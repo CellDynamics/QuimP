@@ -525,7 +525,7 @@ public final class Outline implements Cloneable {
         return centroid;
    }
 
-   private double calcArea() {
+   public double calcArea() {
       double area, sum;
       sum = 0.0;
       Vert n = head;
@@ -1051,5 +1051,31 @@ public final class Outline implements Cloneable {
          v = v.getNext();
       }while(!v.isHead());
       return head;
+   }
+   
+   public void scale(double amount, double stepSize){
+      //make sure snake access is clockwise
+      Node.setClockwise(true);
+      // scale the snake by 'amount', in increments of 'stepsize'
+      if (amount > 0) {
+         stepSize *= -1;  // scale down if amount negative
+      }
+      double steps = Math.abs(amount / stepSize);
+      //IJ.log(""+steps);
+      Vert n;
+      int j;
+      for (j = 0; j < steps; j++) {
+         n = head;
+         do {
+            
+             n.setX(n.getX() + stepSize * n.getNormal().getX());
+             n.setY(n.getY() + stepSize * n.getNormal().getY());
+            
+             n = n.getNext();
+         } while (!n.isHead());
+
+         //cutSelfIntersects();
+         updateNormales(false);
+      }
    }
 }
