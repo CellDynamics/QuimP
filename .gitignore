@@ -1,2 +1,3 @@
-Doxygen_doc/
+Doxygen_doc/*
+!Doxygen_doc/Doxyfile
 IDEs/
