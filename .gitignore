@@ -1,3 +1,4 @@
 Doxygen_doc/*
 !Doxygen_doc/Doxyfile
 IDEs/
+.directory
