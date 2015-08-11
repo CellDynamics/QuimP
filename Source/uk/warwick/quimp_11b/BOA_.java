@@ -2232,9 +2232,10 @@ class SnakeHandler {
       double x, y;
       Node head, n, prevn;
       int s = 0;
-
+      BufferedReader br = null;
+      
       try {
-         BufferedReader br = new BufferedReader(new FileReader(inFile));
+          br = new BufferedReader(new FileReader(inFile));
 
          while ((thisLine = br.readLine()) != null) { // while loop begins here
             //System.out.println(thisLine);
@@ -2271,6 +2272,13 @@ class SnakeHandler {
          } // end while
       } catch (IOException e) {
          System.err.println("Error: " + e);
+      } finally {
+    	  if(br!=null)
+			try {
+				br.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
       }
 
       return 1;

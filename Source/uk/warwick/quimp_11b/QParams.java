@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
@@ -287,8 +288,9 @@ public class QParams {
    }
 
    void checkECMMrun(){
-       try {
-            BufferedReader br = new BufferedReader(new FileReader(snakeQP));
+	   BufferedReader br = null;
+	   try {
+            br = new BufferedReader(new FileReader(snakeQP));
             String line = br.readLine();  // read first line
 
             String sub = line.substring(line.length()-4, line.length());
@@ -300,7 +302,14 @@ public class QParams {
                ecmmHasRun = false;
             }
        }catch(Exception e){
-
+    	   System.err.println("Error: " + e);
+       } finally {
+    	   if(br!=null)
+			try {
+				br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
        }
    }
 }
