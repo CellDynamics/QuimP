@@ -3676,9 +3676,6 @@ class BOAp {
    static int callCount; // use to test how many times a method is called
    static boolean SEGrunning; // is seg running
 
-   void BOAp() {
-   }
-
    static public double getNodeRes() {
       return nodeRes;
    }

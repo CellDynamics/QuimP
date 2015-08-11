@@ -36,9 +36,6 @@ public class Q_Explorer implements PlugIn {
    ImageManager imageManager;
    OutlineHandler oH;
 
-   void Q_Explorer() {
-   }
-
    @Override
    public void run(String string) {
       try {
