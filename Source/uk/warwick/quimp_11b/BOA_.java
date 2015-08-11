@@ -161,7 +161,8 @@ public class BOA_ implements PlugIn {
       logArea.append(s + '\n');
    }
 
-   class CustomCanvas extends ImageCanvas {
+   @SuppressWarnings("serial")
+class CustomCanvas extends ImageCanvas {
 
       CustomCanvas(ImagePlus imp) {
          super(imp);
@@ -199,7 +200,8 @@ public class BOA_ implements PlugIn {
       //}
    }
 
-   class CustomStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
+   @SuppressWarnings("serial")
+class CustomStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
 
       private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
       private Button bAdd, bDel, bDelSeg, bQuit;

@@ -60,7 +60,8 @@ public class Q_Explorer implements PlugIn {
       }
    }
 
-   class MapCanvas extends ImageCanvas {
+   @SuppressWarnings("serial")
+class MapCanvas extends ImageCanvas {
 
       MapCanvas(ImagePlus imp) {
          super(imp);
@@ -74,7 +75,8 @@ public class Q_Explorer implements PlugIn {
       }
    }
 
-   class MovCanvas extends ImageCanvas {
+   @SuppressWarnings("serial")
+class MovCanvas extends ImageCanvas {
 
       MovCanvas(ImagePlus imp) {
          super(imp);
@@ -86,7 +88,8 @@ public class Q_Explorer implements PlugIn {
       }
    }
 
-   class ExplorerStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
+   @SuppressWarnings("serial")
+class ExplorerStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
 
       ExplorerStackWindow(ImagePlus imp, ImageCanvas stackCanvas) {
          super(imp, stackCanvas);
