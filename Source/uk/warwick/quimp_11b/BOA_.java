@@ -3618,59 +3618,70 @@ class Node {
 
 }
 
+/**
+ * Holds parameters defining snake and controlling contour matching algorithm.
+ * BOAp is static class contains internal as well as external parameters used 
+ * to defining snake and controlling contour matching algorithm. There are also 
+ * several basic methods get/set methods for accessing selected parameters, 
+ * setting default {@link BOAp#setDefaults() values} and writing/reading these 
+ * (external) parameters to/from disk. 
+ * 
+ * @author rtyson
+ * @see QParams
+ * @see Tool
+ */
 class BOAp {
 
-   static File orgFile, outFile; //paramFile;
-   static String fileName;                            //file name only, no extension
-   static QParams readQp; // read in parameter file
+   static File orgFile, outFile; 	// paramFile;
+   static String fileName;          // file name only, no extension
+   static QParams readQp; 			// read in parameter file
    //
    //Parameters Numeric
    static private double nodeRes;
-   static int blowup;            // distance to blow up chain
+   static int blowup;            	// distance to blow up chain
    static double vel_crit;
    static double f_central;
-   static double f_image;     // image force
-   static int max_iterations;  // max iterations per contraction
+   static double f_image;     		// image force
+   static int max_iterations;  		// max iterations per contraction
    static int sample_tan;
    static int sample_norm;
    static double f_contract;
    static double finalShrink;
    //Switch Params
-   static boolean use_previous_snake;  // next contraction begins with last chain
+   static boolean use_previous_snake;// next contraction begins with last chain
    static boolean showPaths;
-   static boolean expandSnake; // set true to act as an expanding snake
+   static boolean expandSnake; 		 // set true to act as an expanding snake
    //internal parameters
    static int NMAX;             // maximum number of nodes (% of starting nodes)
    static double delta_t;
    static double sensitivity;
    static double f_friction;
-   static int FRAMES; // Number of frames in stack
+   static int FRAMES; 			// Number of frames in stack
    static int WIDTH, HEIGHT;
-   static int cut_every;                 // cut loops in chain every X frames
-   static boolean oldFormat;           // output old QuimP format?
-   static boolean saveSnake;  // save snake data
+   static int cut_every;        // cut loops in chain every X frames
+   static boolean oldFormat;    // output old QuimP format?
+   static boolean saveSnake;  	// save snake data
    static private double min_dist;       // min distance between nodes
    static private double max_dist;       // max distance between nodes
-   static double proximity;     // distance between centroids at
+   static double proximity;     		// distance between centroids at
    //which contact is tested for
-   static double proxFreeze;     // proximity of nodes to freeze when blowing up
+   static double proxFreeze;    // proximity of nodes to freeze when blowing up
    static boolean savedOne;
-   //static int nestSize;
-   static double imageScale; //scale of image in
+   static double imageScale; 	//scale of image in
    static double imageFrameInterval;
    static boolean scaleAdjusted;
    static boolean fIAdjusted;
    static boolean singleImage;
-   static String paramsExist; //on statup check if defults are needed to set
+   static String paramsExist; 	//on statup check if defults are needed to set
    static boolean zoom;
    static boolean doDelete;
    static boolean doDeleteSeg;
-   static boolean editMode; // select a cell for editing
-   static int editingID; // currently editing cell iD. -1 if not editing
+   static boolean editMode; 	// select a cell for editing
+   static int editingID; 		// currently editing cell iD. -1 if not editing
    static boolean useSubPixel = true;
    static boolean supressStateChangeBOArun = false;
-   static int callCount; // use to test how many times a method is called
-   static boolean SEGrunning; // is seg running
+   static int callCount; 		// use to test how many times a method is called
+   static boolean SEGrunning; 	// is seg running
 
    static public double getNodeRes() {
       return nodeRes;
@@ -3680,11 +3691,11 @@ class BOAp {
       nodeRes = d;
       if (nodeRes < 1) {
          min_dist = 1;       // min distance between nodes
-         max_dist = 2.3;       // max distance between nodes
+         max_dist = 2.3;     // max distance between nodes
          return;
       }
       min_dist = nodeRes;       // min distance between nodes
-      max_dist = nodeRes * 1.9; //+(0.3*nodeRes);     // max distance between nodes
+      max_dist = nodeRes * 1.9; // max distance between nodes
    }
 
    static public double getMax_dist() {
@@ -3695,10 +3706,15 @@ class BOAp {
       return min_dist;
    }
 
+   /**
+    * Sets default parameters for contour matching algorithm.
+    * Fills some fields in BOAp class related to CM algorithm. These parameters
+    * are external - available for user to set. 
+    */
    static public void setDefaults() {
 
       //Parameters Numeric
-      setNodeRes(6.);
+      setNodeRes(6.0);
       blowup = 20;            // distance to blow up chain
       vel_crit = 0.005;
       f_central = 0.04;
@@ -3711,6 +3727,10 @@ class BOAp {
 
    }
 
+   /**
+    * Initialises internal parameters of BOAp class and gets IJ image reference. 
+    * @param ip	Reference to IJ image
+    */
    static public void setup(ImagePlus ip) {
       FileInfo fileinfo = ip.getOriginalFileInfo();
       if (fileinfo == null) {
@@ -3769,6 +3789,12 @@ class BOAp {
       SEGrunning = false;
    }
 
+   /**
+    * Writes set of snake parameters to disk.
+    * @param sID
+    * @param startF
+    * @param endF
+    */
    static public void writeParams(int sID, int startF, int endF) {
       if (saveSnake) {
          File paramFile = new File(outFile.getParent(), fileName + "_" + sID + ".paQP");
