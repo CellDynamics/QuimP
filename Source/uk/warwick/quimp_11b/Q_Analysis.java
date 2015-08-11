@@ -583,23 +583,23 @@ class STmap {
         return v1 + ((v2 - v1) * frac);
     }
 
-    private void testQColorBW() {
-        /*
-         * fluImP = IJ.createImage("Fluorescence Map", "8-bit white", 10,10,1);
-         * ImageProcessor ip = fluImP.getProcessor(); byte[] pixels =
-         * (byte[])ip.getPixels(); for(int j = 0; j < pixels.length ; j++){
-         * System.out.println("pixel " + j+": "+pixels[j]); }
-         */
-        double max = 10;
-        double step = max / 255;
-        byte b;
-        for (int i = 0; i < 255; i++) {
-            System.out.print("in val: " + i * step);
-            b = (byte) QColor.bwScale(i * step, 256, max, 0);
-            System.out.println(", b: " + b);
-        }
-
-    }
+//    private void testQColorBW() {
+//        /*
+//         * fluImP = IJ.createImage("Fluorescence Map", "8-bit white", 10,10,1);
+//         * ImageProcessor ip = fluImP.getProcessor(); byte[] pixels =
+//         * (byte[])ip.getPixels(); for(int j = 0; j < pixels.length ; j++){
+//         * System.out.println("pixel " + j+": "+pixels[j]); }
+//         */
+//        double max = 10;
+//        double step = max / 255;
+//        byte b;
+//        for (int i = 0; i < 255; i++) {
+//            System.out.print("in val: " + i * step);
+//            b = (byte) QColor.bwScale(i * step, 256, max, 0);
+//            System.out.println(", b: " + b);
+//        }
+//
+//    }
 
     private void calcCurvature() {
         // returns the min and max values
@@ -706,8 +706,6 @@ class STmap {
 
         Vert v, tmpV;
         double totalCur, distance;
-        int count;
-
         //avertage over curvatures
         if (Qp.sumCov > 0) {
             System.out.println("summing curv");
@@ -715,8 +713,6 @@ class STmap {
             do {
                 //System.out.println("\tnew vert");
                 totalCur = v.curvatureSmoothed; //reset
-                count = 1;
-
                 //add up curvatures of prev nodes
                 //System.out.println("\t  prev nodes");
                 tmpV = v.getPrev();
@@ -724,7 +720,6 @@ class STmap {
                 do {
                     distance += Vect2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureSmoothed;
-                    count++;
                     tmpV = tmpV.getPrev();
                 } while (distance < Qp.sumCov / 2);
 
@@ -734,7 +729,6 @@ class STmap {
                 do {
                     distance += Vect2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureSmoothed;
-                    count++;
                     tmpV = tmpV.getNext();
                 } while (distance < Qp.sumCov / 2);
 
@@ -746,7 +740,8 @@ class STmap {
 
     }
 
-    @Deprecated
+    @SuppressWarnings("unused")
+	@Deprecated
     private Vert findFirstNodeX(Outline o, char c) {
         // find the first node in terms of coord and fcoord
         // ie closest to zero

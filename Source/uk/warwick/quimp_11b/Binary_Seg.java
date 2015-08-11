@@ -9,19 +9,14 @@ package uk.warwick.quimp_11b;
  * @author rtyson
  */
 import ij.*;
-import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.io.FileInfo;
 import ij.io.OpenDialog;
 import ij.io.SaveDialog;
 import ij.plugin.filter.PlugInFilter;
-import ij.process.ImageProcessor;
 import ij.plugin.filter.ParticleAnalyzer;
-//import ij.measure.Measurements;
-import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
 import ij.process.ImageStatistics;
-import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;

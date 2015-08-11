@@ -9,7 +9,6 @@ import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.ImageWindow;
 import ij.gui.Overlay;
-import ij.gui.Roi;
 import ij.gui.StackWindow;
 import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
@@ -20,7 +19,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 

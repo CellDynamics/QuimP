@@ -6,7 +6,6 @@ package uk.warwick.quimp_11b;
 
 import java.io.*;
 import ij.*;
-import java.awt.Color;
 
 
 public class SVGplotter {
@@ -232,7 +231,6 @@ class ScaleBar{
     public double thickness;
     public QColor colour;
     private Vect2d location;
-    private double scale;
     private Qtext text;
 
     public ScaleBar(Vect2d l, String u, int v, double s){
@@ -247,7 +245,6 @@ class ScaleBar{
     }
 
     public void setScale(double s){
-        scale = s;
         length = value / s;
     }
 

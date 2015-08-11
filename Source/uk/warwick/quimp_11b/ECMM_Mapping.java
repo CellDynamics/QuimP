@@ -11,7 +11,6 @@ import ij.io.OpenDialog;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import java.io.*;
-import java.lang.Math.*;
 import java.util.ArrayList;
 //import java.util.Vector;
 import java.util.Random;
@@ -416,9 +415,7 @@ class Mapping {
 
         Vert nA, nB, temp; // node 1 of edges A and B
         double[] intersect = new double[2];
-        int edgeAcount = 1;
-        int edgeBcount = 1;
-        int i = 0, state;
+        int state;
 
         nA = o1.getHead();
         do {
@@ -442,38 +439,33 @@ class Mapping {
                     temp.setY(intersect[1]);
                     temp.setIntPoint(true, INTS);
                     nB = nB.getNext();
-
-                    //result.print("intersect point: ");
-                    i++;
                 }
                 nB = nB.getNext();
-                edgeBcount++;
             } while (!nB.isHead());
             nA = nA.getNext();
-            edgeAcount++;
         } while (!nA.isHead());
 
         return INTS;
     }
 
-    private void removeIntersects() {
-        //removes intersect points inserted by calcIntersects
-        Vert v = o1.getHead();
-        do {
-            if (v.getPrev().isIntPoint()) {
-                o1.removeVert(v.getPrev());
-            }
-            v = v.getNext();
-        } while (!v.isHead());
-
-        v = o2.getHead();
-        do {
-            if (v.getPrev().isIntPoint()) {
-                o2.removeVert(v.getPrev());
-            }
-            v = v.getNext();
-        } while (!v.isHead());
-    }
+//    private void removeIntersects() {
+//        //removes intersect points inserted by calcIntersects
+//        Vert v = o1.getHead();
+//        do {
+//            if (v.getPrev().isIntPoint()) {
+//                o1.removeVert(v.getPrev());
+//            }
+//            v = v.getNext();
+//        } while (!v.isHead());
+//
+//        v = o2.getHead();
+//        do {
+//            if (v.getPrev().isIntPoint()) {
+//                o2.removeVert(v.getPrev());
+//            }
+//            v = v.getNext();
+//        } while (!v.isHead());
+//    }
 
     private void insertFake() {
         //insert one fake intersect point just after the heads
@@ -581,112 +573,112 @@ class Mapping {
         return valid;
     }
 
-    private void rebuildIntsOLD() {
-        // attempts to remove the correct intersects to leave only valid
-        // intersections.  Done by adding back in inverted ints found by
-        // findInvertedInts()
-
-        //find a good sector to start with (intState==1)
-        Vert v1 = o1.getHead();
-        boolean found = false;
-        do {
-            if (v1.isIntPoint() && v1.intState == 1) {
-                found = true;
-                break;
-            }
-            v1 = v1.getNext();
-        } while (!v1.isHead());
-
-        // if no valid sectors use a loose vert to start from (and cross fingers)
-        if (!found) {
-            v1 = o1.getHead();
-            do {
-                if (v1.isIntPoint() && (v1.intState == 4 || v1.intState == 2)) {
-                    found = true;
-                    break;
-                }
-                v1 = v1.getNext();
-            } while (!v1.isHead());
-
-            if (!found) {
-                System.out.println("    COUDL NOT FIND A STATING INT POINT. Going random=BAD");
-            }
-        }
-
-        // find matching intersection in o2
-        Vert v2 = o2.getHead();
-        do {
-            if (v2.isIntPoint() && v2.intsectID == v1.intsectID) {
-                break;
-            }
-            v2 = v2.getNext();
-        } while (!v2.isHead());
-
-        // from v1, retain intersect points that allow building of good sectors,
-        // and delete the others.
-        int startingInt = v1.intsectID;
-        Vert v1remove;
-
-        int o1count; // provide rough estimate to sector lengths
-        int o2count; // allow us to pick the assumed best soloution
-        do {
-            o1count = 0;
-            o2count = 0;
-            do {
-                v1 = v1.getNext();
-                o1count++;
-            } while (!v1.isIntPoint()); // move to next int point
-            do {
-                v2 = v2.getNext();
-                o2count++;
-            } while (!v2.isIntPoint()); // move to next int point
-
-            if (v2.intsectID == v1.intsectID) {
-                //System.out.println("good sector");
-                continue;
-
-            }     //good  sector
-
-            do {
-
-                if (v2.isIntPoint() && v2.intsectID != v1.intsectID) {
-                    //System.out.println("deleting...");
-                    v1remove = o1.getHead();
-                    do {
-                        // find matching intersect to also delete
-                        if (v1remove.isIntPoint() && v1remove.intsectID == v2.intsectID) {
-                            o1.removeVert(v1remove);
-                            break;
-                        }
-                        v1remove = v1remove.getNext();
-                    } while (!v1remove.isHead()); // move to next int point
-
-                    o2.removeVert(v2); // delete troublesome intersect
-                    ECMM_Mapping.plot.setColor(0, 0.8, 0);
-                    ECMM_Mapping.plot.drawCross(v2.getPoint(), 5);
-
-                } else if (v2.isIntPoint() && v2.intsectID == v1.intsectID) {
-                    //System.out.println("New good sector!!");
-                    break;
-                }
-                v2 = v2.getNext();
-            } while (true);
-
-        } while (v1.intsectID != startingInt);
-
-        // count remaining intersects
-        v1 = o1.getHead();
-        int intersects = 0;
-        do {
-            if (v1.isIntPoint()) {
-                intersects++;
-            }
-            v1 = v1.getNext();
-        } while (!v1.isHead());
-
-        ECMp.numINTS = intersects;
-
-    }
+//    private void rebuildIntsOLD() {
+//        // attempts to remove the correct intersects to leave only valid
+//        // intersections.  Done by adding back in inverted ints found by
+//        // findInvertedInts()
+//
+//        //find a good sector to start with (intState==1)
+//        Vert v1 = o1.getHead();
+//        boolean found = false;
+//        do {
+//            if (v1.isIntPoint() && v1.intState == 1) {
+//                found = true;
+//                break;
+//            }
+//            v1 = v1.getNext();
+//        } while (!v1.isHead());
+//
+//        // if no valid sectors use a loose vert to start from (and cross fingers)
+//        if (!found) {
+//            v1 = o1.getHead();
+//            do {
+//                if (v1.isIntPoint() && (v1.intState == 4 || v1.intState == 2)) {
+//                    found = true;
+//                    break;
+//                }
+//                v1 = v1.getNext();
+//            } while (!v1.isHead());
+//
+//            if (!found) {
+//                System.out.println("    COUDL NOT FIND A STATING INT POINT. Going random=BAD");
+//            }
+//        }
+//
+//        // find matching intersection in o2
+//        Vert v2 = o2.getHead();
+//        do {
+//            if (v2.isIntPoint() && v2.intsectID == v1.intsectID) {
+//                break;
+//            }
+//            v2 = v2.getNext();
+//        } while (!v2.isHead());
+//
+//        // from v1, retain intersect points that allow building of good sectors,
+//        // and delete the others.
+//        int startingInt = v1.intsectID;
+//        Vert v1remove;
+//
+//        int o1count; // provide rough estimate to sector lengths
+//        int o2count; // allow us to pick the assumed best soloution
+//        do {
+//            o1count = 0;
+//            o2count = 0;
+//            do {
+//                v1 = v1.getNext();
+//                o1count++;
+//            } while (!v1.isIntPoint()); // move to next int point
+//            do {
+//                v2 = v2.getNext();
+//                o2count++;
+//            } while (!v2.isIntPoint()); // move to next int point
+//
+//            if (v2.intsectID == v1.intsectID) {
+//                //System.out.println("good sector");
+//                continue;
+//
+//            }     //good  sector
+//
+//            do {
+//
+//                if (v2.isIntPoint() && v2.intsectID != v1.intsectID) {
+//                    //System.out.println("deleting...");
+//                    v1remove = o1.getHead();
+//                    do {
+//                        // find matching intersect to also delete
+//                        if (v1remove.isIntPoint() && v1remove.intsectID == v2.intsectID) {
+//                            o1.removeVert(v1remove);
+//                            break;
+//                        }
+//                        v1remove = v1remove.getNext();
+//                    } while (!v1remove.isHead()); // move to next int point
+//
+//                    o2.removeVert(v2); // delete troublesome intersect
+//                    ECMM_Mapping.plot.setColor(0, 0.8, 0);
+//                    ECMM_Mapping.plot.drawCross(v2.getPoint(), 5);
+//
+//                } else if (v2.isIntPoint() && v2.intsectID == v1.intsectID) {
+//                    //System.out.println("New good sector!!");
+//                    break;
+//                }
+//                v2 = v2.getNext();
+//            } while (true);
+//
+//        } while (v1.intsectID != startingInt);
+//
+//        // count remaining intersects
+//        v1 = o1.getHead();
+//        int intersects = 0;
+//        do {
+//            if (v1.isIntPoint()) {
+//                intersects++;
+//            }
+//            v1 = v1.getNext();
+//        } while (!v1.isHead());
+//
+//        ECMp.numINTS = intersects;
+//
+//    }
 
     private void rebuildInts() {
         // attempts to remove the correct intersects to leave only valid
@@ -813,52 +805,52 @@ class Mapping {
         System.out.println("finished rebuilding. INTS:" + ECMp.numINTS);
     }
 
-    private void drawRawIntsStates() {
-        // test method that draws different labels of intersection
-
-        Vert v1 = o1.getHead();
-        do {
-            if (v1.isIntPoint()) {
-                if (v1.intState == 4) {
-                    ECMM_Mapping.plot.setColor(0.8, 0.8, 0);
-                }
-                if (v1.intState == 1) {
-                    ECMM_Mapping.plot.setColor(0, 0.8, 0);
-                }
-                if (v1.intState == 2) {
-                    ECMM_Mapping.plot.setColor(0, 0, 0.8);
-                }
-                if (v1.intState == 3) {
-                    ECMM_Mapping.plot.setColor(0.8, 0, 0);
-                }
-
-                ECMM_Mapping.plot.drawCross(v1.getPoint(), 6);
-
-            }
-            v1 = v1.getNext();
-        } while (!v1.isHead());
-
-        Vert v2 = o2.getHead();
-        do {
-            if (v2.isIntPoint()) {
-                if (v2.intState == 4) {
-                    ECMM_Mapping.plot.setColor(0.8, 0.8, 0);
-                }
-                if (v2.intState == 1) {
-                    ECMM_Mapping.plot.setColor(0, 0.8, 0);
-                }
-                if (v2.intState == 2) {
-                    ECMM_Mapping.plot.setColor(0, 0, 0.8);
-                }
-                if (v2.intState == 3) {
-                    ECMM_Mapping.plot.setColor(0.8, 0, 0);
-                }
-                ECMM_Mapping.plot.drawCircle(v2.getPoint(), 12);
-            }
-            v2 = v2.getNext();
-        } while (!v2.isHead());
-
-    }
+//    private void drawRawIntsStates() {
+//        // test method that draws different labels of intersection
+//
+//        Vert v1 = o1.getHead();
+//        do {
+//            if (v1.isIntPoint()) {
+//                if (v1.intState == 4) {
+//                    ECMM_Mapping.plot.setColor(0.8, 0.8, 0);
+//                }
+//                if (v1.intState == 1) {
+//                    ECMM_Mapping.plot.setColor(0, 0.8, 0);
+//                }
+//                if (v1.intState == 2) {
+//                    ECMM_Mapping.plot.setColor(0, 0, 0.8);
+//                }
+//                if (v1.intState == 3) {
+//                    ECMM_Mapping.plot.setColor(0.8, 0, 0);
+//                }
+//
+//                ECMM_Mapping.plot.drawCross(v1.getPoint(), 6);
+//
+//            }
+//            v1 = v1.getNext();
+//        } while (!v1.isHead());
+//
+//        Vert v2 = o2.getHead();
+//        do {
+//            if (v2.isIntPoint()) {
+//                if (v2.intState == 4) {
+//                    ECMM_Mapping.plot.setColor(0.8, 0.8, 0);
+//                }
+//                if (v2.intState == 1) {
+//                    ECMM_Mapping.plot.setColor(0, 0.8, 0);
+//                }
+//                if (v2.intState == 2) {
+//                    ECMM_Mapping.plot.setColor(0, 0, 0.8);
+//                }
+//                if (v2.intState == 3) {
+//                    ECMM_Mapping.plot.setColor(0.8, 0, 0);
+//                }
+//                ECMM_Mapping.plot.drawCircle(v2.getPoint(), 12);
+//            }
+//            v2 = v2.getNext();
+//        } while (!v2.isHead());
+//
+//    }
 
     private void drawIntersects() {
         if(!ECMp.plot) return;
@@ -938,17 +930,13 @@ class Mapping {
     }
 
     public Outline migrate() {
-        Vert tempVert = new Vert(-2); //only create to get rid of 'might not be initialized'
         Vert newVert; // placed at the marker
         Vect2d newPos;
         Sector s;
 
         Vert mapHead = new Vert(-1);
         Outline mappedOutline = new Outline(mapHead);
-        Outline tempO; // for switching mig and tar contours
         Vert currentMapVert = mapHead;
-        int nodeSucCount = 0;
-
         for (int i = 0; i < sectors.length; i++) {
             s = sectors[i];
             Vert v = s.getMigStart().getNext(); // starting vert, don't migrate the intpoint
@@ -975,8 +963,6 @@ class Mapping {
 
                 newVert = mappedOutline.insertVert(currentMapVert);
                 newVert.tarLandingCoord = v.fLandCoord; // so we always have a reference to where we landed
-                nodeSucCount++;
-
                 if (s.expansion) { // expanding or retracting based on area change (not length of sector)
                     newVert.distance = -v.distance; //?????????????? why neg
                 } else {
@@ -1043,41 +1029,41 @@ class Mapping {
 
     
 
-    private void secondPass(Sector s, Outline mappedOutline, int noNodesAdded) {
-        // check for low density and add in markers
-        s.switchMigDirection();
-        double markerResTol = ECMp.markerRes * 1.5d;
-
-        Vert v = mappedOutline.getHead();
-        Vert vp, addV; // prev vert
-        double distance, rSize, fillGap, addAt; // relative size of gap
-        double fillWith;
-
-        for (int i = noNodesAdded; i > 1; i--) { //cycle back through success mapped nodes
-            v = v.getPrev();
-            vp = v.getPrev();
-
-
-            distance = Vect2d.lengthP2P(v.getPoint(), vp.getPoint());
-            if (distance > markerResTol) {
-
-                rSize = distance / markerResTol; // gap size relative to marker density
-                fillWith = Math.ceil(distance / markerResTol); // number of verts to insert
-                distance = Vert.disCoord2Coord(vp.tarLandingCoord, v.tarLandingCoord);
-                fillGap = distance / (fillWith + 1); // coord gap to inster nodes
-
-                for (int j = 0; j < fillWith; j++) {
-                    addAt = Vert.addCoords(vp.tarLandingCoord, fillGap);
-                    //addV = o2.findCoordPoint(addAt);
-                }
-
-
-                //ECMM_Mapping.plot.drawCircle(vp.getPoint(), 4);
-            }
-        }
-
-        s.switchMigDirection();
-    }
+//    private void secondPass(Sector s, Outline mappedOutline, int noNodesAdded) {
+//        // check for low density and add in markers
+//        s.switchMigDirection();
+//        double markerResTol = ECMp.markerRes * 1.5d;
+//
+//        Vert v = mappedOutline.getHead();
+//        Vert vp, addV; // prev vert
+//        double distance, rSize, fillGap, addAt; // relative size of gap
+//        double fillWith;
+//
+//        for (int i = noNodesAdded; i > 1; i--) { //cycle back through success mapped nodes
+//            v = v.getPrev();
+//            vp = v.getPrev();
+//
+//
+//            distance = Vect2d.lengthP2P(v.getPoint(), vp.getPoint());
+//            if (distance > markerResTol) {
+//
+//                rSize = distance / markerResTol; // gap size relative to marker density
+//                fillWith = Math.ceil(distance / markerResTol); // number of verts to insert
+//                distance = Vert.disCoord2Coord(vp.tarLandingCoord, v.tarLandingCoord);
+//                fillGap = distance / (fillWith + 1); // coord gap to inster nodes
+//
+//                for (int j = 0; j < fillWith; j++) {
+//                    addAt = Vert.addCoords(vp.tarLandingCoord, fillGap);
+//                    //addV = o2.findCoordPoint(addAt);
+//                }
+//
+//
+//                //ECMM_Mapping.plot.drawCircle(vp.getPoint(), 4);
+//            }
+//        }
+//
+//        s.switchMigDirection();
+//    }
 }
 
 class Sector {
@@ -1421,42 +1407,42 @@ class Sector {
 
     }
 
-    private void ioPolygonsOLD() { //in and out polygons
-        float[] x = new float[migCharges.getVerts()];
-        float[] y = new float[migCharges.getVerts()];
-
-        int i = 0;
-        Vert v = migCharges.getHead();
-        do {
-            x[i] = (float) v.getX();
-            y[i] = (float) v.getY();
-            i++;
-            v = v.getNext();
-        } while (!v.isHead());
-
-        outerPoly = new FloatPolygon(x, y, x.length); //was this
-        //innerPoly = new FloatPolygon(x, y, x.length);
-
-        x = new float[tarCharges.getVerts()];
-        y = new float[tarCharges.getVerts()];
-        i = 0;
-        v = tarCharges.getHead();
-        do {
-            x[i] = (float) v.getX();
-            y[i] = (float) v.getY();
-            i++;
-            v = v.getNext();
-        } while (!v.isHead());
-
-        innerPoly = new FloatPolygon(x, y, x.length); //was this
-        //outerPoly = new FloatPolygon(x, y, x.length);
-        //System.out.println("Using ioPoly");
-
-        if (ECMp.plot) {
-            //ECMM_Mapping.plot.drawPolygon(outerPoly);
-            //ECMM_Mapping.plot.drawPolygon(innerPoly);
-        }
-    }
+//    private void ioPolygonsOLD() { //in and out polygons
+//        float[] x = new float[migCharges.getVerts()];
+//        float[] y = new float[migCharges.getVerts()];
+//
+//        int i = 0;
+//        Vert v = migCharges.getHead();
+//        do {
+//            x[i] = (float) v.getX();
+//            y[i] = (float) v.getY();
+//            i++;
+//            v = v.getNext();
+//        } while (!v.isHead());
+//
+//        outerPoly = new FloatPolygon(x, y, x.length); //was this
+//        //innerPoly = new FloatPolygon(x, y, x.length);
+//
+//        x = new float[tarCharges.getVerts()];
+//        y = new float[tarCharges.getVerts()];
+//        i = 0;
+//        v = tarCharges.getHead();
+//        do {
+//            x[i] = (float) v.getX();
+//            y[i] = (float) v.getY();
+//            i++;
+//            v = v.getNext();
+//        } while (!v.isHead());
+//
+//        innerPoly = new FloatPolygon(x, y, x.length); //was this
+//        //outerPoly = new FloatPolygon(x, y, x.length);
+//        //System.out.println("Using ioPoly");
+//
+//        if (ECMp.plot) {
+//            //ECMM_Mapping.plot.drawPolygon(outerPoly);
+//            //ECMM_Mapping.plot.drawPolygon(innerPoly);
+//        }
+//    }
 
     private FloatPolygon ioPolygons(Outline charges) { //in and out polygons
         float[] x = new float[charges.getVerts()];
@@ -1659,7 +1645,7 @@ class ODEsolver {
 
     private static Vert snap(Vect2d p, Sector s) {
         // snap p to the closest segment of target contour
-        Vect2d closest, current;
+        Vect2d current;
         Vert closestEdge;
         double distance;// = ECMp.d + 1; // must be closer then d+1, good starting value
         double tempDis;
@@ -1667,14 +1653,12 @@ class ODEsolver {
         Vert v = s.getTarStart().getPrev(); //include the edge to the starting intersect pount
         distance = Vect2d.distPointToSegment(p, v.getPoint(), v.getNext().getPoint());
         v = v.getNext();
-        closest = v.getPoint();
         closestEdge = v;
         do {
             current = Vect2d.PointToSegment(p, v.getPoint(), v.getNext().getPoint());
             tempDis = Vect2d.lengthP2P(p, current);
 
             if (tempDis < distance) {
-                closest = current;
                 closestEdge = v;
                 distance = tempDis;
             }
@@ -1796,21 +1780,21 @@ class ODEsolver {
         return totalF;
     }
 
-    private static void forceL(Vect2d force, Vect2d p, Vect2d s1, Vect2d s2, double q) {
-        double L = Vect2d.lengthP2P(s1, s2);
-        Vect2d rU = Vect2d.unitVector(s2, p);
-        double r = Vect2d.lengthP2P(s2, p);
-        Vect2d rpU = Vect2d.unitVector(s1, p);
-        double rp = Vect2d.lengthP2P(s1, p);
-
-        double d = (((rp + r) * (rp + r)) - (L * L)) / (2 * L);
-        //double d = ( Math.pow((rp + r), power) - (L * L)) / (2 * L);
-        double multiplier = ((ECMp.k * q) / d);
-        rpU.addVec(rU);
-
-        force.setX(rpU.getX() * multiplier);
-        force.setY(rpU.getY() * multiplier);
-    }
+//    private static void forceL(Vect2d force, Vect2d p, Vect2d s1, Vect2d s2, double q) {
+//        double L = Vect2d.lengthP2P(s1, s2);
+//        Vect2d rU = Vect2d.unitVector(s2, p);
+//        double r = Vect2d.lengthP2P(s2, p);
+//        Vect2d rpU = Vect2d.unitVector(s1, p);
+//        double rp = Vect2d.lengthP2P(s1, p);
+//
+//        double d = (((rp + r) * (rp + r)) - (L * L)) / (2 * L);
+//        //double d = ( Math.pow((rp + r), power) - (L * L)) / (2 * L);
+//        double multiplier = ((ECMp.k * q) / d);
+//        rpU.addVec(rU);
+//
+//        force.setX(rpU.getX() * multiplier);
+//        force.setY(rpU.getY() * multiplier);
+//    }
 
     private static void forceLpolar(Vect2d force, Vect2d p, Vect2d s1, Vect2d s2, double q, double power, double orientation) {
         double L = Vect2d.lengthP2P(s1, s2);

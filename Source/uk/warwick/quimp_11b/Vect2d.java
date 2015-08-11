@@ -431,19 +431,19 @@ public class Vect2d {
 
 
 
-  /**
-   * Check if two double precision numbers are "equal", i.e. close enough
-   * to a pre-specified limit.
-   *
-   * @param a  First number to check
-   * @param b  Second number to check
-   * @return   True if the two numbers are "equal", false otherwise
-   * http://geosoft.no/software/geometry/Geometry.java.html
-   */
-  private static boolean equals (double a, double b)
-  {
-    return equals (a, b, 1.0e-5);
-  }
+//  /**
+//   * Check if two double precision numbers are "equal", i.e. close enough
+//   * to a pre-specified limit.
+//   *
+//   * @param a  First number to check
+//   * @param b  Second number to check
+//   * @return   True if the two numbers are "equal", false otherwise
+//   * http://geosoft.no/software/geometry/Geometry.java.html
+//   */
+//  private static boolean equals (double a, double b)
+//  {
+//    return equals (a, b, 1.0e-5);
+//  }
 
 
 

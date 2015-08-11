@@ -10,14 +10,6 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import java.awt.Polygon;
 import java.io.File;
-//import java.io.FileNotFoundException;
-//import java.io.IOException;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-//import javax.media.j3d.*;
-import javax.vecmath.Color3f;
-//import javax.vecmath.Point3f;
-//import org.cybergarage.x3d.j3d.VRML97Saver;
 
 /** Inserts an image or stack into a stack.
  */
@@ -62,8 +54,6 @@ public class Test_QuimP implements PlugIn {
       innerPoly.addPoint(60, 130);
 
       PolygonRoi outerRoi = new PolygonRoi(outerPoly, Roi.POLYGON);
-      PolygonRoi innerRoi = new PolygonRoi(innerPoly, Roi.POLYGON);
-
       impProc.setRoi(outerRoi);
 
       ImageStatistics is = ImageStatistics.getStatistics(impProc, m, null);
@@ -186,34 +176,34 @@ public class Test_QuimP implements PlugIn {
 
    }
 
-   private void testCutSelf() {
-      QParams qp = new QParams(new File("/Users/rtyson/Documents/phd/tmp/bugs/Files_problems/Dicty-2011_04_04-exp5-RFP-5_0.paQP"));
-      qp.readParams();
-      System.out.println("" + qp.snakeQP);
-      OutlineHandler oh = new OutlineHandler(qp);
+//   private void testCutSelf() {
+//      QParams qp = new QParams(new File("/Users/rtyson/Documents/phd/tmp/bugs/Files_problems/Dicty-2011_04_04-exp5-RFP-5_0.paQP"));
+//      qp.readParams();
+//      System.out.println("" + qp.snakeQP);
+//      OutlineHandler oh = new OutlineHandler(qp);
+//
+//      Outline o = oh.getOutline(1);
+//      o.cutSelfIntersects();
+//   }
 
-      Outline o = oh.getOutline(1);
-      o.cutSelfIntersects();
-   }
-
-   private void testClosest() {
-
-      Vect2d p = new Vect2d(76.23858250113373,119.10033085490637);
-      Vect2d a = new Vect2d(74.16480188724655,119.79799016803751);
-      Vect2d b = new Vect2d(75.84030926810546,119.2); //118.13024961475276);
-
-      Vect2d c = Vect2d.PointToSegment(p, a, b);
-
-      System.out.println("c.x: "+ c.getX()+ ", c.y: " +c.getY());
-
-      Vect2d edge = Vect2d.unitVector(a, b);
-      Vect2d link = Vect2d.unitVector(p, c);
-
-      double angle  = Vect2d.angle(edge, link);
-
-      System.out.println("angle: " + angle);
-
-   }
+//   private void testClosest() {
+//
+//      Vect2d p = new Vect2d(76.23858250113373,119.10033085490637);
+//      Vect2d a = new Vect2d(74.16480188724655,119.79799016803751);
+//      Vect2d b = new Vect2d(75.84030926810546,119.2); //118.13024961475276);
+//
+//      Vect2d c = Vect2d.PointToSegment(p, a, b);
+//
+//      System.out.println("c.x: "+ c.getX()+ ", c.y: " +c.getY());
+//
+//      Vect2d edge = Vect2d.unitVector(a, b);
+//      Vect2d link = Vect2d.unitVector(p, c);
+//
+//      double angle  = Vect2d.angle(edge, link);
+//
+//      System.out.println("angle: " + angle);
+//
+//   }
 
    /*
    private void test3Dout(){
@@ -340,12 +330,12 @@ public class Test_QuimP implements PlugIn {
 
    }
 */
-   private void colorConvert(){
-
-      QColor c = new QColor( 0.6d,0.2d,0.4d);
-      int ci= c.getColorInt();
-      System.out.println("col int: " + ci);
-      Color3f cf = QColor.colorInt23f(ci);
-      System.out.println("r: " + cf.x + ", g: " + cf.y + ", b: " + cf.z);
-   }
+//   private void colorConvert(){
+//
+//      QColor c = new QColor( 0.6d,0.2d,0.4d);
+//      int ci= c.getColorInt();
+//      System.out.println("col int: " + ci);
+//      Color3f cf = QColor.colorInt23f(ci);
+//      System.out.println("r: " + cf.x + ", g: " + cf.y + ", b: " + cf.z);
+//   }
 }

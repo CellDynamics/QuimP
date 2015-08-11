@@ -227,13 +227,6 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          add(buildSetupPanel());
          pack();
 
-         // set window size (fit as 16 by 9)
-         int w = (int) Math.round((IJ.getScreenSize().width / 100) * 85);
-         int wgap = (int) Math.round((IJ.getScreenSize().width - w) / 2);
-         int h = (int) Math.round((w / 16) * 9);
-         int hgap = (int) Math.round((IJ.getScreenSize().height - h) / 2);
-         // this.setLocationAndSize(wgap, hgap, w, h);
-
       }
 
       final Panel buildSetupPanel() {
@@ -351,21 +344,21 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          return b;
       }
 
-      private TextField addTextField(String s, Panel mp, String d) {
-         Panel p = new Panel();
-         p.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-         TextField tf = new TextField(d, 8);
-         tf.addActionListener(this);
-         tf.setEditable(true);
-
-         Label label = new Label(s);
-         p.add(label);
-         p.add(tf);
-         mp.add(p);
-
-         return tf;
-      }
+//      private TextField addTextField(String s, Panel mp, String d) {
+//         Panel p = new Panel();
+//         p.setLayout(new FlowLayout(FlowLayout.RIGHT));
+//
+//         TextField tf = new TextField(d, 8);
+//         tf.addActionListener(this);
+//         tf.setEditable(true);
+//
+//         Label label = new Label(s);
+//         p.add(label);
+//         p.add(tf);
+//         mp.add(p);
+//
+//         return tf;
+//      }
 
       private Checkbox addCheckbox(String s, Panel p, boolean d) {
          Checkbox c = new Checkbox(s, d);
@@ -1139,7 +1132,6 @@ class ImageGroup {
    private ImageStack orgStack, pathsStack; //, contourStack;
    private ImageProcessor orgIp, pathsIp; //, contourIp;
    private Overlay overlay;
-   private final double orgMag;
    private final Nest nest;
    int w, h, f;
 
@@ -1151,7 +1143,7 @@ class ImageGroup {
       orgIpl = oIpl;
       orgIpl.setSlice(1);
       orgIpl.getCanvas().unzoom();
-      orgMag = orgIpl.getCanvas().getMagnification();
+      orgIpl.getCanvas().getMagnification();
 
       orgStack = orgIpl.getStack();
       orgIp = orgStack.getProcessor(1);
@@ -1191,7 +1183,6 @@ class ImageGroup {
    public void updateOverlay(int frame) {
       SnakeHandler sH;
       Snake snake;
-      String label;
       int x, y;
       TextRoi text;
       overlay = new Overlay();
@@ -2961,7 +2952,6 @@ class Snake {
    public void correctDistanceOLD() throws Exception {
       // ensure nodes are between maxDist and minDist apart, add remove nodes as required
 
-      int i = 0; //debug
       double Di, avg_dist, InsX, InsY, InsNormX, InsNormY, rand;
       Vect2d tan;
 
@@ -3012,8 +3002,6 @@ class Snake {
 
          n = n.getNext();
          n_neigh = n_neigh.getNext();
-
-         i++;
       } while (!n.isHead());
 
       Node.setClockwise(true); //reset to clockwise (although shouldnt effect things??)
@@ -3228,20 +3216,20 @@ class Snake {
       return bounds;
    }
 
-   private void calcOrientation() {
-      //calculate determinant of orientation matrix on bounding box
-      Polygon poly = asPolygon();
-      Rectangle b = poly.getBounds(); // bounding box
-      double xa, ya, xb, yb, xc, yc;
-      xa = b.getMinX();
-      ya = b.getMaxY();
-      xb = b.getMaxX();
-      yb = b.getMaxY();
-      xc = b.getMaxX();
-      yc = b.getMinY();
-
-      //detO = (xb*yc + xa*yb + ya*xc) - (ya*xb + yb*xc + xa*yc); //determinant of orientation
-   }
+//   private void calcOrientation() {
+//      //calculate determinant of orientation matrix on bounding box
+//      Polygon poly = asPolygon();
+//      Rectangle b = poly.getBounds(); // bounding box
+//      double xa, ya, xb, yb, xc, yc;
+//      xa = b.getMinX();
+//      ya = b.getMaxY();
+//      xb = b.getMaxX();
+//      yb = b.getMaxY();
+//      xc = b.getMaxX();
+//      yc = b.getMinY();
+//
+//      //detO = (xb*yc + xa*yb + ya*xc) - (ya*xb + yb*xc + xa*yc); //determinant of orientation
+//   }
 
    public boolean checkNodeNumber() {
       //count the nodes and check that NODES matches

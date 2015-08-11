@@ -5,8 +5,6 @@
 
 package uk.warwick.quimp_11b;
 
-import ij.IJ;
-
 /**
  *
  * @author rtyson

@@ -486,26 +486,26 @@ public class ANA_ implements PlugInFilter, DialogListener {
       } while (!v.isHead());
    }
 
-   private void markFrozenNodes(Outline o){
-      int x, y;
-      Vect2d norm;
-      PointRoi pr;
-      Vert v = o.getHead();
-      do {
-         if(v.frozen){
-            overlay.setStrokeColor(Color.RED);
-            norm = new Vect2d(v.getX(), v.getY());
-            norm.addVec(v.getNormal());
-
-            x = (int) v.getX();
-            y = (int) v.getY();
-            pr = new PointRoi(x, y);
-            overlay.add(pr);
-         }
-         
-         v = v.getNext();
-      } while (!v.isHead());
-   }
+//   private void markFrozenNodes(Outline o){
+//      int x, y;
+//      Vect2d norm;
+//      PointRoi pr;
+//      Vert v = o.getHead();
+//      do {
+//         if(v.frozen){
+//            overlay.setStrokeColor(Color.RED);
+//            norm = new Vect2d(v.getX(), v.getY());
+//            norm.addVec(v.getNormal());
+//
+//            x = (int) v.getX();
+//            y = (int) v.getY();
+//            pr = new PointRoi(x, y);
+//            overlay.add(pr);
+//         }
+//         
+//         v = v.getNext();
+//      } while (!v.isHead());
+//   }
 
    private void markFrozenNodesNormal(Outline o){
       float[] x;
@@ -535,43 +535,43 @@ public class ANA_ implements PlugInFilter, DialogListener {
       } while (!v.isHead());
    }
 
-   private void drawOutlineAsSelection(Outline o) {
+/*   private void drawOutlineAsSelection(Outline o) {
       orgIpl.setRoi(new PolygonRoi(o.asPolygon(), Roi.POLYGON));
       //orgIpr = orgStack.getProcessor(1);
       //orgIpr.setRoi(poly);
       //orgIpl.updateAndDraw();
-   }
+   }*/
 
-   private void setFluoStatsScaled(Polygon outerPoly, Polygon innerPoly, int f) {
-
-      //PolygonRoi outerRoi = new PolygonRoi(outerPoly, Roi.POLYGON);
-      //PolygonRoi innerRoi = new PolygonRoi(innerPoly, Roi.POLYGON);
-
-      int store = f - ANAp.startFrame; // frame to index
-      //System.out.println("store: " + store);
-      fluoStats[store].frame = f;
-
-      //orgIpl.setRoi(outerRoi);
-      orgIpr.setRoi(outerPoly);
-      ImageStatistics is = ImageStatistics.getStatistics(orgIpr, m, null); // this does NOT scale to image
-
-      fluoStats[store].channels[ANAp.channel].totalFluor = is.mean * is.area;
-      fluoStats[store].channels[ANAp.channel].meanFluor = fluoStats[store].channels[ANAp.channel].totalFluor / fluoStats[store].area;
-
-      orgIpr.setRoi(innerPoly);
-      is = ImageStatistics.getStatistics(orgIpr, m, null);
-      fluoStats[store].channels[ANAp.channel].innerArea = Tool.areaToScale(is.area, ANAp.scale);
-      fluoStats[store].channels[ANAp.channel].totalInnerFluor = is.mean * is.area;
-      fluoStats[store].channels[ANAp.channel].meanInnerFluor = fluoStats[store].channels[ANAp.channel].totalInnerFluor / fluoStats[store].channels[ANAp.channel].innerArea;
-
-
-      fluoStats[store].channels[ANAp.channel].cortexArea = fluoStats[store].area - fluoStats[store].channels[ANAp.channel].innerArea;
-      fluoStats[store].channels[ANAp.channel].totalCorFluo = fluoStats[store].channels[ANAp.channel].totalFluor - fluoStats[store].channels[ANAp.channel].totalInnerFluor;
-      fluoStats[store].channels[ANAp.channel].meanCorFluo = fluoStats[store].channels[ANAp.channel].totalCorFluo / fluoStats[store].channels[ANAp.channel].cortexArea;
-
-      fluoStats[store].channels[ANAp.channel].percCortexFluo = (fluoStats[store].channels[ANAp.channel].totalCorFluo / fluoStats[store].channels[ANAp.channel].totalFluor) * 100;
-      fluoStats[store].channels[ANAp.channel].cortexWidth = ANAp.getCortexWidthScale();
-   }
+//   private void setFluoStatsScaled(Polygon outerPoly, Polygon innerPoly, int f) {
+//
+//      //PolygonRoi outerRoi = new PolygonRoi(outerPoly, Roi.POLYGON);
+//      //PolygonRoi innerRoi = new PolygonRoi(innerPoly, Roi.POLYGON);
+//
+//      int store = f - ANAp.startFrame; // frame to index
+//      //System.out.println("store: " + store);
+//      fluoStats[store].frame = f;
+//
+//      //orgIpl.setRoi(outerRoi);
+//      orgIpr.setRoi(outerPoly);
+//      ImageStatistics is = ImageStatistics.getStatistics(orgIpr, m, null); // this does NOT scale to image
+//
+//      fluoStats[store].channels[ANAp.channel].totalFluor = is.mean * is.area;
+//      fluoStats[store].channels[ANAp.channel].meanFluor = fluoStats[store].channels[ANAp.channel].totalFluor / fluoStats[store].area;
+//
+//      orgIpr.setRoi(innerPoly);
+//      is = ImageStatistics.getStatistics(orgIpr, m, null);
+//      fluoStats[store].channels[ANAp.channel].innerArea = Tool.areaToScale(is.area, ANAp.scale);
+//      fluoStats[store].channels[ANAp.channel].totalInnerFluor = is.mean * is.area;
+//      fluoStats[store].channels[ANAp.channel].meanInnerFluor = fluoStats[store].channels[ANAp.channel].totalInnerFluor / fluoStats[store].channels[ANAp.channel].innerArea;
+//
+//
+//      fluoStats[store].channels[ANAp.channel].cortexArea = fluoStats[store].area - fluoStats[store].channels[ANAp.channel].innerArea;
+//      fluoStats[store].channels[ANAp.channel].totalCorFluo = fluoStats[store].channels[ANAp.channel].totalFluor - fluoStats[store].channels[ANAp.channel].totalInnerFluor;
+//      fluoStats[store].channels[ANAp.channel].meanCorFluo = fluoStats[store].channels[ANAp.channel].totalCorFluo / fluoStats[store].channels[ANAp.channel].cortexArea;
+//
+//      fluoStats[store].channels[ANAp.channel].percCortexFluo = (fluoStats[store].channels[ANAp.channel].totalCorFluo / fluoStats[store].channels[ANAp.channel].totalFluor) * 100;
+//      fluoStats[store].channels[ANAp.channel].cortexWidth = ANAp.getCortexWidthScale();
+//   }
 
    private void setFluoStats(Polygon outerPoly, Polygon innerPoly, int f) {
 
@@ -609,7 +609,6 @@ public class ANA_ implements PlugInFilter, DialogListener {
    private void normalise2Interior(Outline o, int f) {
       // interior mean fluorescence is used to normalse membrane measurments
       int store = f - ANAp.startFrame; // frame to index
-      FluoMeasurement m;
       Vert v = o.getHead();
       do {
          //System.out.print("normalise: " + v.fluores[ANAp.channel].intensity);
@@ -733,7 +732,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
       } while (!v.isHead());
    }
 
-   private void drawSamplePoints(Outline o) {
+/*   private void drawSamplePoints(Outline o) {
       int x, y;
       PointRoi pr;
       Vert v = o.getHead();
@@ -744,7 +743,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
          overlay.add(pr);
          v = v.getNext();
       } while (!v.isHead());
-   }
+   }*/
    
    private void drawSamplePointsFloat(Outline o) {
       float x, y;
@@ -974,7 +973,6 @@ class ANAp {
    static public File OUTFILE;
    static public File STATSFILE;
    static public File FLUOFILE;
-   static private double segShrinkWidthPixel; // shrink the seg outline
    static private double cortexWidthPixel; // in pixels
    static private double cortexWidthScale; // at scale
    static public double stepRes = 0.04; // step size in pixels
@@ -1007,8 +1005,6 @@ class ANAp {
       channel = 0;
       cleared = false;
       noData = true;
-      
-      segShrinkWidthPixel = 14;
    }
 
    static void setCortextWidthScale(double c) {
