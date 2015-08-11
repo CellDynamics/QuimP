@@ -1887,7 +1887,7 @@ class Nest {
    }
 
    public boolean writeSnakes() throws Exception {
-      Iterator sHitr = sHs.iterator();
+      Iterator<SnakeHandler> sHitr = sHs.iterator();
       SnakeHandler sH;
       while (sHitr.hasNext()) {
          sH = (SnakeHandler) sHitr.next();
@@ -1910,7 +1910,7 @@ class Nest {
    }
 
    public void reviveNest() {
-      Iterator sHitr = sHs.iterator();
+      Iterator<SnakeHandler> sHitr = sHs.iterator();
       while (sHitr.hasNext()) {
          SnakeHandler sH = (SnakeHandler) sHitr.next();
          sH.revive();
@@ -1935,7 +1935,7 @@ class Nest {
    public void analyse(ImagePlus oi) {
       OutlineHandler outputH;
       SnakeHandler sH;
-      Iterator sHitr = sHs.iterator();
+      Iterator<SnakeHandler> sHitr = sHs.iterator();
       while (sHitr.hasNext()) {
          sH = (SnakeHandler) sHitr.next();
 
@@ -1953,7 +1953,7 @@ class Nest {
    public void resetNest() {
       // Rset live snakes to ROI's
       reviveNest();
-      Iterator sHitr = sHs.iterator();
+      Iterator<SnakeHandler> sHitr = sHs.iterator();
       while (sHitr.hasNext()) {
          SnakeHandler sH = (SnakeHandler) sHitr.next();
          try {
@@ -1981,7 +1981,7 @@ class Nest {
    void resetForFrame(int f) {
       // prepare for segmentation from frame f
       reviveNest();
-      Iterator sHitr = sHs.iterator();
+      Iterator<SnakeHandler> sHitr = sHs.iterator();
       //BOA_.log("Reseting for frame " + f);
       while (sHitr.hasNext()) {
          SnakeHandler sH = (SnakeHandler) sHitr.next();
