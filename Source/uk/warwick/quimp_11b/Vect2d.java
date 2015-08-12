@@ -3,7 +3,7 @@ package uk.warwick.quimp_11b;
 import java.awt.geom.Line2D;
 
 /**
- *
+ * Defines 2D vector and performs operations on vectors and lines
  * @author Richard
  */
 public class Vect2d {
