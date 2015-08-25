@@ -1410,7 +1410,8 @@ class ImageGroup {
 }
 
 /**
- * Calculates forces
+ * Calculates forces that affect the snake
+ * Modifies snake's nodes
  * @author rdyson
  *
  */
@@ -2415,7 +2416,7 @@ class Snake {
    public boolean alive;            // snake is alive
    public int snakeID;
    private int nextTrackNumber = 1;  // node ID's
-   private Node head;                // first node in doubley linked list, always maintained
+   private Node head;                // first node in bidirectional linked list, always maintained
    private int NODES;                // number of nodes
    public double startingNnodes;     // how many nodes at start of segmentation
    //public double startingNnodes;     // how many nodes at start of segmentation
@@ -2429,9 +2430,9 @@ class Snake {
    private Vect2d centroid;
 
    /**
-    * Create a snake from existing linked list
-    * @param h
-    * @param N
+    * Create a snake from existing linked list (at least one head node)
+    * @param h	First Node (head?)
+    * @param N	Number of nodes
     * @param id
     * @throws Exception
     */
@@ -2491,7 +2492,7 @@ class Snake {
    }
 
    private void intializeOval(int t, int xc, int yc, int Rx, int Ry, double s) throws Exception {
-      // Rx and Ry are elipse diameters
+      // Rx and Ry are ellipse diameters
       head = new Node(t); //make a dummy head node
       NODES = 1;
       FROZEN = 0;
@@ -3381,7 +3382,14 @@ class Snake {
 
 /**
  * Represents a node in the snake - its basic component
- * In fact this class stands for bidirectional list containing Nodes
+ * In fact this class stands for bidirectional list containing Nodes. Every node
+ * has assigned 2D position and several additional properties such as:
+ * <ul>
+ * <li> velocity of Node</li>
+ * <li> total force of Node</li>
+ * <li> normal vector</li>
+ * </ul>
+ * 
  * @author rdyson
  *
  */
@@ -3449,16 +3457,21 @@ class Node {
       point.setY(y);
    }
 
+   /**
+    * update point and force with preliminary values, and reset.
+    */
    public void update() {
-      //update point and force with preliminary values, and reset.
       setX(getX() + prelimPoint.getX());
       setY(getY() + prelimPoint.getY());
       prelimPoint.setX(0);
       prelimPoint.setY(0);
    }
 
+   /**
+    * get next node in chain (prev if not clockwise)
+    * @return next or previous Node from list 
+    */
    public Node getPrev() {
-      // get next node in chain (prev if not clockwise)
       if (clockwise) {
          return prev;
       } else {
@@ -3466,8 +3479,11 @@ class Node {
       }
    }
 
+   /**
+    * get previous node in chain (next if not clockwise)
+    * @return previous or next Node from list 
+    */
    public Node getNext() {
-      // get prev node in chain (next if not clockwise)
       if (clockwise) {
          return next;
       } else {
@@ -3475,6 +3491,10 @@ class Node {
       }
    }
 
+   /**
+    * Adds previous (or next if not clockwise) Node to list
+    * @param n	Node to add
+    */
    public void setPrev(Node n) {
       if (clockwise) {
          prev = n;
@@ -3483,6 +3503,10 @@ class Node {
       }
    }
 
+   /**
+    * Adds next (or previous if not clockwise) Node to list
+    * @param n	Node to add
+    */
    public void setNext(Node n) {
       if (clockwise) {
          next = n;
@@ -3522,23 +3546,39 @@ class Node {
    public int getTrackNum() {
       return tracknumber;
    }
-
+   
+   /**
+    * Sets total force for Node
+    * @param f	vector of force to assign to Node force
+    */
    public void setF_total(Vect2d f) {
       F_total.setX(f.getX());
       F_total.setY(f.getY());
    }
 
+   /**
+    * Sets velocity for Node
+    * @param v	vector of velocity to assign to Node force
+    */
    public void setVel(Vect2d v) {
       vel.setX(v.getX());
       vel.setY(v.getY());
    }
 
+   /**
+    * Updates total force for Node
+    * @param f	vector of force to add to Node force
+    */
    public void addF_total(Vect2d f) {
       // add the xy values in f to xy F_total i.e updates total Force
       F_total.setX(F_total.getX() + f.getX());
       F_total.setY(F_total.getY() + f.getY());
    }
 
+   /**
+    * Updates velocity for Node
+    * @param v	vector of velocity to add to Node force
+    */   
    public void addVel(Vect2d v) {
       //adds the xy values in v to Vel i.e. updates velocity
       vel.setX(vel.getX() + v.getX());
@@ -3673,7 +3713,7 @@ class Node {
 /**
  * Holds parameters defining snake and controlling contour matching algorithm.
  * BOAp is static class contains internal as well as external parameters used 
- * to defining snake and controlling contour matching algorithm. There are also 
+ * to define snake and to control contour matching algorithm. There are also 
  * several basic  get/set methods for accessing selected parameters, 
  * setting default {@link BOAp#setDefaults() values} and writing/reading these 
  * (external) parameters to/from disk. File format used for storing data in 

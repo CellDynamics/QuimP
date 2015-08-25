@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Supports writing and reading segmentation parameters from files (paQP).
+ * Container class for parameters defining the whole process of analysis in QuimP. 
+ * Stores also BOA parameters and supports writing and reading segmentation 
+ * parameters from files (paQP).
  * This class defines file format used for storing parameters in file. Process 
  * only main paQP file. 
  * QuimP uses several files to store segmentation results and algorithm 
@@ -275,7 +277,6 @@ public class QParams {
          return otherPaFiles;
       }
    }
-
 
    File getParamFile(){
       return paramFile;
