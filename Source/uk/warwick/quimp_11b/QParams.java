@@ -15,8 +15,22 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- *
+ * Container class for parameters defining the whole process of analysis in QuimP. 
+ * Stores also BOA parameters and supports writing and reading segmentation 
+ * parameters from files (paQP).
+ * This class defines file format used for storing parameters in file. Process 
+ * only main paQP file. 
+ * QuimP uses several files to store segmentation results and algorithm 
+ * parameters:
+ * <ul>
+ * <li> .paQP - core file, contains reference to images and parameters of algorithm. This file is saved and processed by QParams class </li>
+ * <li> .snQP - contains positions of all nodes for every frame </li>
+ * <li> .stQP - basic shape statistics for every frame </li>
+ * </ul>
+ * <p>
+ * These files are generated for every one segmented object.
  * @author rtyson
+ * @see BOAp
  */
 public class QParams {
 
@@ -263,7 +277,6 @@ public class QParams {
          return otherPaFiles;
       }
    }
-
 
    File getParamFile(){
       return paramFile;

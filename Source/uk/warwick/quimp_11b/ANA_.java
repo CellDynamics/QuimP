@@ -17,7 +17,7 @@ import java.awt.*;
 import java.io.*;
 
 /**
- *
+ * Main ANA class implementing IJ PlugInFilter
  * @author tyson
  */
 public class ANA_ implements PlugInFilter, DialogListener {
@@ -259,6 +259,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
       orgIpl.getCalibration().pixelWidth = ANAp.scale;
    }
 
+   /**
+    * Main method for fluorescence measurements analysis
+    */
    private void Ana() {
 
       Outline o1, s1, s2;
@@ -967,6 +970,11 @@ class ChannelStat {
    }
 }
 
+/**
+ * Container class for parameters concerned with ANA analysis
+ * @author rtyson
+ *
+ */
 class ANAp {
 
    static public File INFILE;
@@ -993,6 +1001,10 @@ class ANAp {
    public ANAp() {
    }
 
+   /**
+    * Initiates ANAp class with parameters copied from BOA analysis
+    * @param qp	reference to QParams container (master file and BOA params)
+    */
    static void setup(QParams qp) {
       INFILE = qp.snakeQP;
       OUTFILE = new File(INFILE.getAbsolutePath()); // output file (.snQP) file

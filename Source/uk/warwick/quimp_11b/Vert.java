@@ -4,22 +4,21 @@ package uk.warwick.quimp_11b;
 import ij.IJ;
 
 /**
- *
- * @author tyson
+ * Represents a vertex in the outline
+ * Contains several methods that operate on vertexes and vectors.
+ * @author rtyson
  */
 public class Vert {
-    // represents a vert in the outline
-
     private Vect2d point;		//x,y co-ordinates of the node
     private Vect2d normal;		//normals
     private Vect2d tan;
     public double charge;               // charge on the vertex
-    public double distance;                    // distance vert migrated (actually converted to speed by Tool.speedToScale
+    public double distance;             // distance vert migrated (actually converted to speed by Tool.speedToScale
 
-    final FluoMeasurement fluores[];              // fluorescence channels 1-3. Intensity and location
+    final FluoMeasurement fluores[];    // fluorescence channels 1-3. Intensity and location
 
     //public double curvatureOLD;
-    //public double convexityOLD;            // curvature, but may be a smoothed value
+    //public double convexityOLD;         // curvature, but may be a smoothed value
     public double curvatureLocal;         // curvature local to a node
     public double curvatureSmoothed;      // smoothed curvature
     public double curvatureSum;           // summed curvature over x microns
@@ -29,10 +28,10 @@ public class Vert {
     public boolean frozen;
 
     public double coord; //co-ord relative to head node on current frame 
-    public double fCoord;  // coor relative to coord on previouse frame
-    public double fLandCoord; // landing relative to prevouse frame
+    public double fCoord;  // coor relative to coord on previous frame
+    public double fLandCoord; // landing relative to previous frame
     public double gCoord; // global co-ord relative to head node on frame 1;
-    public double gLandCoord; //landing co-cord realtive to head node on frame 1;
+    public double gLandCoord; //landing co-cord relative to head node on frame 1;
     public double tarLandingCoord;
 
     public QColor color;
@@ -167,6 +166,7 @@ public class Vert {
         normal.setX(x);
         normal.setY(y);
     }
+    // 
 
     public Vect2d getTangent() {
         return tan;
@@ -204,7 +204,8 @@ public class Vert {
         tan = calcTan();	//tangent
 
         // inner norma X = -ve Y, Y = +ve X
-        // inner norma X = +ve Y, Y = -ve X
+        // inner norma X = +ve Y, Y = -ve X    // 
+
         if (!inner) {    // switch around if expanding snake
             normal.setX(-tan.getY());
             normal.setY(tan.getX());
@@ -216,7 +217,7 @@ public class Vert {
 
     private Vect2d calcTan() {
         // calulate tangent at Vert n (i.e. unit vector between neighbours)
-        // calc a unit vector towards neighbouring nodes and then a unit vec between thier ends
+        // calc a unit vector towards neighbouring nodes and then a unit vec between their ends
         // direction important for normale calculation. Always calc tan as if clockwise
 
         Vect2d unitVecLeft = Vect2d.unitVector(point, prev.getPoint());

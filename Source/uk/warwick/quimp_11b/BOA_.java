@@ -1,9 +1,6 @@
 package uk.warwick.quimp_11b;
 
-/**
- * @author Richard Tyson,Till Bretschneider
- * Created 16-04-09
- */
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -26,6 +23,12 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+/**
+ * Main plugin class implementing snake segmentation algorithm.
+ * 
+ * @author Richard Tyson,Till Bretschneider
+ * Created 16-04-09
+ */
 public class BOA_ implements PlugIn {
 
    CustomCanvas canvas;
@@ -161,6 +164,11 @@ public class BOA_ implements PlugIn {
       logArea.append(s + '\n');
    }
 
+/**
+ * Supports mouse actions on image at QuimP window according to selected option   
+ * @author rdyson
+ *
+ */
    @SuppressWarnings("serial")
 class CustomCanvas extends ImageCanvas {
 
@@ -200,6 +208,15 @@ class CustomCanvas extends ImageCanvas {
       //}
    }
 
+/**
+ * Extends standard ImageJ StackWindow adding own GUI elements.
+ * This class stands for definition of main BOA plugin GUI window. Current state
+ * of BOA plugin is located at {@link BOAp} class. 
+ * 
+ * @author rdyson
+ * @see BOAp
+ *
+ */
    @SuppressWarnings("serial")
 class CustomStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
 
@@ -708,7 +725,12 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
           fpsLabel.setText("F Interval: " + IJ.d2s(BOAp.imageFrameInterval, 3) + " s");
       }
    }
-
+   /**
+    * Starts segmentation process on range of frames
+    * @param startF	start frame
+    * @param endF 	end frame
+    * @throws BoaException
+    */
    public void runBoa(int startF, int endF) throws BoaException {
       System.out.println("run BOA");
       BOAp.SEGrunning = true;
@@ -1122,8 +1144,12 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
    }
 }
 
+/**
+ * Hold, manipulate and draw on images
+ * @author rtyson
+ *
+ */
 class ImageGroup {
-   // hold, manipulate and draw on images
    // paths - snake drawn as it contracts
    // contour - final snake drawn
    // org - original image, kept clean
@@ -1383,9 +1409,13 @@ class ImageGroup {
    }
 }
 
+/**
+ * Calculates forces that affect the snake
+ * Modifies snake's nodes
+ * @author rdyson
+ *
+ */
 class Constrictor {
-   // calc forces and constrict the snake
-
    public Constrictor() {
    }
 
@@ -1823,7 +1853,11 @@ class Constrictor {
    }
 }
 
-
+/**
+ * Represent collection of Snakes
+ * @author rdyson
+ *
+ */
 class Nest {
    //private Snake[] snakes;
    //private Roi[] startROIs;
@@ -2014,10 +2048,13 @@ class Nest {
    }
 }
 
+/**
+ * Stores all the snakes computed for one cell and is responsible for writing them to file.
+ * 
+ * @author rdyson
+ *
+ */
 class SnakeHandler {
-   // stores all the snakes computed for one cell
-   // and is responsible for writing them to file.
-
    private Roi roi;        // inital ROI
    private int startFrame;
    private int endFrame;
@@ -2369,12 +2406,17 @@ class SnakeHandler {
    }
 }
 
+/**
+ * Creates snake basing on Nodes and performs operations on snake?
+ * @author rdyson
+ *
+ */
 class Snake {
 
    public boolean alive;            // snake is alive
    public int snakeID;
    private int nextTrackNumber = 1;  // node ID's
-   private Node head;                // first node in doubley linked list, always maintained
+   private Node head;                // first node in bidirectional linked list, always maintained
    private int NODES;                // number of nodes
    public double startingNnodes;     // how many nodes at start of segmentation
    //public double startingNnodes;     // how many nodes at start of segmentation
@@ -2387,8 +2429,15 @@ class Snake {
    //public QColor colour;
    private Vect2d centroid;
 
+   /**
+    * Create a snake from existing linked list (at least one head node)
+    * @param h	First Node (head?)
+    * @param N	Number of nodes
+    * @param id
+    * @throws Exception
+    */
    public Snake(Node h, int N, int id) throws Exception {
-      // create a snake from existing linked list
+      // 
       snakeID = id;
       head = h;
       NODES = N;
@@ -2443,7 +2492,7 @@ class Snake {
    }
 
    private void intializeOval(int t, int xc, int yc, int Rx, int Ry, double s) throws Exception {
-      // Rx and Ry are elipse diameters
+      // Rx and Ry are ellipse diameters
       head = new Node(t); //make a dummy head node
       NODES = 1;
       FROZEN = 0;
@@ -3331,9 +3380,20 @@ class Snake {
 
 }
 
+/**
+ * Represents a node in the snake - its basic component
+ * In fact this class stands for bidirectional list containing Nodes. Every node
+ * has assigned 2D position and several additional properties such as:
+ * <ul>
+ * <li> velocity of Node</li>
+ * <li> total force of Node</li>
+ * <li> normal vector</li>
+ * </ul>
+ * 
+ * @author rdyson
+ *
+ */
 class Node {
-   // represents a node in the snake.
-
    private Vect2d point;		//x,y co-ordinates of the node
    private Vect2d normal;		//normals
    private Vect2d tan;
@@ -3397,16 +3457,21 @@ class Node {
       point.setY(y);
    }
 
+   /**
+    * update point and force with preliminary values, and reset.
+    */
    public void update() {
-      //update point and force with preliminary values, and reset.
       setX(getX() + prelimPoint.getX());
       setY(getY() + prelimPoint.getY());
       prelimPoint.setX(0);
       prelimPoint.setY(0);
    }
 
+   /**
+    * get next node in chain (prev if not clockwise)
+    * @return next or previous Node from list 
+    */
    public Node getPrev() {
-      // get next node in chain (prev if not clockwise)
       if (clockwise) {
          return prev;
       } else {
@@ -3414,8 +3479,11 @@ class Node {
       }
    }
 
+   /**
+    * get previous node in chain (next if not clockwise)
+    * @return previous or next Node from list 
+    */
    public Node getNext() {
-      // get prev node in chain (next if not clockwise)
       if (clockwise) {
          return next;
       } else {
@@ -3423,6 +3491,10 @@ class Node {
       }
    }
 
+   /**
+    * Adds previous (or next if not clockwise) Node to list
+    * @param n	Node to add
+    */
    public void setPrev(Node n) {
       if (clockwise) {
          prev = n;
@@ -3431,6 +3503,10 @@ class Node {
       }
    }
 
+   /**
+    * Adds next (or previous if not clockwise) Node to list
+    * @param n	Node to add
+    */
    public void setNext(Node n) {
       if (clockwise) {
          next = n;
@@ -3470,23 +3546,39 @@ class Node {
    public int getTrackNum() {
       return tracknumber;
    }
-
+   
+   /**
+    * Sets total force for Node
+    * @param f	vector of force to assign to Node force
+    */
    public void setF_total(Vect2d f) {
       F_total.setX(f.getX());
       F_total.setY(f.getY());
    }
 
+   /**
+    * Sets velocity for Node
+    * @param v	vector of velocity to assign to Node force
+    */
    public void setVel(Vect2d v) {
       vel.setX(v.getX());
       vel.setY(v.getY());
    }
 
+   /**
+    * Updates total force for Node
+    * @param f	vector of force to add to Node force
+    */
    public void addF_total(Vect2d f) {
       // add the xy values in f to xy F_total i.e updates total Force
       F_total.setX(F_total.getX() + f.getX());
       F_total.setY(F_total.getY() + f.getY());
    }
 
+   /**
+    * Updates velocity for Node
+    * @param v	vector of velocity to add to Node force
+    */   
    public void addVel(Vect2d v) {
       //adds the xy values in v to Vel i.e. updates velocity
       vel.setX(vel.getX() + v.getX());
@@ -3618,59 +3710,74 @@ class Node {
 
 }
 
+/**
+ * Holds parameters defining snake and controlling contour matching algorithm.
+ * BOAp is static class contains internal as well as external parameters used 
+ * to define snake and to control contour matching algorithm. There are also 
+ * several basic  get/set methods for accessing selected parameters, 
+ * setting default {@link BOAp#setDefaults() values} and writing/reading these 
+ * (external) parameters to/from disk. File format used for storing data in 
+ * files is defined at {@link QParams} class.
+ * 
+ * External parameters are those related to algorithm options whereas internal
+ * are those related to internal settings of algorithm, GUI and other non exportable 
+ * 
+ * @author rtyson
+ * @see QParams
+ * @see Tool
+ */
 class BOAp {
 
-   static File orgFile, outFile; //paramFile;
-   static String fileName;                            //file name only, no extension
-   static QParams readQp; // read in parameter file
+   static File orgFile, outFile; 	// paramFile;
+   static String fileName;          // file name only, no extension
+   static QParams readQp; 			// read in parameter file
    //
    //Parameters Numeric
    static private double nodeRes;
-   static int blowup;            // distance to blow up chain
+   static int blowup;            	// distance to blow up chain
    static double vel_crit;
    static double f_central;
-   static double f_image;     // image force
-   static int max_iterations;  // max iterations per contraction
+   static double f_image;     		// image force
+   static int max_iterations;  		// max iterations per contraction
    static int sample_tan;
    static int sample_norm;
    static double f_contract;
    static double finalShrink;
    //Switch Params
-   static boolean use_previous_snake;  // next contraction begins with last chain
+   static boolean use_previous_snake;// next contraction begins with last chain
    static boolean showPaths;
-   static boolean expandSnake; // set true to act as an expanding snake
+   static boolean expandSnake; 		 // set true to act as an expanding snake
    //internal parameters
    static int NMAX;             // maximum number of nodes (% of starting nodes)
    static double delta_t;
    static double sensitivity;
    static double f_friction;
-   static int FRAMES; // Number of frames in stack
+   static int FRAMES; 			// Number of frames in stack
    static int WIDTH, HEIGHT;
-   static int cut_every;                 // cut loops in chain every X frames
-   static boolean oldFormat;           // output old QuimP format?
-   static boolean saveSnake;  // save snake data
+   static int cut_every;        // cut loops in chain every X frames
+   static boolean oldFormat;    // output old QuimP format?
+   static boolean saveSnake;  	// save snake data
    static private double min_dist;       // min distance between nodes
    static private double max_dist;       // max distance between nodes
-   static double proximity;     // distance between centroids at
+   static double proximity;     		// distance between centroids at
    //which contact is tested for
-   static double proxFreeze;     // proximity of nodes to freeze when blowing up
+   static double proxFreeze;    // proximity of nodes to freeze when blowing up
    static boolean savedOne;
-   //static int nestSize;
-   static double imageScale; //scale of image in
+   static double imageScale; 	//scale of image in
    static double imageFrameInterval;
    static boolean scaleAdjusted;
    static boolean fIAdjusted;
    static boolean singleImage;
-   static String paramsExist; //on statup check if defults are needed to set
+   static String paramsExist; 	//on statup check if defults are needed to set
    static boolean zoom;
    static boolean doDelete;
    static boolean doDeleteSeg;
-   static boolean editMode; // select a cell for editing
-   static int editingID; // currently editing cell iD. -1 if not editing
+   static boolean editMode; 	// select a cell for editing
+   static int editingID; 		// currently editing cell iD. -1 if not editing
    static boolean useSubPixel = true;
    static boolean supressStateChangeBOArun = false;
-   static int callCount; // use to test how many times a method is called
-   static boolean SEGrunning; // is seg running
+   static int callCount; 		// use to test how many times a method is called
+   static boolean SEGrunning; 	// is seg running
 
    static public double getNodeRes() {
       return nodeRes;
@@ -3680,11 +3787,11 @@ class BOAp {
       nodeRes = d;
       if (nodeRes < 1) {
          min_dist = 1;       // min distance between nodes
-         max_dist = 2.3;       // max distance between nodes
+         max_dist = 2.3;     // max distance between nodes
          return;
       }
       min_dist = nodeRes;       // min distance between nodes
-      max_dist = nodeRes * 1.9; //+(0.3*nodeRes);     // max distance between nodes
+      max_dist = nodeRes * 1.9; // max distance between nodes
    }
 
    static public double getMax_dist() {
@@ -3695,10 +3802,15 @@ class BOAp {
       return min_dist;
    }
 
+   /**
+    * Sets default parameters for contour matching algorithm.
+    * Fills some fields in BOAp class related to CM algorithm. These parameters
+    * are external - available for user to set. 
+    */
    static public void setDefaults() {
 
       //Parameters Numeric
-      setNodeRes(6.);
+      setNodeRes(6.0);
       blowup = 20;            // distance to blow up chain
       vel_crit = 0.005;
       f_central = 0.04;
@@ -3711,6 +3823,10 @@ class BOAp {
 
    }
 
+   /**
+    * Initialises internal parameters of BOAp class and gets IJ image reference. 
+    * @param ip	Reference to IJ image
+    */
    static public void setup(ImagePlus ip) {
       FileInfo fileinfo = ip.getOriginalFileInfo();
       if (fileinfo == null) {
@@ -3769,6 +3885,14 @@ class BOAp {
       SEGrunning = false;
    }
 
+   /**
+    * Writes set of snake parameters to disk.
+    * writeParams method creates paQP master file, referencing only other associated
+    * files there.
+    * @param sID	ID of cell. If many cells segmented in one time, QuimP produces separate parameter file for every of them
+    * @param startF	Start frame (typically beginning of stack)
+    * @param endF	End frame (typically end of stack)
+    */
    static public void writeParams(int sID, int startF, int endF) {
       if (saveSnake) {
          File paramFile = new File(outFile.getParent(), fileName + "_" + sID + ".paQP");
@@ -3838,6 +3962,12 @@ class BOAp {
   
 }
 
+/**
+ * Extended exception class.
+ * Contains additional information on frame and type
+ * @author rtyson
+ *
+ */
 class BoaException extends Exception {
 
    private static final long serialVersionUID = 1L;

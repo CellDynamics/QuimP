@@ -15,6 +15,11 @@ import java.util.ArrayList;
 //import java.util.Vector;
 import java.util.Random;
 
+/**
+ * Main ECMM implementation class.
+ * @author rtyson
+ *
+ */
 public class ECMM_Mapping {
 
     OutlineHandler oH, outputH;
@@ -50,7 +55,10 @@ public class ECMM_Mapping {
             e.printStackTrace();
         }
     }
-
+    
+    /**
+     * Default constructor called on plugin run from IJ GUI
+     */
     public ECMM_Mapping() {
         about();
         try {
@@ -123,7 +131,9 @@ public class ECMM_Mapping {
                 + "David Epstein & T. Bretschneider, Version 3.0\n"
                 + "T.Bretschneider@warwick.ac.uk\n\n" + "##############################################\n \n");
     }
-
+    /**
+     * MAin executive for ECMM processing
+     */
     private void runFromFile() {
         oH = new OutlineHandler(qp);
         if (!oH.readSuccess) {
@@ -181,6 +191,9 @@ public class ECMM_Mapping {
         return outputH;
     }
 
+    /**
+     * Main executive for ECMM plugin
+     */
     private void run() {
         long time = System.currentTimeMillis();
         if (!ECMp.ANA) {
@@ -1825,7 +1838,11 @@ class ODEsolver {
 }
 
 
-
+/**
+ * Container class holding parameters related to ECMM analysis.
+ * @author baniuk
+ *
+ */
 class ECMp {
 
     static public File INFILE; // snQP file
@@ -1872,6 +1889,10 @@ class ECMp {
     public ECMp() {
     }
 
+    /**
+     * Defines default values for ECMM algorithm
+     * @param maxCellLength	Maximal length of cell
+     */
     public static void setParams(double maxCellLength) {
         maxCellSize = maxCellLength / Math.PI; // guess cell diameter
 
@@ -1908,6 +1929,10 @@ class ECMp {
 
     }
 
+    /**
+     * Fills ECMp fields with values from previous analysis (master paQP file)
+     * @param qp	Master configuration file
+     */
     static void setup(QParams qp) {
         INFILE = qp.snakeQP;
         OUTFILE = new File(ECMp.INFILE.getAbsolutePath()); // output file (.snQP) file
@@ -1921,6 +1946,11 @@ class ECMp {
     }
 }
 
+/**
+ * Class responsible for plotting ECMM outlines during computations
+ * @author baniuk
+ *
+ */
 class ECMplot {
 
     public ImagePlus imPlus;
