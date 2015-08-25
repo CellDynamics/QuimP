@@ -204,13 +204,8 @@ public class Vect2d {
          return null;
       }
    }
-
-   public static int segmentIntersection(double x0, double y0,
-                                                 double x1, double y1,
-                                                 double x2, double y2,
-                                                 double x3, double y3,
-                                                 double[] intersection){
-     /**
+   
+   /**
    * Compute the intersection between two line segments, or two lines
    * of infinite length.
    *
@@ -222,13 +217,19 @@ public class Vect2d {
    * @param  y2              Y coordinate first end point second line segment.
    * @param  x3              X coordinate second end point second line segment.
    * @param  y3              Y coordinate second end point second line segment.
-   * @param  intersection[2] Preallocated by caller to double[2]
+   * @param  intersection    Preallocated by caller to double[2]
    * @return -1 if lines are parallel (x,y unset),
    *         -2 if lines are parallel and overlapping (x, y center)
    *          0 if intersection outside segments (x,y set)
    *         +1 if segments intersect (x,y set)
-      * http://geosoft.no/software/geometry/Geometry.java.html
+   * @see http://geosoft.no/software/geometry/Geometry.java.html
    */
+   public static int segmentIntersection(double x0, double y0,
+                                         double x1, double y1,
+                                         double x2, double y2,
+                                         double x3, double y3,
+                                         double[] intersection){
+
 
     final double LIMIT    = 1e-5;
     final double INFINITY = 1e8;
