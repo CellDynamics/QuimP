@@ -166,7 +166,7 @@ public class BOA_ implements PlugIn {
 
 /**
  * Supports mouse actions on image at QuimP window according to selected option   
- * @author rdyson
+ * @author rtyson
  *
  */
    @SuppressWarnings("serial")
@@ -213,7 +213,7 @@ class CustomCanvas extends ImageCanvas {
  * This class stands for definition of main BOA plugin GUI window. Current state
  * of BOA plugin is located at {@link BOAp} class. 
  * 
- * @author rdyson
+ * @author rtyson
  * @see BOAp
  *
  */
@@ -1412,7 +1412,7 @@ class ImageGroup {
 /**
  * Calculates forces that affect the snake
  * Modifies snake's nodes
- * @author rdyson
+ * @author rtyson
  *
  */
 class Constrictor {
@@ -1855,7 +1855,7 @@ class Constrictor {
 
 /**
  * Represent collection of Snakes
- * @author rdyson
+ * @author rtyson
  *
  */
 class Nest {
@@ -2051,7 +2051,7 @@ class Nest {
 /**
  * Stores all the snakes computed for one cell and is responsible for writing them to file.
  * 
- * @author rdyson
+ * @author rtyson
  *
  */
 class SnakeHandler {
@@ -2408,7 +2408,7 @@ class SnakeHandler {
 
 /**
  * Creates snake basing on Nodes and performs operations on snake?
- * @author rdyson
+ * @author rtyson
  *
  */
 class Snake {
@@ -3390,7 +3390,7 @@ class Snake {
  * <li> normal vector</li>
  * </ul>
  * 
- * @author rdyson
+ * @author rtyson
  *
  */
 class Node {
