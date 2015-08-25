@@ -3,7 +3,7 @@
 <node CREATED="1439456586885" ID="ID_188552676" MODIFIED="1439456800054" TEXT="QuimP">
 <node BACKGROUND_COLOR="#ff6666" CREATED="1439390467779" ID="ID_1133629997" MODIFIED="1439460230804" POSITION="right" STYLE="fork" TEXT="BOA Plugin">
 <node CREATED="1439390538551" ID="ID_1333994693" MODIFIED="1439460230804" TEXT="BOA:Run()">
-<node CREATED="1439390641069" ID="ID_1832319511" MODIFIED="1439460230804" TEXT="Setup()">
+<node CREATED="1439390641069" ID="ID_1832319511" MODIFIED="1440497082320" TEXT="Setup()">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -13,7 +13,8 @@
       <font size="2">initializes main structures</font>
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <node CREATED="1439390942116" ID="ID_500299297" MODIFIED="1439460230804" TEXT="BOAp.setup()">
 <richcontent TYPE="NOTE"><html>
   <head>
@@ -53,7 +54,10 @@
 <node CREATED="1439390791360" ID="ID_25836955" MODIFIED="1439460230805" TEXT="new ImageGroup">
 <icon BUILTIN="wizard"/>
 </node>
-<node CREATED="1439390806152" ID="ID_792187126" MODIFIED="1439460230805" TEXT="new Canvas">
+<node CREATED="1440497089516" ID="ID_1165710913" MODIFIED="1440497113625" TEXT="new CustomStackWindow">
+<icon BUILTIN="wizard"/>
+</node>
+<node CREATED="1439390806152" ID="ID_792187126" MODIFIED="1440497064173" TEXT="new CustomCanvas">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -72,7 +76,7 @@
 <node CREATED="1439390857760" ID="ID_996000154" MODIFIED="1439460230805" TEXT="new RoiManager">
 <icon BUILTIN="wizard"/>
 </node>
-<node CREATED="1439390864216" ID="ID_1212505514" MODIFIED="1439460230805" TEXT="new Constrictor">
+<node CREATED="1439390864216" ID="ID_1212505514" MODIFIED="1440497099627" TEXT="new Constrictor">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -82,7 +86,8 @@
       <font size="2">object for main snake evaluation</font>
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <icon BUILTIN="wizard"/>
 </node>
 </node>
@@ -134,8 +139,7 @@
       match to shape - here is algorithm
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 </node>
 <node CREATED="1439391448776" ID="ID_699364124" MODIFIED="1439460230806" TEXT=" storeCurrentSnake()">
 <richcontent TYPE="NOTE"><html>
@@ -184,8 +188,7 @@
       Ana uses several variables from class propagated among various methods and uses ECMM class as well
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <node CREATED="1439458100946" ID="ID_1581865465" MODIFIED="1439461446971" TEXT="OutlineHandler::save()"/>
 </node>
 <node CREATED="1439458126642" ID="ID_520322263" MODIFIED="1439460251350" TEXT="outputH.writeOutlines"/>
@@ -205,8 +208,7 @@
       Main executive for ECMM
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <node CREATED="1439460807899" ID="ID_461168764" MODIFIED="1439460811203" TEXT="new OutlineHandler()"/>
 <node CREATED="1439460822835" ID="ID_1836746052" MODIFIED="1439460826314" TEXT="ECMp.setup()">
 <node CREATED="1439460955875" ID="ID_1870194822" MODIFIED="1439460969213" TEXT="gets file names from previous analysis"/>
@@ -228,8 +230,7 @@
       Main executive for ECMM
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <node CREATED="1439461417051" ID="ID_1588331953" MODIFIED="1439461430675" TEXT="OutlineHandler::save()"/>
 </node>
 <node CREATED="1439461238667" ID="ID_761483804" MODIFIED="1439461249971" TEXT="OutlineHandler::writeOutlines()"/>
