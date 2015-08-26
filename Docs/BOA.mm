@@ -13,9 +13,8 @@
       <font size="2">initializes main structures</font>
     </p>
   </body>
-</html>
-</richcontent>
-<node CREATED="1439390942116" ID="ID_500299297" MODIFIED="1439460230804" TEXT="BOAp.setup()">
+</html></richcontent>
+<node CREATED="1439390942116" ID="ID_500299297" MODIFIED="1440592219197" TEXT="BOAp.setup()">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -25,7 +24,8 @@
       <font size="2">setup for default params etc</font>
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <node CREATED="1439391018372" ID="ID_1958582301" MODIFIED="1439460230804" TEXT="setups file name"/>
 <node CREATED="1439391025681" ID="ID_1370340352" MODIFIED="1439460230804" TEXT="setups initial window parameter (internal)">
 <node COLOR="#cc3300" CREATED="1439391068052" ID="ID_1058550189" MODIFIED="1439460230804" TEXT="why not use setDefaults method">
@@ -86,12 +86,22 @@
       <font size="2">object for main snake evaluation</font>
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <icon BUILTIN="wizard"/>
 </node>
 </node>
-<node CREATED="1439390696916" ID="ID_606943001" MODIFIED="1439460230805" TEXT="runBoa()">
+<node CREATED="1439390696916" ID="ID_606943001" MODIFIED="1440592312272" TEXT="runBoa()">
+<richcontent TYPE="NOTE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      can be run from actionPerformed() as well. This method is called on reaction on interface
+    </p>
+  </body>
+</html>
+</richcontent>
 <node COLOR="#cc3300" CREATED="1439391221620" ID="ID_859804983" MODIFIED="1439460230805" TEXT="nest.resetForFrame()">
 <icon BUILTIN="help"/>
 <node COLOR="#cc3300" CREATED="1439391972916" ID="ID_1952472435" MODIFIED="1439460230805" TEXT="what is the source of snakes at nest">

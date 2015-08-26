@@ -1,5 +1,6 @@
 /**
-\page BOA_Gui How to add own GUI to BOA interface
+\page BOA_Gui About GUI
+\section General General information
 GUI is created in void uk.warwick.quimp_11b.BOA_#setup() method. One can find the following code responsible for building and displaying GUI window.
 
 \code{.java}
@@ -19,5 +20,10 @@ Inside \ref uk.warwick.quimp_11b.BOA_.CustomStackWindow#buildSetupPanel() "build
 - \c southPanel: Quit, Finish buttons
 - \c logPanel: log Area
 
+Any action on these controls is handled by uk.warwick.quimp_11b.BOA_.CustomStackWindow#actionPerformed() method. The following buttons run actions:
+- \ref Edit "Edit"
 
+\section Actions Actions
+\subsection Edit Edit
+When user click \b Edit \ref uk.warwick.quimp_11b.BOA_.CustomStackWindow#actionPerformed() "actionPerformed" method catch this and calls uk.warwick.quimp_11b.BOA_.editSeg(int, int, int) method if there is only one snake on screen. If there is more snakes, user must click one of them to perform its editing. Second click of \b Edit switches editing off by calling uk.warwick.quimp_11b.BOA_.stopEdit(). 
 */

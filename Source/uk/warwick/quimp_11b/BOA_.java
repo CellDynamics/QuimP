@@ -205,7 +205,7 @@ class CustomCanvas extends ImageCanvas {
       /** Overrides handlePopupMenu() in ImageCanvas to suppress the right-click popup menu. */
       //protected void handlePopupMenu(MouseEvent e) {
       //}
-   }
+   } //end of CustomCanvas
 
 /**
  * Extends standard ImageJ StackWindow adding own GUI elements.
@@ -530,7 +530,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
                BOA_.log("**EDIT IS ON**");
                BOAp.editMode = true;
                IJ.setTool(Toolbar.LINE);
-               if(nest.size() ==1) editSeg(0, 0, frame); // if only 1 snake go stright to edit
+               if(nest.size() ==1) editSeg(0, 0, frame); // if only 1 snake go stright to edit, if more user must pick one
             } else {
                BOAp.editMode = false;
                if (BOAp.editingID != -1) {
@@ -722,6 +722,10 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       }
 
+      /**
+       * Update the frame label, overlay, frame and set zoom
+       * Called when user click on slice selector in IJ window.
+       */
       @Override
       public void updateSliceSelector() {
          super.updateSliceSelector(); 
@@ -755,7 +759,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
              IJ.setTool(Toolbar.LINE);
              editSeg(0,0,frame);
          }
-      } // update the frame label, overlay, frame and set zoom
+      }
 
       void switchOffDelete() {
          BOAp.doDelete = false;
@@ -780,7 +784,8 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
           pixelLabel.setText("Scale: " + IJ.d2s(BOAp.imageScale, 6) + " \u00B5m");
           fpsLabel.setText("F Interval: " + IJ.d2s(BOAp.imageFrameInterval, 3) + " s");
       }
-   }
+   } // end of CustomStackWindow
+   
    /**
     * Starts segmentation process on range of frames
     * @param startF	start frame
@@ -1087,6 +1092,14 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
    }
 
+   /**
+    * Called when user click Edit button.
+    * @param x Coordinate of clicked point
+    * @param y Coordinate of clicked point
+    * @param frame current frame in stack
+    * @see stopEdit
+    * @see updateSliceSelector
+    */
    void editSeg(int x, int y, int frame) {
       SnakeHandler sH;
       Snake snake;
@@ -1123,6 +1136,10 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
    }
 
+   /**
+    * Called when user ends editing.
+    * @see updateSliceSelector
+    */
    void stopEdit() {
       Roi r = canvas.getImage().getRoi();
       Roi.setColor(Color.yellow);
