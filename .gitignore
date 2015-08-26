@@ -2,3 +2,4 @@ Doxygen_doc/html/
 Doxygen_doc/latex/
 IDEs/
 .directory
+.fuse*
