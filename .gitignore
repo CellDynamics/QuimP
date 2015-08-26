@@ -1,4 +1,4 @@
-Doxygen_doc/*
-!Doxygen_doc/Doxyfile
+Doxygen_doc/html/
+Doxygen_doc/latex/
 IDEs/
 .directory

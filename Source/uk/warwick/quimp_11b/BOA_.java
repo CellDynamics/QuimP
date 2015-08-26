@@ -119,7 +119,6 @@ public class BOA_ implements PlugIn {
       canvas = new CustomCanvas(imageGroup.getOrgIpl());
       window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
       window.buildWindow();
-
       // warn about scale
       if (BOAp.scaleAdjusted) {
          BOA_.log("WARNING Scale was zero...\n\tset to 1");
@@ -167,6 +166,7 @@ public class BOA_ implements PlugIn {
 /**
  * Supports mouse actions on image at QuimP window according to selected option   
  * @author rtyson
+ *
  */
    @SuppressWarnings("serial")
 class CustomCanvas extends ImageCanvas {
@@ -212,16 +212,16 @@ class CustomCanvas extends ImageCanvas {
  * This class stands for definition of main BOA plugin GUI window. Current state
  * of BOA plugin is located at {@link BOAp} class. 
  * 
- * @author rdyson
+ * @author rtyson
  * @see BOAp
  */
    @SuppressWarnings("serial")
 class CustomStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
 
-      private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
+      private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale, bFreeze, bUnfreeze;
       private Button bAdd, bDel, bDelSeg, bQuit;
       private Checkbox cPrevSnake, cExpSnake, cPath, cZoom;
-      JScrollPane logPane;
+      JScrollPane logPanel;
       Label fpsLabel, pixelLabel, frameLabel;
       JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
       JSpinner isMaxIterations, isBlowup, isSample_tan, isSample_norm;
@@ -229,7 +229,12 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       CustomStackWindow(ImagePlus imp, ImageCanvas ic) {
          super(imp, ic);
       }
-
+      
+      /**
+       * This method is called as first to build user interface.
+       * The interface is built in two steps: Left side of window (configuration
+       * zone) and right side of main window (logs and other info and buttons)
+       */
       private void buildWindow() {
          setLayout(new FlowLayout());
          if (!BOAp.singleImage) {
@@ -244,30 +249,36 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       }
 
+      /**
+       * Builds right side of main BOA window
+       * @return Reference to panel
+       */
       final Panel buildSetupPanel() {
-         Panel setupPanel = new Panel();
-         Panel topPanel = new Panel();
-         Panel southPanel = new Panel();
+         Panel setupPanel = new Panel(); // Main panel comprised from North, Centre and South subpanels
+         Panel northPanel = new Panel(); // Contains static info and four buttons (Scale, Truncate, Add, Delete)
+         Panel southPanel = new Panel(); // Contains two buttons: Quit and Finish
 
          setupPanel.setLayout(new BorderLayout());
-         topPanel.setLayout(new GridLayout(4, 2));
+         northPanel.setLayout(new GridLayout(5, 2));
          southPanel.setLayout(new GridLayout(2, 2));
 
-         //-----build top panel------
+         //-----build north panel------
          fpsLabel = new Label("F Interval: " + IJ.d2s(BOAp.imageFrameInterval, 3) + " s");
-         topPanel.add(fpsLabel);
+         northPanel.add(fpsLabel);
          pixelLabel = new Label("Scale: " + IJ.d2s(BOAp.imageScale, 6) + " \u00B5m");
-         topPanel.add(pixelLabel);
-         bScale = addButton("Set Scale", topPanel);
-         bDelSeg = addButton("Truncate Seg", topPanel);
-         bAdd = addButton("Add cell", topPanel);
-         bDel = addButton("Delete cell", topPanel);
-         topPanel.add(new Label(""));
+         northPanel.add(pixelLabel);
+         bScale = addButton("Set Scale", northPanel);
+         bDelSeg = addButton("Truncate Seg", northPanel);
+         bAdd = addButton("Add cell", northPanel);
+         bDel = addButton("Delete cell", northPanel);
+         bFreeze = addButton("Freeze cell", northPanel);
+         bUnfreeze = addButton("Unfreeze cell", northPanel);
+         northPanel.add(new Label(""));
          //--------------------------
 
          // --------build log---------
          logArea = new TextArea(24, 25);
-         logPane = new JScrollPane(logArea);
+         logPanel = new JScrollPane(logArea);
          logArea.setEditable(false);
          //------------------------------
 
@@ -278,8 +289,8 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          bFinish = addButton("FINISH", southPanel);
          //------------------------------
 
-         setupPanel.add("North", topPanel);
-         setupPanel.add("Center", logPane);
+         setupPanel.add("North", northPanel);
+         setupPanel.add("Center", logPanel);
          setupPanel.add("South", southPanel);
 
          return setupPanel;
@@ -1457,7 +1468,7 @@ class ImageGroup {
 /**
  * Calculates forces that affect the snake
  * Modifies snake's nodes
- * @author rdyson
+ * @author rtyson
  *
  */
 class Constrictor {
@@ -1900,7 +1911,7 @@ class Constrictor {
 
 /**
  * Represent collection of Snakes
- * @author rdyson
+ * @author rtyson
  *
  */
 class Nest {
@@ -2096,7 +2107,7 @@ class Nest {
 /**
  * Stores all the snakes computed for one cell and is responsible for writing them to file.
  * 
- * @author rdyson
+ * @author rtyson
  *
  */
 class SnakeHandler {
@@ -2453,7 +2464,7 @@ class SnakeHandler {
 
 /**
  * Creates snake basing on Nodes and performs operations on snake?
- * @author rdyson
+ * @author rtyson
  *
  */
 class Snake {
@@ -3435,7 +3446,7 @@ class Snake {
  * <li> normal vector</li>
  * </ul>
  * 
- * @author rdyson
+ * @author rtyson
  *
  */
 class Node {

@@ -1,0 +1,23 @@
+/**
+\page BOA_Gui How to add own GUI to BOA interface
+GUI is created in void uk.warwick.quimp_11b.BOA_#setup() method. One can find the following code responsible for building and displaying GUI window.
+
+\code{.java}
+      canvas = new CustomCanvas(imageGroup.getOrgIpl());
+      window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
+      window.buildWindow();
+\endcode
+
+Class uk.warwick.quimp_11b.BOA_.CustomCanvas is responsible for handling mouse events whereas class uk.warwick.quimp_11b.BOA_.CustomStackWindow holds definition of user controls. Mouse events serviced by \ref uk.warwick.quimp_11b.BOA_.CustomCanvas "CustomCanvas" class are related to main paint window where cells are drawn. It supports \a Delete and \a Edit commands.
+The main builder is method \ref uk.warwick.quimp_11b.BOA_.CustomStackWindow#buildWindow() "buildWindow()" which calls two other methods:
+-# \ref uk.warwick.quimp_11b.BOA_.CustomStackWindow#buildControlPanel() "buildControlPanel()"
+-# \ref uk.warwick.quimp_11b.BOA_.CustomStackWindow#buildSetupPanel() "buildSetupPanel()"
+
+The \b ControlPanel is on the left of main window and contains all parameter fields, \a Load, \a Default, \a Edit, \a Segment, etc controls. The \b SetupPanel is on right of main window and contains Log field, Interval/Scale infos and all buttons.
+Inside \ref uk.warwick.quimp_11b.BOA_.CustomStackWindow#buildSetupPanel() "buildSetupPanel()" one can find main panel (\c setupPanel) comprised from three sub-panels called \c northPanel, \c southPanel and \c logPanel which in centre of of \c setupPanel. These objects contain:
+- \c northPanel: static fields, Scale, Truncate, Add, Delete buttons
+- \c southPanel: Quit, Finish buttons
+- \c logPanel: log Area
+
+
+*/
