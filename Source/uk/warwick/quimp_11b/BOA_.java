@@ -166,8 +166,7 @@ public class BOA_ implements PlugIn {
 
 /**
  * Supports mouse actions on image at QuimP window according to selected option   
- * @author rdyson
- *
+ * @author rtyson
  */
    @SuppressWarnings("serial")
 class CustomCanvas extends ImageCanvas {
@@ -215,7 +214,6 @@ class CustomCanvas extends ImageCanvas {
  * 
  * @author rdyson
  * @see BOAp
- *
  */
    @SuppressWarnings("serial")
 class CustomStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
@@ -287,6 +285,10 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          return setupPanel;
       }
 
+      /**
+       * Builds left side of main BOA window.
+       * @return Reference to built panel
+       */
       final Panel buildControlPanel() {
          Panel controlPanel = new Panel();
          Panel topPanel = new Panel();
@@ -334,8 +336,6 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
             frameLabel = new Label(imageGroup.getOrgIpl().getSlice() + "  ");
             sliderPanel.add(frameLabel);
          }
-
-
          paramPanel.add(sliderPanel);
          //----------------------------------
 
@@ -343,8 +343,6 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          cPath = addCheckbox("Show paths", bottomPanel, BOAp.showPaths);
          cZoom = addCheckbox("Zoom cell", bottomPanel, BOAp.zoom);
          //-------------------------------
-
-
          //build control panel
          controlPanel.add("North", topPanel);
          controlPanel.add("Center", paramPanel);
@@ -354,6 +352,12 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          return controlPanel;
       }
 
+      /**
+       * Helper method for adding buttons to UI
+       * @param label Label on button
+       * @param p Reference to the panel where button is located
+       * @return Reference to created button
+       */
       private Button addButton(String label, Panel p) {
          Button b = new Button(label);
          b.addActionListener(this);
@@ -377,13 +381,30 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 //         return tf;
 //      }
 
-      private Checkbox addCheckbox(String s, Panel p, boolean d) {
-         Checkbox c = new Checkbox(s, d);
+      /**
+       * Helper method for creating checkbox in UI
+       * @param label Label of checkbox
+       * @param p Reference to the panel where checkbox is located
+       * @param d Initial state of checkbox
+       * @return Reference to created checkbox
+       */
+      private Checkbox addCheckbox(String label, Panel p, boolean d) {
+         Checkbox c = new Checkbox(label, d);
          c.addItemListener(this);
          p.add(c);
          return c;
       }
 
+      /**
+       * Helper method for creating spinner in UI with real values
+       * @param s Label of spinner (added on its left side)
+       * @param mp Reference of panel where spinner is located
+       * @param d The current vale of model
+       * @param min The first number in sequence
+       * @param max The last number in sequence
+       * @param step The difference between numbers in sequence
+       * @return Reference to created spinner
+       */
       private JSpinner addDoubleSpinner(String s, Panel mp, double d, double min, double max, double step) {
          SpinnerNumberModel model = new SpinnerNumberModel(d, min, max, step);
          JSpinner spinner = new JSpinner(model);
@@ -399,6 +420,16 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          return spinner;
       }
 
+      /**
+       * Helper method for creating spinner in UI with integer values
+       * @param s Label of spinner (added on its left side)
+       * @param mp Reference of panel where spinner is located
+       * @param d The current vale of model
+       * @param min The first number in sequence
+       * @param max The last number in sequence
+       * @param step The difference between numbers in sequence
+       * @return Reference to created spinner
+       */
       private JSpinner addIntSpinner(String s, Panel mp, int d, int min, int max, int step) {
          SpinnerNumberModel model = new SpinnerNumberModel(d, min, max, step);
          JSpinner spinner = new JSpinner(model);
@@ -414,11 +445,19 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          return spinner;
       }
 
+      /**
+       * Sets default vales defined in model class {@link uk.warwick.quimp_11b.BOAp} and updates UI
+       * @see BOAp
+       */
       private void setDefualts() {
          BOAp.setDefaults();
          updateSpinnerValues();
       }
 
+      /**
+       * Updates spinners in BOA UI
+       * @see BOAp
+       */
       private void updateSpinnerValues() {
          BOAp.supressStateChangeBOArun = true;
          dsNodeRes.setValue(BOAp.getNodeRes());
@@ -434,6 +473,12 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          BOAp.supressStateChangeBOArun = false;
       }
 
+      /**
+       * Main method that handles all actions performed on UI elements.
+       * Do not support mouse events, only UI elements like buttons, spinners, etc.
+       * Runs also main algorithm on specified input state.
+       * @param e Type of event
+       */
       @Override
       public void actionPerformed(ActionEvent e) {
          boolean run = false;
