@@ -219,7 +219,7 @@ class CustomCanvas extends ImageCanvas {
    @SuppressWarnings("serial")
 class CustomStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
 
-      private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
+      private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale, bFreeze, bUnfreeze;
       private Button bAdd, bDel, bDelSeg, bQuit;
       private Checkbox cPrevSnake, cExpSnake, cPath, cZoom;
       JScrollPane logPanel;
@@ -260,7 +260,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          Panel southPanel = new Panel(); // Contains two buttons: Quit and Finish
 
          setupPanel.setLayout(new BorderLayout());
-         northPanel.setLayout(new GridLayout(4, 2));
+         northPanel.setLayout(new GridLayout(5, 2));
          southPanel.setLayout(new GridLayout(2, 2));
 
          //-----build north panel------
@@ -272,6 +272,8 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          bDelSeg = addButton("Truncate Seg", northPanel);
          bAdd = addButton("Add cell", northPanel);
          bDel = addButton("Delete cell", northPanel);
+         bFreeze = addButton("Freeze cell", northPanel);
+         bUnfreeze = addButton("Unfreeze cell", northPanel);
          northPanel.add(new Label(""));
          //--------------------------
 
