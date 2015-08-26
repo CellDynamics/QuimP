@@ -119,7 +119,6 @@ public class BOA_ implements PlugIn {
       canvas = new CustomCanvas(imageGroup.getOrgIpl());
       window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
       window.buildWindow();
-
       // warn about scale
       if (BOAp.scaleAdjusted) {
          BOA_.log("WARNING Scale was zero...\n\tset to 1");

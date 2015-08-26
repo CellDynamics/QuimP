@@ -99,7 +99,8 @@ WARN_LOGFILE           =
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = ../Source/uk/warwick \
-			 ./
+			 ./ \
+			 ../Tests
                         
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
