@@ -620,7 +620,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
             } else {
                this.setImage(imageGroup.getOrgIpl());
             }
-            if (BOAp.zoom && !nest.isVacant()) { // set zomm
+            if (BOAp.zoom && !nest.isVacant()) { // set zoom
                imageGroup.zoom(canvas, frame);
             }
          } else if (source == cPrevSnake) {
@@ -915,7 +915,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
    private void tightenSnake(Snake snake) throws Exception {
 
       int i;
-      //imageGroup.drawPath(snake, frame); //draw inital contour on path image
+      //imageGroup.drawPath(snake, frame); //draw initial contour on path image
 
       for (i = 0; i < BOAp.max_iterations; i++) {  // iter constrict snake
          if (i % BOAp.cut_every == 0) {
