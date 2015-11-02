@@ -30,7 +30,7 @@ public class BOA__test {
 
 	@Before
 	public void setUp() throws Exception {
-		img = IJ.openImage("../../Tests/uk/warwick/quimp_11b/movie03.tif");
+		img = IJ.openImage("src/test/java/uk/warwick/quimp_11b/movie03.tif");
 	}
 
 	@After
