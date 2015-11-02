@@ -66,12 +66,12 @@ public class DicLidTest extends DicLid {
 	}
 
 	/**
-	 * Test method for {@link uk.warwick.dic.lid.DicLid#DicLid(ij.ImagePlus)}.
+	 * Test method for {@link uk.warwick.dic.lid.DicLid#DicLid(ImagePlus)}. 
 	 */
 	@Test
 	public void testDicLid() {
 		fail("Not yet implemented");
-	}
+	}//TODO Add doxygen test marks 
 
 	/**
 	 * Test method for {@link uk.warwick.dic.lid.DicLid#fillDiagonals()}.
