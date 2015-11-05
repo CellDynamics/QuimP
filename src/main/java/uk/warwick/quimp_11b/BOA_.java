@@ -81,7 +81,6 @@ public class BOA_ implements PlugIn {
       }
       //check if image saved to disk
 
-
       BOA_.running = true;
       setup(ip);
       about();
@@ -106,6 +105,10 @@ public class BOA_ implements PlugIn {
 
    }
 
+   /**
+    * Build all BOA windows and setups initial parameters for segmentation	
+    * @param ip Reference to image being processed by BOA
+    */
    void setup(ImagePlus ip) {
       if (BOAp.paramsExist == null) {
          BOAp.setDefaults();
@@ -150,6 +153,9 @@ public class BOA_ implements PlugIn {
       constrictor = new Constrictor(); // does computations on snakes
    }
 
+   /**
+    * Display about information in BOA window
+    */
    void about() {
       BOA_.log("\n############################\n \n"
               + Tool.getQuimPversion() + " - BOA plugin,\nby Richard Tyson"
@@ -159,6 +165,10 @@ public class BOA_ implements PlugIn {
               + "############################\n \n");
    }
 
+   /**
+    * Append string to log window in BOA plugin
+    * @param s String to display in BOA window
+ 	*/
    static void log(String s) {
       logArea.append(s + '\n');
    }
