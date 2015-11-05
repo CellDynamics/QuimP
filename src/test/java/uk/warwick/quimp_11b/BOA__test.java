@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ij.IJ;
@@ -35,18 +36,4 @@ public class BOA__test {
 	public void tearDown() throws Exception {
 		img = null;
 	}
-
-	@Test
-	/**
-	 * Runs BOA_ class and displays plugin window
-	 * @author baniuk
-	 * @test RunBOA()
-	 */
-	public void RunBOA() {
-		img.show(); // this is necessary for plugin as it uses getcurrentimage to work
-		BOA_ ob = new BOA_();
-		ob.run(null);
-		new WaitForUserDialog("Do something, then click OK.").show();		
-	}
-
 }
