@@ -106,7 +106,11 @@ public class BOA_ implements PlugIn {
    }
 
    /**
-    * Build all BOA windows and setups initial parameters for segmentation	
+    * Build all BOA windows and setups initial parameters for segmentation
+    * Defines also windowListener for cleaning after closing the main window by user.
+    * Unfortunately \c windowClosing is not called probably due to masking 
+    * \c setDefaultCloseOperation by IJ derived classes thus it is not possible to
+    * perform any action on window closing (by system button)
     * @param ip Reference to image being processed by BOA
     */
    void setup(ImagePlus ip) {
@@ -129,6 +133,19 @@ public class BOA_ implements PlugIn {
       if (BOAp.fIAdjusted) {
          BOA_.log("WARNING Frame interval was zero...\n\tset to 1");
       }
+      
+      window.addWindowListener(new WindowAdapter() {
+			
+			@Override
+			// This method will be called when BOA_ window is closed already
+			// It is too late for asking user
+			public void windowClosed(WindowEvent arg0) {
+				BOA_.running = false;
+				canvas = null;
+				imageGroup = null;
+				window = null;
+			}
+	  });
       
       setScales();
       updateImageScale();
@@ -1198,8 +1215,6 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       new StackWindow(imageGroup.getOrgIpl()); // clear overlay
       window.setImage(new ImagePlus());
       window.close();
-      window = null;
-      canvas = null;
    }
 
    void quit() {
@@ -1208,6 +1223,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       if (!ync.yesPressed()) {
          return;
       }
+
       BOA_.running = false;
       nest = null; //remove from memory
       imageGroup.getOrgIpl().setOverlay(new Overlay()); // clear overlay
@@ -1215,9 +1231,6 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       window.setImage(new ImagePlus());//remove link to window
       window.close();
-      window = null;
-      canvas = null;
-      imageGroup = null;
    }
 
    public static void main(String[] args) {
