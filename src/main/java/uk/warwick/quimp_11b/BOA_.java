@@ -108,9 +108,6 @@ public class BOA_ implements PlugIn {
    /**
     * Build all BOA windows and setups initial parameters for segmentation
     * Defines also windowListener for cleaning after closing the main window by user.
-    * Unfortunately \c windowClosing is not called probably due to masking 
-    * \c setDefaultCloseOperation by IJ derived classes thus it is not possible to
-    * perform any action on window closing (by system button)
     * @param ip Reference to image being processed by BOA
     */
    void setup(ImagePlus ip) {
@@ -134,18 +131,8 @@ public class BOA_ implements PlugIn {
          BOA_.log("WARNING Frame interval was zero...\n\tset to 1");
       }
       
-      window.addWindowListener(new WindowAdapter() {
-			
-			@Override
-			// This method will be called when BOA_ window is closed already
-			// It is too late for asking user
-			public void windowClosed(WindowEvent arg0) {
-				BOA_.running = false;
-				canvas = null;
-				imageGroup = null;
-				window = null;
-			}
-	  });
+      // adds window listener called on plugin closing
+      window.addWindowListener(new CustomWindowAdapter());
       
       setScales();
       updateImageScale();
@@ -190,6 +177,23 @@ public class BOA_ implements PlugIn {
       logArea.append(s + '\n');
    }
 
+/**
+ * Overrides actions performed on window closing.
+ * \c windowClosing and /c windowClose are called when window disappeared
+ * from screen. Thus it is not possible to perform any action on window closing (by system button)
+ * @author baniuk   
+ */
+class CustomWindowAdapter extends WindowAdapter {
+	@Override
+	// This method will be called when BOA_ window is closed already
+	// It is too late for asking user
+	public void windowClosed(WindowEvent arg0) {
+		BOA_.running = false;
+		canvas = null;
+		imageGroup = null;
+		window = null;
+	}
+}
 /**
  * Supports mouse actions on image at QuimP window according to selected option   
  * @author rtyson
