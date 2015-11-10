@@ -10,6 +10,14 @@
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
 
+// imports
+import org.apache.tools.ant.filters.ReplaceTokens
+
+// set current plugin version
+def version = "0.11c"
+// set purpose of building 
+def purpose = "_testbuild"
+
 // In this section you declare where to find the dependencies of your project
 repositories {
     // Use 'jcenter' for resolving your dependencies.
@@ -30,4 +38,12 @@ dependencies {
     // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
     // 'test.useTestNG()' to your build script.
     testCompile 'junit:junit:4.12'
+}
+
+// generate plugins.config script for QuimP
+task generatePluginConfig(type: Copy) {
+	from 'Resources/main/java/uk/warwick/quimp/plugins.config'
+	into 'src/main/java/uk/warwick/quimp_11b'
+	filter(ReplaceTokens, tokens: [ver: version, purpose: purpose])
+
 }
