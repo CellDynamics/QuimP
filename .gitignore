@@ -58,3 +58,5 @@ hs_err_pid*
 ._*
 
 build/
+
+src/**/plugins.config
