@@ -1,6 +1,7 @@
 Doxygen_doc/html/
 Doxygen_doc/latex/
 .directory
+.DS_Store
 .fuse*
 *.pydevproject
 .metadata
@@ -59,4 +60,4 @@ hs_err_pid*
 
 build/
 
-src/**/plugins.config
+QuimP_plugin/src/**/plugins.config
