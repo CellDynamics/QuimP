@@ -41,9 +41,12 @@ dependencies {
 }
 
 // generate plugins.config script for QuimP
+// config stage (no <<), can not be in execution (<<) because it could be run only on plugins.config change
+// This task will run always, no dependency is required
 task generatePluginConfig(type: Copy) {
+	description 'Cretes plugins.config file with current wersion. This file is required by IJ to configure plugin'
+	println '[INFO] Creating QuimP plugins.config file'
 	from 'Resources/main/java/uk/warwick/quimp/plugins.config'
 	into 'src/main/java/uk/warwick/quimp_11b'
 	filter(ReplaceTokens, tokens: [ver: version, purpose: purpose])
-
 }
