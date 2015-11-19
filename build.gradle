@@ -53,3 +53,10 @@ task generatePluginConfig(type: Copy) {
 	into 'QuimP_plugin/src/main/java/uk/warwick/quimp'
 	filter(ReplaceTokens, tokens: [ver: version, purpose: purpose])
 }
+
+// set name of jar files for all projects
+subprojects {
+	tasks.withType(Jar) {
+		baseName = "$project.name" + "_" + version + purpose
+	}
+}
