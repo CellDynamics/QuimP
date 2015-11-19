@@ -47,9 +47,9 @@ def purpose = "_testbuild"
 // config stage (no <<), can not be in execution (<<) because it could be run only on plugins.config change
 // This task will run always, no dependency is required
 task generatePluginConfig(type: Copy) {
-	description 'Cretes plugins.config file with current wersion. This file is required by IJ to configure plugin'
+	description 'Cretes plugins.config file with current version. This file is required by IJ to configure plugin'
 	println '[INFO] Creating QuimP plugins.config file'
 	from 'QuimP_plugin/Resources/main/java/uk/warwick/quimp/plugins.config'
-	into 'QuimP_plugin/src/main/java/uk/warwick/quimp_11b'
+	into 'QuimP_plugin/src/main/java/uk/warwick/quimp'
 	filter(ReplaceTokens, tokens: [ver: version, purpose: purpose])
 }
