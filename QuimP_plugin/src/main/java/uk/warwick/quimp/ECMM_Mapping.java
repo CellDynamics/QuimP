@@ -1,4 +1,4 @@
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 /**
  * Richard Tyson. 23/09/2009. ECM Mapping Systems Biology DTC, Warwick

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -9,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
 
 import ij.IJ;
 import ij.ImagePlus;
+import uk.warwick.quimp.BOA_;
 
 /**
  * Main runner for BOA plugin. Shows main window and waits for its closing and then ends.

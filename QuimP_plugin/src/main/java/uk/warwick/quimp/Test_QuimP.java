@@ -1,4 +1,4 @@
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 import ij.*;
 import ij.gui.Overlay;
@@ -8,6 +8,7 @@ import ij.measure.Measurements;
 import ij.plugin.PlugIn;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+
 import java.awt.Polygon;
 import java.io.File;
 

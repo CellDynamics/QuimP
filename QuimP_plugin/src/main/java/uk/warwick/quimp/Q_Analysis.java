@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -12,6 +12,7 @@ import ij.gui.YesNoCancelDialog;
 import ij.io.*;
 //import ij.process.ColorProcessor;
 import ij.process.*;
+
 import java.io.*;
 import java.util.ArrayList;
 

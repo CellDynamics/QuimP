@@ -1,4 +1,4 @@
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 import java.awt.geom.Line2D;
 

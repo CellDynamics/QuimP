@@ -1,5 +1,5 @@
 
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 import ij.IJ;
 
