@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 import ij.IJ;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

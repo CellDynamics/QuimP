@@ -1,4 +1,4 @@
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 import org.junit.After;
 import org.junit.AfterClass;

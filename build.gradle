@@ -36,20 +36,35 @@ allprojects {
     task listProject { task -> println "Found project: $task.project.name" }
 }
 
-
-// set current plugin version
-def version = "0.11c"
-// set purpose of building 
-def purpose = "_testbuild"
-
+// TODO This var should be set in separate Deploy task. Will affect generatePluginConfig and jar 
+def purpose = 'SNAPSHOT'
 
 // generate plugins.config script for QuimP
-// config stage (no <<), can not be in execution (<<) because it could be run only on plugins.config change
 // This task will run always, no dependency is required
-task generatePluginConfig(type: Copy) {
-	description 'Cretes plugins.config file with current wersion. This file is required by IJ to configure plugin'
+task generatePluginConfig() {
+	description 'Cretes plugins.config file with current version. This file is required by IJ to configure plugin'
+	// can't be (task: Copy) as it was not run in config stage but only after explicit call
+	String version_from_file = new File("${rootDir}/QuimP_plugin/src/version").getText().replaceAll("\\s","")
+	copy {
+		from 'QuimP_plugin/Resources/main/java/uk/warwick/quimp/plugins.config'
+		into 'QuimP_plugin/src/main/java/uk/warwick/quimp'
+		filter(ReplaceTokens, tokens: [ver: version_from_file, purpose: purpose])
+	}
 	println '[INFO] Creating QuimP plugins.config file'
-	from 'QuimP_plugin/Resources/main/java/uk/warwick/quimp/plugins.config'
-	into 'QuimP_plugin/src/main/java/uk/warwick/quimp_11b'
-	filter(ReplaceTokens, tokens: [ver: version, purpose: purpose])
 }
+
+// executed for every subproject separatelly
+subprojects {
+	task getVersion {
+		description 'Read version file from every project and create external properties with these values'
+    	ext.version_from_file = new File("$projectDir/src/version").getText().replaceAll("\\s","")
+    }
+    // build jar file with correct names
+	tasks.withType(Jar) {
+		version = "$getVersion.version_from_file"
+		classifier = 'SNAPSHOT'
+		baseName = "$project.name"
+		println "$project.name "+"$version "+"$classifier"
+	}
+}
+

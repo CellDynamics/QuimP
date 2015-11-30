@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -14,6 +14,7 @@ import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
 import ij.plugin.TextReader;
 import ij.process.ImageProcessor;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;

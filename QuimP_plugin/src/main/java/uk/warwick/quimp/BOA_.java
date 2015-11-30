@@ -1,4 +1,4 @@
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 
 import ij.IJ;
@@ -12,6 +12,7 @@ import ij.io.SaveDialog;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 import ij.process.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -488,7 +489,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
 
       /**
-       * Sets default vales defined in model class {@link uk.warwick.quimp_11b.BOAp} and updates UI
+       * Sets default vales defined in model class {@link uk.warwick.quimp.BOAp} and updates UI
        * @see BOAp
        */
       private void setDefualts() {

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package uk.warwick.quimp_11b;
+package uk.warwick.quimp;
 
 //import jahuwaldt.plot.*;
 
