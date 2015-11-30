@@ -27,8 +27,9 @@ import javax.swing.event.ChangeListener;
 /**
  * Main plugin class implementing snake segmentation algorithm.
  * 
- * @author Richard Tyson,Till Bretschneider
- * Created 16-04-09
+ * @author Richard Tyson
+ * @author Till Bretschneider
+ * @date 16-04-09
  */
 public class BOA_ implements PlugIn {
 
@@ -80,7 +81,6 @@ public class BOA_ implements PlugIn {
             return;
          }
       }
-      //check if image saved to disk
 
       BOA_.running = true;
       setup(ip);
@@ -102,14 +102,12 @@ public class BOA_ implements PlugIn {
          BOA_.log(be.getMessage());
          be.printStackTrace();
       }
-
-
    }
 
    /**
-    * Build all BOA windows and setups initial parameters for segmentation
-    * Defines also windowListener for cleaning after closing the main window by user.
-    * @param ip Reference to image being processed by BOA
+    * Build all BOA windows and setup initial parameters for segmentation
+    * Define also windowListener for cleaning after closing the main window by user.
+    * @param ip Reference to image to be processed by BOA
     */
    void setup(ImagePlus ip) {
       if (BOAp.paramsExist == null) {
@@ -179,10 +177,15 @@ public class BOA_ implements PlugIn {
    }
 
 /**
- * Overrides actions performed on window closing.
- * \c windowClosing and /c windowClose are called when window disappeared
- * from screen. Thus it is not possible to perform any action on window closing (by system button)
- * @author baniuk   
+ * Override action performed on window closing.
+ * Clear BOA._running static variable and prevent to notify user that QuimP
+ * is running when it has been closed and called again. 
+ * @bug When user closes window by system button QuimP does not ask for
+ * saving current work. This is because by default QuimP window is managed
+ * by ImageJ and it by \a probably only hides it when window close button
+ * is clicked.
+ * 
+ * @author p.baniukiewicz
  */
 class CustomWindowAdapter extends WindowAdapter {
 	@Override
@@ -242,8 +245,7 @@ class CustomCanvas extends ImageCanvas {
 /**
  * Extends standard ImageJ StackWindow adding own GUI elements.
  * This class stands for definition of main BOA plugin GUI window. Current state
- * of BOA plugin is located at {@link BOAp} class. 
- * 
+ * of BOA plugin is stored at {@link BOAp} class. 
  * @author rtyson
  * @see BOAp
  */
@@ -282,7 +284,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
 
       /**
-       * Builds right side of main BOA window
+       * Build right side of main BOA window
        * @return Reference to panel
        */
       final Panel buildSetupPanel() {
@@ -329,7 +331,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
 
       /**
-       * Builds left side of main BOA window.
+       * Build left side of main BOA window.
        * @return Reference to built panel
        */
       final Panel buildControlPanel() {
@@ -408,22 +410,6 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          return b;
       }
 
-//      private TextField addTextField(String s, Panel mp, String d) {
-//         Panel p = new Panel();
-//         p.setLayout(new FlowLayout(FlowLayout.RIGHT));
-//
-//         TextField tf = new TextField(d, 8);
-//         tf.addActionListener(this);
-//         tf.setEditable(true);
-//
-//         Label label = new Label(s);
-//         p.add(label);
-//         p.add(tf);
-//         mp.add(p);
-//
-//         return tf;
-//      }
-
       /**
        * Helper method for creating checkbox in UI
        * @param label Label of checkbox
@@ -489,7 +475,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
 
       /**
-       * Sets default vales defined in model class {@link uk.warwick.quimp.BOAp} and updates UI
+       * Set default values defined in model class {@link uk.warwick.quimp.BOAp} and update UI
        * @see BOAp
        */
       private void setDefualts() {
@@ -498,7 +484,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
 
       /**
-       * Updates spinners in BOA UI
+       * Update spinners in BOA UI
        * @see BOAp
        */
       private void updateSpinnerValues() {
@@ -521,6 +507,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
        * Do not support mouse events, only UI elements like buttons, spinners, etc.
        * Runs also main algorithm on specified input state.
        * @param e Type of event
+       * @see BOAp
        */
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -756,7 +743,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       /**
        * Update the frame label, overlay, frame and set zoom
-       * Called when user click on slice selector in IJ window.
+       * Called when user clicks on slice selector in IJ window.
        */
       @Override
       public void updateSliceSelector() {
@@ -819,7 +806,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
    } // end of CustomStackWindow
    
    /**
-    * Starts segmentation process on range of frames
+    * Start segmentation process on range of frames
     * @param startF	start frame
     * @param endF 	end frame
     * @throws BoaException
@@ -1177,13 +1164,6 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       Roi.setColor(Color.yellow);
       SnakeHandler sH = nest.getHandler(BOAp.editingID);
       sH.storeRoi((PolygonRoi) r, frame);
-      //try{
-      //sH.getStoredSnake(frame).correctDistance();
-      //} catch (Exception e) {
-      // if nodes less than 3 use orginal roi
-
-      //sH.storeRoi(r, frame);
-      //}
       canvas.getImage().killRoi();
       imageGroup.updateOverlay(frame);
       BOAp.editingID = -1;
@@ -1222,6 +1202,12 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       window.close();
    }
 
+   /**
+    * Action for Quit button
+    * Set BOA_.running static field to false and close the window 
+    * @author rtyson
+    * @author p.baniukiewicz
+    */
    void quit() {
       YesNoCancelDialog ync;
       ync = new YesNoCancelDialog(window, "Quit", "Quit without saving?");
@@ -1247,6 +1233,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
 /**
  * Hold, manipulate and draw on images
+ * 
  * @author rtyson
  *
  */
@@ -1264,7 +1251,7 @@ class ImageGroup {
 
    public ImageGroup(ImagePlus oIpl, Nest n) {
       nest = n;
-      // create two new stackes for drawing
+      // create two new stacks for drawing
 
       // image set up
       orgIpl = oIpl;
@@ -1284,12 +1271,6 @@ class ImageGroup {
       pathsStack = pathsIpl.getStack();
       pathsIpl.setSlice(1);
       pathsIp = pathsStack.getProcessor(1);
-
-
-      //contourIpl = orgIpl.createImagePlus();
-      ///contourIpl.setStack("contours", contourStack);
-      //int[] dim = orgIpl.getDimensions();
-      //contourIpl.setDimensions(dim[2], dim[3], dim[4])
 
       setIpSliceAll(1);
       setProcessor(1);
@@ -1511,7 +1492,7 @@ class ImageGroup {
 }
 
 /**
- * Calculates forces that affect the snake
+ * Calculate forces that affect the snake
  * Modifies snake's nodes
  * @author rtyson
  *
@@ -2150,8 +2131,7 @@ class Nest {
 }
 
 /**
- * Stores all the snakes computed for one cell and is responsible for writing them to file.
- * 
+ * Store all the snakes computed for one cell and is responsible for writing them to file.
  * @author rtyson
  *
  */
@@ -2508,7 +2488,7 @@ class SnakeHandler {
 }
 
 /**
- * Creates snake basing on Nodes and performs operations on snake?
+ * Create snake basing on Nodes and performs operations on snake?
  * @author rtyson
  *
  */
@@ -3904,8 +3884,8 @@ class BOAp {
    }
 
    /**
-    * Sets default parameters for contour matching algorithm.
-    * Fills some fields in BOAp class related to CM algorithm. These parameters
+    * Set default parameters for contour matching algorithm.
+    * Fill some fields in BOAp class related to CM algorithm. These parameters
     * are external - available for user to set. 
     */
    static public void setDefaults() {
@@ -3925,8 +3905,8 @@ class BOAp {
    }
 
    /**
-    * Initialises internal parameters of BOAp class and gets IJ image reference. 
-    * @param ip	Reference to IJ image
+    * Initialise internal parameters of BOAp class
+    * @param ip	Reference to segmented image passed from IJ
     */
    static public void setup(ImagePlus ip) {
       FileInfo fileinfo = ip.getOriginalFileInfo();
@@ -3987,9 +3967,8 @@ class BOAp {
    }
 
    /**
-    * Writes set of snake parameters to disk.
-    * writeParams method creates paQP master file, referencing only other associated
-    * files there.
+    * Write set of snake parameters to disk.
+    * writeParams method creates paQP master file, referencing other associated files.
     * @param sID	ID of cell. If many cells segmented in one time, QuimP produces separate parameter file for every of them
     * @param startF	Start frame (typically beginning of stack)
     * @param endF	End frame (typically end of stack)

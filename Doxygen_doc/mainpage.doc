@@ -1,6 +1,9 @@
 /**
 \mainpage QuimP
+\author p.baniukiewicz
+\date 30 Nov 2015
 \tableofcontents
 \section HowTo HowTo
 - \subpage BOA_Gui "BOA GUI"
+- \subpage BOA "BOA Plugin"
 */

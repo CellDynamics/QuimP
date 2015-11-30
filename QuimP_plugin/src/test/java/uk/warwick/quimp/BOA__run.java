@@ -12,16 +12,13 @@ import ij.ImagePlus;
 import uk.warwick.quimp.BOA_;
 
 /**
- * Main runner for BOA plugin. Shows main window and waits for its closing and then ends.
+ * Main runner for BOA plugin. Show main window and wait for its closing and then ends.
  * @author baniuk
  * @note
- * The main problem is with ImageJ plugin is that it is run and then when it finish
- * all its windows being closed. Window is run in separate thread and when control
- * is returned to main thread all being killed and removed from memory
- * To prevent this behaviour thread synchronisation is used.
- * Window listener is added to BOA_ window.
- * \c window is \c public field of BOA_ class representing \c CustomStackWindow
- * internally extending \c Frame class
+ * The window is run in separate thread therefore when control is returned to main thread (\c main)
+ * (immediately after the window has been created) and the main thread ends everything is removed from memory
+ * and the window closes. To prevent this behaviour thread synchronisation is used. Window listener is added to BOA_ window.
+ * \c window is \c public field of BOA_ class representing \c CustomStackWindow internally extending \c Frame class.
  * @see
  * BOA_
  */

@@ -1,0 +1,27 @@
+/**
+@page BOA BOA Plugin
+@author p.baniukiewicz
+@date 30 Nov 2015
+@section GeneralBOA General information
+BOA plugin performs image segmentation using Active Contour method. The main plugin class is uk.warwick.quimp.BOA_ where one can find also full collaboration diagram. This class contains three nested classes:
+- uk.warwick.quimp.BOA_.CustomCanvas
+- uk.warwick.quimp.BOA_.CustomStackWindow
+- uk.warwick.quimp.BOA_.CustomWindowAdapter
+
+that control main window creation process.
+
+@dot
+digraph G {
+main -> parse -> execute;
+main -> init;
+main -> cleanup;
+execute -> make_string;
+execute -> printf
+init -> make_string;
+main -> printf;
+execute -> compare;
+}
+@enddot
+
+*/
+
