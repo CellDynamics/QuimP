@@ -3,7 +3,7 @@
 \author p.baniukiewicz
 \date 30 Nov 2015
 \tableofcontents
-\section HowTo HowTo
-- \subpage BOA_Gui "BOA GUI"
+\section MainDesc Description of plugin structure
+The description below is simplified version of classes relationship documentation based JavaDoc/Doxygen documentation that can be found deeper in these files.  
 - \subpage BOA "BOA Plugin"
 */
