@@ -25,7 +25,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * Main plugin class implementing snake segmentation algorithm.
+ * Main class implementing BOA plugin.
  * 
  * @author Richard Tyson
  * @author Till Bretschneider
@@ -108,6 +108,7 @@ public class BOA_ implements PlugIn {
     * Build all BOA windows and setup initial parameters for segmentation
     * Define also windowListener for cleaning after closing the main window by user.
     * @param ip Reference to image to be processed by BOA
+    * @see BOAp
     */
    void setup(ImagePlus ip) {
       if (BOAp.paramsExist == null) {
@@ -206,11 +207,19 @@ class CustomWindowAdapter extends WindowAdapter {
    @SuppressWarnings("serial")
 class CustomCanvas extends ImageCanvas {
 
-      CustomCanvas(ImagePlus imp) {
+      /**
+       * Empty constructor
+       * @param imp Reference to image loaded by BOA
+       */
+	  CustomCanvas(ImagePlus imp) {
          super(imp);
       }
 
-      @Override
+      /**
+       * @deprecated
+       * Actually not used in this version of QuimP
+       */
+	  @Override
       public void paint(Graphics g) {
          super.paint(g);
          //int size = 80;
@@ -221,6 +230,14 @@ class CustomCanvas extends ImageCanvas {
          //g.drawOval(x, y, screenSize, screenSize);
       }
 
+	  /**
+	   * Implement mouse action on image loaded to BOA
+	   * Used for manual editions of segmented shape.
+	   * Define reactions of mouse buttons according to GUI state, set by \b Delete and
+	   * \b Edit buttons.
+	   * @see BOAp
+	   * @see CustomStackWindow
+	   */
       @Override
       public void mousePressed(MouseEvent e) {
          super.mousePressed(e);
@@ -260,14 +277,20 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
       JSpinner isMaxIterations, isBlowup, isSample_tan, isSample_norm;
 
+      /**
+       * Default constructor
+       * @param imp Image loaded to plugin
+       * @param ic Image canvas
+       */
       CustomStackWindow(ImagePlus imp, ImageCanvas ic) {
          super(imp, ic);
       }
       
       /**
-       * This method is called as first to build user interface.
-       * The interface is built in two steps: Left side of window (configuration
-       * zone) and right side of main window (logs and other info and buttons)
+       * Build user interface.
+       * This method is called as first. The interface is built in two steps:
+       * Left side of window (configuration zone) and right side of main window
+       * (logs and other info and buttons)
        */
       private void buildWindow() {
          setLayout(new FlowLayout());
@@ -280,7 +303,6 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          add(buildControlPanel(), 0); // add to the left, position 0
          add(buildSetupPanel());
          pack();
-
       }
 
       /**
@@ -485,6 +507,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       /**
        * Update spinners in BOA UI
+       * Update spinners according to values stored in machine state {@link uk.warwick.quimp.BOAp}
        * @see BOAp
        */
       private void updateSpinnerValues() {
@@ -624,6 +647,11 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       }
 
+      /**
+       * Detect changes in checkboxes and run segmentation for current frame.
+       * Transfer parameters from changed GUI element to {@link uk.warwick.quimp.BOAp} class
+       * @param e Type of event
+       */
       @Override
       public void itemStateChanged(ItemEvent e) {
          // detect check boxes
@@ -673,6 +701,11 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          }
       }
 
+      /**
+       * Detect changes in spinners and run segmentation for current frame.
+       * Transfer parameters from changed GUI element to {@link uk.warwick.quimp.BOAp} class
+       * @param ce Type of event
+       */
       @Override
       public void stateChanged(ChangeEvent ce) {
          if (BOAp.doDelete) {
@@ -780,6 +813,9 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          }
       }
 
+      /**
+       * Turn delete mode off by setting proper value in {@link uk.warwick.quimp.BOAp}
+       */
       void switchOffDelete() {
          BOAp.doDelete = false;
          bDel.setLabel("Delete cell");
@@ -794,6 +830,9 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          this.ic.setSize(dem);
       }
 
+      /**
+       * Turn truncate mode off by setting proper value in {@link uk.warwick.quimp.BOAp}
+       */
       void switchOfftruncate() {
          BOAp.doDeleteSeg = false;
          bDelSeg.setLabel("Truncate Seg");
@@ -3801,7 +3840,7 @@ class Node {
  * files is defined at {@link QParams} class.
  * 
  * External parameters are those related to algorithm options whereas internal
- * are those related to internal settings of algorithm, GUI and other non exportable 
+ * are those related to internal settings of algorithm, GUI and whole plugin
  * 
  * @author rtyson
  * @see QParams
@@ -3829,7 +3868,7 @@ class BOAp {
    static boolean showPaths;
    static boolean expandSnake; 		 // set true to act as an expanding snake
    //internal parameters
-   static int NMAX;             // maximum number of nodes (% of starting nodes)
+   static int NMAX;             	// maximum number of nodes (% of starting nodes)
    static double delta_t;
    static double sensitivity;
    static double f_friction;
@@ -3849,7 +3888,7 @@ class BOAp {
    static boolean scaleAdjusted;
    static boolean fIAdjusted;
    static boolean singleImage;
-   static String paramsExist; 	//on statup check if defults are needed to set
+   static String paramsExist; 	//on startup check if defaults are needed to set
    static boolean zoom;
    static boolean doDelete;
    static boolean doDeleteSeg;
@@ -3886,7 +3925,7 @@ class BOAp {
    /**
     * Set default parameters for contour matching algorithm.
     * Fill some fields in BOAp class related to CM algorithm. These parameters
-    * are external - available for user to set. 
+    * are external - available for user to set in GUI. 
     */
    static public void setDefaults() {
 
@@ -3905,8 +3944,13 @@ class BOAp {
    }
 
    /**
-    * Initialise internal parameters of BOAp class
+    * Initialise internal parameters of BOA plugin
+    * Most of these parameters are related to state machine of BOA.
+    * There are also parameters related to internal state of Active
+    * Contour algorithm. 
+    * Defaults for parameters available for user are set in {@link uk.warwick.quimp.BOAp.setDefaults()} 
     * @param ip	Reference to segmented image passed from IJ
+    * @see setDefaults()
     */
    static public void setup(ImagePlus ip) {
       FileInfo fileinfo = ip.getOriginalFileInfo();
@@ -3968,10 +4012,12 @@ class BOAp {
 
    /**
     * Write set of snake parameters to disk.
-    * writeParams method creates paQP master file, referencing other associated files.
+    * writeParams method creates \a paQP master file, referencing other associated files and \a csv file
+    * with statistics.
     * @param sID	ID of cell. If many cells segmented in one time, QuimP produces separate parameter file for every of them
     * @param startF	Start frame (typically beginning of stack)
     * @param endF	End frame (typically end of stack)
+    * @see QParams
     */
    static public void writeParams(int sID, int startF, int endF) {
       if (saveSnake) {
@@ -4005,6 +4051,14 @@ class BOAp {
       }
    }
 
+   /**
+    * Read set of snake parameters from disk.
+    * readParams method reads \a paQP master file, referencing other associated files.
+    * @return Status of operation
+    * @retval true when file has been loaded successfully
+    * @retval false when file has not been opened correctly or QParams.readParams() returned \c false
+    * @see QParams
+    */
    static public boolean readParams() {
       OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", "");
       if (od.getFileName() == null) {
@@ -4016,8 +4070,6 @@ class BOAp {
          BOA_.log("Failed to read parameter file");
          return false;
       }
-      
-
       NMAX = readQp.NMAX;
       blowup = readQp.blowup;
       max_iterations = readQp.max_iterations;
@@ -4033,13 +4085,9 @@ class BOAp {
       if (readQp.newFormat) {
          finalShrink = readQp.finalShrink;
       }
-
-
       BOA_.log("Successfully read parameters");
       return true;
    }
-   
-  
 }
 
 /**

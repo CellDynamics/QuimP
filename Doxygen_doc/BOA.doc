@@ -22,7 +22,7 @@ There are several classes and structures referenced in \ref uk.warwick.quimp.BOA
 -# Related to images
  -# uk.warwick.quimp.ImageGroup (composition of \ref uk.warwick.quimp.BOA_ "BOA_")
 
-@todo add general description - what classes what do and in what order, eg - setup, then roi passed to nest and ...
+@todo add general description - what classes what do and in what order, eg - setup, then roi passed to nest and ..., add plot
 
 @section startBOA Starting BOA plugin
 This section describes basic activities that occur during starting the BOA plugin. The entry function of BOA is ovverrided from ij.plugin.PlugIn the \ref uk.warwick.quimp.BOA_.run(String) "run()" method.
@@ -40,7 +40,7 @@ Some important structures are initialized in \a BOA_ class as its private or pub
    private Constrictor constrictor;
 @endcode   
 
-The \ref uk.warwick.quimp.BOA_.run(String) "run()" method checks general prerequirements for plugin such as IJ version, input image type. Then the static field \c BOA_.running is set to \c true to prevent from running more instances of plugin. Then the following methods are started to configure GUI and start segmeentation.
+The \ref uk.warwick.quimp.BOA_.run(String) "run()" method checks general prerequirements for plugin such as IJ version, input image type. Then the static field \c BOA_.running is set to \c true to prevent from running more instances of plugin. Then the following methods are started to configure GUI and start segmentation.
 
 @msc
 	hscale="0.5";
@@ -53,6 +53,8 @@ The \ref uk.warwick.quimp.BOA_.run(String) "run()" method checks general prerequ
 In general the \ref uk.warwick.quimp.BOA_.setup(ImagePlus) "setup(ImagePlus)" method build user interface and sets default parameters for segmentation (see \ref setupBOA ), \ref uk.warwick.quimp.BOA_.about() "about()" just shows info in log window and \ref uk.warwick.quimp.BOA_.runBoa(int, int) "runBOA(int,int)" carryes further user actions and segmenetation.  
 
 @section setupBOA Setup BOA plugin
+
+@subsection setupBOAGeneral General workflow
 The initial setup of BOA environment is mostly done in \ref uk.warwick.quimp.BOA_.setup(ImagePlus) "setup(ImagePlus)" method (see call graph). The following operations occur during this stage:
 
 @dot
@@ -70,7 +72,7 @@ Start->InitParam->Init->BuildWnd->IJconfig->AddSnake->Stop;
 }
 @enddot
 
-First, the method initializes internal and external default parameters hold at uk.warwick.quimp.BOAp \b static class by calling \ref uk.warwick.quimp.BOAp.setDefaults() "setDefaults()" and \ref uk.warwick.quimp.BOAp.setup(ImagePlus) "setup(ImagePlus)" from BOAp class. By internal parameters I understand those that can not be changed by user during using the program. External parameters are those that are reflected in user menu.
+First, the method initializes internal and external default parameters hold at uk.warwick.quimp.BOAp (see \ref setupBOABOAp) \b static class by calling \ref uk.warwick.quimp.BOAp.setDefaults() "setDefaults()" and \ref uk.warwick.quimp.BOAp.setup(ImagePlus) "setup(ImagePlus)" from BOAp class. By internal parameters I understand those that can not be changed by user during using the program. External parameters are those that are reflected in user menu.
 
 Secondly, it creates all important structures such as:
 -# uk.warwick.quimp.Nest.Nest()
@@ -84,7 +86,12 @@ Next the image is calibrated using real units by calling \ref uk.warwick.quimp.B
 
 Finally \ref uk.warwick.quimp.BOA_.setup(ImagePlus) "setup(ImagePlus)" method gets ROI from ROI manager and passes it to \ref uk.warwick.quimp.BOA_.nest "nest" class by \ref uk.warwick.quimp.Nest.addHandler(Roi, int) "Nest.addHandler(Roi, int)" method. This ROI should contain object for segmentation.
 
-@section guiBOA About GUI
+@subsection setupBOABOAp BOA state machine
+Most of configuration parameters are initialzied ad stored in static class uk.warwick.quimp.BOAp. They are initialized in \ref uk.warwick.quimp.BOA_.setup(ImagePlus) "setup(ImagePlus)" stage as mentioned in \ref setupBOA. Currently uk.warwick.quimp.BOAp.setup(ImagePlus) method initializes BOAp fields with current image data and some constants related to active contour algorithm and boolean semaphors. Very similar method uk.warwick.quimp.BOAp.setDefaults() initializes default values of active contour algorithm exposed to user (it is called from uk.warwick.quimp.BOA_.CustomStackWindow.setDefualts() as well).
+
+This class stands also as wrapper for reading and writing configuration from/to disk. Low level disk operations are supported by container class uk.warwick.quimp.QParams
+
+@subsection setupBOAGUI Building GUI
 GUI is created in void uk.warwick.quimp.BOA_#setup() method. One can find the following code responsible for building and displaying GUI window.
 
 @code{.java}
@@ -93,7 +100,6 @@ GUI is created in void uk.warwick.quimp.BOA_#setup() method. One can find the fo
       window.buildWindow();
 @endcode
 
-Class uk.warwick.quimp.BOA_.CustomCanvas is responsible for handling mouse events whereas class uk.warwick.quimp.BOA_.CustomStackWindow holds definition of user controls. Mouse events serviced by \ref uk.warwick.quimp.BOA_.CustomCanvas "CustomCanvas" class are related to main paint window where cells are drawn. It supports \a Delete and \a Edit commands.
 The main builder is method \ref uk.warwick.quimp.BOA_.CustomStackWindow.buildWindow() "buildWindow()" which calls two other methods:
 -# \ref uk.warwick.quimp.BOA_.CustomStackWindow.buildControlPanel() "buildControlPanel()"
 -# \ref uk.warwick.quimp.BOA_.CustomStackWindow.buildSetupPanel() "buildSetupPanel()"
@@ -107,7 +113,19 @@ Inside \ref uk.warwick.quimp.BOA_.CustomStackWindow.buildSetupPanel() "buildSetu
 Any action on these controls is handled by uk.warwick.quimp_11b.BOA_.CustomStackWindow.actionPerformed() method. The following buttons run actions:
 - \ref editBOA
 
-\subsection editBOA Edit
+\subsubsection editBOA Edit
 When user click \b Edit \ref uk.warwick.quimp.BOA_.CustomStackWindow.actionPerformed() "actionPerformed(ActionEvent)" method catch this and calls uk.warwick.quimp.BOA_.editSeg(int, int, int) method if there is only one snake on screen. If there is more snakes, user must click one of them to perform its editing. Second click of \b Edit switches editing off by calling uk.warwick.quimp.BOA_.stopEdit(). 
+
+@todo Add remaining buttons here
+
+@section runBOA Running BOA
+The main method that runs segmenetation is uk.warwick.quimp.BOA_.runBoa(int, int) called by uk.warwick.quimp.BOA_.run(String) on plugin start if there is snake in Nest or by clicking GUI elements (\ref uk.warwick.quimp.BOA_.CustomStackWindow.actionPerformed(ActionEvent) "actionPerformed", \ref uk.warwick.quimp.BOA_.CustomStackWindow.itemStateChanged(ItemEvent) "itemStateChanged", \ref uk.warwick.quimp.BOA_.CustomStackWindow.stateChanged(ChangeEvent) "stateChanged")
+
+@todo general segmenetation description
+
+
+@section guiBOA About GUI
+Class uk.warwick.quimp.BOA_.CustomCanvas is responsible for handling mouse events whereas class uk.warwick.quimp.BOA_.CustomStackWindow holds definition of user controls. Mouse events serviced by \ref uk.warwick.quimp.BOA_.CustomCanvas "CustomCanvas" class are related to main paint window where cells are drawn.
+
 */
 
