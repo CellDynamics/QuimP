@@ -527,14 +527,14 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       /**
        * Main method that handles all actions performed on UI elements.
-       * Do not support mouse events, only UI elements like buttons, spinners, etc.
+       * Do not support mouse events, only UI elements like buttons. Contain also logic of GUI
        * Runs also main algorithm on specified input state.
        * @param e Type of event
        * @see BOAp
        */
       @Override
       public void actionPerformed(ActionEvent e) {
-         boolean run = false;
+         boolean run = false; // some actions require to re-run segmentation. They set run to true
          Object b = e.getSource();
          if (b == bDel && !BOAp.editMode && !BOAp.doDeleteSeg) {
             if (BOAp.doDelete == false) {
@@ -633,7 +633,8 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          } else if (b == bQuit) {
             quit();
          }
-
+         
+         // run segmentation for selected cases
          if (run) {
             System.out.println("running from in stackwindow");
             // run on current frame
@@ -648,7 +649,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
 
       /**
-       * Detect changes in checkboxes and run segmentation for current frame.
+       * Detect changes in checkboxes and run segmentation for current frame if necessary.
        * Transfer parameters from changed GUI element to {@link uk.warwick.quimp.BOAp} class
        * @param e Type of event
        */
@@ -658,7 +659,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          if (BOAp.doDelete) {
             BOA_.log("**WARNING:DELETE IS ON**");
          }
-         boolean run = false;
+         boolean run = false; // set to true if any of items changes require to re-run segmentation
          Object source = e.getItemSelectable();
          if (source == cPath) {
             BOAp.showPaths = cPath.getState();
@@ -702,7 +703,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
 
       /**
-       * Detect changes in spinners and run segmentation for current frame.
+       * Detect changes in spinners and run segmentation for current frame if necessary.
        * Transfer parameters from changed GUI element to {@link uk.warwick.quimp.BOAp} class
        * @param ce Type of event
        */
@@ -711,7 +712,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          if (BOAp.doDelete) {
             BOA_.log("**WARNING:DELETE IS ON**");
          }
-         boolean run = false;
+         boolean run = false; // set to true if any of items changes require to re-run segmentation
          Object source = ce.getSource();
           
          if (source == dsNodeRes) {
@@ -846,6 +847,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
    
    /**
     * Start segmentation process on range of frames
+    * This method is called for update only current view as well (\c startF == \c endF)
     * @param startF	start frame
     * @param endF 	end frame
     * @throws BoaException
@@ -1066,6 +1068,13 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       return true;
    }
 
+   /**
+    * Add ROI to Nest.
+    * This method is called on selection that should contain object to be segmented.
+    * TODO finish details here
+    * @param r ROI object (IJ)
+    * @param f number of current frame 
+    */
    void addCell(Roi r, int f) {
       SnakeHandler sH = nest.addHandler(r, f);
       Snake snake = sH.getLiveSnake();
@@ -2011,6 +2020,14 @@ class Nest {
       BOA_.log("Cells being tracked: " + NSNAKES);
    }
 
+   /**
+    * Add ROI objects in Nest
+    * Snakes are stored in Nest object in form of SnakeHandler objects kept in
+    * \c ArrayList<SnakeHandler> \c sHs field.
+    * @param r ROI object that contain image object to be segmented
+    * @param startFrame Current frame 
+    * @return SnakeHandler object that is also stored in Nest
+    */
    public SnakeHandler addHandler(Roi r, int startFrame) {
       SnakeHandler sH;
       try {
@@ -2182,10 +2199,19 @@ class SnakeHandler {
    private Snake[] snakes; // series of snakes
    private int ID;
 
+   /**
+    * Constructor of SnakeHandler.
+    * Stores ROI with object for segmentation
+    * @param r ROI with selected object
+    * @param f Current frame for which the ROI is taken
+    * @param i Unique Snake ID controlled by Nest object
+    * @throws Exception
+    */
    public SnakeHandler(Roi r, int f, int i) throws Exception {
       startFrame = f;
       endFrame = BOAp.FRAMES;
       roi = r;
+      // QUEST what is snakes?
       snakes = new Snake[BOAp.FRAMES - startFrame + 1]; // stored snakes
       ID = i;
       liveSnake = new Snake(roi, ID, false);
@@ -2575,6 +2601,13 @@ class Snake {
       //calcOrientation();
    }
 
+   /**
+    * Create snake from ROI
+    * @param R ROI with object to be segmented
+    * @param id Unique ID of snake
+    * @param direct 
+    * @throws Exception
+    */
    public Snake(Roi R, int id, boolean direct) throws Exception {
       // create snake from ROI
       // place nodes in a circle
@@ -3441,32 +3474,23 @@ class Snake {
       return centroid;
    }
 
-   /*
-   public void calcCentroidOLD(){
-   centroid = new Vect2d(0,0);
-   Node v = head;
-   do {
-   centroid.addVec(v.getPoint());
-   v = v.getNext();
-   } while (!v.isHead());
-
-   centroid.multiply(1d/(double)NODES);
-   }
+   /**
+    * Calculate centroid of object given as the set of Nodes
     */
    public void calcCentroid() {
-      centroid = new Vect2d(0, 0);
-      Node v = head;
+      this.centroid = new Vect2d(0, 0);
+      Node v = this.head;
       double x, y, g;
       do {
          g = (v.getX() * v.getNext().getY()) - (v.getNext().getX() * v.getY());
          x = (v.getX() + v.getNext().getX()) * g;
          y = (v.getY() + v.getNext().getY()) * g;
-         centroid.setX(centroid.getX() + x);
-         centroid.setY(centroid.getY() + y);
+         this.centroid.setX(this.centroid.getX() + x);
+         this.centroid.setY(this.centroid.getY() + y);
          v = v.getNext();
       } while (!v.isHead());
 
-      centroid.multiply(1d / (6 * this.calcArea()));
+      this.centroid.multiply(1d / (6 * this.calcArea()));
    }
 
    public void makeAntiClockwise() {
