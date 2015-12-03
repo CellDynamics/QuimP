@@ -269,7 +269,7 @@ class CustomCanvas extends ImageCanvas {
    @SuppressWarnings("serial")
 class CustomStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
 
-      private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale, bFreeze, bUnfreeze;
+      private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
       private Button bAdd, bDel, bDelSeg, bQuit;
       private Checkbox cPrevSnake, cExpSnake, cPath, cZoom;
       JScrollPane logPanel;
@@ -327,8 +327,6 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          bDelSeg = addButton("Truncate Seg", northPanel);
          bAdd = addButton("Add cell", northPanel);
          bDel = addButton("Delete cell", northPanel);
-         bFreeze = addButton("Freeze cell", northPanel);
-         bUnfreeze = addButton("Unfreeze cell", northPanel);
          northPanel.add(new Label(""));
          //--------------------------
 
@@ -1071,7 +1069,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
    /**
     * Add ROI to Nest.
     * This method is called on selection that should contain object to be segmented.
-    * TODO finish details here
+    * @todo finish details here
     * @param r ROI object (IJ)
     * @param f number of current frame 
     */
@@ -1541,9 +1539,8 @@ class ImageGroup {
 
 /**
  * Calculate forces that affect the snake
- * Modifies snake's nodes
  * @author rtyson
- *
+ * @todo move to stattic?
  */
 class Constrictor {
    public Constrictor() {
@@ -1609,6 +1606,12 @@ class Constrictor {
       return snake.isFrozen(); //true if all nodes frozen
    }
 
+   /**
+    * @deprecated Strictly related to absolute paths on disk. Probably for testing purposes only
+    * @param snake
+    * @param ip
+    * @return
+    */
    public boolean constrictWrite(Snake snake, ImageProcessor ip) {
       // for writing forces at each frame
       try {
@@ -1704,6 +1707,12 @@ class Constrictor {
       return (force);
    }
 
+   /**
+    * @deprecated Probably old version of contractionForce(Node n)
+    * @param n
+    * @param ip
+    * @return
+    */
    public Vect2d imageForceOLD(Node n, ImageProcessor ip) {
       Vect2d result = new Vect2d();
       Vect2d tan;	//Tangent
@@ -2553,7 +2562,8 @@ class SnakeHandler {
 }
 
 /**
- * Create snake basing on Nodes and performs operations on snake?
+ * Low level snake definition.
+ * Form snake from Node objects
  * @author rtyson
  *
  */
@@ -2707,24 +2717,6 @@ class Snake {
       removeNode(head); // remove dummy head node
       this.makeAntiClockwise();
       updateNormales();
-
-
-      /*
-      Node node;
-      for (int i = 0; i < p.npoints; i++) {
-      int x = p.xpoints[i];
-      int y = p.ypoints[i];
-      node = new Node(nextTrackNumber);
-      nextTrackNumber++;
-
-      node.setX(x);
-      node.setY(y);
-      addNode(node);
-      }
-
-      removeNode(head); // remove dummy head node
-      updateNormales();
-       */
    }
 
    private void intializePolygonDirect(FloatPolygon p) throws Exception {
@@ -3418,21 +3410,6 @@ class Snake {
       return bounds;
    }
 
-//   private void calcOrientation() {
-//      //calculate determinant of orientation matrix on bounding box
-//      Polygon poly = asPolygon();
-//      Rectangle b = poly.getBounds(); // bounding box
-//      double xa, ya, xb, yb, xc, yc;
-//      xa = b.getMinX();
-//      ya = b.getMaxY();
-//      xb = b.getMaxX();
-//      yb = b.getMaxY();
-//      xc = b.getMaxX();
-//      yc = b.getMinY();
-//
-//      //detO = (xb*yc + xa*yb + ya*xc) - (ya*xb + yb*xc + xa*yc); //determinant of orientation
-//   }
-
    public boolean checkNodeNumber() {
       //count the nodes and check that NODES matches
       Node n = head;
@@ -3475,22 +3452,22 @@ class Snake {
    }
 
    /**
-    * Calculate centroid of object given as the set of Nodes
+    * Calculate centroid of Snake given as the set of Nodes
     */
    public void calcCentroid() {
-      this.centroid = new Vect2d(0, 0);
+      centroid = new Vect2d(0, 0);
       Node v = this.head;
       double x, y, g;
       do {
          g = (v.getX() * v.getNext().getY()) - (v.getNext().getX() * v.getY());
          x = (v.getX() + v.getNext().getX()) * g;
          y = (v.getY() + v.getNext().getY()) * g;
-         this.centroid.setX(this.centroid.getX() + x);
-         this.centroid.setY(this.centroid.getY() + y);
+         centroid.setX(centroid.getX() + x);
+         centroid.setY(centroid.getY() + y);
          v = v.getNext();
       } while (!v.isHead());
 
-      this.centroid.multiply(1d / (6 * this.calcArea()));
+      centroid.multiply(1d / (6 * this.calcArea()));
    }
 
    public void makeAntiClockwise() {
@@ -3543,12 +3520,12 @@ class Node {
    private Vect2d tan;
    private Vect2d vel;			//velocity of the nodes
    private Vect2d F_total;		//total force at node
-   private Vect2d prelimPoint;          // point to move node to after all new node postions have been calc
+   private Vect2d prelimPoint;          // point to move node to after all new node positions have been calc
    private boolean frozen;		//flag which is set when the velocity is below the critical velocity
    private int tracknumber;
    double position = -1;   // position value.
-   private Node prev;
-   private Node next;
+   private Node prev;	   // predecessor to current node	
+   private Node next;	// successor to current node	
    private boolean head;
    private static boolean clockwise = true; // access clockwise if true
 //    public QColor colour;
@@ -3577,8 +3554,7 @@ class Node {
       frozen = false;
       head = false;
       tracknumber = t;
-
-//        colour = QColor.lightColor();
+//    colour = QColor.lightColor();
    }
 
    public double getX() {
@@ -3612,7 +3588,7 @@ class Node {
    }
 
    /**
-    * get next node in chain (prev if not clockwise)
+    * get previous node in chain (next if not clockwise)
     * @return next or previous Node from list 
     */
    public Node getPrev() {
@@ -3624,7 +3600,7 @@ class Node {
    }
 
    /**
-    * get previous node in chain (next if not clockwise)
+    * get next node in chain (previous if not clockwise)
     * @return previous or next Node from list 
     */
    public Node getNext() {
