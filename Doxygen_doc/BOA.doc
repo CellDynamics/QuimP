@@ -125,7 +125,12 @@ The main method that runs segmenetation is uk.warwick.quimp.BOA_.runBoa(int, int
 
 
 @section guiBOA About GUI
-Class uk.warwick.quimp.BOA_.CustomCanvas is responsible for handling mouse events whereas class uk.warwick.quimp.BOA_.CustomStackWindow holds definition of user controls. Mouse events serviced by \ref uk.warwick.quimp.BOA_.CustomCanvas "CustomCanvas" class are related to main paint window where cells are drawn.
+Class uk.warwick.quimp.BOA_.CustomCanvas is responsible for handling mouse events whereas class uk.warwick.quimp.BOA_.CustomStackWindow holds definition of user controls. Mouse events serviced by \ref uk.warwick.quimp.BOA_.CustomCanvas "CustomCanvas" class are related to main paint window where cells are drawn. Three main methods that respond to action on GUI are:
+-# uk.warwick.quimp.BOA_.CustomStackWindow.actionPerformed(ActionEvent) - related to buttons and general GUI logic
+-# uk.warwick.quimp.BOA_.CustomStackWindow.itemStateChanged(ItemEvent) - related to changes of checkboxes
+-# uk.warwick.quimp.BOA_.CustomStackWindow.stateChanged(ChangeEvent) - related to spinners
+
+All these method can run segmentation of current frame or whole stack by calling \ref uk.warwick.quimp.BOA_.runBoa(int, int) "runBoa(int, int)".
 
 */
 

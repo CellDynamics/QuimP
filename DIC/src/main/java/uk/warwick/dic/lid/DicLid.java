@@ -157,8 +157,9 @@ public class DicLid {
 	
 	/**
 	 * Performs DIC reconstruction using LID method
-	 * @param r Row number counted from 0
-	 * @param c Column number counted from 0
+	 * @param B 
+	 * @param s0 
+	 * @param d
 	 * @return Reconstructed image of size of original image
 	 * @warning Performs scaling of output array to ImagePlus formats
 	 */
