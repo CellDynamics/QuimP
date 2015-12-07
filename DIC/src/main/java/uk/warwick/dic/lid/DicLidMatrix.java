@@ -15,8 +15,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class DicLidMatrix {
 	
-//	final Logger logger = LoggerFactory.getLogger(DicLidMatrix.class);
-	protected static final Logger logger = LogManager.getLogger(DicLidMatrix.class.getName());
+	private static final Logger logger = LogManager.getLogger(DicLidMatrix.class.getName());
 	/**
 	 * Empty default constructor
 	 */
@@ -32,8 +31,7 @@ public class DicLidMatrix {
 	 * @return
 	 */
 	public ImagePlus DicReconstructionLidMatrix(ImagePlus srcImage, double s0) {
-		
-		logger.info("Height of image = "+String.valueOf(srcImage.getHeight()));
+		logger.debug("Height of image = " + String.valueOf(srcImage.getHeight()));
 		ImagePlus localCopy = srcImage.duplicate(); // make a copy of original
 		ByteProcessor tmpProcessor = (ByteProcessor) localCopy.getProcessor(); // get ByteProcessor to access pixels
 		

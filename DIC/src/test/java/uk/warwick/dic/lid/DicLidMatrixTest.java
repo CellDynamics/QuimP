@@ -5,6 +5,8 @@ package uk.warwick.dic.lid;
 
 import static org.junit.Assert.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +21,7 @@ import ij.ImagePlus;
 public class DicLidMatrixTest extends DicLidMatrix {
 	
 	private ImagePlus image;
-	
+	private static final Logger logger = LogManager.getLogger(DicLidMatrixTest.class.getName());
 	public DicLidMatrixTest() {
 		
 	}
@@ -64,6 +66,7 @@ public class DicLidMatrixTest extends DicLidMatrix {
 		ImagePlus ret;
 		ret = DicReconstructionLidMatrix(image,0);
 		IJ.saveAsTiff(ret, "/tmp/testDicReconstructionLidMatrix.tif"); 
+		logger.info("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
 	}
 
 }
