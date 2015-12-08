@@ -23,7 +23,6 @@ allprojects {
 	// In this section you declare the dependencies for your production and test code
 	dependencies {
 	    // The production code uses the SLF4J logging API at compile time
-//	    compile 'org.slf4j:slf4j-simple:1.7.12'
 	    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.4.1'
   		compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.4.1'
 	    compile 'net.imagej:ij:1.50d'
