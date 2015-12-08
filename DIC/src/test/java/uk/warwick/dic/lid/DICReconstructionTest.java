@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ImageProcessor;
 
 /**
  * @author baniuk
@@ -64,8 +65,8 @@ public class DICReconstructionTest extends DICReconstruction {
 	 */
 	@Test
 	public void testrotateImage() {
-		rotateImage(image.getProcessor(), 135f);
-		IJ.saveAsTiff(image, "/tmp/testrotateImage.tif");
+		ImageProcessor ret = rotateImage(image.getProcessor(), 135);
+		IJ.saveAsTiff(new ImagePlus("",ret), "/tmp/testrotateImage.tif");
 		logger.info("Check /tmp/testrotateImage.tif to see results of rotation");
 	}
 	
@@ -142,7 +143,27 @@ public class DICReconstructionTest extends DICReconstruction {
 		assertEquals(699, ret.getHeightInt());
 	}
 	
-	/**
+	@Test
+	public void testextendImage_45s() {
+		double angle = 45;
+		ImageProcessor ret = extendImage(image.getProcessor(), angle);
+		assertEquals(724,ret.getWidth());
+		assertEquals(724,ret.getHeight());
+		IJ.saveAsTiff(new ImagePlus("extended",ret), "/tmp/testextendImage_45s.tif"); 
+		logger.info("Check /tmp/testextendImage_45s.tif to see results");
+	}
+	
+	@Test
+	public void testextendImage_0s() {
+		double angle = 0;
+		ImageProcessor ret = extendImage(image.getProcessor(), angle);
+		assertEquals(512,ret.getWidth());
+		assertEquals(512,ret.getHeight());
+		IJ.saveAsTiff(new ImagePlus("extended",ret), "/tmp/testextendImage_0s.tif"); 
+		logger.info("Check /tmp/testextendImage_0s.tif to see results");
+	}
+	
+ 	/**
 	 * @ test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ij.ImagePlus, double, double)}.
 	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
 	 * @pre

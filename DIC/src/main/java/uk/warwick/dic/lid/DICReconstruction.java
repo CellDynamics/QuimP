@@ -37,12 +37,14 @@ public class DICReconstruction {
 	}
 	
 	/**
+	 * Calculate bounding box of rotated image of given size.
 	 * @remarks
-	 * Returned lengths of bounding box are rounded to up
-	 * @param width
-	 * @param height
-	 * @param angle
-	 * @return
+	 * Do not modify any image. Uses only virtual sizes and angle
+	 * @param width Width of image
+	 * @param height Height of image
+	 * @param angle Rotation angle
+	 * @retval BoundingBox
+	 * @return BoundingBox object that contains coordinates of bounding box after image rotation (see remarks)
 	 */
 	protected BoundingBox getBoundingBox(int width, int height, double angle) {
 		
@@ -73,13 +75,13 @@ public class DICReconstruction {
 		
 		// get ranges of x and y
 		// collect all x coords
-		Vector<Double> x = new Vector<Double>();
+		Vector<Float> x = new Vector<Float>();
 		for(Point3d p: cornerTable)
-			x.add(p.x);
+			x.add((float)p.x);
 		// collect all y
-		Vector<Double> y = new Vector<Double>();
+		Vector<Float> y = new Vector<Float>();
 		for(Point3d p: cornerTable)
-			y.add(p.y);
+			y.add((float)p.y);
 		
 		return new BoundingBox(x, y);
 	}
@@ -88,17 +90,28 @@ public class DICReconstruction {
 	 * Add borders around image to prevent cropping during scaling.
 	 * 
 	 * @param srcImage
-	 * @param newWidth
-	 * @param newHeight
+	 * @param angle
 	 * @retval 
 	 * @return
 	 */
-	protected ImageProcessor extendImage(ImageProcessor srcImage, int newWidth, int newHeight) {
+	protected ImageProcessor extendImage(ImageProcessor srcImage, double angle) {
 		int width = srcImage.getWidth();
 		int height = srcImage.getHeight();
-		double diagonal = Math.ceil(Math.sqrt(height*height + width*width));
-		// TODO not finished
-		return srcImage;
+		// calculate future image size after rotation
+		BoundingBox box = getBoundingBox(width, height, angle);
+		// create image extended
+		ImagePlus extendedImage = IJ.createImage("extendedImage", 
+				box.getWidthInt(), 
+				box.getHeightInt(), 
+				1, 						// WARN possible problem with stack
+				srcImage.getBitDepth());
+		ImageProcessor extendedImageProc = extendedImage.getProcessor();
+		logger.debug("duplicated: "+String.valueOf(extendedImage.getWidth()) + " " + String.valueOf(extendedImage.getHeight()));
+		extendedImageProc.insert(srcImage,
+				Math.round( (box.getWidth()-width)/2 )-1,
+				Math.round( (box.getHeight()-height)/2 )-1
+				);
+		return extendedImage.getProcessor();
 	}
 	
 	/**
@@ -110,11 +123,15 @@ public class DICReconstruction {
 	 * @warning This method modifies input image
 	 * @remarks The reconstruction algorithm assumes that input image bas-reliefs are oriented horizontally 
 	 */
-	protected void rotateImage(ImageProcessor ip, double angle) {
-		ip.setInterpolationMethod(ImageProcessor.BICUBIC);
+	protected ImageProcessor rotateImage(ImageProcessor ip, double angle) {
+		ImageProcessor extendedImage = extendImage(ip, angle);
+		extendedImage.setInterpolationMethod(ImageProcessor.BICUBIC);
+		extendedImage.setBackgroundValue(0);
 		// rotate rotates in clockwise direction thus shear angle should not be negated if it has been counted in proper mathematical way
-		ip.rotate(angle);
+		extendedImage.rotate(angle);
+		return extendedImage;
 	}
+	
 	/**
 	 * Reconstruct DIC image by LID method using LID method
 	 * Make copy of original image to not change it.
@@ -176,22 +193,21 @@ public class DICReconstruction {
 	}
 	
 	/**
-	 * @remarks
-	 * Returned lengths of bounding box are rounded to up
+	 * Holds bounding box object of image that was rotated
 	 * @author baniuk
 	 *
 	 */
 	class BoundingBox {
-		private Vector<Double> x;
-		private Vector<Double> y;
-		public BoundingBox(Vector<Double> x, Vector<Double> y) {
+		private Vector<Float> x;
+		private Vector<Float> y;
+		public BoundingBox(Vector<Float> x, Vector<Float> y) {
 			this.x = x;
 			this.y = y;
 		}
 		public int getWidthInt() {return (int)(Math.round(Math.abs(Collections.max(x) - Collections.min(x))));}
 		public int getHeightInt() {return (int)(Math.round(Math.abs(Collections.max(y) - Collections.min(y))));}
-		public double getWidth() {return Collections.max(x) - Collections.min(x);}
-		public double getHeight() {return Collections.max(y) - Collections.min(y);}
+		public float getWidth() {return Math.abs(Collections.max(x) - Collections.min(x));}
+		public float getHeight() {return Math.abs(Collections.max(y) - Collections.min(y));}
 	}
 
 
