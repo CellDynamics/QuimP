@@ -58,7 +58,7 @@ public class DICReconstructionTest extends DICReconstruction {
 
 	/**
 	 * @test
-	 * Test method for {@link uk.warwick.dic.lid.DICReconstruction#uk.warwick.dic.lid.DICReconstruction.rotateImage(ImageProcessor, double)}.
+	 * Test method for {@link uk.warwick.dic.lid.DICReconstruction#rotateImage(ImageProcessor, double)}.
 	 * Saves rotated image to /tmp/testrotateImage.tif. 
 	 * @post
 	 * Rotated image should have bas-reliefs oriented horizontally
@@ -164,7 +164,7 @@ public class DICReconstructionTest extends DICReconstruction {
 	}
 	
  	/**
-	 * @ test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ij.ImagePlus, double, double)}.
+	 * @ test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ImagePlus, double, double)}.
 	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
 	 * @pre
 	 * Input image is square

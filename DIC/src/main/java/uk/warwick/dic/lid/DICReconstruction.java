@@ -91,7 +91,7 @@ public class DICReconstruction {
 	 * 
 	 * @param srcImage
 	 * @param angle
-	 * @retval 
+	 * @retval ImageProcessor
 	 * @return
 	 */
 	protected ImageProcessor extendImage(ImageProcessor srcImage, double angle) {
