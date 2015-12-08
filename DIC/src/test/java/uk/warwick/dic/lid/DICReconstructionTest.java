@@ -68,6 +68,80 @@ public class DICReconstructionTest extends DICReconstruction {
 		IJ.saveAsTiff(image, "/tmp/testrotateImage.tif");
 		logger.info("Check /tmp/testrotateImage.tif to see results of rotation");
 	}
+	
+	/**
+	 * @test Test of getBoundingBox for square image and angle 0 deg
+	 */
+	@Test
+	public void testgetBoundingBox_0s() {
+		int width = 512;
+		int height = 512;
+		double angle = 0;
+		
+		BoundingBox ret = getBoundingBox(width,height, angle);
+		assertEquals(512, ret.getWidthInt());
+		assertEquals(512, ret.getHeightInt());
+	}
+	
+	/**
+	 * @test Test of getBoundingBox for square image and angle 90 deg
+	 */
+	@Test
+	public void testgetBoundingBox_90s() {
+		int width = 512;
+		int height = 512;
+		double angle = 90;
+		
+		BoundingBox ret = getBoundingBox(width,height, angle);
+		assertEquals(512, ret.getWidthInt());
+		assertEquals(512, ret.getHeightInt());
+	}
+
+	/**
+	 * @test Test of getBoundingBox for non square image and angle 90 deg
+	 */
+	@Test
+	public void testgetBoundingBox_90ns() {
+		int width = 512;
+		int height = 1024;
+		double angle = 90;
+		
+		BoundingBox ret = getBoundingBox(width,height, angle);
+		assertEquals(1024, ret.getWidthInt());
+		assertEquals(512, ret.getHeightInt());
+	}
+	
+	/**
+	 * @test Test of getBoundingBox for square image and angle 45 deg
+	 */
+	@Test
+	public void testgetBoundingBox_45s() {
+		int width = 512;
+		int height = 512;
+		double angle = 45;
+		
+		BoundingBox ret = getBoundingBox(width,height, angle);
+		assertEquals(724, ret.getWidthInt());
+		assertEquals(724, ret.getHeightInt());
+	}
+	
+	/**
+	 * @test Test of getBoundingBox for square image and angle 30 deg
+	 * @post
+	 * Expected values were read from IJ after rotating test image. ImageJ add +1 for every length
+	 * (tested by rotating by 45 deg) thus expected values are smaller by 1 comparing to IJ
+	 */
+	@Test
+	public void testgetBoundingBox_30s() {
+		int width = 512;
+		int height = 512;
+		double angle = 30;
+		
+		BoundingBox ret = getBoundingBox(width,height, angle);
+		assertEquals(699, ret.getWidthInt());
+		assertEquals(699, ret.getHeightInt());
+	}
+	
 	/**
 	 * @ test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ij.ImagePlus, double, double)}.
 	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
@@ -77,6 +151,7 @@ public class DICReconstructionTest extends DICReconstruction {
 	 * Output image should be properly reconstructed
 	 */
 	@Test
+	@Ignore
 	public void testreconstructionDicLid() {
 		ImagePlus ret;
 		ret = reconstructionDicLid(image,0.04,135f);
