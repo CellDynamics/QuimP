@@ -50,15 +50,14 @@ public class DICReconstruction {
 		float I;
 		int linindex = 0;
 		// make copy of original image to not modify it
-		ImagePlus srcImagelCopy = srcImage.duplicate(); // make a copy of original
-		ExtraImageProcessor srcImagelProcessor = new ExtraImageProcessor(srcImagelCopy.getProcessor());
+		ExtraImageProcessor srcImageCopyProcessor = new ExtraImageProcessor(srcImage.duplicate().getProcessor());
 		// Rotating image
-		srcImagelProcessor.rotate(angle,true);
+		srcImageCopyProcessor.rotate(angle,true);
 		
 		// get new sizes for optimisation purposes
-		int newWidth = srcImagelProcessor.getIP().getWidth();
-		int newHeight = srcImagelProcessor.getIP().getHeight();
-		ImageProcessor srcImageProcessorUnwrapped = srcImagelProcessor.getIP();
+		int newWidth = srcImageCopyProcessor.getIP().getWidth();
+		int newHeight = srcImageCopyProcessor.getIP().getHeight();
+		ImageProcessor srcImageProcessorUnwrapped = srcImageCopyProcessor.getIP();
 		// -------------------- end of optimisation
 		
 		// create array for storing results - 32bit float as imageprocessor		
