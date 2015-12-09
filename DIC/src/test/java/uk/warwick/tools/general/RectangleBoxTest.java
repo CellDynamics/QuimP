@@ -41,6 +41,7 @@ public class RectangleBoxTest {
 		double angle = 0;
 		
 		RectangleBox r = new RectangleBox(width,height);
+		r.rotateBoundingBox(angle);
 		
 		assertEquals(512, r.getWidth(),0);
 		assertEquals(512, r.getHeight(),0);
@@ -80,9 +81,6 @@ public class RectangleBoxTest {
 	
 	/**
 	 * @test Test of RectangleBox for square image and angle 45 deg
-	 * @post
-	 * Expected values were read from IJ after rotating test image. ImageJ add +1 for every length
-	 * (tested by rotating by 45 deg) thus expected values are smaller by 1 comparing to IJ
 	 */
 	@Test
 	public void testRectangleBox_45s() {
@@ -99,9 +97,6 @@ public class RectangleBoxTest {
 	
 	/**
 	 * @test Test of RectangleBox for square image and angle 30 deg
-	 * @post
-	 * Expected values were read from IJ after rotating test image. ImageJ add +1 for every length
-	 * (tested by rotating by 45 deg) thus expected values are smaller by 1 comparing to IJ
 	 */
 	@Test
 	public void testRectangleBox_30s() {

@@ -56,115 +56,9 @@ public class DICReconstructionTest extends DICReconstruction {
 		// Empty constructor - nothing to do here
 	}
 
-	/**
-	 * @test
-	 * Test method for {@link uk.warwick.dic.lid.DICReconstruction#rotateImage(ImageProcessor, double)}.
-	 * Saves rotated image to /tmp/testrotateImage.tif. 
-	 * @post
-	 * Rotated image should have bas-reliefs oriented horizontally
-	 */
-	@Test
-	public void testrotateImage() {
-		ImageProcessor ret = rotateImage(image.getProcessor(), 135);
-		IJ.saveAsTiff(new ImagePlus("",ret), "/tmp/testrotateImage.tif");
-		logger.info("Check /tmp/testrotateImage.tif to see results of rotation");
-	}
-	
-	/**
-	 * @test Test of getBoundingBox for square image and angle 0 deg
-	 */
-	@Test
-	public void testgetBoundingBox_0s() {
-		int width = 512;
-		int height = 512;
-		double angle = 0;
-		
-		BoundingBox ret = getBoundingBox(width,height, angle);
-		assertEquals(512, ret.getWidthInt());
-		assertEquals(512, ret.getHeightInt());
-	}
-	
-	/**
-	 * @test Test of getBoundingBox for square image and angle 90 deg
-	 */
-	@Test
-	public void testgetBoundingBox_90s() {
-		int width = 512;
-		int height = 512;
-		double angle = 90;
-		
-		BoundingBox ret = getBoundingBox(width,height, angle);
-		assertEquals(512, ret.getWidthInt());
-		assertEquals(512, ret.getHeightInt());
-	}
-
-	/**
-	 * @test Test of getBoundingBox for non square image and angle 90 deg
-	 */
-	@Test
-	public void testgetBoundingBox_90ns() {
-		int width = 512;
-		int height = 1024;
-		double angle = 90;
-		
-		BoundingBox ret = getBoundingBox(width,height, angle);
-		assertEquals(1024, ret.getWidthInt());
-		assertEquals(512, ret.getHeightInt());
-	}
-	
-	/**
-	 * @test Test of getBoundingBox for square image and angle 45 deg
-	 */
-	@Test
-	public void testgetBoundingBox_45s() {
-		int width = 512;
-		int height = 512;
-		double angle = 45;
-		
-		BoundingBox ret = getBoundingBox(width,height, angle);
-		assertEquals(724, ret.getWidthInt());
-		assertEquals(724, ret.getHeightInt());
-	}
-	
-	/**
-	 * @test Test of getBoundingBox for square image and angle 30 deg
-	 * @post
-	 * Expected values were read from IJ after rotating test image. ImageJ add +1 for every length
-	 * (tested by rotating by 45 deg) thus expected values are smaller by 1 comparing to IJ
-	 */
-	@Test
-	public void testgetBoundingBox_30s() {
-		int width = 512;
-		int height = 512;
-		double angle = 30;
-		
-		BoundingBox ret = getBoundingBox(width,height, angle);
-		assertEquals(699, ret.getWidthInt());
-		assertEquals(699, ret.getHeightInt());
-	}
-	
-	@Test
-	public void testextendImage_45s() {
-		double angle = 45;
-		ImageProcessor ret = extendImage(image.getProcessor(), angle);
-		assertEquals(724,ret.getWidth());
-		assertEquals(724,ret.getHeight());
-		IJ.saveAsTiff(new ImagePlus("extended",ret), "/tmp/testextendImage_45s.tif"); 
-		logger.info("Check /tmp/testextendImage_45s.tif to see results");
-	}
-	
-	@Test
-	public void testextendImage_0s() {
-		double angle = 0;
-		ImageProcessor ret = extendImage(image.getProcessor(), angle);
-		assertEquals(512,ret.getWidth());
-		assertEquals(512,ret.getHeight());
-		IJ.saveAsTiff(new ImagePlus("extended",ret), "/tmp/testextendImage_0s.tif"); 
-		logger.info("Check /tmp/testextendImage_0s.tif to see results");
-	}
-	
  	/**
-	 * @ test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ImagePlus, double, double)}.
+	 * @throws Exception 
+ 	 * @ test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ImagePlus, double, double)}.
 	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
 	 * @pre
 	 * Input image is square
@@ -172,8 +66,7 @@ public class DICReconstructionTest extends DICReconstruction {
 	 * Output image should be properly reconstructed
 	 */
 	@Test
-	@Ignore
-	public void testreconstructionDicLid() {
+	public void testreconstructionDicLid() throws Exception {
 		ImagePlus ret;
 		ret = reconstructionDicLid(image,0.04,135f);
 		IJ.saveAsTiff(ret, "/tmp/testDicReconstructionLidMatrix.tif"); 
