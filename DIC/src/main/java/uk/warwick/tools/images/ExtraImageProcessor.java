@@ -5,33 +5,56 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.warwick.tools.general.RectangleBox;
 
+/**
+ * Wrapper class implementing extra functionalities for ij.ImageProcessor
+ * This class covers ImageProcessor object and may change it or release
+ * @warning
+ * Currently this class holds reference to passed ImageProcessor object
+ * @author p.baniukiewicz
+ * @date 9 Dec 2015
+ *
+ */
 public class ExtraImageProcessor {
 		
 	private ImageProcessor ip;
 	
+	/**
+	 * Main constructor. Connect ImageProcessor reference to object
+	 * @param ip ImageProcessor object
+	 */
 	public ExtraImageProcessor(ImageProcessor ip) {
 		setImageProcessor(ip);
 	}
 	
+	/**
+	 * Default constructor. Creates empty image of sie 100, 100
+	 * @remarks
+	 * Should not be used except tests
+	 */
 	public ExtraImageProcessor() {
-		this.ip = null;
+		this.ip = new ByteProcessor(100,100);
 	}
 	
+	/**
+	 * Connects ImageProcessor to object, releasing old one.
+	 * @param ip
+	 */
 	public void setImageProcessor(ImageProcessor ip) {
 		this.ip = ip;
 	}
 	
+	/**
+	 * Returns covered ImageProcessor object.
+	 * @return ImageProcessor object
+	 */
 	public ImageProcessor getImageProcessor() {
 		return ip;
 	}
+	
 	/**
 	 * Add borders around image to prevent cropping during scaling.
-	 * 
-	 * @param srcImage
-	 * @param angle
-	 * @retval ImageProcessor
-	 * @return
-	 * @throws Exception 
+	 * @param angle Angle to be image rotated
+	 * @throws Exception When ImageProcessor passed to object is not supported
 	 */
 	protected void extendImageToRotation(double angle) throws Exception {
 		ImageProcessor ret;
@@ -62,13 +85,9 @@ public class ExtraImageProcessor {
 	
 	/**
 	 * Rotate image by specified angle keeping correct rotation direction
-	 * It is assumed that user counts angle in anti-clockwise direction and the shear angle 
-	 * must be specified in this way as well.  
-	 * @param ip ImageProcessor of image to be rotated
-	 * @param angle Shear angle counted from x axis in anti-clockwise direction
+	 * @param angle Angle of rotation in anti-clockwise direction
+	 * @param addBorders if \a true rotates with extension, \a false use standard rotation with clipping
 	 * @throws Exception 
-	 * @warning This method modifies input image
-	 * @remarks The reconstruction algorithm assumes that input image bas-reliefs are oriented horizontally 
 	 */
 	public ImageProcessor rotate(double angle, boolean addBorders) throws Exception {
 		if(addBorders)

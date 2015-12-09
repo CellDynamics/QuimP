@@ -49,12 +49,11 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	}
 
 	/**
-	 * @throws Exception 
 	 * @test
-	 * Test method for {@link uk.warwick.dic.lid.DICReconstruction#rotateImage(ImageProcessor, double)}.
-	 * Saves rotated image to /tmp/testrotateImage.tif. 
+	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#rotate(double, boolean)}.
 	 * @post
-	 * Rotated image should have bas-reliefs oriented horizontally
+	 * Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to /tmp/testrotateImage.tif. 
+	 * @throws Exception 
 	 */
 	@Test
 	public void testRotate() throws Exception {
@@ -64,6 +63,13 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 		logger.info("Check /tmp/testrotateImage.tif to see results of rotation");
 	}
 	
+	/**
+	 * @test
+	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageToRotation(double)}.
+	 * @post
+	 * Saves extended image to /tmp/testextendImage_0s.tif. 
+	 * @throws Exception 
+	 */
 	@Test
 	public void testExtendImageToRotation_0s() throws Exception {
 		double angle = 0;
@@ -76,6 +82,13 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 		logger.info("Check /tmp/testextendImage_0s.tif to see results");		
 	}
 	
+	/**
+	 * @test
+	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageToRotation(double)}.
+	 * @post
+	 * Saves extended image to /tmp/testextendImage_45s.tif. 
+	 * @throws Exception 
+	 */
 	@Test
 	public void testExtendImageToRotation_45s() throws Exception {
 		double angle = 45;

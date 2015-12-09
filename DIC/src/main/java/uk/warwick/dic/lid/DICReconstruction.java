@@ -30,6 +30,9 @@ public class DICReconstruction {
    /**
 	 * Reconstruct DIC image by LID method using LID method
 	 * Make copy of original image to not change it.
+	 * It is assumed that user counts angle in anti-clockwise direction and the shear angle 
+	 * must be specified in this way as well.
+	 * @remarks The reconstruction algorithm assumes that input image bas-reliefs are oriented horizontally 
 	 * @param srcImage DIC image to be reconstructed
 	 * @param decay Decay factor (positive) defined as exponent
 	 * @param angle Shear angle counted from x axis in anti-clockwise direction (mathematically)

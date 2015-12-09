@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import uk.warwick.dic.lid.DICReconstruction;
 
-/**Width
+/**
  * Represents rectangle bounding box
  * Bounding box is defined by four corners (in contrary to javafx.geometry.BoundingBox) that can be rotated
  * by any angle.
