@@ -23,7 +23,7 @@ public class ExtraImageProcessor {
 	 * @param ip ImageProcessor object
 	 */
 	public ExtraImageProcessor(ImageProcessor ip) {
-		setImageProcessor(ip);
+		setIP(ip);
 	}
 	
 	/**
@@ -39,7 +39,7 @@ public class ExtraImageProcessor {
 	 * Connects ImageProcessor to object, releasing old one.
 	 * @param ip
 	 */
-	public void setImageProcessor(ImageProcessor ip) {
+	public void setIP(ImageProcessor ip) {
 		this.ip = ip;
 	}
 	
@@ -47,7 +47,7 @@ public class ExtraImageProcessor {
 	 * Returns covered ImageProcessor object.
 	 * @return ImageProcessor object
 	 */
-	public ImageProcessor getImageProcessor() {
+	public ImageProcessor getIP() {
 		return ip;
 	}
 	

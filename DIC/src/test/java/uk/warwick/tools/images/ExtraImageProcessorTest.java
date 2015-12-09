@@ -34,7 +34,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	@Before
 	public void setUp() throws Exception {
 		image = IJ.openImage("src/test/java/uk/warwick/dic/lid/testObject.tif"); // opens test image
-		setImageProcessor(image.getProcessor());
+		setIP(image.getProcessor());
 	}
 
 	@After
@@ -75,7 +75,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 		double angle = 0;
 		ImageProcessor ret;
 		extendImageToRotation(angle);
-		ret = getImageProcessor();
+		ret = getIP();
 		assertEquals(513,ret.getWidth()); // size of the image
 		assertEquals(513,ret.getHeight());
 		IJ.saveAsTiff(new ImagePlus("extended",ret), "/tmp/testextendImage_0s.tif"); 
@@ -94,7 +94,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 		double angle = 45;
 		ImageProcessor ret;
 		extendImageToRotation(angle);
-		ret = getImageProcessor();
+		ret = getIP();
 		assertEquals(725,ret.getWidth()); // size of the image
 		assertEquals(725,ret.getHeight());
 		IJ.saveAsTiff(new ImagePlus("extended",ret), "/tmp/testextendImage_45s.tif"); 
