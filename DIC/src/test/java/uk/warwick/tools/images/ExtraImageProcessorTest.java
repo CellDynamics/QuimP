@@ -53,10 +53,9 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#rotate(double, boolean)}.
 	 * @post
 	 * Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to /tmp/testrotateImage.tif. 
-	 * @throws Exception 
 	 */
 	@Test
-	public void testRotate() throws Exception {
+	public void testRotate() {
 		double angle = 135;
 		ImageProcessor ret = rotate(angle,true);
 		IJ.saveAsTiff(new ImagePlus("",ret), "/tmp/testrotateImage.tif");
@@ -68,10 +67,9 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageToRotation(double)}.
 	 * @post
 	 * Saves extended image to /tmp/testextendImage_0s.tif. 
-	 * @throws Exception 
 	 */
 	@Test
-	public void testExtendImageToRotation_0s() throws Exception {
+	public void testExtendImageToRotation_0s() {
 		double angle = 0;
 		ImageProcessor ret;
 		extendImageToRotation(angle);
@@ -87,10 +85,9 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageToRotation(double)}.
 	 * @post
 	 * Saves extended image to /tmp/testextendImage_45s.tif. 
-	 * @throws Exception 
 	 */
 	@Test
-	public void testExtendImageToRotation_45s() throws Exception {
+	public void testExtendImageToRotation_45s() {
 		double angle = 45;
 		ImageProcessor ret;
 		extendImageToRotation(angle);

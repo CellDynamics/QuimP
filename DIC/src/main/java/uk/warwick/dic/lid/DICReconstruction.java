@@ -38,9 +38,8 @@ public class DICReconstruction {
 	 * @param angle Shear angle counted from x axis in anti-clockwise direction (mathematically)
 	 * @retval ImagePlus
 	 * @return Return reconstruction of \a srcImage as 8-bit image
-     * @throws Exception 
 	 */
-	public ImagePlus reconstructionDicLid(ImagePlus srcImage, double decay, double angle) throws Exception {
+	public ImagePlus reconstructionDicLid(ImagePlus srcImage, double decay, double angle) {
 		logger.debug("Input image: "+ String.valueOf(srcImage.getWidth()) + " " + 
 				String.valueOf(srcImage.getHeight()) + " " + 
 				String.valueOf(srcImage.getImageStackSize()) + " " +  
