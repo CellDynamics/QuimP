@@ -38,9 +38,8 @@ public class DICReconstruction {
 	 * @param angle Shear angle counted from x axis in anti-clockwise direction (mathematically)
 	 * @retval ImagePlus
 	 * @return Return reconstruction of \a srcImage as 8-bit image
-     * @throws Exception 
 	 */
-	public ImagePlus reconstructionDicLid(ImagePlus srcImage, double decay, double angle) throws Exception {
+	public ImagePlus reconstructionDicLid(ImagePlus srcImage, double decay, double angle) {
 		logger.debug("Input image: "+ String.valueOf(srcImage.getWidth()) + " " + 
 				String.valueOf(srcImage.getHeight()) + " " + 
 				String.valueOf(srcImage.getImageStackSize()) + " " +  
@@ -51,15 +50,14 @@ public class DICReconstruction {
 		float I;
 		int linindex = 0;
 		// make copy of original image to not modify it
-		ImagePlus srcImagelCopy = srcImage.duplicate(); // make a copy of original
-		ExtraImageProcessor srcImagelProcessor = new ExtraImageProcessor(srcImagelCopy.getProcessor());
+		ExtraImageProcessor srcImageCopyProcessor = new ExtraImageProcessor(srcImage.duplicate().getProcessor());
 		// Rotating image
-		srcImagelProcessor.rotate(angle,true);
+		srcImageCopyProcessor.rotate(angle,true);
 		
 		// get new sizes for optimisation purposes
-		int newWidth = srcImagelProcessor.getImageProcessor().getWidth();
-		int newHeight = srcImagelProcessor.getImageProcessor().getHeight();
-		ImageProcessor srcImageProcessorUnwrapped = srcImagelProcessor.getImageProcessor();
+		int newWidth = srcImageCopyProcessor.getIP().getWidth();
+		int newHeight = srcImageCopyProcessor.getIP().getHeight();
+		ImageProcessor srcImageProcessorUnwrapped = srcImageCopyProcessor.getIP();
 		// -------------------- end of optimisation
 		
 		// create array for storing results - 32bit float as imageprocessor		
@@ -73,11 +71,11 @@ public class DICReconstruction {
 				// up
 				cumsumup = 0;
 				for(u=c; u>=0; u--)
-					cumsumup += (srcImageProcessorUnwrapped.getPixel(u, r) & 0xff)*Math.exp(-decay*Math.abs(u-c));		// TODO change for get as faster version
+					cumsumup += (srcImageProcessorUnwrapped.getPixel(u, r))*Math.exp(-decay*Math.abs(u-c));		// TODO change for get as faster version
 				// down
 				cumsumdown = 0; // cumulative sum from point r to the end of column
 				for(d=c; d<srcImageProcessorUnwrapped.getWidth(); d++)
-					cumsumdown += (srcImageProcessorUnwrapped.getPixel(d,r) & 0xff)*Math.exp(-decay*Math.abs(d-c));
+					cumsumdown += (srcImageProcessorUnwrapped.getPixel(d,r))*Math.exp(-decay*Math.abs(d-c));
 				// integral
 				I = (float)cumsumup - (float)cumsumdown;
 				outputPixelArray[linindex++] = I; // linear indexing is in row-order

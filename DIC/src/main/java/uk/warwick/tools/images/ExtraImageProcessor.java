@@ -23,7 +23,7 @@ public class ExtraImageProcessor {
 	 * @param ip ImageProcessor object
 	 */
 	public ExtraImageProcessor(ImageProcessor ip) {
-		setImageProcessor(ip);
+		setIP(ip);
 	}
 	
 	/**
@@ -39,7 +39,7 @@ public class ExtraImageProcessor {
 	 * Connects ImageProcessor to object, releasing old one.
 	 * @param ip
 	 */
-	public void setImageProcessor(ImageProcessor ip) {
+	public void setIP(ImageProcessor ip) {
 		this.ip = ip;
 	}
 	
@@ -47,16 +47,15 @@ public class ExtraImageProcessor {
 	 * Returns covered ImageProcessor object.
 	 * @return ImageProcessor object
 	 */
-	public ImageProcessor getImageProcessor() {
+	public ImageProcessor getIP() {
 		return ip;
 	}
 	
 	/**
 	 * Add borders around image to prevent cropping during scaling.
 	 * @param angle Angle to be image rotated
-	 * @throws Exception When ImageProcessor passed to object is not supported
 	 */
-	protected void extendImageToRotation(double angle) throws Exception {
+	protected void extendImageToRotation(double angle) {
 		ImageProcessor ret;
 		int width = ip.getWidth(); 
 		int height = ip.getHeight(); 
@@ -66,16 +65,7 @@ public class ExtraImageProcessor {
 		int newWidth = (int)Math.round(rb.getWidth());
 		int newHeight = (int)Math.round(rb.getHeight());
 		// create new array resized
-		switch(ip.getBitDepth()) {
-		case 8:
-			ret = new ByteProcessor(newWidth, newHeight);
-			break;
-		case 32:
-			ret = new FloatProcessor(newWidth, newHeight);
-			break;		
-		default:
-			throw new Exception("Bitdepth not supported");		
-		}
+		ret = ip.createProcessor(newWidth, newHeight);
 		ret.insert(ip,
 				(int)Math.round( (newWidth - ip.getWidth())/2 ),
 				(int)Math.round( (newHeight - ip.getHeight())/2 )
@@ -87,9 +77,8 @@ public class ExtraImageProcessor {
 	 * Rotate image by specified angle keeping correct rotation direction
 	 * @param angle Angle of rotation in anti-clockwise direction
 	 * @param addBorders if \a true rotates with extension, \a false use standard rotation with clipping
-	 * @throws Exception 
 	 */
-	public ImageProcessor rotate(double angle, boolean addBorders) throws Exception {
+	public ImageProcessor rotate(double angle, boolean addBorders) {
 		if(addBorders)
 			extendImageToRotation(angle);
 		ip.rotate(angle);		

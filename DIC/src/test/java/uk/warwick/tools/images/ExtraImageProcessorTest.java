@@ -34,7 +34,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	@Before
 	public void setUp() throws Exception {
 		image = IJ.openImage("src/test/java/uk/warwick/dic/lid/testObject.tif"); // opens test image
-		setImageProcessor(image.getProcessor());
+		setIP(image.getProcessor());
 	}
 
 	@After
@@ -53,10 +53,9 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#rotate(double, boolean)}.
 	 * @post
 	 * Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to /tmp/testrotateImage.tif. 
-	 * @throws Exception 
 	 */
 	@Test
-	public void testRotate() throws Exception {
+	public void testRotate() {
 		double angle = 135;
 		ImageProcessor ret = rotate(angle,true);
 		IJ.saveAsTiff(new ImagePlus("",ret), "/tmp/testrotateImage.tif");
@@ -68,14 +67,13 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageToRotation(double)}.
 	 * @post
 	 * Saves extended image to /tmp/testextendImage_0s.tif. 
-	 * @throws Exception 
 	 */
 	@Test
-	public void testExtendImageToRotation_0s() throws Exception {
+	public void testExtendImageToRotation_0s() {
 		double angle = 0;
 		ImageProcessor ret;
 		extendImageToRotation(angle);
-		ret = getImageProcessor();
+		ret = getIP();
 		assertEquals(513,ret.getWidth()); // size of the image
 		assertEquals(513,ret.getHeight());
 		IJ.saveAsTiff(new ImagePlus("extended",ret), "/tmp/testextendImage_0s.tif"); 
@@ -87,14 +85,13 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageToRotation(double)}.
 	 * @post
 	 * Saves extended image to /tmp/testextendImage_45s.tif. 
-	 * @throws Exception 
 	 */
 	@Test
-	public void testExtendImageToRotation_45s() throws Exception {
+	public void testExtendImageToRotation_45s() {
 		double angle = 45;
 		ImageProcessor ret;
 		extendImageToRotation(angle);
-		ret = getImageProcessor();
+		ret = getIP();
 		assertEquals(725,ret.getWidth()); // size of the image
 		assertEquals(725,ret.getHeight());
 		IJ.saveAsTiff(new ImagePlus("extended",ret), "/tmp/testextendImage_45s.tif"); 
