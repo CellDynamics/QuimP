@@ -71,10 +71,12 @@ public class ExtraImageProcessor {
 		ret.setValue(ip.getBackgroundValue()); // set current fill value for extended image
 		ret.setBackgroundValue(ip.getBackgroundValue()); // set the same background as in original image
 		ret.fill(); // change color of extended image
+		ret.setInterpolationMethod(ip.getInterpolationMethod());
 		ret.insert(ip,
 				(int)Math.round( (newWidth - ip.getWidth())/2 ),
 				(int)Math.round( (newHeight - ip.getHeight())/2 )
 				); // insert original image into extended
+		ret.resetRoi();
 		this.ip = ret; // assign extended into current
 	}
 	
