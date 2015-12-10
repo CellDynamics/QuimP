@@ -64,7 +64,7 @@ public class DICReconstructionTest extends DICReconstruction {
 	 * Output image should be properly reconstructed and have correct size of input image
 	 */
 	@Test
-	public void testreconstructionDicLid() throws Exception {
+	public void testreconstructionDicLid() {
 		ImagePlus ret;
 		ret = reconstructionDicLid(image,0.04,135f);
 		assertEquals(513,ret.getWidth()); // size of the image
