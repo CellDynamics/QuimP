@@ -31,7 +31,7 @@ public class RectangleBox {
 	 * Vectors define corner in clockwise direction.
 	 * @warning Vectors are referenced only, not copied. They can
 	 * be modified during rotation
-	 * @warning Bounding box defined in this way must be centered at (0,) to avoid wrong rotation
+	 * @bug Bounding box defined in this way must be centered at (0,) to avoid wrong rotation
 	 * @param x \a x coordinates of bounding box in clockwise order
 	 * @param y \a y coordinates of bounding box in clockwise order
 	 */

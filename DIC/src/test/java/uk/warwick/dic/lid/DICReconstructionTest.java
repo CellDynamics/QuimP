@@ -3,6 +3,8 @@
  */
 package uk.warwick.dic.lid;
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -59,12 +61,14 @@ public class DICReconstructionTest extends DICReconstruction {
 	 * @pre
 	 * Input image is square
 	 * @post
-	 * Output image should be properly reconstructed
+	 * Output image should be properly reconstructed and have correct size of input image
 	 */
 	@Test
 	public void testreconstructionDicLid() throws Exception {
 		ImagePlus ret;
 		ret = reconstructionDicLid(image,0.04,135f);
+		assertEquals(513,ret.getWidth()); // size of the image
+		assertEquals(513,ret.getHeight());
 		IJ.saveAsTiff(ret, "/tmp/testDicReconstructionLidMatrix.tif"); 
 		logger.info("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
 	}

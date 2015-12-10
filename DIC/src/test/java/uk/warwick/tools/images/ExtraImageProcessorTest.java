@@ -64,7 +64,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	
 	/**
 	 * @test
-	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageToRotation(double)}.
+	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageBeforeRotation(double)}.
 	 * @post
 	 * Saves extended image to /tmp/testextendImage_0s.tif. 
 	 */
@@ -72,7 +72,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	public void testExtendImageToRotation_0s() {
 		double angle = 0;
 		ImageProcessor ret;
-		extendImageToRotation(angle);
+		extendImageBeforeRotation(angle);
 		ret = getIP();
 		assertEquals(513,ret.getWidth()); // size of the image
 		assertEquals(513,ret.getHeight());
@@ -82,7 +82,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	
 	/**
 	 * @test
-	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageToRotation(double)}.
+	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageBeforeRotation(double)}.
 	 * @post
 	 * Saves extended image to /tmp/testextendImage_45s.tif. 
 	 */
@@ -90,7 +90,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	public void testExtendImageToRotation_45s() {
 		double angle = 45;
 		ImageProcessor ret;
-		extendImageToRotation(angle);
+		extendImageBeforeRotation(angle);
 		ret = getIP();
 		assertEquals(725,ret.getWidth()); // size of the image
 		assertEquals(725,ret.getHeight());
@@ -101,9 +101,9 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	@Test
 	public void testcrop() {
 		crop(10,10,200,200);
-		assertEquals(200,getImageProcessor().getWidth()); // size of the image
-		assertEquals(200,getImageProcessor().getHeight());
-		IJ.saveAsTiff(new ImagePlus("extended",getImageProcessor()), "/tmp/testcrop.tif"); 
+		assertEquals(200,getIP().getWidth()); // size of the image
+		assertEquals(200,getIP().getHeight());
+		IJ.saveAsTiff(new ImagePlus("extended",getIP()), "/tmp/testcrop.tif"); 
 		logger.info("Check /tmp/testcrop.tif to see results");		
 	}
 

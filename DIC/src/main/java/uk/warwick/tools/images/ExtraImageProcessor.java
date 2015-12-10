@@ -55,7 +55,7 @@ public class ExtraImageProcessor {
 	 * Add borders around image to prevent cropping during scaling.
 	 * @param angle Angle to be image rotated
 	 */
-	protected void extendImageToRotation(double angle) {
+	protected void extendImageBeforeRotation(double angle) {
 		ImageProcessor ret;
 		int width = ip.getWidth(); 
 		int height = ip.getHeight(); 
@@ -80,13 +80,44 @@ public class ExtraImageProcessor {
 	 */
 	public ImageProcessor rotate(double angle, boolean addBorders) {
 		if(addBorders)
-			extendImageToRotation(angle);
+			extendImageBeforeRotation(angle);
 		ip.rotate(angle);		
 		return ip;
 	}
 	
+	/**
+	 * Crop image
+	 * 
+	 * @param luX Left upper corner \a x coordinate
+	 * @param luY Left upper corner \a y coordinate
+	 * @param width Width of clipped area
+	 * @param height Height of clipped area
+	 * @remarks Modifies current object
+	 * @retval ImageProcessor
+	 * @return Clipped image
+	 */
 	public ImageProcessor crop(int luX, int luY, int width, int height) {
 		ip.setRoi(luX, luY, width, height);
+		ip = ip.crop();
+		ip.resetRoi();
+		return ip;
+	}
+	
+	/**
+	 * Crop image
+	 * Designed to use with cooperation with extendImageBeforeRotation(double). Assumes that cropping area is centered 
+	 * in source image
+	 * @param width Width of clipped area
+	 * @param height Height of clipped area
+	 * @remarks Modifies current object
+	 * @retval ImageProcessor
+	 * @return Clipped image
+	 */
+	public ImageProcessor cropImageAfterRotation(int width, int height) {
+		ip.setRoi((int)Math.round( (ip.getWidth() - width)/2 ),
+				(int)Math.round( (ip.getHeight() - height)/2 ),
+				width,
+				height);
 		ip = ip.crop();
 		ip.resetRoi();
 		return ip;
