@@ -100,5 +100,14 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 		IJ.saveAsTiff(new ImagePlus("extended",ret), "/tmp/testextendImage_45s.tif"); 
 		logger.info("Check /tmp/testextendImage_45s.tif to see results");		
 	}
+	
+	@Test
+	public void testcrop() {
+		crop(10,10,200,200);
+		assertEquals(200,getImageProcessor().getWidth()); // size of the image
+		assertEquals(200,getImageProcessor().getHeight());
+		IJ.saveAsTiff(new ImagePlus("extended",getImageProcessor()), "/tmp/testcrop.tif"); 
+		logger.info("Check /tmp/testcrop.tif to see results");		
+	}
 
 }

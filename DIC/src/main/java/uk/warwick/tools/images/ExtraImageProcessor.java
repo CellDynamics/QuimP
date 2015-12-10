@@ -95,5 +95,12 @@ public class ExtraImageProcessor {
 		ip.rotate(angle);		
 		return ip;
 	}
+	
+	public ImageProcessor crop(int luX, int luY, int width, int height) {
+		ip.setRoi(luX, luY, width, height);
+		ip = ip.crop();
+		ip.resetRoi();
+		return ip;
+	}
 
 }

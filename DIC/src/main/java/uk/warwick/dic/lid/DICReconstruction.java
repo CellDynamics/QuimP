@@ -63,8 +63,8 @@ public class DICReconstruction {
 		// -------------------- end of optimisation
 		
 		// create array for storing results - 32bit float as imageprocessor		
-		FloatProcessor outputArrayProcessor = new FloatProcessor(newWidth, newHeight);
-		float[] outputPixelArray = (float[]) outputArrayProcessor.getPixels();
+		ExtraImageProcessor outputArrayProcessor = new ExtraImageProcessor(new FloatProcessor(newWidth, newHeight));
+		float[] outputPixelArray = (float[]) outputArrayProcessor.getImageProcessor().getPixels();
 		
 		// do for every row
 		for(r=0; r<newHeight; r++) {
@@ -84,9 +84,9 @@ public class DICReconstruction {
 			}
 		}
 		// rotate back output processor
-		outputArrayProcessor.rotate(-angle);
+		outputArrayProcessor.getImageProcessor().rotate(-angle);
 		// replace outputImage processor with result array with scaling conversion
-		ImagePlus outputImage = new ImagePlus("", outputArrayProcessor.convertToByte(true));
+		ImagePlus outputImage = new ImagePlus("", outputArrayProcessor.getImageProcessor().convertToByte(true));
 
 		return outputImage; // return reconstruction
 	}
