@@ -7,7 +7,6 @@ import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import ij.util.ArrayUtil;
 import uk.warwick.tools.images.ExtraImageProcessor;
 
 import org.apache.logging.log4j.Logger;

@@ -1,7 +1,6 @@
 package uk.warwick.tools.images;
 
 import ij.process.ByteProcessor;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.warwick.tools.general.RectangleBox;
 
