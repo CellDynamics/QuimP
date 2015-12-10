@@ -53,6 +53,7 @@ public class ExtraImageProcessor {
 	
 	/**
 	 * Add borders around image to prevent cropping during scaling.
+	 * @warning Replaces original image and may not preserve all its attributes 
 	 * @param angle Angle to be image rotated
 	 */
 	protected void extendImageBeforeRotation(double angle) {
@@ -66,11 +67,15 @@ public class ExtraImageProcessor {
 		int newHeight = (int)Math.round(rb.getHeight());
 		// create new array resized
 		ret = ip.createProcessor(newWidth, newHeight);
+		// get current background - borders will have the same value
+		ret.setValue(ip.getBackgroundValue()); // set current fill value for extended image
+		ret.setBackgroundValue(ip.getBackgroundValue()); // set the same background as in original image
+		ret.fill(); // change color of extended image
 		ret.insert(ip,
 				(int)Math.round( (newWidth - ip.getWidth())/2 ),
 				(int)Math.round( (newHeight - ip.getHeight())/2 )
-				);
-		this.ip = ret;
+				); // insert original image into extended
+		this.ip = ret; // assign extended into current
 	}
 	
 	/**

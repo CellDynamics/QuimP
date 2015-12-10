@@ -64,6 +64,22 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	
 	/**
 	 * @test
+	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#rotate(double, boolean)}. with background settings
+	 * @post
+	 * Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to /tmp/testrotateImage.tif. 
+	 * There should be 0 background
+	 */
+	@Test
+	public void testRotate_0background() {
+		double angle = 135;
+		getIP().setBackgroundValue(0);
+		ImageProcessor ret = rotate(angle,true);
+		IJ.saveAsTiff(new ImagePlus("",ret), "/tmp/testrotateImage_0background.tif");
+		logger.info("Check /tmp/testrotateImage_0background.tif to see results of rotation");
+	}
+	
+	/**
+	 * @test
 	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageBeforeRotation(double)}.
 	 * @post
 	 * Saves extended image to /tmp/testextendImage_0s.tif. 
