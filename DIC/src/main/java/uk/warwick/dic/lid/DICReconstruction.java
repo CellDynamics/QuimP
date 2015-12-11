@@ -26,7 +26,6 @@ public class DICReconstruction {
 	private double decay;
 	private double angle;
 	private double[] decays; // reference to preallocated decay data
-	private boolean isRecalculated; // shows if there is ANY data in decays and ranges (true if both arrays are not null)
 	private int maxWidth;
 	private int[][] ranges;
 	private ImageStatistics is;
@@ -37,43 +36,22 @@ public class DICReconstruction {
 		this.srcImage = srcImage;
 		this.angle = angle;
 		this.decay = decay;
-		this.isRecalculated = false;
 		is = srcImage.getProcessor().getStatistics();
-		generateRanges(); // generate ranges and initialise maxWidth field. Must be done before decays
-		recalculate(true,false); // ranges calculated above
+		// get mean value
+		logger.debug("Mean value is " + is.mean);
+		recalculate(); // ranges calculated above
 	}
 	
-	/**
-	 * Changes decay factor related to current object. Recalculates \c decays table
-	 * @warning
-	 * Should not be called from constructor as it may left \c ranges uninitialised setting \c isRecalculated to \c true in the same time 
-	 * @param decay
-	 */
-	public void setDecay(double decay) {
-		this.decay = decay;
-		// need recalculate
-		recalculate(true,false);
-	}
-	
-	/**
-	 * Changes angle related to current object. Recalculates \c ranges table
-	 * @warning
-	 * Should not be called from constructor as it may left \c decays uninitialised setting \c isRecalculated to \c true in the same time 
-	 * @param angle
-	 */
-	public void setAngle(double angle) {
-		this.angle = angle;
-		recalculate(false,true);
-	}
-	
+
 	/**
 	 * Sets new reconstruction parameters for current object
 	 * @param decay
 	 * @param angle
 	 */
 	public void setParams(double decay, double angle) {
-		setDecay(decay);
-		setAngle(angle);
+		this.angle = angle;
+		this.decay = decay;
+		recalculate();
 	}
 	
 	/**
@@ -121,17 +99,18 @@ public class DICReconstruction {
 		
 	}
 	
-	private void recalculate(boolean doDecay, boolean doRanges) {
+	/**
+	 * Recalculates tables on demand
+	 * @warning
+	 * generateRanges() must be called first as it initialises fields used by generateDecay()
+	 */
+	private void recalculate() {
 		// calculate preallocated decay data
 		// recalculate on demand (doDecay==true) or when not calculated at all (isrecalculated==false)
-		if(doDecay || isRecalculated==false)
-			decays = generateDeacy(decay, maxWidth);
-		if(doRanges || isRecalculated==false) {
-			; // calculate ranges and store in table
-			generateRanges();
-		}
-		isRecalculated = true;
+		generateRanges();
+		decays = generateDeacy(decay, maxWidth);
 	}
+	
    /**
 	 * Reconstruct DIC image by LID method using LID method
 	 * Make copy of original image to not change it.
@@ -166,8 +145,6 @@ public class DICReconstruction {
 		srcImageCopyProcessor.getIP().setInterpolationMethod(ImageProcessor.BICUBIC);
 		// Rotating image - set 0 background
 		srcImageCopyProcessor.getIP().setBackgroundValue(0.0);
-		// get mean value
-		logger.debug("Mean value is " + is.mean);
 		
 		srcImageCopyProcessor.rotate(angle,true);
 		// dereferencing for optimisation purposes
