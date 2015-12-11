@@ -53,10 +53,9 @@ public class DICReconstruction {
 		
 		double cumsumup, cumsumdown;
 		int c,u,d,r; // loop indexes
-		int linindex = 0;
+		int linindex = 0; // output table linear index
 		double minpixel, maxpixel; // minimal pixel value
 		int firstpixel, lastpixel; // first and last pixel of image in line
-		double meanofimage; // mean value of source image
 		// make copy of original image to not modify it - converting to 16bit
 		ExtraImageProcessor srcImageCopyProcessor = new ExtraImageProcessor(srcImage.getProcessor().convertToShort(false));
 		logger.debug("Type of image " + srcImageCopyProcessor.getIP().getBitDepth() + " bit");
@@ -64,7 +63,6 @@ public class DICReconstruction {
 		srcImageCopyProcessor.getIP().setInterpolationMethod(ImageProcessor.BICUBIC);
 		// get mean value
 		ImageStatistics is = srcImageCopyProcessor.getIP().getStatistics();
-		meanofimage = is.mean;
 		logger.debug("Mean value is " + is.mean);
 		// check condition for removing 0 value from image
 		srcImageCopyProcessor.getIP().resetMinAndMax();	// ensure that minmax will be recalculated (usually they are stored in class field)
@@ -91,11 +89,11 @@ public class DICReconstruction {
 		ExtraImageProcessor outputArrayProcessor = new ExtraImageProcessor(new FloatProcessor(newWidth, newHeight));
 		float[] outputPixelArray = (float[]) outputArrayProcessor.getIP().getPixels();
 		
-		// do for every row
-		logger.debug("Image size " + newWidth + " " + newHeight);
+		// do for every row - bas-relief is oriented horizontally 
 		for(r=0; r<newHeight; r++) {
-			for(firstpixel=0; firstpixel<newWidth && srcImageProcessorUnwrapped.getPixel(firstpixel,r)==0;firstpixel++);
-			for(lastpixel=newWidth-1;lastpixel>=0 && srcImageProcessorUnwrapped.getPixel(lastpixel,r)==0;lastpixel--);
+			// to not process whole line, detect where starts and ends pixels of image (reject background added during rotation)
+			for(firstpixel=0; firstpixel<newWidth && srcImageProcessorUnwrapped.get(firstpixel,r)==0;firstpixel++);
+			for(lastpixel=newWidth-1;lastpixel>=0 && srcImageProcessorUnwrapped.get(lastpixel,r)==0;lastpixel--);
 			//logger.debug("First last " + firstpixel + " " + lastpixel);
 			linindex = linindex + firstpixel;
 			// for every point apply KAM formula
@@ -103,12 +101,12 @@ public class DICReconstruction {
 				// up
 				cumsumup = 0;
 				for(u=c; u>=firstpixel; u--) {
-					cumsumup += (srcImageProcessorUnwrapped.getPixel(u, r)-shift-meanofimage)*Math.exp(-decay*Math.abs(u-c));		// TODO change for get as faster version
+					cumsumup += (srcImageProcessorUnwrapped.get(u, r)-shift-is.mean)*Math.exp(-decay*Math.abs(u-c));		// TODO change for get as faster version
 				}
 				// down
 				cumsumdown = 0; // cumulative sum from point r to the end of column
 				for(d=c; d<=lastpixel; d++) {
-					cumsumdown += (srcImageProcessorUnwrapped.getPixel(d,r)-shift-meanofimage)*Math.exp(-decay*Math.abs(d-c));
+					cumsumdown += (srcImageProcessorUnwrapped.get(d,r)-shift-is.mean)*Math.exp(-decay*Math.abs(d-c));
 				}
 				// integral
 				outputPixelArray[linindex] = (float)(cumsumup - cumsumdown); // linear indexing is in row-order
