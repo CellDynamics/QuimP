@@ -9,8 +9,6 @@ import javax.vecmath.Point3d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.warwick.dic.lid.DICReconstruction;
-
 /**
  * Represents rectangle bounding box
  * Bounding box is defined by four corners (in contrary to javafx.geometry.BoundingBox) that can be rotated
