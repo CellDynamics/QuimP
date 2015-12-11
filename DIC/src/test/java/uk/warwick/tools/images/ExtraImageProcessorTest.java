@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
 public class ExtraImageProcessorTest extends ExtraImageProcessor {
@@ -19,8 +20,12 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	private ImagePlus image;
 	private static final Logger logger = LogManager.getLogger(ExtraImageProcessorTest.class.getName());
 	
+	/**
+	 * Dummy constructor filling underlying class with unused object replaced in setUp() method
+	 */
 	public ExtraImageProcessorTest() {
-		// TODO Auto-generated constructor stub
+		super(new ByteProcessor(100,100));
+
 	}
 	
 	@BeforeClass

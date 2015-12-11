@@ -4,12 +4,10 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.WaitForUserDialog;
 
 /**
  * Test class for BOA_ plugin

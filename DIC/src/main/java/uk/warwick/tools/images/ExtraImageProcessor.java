@@ -1,6 +1,5 @@
 package uk.warwick.tools.images;
 
-import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import uk.warwick.tools.general.RectangleBox;
 
@@ -23,15 +22,6 @@ public class ExtraImageProcessor {
 	 */
 	public ExtraImageProcessor(ImageProcessor ip) {
 		setIP(ip);
-	}
-	
-	/**
-	 * Default constructor. Creates empty image of sie 100, 100
-	 * @remarks
-	 * Should not be used except tests
-	 */
-	public ExtraImageProcessor() {
-		this.ip = new ByteProcessor(100,100);
 	}
 	
 	/**
