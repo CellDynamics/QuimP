@@ -83,7 +83,6 @@ public class DICReconstruction {
 		srcImageCopyProcessor.getIP().resetMinAndMax(); logger.debug("Pixel range after shift is " + srcImageCopyProcessor.getIP().getMin() + " " + srcImageCopyProcessor.getIP().getMax());
 		// rotate image with extending it. borders have the same value as background
 		srcImageCopyProcessor.rotate(angle,true); // WARN May happen that after interpolation pixels gets 0 again ?
-		// TODO add ranges loops form reconstruction code
 		int newWidth = srcImageCopyProcessor.getIP().getWidth();
 		int newHeight = srcImageCopyProcessor.getIP().getHeight();
 		ImageProcessor srcImageProcessorUnwrapped = srcImageCopyProcessor.getIP();
