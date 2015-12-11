@@ -35,10 +35,12 @@ public class DICReconstruction {
 	 * It is assumed that user counts angle in anti-clockwise direction and the shear angle 
 	 * must be specified in this way as well.
 	 * The algorithm process only correct pixels of rotated image to prevent artifacts on edges. This
-	 * pixels are detected in less-computational way. First image is converted to 16bit and the value of \c shift is added
+	 * pixels are detected in less-computational way. First the image is converted to 16bit and the value of \c shift is added
 	 * to each pixel. In this way original image does not contain 0. Then image is rotated with 0 padding. Thus any 0 on 
 	 * rotated and prepared to reconstruction image does not belong to right pixels. 
-	 * @remarks The reconstruction algorithm assumes that input image bas-reliefs are oriented horizontally 
+	 * @remarks The reconstruction algorithm assumes that input image bas-reliefs are oriented horizontally, thus correct \c angle should be provided
+	 * @warning Used optimisation with detecting of image pixels based on their value may not be accurate when input image 
+	 * will contain saturated pixels
 	 * @param srcImage DIC image to be reconstructed
 	 * @param decay Decay factor (positive) defined as exponent
 	 * @param angle Shear angle counted from x axis in anti-clockwise direction (mathematically)
@@ -56,6 +58,7 @@ public class DICReconstruction {
 		int linindex = 0; // output table linear index
 		double minpixel, maxpixel; // minimal pixel value
 		int firstpixel, lastpixel; // first and last pixel of image in line
+		double[] decays; // reference to preallocated decay data
 		// make copy of original image to not modify it - converting to 16bit
 		ExtraImageProcessor srcImageCopyProcessor = new ExtraImageProcessor(srcImage.getProcessor().convertToShort(false));
 		logger.debug("Type of image " + srcImageCopyProcessor.getIP().getBitDepth() + " bit");
@@ -79,16 +82,17 @@ public class DICReconstruction {
 		// rotate image with extending it. borders have the same value as background
 		srcImageCopyProcessor.rotate(angle,true); // WARN May happen that after interpolation pixels gets 0 again ?
 		
-		// get new sizes for optimisation purposes
+		// dereferencing for optimisation purposes
 		int newWidth = srcImageCopyProcessor.getIP().getWidth();
 		int newHeight = srcImageCopyProcessor.getIP().getHeight();
 		ImageProcessor srcImageProcessorUnwrapped = srcImageCopyProcessor.getIP();
-		// -------------------- end of optimisation
-		
 		// create array for storing results - 32bit float as imageprocessor		
 		ExtraImageProcessor outputArrayProcessor = new ExtraImageProcessor(new FloatProcessor(newWidth, newHeight));
 		float[] outputPixelArray = (float[]) outputArrayProcessor.getIP().getPixels();
 		
+		// calculate preallocated decay data
+		decays = generateDeacy(decay, newWidth);
+				
 		// do for every row - bas-relief is oriented horizontally 
 		for(r=0; r<newHeight; r++) {
 			// to not process whole line, detect where starts and ends pixels of image (reject background added during rotation)
@@ -101,12 +105,12 @@ public class DICReconstruction {
 				// up
 				cumsumup = 0;
 				for(u=c; u>=firstpixel; u--) {
-					cumsumup += (srcImageProcessorUnwrapped.get(u, r)-shift-is.mean)*Math.exp(-decay*Math.abs(u-c));		// TODO change for get as faster version
+					cumsumup += (srcImageProcessorUnwrapped.get(u, r)-shift-is.mean)*decays[Math.abs(u-c)];
 				}
 				// down
 				cumsumdown = 0; // cumulative sum from point r to the end of column
 				for(d=c; d<=lastpixel; d++) {
-					cumsumdown += (srcImageProcessorUnwrapped.get(d,r)-shift-is.mean)*Math.exp(-decay*Math.abs(d-c));
+					cumsumdown += (srcImageProcessorUnwrapped.get(d,r)-shift-is.mean)*decays[Math.abs(d-c)];
 				}
 				// integral
 				outputPixelArray[linindex] = (float)(cumsumup - cumsumdown); // linear indexing is in row-order
@@ -117,12 +121,28 @@ public class DICReconstruction {
 		// rotate back output processor
 		outputArrayProcessor.getIP().setBackgroundValue(0.0);
 		outputArrayProcessor.getIP().rotate(-angle);
-		// crop it back
+		// crop it back to original size
 		outputArrayProcessor.cropImageAfterRotation(srcImage.getWidth(), srcImage.getHeight());
 
 		// replace outputImage processor with result array with scaling conversion
 		ImagePlus outputImage = new ImagePlus("", outputArrayProcessor.getIP().convertToByte(true));
 
 		return outputImage; // return reconstruction
+	}
+	
+	/**
+	 * Generates decay table with exponential distances between pixels multiplied by decay coefficient
+	 * @param decay The value of decay coefficient
+	 * @param length Length of table, usually equals to longest processed line on image
+	 * @retval double[]
+	 * @return Table with decays coefficients 
+	 */
+	private double[] generateDeacy(double decay, int length) {
+		double[] tab = new double[length];
+		
+		for(int i=0;i<length;i++)
+			tab[i] = Math.exp(-decay*i);
+		return tab;
+		
 	}
 }
