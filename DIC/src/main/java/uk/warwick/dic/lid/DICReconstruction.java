@@ -22,13 +22,116 @@ public class DICReconstruction {
 	private static final Logger logger = LogManager.getLogger(DICReconstruction.class.getName());
 	private final int shift = 1; // shift added to original image to eliminate 0 values
 	
+	private ImagePlus srcImage;
+	private double decay;
+	private double angle;
+	private double[] decays; // reference to preallocated decay data
+	private boolean isRecalculated; // shows if there is ANY data in decays and ranges (true if both arrays are not null)
+	private int maxWidth;
+	private int[][] ranges;
+	private ImageStatistics is;
 	/**
-	 * Empty default constructor
+	 * Default constructor
 	 */
-	public DICReconstruction() {
-
+	public DICReconstruction(ImagePlus srcImage, double decay, double angle) {
+		this.srcImage = srcImage;
+		this.angle = angle;
+		this.decay = decay;
+		this.isRecalculated = false;
+		is = srcImage.getProcessor().getStatistics();
+		generateRanges(); // generate ranges and initialise maxWidth field. Must be done before decays
+		recalculate(true,false); // ranges calculated above
 	}
 	
+	/**
+	 * Changes decay factor related to current object. Recalculates \c decays table
+	 * @warning
+	 * Should not be called from constructor as it may left \c ranges uninitialised setting \c isRecalculated to \c true in the same time 
+	 * @param decay
+	 */
+	public void setDecay(double decay) {
+		this.decay = decay;
+		// need recalculate
+		recalculate(true,false);
+	}
+	
+	/**
+	 * Changes angle related to current object. Recalculates \c ranges table
+	 * @warning
+	 * Should not be called from constructor as it may left \c decays uninitialised setting \c isRecalculated to \c true in the same time 
+	 * @param angle
+	 */
+	public void setAngle(double angle) {
+		this.angle = angle;
+		recalculate(false,true);
+	}
+	
+	/**
+	 * Sets new reconstruction parameters for current object
+	 * @param decay
+	 * @param angle
+	 */
+	public void setParams(double decay, double angle) {
+		setDecay(decay);
+		setAngle(angle);
+	}
+	
+	/**
+	 * Setup private fields.
+	 * TODO should accept slice number?
+	 */
+	private void generateRanges() {
+		double minpixel, maxpixel; // minimal pixel value
+		int r; // loop indexes
+		int firstpixel, lastpixel; // first and last pixel of image in line
+		
+		ExtraImageProcessor srcImageCopyProcessor;
+		// make copy of original image to not modify it - converting to 16bit
+		srcImageCopyProcessor = new ExtraImageProcessor(srcImage.getProcessor().convertToShort(false));
+		logger.debug("Type of image " + srcImageCopyProcessor.getIP().getBitDepth() + " bit");
+		// check condition for removing 0 value from image
+		srcImageCopyProcessor.getIP().resetMinAndMax();	// ensure that minmax will be recalculated (usually they are stored in class field)
+		minpixel = srcImageCopyProcessor.getIP().getMin();
+		maxpixel = srcImageCopyProcessor.getIP().getMax();
+		logger.debug("Pixel range is " + minpixel + " " + maxpixel);
+		if(maxpixel > 65535-shift)
+			logger.warn("Possible image clipping - check if image is saturated");
+		// set interpolation
+		srcImageCopyProcessor.getIP().setInterpolationMethod(ImageProcessor.BICUBIC);
+		// Rotating image - set 0 background
+		srcImageCopyProcessor.getIP().setBackgroundValue(0.0);
+				// scale pixels by adding 1 - we remove any 0 value from source image
+		srcImageCopyProcessor.getIP().add(shift); 	
+		srcImageCopyProcessor.getIP().resetMinAndMax(); logger.debug("Pixel range after shift is " + srcImageCopyProcessor.getIP().getMin() + " " + srcImageCopyProcessor.getIP().getMax());
+		// rotate image with extending it. borders have the same value as background
+		srcImageCopyProcessor.rotate(angle,true); // WARN May happen that after interpolation pixels gets 0 again ?
+		// TODO add ranges loops form reconstruction code
+		int newWidth = srcImageCopyProcessor.getIP().getWidth();
+		int newHeight = srcImageCopyProcessor.getIP().getHeight();
+		ImageProcessor srcImageProcessorUnwrapped = srcImageCopyProcessor.getIP();
+		maxWidth = newWidth;
+		ranges = new int[newHeight][2];
+		for(r=0; r<newHeight; r++) {
+			// to not process whole line, detect where starts and ends pixels of image (reject background added during rotation)
+			for(firstpixel=0; firstpixel<newWidth && srcImageProcessorUnwrapped.get(firstpixel,r)==0;firstpixel++);
+			for(lastpixel=newWidth-1;lastpixel>=0 && srcImageProcessorUnwrapped.get(lastpixel,r)==0;lastpixel--);
+			ranges[r][0] = firstpixel;
+			ranges[r][1] = lastpixel;
+		}
+		
+	}
+	
+	private void recalculate(boolean doDecay, boolean doRanges) {
+		// calculate preallocated decay data
+		// recalculate on demand (doDecay==true) or when not calculated at all (isrecalculated==false)
+		if(doDecay || isRecalculated==false)
+			decays = generateDeacy(decay, maxWidth);
+		if(doRanges || isRecalculated==false) {
+			; // calculate ranges and store in table
+			generateRanges();
+		}
+		isRecalculated = true;
+	}
    /**
 	 * Reconstruct DIC image by LID method using LID method
 	 * Make copy of original image to not change it.
@@ -47,7 +150,7 @@ public class DICReconstruction {
 	 * @retval ImagePlus
 	 * @return Return reconstruction of \c srcImage as 8-bit image
 	 */
-	public ImagePlus reconstructionDicLid(ImagePlus srcImage, double decay, double angle) {
+	public ImagePlus reconstructionDicLid() {
 		logger.debug("Input image: "+ String.valueOf(srcImage.getWidth()) + " " + 
 				String.valueOf(srcImage.getHeight()) + " " + 
 				String.valueOf(srcImage.getImageStackSize()) + " " +  
@@ -56,32 +159,17 @@ public class DICReconstruction {
 		double cumsumup, cumsumdown;
 		int c,u,d,r; // loop indexes
 		int linindex = 0; // output table linear index
-		double minpixel, maxpixel; // minimal pixel value
-		int firstpixel, lastpixel; // first and last pixel of image in line
-		double[] decays; // reference to preallocated decay data
+		ExtraImageProcessor srcImageCopyProcessor;
 		// make copy of original image to not modify it - converting to 16bit
-		ExtraImageProcessor srcImageCopyProcessor = new ExtraImageProcessor(srcImage.getProcessor().convertToShort(false));
-		logger.debug("Type of image " + srcImageCopyProcessor.getIP().getBitDepth() + " bit");
+		srcImageCopyProcessor = new ExtraImageProcessor(srcImage.getProcessor().convertToShort(false));
 		// set interpolation
 		srcImageCopyProcessor.getIP().setInterpolationMethod(ImageProcessor.BICUBIC);
-		// get mean value
-		ImageStatistics is = srcImageCopyProcessor.getIP().getStatistics();
-		logger.debug("Mean value is " + is.mean);
-		// check condition for removing 0 value from image
-		srcImageCopyProcessor.getIP().resetMinAndMax();	// ensure that minmax will be recalculated (usually they are stored in class field)
-		minpixel = srcImageCopyProcessor.getIP().getMin();
-		maxpixel = srcImageCopyProcessor.getIP().getMax();
-		logger.debug("Pixel range is " + minpixel + " " + maxpixel);
-		if(maxpixel > 65535-shift)
-			logger.warn("Possible image clipping - check if image is saturated");
-		// scale pixels by adding 1 - we remove any 0 value from source image
-		srcImageCopyProcessor.getIP().add(shift); 	
 		// Rotating image - set 0 background
 		srcImageCopyProcessor.getIP().setBackgroundValue(0.0);
-		srcImageCopyProcessor.getIP().resetMinAndMax(); logger.debug("Pixel range after shift is " + srcImageCopyProcessor.getIP().getMin() + " " + srcImageCopyProcessor.getIP().getMax());
-		// rotate image with extending it. borders have the same value as background
-		srcImageCopyProcessor.rotate(angle,true); // WARN May happen that after interpolation pixels gets 0 again ?
+		// get mean value
+		logger.debug("Mean value is " + is.mean);
 		
+		srcImageCopyProcessor.rotate(angle,true);
 		// dereferencing for optimisation purposes
 		int newWidth = srcImageCopyProcessor.getIP().getWidth();
 		int newHeight = srcImageCopyProcessor.getIP().getHeight();
@@ -90,33 +178,28 @@ public class DICReconstruction {
 		ExtraImageProcessor outputArrayProcessor = new ExtraImageProcessor(new FloatProcessor(newWidth, newHeight));
 		float[] outputPixelArray = (float[]) outputArrayProcessor.getIP().getPixels();
 		
-		// calculate preallocated decay data
-		decays = generateDeacy(decay, newWidth);
-				
 		// do for every row - bas-relief is oriented horizontally 
 		for(r=0; r<newHeight; r++) {
-			// to not process whole line, detect where starts and ends pixels of image (reject background added during rotation)
-			for(firstpixel=0; firstpixel<newWidth && srcImageProcessorUnwrapped.get(firstpixel,r)==0;firstpixel++);
-			for(lastpixel=newWidth-1;lastpixel>=0 && srcImageProcessorUnwrapped.get(lastpixel,r)==0;lastpixel--);
-			//logger.debug("First last " + firstpixel + " " + lastpixel);
-			linindex = linindex + firstpixel;
+			// ranges[r][0] - first image pixel in line r
+			// ranges[r][1] - last image pixel in line r
+			linindex = linindex + ranges[r][0];
 			// for every point apply KAM formula
-			for(c=firstpixel; c<=lastpixel; c++) {
+			for(c=ranges[r][0]; c<=ranges[r][1]; c++) {
 				// up
 				cumsumup = 0;
-				for(u=c; u>=firstpixel; u--) {
-					cumsumup += (srcImageProcessorUnwrapped.get(u, r)-shift-is.mean)*decays[Math.abs(u-c)];
+				for(u=c; u>=ranges[r][0]; u--) {
+					cumsumup += (srcImageProcessorUnwrapped.get(u, r)-is.mean)*decays[Math.abs(u-c)];
 				}
 				// down
 				cumsumdown = 0; // cumulative sum from point r to the end of column
-				for(d=c; d<=lastpixel; d++) {
-					cumsumdown += (srcImageProcessorUnwrapped.get(d,r)-shift-is.mean)*decays[Math.abs(d-c)];
+				for(d=c; d<=ranges[r][1]; d++) {
+					cumsumdown += (srcImageProcessorUnwrapped.get(d,r)-is.mean)*decays[Math.abs(d-c)];
 				}
 				// integral
 				outputPixelArray[linindex] = (float)(cumsumup - cumsumdown); // linear indexing is in row-order
 				linindex++;
 			}
-			linindex = linindex + newWidth-lastpixel-1;
+			linindex = linindex + newWidth-ranges[r][1]-1;
 		}
 		// rotate back output processor
 		outputArrayProcessor.getIP().setBackgroundValue(0.0);

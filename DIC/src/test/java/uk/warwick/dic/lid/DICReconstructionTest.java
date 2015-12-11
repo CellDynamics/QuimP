@@ -18,11 +18,11 @@ import ij.ImagePlus;
  * @author baniuk
  *
  */
-public class DICReconstructionTest extends DICReconstruction {
+public class DICReconstructionTest {
 	
 	private ImagePlus image;
 	private static final Logger logger = LogManager.getLogger(DICReconstructionTest.class.getName());
-
+	
 	/**
 	 * Load test image
 	 * @throws java.lang.Exception
@@ -46,14 +46,6 @@ public class DICReconstructionTest extends DICReconstruction {
 		image.close();
 	}
 
-	/**
-	 * @test Test method for {@link uk.warwick.dic.lid.DICReconstruction#DICReconstruction()}.
-	 */
-	@Test
-	public void testDICReconstruction() {
-		// Empty constructor - nothing to do here
-	}
-
  	/**
 	 * @throws Exception 
  	 * @ test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ImagePlus, double, double)}.
@@ -66,7 +58,8 @@ public class DICReconstructionTest extends DICReconstruction {
 	@Test
 	public void testreconstructionDicLid() {
 		ImagePlus ret;
-		ret = reconstructionDicLid(image,0.04,135f);
+		DICReconstruction dcr = new DICReconstruction(image, 0.04, 135f);
+		ret = dcr.reconstructionDicLid();
 		assertEquals(513,ret.getWidth()); // size of the image
 		assertEquals(513,ret.getHeight());
 		IJ.saveAsTiff(ret, "/tmp/testDicReconstructionLidMatrix.tif"); 
