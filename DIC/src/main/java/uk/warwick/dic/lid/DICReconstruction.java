@@ -100,14 +100,13 @@ public class DICReconstruction {
 	
 	/**
 	 * Recalculates tables on demand
-	 * @warning
-	 * generateRanges() must be called first as it initialises fields used by generateDecay()
 	 */
 	private void recalculate() {
 		// calculate preallocated decay data
 		// recalculate on demand (doDecay==true) or when not calculated at all (isrecalculated==false)
 		generateRanges();
-		decays = generateDeacy(decay, maxWidth);
+		// generateRanges() must be called first as it initializes fields used by generateDecay()
+		generateDeacy(decay, maxWidth);
 	}
 	
    /**
@@ -146,7 +145,7 @@ public class DICReconstruction {
 		srcImageCopyProcessor.getIP().setBackgroundValue(0.0);
 		
 		srcImageCopyProcessor.rotate(angle,true);
-		// dereferencing for optimisation purposes
+		// dereferencing for optimization purposes
 		int newWidth = srcImageCopyProcessor.getIP().getWidth();
 		int newHeight = srcImageCopyProcessor.getIP().getHeight();
 		ImageProcessor srcImageProcessorUnwrapped = srcImageCopyProcessor.getIP();
@@ -196,12 +195,10 @@ public class DICReconstruction {
 	 * @retval double[]
 	 * @return Table with decays coefficients 
 	 */
-	private double[] generateDeacy(double decay, int length) {
-		double[] tab = new double[length];
+	private void generateDeacy(double decay, int length) {
+		double[] decays = new double[length];
 		
 		for(int i=0;i<length;i++)
-			tab[i] = Math.exp(-decay*i);
-		return tab;
-		
+			decays[i] = Math.exp(-decay*i);
 	}
 }
