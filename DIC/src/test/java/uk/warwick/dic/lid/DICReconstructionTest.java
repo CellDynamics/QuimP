@@ -47,7 +47,6 @@ public class DICReconstructionTest {
 	}
 
  	/**
-	 * @throws Exception 
  	 * @ test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ImagePlus, double, double)}.
 	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
 	 * @pre
@@ -58,12 +57,19 @@ public class DICReconstructionTest {
 	@Test
 	public void testreconstructionDicLid() {
 		ImagePlus ret;
-		DICReconstruction dcr = new DICReconstruction(image, 0.04, 135f);
-		ret = dcr.reconstructionDicLid();
-		assertEquals(513,ret.getWidth()); // size of the image
-		assertEquals(513,ret.getHeight());
-		IJ.saveAsTiff(ret, "/tmp/testDicReconstructionLidMatrix.tif"); 
-		logger.info("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
+		DICReconstruction dcr;
+		try {
+			dcr = new DICReconstruction(image, 0.04, 135f);
+			ret = dcr.reconstructionDicLid();
+			assertEquals(513,ret.getWidth()); // size of the image
+			assertEquals(513,ret.getHeight());
+			IJ.saveAsTiff(ret, "/tmp/testDicReconstructionLidMatrix.tif"); 
+			logger.info("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
+		} catch (DicException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+
 	}
 
 }

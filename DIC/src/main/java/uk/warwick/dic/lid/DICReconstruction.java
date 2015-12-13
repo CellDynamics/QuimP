@@ -31,8 +31,9 @@ public class DICReconstruction {
 	private ImageStatistics is;
 	/**
 	 * Default constructor
+	 * @throws DicException Throws exception after generateRanges()
 	 */
-	public DICReconstruction(ImagePlus srcImage, double decay, double angle) {
+	public DICReconstruction(ImagePlus srcImage, double decay, double angle) throws DicException {
 		this.srcImage = srcImage;
 		this.angle = angle;
 		this.decay = decay;
@@ -47,8 +48,9 @@ public class DICReconstruction {
 	 * Sets new reconstruction parameters for current object
 	 * @param decay
 	 * @param angle
+	 * @throws DicException Rethrow exception after generateRanges()
 	 */
-	public void setParams(double decay, double angle) {
+	public void setParams(double decay, double angle) throws DicException {
 		this.angle = angle;
 		this.decay = decay;
 		recalculate();
@@ -57,8 +59,10 @@ public class DICReconstruction {
 	/**
 	 * Setup private fields.
 	 * TODO should accept slice number?
+	 * @throws DicException when input image is close to saturation e.g. has values of 65536-shift. This is due to applied algorithm 
+	 * of detection image pixels after rotation.
 	 */
-	private void generateRanges() {
+	private void generateRanges() throws DicException {
 		double minpixel, maxpixel; // minimal pixel value
 		int r; // loop indexes
 		int firstpixel, lastpixel; // first and last pixel of image in line
@@ -72,8 +76,10 @@ public class DICReconstruction {
 		minpixel = srcImageCopyProcessor.getIP().getMin();
 		maxpixel = srcImageCopyProcessor.getIP().getMax();
 		logger.debug("Pixel range is " + minpixel + " " + maxpixel);
-		if(maxpixel > 65535-shift)
+		if(maxpixel > 65535-shift) {
 			logger.warn("Possible image clipping - check if image is saturated");
+			throw new DicException(String.format("Possible image clipping - input image has at leas one pixel with value %d",65535-shift));
+		}
 		// set interpolation
 		srcImageCopyProcessor.getIP().setInterpolationMethod(ImageProcessor.BICUBIC);
 		// Rotating image - set 0 background
@@ -100,12 +106,12 @@ public class DICReconstruction {
 	
 	/**
 	 * Recalculates tables on demand
+	 * @throws DicException Rethrow exception after generateRanges()
 	 */
-	private void recalculate() {
+	private void recalculate() throws DicException {
 		// calculate preallocated decay data
-		// recalculate on demand (doDecay==true) or when not calculated at all (isrecalculated==false)
-		generateRanges();
 		// generateRanges() must be called first as it initializes fields used by generateDecay()
+		generateRanges();
 		generateDeacy(decay, maxWidth);
 	}
 	
