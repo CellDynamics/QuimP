@@ -15,13 +15,13 @@ import uk.warwick.dic.lid.DicException;
  * @date 14 Dec 2015 
  *
  */
-public class DICReconstructionPlugin implements PlugInFilter {
+public class DICReconstruction_ implements PlugInFilter {
 
 	private DICReconstruction dic;
 	private ImagePlus imp;
 	private ImageProcessor ip;
 	
-	public DICReconstructionPlugin() {
+	public DICReconstruction_() {
 		// TODO Auto-generated constructor stub
 	}
 

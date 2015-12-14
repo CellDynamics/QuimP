@@ -56,7 +56,7 @@ task generatePluginConfig() {
 
 // executed for every subproject separately
 subprojects {
-/*	project(':DIC') {
+/*	project(':DIC_') {
 		dependencies {
 	    	
 		}
