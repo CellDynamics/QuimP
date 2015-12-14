@@ -61,6 +61,7 @@ subprojects {
 	    	
 		}
 	}*/
+
 	task getVersion {
 		description 'Read version file from every project and create external properties with these values'
     	ext.version_from_file = new File("$projectDir/src/version").getText().replaceAll("\\s","")
@@ -68,8 +69,7 @@ subprojects {
     // build jar file with correct names
 	tasks.withType(Jar) {
 		version = "$getVersion.version_from_file"
-		if(classifier!='RELEASE')
-			classifier = 'SNAPSHOT'
+		classifier = 'SNAPSHOT'
 		baseName = "$project.name"
 		println "$project.name "+"$version "+"$classifier"
 	}
@@ -79,8 +79,22 @@ subprojects {
 		classifier = 'RELEASE'
     	baseName = "$project.name"
     	println "$project.name "+"$version "+"$classifier"
+    	manifest {
+        attributes("Implementation-Title": "$project.name",
+                   "Implementation-Version": version)
+    	}
     	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     	with jar
-}
+	}
+	
+	artifacts {
+    	archives ReleaseJar
+	}
+	
+	task doRelease(type: Copy, dependsOn: ReleaseJar) {
+    from 'build/libs/'
+    into "${rootDir}/Releases"
+	} 
+	
 }
 
