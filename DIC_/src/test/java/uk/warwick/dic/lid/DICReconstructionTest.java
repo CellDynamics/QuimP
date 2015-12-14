@@ -70,7 +70,7 @@ public class DICReconstructionTest {
 			assertEquals(513,outputImage.getWidth()); // size of the image
 			assertEquals(513,outputImage.getHeight());
 			IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix.tif"); 
-			logger.info("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
+			logger.trace("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
 		} catch (DicException e) {
 			logger.error(e);
 		}
@@ -94,7 +94,7 @@ public class DICReconstructionTest {
 			assertEquals(513,outputImage.getWidth()); // size of the image
 			assertEquals(513,outputImage.getHeight());
 			IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_sat.tif"); 
-			logger.info("Check /tmp/testDicReconstructionLidMatrix_sat.tif to see results");
+			logger.trace("Check /tmp/testDicReconstructionLidMatrix_sat.tif to see results");
 		} catch (DicException e) {
 			logger.error(e);
 			throw e;
