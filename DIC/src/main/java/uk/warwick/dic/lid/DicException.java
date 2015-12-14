@@ -7,6 +7,7 @@ package uk.warwick.dic.lid;
  * @author p.baniukiewicz
  *
  */
+@SuppressWarnings("serial")
 public class DicException extends Exception {
 
 	/**

@@ -59,14 +59,17 @@ public class DICReconstructionTest {
 	 */
 	@Test
 	public void testreconstructionDicLid() {
-		ImagePlus ret;
+		ImageProcessor ret;
 		DICReconstruction dcr;
 		try {
 			dcr = new DICReconstruction(image, 0.04, 135f);
+			// replace outputImage processor with result array with scaling conversion
 			ret = dcr.reconstructionDicLid();
-			assertEquals(513,ret.getWidth()); // size of the image
-			assertEquals(513,ret.getHeight());
-			IJ.saveAsTiff(ret, "/tmp/testDicReconstructionLidMatrix.tif"); 
+			ImagePlus outputImage = new ImagePlus("", ret);
+			
+			assertEquals(513,outputImage.getWidth()); // size of the image
+			assertEquals(513,outputImage.getHeight());
+			IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix.tif"); 
 			logger.info("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
 		} catch (DicException e) {
 			logger.error(e);
@@ -76,7 +79,7 @@ public class DICReconstructionTest {
 	
 	@Test(expected=DicException.class)
 	public void testreconstructionDicLid_saturated() throws DicException {
-		ImagePlus ret;
+		ImageProcessor ret;
 		DICReconstruction dcr;
 		ImageConverter.setDoScaling(true);
 		ImageConverter image16 = new ImageConverter(image);
@@ -87,10 +90,11 @@ public class DICReconstructionTest {
 		try {
 			dcr = new DICReconstruction(image, 0.04, 135f);
 			ret = dcr.reconstructionDicLid();
-			assertEquals(513,ret.getWidth()); // size of the image
-			assertEquals(513,ret.getHeight());
-			IJ.saveAsTiff(ret, "/tmp/testDicReconstructionLidMatrix.tif"); 
-			logger.info("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
+			ImagePlus outputImage = new ImagePlus("", ret);
+			assertEquals(513,outputImage.getWidth()); // size of the image
+			assertEquals(513,outputImage.getHeight());
+			IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_sat.tif"); 
+			logger.info("Check /tmp/testDicReconstructionLidMatrix_sat.tif to see results");
 		} catch (DicException e) {
 			logger.error(e);
 			throw e;

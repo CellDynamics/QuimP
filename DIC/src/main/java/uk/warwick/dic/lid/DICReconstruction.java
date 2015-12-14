@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 /**
  * Implementation of Kam algorithm with use of matrix approach
+ * TODO description of algorithm and internal dependencies
  * @author baniuk
  *
  */
@@ -22,27 +23,36 @@ public class DICReconstruction {
 	private static final Logger logger = LogManager.getLogger(DICReconstruction.class.getName());
 	private final int shift = 1; // shift added to original image to eliminate 0 values
 	
-	private ImagePlus srcImage;
+	private ImageProcessor srcIp;
 	private double decay;
 	private double angle;
 	private double[] decays; // reference to preallocated decay data
 	private int maxWidth;
-	private int[][] ranges;
+	private int[][] ranges; // [r][0] - x of first pixel of line r of image, [r][1] - x of last pixel of image of line r 
 	private ImageStatistics is;
+	private ExtraImageProcessor srcImageCopyProcessor;
+	
 	/**
-	 * Default constructor
+	 * Default constructor that accepts ImagePlus
 	 * @throws DicException Throws exception after generateRanges()
 	 */
 	public DICReconstruction(ImagePlus srcImage, double decay, double angle) throws DicException {
-		this.srcImage = srcImage;
+		this(srcImage.getProcessor(), decay, angle);
+	}
+	
+	/**
+	 * Default constructor that accepts ImageProcessor
+	 * @throws DicException Throws exception after generateRanges()
+	 */
+	public DICReconstruction(ImageProcessor ip, double decay, double angle) throws DicException {
 		this.angle = angle;
 		this.decay = decay;
-		is = srcImage.getProcessor().getStatistics();
+		this.is = ip.getStatistics();
+		this.srcIp = ip;
 		// get mean value
 		logger.debug("Mean value is " + is.mean);
 		recalculate(); // ranges calculated above
 	}
-	
 
 	/**
 	 * Sets new reconstruction parameters for current object
@@ -61,15 +71,17 @@ public class DICReconstruction {
 	 * TODO should accept slice number?
 	 * @throws DicException when input image is close to saturation e.g. has values of 65536-shift. This is due to applied algorithm 
 	 * of detection image pixels after rotation.
+	 * @return \c maxWidth (private field) and \c ranges (private field). \c maxWidth holds width of image after rotation, \c ranges holds 
+	 * first and last \a x position of image line (first and last pixel of image on background after rotation), \c srcImageCopyProcessor
+	 * is rotated and shifted
 	 */
-	private void generateRanges() throws DicException {
+	private void setup() throws DicException {
 		double minpixel, maxpixel; // minimal pixel value
 		int r; // loop indexes
 		int firstpixel, lastpixel; // first and last pixel of image in line
 		
-		ExtraImageProcessor srcImageCopyProcessor;
 		// make copy of original image to not modify it - converting to 16bit
-		srcImageCopyProcessor = new ExtraImageProcessor(srcImage.getProcessor().convertToShort(false));
+		srcImageCopyProcessor = new ExtraImageProcessor(srcIp.convertToShort(false));
 		logger.debug("Type of image " + srcImageCopyProcessor.getIP().getBitDepth() + " bit");
 		// check condition for removing 0 value from image
 		srcImageCopyProcessor.getIP().resetMinAndMax();	// ensure that minmax will be recalculated (usually they are stored in class field)
@@ -111,7 +123,7 @@ public class DICReconstruction {
 	private void recalculate() throws DicException {
 		// calculate preallocated decay data
 		// generateRanges() must be called first as it initializes fields used by generateDecay()
-		generateRanges();
+		setup();
 		generateDeacy(decay, maxWidth);
 	}
 	
@@ -133,24 +145,21 @@ public class DICReconstruction {
 	 * @retval ImagePlus
 	 * @return Return reconstruction of \c srcImage as 8-bit image
 	 */
-	public ImagePlus reconstructionDicLid() {
-		logger.debug("Input image: "+ String.valueOf(srcImage.getWidth()) + " " + 
-				String.valueOf(srcImage.getHeight()) + " " + 
-				String.valueOf(srcImage.getImageStackSize()) + " " +  
-				String.valueOf(srcImage.getBitDepth()));
+	public ImageProcessor reconstructionDicLid() {
+		logger.debug("Input image: "+ String.valueOf(srcIp.getWidth()) + " " + 
+				String.valueOf(srcIp.getHeight()) + " " + 
+				String.valueOf(srcIp.getBitDepth()));
 		
 		double cumsumup, cumsumdown;
 		int c,u,d,r; // loop indexes
 		int linindex = 0; // output table linear index
-		ExtraImageProcessor srcImageCopyProcessor;
-		// make copy of original image to not modify it - converting to 16bit
-		srcImageCopyProcessor = new ExtraImageProcessor(srcImage.getProcessor().convertToShort(false));
+		// srcImageProcessor is here rotated and shifted by generateRanges
 		// set interpolation
 		srcImageCopyProcessor.getIP().setInterpolationMethod(ImageProcessor.BICUBIC);
 		// Rotating image - set 0 background
 		srcImageCopyProcessor.getIP().setBackgroundValue(0.0);
 		
-		srcImageCopyProcessor.rotate(angle,true);
+//		srcImageCopyProcessor.rotate(angle,true);
 		// dereferencing for optimization purposes
 		int newWidth = srcImageCopyProcessor.getIP().getWidth();
 		int newHeight = srcImageCopyProcessor.getIP().getHeight();
@@ -169,12 +178,12 @@ public class DICReconstruction {
 				// up
 				cumsumup = 0;
 				for(u=c; u>=ranges[r][0]; u--) {
-					cumsumup += (srcImageProcessorUnwrapped.get(u, r)-is.mean)*decays[Math.abs(u-c)];
+					cumsumup += (srcImageProcessorUnwrapped.get(u, r)-shift-is.mean)*decays[Math.abs(u-c)];
 				}
 				// down
 				cumsumdown = 0; // cumulative sum from point r to the end of column
 				for(d=c; d<=ranges[r][1]; d++) {
-					cumsumdown += (srcImageProcessorUnwrapped.get(d,r)-is.mean)*decays[Math.abs(d-c)];
+					cumsumdown += (srcImageProcessorUnwrapped.get(d,r)-shift-is.mean)*decays[Math.abs(d-c)];
 				}
 				// integral
 				outputPixelArray[linindex] = (float)(cumsumup - cumsumdown); // linear indexing is in row-order
@@ -186,20 +195,16 @@ public class DICReconstruction {
 		outputArrayProcessor.getIP().setBackgroundValue(0.0);
 		outputArrayProcessor.getIP().rotate(-angle);
 		// crop it back to original size
-		outputArrayProcessor.cropImageAfterRotation(srcImage.getWidth(), srcImage.getHeight());
+		outputArrayProcessor.cropImageAfterRotation(srcIp.getWidth(), srcIp.getHeight());
 
-		// replace outputImage processor with result array with scaling conversion
-		ImagePlus outputImage = new ImagePlus("", outputArrayProcessor.getIP().convertToByte(true));
-
-		return outputImage; // return reconstruction
+		return outputArrayProcessor.getIP().convertToByte(true); // return reconstruction
 	}
 	
 	/**
 	 * Generates decay table with exponential distances between pixels multiplied by decay coefficient
 	 * @param decay The value of decay coefficient
 	 * @param length Length of table, usually equals to longest processed line on image
-	 * @retval double[]
-	 * @return Table with decays coefficients 
+	 * @return Table with decays coefficients (private field)
 	 */
 	private void generateDeacy(double decay, int length) {
 		decays = new double[length];
