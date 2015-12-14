@@ -25,8 +25,8 @@ allprojects {
 	    // The production code uses the SLF4J logging API at compile time
 	    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.4.1'
   		compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.4.1'
-	    compile 'net.imagej:ij:1.50d'
-	    compile 'javax.vecmath:vecmath:1.5.2'
+  		compile 'net.imagej:ij:1.50d'
+  		compile 'javax.vecmath:vecmath:1.5.2'
 
 	    // Declare the dependency for your favourite test framework you want to use in your tests.
 	    // TestNG is also supported by the Gradle Test task. Just change the
@@ -43,7 +43,7 @@ def purpose = 'SNAPSHOT'
 // generate plugins.config script for QuimP
 // This task will run always, no dependency is required
 task generatePluginConfig() {
-	description 'Cretes plugins.config file with current version. This file is required by IJ to configure plugin'
+	description 'Creates plugins.config file with current version. This file is required by IJ to configure plugin'
 	// can't be (task: Copy) as it was not run in config stage but only after explicit call
 	String version_from_file = new File("${rootDir}/QuimP_plugin/src/version").getText().replaceAll("\\s","")
 	copy {
@@ -54,8 +54,14 @@ task generatePluginConfig() {
 	println '[INFO] Creating QuimP plugins.config file'
 }
 
-// executed for every subproject separatelly
+// executed for every subproject separately
 subprojects {
+/*	project(':DIC') {
+		dependencies {
+	    	
+		}
+	}*/
+
 	task getVersion {
 		description 'Read version file from every project and create external properties with these values'
     	ext.version_from_file = new File("$projectDir/src/version").getText().replaceAll("\\s","")
@@ -67,5 +73,28 @@ subprojects {
 		baseName = "$project.name"
 		println "$project.name "+"$version "+"$classifier"
 	}
+	
+	task ReleaseJar(type: Jar) {
+		version = "$getVersion.version_from_file"
+		classifier = 'RELEASE'
+    	baseName = "$project.name"
+    	println "$project.name "+"$version "+"$classifier"
+    	manifest {
+        attributes("Implementation-Title": "$project.name",
+                   "Implementation-Version": version)
+    	}
+    	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    	with jar
+	}
+	
+	artifacts {
+    	archives ReleaseJar
+	}
+	
+	task doRelease(type: Copy, dependsOn: ReleaseJar) {
+    from 'build/libs/'
+    into "${rootDir}/Releases"
+	} 
+	
 }
 
