@@ -89,7 +89,7 @@ public class DICReconstruction {
 		maxpixel = srcImageCopyProcessor.getIP().getMax();
 		logger.debug("Pixel range is " + minpixel + " " + maxpixel);
 		if(maxpixel > 65535-shift) {
-			logger.warn("Possible image clipping - check if image is saturated");
+			logger.error("Possible image clipping - check if image is saturated");
 			throw new DicException(String.format("Possible image clipping - input image has at leas one pixel with value %d",65535-shift));
 		}
 		// set interpolation

@@ -1,5 +1,8 @@
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.plugin.filter.PlugInFilter;
@@ -17,6 +20,7 @@ import uk.warwick.dic.lid.DicException;
  */
 public class DICReconstruction_ implements PlugInFilter {
 
+	private static final Logger logger = LogManager.getLogger(DICReconstruction_.class.getName());
 	private DICReconstruction dic;
 	private ImagePlus imp;
 	
@@ -42,8 +46,7 @@ public class DICReconstruction_ implements PlugInFilter {
 			ret = dic.reconstructionDicLid();
 			ip.setPixels(ret.getPixels());
 		} catch (DicException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 		finally {
 			imp.updateAndDraw();

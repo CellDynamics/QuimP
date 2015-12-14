@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Piotr Baniukiewicz--><!--7.12.2015-->
+<Configuration status="WARN">
+	<Appenders>
+		<Console target="SYSTEM_OUT" name="Console_out">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"></PatternLayout>
+			<ThresholdFilter level="warn" onMatch="deny" onMismatch="ACCEPT"/>
+		</Console>
+		<Console target="SYSTEM_ERR" name="Console_err">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"></PatternLayout>
+			<ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="debug">
+			<AppenderRef ref="Console_err"></AppenderRef>
+			<AppenderRef ref="Console_out"></AppenderRef>
+		</Root>
+	</Loggers>
+</Configuration>
