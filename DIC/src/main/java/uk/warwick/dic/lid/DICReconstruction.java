@@ -202,7 +202,7 @@ public class DICReconstruction {
 	 * @return Table with decays coefficients 
 	 */
 	private void generateDeacy(double decay, int length) {
-		double[] decays = new double[length];
+		decays = new double[length];
 		
 		for(int i=0;i<length;i++)
 			decays[i] = Math.exp(-decay*i);

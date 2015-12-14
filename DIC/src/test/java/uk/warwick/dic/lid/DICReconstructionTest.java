@@ -9,10 +9,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ImageConverter;
+import ij.process.ImageProcessor;
 
 /**
  * @author baniuk
@@ -47,7 +50,7 @@ public class DICReconstructionTest {
 	}
 
  	/**
- 	 * @ test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ImagePlus, double, double)}.
+ 	 * @test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ImagePlus, double, double)}.
 	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
 	 * @pre
 	 * Input image is square
@@ -67,7 +70,30 @@ public class DICReconstructionTest {
 			logger.info("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
 		} catch (DicException e) {
 			logger.error(e);
-			e.printStackTrace();
+		}
+
+	}
+	
+	@Test(expected=DicException.class)
+	public void testreconstructionDicLid_saturated() throws DicException {
+		ImagePlus ret;
+		DICReconstruction dcr;
+		ImageConverter.setDoScaling(true);
+		ImageConverter image16 = new ImageConverter(image);
+		image16.convertToGray16();
+		
+		image.getProcessor().putPixel(100, 100, 65535);
+		
+		try {
+			dcr = new DICReconstruction(image, 0.04, 135f);
+			ret = dcr.reconstructionDicLid();
+			assertEquals(513,ret.getWidth()); // size of the image
+			assertEquals(513,ret.getHeight());
+			IJ.saveAsTiff(ret, "/tmp/testDicReconstructionLidMatrix.tif"); 
+			logger.info("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
+		} catch (DicException e) {
+			logger.error(e);
+			throw e;
 		}
 
 	}
