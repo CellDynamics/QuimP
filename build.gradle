@@ -92,9 +92,16 @@ subprojects {
 	}
 	
 	task doRelease(type: Copy, dependsOn: ReleaseJar) {
-    from 'build/libs/'
-    into "${rootDir}/Releases"
+    	from 'build/libs/'
+    	into "${rootDir}/Releases"
 	} 
 	
+	// run separatelly to make copy of dependencies used in project
+	task doSnapshot(type: Copy) {
+    	// into "build/lib"
+    	from configurations.runtime
+    	into "$buildDir/dependencies/"
+    	
+	}
 }
 

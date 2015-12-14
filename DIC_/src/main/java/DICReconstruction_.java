@@ -19,7 +19,6 @@ public class DICReconstruction_ implements PlugInFilter {
 
 	private DICReconstruction dic;
 	private ImagePlus imp;
-	private ImageProcessor ip;
 	
 	public DICReconstruction_() {
 		// TODO Auto-generated constructor stub
@@ -40,8 +39,8 @@ public class DICReconstruction_ implements PlugInFilter {
 		ImageProcessor ret;
 		try {
 			dic = new DICReconstruction(ip, 0.04, 135);
-//			ret = dic.reconstructionDicLid();
-			ip = new ByteProcessor(imp.getWidth(), imp.getHeight());
+			ret = dic.reconstructionDicLid();
+			ip.setPixels(ret.getPixels());
 		} catch (DicException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
