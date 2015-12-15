@@ -50,7 +50,7 @@ public class DICReconstructionTest {
 	}
 
  	/**
- 	 * @test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid(ImagePlus, double, double)}.
+ 	 * @test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid()}.
 	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
 	 * @pre
 	 * Input image is square
@@ -77,6 +77,14 @@ public class DICReconstructionTest {
 
 	}
 	
+ 	/**
+ 	 * @test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid()}.
+	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
+	 * @pre
+	 * Input image is square and saturated
+	 * @post
+	 * Throws exception DicException because of saturated image
+	 */
 	@Test(expected=DicException.class)
 	public void testreconstructionDicLid_saturated() throws DicException {
 		ImageProcessor ret;

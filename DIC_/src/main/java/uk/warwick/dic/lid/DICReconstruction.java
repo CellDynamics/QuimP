@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
  * Implementation of Kam algorithm with use of matrix approach
  * TODO description of algorithm and internal dependencies
  * @author baniuk
+ * @date 10 Dec 2015
  *
  */
 public class DICReconstruction {
@@ -71,8 +72,11 @@ public class DICReconstruction {
 	 * TODO should accept slice number?
 	 * @throws DicException when input image is close to saturation e.g. has values of 65536-shift. This is due to applied algorithm 
 	 * of detection image pixels after rotation.
-	 * @return \c maxWidth (private field) and \c ranges (private field). \c maxWidth holds width of image after rotation, \c ranges holds 
-	 * first and last \a x position of image line (first and last pixel of image on background after rotation), \c srcImageCopyProcessor
+	 * @return As modification of private class fields:
+	 * \li \c maxWidth (private field)
+	 * \li \c ranges (private field)
+	 * \li \c maxWidth holds width of image after rotation,
+	 * \li \c ranges table that holds first and last \a x position of image line (first and last pixel of image on background after rotation), \c srcImageCopyProcessor
 	 * is rotated and shifted
 	 */
 	private void setup() throws DicException {
@@ -139,10 +143,7 @@ public class DICReconstruction {
 	 * @remarks The reconstruction algorithm assumes that input image bas-reliefs are oriented horizontally, thus correct \c angle should be provided
 	 * @warning Used optimisation with detecting of image pixels based on their value may not be accurate when input image 
 	 * will contain saturated pixels
-	 * @param srcImage DIC image to be reconstructed
-	 * @param decay Decay factor (positive) defined as exponent
-	 * @param angle Shear angle counted from x axis in anti-clockwise direction (mathematically)
-	 * @retval ImagePlus
+	 * @retval ImageProcessor
 	 * @return Return reconstruction of \c srcImage as 8-bit image
 	 */
 	public ImageProcessor reconstructionDicLid() {

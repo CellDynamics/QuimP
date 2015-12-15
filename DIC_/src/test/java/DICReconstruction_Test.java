@@ -24,6 +24,10 @@ public class DICReconstruction_Test {
 	public void tearDown() throws Exception {
 	}
 
+	/**
+	 * @test Test of GUI builder for DICReconstruction_
+	 * @post Shows GUI and expect correct inputs (numbers) and OK
+	 */
 	@Test
 	public void testBuildGUI() {
 		DICReconstruction_ dic = new DICReconstruction_();
