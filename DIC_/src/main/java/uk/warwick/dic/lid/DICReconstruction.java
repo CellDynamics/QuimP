@@ -30,11 +30,13 @@ public class DICReconstruction {
 	private double[] decays; // reference to preallocated decay data
 	private int maxWidth;
 	private int[][] ranges; // [r][0] - x of first pixel of line r of image, [r][1] - x of last pixel of image of line r 
-	private ImageStatistics is;
 	private ExtraImageProcessor srcImageCopyProcessor;
+	private boolean isRotated; // true if srcImageCopyProcessor has been rotated already
+	private ImageStatistics is;
 	
 	/**
 	 * Default constructor that accepts ImagePlus
+	 * It does not support stacks.
 	 * @throws DicException Throws exception after generateRanges()
 	 */
 	public DICReconstruction(ImagePlus srcImage, double decay, double angle) throws DicException {
@@ -48,11 +50,9 @@ public class DICReconstruction {
 	public DICReconstruction(ImageProcessor ip, double decay, double angle) throws DicException {
 		this.angle = angle;
 		this.decay = decay;
-		this.is = ip.getStatistics();
-		this.srcIp = ip;
-		// get mean value
-		logger.debug("Mean value is " + is.mean);
-		recalculate(); // ranges calculated above
+		this.isRotated = false;
+		setIp(ip);
+		recalculate(); 
 	}
 
 	/**
@@ -67,6 +67,21 @@ public class DICReconstruction {
 		recalculate();
 	}
 	
+	public void setIp(ImageProcessor ip) {
+		this.srcIp = ip;
+		// make copy of original image to not modify it - converting to 16bit
+		this.srcImageCopyProcessor = new ExtraImageProcessor(srcIp.convertToShort(false));
+		srcImageCopyProcessor.getIP().resetMinAndMax();	// ensure that minmax will be recalculated (usually they are stored in class field)
+		logger.debug("Type of image " + srcImageCopyProcessor.getIP().getBitDepth() + " bit");
+		// set interpolation
+		srcImageCopyProcessor.getIP().setInterpolationMethod(ImageProcessor.BICUBIC);
+		// Rotating image - set 0 background
+		srcImageCopyProcessor.getIP().setBackgroundValue(0.0);
+		// getting mean value
+		is = srcImageCopyProcessor.getIP().getStatistics(); logger.debug("Mean value is " + is.mean);
+		this.isRotated = false; // new Processor not rotated yet
+	}
+	
 	/**
 	 * Setup private fields.
 	 * TODO should accept slice number?
@@ -79,16 +94,12 @@ public class DICReconstruction {
 	 * \li \c ranges table that holds first and last \a x position of image line (first and last pixel of image on background after rotation), \c srcImageCopyProcessor
 	 * is rotated and shifted
 	 */
-	private void setup() throws DicException {
+	private void getRanges() throws DicException {
 		double minpixel, maxpixel; // minimal pixel value
 		int r; // loop indexes
 		int firstpixel, lastpixel; // first and last pixel of image in line
-		
-		// make copy of original image to not modify it - converting to 16bit
-		srcImageCopyProcessor = new ExtraImageProcessor(srcIp.convertToShort(false));
-		logger.debug("Type of image " + srcImageCopyProcessor.getIP().getBitDepth() + " bit");
+			
 		// check condition for removing 0 value from image
-		srcImageCopyProcessor.getIP().resetMinAndMax();	// ensure that minmax will be recalculated (usually they are stored in class field)
 		minpixel = srcImageCopyProcessor.getIP().getMin();
 		maxpixel = srcImageCopyProcessor.getIP().getMax();
 		logger.debug("Pixel range is " + minpixel + " " + maxpixel);
@@ -96,15 +107,12 @@ public class DICReconstruction {
 			logger.error("Possible image clipping - check if image is saturated");
 			throw new DicException(String.format("Possible image clipping - input image has at leas one pixel with value %d",65535-shift));
 		}
-		// set interpolation
-		srcImageCopyProcessor.getIP().setInterpolationMethod(ImageProcessor.BICUBIC);
-		// Rotating image - set 0 background
-		srcImageCopyProcessor.getIP().setBackgroundValue(0.0);
-				// scale pixels by adding 1 - we remove any 0 value from source image
+		// scale pixels by adding 1 - we remove any 0 value from source image
 		srcImageCopyProcessor.getIP().add(shift); 	
 		srcImageCopyProcessor.getIP().resetMinAndMax(); logger.debug("Pixel range after shift is " + srcImageCopyProcessor.getIP().getMin() + " " + srcImageCopyProcessor.getIP().getMax());
 		// rotate image with extending it. borders have the same value as background
 		srcImageCopyProcessor.rotate(angle,true); // WARN May happen that after interpolation pixels gets 0 again ?
+		isRotated = true; // current object was rotated
 		int newWidth = srcImageCopyProcessor.getIP().getWidth();
 		int newHeight = srcImageCopyProcessor.getIP().getHeight();
 		ImageProcessor srcImageProcessorUnwrapped = srcImageCopyProcessor.getIP();
@@ -117,7 +125,6 @@ public class DICReconstruction {
 			ranges[r][0] = firstpixel;
 			ranges[r][1] = lastpixel;
 		}
-		
 	}
 	
 	/**
@@ -127,7 +134,7 @@ public class DICReconstruction {
 	private void recalculate() throws DicException {
 		// calculate preallocated decay data
 		// generateRanges() must be called first as it initializes fields used by generateDecay()
-		setup();
+		getRanges();
 		generateDeacy(decay, maxWidth);
 	}
 	
@@ -154,13 +161,10 @@ public class DICReconstruction {
 		double cumsumup, cumsumdown;
 		int c,u,d,r; // loop indexes
 		int linindex = 0; // output table linear index
-		// srcImageProcessor is here rotated and shifted by generateRanges
-		// set interpolation
-		srcImageCopyProcessor.getIP().setInterpolationMethod(ImageProcessor.BICUBIC);
-		// Rotating image - set 0 background
-		srcImageCopyProcessor.getIP().setBackgroundValue(0.0);
-		
-//		srcImageCopyProcessor.rotate(angle,true);
+		if(!isRotated)	{ // rotate if not rotated in getRanges - e.g. we have new Processor added by setIp	
+			srcImageCopyProcessor.getIP().add(shift); // we use different IP so shift must be added
+			srcImageCopyProcessor.rotate(angle,true);
+		}
 		// dereferencing for optimization purposes
 		int newWidth = srcImageCopyProcessor.getIP().getWidth();
 		int newHeight = srcImageCopyProcessor.getIP().getHeight();

@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 
@@ -24,6 +25,7 @@ import ij.process.ImageProcessor;
 public class DICReconstructionTest {
 	
 	private ImagePlus image;
+	private ImagePlus stack;
 	private static final Logger logger = LogManager.getLogger(DICReconstructionTest.class.getName());
 	
 	/**
@@ -33,6 +35,7 @@ public class DICReconstructionTest {
 	@Before
 	public void setUp() throws Exception {
 		image = IJ.openImage("src/test/java/uk/warwick/dic/lid/testObject.tif"); // opens test image
+		stack = IJ.openImage("src/test/java/uk/warwick/dic/lid/testObject_4slices.tif"); // opens test image
 	}
 
 	/**
@@ -41,12 +44,15 @@ public class DICReconstructionTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		if(image.changes) { // check if source was modified
+		if(image.changes || stack.changes) { // check if source was modified
 			image.changes = false; // set flag to false to prevent save dialog
+			stack.changes = false;
 			image.close(); // close image
+			stack.close();
 			throw new Exception("Image has been modified"); // throw exception if source image was modified
 		}
 		image.close();
+		stack.close();
 	}
 
  	/**
@@ -79,7 +85,7 @@ public class DICReconstructionTest {
 	
  	/**
  	 * @test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid()}.
-	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
+	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix_sat.tif
 	 * @pre
 	 * Input image is square and saturated
 	 * @post
@@ -106,6 +112,39 @@ public class DICReconstructionTest {
 		} catch (DicException e) {
 			logger.error(e);
 			throw e;
+		}
+
+	}
+	
+	/**
+ 	 * @test Test method for {@link uk.warwick.dic.lid.DICReconstruction#setIp(ImageProcessor)}.
+	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix_Stack.tif
+	 * @pre
+	 * Input stack is square
+	 * @post
+	 * Reconstructed stack
+	 */
+	@Test()
+	public void testreconstructionDicLid_stack() {
+		ImageProcessor ret;
+		DICReconstruction dcr;
+		try {
+			dcr = new DICReconstruction(stack, 0.04, 135f);
+			ImageStack is = stack.getStack();
+			for(int s=1;s<=is.getSize();s++) {
+				dcr.setIp(is.getProcessor(s));
+				ret = dcr.reconstructionDicLid();
+				is.setPixels(ret.getPixels(),s);
+			}
+			
+			ImagePlus outputImage = new ImagePlus("", is);
+			
+			assertEquals(513,outputImage.getWidth()); // size of the image
+			assertEquals(513,outputImage.getHeight());
+			IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_stack.tif"); 
+			logger.trace("Check /tmp/testDicReconstructionLidMatrix_stack.tif to see results");
+		} catch (DicException e) {
+			logger.error(e);
 		}
 
 	}

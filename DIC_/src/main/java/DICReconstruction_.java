@@ -3,6 +3,7 @@ import org.apache.logging.log4j.Logger;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.gui.GenericDialog;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
@@ -49,9 +50,18 @@ public class DICReconstruction_ implements PlugInFilter {
 		if(!showDialog())
 			return;	// if user clicked Cancel or data were not valid
 		try {
-			dic = new DICReconstruction(ip, decay, angle);
-			ret = dic.reconstructionDicLid();
-			ip.setPixels(ret.getPixels()); // DICReconstruction works with duplicates. Copy resulting array to current image
+			dic = new DICReconstruction(imp, decay, angle);
+			if(imp.getNSlices()==1)	{// use  - if there is no stack we can avoid additional rotation here
+				ret = dic.reconstructionDicLid();
+				ip.setPixels(ret.getPixels()); // DICReconstruction works with duplicates. Copy resulting array to current image
+			} else {
+				ImageStack stack = imp.getStack();
+				for(int s=1;s<=stack.getSize();s++) {
+					dic.setIp(stack.getProcessor(s));
+					ret = dic.reconstructionDicLid();
+					stack.setPixels(ret.getPixels(),s);
+				}
+			}
 		} catch (DicException e) { // exception can be thrown (theoretically) if input image is 16-bit and saturated
 			logger.error(e);
 		}
