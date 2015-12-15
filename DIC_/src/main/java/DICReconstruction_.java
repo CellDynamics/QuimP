@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.GenericDialog;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
@@ -23,17 +24,10 @@ public class DICReconstruction_ implements PlugInFilter {
 	private static final Logger logger = LogManager.getLogger(DICReconstruction_.class.getName());
 	private DICReconstruction dic;
 	private ImagePlus imp;
+	private GenericDialog gd;
 	
-	public DICReconstruction_() {
-		// TODO Auto-generated constructor stub
-	}
-
 	@Override
 	public int setup(String arg, ImagePlus imp) {
-		if (arg.equals("about")) {
-			showAbout();
-			return DONE;
-		}
 		this.imp = imp;
 		return DOES_8G;
 	}
@@ -41,8 +35,15 @@ public class DICReconstruction_ implements PlugInFilter {
 	@Override
 	public void run(ImageProcessor ip) {
 		ImageProcessor ret;
+		double decay;
+		double angle;
+		buildGUI();
+		if(gd.wasCanceled())
+			return;
+		angle = gd.getNextNumber();
+		decay = gd.getNextNumber();
 		try {
-			dic = new DICReconstruction(ip, 0.04, 135);
+			dic = new DICReconstruction(ip, decay, angle);
 			ret = dic.reconstructionDicLid();
 			ip.setPixels(ret.getPixels());
 		} catch (DicException e) {
@@ -54,10 +55,14 @@ public class DICReconstruction_ implements PlugInFilter {
 
 	}
 	
-	void showAbout() {
-		IJ.showMessage("About ",
-		"Line...\n"
-		);
+	public void buildGUI() {
+		gd = new GenericDialog("DIC reconstruction");
+		gd.addMessage("Reconstruction of DIC image by Line Integrals\nShear angle is measured counterclockwise");
+		gd.addNumericField("Shear angle", 45.0, 0);
+		gd.addMessage("Decay factor is usually positive and smaller than 1");
+		gd.addNumericField("Decay", 0.0, 2);
+		gd.setResizable(false);
+		gd.showDialog();
 	}
 
 }
