@@ -17,4 +17,4 @@ include 'services:webservice'
 */
 
 rootProject.name = 'QuimP'
-include 'QuimP_plugin', 'DIC'
+include 'QuimP_plugin', 'DIC_'

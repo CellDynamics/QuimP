@@ -4,6 +4,10 @@
 \date 30 Nov 2015
 \tableofcontents
 \section MainDesc Description of plugin structure
-The description below is simplified version of classes relationship documentation based JavaDoc/Doxygen documentation that can be found deeper in these files.  
+The description below is simplified version of classes relationship documentation based JavaDoc/Doxygen documentation that can be found deeper in these files.
+\section ProjectStructure Project Structure
+Gradle tasks avaiable:
+-# ReleaseJar - build fat jars for every subproject
+-# doSnapshot - copies all dependencies for subprojects into $buildDir/dependencies. These jars should be copied into Fiji.app/jars  
 - \subpage BOA "BOA Plugin"
 */

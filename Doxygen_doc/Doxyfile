@@ -99,7 +99,7 @@ WARN_LOGFILE           =
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = ../QuimP_plugin/src \
-			 ../DIC/src \
+			 ../DIC_/src \
 			 ../Doxygen_doc
                         
 INPUT_ENCODING         = UTF-8
