@@ -27,7 +27,7 @@ public class DICReconstruction_Test {
 	@Test
 	public void testBuildGUI() {
 		DICReconstruction_ dic = new DICReconstruction_();
-		dic.buildGUI();
+		assertTrue(dic.showDialog());
 	}
 
 }

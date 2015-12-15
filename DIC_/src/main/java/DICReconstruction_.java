@@ -24,7 +24,7 @@ public class DICReconstruction_ implements PlugInFilter {
 	private static final Logger logger = LogManager.getLogger(DICReconstruction_.class.getName());
 	private DICReconstruction dic;
 	private ImagePlus imp;
-	private GenericDialog gd;
+	private double angle, decay;
 	
 	@Override
 	public int setup(String arg, ImagePlus imp) {
@@ -35,13 +35,8 @@ public class DICReconstruction_ implements PlugInFilter {
 	@Override
 	public void run(ImageProcessor ip) {
 		ImageProcessor ret;
-		double decay;
-		double angle;
-		buildGUI();
-		if(gd.wasCanceled())
+		if(!showDialog())
 			return;
-		angle = gd.getNextNumber();
-		decay = gd.getNextNumber();
 		try {
 			dic = new DICReconstruction(ip, decay, angle);
 			ret = dic.reconstructionDicLid();
@@ -55,14 +50,24 @@ public class DICReconstruction_ implements PlugInFilter {
 
 	}
 	
-	public void buildGUI() {
-		gd = new GenericDialog("DIC reconstruction");
+	public boolean showDialog() {
+		GenericDialog gd = new GenericDialog("DIC reconstruction");
 		gd.addMessage("Reconstruction of DIC image by Line Integrals\nShear angle is measured counterclockwise");
 		gd.addNumericField("Shear angle", 45.0, 0);
 		gd.addMessage("Decay factor is usually positive and smaller than 1");
 		gd.addNumericField("Decay", 0.0, 2);
 		gd.setResizable(false);
 		gd.showDialog();
+		if(gd.wasCanceled())
+			return false;
+		angle = gd.getNextNumber();
+		decay = gd.getNextNumber();
+		if(gd.invalidNumber()) {
+			IJ.error("Not valid number");
+			logger.error("One of the numbers in dialog box is not valid");
+			return false;
+		}
+		return true;		
 	}
 
 }
