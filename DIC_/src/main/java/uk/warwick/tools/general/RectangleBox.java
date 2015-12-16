@@ -11,8 +11,10 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Represents rectangle bounding box
+ * 
  * Bounding box is defined by four corners (in contrary to javafx.geometry.BoundingBox) that can be rotated
  * by any angle.
+ * 
  * @author p.baniukiewicz
  * @date 09 Dec 2015
  * 
@@ -26,7 +28,9 @@ public class RectangleBox {
 	
 	/**
 	 * Creates bounding box object from \a x \a y vectors.
-	 * Vectors define corner in clockwise direction.
+	 * 
+	 * Vectors define corners in clockwise direction.
+	 * 
 	 * @warning Vectors are referenced only, not copied. They can
 	 * be modified during rotation
 	 * @bug Bounding box defined in this way must be centered at (0,) to avoid wrong rotation
@@ -41,6 +45,7 @@ public class RectangleBox {
 
 	/**
 	 * Specifies bounding box centered at (0,0)
+	 * 
 	 * @param width Width of bounding box
 	 * @param height Height of bounding box
 	 */
@@ -62,6 +67,7 @@ public class RectangleBox {
 	
 	/**
 	 * Rotates bounding box.
+	 * 
 	 * @param angle Rotation angle
 	 */
 	public void rotateBoundingBox(double angle) {
@@ -98,12 +104,14 @@ public class RectangleBox {
 	
 	/**
 	 * Gets width of bounding box as distance over \b x between outermost corners 
+	 * 
 	 * @return Width of bounding box
 	 */
 	public double getWidth() {return Math.abs(Collections.max(x) - Collections.min(x));}
 	
 	/**
-	 * Gets height of bounding box as distance over \b y between outermost corners 
+	 * Gets height of bounding box as distance over \b y between outermost corners
+	 * 
 	 * @return Height of bounding box
 	 */
 	public double getHeight() {return Math.abs(Collections.max(y) - Collections.min(y));}

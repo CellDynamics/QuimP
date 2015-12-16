@@ -5,9 +5,9 @@ import uk.warwick.tools.general.RectangleBox;
 
 /**
  * Wrapper class implementing extra functionalities for ij.ImageProcessor
- * This class covers ImageProcessor object and may change it or release
- * @warning
- * Currently this class holds reference to passed ImageProcessor object
+ 
+ * This class covers ImageProcessor object and holds its reference. This object may be changed or released.
+ *
  * @author p.baniukiewicz
  * @date 9 Dec 2015
  *
@@ -18,6 +18,7 @@ public class ExtraImageProcessor {
 	
 	/**
 	 * Main constructor. Connect ImageProcessor reference to object
+	 * 
 	 * @param ip ImageProcessor object
 	 */
 	public ExtraImageProcessor(ImageProcessor ip) {
@@ -26,7 +27,8 @@ public class ExtraImageProcessor {
 	
 	/**
 	 * Connects ImageProcessor to object, releasing old one.
-	 * @param ip
+	 * 
+	 * @param ip ImageProcessor object
 	 */
 	public void setIP(ImageProcessor ip) {
 		this.ip = ip;
@@ -42,6 +44,7 @@ public class ExtraImageProcessor {
 	
 	/**
 	 * Add borders around image to prevent cropping during scaling.
+	 * 
 	 * @warning Replaces original image and may not preserve all its attributes 
 	 * @param angle Angle to be image rotated
 	 */
@@ -71,6 +74,7 @@ public class ExtraImageProcessor {
 	
 	/**
 	 * Rotate image by specified angle keeping correct rotation direction
+	 * 
 	 * @param angle Angle of rotation in anti-clockwise direction
 	 * @param addBorders if \a true rotates with extension, \a false use standard rotation with clipping
 	 */
@@ -101,8 +105,10 @@ public class ExtraImageProcessor {
 	
 	/**
 	 * Crop image
+	 * 
 	 * Designed to use with cooperation with extendImageBeforeRotation(double). Assumes that cropping area is centered 
 	 * in source image
+	 * 
 	 * @param width Width of clipped area
 	 * @param height Height of clipped area
 	 * @remarks Modifies current object

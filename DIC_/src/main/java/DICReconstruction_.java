@@ -12,10 +12,12 @@ import uk.warwick.dic.lid.DicException;
 
 /**
  * Main implementation of ImageJ plugin
- * TODO Add conditions for images etc.
+ * 
+ * Currently supports only 8bit images and stacks.
+ * 
  * @author p.baniukiewicz
  * @date 14 Dec 2015 
- *
+ * @see DICReconstruction for algorithm details *
  */
 public class DICReconstruction_ implements PlugInFilter {
 
@@ -51,10 +53,10 @@ public class DICReconstruction_ implements PlugInFilter {
 			return;	// if user clicked Cancel or data were not valid
 		try {
 			dic = new DICReconstruction(imp, decay, angle);
-			if(imp.getNSlices()==1)	{// use  - if there is no stack we can avoid additional rotation here
+			if(imp.getNSlices()==1)	{// if there is no stack we can avoid additional rotation here (see DICReconstruction documentation)
 				ret = dic.reconstructionDicLid();
 				ip.setPixels(ret.getPixels()); // DICReconstruction works with duplicates. Copy resulting array to current image
-			} else {
+			} else { // we have stack. Process slice by slice
 				ImageStack stack = imp.getStack();
 				for(int s=1;s<=stack.getSize();s++) {
 					dic.setIp(stack.getProcessor(s));
@@ -62,7 +64,7 @@ public class DICReconstruction_ implements PlugInFilter {
 					stack.setPixels(ret.getPixels(),s);
 				}
 			}
-		} catch (DicException e) { // exception can be thrown (theoretically) if input image is 16-bit and saturated
+		} catch (DicException e) { // exception can be thrown if input image is 16-bit and saturated
 			logger.error(e);
 		}
 		finally {
