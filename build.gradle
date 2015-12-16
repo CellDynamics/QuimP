@@ -42,7 +42,7 @@ allprojects {
 }
 
 // TODO This var should be set in separate Deploy task. Will affect generatePluginConfig and jar 
-def purpose = 'SNAPSHOT'
+def purpose = 'RELEASE'
 
 // generate plugins.config script for QuimP
 // This task will run always, no dependency is required
