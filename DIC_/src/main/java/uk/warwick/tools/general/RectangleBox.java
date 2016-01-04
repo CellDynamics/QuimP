@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class RectangleBox {
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(RectangleBox.class.getName());
 	
 	private Vector<Double> x; // stores x coordinates of bounding box in clockwise order
