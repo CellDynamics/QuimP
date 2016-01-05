@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class RectangleBox {
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(RectangleBox.class.getName());
 	
 	private Vector<Double> x; // stores x coordinates of bounding box in clockwise order
@@ -31,20 +32,32 @@ public class RectangleBox {
 	 * 
 	 * Vectors define corners in clockwise direction.
 	 * 
-	 * @warning Vectors are referenced only, not copied. They can
-	 * be modified during rotation
-	 * @bug Bounding box defined in this way must be centered at (0,) to avoid wrong rotation
+	 * @warning Vectors are referenced only, not copied. They are
+	 * modified during rotation
 	 * @param x \a x coordinates of bounding box in clockwise order
 	 * @param y \a y coordinates of bounding box in clockwise order
+	 * @throws IllegalArgumentException When empty vectors are passed to constructor or input vectors have different length
 	 */
-	public RectangleBox(Vector<Double> x, Vector<Double> y) {
-		this.x = x;
-		this.y = y;
-		logger.warn("Calling this constructor one must be sure that rectangle is centered at (0,0)");
+	@SuppressWarnings("unchecked")
+	public RectangleBox(Vector<Double> x, Vector<Double> y) throws Exception {
+		this.x = (Vector<Double>) x.clone();
+		this.y = (Vector<Double>) y.clone();
+		// get average of x and y
+		if(x.isEmpty() || y.isEmpty())
+			throw new IllegalArgumentException("Input vectors are empty");
+		if(x.size() != y.size())
+			throw new IllegalArgumentException("Input vectors are not equal");
+		double centerX = getAverage(x); // centre of mass
+		double centerY = getAverage(y); // centre of mass
+		// move input points to (0,0)
+		for(int i=0;i<x.size();i++) {
+			this.x.set(i, x.get(i)-centerX);
+			this.y.set(i, y.get(i)-centerY);
+		}
 	}
 
 	/**
-	 * Specifies bounding box centered at (0,0)
+	 * Specifies bounding box centred at (0,0)
 	 * 
 	 * @param width Width of bounding box
 	 * @param height Height of bounding box
@@ -115,4 +128,17 @@ public class RectangleBox {
 	 * @return Height of bounding box
 	 */
 	public double getHeight() {return Math.abs(Collections.max(y) - Collections.min(y));}
+	
+	/**
+	 * Gets mean value of input vector
+	 * 
+	 * @param x Vector of to calculate mean
+	 * @return Mean value of \a x
+	 */
+	private double getAverage(Vector<Double> x) {
+		double sum = 0;
+		for(Double val : x)
+			sum += val;
+		return sum/x.size();		
+	}
 }

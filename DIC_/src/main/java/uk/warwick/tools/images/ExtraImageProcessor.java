@@ -8,6 +8,7 @@ import uk.warwick.tools.general.RectangleBox;
  
  * This class covers ImageProcessor object and holds its reference. This object may be changed or released.
  *
+ * @warning See extendImageBeforeRotation(double) for possible problems 
  * @author p.baniukiewicz
  * @date 9 Dec 2015
  *

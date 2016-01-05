@@ -2,6 +2,8 @@ package uk.warwick.tools.general;
 
 import static org.junit.Assert.*;
 
+import java.util.Vector;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -45,6 +47,50 @@ public class RectangleBoxTest {
 		
 		assertEquals(512, r.getWidth(),0);
 		assertEquals(512, r.getHeight(),0);
+	}
+	
+	/**
+	 * @throws Exception 
+	 * @test Test of RectangleBox for square image and angle 0 deg for input vectors
+	 */
+	@Test
+	public void testRectangleBoxVector_0s() throws Exception {
+		
+		Vector<Double> x = new Vector<Double>();
+		Vector<Double> y = new Vector<Double>();
+		
+		x.add(-10.0);x.add(10.0);x.add(10.0);x.add(-10.0);
+		y.add(10.0);y.add(10.0);y.add(-10.0);y.add(-10.0);
+		
+		double angle = 0;
+		
+		RectangleBox r = new RectangleBox(x,y);
+		r.rotateBoundingBox(angle);
+		
+		assertEquals(20, r.getWidth(),0);
+		assertEquals(20, r.getHeight(),0);
+	}
+	
+	/**
+	 * @throws Exception 
+	 * @test Test of RectangleBox for square image and angle 45 deg for input vectors
+	 */
+	@Test
+	public void testRectangleBoxVector_45s() throws Exception {
+		
+		Vector<Double> x = new Vector<Double>();
+		Vector<Double> y = new Vector<Double>();
+		
+		x.add(-10.0);x.add(10.0);x.add(10.0);x.add(-10.0);
+		y.add(10.0);y.add(10.0);y.add(-10.0);y.add(-10.0);
+		
+		double angle = 45;
+		
+		RectangleBox r = new RectangleBox(x,y);
+		r.rotateBoundingBox(angle);
+		
+		assertEquals(28, Math.round(r.getWidth()),0);
+		assertEquals(28, Math.round(r.getHeight()),0);
 	}
 	
 	/**
