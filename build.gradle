@@ -52,7 +52,7 @@ task generatePluginConfig() {
 	String version_from_file = new File("${rootDir}/QuimP_plugin/src/version").getText().replaceAll("\\s","")
 	copy {
 		from 'QuimP_plugin/Resources/main/java/uk/warwick/quimp/plugins.config'
-		into 'QuimP_plugin/src/main/java/uk/warwick/quimp'
+		into 'QuimP_plugin/src/main/resources/uk/warwick/quimp'
 		filter(ReplaceTokens, tokens: [ver: version_from_file, purpose: purpose])
 	}
 	println '[INFO] Creating QuimP plugins.config file'
