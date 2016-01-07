@@ -61,3 +61,5 @@ hs_err_pid*
 build/
 
 QuimP_plugin/src/**/plugins.config
+
+/target/

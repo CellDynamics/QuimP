@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: uk.warwick.dic.lid.DICReconstructionTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.659 sec
