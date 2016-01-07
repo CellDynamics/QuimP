@@ -62,4 +62,4 @@ build/
 
 QuimP_plugin/src/**/plugins.config
 
-/target/
+target/
