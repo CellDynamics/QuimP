@@ -1,7 +1,7 @@
-package uk.warwick.tools.images;
+package uk.ac.warwick.wsbc.tools.images;
 
 import ij.process.ImageProcessor;
-import uk.warwick.tools.general.RectangleBox;
+import uk.ac.warwick.wsbc.tools.general.RectangleBox;
 
 /**
  * Wrapper class implementing extra functionalities for ij.ImageProcessor

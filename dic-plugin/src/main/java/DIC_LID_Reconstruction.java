@@ -7,8 +7,8 @@ import ij.ImageStack;
 import ij.gui.GenericDialog;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
-import uk.warwick.dic.lid.DICReconstruction;
-import uk.warwick.dic.lid.DicException;
+import uk.ac.warwick.wsbc.dic.lid.DICReconstruction;
+import uk.ac.warwick.wsbc.dic.lid.DicException;
 
 /**
  * Main implementation of ImageJ plugin

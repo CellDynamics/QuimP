@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.warwick.dic.lid;
+package uk.ac.warwick.wsbc.dic.lid;
 
 import static org.junit.Assert.assertEquals;
 

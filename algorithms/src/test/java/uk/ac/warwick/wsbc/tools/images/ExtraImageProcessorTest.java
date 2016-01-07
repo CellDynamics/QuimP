@@ -1,4 +1,4 @@
-package uk.warwick.tools.images;
+package uk.ac.warwick.wsbc.tools.images;
 
 import static org.junit.Assert.*;
 

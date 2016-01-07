@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.warwick.dic.lid;
+package uk.ac.warwick.wsbc.dic.lid;
 
 /**
  * Basic class derived from Exception for purposes of DICReconstruction module 

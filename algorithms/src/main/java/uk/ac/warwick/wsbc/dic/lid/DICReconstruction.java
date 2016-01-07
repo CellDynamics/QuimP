@@ -1,13 +1,13 @@
 /**
  * 
  */
-package uk.warwick.dic.lid;
+package uk.ac.warwick.wsbc.dic.lid;
 
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import uk.warwick.tools.images.ExtraImageProcessor;
+import uk.ac.warwick.wsbc.tools.images.ExtraImageProcessor;
 
 import org.apache.logging.log4j.Logger;
 

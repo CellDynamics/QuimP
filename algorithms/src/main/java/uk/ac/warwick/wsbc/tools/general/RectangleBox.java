@@ -1,4 +1,4 @@
-package uk.warwick.tools.general;
+package uk.ac.warwick.wsbc.tools.general;
 
 import java.util.Collections;
 import java.util.Vector;
