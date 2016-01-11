@@ -13,7 +13,7 @@ function varargout = shapeFilteringTest(varargin)
 % mail:     p.baniukiewicz@warwick.ac.uk
 % Date:     08 Jan 2016
 %
-% Last Modified by GUIDE v2.5 11-Jan-2016 11:38:00
+% Last Modified by GUIDE v2.5 11-Jan-2016 14:05:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -55,6 +55,7 @@ set(handles.fcnMMParam,'Enable','off');
 set(handles.fcnDPParam,'Enable','off');
 set(handles.fcnHampelParam,'Enable','off');
 set(handles.fcnHampelMeanParam,'Enable','off');
+set(handles.fcnHampelMedianParam,'Enable','off');
 % Update handles structure
 guidata(hObject, handles);
 
@@ -102,9 +103,9 @@ function loadImage_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% [FileName,PathName,FilterIndex] = uigetfile('*.*');
-PathName = '/home/baniuk/Documents/Quimp-developing/quimp-user-request/';
-FileName = 'Composite-after-macro.tif';
+[FileName,PathName,FilterIndex] = uigetfile('*.*');
+% PathName = 'Resources/after-macro\';
+% FileName = 'Composite-after-macro.tif';
 handles.imageName = fullfile(PathName,FileName);
 handles.stackSize = length(imfinfo(handles.imageName));
 updateImage(handles,1);
@@ -235,6 +236,7 @@ if get(hObject,'Value')>0
     set(handles.fcnDPParam,'Enable','off');
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
+    set(handles.fcnHampelMedianParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -256,6 +258,7 @@ if get(hObject,'Value')>0
     set(handles.fcnDPParam,'Enable','off');
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
+    set(handles.fcnHampelMedianParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -276,6 +279,7 @@ if get(hObject,'Value')>0
     set(handles.fcnDPParam,'Enable','off');
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
+    set(handles.fcnHampelMedianParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -296,6 +300,7 @@ if get(hObject,'Value')>0
     set(handles.fcnDPParam,'Enable','off');
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
+    set(handles.fcnHampelMedianParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -316,6 +321,7 @@ if get(hObject,'Value')>0
     set(handles.fcnDPParam,'Enable','on');
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
+    set(handles.fcnHampelMedianParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -336,6 +342,7 @@ if get(hObject,'Value')>0
     set(handles.fcnDPParam,'Enable','off');
     set(handles.fcnHampelParam,'Enable','on');
     set(handles.fcnHampelMeanParam,'Enable','off');
+    set(handles.fcnHampelMedianParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -356,10 +363,31 @@ if get(hObject,'Value')>0
     set(handles.fcnDPParam,'Enable','off');
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','on');
+    set(handles.fcnHampelMedianParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
 
+% --- Executes on button press in fcnHampelMedian.
+function fcnHampelMedian_Callback(hObject, eventdata, handles)
+% hObject    handle to fcnHampelMedian (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of fcnHampelMedian
+if get(hObject,'Value')>0
+    params = str2num(get(handles.fcnHampelMedianParam,'String'));
+    handles.process = @(in)HampelMediansmooth(in,params);
+    set(handles.fcnMedianParam,'Enable','off');
+    set(handles.fcnMeanParam,'Enable','off');
+    set(handles.fcnMMParam,'Enable','off');
+    set(handles.fcnDPParam,'Enable','off');
+    set(handles.fcnHampelParam,'Enable','off');
+    set(handles.fcnHampelMeanParam,'Enable','off');
+    set(handles.fcnHampelMedianParam,'Enable','on');
+end
+guidata(hObject,handles);
+updateImage(handles,round(get(handles.frameSelect,'Value')));
 
 function fcnMMParam_Callback(hObject, eventdata, handles)
 % hObject    handle to fcnMMParam (see GCBO)
@@ -431,6 +459,18 @@ function fcnHampelMeanParam_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of fcnHampelMeanParam as a double
 params = str2num(get(hObject,'String'));
 handles.process = @(in)HampelMeansmooth(in,params);
+guidata(hObject,handles);
+updateImage(handles,round(get(handles.frameSelect,'Value')));
+
+function fcnHampelMedianParam_Callback(hObject, eventdata, handles)
+% hObject    handle to fcnHampelMedianParam (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of fcnHampelMedianParam as text
+%        str2double(get(hObject,'String')) returns contents of fcnHampelMedianParam as a double
+params = str2num(get(hObject,'String'));
+handles.process = @(in)HampelMediansmooth(in,params);
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
 
@@ -517,6 +557,19 @@ end
 % --- Executes during object creation, after setting all properties.
 function fcnHampelMeanParam_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to fcnHampelMeanParam (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function fcnHampelMedianParam_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to fcnHampelMedianParam (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

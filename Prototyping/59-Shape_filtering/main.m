@@ -9,7 +9,7 @@
 %% Load data
 addpath('/home/baniuk/Documents/QuimP11_MATLAB/')
 qCells = readQanalysis('Resources/after-macro');
-testFrames = [75 125 137];
+testFrames = [75 125 137 1];
 clear coords;
 for i=1:length(testFrames)
     coords{i} = qCells.outlines{testFrames(i)}(:,2:3);
@@ -282,7 +282,7 @@ grid on
 hold off
 
 %% hampel
-c = 3;
+c = 4;
 
 coord = coords{c};
 [coordf,j] = hampel(coord,25,0.8);
