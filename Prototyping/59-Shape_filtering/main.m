@@ -8,7 +8,7 @@
 % Prototype application can be found: shapeFilteringTest.m
 %% Load data
 addpath('/home/baniuk/Documents/QuimP11_MATLAB/')
-qCells = readQanalysis('/home/baniuk/Documents/Quimp-developing/quimp-user-request/Solution');
+qCells = readQanalysis('Resources/after-macro');
 testFrames = [75 125 137];
 clear coords;
 for i=1:length(testFrames)
@@ -22,7 +22,7 @@ axis square
 grid on
 %% Tools - Plot merged
 i = 1;
-im = imread('../Composite-after-macro.tif','index',testFrames(i));
+im = imread('Resources/after-macro/Composite-after-macro.tif','index',testFrames(i));
 figure;
 imagesc(im);axis equal
 hold on
@@ -215,7 +215,8 @@ axis square
 grid on
 hold on
 %% test dpsimplify
-
+% Uses Recursive Douglas-Peucker Polyline Simplification that originally
+% detects most important points on curve.
 % ix - indexes retained
 addpath('dpsimplify/')
 c = 3;
@@ -226,10 +227,10 @@ figure
 for i=1:iter
     lin = 1:length(psin);
     [~,ix] = dpsimplify(psin,1/exp(-(i)*0.1));
-    ixx = setdiff(lin,ix);
+    ixx = setdiff(lin,ix); % get those rejected points which are more interesting for us
     psout = psin(ixx',:);
     psin = psout;
-    psin = [coord(1,:); psin; coord(end,:)];
+    psin = [coord(1,:); psin; coord(end,:)]; 
     
     % plotting
     subplot(2,3,i)
@@ -243,8 +244,6 @@ for i=1:iter
     title(i)
 end
 ps = psout;
-
-
 
 
 %% smoothing between verticles (do not work)
@@ -295,7 +294,7 @@ end
 if hh(end)==0
     coordf = [coordf; coord(end,:)];
 end
-%
+% add extra smoothing after hampel (with small window)
 
 coordff = meansmooth(coordf,[3,1]);
 coordff = [coord(1,:); coordff; coord(end,:)];
