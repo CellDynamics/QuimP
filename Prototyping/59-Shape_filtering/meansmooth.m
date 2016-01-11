@@ -9,10 +9,10 @@ xcoordf = in(:,1);
 ycoordf = in(:,2);
 
 for i=1:iter
-    xcoordf = padarray(xcoordf,w,'symmetric');
-    ycoordf = padarray(ycoordf,w,'symmetric');
-    xcoordf = filter(ones(1,w)/w,1,xcoordf);
-    ycoordf = filter(ones(1,w)/w,1,ycoordf);
+    xcoordf = padarray(xcoordf,w,'circular');
+    ycoordf = padarray(ycoordf,w,'circular');
+    xcoordf = smooth(xcoordf,w);
+    ycoordf = smooth(ycoordf,w);
     xcoordf = xcoordf(w+1:length(in(:,1))+w);
     ycoordf = ycoordf(w+1:length(in(:,2))+w);
 end

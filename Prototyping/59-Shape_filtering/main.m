@@ -296,8 +296,12 @@ if hh(end)==0
 end
 % add extra smoothing after hampel (with small window)
 
-coordff = meansmooth(coordf,[3,1]);
-coordff = [coord(1,:); coordff; coord(end,:)];
+coordff = meansmooth(coordf,[5,1]);
+% last and first point are often lost but sometimes they can not be just
+% added as inserted originals. See example for first frame (c=4). It does
+% not work because in this case both points are on protrusion.
+
+% coordff = [coord(1,:); coordff; coord(end,:)];
 
 figure
 plot(coord(:,1),coord(:,2),'-bs','markersize',5);

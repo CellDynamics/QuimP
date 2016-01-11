@@ -14,7 +14,7 @@ if hh(end)==0
     coordf = [coordf; coord(end,:)];
 end
 coordff = meansmooth(coordf,[params(3),1]);
-coordff = [coord(1,:); coordff; coord(end,:)];
+% coordff = [coord(1,:); coordff; coord(end,:)];
 
 out = coordff;
 
