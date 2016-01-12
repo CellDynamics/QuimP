@@ -13,7 +13,7 @@ function varargout = shapeFilteringTest(varargin)
 % mail:     p.baniukiewicz@warwick.ac.uk
 % Date:     08 Jan 2016
 %
-% Last Modified by GUIDE v2.5 11-Jan-2016 14:05:18
+% Last Modified by GUIDE v2.5 12-Jan-2016 15:36:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -56,6 +56,7 @@ set(handles.fcnDPParam,'Enable','off');
 set(handles.fcnHampelParam,'Enable','off');
 set(handles.fcnHampelMeanParam,'Enable','off');
 set(handles.fcnHampelMedianParam,'Enable','off');
+set(handles.fcnHatParam,'Enable','off');
 % Update handles structure
 guidata(hObject, handles);
 
@@ -237,6 +238,7 @@ if get(hObject,'Value')>0
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
     set(handles.fcnHampelMedianParam,'Enable','off');
+    set(handles.fcnHatParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -259,6 +261,7 @@ if get(hObject,'Value')>0
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
     set(handles.fcnHampelMedianParam,'Enable','off');
+    set(handles.fcnHatParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -280,6 +283,7 @@ if get(hObject,'Value')>0
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
     set(handles.fcnHampelMedianParam,'Enable','off');
+    set(handles.fcnHatParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -301,6 +305,7 @@ if get(hObject,'Value')>0
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
     set(handles.fcnHampelMedianParam,'Enable','off');
+    set(handles.fcnHatParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -322,6 +327,7 @@ if get(hObject,'Value')>0
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
     set(handles.fcnHampelMedianParam,'Enable','off');
+    set(handles.fcnHatParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -343,6 +349,7 @@ if get(hObject,'Value')>0
     set(handles.fcnHampelParam,'Enable','on');
     set(handles.fcnHampelMeanParam,'Enable','off');
     set(handles.fcnHampelMedianParam,'Enable','off');
+    set(handles.fcnHatParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -364,6 +371,7 @@ if get(hObject,'Value')>0
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','on');
     set(handles.fcnHampelMedianParam,'Enable','off');
+    set(handles.fcnHatParam,'Enable','off');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -385,6 +393,30 @@ if get(hObject,'Value')>0
     set(handles.fcnHampelParam,'Enable','off');
     set(handles.fcnHampelMeanParam,'Enable','off');
     set(handles.fcnHampelMedianParam,'Enable','on');
+    set(handles.fcnHatParam,'Enable','off');
+end
+guidata(hObject,handles);
+updateImage(handles,round(get(handles.frameSelect,'Value')));
+
+
+% --- Executes on button press in fcnHat.
+function fcnHat_Callback(hObject, eventdata, handles)
+% hObject    handle to fcnHat (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of fcnHat
+if get(hObject,'Value')>0
+    params = str2num(get(handles.fcnHatParam,'String'));
+    handles.process = @(in)hatsmooth(in,params);
+    set(handles.fcnMedianParam,'Enable','off');
+    set(handles.fcnMeanParam,'Enable','off');
+    set(handles.fcnMMParam,'Enable','off');
+    set(handles.fcnDPParam,'Enable','off');
+    set(handles.fcnHampelParam,'Enable','off');
+    set(handles.fcnHampelMeanParam,'Enable','off');
+    set(handles.fcnHampelMedianParam,'Enable','off');
+    set(handles.fcnHatParam,'Enable','on');
 end
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
@@ -471,6 +503,18 @@ function fcnHampelMedianParam_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of fcnHampelMedianParam as a double
 params = str2num(get(hObject,'String'));
 handles.process = @(in)HampelMediansmooth(in,params);
+guidata(hObject,handles);
+updateImage(handles,round(get(handles.frameSelect,'Value')));
+
+function fcnHatParam_Callback(hObject, eventdata, handles)
+% hObject    handle to fcnHatParam (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of fcnHatParam as text
+%        str2double(get(hObject,'String')) returns contents of fcnHatParam as a double
+params = str2num(get(hObject,'String'));
+handles.process = @(in)hatsmooth(in,params);
 guidata(hObject,handles);
 updateImage(handles,round(get(handles.frameSelect,'Value')));
 
@@ -570,6 +614,18 @@ end
 % --- Executes during object creation, after setting all properties.
 function fcnHampelMedianParam_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to fcnHampelMedianParam (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function fcnHatParam_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to fcnHatParam (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

@@ -355,9 +355,9 @@ plot(coordm(:,1),coordm(:,2),'-rs','markersize',5);
 % calculated: Length of curve covered by hat (crown + brim) nad length of
 % curve without crown. For small survatures those lengths should be
 % similar. If they are not (ratio) vertexes from crown are removed.
-c = 1;
+c = 4;
 coord = coords{c};
-clear angle ratio indtoremove
+clear angle ratio indtoremove ar indtoremovealt
 crown = 13;
 brim = 5;
 dp = floor(crown/2)+brim;
@@ -373,10 +373,34 @@ for i=start:length(coord)+start-1
     nocrownvectors = diff(nocrownpoints);
     lennocrownvectors = sum(sqrt(sum(nocrownvectors.^2,2)));
     ratio(i-start+1) = 1-lennocrownvectors/lenallvectors;
-    if ratio(i-start+1)>0.3
-        indtoremove{i-start+1} = i-floor(crown/2):i+floor(crown/2); % detect which vertexes are in crown for passed acceptance
+    
+    % test for other criterion
+    crownpoints = allpoints(brim+1:end-brim,:);
+    ar(i-start+1) = polyarea(crownpoints(:,1),crownpoints(:,2))/polyarea(allpoints(:,1),allpoints(:,2));
+    
+end
+
+for i=1:length(ratio)
+    if(ratio(i))>0.28
+        indtoremove{i} = (i+start-1) - floor(crown/2):(i+start-1)+floor(crown/2);
+%         indtoremove{i} = (i+start-1);
     end
 end
+
+% % alternative criterion
+% [xData, yData] = prepareCurveData( [], ratio );
+% 
+% ft = fittype( 'poly1' );
+% [fitresult, gof] = fit( xData, yData,ft );
+% 
+% ratiofit = fitresult(xData);
+% for i=1:length(xData)
+%     if ratiofit(i)<ratio(i)
+% %         indtoremove{i} = (i+start-1) - floor(crown/2):(i+start-1)+floor(crown/2);
+%         indtoremove{i} = (i+start-1);
+%     end
+% end
+% figure;plot(ratio,'-bo');hold on; plot(ratiofit,'-rs');
 
 % set NaN for vertexes to remove
 for i=1:length(indtoremove)
@@ -392,6 +416,7 @@ coordp = coordp(1:length(coord),:);
 isnotnan = ~any(isnan(coordp),2);
 % and remove them
 coordpp=coordp(isnotnan,:);
+
 
 figure
 plot(coord(:,1),coord(:,2),'-bs','markersize',5);
