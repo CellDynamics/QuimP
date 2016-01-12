@@ -312,4 +312,88 @@ plot(coordff(:,1),coordff(:,2),'-go','markersize',3)
 axis square
 grid on
 hold off
+%% vector angles (test)
+c = 3;
+coord = coords{c};
+clear angle
+for i = 1:length(coord)-2
+    v1c = coord(i:i+1,:);
+    v2c = coord(i+1:i+2,:);
+    v1 = diff(v1c);
+    v2 = diff(v2c);
+    v1 = v1/sqrt(sum(v1.^2));
+    v2 = v2/sqrt(sum(v2.^2));
+    angle(i+1) = acosd(v1*v2');
+end
 
+figure
+plot(coord(:,1),coord(:,2),'-bs','markersize',5);
+figure
+plot(1:length(angle),angle,'-b');
+
+w = 23;
+dw = floor(w/2);
+anglep = padarray(angle',w,'symmetric')';
+anglep = diff(anglep);
+cs = [];
+for i = dw+1:length(angle)+dw
+    cs(i-dw) = sum(anglep(i-dw:i+dw));
+    
+end
+hold on
+plot(1:length(angle),cs,'-r');
+
+xcs = find(abs(cs)<10);
+coordm = coord;
+coordm(xcs',:)=[];
+figure
+plot(coord(:,1),coord(:,2),'-bs','markersize',5);
+hold on
+plot(coordm(:,1),coordm(:,2),'-rs','markersize',5);
+%% hat filtering
+% Hat filter slides over envelope. For every position there are two lengths
+% calculated: Length of curve covered by hat (crown + brim) nad length of
+% curve without crown. For small survatures those lengths should be
+% similar. If they are not (ratio) vertexes from crown are removed.
+c = 1;
+coord = coords{c};
+clear angle ratio indtoremove
+crown = 13;
+brim = 5;
+dp = floor(crown/2)+brim;
+coordp = padarray(coord,crown+2*brim,'circular');
+start = brim+floor(crown/2)+1;
+indtoremove = cell(1,length(start:length(coord)+start-1));
+for i=start:length(coord)+start-1
+    allpoints = coordp(i-dp:i+dp,:);
+    allvectors = diff(allpoints);
+    lenallvectors = sum(sqrt(sum(allvectors.^2,2)));
+    nocrownpoints = allpoints;
+    nocrownpoints(brim+1:end-brim,:) = [];
+    nocrownvectors = diff(nocrownpoints);
+    lennocrownvectors = sum(sqrt(sum(nocrownvectors.^2,2)));
+    ratio(i-start+1) = 1-lennocrownvectors/lenallvectors;
+    if ratio(i-start+1)>0.3
+        indtoremove{i-start+1} = i-floor(crown/2):i+floor(crown/2); % detect which vertexes are in crown for passed acceptance
+    end
+end
+
+% set NaN for vertexes to remove
+for i=1:length(indtoremove)
+   if ~isempty(indtoremove{i})
+       coordp(indtoremove{i},:) = NaN;
+   end
+end
+% delete padding (on beginig)
+coordp = coordp(crown+2*brim+1:end,:);
+% and on the end
+coordp = coordp(1:length(coord),:);
+% find positions of NaNs (vertices to remove)
+isnotnan = ~any(isnan(coordp),2);
+% and remove them
+coordpp=coordp(isnotnan,:);
+
+figure
+plot(coord(:,1),coord(:,2),'-bs','markersize',5);
+hold on
+plot(coordpp(:,1),coordpp(:,2),'-rs','markersize',5);
