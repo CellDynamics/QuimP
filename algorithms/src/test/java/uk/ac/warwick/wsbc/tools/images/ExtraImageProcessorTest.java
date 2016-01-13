@@ -55,7 +55,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 
 	/**
 	 * @test
-	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#rotate(double, boolean)}.
+	 * Test method for {@link uk.ac.warwick.wsbc.tools.images.ExtraImageProcessor#rotate(double, boolean)}.
 	 * @post
 	 * Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to /tmp/testrotateImage.tif. 
 	 */
@@ -69,7 +69,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	
 	/**
 	 * @test
-	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#rotate(double, boolean)}. with background settings
+	 * Test method for {@link uk.ac.warwick.wsbc.tools.images.ExtraImageProcessor#rotate(double, boolean)}. with background settings
 	 * @post
 	 * Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to /tmp/testrotateImage.tif. 
 	 * There should be 0 background
@@ -85,7 +85,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	
 	/**
 	 * @test
-	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageBeforeRotation(double)}.
+	 * Test method for {@link uk.ac.warwick.wsbc.tools.images.ExtraImageProcessor#extendImageBeforeRotation(double)}.
 	 * @post
 	 * Saves extended image to /tmp/testextendImage_0s.tif. 
 	 */
@@ -103,7 +103,7 @@ public class ExtraImageProcessorTest extends ExtraImageProcessor {
 	
 	/**
 	 * @test
-	 * Test method for {@link uk.warwick.tools.images.ExtraImageProcessor#extendImageBeforeRotation(double)}.
+	 * Test method for {@link uk.ac.warwick.wsbc.tools.images.ExtraImageProcessor#extendImageBeforeRotation(double)}.
 	 * @post
 	 * Saves extended image to /tmp/testextendImage_45s.tif. 
 	 */

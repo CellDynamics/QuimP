@@ -495,7 +495,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
 
       /**
-       * Set default values defined in model class {@link uk.warwick.quimp.BOAp} and update UI
+       * Set default values defined in model class {@link uk.ac.warwick.wsbc.QuimP.BOAp} and update UI
        * @see BOAp
        */
       private void setDefualts() {
@@ -505,7 +505,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       /**
        * Update spinners in BOA UI
-       * Update spinners according to values stored in machine state {@link uk.warwick.quimp.BOAp}
+       * Update spinners according to values stored in machine state {@link uk.ac.warwick.wsbc.QuimP.BOAp}
        * @see BOAp
        */
       private void updateSpinnerValues() {
@@ -648,7 +648,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       /**
        * Detect changes in checkboxes and run segmentation for current frame if necessary.
-       * Transfer parameters from changed GUI element to {@link uk.warwick.quimp.BOAp} class
+       * Transfer parameters from changed GUI element to {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
        * @param e Type of event
        */
       @Override
@@ -702,7 +702,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       /**
        * Detect changes in spinners and run segmentation for current frame if necessary.
-       * Transfer parameters from changed GUI element to {@link uk.warwick.quimp.BOAp} class
+       * Transfer parameters from changed GUI element to {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
        * @param ce Type of event
        */
       @Override
@@ -813,7 +813,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
 
       /**
-       * Turn delete mode off by setting proper value in {@link uk.warwick.quimp.BOAp}
+       * Turn delete mode off by setting proper value in {@link uk.ac.warwick.wsbc.QuimP.BOAp}
        */
       void switchOffDelete() {
          BOAp.doDelete = false;
@@ -830,7 +830,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       }
 
       /**
-       * Turn truncate mode off by setting proper value in {@link uk.warwick.quimp.BOAp}
+       * Turn truncate mode off by setting proper value in {@link uk.ac.warwick.wsbc.QuimP.BOAp}
        */
       void switchOfftruncate() {
          BOAp.doDeleteSeg = false;
@@ -3948,7 +3948,7 @@ class BOAp {
     * Most of these parameters are related to state machine of BOA.
     * There are also parameters related to internal state of Active
     * Contour algorithm. 
-    * Defaults for parameters available for user are set in {@link uk.warwick.quimp.BOAp.setDefaults()} 
+    * Defaults for parameters available for user are set in {@link uk.ac.warwick.wsbc.QuimP.BOAp.setDefaults()} 
     * @param ip	Reference to segmented image passed from IJ
     * @see setDefaults()
     */
