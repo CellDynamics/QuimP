@@ -56,7 +56,7 @@ public class DICReconstructionTest {
 	}
 
  	/**
- 	 * @test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid()}.
+ 	 * @test Test method for {@link uk.ac.warwick.wsbc.dic.lid.DICReconstruction#reconstructionDicLid()}.
 	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
 	 * @pre
 	 * Input image is square
@@ -84,7 +84,7 @@ public class DICReconstructionTest {
 	}
 	
  	/**
- 	 * @test Test method for {@link uk.warwick.dic.lid.DICReconstruction#reconstructionDicLid()}.
+ 	 * @test Test method for {@link uk.ac.warwick.wsbc.dic.lid.DICReconstruction#reconstructionDicLid()}.
 	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix_sat.tif
 	 * @pre
 	 * Input image is square and saturated
@@ -116,7 +116,7 @@ public class DICReconstructionTest {
 	}
 	
 	/**
- 	 * @test Test method for {@link uk.warwick.dic.lid.DICReconstruction#setIp(ImageProcessor)}.
+ 	 * @test Test method for {@link uk.ac.warwick.wsbc.dic.lid.DICReconstruction#setIp(ImageProcessor)}.
 	 * Saves output image at \c /tmp/testDicReconstructionLidMatrix_Stack.tif
 	 * @pre
 	 * Input stack is square
