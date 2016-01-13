@@ -5,6 +5,7 @@ function out = hatsmooth(in,params)
 crown = params(1);
 brim = params(2);
 sig = params(3);
+sm = params(4);
 
 coord = in;
 
@@ -42,4 +43,14 @@ coordp = coordp(1:length(coord),:);
 % find positions of NaNs (vertices to remove)
 isnotnan = ~any(isnan(coordp),2);
 % and remove them
-out = coordp(isnotnan,:);
+coordpp = coordp(isnotnan,:);
+
+[xDatax, yDatax] = prepareCurveData( [], coordpp(:,1) );
+[xDatay, yDatay] = prepareCurveData( [], coordpp(:,2) );
+ft = fittype( 'smoothingspline' );
+opts = fitoptions( 'Method', 'SmoothingSpline' );
+opts.SmoothingParam = sm;
+[fitresult, ~] = fit( xDatax, yDatax, ft, opts );
+out(:,1) = fitresult(xDatax);
+[fitresult, ~] = fit( xDatay, yDatay, ft, opts );
+out(:,2) = fitresult(xDatay);

@@ -355,7 +355,7 @@ plot(coordm(:,1),coordm(:,2),'-rs','markersize',5);
 % calculated: Length of curve covered by hat (crown + brim) nad length of
 % curve without crown. For small survatures those lengths should be
 % similar. If they are not (ratio) vertexes from crown are removed.
-c = 4;
+c = 3;
 coord = coords{c};
 clear angle ratio indtoremove ar indtoremovealt
 crown = 13;
@@ -383,7 +383,7 @@ end
 for i=1:length(ratio)
     if(ratio(i))>0.28
         indtoremove{i} = (i+start-1) - floor(crown/2):(i+start-1)+floor(crown/2);
-%         indtoremove{i} = (i+start-1);
+%         indtoremove{i} = (i+start-1); % crown=29;brim=7;
     end
 end
 
@@ -417,8 +417,19 @@ isnotnan = ~any(isnan(coordp),2);
 % and remove them
 coordpp=coordp(isnotnan,:);
 
+% smooth
+[xDatax, yDatax] = prepareCurveData( [], coordpp(:,1) );
+[xDatay, yDatay] = prepareCurveData( [], coordpp(:,2) );
+ft = fittype( 'smoothingspline' );
+opts = fitoptions( 'Method', 'SmoothingSpline' );
+opts.SmoothingParam = 0.1;
+[fitresult, gof] = fit( xDatax, yDatax, ft, opts );
+coordppf(:,1) = fitresult(xDatax);
+[fitresult, gof] = fit( xDatay, yDatay, ft, opts );
+coordppf(:,2) = fitresult(xDatay);
 
 figure
 plot(coord(:,1),coord(:,2),'-bs','markersize',5);
 hold on
 plot(coordpp(:,1),coordpp(:,2),'-rs','markersize',5);
+plot(coordppf(:,1),coordppf(:,2),'-k');
