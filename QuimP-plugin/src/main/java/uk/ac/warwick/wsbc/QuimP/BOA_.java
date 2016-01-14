@@ -587,7 +587,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          if (b == bDefault) {
             this.setDefualts();
             run = true;
-         } else if (b == bSeg) {
+         } else if (b == bSeg) { // main segmentation procedure starts here
             IJ.showStatus("SEGMENTING...");
             bSeg.setLabel("computing");
             int framesCompleted;
@@ -2196,7 +2196,7 @@ class Nest {
 }
 
 /**
- * Store all the snakes computed for one cell and is responsible for writing them to file.
+ * Store all the snakes computed for one cell across frames and is responsible for writing them to file.
  * @author rtyson
  *
  */
@@ -2220,12 +2220,17 @@ class SnakeHandler {
       startFrame = f;
       endFrame = BOAp.FRAMES;
       roi = r;
-      // QUEST what is snakes?
+      // snakes array keeps snakes across frames from current to end. Current is that one for which cell has been added
       snakes = new Snake[BOAp.FRAMES - startFrame + 1]; // stored snakes
       ID = i;
       liveSnake = new Snake(roi, ID, false);
    }
 
+   /**
+    * Copies \c liveSnake into \c snakes array
+    * @param frame Frame for which \c liveSnake will be copied to
+    * @throws Exception
+    */
    public void storeCurrentSnake(int frame) throws Exception {
       // basically clone snake into memory
       //snake.printSnake();
