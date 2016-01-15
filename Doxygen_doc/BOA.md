@@ -74,7 +74,7 @@ The initial setup of BOA environment is mostly done in \ref uk.ac.warwick.wsbc.Q
 @dot
 digraph SetupRelations {
 rankdir = LR;
-node [shape=box,fontsize=10];
+node [shape=box,fontsize=11];
 Start[shape=ellipse,style=filled, fillcolor=gray];
 Stop[shape=ellipse,style=filled, fillcolor=gray];
 Init [label="Initialize\nstructures"];
@@ -152,7 +152,7 @@ The following structures are used to hold and process segmented data:
 1. \ref uk.ac.warwick.wsbc.QuimP.Nest "Nest" - this class holds segmented objects. Every selected cell on image is kept inside this class at `sHs` list.
 2. \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandler" - this class stores snakes in `snakes` array. It operates with two forms of snakes. The first one is `Snake liveSnake` which is snake object being processed, the second one is array `Snake[] snakes` where already processed snakes are stored. This array has size of `FRAMES-f`, where `f` is the frame which object has been added for segmentation in. `SnakeHandler` holds all snake objects for one cell for all successive frames after frame where cell has been added. This class also performs writing/reading operations.
 3. \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" this class holds snake for one frame and it is responsible for preparing segmentation process basing on passed ROI. **It does not do segmentation itself** but provides functions for scaling, changing orientation, cutting loops, etc.
-4. \ref uk.ac.warwick.wsbc.QuimP.Node "Node" represents vertex on snake and allows to add extra properties (forces, normals) to them. It has form of linked list, every Node knows its predecessor and successor. Simplified diagram below shows basic class relations and most important methods and fields.
+4. \ref uk.ac.warwick.wsbc.QuimP.Node "Node" represents vertex on snake and allows to add extra properties (forces, normals) to them. It has form of linked list, every Node knows its predecessor and successor. Simplified diagram below shows basic class relations and most important methods and fields. This class has `prelimPoint` field that keeps preliminary vector values which can be later promoted to regular vale of current object by using \ref uk.ac.warwick.wsbc.QuimP.Node.update() "update()" method. **List is looped - last element points to first and first to last** 
 
 @startuml "Simplified class structure for Snakes" 
 	Nest*-->SnakeHandler : sHs[cells]
@@ -177,7 +177,104 @@ The following structures are used to hold and process segmented data:
 
 Snakes objects are created for every frame separately and collected in object `SnakeHandler`. Every segmented cell is stored in top class `Nest` at `sHs` array. The array `snakes` at `SnakeHandler` is size of remaining frames from current one (that which the cell was added at) to the end of stack.
 
+@dot
+digraph CreateSnake {
+    rankdir = LR;
+    node [shape=box,fontsize=11];
+     
+    BOASetup [label="BOA::Setup"];
+    BOAAddcell [label="BOA::addCell"];
+    nestaddHandler [label="nest::addHandler(roi,frame)"];
+    GUI [style=filled, fillcolor=yellow];
+    onRUN [style=filled, fillcolor=yellow];
+    sh [label="new SnakeHandler(roi, frame, ID);"];
+    s [label="new Snake[frames_to_end];\nliveSnake = new Snake(roi, ID, direction)"];
+    n [label="create linked list\nof Node"];
+ 
+    GUI->BOAAddcell;
+    onRUN->BOASetup;
+    BOASetup->nestaddHandler;
+    BOAAddcell->nestaddHandler;
+    nestaddHandler->sh;
+    sh->s->n;
+}
+@enddot
+
+The \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" object store only head of snake as \ref uk.ac.warwick.wsbc.QuimP.Node "Node" object that is two directional linked list. This list is initialized in appropriate methods of `Snake` that convert passed *ROI* to form of `Node` list (see e.g. \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygon(FloatPolygon) "intializePolygon"). Snake is created in \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" class constructor and there are three possibilities here:
+
+@dot
+digraph CreateSnake1 {
+	rankdir = LR;
+    node [shape=box,fontsize=11];
+    
+    Snake [label="Snake constructors",style=filled,fillcolor=chocolate];
+    addNode [label="addNode(Node)",style=filled,fillcolor=darkgreen];
+    
+    Snake->intializeFloat [label=" Not used?",fontsize=11];
+    Snake->intializeOval [label=" If input ROI is other than polygon",fontsize=11];
+    Snake->intializePolygon [label=" If input ROI is polygon\nand nodes are refined",fontsize=11];
+    Snake->intializePolygonDirect [label=" If input ROI is polygon\nand nodes are not refined",fontsize=11];
+    intializeFloat->addNode;
+    intializeOval->addNode;
+    intializePolygon->addNode;
+    intializePolygonDirect->addNode;
+    addNode->updateNormales;
+}
+@enddot
+
+The \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygon(FloatPolygon) "intializePolygon" creates first estimation of snake using ROI shape and doing node refinement to get number of nodes for every edge as defined in uk.ac.warwick.wsbc.QuimP.BOAp.nodeRes. \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygonDirect(FloatPolygon) "intializePolygonDirect" does not refine points and uses those from polygon. If input ROI is other type than `RECTANGLE` or `POLYGON` as the firs estimation of segmented shape the ellipse is used calculated by \ref uk.ac.warwick.wsbc.QuimP.Snake.intializeOval(int, int, int, int, int, double) "intializeOval" according to initial parameters based on ROI bounding box.  
+
+The \ref uk.ac.warwick.wsbc.QuimP.Snake.addNode(Node) "addNode(Node)" method constructs Snake as it is called for every node calculated in above methods. It is important that \ref uk.ac.warwick.wsbc.QuimP.Snake.addNode(Node) "addNode(Node)" is used only for Snake initialization and together with correct initial conditions:
+
+@code{.java}
+head = new Node(0); //make a dummy head node for list initialization
+head.setPrev(head); // link head to itself
+head.setNext(head);
+head.setHead(true);
+// run more than 3 times
+	node = new Node(x,y,i++);
+	addNode(node);
+// ----
+removeNode(head); // remove dummy head node
+@endcode
+
+it guarantees the created list is looped. Last Node points to first by \ref uk.ac.warwick.wsbc.QuimP.Node.getPrev() "Node::getPrev()" and first one points to last one by \ref uk.ac.warwick.wsbc.QuimP.Node.getNext() "Node::getNext()".   
+
 ### Initiating segmentation 
+
+The segmentation is started after initialization described at \ref createsnakes, \ref runBOAStructures and \ref setupBOAGeneral. Process of segmentation of whole stack is started by clicking:
+
+- \ref uk.ac.warwick.wsbc.QuimP.BOA_.addCell(Roi, int) "addCell" - refers to \ref uk.ac.warwick.wsbc.QuimP.BOA_.tightenSnake(Snake) "tightenSnake" that performs `Snake` modification and fits it to cell shape.
+- **Segmentation** calls \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA" method.
+- Modifying other parameters of GUI that result in calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA" method
+
+Those methods are called from \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(ActionEvent) "actionPerformed" method. 
+
+### Segmentation
+
+Segmentation is controlled by \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA" that is ran over certain frame range. The following operations have place for every frame from current to last one in stack:
+
+@dot
+digraph segment {
+	rankdir = LR;
+	node [shape=box,fontsize=11];
+	
+	nestresetForFrame [label="nest::resetForFrame"];
+	constrictorloosen [label="constrictor::loosen(nest, startF)"];
+	constrictorimplode [label="constrictor::implode(nest, startF)"];
+	imageGroupdrawPath [label="imageGroup::drawPath(snake, frame)"]; 
+	tightenSnake [label="tightenSnake(snake)",style=filled,fillcolor=yellow];
+	sHstoreCurrentSnake [label="SnakeHandler::storeCurrentSnake(frame)"];
+	
+	nestresetForFrame->constrictorloosen->imageGroupdrawPath;
+	nestresetForFrame->constrictorimplode->imageGroupdrawPath;
+	imageGroupdrawPath->tightenSnake->sHstoreCurrentSnake;
+}
+@enddot
+
+#### Segmentation algorithm
+
+@todo Finish here and say how snakes are created as well, describe addcell
    
 
 ## About GUI {#guiBOA}

@@ -4,10 +4,13 @@ import java.awt.geom.Line2D;
 
 /**
  * Defines 2D vector and performs operations on vectors and lines
+ *
+ * @remarks
+ * This definition of vector is often used in QuimP for expressing points as well
+ *
  * @author Richard
  */
 public class Vect2d {
-   // simple 2D vector class
 
    private double x;
    private double y;
@@ -104,12 +107,21 @@ public class Vect2d {
       return v.length();
    }
 
+   /**
+    * Calculate the intersect between two edges \b A and \b B.
+    * Edge is defined as vector \b AB, where \b A and \b B stand for
+    * initial and terminal points given as vectors mounted at (0,0)
+    * 
+    * @param nA1 initial point of \b A edge
+    * @param nA2 terminal point of \b A edge
+    * @param nB1 initial point of \b B edge
+    * @param nB2 terminal point of \b B edge
+    * @return Intersect point
+    * @retval Vect2d if intersection found or \c null if not found
+    * @deprecated Actually not used in this version of QuimP
+    */
+   @Deprecated
    public static Vect2d lineIntersectionOLD(Vect2d nA1, Vect2d nA2, Vect2d nB1, Vect2d nB2) {
-
-      // calc the intersect between two edges
-      //edges A and B
-      //verts 1 and 2 for each edge
-
       double aA, bB, aB, bA, denom;
       aA = nA2.getY() - nA1.getY();
       bA = nA1.getX() - nA2.getX();
@@ -131,9 +143,6 @@ public class Vect2d {
 
       Vect2d cp = null;
       double dA2, dA1, eA1, eA2, dB2, dB1, eB1, eB2;
-
-// a1x + b1y + c1 = 0 line1 eq
-// a2x + b2y + c2 = 0 line2 eq
 
       cp = new Vect2d((bA * cB - bB * cA) / denom, (aB * cA - aA * cB) / denom); //intersection point
 
@@ -158,16 +167,14 @@ public class Vect2d {
             return cp;
          }
       }
-
       return null;
    }
 
+   /**
+    * @copydoc lineIntersectionOLD(Vect2d, Vect2d, Vect2d, Vect2d)
+    */
+   @Deprecated
    public static Vect2d lineIntersectionOLD2(Vect2d nA1, Vect2d nA2, Vect2d nB1, Vect2d nB2) {
-
-      // calc the intersect between two edges
-      //edges A and B
-      //verts 1 and 2 for each edge
-
       if (Line2D.linesIntersect(nA1.getX(), nA1.getY(), nA2.getX(), nA2.getY(), nB1.getX(), nB1.getY(), nB2.getX(), nB2.getY())) {
 
          double aA, bB, aB, bA, denom;

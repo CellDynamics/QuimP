@@ -1068,10 +1068,13 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
    /**
     * Add ROI to Nest.
+    * 
     * This method is called on selection that should contain object to be segmented.
-    * @todo finish details here
+    * Initialize Snake object in Nest and it performs also initial segmentation of selected cell
+    * 
     * @param r ROI object (IJ)
-    * @param f number of current frame 
+    * @param f number of current frame
+    * @see tightenSnake(Snake) 
     */
    void addCell(Roi r, int f) {
       SnakeHandler sH = nest.addHandler(r, f);
@@ -1540,7 +1543,7 @@ class ImageGroup {
 /**
  * Calculate forces that affect the snake
  * @author rtyson
- * @todo move to stattic?
+ * @todo move to stattic? http://stackoverflow.com/questions/7486012/static-classes-in-java
  */
 class Constrictor {
    public Constrictor() {
@@ -1608,9 +1611,6 @@ class Constrictor {
 
    /**
     * @deprecated Strictly related to absolute paths on disk. Probably for testing purposes only
-    * @param snake
-    * @param ip
-    * @return
     */
    public boolean constrictWrite(Snake snake, ImageProcessor ip) {
       // for writing forces at each frame
@@ -1709,9 +1709,6 @@ class Constrictor {
 
    /**
     * @deprecated Probably old version of contractionForce(Node n)
-    * @param n
-    * @param ip
-    * @return
     */
    public Vect2d imageForceOLD(Node n, ImageProcessor ip) {
       Vect2d result = new Vect2d();
@@ -2228,14 +2225,13 @@ class SnakeHandler {
 
    /**
     * Copies \c liveSnake into \c snakes array
+    * 
     * @param frame Frame for which \c liveSnake will be copied to
     * @throws Exception
     */
    public void storeCurrentSnake(int frame) throws Exception {
-      // basically clone snake into memory
-      //snake.printSnake();
       //BOA_.log("Store snake " + ID + " at frame " + frame);
-      snakes[frame - startFrame] = null; // detele at current frame
+      snakes[frame - startFrame] = null; // delete at current frame
 
       Node head = new Node(0); // dummy head node
       head.setHead(true);
@@ -2568,7 +2564,8 @@ class SnakeHandler {
 
 /**
  * Low level snake definition.
- * Form snake from Node objects
+ * Form snake from Node objects. Snake is defined by first \c head node.
+ * Remaining nodes are in bidirectional linked list. 
  * @author rtyson
  *
  */
@@ -2592,9 +2589,10 @@ class Snake {
 
    /**
     * Create a snake from existing linked list (at least one head node)
-    * @param h	First Node (head?)
+    * 
+    * @param h	Node of list
     * @param N	Number of nodes
-    * @param id
+    * @param id Unique snake ID related to object being segmented.
     * @throws Exception
     */
    public Snake(Node h, int N, int id) throws Exception {
@@ -2619,12 +2617,11 @@ class Snake {
    /**
     * Create snake from ROI
     * @param R ROI with object to be segmented
-    * @param id Unique ID of snake
+    * @param id Unique ID of snake related to object being segmented.
     * @param direct 
     * @throws Exception
     */
    public Snake(Roi R, int id, boolean direct) throws Exception {
-      // create snake from ROI
       // place nodes in a circle
       snakeID = id;
       if (R.getType() == Roi.RECTANGLE || R.getType() == Roi.POLYGON) {
@@ -2649,6 +2646,12 @@ class Snake {
       this.calcCentroid();
    }
 
+   /**
+    * @see Snake(Roi, int, boolean)
+    * @param R
+    * @param id
+    * @throws Exception
+    */
    public Snake(PolygonRoi R, int id) throws Exception {
       snakeID = id;
       intializeFloat(R.getFloatPolygon());
@@ -2659,9 +2662,22 @@ class Snake {
       this.calcCentroid();
    }
 
+   /**
+    * Initializes \c Node list from ROIs other than polygons
+    * For non-polygon ROIs ellipse is used as first approximation of segmented shape.
+    * Parameters of ellipse are estimated usually using parameters of bounding box of user ROI
+    *  
+    * @param t index of node
+    * @param xc center of ellipse
+    * @param yc center of ellipse
+    * @param Rx ellipse diameter
+    * @param Ry ellipse diameter
+    * @param s number of nodes
+    * 
+    * @throws Exception
+    */
    private void intializeOval(int t, int xc, int yc, int Rx, int Ry, double s) throws Exception {
-      // Rx and Ry are ellipse diameters
-      head = new Node(t); //make a dummy head node
+      head = new Node(t); //make a dummy head node for list initialization
       NODES = 1;
       FROZEN = 0;
       head.setPrev(head); // link head to itself
@@ -2684,9 +2700,16 @@ class Snake {
       updateNormales();
    }
 
+   /**
+    * Initializes \c Node list from polygon
+    * Each edge of input polygon is divided on uk.ac.warwick.wsbc.QuimP.BOAp.nodeRes nodes
+    *  
+    * @param p Polygon extracted from IJ ROI
+    * @throws Exception
+    */
    private void intializePolygon(FloatPolygon p) throws Exception {
       //System.out.println("poly with node distance");
-      head = new Node(0); //make a dummy head node
+      head = new Node(0); //make a dummy head node for list initialization
       NODES = 1;
       FROZEN = 0;
       head.setPrev(head); // link head to itself
@@ -2699,15 +2722,15 @@ class Snake {
       double x, y, spacing;
       Vect2d a, b, u;
       for (int i = 0; i < p.npoints; i++) {
-         j = ((i + 1) % (p.npoints));
-         a = new Vect2d(p.xpoints[i], p.ypoints[i]);
+         j = ((i + 1) % (p.npoints)); // for last i point we turn for first one closing polygon
+         a = new Vect2d(p.xpoints[i], p.ypoints[i]);// vectors ab define edge
          b = new Vect2d(p.xpoints[j], p.ypoints[j]);
 
 
-         nn = (int) Math.ceil(Vect2d.lengthP2P(a, b) / BOAp.getNodeRes()); //n nodes
+         nn = (int) Math.ceil(Vect2d.lengthP2P(a, b) / BOAp.getNodeRes()); // number of nodes
          spacing = Vect2d.lengthP2P(a, b) / (double) nn;
          u = Vect2d.unitVector(a, b);
-         u.multiply(spacing);
+         u.multiply(spacing); // required distance between points
 
          for (int s = 0; s < nn; s++) { //place nodes along edge
             node = new Node(nextTrackNumber);
@@ -2719,14 +2742,22 @@ class Snake {
             addNode(node);
          }
       }
-      removeNode(head); // remove dummy head node
+      removeNode(head); // remove dummy head node new head will be set
       this.makeAntiClockwise();
       updateNormales();
    }
 
+   /**
+    * Initializes \c Node list from polygon
+    * Does not refine points. USe only those from polygon
+    *  
+    * @param p Polygon extracted from IJ ROI
+    * @throws Exception
+    * @see intializePolygon(FloatPolygon)
+    */
    private void intializePolygonDirect(FloatPolygon p) throws Exception {
       //System.out.println("poly direct");
-      head = new Node(0); //make a dummy head node
+      head = new Node(0); //make a dummy head node for list initialization
       NODES = 1;
       FROZEN = 0;
       head.setPrev(head); // link head to itself
@@ -2744,6 +2775,11 @@ class Snake {
       updateNormales();
    }
 
+   /**
+    * @see intializePolygonDirect(FloatPolygon)
+    * @param p
+    * @throws Exception
+    */
    private void intializeFloat(FloatPolygon p) throws Exception {
       //System.out.println("poly direct");
       head = new Node(0); //make a dummy head node
@@ -2780,16 +2816,28 @@ class Snake {
       }
    }
 
+   /**
+    * Get head of current Snake
+    * 
+    * @return Node representing head of Snake
+    */
    public Node getHead() {
       return head;
    }
 
+   /**
+    * Get number of nodes forming current Snake
+    * 
+    * @return number of nodes in current Snake
+    */
    public int getNODES() {
       return NODES;
    }
 
+   /**
+    * Unfreeze all nodes
+    */
    public void defreeze() {
-      // unfreeze all nodes
       Node n = head;
       do {
          n.unfreeze();
@@ -2798,36 +2846,36 @@ class Snake {
       FROZEN = 0;
    }
 
+   /**
+    * Freeze a specific node
+    * 
+    * @param n Node to freeze
+    */
    public void freezeNode(Node n) {
-      // freeze a specific node
       if(!n.isFrozen()){
         n.freeze();
         FROZEN++;
       }
    }
    
+   /**
+    * Unfreeze a specific node
+    * 
+    * @param n Node to unfreeze
+    */
    public void unfreezeNode(Node n) {
-      // freeze a specific node
       if(n.isFrozen()){
         n.unfreeze();
         FROZEN--;
       }
    }
 
+   /**
+    * Check if all nodes are frozen
+    * 
+    * @return \c true if all nodes are frozen
+    */
    public boolean isFrozen() {
-      // return true if all nodes are frozen
-        /*
-      Node n = head;
-      int f=0;
-      int c=0;
-      do{
-      if(n.isFrozen()) f++;
-      c++;
-      n = n.getNext();
-      }while(!n.isHead());
-
-      if(true) System.out.println("WARNING-FROZEN WRONG, F: " + f + ", nodes: " + c + "("+NODES+")");
-       */
       if (FROZEN == NODES) {
          return true;
       } else {
@@ -2835,8 +2883,26 @@ class Snake {
       }
    }
 
+   /**
+    * Add node before head node assuring that list has closed loop.
+    * If initial list condition is defined in such way:
+    * @code
+    * 	head = new Node(0); //make a dummy head node
+    *  	NODES = 1;
+    *  	FROZEN = 0;
+    *  	head.setPrev(head); // link head to itself
+    *  	head.setNext(head);
+    *  	head.setHead(true);
+    * @endcode
+    * the \c addNode will produce closed bidirectional linked list. From first Node it is possible
+    * to reach last one by calling Node::getNext() and from the last one, firs should be accessible
+    * by calling Node::getPrev()
+    *  
+    * @param newNode Node to be added to list
+    * 
+    * @remarks For initialization only
+    */
    private void addNode(Node newNode) {
-      // add nodes in before head node, for initialisation only
       Node prevNode = head.getPrev();
       newNode.setPrev(prevNode);
       newNode.setNext(head);
@@ -2846,6 +2912,14 @@ class Snake {
       NODES++;
    }
 
+   /**
+    * Remove selected node from list
+    * Check if removed node was head and if it was, the new head is randomly selected
+    * 
+    * @param n Node to remove
+    * 
+    * @throws Exception
+    */
    final public void removeNode(Node n) throws Exception {
       if (NODES <= 3) {
          throw new BoaException("removeNode: Did not remove node. " + NODES + " nodes remaining.", 0, 2);
@@ -2873,12 +2947,13 @@ class Snake {
       n.getPrev().updateNormale();
       n.getNext().updateNormale();
       n = null;
-
-
    }
 
+   /**
+    * Update all node normals
+    * Called after modification of Snake nodes
+    */
    public void updateNormales() {
-      // update all node normales
       Node n = head;
       do {
          n.updateNormale();
@@ -2956,8 +3031,11 @@ class Snake {
       }
    }
 
+   /**
+    * Cut out a loop
+    * Insert a new node at cut point
+    */
    public void cutLoops() {
-      // cut out a loop, insert a new node at cut point
       //System.out.println("cutting loops");
       int MAXINTERVAL = 12;  //how far ahead do you check for a loop
       int interval, state;
@@ -3016,13 +3094,16 @@ class Snake {
       //System.out.println("done cutting loops");
    }
 
+   /**
+    * Cut out intersects.
+    * Done once at the end of each frame to cut out any parts of the contour that self intersect.
+    * Similar to cutLoops, but check all edges (NODES / 2) and cuts out the smallest section
+    * 
+    * @see cutLoops()
+    */
    public void cutIntersects() {
-      //done once at the end of each frame to cut out any parts of the contour
-      //that self intersect.
-      //Simular to cutLoops, but cheack all edges (NODES / 2)
-      //and cuts out the smallest section
 
-      int interval, state;
+	   int interval, state;
 
       Node nA, nB;
       double[] intersect = new double[2];
@@ -3073,6 +3154,9 @@ class Snake {
       } while (!nA.isHead());
    }
 
+   /**
+    * @deprecated Old version of cutLoops()
+    */
    public void cutLoopsOLD() {
 
       int i;
@@ -3148,6 +3232,10 @@ class Snake {
       }
    }
 
+   /**
+    * @deprecated Old version of correctDistance(boolean)
+    * @throws Exception
+    */
    public void correctDistanceOLD() throws Exception {
       // ensure nodes are between maxDist and minDist apart, add remove nodes as required
 
@@ -3206,8 +3294,13 @@ class Snake {
       Node.setClockwise(true); //reset to clockwise (although shouldnt effect things??)
    }
 
+   /**
+    * Ensure nodes are between \c maxDist and \c minDist apart, add remove nodes as required
+    * 
+    * @param shiftNewNode
+    * @throws Exception
+    */
    public void correctDistance(boolean shiftNewNode) throws Exception {
-      // ensure nodes are between maxDist and minDist apart, add remove nodes as required
       Node.randDirection(); //choose a random direction to process the chain
 
       Vect2d tanL, tanR, tanLR, npos; //
@@ -3302,8 +3395,10 @@ class Snake {
       Node.setClockwise(true); //reset to clockwise (although shouldnt effect things??)
    }
 
+   /**
+    * Insert node after node \c n
+    */
    public Node insertNode(Node n) {
-      //insert a new node after node n
       Node newNode = new Node(nextTrackNumber);
       nextTrackNumber++;
       newNode.setNext(n.getNext());
@@ -3315,6 +3410,9 @@ class Snake {
       return newNode;
    }
 
+   /**
+    * Return current \c snake as polygon
+    */
    public Polygon asPolygon() {
       Polygon pol = new Polygon();
       Node n = head;
@@ -3339,8 +3437,12 @@ class Snake {
       } while (!v.isHead());
    }
 
+   /**
+    * Add up lengths between all verts
+    * 
+    * @return length of snake
+    */
    public double getLength() {
-      // add up lengths between all verts
       Node v = head;
       double length = 0.0;
       do {
@@ -3415,8 +3517,12 @@ class Snake {
       return bounds;
    }
 
+   /**
+    * Count the nodes and check that NODES matches
+    * 
+    * @return \c true if counted nodes matches \c NODES
+    */
    public boolean checkNodeNumber() {
-      //count the nodes and check that NODES matches
       Node n = head;
       int count = 0;
       do {
@@ -3430,9 +3536,13 @@ class Snake {
       } else {
          return true;
       }
-
    }
 
+   /**
+    * Check if there is a head node
+    * 
+    * @return \c true if there is head of snake
+    */
    public boolean checkIsHead() {
       //make sure there is a head node
       Node n = head;
@@ -3442,7 +3552,6 @@ class Snake {
             System.out.println("Head lost!!!!");
             return false;
          }
-
          n = n.getNext();
       } while (!n.isHead());
       return true;
@@ -3457,7 +3566,7 @@ class Snake {
    }
 
    /**
-    * Calculate centroid of Snake given as the set of Nodes
+    * Calculate centroid of Snake
     */
    public void calcCentroid() {
       centroid = new Vect2d(0, 0);
@@ -3491,8 +3600,10 @@ class Snake {
       }
    }
 
+   /**
+    * Turn Snake back anti clockwise
+    */
    public void reverseSnake() {
-      // turn it back anti clockwise
       Node tmp;
       Node v = head;
       do {
@@ -3583,7 +3694,7 @@ class Node {
    }
 
    /**
-    * update point and force with preliminary values, and reset.
+    * Update point and force with preliminary values, and reset.
     */
    public void update() {
       setX(getX() + prelimPoint.getX());
@@ -3593,7 +3704,7 @@ class Node {
    }
 
    /**
-    * get previous node in chain (next if not clockwise)
+    * Get previous node in chain (next if not clockwise)
     * @return next or previous Node from list 
     */
    public Node getPrev() {
@@ -3605,7 +3716,7 @@ class Node {
    }
 
    /**
-    * get next node in chain (previous if not clockwise)
+    * Get next node in chain (previous if not clockwise)
     * @return previous or next Node from list 
     */
    public Node getNext() {
@@ -3731,8 +3842,10 @@ class Node {
       head = t;
    }
 
+   /**
+    * Updates the normal (must point inwards)
+    */
    public void updateNormale() {
-      // updates the normal (must point inwards)
       boolean c = clockwise;
       clockwise = true; //just in case
       tan = calcTan();	//tangent
@@ -3858,37 +3971,37 @@ class BOAp {
    static QParams readQp; 			// read in parameter file
    //
    //Parameters Numeric
-   static private double nodeRes;
-   static int blowup;            	// distance to blow up chain
+   static private double nodeRes;	///< Number of nodes on ROI edge  
+   static int blowup;            	///< distance to blow up chain
    static double vel_crit;
    static double f_central;
-   static double f_image;     		// image force
-   static int max_iterations;  		// max iterations per contraction
+   static double f_image;     		///< image force
+   static int max_iterations;  		///< max iterations per contraction
    static int sample_tan;
    static int sample_norm;
    static double f_contract;
    static double finalShrink;
    //Switch Params
-   static boolean use_previous_snake;// next contraction begins with last chain
+   static boolean use_previous_snake;///< whether next contraction begins with last chain
    static boolean showPaths;
-   static boolean expandSnake; 		 // set true to act as an expanding snake
+   static boolean expandSnake; 		 ///< whether to act as an expanding snake
    //internal parameters
-   static int NMAX;             	// maximum number of nodes (% of starting nodes)
+   static int NMAX;             	///< maximum number of nodes (% of starting nodes)
    static double delta_t;
    static double sensitivity;
    static double f_friction;
-   static int FRAMES; 			// Number of frames in stack
+   static int FRAMES; 			///< Number of frames in stack
    static int WIDTH, HEIGHT;
-   static int cut_every;        // cut loops in chain every X frames
-   static boolean oldFormat;    // output old QuimP format?
-   static boolean saveSnake;  	// save snake data
-   static private double min_dist;       // min distance between nodes
-   static private double max_dist;       // max distance between nodes
-   static double proximity;     		// distance between centroids at
+   static int cut_every;        ///< cut loops in chain every X frames
+   static boolean oldFormat;    ///< output old QuimP format?
+   static boolean saveSnake;  	///< save snake data
+   static private double min_dist;       ///< min distance between nodes
+   static private double max_dist;       ///< max distance between nodes
+   static double proximity;     		///< distance between centroids at
    //which contact is tested for
-   static double proxFreeze;    // proximity of nodes to freeze when blowing up
+   static double proxFreeze;    ///< proximity of nodes to freeze when blowing up
    static boolean savedOne;
-   static double imageScale; 	//scale of image in
+   static double imageScale; 	///< scale of image in
    static double imageFrameInterval;
    static boolean scaleAdjusted;
    static boolean fIAdjusted;
@@ -3897,17 +4010,26 @@ class BOAp {
    static boolean zoom;
    static boolean doDelete;
    static boolean doDeleteSeg;
-   static boolean editMode; 	// select a cell for editing
+   static boolean editMode; 	///< is select a cell for editing active?
    static int editingID; 		// currently editing cell iD. -1 if not editing
    static boolean useSubPixel = true;
    static boolean supressStateChangeBOArun = false;
    static int callCount; 		// use to test how many times a method is called
-   static boolean SEGrunning; 	// is seg running
+   static boolean SEGrunning; 	///< is seg running
 
+   /**
+    * Return nodeRes
+    * 
+    * @return nodeRes field
+    */
    static public double getNodeRes() {
       return nodeRes;
    }
 
+   /**
+    * Set /c nodeRes field and calculate \c min_dist and \c max_dist
+    * @param d
+    */
    static public void setNodeRes(double d) {
       nodeRes = d;
       if (nodeRes < 1) {
@@ -3933,8 +4055,6 @@ class BOAp {
     * are external - available for user to set in GUI. 
     */
    static public void setDefaults() {
-
-      //Parameters Numeric
       setNodeRes(6.0);
       blowup = 20;            // distance to blow up chain
       vel_crit = 0.005;
@@ -3949,11 +4069,13 @@ class BOAp {
    }
 
    /**
-    * Initialise internal parameters of BOA plugin
+    * Initialize internal parameters of BOA plugin
+    * 
     * Most of these parameters are related to state machine of BOA.
     * There are also parameters related to internal state of Active
     * Contour algorithm. 
     * Defaults for parameters available for user are set in {@link uk.ac.warwick.wsbc.QuimP.BOAp.setDefaults()} 
+    * 
     * @param ip	Reference to segmented image passed from IJ
     * @see setDefaults()
     */
@@ -4017,8 +4139,10 @@ class BOAp {
 
    /**
     * Write set of snake parameters to disk.
+    * 
     * writeParams method creates \a paQP master file, referencing other associated files and \a csv file
     * with statistics.
+    * 
     * @param sID	ID of cell. If many cells segmented in one time, QuimP produces separate parameter file for every of them
     * @param startF	Start frame (typically beginning of stack)
     * @param endF	End frame (typically end of stack)
@@ -4058,7 +4182,9 @@ class BOAp {
 
    /**
     * Read set of snake parameters from disk.
+    * 
     * readParams method reads \a paQP master file, referencing other associated files.
+    * 
     * @return Status of operation
     * @retval true when file has been loaded successfully
     * @retval false when file has not been opened correctly or QParams.readParams() returned \c false
@@ -4097,7 +4223,9 @@ class BOAp {
 
 /**
  * Extended exception class.
+ * 
  * Contains additional information on frame and type
+ * 
  * @author rtyson
  *
  */
