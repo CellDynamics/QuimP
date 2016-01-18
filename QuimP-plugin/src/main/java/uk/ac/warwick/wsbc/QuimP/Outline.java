@@ -615,6 +615,7 @@ public final class Outline implements Cloneable {
       } while (!v.isHead());
    }
 
+   @Deprecated
    public boolean cutSelfIntersectsOLD() {
       //done once at the end of each frame to cut out any parts of the contour
       //that self intersect.
