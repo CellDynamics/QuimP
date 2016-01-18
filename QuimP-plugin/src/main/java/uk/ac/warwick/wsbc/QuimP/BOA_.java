@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Iterator;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -3486,6 +3487,22 @@ class Snake {
       return new PolygonRoi(x, y, NODES, Roi.POLYLINE);
    }
 
+   /**
+    * Returns current Snake as list of Nodes
+    * 
+    * @return List of Vect2d objects representing coordinates of Snake Nodes
+    */
+   public List<Vect2d> asList() {
+	   List<Vect2d> al = new ArrayList<Vect2d>(NODES);
+	   // iterate over nodes at Snake
+	   Node n = head;
+	   do {
+		   al.add(new Vect2d(n.getX(), n.getY()));
+		   n = n.getNext();
+	   } while(!n.isHead());
+	   return al;
+   }
+   
    public Rectangle getBounds() {
       //change tp asPolygon, and get bounds
       Node n = head;

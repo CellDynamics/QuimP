@@ -88,6 +88,14 @@ public class Vect2d {
       y = Math.pow(y, p);
 
    }
+   
+   /**
+    * Simple compatibility method for debugging.
+    */
+   public String toString() 
+   {
+   	return String.format("{%g,%g}", this.x,this.y);
+   }
 
    public static Vect2d unitVector(Vect2d a, Vect2d b) {
       // calc unit vector to target
