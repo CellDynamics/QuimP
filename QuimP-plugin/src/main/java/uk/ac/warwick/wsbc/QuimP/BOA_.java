@@ -525,8 +525,10 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       /**
        * Main method that handles all actions performed on UI elements.
+       * 
        * Do not support mouse events, only UI elements like buttons. Contain also logic of GUI
        * Runs also main algorithm on specified input state.
+       * 
        * @param e Type of event
        * @see BOAp
        */
@@ -649,6 +651,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       /**
        * Detect changes in checkboxes and run segmentation for current frame if necessary.
        * Transfer parameters from changed GUI element to {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
+       * 
        * @param e Type of event
        */
       @Override
@@ -703,6 +706,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       /**
        * Detect changes in spinners and run segmentation for current frame if necessary.
        * Transfer parameters from changed GUI element to {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
+       * 
        * @param ce Type of event
        */
       @Override
@@ -845,7 +849,9 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
    
    /**
     * Start segmentation process on range of frames
+    * 
     * This method is called for update only current view as well (\c startF == \c endF)
+    * 
     * @param startF	start frame
     * @param endF 	end frame
     * @throws BoaException
@@ -908,10 +914,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
                      imageGroup.drawPath(snake, frame); //post tightned snake on path
 
-
-                     //imageGroup.drawContour(nest.getSNAKES(), frame);
                      sH.storeCurrentSnake(frame);
-
 
                   } catch (BoaException be) {
                      imageGroup.drawPath(snake, frame); // failed position
@@ -927,30 +930,13 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
                   }
 
                }
-
-
-               //if (BOAp.zoom && nest.NSNAKES==1) {
-               //imageGroup.zoom(nest.getSnake(0).getBounds());
-               //}
-
-               //imageGroup.drawOnContour(sHs, frame);
-
                imageGroup.updateOverlay(frame);
-               //System.out.println(Thread.currentThread().getName());
-
-               //imageGroup.repaint();
-
                IJ.showProgress(frame, endF);
             } catch (BoaException be) {
                BOAp.SEGrunning = false;
                if (!BOAp.use_previous_snake) {
-                  //sH.storeCurrentSnake(frame);
-                  //imageGroup.drawOnContour(sHs, frame);
                   imageGroup.setIpSliceAll(frame);
                   imageGroup.updateOverlay(frame);
-
-                  //imageGroup.repaint();
-                  //snake.defreeze();
                } else {
                   System.out.println("\nL811. Exception");
                   throw be;
@@ -1543,7 +1529,7 @@ class ImageGroup {
 /**
  * Calculate forces that affect the snake
  * @author rtyson
- * @todo move to stattic? http://stackoverflow.com/questions/7486012/static-classes-in-java
+ * @todo move to static? http://stackoverflow.com/questions/7486012/static-classes-in-java
  */
 class Constrictor {
    public Constrictor() {
@@ -2147,8 +2133,12 @@ class Nest {
       return NSNAKES;
    }
 
+   /**
+    * Prepare for segmentation from frame \c f
+    * 
+    * @param f current frame under segmentation
+    */
    void resetForFrame(int f) {
-      // prepare for segmentation from frame f
       reviveNest();
       Iterator<SnakeHandler> sHitr = sHs.iterator();
       //BOA_.log("Reseting for frame " + f);
@@ -2521,6 +2511,13 @@ class SnakeHandler {
       return endFrame;
    }
 
+   /**
+    * Prepare current frame \c for segmentation
+    * 
+    * Create \c liveSnake using previous frame or ROI
+    *  
+    * @param f Current segmented frame
+    */
    void resetForFrame(int f) {
       try {
          if (BOAp.use_previous_snake) {
@@ -3683,13 +3680,21 @@ class Node {
       return point.getY();
    }
 
+   /**
+    * Set \c X space co-ordinate
+    * 
+    * @param x coordinate
+    */
    public void setX(double x) {
-      // set X space co-ordinate
       point.setX(x);
    }
 
+   /**
+    * Set \c Y space co-ordinate
+    * 
+    * @param y coordinate
+    */
    public void setY(double y) {
-      // set X space co-ordinate
       point.setY(y);
    }
 
@@ -3705,6 +3710,7 @@ class Node {
 
    /**
     * Get previous node in chain (next if not clockwise)
+    * 
     * @return next or previous Node from list 
     */
    public Node getPrev() {
@@ -3717,6 +3723,7 @@ class Node {
 
    /**
     * Get next node in chain (previous if not clockwise)
+    * 
     * @return previous or next Node from list 
     */
    public Node getNext() {
@@ -3729,6 +3736,7 @@ class Node {
 
    /**
     * Adds previous (or next if not clockwise) Node to list
+    * 
     * @param n	Node to add
     */
    public void setPrev(Node n) {

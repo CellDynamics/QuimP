@@ -20,6 +20,14 @@ public class Vect2d {
       y = 0.0;
    }
 
+   /**
+    * Simple constructor.
+    * 
+    * Creates vector mounted at (0,0).
+    * 
+    * @param xx \c x coordinate of vector
+    * @param yy \c y coordinate of vector
+    */
    public Vect2d(double xx, double yy) {
       x = xx;
       y = yy;

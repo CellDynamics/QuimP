@@ -244,11 +244,12 @@ it guarantees the created list is looped. Last Node points to first by \ref uk.a
 
 The segmentation is started after initialization described at \ref createsnakes, \ref runBOAStructures and \ref setupBOAGeneral. Process of segmentation of whole stack is started by clicking:
 
-- \ref uk.ac.warwick.wsbc.QuimP.BOA_.addCell(Roi, int) "addCell" - refers to \ref uk.ac.warwick.wsbc.QuimP.BOA_.tightenSnake(Snake) "tightenSnake" that performs `Snake` modification and fits it to cell shape.
+- \ref uk.ac.warwick.wsbc.QuimP.BOA_.addCell(Roi, int) "addCell" - refers to \ref uk.ac.warwick.wsbc.QuimP.BOA_.tightenSnake(Snake) "tightenSnake" that performs `Snake` modification and fits it to cell shape. `addCell` performs basic segmentation.`tightenSnake` is segmentation procedure that modifies `liveSnake` obtained from `SnakeHandler`. After modification this Snake is stored back to SnakeHandler to `snakes[f]` array deleting snake at index `f`. The method \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler.storeCurrentSnake(int) "storeCurrentSnake(int)" copies whole linked list given by `head` to mentioned table closing the Snake.  
 - **Segmentation** calls \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA" method.
 - Modifying other parameters of GUI that result in calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA" method
 
-Those methods are called from \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(ActionEvent) "actionPerformed" method. 
+Those methods are called from \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(ActionEvent) "actionPerformed" method.
+
 
 ### Segmentation
 
@@ -274,7 +275,7 @@ digraph segment {
 
 #### Segmentation algorithm
 
-@todo Finish here and say how snakes are created as well, describe addcell
+@todo Finish here and say how snakes are created as well
    
 
 ## About GUI {#guiBOA}
