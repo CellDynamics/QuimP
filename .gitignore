@@ -65,3 +65,4 @@ QuimP_plugin/src/**/plugins.config
 target/
 # not the same as java resources dir
 Resources/
+*.m~
