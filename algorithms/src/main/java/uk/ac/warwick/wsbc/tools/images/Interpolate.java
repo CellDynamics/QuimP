@@ -6,6 +6,7 @@ import javax.vecmath.Vector2d;
 
 import org.apache.commons.math3.analysis.interpolation.*;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
+import org.apache.commons.math3.exception.NumberIsTooSmallException;
 
 /**
  * Class for interpolation of polygons defined by vertices.
@@ -14,7 +15,7 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
  * listed in order given in \c input list. Polygon should be defined in 
  * clock-wise or anticlock-wise direction.
  * 
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class Interpolate {
@@ -42,23 +43,36 @@ public class Interpolate {
 	/**
 	 * Get interpolation using Loess interpolator
 	 * 
-	 * @param f smoothing, useful range is from 0.03 - 0.1
+	 * For smallest smoothing (lowest \c smooth) shape is still slightly influenced
+	 * 
+	 * @param f smoothing, useful range is from 0.015 - 0.1
 	 * @return interpolated input data
+	 * @throws InterpolateException when \c f is too small
+	 * @remarks \c density variable might be important in future
 	 */
-	public List<Vector2d> getInterpolationLoess(double f)
+	public List<Vector2d> getInterpolationLoess(double f) throws InterpolateException
 	{
-		LoessInterpolator sI = new LoessInterpolator(
+		float density = 1.0f;	// If smaller than 1 output points will be refined. For 1 numbers of output points and input points are equal.  
+		LoessInterpolator sI;
+		double[] i = new double[input.size()];
+		List<Vector2d> out = new ArrayList<Vector2d>();
+		PolynomialSplineFunction psfX;
+		PolynomialSplineFunction psfY;
+		try {
+			sI = new LoessInterpolator(
 				f,// f 0.03-0.1
 				1, // W
 				1.0E-15);
-		double[] i = new double[input.size()];
-		List<Vector2d> out = new ArrayList<Vector2d>();
-		
-		for(int ii=0;ii<input.size();ii++)
-			i[ii] = ii;	// create linear indexes for X and Y
-		PolynomialSplineFunction psfX = sI.interpolate(i, X);	// interpolation of X
-		PolynomialSplineFunction psfY = sI.interpolate(i, Y);	// interpolation of Y
-		for(float ii=0;ii<=input.size()-1;ii+=0.1f) {
+			for(int ii=0;ii<input.size();ii++)
+				i[ii] = ii;	// create linear indexes for X and Y
+			psfX = sI.interpolate(i, X);	// interpolation of X
+			psfY = sI.interpolate(i, Y);	// interpolation of Y
+		} 
+		catch (NumberIsTooSmallException e) {
+				throw new InterpolateException(e.getMessage());
+		}
+		// copy to Vector2d List
+		for(float ii=0;ii<=input.size()-1;ii+=density) {
 			out.add(new Vector2d(
 					psfX.value(ii),
 					psfY.value(ii)));

@@ -32,6 +32,14 @@ import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.tools.images.Interpolate;
 
+/**
+ * Test runner for Interpolate class.
+ * 
+ * Use src/test/resources/Interpolate_Test_Analyzer.m for plotting results
+ * 
+ * @author p.baniukiewicz
+ *
+ */
 @RunWith(Parameterized.class)
 public class Interpolate_Test {
 	
@@ -77,25 +85,25 @@ public class Interpolate_Test {
 	@Parameterized.Parameters
 	public static Collection<Object[]> testFiles() {
 		return Arrays.asList(new Object[][] {
-			{"src/test/resources/testData_75.dat",0.02},
+			{"src/test/resources/testData_75.dat",0.015},
 			{"src/test/resources/testData_75.dat",0.04},
 			{"src/test/resources/testData_75.dat",0.06},
 			{"src/test/resources/testData_75.dat",0.08},
 			{"src/test/resources/testData_75.dat",0.1},
 			
-			{"src/test/resources/testData_125.dat",0.02},
+			{"src/test/resources/testData_125.dat",0.015},
 			{"src/test/resources/testData_125.dat",0.04},
 			{"src/test/resources/testData_125.dat",0.06},
 			{"src/test/resources/testData_125.dat",0.08},
 			{"src/test/resources/testData_125.dat",0.1},
 			
-			{"src/test/resources/testData_137.dat",0.02},
+			{"src/test/resources/testData_137.dat",0.015},
 			{"src/test/resources/testData_137.dat",0.04},
 			{"src/test/resources/testData_137.dat",0.06},
 			{"src/test/resources/testData_137.dat",0.08},
 			{"src/test/resources/testData_137.dat",0.1},
 			
-			{"src/test/resources/testData_1.dat",0.02},
+			{"src/test/resources/testData_1.dat",0.015},
 			{"src/test/resources/testData_1.dat",0.04},
 			{"src/test/resources/testData_1.dat",0.06},
 			{"src/test/resources/testData_1.dat",0.08},
@@ -104,11 +112,12 @@ public class Interpolate_Test {
 	}
 		
 	/**
+	 * @throws InterpolateException 
 	 * @test Test of Interpolate method
 	 * @post Save image testInterpolate_* in /tmp/
 	 */
 	@Test
-	public void test_getInterpolationLoess() {
+	public void test_getInterpolationLoess() throws InterpolateException {
 		ArrayList<Vector2d> out;
 		Interpolate i = new Interpolate(testcase);
 		out = (ArrayList<Vector2d>) i.getInterpolationLoess(smooth.doubleValue());
