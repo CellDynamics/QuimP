@@ -14,6 +14,13 @@ clear coords;
 for i=1:length(testFrames)
     coords{i} = qCells.outlines{testFrames(i)}(:,2:3);
 end
+for i=1:length(testFrames)
+   fid = fopen(['testData_' num2str(testFrames(i)) '.dat'], 'w');
+   xy = coords{i};
+   xyr = reshape(xy',[],1); % x first
+   fprintf(fid,'%.4f\n',xyr);
+   fclose(fid);
+end
 %% Tools - Plot
 i = 1;
 figure
