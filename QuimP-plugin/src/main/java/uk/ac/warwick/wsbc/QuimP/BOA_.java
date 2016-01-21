@@ -3488,7 +3488,7 @@ class Snake {
    }
 
    /**
-    * Returns current Snake as list of Nodes
+    * Returns current Snake as list of Nodes (copy)
     * 
     * @return List of Vect2d objects representing coordinates of Snake Nodes
     */

@@ -20,7 +20,7 @@ import org.apache.commons.math3.exception.NumberIsTooSmallException;
  *
  */
 public class Interpolate {
-	static final int CIRCULAR = 1; ///< defines circular padding at getIndex(int, int)
+	static final int CIRCULARPAD = 1; ///< defines circular padding at getIndex(int, int)
 	
 	private List<Vector2d> input; ///< reference to input list with coordinates
 	private double X[]; ///< extracted x coords from Vec2d
@@ -116,7 +116,7 @@ public class Interpolate {
 			meanx = 0;
 			meany = 0;
 			for(int cc=c-cp;cc<=c+cp;cc++) { // collect points in range c-2 c-1 c-0 c+1 c+2 (for window=5)
-				indexTmp = getIndex(cc, Interpolate.CIRCULAR);
+				indexTmp = getIndex(cc, Interpolate.CIRCULARPAD);
 				meanx += X[indexTmp];
 				meany += Y[indexTmp];				
 			}
@@ -144,7 +144,7 @@ public class Interpolate {
 		
 		int length = input.size();
 		switch(mode) {
-			case CIRCULAR:
+			case CIRCULARPAD:
 				if(index<0)
 					return(length+index); // for -1 points last element
 				if(index>=length)
