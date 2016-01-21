@@ -10,12 +10,12 @@
 
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
-  <artifactId>QuimP-plugin</artifactId>
+  <artifactId>QuimP_plugin</artifactId>
   <packaging>jar</packaging>
   <version>1.11.2-SNAPSHOT</version>
 
   <!-- Name and licencing and other project informations -->
-  <name>QuimP-plugin</name>
+  <name>QuimP_plugin</name>
   <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/bretschneider/quimp/</url>
   
   <dependencies>
