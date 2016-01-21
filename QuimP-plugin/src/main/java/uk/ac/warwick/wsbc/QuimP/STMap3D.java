@@ -90,7 +90,7 @@ public class STMap3D {
       
    }
 
-   void toOrigin(Vect2d centre){
+   void toOrigin(ExtendedVector2d centre){
       cell3d.transform((float)-centre.getX(), 0, (float)-centre.getY());
    }
 

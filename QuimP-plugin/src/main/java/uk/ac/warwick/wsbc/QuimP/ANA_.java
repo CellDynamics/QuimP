@@ -428,8 +428,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
       vl = v.getPrev();
       vr = v.getNext();
       do {
-         d1 = Vect2d.lengthP2P(v.getPoint(), vl.getPoint());
-         d2 = Vect2d.lengthP2P(v.getPoint(), vr.getPoint());
+         d1 = ExtendedVector2d.lengthP2P(v.getPoint(), vl.getPoint());
+         d2 = ExtendedVector2d.lengthP2P(v.getPoint(), vr.getPoint());
 
          if ((d1 < 1.5 || d2 < 1.5) && !v.frozen ) { // don't remove frozen. May alter angles
             o.removeVert(v);
@@ -444,7 +444,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
    private void freezeProx(Outline o) {
       // freeze a node and corresponding edge if its to close && close to paralel
       Vert v, vT;
-      Vect2d closest, edge, link;
+      ExtendedVector2d closest, edge, link;
       double dis, angle;
 
       v = o.getHead();
@@ -456,14 +456,14 @@ public class ANA_ implements PlugInFilter, DialogListener {
                   vT = vT.getNext();
                   continue;
                }
-               closest = Vect2d.PointToSegment(v.getPoint(), vT.getPoint(), vT.getNext().getPoint());
-               dis = Vect2d.lengthP2P(v.getPoint(), closest);
+               closest = ExtendedVector2d.PointToSegment(v.getPoint(), vT.getPoint(), vT.getNext().getPoint());
+               dis = ExtendedVector2d.lengthP2P(v.getPoint(), closest);
                //System.out.println("dis: " + dis);
                //dis=1;
                if (dis < ANAp.freezeTh) {
-                  edge = Vect2d.unitVector(vT.getPoint(), vT.getNext().getPoint());
-                  link = Vect2d.unitVector(v.getPoint(), closest);
-                  angle = Math.abs(Vect2d.angle(edge, link));
+                  edge = ExtendedVector2d.unitVector(vT.getPoint(), vT.getNext().getPoint());
+                  link = ExtendedVector2d.unitVector(v.getPoint(), closest);
+                  angle = Math.abs(ExtendedVector2d.angle(edge, link));
                   if(angle > Math.PI) angle = angle - Math.PI; // if > 180, shift back around 180
                   angle = angle - 1.5708; // 90 degree shift to centre around zero
                   //System.out.println("angle:" + angle);
@@ -513,13 +513,13 @@ public class ANA_ implements PlugInFilter, DialogListener {
    private void markFrozenNodesNormal(Outline o){
       float[] x;
       float[] y;
-      Vect2d norm;
+      ExtendedVector2d norm;
       PolygonRoi pr;
       Vert v = o.getHead();
       do {
          if(v.frozen){
             overlay.setStrokeColor(Color.RED);
-            norm = new Vect2d(v.getX(), v.getY());
+            norm = new ExtendedVector2d(v.getX(), v.getY());
             norm.addVec(v.getNormal());
             //norm.addVec(new Vect2d(1,1));
 
@@ -712,8 +712,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
                continue;
             }
 
-            disLtoN = Vect2d.lengthP2P(last.getPoint(), nex.getPoint());
-            disLtoV = Vect2d.lengthP2P(last.getPoint(), v.getPoint());
+            disLtoN = ExtendedVector2d.lengthP2P(last.getPoint(), nex.getPoint());
+            disLtoV = ExtendedVector2d.lengthP2P(last.getPoint(), v.getPoint());
             ratio = disLtoV / disLtoN;
             if (ratio > 1) {
                ratio = 1;
@@ -792,7 +792,7 @@ class FluoStats {
 
    int frame = -1;
    double area = -1;
-   Vect2d centroid;
+   ExtendedVector2d centroid;
    double elongation = -1;
    double circularity = -1;
    double perimiter = -1;
@@ -806,7 +806,7 @@ class FluoStats {
    ChannelStat[] channels;
 
    public FluoStats() {
-      centroid = new Vect2d();
+      centroid = new ExtendedVector2d();
       channels = new ChannelStat[3];
       channels[0] = new ChannelStat();
       channels[1] = new ChannelStat();

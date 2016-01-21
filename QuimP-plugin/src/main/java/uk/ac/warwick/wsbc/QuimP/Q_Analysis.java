@@ -679,7 +679,7 @@ class STmap {
                 tmpV = v.getPrev();
                 distance = 0;
                 do {
-                    distance += Vect2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+                    distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureLocal;
                     count++;
                     tmpV = tmpV.getPrev();
@@ -689,7 +689,7 @@ class STmap {
                 distance = 0;
                 tmpV = v.getNext();
                 do {
-                    distance += Vect2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+                    distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureLocal;
                     count++;
                     tmpV = tmpV.getNext();
@@ -719,7 +719,7 @@ class STmap {
                 tmpV = v.getPrev();
                 distance = 0;
                 do {
-                    distance += Vect2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+                    distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureSmoothed;
                     tmpV = tmpV.getPrev();
                 } while (distance < Qp.sumCov / 2);
@@ -728,7 +728,7 @@ class STmap {
                 distance = 0;
                 tmpV = v.getNext();
                 do {
-                    distance += Vect2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+                    distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureSmoothed;
                     tmpV = tmpV.getNext();
                 } while (distance < Qp.sumCov / 2);

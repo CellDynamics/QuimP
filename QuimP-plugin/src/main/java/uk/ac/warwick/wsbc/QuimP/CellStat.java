@@ -91,12 +91,12 @@ public class CellStat implements Measurements{
             stats[store].elongation =  is.major / is.minor; //include both axis plus elongation
             stats[store].perimiter = roi.getLength(); //o.getLength();
             stats[store].circularity = 4 * Math.PI * (stats[store].area / (stats[store].perimiter * stats[store].perimiter));
-            stats[store].displacement = Vect2d.lengthP2P(stats[0].centroid, stats[store].centroid);
+            stats[store].displacement = ExtendedVector2d.lengthP2P(stats[0].centroid, stats[store].centroid);
 
 
             if (store != 0) {
-                stats[store].speed = Vect2d.lengthP2P(stats[store - 1].centroid, stats[store].centroid);
-                distance += Vect2d.lengthP2P(stats[store - 1].centroid, stats[store].centroid);
+                stats[store].speed = ExtendedVector2d.lengthP2P(stats[store - 1].centroid, stats[store].centroid);
+                distance += ExtendedVector2d.lengthP2P(stats[store - 1].centroid, stats[store].centroid);
                 stats[store].dist = distance;
             } else {
                 stats[store].dist = 0;
@@ -220,7 +220,7 @@ class FrameStat {
     double area;
     //double totalFlour;
     //double meanFlour;
-    Vect2d centroid;
+    ExtendedVector2d centroid;
     double elongation;
     double circularity;
     double perimiter;
@@ -234,7 +234,7 @@ class FrameStat {
     //int cellAge;
 
     public FrameStat() {
-        centroid = new Vect2d();
+        centroid = new ExtendedVector2d();
     }
 
     public void toScale(double scale, double frameInterval) {

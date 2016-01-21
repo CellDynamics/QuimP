@@ -179,9 +179,9 @@ public class NodeMigrator {
 //      return closestEdge;
 //   }
 
-   Vect2d fieldAt(Vect2d p, Sector s) {
+   ExtendedVector2d fieldAt(ExtendedVector2d p, Sector s) {
       // override
-      return new Vect2d(0,0);
+      return new ExtendedVector2d(0,0);
    }
 
 //   private double sampleFluo(int x, int y) {

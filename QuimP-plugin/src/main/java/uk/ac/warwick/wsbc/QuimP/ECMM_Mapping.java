@@ -352,7 +352,7 @@ public class ECMM_Mapping {
                 }
 
                 //check if lines are parallel
-                state = Vect2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(), nA.getNext().getY(),
+                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(), nA.getNext().getY(),
                         nB.getX(), nB.getY(), nB.getNext().getX(), nB.getNext().getY(), intersect);
                 if (state == -1 || state == -2) {
                     //IJ.log("  outline parrallel -fixed");
@@ -435,7 +435,7 @@ class Mapping {
             nB = o2.getHead(); // a different outline so no problem with adjacent edges being flagged as crossing
             //edgeBcount = 1;
             do {
-                state = Vect2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(), nA.getNext().getY(),
+                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(), nA.getNext().getY(),
                         nB.getX(), nB.getY(), nB.getNext().getX(), nB.getNext().getY(), intersect);
 
                 if (state == 1) {
@@ -483,7 +483,7 @@ class Mapping {
     private void insertFake() {
         //insert one fake intersect point just after the heads
         // done when no intersections exist
-        Vect2d pos = Vect2d.vecP2P(o1.getHead().getPoint(), o1.getHead().getNext().getPoint());
+        ExtendedVector2d pos = ExtendedVector2d.vecP2P(o1.getHead().getPoint(), o1.getHead().getNext().getPoint());
         pos.multiply(0.5);
         pos.addVec(o1.getHead().getPoint()); //half way between head and next vert
 
@@ -492,7 +492,7 @@ class Mapping {
         temp.setY(pos.getY());
         temp.setIntPoint(true, 1);
         //
-        pos = Vect2d.vecP2P(o2.getHead().getPoint(), o2.getHead().getNext().getPoint());
+        pos = ExtendedVector2d.vecP2P(o2.getHead().getPoint(), o2.getHead().getNext().getPoint());
         pos.multiply(0.5);
         pos.addVec(o2.getHead().getPoint()); //half way between head and next vert
 
@@ -944,7 +944,7 @@ class Mapping {
 
     public Outline migrate() {
         Vert newVert; // placed at the marker
-        Vect2d newPos;
+        ExtendedVector2d newPos;
         Sector s;
 
         Vert mapHead = new Vert(-1);
@@ -1111,7 +1111,7 @@ class Sector {
     public void construct() {
         // calc lengths, determin expansion, set charges
         calcLengths();
-        double sectorTriArea = Vect2d.triangleArea(startO1.getPoint(),
+        double sectorTriArea = ExtendedVector2d.triangleArea(startO1.getPoint(),
                 startO1.getNext().getPoint(), startO2.getNext().getPoint()); //left or right? Use the "left" algorithm (sign of triangle area)
 
 
@@ -1141,9 +1141,9 @@ class Sector {
         }
 
         Vert v = migCharges.getHead();
-        Vect2d normal;
+        ExtendedVector2d normal;
         do {
-            normal = new Vect2d(v.getNormal().getX(), v.getNormal().getY());
+            normal = new ExtendedVector2d(v.getNormal().getX(), v.getNormal().getY());
             normal.multiply(outerNormal * ECMp.w);
             v.getPoint().addVec(normal);
             v = v.getNext();
@@ -1248,9 +1248,9 @@ class Sector {
 
 
         Vert v = migCharges.getHead();
-        Vect2d normal;
+        ExtendedVector2d normal;
         do {
-            normal = new Vect2d(v.getNormal().getX(), v.getNormal().getY());
+            normal = new ExtendedVector2d(v.getNormal().getX(), v.getNormal().getY());
             normal.multiply(outerNormal * ECMp.w);
             v.getPoint().addVec(normal);
             v = v.getNext();
@@ -1278,7 +1278,7 @@ class Sector {
         VERTSo1 = 0;
         Vert v = startO1;
         do {
-            lengthO1 += Vect2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
+            lengthO1 += ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
             VERTSo1++;
             v = v.getNext();
         } while (!v.isIntPoint());
@@ -1287,7 +1287,7 @@ class Sector {
         VERTSo2 = 0;
         v = startO2;
         do {
-            lengthO2 += Vect2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
+            lengthO2 += ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
             VERTSo2++;
             v = v.getNext();
         } while (!v.isIntPoint());
@@ -1345,7 +1345,7 @@ class Sector {
         double cDis;
         Vert closest = v;
         do {
-            cDis = Vect2d.distPointToSegment(tv.getPoint(), v.getPoint(), v.getNext().getPoint());
+            cDis = ExtendedVector2d.distPointToSegment(tv.getPoint(), v.getPoint(), v.getNext().getPoint());
             if (cDis < dis) {
                 closest = v;
                 dis = cDis;
@@ -1357,7 +1357,7 @@ class Sector {
         newVert.setTrackNum(-35);
         newVert.setX(tv.getX());
         newVert.setY(tv.getY());
-        Vect2d normal = new Vect2d(tv.getNormal().getX(), tv.getNormal().getY());
+        ExtendedVector2d normal = new ExtendedVector2d(tv.getNormal().getX(), tv.getNormal().getY());
         normal.multiply(outerNormal * ECMp.w);
         newVert.getPoint().addVec(normal);
         newVert.updateNormale(true);
@@ -1369,7 +1369,7 @@ class Sector {
     }
 
     private void chargesPolygon() {
-        ArrayList<Vect2d> points = new ArrayList<Vect2d>();
+        ArrayList<ExtendedVector2d> points = new ArrayList<ExtendedVector2d>();
 
         Vert v = migCharges.getHead(); //get charges from head to int point, forward
         do {
@@ -1397,9 +1397,9 @@ class Sector {
         float[] x = new float[points.size()];
         float[] y = new float[points.size()];
 
-        Vect2d p;
+        ExtendedVector2d p;
         for (int i = 0; i < points.size(); i++) {
-            p = (Vect2d) points.get(i);
+            p = (ExtendedVector2d) points.get(i);
             x[i] = (float) p.getX();
             y[i] = (float) p.getY();
         }
@@ -1473,7 +1473,7 @@ class Sector {
         return new FloatPolygon(x, y, x.length); //was this
     }
 
-    public boolean insideCharges(Vect2d p) {
+    public boolean insideCharges(ExtendedVector2d p) {
         if (ECMp.numINTS > 1) {
             return chargesPoly.contains((float) p.getX(), (float) p.getY());
         } else {
@@ -1507,7 +1507,7 @@ class ODEsolver {
     public ODEsolver() {
     }
 
-    public static Vect2d euler(Vert v, Sector s) {
+    public static ExtendedVector2d euler(Vert v, Sector s) {
         //Vect2d[] history =  new Vect2d[ECMp.maxIter];
         int x, y;
         int lastSampleX = -1;
@@ -1515,7 +1515,7 @@ class ODEsolver {
         double dist = 0; // distance migrated
         double tempFlu;
         Vert edge;
-        Vect2d p, pp;
+        ExtendedVector2d p, pp;
 
         v.snapped = false;
 
@@ -1535,14 +1535,14 @@ class ODEsolver {
             ECMM_Mapping.plot.setColor(0, 0, 0);
         }
 
-        p = new Vect2d(v.getX(), v.getY());
-        pp = new Vect2d(v.getX(), v.getY()); //previouse position
+        p = new ExtendedVector2d(v.getX(), v.getY());
+        pp = new ExtendedVector2d(v.getX(), v.getY()); //previouse position
 
         //history[0] = new Vect2d(p.getX(), p.getY());
 
         boolean maxHit = false;
         int i = 1;
-        Vect2d k;
+        ExtendedVector2d k;
 
         for (; i < ECMp.maxIter - 1; i++) {
             //IJ.log("\tIt " + i); //debug
@@ -1554,7 +1554,7 @@ class ODEsolver {
 
                 //if(!ECMp.ANA) {  // no need to snap ana result. landing coord not needed
                 edge = ODEsolver.snap(p, s);
-                dist += Vect2d.lengthP2P(pp, p);
+                dist += ExtendedVector2d.lengthP2P(pp, p);
                 v.distance = Tool.speedToScale(dist, ECMp.scale, ECMp.frameInterval);
                 //if (s.expanding && !ECMp.ANA) {
                 v.setLandingCoord(p, edge);
@@ -1578,7 +1578,7 @@ class ODEsolver {
             pp.setY(p.getY());
             p.setX(p.getX() + k.getX());
             p.setY(p.getY() + k.getY());
-            dist += Vect2d.lengthP2P(pp, p);
+            dist += ExtendedVector2d.lengthP2P(pp, p);
 
             if (ECMp.plot && ECMp.drawPaths) {
                 //ECMM_Mapping.plot.setColor(1, 0, 0);
@@ -1626,8 +1626,8 @@ class ODEsolver {
         return p;
     }
 
-    public static Vect2d dydt(Vect2d p, Sector s) {
-        Vect2d result = fieldAt(p, s);
+    public static ExtendedVector2d dydt(ExtendedVector2d p, Sector s) {
+        ExtendedVector2d result = fieldAt(p, s);
         result.multiply(ECMp.mobileQ);
 
         if (true) {//Math.abs(result.length()) > ECMp.maxVertF) {
@@ -1638,7 +1638,7 @@ class ODEsolver {
         return result;
     }
 
-    public static boolean proximity(Vect2d p, Sector s) {
+    public static boolean proximity(ExtendedVector2d p, Sector s) {
         // could test against the chrages or the actual contour.
         // if using polar lines can use actual contour
         //Vert v = s.getTarStart();
@@ -1646,7 +1646,7 @@ class ODEsolver {
         //Vert v = s.tarCharges.getHead();
         Vert v = s.getTarStart();
         do {
-            double d = Vect2d.distPointToSegment(p, v.getPoint(), v.getNext().getPoint());
+            double d = ExtendedVector2d.distPointToSegment(p, v.getPoint(), v.getNext().getPoint());
             //IJ.log("\t\tprox to: " + d); //debug
             if (d <= ECMp.d) {
                 return true;
@@ -1656,20 +1656,20 @@ class ODEsolver {
         return false;
     }
 
-    private static Vert snap(Vect2d p, Sector s) {
+    private static Vert snap(ExtendedVector2d p, Sector s) {
         // snap p to the closest segment of target contour
-        Vect2d current;
+        ExtendedVector2d current;
         Vert closestEdge;
         double distance;// = ECMp.d + 1; // must be closer then d+1, good starting value
         double tempDis;
 
         Vert v = s.getTarStart().getPrev(); //include the edge to the starting intersect pount
-        distance = Vect2d.distPointToSegment(p, v.getPoint(), v.getNext().getPoint());
+        distance = ExtendedVector2d.distPointToSegment(p, v.getPoint(), v.getNext().getPoint());
         v = v.getNext();
         closestEdge = v;
         do {
-            current = Vect2d.PointToSegment(p, v.getPoint(), v.getNext().getPoint());
-            tempDis = Vect2d.lengthP2P(p, current);
+            current = ExtendedVector2d.PointToSegment(p, v.getPoint(), v.getNext().getPoint());
+            tempDis = ExtendedVector2d.lengthP2P(p, current);
 
             if (tempDis < distance) {
                 closestEdge = v;
@@ -1684,7 +1684,7 @@ class ODEsolver {
         return closestEdge;
     }
 
-    private static Vect2d fieldAt(Vect2d p, Sector s) {
+    private static ExtendedVector2d fieldAt(ExtendedVector2d p, Sector s) {
 
 
         // Use line charges or point charges. remove if for speed
@@ -1696,10 +1696,10 @@ class ODEsolver {
         }
     }
 
-    private static Vect2d fieldAtPoints(Vect2d p, Sector s) {
+    private static ExtendedVector2d fieldAtPoints(ExtendedVector2d p, Sector s) {
         //calc the field size at p according to to migrating and target charges
-        Vect2d field = new Vect2d(0, 0);
-        Vect2d totalF = new Vect2d(0, 0);
+        ExtendedVector2d field = new ExtendedVector2d(0, 0);
+        ExtendedVector2d totalF = new ExtendedVector2d(0, 0);
 
         Vert v = s.migCharges.getHead();
         do {
@@ -1720,8 +1720,8 @@ class ODEsolver {
         return totalF;
     }
 
-    private static void forceP(Vect2d force, Vect2d p, Vect2d pQ, double q, double power) {
-        double r = Vect2d.lengthP2P(pQ, p);
+    private static void forceP(ExtendedVector2d force, ExtendedVector2d p, ExtendedVector2d pQ, double q, double power) {
+        double r = ExtendedVector2d.lengthP2P(pQ, p);
         //System.out.println("\t r = " + r);
         if (r == 0) {
             force.setX(250);
@@ -1730,16 +1730,16 @@ class ODEsolver {
             return;
         }
         r = Math.abs(Math.pow(r, power));
-        Vect2d unitV = Vect2d.unitVector(pQ, p);
+        ExtendedVector2d unitV = ExtendedVector2d.unitVector(pQ, p);
         double multiplier = (ECMp.k * (q / r));
         force.setX(unitV.getX() * multiplier);
         force.setY(unitV.getY() * multiplier);
     }
 
-    private static Vect2d fieldAtLines(Vect2d p, Sector s) {
+    private static ExtendedVector2d fieldAtLines(ExtendedVector2d p, Sector s) {
         //calc the field size at p according to to migrating and target charges
-        Vect2d field = new Vect2d(0, 0);
-        Vect2d totalF = new Vect2d(0, 0);
+        ExtendedVector2d field = new ExtendedVector2d(0, 0);
+        ExtendedVector2d totalF = new ExtendedVector2d(0, 0);
         double polarDir;
 
 
@@ -1809,12 +1809,12 @@ class ODEsolver {
 //        force.setY(rpU.getY() * multiplier);
 //    }
 
-    private static void forceLpolar(Vect2d force, Vect2d p, Vect2d s1, Vect2d s2, double q, double power, double orientation) {
-        double L = Vect2d.lengthP2P(s1, s2);
-        Vect2d rU = Vect2d.unitVector(s2, p);
-        double r = Vect2d.lengthP2P(s2, p);
-        Vect2d rpU = Vect2d.unitVector(s1, p);
-        double rp = Vect2d.lengthP2P(s1, p);
+    private static void forceLpolar(ExtendedVector2d force, ExtendedVector2d p, ExtendedVector2d s1, ExtendedVector2d s2, double q, double power, double orientation) {
+        double L = ExtendedVector2d.lengthP2P(s1, s2);
+        ExtendedVector2d rU = ExtendedVector2d.unitVector(s2, p);
+        double r = ExtendedVector2d.lengthP2P(s2, p);
+        ExtendedVector2d rpU = ExtendedVector2d.unitVector(s1, p);
+        double rp = ExtendedVector2d.lengthP2P(s1, p);
 
         double d = (((rp + r) * (rp + r)) - (L * L)) / (2 * L);
         //double d = ( Math.pow((rp + r), power) - (L * L)) / (2 * L);
@@ -1957,7 +1957,7 @@ class ECMplot {
     public ImageStack imStack;
     public ImageProcessor imProc;
     public int drawFrame = 1;
-    public Vect2d centre;
+    public ExtendedVector2d centre;
     public double scale;
     public QColor color;
     private int intersectSize = 6;
@@ -1976,7 +1976,7 @@ class ECMplot {
         h = ECMp.visualRes;
         
         f = ff;
-        centre = new Vect2d(0, 0);
+        centre = new ExtendedVector2d(0, 0);
         color = new QColor(1, 1, 1);
         //imPlus = NewImage.createByteImage("ECMM mappings", w, h, f, NewImage.FILL_BLACK);
         imPlus = NewImage.createRGBImage("ECMM_mappings", w, h, f, NewImage.FILL_WHITE);
@@ -2017,8 +2017,8 @@ class ECMplot {
 
     public void drawLine(Vert v1, Vert v2) {
 
-        Vect2d a = new Vect2d(v1.getX(), v1.getY());
-        Vect2d b = new Vect2d(v2.getX(), v2.getY());
+        ExtendedVector2d a = new ExtendedVector2d(v1.getX(), v1.getY());
+        ExtendedVector2d b = new ExtendedVector2d(v2.getX(), v2.getY());
         relocate(a);
         relocate(b);
 
@@ -2030,7 +2030,7 @@ class ECMplot {
         imPlus.setSlice(f);
     }
 
-    public void drawPath(Vect2d[] data) {
+    public void drawPath(ExtendedVector2d[] data) {
         relocate(data[0]);
         for (int i = 0; i < data.length - 1; i++) {
             if (data[i + 1] == null) {
@@ -2041,21 +2041,21 @@ class ECMplot {
         }
     }
 
-    public void drawLine(Vect2d aa, Vect2d bb) {
+    public void drawLine(ExtendedVector2d aa, ExtendedVector2d bb) {
 
-        Vect2d a = new Vect2d(aa.getX(), aa.getY());
-        Vect2d b = new Vect2d(bb.getX(), bb.getY());
+        ExtendedVector2d a = new ExtendedVector2d(aa.getX(), aa.getY());
+        ExtendedVector2d b = new ExtendedVector2d(bb.getX(), bb.getY());
         relocate(a);
         relocate(b);
 
         imProc.drawLine((int) a.getX(), (int) a.getY(), (int) b.getX(), (int) b.getY());
     }
 
-    private void relocate(Vect2d p) {
+    private void relocate(ExtendedVector2d p) {
         // move a point to the centre
-        p.addVec(new Vect2d(-centre.getX(), -centre.getY()));
+        p.addVec(new ExtendedVector2d(-centre.getX(), -centre.getY()));
         p.multiply(scale);
-        p.addVec(new Vect2d(ECMp.visualRes / 2, ECMp.visualRes / 2));
+        p.addVec(new ExtendedVector2d(ECMp.visualRes / 2, ECMp.visualRes / 2));
 
     }
 
@@ -2068,14 +2068,14 @@ class ECMplot {
         this.drawCircle(i.getPoint(), intersectSize);
     }
 
-    public void drawCircle(Vect2d a, int s) {
-        Vect2d v = new Vect2d(a.getX(), a.getY());
+    public void drawCircle(ExtendedVector2d a, int s) {
+        ExtendedVector2d v = new ExtendedVector2d(a.getX(), a.getY());
         relocate(v);
         imProc.drawOval((int) v.getX() - (s / 2), (int) v.getY() - (s / 2), s, s);
     }
 
-    public void drawCross(Vect2d a, int s) {
-        Vect2d p = new Vect2d(a.getX(), a.getY());
+    public void drawCross(ExtendedVector2d a, int s) {
+        ExtendedVector2d p = new ExtendedVector2d(a.getX(), a.getY());
         relocate(p);
         imProc.drawLine((int) p.getX() - s, (int) p.getY() - s, (int) p.getX() + s, (int) p.getY() + s);
         imProc.drawLine((int) p.getX() + s, (int) p.getY() - s, (int) p.getX() - s, (int) p.getY() + s);

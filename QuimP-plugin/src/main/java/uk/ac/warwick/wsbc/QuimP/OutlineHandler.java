@@ -15,8 +15,8 @@ public class OutlineHandler {
    private int startFrame;
    private int endFrame;
    private QParams qp;
-   public Vect2d maxCoor;
-   public Vect2d minCoor;
+   public ExtendedVector2d maxCoor;
+   public ExtendedVector2d minCoor;
    // min and max limits
    public double[] migLimits;
    public double[][] fluLims;
@@ -216,8 +216,8 @@ public class OutlineHandler {
    }
 
    private void findStatLimits() {
-      maxCoor = new Vect2d();
-      minCoor = new Vect2d();
+      maxCoor = new ExtendedVector2d();
+      minCoor = new ExtendedVector2d();
       fluLims = new double[3][2];
       migLimits = new double[2];
       //convLimits = new double[2];

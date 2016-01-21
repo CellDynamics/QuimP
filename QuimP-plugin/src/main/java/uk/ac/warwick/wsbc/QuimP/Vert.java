@@ -9,9 +9,9 @@ import ij.IJ;
  * @author rtyson
  */
 public class Vert {
-    private Vect2d point;		//x,y co-ordinates of the node
-    private Vect2d normal;		//normals
-    private Vect2d tan;
+    private ExtendedVector2d point;		//x,y co-ordinates of the node
+    private ExtendedVector2d normal;		//normals
+    private ExtendedVector2d tan;
     public double charge;               // charge on the vertex
     public double distance;             // distance vert migrated (actually converted to speed by Tool.speedToScale
 
@@ -51,9 +51,9 @@ public class Vert {
 
     public Vert(int t) {
         // t = tracking number
-        point = new Vect2d();
-        normal = new Vect2d();
-        tan = new Vect2d();
+        point = new ExtendedVector2d();
+        normal = new ExtendedVector2d();
+        tan = new ExtendedVector2d();
         head = false;
         intPoint = false;
         intState = 0;
@@ -71,10 +71,10 @@ public class Vert {
     }
 
     public Vert(double xx, double yy, int t) {
-        point = new Vect2d(xx, yy);
+        point = new ExtendedVector2d(xx, yy);
         tracknumber = t;
-        normal = new Vect2d();
-        tan = new Vect2d();
+        normal = new ExtendedVector2d();
+        tan = new ExtendedVector2d();
         head = false;
         intPoint = false;
         intState = 0;
@@ -154,11 +154,11 @@ public class Vert {
         Vert.clockwise = b;
     }
 
-    public Vect2d getPoint() {
+    public ExtendedVector2d getPoint() {
         return point;
     }
 
-    public Vect2d getNormal() {
+    public ExtendedVector2d getNormal() {
         return normal;
     }
 
@@ -168,7 +168,7 @@ public class Vert {
     }
     // 
 
-    public Vect2d getTangent() {
+    public ExtendedVector2d getTangent() {
         return tan;
     }
 
@@ -215,25 +215,25 @@ public class Vert {
         }
     }
 
-    private Vect2d calcTan() {
+    private ExtendedVector2d calcTan() {
         // calulate tangent at Vert n (i.e. unit vector between neighbours)
         // calc a unit vector towards neighbouring nodes and then a unit vec between their ends
         // direction important for normale calculation. Always calc tan as if clockwise
 
-        Vect2d unitVecLeft = Vect2d.unitVector(point, prev.getPoint());
-        Vect2d unitVecRight = Vect2d.unitVector(point, next.getPoint());
+        ExtendedVector2d unitVecLeft = ExtendedVector2d.unitVector(point, prev.getPoint());
+        ExtendedVector2d unitVecRight = ExtendedVector2d.unitVector(point, next.getPoint());
 
-        Vect2d pointLeft = new Vect2d();
+        ExtendedVector2d pointLeft = new ExtendedVector2d();
         pointLeft.setX(getX());
         pointLeft.setY(getY());
         pointLeft.addVec(unitVecLeft);
 
-        Vect2d pointRight = new Vect2d();
+        ExtendedVector2d pointRight = new ExtendedVector2d();
         pointRight.setX(getX());
         pointRight.setY(getY());
         pointRight.addVec(unitVecRight);
 
-        return Vect2d.unitVector(pointLeft, pointRight);
+        return ExtendedVector2d.unitVector(pointLeft, pointRight);
     }
 
     public static void randDirection() {
@@ -244,7 +244,7 @@ public class Vert {
         }
     }
 
-    public void setLandingCoord(Vect2d p, Vert edge) {
+    public void setLandingCoord(ExtendedVector2d p, Vert edge) {
         Vert edge2 = edge.getNext(); //'edge' is the 1st vert of an edge
 
         while (edge.isIntPoint()) {
@@ -255,8 +255,8 @@ public class Vert {
         }
 
         // relative position of landing
-        double d1 = Vect2d.lengthP2P(edge.point, edge2.point);
-        double d2 = Vect2d.lengthP2P(edge.point, p);
+        double d1 = ExtendedVector2d.lengthP2P(edge.point, edge2.point);
+        double d2 = ExtendedVector2d.lengthP2P(edge.point, p);
         double prop = d2 / d1;
 
         gLandCoord = calcLanding(edge.gCoord, edge2.gCoord,prop);
@@ -314,10 +314,10 @@ public class Vert {
 
     public void calcCurvatureLocal(){
 
-        Vect2d edge1 =  Vect2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
-        Vect2d edge2 =  Vect2d.vecP2P(this.getPoint(),this.getNext().getPoint());
+        ExtendedVector2d edge1 =  ExtendedVector2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
+        ExtendedVector2d edge2 =  ExtendedVector2d.vecP2P(this.getPoint(),this.getNext().getPoint());
 
-        double angle = Vect2d.angle(edge1, edge2) * (180/Math.PI); //convert to degrees
+        double angle = ExtendedVector2d.angle(edge1, edge2) * (180/Math.PI); //convert to degrees
 
         if(angle > 360 || angle < -360){
             System.out.println("Warning-angle out of range (Vert l:320)");

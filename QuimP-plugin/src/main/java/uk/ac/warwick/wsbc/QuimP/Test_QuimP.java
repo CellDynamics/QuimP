@@ -87,11 +87,11 @@ public class Test_QuimP implements PlugIn {
 
 
 
-      Vect2d edge1 = Vect2d.vecP2P(b.getPoint(), a.getPoint());
+      ExtendedVector2d edge1 = ExtendedVector2d.vecP2P(b.getPoint(), a.getPoint());
 
-      Vect2d edge2 = Vect2d.vecP2P(b.getPoint(), c.getPoint());
+      ExtendedVector2d edge2 = ExtendedVector2d.vecP2P(b.getPoint(), c.getPoint());
 
-      double curvature = Vect2d.angle(edge1, edge2) * (180 / Math.PI);
+      double curvature = ExtendedVector2d.angle(edge1, edge2) * (180 / Math.PI);
 
       System.out.println("curv = " + curvature);
    }
@@ -148,15 +148,15 @@ public class Test_QuimP implements PlugIn {
       //Vect2d c = new Vect2d(248.21769647653375,383.1254314892506);
       //Vect2d d = new Vect2d(248.22719691475632,395.7869644627188);
       
-      Vect2d a = new Vect2d(238,180);
-      Vect2d b = new Vect2d(252,179);
+      ExtendedVector2d a = new ExtendedVector2d(238,180);
+      ExtendedVector2d b = new ExtendedVector2d(252,179);
 
-      Vect2d c = new Vect2d(248.217,383);
-      Vect2d d = new Vect2d(248.227,395);
+      ExtendedVector2d c = new ExtendedVector2d(248.217,383);
+      ExtendedVector2d d = new ExtendedVector2d(248.227,395);
 
       double[] intersect = new double[2];
 
-      int state = Vect2d.segmentIntersection(a.getX(), a.getY(), b.getX(), b.getY(), c.getX(), c.getY(), d.getX(), d.getY(), intersect);
+      int state = ExtendedVector2d.segmentIntersection(a.getX(), a.getY(), b.getX(), b.getY(), c.getX(), c.getY(), d.getX(), d.getY(), intersect);
        System.out.println("Sate: " + state);
       if (state == -1) {
          System.out.println("\nLines parallel");

@@ -15,6 +15,6 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ Interpolate_test.class, InterpolateLoess_testParam.class, InterpolateMean_testParam.class })
-public class Interpolate_TestAll {
+public class Interpolate_Test {
 
 }

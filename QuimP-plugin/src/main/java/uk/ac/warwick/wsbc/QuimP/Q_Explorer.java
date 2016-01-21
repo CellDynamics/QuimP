@@ -137,8 +137,8 @@ class ExplorerStackWindow extends StackWindow implements ActionListener, ItemLis
       imageManager.setSlice(y);
    }
 
-   Vect2d map2Mov(){
-      return new Vect2d(-1,-1);
+   ExtendedVector2d map2Mov(){
+      return new ExtendedVector2d(-1,-1);
    }
 }
 
@@ -149,8 +149,8 @@ class ImageManager{
    ImagePlus movieIpl;
    ImagePlus xMap, yMap;
    Overlay[] movOverlay;
-   Vect2d mapCoord;
-   Vect2d movCoord;
+   ExtendedVector2d mapCoord;
+   ExtendedVector2d movCoord;
    int nbMaps;
 
    ImageManager( OutlineHandler oH){

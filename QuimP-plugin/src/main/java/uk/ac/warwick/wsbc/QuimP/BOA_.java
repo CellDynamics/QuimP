@@ -1090,8 +1090,8 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       SnakeHandler sH;
       Snake snake;
-      Vect2d sV;
-      Vect2d mV = new Vect2d(x, y);
+      ExtendedVector2d sV;
+      ExtendedVector2d mV = new ExtendedVector2d(x, y);
       double[] distance = new double[nest.size()];
 
       for (int i = 0; i < nest.size(); i++) { // calc all distances
@@ -1099,7 +1099,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          if (sH.isStoredAt(frame)) {
             snake = sH.getStoredSnake(frame);
             sV = snake.getCentroid();
-            distance[i] = Vect2d.lengthP2P(mV, sV);
+            distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
          }
       }
       int minIndex = Tool.minArrayIndex(distance);
@@ -1118,8 +1118,8 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
    void deleteSegmentation(int x, int y, int frame) {
       SnakeHandler sH;
       Snake snake;
-      Vect2d sV;
-      Vect2d mV = new Vect2d(x, y);
+      ExtendedVector2d sV;
+      ExtendedVector2d mV = new ExtendedVector2d(x, y);
       double[] distance = new double[nest.size()];
 
       for (int i = 0; i < nest.size(); i++) { // calc all distances
@@ -1128,7 +1128,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          if (sH.isStoredAt(frame)) {
             snake = sH.getStoredSnake(frame);
             sV = snake.getCentroid();
-            distance[i] = Vect2d.lengthP2P(mV, sV);
+            distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
          } else {
             distance[i] = 9999;
          }
@@ -1158,8 +1158,8 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
    void editSeg(int x, int y, int frame) {
       SnakeHandler sH;
       Snake snake;
-      Vect2d sV;
-      Vect2d mV = new Vect2d(x, y);
+      ExtendedVector2d sV;
+      ExtendedVector2d mV = new ExtendedVector2d(x, y);
       double[] distance = new double[nest.size()];
 
       for (int i = 0; i < nest.size(); i++) { // calc all distances
@@ -1167,7 +1167,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          if (sH.isStoredAt(frame)) {
             snake = sH.getStoredSnake(frame);
             sV = snake.getCentroid();
-            distance[i] = Vect2d.lengthP2P(mV, sV);
+            distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
          }
       }
       int minIndex = Tool.minArrayIndex(distance);
@@ -1538,8 +1538,8 @@ class Constrictor {
 
    public boolean constrict(Snake snake, ImageProcessor ip) {
 
-      Vect2d F_temp; //temp vectors for forces
-      Vect2d V_temp = new Vect2d();
+      ExtendedVector2d F_temp; //temp vectors for forces
+      ExtendedVector2d V_temp = new ExtendedVector2d();
 
       Node n = snake.getHead();
       do { //compute F_total
@@ -1606,8 +1606,8 @@ class Constrictor {
          
          
 
-         Vect2d F_temp; //temp vectors for forces
-         Vect2d V_temp = new Vect2d();
+         ExtendedVector2d F_temp; //temp vectors for forces
+         ExtendedVector2d V_temp = new ExtendedVector2d();
 
          Node n = snake.getHead();
          do { //compute F_total
@@ -1676,17 +1676,17 @@ class Constrictor {
       }
    }
 
-   public Vect2d contractionForce(Node n) {
+   public ExtendedVector2d contractionForce(Node n) {
 
-      Vect2d R_result;
-      Vect2d L_result;
-      Vect2d force = new Vect2d();
+      ExtendedVector2d R_result;
+      ExtendedVector2d L_result;
+      ExtendedVector2d force = new ExtendedVector2d();
 
       //compute the unit vector pointing to the left neighbour (static method)
-      L_result = Vect2d.unitVector(n.getPoint(), n.getPrev().getPoint());
+      L_result = ExtendedVector2d.unitVector(n.getPoint(), n.getPrev().getPoint());
 
       //compute the unit vector pointing to the right neighbour
-      R_result = Vect2d.unitVector(n.getPoint(), n.getNext().getPoint());
+      R_result = ExtendedVector2d.unitVector(n.getPoint(), n.getNext().getPoint());
 
       force.setX((R_result.getX() + L_result.getX()) * 0.5); // combine vector to left and right
       force.setY( (R_result.getY() + L_result.getY()) * 0.5);
@@ -1697,9 +1697,9 @@ class Constrictor {
    /**
     * @deprecated Probably old version of contractionForce(Node n)
     */
-   public Vect2d imageForceOLD(Node n, ImageProcessor ip) {
-      Vect2d result = new Vect2d();
-      Vect2d tan;	//Tangent
+   public ExtendedVector2d imageForceOLD(Node n, ImageProcessor ip) {
+      ExtendedVector2d result = new ExtendedVector2d();
+      ExtendedVector2d tan;	//Tangent
       int i, j;
 
       double a = 0.75;	//subsampling factor
@@ -1808,9 +1808,9 @@ class Constrictor {
       return (result);
    }
 
-   public Vect2d imageForce(Node n, ImageProcessor ip) {
-      Vect2d result = new Vect2d();
-      Vect2d tan = n.getTangent();	//Tangent at node
+   public ExtendedVector2d imageForce(Node n, ImageProcessor ip) {
+      ExtendedVector2d result = new ExtendedVector2d();
+      ExtendedVector2d tan = n.getTangent();	//Tangent at node
       int i, j;                       //loop vars
 
       double a = 0.75;	//subsampling factor
@@ -1884,7 +1884,7 @@ class Constrictor {
          for (int sj = si + 1; sj < N; sj++) {
             snakeB = nest.getHandler(sj).getLiveSnake();
             snakeB.calcCentroid();
-            prox[si][sj] = Vect2d.lengthP2P(snakeA.getCentroid(), snakeB.getCentroid());
+            prox[si][sj] = ExtendedVector2d.lengthP2P(snakeA.getCentroid(), snakeB.getCentroid());
          }
       }
 
@@ -1947,7 +1947,7 @@ class Constrictor {
                continue;
             }
             //test proximity and freeze
-            prox = Vect2d.distPointToSegment(an.getPoint(), bn.getPoint(), bn.getNext().getPoint());
+            prox = ExtendedVector2d.distPointToSegment(an.getPoint(), bn.getPoint(), bn.getNext().getPoint());
             if (prox < BOAp.proxFreeze) {
                an.freeze();
                bn.freeze();
@@ -2583,7 +2583,7 @@ class Snake {
    private Rectangle bounds = new Rectangle();      // snake bounds
    //public QColor colour;   private Rectangle bounds = new Rectangle();      // snake bounds
    //public QColor colour;
-   private Vect2d centroid;
+   private ExtendedVector2d centroid;
 
    /**
     * Create a snake from existing linked list (at least one head node)
@@ -2601,7 +2601,7 @@ class Snake {
       FROZEN = N;
       nextTrackNumber = N + 1;
       //colour = QColor.lightColor();
-      centroid = new Vect2d(0d, 0d);
+      centroid = new ExtendedVector2d(0d, 0d);
       this.calcCentroid();
 
       removeNode(head);
@@ -2718,16 +2718,16 @@ class Snake {
       Node node;
       int j, nn;
       double x, y, spacing;
-      Vect2d a, b, u;
+      ExtendedVector2d a, b, u;
       for (int i = 0; i < p.npoints; i++) {
          j = ((i + 1) % (p.npoints)); // for last i point we turn for first one closing polygon
-         a = new Vect2d(p.xpoints[i], p.ypoints[i]);// vectors ab define edge
-         b = new Vect2d(p.xpoints[j], p.ypoints[j]);
+         a = new ExtendedVector2d(p.xpoints[i], p.ypoints[i]);// vectors ab define edge
+         b = new ExtendedVector2d(p.xpoints[j], p.ypoints[j]);
 
 
-         nn = (int) Math.ceil(Vect2d.lengthP2P(a, b) / BOAp.getNodeRes()); // number of nodes
-         spacing = Vect2d.lengthP2P(a, b) / (double) nn;
-         u = Vect2d.unitVector(a, b);
+         nn = (int) Math.ceil(ExtendedVector2d.lengthP2P(a, b) / BOAp.getNodeRes()); // number of nodes
+         spacing = ExtendedVector2d.lengthP2P(a, b) / (double) nn;
+         u = ExtendedVector2d.unitVector(a, b);
          u.multiply(spacing); // required distance between points
 
          for (int s = 0; s < nn; s++) { //place nodes along edge
@@ -3054,7 +3054,7 @@ class Snake {
             if (nB.isHead()) {
                cutHead = true;
             }
-            state = Vect2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(), nA.getNext().getY(),
+            state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(), nA.getNext().getY(),
                     nB.getX(), nB.getY(), nB.getNext().getX(), nB.getNext().getY(), intersect);
             if (state == 1) {
                //System.out.println("CutLoops: cut out a loop");
@@ -3119,7 +3119,7 @@ class Snake {
             if (nB.isHead()) {
                cutHead = true;
             }
-            state = Vect2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(), nA.getNext().getY(),
+            state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(), nA.getNext().getY(),
                     nB.getX(), nB.getY(), nB.getNext().getX(), nB.getNext().getY(), intersect);
             if (state == 1) {
                //System.out.println("CutIntersect: cut out an intersect: x0: " + 
@@ -3238,7 +3238,7 @@ class Snake {
       // ensure nodes are between maxDist and minDist apart, add remove nodes as required
 
       double Di, avg_dist, InsX, InsY, InsNormX, InsNormY, rand;
-      Vect2d tan;
+      ExtendedVector2d tan;
 
       //choose a random direction to process the chain
       Node.randDirection();
@@ -3249,7 +3249,7 @@ class Snake {
       Node n_neigh = n.getNext(); // either the left or right neighbour
       do {
          //compute tangent
-         tan = Vect2d.vecP2P(n.getPoint(), n_neigh.getPoint());
+         tan = ExtendedVector2d.vecP2P(n.getPoint(), n_neigh.getPoint());
 
          //compute Distance
          Di = tan.length();
@@ -3301,7 +3301,7 @@ class Snake {
    public void correctDistance(boolean shiftNewNode) throws Exception {
       Node.randDirection(); //choose a random direction to process the chain
 
-      Vect2d tanL, tanR, tanLR, npos; //
+      ExtendedVector2d tanL, tanR, tanLR, npos; //
       double dL, dR, dLR, tmp;
 
       Node nC = head;
@@ -3313,9 +3313,9 @@ class Snake {
          nR = nC.getNext(); // left neighbour
 
          //compute tangent
-         tanL = Vect2d.vecP2P(nL.getPoint(), nC.getPoint());
-         tanR = Vect2d.vecP2P(nC.getPoint(), nR.getPoint());
-         tanLR = Vect2d.vecP2P(nL.getPoint(), nR.getPoint());
+         tanL = ExtendedVector2d.vecP2P(nL.getPoint(), nC.getPoint());
+         tanR = ExtendedVector2d.vecP2P(nC.getPoint(), nR.getPoint());
+         tanLR = ExtendedVector2d.vecP2P(nL.getPoint(), nR.getPoint());
          dL = tanL.length();
          dR = tanR.length();
          dLR = tanLR.length();
@@ -3325,7 +3325,7 @@ class Snake {
             if (dLR > 2 * BOAp.getMin_dist()) {
 
                //move nC to middle
-               npos = new Vect2d(tanLR.getX(), tanLR.getY());
+               npos = new ExtendedVector2d(tanLR.getX(), tanLR.getY());
                npos.multiply(0.501); //half
                npos.addVec(nL.getPoint());
 
@@ -3335,7 +3335,7 @@ class Snake {
                //tmp = Math.sqrt((dL*dL) - ((dLR/2.)*(dLR/2.)));
                //System.out.println("too close, move to middle, tmp: "+tmp);
                
-               tmp = Math.sin(Vect2d.angle(tanL, tanLR)) * dL;
+               tmp = Math.sin(ExtendedVector2d.angle(tanL, tanLR)) * dL;
                //tmp = Vec2d.distPointToSegment(nC.getPoint(), nL.getPoint(), nR.getPoint());
                nC.getNormal().multiply(-tmp);
                nC.getPoint().addVec(nC.getNormal());
@@ -3368,7 +3368,7 @@ class Snake {
                 nIns.getVel().multiply(BOAp.vel_crit*1.5);
             }           
  
-            npos = new Vect2d(tanL.getX(), tanL.getY());
+            npos = new ExtendedVector2d(tanL.getX(), tanL.getY());
             npos.multiply(0.51);
             npos.addVec(nL.getPoint());
 
@@ -3430,7 +3430,7 @@ class Snake {
       Node v = head;
       do {
          v.position = d / length;
-         d = d + Vect2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
+         d = d + ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
          v = v.getNext();
       } while (!v.isHead());
    }
@@ -3444,7 +3444,7 @@ class Snake {
       Node v = head;
       double length = 0.0;
       do {
-         length += Vect2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
+         length += ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
          v = v.getNext();
       } while (!v.isHead());
       return length;
@@ -3492,12 +3492,12 @@ class Snake {
     * 
     * @return List of Vect2d objects representing coordinates of Snake Nodes
     */
-   public List<Vect2d> asList() {
-	   List<Vect2d> al = new ArrayList<Vect2d>(NODES);
+   public List<ExtendedVector2d> asList() {
+	   List<ExtendedVector2d> al = new ArrayList<ExtendedVector2d>(NODES);
 	   // iterate over nodes at Snake
 	   Node n = head;
 	   do {
-		   al.add(new Vect2d(n.getX(), n.getY()));
+		   al.add(new ExtendedVector2d(n.getX(), n.getY()));
 		   n = n.getNext();
 	   } while(!n.isHead());
 	   return al;
@@ -3575,7 +3575,7 @@ class Snake {
       System.out.println("Editing a snake");
    }
 
-   public Vect2d getCentroid() {
+   public ExtendedVector2d getCentroid() {
       return centroid;
    }
 
@@ -3583,7 +3583,7 @@ class Snake {
     * Calculate centroid of Snake
     */
    public void calcCentroid() {
-      centroid = new Vect2d(0, 0);
+      centroid = new ExtendedVector2d(0, 0);
       Node v = this.head;
       double x, y, g;
       do {
@@ -3645,12 +3645,12 @@ class Snake {
  *
  */
 class Node {
-   private Vect2d point;		//x,y co-ordinates of the node
-   private Vect2d normal;		//normals
-   private Vect2d tan;
-   private Vect2d vel;			//velocity of the nodes
-   private Vect2d F_total;		//total force at node
-   private Vect2d prelimPoint;          // point to move node to after all new node positions have been calc
+   private ExtendedVector2d point;		//x,y co-ordinates of the node
+   private ExtendedVector2d normal;		//normals
+   private ExtendedVector2d tan;
+   private ExtendedVector2d vel;			//velocity of the nodes
+   private ExtendedVector2d F_total;		//total force at node
+   private ExtendedVector2d prelimPoint;          // point to move node to after all new node positions have been calc
    private boolean frozen;		//flag which is set when the velocity is below the critical velocity
    private int tracknumber;
    double position = -1;   // position value.
@@ -3662,12 +3662,12 @@ class Node {
 
    public Node(int t) {
       // t = tracking number
-      point = new Vect2d();
-      F_total = new Vect2d();
-      vel = new Vect2d();
-      normal = new Vect2d();
-      tan = new Vect2d();
-      prelimPoint = new Vect2d();
+      point = new ExtendedVector2d();
+      F_total = new ExtendedVector2d();
+      vel = new ExtendedVector2d();
+      normal = new ExtendedVector2d();
+      tan = new ExtendedVector2d();
+      prelimPoint = new ExtendedVector2d();
       frozen = false;
       head = false;
       tracknumber = t;
@@ -3675,12 +3675,12 @@ class Node {
    }
 
    Node(double xx, double yy, int t) {
-      point = new Vect2d(xx, yy);
-      F_total = new Vect2d();
-      vel = new Vect2d();
-      normal = new Vect2d();
-      tan = new Vect2d();
-      prelimPoint = new Vect2d();
+      point = new ExtendedVector2d(xx, yy);
+      F_total = new ExtendedVector2d();
+      vel = new ExtendedVector2d();
+      normal = new ExtendedVector2d();
+      tan = new ExtendedVector2d();
+      prelimPoint = new ExtendedVector2d();
       frozen = false;
       head = false;
       tracknumber = t;
@@ -3780,7 +3780,7 @@ class Node {
       Node.clockwise = b;
    }
 
-   public Vect2d getPoint() {
+   public ExtendedVector2d getPoint() {
       return point;
    }
 
@@ -3788,19 +3788,19 @@ class Node {
       return frozen;
    }
 
-   public Vect2d getF_total() {
+   public ExtendedVector2d getF_total() {
       return F_total;
    }
 
-   public Vect2d getVel() {
+   public ExtendedVector2d getVel() {
       return vel;
    }
 
-   public Vect2d getNormal() {
+   public ExtendedVector2d getNormal() {
       return normal;
    }
 
-   public Vect2d getTangent() {
+   public ExtendedVector2d getTangent() {
       return tan;
    }
 
@@ -3812,7 +3812,7 @@ class Node {
     * Sets total force for Node
     * @param f	vector of force to assign to Node force
     */
-   public void setF_total(Vect2d f) {
+   public void setF_total(ExtendedVector2d f) {
       F_total.setX(f.getX());
       F_total.setY(f.getY());
    }
@@ -3821,7 +3821,7 @@ class Node {
     * Sets velocity for Node
     * @param v	vector of velocity to assign to Node force
     */
-   public void setVel(Vect2d v) {
+   public void setVel(ExtendedVector2d v) {
       vel.setX(v.getX());
       vel.setY(v.getY());
    }
@@ -3830,7 +3830,7 @@ class Node {
     * Updates total force for Node
     * @param f	vector of force to add to Node force
     */
-   public void addF_total(Vect2d f) {
+   public void addF_total(ExtendedVector2d f) {
       // add the xy values in f to xy F_total i.e updates total Force
       F_total.setX(F_total.getX() + f.getX());
       F_total.setY(F_total.getY() + f.getY());
@@ -3840,13 +3840,13 @@ class Node {
     * Updates velocity for Node
     * @param v	vector of velocity to add to Node force
     */   
-   public void addVel(Vect2d v) {
+   public void addVel(ExtendedVector2d v) {
       //adds the xy values in v to Vel i.e. updates velocity
       vel.setX(vel.getX() + v.getX());
       vel.setY(vel.getY() + v.getY());
    }
 
-   public void setPrelim(Vect2d v) {
+   public void setPrelim(ExtendedVector2d v) {
       prelimPoint.setX(v.getX());
       prelimPoint.setY(v.getY());
    }
@@ -3915,25 +3915,25 @@ class Node {
 
    }
 
-   private Vect2d calcTan() {
+   private ExtendedVector2d calcTan() {
       // calulate tangent at Node n (i.e. unit vector between neighbours)
       // calc a unit vector towards neighbouring nodes and then a unit vec between thier ends
       // direction important for normale calculation. Always calc tan as if clockwise
 
-      Vect2d unitVecLeft = Vect2d.unitVector(point, prev.getPoint());
-      Vect2d unitVecRight = Vect2d.unitVector(point, next.getPoint());
+      ExtendedVector2d unitVecLeft = ExtendedVector2d.unitVector(point, prev.getPoint());
+      ExtendedVector2d unitVecRight = ExtendedVector2d.unitVector(point, next.getPoint());
 
-      Vect2d pointLeft = new Vect2d();
+      ExtendedVector2d pointLeft = new ExtendedVector2d();
       pointLeft.setX(getX());
       pointLeft.setY(getY());
       pointLeft.addVec(unitVecLeft);
 
-      Vect2d pointRight = new Vect2d();
+      ExtendedVector2d pointRight = new ExtendedVector2d();
       pointRight.setX(getX());
       pointRight.setY(getY());
       pointRight.addVec(unitVecRight);
 
-      tan = Vect2d.unitVector(pointLeft, pointRight);
+      tan = ExtendedVector2d.unitVector(pointLeft, pointRight);
 
       return tan;
    }
@@ -3948,10 +3948,10 @@ class Node {
 
    public double getCurvatureLocal(){
 
-        Vect2d edge1 =  Vect2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
-        Vect2d edge2 =  Vect2d.vecP2P(this.getPoint(),this.getNext().getPoint());
+        ExtendedVector2d edge1 =  ExtendedVector2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
+        ExtendedVector2d edge2 =  ExtendedVector2d.vecP2P(this.getPoint(),this.getNext().getPoint());
 
-        double angle = Vect2d.angle(edge1, edge2) * (180/Math.PI); //convert to degrees
+        double angle = ExtendedVector2d.angle(edge1, edge2) * (180/Math.PI); //convert to degrees
 
         if(angle > 360 || angle < -360){
             System.out.println("Warning-angle out of range (Vert l:320)");

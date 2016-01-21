@@ -338,14 +338,14 @@ public final class Outline implements Cloneable {
       newV = head;
 
       int numVertsInserted = 1; // the head
-      Vect2d uEdge, edge, placementVector;
+      ExtendedVector2d uEdge, edge, placementVector;
       do {
          Vert v2 = v1.getNext();
          lastPlacement = 0.0;
          currentDis = 0.0;
-         edge = Vect2d.vecP2P(v1.getPoint(), v2.getPoint());
+         edge = ExtendedVector2d.vecP2P(v1.getPoint(), v2.getPoint());
          //edge.print("edge");
-         uEdge = Vect2d.unitVector(v1.getPoint(), v2.getPoint());
+         uEdge = ExtendedVector2d.unitVector(v1.getPoint(), v2.getPoint());
          //uEdge.print("uEdge");
          if (edge.length() == 0) { //points on top of one another, move on
             v1 = v1.getNext();
@@ -353,7 +353,7 @@ public final class Outline implements Cloneable {
          }
 
          while (true) {
-            placementVector = new Vect2d(uEdge.getX(), uEdge.getY());
+            placementVector = new ExtendedVector2d(uEdge.getX(), uEdge.getY());
             //double mult = (density + currentDis) - remaining;
             //System.out.println("mult "+mult);
             //placementVector.print("before Mult");
@@ -433,14 +433,14 @@ public final class Outline implements Cloneable {
       newV = head;
 
       int numVertsInserted = 1; // the head
-      Vect2d uEdge, edge, placementVector;
+      ExtendedVector2d uEdge, edge, placementVector;
       do {
          Vert v2 = v1.getNext();
          lastPlacement = 0.0;
          currentDis = 0.0;
-         edge = Vect2d.vecP2P(v1.getPoint(), v2.getPoint());
+         edge = ExtendedVector2d.vecP2P(v1.getPoint(), v2.getPoint());
          //edge.print("edge");
-         uEdge = Vect2d.unitVector(v1.getPoint(), v2.getPoint());
+         uEdge = ExtendedVector2d.unitVector(v1.getPoint(), v2.getPoint());
          //uEdge.print("uEdge");
          if (edge.length() == 0) { //points on top of one another, move on
             v1 = v1.getNext();
@@ -448,7 +448,7 @@ public final class Outline implements Cloneable {
          }
 
          while (true) {
-            placementVector = new Vect2d(uEdge.getX(), uEdge.getY());
+            placementVector = new ExtendedVector2d(uEdge.getX(), uEdge.getY());
             //double mult = (density + currentDis) - remaining;
             //System.out.println("mult "+mult);
             //placementVector.print("before Mult");
@@ -509,8 +509,8 @@ public final class Outline implements Cloneable {
       return 0.5 * sum;
    }
 
-   public Vect2d getCentroid() {
-      Vect2d centroid = new Vect2d(0,0);
+   public ExtendedVector2d getCentroid() {
+      ExtendedVector2d centroid = new ExtendedVector2d(0,0);
         Vert v = head;
         double x,y,g;
         do {
@@ -601,7 +601,7 @@ public final class Outline implements Cloneable {
       Vert v = head;
 
       do {
-         dist = Vect2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
+         dist = ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
 
          if (dist < min) {
             removeVert(v.getNext());
@@ -626,7 +626,7 @@ public final class Outline implements Cloneable {
       int interval;
 
       Vert nA, nB;
-      Vect2d intersect;
+      ExtendedVector2d intersect;
       Vert newN;
 
       boolean cutHead = false;
@@ -640,7 +640,7 @@ public final class Outline implements Cloneable {
             if (nB.isHead()) {
                cutHead = true;
             }
-            intersect = Vect2d.lineIntersectionOLD(nA.getPoint(), nA.getNext().getPoint(), nB.getPoint(), nB.getNext().getPoint());
+            intersect = ExtendedVector2d.lineIntersectionOLD(nA.getPoint(), nA.getNext().getPoint(), nB.getPoint(), nB.getNext().getPoint());
             if (intersect != null) {
 
                iCut = true;
@@ -701,7 +701,7 @@ public final class Outline implements Cloneable {
                cutHead = true;
             }
             intersect = new double[2];
-            state = Vect2d.segmentIntersection(nA.getPoint().getX(), nA.getPoint().getY(), nA.getNext().getPoint().getX(), nA.getNext().getPoint().getY(),
+            state = ExtendedVector2d.segmentIntersection(nA.getPoint().getX(), nA.getPoint().getY(), nA.getNext().getPoint().getX(), nA.getNext().getPoint().getY(),
                     nB.getPoint().getX(), nB.getPoint().getY(), nB.getNext().getPoint().getX(), nB.getNext().getPoint().getY(), intersect);
             /*
             if (state == -1) {
@@ -782,7 +782,7 @@ public final class Outline implements Cloneable {
       do {
          do {
             nB = nA.getNext();
-            length = Vect2d.lengthP2P(nA.getPoint(), nB.getPoint());
+            length = ExtendedVector2d.lengthP2P(nA.getPoint(), nB.getPoint());
             if(length < nano){
                this.removeVert(nB);
                deleted = true;
@@ -800,7 +800,7 @@ public final class Outline implements Cloneable {
       Vert v = head;
       double length = 0.0;
       do {
-         length += Vect2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
+         length += ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
          v = v.getNext();
       } while (!v.isHead());
       return length;
@@ -821,7 +821,7 @@ public final class Outline implements Cloneable {
       Vert v = head;
       do {
          v.coord = d / length;
-         d = d + Vect2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
+         d = d + ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
          v = v.getNext();
       } while (!v.isHead());
    }
@@ -835,7 +835,7 @@ public final class Outline implements Cloneable {
          v.coord = d / length;
          v.gCoord = v.coord;
          v.fCoord = v.coord;
-         d = d + Vect2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
+         d = d + ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
          v = v.getNext();
       } while (!v.isHead());
    }
@@ -1005,14 +1005,14 @@ public final class Outline implements Cloneable {
       } while (!v.isHead());
    }
 
-   void setHeadclosest(Vect2d pHead) {
+   void setHeadclosest(ExtendedVector2d pHead) {
       double dis, curDis;
       Vert v = head;
       Vert closestV = head;
-      curDis = Vect2d.lengthP2P(pHead, v.getPoint());
+      curDis = ExtendedVector2d.lengthP2P(pHead, v.getPoint());
 
       do{
-         dis = Vect2d.lengthP2P(pHead, v.getPoint());
+         dis = ExtendedVector2d.lengthP2P(pHead, v.getPoint());
          if(dis < curDis){
             curDis = dis;
             closestV = v;

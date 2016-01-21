@@ -154,7 +154,7 @@ public class SVGplotter {
 
 
             int barValue = (int)Math.round((width / 5d) * scale);
-            ScaleBar scaleBar = new ScaleBar(new Vect2d(minx+5,miny+8), "&#x3BC;m", barValue, scale);
+            ScaleBar scaleBar = new ScaleBar(new ExtendedVector2d(minx+5,miny+8), "&#x3BC;m", barValue, scale);
             scaleBar.thickness = 1;
             scaleBar.colour.setRGB(1, 1, 1);
             scaleBar.draw(osw);
@@ -230,10 +230,10 @@ class ScaleBar{
     private int value;
     public double thickness;
     public QColor colour;
-    private Vect2d location;
+    private ExtendedVector2d location;
     private Qtext text;
 
-    public ScaleBar(Vect2d l, String u, int v, double s){
+    public ScaleBar(ExtendedVector2d l, String u, int v, double s){
         location= l;
         units = u;
         value = v;
@@ -253,8 +253,8 @@ class ScaleBar{
         Qline body, lTick, rTick;
         double tickSize = 2*thickness;
 
-        Vect2d end = new Vect2d(location.getX(), location.getY());
-        end.addVec(new Vect2d(length,0));
+        ExtendedVector2d end = new ExtendedVector2d(location.getX(), location.getY());
+        end.addVec(new ExtendedVector2d(length,0));
         body = new Qline(location.getX(), location.getY(), end.getX(), end.getY());
         body.thickness = thickness;
         body.colour = colour;
@@ -274,7 +274,7 @@ class ScaleBar{
         int textLength = 2 + Integer.toString(value).length();
         textLength = textLength * 4;
         double textDis = (body.length() - textLength) / 2;
-        SVGdraw.text(osw, text, new Vect2d(location.getX()+textDis, location.getY()-2));
+        SVGdraw.text(osw, text, new ExtendedVector2d(location.getX()+textDis, location.getY()-2));
     }
 
 }
@@ -289,7 +289,7 @@ class SVGdraw{
         osw.write("style=\"stroke:" +l.colour.getColorSVG() +";stroke-width:" +l.thickness + "\"/>");
     }
 
-    static public void text(OutputStreamWriter osw, Qtext t, Vect2d l)throws IOException{
+    static public void text(OutputStreamWriter osw, Qtext t, ExtendedVector2d l)throws IOException{
         osw.write("\n<text x=\""+l.getX()+"\" y=\""+l.getY()+"\" "+
                 "style=\"font-family: " + t.font + ";font-size: " + t.size+";fill: "+t.colour.getColorSVG()+"\">"
                 +t.text+"</text>");
