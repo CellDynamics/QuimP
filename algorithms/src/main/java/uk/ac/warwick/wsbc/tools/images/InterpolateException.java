@@ -17,4 +17,8 @@ public class InterpolateException extends Exception {
 	public InterpolateException(String arg0) {
 		super(arg0);
 	}
+	
+	public InterpolateException(String arg0, Throwable cause) {
+		super(arg0,cause);
+	}
 }
