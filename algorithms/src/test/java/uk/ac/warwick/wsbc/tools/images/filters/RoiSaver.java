@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.tools.images;
+package uk.ac.warwick.wsbc.tools.images.filters;
 
 import java.awt.Color;
 import java.util.List;

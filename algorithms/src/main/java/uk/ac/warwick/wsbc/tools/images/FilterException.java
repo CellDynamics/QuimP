@@ -7,18 +7,18 @@ package uk.ac.warwick.wsbc.tools.images;
  * @date 20 Jan 2016
  */
 @SuppressWarnings("serial")
-public class InterpolateException extends Exception {
+public class FilterException extends Exception {
 
 	/**
 	 * Main constructor
 	 * 
 	 * @param arg0 Reason of exception
 	 */
-	public InterpolateException(String arg0) {
+	public FilterException(String arg0) {
 		super(arg0);
 	}
 	
-	public InterpolateException(String arg0, Throwable cause) {
+	public FilterException(String arg0, Throwable cause) {
 		super(arg0,cause);
 	}
 }

@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.tools.images;
+package uk.ac.warwick.wsbc.tools.images.filters;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -14,7 +14,10 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses({ Interpolate_test.class, InterpolateLoess_testParam.class, InterpolateMean_testParam.class })
+@SuiteClasses({ MeanFilter_test.class,
+	InterpolateLoess_testParam.class,
+	MeanFilter_testParam.class,
+	IPadArray_test.class})
 public class Interpolate_Test {
 
 }

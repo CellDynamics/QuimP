@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.tools.images;
+package uk.ac.warwick.wsbc.tools.images.filters;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,9 +16,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
-import org.junit.runner.RunWith;
 
-import uk.ac.warwick.wsbc.tools.images.Interpolate;
+import uk.ac.warwick.wsbc.tools.images.FilterException;
+
+import org.junit.runner.RunWith;
 
 /**
  * Test runner for Interpolate class using parameters. Test only getInterpolationLoess method using its own parameters
@@ -101,15 +102,15 @@ public class InterpolateLoess_testParam {
 	}
 		
 	/**
-	 * @throws InterpolateException 
+	 * @throws FilterException 
 	 * @test Test of getInterpolationLoess method
 	 * @post Save image test_getInterpolationLoess_* in /tmp/
 	 */
 	@Test
-	public void test_getInterpolationLoess() throws InterpolateException {
+	public void test_getInterpolationLoess() throws FilterException {
 		ArrayList<Vector2d> out;
-		Interpolate i = new Interpolate(testcase);
-		out = (ArrayList<Vector2d>) i.getInterpolationLoess(smooth.doubleValue());
+		LoessFilter i = new LoessFilter(testcase,smooth.doubleValue());
+		out = (ArrayList<Vector2d>) i.RunFilter();
 		RoiSaver.saveROI("/tmp/test_getInterpolationLoess_"+testfileName.getFileName()+"_"+smooth.toString()+".tif", out);
 		logger.debug("setUp: "+testcase.toString());
 		if(out.size()<100)

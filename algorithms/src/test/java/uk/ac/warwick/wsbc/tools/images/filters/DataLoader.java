@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.tools.images;
+package uk.ac.warwick.wsbc.tools.images.filters;
 
 import java.io.File;
 import java.io.FileNotFoundException;

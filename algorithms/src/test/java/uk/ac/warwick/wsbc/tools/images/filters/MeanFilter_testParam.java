@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.tools.images;
+package uk.ac.warwick.wsbc.tools.images.filters;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,6 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import uk.ac.warwick.wsbc.tools.images.FilterException;
+
 /**
  * Test runner for Interpolate class using parameters. Test only getInterpolationMean method using its own parameters
  * 
@@ -27,11 +29,11 @@ import org.junit.runners.Parameterized;
  *
  */
 @RunWith(Parameterized.class)
-public class InterpolateMean_testParam {
+public class MeanFilter_testParam {
 	private List<Vector2d> testcase;
 	private Integer window;
 	private Path testfileName;
-	private static final Logger logger = LogManager.getLogger(InterpolateMean_testParam.class.getName());
+	private static final Logger logger = LogManager.getLogger(MeanFilter_testParam.class.getName());
 
 	/**
 	 * Parameterized constructor.
@@ -44,7 +46,7 @@ public class InterpolateMean_testParam {
 	 * @param window averaging window size
 	 * @see DataLoader
 	 */
-	public InterpolateMean_testParam(String testFileName, Integer window) {
+	public MeanFilter_testParam(String testFileName, Integer window) {
 		this.testfileName = Paths.get(testFileName);
 		this.window = window;
 	}
@@ -101,16 +103,16 @@ public class InterpolateMean_testParam {
 	}
 	
 	/**
-	 * @throws InterpolateException 
+	 * @throws FilterException 
 	 * @test Test of getInterpolationMean method
 	 * @pre original images saved as test_roiSaver_
 	 * @post Save image test_getInterpolationMean_* in /tmp/
 	 */
 	@Test
-	public void test_getInterpolationMean() throws InterpolateException {
+	public void test_getInterpolationMean() throws FilterException {
 		ArrayList<Vector2d> out;
-		Interpolate i = new Interpolate(testcase);
-		out = (ArrayList<Vector2d>) i.getInterpolationMean(window.intValue());
+		MeanFilter i = new MeanFilter(testcase,window.intValue());
+		out = (ArrayList<Vector2d>) i.RunFilter();
 		RoiSaver.saveROI("/tmp/test_getInterpolationMean_"+testfileName.getFileName()+"_"+window.toString()+".tif", out);
 		logger.debug("setUp: "+testcase.toString());
 		if(out.size()<100)

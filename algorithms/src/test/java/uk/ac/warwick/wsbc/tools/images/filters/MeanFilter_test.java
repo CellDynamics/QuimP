@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.warwick.wsbc.tools.images;
+package uk.ac.warwick.wsbc.tools.images.filters;
 
 import static org.junit.Assert.*;
 
@@ -16,6 +16,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.warwick.wsbc.tools.images.FilterException;
+
 /**
  * Test runner for Interpolate class.
  * 
@@ -24,10 +26,10 @@ import org.junit.Test;
  * @author baniuk
  *
  */
-public class Interpolate_test {
+public class MeanFilter_test {
 
 	private List<Vector2d> testcase;
-	private static final Logger logger = LogManager.getLogger(Interpolate_test.class.getName());
+	private static final Logger logger = LogManager.getLogger(MeanFilter_test.class.getName());
 	
 	/**
 	 * Called after construction but before tests
@@ -50,17 +52,17 @@ public class Interpolate_test {
 
 	/**
 	 * @test Test of getInterpolationMean method
-	 * @throws InterpolateException 
+	 * @throws FilterException 
 	 * @pre Vector of 1-10 elements
 	 * @post Running mean for window 3: [4.3333    2.0000    3.0000    4.0000    5.0000    6.0000    7.0000    8.0000    9.0000    6.6667]
 	 */
 	@Test
-	public void test_getInterpolationMean() throws InterpolateException {
-		Interpolate in = new Interpolate(testcase);
+	public void test_getInterpolationMean() throws FilterException {
+		MeanFilter in = new MeanFilter(testcase,3);
 		double[] expected = {4.3333, 2.0000, 3.0000, 4.0000, 5.0000, 6.0000, 7.0000, 8.0000, 9.0000, 6.6667};
 		
 		List<Vector2d> out;
-		out = in.getInterpolationMean(3);
+		out = (List<Vector2d>) in.RunFilter();
 		logger.debug("org     : "+testcase.toString());
 		logger.debug("Window 3: "+out.toString());
 		
