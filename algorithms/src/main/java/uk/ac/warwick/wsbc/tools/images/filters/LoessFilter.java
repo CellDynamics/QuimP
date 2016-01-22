@@ -33,6 +33,7 @@ public class LoessFilter extends Vector2dFilter {
 	 */
 	public LoessFilter(List<Vector2d> input, double smoothing) {
 		super(input);
+		toArrays(); // this algorithm needs access to coordinates separately
 		this.smoothing = smoothing;
 	}
 
@@ -47,11 +48,11 @@ public class LoessFilter extends Vector2dFilter {
 	public Collection<Vector2d> RunFilter() throws FilterException {
 		float density = 1.0f;	// If smaller than 1 output points will be refined. For 1 numbers of output points and input points are equal.  
 		LoessInterpolator sI;
-		double[] i = new double[input.size()]; // table of linear indexes that stand for x values for X,Y vectors (treated separately now)
+		double[] i = new double[points.size()]; // table of linear indexes that stand for x values for X,Y vectors (treated separately now)
 		List<Vector2d> out = new ArrayList<Vector2d>(); // output interpolated data
 		PolynomialSplineFunction psfX; // result of LoessInterpolator.interpolate for X and Y data
 		PolynomialSplineFunction psfY;
-		for(int ii=0;ii<input.size();ii++)
+		for(int ii=0;ii<points.size();ii++)
 			i[ii] = ii;	// create linear indexes for X and Y
 		try {
 			sI = new LoessInterpolator(
@@ -65,7 +66,7 @@ public class LoessFilter extends Vector2dFilter {
 				throw new FilterException("Smoothing value is too small",e); // change for checked exception and add cause
 		}
 		// copy to Vector2d List
-		for(float ii=0;ii<=input.size()-1;ii+=density) {
+		for(float ii=0;ii<=points.size()-1;ii+=density) {
 			out.add(new Vector2d(
 					psfX.value(ii),
 					psfY.value(ii)));

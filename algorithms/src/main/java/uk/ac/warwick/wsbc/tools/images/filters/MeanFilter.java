@@ -27,6 +27,7 @@ public class MeanFilter extends Vector2dFilter implements IPadArray {
 	 */
 	public MeanFilter(List<Vector2d> input, int window) {
 		super(input);
+		toArrays(); // this algorithm needs access to coordinates separately
 		this.window = window;
 	}
 
@@ -52,16 +53,16 @@ public class MeanFilter extends Vector2dFilter implements IPadArray {
 		
 		if(window%2==0)
 			throw new FilterException("Input argument must be uneven");
-		if(window>=input.size())
+		if(window>=points.size())
 			throw new FilterException("Processing window to long");
 		if(window<0)
 			throw new FilterException("Processing window is negative");
 		
-		for(int c=0;c<input.size();c++)	{	// for every point in data
+		for(int c=0;c<points.size();c++)	{	// for every point in data
 			meanx = 0;
 			meany = 0;
 			for(int cc=c-cp;cc<=c+cp;cc++) { // collect points in range c-2 c-1 c-0 c+1 c+2 (for window=5)
-				indexTmp = IPadArray.getIndex(input.size(), cc, IPadArray.CIRCULARPAD);
+				indexTmp = IPadArray.getIndex(points.size(), cc, IPadArray.CIRCULARPAD);
 				meanx += X[indexTmp];
 				meany += Y[indexTmp];				
 			}
