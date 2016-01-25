@@ -10,14 +10,15 @@ import org.junit.runners.Suite.SuiteClasses;
  * By default all those tests are named with small letter to prevent Maven
  * from executing them.
  * 
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 @RunWith(Suite.class)
 @SuiteClasses({ MeanFilter_test.class,
 	InterpolateLoess_testParam.class,
 	MeanFilter_testParam.class,
-	IPadArray_test.class})
+	IPadArray_test.class,
+	HatFilter_test.class})
 public class Interpolate_Test {
 
 }

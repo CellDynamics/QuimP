@@ -7,7 +7,7 @@ import uk.ac.warwick.wsbc.tools.images.FilterException;
 /**
  * General interface that define filter run on points in euclidean space
  *  
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public interface IPoint2dFilter<E> {

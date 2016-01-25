@@ -5,7 +5,7 @@ package uk.ac.warwick.wsbc.tools.images.filters;
  * 
  * Supports various methods of data padding
  *  
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public interface IPadArray {

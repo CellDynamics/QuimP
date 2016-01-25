@@ -28,13 +28,10 @@ import uk.ac.warwick.wsbc.tools.images.FilterException;
 public class HatFilter_test {
 	
 	private static final Logger logger = LogManager.getLogger(HatFilter_test.class.getName());
-	List<Vector2d> input;
+	private List<Vector2d> input;
 
-	/**
-	 * Allow to get tested method name (called at setUp())
-	 */
 	@Rule
-	public TestName name = new TestName();
+	public TestName name = new TestName(); ///< Allow to get tested method name (called at setUp())
 	
 	/**
 	 * Create line with nodes in every 1 unit. 
