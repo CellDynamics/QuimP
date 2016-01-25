@@ -11,24 +11,26 @@ sig = 0.05;
 
 coord = in;
 clear ratio
-dp = floor(crown/2)+brim;
-coordp = padarray(coord,crown+2*brim,'circular');
-start = brim+floor(crown/2)+1;
+dp = floor(crown/2);
+coordp = padarray(coord,dp,'circular');
+start = dp+1;
 indtoremove = cell(1,length(start:length(coord)+start-1));
 for i=start:length(coord)+start-1
     allpoints = coordp(i-dp:i+dp,:);
     allvectors = diff(allpoints);
-    lenallvectors = sum(sqrt(sum(allvectors.^2,2)));
+    lenallvectors = sum(sqrt(sum(allvectors.^2,2)))';
     nocrownpoints = allpoints;
-    nocrownpoints(brim+1:end-brim,:) = [];
+    nocrownpoints(dp+1-floor(brim/2):dp+1+floor(brim/2),:) = [];
     nocrownvectors = diff(nocrownpoints);
-    lennocrownvectors = sum(sqrt(sum(nocrownvectors.^2,2)));
+    lennocrownvectors = sum(sqrt(sum(nocrownvectors.^2,2)))';
     ratio(i-start+1) = 1-lennocrownvectors/lenallvectors;    
 end
 
+indtoremovetest = [];
 for i=1:length(ratio)
     if(ratio(i))>sig
         indtoremove{i} = (i+start-1) - floor(crown/2):(i+start-1)+floor(crown/2);
+        indtoremovetest = [indtoremovetest indtoremove{i}];
     end
 end
 
@@ -39,7 +41,7 @@ for i=1:length(indtoremove)
    end
 end
 % delete padding (on beginig)
-coordp = coordp(crown+2*brim+1:end,:);
+coordp(1:dp,:) = [];
 % and on the end
 coordp = coordp(1:length(coord),:);
 % find positions of NaNs (vertices to remove)
@@ -55,3 +57,4 @@ plot(ratio);grid on
 hold on
 plot(coordpp(:,1),repmat(sig,length(coordpp),1),'-g')
 hold off
+unique(indtoremovetest)
