@@ -40,6 +40,7 @@ public class HatFilter_test {
 	 * @code
 	 *                  ---
 	 * -----------------   --------------------
+	 * 0                                      39
 	 * @endcode
 	 * 
 	 * @throws Exception

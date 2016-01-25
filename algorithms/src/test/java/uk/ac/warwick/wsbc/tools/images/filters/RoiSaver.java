@@ -33,31 +33,43 @@ class RoiSaver {
 	 * Save ROI as image
 	 * 
 	 * Get ListArray with vertices and create \a fileName.tif image with ROI
+	 * For non-valid input list it creates red image of size 100 x 100
 	 * 
 	 * @param fileName file to save image with path
 	 * @param vert list of vertices
 	 */
 	public static void saveROI(String fileName, List<Vector2d> vert) {
-		double[] bb;
-		float[] x = new float[vert.size()];
-		float[] y = new float[vert.size()];
-		int l = 0;
-		// copy to arrays
-		for(Vector2d el : vert) {
-			x[l] = (float)el.getX();
-			y[l] = (float)el.getY();
-			l++;
+		try {
+			double[] bb;
+			float[] x = new float[vert.size()];
+			float[] y = new float[vert.size()];
+			int l = 0;
+			// copy to arrays
+			for(Vector2d el : vert) {
+				x[l] = (float)el.getX();
+				y[l] = (float)el.getY();
+				l++;
+			}
+			bb = getBoundingBox(vert); // get size of output image
+			PolygonRoi pR = new PolygonRoi(x, y, Roi.POLYGON); // create polygon object
+			logger.debug("Creating image of size ["+(int)Math.round(bb[0])+","+(int)Math.round(bb[1])+"]");
+			ImagePlus outputImage = IJ.createImage("", (int)Math.round(bb[0]+0.2*bb[0]), (int)Math.round(bb[1]+0.2*bb[1]), 1, 8); // output image of size of polygon + margins
+			ImageProcessor ip = outputImage.getProcessor(); // get processor required later
+			ip.setColor(Color.WHITE); // set pen
+			pR.setLocation(0.1*bb[0], 0.1*bb[1]); // move slightly ROI to center
+			pR.drawPixels(ip); // draw roi
+			IJ.saveAsTiff(outputImage, fileName); // save image
+			logger.debug("Saved as: "+fileName);
+		} catch(Exception e)
+		{
+			ImagePlus outputImage = IJ.createImage("", 100, 100, 1, 24);
+			ImageProcessor ip = outputImage.getProcessor(); 
+			ip.setColor(Color.RED);
+			ip.fill();
+			IJ.saveAsTiff(outputImage, fileName); // save image
+			logger.error(e);
 		}
-		bb = getBoundingBox(vert); // get size of output image
-		PolygonRoi pR = new PolygonRoi(x, y, Roi.POLYGON); // create polygon object
-		logger.debug("Creating image of size ["+(int)Math.round(bb[0])+","+(int)Math.round(bb[1])+"]");
-		ImagePlus outputImage = IJ.createImage("", (int)Math.round(bb[0]+0.2*bb[0]), (int)Math.round(bb[1]+0.2*bb[1]), 1, 8); // output image of size of polygon + margins
-		ImageProcessor ip = outputImage.getProcessor(); // get processor required later
-		ip.setColor(Color.WHITE); // set pen
-		pR.setLocation(0.1*bb[0], 0.1*bb[1]); // move slightly ROI to center
-		pR.drawPixels(ip); // draw roi
-		IJ.saveAsTiff(outputImage, fileName); // save image
-		logger.debug("Saved as: "+fileName);
+		
 	}
 	
 	/**
