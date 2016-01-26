@@ -85,10 +85,10 @@ public class HatFilter_testParam {
 	@Parameterized.Parameters
 	public static Collection<Object[]> testFiles() {
 		return Arrays.asList(new Object[][] {
-			{"src/test/resources/testData_137.dat",23,13,0.3},
-			{"src/test/resources/testData_1.dat",23,13,0.3},
-			{"src/test/resources/testData_125.dat",23,13,0.3},
-			{"src/test/resources/testData_75.dat",23,13,0.3}
+			{"src/test/resources/testData_137.dat",25,13,0.6e-3},
+			{"src/test/resources/testData_1.dat",25,13,0.6e-3},
+			{"src/test/resources/testData_125.dat",25,13,0.6e-3},
+			{"src/test/resources/testData_75.dat",25,13,0.6e-3}
 		});
 	}
 	

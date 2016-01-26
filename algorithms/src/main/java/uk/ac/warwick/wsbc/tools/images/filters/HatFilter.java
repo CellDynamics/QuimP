@@ -114,7 +114,7 @@ public class HatFilter extends Vector2dFilter implements IPadArray {
 			for(int i=0;i<B.length-1;i++)
 				lenBrim += getLen(B[i],B[i+1]);
 			// decide whether to remove crown
-			double ratio = 1 - lenBrim/lenAll;
+			double ratio = (1 - lenBrim/lenAll)/(window*crown);
 			logger.debug("c: "+c+" lenAll="+lenAll+" lenBrim="+lenBrim+" ratio: "+ratio);
 			if(ratio>sig) // add crown for current window position c to remove list. Added are real indexes in points array (not local window indexes)
 				for(int i=c-cr;i<=c+cr;i++) 
