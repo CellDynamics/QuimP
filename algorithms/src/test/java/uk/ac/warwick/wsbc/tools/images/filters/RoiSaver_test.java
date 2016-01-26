@@ -4,8 +4,6 @@
  */
 package uk.ac.warwick.wsbc.tools.images.filters;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 
 import javax.vecmath.Vector2d;

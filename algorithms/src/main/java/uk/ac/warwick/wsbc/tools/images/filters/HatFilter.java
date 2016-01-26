@@ -102,24 +102,17 @@ public class HatFilter extends Vector2dFilter implements IPadArray {
 			lenBrim = 0;
 			for(int cc=c-cp;cc<=c+cp;cc++) { // collect points in range c-2 c-1 c-0 c+1 c+2 (for window=5)
 				indexTmp = IPadArray.getIndex(points.size(), cc, IPadArray.CIRCULARPAD); // get padded indexes
-				V[countW] = (Vector2d) points.get(indexTmp).clone(); // store window content, copy as V and B will be changed and can't be referenced each other
-				if(cc<c-cr || cc>c+cr) //FIXME Avoid clone() method
-					B[countC++] = (Vector2d) points.get(indexTmp).clone(); // store only brim, copy as V and B will be changed and can't be referenced each other
+				V[countW] = points.get(indexTmp); // store window content (reference)
+				if(cc<c-cr || cc>c+cr)
+					B[countC++] = points.get(indexTmp); // store only brim (reference)
 				countW++;
 			}
 			
-			// converting node points to vectors between them
-			// for temporary table V/B {n0 n1 n2 n3 ...} calculate vectors {n1-n0 n2-n1 ....}
-			// results are stored in the same V/B but now V/B are valid to V/B.length-1
+			// converting node points to vectors between them and get that vector length
 			for(int i=0;i<V.length-1;i++)
-				V[i].sub(V[i+1]);
+				lenAll += getLen(V[i],V[i+1]);
 			for(int i=0;i<B.length-1;i++)
-				B[i].sub(B[i+1]);
-			// calculate lengths
-			for(int i=0;i<V.length-1;i++)
-				lenAll += V[i].length();
-			for(int i=0;i<B.length-1;i++)
-				lenBrim += B[i].length();
+				lenBrim += getLen(B[i],B[i+1]);
 			// decide whether to remove crown
 			double ratio = 1 - lenBrim/lenAll;
 			logger.debug("c: "+c+" lenAll="+lenAll+" lenBrim="+lenBrim+" ratio: "+ratio);
@@ -133,6 +126,25 @@ public class HatFilter extends Vector2dFilter implements IPadArray {
 			if( !indToRemove.contains(i) )
 				out.add(points.get(i));
 		return out;
+	}
+	
+	/**
+	 * Get length of vector v = v1-v2
+	 * 
+	 * Avoid creating new Vector2d object when using build-in Vector2d::sub method
+	 * method
+	 * 
+	 * @param v1 Vector
+	 * @param v2 Vector
+	 * @return ||v1-v2||
+	 */
+	private double getLen(Vector2d v1, Vector2d v2) {
+		double dx;
+		double dy;
+		dx = v1.x - v2.x;
+		dy = v1.y - v2.y;
+		
+		return Math.sqrt(dx*dx + dy*dy);
 	}
 
 }

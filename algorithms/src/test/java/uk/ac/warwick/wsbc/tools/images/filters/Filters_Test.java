@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * Suite class collecting all tests for Interpolate class
+ * Suite class collecting all tests for Filters
  * 
  * By default all those tests are named with small letter to prevent Maven
  * from executing them.
@@ -18,7 +18,9 @@ import org.junit.runners.Suite.SuiteClasses;
 	InterpolateLoess_testParam.class,
 	MeanFilter_testParam.class,
 	IPadArray_test.class,
-	HatFilter_test.class})
-public class Interpolate_Test {
+	HatFilter_test.class,
+	HatFilter_testParam.class,
+	RoiSaver_test.class})
+public class Filters_Test {
 
 }
