@@ -4,8 +4,6 @@
  */
 package uk.ac.warwick.wsbc.tools.images.filters;
 
-import static org.junit.Assert.*;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,6 +24,8 @@ import org.junit.runners.Parameterized;
 import uk.ac.warwick.wsbc.tools.images.FilterException;
 
 /**
+ * Parameterized test for HatFilter
+ * 
  * @author p.baniukiewicz
  * @date 25 Jan 2016
  *
@@ -43,9 +43,8 @@ public class HatFilter_testParam {
 	 * Parameterized constructor.
 	 * 
 	 * Each parameter should be placed as an argument here
-     * Every time runner triggers, it will pass the arguments
-     * from parameters we defined in primeNumbers() method
-     * 
+	 * Every time runner triggers, it will pass the arguments
+	 * from parameters we defined to this method
 	 * @param testFileName test file name
 	 * @param window filter window size
 	 * @param crown filter crown size
@@ -81,19 +80,27 @@ public class HatFilter_testParam {
 	 * Set of parameters for tests.
 	 * 
 	 * @return List of strings with paths to testfiles and smooth parameter
+	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
 	 */
 	@Parameterized.Parameters
 	public static Collection<Object[]> testFiles() {
 		return Arrays.asList(new Object[][] {
-			{"src/test/resources/testData_137.dat",13,5,0.01},
+			{"src/test/resources/testData_137.dat",23,13,0.3},
+			{"src/test/resources/testData_1.dat",23,13,0.3},
+			{"src/test/resources/testData_125.dat",23,13,0.3},
+			{"src/test/resources/testData_75.dat",23,13,0.3}
 		});
 	}
 	
 
 	/**
-	 * @throws FilterException 
 	 * @test Test of getInterpolationLoess method
+	 * @pre Real cases extrcted from 
 	 * @post Save image test_HatFilter_* in /tmp/
+	 * @throws FilterException 
+	 * @see QuimP-toolbox/algorithms/src/test/resources/HatFilter.m for verification of logs (ratios, indexes, etc)
+	 * @see QuimP-toolbox/algorithms/src/test/resources/Interpolate_Test_Analyzer.m for plotting results
+	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
 	 */
 	@Test
 	public void test_HatFilter() throws FilterException {
@@ -102,5 +109,14 @@ public class HatFilter_testParam {
 		out = (ArrayList<Vector2d>) hf.RunFilter();
 		RoiSaver.saveROI("/tmp/test_HatFilter_"+testfileName.getFileName()+"_"+window.toString()+"_"+crown.toString()+"_"+sig.toString()+".tif", out);
 		logger.debug("setUp: "+testcase.toString());
+	}
+	
+	/**
+	 * @test Simple test of RoiSaver class, create reference images without processing but with the same name scheme
+	 * @post Save image /tmp/testroiSaver_*.tif
+	 */
+	@Test
+	public void test_roiSaver() {
+		RoiSaver.saveROI("/tmp/ref_HatFilter_"+testfileName.getFileName()+"_"+window.toString()+"_"+crown.toString()+"_"+sig.toString()+".tif", testcase);
 	}
 }

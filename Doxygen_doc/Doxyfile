@@ -108,7 +108,7 @@ FILE_PATTERNS          = *.h \
                          *.cpp \
                          *.md \
                          *.java \
-			 *.doc
+	            		 *.doc 
 RECURSIVE              = YES
 EXCLUDE                = 
                         

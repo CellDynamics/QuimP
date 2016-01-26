@@ -39,9 +39,8 @@ public class MeanFilter_testParam {
 	 * Parameterized constructor.
 	 * 
 	 * Each parameter should be placed as an argument here
-     * Every time runner triggers, it will pass the arguments
-     * from parameters we defined in primeNumbers() method
-     * 
+	 * Every time runner triggers, it will pass the arguments
+	 * from parameters we defined to this method 
 	 * @param testFileName test file name
 	 * @param window averaging window size
 	 * @see DataLoader
@@ -72,6 +71,7 @@ public class MeanFilter_testParam {
 	 * Set of parameters for tests.
 	 * 
 	 * @return List of strings with paths to testfiles and smooth parameter
+	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
 	 */
 	@Parameterized.Parameters
 	public static Collection<Object[]> testFiles() {
@@ -107,6 +107,8 @@ public class MeanFilter_testParam {
 	 * @test Test of getInterpolationMean method
 	 * @pre original images saved as test_roiSaver_
 	 * @post Save image test_getInterpolationMean_* in /tmp/
+	 * @see QuimP-toolbox/algorithms/src/test/resources/Interpolate_Test_Analyzer.m for plotting results
+	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
 	 */
 	@Test
 	public void test_getInterpolationMean() throws FilterException {
@@ -120,7 +122,7 @@ public class MeanFilter_testParam {
 	}
 	
 	/**
-	 * @test Simple test of roiSaver class, create reference images without processing
+	 * @test Simple test of RoiSaver class, create reference images without processing
 	 * @post Save image /tmp/testroiSaver_*.tif
 	 */
 	@Test

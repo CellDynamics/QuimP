@@ -14,6 +14,8 @@ clear coords;
 for i=1:length(testFrames)
     coords{i} = qCells.outlines{testFrames(i)}(:,2:3);
 end
+%% Generate test cases
+% should be copied to relevant test/Resources directory
 for i=1:length(testFrames)
    fid = fopen(['testData_' num2str(testFrames(i)) '.dat'], 'w');
    xy = coords{i};
