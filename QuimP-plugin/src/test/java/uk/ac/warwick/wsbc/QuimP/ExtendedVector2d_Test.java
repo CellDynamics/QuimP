@@ -50,5 +50,10 @@ public class ExtendedVector2d_Test {
 		ExtendedVector2d ev1 = new ExtendedVector2d(v1);
 		logger.debug("Casting1: "+ev1.toString());
 	}
+	
+	@Test
+	public void test_ListCast() {
+		ArrayList<Vector2d> l = (ArrayList<Vector2d>)(ArrayList)new ArrayList<ExtendedVector2d>();
+	}
 
 }

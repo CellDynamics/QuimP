@@ -12,6 +12,9 @@ import ij.io.SaveDialog;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 import ij.process.*;
+import uk.ac.warwick.wsbc.tools.images.FilterException;
+import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
+import uk.ac.warwick.wsbc.tools.images.filters.Vector2dFilter;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -24,6 +27,10 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.vecmath.Vector2d;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Main class implementing BOA plugin.
@@ -34,6 +41,7 @@ import javax.swing.event.ChangeListener;
  */
 public class BOA_ implements PlugIn {
 
+   private static final Logger logger = LogManager.getLogger(BOA_.class.getName());
    CustomCanvas canvas;
    CustomStackWindow window;
    static TextArea logArea;
@@ -1068,6 +1076,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
     * @param r ROI object (IJ)
     * @param f number of current frame
     * @see tightenSnake(Snake) 
+    * @todo sH.storeCurrentSnake(f); is called two times just to know who thrown exception
     */
    void addCell(Roi r, int f) {
       SnakeHandler sH = nest.addHandler(r, f);
@@ -1077,12 +1086,24 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          imageGroup.drawPath(snake, f); //pre tightned snake on path
          tightenSnake(snake);
          imageGroup.drawPath(snake, f); //post tightned snake on path
+         // processing
+         Vector2dFilter filter = new MeanFilter(snake.asList(), 7);
+         ArrayList<Vector2d> out = (ArrayList<Vector2d>) filter.RunFilter();
+         //TODO Convert to Snake - construct new object
+         //TODO replace liveSnake from SnakeHandler
+         
          sH.storeCurrentSnake(f);
-      } catch (Exception e) {
+      } 
+      catch(FilterException e) {
+    	  BOA_.log("Error in filter module: "+e.getMessage());
+    	  logger.error(e);
+      }
+      catch (Exception e) {
          BOA_.log("New snake failed to converge");
+         logger.error(e);
       }
       try {
-         sH.storeCurrentSnake(f);
+         sH.storeCurrentSnake(f); //FIXME Call it only once and throw different exceptions
       } catch (Exception e) {
          BOA_.log("Could not store new snake");
       }
@@ -3498,12 +3519,12 @@ class Snake {
     * 
     * @return List of Vect2d objects representing coordinates of Snake Nodes
     */
-   public List<ExtendedVector2d> asList() {
-	   List<ExtendedVector2d> al = new ArrayList<ExtendedVector2d>(NODES);
+   public List<Vector2d> asList() {
+	   List<Vector2d> al = new ArrayList<Vector2d>(NODES);
 	   // iterate over nodes at Snake
 	   Node n = head;
 	   do {
-		   al.add(new ExtendedVector2d(n.getX(), n.getY()));
+		   al.add(new Vector2d(n.getX(), n.getY()));
 		   n = n.getNext();
 	   } while(!n.isHead());
 	   return al;
