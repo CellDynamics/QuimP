@@ -62,7 +62,7 @@ The \ref uk.ac.warwick.wsbc.QuimP.BOA_.run(String) "run()" method checks general
     BOA_=>BOA_ [label="runBoa(int,int)"];
 @endmsc
 
-In general the \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(ImagePlus) "setup(ImagePlus)" method build user interface and sets default parameters for segmentation (see \ref setupBOA ), \ref uk.ac.warwick.wsbc.QuimP.BOA_.about() "about()" just shows info in log window and \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA(int,int)" is responsible for segmentation. 
+In general the \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(ImagePlus) "setup(ImagePlus)" method build user interface and sets default parameters for segmentation (see \ref setupBOA, \ref guiBOA, \ref setupBOAGUI  ), \ref uk.ac.warwick.wsbc.QuimP.BOA_.about() "about()" just shows info in log window and \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA(int,int)" is responsible for segmentation. 
 `runBOA` is called on startup to run segmentation in case of filled ROI manager.  
 
 ## Setup BOA plugin {#setupBOA}

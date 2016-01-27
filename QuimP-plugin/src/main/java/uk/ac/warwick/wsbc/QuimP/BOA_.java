@@ -262,8 +262,10 @@ class CustomCanvas extends ImageCanvas {
 
 /**
  * Extends standard ImageJ StackWindow adding own GUI elements.
+ * 
  * This class stands for definition of main BOA plugin GUI window. Current state
  * of BOA plugin is stored at {@link BOAp} class. 
+ * 
  * @author rtyson
  * @see BOAp
  */
@@ -280,6 +282,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       /**
        * Default constructor
+       * 
        * @param imp Image loaded to plugin
        * @param ic Image canvas
        */
@@ -289,6 +292,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
       
       /**
        * Build user interface.
+       * 
        * This method is called as first. The interface is built in two steps:
        * Left side of window (configuration zone) and right side of main window
        * (logs and other info and buttons)
@@ -308,6 +312,7 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
 
       /**
        * Build right side of main BOA window
+       * 
        * @return Reference to panel
        */
       final Panel buildSetupPanel() {
@@ -344,9 +349,9 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          bFinish = addButton("FINISH", southPanel);
          //------------------------------
 
-         setupPanel.add("North", northPanel);
-         setupPanel.add("Center", logPanel);
-         setupPanel.add("South", southPanel);
+         setupPanel.add(northPanel,BorderLayout.NORTH);
+         setupPanel.add(logPanel, BorderLayout.CENTER);
+         setupPanel.add(southPanel, BorderLayout.SOUTH);
 
          return setupPanel;
       }
@@ -410,16 +415,17 @@ class CustomStackWindow extends StackWindow implements ActionListener, ItemListe
          cZoom = addCheckbox("Zoom cell", bottomPanel, BOAp.zoom);
          //-------------------------------
          //build control panel
-         controlPanel.add("North", topPanel);
-         controlPanel.add("Center", paramPanel);
-         //controlPanel.add("Center", sliderPanel);
-         controlPanel.add("South", bottomPanel);
+         
+         controlPanel.add(topPanel,BorderLayout.NORTH);
+         controlPanel.add(paramPanel,BorderLayout.CENTER);
+         controlPanel.add(bottomPanel,BorderLayout.SOUTH);
 
          return controlPanel;
       }
 
       /**
        * Helper method for adding buttons to UI
+       * 
        * @param label Label on button
        * @param p Reference to the panel where button is located
        * @return Reference to created button
