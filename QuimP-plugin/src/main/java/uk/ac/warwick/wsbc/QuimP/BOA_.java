@@ -2783,7 +2783,6 @@ class Snake {
 		head.setNext(head);
 		head.setHead(true);
 
-
 		Node node;
 		int j, nn;
 		double x, y, spacing;
@@ -2816,7 +2815,7 @@ class Snake {
 
 	/**
 	 * Initializes \c Node list from polygon
-	 * Does not refine points. Use only those from polygon
+	 * Does not refine points. Use only those nodes available in polygon
 	 *  
 	 * @param p Polygon extracted from IJ ROI
 	 * @throws Exception
@@ -2846,6 +2845,7 @@ class Snake {
 	 * @see intializePolygonDirect(FloatPolygon)
 	 * @param p
 	 * @throws Exception
+	 * @todo This method is the same as intializePolygonDirect(FloatPolygon)
 	 */
 	private void intializeFloat(FloatPolygon p) throws Exception {
 		//System.out.println("poly direct");
@@ -4146,7 +4146,7 @@ class BOAp {
 	}
 
 	/**
-	 * Set /c nodeRes field and calculate \c min_dist and \c max_dist
+	 * Set \c nodeRes field and calculate \c min_dist and \c max_dist
 	 * @param d
 	 */
 	static public void setNodeRes(double d) {
@@ -4170,6 +4170,7 @@ class BOAp {
 
 	/**
 	 * Set default parameters for contour matching algorithm.
+	 * 
 	 * Fill some fields in BOAp class related to CM algorithm. These parameters
 	 * are external - available for user to set in GUI. 
 	 */
