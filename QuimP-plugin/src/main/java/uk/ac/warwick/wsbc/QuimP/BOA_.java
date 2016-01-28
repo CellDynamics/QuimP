@@ -2686,12 +2686,29 @@ class Snake {
 		//calcOrientation();
 		this.calcCentroid();
 	}
+	
+	/**
+	 * Construct Snake object from list of nodes
+	 * 
+	 * @param list list of nodes as Vector2d
+	 * @param id id of Snake
+	 * @throws Exception
+	 */
+	public Snake(List<Vector2d> list, int id) throws Exception {
+		snakeID = id;
+		initializeArrayList(list);
+		startingNnodes = NODES / 100;
+		alive = true;
+		this.calcCentroid();
+	}
 
 	/**
 	 * Initializes \c Node list from ROIs other than polygons
 	 * For non-polygon ROIs ellipse is used as first approximation of segmented shape.
 	 * Parameters of ellipse are estimated usually using parameters of bounding box of user ROI
-	 *  
+	 * This method differs from other \c initialize* methods by input data which do not 
+	 * contain nodes but the are defined analytically
+	 *    
 	 * @param t index of node
 	 * @param xc center of ellipse
 	 * @param yc center of ellipse
@@ -2774,7 +2791,7 @@ class Snake {
 
 	/**
 	 * Initializes \c Node list from polygon
-	 * Does not refine points. USe only those from polygon
+	 * Does not refine points. Use only those from polygon
 	 *  
 	 * @param p Polygon extracted from IJ ROI
 	 * @throws Exception
@@ -2825,6 +2842,31 @@ class Snake {
 		updateNormales();
 	}
 
+	/**
+	 * Initialize snake from List of Vector2d objects
+	 * 
+	 * @param p
+	 * @throws Exception 
+	 */
+	private void initializeArrayList(List<Vector2d> p) throws Exception {
+		head = new Node(0);
+		NODES = 1;
+		FROZEN = 0;
+		head.setPrev(head);
+		head.setNext(head);
+		head.setHead(true);
+		
+		Node node;
+		for(Vector2d el : p) {
+			node = new Node(el.getX(), el.getY(), nextTrackNumber++);
+			addNode(node);
+		}
+		
+		removeNode(head);
+		this.makeAntiClockwise();
+		updateNormales();
+	}
+	
 	public void printSnake() {
 		System.out.println("Print Nodes (" + NODES + ")");
 		int i = 0;
