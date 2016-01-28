@@ -1087,12 +1087,12 @@ public class BOA_ implements PlugIn {
 			tightenSnake(snake);
 			imageGroup.drawPath(snake, f); //post tightned snake on path
 			// processing
-			Vector2dFilter filter = new MeanFilter(snake.asList(), 7);
-			ArrayList<Vector2d> out = (ArrayList<Vector2d>) filter.RunFilter();
-			//TODO Convert to Snake - construct new object
-			//TODO replace liveSnake from SnakeHandler
+			//TODO add logic here as well as BOAp entries
+			Vector2dFilter filter = new MeanFilter(snake.asList(), 11); // construct processing obj
+			ArrayList<Vector2d> out = (ArrayList<Vector2d>) filter.RunFilter(); // do processing
+			sH.attachLiveSnake(out); // copy new data into current snakeHandler
 
-			sH.storeCurrentSnake(f);
+			sH.storeCurrentSnake(f); // remember temporary LiveSnake for this frame and this object
 		} 
 		catch(FilterException e) {
 			BOA_.log("Error in filter module: "+e.getMessage());
@@ -1103,7 +1103,7 @@ public class BOA_ implements PlugIn {
 			logger.error(e);
 		}
 		try {
-			sH.storeCurrentSnake(f); //FIXME Call it only once and throw different exceptions
+			sH.storeCurrentSnake(f); //FIXME Call it only once and throw different exceptions It tries to store current snake when other methods called error
 		} catch (Exception e) {
 			BOA_.log("Could not store new snake");
 		}
@@ -2227,22 +2227,22 @@ class SnakeHandler {
 	 * Constructor of SnakeHandler.
 	 * Stores ROI with object for segmentation
 	 * @param r ROI with selected object
-	 * @param f Current frame for which the ROI is taken
-	 * @param i Unique Snake ID controlled by Nest object
+	 * @param frame Current frame for which the ROI is taken
+	 * @param id Unique Snake ID controlled by Nest object
 	 * @throws Exception
 	 */
-	public SnakeHandler(Roi r, int f, int i) throws Exception {
-		startFrame = f;
+	public SnakeHandler(Roi r, int frame, int id) throws Exception {
+		startFrame = frame;
 		endFrame = BOAp.FRAMES;
 		roi = r;
 		// snakes array keeps snakes across frames from current to end. Current is that one for which cell has been added
 		snakes = new Snake[BOAp.FRAMES - startFrame + 1]; // stored snakes
-		ID = i;
-		liveSnake = new Snake(roi, ID, false);
+		ID = id;
+		attachLiveSnake(r); //TODO Change BOA.md to add those modification
 	}
 
 	/**
-	 * Copies \c liveSnake into \c snakes array
+	 * Make copy of \c liveSnake into \c snakes array
 	 * 
 	 * @param frame Frame for which \c liveSnake will be copied to
 	 * @throws Exception
@@ -2276,6 +2276,30 @@ class SnakeHandler {
 
 	}
 
+	/**
+	 * Create Snake and attach it to \c liveSnake (current one not stored yet)
+	 * 
+	 * Created snake has correct \c ID set in SnakeHandler constructor
+	 * 
+	 * @param data data to create Snake from
+	 * @throws Exception 
+	 */
+	public void attachLiveSnake(List<Vector2d> data) throws Exception {
+		liveSnake = new Snake(data,ID);
+	}
+	
+	/**
+	 * @copybrief attachLiveSnake(List<Vector2d>)
+	 * @copydetails attachLiveSnake(List<Vector2d>)
+	 */
+	public void attachLiveSnake(Roi data) throws Exception {
+		liveSnake = new Snake(data,ID,false);
+	}
+	
+	public void updateLiveSnake() {
+		//TODO Possible updating only when new snake has the same Nodes but slightly shifted
+	}
+	
 	public boolean writeSnakes() throws Exception {
 
 		String saveIn = BOAp.orgFile.getParent();
@@ -2641,6 +2665,7 @@ class Snake {
 
 	/**
 	 * Create snake from ROI
+	 * 
 	 * @param R ROI with object to be segmented
 	 * @param id Unique ID of snake related to object being segmented.
 	 * @param direct 

@@ -4,6 +4,8 @@
 \author p.baniukiewicz
 \date 30 Nov 2015
 \tableofcontents
+\todo Review code about creating snakes after recent changes in SnakeHandler
+
 
 # BOA Plugin {#BOA}
 
