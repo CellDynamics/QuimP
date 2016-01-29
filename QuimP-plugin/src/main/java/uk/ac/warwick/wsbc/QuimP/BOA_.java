@@ -1091,7 +1091,7 @@ public class BOA_ implements PlugIn {
 			imageGroup.drawPath(snake, f); //post tightned snake on path
 			// processing
 			//TODO add logic here as well as BOAp entries
-			ConfigReader cR = new ConfigReader("/home/baniuk/Documents/Repos/plugin.json");
+			ConfigReader cR = new ConfigReader(System.getProperty("user.home")+System.getProperty("file.separator")+"plugin.json");
 			if(cR.getIntParam("MeanFilter", "active")>0) {
 				Vector2dFilter filter = new MeanFilter(snake.asList(),
 						cR.getIntParam("MeanFilter", "window")); // construct processing obj
