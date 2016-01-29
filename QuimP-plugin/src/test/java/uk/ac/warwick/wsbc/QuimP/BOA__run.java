@@ -12,7 +12,7 @@ import ij.ImagePlus;
 import uk.ac.warwick.wsbc.QuimP.BOA_;
 
 /**
- * Main runner for BOA plugin. Show main window and wait for its closing and then ends.
+ * Main runner for BOA_ plugin. Show main window and wait for its closing and then ends.
  * 
  * @author baniuk
  * @note

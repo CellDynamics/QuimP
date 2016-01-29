@@ -12,6 +12,8 @@ import ij.io.SaveDialog;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 import ij.process.*;
+import uk.ac.warwick.wsbc.helpers.ConfigReader;
+import uk.ac.warwick.wsbc.helpers.ConfigReaderException;
 import uk.ac.warwick.wsbc.tools.images.FilterException;
 import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
 import uk.ac.warwick.wsbc.tools.images.filters.Vector2dFilter;
@@ -31,6 +33,7 @@ import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 
 /**
  * Main class implementing BOA plugin.
@@ -1088,15 +1091,23 @@ public class BOA_ implements PlugIn {
 			imageGroup.drawPath(snake, f); //post tightned snake on path
 			// processing
 			//TODO add logic here as well as BOAp entries
-			Vector2dFilter filter = new MeanFilter(snake.asList(), 11); // construct processing obj
-			ArrayList<Vector2d> out = (ArrayList<Vector2d>) filter.RunFilter(); // do processing
-			sH.attachLiveSnake(out); // copy new data into current snakeHandler
-
+			ConfigReader cR = new ConfigReader("/home/baniuk/Documents/Repos/plugin.json");
+			if(cR.getIntParam("MeanFilter", "active")>0) {
+				Vector2dFilter filter = new MeanFilter(snake.asList(),
+						cR.getIntParam("MeanFilter", "window")); // construct processing obj
+				sH.attachLiveSnake(
+						(ArrayList<Vector2d>) filter.RunFilter()); // copy new data into current snakeHandler
+			}
 			sH.storeCurrentSnake(f); // remember temporary LiveSnake for this frame and this object
 		} 
 		catch(FilterException e) {
 			BOA_.log("Error in filter module: "+e.getMessage());
 			logger.error(e);
+		}
+		catch(ConfigReaderException e) {
+			BOA_.log(e.getMessage());
+			logger.error(e);
+			throw new IllegalArgumentException(e);
 		}
 		catch (Exception e) {
 			BOA_.log("New snake failed to converge");

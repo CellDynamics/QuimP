@@ -51,7 +51,7 @@ public class ConfigReader {
 	 * 
 	 * @throws ConfigReaderException On any error (syntax, file read, etc)
 	 */
-	ConfigReader(String filename) throws ConfigReaderException {
+	public ConfigReader(String filename) throws ConfigReaderException {
 		JSONParser parser;
 		try {
 			parser = new JSONParser();
