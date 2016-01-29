@@ -6,6 +6,10 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import static org.junit.Assert.*;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.concurrent.CountDownLatch;
+
 import org.junit.Test;
 
 /**
@@ -16,8 +20,24 @@ import org.junit.Test;
 public class QWindowBuilder_Test extends QWindowBuilder {
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void test() throws InterruptedException {
+		CountDownLatch startSignal = new CountDownLatch(1);
+		
+		String def[][] = {
+				{"Title", ""},
+				{"Control1", "a b c"},
+				{"Control2", "c d e"}
+		};
+		BuildWindow(def);
+		pluginWnd.addWindowListener(new WindowAdapter() {
+			@Override
+			// This method will be called when BOA_ window is closed
+			public void windowClosed(WindowEvent arg0) {
+				startSignal.countDown(); // decrease latch by 1
+			}
+		});
+		// main thread waits here until Latch reaches 0
+		startSignal.await();
 	}
 
 }
