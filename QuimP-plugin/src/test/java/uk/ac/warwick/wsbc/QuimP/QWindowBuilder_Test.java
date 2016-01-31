@@ -25,8 +25,8 @@ public class QWindowBuilder_Test extends QWindowBuilder {
 		
 		String def[][] = {
 				{"Title", ""},
-				{"Control1", "a b c"},
-				{"Control2", "c d e"}
+				{"spinner", "-0.5","0.5","0.1","Description"},
+				{"spinner", "-1", "10", "1","Description1"}
 		};
 		BuildWindow(def);
 		pluginWnd.addWindowListener(new WindowAdapter() {
@@ -36,6 +36,7 @@ public class QWindowBuilder_Test extends QWindowBuilder {
 				startSignal.countDown(); // decrease latch by 1
 			}
 		});
+		ToggleWindow();
 		// main thread waits here until Latch reaches 0
 		startSignal.await();
 	}

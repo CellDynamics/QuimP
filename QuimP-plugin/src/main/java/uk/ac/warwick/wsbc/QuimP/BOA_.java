@@ -464,6 +464,7 @@ public class BOA_ implements PlugIn {
 
 		/**
 		 * Helper method for creating spinner in UI with real values
+		 * 
 		 * @param s Label of spinner (added on its left side)
 		 * @param mp Reference of panel where spinner is located
 		 * @param d The current vale of model
@@ -489,6 +490,7 @@ public class BOA_ implements PlugIn {
 
 		/**
 		 * Helper method for creating spinner in UI with integer values
+		 * 
 		 * @param s Label of spinner (added on its left side)
 		 * @param mp Reference of panel where spinner is located
 		 * @param d The current vale of model
