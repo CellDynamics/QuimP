@@ -37,10 +37,39 @@ import org.apache.logging.log4j.Logger;
  * Allow user to construct simple window for his plugins just by passing textual 
  * description of what that window should contain.
  * 
- * Main function accepts HashMap with pairs <name,params> where name is unique name of the parameter
- * and params defines ho this parameter will be displayed in UI (see BuildWindow(Map<String, String[]>)).
- * Using this mapping there is next list /c ui created that contains the same names but now joined
- * wit UI components. This list is used for addresing these component basing on theirs names.
+ * Main function (BuildWindow) accepts HashMap with pairs <name,params> where name is unique name of the parameter
+ * and params defines how this parameter will be displayed in UI (see BuildWindow(Map<String, String[]>)).
+ * Using this mapping there is next list \c ui created that contains the same names but now joined
+ * with UI components. This list is used for addressing these component basing on theirs names.
+ * The UI controls are stored at \c ui which is \a protected and may be used for influencing these controls
+ * by user. To identify certain UI control its name is required which is the string passed as first dimension
+ * of \c def definition passed to to BuildWindow method. Below code shows how to change property of control
+ * @code{.java}
+ * String key = "paramname";
+ * JSpinner comp = (JSpinner) ui.get(key); // get control using its name (commonly it is name of parameter controled by this UI)
+ * ((JSpinner.DefaultEditor) comp.getEditor()).getTextField().setColumns(5);  
+ * @endcode
+ * 
+ * The basic usage pattern is as follows:
+ * 
+ * @msc
+ *	hscale="1";
+ *	Caller,QWindowBuilder,AWTWindow;
+ *  Caller=>QWindowBuilder [label="BuildWindow(..)"];
+ *  Caller=>QWindowBuilder [label="ShowWindow(true)"];
+ *  QWindowBuilder->AWTWindow [label="Show AWT window"];
+ *  --- [label="Window is displayed"];
+ *  Caller=>QWindowBuilder [label="setValues(..)"];
+ *  QWindowBuilder->AWTWindow [label="update UI"];
+ *  Caller=>QWindowBuilder [label="getValues()"];
+ *  QWindowBuilder->AWTWindow [label="ask for values"];
+ *  AWTWindow>>QWindowBuilder;
+ *  Caller<<QWindowBuilder [label="UI values"];  
+ * @endmsc
+ * 
+ * Methods getValues() and setValues() should be used by class extending QWindowBuilder for setting and achieving
+ * parameters from GUI. Note that parameters in UIs are validated only when they become out of focus. Until 
+ * cursor is in UI its value is not updated internally, thus getValue returns its old snapshot. 
  *  
  * @author p.baniukiewicz
  * @date 29 Jan 2016
@@ -214,13 +243,14 @@ public abstract class QWindowBuilder {
 	 * 
 	 * Use the same parameters names as in BuildWindow(Map<String, String[]>).
 	 * The name of the parameter is \a key in Map. Every parameter passed
-	 * to this method must have its representation in GUI and thus must be
+	 * to this method must have its representation in GUI and thus it must be
 	 * present in \c def parameter of BuildWindow(Map<String, String[]>)
 	 * All values are passed as:
-	 * -# Double in case of spinners
+	 * -# \c Double in case of spinners
 	 * 
 	 * User has to care for correct format passed to UI control. 
 	 * If input values are above range defined in \c def, new range is set for UI control
+	 * 
 	 * @param vals <key,value> pairs to fill UI.
 	 */
 	public void setValues(Map<String, Object> vals) {
