@@ -12,22 +12,24 @@ import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Simple window builder for QuimP plugins
@@ -35,25 +37,39 @@ import javax.swing.SpinnerNumberModel;
  * Allow user to construct simple window for his plugins just by passing textual 
  * description of what that window should contain.
  * 
+ * Main function accepts HashMap with pairs <name,params> where name is unique name of the parameter
+ * and params defines ho this parameter will be displayed in UI (see BuildWindow(Map<String, String[]>)).
+ * Using this mapping there is next list /c ui created that contains the same names but now joined
+ * wit UI components. This list is used for addresing these component basing on theirs names.
+ *  
  * @author p.baniukiewicz
  * @date 29 Jan 2016
  *
  */
 public abstract class QWindowBuilder {
-
+	final private static Logger logger = LogManager.getLogger(QWindowBuilder.class.getName());
 	protected Frame pluginWnd; ///< main window object
 	protected boolean windowState; ///< current window state \c true if visible
-	private ArrayList<Component> ui; ///<< contain list of all ui elements created on base of \c def
-	final private static HashSet<String> RESERVED_KEYS = new HashSet<String>(
+	private LinkedHashMap<String,Component> ui; ///< contain list of all UI elements created on base of \c def together with their names
+	private Map<String, String[]> def; ///< definition of window and names of parameters
+	final private HashSet<String> RESERVED_KEYS = new HashSet<String>(
 			Arrays.asList(
 					new String[]
 							{"help", "name"})); ///< list of reserved keys that are not UI elements. They are processed in different way
+	
+	// definition string - positions of configuration data in value string (see BuildWindow)
+	final private int UITYPE 		= 0; // type of UI control to create
+	final private int S_MIN 		= 1; // spinner min value
+	final private int S_MAX 		= 2; // spinner max value
+	final private int S_STEP 		= 3; // spinner step value
 	
 	/**
 	 * Default constructor
 	 */
 	public QWindowBuilder() {
-		ui = new ArrayList<Component>();
+		logger.info("Entering constructor");
+		ui = new LinkedHashMap<String,Component>();
+		def = null;
 	}
 	
 	/**
@@ -90,7 +106,9 @@ public abstract class QWindowBuilder {
 		def1.put("help", new String[] {"help text}); // non UI element - help 
 	 * @endcode
 	 * 
-	 * By default window is not visible yet. User must call ShowWindow or ToggleWindow
+	 * By default window is not visible yet. User must call ShowWindow or ToggleWindow.
+	 * The \b Apply button does nothing. It is only to refocus after change of values in spinners.
+	 * They are not updated until unfocused.
 	 *  
 	 * @param def Configuration \c Map<String, String[]> as described
 	 * @throw IllegalArgumentException or other unchecked exceptions on wrong syntax of \c def
@@ -98,6 +116,7 @@ public abstract class QWindowBuilder {
 	public void BuildWindow(Map<String, String[]> def) {
 		if(def.size()<2)
 			throw new IllegalArgumentException("Window must contain title and at least one control");
+		this.def = def; // remember parameters
 		ui.clear(); // clear all ui stored on second call of third method
 		
 		pluginWnd = new Frame(); //create frame with title given as first position in table
@@ -118,26 +137,27 @@ public abstract class QWindowBuilder {
 		gridL.setVgap(5); // set bigger gaps
 		gridL.setHgap(5);
 		Iterator<String> keySetIterator = def.keySet().iterator();  // iterate over def entries except first one which is always title
+		// every decoded control is put into ordered hashmap together with its descriptor (label)
 		while(keySetIterator.hasNext()) {
 			String key = keySetIterator.next();
 			if(RESERVED_KEYS.contains(key))
 				continue;
-			String componentName = def.get(key)[0]; // get name of UI for given key
+			String componentName = def.get(key)[UITYPE]; // get name of UI for given key
 			switch(componentName.toLowerCase()) {
 				case "spinner": // by default all spinners are double
-					SpinnerNumberModel model = new SpinnerNumberModel(Double.parseDouble(def.get(key)[1]), // current value
-							Double.parseDouble(def.get(key)[1]), // min
-							Double.parseDouble(def.get(key)[2]), // max
-							Double.parseDouble(def.get(key)[3]));// step
-					ui.add(new JSpinner(model) );
-					ui.add(new Label(key)); // add description - on even position
+					SpinnerNumberModel model = new SpinnerNumberModel(Double.parseDouble(def.get(key)[S_MIN]), // current value
+							Double.parseDouble(def.get(key)[S_MIN]), // min
+							Double.parseDouble(def.get(key)[S_MAX]), // max
+							Double.parseDouble(def.get(key)[S_STEP]));// step
+					ui.put(key,new JSpinner(model) );
+					ui.put(key+"label", new Label(key)); // add description - on even position
 					break;
 				default:
 					throw new IllegalArgumentException("Unknown ui type provided: "+key); // wrong param syntax
 			}
 		}
-		for(Component c : ui) // iterate over all components and add them to grid layout
-			north.add(c);
+		for(Map.Entry<String, Component> me : ui.entrySet()) // iterate over all components and add them to grid layout
+			north.add(me.getValue());
 		
 		// add non ui elements
 		if(def.containsKey("name")) {
@@ -152,8 +172,13 @@ public abstract class QWindowBuilder {
 			helpArea.setLineWrap(true); // with wrapping
 		}
 		
+		// add Apply button on south
+		Panel south = new Panel();
+		south.add(new JButton("Apply"));
+		
 		// build window
 		pluginPanel.add(north, BorderLayout.NORTH);
+		pluginPanel.add(south, BorderLayout.SOUTH);
 		pluginWnd.add(pluginPanel);
 		pluginWnd.pack();
 		// add listener on close
@@ -184,7 +209,62 @@ public abstract class QWindowBuilder {
 		ShowWindow(windowState);
 	}
 	
-	public void setValues(Map<String, String> vals) {
-		
+	/**
+	 * Set plugin parameters.
+	 * 
+	 * Use the same parameters names as in BuildWindow(Map<String, String[]>).
+	 * The name of the parameter is \a key in Map. Every parameter passed
+	 * to this method must have its representation in GUI and thus must be
+	 * present in \c def parameter of BuildWindow(Map<String, String[]>)
+	 * All values are passed as:
+	 * -# Double in case of spinners
+	 * 
+	 * User has to care for correct format passed to UI control. 
+	 * If input values are above range defined in \c def, new range is set for UI control
+	 * @param vals <key,value> pairs to fill UI.
+	 */
+	public void setValues(Map<String, Object> vals) {
+		// iterate over parameters and match names to UIs
+		for(Map.Entry<String, Object> e : vals.entrySet()) {
+			String key = e.getKey();
+			Object val = e.getValue();
+			// find key in def and get type of control and its instance
+			switch(def.get(key)[UITYPE]) { // first string in vals is type of control, see BuildWindow
+				case "spinner":
+					JSpinner comp = (JSpinner) ui.get(key); // get UI component of name key (keys in vals must match to keys in BuildWindow(def))
+					comp.setValue(val); // set value from vals
+					SpinnerNumberModel sm = (SpinnerNumberModel) comp.getModel();
+					if(sm.getNextValue() == null)	
+						sm.setMaximum((Double)val);
+					else if (sm.getPreviousValue() == null)
+						sm.setMinimum((Double)val);						
+					break;
+			}
+		}
+	}
+	
+	/**
+	 * Receives parameters related to UI elements
+	 * 
+	 * @return List of <key,param>, where \b key is the name of parameter passed
+	 * to QWindowBuilder class through BuildWindow method. The method remaps those 
+	 * keys to related UI controls and reads values associated to them.
+	 */
+	public Map<String, Object> getValues() {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		// iterate over all UI elements
+		Iterator<Map.Entry<String, Component>> entryIterator = ui.entrySet().iterator();
+		while(entryIterator.hasNext()) {
+			Map.Entry<String, Component> m = entryIterator.next();
+			String key = m.getKey();
+			// check type of component
+			switch(def.get(key)[UITYPE]) {
+				case "spinner":
+					JSpinner val = (JSpinner) m.getValue(); // get value
+					ret.put(key, val.getValue()); //store it in returned Map at the same key
+			}
+			entryIterator.next();	// skip label. ui Map has repeating entries UI,label,UI1,label1,...
+		}
+		return ret;
 	}
 }
