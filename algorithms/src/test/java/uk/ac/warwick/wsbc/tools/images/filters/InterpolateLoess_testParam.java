@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
-import uk.ac.warwick.wsbc.tools.images.FilterException;
+import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 
 import org.junit.runner.RunWith;
 
@@ -102,17 +102,17 @@ public class InterpolateLoess_testParam {
 	}
 		
 	/**
-	 * @throws FilterException 
+	 * @throws QuimpPluginException 
 	 * @test Test of getInterpolationLoess method
 	 * @post Save image test_getInterpolationLoess_* in /tmp/
 	 * @see QuimP-toolbox/algorithms/src/test/resources/Interpolate_Test_Analyzer.m for plotting results
 	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
 	 */
 	@Test
-	public void test_getInterpolationLoess() throws FilterException {
+	public void test_getInterpolationLoess() throws QuimpPluginException {
 		ArrayList<Vector2d> out;
 		LoessFilter i = new LoessFilter(testcase,smooth.doubleValue());
-		out = (ArrayList<Vector2d>) i.RunFilter();
+		out = (ArrayList<Vector2d>) i.runPlugin();
 		RoiSaver.saveROI("/tmp/test_getInterpolationLoess_"+testfileName.getFileName()+"_"+smooth.toString()+".tif", out);
 		logger.debug("setUp: "+testcase.toString());
 		if(out.size()<100)

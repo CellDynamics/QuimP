@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.tools.images.filters;
+package uk.ac.warwick.wsbc.plugin.utils;
 
 /**
  * Basic interface for all family of filters based on moving window.

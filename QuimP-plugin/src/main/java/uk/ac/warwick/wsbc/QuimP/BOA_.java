@@ -14,9 +14,9 @@ import ij.plugin.frame.RoiManager;
 import ij.process.*;
 import uk.ac.warwick.wsbc.helpers.ConfigReader;
 import uk.ac.warwick.wsbc.helpers.ConfigReaderException;
-import uk.ac.warwick.wsbc.tools.images.FilterException;
+import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.plugin.utils.Vector2dFilter;
 import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
-import uk.ac.warwick.wsbc.tools.images.filters.Vector2dFilter;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -1095,14 +1095,14 @@ public class BOA_ implements PlugIn {
 			//TODO add logic here as well as BOAp entries
 			ConfigReader cR = new ConfigReader(System.getProperty("user.home")+System.getProperty("file.separator")+"plugin.json");
 			if(cR.getIntParam("MeanFilter", "active")>0) {
-				Vector2dFilter filter = new MeanFilter(snake.asList(),
+				MeanFilter filter = new MeanFilter(snake.asList(),
 						cR.getIntParam("MeanFilter", "window")); // construct processing obj
 				sH.attachLiveSnake(
-						(ArrayList<Vector2d>) filter.RunFilter()); // copy new data into current snakeHandler
+						(ArrayList<Vector2d>) filter.runPlugin()); // copy new data into current snakeHandler
 			}
 			sH.storeCurrentSnake(f); // remember temporary LiveSnake for this frame and this object
 		} 
-		catch(FilterException e) {
+		catch(QuimpPluginException e) {
 			BOA_.log("Error in filter module: "+e.getMessage());
 			logger.error(e);
 		}

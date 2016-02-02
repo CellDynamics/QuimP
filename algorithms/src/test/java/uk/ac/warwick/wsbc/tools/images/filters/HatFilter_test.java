@@ -16,7 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
-import uk.ac.warwick.wsbc.tools.images.FilterException;
+import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 
 /**
  * Test class for HatFilter
@@ -64,13 +64,13 @@ public class HatFilter_test {
 	 * @test test of HatFilter method
 	 * @pre vector line defined in setUp()
 	 * @post all nodes accepted. input==output
-	 * @throws FilterException
+	 * @throws QuimpPluginException
 	 */
 	@Test
-	public void test_HatFilter_case1() throws FilterException {
+	public void test_HatFilter_case1() throws QuimpPluginException {
 		logger.debug("input: "+input.toString());
 		HatFilter hf = new HatFilter(input, 5, 3, 1);
-		ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.RunFilter();
+		ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
 		logger.debug("  out: "+out.toString());
 		assertEquals(input, out);
 	}
@@ -79,13 +79,13 @@ public class HatFilter_test {
 	 * @test test of HatFilter method
 	 * @pre vector line defined in setUp()
 	 * @post nodes 0, 1, 2, 37, 38, 39, 15, 16, 17, 18, 19, 20, 21, 22, 23 removed
-	 * @throws FilterException
+	 * @throws QuimpPluginException
 	 */
 	@Test
-	public void test_HatFilter_case2() throws FilterException {
+	public void test_HatFilter_case2() throws QuimpPluginException {
 		logger.debug("input: "+input.toString());
 		HatFilter hf = new HatFilter(input, 5, 3, 0.05);
-		ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.RunFilter();
+		ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
 		logger.debug("  out: "+out.toString());
 		
 		// remove precalculated indexes from input array (see Matlab test code)
@@ -107,57 +107,57 @@ public class HatFilter_test {
 	public void test_HatFilter_case3() {
 		try {
 			HatFilter hf = new HatFilter(input, 6, 3, 1); // even window
-			hf.RunFilter();
+			hf.runPlugin();
 			fail("Exception not thrown");
-		} catch (FilterException e) {
+		} catch (QuimpPluginException e) {
 			assertTrue(e!=null);
 			logger.debug(e.getMessage());
 		}
 		try {
 			HatFilter hf = new HatFilter(input, 5, 4, 1); // even crown
-			hf.RunFilter();
+			hf.runPlugin();
 			fail("Exception not thrown");
-		} catch (FilterException e) {
+		} catch (QuimpPluginException e) {
 			assertTrue(e!=null);
 			logger.debug(e.getMessage());
 		}
 		try {
 			HatFilter hf = new HatFilter(input, 5, 5, 1); // crown>window
-			hf.RunFilter();
+			hf.runPlugin();
 			fail("Exception not thrown");
-		} catch (FilterException e) {
+		} catch (QuimpPluginException e) {
 			assertTrue(e!=null);
 			logger.debug(e.getMessage());
 		}
 		try {
 			HatFilter hf = new HatFilter(input, 5, 0, 1); // bad crown
-			hf.RunFilter();
+			hf.runPlugin();
 			fail("Exception not thrown");
-		} catch (FilterException e) {
+		} catch (QuimpPluginException e) {
 			assertTrue(e!=null);
 			logger.debug(e.getMessage());
 		}
 		try {
 			HatFilter hf = new HatFilter(input, 0, 3, 1); // bad crown
-			hf.RunFilter();
+			hf.runPlugin();
 			fail("Exception not thrown");
-		} catch (FilterException e) {
+		} catch (QuimpPluginException e) {
 			assertTrue(e!=null);
 			logger.debug(e.getMessage());
 		}
 		try {
 			HatFilter hf = new HatFilter(input, 0, -3, 1); // bad crown
-			hf.RunFilter();
+			hf.runPlugin();
 			fail("Exception not thrown");
-		} catch (FilterException e) {
+		} catch (QuimpPluginException e) {
 			assertTrue(e!=null);
 			logger.debug(e.getMessage());
 		}
 		try {
 			HatFilter hf = new HatFilter(input, 1, 1, 1); // bad crown
-			hf.RunFilter();
+			hf.runPlugin();
 			fail("Exception not thrown");
-		} catch (FilterException e) {
+		} catch (QuimpPluginException e) {
 			assertTrue(e!=null);
 			logger.debug(e.getMessage());
 		}

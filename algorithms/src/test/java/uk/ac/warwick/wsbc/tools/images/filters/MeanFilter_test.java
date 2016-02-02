@@ -16,7 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.warwick.wsbc.tools.images.FilterException;
+import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 
 /**
  * Test runner for Interpolate class.
@@ -52,17 +52,17 @@ public class MeanFilter_test {
 
 	/**
 	 * @test Test of getInterpolationMean method
-	 * @throws FilterException 
+	 * @throws QuimpPluginException 
 	 * @pre Vector of 1-10 elements
 	 * @post Running mean for window 3: [4.3333    2.0000    3.0000    4.0000    5.0000    6.0000    7.0000    8.0000    9.0000    6.6667]
 	 */
 	@Test
-	public void test_getInterpolationMean() throws FilterException {
+	public void test_getInterpolationMean() throws QuimpPluginException {
 		MeanFilter in = new MeanFilter(testcase,3);
 		double[] expected = {4.3333, 2.0000, 3.0000, 4.0000, 5.0000, 6.0000, 7.0000, 8.0000, 9.0000, 6.6667};
 		
 		List<Vector2d> out;
-		out = (List<Vector2d>) in.RunFilter();
+		out = (List<Vector2d>) in.runPlugin();
 		logger.debug("org     : "+testcase.toString());
 		logger.debug("Window 3: "+out.toString());
 		

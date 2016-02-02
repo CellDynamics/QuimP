@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
+
 public class IPadArray_test implements IPadArray {
 
 	private int window = 5; // size of virtual window

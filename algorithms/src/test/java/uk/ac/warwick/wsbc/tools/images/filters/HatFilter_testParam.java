@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import uk.ac.warwick.wsbc.tools.images.FilterException;
+import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 
 /**
  * Parameterized test for HatFilter
@@ -97,16 +97,16 @@ public class HatFilter_testParam {
 	 * @test Test of getInterpolationLoess method
 	 * @pre Real cases extrcted from 
 	 * @post Save image test_HatFilter_* in /tmp/
-	 * @throws FilterException 
+	 * @throws QuimpPluginException 
 	 * @see QuimP-toolbox/algorithms/src/test/resources/HatFilter.m for verification of logs (ratios, indexes, etc)
 	 * @see QuimP-toolbox/algorithms/src/test/resources/Interpolate_Test_Analyzer.m for plotting results
 	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
 	 */
 	@Test
-	public void test_HatFilter() throws FilterException {
+	public void test_HatFilter() throws QuimpPluginException {
 		ArrayList<Vector2d> out;
 		HatFilter hf = new HatFilter(testcase, window, crown, sig);
-		out = (ArrayList<Vector2d>) hf.RunFilter();
+		out = (ArrayList<Vector2d>) hf.runPlugin();
 		RoiSaver.saveROI("/tmp/test_HatFilter_"+testfileName.getFileName()+"_"+window.toString()+"_"+crown.toString()+"_"+sig.toString()+".tif", out);
 		logger.debug("setUp: "+testcase.toString());
 	}

@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import uk.ac.warwick.wsbc.tools.images.FilterException;
+import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 
 /**
  * Test runner for Interpolate class using parameters. Test only getInterpolationMean method using its own parameters
@@ -103,7 +103,7 @@ public class MeanFilter_testParam {
 	}
 	
 	/**
-	 * @throws FilterException 
+	 * @throws QuimpPluginException 
 	 * @test Test of getInterpolationMean method
 	 * @pre original images saved as test_roiSaver_
 	 * @post Save image test_getInterpolationMean_* in /tmp/
@@ -111,10 +111,10 @@ public class MeanFilter_testParam {
 	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
 	 */
 	@Test
-	public void test_getInterpolationMean() throws FilterException {
+	public void test_getInterpolationMean() throws QuimpPluginException {
 		ArrayList<Vector2d> out;
 		MeanFilter i = new MeanFilter(testcase,window.intValue());
-		out = (ArrayList<Vector2d>) i.RunFilter();
+		out = (ArrayList<Vector2d>) i.runPlugin();
 		RoiSaver.saveROI("/tmp/test_getInterpolationMean_"+testfileName.getFileName()+"_"+window.toString()+".tif", out);
 		logger.debug("setUp: "+testcase.toString());
 		if(out.size()<100)

@@ -2,8 +2,10 @@ package uk.ac.warwick.wsbc.tools.images.filters;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.vecmath.Vector2d;
@@ -11,7 +13,9 @@ import javax.vecmath.Vector2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.ac.warwick.wsbc.tools.images.FilterException;
+import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
 
 /**
  * Implementation of HatFilter for removing convexities from polygon
@@ -41,11 +45,12 @@ import uk.ac.warwick.wsbc.tools.images.FilterException;
  * @date 25 Jan 2016
  *
  */
-public class HatFilter extends Vector2dFilter implements IPadArray {
+public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 
 	private int window; ///< filter's window size 
 	private int crown; ///< filter's crown size (in middle of \a window)
 	private double sig; ///< acceptance criterion
+	private List<Vector2d> points;
 	
 	private static final Logger logger = LogManager.getLogger(HatFilter.class.getName());
 	
@@ -59,7 +64,7 @@ public class HatFilter extends Vector2dFilter implements IPadArray {
 	 * @param sig Acceptance criterion, all ratios larger than \a sig will be removed from \a input list
 	 */
 	public HatFilter(List<Vector2d> input, int window, int crown, double sig) {
-		super(input);
+		points = input;
 		this.window = window;
 		this.crown = crown;
 		this.sig = sig;
@@ -71,7 +76,7 @@ public class HatFilter extends Vector2dFilter implements IPadArray {
 	 * @return Processed \a input list, size of output list may be different than input. Empty output is also allowed.
 	 */
 	@Override
-	public Collection<Vector2d> RunFilter() throws FilterException {
+	public List<Vector2d> runPlugin() throws QuimpPluginException {
 		int cp = window/2; // left and right range of window
 		int cr = crown/2; // left and right range of crown
 		int indexTmp; // temporary index after padding
@@ -84,13 +89,13 @@ public class HatFilter extends Vector2dFilter implements IPadArray {
 		
 		// check input conditions
 		if(window%2==0 || crown%2==0)
-			throw new FilterException("Input arguments must be uneven, positive and larger than 0");
+			throw new QuimpPluginException("Input arguments must be uneven, positive and larger than 0");
 		if(window>=points.size() || crown>=points.size())
-			throw new FilterException("Processing window or crown to long");
+			throw new QuimpPluginException("Processing window or crown to long");
 		if(crown>=window)
-			throw new FilterException("Crown can not be larger or equal to window");
+			throw new QuimpPluginException("Crown can not be larger or equal to window");
 		if(window<3)
-			throw new FilterException("Window should be larger than 2");
+			throw new QuimpPluginException("Window should be larger than 2");
 		
 		Vector2d V[] = new Vector2d[window]; // temporary array for holding content of window [v1 v2 v3 v4 v5 v6 v7]
 		Vector2d B[] = new Vector2d[window-crown]; //array for holding brim only points  [v1 v2 v6 v7]
@@ -146,5 +151,30 @@ public class HatFilter extends Vector2dFilter implements IPadArray {
 		
 		return Math.sqrt(dx*dx + dy*dy);
 	}
+
+	@Override
+	public int setup() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setPluginConfig(HashMap<String, Object> par) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Map<String, Object> getPluginConfig() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void attachData(Object data) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
