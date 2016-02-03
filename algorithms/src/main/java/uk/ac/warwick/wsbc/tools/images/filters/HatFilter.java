@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
+import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 
 /**
  * Implementation of HatFilter for removing convexities from polygon
@@ -171,7 +172,13 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	}
 
 	@Override
-	public void attachData(Object data) {
+	public void showUI(boolean val) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void attachData(List<Vector2d> data) {
 		// TODO Auto-generated method stub
 		
 	}

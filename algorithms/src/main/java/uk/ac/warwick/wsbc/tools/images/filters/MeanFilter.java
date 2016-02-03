@@ -1,7 +1,6 @@
 package uk.ac.warwick.wsbc.tools.images.filters;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,7 @@ import javax.vecmath.Vector2d;
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
-import uk.ac.warwick.wsbc.plugin.utils.Vector2dFilter;
+import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 
 /**
  * Interpolation of points (X,Y) by means of running mean method
@@ -21,7 +20,7 @@ import uk.ac.warwick.wsbc.plugin.utils.Vector2dFilter;
  *
  */
 public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
-	private Vector2dFilter xyData; ///< input List converted to separate X and Y arrays
+	private QuimpDataConverter xyData; ///< input List converted to separate X and Y arrays
 	private int window; ///< size of processing window
 	
 	/**
@@ -30,11 +29,15 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	 * @param input List of points to be filtered
 	 * @param window Size of processing window. Must be uneven, positive and shorter than dataLength
 	 */
-	public MeanFilter(List<Vector2d> input, int window) {
-		xyData = new Vector2dFilter(input);
-		this.window = window;
+	public MeanFilter() {
+		this.window = 1; // default value
 	}
 
+	@Override
+	public void attachData(List<Vector2d> data) {
+		xyData = new QuimpDataConverter(data);
+	}
+	
 	/**
 	 * Perform interpolation of data by a moving average filter with given window
 	 * 
@@ -84,9 +87,15 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	}
 
 	@Override
-	public void setPluginConfig(HashMap<String, Object> par) {
-		// TODO Auto-generated method stub
-		
+	public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException {
+		try
+		{
+			window = ((Double)par.get("window")).intValue(); // by default all numeric values are passed as double
+		}
+		catch(Exception e)
+		{
+			throw new QuimpPluginException("Wrong input argument->"+e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -96,7 +105,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	}
 
 	@Override
-	public void attachData(Object data) {
+	public void showUI(boolean val) {
 		// TODO Auto-generated method stub
 		
 	}

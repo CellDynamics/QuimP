@@ -15,7 +15,7 @@ import javax.vecmath.Vector2d;
  * @author p.baniukiewicz
  *
  */
-public class Vector2dFilter {
+public class QuimpDataConverter {
 	private List<Vector2d> points; ///< reference to input list with coordinates
 	private double X[]; ///< extracted x coords from Vec2d
 	private double Y[]; ///< extracted y coords from Vec2d
@@ -25,7 +25,7 @@ public class Vector2dFilter {
 	 * 
 	 * @param input list of vertices
 	 */
-	public Vector2dFilter(List<Vector2d> input) {
+	public QuimpDataConverter(List<Vector2d> input) {
 		this.points = input;
 		toArrays();
 	}
@@ -69,6 +69,16 @@ public class Vector2dFilter {
 	 */
 	public int size() {
 		return points.size();
+	}
+	
+	/**
+	 * Data accessor
+	 * 
+	 * @return List of vertices as list
+	 * @todo consider creating copy here
+	 */
+	public List<Vector2d> getList() {
+		return points;
 	}
 
 }

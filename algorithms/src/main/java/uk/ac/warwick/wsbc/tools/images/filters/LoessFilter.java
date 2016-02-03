@@ -14,7 +14,7 @@ import org.apache.commons.math3.exception.NumberIsTooSmallException;
 
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
-import uk.ac.warwick.wsbc.plugin.utils.Vector2dFilter;
+import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 
 /**
  * Interpolation of points (X,Y) by means of Loess method
@@ -25,7 +25,7 @@ import uk.ac.warwick.wsbc.plugin.utils.Vector2dFilter;
  *
  */
 public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
-	private Vector2dFilter xyData; ///< input List converted to separate X and Y arrays
+	private QuimpDataConverter xyData; ///< input List converted to separate X and Y arrays
 	private double smoothing; ///< smoothing value (f according to references)
 	
 	/**
@@ -36,7 +36,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 	 * give less filtered shape.
 	 */
 	public LoessFilter(List<Vector2d> input, double smoothing) {
-		xyData = new Vector2dFilter(input);
+		xyData = new QuimpDataConverter(input);
 		this.smoothing = smoothing;
 	}
 
@@ -96,7 +96,13 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 	}
 
 	@Override
-	public void attachData(Object data) {
+	public void showUI(boolean val) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void attachData(List<Vector2d> data) {
 		// TODO Auto-generated method stub
 		
 	}

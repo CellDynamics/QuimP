@@ -6,6 +6,7 @@ package uk.ac.warwick.wsbc.tools.images.filters;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.vecmath.Vector2d;
@@ -56,9 +57,13 @@ public class MeanFilter_test {
 	 * @pre Vector of 1-10 elements
 	 * @post Running mean for window 3: [4.3333    2.0000    3.0000    4.0000    5.0000    6.0000    7.0000    8.0000    9.0000    6.6667]
 	 */
+	@SuppressWarnings("serial")
 	@Test
 	public void test_getInterpolationMean() throws QuimpPluginException {
-		MeanFilter in = new MeanFilter(testcase,3);
+		MeanFilter in = new MeanFilter();
+		in.attachData(testcase);
+		Double window = 3.0;
+		in.setPluginConfig(new HashMap<String,Object>(){{put("window",window);}});
 		double[] expected = {4.3333, 2.0000, 3.0000, 4.0000, 5.0000, 6.0000, 7.0000, 8.0000, 9.0000, 6.6667};
 		
 		List<Vector2d> out;

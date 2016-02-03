@@ -14,14 +14,17 @@ import ij.plugin.frame.RoiManager;
 import ij.process.*;
 import uk.ac.warwick.wsbc.helpers.ConfigReader;
 import uk.ac.warwick.wsbc.helpers.ConfigReaderException;
+import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.plugin.utils.Vector2dFilter;
+import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
 import javax.swing.JScrollPane;
@@ -1093,13 +1096,18 @@ public class BOA_ implements PlugIn {
 			imageGroup.drawPath(snake, f); //post tightned snake on path
 			// processing
 			//TODO add logic here as well as BOAp entries
+			// create instance of plugin
+			IQuimpPoint2dFilter<Vector2d> filter = new MeanFilter();
+			// attach data
+			filter.attachData(snake.asList());
+			// set params
 			ConfigReader cR = new ConfigReader(System.getProperty("user.home")+System.getProperty("file.separator")+"plugin.json");
-			if(cR.getIntParam("MeanFilter", "active")>0) {
-				MeanFilter filter = new MeanFilter(snake.asList(),
-						cR.getIntParam("MeanFilter", "window")); // construct processing obj
-				sH.attachLiveSnake(
-						(ArrayList<Vector2d>) filter.runPlugin()); // copy new data into current snakeHandler
-			}
+			HashMap<String,Object> map = new HashMap<String,Object>();
+			map.put("window", cR.getDoubleParam("MeanFilter", "window"));
+			filter.setPluginConfig(map);
+			// run plugin
+			sH.attachLiveSnake(filter.runPlugin());
+			
 			sH.storeCurrentSnake(f); // remember temporary LiveSnake for this frame and this object
 		} 
 		catch(QuimpPluginException e) {

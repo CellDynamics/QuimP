@@ -17,6 +17,7 @@ import java.util.Map;
 public interface IQuimpPlugin {
 	
 	/**
+	 * Provide basic information to QuimP about plugin
 	 * 
 	 * @return
 	 */
@@ -26,29 +27,27 @@ public interface IQuimpPlugin {
 	 * Pass to plugin its configuration data as pairs <key,value>
 	 * 
 	 * @param par
+	 * @throws QuimpPluginException on problems with understanding parameters by plugin
+	 * e.g. \b key is not understood or casting from \c Object \b value to other type
+	 * has not been successful. 
 	 */
-	public void setPluginConfig(HashMap<String,Object> par);
+	public void setPluginConfig(HashMap<String,Object> par) throws QuimpPluginException;
 	
 	/**
 	 * Retrieve plugin configuration data as pairs <key,value>
+	 * 
+	 * This configuration is not used by QuimP but it may be stored in QuimP configuration
 	 * 
 	 * @return
 	 */
 	public Map<String,Object> getPluginConfig();
 	
 	/**
-	 * Attach data to process to plugin
+	 * Show or hide plugin UI
 	 * 
-	 * @todo attached data can be separate class type like QuimpDataAccessor?
-	 * @param data
-	 */
-	public void attachData(Object data);
-	
-	/**
-	 * Run plugin, returned is copy of processed data attached by attachData(Object)
+	 * UI is not obligatory. This function must be implemented but may do nothing.
 	 * 
-	 * @return
-	 * @throws QuimpPluginException
+	 * @param val
 	 */
-	public Object runPlugin() throws QuimpPluginException;
+	public void showUI(boolean val);
 }

@@ -14,10 +14,23 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
 	
 	/**
-	 * Runs filter and return filtered points as ordered collection
+	 * Runs filter and return filtered points in the same order as input points
+	 * 
+	 * Number of points can be different.
 	 * 
 	 * @return Filtered points
-	 * @throws QuimpPluginException
+	 * @throws QuimpPluginException on any problems during filter execution
 	 */
 	public List<E> runPlugin() throws QuimpPluginException;
+	
+	/**
+	 * Attach data to process to plugin
+	 * 
+	 * @todo attached data can be separate class type like QuimpDataAccessor?
+	 * general base class + some derived to cover transformations from other types 
+	 * or one class with several methods that return X,Y,image,etc. If any data
+	 * not available method throw exception.
+	 * @param data
+	 */
+	public void attachData(List<E> data);
 }
