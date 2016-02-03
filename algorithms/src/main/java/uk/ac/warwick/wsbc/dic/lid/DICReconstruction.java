@@ -8,7 +8,6 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.tools.general.RectangleBox;
-import uk.ac.warwick.wsbc.tools.images.ExtraImageProcessor;
 
 import org.apache.logging.log4j.Logger;
 
@@ -61,7 +60,7 @@ public class DICReconstruction {
 	private double[] decays; ///< reference to preallocated decay data created in generateDecay(double,int)
 	private int maxWidth; ///< Width of image after rotation. Set by getRanges()
 	private int[][] ranges; ///< \b true pixels begin and end on \a x axis. Set by getRanges(). [r][0] - x of first pixel of line r of image, [r][1] - x of last pixel of image of line r 
-	private ExtraImageProcessor srcImageCopyProcessor; ///< local \b copy of input ImageProcessor passed to object. Set by constructors and setIp(ImageProcessor)
+	private ImageProcessor srcImageCopyProcessor; ///< local \b copy of input ImageProcessor passed to object. Set by constructors and setIp(ImageProcessor)
 	private boolean isRotated; ///< \c true if srcImageCopyProcessor has been rotated already. It is set by getRanges that rotates object to get true pixels position and cancelled by setIP
 	private ImageStatistics is;
 	
@@ -115,14 +114,14 @@ public class DICReconstruction {
 	public void setIp(ImageProcessor ip) {
 		this.srcIp = ip;
 		// make copy of original image to not modify it - converting to 16bit
-		this.srcImageCopyProcessor = new ExtraImageProcessor(srcIp.convertToShort(false));
-		srcImageCopyProcessor.getIP().resetMinAndMax();	// ensure that minmax will be recalculated (usually they are stored in class field)
+		this.srcImageCopyProcessor = srcIp.convertToShort(false);
+		srcImageCopyProcessor.resetMinAndMax();	// ensure that minmax will be recalculated (usually they are stored in class field)
 		// set interpolation
-		srcImageCopyProcessor.getIP().setInterpolationMethod(ImageProcessor.BICUBIC);
+		srcImageCopyProcessor.setInterpolationMethod(ImageProcessor.BICUBIC);
 		// Rotating image - set 0 background
-		srcImageCopyProcessor.getIP().setBackgroundValue(0.0);
+		srcImageCopyProcessor.setBackgroundValue(0.0);
 		// getting mean value
-		is = srcImageCopyProcessor.getIP().getStatistics();
+		is = srcImageCopyProcessor.getStatistics();
 		this.isRotated = false; // new Processor not rotated yet
 	}
 	
@@ -144,29 +143,28 @@ public class DICReconstruction {
 		int firstpixel, lastpixel; // first and last pixel of image in line
 			
 		// check condition for removing 0 value from image
-		maxpixel = srcImageCopyProcessor.getIP().getMax();
+		maxpixel = srcImageCopyProcessor.getMax();
 		if(maxpixel > 65535-shift) {
 			logger.error("Possible image clipping - check if image is saturated");
 			throw new DicException(String.format("Possible image clipping - input image has at leas one pixel with value %d",65535-shift));
 		}
 		// scale pixels by adding 1 - we remove any 0 value from source image
-		srcImageCopyProcessor.getIP().add(shift); 	
-		srcImageCopyProcessor.getIP().resetMinAndMax();
+		srcImageCopyProcessor.add(shift); 	
+		srcImageCopyProcessor.resetMinAndMax();
 		// rotate image with extending it. borders have the same value as background
-		srcImageCopyProcessor.rotate(angle,true); 
+		srcImageCopyProcessor = rotate(srcImageCopyProcessor,angle,true); 
 		isRotated = true; // current object was rotated
 		// get references of covered object for optimisation purposes
-		int newWidth = srcImageCopyProcessor.getIP().getWidth();
-		int newHeight = srcImageCopyProcessor.getIP().getHeight();
-		ImageProcessor srcImageProcessorUnwrapped = srcImageCopyProcessor.getIP();
+		int newWidth = srcImageCopyProcessor.getWidth();
+		int newHeight = srcImageCopyProcessor.getHeight();
 		// set private fields - size of image after rotation
 		maxWidth = newWidth;
 		ranges = new int[newHeight][2];
 		// get true pixels positions for every row
 		for(r=0; r<newHeight; r++) {
 			// to not process whole line, detect where starts and ends pixels of image (reject background added during rotation)
-			for(firstpixel=0; firstpixel<newWidth && srcImageProcessorUnwrapped.get(firstpixel,r)==0;firstpixel++);
-			for(lastpixel=newWidth-1;lastpixel>=0 && srcImageProcessorUnwrapped.get(lastpixel,r)==0;lastpixel--);
+			for(firstpixel=0; firstpixel<newWidth && srcImageCopyProcessor.get(firstpixel,r)==0;firstpixel++);
+			for(lastpixel=newWidth-1;lastpixel>=0 && srcImageCopyProcessor.get(lastpixel,r)==0;lastpixel--);
 			ranges[r][0] = firstpixel;
 			ranges[r][1] = lastpixel;
 		}
@@ -266,16 +264,15 @@ public class DICReconstruction {
 		int c,u,d,r; // loop indexes
 		int linindex = 0; // output table linear index
 		if(!isRotated)	{ // rotate if not rotated in getRanges - e.g. we have new Processor added by setIp	
-			srcImageCopyProcessor.getIP().add(shift); // we use different IP so shift must be added
-			srcImageCopyProcessor.rotate(angle,true);
+			srcImageCopyProcessor.add(shift); // we use different IP so shift must be added
+			srcImageCopyProcessor = rotate(srcImageCopyProcessor,angle,true);
 		}
 		// dereferencing for optimization purposes
-		int newWidth = srcImageCopyProcessor.getIP().getWidth();
-		int newHeight = srcImageCopyProcessor.getIP().getHeight();
-		ImageProcessor srcImageProcessorUnwrapped = srcImageCopyProcessor.getIP();
+		int newWidth = srcImageCopyProcessor.getWidth();
+		int newHeight = srcImageCopyProcessor.getHeight();
 		// create array for storing results - 32bit float as imageprocessor		
-		ExtraImageProcessor outputArrayProcessor = new ExtraImageProcessor(new FloatProcessor(newWidth, newHeight));
-		float[] outputPixelArray = (float[]) outputArrayProcessor.getIP().getPixels();
+		ImageProcessor outputArrayProcessor = new FloatProcessor(newWidth, newHeight);
+		float[] outputPixelArray = (float[]) outputArrayProcessor.getPixels();
 		
 		// do for every row - bas-relief is oriented horizontally 
 		for(r=0; r<newHeight; r++) {
@@ -287,12 +284,12 @@ public class DICReconstruction {
 				// up
 				cumsumup = 0;
 				for(u=c; u>=ranges[r][0]; u--) {
-					cumsumup += (srcImageProcessorUnwrapped.get(u, r)-shift-is.mean)*decays[Math.abs(u-c)];
+					cumsumup += (srcImageCopyProcessor.get(u, r)-shift-is.mean)*decays[Math.abs(u-c)];
 				}
 				// down
 				cumsumdown = 0; // cumulative sum from point r to the end of column
 				for(d=c; d<=ranges[r][1]; d++) {
-					cumsumdown += (srcImageProcessorUnwrapped.get(d,r)-shift-is.mean)*decays[Math.abs(d-c)];
+					cumsumdown += (srcImageCopyProcessor.get(d,r)-shift-is.mean)*decays[Math.abs(d-c)];
 				}
 				// integral
 				outputPixelArray[linindex] = (float)(cumsumup - cumsumdown); // linear indexing is in row-order
@@ -301,12 +298,12 @@ public class DICReconstruction {
 			linindex = linindex + newWidth-ranges[r][1]-1;
 		}
 		// rotate back output processor
-		outputArrayProcessor.getIP().setBackgroundValue(0.0);
-		outputArrayProcessor.getIP().rotate(-angle);
+		outputArrayProcessor.setBackgroundValue(0.0);
+		outputArrayProcessor.rotate(-angle);
 		// crop it back to original size
-		outputArrayProcessor.cropImageAfterRotation(srcIp.getWidth(), srcIp.getHeight());
+		outputArrayProcessor = cropImageAfterRotation(outputArrayProcessor,srcIp.getWidth(), srcIp.getHeight());
 
-		return outputArrayProcessor.getIP().convertToByte(true); // return reconstruction
+		return outputArrayProcessor.convertToByte(true); // return reconstruction
 	}
 	
 	/**
