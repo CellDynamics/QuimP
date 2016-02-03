@@ -1,7 +1,6 @@
 package uk.ac.warwick.wsbc.tools.images.filters;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;

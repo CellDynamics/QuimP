@@ -11,7 +11,7 @@ import uk.ac.warwick.wsbc.tools.general.RectangleBox;
  * @warning See extendImageBeforeRotation(double) for possible problems 
  * @author p.baniukiewicz
  * @date 9 Dec 2015
- *
+ * @todo Remove completely this class in future. Ad required functionalities as separate static class
  */
 public class ExtraImageProcessor {
 		

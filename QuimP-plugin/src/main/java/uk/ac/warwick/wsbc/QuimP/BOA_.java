@@ -27,6 +27,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -285,7 +289,9 @@ public class BOA_ implements PlugIn {
 	 */
 	@SuppressWarnings("serial")
 	class CustomStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
-
+		
+		final static int DEFAULT_SPINNER_SIZE = 5;
+		
 		private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
 		private Button bAdd, bDel, bDelSeg, bQuit;
 		private Checkbox cPrevSnake, cExpSnake, cPath, cZoom;
@@ -293,6 +299,9 @@ public class BOA_ implements PlugIn {
 		Label fpsLabel, pixelLabel, frameLabel;
 		JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
 		JSpinner isMaxIterations, isBlowup, isSample_tan, isSample_norm;
+		JSpinner postWindowSize, postCrownSize, postSigma, postSmooth; // GUI elements related to postprocessing
+		private JComboBox<?> firstPluginName,secondPluginName,thirdPluginName;
+		private Button firstPluginGUI,secondPluginGUI,thirdPluginGUI;
 
 		/**
 		 * Default constructor
@@ -335,25 +344,51 @@ public class BOA_ implements PlugIn {
 			Panel southPanel = new Panel(); // Contains two buttons: Quit and Finish
 
 			setupPanel.setLayout(new BorderLayout());
-			northPanel.setLayout(new GridLayout(5, 2));
+			northPanel.setLayout(new GridLayout(3, 1));
 			southPanel.setLayout(new GridLayout(2, 2));
 
-			//-----build north panel------
+			// build subpanel with info
+			JPanel groupBoxLabel = new JPanel(); // Contain two static fields wit image scale info
+			groupBoxLabel.setBorder(BorderFactory.createTitledBorder("Image scale"));
+			groupBoxLabel.setLayout(new GridLayout(1, 2));
 			fpsLabel = new Label("F Interval: " + IJ.d2s(BOAp.imageFrameInterval, 3) + " s");
-			northPanel.add(fpsLabel);
+			groupBoxLabel.add(fpsLabel);
 			pixelLabel = new Label("Scale: " + IJ.d2s(BOAp.imageScale, 6) + " \u00B5m");
-			northPanel.add(pixelLabel);
-			bScale = addButton("Set Scale", northPanel);
-			bDelSeg = addButton("Truncate Seg", northPanel);
-			bAdd = addButton("Add cell", northPanel);
-			bDel = addButton("Delete cell", northPanel);
-			northPanel.add(new Label(""));
-			//--------------------------
+			groupBoxLabel.add(pixelLabel);
+
+			// build subpanel with cell buttons
+			JPanel groupBoxCell = new JPanel(); // contain 4 buttons related to cell operation
+			groupBoxCell.setBorder(BorderFactory.createTitledBorder("Cell operations"));
+			groupBoxCell.setLayout(new GridLayout(2, 2));
+			bScale = addButton("Set Scale", groupBoxCell);
+			bDelSeg = addButton("Truncate Seg", groupBoxCell);
+			bAdd = addButton("Add cell", groupBoxCell);
+			bDel = addButton("Delete cell", groupBoxCell);
+
+			// build subpanel with plugins
+			JPanel groupBoxSnakePlugins = new JPanel();
+			groupBoxSnakePlugins.setBorder(BorderFactory.createTitledBorder("Snake Plugins"));
+			groupBoxSnakePlugins.setLayout(new GridLayout(3, 2));
+			firstPluginName = addComboBox(new String[] {"Mean Filter","Loes Filter"}, groupBoxSnakePlugins);
+			firstPluginGUI = addButton("GUI", groupBoxSnakePlugins);
+			secondPluginName = addComboBox(new String[] {"Mean Filter","Loes Filter"}, groupBoxSnakePlugins);
+			secondPluginGUI = addButton("GUI", groupBoxSnakePlugins);
+			thirdPluginName = addComboBox(new String[] {"Mean Filter","Loes Filter"}, groupBoxSnakePlugins);
+			thirdPluginGUI = addButton("GUI", groupBoxSnakePlugins);
+			
+
+			//-----build north panel------
+			northPanel.add(groupBoxLabel); // image info
+			northPanel.add(groupBoxCell); // cell operations
+			northPanel.add(groupBoxSnakePlugins); // postprocessing
 
 			// --------build log---------
-			logArea = new TextArea(24, 25);
-			logPanel = new JScrollPane(logArea);
+			JPanel groupBoxLog = new JPanel(); // conatain two static fields wit image scale info
+			groupBoxLog.setBorder(BorderFactory.createTitledBorder("Log"));
+			logArea = new TextArea(10, 25);
 			logArea.setEditable(false);
+			logPanel = new JScrollPane(logArea);
+			groupBoxLog.add(logPanel);
 			//------------------------------
 
 			//--------build south--------------
@@ -363,7 +398,7 @@ public class BOA_ implements PlugIn {
 			bFinish = addButton("FINISH", southPanel);
 			//------------------------------
 
-			setupPanel.add(northPanel,BorderLayout.NORTH);
+			setupPanel.add(northPanel,BorderLayout.PAGE_START);
 			setupPanel.add(logPanel, BorderLayout.CENTER);
 			setupPanel.add(southPanel, BorderLayout.SOUTH);
 
@@ -391,16 +426,16 @@ public class BOA_ implements PlugIn {
 			//-----------------------
 
 			//--------build paramPanel--------------
-			dsNodeRes = addDoubleSpinner("Node Spacing:", paramPanel, BOAp.getNodeRes(), 1., 20., 0.2);
-			isMaxIterations = addIntSpinner("Max Iterations:", paramPanel, BOAp.max_iterations, 100, 10000, 100);
-			isBlowup = addIntSpinner("Blowup:", paramPanel, BOAp.blowup, 0, 200, 2);
-			dsVel_crit = addDoubleSpinner("Crit velocity:", paramPanel, BOAp.vel_crit, 0.0001, 2., 0.001);
-			dsF_image = addDoubleSpinner("Image F:", paramPanel, BOAp.f_image, 0.01, 10., 0.01);
-			dsF_central = addDoubleSpinner("Central F:", paramPanel, BOAp.f_central, 0.0005, 1, 0.002);
-			dsF_contract = addDoubleSpinner("Contract F:", paramPanel, BOAp.f_contract, 0.001, 1, 0.001);
-			dsFinalShrink = addDoubleSpinner("Final Shrink:", paramPanel, BOAp.finalShrink, -100, 100, 0.5);
-			isSample_tan = addIntSpinner("Sample tan:", paramPanel, BOAp.sample_tan, 1, 30, 1);
-			isSample_norm = addIntSpinner("Sample norm:", paramPanel, BOAp.sample_norm, 1, 60, 1);
+			dsNodeRes = addDoubleSpinner("Node Spacing:", paramPanel, BOAp.getNodeRes(), 1., 20., 0.2, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+			isMaxIterations = addIntSpinner("Max Iterations:", paramPanel, BOAp.max_iterations, 100, 10000, 100, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+			isBlowup = addIntSpinner("Blowup:", paramPanel, BOAp.blowup, 0, 200, 2, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+			dsVel_crit = addDoubleSpinner("Crit velocity:", paramPanel, BOAp.vel_crit, 0.0001, 2., 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+			dsF_image = addDoubleSpinner("Image F:", paramPanel, BOAp.f_image, 0.01, 10., 0.01, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+			dsF_central = addDoubleSpinner("Central F:", paramPanel, BOAp.f_central, 0.0005, 1, 0.002, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+			dsF_contract = addDoubleSpinner("Contract F:", paramPanel, BOAp.f_contract, 0.001, 1, 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+			dsFinalShrink = addDoubleSpinner("Final Shrink:", paramPanel, BOAp.finalShrink, -100, 100, 0.5, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+			isSample_tan = addIntSpinner("Sample tan:", paramPanel, BOAp.sample_tan, 1, 30, 1, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+			isSample_norm = addIntSpinner("Sample norm:", paramPanel, BOAp.sample_norm, 1, 60, 1, CustomStackWindow.DEFAULT_SPINNER_SIZE);
 
 			cPrevSnake = addCheckbox("Use Previouse Snake", paramPanel, BOAp.use_previous_snake);
 			cExpSnake = addCheckbox("Expanding Snake", paramPanel, BOAp.expandSnake);
@@ -444,7 +479,7 @@ public class BOA_ implements PlugIn {
 		 * @param p Reference to the panel where button is located
 		 * @return Reference to created button
 		 */
-		private Button addButton(String label, Panel p) {
+		private Button addButton(String label, Container p) {
 			Button b = new Button(label);
 			b.addActionListener(this);
 			p.add(b);
@@ -466,6 +501,21 @@ public class BOA_ implements PlugIn {
 		}
 
 		/**
+		 * Helper method for creating ComboBox in UI
+		 *
+		 * @param s Strings to be included in ComboBox
+		 * @param mp Reference to the panel where ComboBox is located
+		 * @return Reference to created ComboBox
+		 */
+		private JComboBox<String> addComboBox(String s[], Container mp) {
+			JComboBox<String> c = new JComboBox<String>(s);
+			c.setSelectedIndex(0);
+			c.addItemListener(this);
+			mp.add(c);
+			return c;
+		}
+
+		/**
 		 * Helper method for creating spinner in UI with real values
 		 * 
 		 * @param s Label of spinner (added on its left side)
@@ -474,12 +524,13 @@ public class BOA_ implements PlugIn {
 		 * @param min The first number in sequence
 		 * @param max The last number in sequence
 		 * @param step The difference between numbers in sequence
+		 * @param columns The number of columns preferred for display
 		 * @return Reference to created spinner
 		 */
-		private JSpinner addDoubleSpinner(String s, Panel mp, double d, double min, double max, double step) {
+		private JSpinner addDoubleSpinner(String s, Container mp, double d, double min, double max, double step, int columns) {
 			SpinnerNumberModel model = new SpinnerNumberModel(d, min, max, step);
 			JSpinner spinner = new JSpinner(model);
-			((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().setColumns(5);
+			((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().setColumns(columns);
 			spinner.addChangeListener(this);
 
 			Panel p = new Panel();
@@ -502,10 +553,10 @@ public class BOA_ implements PlugIn {
 		 * @param step The difference between numbers in sequence
 		 * @return Reference to created spinner
 		 */
-		private JSpinner addIntSpinner(String s, Panel mp, int d, int min, int max, int step) {
+		private JSpinner addIntSpinner(String s, Container mp, int d, int min, int max, int step, int columns) {
 			SpinnerNumberModel model = new SpinnerNumberModel(d, min, max, step);
 			JSpinner spinner = new JSpinner(model);
-			((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().setColumns(5);
+			((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().setColumns(columns);
 			spinner.addChangeListener(this);
 
 			Panel p = new Panel();

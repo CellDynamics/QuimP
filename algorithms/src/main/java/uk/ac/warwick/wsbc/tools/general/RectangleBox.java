@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author p.baniukiewicz
  * @date 09 Dec 2015
- * 
+ * @todo integrate with DIC and ExtraImageProcessor
  */
 public class RectangleBox {
 
