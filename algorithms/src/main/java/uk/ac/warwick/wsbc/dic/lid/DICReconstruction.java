@@ -7,6 +7,7 @@ import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+import uk.ac.warwick.wsbc.tools.general.RectangleBox;
 import uk.ac.warwick.wsbc.tools.images.ExtraImageProcessor;
 
 import org.apache.logging.log4j.Logger;
@@ -169,6 +170,74 @@ public class DICReconstruction {
 			ranges[r][0] = firstpixel;
 			ranges[r][1] = lastpixel;
 		}
+	}
+	
+	/**
+	 * Add borders around image to prevent cropping during scaling.
+	 * 
+	 * @warning Replaces original image and may not preserve all its attributes 
+	 * @param angle Angle to be image rotated
+	 */
+	private ImageProcessor extendImageBeforeRotation(ImageProcessor ip, double angle) {
+		ImageProcessor ret;
+		int width = ip.getWidth(); 
+		int height = ip.getHeight(); 
+		// get bounding box after rotation
+		RectangleBox rb = new RectangleBox(width,height);
+		rb.rotateBoundingBox(angle);
+		int newWidth = (int)Math.round(rb.getWidth());
+		int newHeight = (int)Math.round(rb.getHeight());
+		// create new array resized
+		ret = ip.createProcessor(newWidth, newHeight);
+		// get current background - borders will have the same value
+		ret.setValue(ip.getBackgroundValue()); // set current fill value for extended image
+		ret.setBackgroundValue(ip.getBackgroundValue()); // set the same background as in original image
+		ret.fill(); // change color of extended image
+		ret.setInterpolationMethod(ip.getInterpolationMethod());
+		ret.insert(ip,
+				(int)Math.round( (newWidth - ip.getWidth())/2 ),
+				(int)Math.round( (newHeight - ip.getHeight())/2 )
+				); // insert original image into extended
+		ret.resetRoi();
+		return ret; // assign extended into current
+	}
+	
+	/**
+	 * Rotate image by specified angle keeping correct rotation direction
+	 * 
+	 * @param angle Angle of rotation in anti-clockwise direction
+	 * @param addBorders if \a true rotates with extension, \a false use standard rotation with clipping
+	 */
+	public ImageProcessor rotate(ImageProcessor ip, double angle, boolean addBorders) {
+		ImageProcessor ret;
+		if(addBorders)
+			ret = extendImageBeforeRotation(ip, angle);
+		else
+			ret = ip;
+		ret.rotate(angle);		
+		return ret;
+	}
+	
+	/**
+	 * Crop image
+	 * 
+	 * Designed to use with cooperation with extendImageBeforeRotation(double). Assumes that cropping area is centered 
+	 * in source image
+	 * 
+	 * @param width Width of clipped area
+	 * @param height Height of clipped area
+	 * @remarks Modifies current object
+	 * @retval ImageProcessor
+	 * @return Clipped image
+	 */
+	public ImageProcessor cropImageAfterRotation(ImageProcessor ip, int width, int height) {
+		ip.setRoi((int)Math.round( (ip.getWidth() - width)/2 ),
+				(int)Math.round( (ip.getHeight() - height)/2 ),
+				width,
+				height);
+		ip = ip.crop();
+		ip.resetRoi();
+		return ip;
 	}
 	
 	/**
