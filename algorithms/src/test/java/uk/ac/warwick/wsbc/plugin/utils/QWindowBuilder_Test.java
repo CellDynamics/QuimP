@@ -90,7 +90,7 @@ public class QWindowBuilder_Test {
 		// main thread waits here until Latch reaches 0
 		startSignal.await();
 		ret = (HashMap<String, Object>) inst.getValues();
-		logger.info("Finishing "+name.getMethodName());
+		logger.trace("Finishing "+name.getMethodName());
 		logger.debug("window="+ret.get("window")+" smooth="+ret.get("smooth"));
 	}
 	

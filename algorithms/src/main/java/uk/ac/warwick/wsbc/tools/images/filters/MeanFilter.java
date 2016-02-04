@@ -50,6 +50,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	 */
 	@Override
 	public void attachData(List<Vector2d> data) {
+		logger.trace("Entering constructor");
 		xyData = new QuimpDataConverter(data);
 	}
 	
@@ -105,6 +106,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	 */
 	@Override
 	public int setup() {
+		logger.trace("Entering setup");
 		return DOES_SNAKES;
 	}
 

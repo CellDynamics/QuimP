@@ -96,7 +96,7 @@ public abstract class QWindowBuilder {
 	 * Default constructor
 	 */
 	public QWindowBuilder() {
-		logger.info("Entering constructor");
+		logger.trace("Entering constructor");
 		ui = new LinkedHashMap<String,Component>();
 		def = null;
 	}
