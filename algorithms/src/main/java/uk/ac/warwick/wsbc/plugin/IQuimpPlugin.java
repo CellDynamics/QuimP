@@ -9,17 +9,25 @@ import java.util.Map;
 
 /**
  * General definition of plugin interface for QuimP
+ * 
+ * Contain also flags understood by plugins
  *  
  * @author p.baniukiewicz
  * @date 2 Feb 2016
- *
+ * @todo finish documentation and add UML graphs
  */
 public interface IQuimpPlugin {
+	
+	public int GENERAL = 0; ///< Type of plugin not defined
+	public int DOES_SNAKES = 1; ///< Plugin process snakes only
 	
 	/**
 	 * Provide basic information to QuimP about plugin
 	 * 
-	 * @return
+	 * @warning
+	 * It must return at least type of plugin
+	 * @return Combination of flags specifying:
+	 * -# type of plugin (obligatory)
 	 */
 	public int setup();
 	
