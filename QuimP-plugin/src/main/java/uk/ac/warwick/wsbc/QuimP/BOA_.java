@@ -4150,10 +4150,15 @@ class Node {
 
 	}
 
+	/**
+	 * Calculate tangent at Node n (i.e. unit vector between neighbors)
+	 * 
+	 * Calculate a unit vector towards neighboring nodes and then a unit vector between their ends.
+	 * direction important for normale calculation. Always calculate tan as if clockwise
+	 * 
+	 * @return Tangent at node
+	 */
 	private ExtendedVector2d calcTan() {
-		// calulate tangent at Node n (i.e. unit vector between neighbours)
-		// calc a unit vector towards neighbouring nodes and then a unit vec between thier ends
-		// direction important for normale calculation. Always calc tan as if clockwise
 
 		ExtendedVector2d unitVecLeft = ExtendedVector2d.unitVector(point, prev.getPoint());
 		ExtendedVector2d unitVecRight = ExtendedVector2d.unitVector(point, next.getPoint());
