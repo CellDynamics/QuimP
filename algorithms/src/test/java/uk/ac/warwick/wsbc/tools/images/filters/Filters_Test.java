@@ -17,7 +17,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ MeanFilter_test.class,
 	InterpolateLoess_testParam.class,
 	MeanFilter_testParam.class,
-	IPadArray_test.class,
 	HatFilter_test.class,
 	HatFilter_testParam.class,
 	RoiSaver_test.class})

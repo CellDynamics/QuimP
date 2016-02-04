@@ -2,7 +2,7 @@
  * @file QWindowBuilder.java
  * @date 29 Jan 2016
  */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.plugin.utils;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

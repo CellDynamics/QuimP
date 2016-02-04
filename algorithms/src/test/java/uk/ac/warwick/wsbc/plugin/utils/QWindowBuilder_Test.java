@@ -2,26 +2,24 @@
  * @file QWindowBuilder_Test.java
  * @date 29 Jan 2016
  */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.plugin.utils;
 
 import static org.junit.Assert.*;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
-
-import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+
+import uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder;
 
 /**
  * Test class for QWindowBuilder
@@ -72,7 +70,7 @@ public class QWindowBuilder_Test {
 	 * @throws Exception
 	 */
 	@Test
-	public void BuildWindow_test() throws Exception {
+	public void test_BuildWindow() throws Exception {
 		HashMap<String,Object> set = new HashMap<>();
 		HashMap<String,Object> ret;
 		set.put("window", 0.32);
@@ -102,7 +100,7 @@ public class QWindowBuilder_Test {
 	 * @post default values are lower bounds for defined ui controls
 	 */
 	@Test
-	public void getValues_test() {
+	public void test_getValues() {
 		HashMap<String,Object> ret;
 		inst.BuildWindow(def1);
 		ret = (HashMap<String, Object>) inst.getValues();
@@ -116,7 +114,7 @@ public class QWindowBuilder_Test {
 	 * @post set values are received
 	 */
 	@Test
-	public void setgetValues_test() {
+	public void test_setgetValues() {
 		HashMap<String,Object> ret;
 		HashMap<String,Object> set = new HashMap<>();
 		set.put("window", 0.32);

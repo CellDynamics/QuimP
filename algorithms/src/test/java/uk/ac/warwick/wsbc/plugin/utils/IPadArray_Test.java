@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.tools.images.filters;
+package uk.ac.warwick.wsbc.plugin.utils;
 
 import static org.junit.Assert.*;
 
@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
 
-public class IPadArray_test implements IPadArray {
+public class IPadArray_Test implements IPadArray {
 
 	private int window = 5; // size of virtual window
 //	private static final Logger logger = LogManager.getLogger(IPadArray_test.class.getName());
