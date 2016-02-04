@@ -42,6 +42,7 @@ import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.AppendersPlugin;
 import org.mockito.Mockito;
 
 
@@ -753,10 +754,11 @@ public class BOA_ implements PlugIn {
 				quit();
 			}
 			// process plugin buttons
+			// TODO This should update current screen
 			if(b == firstPluginGUI) {
-				logger.debug("First plugin GUI, state of BOAp is "+BOAp.firstSPlugin);
-				if(BOAp.firstSPlugin!=null)
-					BOAp.firstSPlugin.showUI(true);
+				logger.debug("First plugin GUI, state of BOAp is "+BOAp.sPluginList.get(0));
+				if(BOAp.sPluginList.get(0)!=null) // call 0 index from ArrayList of instances
+					BOAp.sPluginList.get(0).showUI(true); // call 0 index from ArrayList of instances
 			}
 			if(b == secondPluginGUI) {
 				logger.debug("Second plugin GUI");
@@ -766,7 +768,7 @@ public class BOA_ implements PlugIn {
 			}
 			if(b == (JComboBox<String>)firstPluginName) {
 				logger.debug("Used firstPluginName, val: "+firstPluginName.getSelectedItem());
-				BOAp.firstSPlugin = pluginFactory.getInstance((String)firstPluginName.getSelectedItem()); // if selected item dos not find reference to name it returns null
+				BOAp.sPluginList.set(0, pluginFactory.getInstance((String)firstPluginName.getSelectedItem())); // if selected item dos not find reference to name it returns null
 			}
 			
 			// run segmentation for selected cases
@@ -1199,6 +1201,7 @@ public class BOA_ implements PlugIn {
 	 * @see tightenSnake(Snake) 
 	 * @todo sH.storeCurrentSnake(f); is called two times just to know who thrown exception
 	 */
+//	@SuppressWarnings("unchecked")
 	void addCell(Roi r, int f) {
 		SnakeHandler sH = nest.addHandler(r, f);
 		Snake snake = sH.getLiveSnake();
@@ -1208,20 +1211,23 @@ public class BOA_ implements PlugIn {
 			tightenSnake(snake);
 			imageGroup.drawPath(snake, f); //post tightned snake on path
 			
-			// processing
-			//TODO add logic here as well as BOAp entries
+			// processing - iterate over sPlugins and execute every of them
 			// create instance of plugin
-			IQuimpPoint2dFilter<Vector2d> filter = new MeanFilter();
-			// attach data
-			filter.attachData(snake.asList());
-			// set params
-			ConfigReader cR = new ConfigReader(System.getProperty("user.home")+System.getProperty("file.separator")+"plugin.json");
-			HashMap<String,Object> map = new HashMap<String,Object>();
-			map.put("window", cR.getDoubleParam("MeanFilter", "window"));
-			filter.setPluginConfig(map);
-			// run plugin
-			sH.attachLiveSnake(filter.runPlugin());
-			
+			// casting from IQuimpPlugin to IQuimpPoint2dFilter<Vector2d> is safe as in this place all elements of
+			// BOAp.sPluginList are this type. care is taken during building GUI 
+			// pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES) returns only correct plugins and 
+			// actionPerformed(ActionEvent e) creates correct BOAp.sPluginList
+			if(!BOAp.isRefListEmpty(BOAp.sPluginList)) { // not empty, there is at least one plugin selected
+				ArrayList<Vector2d> dataToProcess = (ArrayList<Vector2d>) snake.asList();
+				for(IQuimpPlugin qP : BOAp.sPluginList) {
+					if(qP!=null) {
+						IQuimpPoint2dFilter<Vector2d> qPcast = (IQuimpPoint2dFilter<Vector2d>)qP;
+						qPcast.attachData(dataToProcess);
+						dataToProcess = (ArrayList<Vector2d>) qPcast.runPlugin();
+					}
+				}
+				sH.attachLiveSnake(dataToProcess);
+			}
 			sH.storeCurrentSnake(f); // remember temporary LiveSnake for this frame and this object
 		} 
 		catch(QuimpPluginException e) {
@@ -4220,6 +4226,8 @@ class Node {
  */
 class BOAp {
 
+	static final private int NUM_SPLINE_PLUGINS = 3; ///< constant define number of Spline plugins available. Highly related to GUI
+	
 	static File orgFile, outFile; 	// paramFile;
 	static String fileName;          // file name only, no extension
 	static QParams readQp; 			// read in parameter file
@@ -4270,9 +4278,12 @@ class BOAp {
 	static boolean supressStateChangeBOArun = false;
 	static int callCount; 		// use to test how many times a method is called
 	static boolean SEGrunning; 	///< is seg running
-	static IQuimpPlugin firstSPlugin=null; ///< first selected snake plugin
-	static IQuimpPlugin secondSPlugin=null; ///< second selected snake plugin
-	static IQuimpPlugin thirdSPlugin=null; ///< third selected snake plugin
+	/**
+	 * Ordered list of plugins related to snake processing.
+	 * Related to GUI, first plugin is at index 0, etc.
+	 * @see BOAp.setup()
+	 */
+	static ArrayList<IQuimpPlugin> sPluginList; 
 
 	/**
 	 * Return nodeRes
@@ -4298,6 +4309,21 @@ class BOAp {
 		max_dist = nodeRes * 1.9; // max distance between nodes
 	}
 
+	/**
+	 * Check if list of references contains all null elements.
+	 * 
+	 * RefLists are always non-empty as they are initialized with null values
+	 * 
+	 * @param in List to check
+	 * @return \c true if list contains all null pointers, \c false otherwise
+	 */
+	static public boolean isRefListEmpty(List<IQuimpPlugin> in) {
+		for(IQuimpPlugin i : in)
+			if(i!=null)
+				return false;
+		return true;
+	}
+	
 	static public double getMax_dist() {
 		return max_dist;
 	}
@@ -4393,6 +4419,11 @@ class BOAp {
 		editingID = -1;
 		callCount = 0;
 		SEGrunning = false;
+		
+		sPluginList = new ArrayList<IQuimpPlugin>(NUM_SPLINE_PLUGINS);
+		// initialize list with null pointers - this is how QuimP detect that there is plugin selected
+		for(int i=0;i<NUM_SPLINE_PLUGINS;i++)
+			sPluginList.add(i, null);
 	}
 
 	/**

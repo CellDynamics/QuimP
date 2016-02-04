@@ -35,7 +35,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	 * setPluginConfig(HashMap<String, Object>)
 	 */
 	public MeanFilter() {
-		this.window = 1; // default value
+		this.window = 7; // default value
 	}
 
 	/**
@@ -67,6 +67,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	 */
 	@Override
 	public List<Vector2d> runPlugin() throws QuimpPluginException {
+		logger.debug(String.format("Run plugin with params: window %d",window));
 		int cp = window/2; // left and right range of window
 		double meanx = 0;
 		double meany = 0;	// mean of window
