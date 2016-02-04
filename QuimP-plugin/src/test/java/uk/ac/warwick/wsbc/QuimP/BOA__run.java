@@ -37,7 +37,7 @@ public class BOA__run {
 		img = IJ.openImage("src/test/resources/movie03_8bit.tif");
 		img.show(); // this is necessary for plugin as it uses getcurrentimage to work
 		BOA_ ob = new BOA_(); 
-		ob.run(null); // run BOA, control is immediately returned to main
+		ob.run("/home/baniuk/"); // run BOA, control is immediately returned to main
 		// add window listener to BOA_ window
 		// window is \public field of BOA_ class representing CustomStackWindow
 		// internally extending Frame class

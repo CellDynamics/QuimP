@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+import static org.mockito.Mockito.*;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -23,7 +24,9 @@ import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
@@ -40,6 +43,7 @@ import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mockito.Mockito;
 
 
 /**
@@ -60,7 +64,24 @@ public class BOA_ implements PlugIn {
 	private Nest nest;
 	private int frame;
 	private Constrictor constrictor;
+	private PluginFactory pluginFactory; // load and maintain plugins
 
+	/**
+	 * Temporary method for test
+	 * @return \c true if enabled
+	 */
+	private boolean setupTest() {
+		Boolean isActive = true;
+		logger.warn("setupTest is in use and "+isActive.toString());
+		pluginFactory = Mockito.spy(new PluginFactory(Paths.get("")));
+		when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
+				new ArrayList<String>(Arrays.asList("Mean","Loess","Hat")));
+		
+		return isActive;
+	}
+	/**
+	 * @param arg Currently it can be string pointing to plugins directory
+	 */
 	@Override
 	public void run(String arg) {
 		if (IJ.versionLessThan("1.45")) {
@@ -101,6 +122,22 @@ public class BOA_ implements PlugIn {
 			}
 		}
 
+		// scan for plugins
+		
+		try {
+			String path = IJ.getDirectory("plugins");
+			if(path==null) {
+				IJ.log("BOA: Plugin directory not found");
+				path = arg;
+			}
+			if(!setupTest()) // if not created in test
+				pluginFactory = new PluginFactory(Paths.get(path));
+		} catch (Exception e)
+		{
+			// temporary catching may in future be removed
+			throw e; 
+		}
+		
 		BOA_.running = true;
 		setup(ip);
 		about();
@@ -366,14 +403,18 @@ public class BOA_ implements PlugIn {
 			bDel = addButton("Delete cell", groupBoxCell);
 
 			// build subpanel with plugins
+				// get plugins names collected by PluginFactory
+			ArrayList<String> pluginList = (ArrayList<String>) pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
+				// add NONE to list
+			pluginList.add(0, "NONE");
 			JPanel groupBoxSnakePlugins = new JPanel();
 			groupBoxSnakePlugins.setBorder(BorderFactory.createTitledBorder("Snake Plugins"));
 			groupBoxSnakePlugins.setLayout(new GridLayout(3, 2));
-			firstPluginName = addComboBox(new String[] {"Mean Filter","Loes Filter"}, groupBoxSnakePlugins);
+			firstPluginName = addComboBox(pluginList.toArray(new String[0]), groupBoxSnakePlugins);
 			firstPluginGUI = addButton("GUI", groupBoxSnakePlugins);
-			secondPluginName = addComboBox(new String[] {"Mean Filter","Loes Filter"}, groupBoxSnakePlugins);
+			secondPluginName = addComboBox(pluginList.toArray(new String[0]), groupBoxSnakePlugins);
 			secondPluginGUI = addButton("GUI", groupBoxSnakePlugins);
-			thirdPluginName = addComboBox(new String[] {"Mean Filter","Loes Filter"}, groupBoxSnakePlugins);
+			thirdPluginName = addComboBox(pluginList.toArray(new String[0]), groupBoxSnakePlugins);
 			thirdPluginGUI = addButton("GUI", groupBoxSnakePlugins);
 			
 
@@ -1145,6 +1186,7 @@ public class BOA_ implements PlugIn {
 			imageGroup.drawPath(snake, f); //pre tightned snake on path
 			tightenSnake(snake);
 			imageGroup.drawPath(snake, f); //post tightned snake on path
+			
 			// processing
 			//TODO add logic here as well as BOAp entries
 			// create instance of plugin
