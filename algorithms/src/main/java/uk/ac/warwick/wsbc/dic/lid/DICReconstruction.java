@@ -7,7 +7,7 @@ import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import uk.ac.warwick.wsbc.tools.general.RectangleBox;
+import uk.ac.warwick.wsbc.tools.images.ImageProcessorPlus;
 
 import org.apache.logging.log4j.Logger;
 
@@ -63,6 +63,7 @@ public class DICReconstruction {
 	private ImageProcessor srcImageCopyProcessor; ///< local \b copy of input ImageProcessor passed to object. Set by constructors and setIp(ImageProcessor)
 	private boolean isRotated; ///< \c true if srcImageCopyProcessor has been rotated already. It is set by getRanges that rotates object to get true pixels position and cancelled by setIP
 	private ImageStatistics is;
+	private ImageProcessorPlus ipp; ///< helper class for rotating images without clipping
 	
 	/**
 	 * Default constructor that accepts ImagePlus. It does not support stacks.
@@ -84,6 +85,7 @@ public class DICReconstruction {
 		this.angle = angle;
 		this.decay = decay;
 		this.isRotated = false;
+		ipp = new ImageProcessorPlus();
 		setIp(ip);
 		recalculate(); 
 	}
@@ -152,7 +154,7 @@ public class DICReconstruction {
 		srcImageCopyProcessor.add(shift); 	
 		srcImageCopyProcessor.resetMinAndMax();
 		// rotate image with extending it. borders have the same value as background
-		srcImageCopyProcessor = rotate(srcImageCopyProcessor,angle,true); 
+		srcImageCopyProcessor = ipp.rotate(srcImageCopyProcessor,angle,true); 
 		isRotated = true; // current object was rotated
 		// get references of covered object for optimisation purposes
 		int newWidth = srcImageCopyProcessor.getWidth();
@@ -168,74 +170,6 @@ public class DICReconstruction {
 			ranges[r][0] = firstpixel;
 			ranges[r][1] = lastpixel;
 		}
-	}
-	
-	/**
-	 * Add borders around image to prevent cropping during scaling.
-	 * 
-	 * @warning Replaces original image and may not preserve all its attributes 
-	 * @param angle Angle to be image rotated
-	 */
-	private ImageProcessor extendImageBeforeRotation(ImageProcessor ip, double angle) {
-		ImageProcessor ret;
-		int width = ip.getWidth(); 
-		int height = ip.getHeight(); 
-		// get bounding box after rotation
-		RectangleBox rb = new RectangleBox(width,height);
-		rb.rotateBoundingBox(angle);
-		int newWidth = (int)Math.round(rb.getWidth());
-		int newHeight = (int)Math.round(rb.getHeight());
-		// create new array resized
-		ret = ip.createProcessor(newWidth, newHeight);
-		// get current background - borders will have the same value
-		ret.setValue(ip.getBackgroundValue()); // set current fill value for extended image
-		ret.setBackgroundValue(ip.getBackgroundValue()); // set the same background as in original image
-		ret.fill(); // change color of extended image
-		ret.setInterpolationMethod(ip.getInterpolationMethod());
-		ret.insert(ip,
-				(int)Math.round( (newWidth - ip.getWidth())/2 ),
-				(int)Math.round( (newHeight - ip.getHeight())/2 )
-				); // insert original image into extended
-		ret.resetRoi();
-		return ret; // assign extended into current
-	}
-	
-	/**
-	 * Rotate image by specified angle keeping correct rotation direction
-	 * 
-	 * @param angle Angle of rotation in anti-clockwise direction
-	 * @param addBorders if \a true rotates with extension, \a false use standard rotation with clipping
-	 */
-	public ImageProcessor rotate(ImageProcessor ip, double angle, boolean addBorders) {
-		ImageProcessor ret;
-		if(addBorders)
-			ret = extendImageBeforeRotation(ip, angle);
-		else
-			ret = ip;
-		ret.rotate(angle);		
-		return ret;
-	}
-	
-	/**
-	 * Crop image
-	 * 
-	 * Designed to use with cooperation with extendImageBeforeRotation(double). Assumes that cropping area is centered 
-	 * in source image
-	 * 
-	 * @param width Width of clipped area
-	 * @param height Height of clipped area
-	 * @remarks Modifies current object
-	 * @retval ImageProcessor
-	 * @return Clipped image
-	 */
-	public ImageProcessor cropImageAfterRotation(ImageProcessor ip, int width, int height) {
-		ip.setRoi((int)Math.round( (ip.getWidth() - width)/2 ),
-				(int)Math.round( (ip.getHeight() - height)/2 ),
-				width,
-				height);
-		ip = ip.crop();
-		ip.resetRoi();
-		return ip;
 	}
 	
 	/**
@@ -265,7 +199,7 @@ public class DICReconstruction {
 		int linindex = 0; // output table linear index
 		if(!isRotated)	{ // rotate if not rotated in getRanges - e.g. we have new Processor added by setIp	
 			srcImageCopyProcessor.add(shift); // we use different IP so shift must be added
-			srcImageCopyProcessor = rotate(srcImageCopyProcessor,angle,true);
+			srcImageCopyProcessor = ipp.rotate(srcImageCopyProcessor,angle,true);
 		}
 		// dereferencing for optimization purposes
 		int newWidth = srcImageCopyProcessor.getWidth();
@@ -301,7 +235,7 @@ public class DICReconstruction {
 		outputArrayProcessor.setBackgroundValue(0.0);
 		outputArrayProcessor.rotate(-angle);
 		// crop it back to original size
-		outputArrayProcessor = cropImageAfterRotation(outputArrayProcessor,srcIp.getWidth(), srcIp.getHeight());
+		outputArrayProcessor = ipp.cropImageAfterRotation(outputArrayProcessor,srcIp.getWidth(), srcIp.getHeight());
 
 		return outputArrayProcessor.convertToByte(true); // return reconstruction
 	}

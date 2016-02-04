@@ -21,11 +21,11 @@ import ij.process.ImageProcessor;
  * @author baniuk
  *
  */
-public class DICReconstructionTest {
+public class DICReconstruction_Test {
 	
 	private ImagePlus image;
 	private ImagePlus stack;
-	private static final Logger logger = LogManager.getLogger(DICReconstructionTest.class.getName());
+	private static final Logger logger = LogManager.getLogger(DICReconstruction_Test.class.getName());
 	
 	/**
 	 * Load test image
@@ -63,7 +63,7 @@ public class DICReconstructionTest {
 	 * Output image should be properly reconstructed and have correct size of input image
 	 */
 	@Test
-	public void TestReconstructionDicLid() {
+	public void test_ReconstructionDicLid() {
 		ImageProcessor ret;
 		DICReconstruction dcr;
 		try {
@@ -91,7 +91,7 @@ public class DICReconstructionTest {
 	 * Throws exception DicException because of saturated image
 	 */
 	@Test(expected=DicException.class)
-	public void TestReconstructionDicLid_saturated() throws DicException {
+	public void test_ReconstructionDicLid_saturated() throws DicException {
 		ImageProcessor ret;
 		DICReconstruction dcr;
 		ImageConverter.setDoScaling(true);
@@ -123,7 +123,7 @@ public class DICReconstructionTest {
 	 * Reconstructed stack
 	 */
 	@Test()
-	public void TestReconstructionDicLid_stack() {
+	public void test_ReconstructionDicLid_stack() {
 		ImageProcessor ret;
 		DICReconstruction dcr;
 		try {

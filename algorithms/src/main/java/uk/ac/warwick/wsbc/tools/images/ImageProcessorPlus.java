@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.tools.general;
+package uk.ac.warwick.wsbc.tools.images;
 
 import java.util.Collections;
 import java.util.Vector;
@@ -9,6 +9,121 @@ import javax.vecmath.Point3d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ij.process.ImageProcessor;
+
+/**
+ * Class implementing extra functionalities for ij.ImageProcessor
+ *
+ * @warning See extendImageBeforeRotation(double) for possible problems 
+ * @author p.baniukiewicz
+ * @date 9 Dec 2015
+ * @date 4 Feb 2016
+ */
+public class ImageProcessorPlus {
+		
+	/**
+	 * Main constructor.
+	 */
+	public ImageProcessorPlus() {
+	}
+	
+	/**
+	 * Add borders around image to prevent cropping during rotating.
+	 * 
+	 * @warning Replaces original image and may not preserve all its attributes 
+	 * @param ip ImageProcessor to be extended
+	 * @param angle Angle to be image rotated
+	 * @return copy of \c ip extended to size that allows to rotate it by \c angle without clipping
+	 * @retval ImageProcessor
+	 */
+	public ImageProcessor extendImageBeforeRotation(ImageProcessor ip, double angle) {
+		ImageProcessor ret;
+		int width = ip.getWidth(); 
+		int height = ip.getHeight(); 
+		// get bounding box after rotation
+		RectangleBox rb = new RectangleBox(width,height);
+		rb.rotateBoundingBox(angle);
+		int newWidth = (int)Math.round(rb.getWidth());
+		int newHeight = (int)Math.round(rb.getHeight());
+		// create new array resized
+		ret = ip.createProcessor(newWidth, newHeight);
+		// get current background - borders will have the same value
+		ret.setValue(ip.getBackgroundValue()); // set current fill value for extended image
+		ret.setBackgroundValue(ip.getBackgroundValue()); // set the same background as in original image
+		ret.fill(); // change color of extended image
+		ret.setInterpolationMethod(ip.getInterpolationMethod());
+		ret.insert(ip,
+				(int)Math.round( (newWidth - ip.getWidth())/2 ),
+				(int)Math.round( (newHeight - ip.getHeight())/2 )
+				); // insert original image into extended
+		ret.resetRoi();
+		return ret; // assign extended into current
+	}
+	
+	/**
+	 * Rotate image by specified angle keeping correct rotation direction
+	 * 
+	 * @param ip ImageProcessor to be rotated
+	 * @param angle Angle of rotation in anti-clockwise direction
+	 * @param addBorders if \a true rotates with extension, \a false use standard rotation with clipping
+	 * @return rotated \c ip that is a copy of \c ip when \c addBorders is \b true or reference when 
+	 * \c addBorders is \b false
+	 * @retval ImageProcessor
+	 */
+	public ImageProcessor rotate(ImageProcessor ip,double angle, boolean addBorders) {
+		ImageProcessor ret;
+		if(addBorders)
+			ret = extendImageBeforeRotation(ip, angle);
+		else
+			ret = ip;
+		ret.rotate(angle);		
+		return ret;
+	}
+	
+	/**
+	 * Crop image
+	 * 
+	 * @param ip ImageProcessor to be cropped
+	 * @param luX Left upper corner \a x coordinate
+	 * @param luY Left upper corner \a y coordinate
+	 * @param width Width of clipped area
+	 * @param height Height of clipped area
+	 * @remarks Modifies current object
+	 * @retval ImageProcessor
+	 * @return Clipped image
+	 */
+	public ImageProcessor crop(ImageProcessor ip, int luX, int luY, int width, int height) {
+		ip.setRoi(luX, luY, width, height);
+		ip = ip.crop();
+		ip.resetRoi();
+		return ip;
+	}
+	
+	/**
+	 * Crop image
+	 * 
+	 * Designed to use with cooperation with extendImageBeforeRotation(ImageProcessor,double).
+	 * Assumes that cropping area is centered in source image
+	 * 
+	 * @param ip ImageProcessor to be cropped
+	 * @param width Width of clipped area
+	 * @param height Height of clipped area
+	 * @remarks Modifies current object
+	 * @retval ImageProcessor
+	 * @return Clipped image
+	 */
+	public ImageProcessor cropImageAfterRotation(ImageProcessor ip, int width, int height) {
+		ip.setRoi((int)Math.round( (ip.getWidth() - width)/2 ),
+				(int)Math.round( (ip.getHeight() - height)/2 ),
+				width,
+				height);
+		ip = ip.crop();
+		ip.resetRoi();
+		return ip;
+	}
+
+}
+
 /**
  * Represents rectangle bounding box
  * 
@@ -17,9 +132,8 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author p.baniukiewicz
  * @date 09 Dec 2015
- * @todo integrate with DIC and ExtraImageProcessor
  */
-public class RectangleBox {
+class RectangleBox {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(RectangleBox.class.getName());
