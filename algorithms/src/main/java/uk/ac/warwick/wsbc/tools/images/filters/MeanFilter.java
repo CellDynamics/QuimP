@@ -26,13 +26,23 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	/**
 	 * Create running mean filter.
 	 * 
-	 * @param input List of points to be filtered
-	 * @param window Size of processing window. Must be uneven, positive and shorter than dataLength
+	 * All default parameters should be declared here. Non-default are passed by 
+	 * setPluginConfig(HashMap<String, Object>)
 	 */
 	public MeanFilter() {
 		this.window = 1; // default value
 	}
 
+	/**
+	 * Attach data to process.
+	 * 
+	 * Data are as list of vectors defining points of polygon.
+	 * Passed points should be sorted according to a clockwise
+	 * or anti-clockwise direction
+	 * 
+	 * @param data Polygon points
+	 * @see uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter.attachData(List<E>)
+	 */
 	@Override
 	public void attachData(List<Vector2d> data) {
 		xyData = new QuimpDataConverter(data);
@@ -80,12 +90,25 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		return out;
 	}
 
+	/**
+	 * This method should return a flag word that specifies the filters capabilities.
+	 * 
+	 * @return Configuration codes
+	 * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin
+	 * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setup()
+	 */
 	@Override
 	public int setup() {
-		// TODO Auto-generated method stub
-		return 0;
+		return DOES_SNAKES;
 	}
 
+	/**
+	 * Configure plugin and overrides default values
+	 * 
+	 * @param par configuration as pairs <key,val>. Keys are defined
+	 * by plugin creator and plugin caller do not modify them.
+	 * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
+	 */
 	@Override
 	public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException {
 		try
@@ -94,6 +117,8 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		}
 		catch(Exception e)
 		{
+			// we should never hit this exception as parameters are not touched by caller
+			// they are only passed to configuration saver and restored from it
 			throw new QuimpPluginException("Wrong input argument->"+e.getMessage(), e);
 		}
 	}

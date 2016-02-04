@@ -43,7 +43,7 @@ import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
  *    
  * @author p.baniukiewicz
  * @date 25 Jan 2016
- *
+ * FIXME Convert to IQuimpPlugin 
  */
 public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 

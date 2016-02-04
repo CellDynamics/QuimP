@@ -21,7 +21,7 @@ import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
  * @author p.baniukiewicz
  * @date 20 Jan 2016
  * @see William S. Cleveland - Robust Locally Weighted Regression and Smoothing Scatterplots
- *
+ * FIXME Convert to IQuimpPlugin 
  */
 public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 	private QuimpDataConverter xyData; ///< input List converted to separate X and Y arrays

@@ -592,6 +592,7 @@ public class BOA_ implements PlugIn {
 		 * @param min The first number in sequence
 		 * @param max The last number in sequence
 		 * @param step The difference between numbers in sequence
+		 * @param columns The number of columns preferred for display
 		 * @return Reference to created spinner
 		 */
 		private JSpinner addIntSpinner(String s, Container mp, int d, int min, int max, int step, int columns) {
