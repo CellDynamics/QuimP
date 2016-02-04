@@ -18,7 +18,6 @@ import uk.ac.warwick.wsbc.helpers.ConfigReaderException;
 import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
-import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
 
 import java.awt.*;
@@ -51,7 +50,9 @@ import org.mockito.Mockito;
  * 
  * @author Richard Tyson
  * @author Till Bretschneider
+ * @author Piotr Baniukiewicz
  * @date 16-04-09
+ * @date 4 Feb 2016
  */
 public class BOA_ implements PlugIn {
 
@@ -76,6 +77,10 @@ public class BOA_ implements PlugIn {
 		pluginFactory = Mockito.spy(new PluginFactory(Paths.get("")));
 		when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
 				new ArrayList<String>(Arrays.asList("Mean","Loess","Hat")));
+		when(pluginFactory.getInstance("Mean")).thenReturn(new MeanFilter());
+		when(pluginFactory.getInstance("Loess")).thenReturn(null);
+		when(pluginFactory.getInstance("Hat")).thenReturn(null);
+		when(pluginFactory.getInstance("NONE")).thenReturn(null);
 		
 		return isActive;
 	}
@@ -336,8 +341,7 @@ public class BOA_ implements PlugIn {
 		Label fpsLabel, pixelLabel, frameLabel;
 		JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
 		JSpinner isMaxIterations, isBlowup, isSample_tan, isSample_norm;
-		JSpinner postWindowSize, postCrownSize, postSigma, postSmooth; // GUI elements related to postprocessing
-		private JComboBox<?> firstPluginName,secondPluginName,thirdPluginName;
+		private JComboBox<String> firstPluginName,secondPluginName,thirdPluginName;
 		private Button firstPluginGUI,secondPluginGUI,thirdPluginGUI;
 
 		/**
@@ -417,7 +421,6 @@ public class BOA_ implements PlugIn {
 			thirdPluginName = addComboBox(pluginList.toArray(new String[0]), groupBoxSnakePlugins);
 			thirdPluginGUI = addButton("GUI", groupBoxSnakePlugins);
 			
-
 			//-----build north panel------
 			northPanel.add(groupBoxLabel); // image info
 			northPanel.add(groupBoxCell); // cell operations
@@ -534,7 +537,7 @@ public class BOA_ implements PlugIn {
 		 * @param d Initial state of checkbox
 		 * @return Reference to created checkbox
 		 */
-		private Checkbox addCheckbox(String label, Panel p, boolean d) {
+		private Checkbox addCheckbox(String label, Container p, boolean d) {
 			Checkbox c = new Checkbox(label, d);
 			c.addItemListener(this);
 			p.add(c);
@@ -551,7 +554,7 @@ public class BOA_ implements PlugIn {
 		private JComboBox<String> addComboBox(String s[], Container mp) {
 			JComboBox<String> c = new JComboBox<String>(s);
 			c.setSelectedIndex(0);
-			c.addItemListener(this);
+			c.addActionListener(this);
 			mp.add(c);
 			return c;
 		}
@@ -749,7 +752,23 @@ public class BOA_ implements PlugIn {
 			} else if (b == bQuit) {
 				quit();
 			}
-
+			// process plugin buttons
+			if(b == firstPluginGUI) {
+				logger.debug("First plugin GUI, state of BOAp is "+BOAp.firstSPlugin);
+				if(BOAp.firstSPlugin!=null)
+					BOAp.firstSPlugin.showUI(true);
+			}
+			if(b == secondPluginGUI) {
+				logger.debug("Second plugin GUI");
+			}
+			if(b == thirdPluginGUI) {
+				logger.debug("Third plugin GUI");
+			}
+			if(b == (JComboBox<String>)firstPluginName) {
+				logger.debug("Used firstPluginName, val: "+firstPluginName.getSelectedItem());
+				BOAp.firstSPlugin = pluginFactory.getInstance((String)firstPluginName.getSelectedItem()); // if selected item dos not find reference to name it returns null
+			}
+			
 			// run segmentation for selected cases
 			if (run) {
 				System.out.println("running from in stackwindow");
@@ -874,6 +893,7 @@ public class BOA_ implements PlugIn {
 				BOAp.sample_norm = (Integer) spinner.getValue();
 				run = true;
 			}
+
 			if (run) {
 				if(BOAp.supressStateChangeBOArun){
 					//BOAp.supressStateChangeBOArun = false;
@@ -4250,6 +4270,9 @@ class BOAp {
 	static boolean supressStateChangeBOArun = false;
 	static int callCount; 		// use to test how many times a method is called
 	static boolean SEGrunning; 	///< is seg running
+	static IQuimpPlugin firstSPlugin=null; ///< first selected snake plugin
+	static IQuimpPlugin secondSPlugin=null; ///< second selected snake plugin
+	static IQuimpPlugin thirdSPlugin=null; ///< third selected snake plugin
 
 	/**
 	 * Return nodeRes

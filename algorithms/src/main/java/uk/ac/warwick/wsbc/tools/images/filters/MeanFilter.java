@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.vecmath.Vector2d;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
@@ -20,6 +23,8 @@ import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
  *
  */
 public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
+	
+	private static final Logger logger = LogManager.getLogger(MeanFilter.class.getName());
 	private QuimpDataConverter xyData; ///< input List converted to separate X and Y arrays
 	private int window; ///< size of processing window
 	
@@ -131,7 +136,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 
 	@Override
 	public void showUI(boolean val) {
-		// TODO Auto-generated method stub
+		logger.debug("Got message to show UI");
 		
 	}
 }

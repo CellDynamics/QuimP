@@ -36,7 +36,8 @@ public class PluginFactory {
 	}
 	
 	/**
-	 * 
+	 * Scan directory and stores results in array <key,<path,type>>
+	 * Name is usually file name without decorations
 	 */
 	private void scanDirectory() {
 		// TODO Auto-generated constructor stub
@@ -53,7 +54,12 @@ public class PluginFactory {
 		// TODO Auto-generated constructor stub
 	}
 	
-	
+	/**
+	 * Return instance of plugin \c name
+	 * 
+	 * @param name name of plugin
+	 * @return reference to plugin of \c name or \c null if plugin not found
+	 */
 	IQuimpPlugin getInstance(String name) {
 		return null;
 		// TODO Auto-generated constructor stub
