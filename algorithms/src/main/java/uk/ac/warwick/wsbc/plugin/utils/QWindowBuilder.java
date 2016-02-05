@@ -298,4 +298,36 @@ public abstract class QWindowBuilder {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Return value related to given key.
+	 * 
+	 * Value is retrieved from ui element related to given \b key.
+	 * Relation between keys and ui elements is defined by user in
+	 * configuration list provided to BuildWindow().
+	 * 
+	 * @remarks
+	 * The key must be defined and exists in that list.
+	 * @remarks
+	 * In case of wrong conversion it may be exception thrown. 
+	 * User is responsible to call this method for proper key. 
+	 * 
+	 * @param key Key to be read from configuration list
+	 * @return
+	 * @see BuildWindow(Map<String, String[]>)
+	 */
+	public int getInteger(String key) {
+		HashMap<String,Object> uiParam = (HashMap<String, Object>) getValues(); // get list of all params from ui as <key,val> list
+		return ((Double)uiParam.get(key)).intValue();
+	}
+	
+	/**
+	 * Return value related to given key.
+	 * 
+	 * @copydoc getInteger(String)
+	 */
+	public double getDouble(String key) {
+		HashMap<String,Object> uiParam = (HashMap<String, Object>) getValues(); // get list of all params from ui as <key,val> list
+		return ((Double)uiParam.get(key)).doubleValue();
+	}
 }

@@ -44,12 +44,12 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		logger.trace("Entering constructor");
 		this.window = 7; // default value
 		logger.debug("Set default parameter: window="+window);
-		// creating UI
+		// create UI using QWindowBuilder
 		uiDefinition = new HashMap<String, String[]>(); // will hold ui definitions 
 		uiDefinition.put("name", new String[] {"MeanFilter"}); // name of window
 		uiDefinition.put("window", new String[] {"spinner", "1","21","2"}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter 
 		uiDefinition.put("help", new String[] {"Window shoud be uneven"}); // help string
-		uiInstance = new QWindowBuilderInst(); // create window object
+		uiInstance = new QWindowBuilderInst(); // create window object, class QWindowBuilder is abstract so it must be extended
 		uiInstance.BuildWindow(uiDefinition); // construct ui (not shown yet)
 	}
 
@@ -66,7 +66,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	@Override
 	public void attachData(List<Vector2d> data) {
 		logger.trace("Entering attachData");
-		xyData = new QuimpDataConverter(data);
+		xyData = new QuimpDataConverter(data); // helper for converting from List<Vector2d> to X[], Y[]
 	}
 	
 	/**
@@ -84,8 +84,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	@Override
 	public List<Vector2d> runPlugin() throws QuimpPluginException {
 		// collect parameters from window
-		HashMap<String,Object> uiParam = (HashMap<String, Object>) uiInstance.getValues(); // get list of all params from ui as <key,val> list
-		window = ((Double)uiParam.get("window")).intValue(); // get named parameter we want (must be previously defined in ui definition string)
+		window = uiInstance.getInteger("window");
 		logger.debug(String.format("Run plugin with params: window %d",window));
 		
 		// do filtering
