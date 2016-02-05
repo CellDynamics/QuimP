@@ -1114,7 +1114,7 @@ public class BOA_ implements PlugIn {
 		BOAp.SEGrunning = false;
 	}
 
-	private void tightenSnake(Snake snake) throws Exception {
+	private void tightenSnake(Snake snake) throws BoaException {
 
 		int i;
 		//imageGroup.drawPath(snake, frame); //draw initial contour on path image
@@ -1251,19 +1251,24 @@ public class BOA_ implements PlugIn {
 			}
 			sH.storeCurrentSnake(f); // remember temporary LiveSnake for this frame and this object
 		} 
-		catch(QuimpPluginException e) {
-			BOA_.log("Error in filter module: "+e.getMessage());
-			logger.error(e);
+		catch(QuimpPluginException qpe) {
+			BOA_.log("Error in filter module: "+qpe.getMessage());
+			logger.error(qpe);
+		}
+		catch(BoaException be) {
+			BOA_.log("New snake failed to converge"); //FIXME It is not true now as this catch can be activated on unhandled exception from plugin (if plugin-creator did not care on exceptions)
+			logger.error(be);
 		}
 		catch (Exception e) {
-			BOA_.log("New snake failed to converge"); //FIXME It is not true now as this catch can be activated on unhandled exception from plugin (if plugin-creator did not care on exceptions)
-			logger.error(e);
+			BOA_.log("Undefined error"); //FIXME It is not true now as this catch can be activated on unhandled exception from plugin (if plugin-creator did not care on exceptions)
+			logger.fatal(e);
 		}
 		// if any problem with plugin or other, store snake without modification because snake.asList() returns copy
 		try {
 			sH.storeCurrentSnake(f);
-		} catch (Exception e) {
+		} catch (BoaException be) {
 			BOA_.log("Could not store new snake");
+			logger.error(be);
 		}
 		imageGroup.updateOverlay(f);
 	}
@@ -2405,7 +2410,7 @@ class SnakeHandler {
 	 * @param frame Frame for which \c liveSnake will be copied to
 	 * @throws Exception
 	 */
-	public void storeCurrentSnake(int frame) throws Exception {
+	public void storeCurrentSnake(int frame) throws BoaException {
 		//BOA_.log("Store snake " + ID + " at frame " + frame);
 		snakes[frame - startFrame] = null; // delete at current frame
 
@@ -2802,7 +2807,7 @@ class Snake {
 	 * @param id Unique snake ID related to object being segmented.
 	 * @throws Exception
 	 */
-	public Snake(Node h, int N, int id) throws Exception {
+	public Snake(Node h, int N, int id) throws BoaException {
 		// 
 		snakeID = id;
 		head = h;
@@ -3170,7 +3175,7 @@ class Snake {
 	 * 
 	 * @throws Exception
 	 */
-	final public void removeNode(Node n) throws Exception {
+	final public void removeNode(Node n) throws BoaException {
 		if (NODES <= 3) {
 			throw new BoaException("removeNode: Did not remove node. " + NODES + " nodes remaining.", 0, 2);
 		}
@@ -3215,7 +3220,7 @@ class Snake {
 		scale(BOAp.blowup, 4, true);
 	}
 
-	public void shrinkSnake() throws Exception {
+	public void shrinkSnake() throws BoaException {
 		scale(-BOAp.finalShrink, 0.5, false);
 	}
 
@@ -3252,7 +3257,7 @@ class Snake {
 		return area;
 	}
 
-	public void scale(double amount, double stepSize, boolean correct) throws Exception {
+	public void scale(double amount, double stepSize, boolean correct) throws BoaException {
 		if(amount == 0 ) return;
 		//make sure snake access is clockwise
 		Node.setClockwise(true);
@@ -3550,7 +3555,7 @@ class Snake {
 	 * @param shiftNewNode
 	 * @throws Exception
 	 */
-	public void correctDistance(boolean shiftNewNode) throws Exception {
+	public void correctDistance(boolean shiftNewNode) throws BoaException {
 		Node.randDirection(); //choose a random direction to process the chain
 
 		ExtendedVector2d tanL, tanR, tanLR, npos; //
