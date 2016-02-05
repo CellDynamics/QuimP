@@ -1237,6 +1237,7 @@ public class BOA_ implements PlugIn {
 			// BOAp.sPluginList are this type. care is taken during building GUI 
 			// pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES) returns only correct plugins and 
 			// actionPerformed(ActionEvent e) creates correct BOAp.sPluginList
+			// FIXME plugin call should be in its own try-catch
 			if(!BOAp.isRefListEmpty(BOAp.sPluginList)) { // not empty, there is at least one plugin selected
 				ArrayList<Vector2d> dataToProcess = (ArrayList<Vector2d>) snake.asList();
 				for(IQuimpPlugin qP : BOAp.sPluginList) {
@@ -1255,7 +1256,7 @@ public class BOA_ implements PlugIn {
 			logger.error(e);
 		}
 		catch (Exception e) {
-			BOA_.log("New snake failed to converge");
+			BOA_.log("New snake failed to converge"); //FIXME It is not true now as this catch can be activated on unhandled exception from plugin (if plugin-creator did not care on exceptions)
 			logger.error(e);
 		}
 		// if any problem with plugin or other, store snake without modification because snake.asList() returns copy

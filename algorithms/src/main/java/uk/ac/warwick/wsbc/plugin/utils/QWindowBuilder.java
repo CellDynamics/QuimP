@@ -324,7 +324,7 @@ public abstract class QWindowBuilder {
 	/**
 	 * Return value related to given key.
 	 * 
-	 * @copydoc getInteger(String)
+	 * @copydoc getIntegerFromUI(String)
 	 */
 	public double getDoubleFromUI(String key) {
 		HashMap<String,Object> uiParam = (HashMap<String, Object>) getValues(); // get list of all params from ui as <key,val> list
