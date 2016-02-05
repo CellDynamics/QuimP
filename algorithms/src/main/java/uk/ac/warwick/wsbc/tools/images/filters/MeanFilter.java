@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JSpinner;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
+import uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder;
 import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 
 /**
@@ -27,6 +31,8 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	private static final Logger logger = LogManager.getLogger(MeanFilter.class.getName());
 	private QuimpDataConverter xyData; ///< input List converted to separate X and Y arrays
 	private int window; ///< size of processing window
+	private HashMap<String,String[]> uiDefinition; ///< Definition of UI for this plugin
+	private QWindowBuilderInst uiInstance;
 	
 	/**
 	 * Create running mean filter.
@@ -38,6 +44,13 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		logger.trace("Entering constructor");
 		this.window = 7; // default value
 		logger.debug("Set default parameter: window="+window);
+		// creating UI
+		uiDefinition = new HashMap<String, String[]>(); // will hold ui definitions 
+		uiDefinition.put("name", new String[] {"MeanFilter"}); // name of window
+		uiDefinition.put("window", new String[] {"spinner", "1","21","2"}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter 
+		uiDefinition.put("help", new String[] {"Window shoud be uneven"}); // help string
+		uiInstance = new QWindowBuilderInst(); // create window object
+		uiInstance.BuildWindow(uiDefinition); // construct ui (not shown yet)
 	}
 
 	/**
@@ -70,7 +83,12 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	 */
 	@Override
 	public List<Vector2d> runPlugin() throws QuimpPluginException {
+		// collect parameters from window
+		HashMap<String,Object> uiParam = (HashMap<String, Object>) uiInstance.getValues(); // get list of all params from ui as <key,val> list
+		window = ((Double)uiParam.get("window")).intValue(); // get named parameter we want (must be previously defined in ui definition string)
 		logger.debug(String.format("Run plugin with params: window %d",window));
+		
+		// do filtering
 		int cp = window/2; // left and right range of window
 		double meanx = 0;
 		double meany = 0;	// mean of window
@@ -128,6 +146,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		try
 		{
 			window = ((Double)par.get("window")).intValue(); // by default all numeric values are passed as double
+			uiInstance.setValues(par); // populate loaded values to UI
 		}
 		catch(Exception e)
 		{
@@ -146,11 +165,55 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	@Override
 	public void showUI(boolean val) {
 		logger.debug("Got message to show UI");
-		
+		uiInstance.ToggleWindow();		
 	}
 
 	@Override
 	public String getVersion() {
 		return null;
+	}
+}
+
+/**
+ * Instance private class for tested QWindowBuilder
+ * 
+ * Any overrides of UI methods can be done here. For example
+ * user can attach listener to ui object.
+ * 
+ * @author p.baniukiewicz
+ * @date 5 Feb 2016
+ *
+ */
+class QWindowBuilderInst extends QWindowBuilder {		
+	
+	/**
+	 * Example how to protect against even values for \c window parameter
+	 * First override BuildWindow method. It provides \a protected access to
+	 * \c ui HashMap list that keeps references to all ui elements under
+	 * relevant keys, the keys relates to those names that were put in 
+	 * ui definition string. 
+	 * The initial values provided in ui definition string start from 1 with step 2,
+	 * therefore only one possibility to get even value here is by editing it manually
+	 * 
+	 * @param def window definition string
+	 * @see BuildWindow
+	 */
+	@Override
+	public void BuildWindow(Map<String, String[]> def) {
+		super.BuildWindow(def); // window must be built first
+		ChangeListener changeListner = new ChangeListener() { // create new listener that will be attached to ui element
+			@Override
+			public void stateChanged(ChangeEvent ce) {
+				Object source = ce.getSource();
+				JSpinner s = (JSpinner)ui.get("window"); // get ui element
+				if(source == s) { // check if this event concerns it
+					logger.debug("Spinner used");
+					if( ((Double)s.getValue()).intValue()%2==0 )
+						s.setValue((Double)s.getValue() + 1);
+				}
+				
+			}
+		};
+		((JSpinner)ui.get("window")).addChangeListener(changeListner); // attach listener to selected ui
 	}
 }

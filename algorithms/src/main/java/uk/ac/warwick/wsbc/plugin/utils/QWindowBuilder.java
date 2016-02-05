@@ -76,10 +76,10 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public abstract class QWindowBuilder {
-	final private static Logger logger = LogManager.getLogger(QWindowBuilder.class.getName());
+	final protected static Logger logger = LogManager.getLogger(QWindowBuilder.class.getName());
 	protected Frame pluginWnd; ///< main window object
 	protected boolean windowState; ///< current window state \c true if visible
-	private LinkedHashMap<String,Component> ui; ///< contain list of all UI elements created on base of \c def together with their names
+	protected LinkedHashMap<String,Component> ui; ///< contain list of all UI elements created on base of \c def together with their names
 	private Map<String, String[]> def; ///< definition of window and names of parameters
 	final private HashSet<String> RESERVED_KEYS = new HashSet<String>(
 			Arrays.asList(
@@ -214,6 +214,7 @@ public abstract class QWindowBuilder {
 		pluginWnd.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we)
 			{
+				windowState = false;
 				pluginWnd.setVisible(false);
 			}
 		});
