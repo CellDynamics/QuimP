@@ -13,11 +13,9 @@ import ij.io.SaveDialog;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 import ij.process.*;
-import uk.ac.warwick.wsbc.helpers.ConfigReader;
-import uk.ac.warwick.wsbc.helpers.ConfigReaderException;
 import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
 
 import java.awt.*;
@@ -26,7 +24,6 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
 
@@ -42,7 +39,6 @@ import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.AppendersPlugin;
 import org.mockito.Mockito;
 
 
@@ -1052,9 +1048,33 @@ public class BOA_ implements PlugIn {
 
 							imageGroup.drawPath(snake, frame); //post tightned snake on path
 
+							// processing - iterate over sPlugins and execute every of them
+							// create instance of plugin
+							// casting from IQuimpPlugin to IQuimpPoint2dFilter<Vector2d> is safe as in this place all elements of
+							// BOAp.sPluginList are this type. care is taken during building GUI 
+							// pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES) returns only correct plugins and 
+							// actionPerformed(ActionEvent e) creates correct BOAp.sPluginList
+							if(!BOAp.isRefListEmpty(BOAp.sPluginList)) { // not empty, there is at least one plugin selected
+								ArrayList<Vector2d> dataToProcess = (ArrayList<Vector2d>) snake.asList();
+								for(IQuimpPlugin qP : BOAp.sPluginList) {
+									if(qP!=null) {
+										IQuimpPoint2dFilter<Vector2d> qPcast = (IQuimpPoint2dFilter<Vector2d>)qP;
+										qPcast.attachData(dataToProcess);
+										dataToProcess = (ArrayList<Vector2d>) qPcast.runPlugin();
+									}
+								}
+								sH.attachLiveSnake(dataToProcess);
+							}
+							
 							sH.storeCurrentSnake(frame);
 
-						} catch (BoaException be) {
+						}
+						catch (QuimpPluginException qpe) {
+							BOA_.log("Error in filter module: "+qpe.getMessage());
+							logger.error(qpe);
+							sH.storeCurrentSnake(frame); // store snake without modification because snake.asList() returns copy
+						}
+						catch (BoaException be) {
 							imageGroup.drawPath(snake, frame); // failed position
 							//sH.deleteStoreAt(frame);
 							sH.storeCurrentSnake(frame);
@@ -1234,17 +1254,13 @@ public class BOA_ implements PlugIn {
 			BOA_.log("Error in filter module: "+e.getMessage());
 			logger.error(e);
 		}
-		catch(ConfigReaderException e) {
-			BOA_.log(e.getMessage());
-			logger.error(e);
-			throw new IllegalArgumentException(e);
-		}
 		catch (Exception e) {
 			BOA_.log("New snake failed to converge");
 			logger.error(e);
 		}
+		// if any problem with plugin or other, store snake without modification because snake.asList() returns copy
 		try {
-			sH.storeCurrentSnake(f); //FIXME Call it only once and throw different exceptions It tries to store current snake when other methods called error
+			sH.storeCurrentSnake(f);
 		} catch (Exception e) {
 			BOA_.log("Could not store new snake");
 		}

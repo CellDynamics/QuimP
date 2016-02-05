@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
 import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 
@@ -35,7 +35,9 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	 * setPluginConfig(HashMap<String, Object>)
 	 */
 	public MeanFilter() {
+		logger.trace("Entering constructor");
 		this.window = 7; // default value
+		logger.debug("Set default parameter: window="+window);
 	}
 
 	/**
@@ -46,11 +48,11 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	 * or anti-clockwise direction
 	 * 
 	 * @param data Polygon points
-	 * @see uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter.attachData(List<E>)
+	 * @see uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List<E>)
 	 */
 	@Override
 	public void attachData(List<Vector2d> data) {
-		logger.trace("Entering constructor");
+		logger.trace("Entering attachData");
 		xyData = new QuimpDataConverter(data);
 	}
 	
@@ -111,10 +113,14 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	}
 
 	/**
-	 * Configure plugin and overrides default values
+	 * Configure plugin and overrides default values.
+	 * 
+	 * Supported keys:
+	 * -# \c window - size of window
 	 * 
 	 * @param par configuration as pairs <key,val>. Keys are defined
 	 * by plugin creator and plugin caller do not modify them.
+	 * @throws QuimpPluginException on wrong parameters list or wrong parameter conversion
 	 * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
 	 */
 	@Override
@@ -141,5 +147,10 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	public void showUI(boolean val) {
 		logger.debug("Got message to show UI");
 		
+	}
+
+	@Override
+	public String getVersion() {
+		return null;
 	}
 }

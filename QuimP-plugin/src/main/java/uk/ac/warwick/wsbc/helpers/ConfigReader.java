@@ -34,7 +34,14 @@ import org.json.simple.parser.JSONParser;
  * known to class user. All values are provided as \b strings.
  * To get parameter user must call \c getParam method with proper names
  * of plugin and parameter.
- * User must take care on providing correct names and doing correct conversions
+ * User must take care on providing correct names and doing correct conversions.
+ * Example of use:
+ * @code{.java}
+ *	// set params
+ *	ConfigReader cR = new ConfigReader(System.getProperty("user.home")+System.getProperty("file.separator")+"plugin.json");
+ *	HashMap<String,Object> map = new HashMap<String,Object>();
+ * 	map.put("window", cR.getDoubleParam("MeanFilter", "window"));
+ * @endcode
  * 
  * @author p.baniukiewicz
  * @date 29 Jan 2016

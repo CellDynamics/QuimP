@@ -10,9 +10,11 @@ import javax.vecmath.Vector2d;
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 import org.apache.commons.math3.exception.NumberIsTooSmallException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 
 /**
@@ -21,24 +23,41 @@ import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
  * @author p.baniukiewicz
  * @date 20 Jan 2016
  * @see William S. Cleveland - Robust Locally Weighted Regression and Smoothing Scatterplots
- * FIXME Convert to IQuimpPlugin 
  */
 public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
+	
+	private static final Logger logger = LogManager.getLogger(LoessFilter.class.getName());
 	private QuimpDataConverter xyData; ///< input List converted to separate X and Y arrays
 	private double smoothing; ///< smoothing value (f according to references)
 	
 	/**
 	 * Create Loess filter.
 	 * 
-	 * @param input List of points to be filtered
-	 * @param smoothing Smoothing parameter, usually in range 0.15-0.1. Smaller values 
-	 * give less filtered shape.
+	 * All default parameters should be declared here. Non-default are passed by 
+	 * setPluginConfig(HashMap<String, Object>)
 	 */
-	public LoessFilter(List<Vector2d> input, double smoothing) {
-		xyData = new QuimpDataConverter(input);
-		this.smoothing = smoothing;
+	public LoessFilter() {
+		logger.trace("Entering constructor");
+		this.smoothing = 0.11;
+		logger.debug("Set default parameter: smoothing="+smoothing);
 	}
 
+	/**
+	 * Attach data to process.
+	 * 
+	 * Data are as list of vectors defining points of polygon.
+	 * Passed points should be sorted according to a clockwise
+	 * or anti-clockwise direction
+	 * 
+	 * @param data Polygon points
+	 * @see uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List<E>)
+	 */
+	@Override
+	public void attachData(List<Vector2d> data) {
+		logger.trace("Entering attachData");
+		xyData = new QuimpDataConverter(data);
+	}
+	
 	/**
 	 * Run interpolation on X,Y vectors using LoessInterpolator
 	 * 
@@ -76,16 +95,42 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 		return out;		
 	}
 
+	/**
+	 * This method should return a flag word that specifies the filters capabilities.
+	 * 
+	 * @return Configuration codes
+	 * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin
+	 * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setup()
+	 */
 	@Override
 	public int setup() {
-		// TODO Auto-generated method stub
-		return 0;
+		logger.trace("Entering setup");
+		return DOES_SNAKES;
 	}
 
+	/**
+	 * Configure plugin and overrides default values.
+	 * 
+	 * Supported keys:
+	 * -# \c smoothing - smoothing value of filter
+	 * 
+	 * @param par configuration as pairs <key,val>. Keys are defined
+	 * by plugin creator and plugin caller do not modify them.
+	 * @throws QuimpPluginException on wrong parameters list or wrong parameter conversion
+	 * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
+	 */
 	@Override
-	public void setPluginConfig(HashMap<String, Object> par) {
-		// TODO Auto-generated method stub
-		
+	public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException  {
+		try
+		{
+			smoothing = ((Double)par.get("smoothing")).doubleValue(); // by default all numeric values are passed as double
+		}
+		catch(Exception e)
+		{
+			// we should never hit this exception as parameters are not touched by caller
+			// they are only passed to configuration saver and restored from it
+			throw new QuimpPluginException("Wrong input argument->"+e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -96,13 +141,12 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 
 	@Override
 	public void showUI(boolean val) {
-		// TODO Auto-generated method stub
-		
+		logger.debug("Got message to show UI");		
 	}
 
 	@Override
-	public void attachData(List<Vector2d> data) {
+	public String getVersion() {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 }

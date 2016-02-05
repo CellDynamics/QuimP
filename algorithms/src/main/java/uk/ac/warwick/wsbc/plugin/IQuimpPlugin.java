@@ -20,7 +20,7 @@ public interface IQuimpPlugin {
 	
 	public int GENERAL = 0; ///< Type of plugin not defined
 	public int DOES_SNAKES = 1; ///< Plugin process snakes only
-	public int CHANGE_SIZE = 32; ///< Plugin change sie of input data
+	public int CHANGE_SIZE = 32; ///< Plugin change size of input data
 	
 	/**
 	 * Provide basic information to QuimP about plugin
@@ -70,4 +70,17 @@ public interface IQuimpPlugin {
 	 * @param val
 	 */
 	public void showUI(boolean val);
+	
+	/**
+	 * Get version of plugin
+	 * 
+	 * Versioning may be used for detecting incompatibilities between configurations.
+	 * Plugin version is saved in QuimP config files, and then passed to plugin by 
+	 * setPluginConfig(HashMap<String,Object>) as \a version key. This key is not 
+	 * available if plugin has not provided its version.
+	 * The plugin is responsible for parsing this parameter. 
+	 * 
+	 * @return String with version (any format) or \c null if not supported
+	 */
+	public String getVersion();
 }

@@ -13,9 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.plugin.snakefilter.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
-import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 
 /**
  * Implementation of HatFilter for removing convexities from polygon
@@ -43,7 +42,6 @@ import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
  *    
  * @author p.baniukiewicz
  * @date 25 Jan 2016
- * FIXME Convert to IQuimpPlugin 
  */
 public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 
@@ -57,19 +55,31 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	/**
 	 * Construct HatFilter
 	 * Input array with data is virtually circularly padded 
-	 * 
-	 * @param input Input array with vertexes of polygon.
-	 * @param window Size of main processing window (uneven, positive, longer than 2)
-	 * @param crown Size of crown - smaller than \a window
-	 * @param sig Acceptance criterion, all ratios larger than \a sig will be removed from \a input list
 	 */
-	public HatFilter(List<Vector2d> input, int window, int crown, double sig) {
-		points = input;
-		this.window = window;
-		this.crown = crown;
-		this.sig = sig;
+	public HatFilter() {
+		logger.trace("Entering constructor");
+		this.window = 23;
+		this.crown = 13;
+		this.sig = 0.3;
+		logger.debug("Set default parameter: window="+window+" crown="+crown+" sig="+sig);
 	}
 
+	/**
+	 * Attach data to process.
+	 * 
+	 * Data are as list of vectors defining points of polygon.
+	 * Passed points should be sorted according to a clockwise
+	 * or anti-clockwise direction
+	 * 
+	 * @param data Polygon points
+	 * @see uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List<E>)
+	 */
+	@Override
+	public void attachData(List<Vector2d> data) {
+		logger.trace("Entering attachData");
+		points = data;		
+	}
+	
 	/**
 	 * Main filter runner
 	 * 
@@ -152,16 +162,46 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		return Math.sqrt(dx*dx + dy*dy);
 	}
 
+	/**
+	 * This method should return a flag word that specifies the filters capabilities.
+	 * 
+	 * @return Configuration codes
+	 * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin
+	 * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setup()
+	 */
 	@Override
 	public int setup() {
-		// TODO Auto-generated method stub
-		return 0;
+		logger.trace("Entering setup");
+		return DOES_SNAKES + CHANGE_SIZE;
 	}
 
+	/**
+	 * Configure plugin and overrides default values.
+	 * 
+	 * Supported keys:
+	 * -# \c window - size of main window
+	 * -# \c crown - size of inner window
+	 * -# \c sigma - cut-off value (see class description)
+	 * 
+	 * @param par configuration as pairs <key,val>. Keys are defined
+	 * by plugin creator and plugin caller do not modify them.
+	 * @throws QuimpPluginException on wrong parameters list or wrong parameter conversion
+	 * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
+	 */
 	@Override
-	public void setPluginConfig(HashMap<String, Object> par) {
-		// TODO Auto-generated method stub
-		
+	public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException {
+		try
+		{
+			window = ((Double)par.get("window")).intValue(); // by default all numeric values are passed as double
+			crown = ((Double)par.get("crown")).intValue();
+			sig = ((Double)par.get("sigma")).doubleValue();			
+		}
+		catch(Exception e)
+		{
+			// we should never hit this exception as parameters are not touched by caller
+			// they are only passed to configuration saver and restored from it
+			throw new QuimpPluginException("Wrong input argument->"+e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -172,14 +212,13 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 
 	@Override
 	public void showUI(boolean val) {
-		// TODO Auto-generated method stub
-		
+		logger.debug("Got message to show UI");		
 	}
 
 	@Override
-	public void attachData(List<Vector2d> data) {
+	public String getVersion() {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 
 

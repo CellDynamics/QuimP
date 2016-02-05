@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.vecmath.Vector2d;
@@ -33,7 +34,7 @@ import org.junit.runner.RunWith;
 public class InterpolateLoess_testParam {
 	
 	private List<Vector2d> testcase;
-	private Double smooth;
+	private Double smoothing;
 	private Path testfileName;
 	private static final Logger logger = LogManager.getLogger(InterpolateLoess_testParam.class.getName());
 
@@ -49,7 +50,7 @@ public class InterpolateLoess_testParam {
 	 */
 	public InterpolateLoess_testParam(String testFileName, Double smooth) {
 		this.testfileName = Paths.get(testFileName);
-		this.smooth = smooth;
+		this.smoothing = smooth;
 	}
 
 	/**
@@ -108,12 +109,15 @@ public class InterpolateLoess_testParam {
 	 * @see QuimP-toolbox/algorithms/src/test/resources/Interpolate_Test_Analyzer.m for plotting results
 	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
 	 */
+	@SuppressWarnings("serial")
 	@Test
 	public void test_getInterpolationLoess() throws QuimpPluginException {
 		ArrayList<Vector2d> out;
-		LoessFilter i = new LoessFilter(testcase,smooth.doubleValue());
+		LoessFilter i = new LoessFilter();
+		i.attachData(testcase);
+		i.setPluginConfig(new HashMap<String,Object>() {{put("smoothing",smoothing);}});
 		out = (ArrayList<Vector2d>) i.runPlugin();
-		RoiSaver.saveROI("/tmp/test_getInterpolationLoess_"+testfileName.getFileName()+"_"+smooth.toString()+".tif", out);
+		RoiSaver.saveROI("/tmp/test_getInterpolationLoess_"+testfileName.getFileName()+"_"+smoothing.toString()+".tif", out);
 		logger.debug("setUp: "+testcase.toString());
 		if(out.size()<100)
 			logger.debug("testInterpolate: "+out.toString());
@@ -125,7 +129,7 @@ public class InterpolateLoess_testParam {
 	 */
 	@Test
 	public void test_roiSaver() {
-		RoiSaver.saveROI("/tmp/test_roiSaver_"+testfileName.getFileName()+"_"+smooth.toString()+".tif", testcase);
+		RoiSaver.saveROI("/tmp/test_roiSaver_"+testfileName.getFileName()+"_"+smoothing.toString()+".tif", testcase);
 	}
 
 }

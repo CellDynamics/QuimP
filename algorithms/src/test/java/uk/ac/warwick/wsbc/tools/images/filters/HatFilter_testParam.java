@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.vecmath.Vector2d;
@@ -33,8 +34,8 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 @RunWith(Parameterized.class)
 public class HatFilter_testParam {
 	private static final Logger logger = LogManager.getLogger(HatFilter_testParam.class.getName());
-	private Integer window;
-	private Integer crown;
+	private Double window;
+	private Double crown;
 	private Double sig;
 	private List<Vector2d> testcase;
 	private Path testfileName;
@@ -52,7 +53,7 @@ public class HatFilter_testParam {
 	 * @see DataLoader
 	 * @see HatFilter
 	 */
-	public HatFilter_testParam(String testFileName, Integer window, Integer crown, Double sig) {
+	public HatFilter_testParam(String testFileName, Double window, Double crown, Double sig) {
 		this.testfileName = Paths.get(testFileName);
 		this.window = window;
 		this.crown = crown;
@@ -85,10 +86,10 @@ public class HatFilter_testParam {
 	@Parameterized.Parameters
 	public static Collection<Object[]> testFiles() {
 		return Arrays.asList(new Object[][] {
-			{"src/test/resources/testData_137.dat",23,13,0.3},
-			{"src/test/resources/testData_1.dat",23,13,0.3},
-			{"src/test/resources/testData_125.dat",23,13,0.3},
-			{"src/test/resources/testData_75.dat",23,13,0.3}
+			{"src/test/resources/testData_137.dat",23.,13.,0.3},
+			{"src/test/resources/testData_1.dat",23.,13.,0.3},
+			{"src/test/resources/testData_125.dat",23.,13.,0.3},
+			{"src/test/resources/testData_75.dat",23.,13.,0.3}
 		});
 	}
 	
@@ -102,10 +103,15 @@ public class HatFilter_testParam {
 	 * @see QuimP-toolbox/algorithms/src/test/resources/Interpolate_Test_Analyzer.m for plotting results
 	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
 	 */
+	@SuppressWarnings("serial")
 	@Test
 	public void test_HatFilter() throws QuimpPluginException {
 		ArrayList<Vector2d> out;
-		HatFilter hf = new HatFilter(testcase, window, crown, sig);
+		HatFilter hf = new HatFilter();
+		hf.attachData(testcase);
+		hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",window);
+															put("crown",crown);
+															put("sigma",sig);}});
 		out = (ArrayList<Vector2d>) hf.runPlugin();
 		RoiSaver.saveROI("/tmp/test_HatFilter_"+testfileName.getFileName()+"_"+window.toString()+"_"+crown.toString()+"_"+sig.toString()+".tif", out);
 		logger.debug("setUp: "+testcase.toString());

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.vecmath.Vector2d;
@@ -66,10 +67,15 @@ public class HatFilter_test {
 	 * @post all nodes accepted. input==output
 	 * @throws QuimpPluginException
 	 */
+	@SuppressWarnings("serial")
 	@Test
 	public void test_HatFilter_case1() throws QuimpPluginException {
 		logger.debug("input: "+input.toString());
-		HatFilter hf = new HatFilter(input, 5, 3, 1);
+		HatFilter hf = new HatFilter();
+		hf.attachData(input);
+		hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",5.0);
+															put("crown",3.0);
+															put("sigma",1.0);}});
 		ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
 		logger.debug("  out: "+out.toString());
 		assertEquals(input, out);
@@ -81,10 +87,15 @@ public class HatFilter_test {
 	 * @post nodes 0, 1, 2, 37, 38, 39, 15, 16, 17, 18, 19, 20, 21, 22, 23 removed
 	 * @throws QuimpPluginException
 	 */
+	@SuppressWarnings("serial")
 	@Test
 	public void test_HatFilter_case2() throws QuimpPluginException {
 		logger.debug("input: "+input.toString());
-		HatFilter hf = new HatFilter(input, 5, 3, 0.05);
+		HatFilter hf = new HatFilter();
+		hf.attachData(input);
+		hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",5.0);
+															put("crown",3.0);
+															put("sigma",0.05);}});
 		ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
 		logger.debug("  out: "+out.toString());
 		
@@ -103,10 +114,15 @@ public class HatFilter_test {
 	 * @pre Various bad combinations of inputs
 	 * @post Exception FilterException
 	 */
+	@SuppressWarnings("serial")
 	@Test
 	public void test_HatFilter_case3() {
 		try {
-			HatFilter hf = new HatFilter(input, 6, 3, 1); // even window
+			HatFilter hf = new HatFilter(); // even window
+			hf.attachData(input);
+			hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",6.0);
+																put("crown",3.0);
+																put("sigma",1.0);}});
 			hf.runPlugin();
 			fail("Exception not thrown");
 		} catch (QuimpPluginException e) {
@@ -114,7 +130,11 @@ public class HatFilter_test {
 			logger.debug(e.getMessage());
 		}
 		try {
-			HatFilter hf = new HatFilter(input, 5, 4, 1); // even crown
+			HatFilter hf = new HatFilter(); // even crown
+			hf.attachData(input);
+			hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",5.0);
+																put("crown",4.0);
+																put("sigma",1.0);}});
 			hf.runPlugin();
 			fail("Exception not thrown");
 		} catch (QuimpPluginException e) {
@@ -122,7 +142,11 @@ public class HatFilter_test {
 			logger.debug(e.getMessage());
 		}
 		try {
-			HatFilter hf = new HatFilter(input, 5, 5, 1); // crown>window
+			HatFilter hf = new HatFilter(); // crown>window
+			hf.attachData(input);
+			hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",5.0);
+																put("crown",5.0);
+																put("sigma",1.0);}});
 			hf.runPlugin();
 			fail("Exception not thrown");
 		} catch (QuimpPluginException e) {
@@ -130,7 +154,11 @@ public class HatFilter_test {
 			logger.debug(e.getMessage());
 		}
 		try {
-			HatFilter hf = new HatFilter(input, 5, 0, 1); // bad crown
+			HatFilter hf = new HatFilter(); // bad crown
+			hf.attachData(input);
+			hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",5.0);
+																put("crown",0.0);
+																put("sigma",1.0);}});
 			hf.runPlugin();
 			fail("Exception not thrown");
 		} catch (QuimpPluginException e) {
@@ -138,7 +166,11 @@ public class HatFilter_test {
 			logger.debug(e.getMessage());
 		}
 		try {
-			HatFilter hf = new HatFilter(input, 0, 3, 1); // bad crown
+			HatFilter hf = new HatFilter(); // bad crown
+			hf.attachData(input);
+			hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",0.0);
+																put("crown",3.0);
+																put("sigma",1.0);}});
 			hf.runPlugin();
 			fail("Exception not thrown");
 		} catch (QuimpPluginException e) {
@@ -146,7 +178,11 @@ public class HatFilter_test {
 			logger.debug(e.getMessage());
 		}
 		try {
-			HatFilter hf = new HatFilter(input, 0, -3, 1); // bad crown
+			HatFilter hf = new HatFilter(); // bad crown
+			hf.attachData(input);
+			hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",0.0);
+																put("crown",-3.0);
+																put("sigma",1.0);}});
 			hf.runPlugin();
 			fail("Exception not thrown");
 		} catch (QuimpPluginException e) {
@@ -154,7 +190,11 @@ public class HatFilter_test {
 			logger.debug(e.getMessage());
 		}
 		try {
-			HatFilter hf = new HatFilter(input, 1, 1, 1); // bad crown
+			HatFilter hf = new HatFilter(); // bad crown
+			hf.attachData(input);
+			hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",1.0);
+																put("crown",1.0);
+																put("sigma",1.0);}});
 			hf.runPlugin();
 			fail("Exception not thrown");
 		} catch (QuimpPluginException e) {
