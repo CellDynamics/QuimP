@@ -316,7 +316,7 @@ public abstract class QWindowBuilder {
 	 * @return
 	 * @see BuildWindow(Map<String, String[]>)
 	 */
-	public int getInteger(String key) {
+	public int getIntegerFromUI(String key) {
 		HashMap<String,Object> uiParam = (HashMap<String, Object>) getValues(); // get list of all params from ui as <key,val> list
 		return ((Double)uiParam.get(key)).intValue();
 	}
@@ -326,7 +326,7 @@ public abstract class QWindowBuilder {
 	 * 
 	 * @copydoc getInteger(String)
 	 */
-	public double getDouble(String key) {
+	public double getDoubleFromUI(String key) {
 		HashMap<String,Object> uiParam = (HashMap<String, Object>) getValues(); // get list of all params from ui as <key,val> list
 		return ((Double)uiParam.get(key)).doubleValue();
 	}

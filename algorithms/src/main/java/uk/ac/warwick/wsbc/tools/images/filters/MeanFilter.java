@@ -84,7 +84,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	@Override
 	public List<Vector2d> runPlugin() throws QuimpPluginException {
 		// collect parameters from window
-		window = uiInstance.getInteger("window");
+		window = uiInstance.getIntegerFromUI("window");
 		logger.debug(String.format("Run plugin with params: window %d",window));
 		
 		// do filtering
