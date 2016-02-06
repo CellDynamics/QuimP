@@ -16,6 +16,7 @@ import ij.process.*;
 import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.tools.images.filters.LoessFilter;
 import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
 
 import java.awt.*;
@@ -75,7 +76,7 @@ public class BOA_ implements PlugIn {
 		when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
 				new ArrayList<String>(Arrays.asList("Mean","Loess","Hat")));
 		when(pluginFactory.getInstance("Mean")).thenReturn(new MeanFilter());
-		when(pluginFactory.getInstance("Loess")).thenReturn(null);
+		when(pluginFactory.getInstance("Loess")).thenReturn(new LoessFilter());
 		when(pluginFactory.getInstance("Hat")).thenReturn(null);
 		when(pluginFactory.getInstance("NONE")).thenReturn(null);
 		
@@ -757,14 +758,26 @@ public class BOA_ implements PlugIn {
 					BOAp.sPluginList.get(0).showUI(true); // call 0 index from ArrayList of instances
 			}
 			if(b == secondPluginGUI) {
-				logger.debug("Second plugin GUI");
+				logger.debug("Second plugin GUI, state of BOAp is "+BOAp.sPluginList.get(1));
+				if(BOAp.sPluginList.get(1)!=null) // call 1 index from ArrayList of instances
+					BOAp.sPluginList.get(1).showUI(true); // call 1 index from ArrayList of instances
 			}
 			if(b == thirdPluginGUI) {
-				logger.debug("Third plugin GUI");
+				logger.debug("Third plugin GUI, state of BOAp is "+BOAp.sPluginList.get(2));
+				if(BOAp.sPluginList.get(2)!=null) // call 2 index from ArrayList of instances
+					BOAp.sPluginList.get(2).showUI(true); // call 2 index from ArrayList of instances
 			}
 			if(b == (JComboBox<String>)firstPluginName) {
 				logger.debug("Used firstPluginName, val: "+firstPluginName.getSelectedItem());
 				BOAp.sPluginList.set(0, pluginFactory.getInstance((String)firstPluginName.getSelectedItem())); // if selected item dos not find reference to name it returns null
+			}
+			if(b == (JComboBox<String>)secondPluginName) {
+				logger.debug("Used secondPluginName, val: "+secondPluginName.getSelectedItem());
+				BOAp.sPluginList.set(1, pluginFactory.getInstance((String)secondPluginName.getSelectedItem())); // if selected item dos not find reference to name it returns null
+			}
+			if(b == (JComboBox<String>)thirdPluginName) {
+				logger.debug("Used thirdPluginName, val: "+thirdPluginName.getSelectedItem());
+				BOAp.sPluginList.set(2, pluginFactory.getInstance((String)thirdPluginName.getSelectedItem())); // if selected item dos not find reference to name it returns null
 			}
 			
 			// run segmentation for selected cases

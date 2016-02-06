@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JSpinner;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.vecmath.Vector2d;
 
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
@@ -15,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder;
 import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 
 /**
@@ -29,6 +33,8 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 	private static final Logger logger = LogManager.getLogger(LoessFilter.class.getName());
 	private QuimpDataConverter xyData; ///< input List converted to separate X and Y arrays
 	private double smoothing; ///< smoothing value (f according to references)
+	private HashMap<String,String[]> uiDefinition; ///< Definition of UI for this plugin
+	private QWindowBuilderInstLoess uiInstance;
 	
 	/**
 	 * Create Loess filter.
@@ -38,8 +44,14 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 	 */
 	public LoessFilter() {
 		logger.trace("Entering constructor");
-		this.smoothing = 0.11;
+		this.smoothing = 0.25;
 		logger.debug("Set default parameter: smoothing="+smoothing);
+		uiDefinition = new HashMap<String, String[]>(); // will hold ui definitions 
+		uiDefinition.put("name", new String[] {"LoessFilter"}); // name of window
+		uiDefinition.put("smooth", new String[] {"spinner", "0.05","0.5","0.005"}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter 
+		uiDefinition.put("help", new String[] {"Higher values stand for more smooth output. Resonable range is 0.05 - 0.5. For too small values plugin throws error. Minimal vale depends on polygon shape and can vary."}); // help string
+		uiInstance = new QWindowBuilderInstLoess(); // create window object, class QWindowBuilder is abstract so it must be extended
+		uiInstance.BuildWindow(uiDefinition); // construct ui (not shown yet)
 	}
 
 	/**
@@ -63,10 +75,13 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 	 * 
 	 * @return Filtered points as list of Vector2d objects
 	 * @throws QuimpPluginException when:
-	 *  - smoothing value is too small (usually below 0.15)
+	 *  - smoothing value is too small (usually below 0.015)
 	 */
 	@Override
 	public List<Vector2d> runPlugin() throws QuimpPluginException {
+		smoothing = uiInstance.getDoubleFromUI("smooth");
+		logger.debug(String.format("Run plugin with params: smoothing %f",smoothing));
+		
 		float density = 1.0f;	// If smaller than 1 output points will be refined. For 1 numbers of output points and input points are equal.  
 		LoessInterpolator sI;
 		double[] i = new double[xyData.size()]; // table of linear indexes that stand for x values for X,Y vectors (treated separately now)
@@ -123,7 +138,8 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 	public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException  {
 		try
 		{
-			smoothing = ((Double)par.get("smoothing")).doubleValue(); // by default all numeric values are passed as double
+			smoothing = ((Double)par.get("smooth")).doubleValue(); // by default all numeric values are passed as double
+			uiInstance.setValues(par);
 		}
 		catch(Exception e)
 		{
@@ -141,12 +157,25 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 
 	@Override
 	public void showUI(boolean val) {
-		logger.debug("Got message to show UI");		
+		logger.debug("Got message to show UI");	
+		uiInstance.ToggleWindow();
 	}
 
 	@Override
 	public String getVersion() {
-		// TODO Auto-generated method stub
 		return null;
 	}
+}
+
+/**
+ * Instance private class for tested QWindowBuilder
+ * 
+ * Any overrides of UI methods can be done here. For example
+ * user can attach listener to ui object.
+ * 
+ * @author p.baniukiewicz
+ * @date 5 Feb 2016
+ *
+ */
+class QWindowBuilderInstLoess extends QWindowBuilder {		
 }
