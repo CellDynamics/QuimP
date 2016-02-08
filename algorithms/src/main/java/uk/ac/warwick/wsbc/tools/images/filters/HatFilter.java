@@ -69,6 +69,7 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	private HashMap<String,String[]> uiDefinition; ///< Definition of UI for this plugin
 	private DrawPanel dp; ///< Here we will draw. This panel is plot in place of help field
 	private ExPolygon p; ///< representation of snake as polygon
+	private ExPolygon out; ///< output after filtering
 	
 	
 	/**

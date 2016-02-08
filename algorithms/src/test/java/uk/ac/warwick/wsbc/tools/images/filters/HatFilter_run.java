@@ -4,7 +4,6 @@
  */
 package uk.ac.warwick.wsbc.tools.images.filters;
 
-import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
