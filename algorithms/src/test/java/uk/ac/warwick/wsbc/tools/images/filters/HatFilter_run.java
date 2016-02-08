@@ -33,11 +33,14 @@ public class HatFilter_run {
 		List<Vector2d> input;
 		// test data
 		input = new ArrayList<>();
-		for(int i = 0; i<40; i++)
-			input.add(new Vector2d(i,0));
-		input.set(18, new Vector2d(18,1));
-		input.set(19, new Vector2d(19,1));
-		input.set(20, new Vector2d(20,1));
+		input.add(new Vector2d(5,0));
+		input.add(new Vector2d(3.11,3.90));
+		input.add(new Vector2d(-1.11,4.87));
+		input.add(new Vector2d(-4.50,2.16));
+		input.add(new Vector2d(-4.50,-2.16));
+		input.add(new Vector2d(-1.11,-4.87));
+		input.add(new Vector2d(3.11,-3.9));
+
 		
 		// create instance of hatfilter
 		HatFilterInst hf = new HatFilterInst();

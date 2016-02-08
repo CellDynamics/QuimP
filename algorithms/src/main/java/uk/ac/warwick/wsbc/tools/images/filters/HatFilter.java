@@ -3,10 +3,11 @@ package uk.ac.warwick.wsbc.tools.images.filters;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
@@ -58,6 +60,7 @@ import uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder;
 public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vector2d>,IPadArray, ChangeListener, ActionListener {
 
 	private static final Logger logger = LogManager.getLogger(HatFilter.class.getName());
+	private final int DRAW_SIZE = 200;	///< size of draw area in window
 	
 	private int window; ///< filter's window size 
 	private int crown; ///< filter's crown size (in middle of \a window)
@@ -65,6 +68,9 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	private List<Vector2d> points;
 	private HashMap<String,String[]> uiDefinition; ///< Definition of UI for this plugin
 	private DrawPanel dp; ///< Here we will draw. This panel is plot in place of help field
+	private ExPolygon p; ///< representation of snake as polygon
+	
+	
 	/**
 	 * Construct HatFilter
 	 * Input array with data is virtually circularly padded 
@@ -82,6 +88,7 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		uiDefinition.put("sigma", new String[] {"spinner", "0.01","0.9","0.01"});
 //		uiDefinition.put("help", new String[] {""}); // help string
 		BuildWindow(uiDefinition); // construct ui (not shown yet)
+		points = null; // not attached yet
 	}
 
 	/**
@@ -97,13 +104,20 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	@Override
 	public void attachData(List<Vector2d> data) {
 		logger.trace("Entering attachData");
-		points = data;		
+		points = data;	
+		p = new ExPolygon(data);
+		p.fitPolygon(DRAW_SIZE);
+
 	}
 	
 	/**
 	 * Main filter runner
 	 * 
+	 * This version assumes that user clicked Apply button to populate 
+	 * data from UI to plugin.
+	 * 
 	 * @return Processed \a input list, size of output list may be different than input. Empty output is also allowed.
+	 * @see uk.ac.warwick.wsbc.tools.images.filters.HatFilter.actionPerformed(ActionEvent)
 	 */
 	@Override
 	public List<Vector2d> runPlugin() throws QuimpPluginException {
@@ -296,7 +310,7 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	 * window content was copied while runPlugin() command
 	 * 
 	 * @see uk.ac.warwick.wsbc.tools.images.filters.LoessFilter.runPlugin()
-	 * @see uk.ac.warwick.wsbc.tools.images.filters.MeanFilter.runPlugin()	 *  
+	 * @see uk.ac.warwick.wsbc.tools.images.filters.MeanFilter.runPlugin()
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -322,7 +336,7 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		private static final long serialVersionUID = 1L;
 
 		DrawPanel() {
-			setPreferredSize(new Dimension(200, 200));
+			setPreferredSize(new Dimension(DRAW_SIZE, DRAW_SIZE));
 		}
 		
 		/**
@@ -333,10 +347,88 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	        super.paintComponent(g);
 
 	        g.setColor(Color.BLACK);
-	        g.fillRect(0, 0, 200, 200);
+	        g.fillRect(0, 0, DRAW_SIZE, DRAW_SIZE);
 	        g.setColor(Color.WHITE);
-	        g.drawRect(10, 10, 100, 100);
+	        if(points!=null) {
+	        	g.drawPolygon(p);
+	        }
 	    }
+	}
+	
+	/**
+	 * Helper class supporting scaling and fitting polygon to DrawWindow
+	 * 
+	 * @author p.baniukiewicz
+	 * @date 8 Feb 2016
+	 *
+	 */
+	class ExPolygon extends Polygon {
+		
+		private static final long serialVersionUID = 5870934217878285135L;
+		private List<Vector2d> data;
+		
+		/**
+		 * Construct polygon from list of points.
+		 * 
+		 * @param data List of points
+		 */
+		public ExPolygon(List<Vector2d> data) {
+			this.data = data;
+			Point2d centroid;
+			
+			// convert to polygon
+			for(Vector2d v : points)
+				addPoint((int)Math.round(v.getX()), (int)Math.round(v.getY()));
+			// set in 0,0
+			centroid = calcCentroid();
+			translate((int)(-centroid.getX()),
+        			 (int)(-centroid.getY()));
+			
+		}
+		
+		/**
+		 * Scale polygon to fit in rectangular window of \c size
+		 * 
+		 * Method changes internal polygon representation.
+		 * 
+		 * @param size Size of window to fit polygon
+		 */
+		public void fitPolygon(double size) {
+			double scale;
+			Point2d centroid;
+			// get size of bounding box
+			Rectangle2D bounds = getBounds2D();
+			// set scale according to window size
+			if(bounds.getWidth()>bounds.getHeight())
+				scale = bounds.getWidth();
+			else
+				scale = bounds.getHeight();
+			scale = size/scale;
+						
+			for(int i=0;i<npoints;i++) {
+				xpoints[i] = (int)Math.round(xpoints[i]*scale);
+				ypoints[i] = (int)Math.round(ypoints[i]*scale);
+			}
+			// center in window
+			centroid = calcCentroid();
+			translate((int)(size/2-centroid.getX()),
+       			 (int)(size/2-centroid.getY()));
+		}
+		
+		/**
+		 * Calculate mass center of polygon
+		 * 
+		 * @return Center Point2d 
+		 */
+		private Point2d calcCentroid() {
+			double x=0;
+			double y=0;
+			for(Vector2d d: data) {
+				x+=d.getX();
+				y+=d.getY();
+			}
+			return new Point2d(x/data.size(),y/data.size());
+		}
 	}
 }
 
