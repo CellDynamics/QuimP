@@ -5,6 +5,8 @@ import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
+import javax.swing.JFrame;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +38,7 @@ public class QWindowBuilder_run {
 		CountDownLatch startSignal = new CountDownLatch(1);
 		inst.BuildWindow(def1); // main window builder
 		inst.setValues(set);
+		inst.pluginWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		inst.pluginWnd.addWindowListener(new WindowAdapter() {
 			@Override
 			// This method will be called when BOA_ window is closed
@@ -50,6 +53,7 @@ public class QWindowBuilder_run {
 		ret = (HashMap<String, Object>) inst.getValues();
 		logger.trace("Finishing ");
 		logger.debug("window="+ret.get("window")+" smooth="+ret.get("smooth"));
+		inst = null;
 	}
 	
 

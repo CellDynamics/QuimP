@@ -6,7 +6,6 @@ package uk.ac.warwick.wsbc.plugin.utils;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
@@ -22,6 +21,7 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -77,8 +77,9 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class QWindowBuilder {
 	final protected static Logger logger = LogManager.getLogger(QWindowBuilder.class.getName());
-	protected Frame pluginWnd; ///< main window object
+	protected JFrame pluginWnd; ///< main window object
 	protected boolean windowState; ///< current window state \c true if visible
+	protected JPanel pluginPanel; ///< Main panel extended on whole \c pluginWnd
 	protected LinkedHashMap<String,Component> ui; ///< contain list of all UI elements created on base of \c def together with their names
 	private Map<String, String[]> def; ///< definition of window and names of parameters
 	final private HashSet<String> RESERVED_KEYS = new HashSet<String>(
@@ -88,9 +89,12 @@ public abstract class QWindowBuilder {
 	
 	// definition string - positions of configuration data in value string (see BuildWindow)
 	final private int UITYPE 		= 0; // type of UI control to create
+	final private int UIDATA		= 0; // data for ui when only one parameter
 	final private int S_MIN 		= 1; // spinner min value
 	final private int S_MAX 		= 2; // spinner max value
 	final private int S_STEP 		= 3; // spinner step value
+	// definition of constant elements of UI
+	protected JButton applyB;
 	
 	/**
 	 * Default constructor
@@ -148,8 +152,8 @@ public abstract class QWindowBuilder {
 		this.def = def; // remember parameters
 		ui.clear(); // clear all ui stored on second call of third method
 		
-		pluginWnd = new Frame(); //create frame with title given as first position in table
-		JPanel pluginPanel = new JPanel(); // main panel on whole window
+		pluginWnd = new JFrame(); //create frame with title given as first position in table
+		pluginPanel = new JPanel(); // main panel on whole window
 		pluginPanel.setLayout(new BorderLayout()); // divide window on two zones - upper for controls, middle for help
 		
 		Panel north = new Panel(); // panel for controls
@@ -190,20 +194,21 @@ public abstract class QWindowBuilder {
 		
 		// add non ui elements
 		if(def.containsKey("name")) {
-			pluginPanel.setBorder(BorderFactory.createTitledBorder("Plugin "+def.get("name")[0])); // border on whole window
+			pluginPanel.setBorder(BorderFactory.createTitledBorder("Plugin "+def.get("name")[UIDATA])); // border on whole window
 		}
 		if(def.containsKey("help")) {
 			JTextArea helpArea = new JTextArea(10, 10); // default size of text area
 			JScrollPane helpPanel = new JScrollPane(helpArea);
 			helpArea.setEditable(false);
 			pluginPanel.add(helpPanel, BorderLayout.CENTER); // locate at center position
-			helpArea.setText(def.get("help")[0]); // set help text
+			helpArea.setText(def.get("help")[UIDATA]); // set help text
 			helpArea.setLineWrap(true); // with wrapping
 		}
 		
 		// add Apply button on south
 		Panel south = new Panel();
-		south.add(new JButton("Apply"));
+		applyB = new JButton("Apply");
+		south.add(applyB);
 		
 		// build window
 		pluginPanel.add(north, BorderLayout.NORTH);
@@ -331,3 +336,4 @@ public abstract class QWindowBuilder {
 		return ((Double)uiParam.get(key)).doubleValue();
 	}
 }
+

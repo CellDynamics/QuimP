@@ -1,5 +1,12 @@
 package uk.ac.warwick.wsbc.tools.images.filters;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -47,7 +55,7 @@ import uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder;
  * @author p.baniukiewicz
  * @date 25 Jan 2016
  */
-public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
+public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vector2d>,IPadArray, ChangeListener, ActionListener {
 
 	private static final Logger logger = LogManager.getLogger(HatFilter.class.getName());
 	
@@ -56,9 +64,7 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	private double sig; ///< acceptance criterion
 	private List<Vector2d> points;
 	private HashMap<String,String[]> uiDefinition; ///< Definition of UI for this plugin
-	private QWindowBuilderInstHat uiInstance;
-	
-	
+	private DrawPanel dp; ///< Here we will draw. This panel is plot in place of help field
 	/**
 	 * Construct HatFilter
 	 * Input array with data is virtually circularly padded 
@@ -74,9 +80,8 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		uiDefinition.put("window", new String[] {"spinner", "3","51","2"}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter
 		uiDefinition.put("crown", new String[] {"spinner", "1","51","2"});
 		uiDefinition.put("sigma", new String[] {"spinner", "0.01","0.9","0.01"});
-		uiDefinition.put("help", new String[] {""}); // help string
-		uiInstance = new QWindowBuilderInstHat(); // create window object, class QWindowBuilder is abstract so it must be extended
-		uiInstance.BuildWindow(uiDefinition); // construct ui (not shown yet)
+//		uiDefinition.put("help", new String[] {""}); // help string
+		BuildWindow(uiDefinition); // construct ui (not shown yet)
 	}
 
 	/**
@@ -102,9 +107,6 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	 */
 	@Override
 	public List<Vector2d> runPlugin() throws QuimpPluginException {
-		window = uiInstance.getIntegerFromUI("window");
-		crown = uiInstance.getIntegerFromUI("crown");
-		sig = uiInstance.getDoubleFromUI("sigma");
 		logger.debug(String.format("Run plugin with params: window %d, crown %d, sigma %f",window,crown,sig));
 		
 		int cp = window/2; // left and right range of window
@@ -215,7 +217,7 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 			window = ((Double)par.get("window")).intValue(); // by default all numeric values are passed as double
 			crown = ((Double)par.get("crown")).intValue();
 			sig = ((Double)par.get("sigma")).doubleValue();	
-			uiInstance.setValues(par); // copy incoming parameters to UI
+			setValues(par); // copy incoming parameters to UI
 		}
 		catch(Exception e)
 		{
@@ -234,63 +236,107 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	@Override
 	public void showUI(boolean val) {
 		logger.debug("Got message to show UI");	
-		uiInstance.ToggleWindow();
+		ToggleWindow();
 	}
 
 	@Override
 	public String getVersion() {
-		// TODO Auto-generated method stub
 		return null;
 	}
-}
-
-/**
- * Instance private class for tested QWindowBuilder
- * 
- * Any overrides of UI methods can be done here. For example
- * user can attach listener to ui object.
- * 
- * @author p.baniukiewicz
- * @date 8 Feb 2016
- *
- */
-class QWindowBuilderInstHat extends QWindowBuilder {		
+	
 	
 	/**
-	 * Example how to protect against even values for \c window parameter
-	 * First override BuildWindow method. It provides \a protected access to
-	 * \c ui HashMap list that keeps references to all ui elements under
-	 * relevant keys, the keys relates to those names that were put in 
-	 * ui definition string. 
-	 * The initial values provided in ui definition string start from 1 with step 2,
-	 * therefore only one possibility to get even value here is by editing it manually
+	 * Override of uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder.BuildWindow()
 	 * 
-	 * @param def window definition string
-	 * @see BuildWindow
+	 * The aim is to:
+	 * -# attach listeners for spinners ro preventing even numbers
+	 * -# attach listener for build-in apply button
+	 * -# add draw field DrawPanel
 	 */
 	@Override
 	public void BuildWindow(Map<String, String[]> def) {
 		super.BuildWindow(def); // window must be built first
-		ChangeListener changeListner = new ChangeListener() { // create new listener that will be attached to ui element
-			@Override
-			public void stateChanged(ChangeEvent ce) {
-				Object source = ce.getSource();
-				JSpinner s = (JSpinner)ui.get("window"); // get ui element
-				JSpinner s1 = (JSpinner)ui.get("crown"); // get ui element
-				if(source == s) { // check if this event concerns it
-					logger.debug("Spinner window used");
-					if( ((Double)s.getValue()).intValue()%2==0 )
-						s.setValue((Double)s.getValue() + 1);
-				}
-				if(source == s1) { // check if this event concerns it
-					logger.debug("Spinner crown used");
-					if( ((Double)s1.getValue()).intValue()%2==0 )
-						s1.setValue((Double)s1.getValue() + 1);
-				}
-				
-			}
-		};
-		((JSpinner)ui.get("window")).addChangeListener(changeListner); // attach listener to selected ui
-		((JSpinner)ui.get("crown")).addChangeListener(changeListner); // attach listener to selected ui
+		
+		((JSpinner)ui.get("window")).addChangeListener(this); // attach listener to selected ui
+		((JSpinner)ui.get("crown")).addChangeListener(this); // attach listener to selected ui
+		applyB.addActionListener(this); // attach listener to aplly button
+		dp = new DrawPanel(); // create drawable JFrame
+		pluginPanel.add(dp,BorderLayout.CENTER); // add in center position (in place of help zone)
+		pluginWnd.pack();
+	}
+
+	/**
+	 * React on spinners changes. 
+	 * 
+	 * Here used for preventing even values.
+	 */
+	@Override
+	public void stateChanged(ChangeEvent ce) {
+		Object source = ce.getSource();
+		JSpinner s = (JSpinner)ui.get("window"); // get ui element
+		JSpinner s1 = (JSpinner)ui.get("crown"); // get ui element
+		if(source == s) { // check if this event concerns it
+			logger.debug("Spinner window used");
+			if( ((Double)s.getValue()).intValue()%2==0 )
+				s.setValue((Double)s.getValue() + 1);
+		}
+		if(source == s1) { // check if this event concerns it
+			logger.debug("Spinner crown used");
+			if( ((Double)s1.getValue()).intValue()%2==0 )
+				s1.setValue((Double)s1.getValue() + 1);
+		}
+		
+	}
+
+	/**
+	 * React on \b Apply button.
+	 * 
+	 * Here \b Apply button copies window content into plugin structures.
+	 * This is different approach than in LoessFilter and MeanFilter where
+	 * window content was copied while runPlugin() command
+	 * 
+	 * @see uk.ac.warwick.wsbc.tools.images.filters.LoessFilter.runPlugin()
+	 * @see uk.ac.warwick.wsbc.tools.images.filters.MeanFilter.runPlugin()	 *  
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object b = e.getSource();
+		if(b==applyB) { // pressed apply, copy ui data to plugin
+			window = getIntegerFromUI("window");
+			crown = getIntegerFromUI("crown");
+			sig = getDoubleFromUI("sigma");
+			logger.debug(String.format("Apply pressed: window %d, crown %d, sigma %f",window,crown,sig));
+		}
+		
+	}
+	
+	/**
+	 * Class for plotting in center part of plugin derived from QWindowBuilder
+	 * 
+	 * @author p.baniukiewicz
+	 * @date 8 Feb 2016
+	 *
+	 */
+	class DrawPanel extends JPanel {
+
+		private static final long serialVersionUID = 1L;
+
+		DrawPanel() {
+			setPreferredSize(new Dimension(200, 200));
+		}
+		
+		/**
+		 * Main plotting function
+		 */
+		@Override
+		public void paintComponent(Graphics g) {
+	        super.paintComponent(g);
+
+	        g.setColor(Color.BLACK);
+	        g.fillRect(0, 0, 200, 200);
+	        g.setColor(Color.WHITE);
+	        g.drawRect(10, 10, 100, 100);
+	    }
 	}
 }
+

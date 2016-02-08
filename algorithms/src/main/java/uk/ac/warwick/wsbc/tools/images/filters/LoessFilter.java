@@ -72,7 +72,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 	 * 
 	 * @return Filtered points as list of Vector2d objects
 	 * @throws QuimpPluginException when:
-	 *  - smoothing value is too small (usually below 0.015)
+	 *  - smoothing value is too small (usually below 0.015 but it depends on data)
 	 */
 	@Override
 	public List<Vector2d> runPlugin() throws QuimpPluginException {
