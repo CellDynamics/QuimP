@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JSpinner;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
+import uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder;
 
 /**
  * Implementation of HatFilter for removing convexities from polygon
@@ -45,12 +49,15 @@ import uk.ac.warwick.wsbc.plugin.utils.IPadArray;
  */
 public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 
+	private static final Logger logger = LogManager.getLogger(HatFilter.class.getName());
+	
 	private int window; ///< filter's window size 
 	private int crown; ///< filter's crown size (in middle of \a window)
 	private double sig; ///< acceptance criterion
 	private List<Vector2d> points;
+	private HashMap<String,String[]> uiDefinition; ///< Definition of UI for this plugin
+	private QWindowBuilderInstHat uiInstance;
 	
-	private static final Logger logger = LogManager.getLogger(HatFilter.class.getName());
 	
 	/**
 	 * Construct HatFilter
@@ -62,6 +69,14 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		this.crown = 13;
 		this.sig = 0.3;
 		logger.debug("Set default parameter: window="+window+" crown="+crown+" sig="+sig);
+		uiDefinition = new HashMap<String, String[]>(); // will hold ui definitions 
+		uiDefinition.put("name", new String[] {"HatFilter"}); // name of window
+		uiDefinition.put("window", new String[] {"spinner", "3","51","2"}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter
+		uiDefinition.put("crown", new String[] {"spinner", "1","51","2"});
+		uiDefinition.put("sigma", new String[] {"spinner", "0.01","0.9","0.01"});
+		uiDefinition.put("help", new String[] {""}); // help string
+		uiInstance = new QWindowBuilderInstHat(); // create window object, class QWindowBuilder is abstract so it must be extended
+		uiInstance.BuildWindow(uiDefinition); // construct ui (not shown yet)
 	}
 
 	/**
@@ -87,6 +102,11 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 	 */
 	@Override
 	public List<Vector2d> runPlugin() throws QuimpPluginException {
+		window = uiInstance.getIntegerFromUI("window");
+		crown = uiInstance.getIntegerFromUI("crown");
+		sig = uiInstance.getDoubleFromUI("sigma");
+		logger.debug(String.format("Run plugin with params: window %d, crown %d, sigma %f",window,crown,sig));
+		
 		int cp = window/2; // left and right range of window
 		int cr = crown/2; // left and right range of crown
 		int indexTmp; // temporary index after padding
@@ -194,7 +214,8 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		{
 			window = ((Double)par.get("window")).intValue(); // by default all numeric values are passed as double
 			crown = ((Double)par.get("crown")).intValue();
-			sig = ((Double)par.get("sigma")).doubleValue();			
+			sig = ((Double)par.get("sigma")).doubleValue();	
+			uiInstance.setValues(par); // copy incoming parameters to UI
 		}
 		catch(Exception e)
 		{
@@ -212,7 +233,8 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 
 	@Override
 	public void showUI(boolean val) {
-		logger.debug("Got message to show UI");		
+		logger.debug("Got message to show UI");	
+		uiInstance.ToggleWindow();
 	}
 
 	@Override
@@ -220,6 +242,55 @@ public class HatFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		// TODO Auto-generated method stub
 		return null;
 	}
+}
 
-
+/**
+ * Instance private class for tested QWindowBuilder
+ * 
+ * Any overrides of UI methods can be done here. For example
+ * user can attach listener to ui object.
+ * 
+ * @author p.baniukiewicz
+ * @date 8 Feb 2016
+ *
+ */
+class QWindowBuilderInstHat extends QWindowBuilder {		
+	
+	/**
+	 * Example how to protect against even values for \c window parameter
+	 * First override BuildWindow method. It provides \a protected access to
+	 * \c ui HashMap list that keeps references to all ui elements under
+	 * relevant keys, the keys relates to those names that were put in 
+	 * ui definition string. 
+	 * The initial values provided in ui definition string start from 1 with step 2,
+	 * therefore only one possibility to get even value here is by editing it manually
+	 * 
+	 * @param def window definition string
+	 * @see BuildWindow
+	 */
+	@Override
+	public void BuildWindow(Map<String, String[]> def) {
+		super.BuildWindow(def); // window must be built first
+		ChangeListener changeListner = new ChangeListener() { // create new listener that will be attached to ui element
+			@Override
+			public void stateChanged(ChangeEvent ce) {
+				Object source = ce.getSource();
+				JSpinner s = (JSpinner)ui.get("window"); // get ui element
+				JSpinner s1 = (JSpinner)ui.get("crown"); // get ui element
+				if(source == s) { // check if this event concerns it
+					logger.debug("Spinner window used");
+					if( ((Double)s.getValue()).intValue()%2==0 )
+						s.setValue((Double)s.getValue() + 1);
+				}
+				if(source == s1) { // check if this event concerns it
+					logger.debug("Spinner crown used");
+					if( ((Double)s1.getValue()).intValue()%2==0 )
+						s1.setValue((Double)s1.getValue() + 1);
+				}
+				
+			}
+		};
+		((JSpinner)ui.get("window")).addChangeListener(changeListner); // attach listener to selected ui
+		((JSpinner)ui.get("crown")).addChangeListener(changeListner); // attach listener to selected ui
+	}
 }

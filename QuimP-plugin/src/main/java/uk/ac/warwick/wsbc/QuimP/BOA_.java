@@ -16,6 +16,7 @@ import ij.process.*;
 import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.tools.images.filters.HatFilter;
 import uk.ac.warwick.wsbc.tools.images.filters.LoessFilter;
 import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
 
@@ -77,7 +78,7 @@ public class BOA_ implements PlugIn {
 				new ArrayList<String>(Arrays.asList("Mean","Loess","Hat")));
 		when(pluginFactory.getInstance("Mean")).thenReturn(new MeanFilter());
 		when(pluginFactory.getInstance("Loess")).thenReturn(new LoessFilter());
-		when(pluginFactory.getInstance("Hat")).thenReturn(null);
+		when(pluginFactory.getInstance("Hat")).thenReturn(new HatFilter());
 		when(pluginFactory.getInstance("NONE")).thenReturn(null);
 		
 		return isActive;
