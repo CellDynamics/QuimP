@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
-import uk.ac.warwick.wsbc.tools.images.filters.HatFilter_test;
 
 /**
  * 

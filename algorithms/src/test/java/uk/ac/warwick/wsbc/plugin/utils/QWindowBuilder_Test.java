@@ -6,10 +6,7 @@ package uk.ac.warwick.wsbc.plugin.utils;
 
 import static org.junit.Assert.*;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +26,7 @@ import uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder;
  *
  */
 public class QWindowBuilder_Test {
+	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(QWindowBuilder_Test.class.getName());
 	private HashMap<String,String[]> def1;
 	QWindowBuilderInst inst;
@@ -61,37 +59,6 @@ public class QWindowBuilder_Test {
 		def1.clear();
 		def1 = null;
 		inst = null;
-	}
-	
-	/**
-	 * @test BuildWindow - builds and displays window
-	 * @pre window is defined by Map structure and other than default values are set
-	 * @post Window is displayed on screen with updated values
-	 * @throws Exception
-	 */
-	@Test
-	public void test_BuildWindow() throws Exception {
-		HashMap<String,Object> set = new HashMap<>();
-		HashMap<String,Object> ret;
-		set.put("window", 0.32);
-		set.put("smooth", 8.0);
-		CountDownLatch startSignal = new CountDownLatch(1);
-		inst.BuildWindow(def1); // main window builder
-		inst.setValues(set);
-		inst.pluginWnd.addWindowListener(new WindowAdapter() {
-			@Override
-			// This method will be called when BOA_ window is closed
-			public void windowClosing(WindowEvent arg0) {
-				logger.debug("Listener activated "+name.getMethodName());
-				startSignal.countDown(); // decrease latch by 1
-			}
-		});
-		inst.ToggleWindow(); // show window
-		// main thread waits here until Latch reaches 0
-		startSignal.await();
-		ret = (HashMap<String, Object>) inst.getValues();
-		logger.trace("Finishing "+name.getMethodName());
-		logger.debug("window="+ret.get("window")+" smooth="+ret.get("smooth"));
 	}
 	
 	/**

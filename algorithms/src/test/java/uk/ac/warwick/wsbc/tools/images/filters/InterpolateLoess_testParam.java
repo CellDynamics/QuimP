@@ -115,7 +115,7 @@ public class InterpolateLoess_testParam {
 		ArrayList<Vector2d> out;
 		LoessFilter i = new LoessFilter();
 		i.attachData(testcase);
-		i.setPluginConfig(new HashMap<String,Object>() {{put("smoothing",smoothing);}});
+		i.setPluginConfig(new HashMap<String,Object>() {{put("smooth",smoothing);}});
 		out = (ArrayList<Vector2d>) i.runPlugin();
 		RoiSaver.saveROI("/tmp/test_getInterpolationLoess_"+testfileName.getFileName()+"_"+smoothing.toString()+".tif", out);
 		logger.debug("setUp: "+testcase.toString());
