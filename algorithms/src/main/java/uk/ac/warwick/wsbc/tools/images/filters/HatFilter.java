@@ -389,7 +389,7 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		try {
 			out = runPlugin();
 			pout = new ExPolygon(out); // create new figure from out data
-			pout.fitPolygon(DRAW_SIZE,p.initbounds,p.scale); // fit to size FIXME Use previous scale for original data maybe
+			pout.fitPolygon(DRAW_SIZE,p.initbounds,p.scale); // fit to size from original polygon, modified one will be centered to original one
 			dp.repaint(); // repaint window
 		} catch (QuimpPluginException e1) { // ignore exception in general
 			logger.error(e1);
@@ -446,8 +446,9 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 class ExPolygon extends Polygon {
 	private static final Logger logger = LogManager.getLogger(ExPolygon.class.getName());
 	private static final long serialVersionUID = 5870934217878285135L;
-	public Rectangle initbounds;
-	public double scale;
+	public Rectangle initbounds; // initial size of polygon, before scaling
+	public double scale; // current scale
+	
 	/**
 	 * Construct polygon from list of points.
 	 * 
@@ -458,7 +459,7 @@ class ExPolygon extends Polygon {
 		// convert to polygon
 		for(Vector2d v : data)
 			addPoint((int)Math.round(v.getX()), (int)Math.round(v.getY()));
-		initbounds = new Rectangle(getBounds());
+		initbounds = new Rectangle(getBounds()); // remember original size
 		scale = 1;
 	}
 	
@@ -496,26 +497,24 @@ class ExPolygon extends Polygon {
 	/**
 	 * Scale polygon to fit in rectangular window of \c size using pre-computed bounding box and scale
 	 * 
-	 * Use for setting next polygon on base of previous
+	 * Use for setting next polygon on base of previous, when nex has different shape but must be centerd
+	 * with previous one.
 	 * 
 	 * @param size Size of window to fit polygon
-	 * @param init Bounding box where new polygon fit to
+	 * @param init Bounding box to fit new polygon
 	 * @param scale Scale of new polygon
 	 */
 	public void fitPolygon(double size, Rectangle2D init, double scale) {
 		// set in 0,0
 		this.scale = scale;
 		logger.debug("fitPolygon: Scale is: "+scale+" BoundsCenters: "+init.getCenterX()+" "+init.getCenterY());
-		this.initbounds.setBounds((Rectangle) init);
-		translate(	(int)Math.round(-initbounds.getCenterX()),
-					(int)Math.round(-initbounds.getCenterY()));	
-		Rectangle2D bounds = getBounds2D();
+		translate(	(int)Math.round(-init.getCenterX()),
+					(int)Math.round(-init.getCenterY()));	
+
 		for(int i=0;i<npoints;i++) {
 			xpoints[i] = (int)Math.round(xpoints[i]*scale);
 			ypoints[i] = (int)Math.round(ypoints[i]*scale);
-		}
-		// center in window
-		logger.debug("fitPolygon: Scale is: "+scale+" BoundsCenters: "+bounds.getCenterX()+" "+bounds.getCenterY());	
+		}	
 		translate(	(int)(size/2),
 					(int)(size/2));
 	}
