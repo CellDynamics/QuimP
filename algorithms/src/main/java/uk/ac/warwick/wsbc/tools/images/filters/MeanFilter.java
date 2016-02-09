@@ -47,7 +47,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		// create UI using QWindowBuilder
 		uiDefinition = new HashMap<String, String[]>(); // will hold ui definitions 
 		uiDefinition.put("name", new String[] {"MeanFilter"}); // name of window
-		uiDefinition.put("window", new String[] {"spinner", "1","21","2"}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter 
+		uiDefinition.put("window", new String[] {"spinner", "1","21","2",Integer.toString(window)}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter 
 		uiDefinition.put("help", new String[] {"Window shoud be uneven"}); // help string
 		uiInstance = new QWindowBuilderInst(); // create window object, class QWindowBuilder is abstract so it must be extended
 		uiInstance.BuildWindow(uiDefinition); // construct ui (not shown yet)
@@ -155,10 +155,15 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>,IPadArray {
 		}
 	}
 
+	/**
+	 * Transfer plugin configuration to QuimP
+	 * 
+	 * Only parameters mapped to UI by QWindowBuilder are supported directly by getValues()
+	 * Any other parameters created outside QWindowBuilder should be added here manually.
+	 */
 	@Override
 	public Map<String, Object> getPluginConfig() {
-		// TODO Auto-generated method stub
-		return null;
+		return uiInstance.getValues();
 	}
 
 	@Override

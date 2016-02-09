@@ -93,6 +93,7 @@ public abstract class QWindowBuilder {
 	final private int S_MIN 		= 1; // spinner min value
 	final private int S_MAX 		= 2; // spinner max value
 	final private int S_STEP 		= 3; // spinner step value
+	final private int S_DEFAULT		= 4; // spinner default value
 	// definition of constant elements of UI
 	protected JButton applyB;
 	
@@ -178,7 +179,7 @@ public abstract class QWindowBuilder {
 			String componentName = def.get(key)[UITYPE]; // get name of UI for given key
 			switch(componentName.toLowerCase()) {
 				case "spinner": // by default all spinners are double
-					SpinnerNumberModel model = new SpinnerNumberModel(Double.parseDouble(def.get(key)[S_MIN]), // current value
+					SpinnerNumberModel model = new SpinnerNumberModel(Double.parseDouble(def.get(key)[S_DEFAULT]), // current value
 							Double.parseDouble(def.get(key)[S_MIN]), // min
 							Double.parseDouble(def.get(key)[S_MAX]), // max
 							Double.parseDouble(def.get(key)[S_STEP]));// step
@@ -238,10 +239,22 @@ public abstract class QWindowBuilder {
 	
 	/**
 	 * Toggle window visibility
+	 * 
+	 * @return Current status of window \c true if visible, \c false if not
 	 */
-	public void ToggleWindow() {
+	public boolean ToggleWindow() {
 		windowState = !windowState;
 		ShowWindow(windowState);
+		return windowState;
+	}
+	
+	/**
+	 * Check if window is visible
+	 * 
+	 * @return \c true if it is visible, \c false otherwise
+	 */
+	public boolean isWindowVisible() {
+		return windowState;
 	}
 	
 	/**

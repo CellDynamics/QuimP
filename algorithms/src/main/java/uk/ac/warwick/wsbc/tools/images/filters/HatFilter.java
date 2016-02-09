@@ -92,9 +92,9 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		logger.debug("Set default parameter: window="+window+" crown="+crown+" sig="+sig);
 		uiDefinition = new LinkedHashMap<String, String[]>(); // will hold ui definitions 
 		uiDefinition.put("name", new String[] {"HatFilter"}); // name of window
-		uiDefinition.put("window", new String[] {"spinner", "3","51","2"}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter
-		uiDefinition.put("crown", new String[] {"spinner", "1","51","2"});
-		uiDefinition.put("sigma", new String[] {"spinner", "0.01","0.9","0.01"});
+		uiDefinition.put("window", new String[] {"spinner", "3","51","2",Integer.toString(window)}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter
+		uiDefinition.put("crown", new String[] {"spinner", "1","51","2",Integer.toString(crown)});
+		uiDefinition.put("sigma", new String[] {"spinner", "0.01","0.9","0.01",Double.toString(sig)});
 		BuildWindow(uiDefinition); // construct ui (not shown yet)
 		points = null; // not attached yet
 		pout = null; // not calculated yet
@@ -266,8 +266,8 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	@Override
 	public void showUI(boolean val) {
 		logger.debug("Got message to show UI");	
-		ToggleWindow();
-		recalculatePlugin();
+		if(ToggleWindow()==true)
+			recalculatePlugin();
 	}
 
 	/**
@@ -351,7 +351,8 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	 */
 	@Override
 	public void stateChanged(ChangeEvent ce) {
-		recalculatePlugin();
+		if(isWindowVisible()==true) // prevent applying default values before setPluginConfig is used because method is called on window creation
+			recalculatePlugin();
 	}
 
 	/**

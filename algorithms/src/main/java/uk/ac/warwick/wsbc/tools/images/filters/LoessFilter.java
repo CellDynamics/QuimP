@@ -45,7 +45,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 		logger.debug("Set default parameter: smoothing="+smoothing);
 		uiDefinition = new HashMap<String, String[]>(); // will hold ui definitions 
 		uiDefinition.put("name", new String[] {"LoessFilter"}); // name of window
-		uiDefinition.put("smooth", new String[] {"spinner", "0.05","0.5","0.005"}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter 
+		uiDefinition.put("smooth", new String[] {"spinner", "0.05","0.5","0.005",Double.toString(smoothing)}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter 
 		uiDefinition.put("help", new String[] {"Higher values stand for more smooth output. Resonable range is 0.05 - 0.5. For too small values plugin throws error. Minimal vale depends on polygon shape and can vary."}); // help string
 		uiInstance = new QWindowBuilderInstLoess(); // create window object, class QWindowBuilder is abstract so it must be extended
 		uiInstance.BuildWindow(uiDefinition); // construct ui (not shown yet)
@@ -146,10 +146,15 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 		}
 	}
 
+	/**
+	 * Transfer plugin configuration to QuimP
+	 * 
+	 * Only parameters mapped to UI by QWindowBuilder are supported directly by getValues()
+	 * Any other parameters created outside QWindowBuilder should be added here manually.
+	 */
 	@Override
 	public Map<String, Object> getPluginConfig() {
-		// TODO Auto-generated method stub
-		return null;
+		return uiInstance.getValues();
 	}
 
 	@Override

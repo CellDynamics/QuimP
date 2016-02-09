@@ -48,8 +48,8 @@ public class QWindowBuilder_Test {
 	public void setUp() throws Exception {
 		def1 = new HashMap<String, String[]>(); // setup window params
 		def1.put("name", new String[] {"test"});
-		def1.put("window", new String[] {"spinner", "-0.5","0.5","0.1"});
-		def1.put("smooth", new String[] {"spinner", "-1", "10", "1"});
+		def1.put("window", new String[] {"spinner", "-0.5","0.5","0.1","0"});
+		def1.put("smooth", new String[] {"spinner", "-1", "10", "1","-1"});
 		def1.put("help", new String[] {"FlowLayout is the default layout manager for every JPanel. It simply lays out components in a single row, starting a new row if its container is not sufficiently wide. Both panels in CardLayoutDemo, shown previously, use FlowLayout. For further details, see How to Use FlowLayout."});
 		inst = new QWindowBuilderInst(); // create window object
 	}
@@ -71,7 +71,7 @@ public class QWindowBuilder_Test {
 		HashMap<String,Object> ret;
 		inst.BuildWindow(def1);
 		ret = (HashMap<String, Object>) inst.getValues();
-		assertEquals(-0.5, (Double)ret.get("window"),1e-4);
+		assertEquals(0, (Double)ret.get("window"),1e-4);
 		assertEquals(-1, (Double)ret.get("smooth"),1e-4);
 	}
 	
