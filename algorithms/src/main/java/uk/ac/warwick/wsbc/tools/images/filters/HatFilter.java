@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Panel;
 import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,12 +13,15 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.vecmath.Point2d;
@@ -66,10 +71,11 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	private int crown; ///< filter's crown size (in middle of \a window)
 	private double sig; ///< acceptance criterion
 	private List<Vector2d> points;
-	private HashMap<String,String[]> uiDefinition; ///< Definition of UI for this plugin
+	private LinkedHashMap<String,String[]> uiDefinition; ///< Definition of UI for this plugin
 	private DrawPanel dp; ///< Here we will draw. This panel is plot in place of help field
 	private ExPolygon p; ///< representation of snake as polygon
-	private ExPolygon out; ///< output after filtering
+	private ExPolygon pout;	///< output polygon based on \c out
+	private List<Vector2d> out; ///< output after filtering
 	
 	
 	/**
@@ -82,14 +88,14 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		this.crown = 13;
 		this.sig = 0.3;
 		logger.debug("Set default parameter: window="+window+" crown="+crown+" sig="+sig);
-		uiDefinition = new HashMap<String, String[]>(); // will hold ui definitions 
+		uiDefinition = new LinkedHashMap<String, String[]>(); // will hold ui definitions 
 		uiDefinition.put("name", new String[] {"HatFilter"}); // name of window
 		uiDefinition.put("window", new String[] {"spinner", "3","51","2"}); // the name of this ui control is "system-wide", now it will define ui and name of numerical data related to this ui and parameter
 		uiDefinition.put("crown", new String[] {"spinner", "1","51","2"});
 		uiDefinition.put("sigma", new String[] {"spinner", "0.01","0.9","0.01"});
-//		uiDefinition.put("help", new String[] {""}); // help string
 		BuildWindow(uiDefinition); // construct ui (not shown yet)
 		points = null; // not attached yet
+		pout = null; // not calculated yet
 	}
 
 	/**
@@ -106,19 +112,20 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	public void attachData(List<Vector2d> data) {
 		logger.trace("Entering attachData");
 		points = data;	
-		p = new ExPolygon(data);
-		p.fitPolygon(DRAW_SIZE);
-
+		p = new ExPolygon(data); // create polygon from points
+		p.fitPolygon(DRAW_SIZE); // adjust its size to draw window
+		pout = null; // delete any processed polygon
 	}
 	
 	/**
 	 * Main filter runner
 	 * 
 	 * This version assumes that user clicked Apply button to populate 
-	 * data from UI to plugin.
+	 * data from UI to plugin or any other ui element.
 	 * 
 	 * @return Processed \a input list, size of output list may be different than input. Empty output is also allowed.
 	 * @see uk.ac.warwick.wsbc.tools.images.filters.HatFilter.actionPerformed(ActionEvent)
+	 * @see uk.ac.warwick.wsbc.tools.images.filters.HatFilter.stateChanged(ChangeEvent)
 	 */
 	@Override
 	public List<Vector2d> runPlugin() throws QuimpPluginException {
@@ -132,7 +139,7 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		double lenAll; // length of curve in window
 		double lenBrim; // length of curve in window without crown
 		Set<Integer> indToRemove = new HashSet<Integer>();
-		List<Vector2d> out = new ArrayList<Vector2d>(); // output table
+		List<Vector2d> out = new ArrayList<Vector2d>(); // output table for plotting temporary results of filter
 		
 		// check input conditions
 		if(window%2==0 || crown%2==0)
@@ -272,18 +279,41 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	public void BuildWindow(Map<String, String[]> def) {
 		super.BuildWindow(def); // window must be built first
 		
+		// attach listeners to ui to update window on new parameters
 		((JSpinner)ui.get("window")).addChangeListener(this); // attach listener to selected ui
 		((JSpinner)ui.get("crown")).addChangeListener(this); // attach listener to selected ui
+		((JSpinner)ui.get("sigma")).addChangeListener(this); // attach listener to selected ui
 		applyB.addActionListener(this); // attach listener to aplly button
+		// in place of CENTER pane in BorderLayout layout from super.BuildWindow we create few extra controls
+		GridLayout gc = new GridLayout(3,1,5,5);
+		Panel jp = new Panel(); // panel in  CENTER pane
 		dp = new DrawPanel(); // create drawable JFrame
-		pluginPanel.add(dp,BorderLayout.CENTER); // add in center position (in place of help zone)
+		JTextArea helpArea = new JTextArea(10, 10); // default size of text area
+		JScrollPane helpPanel = new JScrollPane(helpArea);
+		helpArea.setEditable(false);
+		helpArea.setText("About plugin"); // set help text
+		helpArea.setLineWrap(true); // with wrapping
+		
+		JTextArea logArea = new JTextArea(10, 10); // default size of text area
+		JScrollPane logPanel = new JScrollPane(logArea);
+		logArea.setEditable(false);
+		logArea.setText("Log:\n"); // set help text
+		logArea.setLineWrap(true); // with wrapping
+		logArea.setPreferredSize(new Dimension(DRAW_SIZE, DRAW_SIZE/4));
+		
+		jp.setLayout(gc);
+		jp.add(dp);
+		jp.add(helpPanel);
+		jp.add(logPanel);
+		
+		pluginPanel.add(jp,BorderLayout.CENTER); // add in center position (in place of help zone)
 		pluginWnd.pack();
 	}
 
 	/**
 	 * React on spinners changes. 
 	 * 
-	 * Here used for preventing even values.
+	 * Here used for preventing even values and update view
 	 */
 	@Override
 	public void stateChanged(ChangeEvent ce) {
@@ -300,7 +330,7 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 			if( ((Double)s1.getValue()).intValue()%2==0 )
 				s1.setValue((Double)s1.getValue() + 1);
 		}
-		
+		recalculatePlugin();
 	}
 
 	/**
@@ -310,6 +340,8 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	 * This is different approach than in LoessFilter and MeanFilter where
 	 * window content was copied while runPlugin() command
 	 * 
+	 * This button run plugin and creates preview of filtered data
+	 * 
 	 * @see uk.ac.warwick.wsbc.tools.images.filters.LoessFilter.runPlugin()
 	 * @see uk.ac.warwick.wsbc.tools.images.filters.MeanFilter.runPlugin()
 	 */
@@ -317,12 +349,31 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	public void actionPerformed(ActionEvent e) {
 		Object b = e.getSource();
 		if(b==applyB) { // pressed apply, copy ui data to plugin
-			window = getIntegerFromUI("window");
-			crown = getIntegerFromUI("crown");
-			sig = getDoubleFromUI("sigma");
-			logger.debug(String.format("Apply pressed: window %d, crown %d, sigma %f",window,crown,sig));
+			recalculatePlugin();
 		}
 		
+	}
+
+	/**
+	 * Recalculate plugin on every change of its parameter.
+	 * 
+	 * Used only for previewing.
+	 */
+	private void recalculatePlugin() {
+		// transfer data from ui
+		window = getIntegerFromUI("window");
+		crown = getIntegerFromUI("crown");
+		sig = getDoubleFromUI("sigma");
+		logger.debug(String.format("Updatet from UI: window %d, crown %d, sigma %f",window,crown,sig));
+		// run plugin for set parameters
+		try {
+			out = runPlugin();
+			pout = new ExPolygon(out); // create new figure from out data
+			pout.fitPolygon(DRAW_SIZE); // fit to size FIXME Use previous scale for original data maybe
+			dp.repaint(); // repaint window
+		} catch (QuimpPluginException e1) { // ignore exception in general
+			logger.error(e1);
+		}
 	}
 	
 	/**
@@ -341,7 +392,9 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		}
 		
 		/**
-		 * Main plotting function
+		 * Main plotting function.
+		 * 
+		 * Plots two polygons, original and processed in red
 		 */
 		@Override
 		public void paintComponent(Graphics g) {
@@ -353,83 +406,87 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	        if(points!=null) {
 	        	g.drawPolygon(p);
 	        }
+	        if(pout!=null) { // pout is initialized after first apply click
+	        	g.setColor(Color.RED);
+	        	g.drawPolygon(pout); // draw output polygon (processed)
+	        }
 	    }
+	}
+}
+
+/**
+ * Helper class supporting scaling and fitting polygon to DrawWindow
+ * 
+ * @author p.baniukiewicz
+ * @date 8 Feb 2016
+ *
+ */
+class ExPolygon extends Polygon {
+	
+	private static final long serialVersionUID = 5870934217878285135L;
+	private List<Vector2d> data;
+	
+	/**
+	 * Construct polygon from list of points.
+	 * 
+	 * @param data List of points
+	 */
+	public ExPolygon(List<Vector2d> data) {
+		this.data = data;
+		Point2d centroid;
+		
+		// convert to polygon
+		for(Vector2d v : data)
+			addPoint((int)Math.round(v.getX()), (int)Math.round(v.getY()));
+		// set in 0,0
+		centroid = calcCentroid();
+		translate((int)(-centroid.getX()),
+    			 (int)(-centroid.getY()));
+		
 	}
 	
 	/**
-	 * Helper class supporting scaling and fitting polygon to DrawWindow
+	 * Scale polygon to fit in rectangular window of \c size
 	 * 
-	 * @author p.baniukiewicz
-	 * @date 8 Feb 2016
-	 *
+	 * Method changes internal polygon representation.
+	 * 
+	 * @param size Size of window to fit polygon
 	 */
-	class ExPolygon extends Polygon {
-		
-		private static final long serialVersionUID = 5870934217878285135L;
-		private List<Vector2d> data;
-		
-		/**
-		 * Construct polygon from list of points.
-		 * 
-		 * @param data List of points
-		 */
-		public ExPolygon(List<Vector2d> data) {
-			this.data = data;
-			Point2d centroid;
-			
-			// convert to polygon
-			for(Vector2d v : points)
-				addPoint((int)Math.round(v.getX()), (int)Math.round(v.getY()));
-			// set in 0,0
-			centroid = calcCentroid();
-			translate((int)(-centroid.getX()),
-        			 (int)(-centroid.getY()));
-			
+	public void fitPolygon(double size) {
+		double scale;
+		Point2d centroid;
+		// get size of bounding box
+		Rectangle2D bounds = getBounds2D();
+		// set scale according to window size
+		if(bounds.getWidth()>bounds.getHeight())
+			scale = bounds.getWidth();
+		else
+			scale = bounds.getHeight();
+		scale = size/scale;
+					
+		for(int i=0;i<npoints;i++) {
+			xpoints[i] = (int)Math.round(xpoints[i]*scale);
+			ypoints[i] = (int)Math.round(ypoints[i]*scale);
 		}
-		
-		/**
-		 * Scale polygon to fit in rectangular window of \c size
-		 * 
-		 * Method changes internal polygon representation.
-		 * 
-		 * @param size Size of window to fit polygon
-		 */
-		public void fitPolygon(double size) {
-			double scale;
-			Point2d centroid;
-			// get size of bounding box
-			Rectangle2D bounds = getBounds2D();
-			// set scale according to window size
-			if(bounds.getWidth()>bounds.getHeight())
-				scale = bounds.getWidth();
-			else
-				scale = bounds.getHeight();
-			scale = size/scale;
-						
-			for(int i=0;i<npoints;i++) {
-				xpoints[i] = (int)Math.round(xpoints[i]*scale);
-				ypoints[i] = (int)Math.round(ypoints[i]*scale);
-			}
-			// center in window
-			centroid = calcCentroid();
-			translate((int)(size/2-centroid.getX()),
-       			 (int)(size/2-centroid.getY()));
+		// center in window
+		centroid = calcCentroid();
+		translate((int)(size/2-centroid.getX()),
+   			 (int)(size/2-centroid.getY()));
+	}
+	
+	/**
+	 * Calculate mass center of polygon
+	 * 
+	 * @return Center Point2d 
+	 */
+	private Point2d calcCentroid() {
+		double x=0;
+		double y=0;
+		for(Vector2d d: data) {
+			x+=d.getX();
+			y+=d.getY();
 		}
-		
-		/**
-		 * Calculate mass center of polygon
-		 * 
-		 * @return Center Point2d 
-		 */
-		private Point2d calcCentroid() {
-			double x=0;
-			double y=0;
-			for(Vector2d d: data) {
-				x+=d.getX();
-				y+=d.getY();
-			}
-			return new Point2d(x/data.size(),y/data.size());
-		}
+		return new Point2d(x/data.size(),y/data.size());
 	}
 }
 
