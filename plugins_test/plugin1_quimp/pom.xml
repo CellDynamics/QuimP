@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>uk.ac.warwick.wsbc</groupId>
+    <artifactId>plugins_test</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+  <!-- Project's coordinates -->
+  <groupId>uk.ac.warwick.wsbc</groupId>
+  <artifactId>plugin1_quimp</artifactId>
+  <packaging>jar</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+
+  <!-- Name and licencing and other project informations -->
+  <name>plugin1_quimp</name>
+  
+  <dependencies>
+    <dependency>
+    	<groupId>uk.ac.warwick.wsbc</groupId>
+    	<artifactId>algorithms</artifactId>
+    	<version>1.11.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  
+  <build>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId> <!-- http://stackoverflow.com/questions/1625492/execute-maven-plugin-goal-on-child-modules-but-not-on-parent -->
+          <artifactId>maven-assembly-plugin</artifactId> <!-- https://maven.apache.org/pom.html -->
+        </plugin>
+      </plugins>
+  </build>
+</project>
