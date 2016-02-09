@@ -32,20 +32,20 @@ public class HatFilter_run {
 		List<Vector2d> input;
 		// test data
 		input = new ArrayList<>();
-		input.add(new Vector2d(5,0));
-		input.add(new Vector2d(3.11,3.90));
-		input.add(new Vector2d(-1.11,4.87));
-		input.add(new Vector2d(-4.50,2.16));
-		input.add(new Vector2d(-4.50,-2.16));
-		input.add(new Vector2d(-1.11,-4.87));
-		input.add(new Vector2d(3.11,-3.9));
+		input.add(new Vector2d(	923,	700));
+		input.add(new Vector2d(	577.5,	1175));
+		input.add(new Vector2d(	18,	993));
+		input.add(new Vector2d(	18,	406));
+		input.add(new Vector2d(	577,	224));
+	//	input.add(new Vector2d(	428,	-4.87));
+	//	input.add(new Vector2d(	3.11,	-3.9));
 
 		
 		// create instance of hatfilter
 		HatFilterInst hf = new HatFilterInst();
 		hf.attachData(input);
-		hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",5.0);
-															put("crown",3.0);
+		hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",3.0);
+															put("crown",1.0);
 															put("sigma",1.0);}});
 		CountDownLatch startSignal = new CountDownLatch(1);
 		hf.pluginWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

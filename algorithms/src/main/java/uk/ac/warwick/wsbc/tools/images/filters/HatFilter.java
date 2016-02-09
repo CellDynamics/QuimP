@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
@@ -24,7 +25,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
@@ -76,6 +76,8 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	private ExPolygon p; ///< representation of snake as polygon
 	private ExPolygon pout;	///< output polygon based on \c out
 	private List<Vector2d> out; ///< output after filtering
+	private JTextArea logArea;
+	private int err;
 	
 	
 	/**
@@ -96,6 +98,7 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		BuildWindow(uiDefinition); // construct ui (not shown yet)
 		points = null; // not attached yet
 		pout = null; // not calculated yet
+		err = 1;
 	}
 
 	/**
@@ -249,18 +252,27 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		}
 	}
 
+	/**
+	 * Transfer plugin configuration to QuimP
+	 * 
+	 * Only parameters mapped to UI by QWindowBuilder are supported directly by getValues()
+	 * Any other parameters created outside QWindowBuilder should be added here manually.
+	 */
 	@Override
 	public Map<String, Object> getPluginConfig() {
-		// TODO Auto-generated method stub
-		return null;
+		return getValues();
 	}
 
 	@Override
 	public void showUI(boolean val) {
 		logger.debug("Got message to show UI");	
 		ToggleWindow();
+		recalculatePlugin();
 	}
 
+	/**
+	 * Plugin is not versioned.
+	 */
 	@Override
 	public String getVersion() {
 		return null;
@@ -285,26 +297,31 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		((JSpinner)ui.get("sigma")).addChangeListener(this); // attach listener to selected ui
 		applyB.addActionListener(this); // attach listener to aplly button
 		// in place of CENTER pane in BorderLayout layout from super.BuildWindow we create few extra controls
-		GridLayout gc = new GridLayout(3,1,5,5);
+		GridLayout gc = new GridLayout(2,1,5,5);
 		Panel jp = new Panel(); // panel in  CENTER pane
+		jp.setLayout(gc);
+		
 		dp = new DrawPanel(); // create drawable JFrame
-		JTextArea helpArea = new JTextArea(10, 10); // default size of text area
+		jp.add(dp);
+		
+		Panel jp1 = new Panel(); // subpanel for two text fields
+		jp1.setLayout(gc);
+		
+		JTextArea helpArea = new JTextArea(); // default size of text area
 		JScrollPane helpPanel = new JScrollPane(helpArea);
 		helpArea.setEditable(false);
-		helpArea.setText("About plugin"); // set help text
+		helpArea.setText("About plugin\nPlugin window does not update when new cell is selected. Please click APPLY to update"); // set help text
 		helpArea.setLineWrap(true); // with wrapping
-		
-		JTextArea logArea = new JTextArea(10, 10); // default size of text area
+				
+		logArea = new JTextArea(); // default size of text area
 		JScrollPane logPanel = new JScrollPane(logArea);
 		logArea.setEditable(false);
 		logArea.setText("Log:\n"); // set help text
 		logArea.setLineWrap(true); // with wrapping
-		logArea.setPreferredSize(new Dimension(DRAW_SIZE, DRAW_SIZE/4));
-		
-		jp.setLayout(gc);
-		jp.add(dp);
-		jp.add(helpPanel);
-		jp.add(logPanel);
+
+		jp1.add(helpPanel);
+		jp1.add(logPanel);
+		jp.add(jp1);
 		
 		pluginPanel.add(jp,BorderLayout.CENTER); // add in center position (in place of help zone)
 		pluginWnd.pack();
@@ -313,23 +330,27 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	/**
 	 * React on spinners changes. 
 	 * 
-	 * Here used for preventing even values and update view
+	 * Here used for updating view but it can be used for example for
+	 * auto-fixing even values provided by user:
+	 * @code{.java}
+	 * Object source = ce.getSource();
+	 *	JSpinner s = (JSpinner)ui.get("window"); // get ui element
+	 *	JSpinner s1 = (JSpinner)ui.get("crown"); // get ui element
+	 *	if(source == s) { // check if this event concerns it
+	 *		logger.debug("Spinner window used");
+	 *		if( ((Double)s.getValue()).intValue()%2==0 )
+	 *	 		s.setValue((Double)s.getValue() + 1);
+	 *	}
+	 *	if(source == s1) { // check if this event concerns it
+	 *		logger.debug("Spinner crown used");
+	 *		if( ((Double)s1.getValue()).intValue()%2==0 )
+	 *			s1.setValue((Double)s1.getValue() + 1);
+	 *	}
+	 * @endcode
+	 * 
 	 */
 	@Override
 	public void stateChanged(ChangeEvent ce) {
-		Object source = ce.getSource();
-		JSpinner s = (JSpinner)ui.get("window"); // get ui element
-		JSpinner s1 = (JSpinner)ui.get("crown"); // get ui element
-		if(source == s) { // check if this event concerns it
-			logger.debug("Spinner window used");
-			if( ((Double)s.getValue()).intValue()%2==0 )
-				s.setValue((Double)s.getValue() + 1);
-		}
-		if(source == s1) { // check if this event concerns it
-			logger.debug("Spinner crown used");
-			if( ((Double)s1.getValue()).intValue()%2==0 )
-				s1.setValue((Double)s1.getValue() + 1);
-		}
 		recalculatePlugin();
 	}
 
@@ -351,7 +372,6 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		if(b==applyB) { // pressed apply, copy ui data to plugin
 			recalculatePlugin();
 		}
-		
 	}
 
 	/**
@@ -364,15 +384,17 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		window = getIntegerFromUI("window");
 		crown = getIntegerFromUI("crown");
 		sig = getDoubleFromUI("sigma");
-		logger.debug(String.format("Updatet from UI: window %d, crown %d, sigma %f",window,crown,sig));
+		logger.debug(String.format("Updated from UI: window %d, crown %d, sigma %f",window,crown,sig));
 		// run plugin for set parameters
 		try {
 			out = runPlugin();
 			pout = new ExPolygon(out); // create new figure from out data
-			pout.fitPolygon(DRAW_SIZE); // fit to size FIXME Use previous scale for original data maybe
+			pout.fitPolygon(DRAW_SIZE,p.initbounds,p.scale); // fit to size FIXME Use previous scale for original data maybe
 			dp.repaint(); // repaint window
 		} catch (QuimpPluginException e1) { // ignore exception in general
 			logger.error(e1);
+			logArea.append("#"+err+": "+e1.getMessage() + '\n');
+			err++;
 		}
 	}
 	
@@ -422,39 +444,36 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
  *
  */
 class ExPolygon extends Polygon {
-	
+	private static final Logger logger = LogManager.getLogger(ExPolygon.class.getName());
 	private static final long serialVersionUID = 5870934217878285135L;
-	private List<Vector2d> data;
-	
+	public Rectangle initbounds;
+	public double scale;
 	/**
 	 * Construct polygon from list of points.
 	 * 
 	 * @param data List of points
 	 */
 	public ExPolygon(List<Vector2d> data) {
-		this.data = data;
-		Point2d centroid;
 		
 		// convert to polygon
 		for(Vector2d v : data)
 			addPoint((int)Math.round(v.getX()), (int)Math.round(v.getY()));
-		// set in 0,0
-		centroid = calcCentroid();
-		translate((int)(-centroid.getX()),
-    			 (int)(-centroid.getY()));
-		
+		initbounds = new Rectangle(getBounds());
+		scale = 1;
 	}
 	
 	/**
 	 * Scale polygon to fit in rectangular window of \c size
 	 * 
 	 * Method changes internal polygon representation.
+	 * Fitting is done basing on bounding box area.
 	 * 
 	 * @param size Size of window to fit polygon
 	 */
 	public void fitPolygon(double size) {
-		double scale;
-		Point2d centroid;
+		// set in 0,0
+		translate(	(int)Math.round(-initbounds.getCenterX()),
+					(int)Math.round(-initbounds.getCenterY()));		
 		// get size of bounding box
 		Rectangle2D bounds = getBounds2D();
 		// set scale according to window size
@@ -463,30 +482,42 @@ class ExPolygon extends Polygon {
 		else
 			scale = bounds.getHeight();
 		scale = size/scale;
-					
+		scale*=0.95; // little smaller than window
 		for(int i=0;i<npoints;i++) {
 			xpoints[i] = (int)Math.round(xpoints[i]*scale);
 			ypoints[i] = (int)Math.round(ypoints[i]*scale);
 		}
 		// center in window
-		centroid = calcCentroid();
-		translate((int)(size/2-centroid.getX()),
-   			 (int)(size/2-centroid.getY()));
+		logger.debug("Scale is: "+scale+" BoundsCenters: "+bounds.getCenterX()+" "+bounds.getCenterY());	
+		translate(	(int)Math.round(bounds.getCenterX())+(int)(size/2),
+					(int)Math.round(bounds.getCenterY())+(int)(size/2));
 	}
 	
 	/**
-	 * Calculate mass center of polygon
+	 * Scale polygon to fit in rectangular window of \c size using pre-computed bounding box and scale
 	 * 
-	 * @return Center Point2d 
+	 * Use for setting next polygon on base of previous
+	 * 
+	 * @param size Size of window to fit polygon
+	 * @param init Bounding box where new polygon fit to
+	 * @param scale Scale of new polygon
 	 */
-	private Point2d calcCentroid() {
-		double x=0;
-		double y=0;
-		for(Vector2d d: data) {
-			x+=d.getX();
-			y+=d.getY();
+	public void fitPolygon(double size, Rectangle2D init, double scale) {
+		// set in 0,0
+		this.scale = scale;
+		logger.debug("fitPolygon: Scale is: "+scale+" BoundsCenters: "+init.getCenterX()+" "+init.getCenterY());
+		this.initbounds.setBounds((Rectangle) init);
+		translate(	(int)Math.round(-initbounds.getCenterX()),
+					(int)Math.round(-initbounds.getCenterY()));	
+		Rectangle2D bounds = getBounds2D();
+		for(int i=0;i<npoints;i++) {
+			xpoints[i] = (int)Math.round(xpoints[i]*scale);
+			ypoints[i] = (int)Math.round(ypoints[i]*scale);
 		}
-		return new Point2d(x/data.size(),y/data.size());
+		// center in window
+		logger.debug("fitPolygon: Scale is: "+scale+" BoundsCenters: "+bounds.getCenterX()+" "+bounds.getCenterY());	
+		translate(	(int)(size/2),
+					(int)(size/2));
 	}
 }
 

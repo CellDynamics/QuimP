@@ -110,6 +110,27 @@ public class HatFilter_test {
 	}
 	
 	/**
+	 * @test test set and get parameters to/from filter
+	 * @pre given parameters
+	 * @post the same parameters received from filter
+	 * @see HatFilter_run for veryfing diaplaying set parameters.
+	 * @throws QuimpPluginException 
+	 */
+	@SuppressWarnings("serial")
+	@Test
+	public void test_HatFilter_setget() throws QuimpPluginException {
+		HatFilter hf = new HatFilter();
+		hf.attachData(input);
+		hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",5.0);
+															put("crown",3.0);
+															put("sigma",0.05);}});
+		HashMap<String,Object> ret = (HashMap<String, Object>) hf.getPluginConfig();
+		assertEquals(5.0, (Double)ret.get("window"),1e-4);
+		assertEquals(3.0, (Double)ret.get("crown"),1e-4);
+		assertEquals(0.05, (Double)ret.get("sigma"),1e-4);
+	}
+	
+	/**
 	 * @test Input condition for HatFilter
 	 * @pre Various bad combinations of inputs
 	 * @post Exception FilterException

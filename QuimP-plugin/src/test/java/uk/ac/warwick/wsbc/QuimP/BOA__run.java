@@ -22,6 +22,12 @@ import uk.ac.warwick.wsbc.QuimP.BOA_;
  * \c window is \c public field of BOA_ class representing \c CustomStackWindow internally extending \c Frame class.
  * @see
  * BOA_
+ * @remarks
+ * This process will not finish because \c window default behavior is to conceal itself not quit.
+ * Kill instances by
+ * @code{.sh}
+ * ps -aux | grep BOA__run | awk '{print $2}' | xargs kill
+ * @endcode
  */
 public class BOA__run {
 

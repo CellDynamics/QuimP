@@ -280,11 +280,15 @@ public abstract class QWindowBuilder {
 	}
 	
 	/**
-	 * Receives parameters related to UI elements
+	 * Receives parameters related to UI elements as Map.
+	 * 
+	 * To get one particular parameter use getIntegerFromUI(String) or getDoubleFromUI(String)
 	 * 
 	 * @return List of <key,param>, where \b key is the name of parameter passed
 	 * to QWindowBuilder class through BuildWindow method. The method remaps those 
 	 * keys to related UI controls and reads values associated to them.
+	 * @see getDoubleFromUI(String)
+	 * @see getIntegerFromUI(String)
 	 */
 	public Map<String, Object> getValues() {
 		Map<String, Object> ret = new HashMap<String, Object>();
