@@ -378,7 +378,7 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 	/**
 	 * Recalculate plugin on every change of its parameter.
 	 * 
-	 * Used only for previewing.
+	 * Used only for previewing. Repaint window as well
 	 */
 	private void recalculatePlugin() {
 		// transfer data from ui

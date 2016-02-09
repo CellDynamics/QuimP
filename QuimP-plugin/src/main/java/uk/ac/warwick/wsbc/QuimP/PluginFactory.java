@@ -22,7 +22,6 @@ import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
  */
 public class PluginFactory {
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(PluginFactory.class.getName()); 
 	private HashMap<String, Path> snakePlugins;
 	
@@ -35,7 +34,7 @@ public class PluginFactory {
 	}
 	
 	/**
-	 * Scan directory and stores results in array <key,<path,type>>
+	 * Scan directory and stores results in array <name,<path,type>>
 	 * Name is usually file name without decorations
 	 */
 	private void scanDirectory() {
