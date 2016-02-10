@@ -127,6 +127,13 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
         <version>3.0.3</version>
+        <reportSets>
+            <reportSet>
+              <reports>
+                <report>findbugs</report>
+              </reports>
+            </reportSet>
+          </reportSets>
       </plugin>
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
