@@ -47,7 +47,7 @@ public class PluginFactory {
 	 * @param type Type defined in uk.ac.warwick.wsbc.plugin.IQuimpPlugin
 	 * @return List of names of plugins of type \c type
 	 */
-	List<String> getPluginNames(int type) {
+	public List<String> getPluginNames(int type) {
 		return null;
 		// TODO Auto-generated constructor stub
 	}
@@ -58,7 +58,7 @@ public class PluginFactory {
 	 * @param name name of plugin
 	 * @return reference to plugin of \c name or \c null if plugin not found
 	 */
-	IQuimpPlugin getInstance(String name) {
+	public IQuimpPlugin getInstance(String name) {
 		return null;
 		// TODO Auto-generated constructor stub
 	}

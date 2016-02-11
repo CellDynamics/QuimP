@@ -221,11 +221,10 @@ public class BOA_ implements PlugIn {
 	 * Display about information in BOA window
 	 */
 	void about() {
-		BOA_.log("\n############################\n \n"
-				+ Tool.getQuimPversion() + " - BOA plugin,\nby Richard Tyson"
-				+ "\n(richard.tyson@warwick.ac.uk)\n"
+		BOA_.log("\n############################\n"
+				+"Build: "+ Tool.getQuimPversion() +"\n"
+				+ "BOA plugin,by Richard Tyson (richard.tyson@warwick.ac.uk)\n"
 				+ "& Till Bretschneider\n(Till.Bretschneider@warwick.ac.uk)\n"
-				+ "Compiled with imageJ 1.49a \n\n"
 				+ "############################\n \n");
 	}
 
