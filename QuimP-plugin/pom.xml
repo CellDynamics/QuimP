@@ -47,6 +47,17 @@
           <groupId>org.apache.maven.plugins</groupId> <!-- http://stackoverflow.com/questions/1625492/execute-maven-plugin-goal-on-child-modules-but-not-on-parent -->
           <artifactId>maven-assembly-plugin</artifactId> <!-- https://maven.apache.org/pom.html -->
         </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+        </plugin>
+        
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>buildnumber-maven-plugin</artifactId>
+       </plugin>  
+
       </plugins>
   </build>
 </project>

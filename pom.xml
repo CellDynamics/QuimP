@@ -8,6 +8,13 @@
   <version>1.11.2-SNAPSHOT</version> <!-- http://stackoverflow.com/questions/5901378/what-exactly-is-a-maven-snapshot-and-why-do-we-need-it -->
   <packaging>pom</packaging>
 
+<!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
+  <scm>
+    <connection>scm:svn:http://none</connection>
+    <developerConnection>scm:svn:https://none</developerConnection>
+    <url>scm:svn:https://none</url>
+  </scm>
+
   <!-- Name and licencing and other project informations -->
   <name>QuimP-toolbox</name>
   <description>Collection of tools related to QuimP software</description>
@@ -100,11 +107,19 @@
         <plugin> 
         <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId> <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
-        <version>2.6</version>
+          <version>2.6</version>
           <configuration>
             <descriptorRefs>
               <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
+            <archive>
+             <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+             </manifest>
+            <manifestEntries>
+              <Implementation-Build>${buildNumber}</Implementation-Build>
+            </manifestEntries>
+          </archive>
           </configuration>
           <executions>
             <execution> <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
@@ -117,6 +132,45 @@
           </executions>  
         </plugin>
         
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>buildnumber-maven-plugin</artifactId>
+          <version>1.4</version>
+          <executions>
+            <execution>
+              <phase>validate</phase>
+              <goals>
+                <goal>create</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <doCheck>false</doCheck>
+            <doUpdate>false</doUpdate>
+            <format>Build: #{0} ({1,date,yyyy-MM-dd HH:mm:ss})</format>
+            <items>
+              <item>buildNumber\d*</item>
+              <item>timestamp</item>
+            </items>  
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.1</version>
+          <configuration>
+            <archive>
+             <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+             </manifest>
+            <manifestEntries>
+              <Implementation-Build>${buildNumber}</Implementation-Build>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+
       </plugins>
     </pluginManagement>
   </build>
