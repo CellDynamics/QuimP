@@ -29,9 +29,11 @@ import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
 public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 
     private static final Logger LOGGER = LogManager.getLogger(LoessFilter.class.getName());
-    private QuimpDataConverter xyData; // input List converted to separate X and Y arrays
+    private QuimpDataConverter xyData; // input List converted to separate X and
+                                       // Y arrays
     private double smoothing; // smoothing value (f according to references)
-    private HashMap<String, String[]> uiDefinition; // Definition of UI for this plugin
+    private HashMap<String, String[]> uiDefinition; // Definition of UI for this
+                                                    // plugin
     private QWindowBuilderInstLoess uiInstance;
 
     /**
@@ -69,8 +71,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      * 
      * @param data
      *            Polygon points
-     * @see uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List
-     *      <E>)
+     * @see wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List<E>)
      */
     @Override
     public void attachData(List<Vector2d> data) {
@@ -82,8 +83,8 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      * Run interpolation on X,Y vectors using LoessInterpolator
      * 
      * @return Filtered points as list of Vector2d objects
-     * @throws QuimpPluginException
-     *             when: - smoothing value is too small (usually below 0.015 but
+     * @throws QuimpPluginException when: - smoothing value is too small
+     *             (usually below 0.015 but
      *             it depends on data)
      */
     @Override
@@ -143,13 +144,10 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      * 
      * Supported keys: -# \c smoothing - smoothing value of filter
      * 
-     * @param par
-     *            configuration as pairs <key,val>. Keys are defined by plugin
+     * @param par configuration as pairs <key,val>. Keys are defined by plugin
      *            creator and plugin caller do not modify them.
-     * @throws QuimpPluginException
-     *             on wrong parameters list or wrong parameter conversion
-     * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<
-     *      String, Object>)
+     * @throws QuimpPluginException on wrong parameters list or wrong parameter conversion
+     * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
      */
     @Override
     public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException {

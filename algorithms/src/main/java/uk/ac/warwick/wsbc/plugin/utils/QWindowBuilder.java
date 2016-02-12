@@ -48,30 +48,34 @@ import org.apache.logging.log4j.Logger;
  * dimension of \c def definition passed to to BuildWindow method. Below code
  * shows how to change property of control
  * 
- * @code{.java} String key = "paramname"; JSpinner comp = (JSpinner)
- *              ui.get(key); // get control using its name (commonly it is name
- *              of parameter controled by this UI) ((JSpinner.DefaultEditor)
- *              comp.getEditor()).getTextField().setColumns(5);
+ * @code{.java}
+ * String key = "paramname"; JSpinner comp = (JSpinner)
+ * ui.get(key); // get control using its name (commonly it is name
+ * // of parameter controlled by this UI) ((JSpinner.DefaultEditor)
+ * comp.getEditor()).getTextField().setColumns(5);
  * @endcode
  * 
- *          The basic usage pattern is as follows:
+ * The basic usage pattern is as follows:
  * 
- * @msc hscale="1"; Caller,QWindowBuilder,AWTWindow; Caller=>QWindowBuilder
- *      [label="BuildWindow(..)"]; Caller=>QWindowBuilder
- *      [label="ShowWindow(true)"]; QWindowBuilder->AWTWindow [label=
- *      "Show AWT window"]; --- [label="Window is displayed"];
- *      Caller=>QWindowBuilder [label="setValues(..)"];
- *      QWindowBuilder->AWTWindow [label="update UI"]; Caller=>QWindowBuilder
- *      [label="getValues()"]; QWindowBuilder->AWTWindow [label="ask for values"
- *      ]; AWTWindow>>QWindowBuilder; Caller<<QWindowBuilder [label="UI values"
- *      ];
+ * @msc
+ * hscale="1";
+ * Caller,QWindowBuilder,AWTWindow;
+ * Caller=>QWindowBuilder [label="BuildWindow(..)"];
+ * Caller=>QWindowBuilder [label="ShowWindow(true)"];
+ * QWindowBuilder->AWTWindow [label="Show AWT window"];
+ * --- [label="Window is displayed"];
+ * Caller=>QWindowBuilder [label="setValues(..)"];
+ * QWindowBuilder->AWTWindow [label="update UI"];
+ * Caller=>QWindowBuilder [label="getValues()"];
+ * QWindowBuilder->AWTWindow [label="ask for values"];
+ * AWTWindow>>QWindowBuilder; Caller<<QWindowBuilder [label="UI values"];
  * @endmsc
  * 
- *         Methods getValues() and setValues() should be used by class extending
- *         QWindowBuilder for setting and achieving parameters from GUI. Note
- *         that parameters in UIs are validated only when they become out of
- *         focus. Until cursor is in UI its value is not updated internally,
- *         thus getValue returns its old snapshot.
+ * Methods getValues() and setValues() should be used by class extending
+ * QWindowBuilder for setting and achieving parameters from GUI. Note
+ * that parameters in UIs are validated only when they become out of
+ * focus. Until cursor is in UI its value is not updated internally,
+ * thus getValue returns its old snapshot.
  * 
  * @author p.baniukiewicz
  * @date 29 Jan 2016
@@ -152,23 +156,23 @@ public abstract class QWindowBuilder {
      * configuration is as follows:
      * 
      * @code{.java} HashMap<String,String[]> def1 = new HashMap<String,
-     *              String[]>(); def1.put("name", new String[] {"test"}); // non
-     *              UI element - name of window def1.put("window", new String[]
-     *              {"spinner", "-0.5","0.5","0.1"}); // adds spinner to provide
-     *              window parameter def1.put("smooth", new String[] {"spinner",
-     *              "-1", "10", "1"}); def1.put("help", new String[] {"help
-     *              text}); // non UI element - help
+     * String[]>(); def1.put("name", new String[] {"test"}); // non
+     * UI element - name of window def1.put("window", new String[]
+     * {"spinner", "-0.5","0.5","0.1"}); // adds spinner to provide
+     * window parameter def1.put("smooth", new String[] {"spinner",
+     * "-1", "10", "1"}); def1.put("help", new String[] {"help
+     * text}); // non UI element - help
      * @endcode
      * 
-     *          By default window is not visible yet. User must call ShowWindow
-     *          or ToggleWindow. The \b Apply button does nothing. It is only to
-     *          refocus after change of values in spinners. They are not updated
-     *          until unfocused.
+     * By default window is not visible yet. User must call ShowWindow
+     * or ToggleWindow. The \b Apply button does nothing. It is only to
+     * refocus after change of values in spinners. They are not updated
+     * until unfocused.
      * 
      * @param def
-     *            Configuration \c Map<String, String[]> as described
+     * Configuration \c Map<String, String[]> as described
      * @throw IllegalArgumentException or other unchecked exceptions on wrong
-     *        syntax of \c def
+     * syntax of \c def
      */
     public void BuildWindow(Map<String, String[]> def) {
         if (def.size() < 2)
@@ -281,7 +285,7 @@ public abstract class QWindowBuilder {
      * Show or hide window
      * 
      * @param state
-     *            State of the window \c true to show, \c false to hide
+     * State of the window \c true to show, \c false to hide
      */
     public void ShowWindow(boolean state) {
         pluginWnd.setVisible(state);
@@ -321,7 +325,7 @@ public abstract class QWindowBuilder {
      * are above range defined in \c def, new range is set for UI control
      * 
      * @param vals
-     *            <key,value> pairs to fill UI.
+     * <key,value> pairs to fill UI.
      */
     public void setValues(Map<String, Object> vals) {
         // iterate over parameters and match names to UIs
@@ -355,9 +359,9 @@ public abstract class QWindowBuilder {
      * getDoubleFromUI(String)
      * 
      * @return List of <key,param>, where \b key is the name of parameter passed
-     *         to QWindowBuilder class through BuildWindow method. The method
-     *         remaps those keys to related UI controls and reads values
-     *         associated to them.
+     * to QWindowBuilder class through BuildWindow method. The method
+     * remaps those keys to related UI controls and reads values
+     * associated to them.
      * @see getDoubleFromUI(String)
      * @see getIntegerFromUI(String)
      */
@@ -390,10 +394,10 @@ public abstract class QWindowBuilder {
      * 
      * @remarks The key must be defined and exists in that list.
      * @remarks In case of wrong conversion it may be exception thrown. User is
-     *          responsible to call this method for proper key.
+     * responsible to call this method for proper key.
      * 
      * @param key
-     *            Key to be read from configuration list
+     * Key to be read from configuration list
      * @return
      * @see BuildWindow(Map<String, String[]>)
      */

@@ -65,10 +65,8 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
      * Data are as list of vectors defining points of polygon. Passed points
      * should be sorted according to a clockwise or anti-clockwise direction
      * 
-     * @param data
-     *            Polygon points
-     * @see uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List
-     *      <E>)
+     * @param data Polygon points
+     * @see wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List<E>)
      */
     @Override
     public void attachData(List<Vector2d> data) {
@@ -144,15 +142,13 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
     /**
      * Configure plugin and overrides default values.
      * 
-     * Supported keys: -# \c window - size of window
+     * Supported keys: 
+     * -# \c window - size of window
      * 
-     * @param par
-     *            configuration as pairs <key,val>. Keys are defined by plugin
+     * @param par configuration as pairs <key,val>. Keys are defined by plugin
      *            creator and plugin caller do not modify them.
-     * @throws QuimpPluginException
-     *             on wrong parameters list or wrong parameter conversion
-     * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<
-     *      String, Object>)
+     * @throws QuimpPluginException on wrong parameters list or wrong parameter conversion
+     * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
      */
     @Override
     public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException {
@@ -215,8 +211,7 @@ class QWindowBuilderInst extends QWindowBuilder {
      * with step 2, therefore only one possibility to get even value here is by
      * editing it manually
      * 
-     * @param def
-     *            window definition string
+     * @param def window definition string
      * @see BuildWindow
      */
     @Override

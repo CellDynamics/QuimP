@@ -46,10 +46,8 @@ public class ExtendedVector2d extends Vector2d {
      * 
      * Creates vector mounted at (0,0).
      * 
-     * @param xx
-     *            \c x coordinate of vector
-     * @param yy
-     *            \c y coordinate of vector
+     * @param xx \c x coordinate of vector
+     * @param yy \c y coordinate of vector
      */
     public ExtendedVector2d(double xx, double yy) {
         super(xx, yy);
@@ -121,14 +119,10 @@ public class ExtendedVector2d extends Vector2d {
      * as vector \b AB, where \b A and \b B stand for initial and terminal
      * points given as vectors mounted at (0,0)
      * 
-     * @param nA1
-     *            initial point of \b A edge
-     * @param nA2
-     *            terminal point of \b A edge
-     * @param nB1
-     *            initial point of \b B edge
-     * @param nB2
-     *            terminal point of \b B edge
+     * @param nA1 initial point of \b A edge
+     * @param nA2 terminal point of \b A edge
+     * @param nB1 initial point of \b B edge
+     * @param nB2 terminal point of \b B edge
      * @return Intersect point
      * @retval Vect2d if intersection found or \c null if not found
      * @deprecated Actually not used in this version of QuimP
@@ -189,8 +183,7 @@ public class ExtendedVector2d extends Vector2d {
     }
 
     /**
-     * @copydoc lineIntersectionOLD(ExtendedVector2d, ExtendedVector2d,
-     *          ExtendedVector2d, ExtendedVector2d)
+     * @copydoc lineIntersectionOLD()
      */
     @Deprecated
     public static ExtendedVector2d lineIntersectionOLD2(ExtendedVector2d nA1, ExtendedVector2d nA2,
@@ -241,24 +234,15 @@ public class ExtendedVector2d extends Vector2d {
      * Compute the intersection between two line segments, or two lines of
      * infinite length.
      *
-     * @param x0
-     *            X coordinate first end point first line segment.
-     * @param y0
-     *            Y coordinate first end point first line segment.
-     * @param x1
-     *            X coordinate second end point first line segment.
-     * @param y1
-     *            Y coordinate second end point first line segment.
-     * @param x2
-     *            X coordinate first end point second line segment.
-     * @param y2
-     *            Y coordinate first end point second line segment.
-     * @param x3
-     *            X coordinate second end point second line segment.
-     * @param y3
-     *            Y coordinate second end point second line segment.
-     * @param intersection
-     *            Preallocated by caller to double[2]
+     * @param x0 X coordinate first end point first line segment.
+     * @param y0 Y coordinate first end point first line segment.
+     * @param x1 X coordinate second end point first line segment.
+     * @param y1 Y coordinate second end point first line segment.
+     * @param x2 X coordinate first end point second line segment.
+     * @param y2 Y coordinate first end point second line segment.
+     * @param x3 X coordinate second end point second line segment.
+     * @param y3 Y coordinate second end point second line segment.
+     * @param intersection Preallocated by caller to double[2]
      * @return -1 if lines are parallel (x,y unset), -2 if lines are parallel
      *         and overlapping (x, y center) 0 if intersection outside segments
      *         (x,y set) +1 if segments intersect (x,y set)
@@ -438,12 +422,9 @@ public class ExtendedVector2d extends Vector2d {
      * Check if two double precision numbers are "equal", i.e. close enough to a
      * given limit.
      *
-     * @param a
-     *            First number to check
-     * @param b
-     *            Second number to check
-     * @param limit
-     *            The definition of "equal".
+     * @param a First number to check
+     * @param b Second number to check
+     * @param limit The definition of "equal".
      * @return True if the two numbers are "equal", false otherwise
      *         http://geosoft.no/software/geometry/Geometry.java.html
      */
@@ -454,14 +435,10 @@ public class ExtendedVector2d extends Vector2d {
     /**
      * Return smallest of four numbers.
      *
-     * @param a
-     *            First number to find smallest among.
-     * @param b
-     *            Second number to find smallest among.
-     * @param c
-     *            Third number to find smallest among.
-     * @param d
-     *            Fourth number to find smallest among.
+     * @param a First number to find smallest among.
+     * @param b Second number to find smallest among.
+     * @param c Third number to find smallest among.
+     * @param d Fourth number to find smallest among.
      * @return Smallest of a, b, c and d.
      * @see http://geosoft.no/software/geometry/Geometry.java.html
      */
@@ -472,14 +449,10 @@ public class ExtendedVector2d extends Vector2d {
     /**
      * Return largest of four numbers.
      *
-     * @param a
-     *            First number to find largest among.
-     * @param b
-     *            Second number to find largest among.
-     * @param c
-     *            Third number to find largest among.
-     * @param d
-     *            Fourth number to find largest among.
+     * @param a First number to find largest among.
+     * @param b Second number to find largest among.
+     * @param c Third number to find largest among.
+     * @param d Fourth number to find largest among.
      * @return Largest of a, b, c and d.
      * @see http://geosoft.no/software/geometry/Geometry.java.html
      */

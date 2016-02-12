@@ -69,8 +69,10 @@ public class HatFilter extends QWindowBuilder
     private int crown; // filter's crown size (in middle of \a window)
     private double sig; // acceptance criterion
     private List<Vector2d> points;
-    private LinkedHashMap<String, String[]> uiDefinition; // Definition of UI for this plugin
-    private DrawPanel dp; // Here we will draw. This panel is plot in place of help field
+    private LinkedHashMap<String, String[]> uiDefinition; // Definition of UI
+                                                          // for this plugin
+    private DrawPanel dp; // Here we will draw. This panel is plot in place of
+                          // help field
     private ExPolygon p; // representation of snake as polygon
     private ExPolygon pout; // output polygon based on \c out
     private List<Vector2d> out; // output after filtering
@@ -107,10 +109,8 @@ public class HatFilter extends QWindowBuilder
      * Data are as list of vectors defining points of polygon. Passed points
      * should be sorted according to a clockwise or anti-clockwise direction
      * 
-     * @param data
-     *            Polygon points
-     * @see uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List
-     *      <E>)
+     * @param data Polygon points
+     * @see plugin.snakes.IQuimpPoint2dFilter.attachData(List<E>)
      */
     @Override
     public void attachData(List<Vector2d> data) {
@@ -217,10 +217,8 @@ public class HatFilter extends QWindowBuilder
      * Avoid creating new Vector2d object when using build-in Vector2d::sub
      * method method
      * 
-     * @param v1
-     *            Vector
-     * @param v2
-     *            Vector
+     * @param v1 Vector
+     * @param v2 Vector
      * @return ||v1-v2||
      */
     private double getLen(Vector2d v1, Vector2d v2) {
@@ -252,11 +250,10 @@ public class HatFilter extends QWindowBuilder
      * Supported keys: -# \c window - size of main window -# \c crown - size of
      * inner window -# \c sigma - cut-off value (see class description)
      * 
-     * @param par
-     *            configuration as pairs <key,val>. Keys are defined by plugin
+     * @param par configuration as pairs <key,val>. Keys are defined by plugin
      *            creator and plugin caller do not modify them.
-     * @throws QuimpPluginException
-     *             on wrong parameters list or wrong parameter conversion
+     * @throws QuimpPluginException on wrong parameters list or wrong parameter
+     *             conversion
      * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<
      *      String, Object>)
      */
@@ -367,17 +364,20 @@ public class HatFilter extends QWindowBuilder
      * Here used for updating view but it can be used for example for
      * auto-fixing even values provided by user:
      * 
-     * @code{.java} Object source = ce.getSource(); JSpinner s =
-     *              (JSpinner)ui.get("window"); // get ui element JSpinner s1 =
-     *              (JSpinner)ui.get("crown"); // get ui element if(source == s)
-     *              { // check if this event concerns it logger.debug(
-     *              "Spinner window used"); if(
-     *              ((Double)s.getValue()).intValue()%2==0 )
-     *              s.setValue((Double)s.getValue() + 1); } if(source == s1) {
-     *              // check if this event concerns it logger.debug(
-     *              "Spinner crown used"); if(
-     *              ((Double)s1.getValue()).intValue()%2==0 )
-     *              s1.setValue((Double)s1.getValue() + 1); }
+     * @code{.java}
+     *              Object source = ce.getSource();
+     *              JSpinner s = (JSpinner)ui.get("window"); // get ui element
+     *              JSpinner s1 = (JSpinner)ui.get("crown"); // get ui element
+     *              if(source == s) { // check if this event concerns it
+     *              logger.debug("Spinner window used");
+     *              if(((Double)s.getValue()).intValue()%2==0 )
+     *              s.setValue((Double)s.getValue() + 1);
+     *              }
+     *              if(source == s1) { // check if this event concerns it
+     *              logger.debug("Spinner crown used");
+     *              if(((Double)s1.getValue()).intValue()%2==0 )
+     *              s1.setValue((Double)s1.getValue() + 1);
+     *              }
      * @endcode
      * 
      */
@@ -493,8 +493,7 @@ class ExPolygon extends Polygon {
     /**
      * Construct polygon from list of points.
      * 
-     * @param data
-     *            List of points
+     * @param data List of points
      */
     public ExPolygon(List<Vector2d> data) {
 
@@ -511,8 +510,7 @@ class ExPolygon extends Polygon {
      * Method changes internal polygon representation. Fitting is done basing on
      * bounding box area.
      * 
-     * @param size
-     *            Size of window to fit polygon
+     * @param size Size of window to fit polygon
      */
     public void fitPolygon(double size) {
         // set in 0,0
@@ -543,12 +541,9 @@ class ExPolygon extends Polygon {
      * Use for setting next polygon on base of previous, when nex has different
      * shape but must be centerd with previous one.
      * 
-     * @param size
-     *            Size of window to fit polygon
-     * @param init
-     *            Bounding box to fit new polygon
-     * @param scale
-     *            Scale of new polygon
+     * @param size Size of window to fit polygon
+     * @param init Bounding box to fit new polygon
+     * @param scale Scale of new polygon
      */
     public void fitPolygon(double size, Rectangle2D init, double scale) {
         // set in 0,0

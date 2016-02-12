@@ -23,10 +23,14 @@ import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
@@ -42,8 +46,6 @@ import javax.vecmath.Vector2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mockito.Mockito;
-
-import com.jcabi.manifests.Manifests;
 
 /**
  * Main class implementing BOA plugin.
@@ -87,8 +89,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * @param arg
-     *            Currently it can be string pointing to plugins directory
+     * @param arg Currently it can be string pointing to plugins directory
      */
     @Override
     public void run(String arg) {
@@ -172,8 +173,7 @@ public class BOA_ implements PlugIn {
      * Define also windowListener for cleaning after closing the main window by
      * user.
      * 
-     * @param ip
-     *            Reference to image to be processed by BOA
+     * @param ip Reference to image to be processed by BOA
      * @see BOAp
      */
     void setup(ImagePlus ip) {
@@ -189,6 +189,8 @@ public class BOA_ implements PlugIn {
         canvas = new CustomCanvas(imageGroup.getOrgIpl());
         window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
         window.buildWindow();
+        String ver = getQuimPBuildInfo();
+        window.setTitle(window.getTitle() + " :QuimP: " + ver);
         // warn about scale
         if (BOAp.scaleAdjusted) {
             BOA_.log("WARNING Scale was zero...\n\tset to 1");
@@ -230,14 +232,42 @@ public class BOA_ implements PlugIn {
         BOA_.log("\n############################\n" + "Build: " + Tool.getQuimPversion() + "\n"
                 + "BOA plugin,by Richard Tyson (richard.tyson@warwick.ac.uk)\n"
                 + "& Till Bretschneider\n(Till.Bretschneider@warwick.ac.uk)\n" + "############################\n \n");
-        logger.info("Man: " + Manifests.read("Built-By"));
+    }
+
+    /**
+     * Get build info read from jar file
+     * 
+     * @return Formatted string with build info
+     * @warning This method is jar-name dependent
+     */
+    public String getQuimPBuildInfo() {
+        String ret = "version not found in jar";
+        try {
+            Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+            while (resources.hasMoreElements()) {
+                Manifest manifest = new Manifest(resources.nextElement().openStream());
+                Attributes attributes = manifest.getMainAttributes();
+                try {
+                    String val = attributes.getValue("Implementation-Title");
+                    if (val == null)
+                        continue;
+                    if (attributes.getValue("Implementation-Title").contains("QuimP")) {
+                        ret = "Build by: " + attributes.getValue("Built-By") + "on: "
+                                + attributes.getValue("Implementation-Build");
+                        logger.info(ret);
+                    }
+                } catch (Exception e) {
+                }
+            }
+        } catch (IOException e) {
+        }
+        return ret;
     }
 
     /**
      * Append string to log window in BOA plugin
      * 
-     * @param s
-     *            String to display in BOA window
+     * @param s String to display in BOA window
      */
     static void log(String s) {
         logArea.append(s + '\n');
@@ -280,8 +310,7 @@ public class BOA_ implements PlugIn {
         /**
          * Empty constructor
          * 
-         * @param imp
-         *            Reference to image loaded by BOA
+         * @param imp Reference to image loaded by BOA
          */
         CustomCanvas(ImagePlus imp) {
             super(imp);
@@ -363,10 +392,8 @@ public class BOA_ implements PlugIn {
         /**
          * Default constructor
          * 
-         * @param imp
-         *            Image loaded to plugin
-         * @param ic
-         *            Image canvas
+         * @param imp Image loaded to plugin
+         * @param ic Image canvas
          */
         CustomStackWindow(ImagePlus imp, ImageCanvas ic) {
             super(imp, ic);
@@ -555,10 +582,8 @@ public class BOA_ implements PlugIn {
         /**
          * Helper method for adding buttons to UI
          * 
-         * @param label
-         *            Label on button
-         * @param p
-         *            Reference to the panel where button is located
+         * @param label Label on button
+         * @param p Reference to the panel where button is located
          * @return Reference to created button
          */
         private Button addButton(String label, Container p) {
@@ -571,12 +596,9 @@ public class BOA_ implements PlugIn {
         /**
          * Helper method for creating checkbox in UI
          * 
-         * @param label
-         *            Label of checkbox
-         * @param p
-         *            Reference to the panel where checkbox is located
-         * @param d
-         *            Initial state of checkbox
+         * @param label Label of checkbox
+         * @param p Reference to the panel where checkbox is located
+         * @param d Initial state of checkbox
          * @return Reference to created checkbox
          */
         private Checkbox addCheckbox(String label, Container p, boolean d) {
@@ -589,10 +611,8 @@ public class BOA_ implements PlugIn {
         /**
          * Helper method for creating ComboBox in UI
          *
-         * @param s
-         *            Strings to be included in ComboBox
-         * @param mp
-         *            Reference to the panel where ComboBox is located
+         * @param s Strings to be included in ComboBox
+         * @param mp Reference to the panel where ComboBox is located
          * @return Reference to created ComboBox
          */
         private JComboBox<String> addComboBox(String[] s, Container mp) {
@@ -606,20 +626,13 @@ public class BOA_ implements PlugIn {
         /**
          * Helper method for creating spinner in UI with real values
          * 
-         * @param s
-         *            Label of spinner (added on its left side)
-         * @param mp
-         *            Reference of panel where spinner is located
-         * @param d
-         *            The current vale of model
-         * @param min
-         *            The first number in sequence
-         * @param max
-         *            The last number in sequence
-         * @param step
-         *            The difference between numbers in sequence
-         * @param columns
-         *            The number of columns preferred for display
+         * @param s Label of spinner (added on its left side)
+         * @param mp Reference of panel where spinner is located
+         * @param d The current vale of model
+         * @param min The first number in sequence
+         * @param max The last number in sequence
+         * @param step The difference between numbers in sequence
+         * @param columns The number of columns preferred for display
          * @return Reference to created spinner
          */
         private JSpinner addDoubleSpinner(String s, Container mp, double d, double min, double max, double step,
@@ -641,20 +654,13 @@ public class BOA_ implements PlugIn {
         /**
          * Helper method for creating spinner in UI with integer values
          * 
-         * @param s
-         *            Label of spinner (added on its left side)
-         * @param mp
-         *            Reference of panel where spinner is located
-         * @param d
-         *            The current vale of model
-         * @param min
-         *            The first number in sequence
-         * @param max
-         *            The last number in sequence
-         * @param step
-         *            The difference between numbers in sequence
-         * @param columns
-         *            The number of columns preferred for display
+         * @param s Label of spinner (added on its left side)
+         * @param mp Reference of panel where spinner is located
+         * @param d The current vale of model
+         * @param min The first number in sequence
+         * @param max The last number in sequence
+         * @param step The difference between numbers in sequence
+         * @param columns The number of columns preferred for display
          * @return Reference to created spinner
          */
         private JSpinner addIntSpinner(String s, Container mp, int d, int min, int max, int step, int columns) {
@@ -710,8 +716,7 @@ public class BOA_ implements PlugIn {
          * Do not support mouse events, only UI elements like buttons. Contain
          * also logic of GUI Runs also main algorithm on specified input state.
          * 
-         * @param e
-         *            Type of event
+         * @param e Type of event
          * @see BOAp
          */
         @Override
@@ -910,8 +915,7 @@ public class BOA_ implements PlugIn {
          * if necessary. Transfer parameters from changed GUI element to
          * {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
          * 
-         * @param e
-         *            Type of event
+         * @param e Type of event
          */
         @Override
         public void itemStateChanged(ItemEvent e) {
@@ -968,8 +972,7 @@ public class BOA_ implements PlugIn {
          * necessary. Transfer parameters from changed GUI element to
          * {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
          * 
-         * @param ce
-         *            Type of event
+         * @param ce Type of event
          */
         @Override
         public void stateChanged(ChangeEvent ce) {
@@ -1121,10 +1124,8 @@ public class BOA_ implements PlugIn {
      * This method is called for update only current view as well (\c startF ==
      * \c endF)
      * 
-     * @param startF
-     *            start frame
-     * @param endF
-     *            end frame
+     * @param startF start frame
+     * @param endF end frame
      * @throws BoaException
      */
     public void runBoa(int startF, int endF) throws BoaException {
@@ -1388,10 +1389,8 @@ public class BOA_ implements PlugIn {
      * segmented. Initialize Snake object in Nest and it performs also initial
      * segmentation of selected cell
      * 
-     * @param r
-     *            ROI object (IJ)
-     * @param f
-     *            number of current frame
+     * @param r ROI object (IJ)
+     * @param f number of current frame
      * @see tightenSnake(Snake)
      * @todo sH.storeCurrentSnake(f); is called two times just to know who
      *       thrown exception
@@ -1529,12 +1528,9 @@ public class BOA_ implements PlugIn {
     /**
      * Called when user click Edit button.
      * 
-     * @param x
-     *            Coordinate of clicked point
-     * @param y
-     *            Coordinate of clicked point
-     * @param frame
-     *            current frame in stack
+     * @param x Coordinate of clicked point
+     * @param y Coordinate of clicked point
+     * @param frame current frame in stack
      * @see stopEdit
      * @see updateSliceSelector
      */
@@ -2426,10 +2422,8 @@ class Nest {
      * Add ROI objects in Nest Snakes are stored in Nest object in form of
      * SnakeHandler objects kept in \c ArrayList<SnakeHandler> \c sHs field.
      * 
-     * @param r
-     *            ROI object that contain image object to be segmented
-     * @param startFrame
-     *            Current frame
+     * @param r ROI object that contain image object to be segmented
+     * @param startFrame Current frame
      * @return SnakeHandler object that is also stored in Nest
      */
     public SnakeHandler addHandler(Roi r, int startFrame) {
@@ -2548,8 +2542,7 @@ class Nest {
     /**
      * Prepare for segmentation from frame \c f
      * 
-     * @param f
-     *            current frame under segmentation
+     * @param f current frame under segmentation
      */
     void resetForFrame(int f) {
         reviveNest();
@@ -2613,12 +2606,9 @@ class SnakeHandler {
     /**
      * Constructor of SnakeHandler. Stores ROI with object for segmentation
      * 
-     * @param r
-     *            ROI with selected object
-     * @param frame
-     *            Current frame for which the ROI is taken
-     * @param id
-     *            Unique Snake ID controlled by Nest object
+     * @param r ROI with selected object
+     * @param frame Current frame for which the ROI is taken
+     * @param id Unique Snake ID controlled by Nest object
      * @throws Exception
      */
     public SnakeHandler(Roi r, int frame, int id) throws Exception {
@@ -2635,8 +2625,7 @@ class SnakeHandler {
     /**
      * Make copy of \c liveSnake into \c snakes array
      * 
-     * @param frame
-     *            Frame for which \c liveSnake will be copied to
+     * @param frame Frame for which \c liveSnake will be copied to
      * @throws Exception
      */
     public void storeCurrentSnake(int frame) throws BoaException {
@@ -2675,8 +2664,7 @@ class SnakeHandler {
      * 
      * Created snake has correct \c ID set in SnakeHandler constructor
      * 
-     * @param data
-     *            data to create Snake from
+     * @param data data to create Snake from
      * @throws Exception
      */
     public void attachLiveSnake(List<Vector2d> data) throws Exception {
@@ -2969,8 +2957,7 @@ class SnakeHandler {
      * 
      * Create \c liveSnake using previous frame or ROI
      * 
-     * @param f
-     *            Current segmented frame
+     * @param f Current segmented frame
      */
     void resetForFrame(int f) {
         try {
@@ -3051,12 +3038,9 @@ class Snake {
     /**
      * Create a snake from existing linked list (at least one head node)
      * 
-     * @param h
-     *            Node of list
-     * @param N
-     *            Number of nodes
-     * @param id
-     *            Unique snake ID related to object being segmented.
+     * @param h Node of list
+     * @param N Number of nodes
+     * @param id Unique snake ID related to object being segmented.
      * @throws Exception
      */
     public Snake(Node h, int N, int id) throws BoaException {
@@ -3081,10 +3065,8 @@ class Snake {
     /**
      * Create snake from ROI
      * 
-     * @param R
-     *            ROI with object to be segmented
-     * @param id
-     *            Unique ID of snake related to object being segmented.
+     * @param R ROI with object to be segmented
+     * @param id Unique ID of snake related to object being segmented.
      * @param direct
      * @throws Exception
      */
@@ -3132,10 +3114,8 @@ class Snake {
     /**
      * Construct Snake object from list of nodes
      * 
-     * @param list
-     *            list of nodes as Vector2d
-     * @param id
-     *            id of Snake
+     * @param list list of nodes as Vector2d
+     * @param id id of Snake
      * @throws Exception
      */
     public Snake(List<Vector2d> list, int id) throws Exception {
@@ -3153,18 +3133,12 @@ class Snake {
      * box of user ROI This method differs from other \c initialize* methods by
      * input data which do not contain nodes but the are defined analytically
      * 
-     * @param t
-     *            index of node
-     * @param xc
-     *            center of ellipse
-     * @param yc
-     *            center of ellipse
-     * @param Rx
-     *            ellipse diameter
-     * @param Ry
-     *            ellipse diameter
-     * @param s
-     *            number of nodes
+     * @param t index of node
+     * @param xc center of ellipse
+     * @param yc center of ellipse
+     * @param Rx ellipse diameter
+     * @param Ry ellipse diameter
+     * @param s number of nodes
      * 
      * @throws Exception
      */
@@ -3196,8 +3170,7 @@ class Snake {
      * Initializes \c Node list from polygon Each edge of input polygon is
      * divided on uk.ac.warwick.wsbc.QuimP.BOAp.nodeRes nodes
      * 
-     * @param p
-     *            Polygon extracted from IJ ROI
+     * @param p Polygon extracted from IJ ROI
      * @throws Exception
      */
     private void intializePolygon(FloatPolygon p) throws Exception {
@@ -3246,8 +3219,7 @@ class Snake {
      * Initializes \c Node list from polygon Does not refine points. Use only
      * those nodes available in polygon
      * 
-     * @param p
-     *            Polygon extracted from IJ ROI
+     * @param p Polygon extracted from IJ ROI
      * @throws Exception
      * @see intializePolygon(FloatPolygon)
      */
@@ -3372,8 +3344,7 @@ class Snake {
     /**
      * Freeze a specific node
      * 
-     * @param n
-     *            Node to freeze
+     * @param n Node to freeze
      */
     public void freezeNode(Node n) {
         if (!n.isFrozen()) {
@@ -3385,8 +3356,7 @@ class Snake {
     /**
      * Unfreeze a specific node
      * 
-     * @param n
-     *            Node to unfreeze
+     * @param n Node to unfreeze
      */
     public void unfreezeNode(Node n) {
         if (n.isFrozen()) {
@@ -3420,8 +3390,7 @@ class Snake {
      *          Node::getNext() and from the last one, firs should be accessible
      *          by calling Node::getPrev()
      * 
-     * @param newNode
-     *            Node to be added to list
+     * @param newNode Node to be added to list
      * 
      * @remarks For initialization only
      */
@@ -3439,8 +3408,7 @@ class Snake {
      * Remove selected node from list Check if removed node was head and if it
      * was, the new head is randomly selected
      * 
-     * @param n
-     *            Node to remove
+     * @param n Node to remove
      * 
      * @throws Exception
      */
@@ -4242,8 +4210,7 @@ class Node {
     /**
      * Set \c X space co-ordinate
      * 
-     * @param x
-     *            coordinate
+     * @param x coordinate
      */
     public void setX(double x) {
         point.setX(x);
@@ -4252,8 +4219,7 @@ class Node {
     /**
      * Set \c Y space co-ordinate
      * 
-     * @param y
-     *            coordinate
+     * @param y coordinate
      */
     public void setY(double y) {
         point.setY(y);
@@ -4298,8 +4264,7 @@ class Node {
     /**
      * Adds previous (or next if not clockwise) Node to list
      * 
-     * @param n
-     *            Node to add
+     * @param n Node to add
      */
     public void setPrev(Node n) {
         if (clockwise) {
@@ -4312,8 +4277,7 @@ class Node {
     /**
      * Adds next (or previous if not clockwise) Node to list
      * 
-     * @param n
-     *            Node to add
+     * @param n Node to add
      */
     public void setNext(Node n) {
         if (clockwise) {
@@ -4358,8 +4322,7 @@ class Node {
     /**
      * Sets total force for Node
      * 
-     * @param f
-     *            vector of force to assign to Node force
+     * @param f vector of force to assign to Node force
      */
     public void setF_total(ExtendedVector2d f) {
         F_total.setX(f.getX());
@@ -4369,8 +4332,7 @@ class Node {
     /**
      * Sets velocity for Node
      * 
-     * @param v
-     *            vector of velocity to assign to Node force
+     * @param v vector of velocity to assign to Node force
      */
     public void setVel(ExtendedVector2d v) {
         vel.setX(v.getX());
@@ -4380,8 +4342,7 @@ class Node {
     /**
      * Updates total force for Node
      * 
-     * @param f
-     *            vector of force to add to Node force
+     * @param f vector of force to add to Node force
      */
     public void addF_total(ExtendedVector2d f) {
         // add the xy values in f to xy F_total i.e updates total Force
@@ -4392,8 +4353,7 @@ class Node {
     /**
      * Updates velocity for Node
      * 
-     * @param v
-     *            vector of velocity to add to Node force
+     * @param v vector of velocity to add to Node force
      */
     public void addVel(ExtendedVector2d v) {
         // adds the xy values in v to Vel i.e. updates velocity
@@ -4635,8 +4595,7 @@ class BOAp {
      * 
      * RefLists are always non-empty as they are initialized with null values
      * 
-     * @param in
-     *            List to check
+     * @param in List to check
      * @return \c true if list contains all null pointers, \c false otherwise
      */
     static public boolean isRefListEmpty(List<IQuimpPlugin> in) {
@@ -4682,8 +4641,7 @@ class BOAp {
      * Defaults for parameters available for user are set in
      * {@link uk.ac.warwick.wsbc.QuimP.BOAp.setDefaults()}
      * 
-     * @param ip
-     *            Reference to segmented image passed from IJ
+     * @param ip Reference to segmented image passed from IJ
      * @see setDefaults()
      */
     static public void setup(ImagePlus ip) {
@@ -4759,13 +4717,10 @@ class BOAp {
      * writeParams method creates \a paQP master file, referencing other
      * associated files and \a csv file with statistics.
      * 
-     * @param sID
-     *            ID of cell. If many cells segmented in one time, QuimP
+     * @param sID ID of cell. If many cells segmented in one time, QuimP
      *            produces separate parameter file for every of them
-     * @param startF
-     *            Start frame (typically beginning of stack)
-     * @param endF
-     *            End frame (typically end of stack)
+     * @param startF Start frame (typically beginning of stack)
+     * @param endF End frame (typically end of stack)
      * @see QParams
      */
     static public void writeParams(int sID, int startF, int endF) {

@@ -59,7 +59,6 @@ public class ImageProcessorPlus_Test {
     /**
      * @test Test method for
      *       {@link uk.ac.warwick.wsbc.tools.images.ImageProcessorPlus#rotate(ImageProcessor, double, boolean)}
-     *       .
      * @post Rotated image should have bas-reliefs oriented horizontally. Saves
      *       rotated image to /tmp/testrotateImage.tif.
      */
@@ -74,7 +73,7 @@ public class ImageProcessorPlus_Test {
     /**
      * @test Test method for
      *       {@link uk.ac.warwick.wsbc.tools.images.ImageProcessorPlus#rotate(ImageProcessor, double, boolean)}
-     *       . with background settings
+     *       with background settings
      * @post Rotated image should have bas-reliefs oriented horizontally. Saves
      *       rotated image to /tmp/testrotateImage.tif. There should be 0
      *       background
@@ -91,7 +90,6 @@ public class ImageProcessorPlus_Test {
     /**
      * @test Test method for
      *       {@link uk.ac.warwick.wsbc.tools.images.ImageProcessorPlus#extendImageBeforeRotation(ImageProcessor, double)}
-     *       .
      * @post Saves extended image to /tmp/testextendImage_0s.tif.
      */
     @Test
@@ -108,7 +106,6 @@ public class ImageProcessorPlus_Test {
     /**
      * @test Test method for
      *       {@link uk.ac.warwick.wsbc.tools.images.ImageProcessorPlus#extendImageBeforeRotation(ImageProcessor, double)}
-     *       .
      * @post Saves extended image to /tmp/testextendImage_45s.tif.
      */
     @Test
