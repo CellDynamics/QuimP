@@ -8,7 +8,6 @@ import java.awt.event.*;
 import java.net.URL;
 import javax.swing.*;
 
-
 public class QuimP_Bar implements PlugIn, ActionListener {
     String name, title;
     String path;
@@ -28,7 +27,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
         frame.setTitle(title);
 
-        //if already open, bring to front
+        // if already open, bring to front
         if (WindowManager.getFrame(title) != null) {
             WindowManager.getFrame(title).toFront();
             return;
@@ -58,14 +57,12 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         frame.setFocusable(true);
         frame.addKeyListener(IJ.getInstance());
 
-
         frame.setResizable(false);
-        //frame.setAlwaysOnTop(true);
+        // frame.setAlwaysOnTop(true);
 
-        frame.setLocation((int) Prefs.get("actionbar" + title + ".xloc", 10), (int) Prefs.get(
-                "actionbar" + title + ".yloc", 10));
+        frame.setLocation((int) Prefs.get("actionbar" + title + ".xloc", 10),
+                (int) Prefs.get("actionbar" + title + ".yloc", 10));
         WindowManager.addWindow(frame);
-
 
         frame.pack();
         frame.setVisible(true);
@@ -87,26 +84,26 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         button = makeNavigationButton("boa.jpg", "run(\"BOA\")", "Cell segmentation", "BOA");
         toolBar.add(button);
 
-        //button = makeNavigationButton("binary.jpg", "run(\"Binary Seg\")", "Binary Segmentation", "Binary Seg");
-        //toolBar.add(button);
+        // button = makeNavigationButton("binary.jpg", "run(\"Binary Seg\")",
+        // "Binary Segmentation", "Binary Seg");
+        // toolBar.add(button);
 
         button = makeNavigationButton("ecmm.jpg", "run(\"ECMM Mapping\")", "Cell membrane tracking", "ECMM");
         toolBar.add(button);
-       
+
         button = makeNavigationButton("ana.jpg", "run(\"ANA\")", "Measure fluorescence", "ANA");
         toolBar.add(button);
-       
+
         toolBar.addSeparator();
 
         button = makeNavigationButton("qanalysis.jpg", "run(\"QuimP Analysis\")", "Q Analysis of data", "Q Analysis");
         toolBar.add(button);
-   
+
         toolBar.setFloatable(false);
         frame.getContentPane().add(toolBar);
     }
 
-    protected JButton makeNavigationButton(String imageName,
-            String actionCommand, String toolTipText, String altText) {
+    protected JButton makeNavigationButton(String imageName, String actionCommand, String toolTipText, String altText) {
 
         String imgLocation = "icons/" + imageName;
         URL imageURL = QuimP_Bar.class.getResource(imgLocation);

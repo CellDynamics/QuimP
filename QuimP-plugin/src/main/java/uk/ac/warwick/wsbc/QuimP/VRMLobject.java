@@ -14,119 +14,121 @@ import java.io.PrintWriter;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 
-
-
 /**
  *
  * @author rtyson
  */
 public class VRMLobject {
 
-   private Point3f[] coords;
-   private Color3f[] colorsF;
-   private int[] coordIndices;
+    private Point3f[] coords;
+    private Color3f[] colorsF;
+    private int[] coordIndices;
 
-   private boolean ccw = true;
-   private boolean colorPerVertex = true;
-   private boolean normalPerVertex = true;
-   private boolean convex = true;
-   private float creaseAngle = 2.0f;
-private boolean solid= true;
+    private boolean ccw = true;
+    private boolean colorPerVertex = true;
+    private boolean normalPerVertex = true;
+    private boolean convex = true;
+    private float creaseAngle = 2.0f;
+    private boolean solid = true;
 
-   public VRMLobject(Point3f[] p, Color3f[] c, int[] i){
-      coords = p;
-      colorsF = c;
-      coordIndices = i;
-   }
+    public VRMLobject(Point3f[] p, Color3f[] c, int[] i) {
+        coords = p;
+        colorsF = c;
+        coordIndices = i;
+    }
 
-   /*
-   public void writeWithJAVA3D(File f){
-      colorsF[0].x = 0.3f;
-      IndexedQuadArray quadArray = new IndexedQuadArray(coords.length,
-              IndexedQuadArray.COORDINATES, coordIndices.length);
-      quadArray.setCoordinates(0, coords);
-      quadArray.setCoordinateIndices(0, coordIndices);
-      quadArray.setColors(0, colorsF);
-      //quadArray.setColorIndices(0, indices);
+    /*
+     * public void writeWithJAVA3D(File f){ colorsF[0].x = 0.3f;
+     * IndexedQuadArray quadArray = new IndexedQuadArray(coords.length,
+     * IndexedQuadArray.COORDINATES, coordIndices.length);
+     * quadArray.setCoordinates(0, coords); quadArray.setCoordinateIndices(0,
+     * coordIndices); quadArray.setColors(0, colorsF);
+     * //quadArray.setColorIndices(0, indices);
+     * 
+     * 
+     * Shape3D myShape = new Shape3D(quadArray);
+     * 
+     * BranchGroup bg = new BranchGroup(); bg.addChild(myShape); VRML97Saver
+     * saver = new VRML97Saver();
+     * 
+     * saver.setBranchGroup(bg); saver.save(f); }
+     */
+    void transform(float x, float y, float z) {
+        Point3f tpf = new Point3f(x, y, z);
 
+        for (int i = 0; i < coords.length; i++) {
+            coords[i].add(tpf);
+        }
+    }
 
-      Shape3D myShape = new Shape3D(quadArray);
+    void scale(float x) {
+        for (int i = 0; i < coords.length; i++) {
+            coords[i].scale(x);
+        }
+    }
 
-      BranchGroup bg = new BranchGroup();
-      bg.addChild(myShape);
-      VRML97Saver saver = new VRML97Saver();
+    void write(File OUT) {
+        try {
+            PrintWriter pw = new PrintWriter(new FileWriter(OUT), true);
 
-      saver.setBranchGroup(bg);
-      saver.save(f);
-   }
-*/
-   void transform(float x, float y, float z){
-      Point3f tpf = new Point3f(x,y,z);
+            pw.print("#VRML V2.0 utf8\nShape {\n\tgeometry IndexedFaceSet {");
+            pw.print("\n\t\tccw ");
+            writeBoolean(pw, ccw);
+            pw.print("\n\t\tcolorPerVertex ");
+            writeBoolean(pw, colorPerVertex);
+            pw.print("\n\t\tnormalPerVertex ");
+            writeBoolean(pw, normalPerVertex);
+            pw.print("\n\t\tconvex ");
+            writeBoolean(pw, convex);
+            pw.print("\n\t\tcreaseAngle " + creaseAngle);
+            pw.print("\n\t\tsolid ");
+            writeBoolean(pw, solid);
 
-      for (int i = 0; i < coords.length; i++) {
-         coords[i].add(tpf);
-      }
-   }
+            pw.print("\n\t\tcoord Coordinate {\n\t\t\tpoint [");
+            // write coords
+            for (int i = 0; i < coords.length; i++) {
+                pw.print("\n\t\t\t\t" + coords[i].x + " " + coords[i].y + " " + coords[i].z);
+                if (i != coords.length - 1)
+                    pw.print(",");
+                // break;
+            }
+            pw.print("\n\t\t\t]\n\t\t}");
 
-   void scale(float x){
-      for (int i = 0; i < coords.length; i++) {
-         coords[i].scale(x);
-      }
-   }
+            pw.print("\n\t\tcolor Color {\n\t\t\tcolor [");
+            // write colors
+            for (int i = 0; i < colorsF.length; i++) {
+                pw.print("\n\t\t\t\t" + colorsF[i].x + " " + colorsF[i].y + " " + colorsF[i].z);
+                if (i != colorsF.length - 1)
+                    pw.print(",");
+                // break;
+            }
+            pw.print("\n\t\t\t]\n\t\t}");
 
-   void write(File OUT){
-      try {
-         PrintWriter pw = new PrintWriter(new FileWriter(OUT), true);
+            pw.print("\n\t\tcoordIndex [");
+            // write coordIndices
+            for (int i = 0; i < coordIndices.length; i += 4) {
+                pw.print("\n\t\t\t" + coordIndices[i] + ", " + coordIndices[i + 1] + ", " + coordIndices[i + 2] + ", "
+                        + coordIndices[i + 3] + ", -1");
+                if (i != coordIndices.length - 4)
+                    pw.print(",");
+                // break;
+            }
+            pw.print("\n\t\t]");
 
-         pw.print("#VRML V2.0 utf8\nShape {\n\tgeometry IndexedFaceSet {");
-         pw.print("\n\t\tccw "); writeBoolean(pw, ccw);
-         pw.print("\n\t\tcolorPerVertex "); writeBoolean(pw, colorPerVertex);
-         pw.print("\n\t\tnormalPerVertex "); writeBoolean(pw, normalPerVertex);
-         pw.print("\n\t\tconvex "); writeBoolean(pw, convex);
-         pw.print("\n\t\tcreaseAngle " + creaseAngle);
-         pw.print("\n\t\tsolid "); writeBoolean(pw, solid);
+            pw.print("\n\t}\n}");
 
-         pw.print("\n\t\tcoord Coordinate {\n\t\t\tpoint [");
-         //write coords
-         for (int i = 0; i < coords.length; i++) {
-            pw.print("\n\t\t\t\t"+ coords[i].x + " " + coords[i].y + " " + coords[i].z);
-            if(i != coords.length-1 ) pw.print(",");
-            //break;
-         }
-         pw.print("\n\t\t\t]\n\t\t}");
+            pw.close();
 
-         pw.print("\n\t\tcolor Color {\n\t\t\tcolor [");
-         //write colors
-         for (int i = 0; i < colorsF.length; i++) {
-            pw.print("\n\t\t\t\t"+ colorsF[i].x + " " + colorsF[i].y + " " + colorsF[i].z);
-            if(i != colorsF.length-1 ) pw.print(",");
-            //break;
-         }
-         pw.print("\n\t\t\t]\n\t\t}");
+        } catch (Exception e) {
+            System.out.println("Could not write VMRL object to " + OUT.getName());
+        }
+    }
 
-         pw.print("\n\t\tcoordIndex [");
-         //write coordIndices
-         for (int i = 0; i < coordIndices.length; i+=4) {
-            pw.print("\n\t\t\t"+ coordIndices[i]+ ", " + coordIndices[i+1] + ", " + coordIndices[i+2] + ", " + coordIndices[i+3] + ", -1");
-            if(i != coordIndices.length - 4 ) pw.print(",");
-            //break;
-         }
-         pw.print("\n\t\t]");
-
-         pw.print("\n\t}\n}");
-
-         pw.close();
-
-      }catch(Exception e){
-         System.out.println("Could not write VMRL object to " + OUT.getName());
-      }
-   }
-
-   private void writeBoolean(PrintWriter pw, boolean b){
-      if(b){
-         pw.print("TRUE");
-      }else{
-         pw.print("FALSE");
-      }
-   }
+    private void writeBoolean(PrintWriter pw, boolean b) {
+        if (b) {
+            pw.print("TRUE");
+        } else {
+            pw.print("FALSE");
+        }
+    }
 }

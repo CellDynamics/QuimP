@@ -33,96 +33,109 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  */
 @RunWith(Parameterized.class)
 public class HatFilter_testParam {
-	private static final Logger logger = LogManager.getLogger(HatFilter_testParam.class.getName());
-	private Double window;
-	private Double crown;
-	private Double sig;
-	private List<Vector2d> testcase;
-	private Path testfileName;
+    private static final Logger logger = LogManager.getLogger(HatFilter_testParam.class.getName());
+    private Double window;
+    private Double crown;
+    private Double sig;
+    private List<Vector2d> testcase;
+    private Path testfileName;
 
-	/**
-	 * Parameterized constructor.
-	 * 
-	 * Each parameter should be placed as an argument here
-	 * Every time runner triggers, it will pass the arguments
-	 * from parameters we defined to this method
-	 * @param testFileName test file name
-	 * @param window filter window size
-	 * @param crown filter crown size
-	 * @param sig sigma value
-	 * @see DataLoader
-	 * @see HatFilter
-	 */
-	public HatFilter_testParam(String testFileName, Double window, Double crown, Double sig) {
-		this.testfileName = Paths.get(testFileName);
-		this.window = window;
-		this.crown = crown;
-		this.sig = sig;
-	}
-	
-	/**
-	 * Called after construction but before tests
-	 * 
-	 * @throws Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		testcase = new DataLoader(testfileName.toString()).getData();
-	}
+    /**
+     * Parameterized constructor.
+     * 
+     * Each parameter should be placed as an argument here Every time runner
+     * triggers, it will pass the arguments from parameters we defined to this
+     * method
+     * 
+     * @param testFileName
+     *            test file name
+     * @param window
+     *            filter window size
+     * @param crown
+     *            filter crown size
+     * @param sig
+     *            sigma value
+     * @see DataLoader
+     * @see HatFilter
+     */
+    public HatFilter_testParam(String testFileName, Double window, Double crown, Double sig) {
+        this.testfileName = Paths.get(testFileName);
+        this.window = window;
+        this.crown = crown;
+        this.sig = sig;
+    }
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-	}
-	
-	/**
-	 * Set of parameters for tests.
-	 * 
-	 * @return List of strings with paths to testfiles and smooth parameter
-	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
-	 */
-	@Parameterized.Parameters
-	public static Collection<Object[]> testFiles() {
-		return Arrays.asList(new Object[][] {
-			{"src/test/resources/testData_137.dat",23.,13.,0.3},
-			{"src/test/resources/testData_1.dat",23.,13.,0.3},
-			{"src/test/resources/testData_125.dat",23.,13.,0.3},
-			{"src/test/resources/testData_75.dat",23.,13.,0.3}
-		});
-	}
-	
+    /**
+     * Called after construction but before tests
+     * 
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        testcase = new DataLoader(testfileName.toString()).getData();
+    }
 
-	/**
-	 * @test Test of getInterpolationLoess method
-	 * @pre Real cases extrcted from 
-	 * @post Save image test_HatFilter_* in /tmp/
-	 * @throws QuimpPluginException 
-	 * @see QuimP-toolbox/algorithms/src/test/resources/HatFilter.m for verification of logs (ratios, indexes, etc)
-	 * @see QuimP-toolbox/algorithms/src/test/resources/Interpolate_Test_Analyzer.m for plotting results
-	 * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
-	 */
-	@SuppressWarnings("serial")
-	@Test
-	public void test_HatFilter() throws QuimpPluginException {
-		ArrayList<Vector2d> out;
-		HatFilter hf = new HatFilter();
-		hf.attachData(testcase);
-		hf.setPluginConfig(new HashMap<String,Object>() {{	put("window",window);
-															put("crown",crown);
-															put("sigma",sig);}});
-		out = (ArrayList<Vector2d>) hf.runPlugin();
-		RoiSaver.saveROI("/tmp/test_HatFilter_"+testfileName.getFileName()+"_"+window.toString()+"_"+crown.toString()+"_"+sig.toString()+".tif", out);
-		logger.debug("setUp: "+testcase.toString());
-	}
-	
-	/**
-	 * @test Simple test of RoiSaver class, create reference images without processing but with the same name scheme
-	 * @post Save image /tmp/testroiSaver_*.tif
-	 */
-	@Test
-	public void test_roiSaver() {
-		RoiSaver.saveROI("/tmp/ref_HatFilter_"+testfileName.getFileName()+"_"+window.toString()+"_"+crown.toString()+"_"+sig.toString()+".tif", testcase);
-	}
+    /**
+     * @throws java.lang.Exception
+     */
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    /**
+     * Set of parameters for tests.
+     * 
+     * @return List of strings with paths to testfiles and smooth parameter
+     * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating
+     *      *.dat files
+     */
+    @Parameterized.Parameters
+    public static Collection<Object[]> testFiles() {
+        return Arrays.asList(new Object[][] { { "src/test/resources/testData_137.dat", 23., 13., 0.3 },
+                { "src/test/resources/testData_1.dat", 23., 13., 0.3 },
+                { "src/test/resources/testData_125.dat", 23., 13., 0.3 },
+                { "src/test/resources/testData_75.dat", 23., 13., 0.3 } });
+    }
+
+    /**
+     * @test Test of getInterpolationLoess method
+     * @pre Real cases extrcted from
+     * @post Save image test_HatFilter_* in /tmp/
+     * @throws QuimpPluginException
+     * @see QuimP-toolbox/algorithms/src/test/resources/HatFilter.m for
+     *      verification of logs (ratios, indexes, etc)
+     * @see QuimP-toolbox/algorithms/src/test/resources/
+     *      Interpolate_Test_Analyzer.m for plotting results
+     * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating
+     *      *.dat files
+     */
+    @SuppressWarnings("serial")
+    @Test
+    public void test_HatFilter() throws QuimpPluginException {
+        ArrayList<Vector2d> out;
+        HatFilter hf = new HatFilter();
+        hf.attachData(testcase);
+        hf.setPluginConfig(new HashMap<String, Object>() {
+            {
+                put("window", window);
+                put("crown", crown);
+                put("sigma", sig);
+            }
+        });
+        out = (ArrayList<Vector2d>) hf.runPlugin();
+        RoiSaver.saveROI("/tmp/test_HatFilter_" + testfileName.getFileName() + "_" + window.toString() + "_"
+                + crown.toString() + "_" + sig.toString() + ".tif", out);
+        logger.debug("setUp: " + testcase.toString());
+    }
+
+    /**
+     * @test Simple test of RoiSaver class, create reference images without
+     *       processing but with the same name scheme
+     * @post Save image /tmp/testroiSaver_*.tif
+     */
+    @Test
+    public void test_roiSaver() {
+        RoiSaver.saveROI("/tmp/ref_HatFilter_" + testfileName.getFileName() + "_" + window.toString() + "_"
+                + crown.toString() + "_" + sig.toString() + ".tif", testcase);
+    }
 }

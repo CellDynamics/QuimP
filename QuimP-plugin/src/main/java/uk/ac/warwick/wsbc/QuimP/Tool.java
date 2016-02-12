@@ -24,7 +24,7 @@ import java.util.Date;
  */
 public class Tool {
 
-    public static String getQuimPversion(){
+    public static String getQuimPversion() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
         Date date = new Date();
         System.out.println(dateFormat.format(date));
@@ -60,11 +60,12 @@ public class Tool {
         }
     }
 
-    public static int sumArray(int[] a){
-       int sum = 0;
-       for (int i=0; i < a.length; i++) sum+=a[i];
+    public static int sumArray(int[] a) {
+        int sum = 0;
+        for (int i = 0; i < a.length; i++)
+            sum += a[i];
 
-       return sum;
+        return sum;
     }
 
     public static double arrayMin(double[] a) {
@@ -82,7 +83,7 @@ public class Tool {
     }
 
     public static int minArrayIndex(double[] a) {
-       // find the index of the min
+        // find the index of the min
         double min = a[0];
         int iMin = 0;
         if (a.length == 1) {
@@ -143,16 +144,16 @@ public class Tool {
             }
             if (flag == 0) {
                 peaks[i] = 1;
-                //System.out.println("peak at " + i);
+                // System.out.println("peak at " + i);
             }
         }
 
-        //remove consecutive points (i.e. in flat areas)
+        // remove consecutive points (i.e. in flat areas)
         int realPeaks = 0;
-        for(int i = 0; i<peaks.length; i++){
-            if(peaks[i] ==1){
+        for (int i = 0; i < peaks.length; i++) {
+            if (peaks[i] == 1) {
                 realPeaks++;
-                if(peaks[i+1] == 1){
+                if (peaks[i + 1] == 1) {
                     realPeaks--;
                 }
             }
@@ -161,7 +162,7 @@ public class Tool {
         return realPeaks;
     }
 
-    public static String removeExtension(String filename){
+    public static String removeExtension(String filename) {
         // extract fileName without extension
 
         int dotI = filename.lastIndexOf(".");
@@ -171,12 +172,12 @@ public class Tool {
         return filename;
     }
 
-    public static String getFileExtension(String filename){
+    public static String getFileExtension(String filename) {
         // extract fileName without extension
 
         int dotI = filename.lastIndexOf(".");
         if (dotI > 0) {
-            filename = filename.substring(dotI+1, filename.length());
+            filename = filename.substring(dotI + 1, filename.length());
         }
         return filename;
     }
@@ -188,11 +189,11 @@ public class Tool {
         double coordA, coordB;
 
         do {
-            //coordA = v.fCoord;
-            //coordB = v.getNext().fCoord;
+            // coordA = v.fCoord;
+            // coordB = v.getNext().fCoord;
             coordA = v.coord;
             coordB = v.getNext().coord;
-            //System.out.println("A: " + coordA + ", B: "+ coordB);
+            // System.out.println("A: " + coordA + ", B: "+ coordB);
 
             if ((coordA > coordB)) {
                 if (coordA <= target && coordB + 1 > target) {
@@ -214,69 +215,73 @@ public class Tool {
         return v;
     }
 
-    public static void arrayToFile(double[][] a , String delim, File outFile) throws IOException{
-        PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); //auto flush
+    public static void arrayToFile(double[][] a, String delim, File outFile) throws IOException {
+        PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto
+                                                                         // flush
 
-        for(int i = 0; i < a.length; i++){
-            if(i != 0) pw.write("\n");
-            pw.write(a[i][0]+"");
-            for(int j = 1; j < a[0].length; j++){
-                pw.write(","+a[i][j]);
+        for (int i = 0; i < a.length; i++) {
+            if (i != 0)
+                pw.write("\n");
+            pw.write(a[i][0] + "");
+            for (int j = 1; j < a[0].length; j++) {
+                pw.write("," + a[i][j]);
             }
         }
 
         pw.close();
     }
 
-    public static double distanceToScale(double value, double scale){
+    public static double distanceToScale(double value, double scale) {
         // assums pixelwidth is in micro meters
-        return value*scale;
-    }
-
-    public static double areaToScale(double value, double scale){
-        // assums pixelwidth is in micro meters
-        return value*(scale*scale);
-    }
-
-    public static double speedToScale(double value, double scale, double frameInterval){
-        return (value * scale) / frameInterval;
-    }
-
-    public static double distanceToScale(int value, double scale){
         return value * scale;
     }
 
-    public static double distanceFromScale(double value, double scale){
-        return value / scale;
+    public static double areaToScale(double value, double scale) {
+        // assums pixelwidth is in micro meters
+        return value * (scale * scale);
     }
 
-    public static double speedToScale(int value, double scale, double frameInterval){
+    public static double speedToScale(double value, double scale, double frameInterval) {
         return (value * scale) / frameInterval;
     }
 
-    public static String dateAsString(){
-       SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-       Date date = new Date();
-       return formatter.format(date);
+    public static double distanceToScale(int value, double scale) {
+        return value * scale;
     }
 
-    public static double[] setLimitsEqual(double[] migLimits){ // min and max
-      if(migLimits.length < 2) {
-         System.out.println("Tool.237-Array to short. Needs a min and max");
-         return migLimits;
-      }
-       // Set limits to equal positive and negative
-      if(migLimits[1] < 0) migLimits[1] = -migLimits[0];
-      if(migLimits[0] > 0) migLimits[0] = -migLimits[1];
+    public static double distanceFromScale(double value, double scale) {
+        return value / scale;
+    }
 
-      // Make min and max equal for mig and conv
-      if(migLimits[0] < -migLimits[1] ){
-         migLimits[1] = -migLimits[0];
-      }else{
-         migLimits[0] = -migLimits[1];
-      }
+    public static double speedToScale(int value, double scale, double frameInterval) {
+        return (value * scale) / frameInterval;
+    }
 
-      return migLimits;
+    public static String dateAsString() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        return formatter.format(date);
+    }
+
+    public static double[] setLimitsEqual(double[] migLimits) { // min and max
+        if (migLimits.length < 2) {
+            System.out.println("Tool.237-Array to short. Needs a min and max");
+            return migLimits;
+        }
+        // Set limits to equal positive and negative
+        if (migLimits[1] < 0)
+            migLimits[1] = -migLimits[0];
+        if (migLimits[0] > 0)
+            migLimits[0] = -migLimits[1];
+
+        // Make min and max equal for mig and conv
+        if (migLimits[0] < -migLimits[1]) {
+            migLimits[1] = -migLimits[0];
+        } else {
+            migLimits[0] = -migLimits[1];
+        }
+
+        return migLimits;
     }
 
 }

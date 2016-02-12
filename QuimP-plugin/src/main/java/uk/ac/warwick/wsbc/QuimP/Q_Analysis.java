@@ -1,7 +1,7 @@
- /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/*
+* To change this template, choose Tools | Templates
+* and open the template in the editor.
+*/
 package uk.ac.warwick.wsbc.QuimP;
 
 import ij.IJ;
@@ -28,9 +28,10 @@ public class Q_Analysis {
 
     public Q_Analysis() {
         IJ.showStatus("QuimP Analysis");
-        IJ.log("##############################################\n \n"
-                + Tool.getQuimPversion() + " - QumiP Analysis plugin,\nby Richard Tyson (R.A.Tyson@warwick.ac.uk)\n\n"
-                + " & T. Bretschneider (T.Bretschneider@warwick.ac.uk)\n\n" + "##############################################\n \n");
+        IJ.log("##############################################\n \n" + Tool.getQuimPversion()
+                + " - QumiP Analysis plugin,\nby Richard Tyson (R.A.Tyson@warwick.ac.uk)\n\n"
+                + " & T. Bretschneider (T.Bretschneider@warwick.ac.uk)\n\n"
+                + "##############################################\n \n");
 
         try {
             do {
@@ -44,16 +45,16 @@ public class Q_Analysis {
                     qp = new QParams(paramFile);
                     qp.readParams();
                     Qp.setup(qp);
-                    //System.out.println(paramFile.getAbsolutePath());
+                    // System.out.println(paramFile.getAbsolutePath());
 
                     run();
 
                     File[] otherPaFiles = qp.findParamFiles();
 
                     if (otherPaFiles.length > 0) {
-                        YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?", "\tBatch Process?\n\n"
-                                + "Process other paQP files in the same folder with QAnalysis?"
-                                + "\n[The same parameters will be used]");
+                        YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
+                                "\tBatch Process?\n\n" + "Process other paQP files in the same folder with QAnalysis?"
+                                        + "\n[The same parameters will be used]");
                         if (yncd.yesPressed()) {
                             ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
                             this.closeAllImages();
@@ -79,17 +80,16 @@ public class Q_Analysis {
                         }
                     }
 
-
                     return;
                 } catch (IOException ioe) {
                     IJ.error(ioe.getMessage());
                     ioe.printStackTrace();
-                    return;//debug
+                    return;// debug
                 }
             } while (true);
 
         } catch (Exception e) {
-            //IJ.error("Unknown exception");
+            // IJ.error("Unknown exception");
             e.printStackTrace();
         }
 
@@ -98,7 +98,6 @@ public class Q_Analysis {
     }
 
     private void run() throws Exception {
-
 
         oH = new OutlineHandler(qp);
         if (!oH.readSuccess) {
@@ -110,7 +109,8 @@ public class Q_Analysis {
             // only one frame - re lable node indices
             oH.getOutline(1).resetAllCoords();
         }
-        //oH.writeOutlines(new File( qp.getParamFile().getAbsolutePath() + ".tempSNQP"));
+        // oH.writeOutlines(new File( qp.getParamFile().getAbsolutePath() +
+        // ".tempSNQP"));
 
         if (Qp.useDialog) {
             if (!showDialog()) {
@@ -125,13 +125,13 @@ public class Q_Analysis {
 
         new STmap(oH, Qp.mapRes);
 
-
         SVGplotter svgPlotter = new SVGplotter(oH, Qp.fps, Qp.scale, Qp.channel, Qp.outFile);
         svgPlotter.plotTrack(Qp.trackColor, Qp.increment);
-        //svgPlotter.plotTrackAnim();
+        // svgPlotter.plotTrackAnim();
         svgPlotter.plotTrackER(Qp.outlinePlot);
 
-        Qp.convexityToUnits(); // reset the covexity options to units (as they are static)
+        Qp.convexityToUnits(); // reset the covexity options to units (as they
+                               // are static)
     }
 
     private boolean showDialog() {
@@ -140,8 +140,9 @@ public class Q_Analysis {
         gd.setOKLabel("RUN");
 
         gd.addMessage("Pixel width: " + Qp.scale + " \u00B5m\nFrame Interval: " + Qp.frameInterval + " sec");
-        //gd.addNumericField("Pixel size (microns)", Qp.scale, 2);
-        //gd.addNumericField("Time between frames (secs)", Qp.frameInterval, 2);
+        // gd.addNumericField("Pixel size (microns)", Qp.scale, 2);
+        // gd.addNumericField("Time between frames (secs)", Qp.frameInterval,
+        // 2);
 
         gd.addMessage("******* Cell track options (svg) *******");
         gd.addNumericField("Frame increment", Qp.increment, 0);
@@ -157,23 +158,20 @@ public class Q_Analysis {
         gd.addMessage("************* Map options *************");
         gd.addNumericField("Map resolution", Qp.mapRes, 0);
 
-
-
         gd.showDialog();
 
         if (gd.wasCanceled()) {
             return false;
         }
 
-        //Qp.scale = gd.getNextNumber();
-        //Qp.setFPS(gd.getNextNumber());
+        // Qp.scale = gd.getNextNumber();
+        // Qp.setFPS(gd.getNextNumber());
         Qp.increment = (int) gd.getNextNumber();
         Qp.trackColor = gd.getNextChoice();
         Qp.outlinePlot = gd.getNextChoice();
         Qp.sumCov = gd.getNextNumber();
         Qp.avgCov = gd.getNextNumber();
         Qp.mapRes = (int) gd.getNextNumber();
-
 
         return true;
     }
@@ -198,8 +196,8 @@ class STmap {
     double[][] migMap;
     int[] migColor;
     float[] migPixels;
-    //double[][] fluMap;
-    //byte[] fluColor;
+    // double[][] fluMap;
+    // byte[] fluColor;
     FluoMap[] fluoMaps;
     double[][] convMap; // convexity map
     int[] convColor;
@@ -215,15 +213,15 @@ class STmap {
 
         coordMap = new double[T][res];
         originMap = new double[T][res];
-        xMap = new double[T][res];      //interpolated pixel coordinates
+        xMap = new double[T][res]; // interpolated pixel coordinates
         yMap = new double[T][res];
 
         migMap = new double[T][res];
         migColor = new int[T * res];
         migPixels = new float[T * res];
 
-        //fluMap = new double[T][res];
-        //fluColor = new byte[T * res];
+        // fluMap = new double[T][res];
+        // fluColor = new byte[T * res];
 
         convMap = new double[T][res];
         convColor = new int[T * res];
@@ -234,14 +232,14 @@ class STmap {
         for (int i = 0; i < 3; i++) {
             fluoMaps[i] = new FluoMap(T, res, i + 1);
             System.out.println("flou in v: " + v.fluores[i].intensity);
-            if (v.fluores[i].intensity == -2) { //disable if no data
+            if (v.fluores[i].intensity == -2) { // disable if no data
                 IJ.log("No fluorescence data for channel " + (i + 1));
                 fluoMaps[i].setEnabled(false);
             }
         }
 
         generate();
-        //testQColorBW();
+        // testQColorBW();
     }
 
     private void generate() {
@@ -257,44 +255,53 @@ class STmap {
 
         double step = 1.0d / res;
 
-        //------debug----
-        //System.out.println("210.in generate: min:"+ oH.migLimits[0]+", max"+oH.migLimits[1]);
-        //zeroVert = closestFloor(oH.getOutline(28), 0.9138373074502235, 'f');
-        //fHead = findFirstNode(oH.getOutline(28),'f');
-        //cHead = findFirstNode(oH.getOutline(28),'c');
-        //if(true)return;
-        //-------------------------
+        // ------debug----
+        // System.out.println("210.in generate: min:"+ oH.migLimits[0]+",
+        // max"+oH.migLimits[1]);
+        // zeroVert = closestFloor(oH.getOutline(28), 0.9138373074502235, 'f');
+        // fHead = findFirstNode(oH.getOutline(28),'f');
+        // cHead = findFirstNode(oH.getOutline(28),'c');
+        // if(true)return;
+        // -------------------------
 
-        double origin = 0; //co-ord for zeroVert to move to next
+        double origin = 0; // co-ord for zeroVert to move to next
         int frame;
 
         for (int tt = 0; tt < T; tt++) {
 
             frame = tt + oH.getStartFrame();
-            //System.out.println("frame " + t);
-            pN = tt * res; //pixel index
+            // System.out.println("frame " + t);
+            pN = tt * res; // pixel index
 
             // find the first node in terms of coord and fcoord (not the head)
             fHead = oH.getOutline(frame).findFirstNode('f');
             cHead = oH.getOutline(frame).findFirstNode('c');
-            //fHead.print();
-            //cHead.print();
+            // fHead.print();
+            // cHead.print();
 
             if (tt == 0) {
-                // for the first time point the head coord node is our starting point
+                // for the first time point the head coord node is our starting
+                // point
                 zeroVert = cHead;
                 fraction = 0;
                 origin = 0;
             } else {
-                // vert closest below zero (zero being tracked over time from frame 1!)
+                // vert closest below zero (zero being tracked over time from
+                // frame 1!)
                 zeroVert = closestFloor(oH.getOutline(frame), origin, 'f', fHead);
-                //System.out.println("zerovert: " + zeroVert.fCoord +", origin: " + origin + ", fHead: " + fHead.fCoord);
-                fraction = ffraction(zeroVert, origin, fHead); // position of origin between zeroVert and zeroVert.getNext
-                //System.out.println("resulting fraction: " + fraction);
+                // System.out.println("zerovert: " + zeroVert.fCoord +", origin:
+                // " + origin + ", fHead: " + fHead.fCoord);
+                fraction = ffraction(zeroVert, origin, fHead); // position of
+                                                               // origin between
+                                                               // zeroVert and
+                                                               // zeroVert.getNext
+                // System.out.println("resulting fraction: " + fraction);
 
-                //System.out.print("\nzeroVert.fCoord:"+zeroVert.coord+", fraction:"+fraction +"\n");
-                origin = interpCoord(zeroVert, fraction, cHead);  // the new origin
-                //System.out.println("new origin: " + origin);
+                // System.out.print("\nzeroVert.fCoord:"+zeroVert.coord+",
+                // fraction:"+fraction +"\n");
+                origin = interpCoord(zeroVert, fraction, cHead); // the new
+                                                                 // origin
+                // System.out.println("new origin: " + origin);
             }
             target = origin; // coord to fill in map next
 
@@ -311,7 +318,8 @@ class STmap {
                         IJ.log("ERROR: There are missing fluoresecne values! Run ANA");
                         return;
                     }
-                    intFlu = interpolate(zeroVert.fluores[i].intensity, zeroVert.getNext().fluores[i].intensity, fraction);
+                    intFlu = interpolate(zeroVert.fluores[i].intensity, zeroVert.getNext().fluores[i].intensity,
+                            fraction);
                     fluoMaps[i].fill(tt, 0, pN, intFlu, oH.fluLims[i][1]);
                 }
             }
@@ -324,32 +332,33 @@ class STmap {
              * QColor.bwScale(intFlu, 256, oH.maxFlu, 0); }
              */
 
-
             intConv = interpolate(zeroVert.curvatureSum, zeroVert.getNext().curvatureSum, fraction);
             convMap[tt][0] = intConv;
             color = QColor.ERColorMap2("rbb", intConv, oH.curvLimits[0], oH.curvLimits[1]);
             convColor[pN] = color.getColorInt();
-
 
             coordMap[tt][0] = origin;
             originMap[tt][0] = interpFCoord(zeroVert, fraction, fHead);
             xMap[tt][0] = interpolate(zeroVert.getX(), zeroVert.getNext().getX(), fraction);
             yMap[tt][0] = interpolate(zeroVert.getY(), zeroVert.getNext().getY(), fraction);
 
-
             if (target >= 1 || target < 0) {
                 System.out.println("target out of range: " + target);
             }
 
             for (int p = 1; p < res; p++) {
-                pN = (tt * res) + p; //pixel index
+                pN = (tt * res) + p; // pixel index
                 target += step;
-                actualTarget = (target >= 1) ? target - 1 : target; //wraps around to zero
-                //System.out.println("\tactualtarget:"+actualTarget);
+                actualTarget = (target >= 1) ? target - 1 : target; // wraps
+                                                                    // around to
+                                                                    // zero
+                // System.out.println("\tactualtarget:"+actualTarget);
                 coordMap[tt][p] = actualTarget;
 
-
-                v = closestFloor(oH.getOutline(frame), actualTarget, 'c', cHead); //should this be 'g'?
+                v = closestFloor(oH.getOutline(frame), actualTarget, 'c', cHead); // should
+                                                                                  // this
+                                                                                  // be
+                                                                                  // 'g'?
                 fraction = cfraction(v, actualTarget, cHead);
 
                 originMap[tt][p] = interpFCoord(v, fraction, fHead);
@@ -383,8 +392,6 @@ class STmap {
 
             }
 
-
-
         }
 
         migImP = new ImagePlus("motility_map", new ColorProcessor(res, T, migColor));
@@ -395,8 +402,8 @@ class STmap {
         setCalibration(convImP);
         migImP.show();
         convImP.show();
-        //fluImP.show();
-        //IJ.doCommand("Red");
+        // fluImP.show();
+        // IJ.doCommand("Red");
 
         if (Qp.Build3D) {
             // create 3D of motility
@@ -414,7 +421,7 @@ class STmap {
             map3dCur.write(new File("/temp/cell_02_cur.wrl"));
         }
 
-        //create fluo images
+        // create fluo images
 
         for (int i = 0; i < 3; i++) {
             if (!fluoMaps[i].isEnabled()) {
@@ -428,18 +435,19 @@ class STmap {
             fluImP.show();
 
             try {
-                Thread.sleep(500); // needed to let imageJ set the right colour maps
+                Thread.sleep(500); // needed to let imageJ set the right colour
+                                   // maps
             } catch (Exception e) {
             }
 
-            IJ.doCommand("Red"); //this don't always work. dun know why
+            IJ.doCommand("Red"); // this don't always work. dun know why
 
-            IJ.saveAs(fluImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename + "_fluoCh" + fluoMaps[i].channel + ".tiff");
+            IJ.saveAs(fluImP, "tiff",
+                    Qp.outFile.getParent() + File.separator + Qp.filename + "_fluoCh" + fluoMaps[i].channel + ".tiff");
         }
 
-
         try {
-            //save images
+            // save images
             IJ.saveAs(migImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename + "_motility.tiff");
             IJ.saveAs(convImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename + "_convexity.tiff");
 
@@ -454,7 +462,8 @@ class STmap {
                 if (!fluoMaps[i].isEnabled()) {
                     continue;
                 }
-                Tool.arrayToFile(fluoMaps[i].getMap(), ",", new File(Qp.outFile.getPath() + "_fluoCh" + fluoMaps[i].channel + ".maQP"));
+                Tool.arrayToFile(fluoMaps[i].getMap(), ",",
+                        new File(Qp.outFile.getPath() + "_fluoCh" + fluoMaps[i].channel + ".maQP"));
             }
 
         } catch (IOException e) {
@@ -462,10 +471,11 @@ class STmap {
         }
 
         if (Tool.sumArray(migColor) == 0) {
-            IJ.showMessage("ECMM data is missing (or corrupt), and is needed for building accurate maps.\nPlease run ECMM (fluorescence data will be lost)");
+            IJ.showMessage(
+                    "ECMM data is missing (or corrupt), and is needed for building accurate maps.\nPlease run ECMM (fluorescence data will be lost)");
         }
         // test making LUT images
-      /*
+        /*
          * ImagePlus migImPLut = IJ.createImage("mig_32", "32-bit", res, T,1);
          * ImageProcessor ipFloat = new FloatProcessor(res, T, migPixels, null);
          * LUT lut = new LUT(); ipFloat.setLut(lut)
@@ -492,23 +502,26 @@ class STmap {
             v = v.getNext();
         } while (v.getNext().getTrackNum() != head.getTrackNum());
 
-
-        //System.out.println("found fcoord " + v.fCoord);
+        // System.out.println("found fcoord " + v.fCoord);
         return v;
     }
 
     private double cfraction(Vert v, double target, Vert head) {
-        //calc fraction for iterpolation
+        // calc fraction for iterpolation
         double v2coord;
-        if (v.getNext().getTrackNum() == head.getTrackNum()) { //passed zero
+        if (v.getNext().getTrackNum() == head.getTrackNum()) { // passed zero
             v2coord = v.getNext().coord + 1;
-            target = (target > v.coord) ? target : target + 1; //not passed zero as all values are passed zero!
+            target = (target > v.coord) ? target : target + 1; // not passed
+                                                               // zero as all
+                                                               // values are
+                                                               // passed zero!
         } else {
             v2coord = v.getNext().coord;
         }
 
         double frac = (target - v.coord) / (v2coord - v.coord);
-        //System.out.println("\tffraction: |v:"+v.coord+"|v2:"+v2coord+"|tar:"+target+"|frac:"+frac);
+        // System.out.println("\tffraction:
+        // |v:"+v.coord+"|v2:"+v2coord+"|tar:"+target+"|frac:"+frac);
         if (frac >= 1) {
             frac = frac - 1;
             System.out.println("WARNING- frac corrected: " + frac);
@@ -520,17 +533,21 @@ class STmap {
     }
 
     private double ffraction(Vert v, double target, Vert head) {
-        //calc fraction for iterpolation
+        // calc fraction for iterpolation
         double v2coord;
-        if (v.getNext().getTrackNum() == head.getTrackNum()) { //passed zero
-            //System.out.println("\tffraction: pass zero. wrap");
+        if (v.getNext().getTrackNum() == head.getTrackNum()) { // passed zero
+            // System.out.println("\tffraction: pass zero. wrap");
             v2coord = v.getNext().fCoord + 1;
-            target = (target > v.fCoord) ? target : target + 1; //not passed zero as all values are passed zero!
+            target = (target > v.fCoord) ? target : target + 1; // not passed
+                                                                // zero as all
+                                                                // values are
+                                                                // passed zero!
         } else {
             v2coord = v.getNext().fCoord;
         }
         double frac = (target - v.fCoord) / (v2coord - v.fCoord);
-        //System.out.println("\tffraction: |v:"+v.fCoord+"|v2:"+v2coord+"|tar:"+target+"|frac:"+frac);
+        // System.out.println("\tffraction:
+        // |v:"+v.fCoord+"|v2:"+v2coord+"|tar:"+target+"|frac:"+frac);
 
         if (frac >= 1) {
             frac = frac - 1;
@@ -549,12 +566,13 @@ class STmap {
     }
 
     private double interpCoord(Vert v, double frac, Vert head) {
-        double v2Coord = (v.getNext().getTrackNum() == head.getTrackNum()) ? v.getNext().coord + 1 : v.getNext().coord; //pass zero
+        double v2Coord = (v.getNext().getTrackNum() == head.getTrackNum()) ? v.getNext().coord + 1 : v.getNext().coord; // pass
+                                                                                                                        // zero
         double dis = v2Coord - v.coord;
         double targ = v.coord + (dis * frac);
 
         if (targ >= 1) {
-            targ += -1; //passed zero
+            targ += -1; // passed zero
         }
 
         if (targ < 0) {
@@ -565,12 +583,13 @@ class STmap {
     }
 
     private double interpFCoord(Vert v, double frac, Vert head) {
-        double v2Coord = (v.getNext().getTrackNum() == head.getTrackNum()) ? v.getNext().fCoord + 1 : v.getNext().fCoord;
+        double v2Coord = (v.getNext().getTrackNum() == head.getTrackNum()) ? v.getNext().fCoord + 1
+                : v.getNext().fCoord;
         double dis = v2Coord - v.fCoord;
         double targ = v.fCoord + (dis * frac);
 
         if (targ >= 1) {
-            targ += -1; //passed zero
+            targ += -1; // passed zero
         }
 
         if (targ < 0) {
@@ -584,23 +603,23 @@ class STmap {
         return v1 + ((v2 - v1) * frac);
     }
 
-//    private void testQColorBW() {
-//        /*
-//         * fluImP = IJ.createImage("Fluorescence Map", "8-bit white", 10,10,1);
-//         * ImageProcessor ip = fluImP.getProcessor(); byte[] pixels =
-//         * (byte[])ip.getPixels(); for(int j = 0; j < pixels.length ; j++){
-//         * System.out.println("pixel " + j+": "+pixels[j]); }
-//         */
-//        double max = 10;
-//        double step = max / 255;
-//        byte b;
-//        for (int i = 0; i < 255; i++) {
-//            System.out.print("in val: " + i * step);
-//            b = (byte) QColor.bwScale(i * step, 256, max, 0);
-//            System.out.println(", b: " + b);
-//        }
-//
-//    }
+    // private void testQColorBW() {
+    // /*
+    // * fluImP = IJ.createImage("Fluorescence Map", "8-bit white", 10,10,1);
+    // * ImageProcessor ip = fluImP.getProcessor(); byte[] pixels =
+    // * (byte[])ip.getPixels(); for(int j = 0; j < pixels.length ; j++){
+    // * System.out.println("pixel " + j+": "+pixels[j]); }
+    // */
+    // double max = 10;
+    // double step = max / 255;
+    // byte b;
+    // for (int i = 0; i < 255; i++) {
+    // System.out.print("in val: " + i * step);
+    // b = (byte) QColor.bwScale(i * step, 256, max, 0);
+    // System.out.println(", b: " + b);
+    // }
+    //
+    // }
 
     private void calcCurvature() {
         // returns the min and max values
@@ -618,10 +637,10 @@ class STmap {
                 continue;
             }
 
-            //update local curvature just in case
+            // update local curvature just in case
             o.updateCurvature();
 
-            //set default curvatures
+            // set default curvatures
             v = o.getHead();
             do {
                 v.curvatureSmoothed = v.curvatureLocal;
@@ -629,12 +648,10 @@ class STmap {
                 v = v.getNext();
             } while (!v.isHead());
 
-
             averageCurvature(o);
             sumCurvature(o);
 
-            //find min and max of sum curvature
-
+            // find min and max of sum curvature
 
             v = o.getHead();
             if (f == oH.getStartFrame()) {
@@ -650,13 +667,16 @@ class STmap {
                 }
                 v = v.getNext();
             } while (!v.isHead());
-            //System.out.println("Min curv: " + oH.curvLimits[0] + ", max curv: " + oH.curvLimits[1]);
+            // System.out.println("Min curv: " + oH.curvLimits[0] + ", max curv:
+            // " + oH.curvLimits[1]);
 
         }
 
-        //System.out.println("curve limits before: " + oH.curvLimits[0] + ", " + oH.curvLimits[1]);
+        // System.out.println("curve limits before: " + oH.curvLimits[0] + ", "
+        // + oH.curvLimits[1]);
         oH.curvLimits = Tool.setLimitsEqual(oH.curvLimits);
-        //System.out.println("curve limits after: " + oH.curvLimits[0] + ", " + oH.curvLimits[1]);
+        // System.out.println("curve limits after: " + oH.curvLimits[0] + ", " +
+        // oH.curvLimits[1]);
     }
 
     private void averageCurvature(Outline o) {
@@ -665,17 +685,17 @@ class STmap {
         double totalCur, distance;
         int count;
 
-        //avertage over curvatures
+        // avertage over curvatures
         if (Qp.avgCov > 0) {
-            //System.out.println("new outline");
+            // System.out.println("new outline");
             v = o.getHead();
             do {
-                //System.out.println("\tnew vert");
-                totalCur = v.curvatureLocal; //reset
+                // System.out.println("\tnew vert");
+                totalCur = v.curvatureLocal; // reset
                 count = 1;
 
-                //add up curvatures of prev nodes
-                //System.out.println("\t  prev nodes");
+                // add up curvatures of prev nodes
+                // System.out.println("\t prev nodes");
                 tmpV = v.getPrev();
                 distance = 0;
                 do {
@@ -685,7 +705,7 @@ class STmap {
                     tmpV = tmpV.getPrev();
                 } while (distance < Qp.avgCov / 2);
 
-                //add up curvatures of next nodes
+                // add up curvatures of next nodes
                 distance = 0;
                 tmpV = v.getNext();
                 do {
@@ -707,15 +727,15 @@ class STmap {
 
         Vert v, tmpV;
         double totalCur, distance;
-        //avertage over curvatures
+        // avertage over curvatures
         if (Qp.sumCov > 0) {
             System.out.println("summing curv");
             v = o.getHead();
             do {
-                //System.out.println("\tnew vert");
-                totalCur = v.curvatureSmoothed; //reset
-                //add up curvatures of prev nodes
-                //System.out.println("\t  prev nodes");
+                // System.out.println("\tnew vert");
+                totalCur = v.curvatureSmoothed; // reset
+                // add up curvatures of prev nodes
+                // System.out.println("\t prev nodes");
                 tmpV = v.getPrev();
                 distance = 0;
                 do {
@@ -724,7 +744,7 @@ class STmap {
                     tmpV = tmpV.getPrev();
                 } while (distance < Qp.sumCov / 2);
 
-                //add up curvatures of next nodes
+                // add up curvatures of next nodes
                 distance = 0;
                 tmpV = v.getNext();
                 do {
@@ -742,7 +762,7 @@ class STmap {
     }
 
     @SuppressWarnings("unused")
-	@Deprecated
+    @Deprecated
     private Vert findFirstNodeX(Outline o, char c) {
         // find the first node in terms of coord and fcoord
         // ie closest to zero
@@ -758,20 +778,20 @@ class STmap {
             coordPrev = (c == 'f') ? v.getPrev().fCoord : v.getPrev().coord;
 
             dis = Math.abs(coord - coordPrev);
-            //System.out.println("abs( " + coord + "-"+coordPrev+") = " + dis);
+            // System.out.println("abs( " + coord + "-"+coordPrev+") = " + dis);
 
             if (dis > disFirst) {
                 vFirst = v;
                 disFirst = dis;
-                //System.out.println("\tchoosen ");
-                //vFirst.print();
+                // System.out.println("\tchoosen ");
+                // vFirst.print();
             }
 
             v = v.getNext();
         } while (!v.isHead());
 
-        //System.out.println("First "+c+"Coord vert: ");
-        //vFirst.print();
+        // System.out.println("First "+c+"Coord vert: ");
+        // vFirst.print();
 
         return vFirst;
 
@@ -779,26 +799,25 @@ class STmap {
 
     private void resize(ImagePlus ImP) {
         if (oH.getSize() >= res * 0.9) {
-            return;  // don't resize if its going to compress frames
+            return; // don't resize if its going to compress frames
         }
         ImageProcessor ip = ImP.getProcessor();
 
-        //if (Qp.singleImage) {
+        // if (Qp.singleImage) {
         ip.setInterpolationMethod(ImageProcessor.NONE);
-        //} else {
+        // } else {
         // ip.setInterpolationMethod(ImageProcessor.BILINEAR);
-        //}
+        // }
 
         double vertRes = Math.ceil((double) res / (double) oH.getSize());
-        //System.out.println("OH s: " + oH.getSize() + ",vertres: "+ vertRes);
+        // System.out.println("OH s: " + oH.getSize() + ",vertres: "+ vertRes);
         Qp.mapPixelHeight = 1.0d / vertRes;
         vertRes = oH.getSize() * vertRes;
 
-        //System.out.println("OH s: " + oH.getSize() + ",vertres: "+ vertRes);
+        // System.out.println("OH s: " + oH.getSize() + ",vertres: "+ vertRes);
 
         ip = ip.resize(res, (int) vertRes);
         ImP.setProcessor(ip);
-
 
     }
 
@@ -815,13 +834,13 @@ class Qp {
     static public File stQPfile;
     static public File outFile;
     static public String filename;
-    static public double scale = 1; //pixel size in microns
+    static public double scale = 1; // pixel size in microns
     static public double frameInterval = 1; // frames per second
     static int startFrame, endFrame;
     static public double fps = 1; // frames per second
     static public int increment = 1;
     static public String trackColor;
-    static public String[] outlinePlots = {"Speed", "Fluorescence", "Convexity"};
+    static public String[] outlinePlots = { "Speed", "Fluorescence", "Convexity" };
     static public String outlinePlot;
     static public double sumCov = 1;
     static public double avgCov = 0;
@@ -834,12 +853,12 @@ class Qp {
     final static boolean Build3D = false;
 
     static void convexityToPixels() {
-        avgCov /= scale;  // convert to pixels
+        avgCov /= scale; // convert to pixels
         sumCov /= scale;
     }
 
     static void convexityToUnits() {
-        avgCov *= scale;  // convert to pixels
+        avgCov *= scale; // convert to pixels
         sumCov *= scale;
     }
 
