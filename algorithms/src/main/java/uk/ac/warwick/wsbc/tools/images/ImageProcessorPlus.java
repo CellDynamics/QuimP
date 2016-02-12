@@ -31,15 +31,14 @@ public class ImageProcessorPlus {
      * Add borders around image to prevent cropping during rotating.
      * 
      * @warning Replaces original image and may not preserve all its attributes
-     * @param ip
-     *            ImageProcessor to be extended
-     * @param angle
-     *            Angle to be image rotated
+     * @param ip ImageProcessor to be extended
+     * @param angle Angle to be image rotated
      * @return copy of \c ip extended to size that allows to rotate it by \c
-     *         angle without clipping
+     * angle without clipping
      * @retval ImageProcessor
      */
-    public ImageProcessor extendImageBeforeRotation(ImageProcessor ip, double angle) {
+    public ImageProcessor extendImageBeforeRotation(ImageProcessor ip,
+            double angle) {
         ImageProcessor ret;
         int width = ip.getWidth();
         int height = ip.getHeight();
@@ -60,10 +59,10 @@ public class ImageProcessorPlus {
         ret.setInterpolationMethod(ip.getInterpolationMethod());
         ret.insert(ip, (int) Math.round((newWidth - ip.getWidth()) / 2),
                 (int) Math.round((newHeight - ip.getHeight()) / 2)); // insert
-                                                                     // original
-                                                                     // image
-                                                                     // into
-                                                                     // extended
+                                                                                                                                      // original
+                                                                                                                                      // image
+                                                                                                                                      // into
+                                                                                                                                      // extended
         ret.resetRoi();
         return ret; // assign extended into current
     }
@@ -72,17 +71,18 @@ public class ImageProcessorPlus {
      * Rotate image by specified angle keeping correct rotation direction
      * 
      * @param ip
-     *            ImageProcessor to be rotated
+     * ImageProcessor to be rotated
      * @param angle
-     *            Angle of rotation in anti-clockwise direction
+     * Angle of rotation in anti-clockwise direction
      * @param addBorders
-     *            if \a true rotates with extension, \a false use standard
-     *            rotation with clipping
+     * if \a true rotates with extension, \a false use standard
+     * rotation with clipping
      * @return rotated \c ip that is a copy of \c ip when \c addBorders is \b
-     *         true or reference when \c addBorders is \b false
+     * true or reference when \c addBorders is \b false
      * @retval ImageProcessor
      */
-    public ImageProcessor rotate(ImageProcessor ip, double angle, boolean addBorders) {
+    public ImageProcessor rotate(ImageProcessor ip, double angle,
+            boolean addBorders) {
         ImageProcessor ret;
         if (addBorders)
             ret = extendImageBeforeRotation(ip, angle);
@@ -95,21 +95,17 @@ public class ImageProcessorPlus {
     /**
      * Crop image
      * 
-     * @param ip
-     *            ImageProcessor to be cropped
-     * @param luX
-     *            Left upper corner \a x coordinate
-     * @param luY
-     *            Left upper corner \a y coordinate
-     * @param width
-     *            Width of clipped area
-     * @param height
-     *            Height of clipped area
+     * @param ip ImageProcessor to be cropped
+     * @param luX Left upper corner \a x coordinate
+     * @param luY Left upper corner \a y coordinate
+     * @param width Width of clipped area
+     * @param height Height of clipped area
      * @remarks Modifies current object
      * @retval ImageProcessor
      * @return Clipped image
      */
-    public ImageProcessor crop(ImageProcessor ip, int luX, int luY, int width, int height) {
+    public ImageProcessor crop(ImageProcessor ip, int luX, int luY, int width,
+            int height) {
         ip.setRoi(luX, luY, width, height);
         ip = ip.crop();
         ip.resetRoi();
@@ -123,18 +119,17 @@ public class ImageProcessorPlus {
      * extendImageBeforeRotation(ImageProcessor,double). Assumes that cropping
      * area is centered in source image
      * 
-     * @param ip
-     *            ImageProcessor to be cropped
-     * @param width
-     *            Width of clipped area
-     * @param height
-     *            Height of clipped area
+     * @param ip ImageProcessor to be cropped
+     * @param width Width of clipped area
+     * @param height Height of clipped area
      * @remarks Modifies current object
      * @retval ImageProcessor
      * @return Clipped image
      */
-    public ImageProcessor cropImageAfterRotation(ImageProcessor ip, int width, int height) {
-        ip.setRoi((int) Math.round((ip.getWidth() - width) / 2), (int) Math.round((ip.getHeight() - height) / 2), width,
+    public ImageProcessor cropImageAfterRotation(ImageProcessor ip, int width,
+            int height) {
+        ip.setRoi((int) Math.round((ip.getWidth() - width) / 2),
+                (int) Math.round((ip.getHeight() - height) / 2), width,
                 height);
         ip = ip.crop();
         ip.resetRoi();
@@ -155,7 +150,8 @@ public class ImageProcessorPlus {
 class RectangleBox {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = LogManager.getLogger(RectangleBox.class.getName());
+    private static final Logger logger = LogManager
+            .getLogger(RectangleBox.class.getName());
 
     private Vector<Double> x; // stores x coordinates of bounding box in
                               // clockwise order
@@ -168,14 +164,12 @@ class RectangleBox {
      * Vectors define corners in clockwise direction.
      * 
      * @warning Vectors are referenced only, not copied. They are modified
-     *          during rotation
-     * @param x
-     *            \a x coordinates of bounding box in clockwise order
-     * @param y
-     *            \a y coordinates of bounding box in clockwise order
+     * during rotation
+     * @param x \a x coordinates of bounding box in clockwise order
+     * @param y \a y coordinates of bounding box in clockwise order
      * @throws IllegalArgumentException
-     *             When empty vectors are passed to constructor or input vectors
-     *             have different length
+     * When empty vectors are passed to constructor or input vectors
+     * have different length
      */
     @SuppressWarnings("unchecked")
     public RectangleBox(Vector<Double> x, Vector<Double> y) throws Exception {
@@ -198,10 +192,8 @@ class RectangleBox {
     /**
      * Specifies bounding box centred at (0,0)
      * 
-     * @param width
-     *            Width of bounding box
-     * @param height
-     *            Height of bounding box
+     * @param width Width of bounding box
+     * @param height Height of bounding box
      */
     public RectangleBox(double width, double height) {
         x = new Vector<Double>();
@@ -222,8 +214,7 @@ class RectangleBox {
     /**
      * Rotates bounding box.
      * 
-     * @param angle
-     *            Rotation angle
+     * @param angle Rotation angle
      */
     public void rotateBoundingBox(double angle) {
 
@@ -237,7 +228,6 @@ class RectangleBox {
         // require counterclockwise (the same)
         rot.rotZ(-angleRad); // generate rotation matrix of angle - bring input
                              // image to horizontal position
-        // logger.debug("Rotation matrix\n"+rot.toString());
 
         // define corner points of image
         Point3d[] cornerTable = new Point3d[4];
@@ -245,8 +235,6 @@ class RectangleBox {
         cornerTable[1] = new Point3d(x.get(1), y.get(1), 0); // right up
         cornerTable[2] = new Point3d(x.get(2), y.get(2), 0); // right down
         cornerTable[3] = new Point3d(x.get(3), y.get(3), 0); // right up
-        // for(Point3d p: cornerTable)
-        // logger.debug("Corner: " + p.toString());
 
         int i = 0;
         // rotate virtual image by angle
@@ -255,7 +243,6 @@ class RectangleBox {
             x.set(i, p.x);
             y.set(i, p.y);
             i++;
-            // logger.debug("Rotated corner: " + p.toString());
         }
     }
 
@@ -282,8 +269,7 @@ class RectangleBox {
     /**
      * Gets mean value of input vector
      * 
-     * @param x
-     *            Vector of to calculate mean
+     * @param x Vector of to calculate mean
      * @return Mean value of \a x
      */
     private double getAverage(Vector<Double> x) {

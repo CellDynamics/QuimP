@@ -18,9 +18,9 @@ import java.util.Map;
  */
 public interface IQuimpPlugin {
 
-    public int GENERAL = 0; /// < Type of plugin not defined
-    public int DOES_SNAKES = 1; /// < Plugin process snakes only
-    public int CHANGE_SIZE = 32; /// < Plugin change size of input data
+    public int GENERAL = 0; ///< Type of plugin not defined
+    public int DOES_SNAKES = 1; ///< Plugin process snakes only
+    public int CHANGE_SIZE = 32; ///< Plugin change size of input data
 
     /**
      * Provide basic information to QuimP about plugin
@@ -49,7 +49,8 @@ public interface IQuimpPlugin {
      * key is not understood or casting from \c Object \b value to
      * other type has not been successful.
      */
-    public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException;
+    public void setPluginConfig(HashMap<String, Object> par)
+            throws QuimpPluginException;
 
     /**
      * Retrieve plugin configuration data as pairs <key,value>

@@ -20,22 +20,30 @@ import org.apache.logging.log4j.Logger;
  * 
  * @code X1 Y1 X2 Y2 ... Xn Yn
  * @endcode The file must contain even number of data. Exemplary code in Matlab
- *          to create such file:
- * @code{.m} addpath('/home/baniuk/Documents/QuimP11_MATLAB/') qCells =
- *           readQanalysis('Resources/after-macro'); testFrames = [75 125 137
- *           1]; clear coords; for i=1:length(testFrames) coords{i} =
- *           qCells.outlines{testFrames(i)}(:,2:3); end for
- *           i=1:length(testFrames) fid = fopen(['testData_'
- *           num2str(testFrames(i)) '.dat'], 'w'); xy = coords{i}; xyr =
- *           reshape(xy',[],1); % x first fprintf(fid,'%.4f\n',xyr);
- *           fclose(fid); end
+ * to create such file:
+ * @code{.m}
+ * addpath('/home/baniuk/Documents/QuimP11_MATLAB/')
+ * qCells = readQanalysis('Resources/after-macro');
+ * testFrames = [75 125 137 1];
+ * clear coords;
+ * for i=1:length(testFrames)
+ * coords{i} = qCells.outlines{testFrames(i)}(:,2:3);
+ * end
+ * for i=1:length(testFrames)
+ * fid = fopen(['testData_' num2str(testFrames(i)) '.dat'], 'w');
+ * xy = coords{i};
+ * xyr = reshape(xy',[],1); % x first
+ * fprintf(fid,'%.4f\n',xyr);
+ * fclose(fid);
+ * end
  * @endcode
  * 
  * @author baniuk
  *
  */
 class DataLoader {
-    private static final Logger LOGGER = LogManager.getLogger(DataLoader.class.getName());
+    private static final Logger LOGGER = LogManager
+            .getLogger(DataLoader.class.getName());
     private List<Double> data;
     public List<Vector2d> Vert;
 
@@ -45,13 +53,14 @@ class DataLoader {
      * Open and read datafile
      * 
      * @param fileName
-     *            file with data (with path)
+     * file with data (with path)
      * @throws FileNotFoundException
-     *             on bad file
+     * on bad file
      * @throws IllegalArgumentException
-     *             when the number of lines in \c fileName is not power of 2
+     * when the number of lines in \c fileName is not power of 2
      */
-    DataLoader(String fileName) throws FileNotFoundException, IllegalArgumentException {
+    DataLoader(String fileName)
+            throws FileNotFoundException, IllegalArgumentException {
         data = new ArrayList<Double>();
         Vert = new ArrayList<Vector2d>();
         Scanner scanner = new Scanner(new File(fileName));

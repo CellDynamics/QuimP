@@ -35,7 +35,8 @@ public class MeanFilter_testParam {
     private List<Vector2d> testcase;
     private Double window;
     private Path testfileName;
-    private static final Logger LOGGER = LogManager.getLogger(MeanFilter_testParam.class.getName());
+    private static final Logger LOGGER = LogManager
+            .getLogger(MeanFilter_testParam.class.getName());
 
     /**
      * Parameterized constructor.
@@ -44,10 +45,8 @@ public class MeanFilter_testParam {
      * triggers, it will pass the arguments from parameters we defined to this
      * method
      * 
-     * @param testFileName
-     *            test file name
-     * @param window
-     *            averaging window size
+     * @param testFileName test file name
+     * @param window averaging window size
      * @see DataLoader
      */
     public MeanFilter_testParam(String testFileName, Double window) {
@@ -77,25 +76,34 @@ public class MeanFilter_testParam {
      * 
      * @return List of strings with paths to testfiles and smooth parameter
      * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating
-     *      *.dat files
+     * *.dat files
      */
     @Parameterized.Parameters
     public static Collection<Object[]> testFiles() {
-        return Arrays.asList(new Object[][] { { "src/test/resources/testData_75.dat", 1.0 },
-                { "src/test/resources/testData_75.dat", 3.0 }, { "src/test/resources/testData_75.dat", 5.0 },
-                { "src/test/resources/testData_75.dat", 9.0 }, { "src/test/resources/testData_75.dat", 15.0 },
+        return Arrays.asList(
+                new Object[][] { { "src/test/resources/testData_75.dat", 1.0 },
+                        { "src/test/resources/testData_75.dat", 3.0 },
+                        { "src/test/resources/testData_75.dat", 5.0 },
+                        { "src/test/resources/testData_75.dat", 9.0 },
+                        { "src/test/resources/testData_75.dat", 15.0 },
 
-                { "src/test/resources/testData_125.dat", 1.0 }, { "src/test/resources/testData_125.dat", 3.0 },
-                { "src/test/resources/testData_125.dat", 5.0 }, { "src/test/resources/testData_125.dat", 9.0 },
-                { "src/test/resources/testData_125.dat", 15.0 },
+                        { "src/test/resources/testData_125.dat", 1.0 },
+                        { "src/test/resources/testData_125.dat", 3.0 },
+                        { "src/test/resources/testData_125.dat", 5.0 },
+                        { "src/test/resources/testData_125.dat", 9.0 },
+                        { "src/test/resources/testData_125.dat", 15.0 },
 
-                { "src/test/resources/testData_137.dat", 1.0 }, { "src/test/resources/testData_137.dat", 3.0 },
-                { "src/test/resources/testData_137.dat", 5.0 }, { "src/test/resources/testData_137.dat", 9.0 },
-                { "src/test/resources/testData_137.dat", 15.0 },
+                        { "src/test/resources/testData_137.dat", 1.0 },
+                        { "src/test/resources/testData_137.dat", 3.0 },
+                        { "src/test/resources/testData_137.dat", 5.0 },
+                        { "src/test/resources/testData_137.dat", 9.0 },
+                        { "src/test/resources/testData_137.dat", 15.0 },
 
-                { "src/test/resources/testData_1.dat", 1.0 }, { "src/test/resources/testData_1.dat", 3.0 },
-                { "src/test/resources/testData_1.dat", 5.0 }, { "src/test/resources/testData_1.dat", 9.0 },
-                { "src/test/resources/testData_1.dat", 15.0 }, });
+                        { "src/test/resources/testData_1.dat", 1.0 },
+                        { "src/test/resources/testData_1.dat", 3.0 },
+                        { "src/test/resources/testData_1.dat", 5.0 },
+                        { "src/test/resources/testData_1.dat", 9.0 },
+                        { "src/test/resources/testData_1.dat", 15.0 }, });
     }
 
     /**
@@ -104,9 +112,9 @@ public class MeanFilter_testParam {
      * @pre original images saved as test_roiSaver_
      * @post Save image test_getInterpolationMean_* in /tmp/
      * @see QuimP-toolbox/algorithms/src/test/resources/
-     *      Interpolate_Test_Analyzer.m for plotting results
+     * Interpolate_Test_Analyzer.m for plotting results
      * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating
-     *      *.dat files
+     * *.dat files
      */
     @SuppressWarnings("serial")
     @Test
@@ -121,7 +129,9 @@ public class MeanFilter_testParam {
         });
         out = (ArrayList<Vector2d>) i.runPlugin();
         RoiSaver.saveROI(
-                "/tmp/test_getInterpolationMean_" + testfileName.getFileName() + "_" + window.toString() + ".tif", out);
+                "/tmp/test_getInterpolationMean_" + testfileName.getFileName()
+                        + "_" + window.toString() + ".tif",
+                out);
         LOGGER.debug("setUp: " + testcase.toString());
         if (out.size() < 100)
             LOGGER.debug("testInterpolate: " + out.toString());
@@ -129,13 +139,14 @@ public class MeanFilter_testParam {
 
     /**
      * @test Simple test of RoiSaver class, create reference images without
-     *       processing
+     * processing
      * @post Save image /tmp/testroiSaver_*.tif
      */
     @Test
     @Ignore
     public void test_roiSaver() {
-        RoiSaver.saveROI("/tmp/test_roiSaver_" + testfileName.getFileName() + "_" + window.toString() + ".tif",
+        RoiSaver.saveROI("/tmp/test_roiSaver_" + testfileName.getFileName()
+                + "_" + window.toString() + ".tif",
                 testcase);
     }
 

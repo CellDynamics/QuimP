@@ -13,7 +13,8 @@ public class QuimpPluginException extends Exception {
         super();
     }
 
-    public QuimpPluginException(String message, Throwable cause, boolean enableSuppression,
+    public QuimpPluginException(String message, Throwable cause,
+            boolean enableSuppression,
             boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
@@ -26,7 +27,7 @@ public class QuimpPluginException extends Exception {
      * Main constructor
      * 
      * @param arg0
-     *            Reason of exception
+     * Reason of exception
      */
     public QuimpPluginException(String arg0) {
         super(arg0);

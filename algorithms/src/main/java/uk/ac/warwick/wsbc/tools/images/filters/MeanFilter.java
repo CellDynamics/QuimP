@@ -28,10 +28,12 @@ import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
  */
 public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
 
-    private static final Logger LOGGER = LogManager.getLogger(MeanFilter.class.getName());
-    private QuimpDataConverter xyData; // input List converted to separate X and Y arrays
+    private static final Logger LOGGER = LogManager
+            .getLogger(MeanFilter.class.getName());
+    private QuimpDataConverter xyData; // input List converted to separate X and
+                                       // Y arrays
     private int window; // size of processing window
-    private HashMap<String, String[]> uiDefinition; // Definition of UI for this plugin
+    private HashMap<String, String[]> uiDefinition; // Definition of UI
     private QWindowBuilderInst uiInstance;
 
     /**
@@ -47,12 +49,12 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
         // create UI using QWindowBuilder
         uiDefinition = new HashMap<String, String[]>(); // will hold ui
                                                         // definitions
-        uiDefinition.put("name", new String[] { "MeanFilter" }); // name of window
+        uiDefinition.put("name", new String[] { "MeanFilter" }); // name of win
         // the name of this ui control is "system-wide", now it will define ui
         // and name of numerical data related to this ui and parameter                                                         // window
-        uiDefinition.put("window", new String[] { "spinner", "1", "21", "2", Integer.toString(window) });
-        uiDefinition.put("help", new String[] { "Window shoud be uneven" }); // help
-                                                                             // string
+        uiDefinition.put("window", new String[] { "spinner", "1", "21", "2",
+                Integer.toString(window) });
+        uiDefinition.put("help", new String[] { "Window shoud be uneven" });
         uiInstance = new QWindowBuilderInst(); // create window object, class
                                                // QWindowBuilder is abstract so
                                                // it must be extended
@@ -85,14 +87,15 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
      * 
      * @return Filtered points as list of Vector2d objects
      * @throws QuimpPluginException
-     *             when: - window is even - window is longer or equal processed
-     *             data - window is negative
+     * when: - window is even - window is longer or equal processed
+     * data - window is negative
      */
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
         // collect parameters from window
         window = uiInstance.getIntegerFromUI("window");
-        LOGGER.debug(String.format("Run plugin with params: window %d", window));
+        LOGGER.debug(
+                String.format("Run plugin with params: window %d", window));
 
         // do filtering
         int cp = window / 2; // left and right range of window
@@ -114,7 +117,8 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
             for (int cc = c - cp; cc <= c + cp; cc++) { // collect points in
                                                         // range c-2 c-1 c-0 c+1
                                                         // c+2 (for window=5)
-                indexTmp = IPadArray.getIndex(xyData.size(), cc, IPadArray.CIRCULARPAD);
+                indexTmp = IPadArray.getIndex(xyData.size(), cc,
+                        IPadArray.CIRCULARPAD);
                 meanx += xyData.getX()[indexTmp];
                 meany += xyData.getY()[indexTmp];
             }
@@ -142,16 +146,18 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
     /**
      * Configure plugin and overrides default values.
      * 
-     * Supported keys: 
+     * Supported keys:
      * -# \c window - size of window
      * 
      * @param par configuration as pairs <key,val>. Keys are defined by plugin
-     *            creator and plugin caller do not modify them.
-     * @throws QuimpPluginException on wrong parameters list or wrong parameter conversion
+     * creator and plugin caller do not modify them.
+     * @throws QuimpPluginException on wrong parameters list or wrong parameter
+     * conversion
      * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
      */
     @Override
-    public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException {
+    public void setPluginConfig(HashMap<String, Object> par)
+            throws QuimpPluginException {
         try {
             window = ((Double) par.get("window")).intValue(); // by default all
                                                               // numeric values
@@ -160,9 +166,10 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
             uiInstance.setValues(par); // populate loaded values to UI
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched
-            // by caller
-            // they are only passed to configuration saver and restored from it
-            throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
+            // by caller they are only passed to configuration saver and
+            // restored from it
+            throw new QuimpPluginException(
+                    "Wrong input argument->" + e.getMessage(), e);
         }
     }
 
@@ -234,10 +241,7 @@ class QWindowBuilderInst extends QWindowBuilder {
 
             }
         };
-        ((JSpinner) ui.get("window")).addChangeListener(changeListner); // attach
-                                                                        // listener
-                                                                        // to
-                                                                        // selected
-                                                                        // ui
+        // attach listener to selected ui
+        ((JSpinner) ui.get("window")).addChangeListener(changeListner);
     }
 }

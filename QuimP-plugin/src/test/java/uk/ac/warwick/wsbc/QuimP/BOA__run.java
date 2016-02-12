@@ -9,7 +9,6 @@ import java.util.concurrent.CountDownLatch;
 
 import ij.IJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.QuimP.BOA_;
 
 /**
  * Main runner for BOA_ plugin. Show main window and wait for its closing and
@@ -46,9 +45,10 @@ public class BOA__run {
         BOA_ ob = new BOA_();
         ob.run("/home/baniuk/"); // run BOA, control is immediately returned to
                                  // main
-        // add window listener to BOA_ window
-        // window is \public field of BOA_ class representing CustomStackWindow
-        // internally extending Frame class
+                                 // add window listener to BOA_ window
+                                 // window is \public field of BOA_ class 
+                                 // representing CustomStackWindow
+                                 // internally extending Frame class
         ob.window.addWindowListener(new WindowAdapter() {
 
             @Override

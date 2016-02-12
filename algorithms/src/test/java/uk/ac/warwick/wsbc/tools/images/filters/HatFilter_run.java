@@ -28,7 +28,8 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 public class HatFilter_run {
 
     @SuppressWarnings("serial")
-    public static void main(String[] args) throws QuimpPluginException, InterruptedException {
+    public static void main(String[] args)
+            throws QuimpPluginException, InterruptedException {
         List<Vector2d> input;
         // test data
         input = new ArrayList<>();

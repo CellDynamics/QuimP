@@ -24,11 +24,12 @@ import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
  * @author p.baniukiewicz
  * @date 20 Jan 2016
  * @see William S. Cleveland - Robust Locally Weighted Regression and Smoothing
- *      Scatterplots
+ * Scatterplots
  */
 public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 
-    private static final Logger LOGGER = LogManager.getLogger(LoessFilter.class.getName());
+    private static final Logger LOGGER = LogManager
+            .getLogger(LoessFilter.class.getName());
     private QuimpDataConverter xyData; // input List converted to separate X and
                                        // Y arrays
     private double smoothing; // smoothing value (f according to references)
@@ -50,12 +51,12 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
                                                         // definitions
         uiDefinition.put("name", new String[] { "LoessFilter" }); // name of
                                                                   // window
-        // the name of this ui control is "system-wide", now it will define ui
-        // and name of numerical data related to this ui and parameter
-        uiDefinition.put("smooth", new String[] { "spinner", "0.05", "0.5", "0.005", Double.toString(smoothing) });
+        uiDefinition.put("smooth", new String[] { "spinner", "0.05", "0.5",
+                "0.005", Double.toString(smoothing) });
         uiDefinition.put("help", new String[] {
-                "Higher values stand for more smooth output. Resonable range is 0.05 - 0.5. For too small values plugin throws error. Minimal vale depends on polygon shape and can vary." }); // help
-                                                                                                                                                                                               // string
+                "Higher values stand for more smooth output. Resonable range is"
+                        + " 0.05 - 0.5. For too small values plugin throws error."
+                        + "Minimal vale depends on polygon shape and can vary." }); // string
         uiInstance = new QWindowBuilderInstLoess(); // create window object,
                                                     // class QWindowBuilder is
                                                     // abstract so it must be
@@ -70,7 +71,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      * should be sorted according to a clockwise or anti-clockwise direction
      * 
      * @param data
-     *            Polygon points
+     * Polygon points
      * @see wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List<E>)
      */
     @Override
@@ -84,13 +85,14 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      * 
      * @return Filtered points as list of Vector2d objects
      * @throws QuimpPluginException when: - smoothing value is too small
-     *             (usually below 0.015 but
-     *             it depends on data)
+     * (usually below 0.015 but
+     * it depends on data)
      */
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
         smoothing = uiInstance.getDoubleFromUI("smooth");
-        LOGGER.debug(String.format("Run plugin with params: smoothing %f", smoothing));
+        LOGGER.debug(String.format("Run plugin with params: smoothing %f",
+                smoothing));
 
         float density = 1.0f; // If smaller than 1 output points will be
                               // refined. For 1 numbers of output points and
@@ -145,12 +147,14 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      * Supported keys: -# \c smoothing - smoothing value of filter
      * 
      * @param par configuration as pairs <key,val>. Keys are defined by plugin
-     *            creator and plugin caller do not modify them.
-     * @throws QuimpPluginException on wrong parameters list or wrong parameter conversion
+     * creator and plugin caller do not modify them.
+     * @throws QuimpPluginException on wrong parameters list or wrong parameter
+     * conversion
      * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
      */
     @Override
-    public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException {
+    public void setPluginConfig(HashMap<String, Object> par)
+            throws QuimpPluginException {
         try {
             smoothing = ((Double) par.get("smooth")).doubleValue(); // by
                                                                     // default
@@ -165,7 +169,8 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
             // we should never hit this exception as parameters are not touched
             // by caller
             // they are only passed to configuration saver and restored from it
-            throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
+            throw new QuimpPluginException(
+                    "Wrong input argument->" + e.getMessage(), e);
         }
     }
 

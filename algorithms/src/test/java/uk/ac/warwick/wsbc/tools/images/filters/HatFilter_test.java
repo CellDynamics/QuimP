@@ -1,6 +1,8 @@
 package uk.ac.warwick.wsbc.tools.images.filters;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +30,8 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  */
 public class HatFilter_test {
 
-    private static final Logger LOGGER = LogManager.getLogger(HatFilter_test.class.getName());
+    private static final Logger LOGGER = LogManager
+            .getLogger(HatFilter_test.class.getName());
     private List<Vector2d> input;
 
     @Rule
@@ -88,7 +91,7 @@ public class HatFilter_test {
      * @test test of HatFilter method
      * @pre vector line defined in setUp()
      * @post nodes 0, 1, 2, 37, 38, 39, 15, 16, 17, 18, 19, 20, 21, 22, 23
-     *       removed
+     * removed
      * @throws QuimpPluginException
      */
     @SuppressWarnings("serial")
@@ -108,7 +111,8 @@ public class HatFilter_test {
         LOGGER.debug("  out: " + out.toString());
 
         // remove precalculated indexes from input array (see Matlab test code)
-        int removed[] = { 0, 1, 2, 37, 38, 39, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
+        int removed[] = { 0, 1, 2, 37, 38, 39, 15, 16, 17, 18, 19, 20, 21, 22,
+                23 };
         Arrays.sort(removed);
         int lr = 0;
         for (int el : removed)
@@ -136,7 +140,8 @@ public class HatFilter_test {
                 put("sigma", 0.05);
             }
         });
-        HashMap<String, Object> ret = (HashMap<String, Object>) hf.getPluginConfig();
+        HashMap<String, Object> ret = (HashMap<String, Object>) hf
+                .getPluginConfig();
         assertEquals(5.0, (Double) ret.get("window"), 1e-4);
         assertEquals(3.0, (Double) ret.get("crown"), 1e-4);
         assertEquals(0.05, (Double) ret.get("sigma"), 1e-4);

@@ -33,7 +33,8 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  */
 @RunWith(Parameterized.class)
 public class HatFilter_testParam {
-    private static final Logger LOGGER = LogManager.getLogger(HatFilter_testParam.class.getName());
+    private static final Logger LOGGER = LogManager
+            .getLogger(HatFilter_testParam.class.getName());
     private Double window;
     private Double crown;
     private Double sig;
@@ -47,18 +48,16 @@ public class HatFilter_testParam {
      * triggers, it will pass the arguments from parameters we defined to this
      * method
      * 
-     * @param testFileName
-     *            test file name
-     * @param window
-     *            filter window size
-     * @param crown
-     *            filter crown size
+     * @param testFileName test file name
+     * @param window filter window size
+     * @param crown filter crown size
      * @param sig
-     *            sigma value
+     * sigma value
      * @see DataLoader
      * @see HatFilter
      */
-    public HatFilter_testParam(String testFileName, Double window, Double crown, Double sig) {
+    public HatFilter_testParam(String testFileName, Double window, Double crown,
+            Double sig) {
         this.testfileName = Paths.get(testFileName);
         this.window = window;
         this.crown = crown;
@@ -87,11 +86,12 @@ public class HatFilter_testParam {
      * 
      * @return List of strings with paths to testfiles and smooth parameter
      * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating
-     *      *.dat files
+     * *.dat files
      */
     @Parameterized.Parameters
     public static Collection<Object[]> testFiles() {
-        return Arrays.asList(new Object[][] { { "src/test/resources/testData_137.dat", 23., 13., 0.3 },
+        return Arrays.asList(new Object[][] {
+                { "src/test/resources/testData_137.dat", 23., 13., 0.3 },
                 { "src/test/resources/testData_1.dat", 23., 13., 0.3 },
                 { "src/test/resources/testData_125.dat", 23., 13., 0.3 },
                 { "src/test/resources/testData_75.dat", 23., 13., 0.3 } });
@@ -103,11 +103,11 @@ public class HatFilter_testParam {
      * @post Save image test_HatFilter_* in /tmp/
      * @throws QuimpPluginException
      * @see QuimP-toolbox/algorithms/src/test/resources/HatFilter.m for
-     *      verification of logs (ratios, indexes, etc)
+     * verification of logs (ratios, indexes, etc)
      * @see QuimP-toolbox/algorithms/src/test/resources/
-     *      Interpolate_Test_Analyzer.m for plotting results
+     * Interpolate_Test_Analyzer.m for plotting results
      * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating
-     *      *.dat files
+     * *.dat files
      */
     @SuppressWarnings("serial")
     @Test
@@ -123,19 +123,21 @@ public class HatFilter_testParam {
             }
         });
         out = (ArrayList<Vector2d>) hf.runPlugin();
-        RoiSaver.saveROI("/tmp/test_HatFilter_" + testfileName.getFileName() + "_" + window.toString() + "_"
+        RoiSaver.saveROI("/tmp/test_HatFilter_" + testfileName.getFileName()
+                + "_" + window.toString() + "_"
                 + crown.toString() + "_" + sig.toString() + ".tif", out);
         LOGGER.debug("setUp: " + testcase.toString());
     }
 
     /**
      * @test Simple test of RoiSaver class, create reference images without
-     *       processing but with the same name scheme
+     * processing but with the same name scheme
      * @post Save image /tmp/testroiSaver_*.tif
      */
     @Test
     public void test_roiSaver() {
-        RoiSaver.saveROI("/tmp/ref_HatFilter_" + testfileName.getFileName() + "_" + window.toString() + "_"
+        RoiSaver.saveROI("/tmp/ref_HatFilter_" + testfileName.getFileName()
+                + "_" + window.toString() + "_"
                 + crown.toString() + "_" + sig.toString() + ".tif", testcase);
     }
 }

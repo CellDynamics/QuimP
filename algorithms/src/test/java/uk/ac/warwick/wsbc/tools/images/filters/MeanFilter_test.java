@@ -3,7 +3,7 @@
  */
 package uk.ac.warwick.wsbc.tools.images.filters;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,8 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 public class MeanFilter_test {
 
     private List<Vector2d> testcase;
-    private static final Logger LOGGER = LogManager.getLogger(MeanFilter_test.class.getName());
+    private static final Logger LOGGER = LogManager
+            .getLogger(MeanFilter_test.class.getName());
 
     /**
      * Called after construction but before tests
@@ -57,7 +58,7 @@ public class MeanFilter_test {
      * @throws QuimpPluginException
      * @pre Vector of 1-10 elements
      * @post Running mean for window 3: [4.3333 2.0000 3.0000 4.0000 5.0000
-     *       6.0000 7.0000 8.0000 9.0000 6.6667]
+     * 6.0000 7.0000 8.0000 9.0000 6.6667]
      */
     @SuppressWarnings("serial")
     @Test
@@ -70,7 +71,8 @@ public class MeanFilter_test {
                 put("window", window);
             }
         });
-        double[] expected = { 4.3333, 2.0000, 3.0000, 4.0000, 5.0000, 6.0000, 7.0000, 8.0000, 9.0000, 6.6667 };
+        double[] expected = { 4.3333, 2.0000, 3.0000, 4.0000, 5.0000, 6.0000,
+                7.0000, 8.0000, 9.0000, 6.6667 };
 
         List<Vector2d> out;
         out = (List<Vector2d>) in.runPlugin();

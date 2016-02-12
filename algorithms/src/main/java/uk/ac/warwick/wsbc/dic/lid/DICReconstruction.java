@@ -3,15 +3,14 @@
  */
 package uk.ac.warwick.wsbc.dic.lid;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.tools.images.ImageProcessorPlus;
-
-import org.apache.logging.log4j.Logger;
-
-import org.apache.logging.log4j.LogManager;
 
 /**
  * Implementation of Line Integration and Deconvolution algorithm proposed by
@@ -53,6 +52,19 @@ import org.apache.logging.log4j.LogManager;
  * by setIp(ImageProcessor) are not rotated. This situation is detected in
  * reconstructionDicLid() by isRotated flag.
  * 
+ * Privates:
+ * <ul>
+ * <li>\c ranges - \b true pixels begin and end on \a x axis. Set by
+ * getRanges(). [r][0] - x of first pixel of line r of image, [r][1] - x of last
+ * pixel of image of line r
+ * <li>\c maxWidth - Set by getRanges()
+ * <li>\c decays - set by generateDeacy(double, int)
+ * <li>\c srcImageCopyProcessor - local \b copy of input ImageProcessor passed
+ * to object. Set by constructors and setIp(ImageProcessor)
+ * <li>\c isRotated - It is set by getRanges() that rotates object to get true
+ * pixels position and cancelled by setIP
+ * </ul>
+ * 
  * @warning
  * Currently this class supports only 8bit images. It can support also
  * 16bit input but in this case algorithm used for detection of \b true
@@ -70,34 +82,20 @@ import org.apache.logging.log4j.LogManager;
  */
 public class DICReconstruction {
 
-    private static final Logger LOGGER = LogManager.getLogger(DICReconstruction.class.getName());
-    private final int shift = 1; /// < shift added to original image to
-                                 /// eliminate 0 values
+    private static final Logger LOGGER = LogManager
+            .getLogger(DICReconstruction.class.getName());
+    private final int shift = 1; ///< shift added to original image eliminate 0s
 
-    private ImageProcessor srcIp; /// < local reference of ImageProcessor passed
-                                  /// to object. Not modifiable.
+    private ImageProcessor srcIp; ///< local reference of ImageProcessor (const)
     private double decay;
     private double angle;
-    private double[] decays; /// < reference to preallocated decay data created
-                             /// in generateDecay(double,int)
-    private int maxWidth; /// < Width of image after rotation. Set by
-                          /// getRanges()
-    private int[][] ranges; /// < \b true pixels begin and end on \a x axis. Set
-                            /// by getRanges(). [r][0] - x of first pixel of
-                            /// line r of image, [r][1] - x of last pixel of
-                            /// image of line r
+    private double[] decays; ///< reference to preallocated decay data created
+    private int maxWidth; ///< Width of image after rotation. Set by getRanges()
+    private int[][] ranges; ///< \b true pixels begin and end on \a x axis.
     private ImageProcessor srcImageCopyProcessor; /// < local \b copy of input
-                                                  /// ImageProcessor passed to
-                                                  /// object. Set by
-                                                  /// constructors and
-                                                  /// setIp(ImageProcessor)
-    private boolean isRotated; /// < \c true if srcImageCopyProcessor has been
-                               /// rotated already. It is set by getRanges that
-                               /// rotates object to get true pixels position
-                               /// and cancelled by setIP
+    private boolean isRotated; ///< \c true if srcImageCopyProcessor is rotated
     private ImageStatistics is;
-    private ImageProcessorPlus ipp; /// < helper class for rotating images
-                                    /// without clipping
+    private ImageProcessorPlus ipp; ///< helper class for rotating images
 
     /**
      * Default constructor that accepts ImagePlus. It does not support stacks.
@@ -106,7 +104,8 @@ public class DICReconstruction {
      * @throws DicException
      * Throws exception after generateRanges()
      */
-    public DICReconstruction(ImagePlus srcImage, double decay, double angle) throws DicException {
+    public DICReconstruction(ImagePlus srcImage, double decay, double angle)
+            throws DicException {
         this(srcImage.getProcessor(), decay, angle);
     }
 
@@ -117,7 +116,8 @@ public class DICReconstruction {
      * @throws DicException
      * Throws exception after generateRanges()
      */
-    public DICReconstruction(ImageProcessor ip, double decay, double angle) throws DicException {
+    public DICReconstruction(ImageProcessor ip, double decay, double angle)
+            throws DicException {
         this.angle = angle;
         this.decay = decay;
         this.isRotated = false;
@@ -160,7 +160,7 @@ public class DICReconstruction {
         srcImageCopyProcessor.resetMinAndMax(); // ensure that minmax will be
                                                 // recalculated (usually they
                                                 // are stored in class field)
-        // set interpolation
+                                                // set interpolation
         srcImageCopyProcessor.setInterpolationMethod(ImageProcessor.BICUBIC);
         // Rotating image - set 0 background
         srcImageCopyProcessor.setBackgroundValue(0.0);
@@ -192,9 +192,12 @@ public class DICReconstruction {
         // check condition for removing 0 value from image
         maxpixel = srcImageCopyProcessor.getMax();
         if (maxpixel > 65535 - shift) {
-            LOGGER.error("Possible image clipping - check if image is saturated");
+            LOGGER.error(
+                    "Possible image clipping - check if image is saturated");
             throw new DicException(String.format(
-                    "Possible image clipping - input image has at leas one pixel with value %d", 65535 - shift));
+                    "Possible image clipping - input image has at leas one"
+                            + " pixel with value %d",
+                    65535 - shift));
         }
         // scale pixels by adding 1 - we remove any 0 value from source image
         srcImageCopyProcessor.add(shift);
@@ -213,9 +216,12 @@ public class DICReconstruction {
         for (r = 0; r < newHeight; r++) {
             // to not process whole line, detect where starts and ends pixels of
             // image (reject background added during rotation)
-            for (firstpixel = 0; firstpixel < newWidth && srcImageCopyProcessor.get(firstpixel, r) == 0; firstpixel++)
+            for (firstpixel = 0; firstpixel < newWidth && srcImageCopyProcessor
+                    .get(firstpixel, r) == 0; firstpixel++)
                 ;
-            for (lastpixel = newWidth - 1; lastpixel >= 0 && srcImageCopyProcessor.get(lastpixel, r) == 0; lastpixel--)
+            for (lastpixel = newWidth - 1; lastpixel >= 0
+                    && srcImageCopyProcessor.get(lastpixel,
+                            r) == 0; lastpixel--)
                 ;
             ranges[r][0] = firstpixel;
             ranges[r][1] = lastpixel;
@@ -258,13 +264,15 @@ public class DICReconstruction {
                           // new Processor added by setIp
             srcImageCopyProcessor.add(shift); // we use different IP so shift
                                               // must be added
-            srcImageCopyProcessor = ipp.rotate(srcImageCopyProcessor, angle, true);
+            srcImageCopyProcessor = ipp.rotate(srcImageCopyProcessor, angle,
+                    true);
         }
         // dereferencing for optimization purposes
         int newWidth = srcImageCopyProcessor.getWidth();
         int newHeight = srcImageCopyProcessor.getHeight();
         // create array for storing results - 32bit float as imageprocessor
-        ImageProcessor outputArrayProcessor = new FloatProcessor(newWidth, newHeight);
+        ImageProcessor outputArrayProcessor = new FloatProcessor(newWidth,
+                newHeight);
         float[] outputPixelArray = (float[]) outputArrayProcessor.getPixels();
 
         // do for every row - bas-relief is oriented horizontally
@@ -277,20 +285,18 @@ public class DICReconstruction {
                 // up
                 cumsumup = 0;
                 for (u = c; u >= ranges[r][0]; u--) {
-                    cumsumup += (srcImageCopyProcessor.get(u, r) - shift - is.mean) * decays[Math.abs(u - c)];
+                    cumsumup += (srcImageCopyProcessor.get(u, r) - shift
+                            - is.mean) * decays[Math.abs(u - c)];
                 }
                 // down
                 cumsumdown = 0; // cumulative sum from point r to the end of
                                 // column
                 for (d = c; d <= ranges[r][1]; d++) {
-                    cumsumdown += (srcImageCopyProcessor.get(d, r) - shift - is.mean) * decays[Math.abs(d - c)];
+                    cumsumdown += (srcImageCopyProcessor.get(d, r) - shift
+                            - is.mean) * decays[Math.abs(d - c)];
                 }
                 // integral
-                outputPixelArray[linindex] = (float) (cumsumup - cumsumdown); // linear
-                                                                              // indexing
-                                                                              // is
-                                                                              // in
-                                                                              // row-order
+                outputPixelArray[linindex] = (float) (cumsumup - cumsumdown);
                 linindex++;
             }
             linindex = linindex + newWidth - ranges[r][1] - 1;
@@ -299,7 +305,8 @@ public class DICReconstruction {
         outputArrayProcessor.setBackgroundValue(0.0);
         outputArrayProcessor.rotate(-angle);
         // crop it back to original size
-        outputArrayProcessor = ipp.cropImageAfterRotation(outputArrayProcessor, srcIp.getWidth(), srcIp.getHeight());
+        outputArrayProcessor = ipp.cropImageAfterRotation(outputArrayProcessor,
+                srcIp.getWidth(), srcIp.getHeight());
 
         return outputArrayProcessor.convertToByte(true); // return
                                                          // reconstruction

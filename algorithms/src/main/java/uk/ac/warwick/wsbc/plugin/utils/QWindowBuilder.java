@@ -77,47 +77,34 @@ import org.apache.logging.log4j.Logger;
  * focus. Until cursor is in UI its value is not updated internally,
  * thus getValue returns its old snapshot.
  * 
+ * \c RESERVED_KEYS is list of reserved keys that are not UI elements. They are
+ * processed in different way.
+ * 
  * @author p.baniukiewicz
  * @date 29 Jan 2016
  *
  */
 public abstract class QWindowBuilder {
-    final protected static Logger LOGGER = LogManager.getLogger(QWindowBuilder.class.getName());
-    protected JFrame pluginWnd; /// < main window object
-    protected boolean windowState; /// < current window state \c true if visible
-    protected JPanel pluginPanel; /// < Main panel extended on whole \c
-                                  /// pluginWnd
-    protected LinkedHashMap<String, Component> ui; /// < contain list of all UI
-                                                   /// elements created on base
-                                                   /// of \c def together with
-                                                   /// their names
-    private Map<String, String[]> def; /// < definition of window and names of
-                                       /// parameters
-    final private HashSet<String> RESERVED_KEYS = new HashSet<String>(Arrays.asList(new String[] { "help", "name" })); /// <
-                                                                                                                       /// list
-                                                                                                                       /// of
-                                                                                                                       /// reserved
-                                                                                                                       /// keys
-                                                                                                                       /// that
-                                                                                                                       /// are
-                                                                                                                       /// not
-                                                                                                                       /// UI
-                                                                                                                       /// elements.
-                                                                                                                       /// They
-                                                                                                                       /// are
-                                                                                                                       /// processed
-                                                                                                                       /// in
-                                                                                                                       /// different
-                                                                                                                       /// way
+    final protected static Logger LOGGER = LogManager
+            .getLogger(QWindowBuilder.class.getName());
+    protected JFrame pluginWnd; ///< main window object
+    protected boolean windowState; ///< current window state \c true if visible
+    protected JPanel pluginPanel; ///< Main panel extended on whole \c pluginWnd
+    protected LinkedHashMap<String, Component> ui; ///< list of all UI elements
+    private Map<String, String[]> def; ///< definition of window and parameters
+
+    final private HashSet<String> RESERVED_KEYS = new HashSet<String>(
+            Arrays.asList(new String[] { "help", "name" })); ///< reserved keys
 
     // definition string - positions of configuration data in value string (see
     // BuildWindow)
-    final private int UITYPE = 0; // type of UI control to create
-    final private int UIDATA = 0; // data for ui when only one parameter
-    final private int S_MIN = 1; // spinner min value
-    final private int S_MAX = 2; // spinner max value
-    final private int S_STEP = 3; // spinner step value
-    final private int S_DEFAULT = 4; // spinner default value
+    final private int UITYPE = 0; ///< type of UI control to create
+    final private int UIDATA = 0; ///< data for ui when only one parameter
+    final private int S_MIN = 1; ///< spinner min value
+    final private int S_MAX = 2; ///< spinner max value
+    final private int S_STEP = 3; ///< spinner step value
+    final private int S_DEFAULT = 4; ///< spinner default value
+
     // definition of constant elements of UI
     protected JButton applyB;
 
@@ -146,22 +133,30 @@ public abstract class QWindowBuilder {
      * help text and plugin name respectively.
      * 
      * The UI elements are defined for all other cases in \b value filed of Map.
-     * Known UI are as follows: -# spinner - creates Spinner control. It
-     * requires 3 parameters (in order) -# minimal range -# maximal range -#
-     * step
+     * Known UI are as follows:
+     * <ul>
+     * <li>spinner - creates Spinner control. It requires 3 parameters (in
+     * order)
+     * <ol>
+     * <li>minimal range
+     * <li>maximal range
+     * <li>step
+     * </ol>
+     * </ul>
      *
      * The type of required UI element associated with given parameter name (\a
      * Key) is coded in value of given Key in accordance with list above. The
      * correct order of sub-parameters must be preserved. Exemplary
      * configuration is as follows:
      * 
-     * @code{.java} HashMap<String,String[]> def1 = new HashMap<String,
-     * String[]>(); def1.put("name", new String[] {"test"}); // non
-     * UI element - name of window def1.put("window", new String[]
-     * {"spinner", "-0.5","0.5","0.1"}); // adds spinner to provide
-     * window parameter def1.put("smooth", new String[] {"spinner",
-     * "-1", "10", "1"}); def1.put("help", new String[] {"help
-     * text}); // non UI element - help
+     * @code{.java}
+     * HashMap<String,String[]> def1 = new HashMap<String, String[]>();
+     * def1.put("name", new String[] {"test"}); // nonUI element - name of
+     * // window
+     * def1.put("window", new String[] {"spinner", "-0.5","0.5","0.1"}); // adds
+     * spinner to provide window parameter
+     * def1.put("smooth", new String[] {"spinner","-1", "10", "1"});
+     * def1.put("help", new String[] {"help text}); // non UI element - help
      * @endcode
      * 
      * By default window is not visible yet. User must call ShowWindow
@@ -176,7 +171,8 @@ public abstract class QWindowBuilder {
      */
     public void BuildWindow(Map<String, String[]> def) {
         if (def.size() < 2)
-            throw new IllegalArgumentException("Window must contain title and at least one control");
+            throw new IllegalArgumentException("Window must contain title and"
+                    + " at least one control");
         this.def = def; // remember parameters
         ui.clear(); // clear all ui stored on second call of third method
 
@@ -185,7 +181,7 @@ public abstract class QWindowBuilder {
         pluginPanel = new JPanel(); // main panel on whole window
         pluginPanel.setLayout(new BorderLayout()); // divide window on two zones
                                                    // - upper for controls,
-                                                   // middle for help
+                                                   // - middle for help
 
         Panel north = new Panel(); // panel for controls
         // get layout size
@@ -203,16 +199,11 @@ public abstract class QWindowBuilder {
         north.setLayout(gridL);
         gridL.setVgap(5); // set bigger gaps
         gridL.setHgap(5);
-        Iterator<String> keySetIterator = def.keySet().iterator(); // iterate
-                                                                   // over def
-                                                                   // entries
-                                                                   // except
-                                                                   // first one
-                                                                   // which is
-                                                                   // always
-                                                                   // title
+
+        // iterate over def entries except first one which is always title
         // every decoded control is put into ordered hashmap together with its
         // descriptor (label)
+        Iterator<String> keySetIterator = def.keySet().iterator();
         while (keySetIterator.hasNext()) {
             String key = keySetIterator.next();
             if (RESERVED_KEYS.contains(key))
@@ -220,34 +211,31 @@ public abstract class QWindowBuilder {
             String componentName = def.get(key)[UITYPE]; // get name of UI for
                                                          // given key
             switch (componentName.toLowerCase()) {
-            case "spinner": // by default all spinners are double
-                SpinnerNumberModel model = new SpinnerNumberModel(Double.parseDouble(def.get(key)[S_DEFAULT]), // current
-                                                                                                               // value
-                        Double.parseDouble(def.get(key)[S_MIN]), // min
-                        Double.parseDouble(def.get(key)[S_MAX]), // max
-                        Double.parseDouble(def.get(key)[S_STEP]));// step
-                ui.put(key, new JSpinner(model));
-                ui.put(key + "label", new Label(key)); // add description - on
-                                                       // even position
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown ui type provided: " + key); // wrong
-                                                                                        // param
-                                                                                        // syntax
+                case "spinner": // by default all spinners are double
+                    SpinnerNumberModel model = new SpinnerNumberModel(
+                            Double.parseDouble(def.get(key)[S_DEFAULT]), // val
+                            Double.parseDouble(def.get(key)[S_MIN]), // min
+                            Double.parseDouble(def.get(key)[S_MAX]), // max
+                            Double.parseDouble(def.get(key)[S_STEP])); // step
+                    ui.put(key, new JSpinner(model));
+                    ui.put(key + "label", new Label(key)); // add description
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown ui type"
+                            + " provided: " + key); // wrong param syntax
             }
         }
-        for (Map.Entry<String, Component> me : ui.entrySet()) // iterate over
-                                                              // all components
-                                                              // and add them to
-                                                              // grid layout
+
+        // iterate over all components and add them to grid layout
+        for (Map.Entry<String, Component> me : ui.entrySet())
             north.add(me.getValue());
 
         // add non ui elements
         if (def.containsKey("name")) {
-            pluginPanel.setBorder(BorderFactory.createTitledBorder("Plugin " + def.get("name")[UIDATA])); // border
-                                                                                                          // on
-                                                                                                          // whole
-                                                                                                          // window
+            // border on whole window
+            pluginPanel.setBorder(
+                    BorderFactory.createTitledBorder(
+                            "Plugin " + def.get("name")[UIDATA]));
         }
         if (def.containsKey("help")) {
             JTextArea helpArea = new JTextArea(10, 10); // default size of text
@@ -335,19 +323,20 @@ public abstract class QWindowBuilder {
             // find key in def and get type of control and its instance
             switch (def.get(key)[UITYPE]) { // first string in vals is type of
                                             // control, see BuildWindow
-            case "spinner":
-                JSpinner comp = (JSpinner) ui.get(key); // get UI component of
-                                                        // name key (keys in
-                                                        // vals must match to
-                                                        // keys in
-                                                        // BuildWindow(def))
-                comp.setValue(val); // set value from vals
-                SpinnerNumberModel sm = (SpinnerNumberModel) comp.getModel();
-                if (sm.getNextValue() == null)
-                    sm.setMaximum((Double) val);
-                else if (sm.getPreviousValue() == null)
-                    sm.setMinimum((Double) val);
-                break;
+                case "spinner":
+                    JSpinner comp = (JSpinner) ui.get(key); // get UI component
+                                                            // of name key (keys
+                                                            // in vals must math
+                                                            // to keys in
+                                                            // BuildWindow(def))
+                    comp.setValue(val); // set value from vals
+                    SpinnerNumberModel sm = (SpinnerNumberModel) comp
+                            .getModel();
+                    if (sm.getNextValue() == null)
+                        sm.setMaximum((Double) val);
+                    else if (sm.getPreviousValue() == null)
+                        sm.setMinimum((Double) val);
+                    break;
             }
         }
     }
@@ -368,16 +357,18 @@ public abstract class QWindowBuilder {
     public Map<String, Object> getValues() {
         Map<String, Object> ret = new HashMap<String, Object>();
         // iterate over all UI elements
-        Iterator<Map.Entry<String, Component>> entryIterator = ui.entrySet().iterator();
+        Iterator<Map.Entry<String, Component>> entryIterator = ui.entrySet()
+                .iterator();
         while (entryIterator.hasNext()) {
             Map.Entry<String, Component> m = entryIterator.next();
             String key = m.getKey();
             // check type of component
             switch (def.get(key)[UITYPE]) {
-            case "spinner":
-                JSpinner val = (JSpinner) m.getValue(); // get value
-                ret.put(key, val.getValue()); // store it in returned Map at the
-                                              // same key
+                case "spinner":
+                    JSpinner val = (JSpinner) m.getValue(); // get value
+                    ret.put(key, val.getValue()); // store it in returned Map at
+                                                  // the
+                                                  // same key
             }
             entryIterator.next(); // skip label. ui Map has repeating entries
                                   // UI,label,UI1,label1,...
@@ -402,16 +393,8 @@ public abstract class QWindowBuilder {
      * @see BuildWindow(Map<String, String[]>)
      */
     public int getIntegerFromUI(String key) {
-        HashMap<String, Object> uiParam = (HashMap<String, Object>) getValues(); // get
-                                                                                 // list
-                                                                                 // of
-                                                                                 // all
-                                                                                 // params
-                                                                                 // from
-                                                                                 // ui
-                                                                                 // as
-                                                                                 // <key,val>
-                                                                                 // list
+        // get list of all params from ui as <key,val> list
+        HashMap<String, Object> uiParam = (HashMap<String, Object>) getValues();
         return ((Double) uiParam.get(key)).intValue();
     }
 
@@ -421,16 +404,8 @@ public abstract class QWindowBuilder {
      * @copydoc getIntegerFromUI(String)
      */
     public double getDoubleFromUI(String key) {
-        HashMap<String, Object> uiParam = (HashMap<String, Object>) getValues(); // get
-                                                                                 // list
-                                                                                 // of
-                                                                                 // all
-                                                                                 // params
-                                                                                 // from
-                                                                                 // ui
-                                                                                 // as
-                                                                                 // <key,val>
-                                                                                 // list
+        // get list of all params from ui as <key,val> list
+        HashMap<String, Object> uiParam = (HashMap<String, Object>) getValues();
         return ((Double) uiParam.get(key)).doubleValue();
     }
 }

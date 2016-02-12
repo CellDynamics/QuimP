@@ -21,8 +21,7 @@ public class RoiSaver_test {
 
     /**
      * @test Test method for
-     *       uk.ac.warwick.wsbc.tools.images.filters.RoiSaver.saveROI(String,
-     *       List<Vector2d>)
+     * tools.images.filters.RoiSaver.saveROI(String, List<Vector2d>)
      * @pre Simple polygon
      * @post Image /tmp/test_SaveROI_case1.tif
      */
@@ -37,8 +36,7 @@ public class RoiSaver_test {
 
     /**
      * @test Test method for
-     *       uk.ac.warwick.wsbc.tools.images.filters.RoiSaver.saveROI(String,
-     *       List<Vector2d>)
+     * tools.images.filters.RoiSaver.saveROI(String,List<Vector2d>)
      * @pre Empty list
      * @post Uniform \b red Image /tmp/test_SaveROI_case2.tif
      */
@@ -50,8 +48,8 @@ public class RoiSaver_test {
 
     /**
      * @test Test method for
-     *       uk.ac.warwick.wsbc.tools.images.filters.RoiSaver.saveROI(String,
-     *       List<Vector2d>)
+     * uk.ac.warwick.wsbc.tools.images.filters.RoiSaver.saveROI(String,
+     * List<Vector2d>)
      * @pre null pointer
      * @post Uniform \b red Image /tmp/test_SaveROI_case3.tif
      */

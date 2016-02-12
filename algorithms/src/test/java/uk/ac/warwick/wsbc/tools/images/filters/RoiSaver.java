@@ -21,7 +21,8 @@ import ij.process.ImageProcessor;
  *
  */
 class RoiSaver {
-    private static final Logger LOGGER = LogManager.getLogger(RoiSaver.class.getName());
+    private static final Logger LOGGER = LogManager
+            .getLogger(RoiSaver.class.getName());
 
     /**
      * Dummy constructor
@@ -36,9 +37,9 @@ class RoiSaver {
      * non-valid input list it creates red image of size 100 x 100
      * 
      * @param fileName
-     *            file to save image with path
+     * file to save image with path
      * @param vert
-     *            list of vertices
+     * list of vertices
      */
     public static void saveROI(String fileName, List<Vector2d> vert) {
         try {
@@ -55,13 +56,11 @@ class RoiSaver {
             bb = getBoundingBox(vert); // get size of output image
             PolygonRoi pR = new PolygonRoi(x, y, Roi.POLYGON); // create polygon
                                                                // object
-            LOGGER.debug("Creating image of size [" + (int) Math.round(bb[0]) + "," + (int) Math.round(bb[1]) + "]");
-            ImagePlus outputImage = IJ.createImage("", (int) Math.round(bb[0] + 0.2 * bb[0]),
-                    (int) Math.round(bb[1] + 0.2 * bb[1]), 1, 8); // output
-                                                                  // image of
-                                                                  // size of
-                                                                  // polygon +
-                                                                  // margins
+            LOGGER.debug("Creating image of size [" + (int) Math.round(bb[0])
+                    + "," + (int) Math.round(bb[1]) + "]");
+            ImagePlus outputImage = IJ.createImage("",
+                    (int) Math.round(bb[0] + 0.2 * bb[0]),
+                    (int) Math.round(bb[1] + 0.2 * bb[1]), 1, 8); // output                                                                        // margins
             ImageProcessor ip = outputImage.getProcessor(); // get processor
                                                             // required later
             ip.setColor(Color.WHITE); // set pen
@@ -86,11 +85,11 @@ class RoiSaver {
      * List of Vector2d elements
      * 
      * @param vert
-     *            List of vertexes of shape
+     * List of vertexes of shape
      * @return two elements array where [width height]
      * @retval double[2]
      * @todo move to RectangleBox class after rework of that class to accept
-     *       ListArrays
+     * ListArrays
      */
     private static double[] getBoundingBox(List<Vector2d> vert) {
         double minx = vert.get(0).getX();

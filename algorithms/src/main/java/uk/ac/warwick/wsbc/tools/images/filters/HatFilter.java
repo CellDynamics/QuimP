@@ -60,9 +60,11 @@ import uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder;
  * @date 25 Jan 2016
  */
 public class HatFilter extends QWindowBuilder
-        implements IQuimpPoint2dFilter<Vector2d>, IPadArray, ChangeListener, ActionListener {
+        implements IQuimpPoint2dFilter<Vector2d>, IPadArray, ChangeListener,
+        ActionListener {
 
-    private static final Logger LOGGER = LogManager.getLogger(HatFilter.class.getName());
+    private static final Logger LOGGER = LogManager
+            .getLogger(HatFilter.class.getName());
     private final int DRAW_SIZE = 200; // size of draw area in window
 
     private int window; // filter's window size
@@ -87,16 +89,19 @@ public class HatFilter extends QWindowBuilder
         this.window = 23;
         this.crown = 13;
         this.sig = 0.3;
-        LOGGER.debug("Set default parameter: window=" + window + " crown=" + crown + " sig=" + sig);
+        LOGGER.debug("Set default parameter: window=" + window + " crown="
+                + crown + " sig=" + sig);
         uiDefinition = new LinkedHashMap<String, String[]>(); // will hold ui
                                                               // definitions
         uiDefinition.put("name", new String[] { "HatFilter" }); // name of
                                                                 // window
-        // the name of this ui control is "system-wide", now it will define ui
-        // and name of numerical data related to this ui and parameter
-        uiDefinition.put("window", new String[] { "spinner", "3", "51", "2", Integer.toString(window) });
-        uiDefinition.put("crown", new String[] { "spinner", "1", "51", "2", Integer.toString(crown) });
-        uiDefinition.put("sigma", new String[] { "spinner", "0.01", "0.9", "0.01", Double.toString(sig) });
+                                                                // "system-wide"
+        uiDefinition.put("window", new String[] { "spinner", "3", "51", "2",
+                Integer.toString(window) });
+        uiDefinition.put("crown", new String[] { "spinner", "1", "51", "2",
+                Integer.toString(crown) });
+        uiDefinition.put("sigma", new String[] { "spinner", "0.01", "0.9",
+                "0.01", Double.toString(sig) });
         BuildWindow(uiDefinition); // construct ui (not shown yet)
         points = null; // not attached yet
         pout = null; // not calculated yet
@@ -128,15 +133,17 @@ public class HatFilter extends QWindowBuilder
      * UI to plugin or any other ui element.
      * 
      * @return Processed \a input list, size of output list may be different
-     *         than input. Empty output is also allowed.
+     * than input. Empty output is also allowed.
      * @see uk.ac.warwick.wsbc.tools.images.filters.HatFilter.actionPerformed(
-     *      ActionEvent)
+     * ActionEvent)
      * @see uk.ac.warwick.wsbc.tools.images.filters.HatFilter.stateChanged(
-     *      ChangeEvent)
+     * ChangeEvent)
      */
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
-        LOGGER.debug(String.format("Run plugin with params: window %d, crown %d, sigma %f", window, crown, sig));
+        LOGGER.debug(String.format(
+                "Run plugin with params: window %d, crown %d, sigma %f", window,
+                crown, sig));
 
         int cp = window / 2; // left and right range of window
         int cr = crown / 2; // left and right range of crown
@@ -152,11 +159,14 @@ public class HatFilter extends QWindowBuilder
 
         // check input conditions
         if (window % 2 == 0 || crown % 2 == 0)
-            throw new QuimpPluginException("Input arguments must be uneven, positive and larger than 0");
+            throw new QuimpPluginException(
+                    "Input arguments must be uneven, positive and larger than 0");
         if (window >= points.size() || crown >= points.size())
-            throw new QuimpPluginException("Processing window or crown to long");
+            throw new QuimpPluginException(
+                    "Processing window or crown to long");
         if (crown >= window)
-            throw new QuimpPluginException("Crown can not be larger or equal to window");
+            throw new QuimpPluginException(
+                    "Crown can not be larger or equal to window");
         if (window < 3)
             throw new QuimpPluginException("Window should be larger than 2");
 
@@ -177,9 +187,8 @@ public class HatFilter extends QWindowBuilder
             for (int cc = c - cp; cc <= c + cp; cc++) { // collect points in
                                                         // range c-2 c-1 c-0 c+1
                                                         // c+2 (for window=5)
-                indexTmp = IPadArray.getIndex(points.size(), cc, IPadArray.CIRCULARPAD); // get
-                                                                                         // padded
-                                                                                         // indexes
+                indexTmp = IPadArray.getIndex(points.size(), cc,
+                        IPadArray.CIRCULARPAD); // get padded indexes
                 V[countW] = points.get(indexTmp); // store window content
                                                   // (reference)
                 if (cc < c - cr || cc > c + cr)
@@ -196,7 +205,8 @@ public class HatFilter extends QWindowBuilder
                 lenBrim += getLen(B[i], B[i + 1]);
             // decide whether to remove crown
             double ratio = 1 - lenBrim / lenAll;
-            LOGGER.debug("c: " + c + " lenAll=" + lenAll + " lenBrim=" + lenBrim + " ratio: " + ratio);
+            LOGGER.debug("c: " + c + " lenAll=" + lenAll + " lenBrim=" + lenBrim
+                    + " ratio: " + ratio);
             if (ratio > sig) // add crown for current window position c to
                              // remove list. Added are real indexes in points
                              // array (not local window indexes)
@@ -251,14 +261,15 @@ public class HatFilter extends QWindowBuilder
      * inner window -# \c sigma - cut-off value (see class description)
      * 
      * @param par configuration as pairs <key,val>. Keys are defined by plugin
-     *            creator and plugin caller do not modify them.
+     * creator and plugin caller do not modify them.
      * @throws QuimpPluginException on wrong parameters list or wrong parameter
-     *             conversion
+     * conversion
      * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<
-     *      String, Object>)
+     * String, Object>)
      */
     @Override
-    public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException {
+    public void setPluginConfig(HashMap<String, Object> par)
+            throws QuimpPluginException {
         try {
             window = ((Double) par.get("window")).intValue(); // by default all
                                                               // numeric values
@@ -271,7 +282,8 @@ public class HatFilter extends QWindowBuilder
             // we should never hit this exception as parameters are not touched
             // by caller
             // they are only passed to configuration saver and restored from it
-            throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
+            throw new QuimpPluginException(
+                    "Wrong input argument->" + e.getMessage(), e);
         }
     }
 
@@ -338,9 +350,8 @@ public class HatFilter extends QWindowBuilder
         JScrollPane helpPanel = new JScrollPane(helpArea);
         helpArea.setEditable(false);
         helpArea.setText(
-                "About plugin\nPlugin window does not update when new cell is selected. Please click APPLY to update"); // set
-                                                                                                                        // help
-                                                                                                                        // text
+                "About plugin\nPlugin window does not update when new cell"
+                        + " is selected. Please click APPLY to update");
         helpArea.setLineWrap(true); // with wrapping
 
         logArea = new JTextArea(); // default size of text area
@@ -365,19 +376,19 @@ public class HatFilter extends QWindowBuilder
      * auto-fixing even values provided by user:
      * 
      * @code{.java}
-     *              Object source = ce.getSource();
-     *              JSpinner s = (JSpinner)ui.get("window"); // get ui element
-     *              JSpinner s1 = (JSpinner)ui.get("crown"); // get ui element
-     *              if(source == s) { // check if this event concerns it
-     *              logger.debug("Spinner window used");
-     *              if(((Double)s.getValue()).intValue()%2==0 )
-     *              s.setValue((Double)s.getValue() + 1);
-     *              }
-     *              if(source == s1) { // check if this event concerns it
-     *              logger.debug("Spinner crown used");
-     *              if(((Double)s1.getValue()).intValue()%2==0 )
-     *              s1.setValue((Double)s1.getValue() + 1);
-     *              }
+     * Object source = ce.getSource();
+     * JSpinner s = (JSpinner)ui.get("window"); // get ui element
+     * JSpinner s1 = (JSpinner)ui.get("crown"); // get ui element
+     * if(source == s) { // check if this event concerns it
+     * logger.debug("Spinner window used");
+     * if(((Double)s.getValue()).intValue()%2==0 )
+     * s.setValue((Double)s.getValue() + 1);
+     * }
+     * if(source == s1) { // check if this event concerns it
+     * logger.debug("Spinner crown used");
+     * if(((Double)s1.getValue()).intValue()%2==0 )
+     * s1.setValue((Double)s1.getValue() + 1);
+     * }
      * @endcode
      * 
      */
@@ -419,7 +430,9 @@ public class HatFilter extends QWindowBuilder
         window = getIntegerFromUI("window");
         crown = getIntegerFromUI("crown");
         sig = getDoubleFromUI("sigma");
-        LOGGER.debug(String.format("Updated from UI: window %d, crown %d, sigma %f", window, crown, sig));
+        LOGGER.debug(
+                String.format("Updated from UI: window %d, crown %d, sigma %f",
+                        window, crown, sig));
         // run plugin for set parameters
         try {
             out = runPlugin();
@@ -485,7 +498,8 @@ public class HatFilter extends QWindowBuilder
  *
  */
 class ExPolygon extends Polygon {
-    private static final Logger logger = LogManager.getLogger(ExPolygon.class.getName());
+    private static final Logger logger = LogManager
+            .getLogger(ExPolygon.class.getName());
     private static final long serialVersionUID = 5870934217878285135L;
     public Rectangle initbounds; // initial size of polygon, before scaling
     public double scale; // current scale
@@ -514,7 +528,8 @@ class ExPolygon extends Polygon {
      */
     public void fitPolygon(double size) {
         // set in 0,0
-        translate((int) Math.round(-initbounds.getCenterX()), (int) Math.round(-initbounds.getCenterY()));
+        translate((int) Math.round(-initbounds.getCenterX()),
+                (int) Math.round(-initbounds.getCenterY()));
         // get size of bounding box
         Rectangle2D bounds = getBounds2D();
         // set scale according to window size
@@ -529,7 +544,8 @@ class ExPolygon extends Polygon {
             ypoints[i] = (int) Math.round(ypoints[i] * scale);
         }
         // center in window
-        logger.debug("Scale is: " + scale + " BoundsCenters: " + bounds.getCenterX() + " " + bounds.getCenterY());
+        logger.debug("Scale is: " + scale + " BoundsCenters: "
+                + bounds.getCenterX() + " " + bounds.getCenterY());
         translate((int) Math.round(bounds.getCenterX()) + (int) (size / 2),
                 (int) Math.round(bounds.getCenterY()) + (int) (size / 2));
     }
@@ -549,8 +565,10 @@ class ExPolygon extends Polygon {
         // set in 0,0
         this.scale = scale;
         logger.debug(
-                "fitPolygon: Scale is: " + scale + " BoundsCenters: " + init.getCenterX() + " " + init.getCenterY());
-        translate((int) Math.round(-init.getCenterX()), (int) Math.round(-init.getCenterY()));
+                "fitPolygon: Scale is: " + scale + " BoundsCenters: "
+                        + init.getCenterX() + " " + init.getCenterY());
+        translate((int) Math.round(-init.getCenterX()),
+                (int) Math.round(-init.getCenterY()));
 
         for (int i = 0; i < npoints; i++) {
             xpoints[i] = (int) Math.round(xpoints[i] * scale);
