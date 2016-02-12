@@ -58,7 +58,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
         uiInstance = new QWindowBuilderInst(); // create window object, class
                                                // QWindowBuilder is abstract so
                                                // it must be extended
-        uiInstance.BuildWindow(uiDefinition); // construct ui (not shown yet)
+        uiInstance.buildWindow(uiDefinition); // construct ui (not shown yet)
     }
 
     /**
@@ -188,7 +188,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
     @Override
     public void showUI(boolean val) {
         LOGGER.debug("Got message to show UI");
-        uiInstance.ToggleWindow();
+        uiInstance.toggleWindow();
     }
 
     @Override
@@ -222,8 +222,8 @@ class QWindowBuilderInst extends QWindowBuilder {
      * @see BuildWindow
      */
     @Override
-    public void BuildWindow(Map<String, String[]> def) {
-        super.BuildWindow(def); // window must be built first
+    public void buildWindow(Map<String, String[]> def) {
+        super.buildWindow(def); // window must be built first
         ChangeListener changeListner = new ChangeListener() { // create new
                                                               // listener that
                                                               // will be

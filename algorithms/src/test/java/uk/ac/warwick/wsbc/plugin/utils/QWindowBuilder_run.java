@@ -37,7 +37,7 @@ public class QWindowBuilder_run {
         set.put("window", 0.32);
         set.put("smooth", 8.0);
         CountDownLatch startSignal = new CountDownLatch(1);
-        inst.BuildWindow(def1); // main window builder
+        inst.buildWindow(def1); // main window builder
         inst.setValues(set);
         inst.pluginWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         inst.pluginWnd.addWindowListener(new WindowAdapter() {
@@ -48,7 +48,7 @@ public class QWindowBuilder_run {
                 startSignal.countDown(); // decrease latch by 1
             }
         });
-        inst.ToggleWindow(); // show window
+        inst.toggleWindow(); // show window
         // main thread waits here until Latch reaches 0
         startSignal.await();
         ret = (HashMap<String, Object>) inst.getValues();

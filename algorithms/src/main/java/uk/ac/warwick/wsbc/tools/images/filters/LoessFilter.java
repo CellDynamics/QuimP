@@ -61,7 +61,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
                                                     // class QWindowBuilder is
                                                     // abstract so it must be
                                                     // extended
-        uiInstance.BuildWindow(uiDefinition); // construct ui (not shown yet)
+        uiInstance.buildWindow(uiDefinition); // construct ui (not shown yet)
     }
 
     /**
@@ -189,7 +189,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
     @Override
     public void showUI(boolean val) {
         LOGGER.debug("Got message to show UI");
-        uiInstance.ToggleWindow();
+        uiInstance.toggleWindow();
     }
 
     @Override

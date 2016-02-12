@@ -71,7 +71,7 @@ public class QWindowBuilder_Test {
     @Test
     public void test_getValues() {
         HashMap<String, Object> ret;
-        inst.BuildWindow(def1);
+        inst.buildWindow(def1);
         ret = (HashMap<String, Object>) inst.getValues();
         assertEquals(0, (Double) ret.get("window"), 1e-4);
         assertEquals(-1, (Double) ret.get("smooth"), 1e-4);
@@ -88,7 +88,7 @@ public class QWindowBuilder_Test {
         HashMap<String, Object> set = new HashMap<>();
         set.put("window", 0.32);
         set.put("smooth", 7.0);
-        inst.BuildWindow(def1);
+        inst.buildWindow(def1);
         inst.setValues(set);
         ret = (HashMap<String, Object>) inst.getValues();
         assertEquals(0.32, (Double) ret.get("window"), 1e-4);

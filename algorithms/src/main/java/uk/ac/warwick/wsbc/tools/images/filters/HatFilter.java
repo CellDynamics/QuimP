@@ -102,7 +102,7 @@ public class HatFilter extends QWindowBuilder
                 Integer.toString(crown) });
         uiDefinition.put("sigma", new String[] { "spinner", "0.01", "0.9",
                 "0.01", Double.toString(sig) });
-        BuildWindow(uiDefinition); // construct ui (not shown yet)
+        buildWindow(uiDefinition); // construct ui (not shown yet)
         points = null; // not attached yet
         pout = null; // not calculated yet
         err = 1;
@@ -301,7 +301,7 @@ public class HatFilter extends QWindowBuilder
     @Override
     public void showUI(boolean val) {
         LOGGER.debug("Got message to show UI");
-        if (ToggleWindow() == true)
+        if (toggleWindow() == true)
             recalculatePlugin();
     }
 
@@ -321,8 +321,8 @@ public class HatFilter extends QWindowBuilder
      * DrawPanel
      */
     @Override
-    public void BuildWindow(Map<String, String[]> def) {
-        super.BuildWindow(def); // window must be built first
+    public void buildWindow(Map<String, String[]> def) {
+        super.buildWindow(def); // window must be built first
 
         // attach listeners to ui to update window on new parameters
         ((JSpinner) ui.get("window")).addChangeListener(this); // attach

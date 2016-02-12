@@ -169,7 +169,7 @@ public abstract class QWindowBuilder {
      * @throw IllegalArgumentException or other unchecked exceptions on wrong
      * syntax of \c def
      */
-    public void BuildWindow(Map<String, String[]> def) {
+    public void buildWindow(Map<String, String[]> def) {
         if (def.size() < 2)
             throw new IllegalArgumentException("Window must contain title and"
                     + " at least one control");
@@ -275,7 +275,7 @@ public abstract class QWindowBuilder {
      * @param state
      * State of the window \c true to show, \c false to hide
      */
-    public void ShowWindow(boolean state) {
+    public void showWindow(boolean state) {
         pluginWnd.setVisible(state);
         windowState = state;
     }
@@ -285,9 +285,9 @@ public abstract class QWindowBuilder {
      * 
      * @return Current status of window \c true if visible, \c false if not
      */
-    public boolean ToggleWindow() {
+    public boolean toggleWindow() {
         windowState = !windowState;
-        ShowWindow(windowState);
+        showWindow(windowState);
         return windowState;
     }
 
@@ -312,8 +312,7 @@ public abstract class QWindowBuilder {
      * User has to care for correct format passed to UI control. If input values
      * are above range defined in \c def, new range is set for UI control
      * 
-     * @param vals
-     * <key,value> pairs to fill UI.
+     * @param vals <key,value> pairs to fill UI.
      */
     public void setValues(Map<String, Object> vals) {
         // iterate over parameters and match names to UIs
@@ -337,6 +336,9 @@ public abstract class QWindowBuilder {
                     else if (sm.getPreviousValue() == null)
                         sm.setMinimum((Double) val);
                     break;
+                default:
+                    new IllegalArgumentException(
+                            "Unknown UI type in setValues");
             }
         }
     }
@@ -369,6 +371,9 @@ public abstract class QWindowBuilder {
                     ret.put(key, val.getValue()); // store it in returned Map at
                                                   // the
                                                   // same key
+                default:
+                    new IllegalArgumentException(
+                            "Unknown UI type in setValues");
             }
             entryIterator.next(); // skip label. ui Map has repeating entries
                                   // UI,label,UI1,label1,...

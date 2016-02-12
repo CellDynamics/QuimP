@@ -60,7 +60,7 @@ public class HatFilter_run {
                 startSignal.countDown(); // decrease latch by 1
             }
         });
-        hf.ToggleWindow(); // show window
+        hf.toggleWindow(); // show window
         // main thread waits here until Latch reaches 0
         startSignal.await();
     }
