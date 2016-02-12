@@ -35,7 +35,7 @@ public interface IPadArray {
                 if (index < 0)
                     return (dataLength + index); // for -1 points last element
                 if (index >= dataLength)
-                    return (index - dataLength); // for after last points
+                    return (index - dataLength); // for after last points 
                                                  // to first
                 break;
             case SYMMETRICPAD:

@@ -21,7 +21,8 @@ import uk.ac.warwick.wsbc.dic.lid.DicException;
  */
 public class DIC_LID_Reconstruction implements PlugInFilter {
 
-    private static final Logger logger = LogManager.getLogger(DIC_LID_Reconstruction.class.getName());
+    private static final Logger logger = LogManager
+            .getLogger(DIC_LID_Reconstruction.class.getName());
     private DICReconstruction dic;
     private ImagePlus imp;
     private double angle, decay;
@@ -31,11 +32,11 @@ public class DIC_LID_Reconstruction implements PlugInFilter {
      * image is of an appropriate type.
      * 
      * @param arg
-     *            can be specified in plugins.config
+     * can be specified in plugins.config
      * @param imp
-     *            is the currently opened image
+     * is the currently opened image
      * @return Combination of flags determining supported formats: \li DOES_8G -
-     *         plugin supports 8bit grayscale images
+     * plugin supports 8bit grayscale images
      * @see ij.plugin.filter.PlugInFilter#setup(java.lang.String, ij.ImagePlus)
      */
     @Override
@@ -49,7 +50,7 @@ public class DIC_LID_Reconstruction implements PlugInFilter {
      * correct
      * 
      * @param ip
-     *            is the current slice
+     * is the current slice
      * @see ij.plugin.filter.PlugInFilter#run(ij.process.ImageProcessor)
      */
     @Override
@@ -86,12 +87,14 @@ public class DIC_LID_Reconstruction implements PlugInFilter {
      * Shows user dialog and check conditions.
      * 
      * @return \c true if user clicked \b OK and input data are correct (they
-     *         are numbers) or return \c false otherwise
+     * are numbers) or return \c false otherwise
      */
     public boolean showDialog() {
         GenericDialog gd = new GenericDialog("DIC reconstruction");
-        gd.addMessage("Reconstruction of DIC image by Line Integrals\n\nShear angle is measured counterclockwise\n"
-                + "Decay factor is usually positive and smaller than 1");
+        gd.addMessage(
+                "Reconstruction of DIC image by Line Integrals\n\nShear angle"
+                        + " is measured counterclockwise\n"
+                        + "Decay factor is usually positive and smaller than 1");
         gd.addNumericField("Shear", 45.0, 0, 6, "[deg]");
         gd.addNumericField("Decay", 0.0, 2, 6, "[-]");
         gd.setResizable(false);

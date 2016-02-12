@@ -387,8 +387,7 @@ public abstract class QWindowBuilder {
      * @remarks In case of wrong conversion it may be exception thrown. User is
      * responsible to call this method for proper key.
      * 
-     * @param key
-     * Key to be read from configuration list
+     * @param key Key to be read from configuration list
      * @return
      * @see BuildWindow(Map<String, String[]>)
      */

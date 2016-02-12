@@ -159,8 +159,8 @@ public class HatFilter extends QWindowBuilder
 
         // check input conditions
         if (window % 2 == 0 || crown % 2 == 0)
-            throw new QuimpPluginException(
-                    "Input arguments must be uneven, positive and larger than 0");
+            throw new QuimpPluginException("Input arguments must be uneven,"
+                    + " positive and larger than 0");
         if (window >= points.size() || crown >= points.size())
             throw new QuimpPluginException(
                     "Processing window or crown to long");
@@ -171,12 +171,11 @@ public class HatFilter extends QWindowBuilder
             throw new QuimpPluginException("Window should be larger than 2");
 
         Vector2d[] V = new Vector2d[window]; // temporary array for holding
-                                             // content of window [v1 v2 v3 v4
-                                             // v5 v6 v7]
+                                             // content of window 
+                                             // [v1 v2 v3 v4 v5 v6 v7]
         Vector2d[] B = new Vector2d[window - crown]; // array for holding brim
-                                                     // only points [v1 v2 v6
-                                                     // v7]
-
+                                                     // only points 
+                                                     // [v1 v2 v6 v7]
         for (int c = 0; c < points.size(); c++) { // for every point in data, c
                                                   // is current window position
                                                   // - middle point
@@ -280,8 +279,8 @@ public class HatFilter extends QWindowBuilder
             setValues(par); // copy incoming parameters to UI
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched
-            // by caller
-            // they are only passed to configuration saver and restored from it
+            // by caller they are only passed to configuration saver and 
+            // restored from it
             throw new QuimpPluginException(
                     "Wrong input argument->" + e.getMessage(), e);
         }
