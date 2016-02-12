@@ -872,7 +872,7 @@ class FluoStats {
          FluoStats[] stats = new FluoStats[i];
 
          i = 0;
-         String split[];
+         String[] split;
          br = new BufferedReader(new FileReader(INFILE)); //re-open and read
          while ((thisLine = br.readLine()) != null) {
             if (thisLine.startsWith("# Channel")) { // reached fluo stats
@@ -918,7 +918,7 @@ class FluoStats {
 
    private static void readChannel(int c, FluoStats[] stats, BufferedReader br) throws IOException {
       String thisLine;
-      String split[];
+      String[] split;
       int i = 0;
       while ((thisLine = br.readLine()) != null) {
          if (thisLine.startsWith("# Channel")) {

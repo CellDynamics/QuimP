@@ -154,8 +154,8 @@ public class HatFilter extends QWindowBuilder implements IQuimpPoint2dFilter<Vec
 		if(window<3)
 			throw new QuimpPluginException("Window should be larger than 2");
 		
-		Vector2d V[] = new Vector2d[window]; // temporary array for holding content of window [v1 v2 v3 v4 v5 v6 v7]
-		Vector2d B[] = new Vector2d[window-crown]; //array for holding brim only points  [v1 v2 v6 v7]
+		Vector2d[] V = new Vector2d[window]; // temporary array for holding content of window [v1 v2 v3 v4 v5 v6 v7]
+		Vector2d[] B = new Vector2d[window-crown]; //array for holding brim only points  [v1 v2 v6 v7]
 		
 		for(int c=0;c<points.size();c++)	{	// for every point in data, c is current window position - middle point
 			countW = 0;

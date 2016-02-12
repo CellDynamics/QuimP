@@ -15,7 +15,7 @@ public class Vert {
     public double charge;               // charge on the vertex
     public double distance;             // distance vert migrated (actually converted to speed by Tool.speedToScale
 
-    final FluoMeasurement fluores[];    // fluorescence channels 1-3. Intensity and location
+    final FluoMeasurement[] fluores;    // fluorescence channels 1-3. Intensity and location
 
     //public double curvatureOLD;
     //public double convexityOLD;         // curvature, but may be a smoothed value

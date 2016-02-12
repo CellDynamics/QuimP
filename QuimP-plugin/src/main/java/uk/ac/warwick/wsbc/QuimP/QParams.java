@@ -253,7 +253,7 @@ public class QParams {
       ArrayList<String> paFiles = new ArrayList<String>();
 
       if(directory.isDirectory()) {
-         String filenames[] = directory.list();
+         String[] filenames = directory.list();
          String extension;
          
          for(int i=0; i < filenames.length ;i++ ){

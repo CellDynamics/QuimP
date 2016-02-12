@@ -43,6 +43,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mockito.Mockito;
 
+import com.jcabi.manifests.Manifests;
+
 
 /**
  * Main class implementing BOA plugin.
@@ -226,6 +228,7 @@ public class BOA_ implements PlugIn {
 				+ "BOA plugin,by Richard Tyson (richard.tyson@warwick.ac.uk)\n"
 				+ "& Till Bretschneider\n(Till.Bretschneider@warwick.ac.uk)\n"
 				+ "############################\n \n");
+		logger.info("Man: "+Manifests.read("Built-By"));
 	}
 
 	/**
@@ -549,7 +552,7 @@ public class BOA_ implements PlugIn {
 		 * @param mp Reference to the panel where ComboBox is located
 		 * @return Reference to created ComboBox
 		 */
-		private JComboBox<String> addComboBox(String s[], Container mp) {
+		private JComboBox<String> addComboBox(String[] s, Container mp) {
 			JComboBox<String> c = new JComboBox<String>(s);
 			c.setSelectedIndex(0);
 			c.addActionListener(this);

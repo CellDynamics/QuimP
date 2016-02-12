@@ -142,7 +142,7 @@ public class OutlineHandler {
 
             for (int i = 0; i < N; i++) {
                thisLine = br.readLine();
-               String split[] = thisLine.split("\t");
+               String[] split = thisLine.split("\t");
                n = new Vert(index);
 
                n.coord = Tool.s2d(split[0]);
