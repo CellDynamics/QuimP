@@ -19,17 +19,14 @@ public interface IPadArray {
      * in-place padding. Returns new proper index for array that accounts
      * padding e.g. for input = -2 it returns last+2 if padding is \b circular
      * 
-     * @param dataLength
-     *            Length of data
-     * @param index
-     *            Index of element to get
-     * @param mode
-     *            Method of padding. Available are: - \b CIRCULARPAD - as in
-     *            Matlab padarray - \b SYMMETRICPAD - as in Matlab padarray
+     * @param dataLength Length of data
+     * @param index Index of element to get
+     * @param mode Method of padding. Available are: - \b CIRCULARPAD - as in
+     * Matlab padarray - \b SYMMETRICPAD - as in Matlab padarray
      * @return Proper index. If \c index is negative or larger than X,Y size
-     *         returned value simulates padding.
+     * returned value simulates padding.
      * @remarks Do no check relations of window (provided \c index) to whole
-     *          data size. May be unstable for certain cases.
+     * data size. May be unstable for certain cases.
      */
     public static int getIndex(int dataLength, int index, int mode) {
 

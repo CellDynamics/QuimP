@@ -11,7 +11,7 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  * @author p.baniukiewicz
  * @todo TODO Finish documentation
  * @todo TODO General specification E may not be useful here as QuimP always
- *       call it as \c Vector2d. Remove if not useful
+ * call it as \c Vector2d. Remove if not useful
  */
 public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
 
@@ -21,8 +21,7 @@ public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
      * Number of returned points can be different.
      * 
      * @return Filtered points
-     * @throws QuimpPluginException
-     *             on any problems during filter execution
+     * @throws QuimpPluginException on any problems during filter execution
      */
     public List<E> runPlugin() throws QuimpPluginException;
 

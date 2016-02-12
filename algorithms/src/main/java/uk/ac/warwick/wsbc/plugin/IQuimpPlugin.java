@@ -26,8 +26,9 @@ public interface IQuimpPlugin {
      * Provide basic information to QuimP about plugin
      * 
      * @warning It must return at least type of plugin
-     * @return Combination of flags specifying: -# type of plugin (obligatory)
-     *         -# modification of input size (e.g. reduction of polygon points)
+     * @return Combination of flags specifying:
+     * -# type of plugin (obligatory)
+     * -# modification of input size (e.g. reduction of polygon points)
      */
     public int setup();
 
@@ -40,13 +41,13 @@ public interface IQuimpPlugin {
      * 
      * @remarks Numerical values should be passed as Double
      * @warning setPluginConfig(HashMap<String,Object>) and getPluginConfig()
-     *          should use the same convention of key naming and parameters
-     *          casting
+     * should use the same convention of key naming and parameters
+     * casting
      * @param par
      * @throws QuimpPluginException
-     *             on problems with understanding parameters by plugin e.g. \b
-     *             key is not understood or casting from \c Object \b value to
-     *             other type has not been successful.
+     * on problems with understanding parameters by plugin e.g. \b
+     * key is not understood or casting from \c Object \b value to
+     * other type has not been successful.
      */
     public void setPluginConfig(HashMap<String, Object> par) throws QuimpPluginException;
 

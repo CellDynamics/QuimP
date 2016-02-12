@@ -53,18 +53,19 @@ import org.apache.logging.log4j.LogManager;
  * by setIp(ImageProcessor) are not rotated. This situation is detected in
  * reconstructionDicLid() by isRotated flag.
  * 
- * @warning Currently this class supports only 8bit images. It can support also
- *          16bit input but in this case algorithm used for detection of \b true
- *          pixels may not work correctly for certain cases - when maximum
- *          intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
+ * @warning
+ * Currently this class supports only 8bit images. It can support also
+ * 16bit input but in this case algorithm used for detection of \b true
+ * pixels may not work correctly for certain cases - when maximum
+ * intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
  * @author p.baniukiewicz
  * @date 10 Dec 2015
  * @see Z. Kam, “Microscopic differential interference contrast image processing
- *      by line integration (LID) and deconvolution,” Bioimaging, vol. 6, no. 4,
- *      pp. 166–176, 1998.
+ * by line integration (LID) and deconvolution,” Bioimaging, vol. 6, no. 4,
+ * pp. 166–176, 1998.
  * @see B. Heise, A. Sonnleitner, and E. P. Klement, “DIC image reconstruction
- *      on large cell scans.,” Microsc. Res. Tech., vol. 66, no. 6, pp. 312–320,
- *      2005.
+ * on large cell scans.,” Microsc. Res. Tech., vol. 66, no. 6, pp. 312–320,
+ * 2005.
  *
  */
 public class DICReconstruction {
@@ -103,7 +104,7 @@ public class DICReconstruction {
      * 
      * @remarks Input \c srcImage is not modified
      * @throws DicException
-     *             Throws exception after generateRanges()
+     * Throws exception after generateRanges()
      */
     public DICReconstruction(ImagePlus srcImage, double decay, double angle) throws DicException {
         this(srcImage.getProcessor(), decay, angle);
@@ -114,7 +115,7 @@ public class DICReconstruction {
      * 
      * @remarks Input \c ip is not modified
      * @throws DicException
-     *             Throws exception after generateRanges()
+     * Throws exception after generateRanges()
      */
     public DICReconstruction(ImageProcessor ip, double decay, double angle) throws DicException {
         this.angle = angle;
@@ -131,7 +132,7 @@ public class DICReconstruction {
      * @param decay
      * @param angle
      * @throws DicException
-     *             Throws exception after generateRanges()
+     * Throws exception after generateRanges()
      */
     public void setParams(double decay, double angle) throws DicException {
         this.angle = angle;
@@ -150,7 +151,7 @@ public class DICReconstruction {
      * 
      * @remarks Input \c ip is not modified
      * @param ip
-     *            New ImageProcessor containing image for reconstruction.
+     * New ImageProcessor containing image for reconstruction.
      */
     public void setIp(ImageProcessor ip) {
         this.srcIp = ip;
@@ -173,15 +174,15 @@ public class DICReconstruction {
      * Setup private class fields.
      * 
      * @throws DicException
-     *             when input image is close to saturation e.g. has values of
-     *             65536-shift. This is due to applied algorithm of detection
-     *             image pixels after rotation.
+     * when input image is close to saturation e.g. has values of
+     * 65536-shift. This is due to applied algorithm of detection
+     * image pixels after rotation.
      * @return Modifies private class fields: \li \c maxWidth (private field)
-     *         \li \c ranges (private field) \li \c maxWidth holds width of
-     *         image after rotation, \li \c ranges table that holds first and
-     *         last \a x position of image line (first and last pixel of image
-     *         on background after rotation), \c srcImageCopyProcessor is
-     *         rotated and shifted
+     * \li \c ranges (private field) \li \c maxWidth holds width of
+     * image after rotation, \li \c ranges table that holds first and
+     * last \a x position of image line (first and last pixel of image
+     * on background after rotation), \c srcImageCopyProcessor is
+     * rotated and shifted
      */
     private void getRanges() throws DicException {
         double maxpixel; // minimal pixel value
@@ -226,7 +227,7 @@ public class DICReconstruction {
      * new decay table.
      * 
      * @throws DicException
-     *             Throws exception after generateRanges()
+     * Throws exception after generateRanges()
      */
     private void recalculate() throws DicException {
         // calculate preallocated decay data
@@ -241,11 +242,11 @@ public class DICReconstruction {
      * reconstruct passed /c ip object.
      * 
      * @remarks The reconstruction algorithm assumes that input image
-     *          bas-reliefs are oriented horizontally, thus correct \c angle
-     *          should be provided
+     * bas-reliefs are oriented horizontally, thus correct \c angle
+     * should be provided
      * @warning Used optimisation with detecting of image pixels based on their
-     *          value may not be accurate when input image will be 16-bit and it
-     *          will contain saturated pixels
+     * value may not be accurate when input image will be 16-bit and it
+     * will contain saturated pixels
      * @retval ImageProcessor
      * @return Return reconstruction of \c srcImage as 8-bit image
      */
@@ -309,10 +310,10 @@ public class DICReconstruction {
      * multiplied by decay coefficient
      * 
      * @param decay
-     *            The value of decay coefficient
+     * The value of decay coefficient
      * @param length
-     *            Length of table, usually equals to longest processed line on
-     *            image
+     * Length of table, usually equals to longest processed line on
+     * image
      * @return Table with decays coefficients (private field)
      */
     private void generateDeacy(double decay, int length) {

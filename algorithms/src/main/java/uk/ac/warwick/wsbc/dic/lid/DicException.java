@@ -15,8 +15,7 @@ public class DicException extends Exception {
     /**
      * Main constructor
      * 
-     * @param arg0
-     *            Reason of exception
+     * @param arg0 Reason of exception
      */
     public DicException(String arg0) {
         super(arg0);

@@ -278,10 +278,11 @@ public class BOA_ implements PlugIn {
      * variable and prevent to notify user that QuimP is running when it has
      * been closed and called again.
      * 
-     * @bug When user closes window by system button QuimP does not ask for
-     *      saving current work. This is because by default QuimP window is
-     *      managed by ImageJ and it by \a probably only hides it when window
-     *      close button is clicked.
+     * @bug
+     * When user closes window by system button QuimP does not ask for
+     * saving current work. This is because by default QuimP window is
+     * managed by ImageJ and it by \a probably only hides it when window
+     * close button is clicked.
      * 
      * @author p.baniukiewicz
      */
@@ -357,12 +358,6 @@ public class BOA_ implements PlugIn {
                 editSeg(offScreenX(e.getX()), offScreenY(e.getY()), frame);
             }
         }
-        /**
-         * Overrides handlePopupMenu() in ImageCanvas to suppress the
-         * right-click popup menu.
-         */
-        // protected void handlePopupMenu(MouseEvent e) {
-        // }
     } // end of CustomCanvas
 
     /**
@@ -1393,7 +1388,7 @@ public class BOA_ implements PlugIn {
      * @param f number of current frame
      * @see tightenSnake(Snake)
      * @todo sH.storeCurrentSnake(f); is called two times just to know who
-     *       thrown exception
+     * thrown exception
      */
     // @SuppressWarnings("unchecked")
     void addCell(Roi r, int f) {
@@ -1641,13 +1636,6 @@ public class BOA_ implements PlugIn {
         window.setImage(new ImagePlus());// remove link to window
         window.close();
     }
-
-    public static void main(String[] args) {
-        // blank main
-        // ij.ImageJ.main(new String[]{"-ijpath", "image j path"});
-        // ij.ImageJ.main(new String[]{"-ijpath",
-        // "/Users/rtyson/Documents/phd/NetBeans/ImageJ/"});
-    }
 }
 
 /**
@@ -1845,11 +1833,8 @@ class ImageGroup {
         Rectangle r = snake.getBounds();
         int border = 40;
 
-        r.setBounds(r.x - border, r.y - border, r.width + border * 2, r.height + border * 2); // add
-                                                                                              // border
-                                                                                              // (10
-                                                                                              // either
-                                                                                              // way)
+        // add border (10 either way)
+        r.setBounds(r.x - border, r.y - border, r.width + border * 2, r.height + border * 2);
 
         // correct r's aspect ratio
         double icAspect = (double) ic.getWidth() / (double) ic.getHeight();
@@ -1919,8 +1904,6 @@ class ImageGroup {
  * Calculate forces that affect the snake
  * 
  * @author rtyson
- * @todo move to static?
- *       http://stackoverflow.com/questions/7486012/static-classes-in-java
  */
 class Constrictor {
     public Constrictor() {
@@ -1990,7 +1973,7 @@ class Constrictor {
 
     /**
      * @deprecated Strictly related to absolute paths on disk. Probably for
-     *             testing purposes only
+     * testing purposes only
      */
     public boolean constrictWrite(Snake snake, ImageProcessor ip) {
         // for writing forces at each frame
@@ -2962,23 +2945,14 @@ class SnakeHandler {
     void resetForFrame(int f) {
         try {
             if (BOAp.use_previous_snake) {
-                liveSnake = new Snake((PolygonRoi) this.getStoredSnake(f - 1).asFloatRoi(), ID); // set
-                                                                                                 // to
-                                                                                                 // last
-                                                                                                 // segmentation
-                                                                                                 // ready
-                                                                                                 // for
-                                                                                                 // blowup
+                // set to last segmentation ready for blowup
+                liveSnake = new Snake((PolygonRoi) this.getStoredSnake(f - 1).asFloatRoi(), ID);
             } else {
                 liveSnake = new Snake(roi, ID, false);
             }
         } catch (Exception e) {
             BOA_.log("Could not reset live snake form frame" + f);
         }
-        // for (int i = f - startFrame; i < snakes.length; i++) { // keep other
-        // snakes?
-        // snakes[i] = null;
-        // }
     }
 
     void storeRoi(PolygonRoi r, int f) {
@@ -2995,7 +2969,7 @@ class SnakeHandler {
     }
 
     void setEndFrame() {
-        // find the first missing contour and set end frame to the previouse one
+        // find the first missing contour and set end frame to the previous one
 
         for (int i = startFrame; i <= BOAp.FRAMES; i++) {
             if (!isStoredAt(i)) {
@@ -3023,16 +2997,10 @@ class Snake {
                        // maintained
     private int NODES; // number of nodes
     public double startingNnodes; // how many nodes at start of segmentation
-    // public double startingNnodes; // how many nodes at start of segmentation
     // used as a reference for node limit
     private int FROZEN; // number of nodes frozen
-    // private double detO; // determinant of orientation (calc weather concave
-    // or convex)
     private double minX, minY, maxX, maxY;
     private Rectangle bounds = new Rectangle(); // snake bounds
-    // public QColor colour; private Rectangle bounds = new Rectangle(); //
-    // snake bounds
-    // public QColor colour;
     private ExtendedVector2d centroid;
 
     /**
@@ -3382,13 +3350,16 @@ class Snake {
      * Add node before head node assuring that list has closed loop. If initial
      * list condition is defined in such way:
      * 
-     * @code head = new Node(0); //make a dummy head node NODES = 1; FROZEN = 0;
-     *       head.setPrev(head); // link head to itself head.setNext(head);
-     *       head.setHead(true);
-     * @endcode the \c addNode will produce closed bidirectional linked list.
-     *          From first Node it is possible to reach last one by calling
-     *          Node::getNext() and from the last one, firs should be accessible
-     *          by calling Node::getPrev()
+     * @code
+     * head = new Node(0); //make a dummy head node NODES = 1; FROZEN = 0;
+     * head.setPrev(head); // link head to itself head.setNext(head);
+     * head.setHead(true);
+     * @endcode
+     * 
+     * The \c addNode will produce closed bidirectional linked list.
+     * From first Node it is possible to reach last one by calling
+     * Node::getNext() and from the last one, first should be accessible
+     * by calling Node::getPrev()
      * 
      * @param newNode Node to be added to list
      * 
@@ -3542,12 +3513,9 @@ class Snake {
             cutHead = (nA.getNext().isHead()) ? true : false;
             nB = nA.getNext().getNext(); // don't check next edge as they can't
                                          // cross, but do touch
-            interval = (NODES > MAXINTERVAL + 3) ? MAXINTERVAL : (NODES - 3); // always
-                                                                              // leave
-                                                                              // 3
-                                                                              // nodes,
-                                                                              // at
-                                                                              // least
+            
+            // always leave 3 nodes, at least
+            interval = (NODES > MAXINTERVAL + 3) ? MAXINTERVAL : (NODES - 3); 
 
             for (int i = 0; i < interval; i++) {
                 if (nB.isHead()) {
@@ -4718,7 +4686,7 @@ class BOAp {
      * associated files and \a csv file with statistics.
      * 
      * @param sID ID of cell. If many cells segmented in one time, QuimP
-     *            produces separate parameter file for every of them
+     * produces separate parameter file for every of them
      * @param startF Start frame (typically beginning of stack)
      * @param endF End frame (typically end of stack)
      * @see QParams
@@ -4765,7 +4733,7 @@ class BOAp {
      * @return Status of operation
      * @retval true when file has been loaded successfully
      * @retval false when file has not been opened correctly or
-     *         QParams.readParams() returned \c false
+     * QParams.readParams() returned \c false
      * @see QParams
      */
     static public boolean readParams() {
