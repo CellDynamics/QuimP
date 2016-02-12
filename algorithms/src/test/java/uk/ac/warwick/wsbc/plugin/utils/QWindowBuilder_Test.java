@@ -27,7 +27,7 @@ import uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder;
  */
 public class QWindowBuilder_Test {
     @SuppressWarnings("unused")
-    private static final Logger logger = LogManager.getLogger(QWindowBuilder_Test.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(QWindowBuilder_Test.class.getName());
     private HashMap<String, String[]> def1;
     QWindowBuilderInst inst;
 

@@ -35,7 +35,7 @@ public class MeanFilter_testParam {
     private List<Vector2d> testcase;
     private Double window;
     private Path testfileName;
-    private static final Logger logger = LogManager.getLogger(MeanFilter_testParam.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(MeanFilter_testParam.class.getName());
 
     /**
      * Parameterized constructor.
@@ -122,9 +122,9 @@ public class MeanFilter_testParam {
         out = (ArrayList<Vector2d>) i.runPlugin();
         RoiSaver.saveROI(
                 "/tmp/test_getInterpolationMean_" + testfileName.getFileName() + "_" + window.toString() + ".tif", out);
-        logger.debug("setUp: " + testcase.toString());
+        LOGGER.debug("setUp: " + testcase.toString());
         if (out.size() < 100)
-            logger.debug("testInterpolate: " + out.toString());
+            LOGGER.debug("testInterpolate: " + out.toString());
     }
 
     /**

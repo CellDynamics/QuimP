@@ -28,12 +28,10 @@ import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
  */
 public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
 
-    private static final Logger logger = LogManager.getLogger(MeanFilter.class.getName());
-    private QuimpDataConverter xyData; /// < input List converted to separate X
-                                       /// and Y arrays
-    private int window; /// < size of processing window
-    private HashMap<String, String[]> uiDefinition; /// < Definition of UI for
-                                                    /// this plugin
+    private static final Logger LOGGER = LogManager.getLogger(MeanFilter.class.getName());
+    private QuimpDataConverter xyData; // input List converted to separate X and Y arrays
+    private int window; // size of processing window
+    private HashMap<String, String[]> uiDefinition; // Definition of UI for this plugin
     private QWindowBuilderInst uiInstance;
 
     /**
@@ -43,38 +41,16 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
      * setPluginConfig(HashMap<String, Object>)
      */
     public MeanFilter() {
-        logger.trace("Entering constructor");
+        LOGGER.trace("Entering constructor");
         this.window = 7; // default value
-        logger.debug("Set default parameter: window=" + window);
+        LOGGER.debug("Set default parameter: window=" + window);
         // create UI using QWindowBuilder
         uiDefinition = new HashMap<String, String[]>(); // will hold ui
                                                         // definitions
-        uiDefinition.put("name", new String[] { "MeanFilter" }); // name of
-                                                                 // window
-        uiDefinition.put("window", new String[] { "spinner", "1", "21", "2", Integer.toString(window) }); // the
-                                                                                                          // name
-                                                                                                          // of
-                                                                                                          // this
-                                                                                                          // ui
-                                                                                                          // control
-                                                                                                          // is
-                                                                                                          // "system-wide",
-                                                                                                          // now
-                                                                                                          // it
-                                                                                                          // will
-                                                                                                          // define
-                                                                                                          // ui
-                                                                                                          // and
-                                                                                                          // name
-                                                                                                          // of
-                                                                                                          // numerical
-                                                                                                          // data
-                                                                                                          // related
-                                                                                                          // to
-                                                                                                          // this
-                                                                                                          // ui
-                                                                                                          // and
-                                                                                                          // parameter
+        uiDefinition.put("name", new String[] { "MeanFilter" }); // name of window
+        // the name of this ui control is "system-wide", now it will define ui
+        // and name of numerical data related to this ui and parameter                                                         // window
+        uiDefinition.put("window", new String[] { "spinner", "1", "21", "2", Integer.toString(window) });
         uiDefinition.put("help", new String[] { "Window shoud be uneven" }); // help
                                                                              // string
         uiInstance = new QWindowBuilderInst(); // create window object, class
@@ -96,7 +72,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
      */
     @Override
     public void attachData(List<Vector2d> data) {
-        logger.trace("Entering attachData");
+        LOGGER.trace("Entering attachData");
         xyData = new QuimpDataConverter(data); // helper for converting from
                                                // List<Vector2d> to X[], Y[]
     }
@@ -118,7 +94,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
     public List<Vector2d> runPlugin() throws QuimpPluginException {
         // collect parameters from window
         window = uiInstance.getIntegerFromUI("window");
-        logger.debug(String.format("Run plugin with params: window %d", window));
+        LOGGER.debug(String.format("Run plugin with params: window %d", window));
 
         // do filtering
         int cp = window / 2; // left and right range of window
@@ -161,7 +137,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
      */
     @Override
     public int setup() {
-        logger.trace("Entering setup");
+        LOGGER.trace("Entering setup");
         return DOES_SNAKES;
     }
 
@@ -208,7 +184,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
 
     @Override
     public void showUI(boolean val) {
-        logger.debug("Got message to show UI");
+        LOGGER.debug("Got message to show UI");
         uiInstance.ToggleWindow();
     }
 
@@ -256,7 +232,7 @@ class QWindowBuilderInst extends QWindowBuilder {
                 Object source = ce.getSource();
                 JSpinner s = (JSpinner) ui.get("window"); // get ui element
                 if (source == s) { // check if this event concerns it
-                    logger.debug("Spinner used");
+                    LOGGER.debug("Spinner used");
                     if (((Double) s.getValue()).intValue() % 2 == 0)
                         s.setValue((Double) s.getValue() + 1);
                 }

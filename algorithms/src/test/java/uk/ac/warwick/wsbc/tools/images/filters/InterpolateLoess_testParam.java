@@ -37,7 +37,7 @@ public class InterpolateLoess_testParam {
     private List<Vector2d> testcase;
     private Double smoothing;
     private Path testfileName;
-    private static final Logger logger = LogManager.getLogger(InterpolateLoess_testParam.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(InterpolateLoess_testParam.class.getName());
 
     /**
      * Parameterized constructor.
@@ -121,9 +121,9 @@ public class InterpolateLoess_testParam {
         RoiSaver.saveROI(
                 "/tmp/test_getInterpolationLoess_" + testfileName.getFileName() + "_" + smoothing.toString() + ".tif",
                 out);
-        logger.debug("setUp: " + testcase.toString());
+        LOGGER.debug("setUp: " + testcase.toString());
         if (out.size() < 100)
-            logger.debug("testInterpolate: " + out.toString());
+            LOGGER.debug("testInterpolate: " + out.toString());
     }
 
     /**

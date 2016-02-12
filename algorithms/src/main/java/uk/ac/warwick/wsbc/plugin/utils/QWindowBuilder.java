@@ -78,7 +78,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public abstract class QWindowBuilder {
-    final protected static Logger logger = LogManager.getLogger(QWindowBuilder.class.getName());
+    final protected static Logger LOGGER = LogManager.getLogger(QWindowBuilder.class.getName());
     protected JFrame pluginWnd; /// < main window object
     protected boolean windowState; /// < current window state \c true if visible
     protected JPanel pluginPanel; /// < Main panel extended on whole \c
@@ -121,7 +121,7 @@ public abstract class QWindowBuilder {
      * Default constructor
      */
     public QWindowBuilder() {
-        logger.trace("Entering constructor");
+        LOGGER.trace("Entering constructor");
         ui = new LinkedHashMap<String, Component>();
         def = null;
     }

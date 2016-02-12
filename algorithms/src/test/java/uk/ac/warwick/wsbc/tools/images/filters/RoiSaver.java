@@ -21,7 +21,7 @@ import ij.process.ImageProcessor;
  *
  */
 class RoiSaver {
-    private static final Logger logger = LogManager.getLogger(RoiSaver.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(RoiSaver.class.getName());
 
     /**
      * Dummy constructor
@@ -55,7 +55,7 @@ class RoiSaver {
             bb = getBoundingBox(vert); // get size of output image
             PolygonRoi pR = new PolygonRoi(x, y, Roi.POLYGON); // create polygon
                                                                // object
-            logger.debug("Creating image of size [" + (int) Math.round(bb[0]) + "," + (int) Math.round(bb[1]) + "]");
+            LOGGER.debug("Creating image of size [" + (int) Math.round(bb[0]) + "," + (int) Math.round(bb[1]) + "]");
             ImagePlus outputImage = IJ.createImage("", (int) Math.round(bb[0] + 0.2 * bb[0]),
                     (int) Math.round(bb[1] + 0.2 * bb[1]), 1, 8); // output
                                                                   // image of
@@ -69,14 +69,14 @@ class RoiSaver {
                                                       // center
             pR.drawPixels(ip); // draw roi
             IJ.saveAsTiff(outputImage, fileName); // save image
-            logger.debug("Saved as: " + fileName);
+            LOGGER.debug("Saved as: " + fileName);
         } catch (Exception e) {
             ImagePlus outputImage = IJ.createImage("", 100, 100, 1, 24);
             ImageProcessor ip = outputImage.getProcessor();
             ip.setColor(Color.RED);
             ip.fill();
             IJ.saveAsTiff(outputImage, fileName); // save image
-            logger.error(e);
+            LOGGER.error(e);
         }
 
     }

@@ -28,7 +28,7 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  */
 public class HatFilter_test {
 
-    private static final Logger logger = LogManager.getLogger(HatFilter_test.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(HatFilter_test.class.getName());
     private List<Vector2d> input;
 
     @Rule
@@ -53,7 +53,7 @@ public class HatFilter_test {
         input.set(18, new Vector2d(18, 1));
         input.set(19, new Vector2d(19, 1));
         input.set(20, new Vector2d(20, 1));
-        logger.info("Entering " + name.getMethodName());
+        LOGGER.info("Entering " + name.getMethodName());
     }
 
     @After
@@ -69,7 +69,7 @@ public class HatFilter_test {
     @SuppressWarnings("serial")
     @Test
     public void test_HatFilter_case1() throws QuimpPluginException {
-        logger.debug("input: " + input.toString());
+        LOGGER.debug("input: " + input.toString());
         HatFilter hf = new HatFilter();
         hf.attachData(input);
         hf.setPluginConfig(new HashMap<String, Object>() {
@@ -80,7 +80,7 @@ public class HatFilter_test {
             }
         });
         ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
-        logger.debug("  out: " + out.toString());
+        LOGGER.debug("  out: " + out.toString());
         assertEquals(input, out);
     }
 
@@ -94,7 +94,7 @@ public class HatFilter_test {
     @SuppressWarnings("serial")
     @Test
     public void test_HatFilter_case2() throws QuimpPluginException {
-        logger.debug("input: " + input.toString());
+        LOGGER.debug("input: " + input.toString());
         HatFilter hf = new HatFilter();
         hf.attachData(input);
         hf.setPluginConfig(new HashMap<String, Object>() {
@@ -105,7 +105,7 @@ public class HatFilter_test {
             }
         });
         ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
-        logger.debug("  out: " + out.toString());
+        LOGGER.debug("  out: " + out.toString());
 
         // remove precalculated indexes from input array (see Matlab test code)
         int removed[] = { 0, 1, 2, 37, 38, 39, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
@@ -113,7 +113,7 @@ public class HatFilter_test {
         int lr = 0;
         for (int el : removed)
             input.remove(el - lr++);
-        logger.debug(input.toString());
+        LOGGER.debug(input.toString());
         assertEquals(input, out);
     }
 
@@ -164,7 +164,7 @@ public class HatFilter_test {
             fail("Exception not thrown");
         } catch (QuimpPluginException e) {
             assertTrue(e != null);
-            logger.debug(e.getMessage());
+            LOGGER.debug(e.getMessage());
         }
         try {
             HatFilter hf = new HatFilter(); // even crown
@@ -180,7 +180,7 @@ public class HatFilter_test {
             fail("Exception not thrown");
         } catch (QuimpPluginException e) {
             assertTrue(e != null);
-            logger.debug(e.getMessage());
+            LOGGER.debug(e.getMessage());
         }
         try {
             HatFilter hf = new HatFilter(); // crown>window
@@ -196,7 +196,7 @@ public class HatFilter_test {
             fail("Exception not thrown");
         } catch (QuimpPluginException e) {
             assertTrue(e != null);
-            logger.debug(e.getMessage());
+            LOGGER.debug(e.getMessage());
         }
         try {
             HatFilter hf = new HatFilter(); // bad crown
@@ -212,7 +212,7 @@ public class HatFilter_test {
             fail("Exception not thrown");
         } catch (QuimpPluginException e) {
             assertTrue(e != null);
-            logger.debug(e.getMessage());
+            LOGGER.debug(e.getMessage());
         }
         try {
             HatFilter hf = new HatFilter(); // bad crown
@@ -228,7 +228,7 @@ public class HatFilter_test {
             fail("Exception not thrown");
         } catch (QuimpPluginException e) {
             assertTrue(e != null);
-            logger.debug(e.getMessage());
+            LOGGER.debug(e.getMessage());
         }
         try {
             HatFilter hf = new HatFilter(); // bad crown
@@ -244,7 +244,7 @@ public class HatFilter_test {
             fail("Exception not thrown");
         } catch (QuimpPluginException e) {
             assertTrue(e != null);
-            logger.debug(e.getMessage());
+            LOGGER.debug(e.getMessage());
         }
         try {
             HatFilter hf = new HatFilter(); // bad crown
@@ -260,7 +260,7 @@ public class HatFilter_test {
             fail("Exception not thrown");
         } catch (QuimpPluginException e) {
             assertTrue(e != null);
-            logger.debug(e.getMessage());
+            LOGGER.debug(e.getMessage());
         }
     }
 

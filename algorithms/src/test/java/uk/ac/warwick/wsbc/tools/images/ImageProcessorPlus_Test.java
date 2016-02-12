@@ -19,7 +19,7 @@ import ij.process.ImageProcessor;
 public class ImageProcessorPlus_Test {
 
     private ImagePlus image;
-    private static final Logger logger = LogManager.getLogger(ImageProcessorPlus_Test.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ImageProcessorPlus_Test.class.getName());
     private ImageProcessorPlus ipp;
 
     /**
@@ -68,7 +68,7 @@ public class ImageProcessorPlus_Test {
         double angle = 135;
         ImageProcessor ret = ipp.rotate(image.getProcessor(), angle, true);
         IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testrotateImage.tif");
-        logger.info("Check /tmp/testrotateImage.tif to see results of rotation");
+        LOGGER.info("Check /tmp/testrotateImage.tif to see results of rotation");
     }
 
     /**
@@ -85,7 +85,7 @@ public class ImageProcessorPlus_Test {
         image.getProcessor().setBackgroundValue(0);
         ImageProcessor ret = ipp.rotate(image.getProcessor(), angle, true);
         IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testrotateImage_0background.tif");
-        logger.info("Check /tmp/testrotateImage_0background.tif to see results of rotation");
+        LOGGER.info("Check /tmp/testrotateImage_0background.tif to see results of rotation");
     }
 
     /**
@@ -102,7 +102,7 @@ public class ImageProcessorPlus_Test {
         assertEquals(513, ret.getWidth()); // size of the image
         assertEquals(513, ret.getHeight());
         IJ.saveAsTiff(new ImagePlus("extended", ret), "/tmp/testextendImage_0s.tif");
-        logger.info("Check /tmp/testextendImage_0s.tif to see results");
+        LOGGER.info("Check /tmp/testextendImage_0s.tif to see results");
     }
 
     /**
@@ -119,7 +119,7 @@ public class ImageProcessorPlus_Test {
         assertEquals(725, ret.getWidth()); // size of the image
         assertEquals(725, ret.getHeight());
         IJ.saveAsTiff(new ImagePlus("extended", ret), "/tmp/testextendImage_45s.tif");
-        logger.info("Check /tmp/testextendImage_45s.tif to see results");
+        LOGGER.info("Check /tmp/testextendImage_45s.tif to see results");
     }
 
     @Test
@@ -129,7 +129,7 @@ public class ImageProcessorPlus_Test {
         assertEquals(200, ret.getWidth()); // size of the image
         assertEquals(200, ret.getHeight());
         IJ.saveAsTiff(new ImagePlus("extended", ret), "/tmp/testcrop.tif");
-        logger.info("Check /tmp/testcrop.tif to see results");
+        LOGGER.info("Check /tmp/testcrop.tif to see results");
     }
 
     /**

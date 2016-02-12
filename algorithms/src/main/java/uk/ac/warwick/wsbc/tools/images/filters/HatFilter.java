@@ -62,20 +62,18 @@ import uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder;
 public class HatFilter extends QWindowBuilder
         implements IQuimpPoint2dFilter<Vector2d>, IPadArray, ChangeListener, ActionListener {
 
-    private static final Logger logger = LogManager.getLogger(HatFilter.class.getName());
-    private final int DRAW_SIZE = 200; /// < size of draw area in window
+    private static final Logger LOGGER = LogManager.getLogger(HatFilter.class.getName());
+    private final int DRAW_SIZE = 200; // size of draw area in window
 
-    private int window; /// < filter's window size
-    private int crown; /// < filter's crown size (in middle of \a window)
-    private double sig; /// < acceptance criterion
+    private int window; // filter's window size
+    private int crown; // filter's crown size (in middle of \a window)
+    private double sig; // acceptance criterion
     private List<Vector2d> points;
-    private LinkedHashMap<String, String[]> uiDefinition; /// < Definition of UI
-                                                          /// for this plugin
-    private DrawPanel dp; /// < Here we will draw. This panel is plot in place
-                          /// of help field
-    private ExPolygon p; /// < representation of snake as polygon
-    private ExPolygon pout; /// < output polygon based on \c out
-    private List<Vector2d> out; /// < output after filtering
+    private LinkedHashMap<String, String[]> uiDefinition; // Definition of UI for this plugin
+    private DrawPanel dp; // Here we will draw. This panel is plot in place of help field
+    private ExPolygon p; // representation of snake as polygon
+    private ExPolygon pout; // output polygon based on \c out
+    private List<Vector2d> out; // output after filtering
     private JTextArea logArea;
     private int err;
 
@@ -83,39 +81,18 @@ public class HatFilter extends QWindowBuilder
      * Construct HatFilter Input array with data is virtually circularly padded
      */
     public HatFilter() {
-        logger.trace("Entering constructor");
+        LOGGER.trace("Entering constructor");
         this.window = 23;
         this.crown = 13;
         this.sig = 0.3;
-        logger.debug("Set default parameter: window=" + window + " crown=" + crown + " sig=" + sig);
+        LOGGER.debug("Set default parameter: window=" + window + " crown=" + crown + " sig=" + sig);
         uiDefinition = new LinkedHashMap<String, String[]>(); // will hold ui
                                                               // definitions
         uiDefinition.put("name", new String[] { "HatFilter" }); // name of
                                                                 // window
-        uiDefinition.put("window", new String[] { "spinner", "3", "51", "2", Integer.toString(window) }); // the
-                                                                                                          // name
-                                                                                                          // of
-                                                                                                          // this
-                                                                                                          // ui
-                                                                                                          // control
-                                                                                                          // is
-                                                                                                          // "system-wide",
-                                                                                                          // now
-                                                                                                          // it
-                                                                                                          // will
-                                                                                                          // define
-                                                                                                          // ui
-                                                                                                          // and
-                                                                                                          // name
-                                                                                                          // of
-                                                                                                          // numerical
-                                                                                                          // data
-                                                                                                          // related
-                                                                                                          // to
-                                                                                                          // this
-                                                                                                          // ui
-                                                                                                          // and
-                                                                                                          // parameter
+        // the name of this ui control is "system-wide", now it will define ui
+        // and name of numerical data related to this ui and parameter
+        uiDefinition.put("window", new String[] { "spinner", "3", "51", "2", Integer.toString(window) });
         uiDefinition.put("crown", new String[] { "spinner", "1", "51", "2", Integer.toString(crown) });
         uiDefinition.put("sigma", new String[] { "spinner", "0.01", "0.9", "0.01", Double.toString(sig) });
         BuildWindow(uiDefinition); // construct ui (not shown yet)
@@ -137,7 +114,7 @@ public class HatFilter extends QWindowBuilder
      */
     @Override
     public void attachData(List<Vector2d> data) {
-        logger.trace("Entering attachData");
+        LOGGER.trace("Entering attachData");
         points = data;
         p = new ExPolygon(data); // create polygon from points
         p.fitPolygon(DRAW_SIZE); // adjust its size to draw window
@@ -159,7 +136,7 @@ public class HatFilter extends QWindowBuilder
      */
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
-        logger.debug(String.format("Run plugin with params: window %d, crown %d, sigma %f", window, crown, sig));
+        LOGGER.debug(String.format("Run plugin with params: window %d, crown %d, sigma %f", window, crown, sig));
 
         int cp = window / 2; // left and right range of window
         int cr = crown / 2; // left and right range of crown
@@ -219,14 +196,14 @@ public class HatFilter extends QWindowBuilder
                 lenBrim += getLen(B[i], B[i + 1]);
             // decide whether to remove crown
             double ratio = 1 - lenBrim / lenAll;
-            logger.debug("c: " + c + " lenAll=" + lenAll + " lenBrim=" + lenBrim + " ratio: " + ratio);
+            LOGGER.debug("c: " + c + " lenAll=" + lenAll + " lenBrim=" + lenBrim + " ratio: " + ratio);
             if (ratio > sig) // add crown for current window position c to
                              // remove list. Added are real indexes in points
                              // array (not local window indexes)
                 for (int i = c - cr; i <= c + cr; i++)
                     indToRemove.add(i); // add only if not present in set
         }
-        logger.debug("Points to remove: " + indToRemove.toString());
+        LOGGER.debug("Points to remove: " + indToRemove.toString());
         // copy old array to new skipping points marked to remove
         for (int i = 0; i < points.size(); i++)
             if (!indToRemove.contains(i))
@@ -265,7 +242,7 @@ public class HatFilter extends QWindowBuilder
      */
     @Override
     public int setup() {
-        logger.trace("Entering setup");
+        LOGGER.trace("Entering setup");
         return DOES_SNAKES + CHANGE_SIZE;
     }
 
@@ -315,7 +292,7 @@ public class HatFilter extends QWindowBuilder
 
     @Override
     public void showUI(boolean val) {
-        logger.debug("Got message to show UI");
+        LOGGER.debug("Got message to show UI");
         if (ToggleWindow() == true)
             recalculatePlugin();
     }
@@ -442,7 +419,7 @@ public class HatFilter extends QWindowBuilder
         window = getIntegerFromUI("window");
         crown = getIntegerFromUI("crown");
         sig = getDoubleFromUI("sigma");
-        logger.debug(String.format("Updated from UI: window %d, crown %d, sigma %f", window, crown, sig));
+        LOGGER.debug(String.format("Updated from UI: window %d, crown %d, sigma %f", window, crown, sig));
         // run plugin for set parameters
         try {
             out = runPlugin();
@@ -456,7 +433,7 @@ public class HatFilter extends QWindowBuilder
                                                                // original one
             dp.repaint(); // repaint window
         } catch (QuimpPluginException e1) { // ignore exception in general
-            logger.error(e1);
+            LOGGER.error(e1);
             logArea.append("#" + err + ": " + e1.getMessage() + '\n');
             err++;
         }

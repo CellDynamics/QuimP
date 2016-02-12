@@ -25,7 +25,7 @@ public class DICReconstruction_Test {
 
     private ImagePlus image;
     private ImagePlus stack;
-    private static final Logger logger = LogManager.getLogger(DICReconstruction_Test.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(DICReconstruction_Test.class.getName());
 
     /**
      * Load test image
@@ -82,9 +82,9 @@ public class DICReconstruction_Test {
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
             IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix.tif");
-            logger.trace("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
+            LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
         } catch (DicException e) {
-            logger.error(e);
+            LOGGER.error(e);
         }
 
     }
@@ -114,7 +114,7 @@ public class DICReconstruction_Test {
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
             IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_sat.tif");
-            logger.trace("Check /tmp/testDicReconstructionLidMatrix_sat.tif to see results");
+            LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_sat.tif to see results");
         } catch (DicException e) {
             throw e;
         }
@@ -147,9 +147,9 @@ public class DICReconstruction_Test {
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
             IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_stack.tif");
-            logger.trace("Check /tmp/testDicReconstructionLidMatrix_stack.tif to see results");
+            LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_stack.tif to see results");
         } catch (DicException e) {
-            logger.error(e);
+            LOGGER.error(e);
         }
 
     }

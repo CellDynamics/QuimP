@@ -69,7 +69,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class DICReconstruction {
 
-    private static final Logger logger = LogManager.getLogger(DICReconstruction.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(DICReconstruction.class.getName());
     private final int shift = 1; /// < shift added to original image to
                                  /// eliminate 0 values
 
@@ -191,7 +191,7 @@ public class DICReconstruction {
         // check condition for removing 0 value from image
         maxpixel = srcImageCopyProcessor.getMax();
         if (maxpixel > 65535 - shift) {
-            logger.error("Possible image clipping - check if image is saturated");
+            LOGGER.error("Possible image clipping - check if image is saturated");
             throw new DicException(String.format(
                     "Possible image clipping - input image has at leas one pixel with value %d", 65535 - shift));
         }

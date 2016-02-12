@@ -33,7 +33,7 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  */
 @RunWith(Parameterized.class)
 public class HatFilter_testParam {
-    private static final Logger logger = LogManager.getLogger(HatFilter_testParam.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(HatFilter_testParam.class.getName());
     private Double window;
     private Double crown;
     private Double sig;
@@ -125,7 +125,7 @@ public class HatFilter_testParam {
         out = (ArrayList<Vector2d>) hf.runPlugin();
         RoiSaver.saveROI("/tmp/test_HatFilter_" + testfileName.getFileName() + "_" + window.toString() + "_"
                 + crown.toString() + "_" + sig.toString() + ".tif", out);
-        logger.debug("setUp: " + testcase.toString());
+        LOGGER.debug("setUp: " + testcase.toString());
     }
 
     /**

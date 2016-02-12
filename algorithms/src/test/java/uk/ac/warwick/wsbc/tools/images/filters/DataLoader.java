@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 class DataLoader {
-    private static final Logger logger = LogManager.getLogger(DataLoader.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(DataLoader.class.getName());
     private List<Double> data;
     public List<Vector2d> Vert;
 
@@ -59,7 +59,7 @@ class DataLoader {
             data.add(scanner.nextDouble());
         scanner.close();
         convertToVector();
-        logger.debug("File: " + fileName + " loaded");
+        LOGGER.debug("File: " + fileName + " loaded");
     }
 
     /**

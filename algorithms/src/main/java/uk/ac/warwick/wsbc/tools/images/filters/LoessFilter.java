@@ -28,12 +28,10 @@ import uk.ac.warwick.wsbc.plugin.utils.QuimpDataConverter;
  */
 public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 
-    private static final Logger logger = LogManager.getLogger(LoessFilter.class.getName());
-    private QuimpDataConverter xyData; /// < input List converted to separate X
-                                       /// and Y arrays
-    private double smoothing; /// < smoothing value (f according to references)
-    private HashMap<String, String[]> uiDefinition; /// < Definition of UI for
-                                                    /// this plugin
+    private static final Logger LOGGER = LogManager.getLogger(LoessFilter.class.getName());
+    private QuimpDataConverter xyData; // input List converted to separate X and Y arrays
+    private double smoothing; // smoothing value (f according to references)
+    private HashMap<String, String[]> uiDefinition; // Definition of UI for this plugin
     private QWindowBuilderInstLoess uiInstance;
 
     /**
@@ -43,37 +41,16 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      * setPluginConfig(HashMap<String, Object>)
      */
     public LoessFilter() {
-        logger.trace("Entering constructor");
+        LOGGER.trace("Entering constructor");
         this.smoothing = 0.25;
-        logger.debug("Set default parameter: smoothing=" + smoothing);
+        LOGGER.debug("Set default parameter: smoothing=" + smoothing);
         uiDefinition = new HashMap<String, String[]>(); // will hold ui
                                                         // definitions
         uiDefinition.put("name", new String[] { "LoessFilter" }); // name of
                                                                   // window
-        uiDefinition.put("smooth", new String[] { "spinner", "0.05", "0.5", "0.005", Double.toString(smoothing) }); // the
-                                                                                                                    // name
-                                                                                                                    // of
-                                                                                                                    // this
-                                                                                                                    // ui
-                                                                                                                    // control
-                                                                                                                    // is
-                                                                                                                    // "system-wide",
-                                                                                                                    // now
-                                                                                                                    // it
-                                                                                                                    // will
-                                                                                                                    // define
-                                                                                                                    // ui
-                                                                                                                    // and
-                                                                                                                    // name
-                                                                                                                    // of
-                                                                                                                    // numerical
-                                                                                                                    // data
-                                                                                                                    // related
-                                                                                                                    // to
-                                                                                                                    // this
-                                                                                                                    // ui
-                                                                                                                    // and
-                                                                                                                    // parameter
+        // the name of this ui control is "system-wide", now it will define ui
+        // and name of numerical data related to this ui and parameter
+        uiDefinition.put("smooth", new String[] { "spinner", "0.05", "0.5", "0.005", Double.toString(smoothing) });
         uiDefinition.put("help", new String[] {
                 "Higher values stand for more smooth output. Resonable range is 0.05 - 0.5. For too small values plugin throws error. Minimal vale depends on polygon shape and can vary." }); // help
                                                                                                                                                                                                // string
@@ -97,7 +74,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      */
     @Override
     public void attachData(List<Vector2d> data) {
-        logger.trace("Entering attachData");
+        LOGGER.trace("Entering attachData");
         xyData = new QuimpDataConverter(data);
     }
 
@@ -112,7 +89,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
         smoothing = uiInstance.getDoubleFromUI("smooth");
-        logger.debug(String.format("Run plugin with params: smoothing %f", smoothing));
+        LOGGER.debug(String.format("Run plugin with params: smoothing %f", smoothing));
 
         float density = 1.0f; // If smaller than 1 output points will be
                               // refined. For 1 numbers of output points and
@@ -137,13 +114,8 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
             psfX = sI.interpolate(i, xyData.getX()); // interpolation of X
             psfY = sI.interpolate(i, xyData.getY()); // interpolation of Y
         } catch (NumberIsTooSmallException e) {
-            throw new QuimpPluginException("Smoothing value is too small", e); // change
-                                                                               // for
-                                                                               // checked
-                                                                               // exception
-                                                                               // and
-                                                                               // add
-                                                                               // cause
+            // change for checked exception and add cause
+            throw new QuimpPluginException("Smoothing value is too small", e);
         }
         // copy to Vector2d List
         for (float ii = 0; ii <= xyData.size() - 1; ii += density) {
@@ -162,7 +134,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      */
     @Override
     public int setup() {
-        logger.trace("Entering setup");
+        LOGGER.trace("Entering setup");
         return DOES_SNAKES;
     }
 
@@ -213,7 +185,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
 
     @Override
     public void showUI(boolean val) {
-        logger.debug("Got message to show UI");
+        LOGGER.debug("Got message to show UI");
         uiInstance.ToggleWindow();
     }
 
