@@ -96,8 +96,8 @@ import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
  */
 public class BOA_ implements PlugIn {
 
-    private static final Logger logger = LogManager
-            .getLogger(BOA_.class.getName());
+    private static final Logger logger = LogManager.getLogger(
+            BOA_.class.getName());
     CustomCanvas canvas;
     CustomStackWindow window;
     static TextArea logArea;
@@ -120,8 +120,8 @@ public class BOA_ implements PlugIn {
         Boolean isActive = true;
         logger.warn("setupTest is in use and " + isActive.toString());
         pluginFactory = Mockito.spy(new PluginFactory(Paths.get("")));
-        when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES))
-                .thenReturn(new ArrayList<String>(
+        when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
+                new ArrayList<String>(
                         Arrays.asList("Mean", "Loess", "Hat")));
         when(pluginFactory.getInstance("Mean")).thenReturn(new MeanFilter());
         when(pluginFactory.getInstance("Loess")).thenReturn(new LoessFilter());
@@ -135,7 +135,7 @@ public class BOA_ implements PlugIn {
      * @param arg Currently it can be string pointing to plugins directory
      */
     @Override
-    public void run(String arg) {
+    public void run(final String arg) {
         if (IJ.versionLessThan("1.45")) {
             return;
         }
@@ -222,7 +222,7 @@ public class BOA_ implements PlugIn {
      * @param ip Reference to image to be processed by BOA
      * @see BOAp
      */
-    void setup(ImagePlus ip) {
+    void setup(final ImagePlus ip) {
         if (BOAp.paramsExist == null) {
             BOAp.setDefaults();
         }
@@ -291,8 +291,9 @@ public class BOA_ implements PlugIn {
     public String getQuimPBuildInfo() {
         String ret = "version not found in jar";
         try {
-            Enumeration<URL> resources = getClass().getClassLoader()
-                    .getResources("META-INF/MANIFEST.MF");
+            Enumeration<URL> resources =
+                    getClass().getClassLoader().getResources(
+                            "META-INF/MANIFEST.MF");
             while (resources.hasMoreElements()) {
                 Manifest manifest = new Manifest(
                         resources.nextElement().openStream());
@@ -301,8 +302,8 @@ public class BOA_ implements PlugIn {
                     String val = attributes.getValue("Implementation-Title");
                     if (val == null)
                         continue;
-                    if (attributes.getValue("Implementation-Title")
-                            .contains("QuimP")) {
+                    if (attributes.getValue("Implementation-Title").contains(
+                            "QuimP")) {
                         ret = "Build by: " + attributes.getValue("Built-By")
                                 + " on: "
                                 + attributes.getValue("Implementation-Build");
@@ -321,7 +322,7 @@ public class BOA_ implements PlugIn {
      * 
      * @param s String to display in BOA window
      */
-    static void log(String s) {
+    static void log(final String s) {
         logArea.append(s + '\n');
     }
 
@@ -342,7 +343,7 @@ public class BOA_ implements PlugIn {
         @Override
         // This method will be called when BOA_ window is closed already
         // It is too late for asking user
-        public void windowClosed(WindowEvent arg0) {
+        public void windowClosed(final WindowEvent arg0) {
             BOA_.running = false;
             canvas = null;
             imageGroup = null;
@@ -365,7 +366,7 @@ public class BOA_ implements PlugIn {
          * 
          * @param imp Reference to image loaded by BOA
          */
-        CustomCanvas(ImagePlus imp) {
+        CustomCanvas(final ImagePlus imp) {
             super(imp);
         }
 
@@ -373,7 +374,7 @@ public class BOA_ implements PlugIn {
          * @deprecated Actually not used in this version of QuimP
          */
         @Override
-        public void paint(Graphics g) {
+        public void paint(final Graphics g) {
             super.paint(g);
             // int size = 80;
             // int screenSize = (int)(size*getMagnification());
@@ -392,7 +393,7 @@ public class BOA_ implements PlugIn {
          * @see CustomStackWindow
          */
         @Override
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(final MouseEvent e) {
             super.mousePressed(e);
             if (BOAp.doDelete) {
                 // BOA_.log("Delete at:
@@ -447,7 +448,7 @@ public class BOA_ implements PlugIn {
          * @param imp Image loaded to plugin
          * @param ic Image canvas
          */
-        CustomStackWindow(ImagePlus imp, ImageCanvas ic) {
+        CustomStackWindow(final ImagePlus imp, final ImageCanvas ic) {
             super(imp, ic);
         }
 
@@ -492,8 +493,8 @@ public class BOA_ implements PlugIn {
             // build subpanel with info
             JPanel groupBoxLabel = new JPanel(); // Contain two static fields
                                                  // wit image scale info
-            groupBoxLabel
-                    .setBorder(BorderFactory.createTitledBorder("Image scale"));
+            groupBoxLabel.setBorder(
+                    BorderFactory.createTitledBorder("Image scale"));
             groupBoxLabel.setLayout(new GridLayout(1, 2));
             fpsLabel = new Label(
                     "F Interval: " + IJ.d2s(BOAp.imageFrameInterval, 3) + " s");
@@ -515,8 +516,9 @@ public class BOA_ implements PlugIn {
 
             // build subpanel with plugins
             // get plugins names collected by PluginFactory
-            ArrayList<String> pluginList = (ArrayList<String>) pluginFactory
-                    .getPluginNames(IQuimpPlugin.DOES_SNAKES);
+            ArrayList<String> pluginList =
+                    (ArrayList<String>) pluginFactory.getPluginNames(
+                            IQuimpPlugin.DOES_SNAKES);
             // add NONE to list
             pluginList.add(0, "NONE");
             JPanel groupBoxSnakePlugins = new JPanel();
@@ -660,7 +662,7 @@ public class BOA_ implements PlugIn {
          * @param p Reference to the panel where button is located
          * @return Reference to created button
          */
-        private Button addButton(String label, Container p) {
+        private Button addButton(final String label, final Container p) {
             Button b = new Button(label);
             b.addActionListener(this);
             p.add(b);
@@ -675,7 +677,8 @@ public class BOA_ implements PlugIn {
          * @param d Initial state of checkbox
          * @return Reference to created checkbox
          */
-        private Checkbox addCheckbox(String label, Container p, boolean d) {
+        private Checkbox addCheckbox(final String label, final Container p,
+                final boolean d) {
             Checkbox c = new Checkbox(label, d);
             c.addItemListener(this);
             p.add(c);
@@ -689,7 +692,8 @@ public class BOA_ implements PlugIn {
          * @param mp Reference to the panel where ComboBox is located
          * @return Reference to created ComboBox
          */
-        private JComboBox<String> addComboBox(String[] s, Container mp) {
+        private JComboBox<String> addComboBox(final String[] s,
+                final Container mp) {
             JComboBox<String> c = new JComboBox<String>(s);
             c.setSelectedIndex(0);
             c.addActionListener(this);
@@ -709,14 +713,14 @@ public class BOA_ implements PlugIn {
          * @param columns The number of columns preferred for display
          * @return Reference to created spinner
          */
-        private JSpinner addDoubleSpinner(String s, Container mp, double d,
-                double min, double max, double step,
-                int columns) {
+        private JSpinner addDoubleSpinner(final String s, final Container mp,
+                double d, double min, double max, double step, int columns) {
             SpinnerNumberModel model = new SpinnerNumberModel(d, min, max,
                     step);
             JSpinner spinner = new JSpinner(model);
             ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField()
-                    .setColumns(columns);
+                    .setColumns(
+                            columns);
             spinner.addChangeListener(this);
 
             Panel p = new Panel();
@@ -740,13 +744,14 @@ public class BOA_ implements PlugIn {
          * @param columns The number of columns preferred for display
          * @return Reference to created spinner
          */
-        private JSpinner addIntSpinner(String s, Container mp, int d, int min,
-                int max, int step, int columns) {
+        private JSpinner addIntSpinner(final String s, final Container mp,
+                int d, int min, int max, int step, int columns) {
             SpinnerNumberModel model = new SpinnerNumberModel(d, min, max,
                     step);
             JSpinner spinner = new JSpinner(model);
             ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField()
-                    .setColumns(columns);
+                    .setColumns(
+                            columns);
             spinner.addChangeListener(this);
 
             Panel p = new Panel();
@@ -800,7 +805,7 @@ public class BOA_ implements PlugIn {
          * @see BOAp
          */
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             boolean run = false; // some actions require to re-run segmentation.
                                  // They set run to true
             Object b = e.getSource();
@@ -986,7 +991,7 @@ public class BOA_ implements PlugIn {
          * @param e Type of event
          */
         @Override
-        public void itemStateChanged(ItemEvent e) {
+        public void itemStateChanged(final ItemEvent e) {
             // detect check boxes
             if (BOAp.doDelete) {
                 BOA_.log("**WARNING:DELETE IS ON**");
@@ -1043,7 +1048,7 @@ public class BOA_ implements PlugIn {
          * @param ce Type of event
          */
         @Override
-        public void stateChanged(ChangeEvent ce) {
+        public void stateChanged(final ChangeEvent ce) {
             if (BOAp.doDelete) {
                 BOA_.log("**WARNING:DELETE IS ON**");
             }
@@ -1275,23 +1280,18 @@ public class BOA_ implements PlugIn {
                             // returns only correct plugins and
                             // actionPerformed(ActionEvent e) creates correct
                             // BOAp.sPluginList
-                            if (!BOAp.isRefListEmpty(BOAp.sPluginList)) { // not
-                                                                          // empty,
-                                                                          // there
-                                                                          // is
-                                                                          // at
-                                                                          // least
-                                                                          // one
-                                                                          // plugin
-                                                                          // selected
-                                ArrayList<Vector2d> dataToProcess = (ArrayList<Vector2d>) snake
-                                        .asList();
+                            if (!BOAp.isRefListEmpty(BOAp.sPluginList)) {
+                                ArrayList<Vector2d> dataToProcess =
+                                        (ArrayList<Vector2d>) snake.asList();
                                 for (IQuimpPlugin qP : BOAp.sPluginList) {
                                     if (qP != null) {
-                                        IQuimpPoint2dFilter<Vector2d> qPcast = (IQuimpPoint2dFilter<Vector2d>) qP;
+                                        @SuppressWarnings("unchecked")
+                                        IQuimpPoint2dFilter<Vector2d> qPcast =
+                                                (IQuimpPoint2dFilter<Vector2d>) qP;
                                         qPcast.attachData(dataToProcess);
-                                        dataToProcess = (ArrayList<Vector2d>) qPcast
-                                                .runPlugin();
+                                        dataToProcess =
+                                                (ArrayList<Vector2d>) qPcast
+                                                        .runPlugin();
                                     }
                                 }
                                 sH.attachLiveSnake(dataToProcess);
@@ -1352,7 +1352,7 @@ public class BOA_ implements PlugIn {
         BOAp.SEGrunning = false;
     }
 
-    private void tightenSnake(Snake snake) throws BoaException {
+    private void tightenSnake(final Snake snake) throws BoaException {
 
         int i;
         // imageGroup.drawPath(snake, frame); //draw initial contour on path
@@ -1429,8 +1429,8 @@ public class BOA_ implements PlugIn {
     }
 
     void updateImageScale() {
-        imageGroup.getOrgIpl()
-                .getCalibration().frameInterval = BOAp.imageFrameInterval;
+        imageGroup.getOrgIpl().getCalibration().frameInterval =
+                BOAp.imageFrameInterval;
         imageGroup.getOrgIpl().getCalibration().pixelHeight = BOAp.imageScale;
         imageGroup.getOrgIpl().getCalibration().pixelWidth = BOAp.imageScale;
     }
@@ -1472,7 +1472,7 @@ public class BOA_ implements PlugIn {
      * thrown exception
      */
     // @SuppressWarnings("unchecked")
-    void addCell(Roi r, int f) {
+    void addCell(final Roi r, int f) {
         SnakeHandler sH = nest.addHandler(r, f);
         Snake snake = sH.getLiveSnake();
         imageGroup.setProcessor(f);
@@ -1493,14 +1493,16 @@ public class BOA_ implements PlugIn {
             if (!BOAp.isRefListEmpty(BOAp.sPluginList)) { // not empty, there is
                                                           // at least one plugin
                                                           // selected
-                ArrayList<Vector2d> dataToProcess = (ArrayList<Vector2d>) snake
-                        .asList();
+                ArrayList<Vector2d> dataToProcess =
+                        (ArrayList<Vector2d>) snake.asList();
                 for (IQuimpPlugin qP : BOAp.sPluginList) {
                     if (qP != null) {
-                        IQuimpPoint2dFilter<Vector2d> qPcast = (IQuimpPoint2dFilter<Vector2d>) qP;
+                        @SuppressWarnings("unchecked")
+                        IQuimpPoint2dFilter<Vector2d> qPcast =
+                                (IQuimpPoint2dFilter<Vector2d>) qP;
                         qPcast.attachData(dataToProcess);
-                        dataToProcess = (ArrayList<Vector2d>) qPcast
-                                .runPlugin();
+                        dataToProcess =
+                                (ArrayList<Vector2d>) qPcast.runPlugin();
                     }
                 }
                 sH.attachLiveSnake(dataToProcess);
@@ -1841,7 +1843,8 @@ class ImageGroup {
         drawSnake(pathsIp, snake, false);
     }
 
-    private void drawSnake(ImageProcessor ip, Snake snake, boolean contrast) {
+    private void drawSnake(final ImageProcessor ip, final Snake snake,
+            boolean contrast) {
         // draw snake
         int x, y;
         int intensity;
@@ -1906,7 +1909,7 @@ class ImageGroup {
 
     }
 
-    void zoom(ImageCanvas ic, int frame) {
+    void zoom(final ImageCanvas ic, int frame) {
         // zoom to cell 1
         if (nest.isVacant()) {
             return;
@@ -1958,7 +1961,7 @@ class ImageGroup {
 
     }
 
-    void unzoom(ImageCanvas ic) {
+    void unzoom(final ImageCanvas ic) {
         // Rectangle sr = ic.getSrcRect();
         // sr.setBounds(0, 0, BOAp.WIDTH, BOAp.HEIGHT);
         ic.unzoom();
@@ -1966,7 +1969,7 @@ class ImageGroup {
         // ic.repaint();
     }
 
-    void drawCellRois(ImageStack stack) {
+    void drawCellRois(final ImageStack stack) {
         Snake snake;
         SnakeHandler sH;
         ImageProcessor ip;
@@ -1999,7 +2002,7 @@ class Constrictor {
     public Constrictor() {
     }
 
-    public boolean constrict(Snake snake, ImageProcessor ip) {
+    public boolean constrict(final Snake snake, final ImageProcessor ip) {
 
         ExtendedVector2d F_temp; // temp vectors for forces
         ExtendedVector2d V_temp = new ExtendedVector2d();
@@ -2065,7 +2068,7 @@ class Constrictor {
      * @deprecated Strictly related to absolute paths on disk. Probably for
      * testing purposes only
      */
-    public boolean constrictWrite(Snake snake, ImageProcessor ip) {
+    public boolean constrictWrite(final Snake snake, final ImageProcessor ip) {
         // for writing forces at each frame
         try {
             PrintWriter pw = new PrintWriter(
@@ -2144,7 +2147,7 @@ class Constrictor {
         }
     }
 
-    public ExtendedVector2d contractionForce(Node n) {
+    public ExtendedVector2d contractionForce(final Node n) {
 
         ExtendedVector2d R_result;
         ExtendedVector2d L_result;
@@ -2170,7 +2173,8 @@ class Constrictor {
     /**
      * @deprecated Probably old version of contractionForce(Node n)
      */
-    public ExtendedVector2d imageForceOLD(Node n, ImageProcessor ip) {
+    public ExtendedVector2d imageForceOLD(final Node n,
+            final ImageProcessor ip) {
         ExtendedVector2d result = new ExtendedVector2d();
         ExtendedVector2d tan; // Tangent
         int i, j;
@@ -2287,7 +2291,7 @@ class Constrictor {
         return (result);
     }
 
-    public ExtendedVector2d imageForce(Node n, ImageProcessor ip) {
+    public ExtendedVector2d imageForce(final Node n, final ImageProcessor ip) {
         ExtendedVector2d result = new ExtendedVector2d();
         ExtendedVector2d tan = n.getTangent(); // Tangent at node
         int i, j; // loop vars
@@ -2353,7 +2357,7 @@ class Constrictor {
         return (result);
     }
 
-    public void loosen(Nest nest, int frame) throws Exception {
+    public void loosen(final Nest nest, int frame) throws Exception {
         // expand all snakes while preventing overlaps
         // dead snakes are ignored
 
@@ -2419,7 +2423,7 @@ class Constrictor {
          */
     }
 
-    public void freezeProx(Snake a, Snake b) {
+    public void freezeProx(final Snake a, final Snake b) {
 
         Node bn;
         Node an = a.getHead();
@@ -2450,7 +2454,7 @@ class Constrictor {
 
     }
 
-    public void implode(Nest nest, int f) throws Exception {
+    public void implode(final Nest nest, int f) throws Exception {
         // System.out.println("imploding snake");
         SnakeHandler sH;
         Snake snake;
@@ -2510,7 +2514,7 @@ class Nest {
      * @param startFrame Current frame
      * @return SnakeHandler object that is also stored in Nest
      */
-    public SnakeHandler addHandler(Roi r, int startFrame) {
+    public SnakeHandler addHandler(final Roi r, int startFrame) {
         SnakeHandler sH;
         try {
             sH = new SnakeHandler(r, startFrame, nextID);
@@ -2550,7 +2554,7 @@ class Nest {
         return true;
     }
 
-    public void kill(SnakeHandler sH) {
+    public void kill(final SnakeHandler sH) {
         sH.kill();
         ALIVE--;
     }
@@ -2578,7 +2582,7 @@ class Nest {
         return false;
     }
 
-    public void analyse(ImagePlus oi) {
+    public void analyse(final ImagePlus oi) {
         OutlineHandler outputH;
         SnakeHandler sH;
         Iterator<SnakeHandler> sHitr = sHs.iterator();
@@ -2615,7 +2619,7 @@ class Nest {
         }
     }
 
-    public void removeHandler(SnakeHandler sH) {
+    public void removeHandler(final SnakeHandler sH) {
         if (sH.isLive()) {
             ALIVE--;
         }
@@ -2665,7 +2669,7 @@ class Nest {
         return n;
     }
 
-    void addOutlinehandler(OutlineHandler oH) {
+    void addOutlinehandler(final OutlineHandler oH) {
         SnakeHandler sH = addHandler(oH.indexGetOutline(0).asFloatRoi(),
                 oH.getStartFrame());
 
@@ -2700,7 +2704,7 @@ class SnakeHandler {
      * @param id Unique Snake ID controlled by Nest object
      * @throws Exception
      */
-    public SnakeHandler(Roi r, int frame, int id) throws Exception {
+    public SnakeHandler(final Roi r, int frame, int id) throws Exception {
         startFrame = frame;
         endFrame = BOAp.FRAMES;
         roi = r;
@@ -2755,13 +2759,13 @@ class SnakeHandler {
      * @param data data to create Snake from
      * @throws Exception
      */
-    public void attachLiveSnake(List<Vector2d> data) throws Exception {
+    public void attachLiveSnake(final List<Vector2d> data) throws Exception {
         liveSnake = new Snake(data, ID);
     }
 
     /**
-     * @copybrief attachLiveSnake(List<Vector2d>)
-     * @copydetails attachLiveSnake(List<Vector2d>)
+     * @copybrief attachLiveSnake(final List<Vector2d>)
+     * @copydetails attachLiveSnake(final List<Vector2d>)
      */
     public void attachLiveSnake(Roi data) throws Exception {
         liveSnake = new Snake(data, ID, false);
@@ -2823,7 +2827,7 @@ class SnakeHandler {
         return true;
     }
 
-    private void write(PrintWriter pw, int frame, int NODES, Node n) {
+    private void write(final PrintWriter pw, int frame, int NODES, Node n) {
         pw.print("\n" + NODES);
 
         do {
@@ -2930,7 +2934,7 @@ class SnakeHandler {
         }
     }
 
-    public int snakeReader(File inFile) throws Exception {
+    public int snakeReader(final File inFile) throws Exception {
         String thisLine;
         int N;
         int index;
@@ -3024,7 +3028,7 @@ class SnakeHandler {
         }
     }
 
-    void storeAt(Snake s, int frame) {
+    void storeAt(final Snake s, int frame) {
         s.calcCentroid();
         if (frame - startFrame < 0) {
             BOA_.log("Tried to store at negative frame\n\tframe:" + frame
@@ -3065,7 +3069,7 @@ class SnakeHandler {
         }
     }
 
-    void storeRoi(PolygonRoi r, int f) {
+    void storeRoi(final PolygonRoi r, int f) {
         try {
             Snake snake = new Snake(r, ID);
             snake.calcCentroid();
@@ -3121,7 +3125,7 @@ class Snake {
      * @param id Unique snake ID related to object being segmented.
      * @throws Exception
      */
-    public Snake(Node h, int N, int id) throws BoaException {
+    public Snake(final Node h, int N, int id) throws BoaException {
         //
         snakeID = id;
         head = h;
@@ -3148,7 +3152,7 @@ class Snake {
      * @param direct
      * @throws Exception
      */
-    public Snake(Roi R, int id, boolean direct) throws Exception {
+    public Snake(final Roi R, int id, boolean direct) throws Exception {
         // place nodes in a circle
         snakeID = id;
         if (R.getType() == Roi.RECTANGLE || R.getType() == Roi.POLYGON) {
@@ -3179,7 +3183,7 @@ class Snake {
      * @param id
      * @throws Exception
      */
-    public Snake(PolygonRoi R, int id) throws Exception {
+    public Snake(final PolygonRoi R, int id) throws Exception {
         snakeID = id;
         intializeFloat(R.getFloatPolygon());
         startingNnodes = NODES / 100.; // as 1%. limit to X%
@@ -3196,7 +3200,7 @@ class Snake {
      * @param id id of Snake
      * @throws Exception
      */
-    public Snake(List<Vector2d> list, int id) throws Exception {
+    public Snake(final List<Vector2d> list, int id) throws Exception {
         snakeID = id;
         initializeArrayList(list);
         startingNnodes = NODES / 100;
@@ -3252,7 +3256,7 @@ class Snake {
      * @param p Polygon extracted from IJ ROI
      * @throws Exception
      */
-    private void intializePolygon(FloatPolygon p) throws Exception {
+    private void intializePolygon(final FloatPolygon p) throws Exception {
         // System.out.println("poly with node distance");
         head = new Node(0); // make a dummy head node for list initialization
         NODES = 1;
@@ -3272,8 +3276,8 @@ class Snake {
                                                                  // define edge
             b = new ExtendedVector2d(p.xpoints[j], p.ypoints[j]);
 
-            nn = (int) Math
-                    .ceil(ExtendedVector2d.lengthP2P(a, b) / BOAp.getNodeRes());
+            nn = (int) Math.ceil(
+                    ExtendedVector2d.lengthP2P(a, b) / BOAp.getNodeRes());
             spacing = ExtendedVector2d.lengthP2P(a, b) / (double) nn;
             u = ExtendedVector2d.unitVector(a, b);
             u.multiply(spacing); // required distance between points
@@ -3301,7 +3305,7 @@ class Snake {
      * @throws Exception
      * @see intializePolygon(FloatPolygon)
      */
-    private void intializePolygonDirect(FloatPolygon p) throws Exception {
+    private void intializePolygonDirect(final FloatPolygon p) throws Exception {
         // System.out.println("poly direct");
         head = new Node(0); // make a dummy head node for list initialization
         NODES = 1;
@@ -3328,7 +3332,7 @@ class Snake {
      * @throws Exception
      * @todo This method is the same as intializePolygonDirect(FloatPolygon)
      */
-    private void intializeFloat(FloatPolygon p) throws Exception {
+    private void intializeFloat(final FloatPolygon p) throws Exception {
         // System.out.println("poly direct");
         head = new Node(0); // make a dummy head node
         NODES = 1;
@@ -3355,7 +3359,7 @@ class Snake {
      * @param p
      * @throws Exception
      */
-    private void initializeArrayList(List<Vector2d> p) throws Exception {
+    private void initializeArrayList(final List<Vector2d> p) throws Exception {
         head = new Node(0);
         NODES = 1;
         FROZEN = 0;
@@ -3478,7 +3482,7 @@ class Snake {
      * 
      * @remarks For initialization only
      */
-    private void addNode(Node newNode) {
+    private void addNode(final Node newNode) {
         Node prevNode = head.getPrev();
         newNode.setPrev(prevNode);
         newNode.setNext(head);
@@ -3998,7 +4002,7 @@ class Snake {
     /**
      * Insert node after node \c n
      */
-    public Node insertNode(Node n) {
+    public Node insertNode(final Node n) {
         Node newNode = new Node(nextTrackNumber);
         nextTrackNumber++;
         newNode.setNext(n.getNext());
@@ -4563,9 +4567,7 @@ class Node {
         ExtendedVector2d edge2 = ExtendedVector2d.vecP2P(this.getPoint(),
                 this.getNext().getPoint());
 
-        double angle = ExtendedVector2d.angle(edge1, edge2) * (180 / Math.PI); // convert
-                                                                               // to
-                                                                               // degrees
+        double angle = ExtendedVector2d.angle(edge1, edge2) * (180 / Math.PI);
 
         if (angle > 360 || angle < -360) {
             System.out.println("Warning-angle out of range (Vert l:320)");
@@ -4605,48 +4607,43 @@ class Node {
  */
 class BOAp {
 
-    static final private int NUM_SPLINE_PLUGINS = 3; /// < constant define
-                                                     /// number of Spline
-                                                     /// plugins available.
-                                                     /// Highly related to GUI
+    static final private int NUM_SPLINE_PLUGINS = 3; ///< number of Spline plugins
 
-    static File orgFile, outFile; // paramFile;
-    static String fileName; // file name only, no extension
-    static QParams readQp; // read in parameter file
+    static File orgFile, outFile; ///< paramFile;
+    static String fileName; ///< file name only, no extension
+    static QParams readQp; ///< read in parameter file
     //
     // Parameters Numeric
-    static private double nodeRes; /// < Number of nodes on ROI edge
-    static int blowup; /// < distance to blow up chain
+    static private double nodeRes; ///< Number of nodes on ROI edge
+    static int blowup; ///< distance to blow up chain
     static double vel_crit;
     static double f_central;
-    static double f_image; /// < image force
-    static int max_iterations; /// < max iterations per contraction
+    static double f_image; ///< image force
+    static int max_iterations; ///< max iterations per contraction
     static int sample_tan;
     static int sample_norm;
     static double f_contract;
     static double finalShrink;
     // Switch Params
-    static boolean use_previous_snake;/// < whether next contraction begins with
-                                      /// last chain
+    static boolean use_previous_snake;///< next contraction begins with prev chain
     static boolean showPaths;
-    static boolean expandSnake; /// < whether to act as an expanding snake
+    static boolean expandSnake; ///< whether to act as an expanding snake
     // internal parameters
-    static int NMAX; /// < maximum number of nodes (% of starting nodes)
+    static int NMAX; ///< maximum number of nodes (% of starting nodes)
     static double delta_t;
     static double sensitivity;
     static double f_friction;
-    static int FRAMES; /// < Number of frames in stack
+    static int FRAMES; ///< Number of frames in stack
     static int WIDTH, HEIGHT;
-    static int cut_every; /// < cut loops in chain every X frames
-    static boolean oldFormat; /// < output old QuimP format?
-    static boolean saveSnake; /// < save snake data
-    static private double min_dist; /// < min distance between nodes
-    static private double max_dist; /// < max distance between nodes
-    static double proximity; /// < distance between centroids at
-    // which contact is tested for
-    static double proxFreeze; /// < proximity of nodes to freeze when blowing up
+    static int cut_every; ///< cut loops in chain every X frames
+    static boolean oldFormat; ///< output old QuimP format?
+    static boolean saveSnake; ///< save snake data
+    static private double min_dist; ///< min distance between nodes
+    static private double max_dist; ///< max distance between nodes
+    static double proximity; ///< distance between centroids at which contact is tested for
+    static double proxFreeze; ///< proximity of nodes to freeze when blowing up
     static boolean savedOne;
-    static double imageScale; /// < scale of image in
+    static double imageScale; ///< scale of image in
     static double imageFrameInterval;
     static boolean scaleAdjusted;
     static boolean fIAdjusted;
@@ -4655,12 +4652,13 @@ class BOAp {
     static boolean zoom;
     static boolean doDelete;
     static boolean doDeleteSeg;
-    static boolean editMode; /// < is select a cell for editing active?
+    static boolean editMode; ///< is select a cell for editing active?
     static int editingID; // currently editing cell iD. -1 if not editing
     static boolean useSubPixel = true;
     static boolean supressStateChangeBOArun = false;
     static int callCount; // use to test how many times a method is called
-    static boolean SEGrunning; /// < is seg running
+    static boolean SEGrunning; ///< is seg running
+
     /**
      * Ordered list of plugins related to snake processing. Related to GUI,
      * first plugin is at index 0, etc.
@@ -4702,7 +4700,7 @@ class BOAp {
      * @param in List to check
      * @return \c true if list contains all null pointers, \c false otherwise
      */
-    static public boolean isRefListEmpty(List<IQuimpPlugin> in) {
+    static public boolean isRefListEmpty(final List<IQuimpPlugin> in) {
         for (IQuimpPlugin i : in)
             if (i != null)
                 return false;
@@ -4748,7 +4746,7 @@ class BOAp {
      * @param ip Reference to segmented image passed from IJ
      * @see setDefaults()
      */
-    static public void setup(ImagePlus ip) {
+    static public void setup(final ImagePlus ip) {
         FileInfo fileinfo = ip.getOriginalFileInfo();
         if (fileinfo == null) {
             // System.out.println("1671-No file Info, use " +
@@ -4797,7 +4795,7 @@ class BOAp {
         oldFormat = false; // output old QuimP format?
         saveSnake = true; // save snake data
         proximity = 150; // distance between centroids at
-        // which contact is tested for
+                         // which contact is tested for
         proxFreeze = 1; // proximity of nodes to freeze when blowing up
         f_friction = 0.6;
         doDelete = false;
