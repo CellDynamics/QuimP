@@ -25,7 +25,8 @@ public class DICReconstruction_Test {
 
     private ImagePlus image;
     private ImagePlus stack;
-    private static final Logger LOGGER = LogManager.getLogger(DICReconstruction_Test.class.getName());
+    private static final Logger LOGGER =
+            LogManager.getLogger(DICReconstruction_Test.class.getName());
 
     /**
      * Load test image
@@ -36,9 +37,9 @@ public class DICReconstruction_Test {
     public void setUp() throws Exception {
         image = IJ.openImage("src/test/resources/testObject.tif"); // opens test
                                                                    // image
-        stack = IJ.openImage("src/test/resources/testObject_4slices.tif"); // opens
-                                                                           // test
-                                                                           // image
+
+        // opens test image
+        stack = IJ.openImage("src/test/resources/testObject_4slices.tif");
     }
 
     /**
@@ -62,11 +63,11 @@ public class DICReconstruction_Test {
 
     /**
      * @test Test method for
-     *       {@link uk.ac.warwick.wsbc.dic.lid.DICReconstruction#reconstructionDicLid()}
-     *       . Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
+     * {@link warwick.wsbc.dic.lid.DICReconstruction#reconstructionDicLid()}
+     * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
      * @pre Input image is square
      * @post Output image should be properly reconstructed and have correct size
-     *       of input image
+     * of input image
      */
     @Test
     public void test_ReconstructionDicLid() {
@@ -81,8 +82,11 @@ public class DICReconstruction_Test {
 
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
-            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix.tif");
-            LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix.tif to see results");
+            IJ.saveAsTiff(outputImage,
+                    "/tmp/testDicReconstructionLidMatrix.tif");
+            LOGGER.trace(
+                    "Check /tmp/testDicReconstructionLidMatrix.tif"
+                            + " to see results");
         } catch (DicException e) {
             LOGGER.error(e);
         }
@@ -91,9 +95,8 @@ public class DICReconstruction_Test {
 
     /**
      * @test Test method for
-     *       {@link uk.ac.warwick.wsbc.dic.lid.DICReconstruction#reconstructionDicLid()}
-     *       . Saves output image at \c
-     *       /tmp/testDicReconstructionLidMatrix_sat.tif
+     * {@link warwick.wsbc.dic.lid.DICReconstruction#reconstructionDicLid()}
+     * Saves output image at \c /tmp/testDicReconstructionLidMatrix_sat.tif
      * @pre Input image is square and saturated
      * @post Throws exception DicException because of saturated image
      */
@@ -113,8 +116,11 @@ public class DICReconstruction_Test {
             ImagePlus outputImage = new ImagePlus("", ret);
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
-            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_sat.tif");
-            LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_sat.tif to see results");
+            IJ.saveAsTiff(outputImage,
+                    "/tmp/testDicReconstructionLidMatrix_sat.tif");
+            LOGGER.trace(
+                    "Check /tmp/testDicReconstructionLidMatrix_sat.tif"
+                            + " to see results");
         } catch (DicException e) {
             throw e;
         }
@@ -123,9 +129,8 @@ public class DICReconstruction_Test {
 
     /**
      * @test Test method for
-     *       {@link uk.ac.warwick.wsbc.dic.lid.DICReconstruction#setIp(ImageProcessor)}
-     *       . Saves output image at \c
-     *       /tmp/testDicReconstructionLidMatrix_Stack.tif
+     * {@link warwick.wsbc.dic.lid.DICReconstruction#setIp(ImageProcessor)}
+     * Saves output image at \c /tmp/testDicReconstructionLidMatrix_Stack.tif
      * @pre Input stack is square
      * @post Reconstructed stack
      */
@@ -146,8 +151,11 @@ public class DICReconstruction_Test {
 
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
-            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_stack.tif");
-            LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_stack.tif to see results");
+            IJ.saveAsTiff(outputImage,
+                    "/tmp/testDicReconstructionLidMatrix_stack.tif");
+            LOGGER.trace(
+                    "Check /tmp/testDicReconstructionLidMatrix_stack.tif to"
+                            + " see results");
         } catch (DicException e) {
             LOGGER.error(e);
         }

@@ -57,12 +57,9 @@ public class ImageProcessorPlus {
                                                          // original image
         ret.fill(); // change color of extended image
         ret.setInterpolationMethod(ip.getInterpolationMethod());
-        ret.insert(ip, (int) Math.round((newWidth - ip.getWidth()) / 2),
-                (int) Math.round((newHeight - ip.getHeight()) / 2)); // insert
-                                                                                                                                      // original
-                                                                                                                                      // image
-                                                                                                                                      // into
-                                                                                                                                      // extended
+        // insert original image into extended
+        ret.insert(ip, (newWidth - ip.getWidth()) / 2,
+                (newHeight - ip.getHeight()) / 2);
         ret.resetRoi();
         return ret; // assign extended into current
     }
@@ -128,8 +125,8 @@ public class ImageProcessorPlus {
      */
     public ImageProcessor cropImageAfterRotation(ImageProcessor ip, int width,
             int height) {
-        ip.setRoi((int) Math.round((ip.getWidth() - width) / 2),
-                (int) Math.round((ip.getHeight() - height) / 2), width,
+        ip.setRoi((ip.getWidth() - width) / 2,
+                (ip.getHeight() - height) / 2, width,
                 height);
         ip = ip.crop();
         ip.resetRoi();

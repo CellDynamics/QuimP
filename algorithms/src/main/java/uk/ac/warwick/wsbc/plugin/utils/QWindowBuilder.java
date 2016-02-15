@@ -203,20 +203,19 @@ public abstract class QWindowBuilder {
         // iterate over def entries except first one which is always title
         // every decoded control is put into ordered hashmap together with its
         // descriptor (label)
-        Iterator<String> keySetIterator = def.keySet().iterator();
-        while (keySetIterator.hasNext()) {
-            String key = keySetIterator.next();
+        for (Map.Entry<String, String[]> e : def.entrySet()) {
+            String key = e.getKey();
             if (RESERVED_KEYS.contains(key))
                 continue;
-            String componentName = def.get(key)[UITYPE]; // get name of UI for
-                                                         // given key
+            String componentName = e.getValue()[UITYPE]; // get name of UI for
+                                                          // given key
             switch (componentName.toLowerCase()) {
                 case "spinner": // by default all spinners are double
                     SpinnerNumberModel model = new SpinnerNumberModel(
-                            Double.parseDouble(def.get(key)[S_DEFAULT]), // val
-                            Double.parseDouble(def.get(key)[S_MIN]), // min
-                            Double.parseDouble(def.get(key)[S_MAX]), // max
-                            Double.parseDouble(def.get(key)[S_STEP])); // step
+                            Double.parseDouble(e.getValue()[S_DEFAULT]), // val
+                            Double.parseDouble(e.getValue()[S_MIN]), // min
+                            Double.parseDouble(e.getValue()[S_MAX]), // max
+                            Double.parseDouble(e.getValue()[S_STEP])); // step
                     ui.put(key, new JSpinner(model));
                     ui.put(key + "label", new Label(key)); // add description
                     break;
@@ -337,7 +336,7 @@ public abstract class QWindowBuilder {
                         sm.setMinimum((Double) val);
                     break;
                 default:
-                    new IllegalArgumentException(
+                    throw new IllegalArgumentException(
                             "Unknown UI type in setValues");
             }
         }
@@ -371,9 +370,10 @@ public abstract class QWindowBuilder {
                     ret.put(key, val.getValue()); // store it in returned Map at
                                                   // the
                                                   // same key
+                    break;
                 default:
-                    new IllegalArgumentException(
-                            "Unknown UI type in setValues");
+                    throw new IllegalArgumentException(
+                            "Unknown UI type in getValues");
             }
             entryIterator.next(); // skip label. ui Map has repeating entries
                                   // UI,label,UI1,label1,...

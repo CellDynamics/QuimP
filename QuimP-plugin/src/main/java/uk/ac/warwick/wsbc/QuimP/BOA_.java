@@ -3527,7 +3527,7 @@ class Snake {
 
         n.getPrev().updateNormale();
         n.getNext().updateNormale();
-        n = null;
+        n = null; // FIXME Does it have meaning here?
     }
 
     /**
