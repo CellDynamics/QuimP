@@ -107,6 +107,9 @@ public class BOA_ implements PlugIn {
     private int frame;
     private Constrictor constrictor;
     private PluginFactory pluginFactory; // load and maintain plugins
+    private String lastTool; // last selection tool selected in IJ remember 
+                             // last tool to reselect it after truncating
+                             // or deleting operation
 
     /**
      * Temporary method for test
@@ -148,7 +151,7 @@ public class BOA_ implements PlugIn {
             return;
         }
         ImagePlus ip = WindowManager.getCurrentImage();
-
+        lastTool = IJ.getToolName();
         // stack or single image?
         if (ip == null) {
             IJ.error("Image required");
@@ -301,7 +304,7 @@ public class BOA_ implements PlugIn {
                     if (attributes.getValue("Implementation-Title")
                             .contains("QuimP")) {
                         ret = "Build by: " + attributes.getValue("Built-By")
-                                + "on: "
+                                + " on: "
                                 + attributes.getValue("Implementation-Build");
                         logger.info(ret);
                     }
@@ -395,6 +398,7 @@ public class BOA_ implements PlugIn {
                 // BOA_.log("Delete at:
                 // ("+offScreenX(e.getX())+","+offScreenY(e.getY())+")");
                 deleteCell(offScreenX(e.getX()), offScreenY(e.getY()), frame);
+                IJ.setTool(lastTool);
             }
             if (BOAp.doDeleteSeg) {
                 // BOA_.log("Delete at:
@@ -804,10 +808,12 @@ public class BOA_ implements PlugIn {
                 if (BOAp.doDelete == false) {
                     bDel.setLabel("*STOP DEL*");
                     BOAp.doDelete = true;
+                    lastTool = IJ.getToolName();
                     IJ.setTool(Toolbar.LINE);
                 } else {
                     BOAp.doDelete = false;
                     bDel.setLabel("Delete cell");
+                    IJ.setTool(lastTool);
                 }
                 return;
             }
@@ -819,10 +825,12 @@ public class BOA_ implements PlugIn {
                 if (!BOAp.doDeleteSeg) {
                     bDelSeg.setLabel("*STOP TRUNCATE*");
                     BOAp.doDeleteSeg = true;
+                    lastTool = IJ.getToolName();
                     IJ.setTool(Toolbar.LINE);
                 } else {
                     BOAp.doDeleteSeg = false;
                     bDelSeg.setLabel("Truncate Seg");
+                    IJ.setTool(lastTool);
                 }
                 return;
             }
@@ -835,6 +843,7 @@ public class BOA_ implements PlugIn {
                     bEdit.setLabel("*STOP EDIT*");
                     BOA_.log("**EDIT IS ON**");
                     BOAp.editMode = true;
+                    lastTool = IJ.getToolName();
                     IJ.setTool(Toolbar.LINE);
                     if (nest.size() == 1)
                         editSeg(0, 0, frame); // if only 1 snake go stright to
@@ -846,6 +855,7 @@ public class BOA_ implements PlugIn {
                         stopEdit();
                     }
                     bEdit.setLabel("Edit");
+                    IJ.setTool(lastTool);
                 }
                 return;
             }
@@ -902,7 +912,7 @@ public class BOA_ implements PlugIn {
             } else if (b == bQuit) {
                 quit();
             }
-            // process plugin buttons
+            // process plugin GUI buttons
             // TODO This should update current screen
             if (b == firstPluginGUI) {
                 logger.debug("First plugin GUI, state of BOAp is "
@@ -931,56 +941,27 @@ public class BOA_ implements PlugIn {
                                                           // ArrayList of
                                                           // instances
             }
+
+            // Process plugin selection
+            // if selected item does not find reference to name it returns
+            // null
             if (b == (JComboBox<String>) firstPluginName) {
                 logger.debug("Used firstPluginName, val: "
                         + firstPluginName.getSelectedItem());
                 BOAp.sPluginList.set(0, pluginFactory.getInstance(
-                        (String) firstPluginName.getSelectedItem())); // if
-                                                                                                                        // selected
-                                                                                                                        // item
-                                                                                                                        // dos
-                                                                                                                        // not
-                                                                                                                        // find
-                                                                                                                        // reference
-                                                                                                                        // to
-                                                                                                                        // name
-                                                                                                                        // it
-                                                                                                                        // returns
-                                                                                                                        // null
+                        (String) firstPluginName.getSelectedItem()));
             }
             if (b == (JComboBox<String>) secondPluginName) {
                 logger.debug("Used secondPluginName, val: "
                         + secondPluginName.getSelectedItem());
                 BOAp.sPluginList.set(1, pluginFactory.getInstance(
-                        (String) secondPluginName.getSelectedItem())); // if
-                                                                                                                         // selected
-                                                                                                                         // item
-                                                                                                                         // dos
-                                                                                                                         // not
-                                                                                                                         // find
-                                                                                                                         // reference
-                                                                                                                         // to
-                                                                                                                         // name
-                                                                                                                         // it
-                                                                                                                         // returns
-                                                                                                                         // null
+                        (String) secondPluginName.getSelectedItem()));
             }
             if (b == (JComboBox<String>) thirdPluginName) {
                 logger.debug("Used thirdPluginName, val: "
                         + thirdPluginName.getSelectedItem());
                 BOAp.sPluginList.set(2, pluginFactory.getInstance(
-                        (String) thirdPluginName.getSelectedItem())); // if
-                                                                                                                        // selected
-                                                                                                                        // item
-                                                                                                                        // dos
-                                                                                                                        // not
-                                                                                                                        // find
-                                                                                                                        // reference
-                                                                                                                        // to
-                                                                                                                        // name
-                                                                                                                        // it
-                                                                                                                        // returns
-                                                                                                                        // null
+                        (String) thirdPluginName.getSelectedItem()));
             }
 
             // run segmentation for selected cases
@@ -1167,8 +1148,10 @@ public class BOA_ implements PlugIn {
                 bEdit.setLabel("*STOP EDIT*");
                 BOA_.log("**EDIT IS ON**");
                 BOAp.editMode = true;
+                lastTool = IJ.getToolName();
                 IJ.setTool(Toolbar.LINE);
                 editSeg(0, 0, frame);
+                IJ.setTool(lastTool);
             }
         }
 
@@ -2088,9 +2071,7 @@ class Constrictor {
             PrintWriter pw = new PrintWriter(
                     new FileWriter(
                             "/Users/rtyson/Documents/phd/tmp/test/forcesWrite/forces.txt"),
-                    true); // auto
-                                                                                                                                           // flush
-
+                    true); // auto flush
             ExtendedVector2d F_temp; // temp vectors for forces
             ExtendedVector2d V_temp = new ExtendedVector2d();
 
@@ -2169,12 +2150,12 @@ class Constrictor {
         ExtendedVector2d L_result;
         ExtendedVector2d force = new ExtendedVector2d();
 
-        // compute the unit vector pointing to the left neighbour (static
+        // compute the unit vector pointing to the left neighbor (static
         // method)
         L_result = ExtendedVector2d.unitVector(n.getPoint(),
                 n.getPrev().getPoint());
 
-        // compute the unit vector pointing to the right neighbour
+        // compute the unit vector pointing to the right neighbor
         R_result = ExtendedVector2d.unitVector(n.getPoint(),
                 n.getNext().getPoint());
 
@@ -2196,18 +2177,18 @@ class Constrictor {
 
         double a = 0.75; // subsampling factor
         double Delta_I; // intensity contrast
-        double x, y; // co-ordinates of the local neighbourhood
+        double x, y; // co-ordinates of the local neighborhood
         double xt, yt; // co-ordinates of the tangent
         int I_inside = 0, I_outside = 0; // Intensity of the local
-        // neighbourhood of a node (insde/outside of the chain)
+        // Neighborhood of a node (inside/outside of the chain)
         int I_in = 0, I_out = 0; // number of pixels in the local
-        // neighbourhood of a node
+        // Neighborhood of a node
 
-        // compute normalized tangent (unit vector between neighbours) via
+        // compute normalized tangent (unit vector between neighbors) via
         // static method
         tan = n.getTangent();
 
-        // determine local neighbourhood: a rectangle with sample_tan x
+        // determine local neighborhood: a rectangle with sample_tan x
         // sample_norm
         // tangent to the chain
 
@@ -2761,9 +2742,7 @@ class SnakeHandler {
         head.setPrev(nn);
 
         snakes[frame - startFrame] = new Snake(head, liveSnake.getNODES() + 1,
-                ID); // +1
-                                                                                            // dummy
-                                                                                            // head
+                ID); // +1 dummy head
         snakes[frame - startFrame].calcCentroid();
 
     }
@@ -2848,12 +2827,10 @@ class SnakeHandler {
         pw.print("\n" + NODES);
 
         do {
+            // fluo values (x,y, itensity)
             pw.print("\n" + IJ.d2s(n.position, 6) + "\t" + IJ.d2s(n.getX(), 2)
                     + "\t" + IJ.d2s(n.getY(), 2)
-                    + "\t0\t0\t0" + "\t-2\t-2\t-2\t-2\t-2\t-2\t-2\t-2\t-2"); // fluo
-                                                                                                                                                                             // values
-                                                                                                                                                                             // (x,y,
-                                                                                                                                                                             // itensity)
+                    + "\t0\t0\t0" + "\t-2\t-2\t-2\t-2\t-2\t-2\t-2\t-2\t-2");
             n = n.getNext();
         } while (!n.isHead());
 
@@ -2965,10 +2942,7 @@ class SnakeHandler {
         try {
             br = new BufferedReader(new FileReader(inFile));
 
-            while ((thisLine = br.readLine()) != null) { // while loop begins
-                                                         // here
-                                                         // System.out.println(thisLine);
-
+            while ((thisLine = br.readLine()) != null) {
                 index = 0;
                 head = new Node(index); // dummy head node
                 head.setHead(true);
@@ -3299,9 +3273,7 @@ class Snake {
             b = new ExtendedVector2d(p.xpoints[j], p.ypoints[j]);
 
             nn = (int) Math
-                    .ceil(ExtendedVector2d.lengthP2P(a, b) / BOAp.getNodeRes()); // number
-                                                                                                // of
-                                                                                                // nodes
+                    .ceil(ExtendedVector2d.lengthP2P(a, b) / BOAp.getNodeRes());
             spacing = ExtendedVector2d.lengthP2P(a, b) / (double) nn;
             u = ExtendedVector2d.unitVector(a, b);
             u.multiply(spacing); // required distance between points
@@ -3906,8 +3878,7 @@ class Snake {
 
             } else if (Di < BOAp.getMin_dist() && NODES >= 4) { // Minimum Nodes
                                                                 // is 3
-                                                                // removes Node n_neigh
-                removeNode(n_neigh);
+                removeNode(n_neigh); // removes Node n_neigh
                 n_neigh = n.getNext();
             }
 
@@ -4837,6 +4808,8 @@ class BOAp {
         callCount = 0;
         SEGrunning = false;
 
+        // Array that keeps references for SPLINE plugins activated by user
+        // in QuimP GUI
         sPluginList = new ArrayList<IQuimpPlugin>(NUM_SPLINE_PLUGINS);
         // initialize list with null pointers - this is how QuimP detect that
         // there is plugin selected
