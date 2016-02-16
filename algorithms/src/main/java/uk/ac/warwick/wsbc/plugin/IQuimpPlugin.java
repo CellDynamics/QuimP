@@ -18,9 +18,9 @@ import java.util.Map;
  */
 public interface IQuimpPlugin {
 
-    public int GENERAL = 0; ///< Type of plugin not defined
-    public int DOES_SNAKES = 1; ///< Plugin process snakes only
-    public int CHANGE_SIZE = 32; ///< Plugin change size of input data
+    int GENERAL = 0; ///< Type of plugin not defined
+    int DOES_SNAKES = 1; ///< Plugin process snakes only
+    int CHANGE_SIZE = 32; ///< Plugin change size of input data
 
     /**
      * Provide basic information to QuimP about plugin
@@ -30,7 +30,7 @@ public interface IQuimpPlugin {
      * -# type of plugin (obligatory)
      * -# modification of input size (e.g. reduction of polygon points)
      */
-    public int setup();
+    int setup();
 
     /**
      * Pass to plugin its configuration data as pairs <key,value>
@@ -49,7 +49,7 @@ public interface IQuimpPlugin {
      * key is not understood or casting from \c Object \b value to
      * other type has not been successful.
      */
-    public void setPluginConfig(HashMap<String, Object> par)
+    void setPluginConfig(HashMap<String, Object> par)
             throws QuimpPluginException;
 
     /**
@@ -61,7 +61,7 @@ public interface IQuimpPlugin {
      * @return
      * @see setPluginConfig(HashMap<String,Object>)
      */
-    public Map<String, Object> getPluginConfig();
+    Map<String, Object> getPluginConfig();
 
     /**
      * Show or hide plugin UI
@@ -71,7 +71,7 @@ public interface IQuimpPlugin {
      * 
      * @param val
      */
-    public void showUI(boolean val);
+    void showUI(boolean val);
 
     /**
      * Get version of plugin
@@ -84,5 +84,5 @@ public interface IQuimpPlugin {
      * 
      * @return String with version (any format) or \c null if not supported
      */
-    public String getVersion();
+    String getVersion();
 }

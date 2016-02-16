@@ -169,7 +169,7 @@ public abstract class QWindowBuilder {
      * @throw IllegalArgumentException or other unchecked exceptions on wrong
      * syntax of \c def
      */
-    public void buildWindow(Map<String, String[]> def) {
+    public void buildWindow(final Map<String, String[]> def) {
         if (def.size() < 2)
             throw new IllegalArgumentException("Window must contain title and"
                     + " at least one control");
@@ -208,7 +208,7 @@ public abstract class QWindowBuilder {
             if (RESERVED_KEYS.contains(key))
                 continue;
             String componentName = e.getValue()[UITYPE]; // get name of UI for
-                                                          // given key
+                                                         // given key
             switch (componentName.toLowerCase()) {
                 case "spinner": // by default all spinners are double
                     SpinnerNumberModel model = new SpinnerNumberModel(
@@ -313,7 +313,7 @@ public abstract class QWindowBuilder {
      * 
      * @param vals <key,value> pairs to fill UI.
      */
-    public void setValues(Map<String, Object> vals) {
+    public void setValues(final Map<String, Object> vals) {
         // iterate over parameters and match names to UIs
         for (Map.Entry<String, Object> e : vals.entrySet()) {
             String key = e.getKey();
@@ -352,8 +352,8 @@ public abstract class QWindowBuilder {
      * to QWindowBuilder class through BuildWindow method. The method
      * remaps those keys to related UI controls and reads values
      * associated to them.
-     * @see getDoubleFromUI(String)
-     * @see getIntegerFromUI(String)
+     * @see getDoubleFromUI(final String)
+     * @see getIntegerFromUI(final String)
      */
     public Map<String, Object> getValues() {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -394,9 +394,9 @@ public abstract class QWindowBuilder {
      * 
      * @param key Key to be read from configuration list
      * @return
-     * @see BuildWindow(Map<String, String[]>)
+     * @see BuildWindow(final Map<String, String[]>)
      */
-    public int getIntegerFromUI(String key) {
+    public int getIntegerFromUI(final String key) {
         // get list of all params from ui as <key,val> list
         HashMap<String, Object> uiParam = (HashMap<String, Object>) getValues();
         return ((Double) uiParam.get(key)).intValue();
@@ -405,9 +405,9 @@ public abstract class QWindowBuilder {
     /**
      * Return value related to given key.
      * 
-     * @copydoc getIntegerFromUI(String)
+     * @copydoc getIntegerFromUI(final String)
      */
-    public double getDoubleFromUI(String key) {
+    public double getDoubleFromUI(final String key) {
         // get list of all params from ui as <key,val> list
         HashMap<String, Object> uiParam = (HashMap<String, Object>) getValues();
         return ((Double) uiParam.get(key)).doubleValue();

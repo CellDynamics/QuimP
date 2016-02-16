@@ -121,8 +121,7 @@ public class BOA_ implements PlugIn {
         logger.warn("setupTest is in use and " + isActive.toString());
         pluginFactory = Mockito.spy(new PluginFactory(Paths.get("")));
         when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
-                new ArrayList<String>(
-                        Arrays.asList("Mean", "Loess", "Hat")));
+                new ArrayList<String>(Arrays.asList("Mean", "Loess", "Hat")));
         when(pluginFactory.getInstance("Mean")).thenReturn(new MeanFilter());
         when(pluginFactory.getInstance("Loess")).thenReturn(new LoessFilter());
         when(pluginFactory.getInstance("Hat")).thenReturn(new HatFilter());
@@ -197,7 +196,8 @@ public class BOA_ implements PlugIn {
 
         if (BOAp.useSubPixel == false) {
             BOA_.log(
-                    "Upgrade to ImageJ 1.46, or higher,\nto get sub-pixel editing.");
+                    "Upgrade to ImageJ 1.46, or higher,"
+                            + "\nto get sub-pixel editing.");
         }
         if (IJ.getVersion().compareTo("1.49a") > 0) {
             BOA_.log("(ImageJ " + IJ.getVersion() + " untested)");
@@ -231,12 +231,11 @@ public class BOA_ implements PlugIn {
         nest = new Nest();
         imageGroup = new ImageGroup(ip, nest);
         frame = 1;
-
+        // build window and set its title
         canvas = new CustomCanvas(imageGroup.getOrgIpl());
         window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
         window.buildWindow();
-        String ver = getQuimPBuildInfo();
-        window.setTitle(window.getTitle() + " :QuimP: " + ver);
+        window.setTitle(window.getTitle() + " :QuimP: " + getQuimPBuildInfo());
         // warn about scale
         if (BOAp.scaleAdjusted) {
             BOA_.log("WARNING Scale was zero...\n\tset to 1");
@@ -492,7 +491,7 @@ public class BOA_ implements PlugIn {
 
             // build subpanel with info
             JPanel groupBoxLabel = new JPanel(); // Contain two static fields
-                                                 // wit image scale info
+                                                 // with image scale info
             groupBoxLabel.setBorder(
                     BorderFactory.createTitledBorder("Image scale"));
             groupBoxLabel.setLayout(new GridLayout(1, 2));
@@ -719,8 +718,7 @@ public class BOA_ implements PlugIn {
                     step);
             JSpinner spinner = new JSpinner(model);
             ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField()
-                    .setColumns(
-                            columns);
+                    .setColumns(columns);
             spinner.addChangeListener(this);
 
             Panel p = new Panel();
@@ -746,12 +744,11 @@ public class BOA_ implements PlugIn {
          */
         private JSpinner addIntSpinner(final String s, final Container mp,
                 int d, int min, int max, int step, int columns) {
-            SpinnerNumberModel model = new SpinnerNumberModel(d, min, max,
-                    step);
+            SpinnerNumberModel model =
+                    new SpinnerNumberModel(d, min, max, step);
             JSpinner spinner = new JSpinner(model);
             ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField()
-                    .setColumns(
-                            columns);
+                    .setColumns(columns);
             spinner.addChangeListener(this);
 
             Panel p = new Panel();
@@ -1284,15 +1281,14 @@ public class BOA_ implements PlugIn {
                                 ArrayList<Vector2d> dataToProcess =
                                         (ArrayList<Vector2d>) snake.asList();
                                 for (IQuimpPlugin qP : BOAp.sPluginList) {
-                                    if (qP != null) {
-                                        @SuppressWarnings("unchecked")
-                                        IQuimpPoint2dFilter<Vector2d> qPcast =
-                                                (IQuimpPoint2dFilter<Vector2d>) qP;
-                                        qPcast.attachData(dataToProcess);
-                                        dataToProcess =
-                                                (ArrayList<Vector2d>) qPcast
-                                                        .runPlugin();
-                                    }
+                                    if (qP == null)
+                                        continue; // no plugin on this slot
+                                    @SuppressWarnings("unchecked")
+                                    IQuimpPoint2dFilter<Vector2d> qPcast =
+                                            (IQuimpPoint2dFilter<Vector2d>) qP;
+                                    qPcast.attachData(dataToProcess);
+                                    dataToProcess = (ArrayList<Vector2d>) qPcast
+                                            .runPlugin();
                                 }
                                 sH.attachLiveSnake(dataToProcess);
                             }

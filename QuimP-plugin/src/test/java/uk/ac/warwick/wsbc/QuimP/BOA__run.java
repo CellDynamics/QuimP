@@ -61,7 +61,6 @@ public class BOA__run {
         // main thread waits here until Latch reaches 0
         startSignal.await();
         img.close();
-
     }
 
 }

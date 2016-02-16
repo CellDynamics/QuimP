@@ -16,16 +16,17 @@ import javax.vecmath.Vector2d;
  *
  */
 public class QuimpDataConverter {
+
     private List<Vector2d> points; ///< reference to input coordinates
-    private double[]       X;      ///< extracted x coords from Vec2d
-    private double[]       Y;      ///< extracted y coords from Vec2d
+    private double[] X; ///< extracted x coords from Vec2d
+    private double[] Y; ///< extracted y coords from Vec2d
 
     /**
      * Default constructor
      * 
      * @param input list of vertices
      */
-    public QuimpDataConverter(List<Vector2d> input) {
+    public QuimpDataConverter(final List<Vector2d> input) {
         this.points = input;
         toArrays();
     }

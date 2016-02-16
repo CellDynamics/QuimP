@@ -17,7 +17,7 @@ public class DicException extends Exception {
      * 
      * @param arg0 Reason of exception
      */
-    public DicException(String arg0) {
+    public DicException(final String arg0) {
         super(arg0);
     }
 

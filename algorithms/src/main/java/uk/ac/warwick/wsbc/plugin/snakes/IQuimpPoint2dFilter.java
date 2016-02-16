@@ -23,12 +23,12 @@ public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
      * @return Filtered points
      * @throws QuimpPluginException on any problems during filter execution
      */
-    public List<E> runPlugin() throws QuimpPluginException;
+    List<E> runPlugin() throws QuimpPluginException;
 
     /**
      * Attach data to process to plugin
      * 
      * @param data
      */
-    public void attachData(List<E> data);
+    void attachData(List<E> data);
 }

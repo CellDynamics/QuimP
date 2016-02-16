@@ -104,8 +104,9 @@ public class DICReconstruction {
      * @throws DicException
      * Throws exception after generateRanges()
      */
-    public DICReconstruction(ImagePlus srcImage, double decay, double angle)
-            throws DicException {
+    public DICReconstruction(final ImagePlus srcImage, double decay,
+            double angle)
+                    throws DicException {
         this(srcImage.getProcessor(), decay, angle);
     }
 
@@ -116,8 +117,9 @@ public class DICReconstruction {
      * @throws DicException
      * Throws exception after generateRanges()
      */
-    public DICReconstruction(ImageProcessor ip, double decay, double angle)
-            throws DicException {
+    public DICReconstruction(final ImageProcessor ip, double decay,
+            double angle)
+                    throws DicException {
         this.angle = angle;
         this.decay = decay;
         this.isRotated = false;
@@ -153,7 +155,7 @@ public class DICReconstruction {
      * @param ip
      * New ImageProcessor containing image for reconstruction.
      */
-    public void setIp(ImageProcessor ip) {
+    public void setIp(final ImageProcessor ip) {
         this.srcIp = ip;
         // make copy of original image to not modify it - converting to 16bit
         this.srcImageCopyProcessor = srcIp.convertToShort(false);

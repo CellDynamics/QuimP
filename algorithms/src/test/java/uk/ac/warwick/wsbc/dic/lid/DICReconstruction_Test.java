@@ -129,7 +129,7 @@ public class DICReconstruction_Test {
 
     /**
      * @test Test method for
-     * {@link warwick.wsbc.dic.lid.DICReconstruction#setIp(ImageProcessor)}
+     * {@link wsbc.dic.lid.DICReconstruction#setIp(final ImageProcessor)}
      * Saves output image at \c /tmp/testDicReconstructionLidMatrix_Stack.tif
      * @pre Input stack is square
      * @post Reconstructed stack

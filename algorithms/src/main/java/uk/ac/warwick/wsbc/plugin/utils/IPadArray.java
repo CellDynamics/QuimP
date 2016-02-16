@@ -9,8 +9,8 @@ package uk.ac.warwick.wsbc.plugin.utils;
  *
  */
 public interface IPadArray {
-    static final int CIRCULARPAD = 1; ///< defines circular padding
-    static final int SYMMETRICPAD = 2; ///< defines symmetric padding
+    int CIRCULARPAD = 1; ///< defines circular padding
+    int SYMMETRICPAD = 2; ///< defines symmetric padding
 
     /**
      * Helper method to pick values from X, Y arrays.
@@ -28,7 +28,7 @@ public interface IPadArray {
      * @remarks Do no check relations of window (provided \c index) to whole
      * data size. May be unstable for certain cases.
      */
-    public static int getIndex(int dataLength, int index, int mode) {
+    static int getIndex(int dataLength, int index, int mode) {
 
         switch (mode) {
             case CIRCULARPAD:
@@ -40,7 +40,7 @@ public interface IPadArray {
                 break;
             case SYMMETRICPAD:
                 if (index < 0)
-                    return ((-index) - 1);
+                    return -index - 1;
                 if (index >= dataLength)
                     return (dataLength - (index - dataLength) - 1);
                 break;
@@ -49,7 +49,7 @@ public interface IPadArray {
                         "Padding mode not supported");
         }
 
-        return (index); // for all remaining cases
+        return index; // for all remaining cases
     }
 
 }

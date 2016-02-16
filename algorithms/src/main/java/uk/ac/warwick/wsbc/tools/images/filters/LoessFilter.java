@@ -94,9 +94,9 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
         LOGGER.debug(String.format("Run plugin with params: smoothing %f",
                 smoothing));
 
-        float density = 1.0f; // If smaller than 1 output points will be
-                              // refined. For 1 numbers of output points and
-                              // input points are equal.
+        double density = 1.0f; // If smaller than 1 output points will be
+                               // refined. For 1 numbers of output points and
+                               // input points are equal.
         LoessInterpolator sI;
         double[] i = new double[xyData.size()]; // table of linear indexes that
                                                 // stand for x values for X,Y
@@ -121,7 +121,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
             throw new QuimpPluginException("Smoothing value is too small", e);
         }
         // copy to Vector2d List
-        for (float ii = 0; ii <= xyData.size() - 1; ii += density) {
+        for (double ii = 0; ii <= xyData.size() - 1; ii += density) {
             out.add(new Vector2d(psfX.value(ii), psfY.value(ii)));
         }
         return out;
