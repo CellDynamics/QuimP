@@ -66,17 +66,18 @@ return DOES_8G + DOES_16 + STACK_REQUIRED + NO_CHANGES;
  */
 public class Binary_Seg implements PlugIn {
 
-    static boolean use_previous_snake = true;  // next contraction begins with last chain
+    static boolean use_previous_snake = true; // next contraction begins with
+                                              // last chain
     static private double nodeRes = 4.;
-    static int blowup = 25;            // distance to blow up chain
+    static int blowup = 25; // distance to blow up chain
     static double vel_crit = 0.001;
     static double f_central = 0.04;
-    static double f_image = 0.2;     // image force
+    static double f_image = 0.2; // image force
     //
-    //advanced parameters
-    static int NMAX = 150;             // maximum number of nodes (% of starting nodes)
+    // advanced parameters
+    static int NMAX = 150; // maximum number of nodes (% of starting nodes)
     static double delta_t = 1.;
-    static int max_iterations = 2000;  // max iterations per contraction
+    static int max_iterations = 2000; // max iterations per contraction
     static int sample_tan = 4;
     static int sample_norm = 12;
     static double f_contract = 0.015;
@@ -132,11 +133,11 @@ public class Binary_Seg implements PlugIn {
             OH.getOutline(j).setResolution(nodeRes);
         }
 
-        if(!setSaveLocations()) return;
+        if (!setSaveLocations())
+            return;
 
-        new CellStat(OH, orgIpl, new File(outFile.getParent(), fileName + "_0.stQP.csv"),
-                imageScale, imageFrameInterval);
-
+        new CellStat(OH, orgIpl, new File(outFile.getParent(), fileName + "_0.stQP.csv"), imageScale,
+                imageFrameInterval);
 
         try {
             OH.writeOutlines(outFile, false);
@@ -148,12 +149,11 @@ public class Binary_Seg implements PlugIn {
 
     private boolean setSaveLocations() {
         String saveIn = orgFile.getParent();
-        //System.out.println(orgFile.getParent());
+        // System.out.println(orgFile.getParent());
         if (!orgFile.exists()) {
             IJ.log("image is not saved to disk!");
             saveIn = OpenDialog.getLastDirectory();
         }
-
 
         SaveDialog sd = new SaveDialog("Save data...", saveIn, fileName, "");
 
@@ -162,7 +162,6 @@ public class Binary_Seg implements PlugIn {
         }
         outFile = new File(sd.getDirectory(), sd.getFileName() + "_0.snQP");
         fileName = sd.getFileName();
-
 
         return true;
     }
@@ -178,16 +177,17 @@ public class Binary_Seg implements PlugIn {
         }
 
         Random generator = new Random();
-        double d = generator.nextDouble() * 1000000;    // 6 digit key to ID job
+        double d = generator.nextDouble() * 1000000; // 6 digit key to ID job
         long key = Math.round(d);
 
-        PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true); //auto flush
+        PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true); // auto
+                                                                            // flush
 
         pPW.print("#p - Boa parameter file (BINARY!)\n");
         pPW.print(IJ.d2s(key, 6) + "\n");
         pPW.print(orgFile.getAbsolutePath() + "\n");
         pPW.print("./" + outFile.getName() + "\n");
-        //pPW.print(outFile.getAbsolutePath() + "\n");
+        // pPW.print(outFile.getAbsolutePath() + "\n");
 
         pPW.print("#Image calibration\n");
         pPW.print(IJ.d2s(imageScale, 6) + "\n");
@@ -206,10 +206,9 @@ public class Binary_Seg implements PlugIn {
         pPW.print(IJ.d2s(f_contract, 6) + "\n");
         pPW.print(IJ.d2s(f_friction, 6) + "\n");
         pPW.print(IJ.d2s(f_image, 6) + "\n");
-        //pPW.print(IJ.d2s(p.cortex_width, 6) + "\n");
+        // pPW.print(IJ.d2s(p.cortex_width, 6) + "\n");
         pPW.print(IJ.d2s(sensitivity, 6) + "\n");
-        //pPW.print(IJ.d2s(cut_every, 6) + "\n");
-
+        // pPW.print(IJ.d2s(cut_every, 6) + "\n");
 
         pPW.close();
 
@@ -218,29 +217,30 @@ public class Binary_Seg implements PlugIn {
     private void setup() {
         FileInfo fileinfo = orgIpl.getOriginalFileInfo();
         if (fileinfo == null) {
-            //System.out.println("1671-No file Info, use " + orgIpl.getTitle());
+            // System.out.println("1671-No file Info, use " +
+            // orgIpl.getTitle());
             orgFile = new File(File.separator, orgIpl.getTitle());
         } else {
-            //System.out.println("1671-file Info, filename: " + fileinfo.fileName);
+            // System.out.println("1671-file Info, filename: " +
+            // fileinfo.fileName);
             orgFile = new File(fileinfo.directory, fileinfo.fileName);
         }
         fileName = Tool.removeExtension(orgFile.getName());
 
         // extract fileName without extension
 
-        //int dotI = fileName.lastIndexOf(".");
-        //if (dotI > 0) {
-        //fileName = fileName.substring(0, dotI);
-        //}
+        // int dotI = fileName.lastIndexOf(".");
+        // if (dotI > 0) {
+        // fileName = fileName.substring(0, dotI);
+        // }
         // System.out.println("fileName: " + fileName);
 
-        //FRAMES = orgIpl.getStackSize(); // get number of frames
+        // FRAMES = orgIpl.getStackSize(); // get number of frames
         imageFrameInterval = orgIpl.getCalibration().frameInterval;
         imageScale = orgIpl.getCalibration().pixelWidth;
         if (imageFrameInterval == 0) {
             imageFrameInterval = 1;
-            IJ.log("Warning. Frame interval was 0 sec. Using 1 sec instead"
-                    + "\n\t[set in 'image->Properties...']");
+            IJ.log("Warning. Frame interval was 0 sec. Using 1 sec instead" + "\n\t[set in 'image->Properties...']");
         }
         if (imageScale == 0) {
             imageScale = 1;
@@ -254,16 +254,17 @@ class CustomParticleAnalyzer extends ParticleAnalyzer {
 
     private OutlineHandler OH;
 
-    // Overrides method with the same in AnalyzeParticles that's called once for each particle
+    // Overrides method with the same in AnalyzeParticles that's called once for
+    // each particle
     protected void saveResults(ImageStatistics stats, Roi roi) {
-        //Outline o = new Outline(roi);
-        //set res?
+        // Outline o = new Outline(roi);
+        // set res?
         OH.setOutline(imp.getCurrentSlice() - 1, new Outline(roi));
         super.saveResults(stats, roi);
     }
 
     public int setup(String arg, ImagePlus imp) {
-        OH = new OutlineHandler(1,imp.getStackSize());
+        OH = new OutlineHandler(1, imp.getStackSize());
         return super.setup(arg, imp);
     }
 

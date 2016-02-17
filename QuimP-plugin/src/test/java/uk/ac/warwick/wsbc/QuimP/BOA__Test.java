@@ -12,37 +12,39 @@ import ij.ImagePlus;
 
 /**
  * Test class for BOA_ plugin
+ * 
  * @author baniuk
  *
  */
 public class BOA__Test {
 
-	ImagePlus img;
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
+    ImagePlus img;
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+    }
 
-	@Before
-	public void setUp() throws Exception {
-		img = IJ.openImage("src/test/resources/movie03.tif");
-	}
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+    }
 
-	@After
-	public void tearDown() throws Exception {
-		img = null;
-	}
-	
-	@Test
-	public void testExample() {
-		assertEquals(10,10);
-	}
+    @Before
+    public void setUp() throws Exception {
+        img = IJ.openImage("src/test/resources/movie03.tif");
+    }
 
-	@Test
-	public void testExample1() {
-		assertEquals(10,10);
-	}
+    @After
+    public void tearDown() throws Exception {
+        img = null;
+    }
+
+    @Test
+    public void testExample() {
+        assertEquals(10, 10);
+    }
+
+    @Test
+    public void testExample1() {
+        assertEquals(10, 10);
+    }
 }

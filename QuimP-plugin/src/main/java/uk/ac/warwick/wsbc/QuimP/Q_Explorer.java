@@ -29,184 +29,183 @@ import javax.swing.event.ChangeListener;
  */
 public class Q_Explorer implements PlugIn {
 
-   MapCanvas[] mapCanvs;
-   MovCanvas movCanvas;
-   ExplorerStackWindow explorerWindow;
-   ImageManager imageManager;
-   OutlineHandler oH;
+    MapCanvas[] mapCanvs;
+    MovCanvas movCanvas;
+    ExplorerStackWindow explorerWindow;
+    ImageManager imageManager;
+    OutlineHandler oH;
 
-   @Override
-   public void run(String string) {
-      try {
-        // do {
+    @Override
+    public void run(String string) {
+        try {
+            // do {
             OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", OpenDialog.getLastDirectory(), "");
             if (od.getFileName() == null) {
-               return;
+                return;
             }
             File paramFile = new File(od.getDirectory(), od.getFileName());
             EXp.qp = new QParams(paramFile);
             EXp.qp.readParams();
             setup();
             return;
-         //} while (true);
+            // } while (true);
 
-      } catch (Exception e) {
-         //IJ.error("Unknown exception");
-         e.printStackTrace();
-      }
-   }
+        } catch (Exception e) {
+            // IJ.error("Unknown exception");
+            e.printStackTrace();
+        }
+    }
 
-   @SuppressWarnings("serial")
-class MapCanvas extends ImageCanvas {
+    @SuppressWarnings("serial")
+    class MapCanvas extends ImageCanvas {
 
-      MapCanvas(ImagePlus imp) {
-         super(imp);
-      }
+        MapCanvas(ImagePlus imp) {
+            super(imp);
+        }
 
-      @Override
-      public void mousePressed(MouseEvent e) {
-         super.mousePressed(e);
-         IJ.log("Map pressed at: ("+offScreenX(e.getX())+","+offScreenY(e.getY())+")");
-         mapUpdate(e.getX(), e.getY());
-      }
-   }
+        @Override
+        public void mousePressed(MouseEvent e) {
+            super.mousePressed(e);
+            IJ.log("Map pressed at: (" + offScreenX(e.getX()) + "," + offScreenY(e.getY()) + ")");
+            mapUpdate(e.getX(), e.getY());
+        }
+    }
 
-   @SuppressWarnings("serial")
-class MovCanvas extends ImageCanvas {
+    @SuppressWarnings("serial")
+    class MovCanvas extends ImageCanvas {
 
-      MovCanvas(ImagePlus imp) {
-         super(imp);
-      }
+        MovCanvas(ImagePlus imp) {
+            super(imp);
+        }
 
-      @Override
-      public void mousePressed(MouseEvent e) {
-         IJ.log("Movie pressed at: ("+offScreenX(e.getX())+","+offScreenY(e.getY())+")");
-      }
-   }
+        @Override
+        public void mousePressed(MouseEvent e) {
+            IJ.log("Movie pressed at: (" + offScreenX(e.getX()) + "," + offScreenY(e.getY()) + ")");
+        }
+    }
 
-   @SuppressWarnings("serial")
-class ExplorerStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
+    @SuppressWarnings("serial")
+    class ExplorerStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
 
-      ExplorerStackWindow(ImagePlus imp, ImageCanvas stackCanvas) {
-         super(imp, stackCanvas);
+        ExplorerStackWindow(ImagePlus imp, ImageCanvas stackCanvas) {
+            super(imp, stackCanvas);
 
-      }
+        }
 
-      @Override
-      public void itemStateChanged(ItemEvent ie) {
-      }
+        @Override
+        public void itemStateChanged(ItemEvent ie) {
+        }
 
-      @Override
-      public void stateChanged(ChangeEvent ce) {
-      }
+        @Override
+        public void stateChanged(ChangeEvent ce) {
+        }
 
-      @Override
-      public void updateSliceSelector() {
-         super.updateSliceSelector();
-         EXp.frame = sliceSelector.getValue();
-         imageManager.updateOverlays(); //draw overlay
-      } // update the frame label, overlay, frame and set zoom
-   }
+        @Override
+        public void updateSliceSelector() {
+            super.updateSliceSelector();
+            EXp.frame = sliceSelector.getValue();
+            imageManager.updateOverlays(); // draw overlay
+        } // update the frame label, overlay, frame and set zoom
+    }
 
-   void setup(){
-      oH = new OutlineHandler(EXp.qp);
-      if(!oH.readSuccess){
-         IJ.error("Failed to read " + EXp.qp.snakeQP.getName());
-         return;
-      }
-      imageManager = new ImageManager(oH);
-      buildWindows();
-   }
+    void setup() {
+        oH = new OutlineHandler(EXp.qp);
+        if (!oH.readSuccess) {
+            IJ.error("Failed to read " + EXp.qp.snakeQP.getName());
+            return;
+        }
+        imageManager = new ImageManager(oH);
+        buildWindows();
+    }
 
-   void buildWindows(){
-      mapCanvs = new MapCanvas[imageManager.nbMaps];
-      mapCanvs[0] = new MapCanvas(imageManager.mapsIpl[0]);
-      new ImageWindow(imageManager.mapsIpl[0], mapCanvs[0]);
-      imageManager.mapsIpl[0].show();
+    void buildWindows() {
+        mapCanvs = new MapCanvas[imageManager.nbMaps];
+        mapCanvs[0] = new MapCanvas(imageManager.mapsIpl[0]);
+        new ImageWindow(imageManager.mapsIpl[0], mapCanvs[0]);
+        imageManager.mapsIpl[0].show();
 
-      movCanvas = new MovCanvas(imageManager.movieIpl);
-      explorerWindow = new ExplorerStackWindow(imageManager.movieIpl, movCanvas);
+        movCanvas = new MovCanvas(imageManager.movieIpl);
+        explorerWindow = new ExplorerStackWindow(imageManager.movieIpl, movCanvas);
 
-      imageManager.movieIpl.show();
-      imageManager.movieIpl.setSlice(1);
-      EXp.frame = 1;
-      imageManager.updateOverlays();
-   }
+        imageManager.movieIpl.show();
+        imageManager.movieIpl.setSlice(1);
+        EXp.frame = 1;
+        imageManager.updateOverlays();
+    }
 
-   void mapUpdate(int x, int y){
-      imageManager.setSlice(y);
-   }
+    void mapUpdate(int x, int y) {
+        imageManager.setSlice(y);
+    }
 
-   ExtendedVector2d map2Mov(){
-      return new ExtendedVector2d(-1,-1);
-   }
+    ExtendedVector2d map2Mov() {
+        return new ExtendedVector2d(-1, -1);
+    }
 }
 
+class ImageManager {
 
-class ImageManager{
+    ImagePlus[] mapsIpl;
+    ImagePlus movieIpl;
+    ImagePlus xMap, yMap;
+    Overlay[] movOverlay;
+    ExtendedVector2d mapCoord;
+    ExtendedVector2d movCoord;
+    int nbMaps;
 
-   ImagePlus[] mapsIpl;
-   ImagePlus movieIpl;
-   ImagePlus xMap, yMap;
-   Overlay[] movOverlay;
-   ExtendedVector2d mapCoord;
-   ExtendedVector2d movCoord;
-   int nbMaps;
+    ImageManager(OutlineHandler oH) {
+        nbMaps = 1;
+        mapsIpl = new ImagePlus[1];
 
-   ImageManager( OutlineHandler oH){
-      nbMaps = 1;
-      mapsIpl = new ImagePlus[1];
+        xMap = openMap(EXp.qp.xFile, "xMap");
+        yMap = openMap(EXp.qp.xFile, "yMap");
 
-      xMap = openMap(EXp.qp.xFile, "xMap");
-      yMap = openMap(EXp.qp.xFile, "yMap");
+        mapsIpl[0] = openMap(EXp.qp.motilityFile, "Motility Map");
 
-      mapsIpl[0] = openMap(EXp.qp.motilityFile, "Motility Map");
+        movieIpl = IJ.openImage(EXp.qp.segImageFile.getAbsolutePath());
+        movOverlay = new Overlay[movieIpl.getStackSize()];
 
-      movieIpl = IJ.openImage(EXp.qp.segImageFile.getAbsolutePath());
-      movOverlay = new Overlay[movieIpl.getStackSize()];
+        // build overlays
+        movOverlay = new Overlay[movieIpl.getStackSize()];
+        for (int i = 1; i <= movieIpl.getStackSize(); i++) {
+            movOverlay[i - 1] = new Overlay();
+            if (oH.isOutlineAt(i)) {
+                movOverlay[i - 1].add(oH.getOutline(i).asFloatRoi());
+            }
+        }
 
-      //build overlays
-      movOverlay = new Overlay[movieIpl.getStackSize()];
-      for(int i = 1; i <= movieIpl.getStackSize(); i++){
-         movOverlay[i-1] = new Overlay();
-         if(oH.isOutlineAt(i)){
-            movOverlay[i-1].add(oH.getOutline(i).asFloatRoi());
-         }
-      }
+    }
 
-   }
+    private ImagePlus openMap(File f, String n) {
 
-   private ImagePlus openMap( File f, String n){
+        if (!f.exists()) {
+            IJ.log("Could not open " + f.getName());
+            return null;
+        }
 
-      if(!f.exists()){
-         IJ.log("Could not open " + f.getName());
-         return null;
-      }
+        TextReader textR = new TextReader();
+        ImageProcessor ip = textR.open(f.getAbsolutePath());
+        return new ImagePlus(n, ip);
+    }
 
-      TextReader textR = new TextReader();
-      ImageProcessor ip = textR.open( f.getAbsolutePath());
-      return new ImagePlus(n, ip);
-   }
+    void updateOverlays() {
+        movieIpl.setOverlay(movOverlay[EXp.frame - 1]);
+    }
 
-   void updateOverlays(){
-      movieIpl.setOverlay(movOverlay[EXp.frame-1]);
-   }
-
-   void setSlice(int i){
-      movieIpl.setSlice(i);
-      EXp.frame = i;
-      this.updateOverlays();
-   }
+    void setSlice(int i) {
+        movieIpl.setSlice(i);
+        EXp.frame = i;
+        this.updateOverlays();
+    }
 
 }
 
-class EXp{
+class EXp {
 
-   static QParams qp;
-   static int frame;
+    static QParams qp;
+    static int frame;
 
-   EXp(){
+    EXp() {
 
-   }
+    }
 
 }
