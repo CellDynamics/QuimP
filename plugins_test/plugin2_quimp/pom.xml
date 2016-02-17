@@ -12,25 +12,28 @@
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>plugin2_quimp</artifactId>
   <packaging>jar</packaging>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
 
   <!-- Name and licencing and other project informations -->
   <name>plugin2_quimp</name>
   
   <dependencies>
-    <dependency>
-    	<groupId>uk.ac.warwick.wsbc</groupId>
-    	<artifactId>algorithms</artifactId>
-    	<version>1.11.2-SNAPSHOT</version>
-    </dependency>
+  <dependency>
+  	<groupId>uk.ac.warwick.wsbc</groupId>
+  	<artifactId>algorithms</artifactId>
+  	<version>1.11.2-SNAPSHOT</version>
+  </dependency>
   </dependencies>
-  
+    
   <build>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId> <!-- http://stackoverflow.com/questions/1625492/execute-maven-plugin-goal-on-child-modules-but-not-on-parent -->
-          <artifactId>maven-assembly-plugin</artifactId> <!-- https://maven.apache.org/pom.html -->
+    <plugins>
+     <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <configuration>
+            <outputDirectory>${basedir}/../target/</outputDirectory>
+        </configuration>
         </plugin>
-      </plugins>
+    </plugins>
   </build>
 </project>

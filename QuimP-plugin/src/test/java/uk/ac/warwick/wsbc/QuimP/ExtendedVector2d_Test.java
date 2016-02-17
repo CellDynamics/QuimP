@@ -6,7 +6,6 @@ import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.junit.Test;
 
 /**
@@ -19,7 +18,8 @@ import org.junit.Test;
  */
 public class ExtendedVector2d_Test {
 
-    private static final Logger logger = LogManager.getLogger(ExtendedVector2d_Test.class.getName());
+    private static final Logger logger =
+            LogManager.getLogger(ExtendedVector2d_Test.class.getName());
 
     /**
      * @test test toString() method
@@ -48,10 +48,4 @@ public class ExtendedVector2d_Test {
         ExtendedVector2d ev1 = new ExtendedVector2d(v1);
         logger.debug("Casting1: " + ev1.toString());
     }
-
-    @Test
-    public void test_ListCast() {
-        ArrayList<Vector2d> l = (ArrayList<Vector2d>) (ArrayList) new ArrayList<ExtendedVector2d>();
-    }
-
 }

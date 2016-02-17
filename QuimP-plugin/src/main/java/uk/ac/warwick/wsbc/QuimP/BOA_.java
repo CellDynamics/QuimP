@@ -29,6 +29,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -122,10 +123,60 @@ public class BOA_ implements PlugIn {
         pluginFactory = Mockito.spy(new PluginFactory(Paths.get("")));
         when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
                 new ArrayList<String>(Arrays.asList("Mean", "Loess", "Hat")));
-        when(pluginFactory.getInstance("Mean")).thenReturn(new MeanFilter());
-        when(pluginFactory.getInstance("Loess")).thenReturn(new LoessFilter());
-        when(pluginFactory.getInstance("Hat")).thenReturn(new HatFilter());
-        when(pluginFactory.getInstance("NONE")).thenReturn(null);
+        try {
+            when(pluginFactory.getInstance("Mean"))
+                    .thenReturn(new MeanFilter());
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+            when(pluginFactory.getInstance("Loess"))
+                    .thenReturn(new LoessFilter());
+        } catch (MalformedURLException | ClassNotFoundException
+                | InstantiationException | IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+            when(pluginFactory.getInstance("Hat")).thenReturn(new HatFilter());
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+            when(pluginFactory.getInstance("NONE")).thenReturn(null);
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         return isActive;
     }
@@ -950,20 +1001,62 @@ public class BOA_ implements PlugIn {
             if (b == (JComboBox<String>) firstPluginName) {
                 logger.debug("Used firstPluginName, val: "
                         + firstPluginName.getSelectedItem());
-                BOAp.sPluginList.set(0, pluginFactory.getInstance(
-                        (String) firstPluginName.getSelectedItem()));
+                try {
+                    BOAp.sPluginList.set(0, pluginFactory.getInstance(
+                            (String) firstPluginName.getSelectedItem()));
+                } catch (MalformedURLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (ClassNotFoundException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (InstantiationException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (IllegalAccessException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
             if (b == (JComboBox<String>) secondPluginName) {
                 logger.debug("Used secondPluginName, val: "
                         + secondPluginName.getSelectedItem());
-                BOAp.sPluginList.set(1, pluginFactory.getInstance(
-                        (String) secondPluginName.getSelectedItem()));
+                try {
+                    BOAp.sPluginList.set(1, pluginFactory.getInstance(
+                            (String) secondPluginName.getSelectedItem()));
+                } catch (MalformedURLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (ClassNotFoundException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (InstantiationException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (IllegalAccessException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
             if (b == (JComboBox<String>) thirdPluginName) {
                 logger.debug("Used thirdPluginName, val: "
                         + thirdPluginName.getSelectedItem());
-                BOAp.sPluginList.set(2, pluginFactory.getInstance(
-                        (String) thirdPluginName.getSelectedItem()));
+                try {
+                    BOAp.sPluginList.set(2, pluginFactory.getInstance(
+                            (String) thirdPluginName.getSelectedItem()));
+                } catch (MalformedURLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (ClassNotFoundException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (InstantiationException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (IllegalAccessException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
 
             // run segmentation for selected cases
