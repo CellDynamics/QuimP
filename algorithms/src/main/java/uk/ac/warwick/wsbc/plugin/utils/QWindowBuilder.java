@@ -368,8 +368,7 @@ public abstract class QWindowBuilder {
                 case "spinner":
                     JSpinner val = (JSpinner) m.getValue(); // get value
                     ret.put(key, val.getValue()); // store it in returned Map at
-                                                  // the
-                                                  // same key
+                                                  // the same key
                     break;
                 default:
                     throw new IllegalArgumentException(

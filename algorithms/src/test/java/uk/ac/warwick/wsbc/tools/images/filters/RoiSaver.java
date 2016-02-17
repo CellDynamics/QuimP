@@ -21,8 +21,8 @@ import ij.process.ImageProcessor;
  *
  */
 class RoiSaver {
-    private static final Logger LOGGER = LogManager
-            .getLogger(RoiSaver.class.getName());
+    private static final Logger LOGGER =
+            LogManager.getLogger(RoiSaver.class.getName());
 
     /**
      * Dummy constructor
@@ -36,10 +36,8 @@ class RoiSaver {
      * Get ListArray with vertices and create \a fileName.tif image with ROI For
      * non-valid input list it creates red image of size 100 x 100
      * 
-     * @param fileName
-     * file to save image with path
-     * @param vert
-     * list of vertices
+     * @param fileName file to save image with path
+     * @param vert list of vertices
      */
     public static void saveROI(String fileName, List<Vector2d> vert) {
         try {
@@ -88,15 +86,13 @@ class RoiSaver {
      * List of vertexes of shape
      * @return two elements array where [width height]
      * @retval double[2]
-     * @todo move to RectangleBox class after rework of that class to accept
-     * ListArrays
      */
     private static double[] getBoundingBox(List<Vector2d> vert) {
         double minx = vert.get(0).getX();
         double maxx = minx;
         double miny = vert.get(0).getY();
         double maxy = miny;
-        double out[] = new double[2];
+        double[] out = new double[2];
         for (Vector2d el : vert) {
             if (el.getX() > maxx)
                 maxx = el.getX();

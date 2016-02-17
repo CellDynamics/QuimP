@@ -30,8 +30,8 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 public class MeanFilter_test {
 
     private List<Vector2d> testcase;
-    private static final Logger LOGGER = LogManager
-            .getLogger(MeanFilter_test.class.getName());
+    private static final Logger LOGGER =
+            LogManager.getLogger(MeanFilter_test.class.getName());
 
     /**
      * Called after construction but before tests
