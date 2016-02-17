@@ -15,9 +15,12 @@ import java.util.Map;
  * @author p.baniukiewicz
  * @date 2 Feb 2016
  * @todo TODO finish documentation and add UML graphs
+ * @see uk.ac.warwick.wsbc.QuimP.PluginFactory.getPluginType(File, String)
  */
 public interface IQuimpPlugin {
 
+    // any change here should be reflected in
+    // uk.ac.warwick.wsbc.QuimP.PluginFactory.getPluginType(File, String)
     int GENERAL = 0; ///< Type of plugin not defined
     int DOES_SNAKES = 1; ///< Plugin process snakes only
     int CHANGE_SIZE = 32; ///< Plugin change size of input data

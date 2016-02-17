@@ -49,7 +49,8 @@ public class PluginFactory {
      * List of plugins found in initial directory \c path passed to constructor
      * 
      * Plugins are organized in list <name, <path, qname, type>> where:
-     * -# \b name is the name of plugin extracted from plugin jar filename
+     * -# \b name is the name of plugin extracted from plugin jar filename. Name
+     * is always encoded as \b Name - starts with capital letter
      * -# \b path is full path with jar filename
      * -# \b qname is qualified name of plugin class obtained from jar name
      * -# \b type is type of plugin read from IQuimpPlugin.setup() method
@@ -72,7 +73,9 @@ public class PluginFactory {
     /**
      * Scan \c path for files that match \c PATTERN name and end with .jar
      * 
-     * Fill \c availPlugins field.
+     * Fill \c availPlugins field. Field name is filled as Name without
+     * dependency how original filename was written. It is converted to small
+     * letters and then first char is upper-case written.
      * 
      * @return table of files that fulfill criterion:
      * -# have extension
@@ -84,17 +87,18 @@ public class PluginFactory {
         File[] listFiles = fi.listFiles(new FilenameFilter() {
 
             @Override
-            public boolean accept(File dir, String name) {
-                if (name.lastIndexOf('.') <= 0)
+            public boolean accept(File dir, final String name) {
+                String sname = name.toLowerCase();
+                if (sname.lastIndexOf('.') <= 0)
                     return false; // no extension
-                int lastIndex = name.lastIndexOf('.');
+                int lastIndex = sname.lastIndexOf('.');
                 // get extension
-                String ext = name.substring(lastIndex);
+                String ext = sname.substring(lastIndex);
                 ext.toLowerCase();
                 if (!ext.equals(".jar"))
                     return false; // no jar extension
                 // now we have .jar file, check name pattern
-                if (name.contains(PATTERN))
+                if (sname.contains(PATTERN))
                     return true;
                 else
                     return false;
@@ -102,7 +106,7 @@ public class PluginFactory {
         });
         // decode names from listFiles and fill availPlugins names and paths
         for (File f : listFiles) {
-            String filename = f.getName();
+            String filename = f.getName().toLowerCase();
             int lastindex = filename.lastIndexOf(PATTERN);
             // cut from beginning to _quimp
             String pluginName = filename.substring(0, lastindex);
@@ -149,8 +153,9 @@ public class PluginFactory {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException When returned type is unknown
      * @throws InvocationTargetException
+     * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin
      */
-    private int getPluginType(File plugin, String className)
+    private int getPluginType(final File plugin, final String className)
             throws MalformedURLException, ClassNotFoundException,
             NoSuchMethodException, SecurityException, InstantiationException,
             IllegalAccessException, IllegalArgumentException,
@@ -199,14 +204,14 @@ public class PluginFactory {
      * @throws IllegalAccessException when problem with creating instance
      * @throws InstantiationException when problem with creating instance
      */
-    public IQuimpPlugin getInstance(String name)
+    public IQuimpPlugin getInstance(final String name)
             throws MalformedURLException, ClassNotFoundException,
             InstantiationException, IllegalAccessException {
         // usually name of plugin is spelled with Capital letter first
         // make sure that name is in correct format
-        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        String qname = name.substring(0, 1).toUpperCase() + name.substring(1);
         // find name in database
-        PluginProperties pp = availPlugins.get(name);
+        PluginProperties pp = availPlugins.get(qname);
         // load class and create instance
         URL[] url = new URL[] { pp.getFile().toURI().toURL() };
         ClassLoader child = new URLClassLoader(url);
