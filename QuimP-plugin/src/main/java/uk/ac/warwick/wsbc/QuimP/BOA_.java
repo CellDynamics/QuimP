@@ -111,22 +111,30 @@ public class BOA_ implements PlugIn {
                              // last tool to reselect it after truncating
                              // or deleting operation
 
+    private final static String NONE = "NONE"; // reserved word that stands for 
+                                               // plugin that is not selected 
+
     /**
      * Temporary method for test
      * 
      * @return \c true if enabled
      * @throws QuimpPluginException
      */
-    private boolean setupTest() throws QuimpPluginException {
+    private boolean setupTest() {
         Boolean isActive = true;
         LOGGER.warn("setupTest is in use and " + isActive.toString());
-        pluginFactory = Mockito.spy(new PluginFactory(Paths.get("")));
+        try {
+            // must be any but existing directory
+            pluginFactory = Mockito.spy(new PluginFactory(Paths.get("/tmp/")));
+        } catch (QuimpPluginException e) {
+            LOGGER.error("setupTest: " + e.getMessage());
+        }
         when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
                 new ArrayList<String>(Arrays.asList("Mean", "Loess", "Hat")));
         when(pluginFactory.getInstance("Mean")).thenReturn(new MeanFilter());
         when(pluginFactory.getInstance("Loess")).thenReturn(new LoessFilter());
         when(pluginFactory.getInstance("Hat")).thenReturn(new HatFilter());
-        when(pluginFactory.getInstance("NONE")).thenReturn(null);
+        when(pluginFactory.getInstance(NONE)).thenReturn(null);
         return isActive;
     }
 
@@ -187,7 +195,7 @@ public class BOA_ implements PlugIn {
                 pluginFactory = new PluginFactory(Paths.get(path));
         } catch (Exception e) {
             // temporary catching may in future be removed
-            LOGGER.error(e);
+            LOGGER.error("run " + e);
         }
 
         BOA_.running = true;
@@ -515,16 +523,15 @@ public class BOA_ implements PlugIn {
 
             // build subpanel with plugins
             // get plugins names collected by PluginFactory
-            ArrayList<String> pluginList =
-                    (ArrayList<String>) pluginFactory.getPluginNames(
-                            IQuimpPlugin.DOES_SNAKES);
+            ArrayList<String> pluginList = pluginFactory.getPluginNames(
+                    IQuimpPlugin.DOES_SNAKES);
             // verify if any plugin is available
             if (pluginList.isEmpty()) {
                 IJ.log("No plugins found");
                 LOGGER.warn("No plugins found");
             }
             // add NONE to list
-            pluginList.add(0, "NONE");
+            pluginList.add(0, NONE);
             // plugins are recognized by their names returned from 
             // pluginFactory.getPluginNames() so if there is no names, it is
             // not possible to call nonexisting plugins, because calls are 
@@ -959,24 +966,37 @@ public class BOA_ implements PlugIn {
             // Process plugin selection
             // if selected item does not find reference to name it returns
             // null
+            IQuimpPlugin inst = null;
+            String selectedPlugin = NONE;
             if (b == (JComboBox<String>) firstPluginName) {
                 LOGGER.debug("Used firstPluginName, val: "
                         + firstPluginName.getSelectedItem());
-                BOAp.sPluginList.set(0, pluginFactory.getInstance(
-                        (String) firstPluginName.getSelectedItem()));
-                // TODO here can be checked if getInstance returned null if passed string was not NONE - it means plugin problem
+                // get instance using plugin name (obtained from getPluginNames
+                // from PluginFactory
+                selectedPlugin = (String) firstPluginName.getSelectedItem();
+                inst = pluginFactory.getInstance(selectedPlugin);
+                // remember instance in active plugin list
+                BOAp.sPluginList.set(0, inst);
             }
             if (b == (JComboBox<String>) secondPluginName) {
                 LOGGER.debug("Used secondPluginName, val: "
                         + secondPluginName.getSelectedItem());
-                BOAp.sPluginList.set(1, pluginFactory.getInstance(
-                        (String) secondPluginName.getSelectedItem()));
+                selectedPlugin = (String) secondPluginName.getSelectedItem();
+                inst = pluginFactory.getInstance(selectedPlugin);
+                BOAp.sPluginList.set(1, inst);
             }
             if (b == (JComboBox<String>) thirdPluginName) {
                 LOGGER.debug("Used thirdPluginName, val: "
                         + thirdPluginName.getSelectedItem());
-                BOAp.sPluginList.set(2, pluginFactory.getInstance(
-                        (String) thirdPluginName.getSelectedItem()));
+                selectedPlugin = (String) thirdPluginName.getSelectedItem();
+                inst = pluginFactory.getInstance(selectedPlugin);
+                BOAp.sPluginList.set(2, inst);
+            }
+            // inform user if PluginFactory returned null for name other 
+            // than NONE. this may be problem with plugin
+            if (inst == null && selectedPlugin != NONE) {
+                LOGGER.warn("Plugin " + selectedPlugin + " cannot be loaded");
+                IJ.log("Plugin " + selectedPlugin + " cannot be loaded");
             }
 
             // run segmentation for selected cases
