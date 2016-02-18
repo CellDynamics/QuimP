@@ -72,9 +72,9 @@ public class PluginFactory_Test {
 
     /**
      * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)}
+     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(final String)}
      * This test creates instances of plugins and calls methods from them
-     * storing and readin data from created obejct for plugin2
+     * storing and reading data from created object for plugin2
      * 
      * @pre Two dummy plugins in src/test/resources/ directory of type
      * DOES_SNAKES

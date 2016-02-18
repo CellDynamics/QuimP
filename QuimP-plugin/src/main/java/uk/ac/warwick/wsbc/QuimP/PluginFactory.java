@@ -25,14 +25,46 @@ import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
 /**
  * Plugin jar loader
  * 
- * Assumed is that jar file name with plugin will have structure:
+ * Created object is connected with directory where plugins exist. This
+ * directory is scanned for jar files that meet given below naming conventions.
+ * Every file that meets naming convention is loaded and asked for method
+ * IQuimpPlugin.setup(). On success the plugin is registered in \c availPlugins
+ * database:
+ * 
+ * @code
+ * <Name, <File, Type, ClassName>>
+ * @endcode
+ * 
+ * Where \b Name is name of plugin extracted form file name (see below required
+ * naming conventions), \b File is handle to file on disk, \b Type is type
+ * of plugin according to types defined in warwick.wsbc.plugin.IQuimpPlugin and
+ * \b ClassName is qualified name of class of plugin. The \b ClassName is
+ * extracted from the plugin file name thus real class name of the plugin must
+ * be the same. Assumed is that jar file name with plugin will have structure:
  * 
  * @code
  * plugin_quimp-other-info.jar
  * @endcode
  * where \a plugin must match to class name \c Plugin.
  * First letter in file name can be small nevertheless it is expected that
- * class name starts from capital letter.
+ * class name starts from capital letter. File name is always converted to small
+ * letters then first letter is capitalized and then there is \c PACKAGE string
+ * appended to the front. All this create \b ClassName
+ * 
+ * Simplified initialization diagram is as follow:
+ * 
+ * @msc
+ * hscale="1.0";
+ * Constructor,Scan,FindJar,GetType;
+ * 
+ * Constructor=>Scan [label="scanDirectory()"];
+ * Scan=>FindJar;
+ * FindJar>>Scan [label="listFiles"];
+ * Scan=>GetType [label="getPluginType(File,className)"];
+ * GetType>>Scan [label="int type"];
+ * Scan note FindJar [label="This is inside Scan",textbgcolour="#7f7fff"];
+ * Scan->Constructor [label="availPlugins"];
+ * @endmsc
  * 
  * @author p.baniukiewicz
  * @date 4 Feb 2016
@@ -106,6 +138,7 @@ public class PluginFactory {
         });
         // decode names from listFiles and fill availPlugins names and paths
         for (File f : listFiles) {
+            // build plugin name from file name
             String filename = f.getName().toLowerCase();
             int lastindex = filename.lastIndexOf(PATTERN);
             // cut from beginning to _quimp
@@ -117,7 +150,7 @@ public class PluginFactory {
             try {
                 // create entry with classname and path
                 availPlugins.put(pluginName, new PluginProperties(f,
-                        PACKAGE + "." + pluginName, -1));
+                        PACKAGE + "." + pluginName, IQuimpPlugin.GENERAL));
                 // get type of path.classname plugin
                 int type = getPluginType(f,
                         availPlugins.get(pluginName).getClassName());
