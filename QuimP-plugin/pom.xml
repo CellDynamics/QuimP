@@ -41,9 +41,14 @@
     </dependency>
     <dependency>
     	<groupId>uk.ac.warwick.wsbc</groupId>
-    	<artifactId>plugins_test</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-    	<type>pom</type>
+    	<artifactId>plugin1_quimp</artifactId>
+    	<version>0.0.1</version>
+    	<scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>uk.ac.warwick.wsbc</groupId>
+    	<artifactId>plugin2_quimp</artifactId>
+    	<version>0.0.1</version>
     	<scope>test</scope>
     </dependency>
   </dependencies>
