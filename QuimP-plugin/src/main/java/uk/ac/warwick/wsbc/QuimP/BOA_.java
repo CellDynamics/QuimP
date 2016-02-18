@@ -29,7 +29,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -97,7 +96,7 @@ import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
  */
 public class BOA_ implements PlugIn {
 
-    private static final Logger logger = LogManager.getLogger(
+    private static final Logger LOGGER = LogManager.getLogger(
             BOA_.class.getName());
     CustomCanvas canvas;
     CustomStackWindow window;
@@ -116,68 +115,18 @@ public class BOA_ implements PlugIn {
      * Temporary method for test
      * 
      * @return \c true if enabled
+     * @throws QuimpPluginException
      */
-    private boolean setupTest() {
+    private boolean setupTest() throws QuimpPluginException {
         Boolean isActive = true;
-        logger.warn("setupTest is in use and " + isActive.toString());
+        LOGGER.warn("setupTest is in use and " + isActive.toString());
         pluginFactory = Mockito.spy(new PluginFactory(Paths.get("")));
         when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
                 new ArrayList<String>(Arrays.asList("Mean", "Loess", "Hat")));
-        try {
-            when(pluginFactory.getInstance("Mean"))
-                    .thenReturn(new MeanFilter());
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            when(pluginFactory.getInstance("Loess"))
-                    .thenReturn(new LoessFilter());
-        } catch (MalformedURLException | ClassNotFoundException
-                | InstantiationException | IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            when(pluginFactory.getInstance("Hat")).thenReturn(new HatFilter());
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            when(pluginFactory.getInstance("NONE")).thenReturn(null);
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        when(pluginFactory.getInstance("Mean")).thenReturn(new MeanFilter());
+        when(pluginFactory.getInstance("Loess")).thenReturn(new LoessFilter());
+        when(pluginFactory.getInstance("Hat")).thenReturn(new HatFilter());
+        when(pluginFactory.getInstance("NONE")).thenReturn(null);
         return isActive;
     }
 
@@ -238,7 +187,7 @@ public class BOA_ implements PlugIn {
                 pluginFactory = new PluginFactory(Paths.get(path));
         } catch (Exception e) {
             // temporary catching may in future be removed
-            throw e;
+            LOGGER.error(e);
         }
 
         BOA_.running = true;
@@ -357,7 +306,7 @@ public class BOA_ implements PlugIn {
                         ret = "Build by: " + attributes.getValue("Built-By")
                                 + " on: "
                                 + attributes.getValue("Implementation-Build");
-                        logger.info(ret);
+                        LOGGER.info(ret);
                     }
                 } catch (Exception e) {
                 }
@@ -569,8 +518,20 @@ public class BOA_ implements PlugIn {
             ArrayList<String> pluginList =
                     (ArrayList<String>) pluginFactory.getPluginNames(
                             IQuimpPlugin.DOES_SNAKES);
+            // verify if any plugin is available
+            if (pluginList.isEmpty()) {
+                IJ.log("No plugins found");
+                LOGGER.warn("No plugins found");
+            }
             // add NONE to list
             pluginList.add(0, "NONE");
+            // plugins are recognized by their names returned from 
+            // pluginFactory.getPluginNames() so if there is no names, it is
+            // not possible to call nonexisting plugins, because calls are 
+            // made using plugin names.
+            // see actionPerformed. If plugin of given name (NONE) is not 
+            // found getInstance return null which is stored in BOAp.sPluginList
+            // and checked during run
             JPanel groupBoxSnakePlugins = new JPanel();
             groupBoxSnakePlugins.setBorder(
                     BorderFactory.createTitledBorder("Snake Plugins"));
@@ -968,7 +929,7 @@ public class BOA_ implements PlugIn {
             // process plugin GUI buttons
             // TODO This should update current screen
             if (b == firstPluginGUI) {
-                logger.debug("First plugin GUI, state of BOAp is "
+                LOGGER.debug("First plugin GUI, state of BOAp is "
                         + BOAp.sPluginList.get(0));
                 if (BOAp.sPluginList.get(0) != null) // call 0 index from
                                                      // ArrayList of instances
@@ -977,7 +938,7 @@ public class BOA_ implements PlugIn {
                                                           // instances
             }
             if (b == secondPluginGUI) {
-                logger.debug("Second plugin GUI, state of BOAp is "
+                LOGGER.debug("Second plugin GUI, state of BOAp is "
                         + BOAp.sPluginList.get(1));
                 if (BOAp.sPluginList.get(1) != null) // call 1 index from
                                                      // ArrayList of instances
@@ -986,7 +947,7 @@ public class BOA_ implements PlugIn {
                                                           // instances
             }
             if (b == thirdPluginGUI) {
-                logger.debug("Third plugin GUI, state of BOAp is "
+                LOGGER.debug("Third plugin GUI, state of BOAp is "
                         + BOAp.sPluginList.get(2));
                 if (BOAp.sPluginList.get(2) != null) // call 2 index from
                                                      // ArrayList of instances
@@ -999,64 +960,23 @@ public class BOA_ implements PlugIn {
             // if selected item does not find reference to name it returns
             // null
             if (b == (JComboBox<String>) firstPluginName) {
-                logger.debug("Used firstPluginName, val: "
+                LOGGER.debug("Used firstPluginName, val: "
                         + firstPluginName.getSelectedItem());
-                try {
-                    BOAp.sPluginList.set(0, pluginFactory.getInstance(
-                            (String) firstPluginName.getSelectedItem()));
-                } catch (MalformedURLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (ClassNotFoundException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (InstantiationException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (IllegalAccessException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+                BOAp.sPluginList.set(0, pluginFactory.getInstance(
+                        (String) firstPluginName.getSelectedItem()));
+                // TODO here can be checked if getInstance returned null if passed string was not NONE - it means plugin problem
             }
             if (b == (JComboBox<String>) secondPluginName) {
-                logger.debug("Used secondPluginName, val: "
+                LOGGER.debug("Used secondPluginName, val: "
                         + secondPluginName.getSelectedItem());
-                try {
-                    BOAp.sPluginList.set(1, pluginFactory.getInstance(
-                            (String) secondPluginName.getSelectedItem()));
-                } catch (MalformedURLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (ClassNotFoundException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (InstantiationException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (IllegalAccessException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+                BOAp.sPluginList.set(1, pluginFactory.getInstance(
+                        (String) secondPluginName.getSelectedItem()));
             }
             if (b == (JComboBox<String>) thirdPluginName) {
-                logger.debug("Used thirdPluginName, val: "
+                LOGGER.debug("Used thirdPluginName, val: "
                         + thirdPluginName.getSelectedItem());
-                try {
-                    BOAp.sPluginList.set(2, pluginFactory.getInstance(
-                            (String) thirdPluginName.getSelectedItem()));
-                } catch (MalformedURLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (ClassNotFoundException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (InstantiationException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (IllegalAccessException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+                BOAp.sPluginList.set(2, pluginFactory.getInstance(
+                        (String) thirdPluginName.getSelectedItem()));
             }
 
             // run segmentation for selected cases
@@ -1391,7 +1311,7 @@ public class BOA_ implements PlugIn {
                         } catch (QuimpPluginException qpe) {
                             BOA_.log("Error in filter module: "
                                     + qpe.getMessage());
-                            logger.error(qpe);
+                            LOGGER.error(qpe);
                             sH.storeCurrentSnake(frame); // store snake without
                                                          // modification because
                                                          // snake.asList()
@@ -1600,7 +1520,7 @@ public class BOA_ implements PlugIn {
                                      // frame and this object
         } catch (QuimpPluginException qpe) {
             BOA_.log("Error in filter module: " + qpe.getMessage());
-            logger.error(qpe);
+            LOGGER.error(qpe);
         } catch (BoaException be) {
             BOA_.log("New snake failed to converge"); // FIXME It is not true
                                                       // now as this catch can
@@ -1609,14 +1529,14 @@ public class BOA_ implements PlugIn {
                                                       // from plugin (if
                                                       // plugin-creator did not
                                                       // care on exceptions)
-            logger.error(be);
+            LOGGER.error(be);
         } catch (Exception e) {
             BOA_.log("Undefined error"); // FIXME It is not true now as this
                                          // catch can be activated on unhandled
                                          // exception from plugin (if
                                          // plugin-creator did not care on
                                          // exceptions)
-            logger.fatal(e);
+            LOGGER.fatal(e);
         }
         // if any problem with plugin or other, store snake without modification
         // because snake.asList() returns copy
@@ -1624,7 +1544,7 @@ public class BOA_ implements PlugIn {
             sH.storeCurrentSnake(f);
         } catch (BoaException be) {
             BOA_.log("Could not store new snake");
-            logger.error(be);
+            LOGGER.error(be);
         }
         imageGroup.updateOverlay(f);
     }
@@ -4751,6 +4671,8 @@ class BOAp {
     /**
      * Ordered list of plugins related to snake processing. Related to GUI,
      * first plugin is at index 0, etc.
+     * Can contain \c null when there is no plugin on this slot or loading
+     * of plugin failed
      * 
      * @see BOAp.setup()
      */

@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 
 /**
  * Plugin jar loader
@@ -66,9 +67,31 @@ import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
  * Scan->Constructor [label="availPlugins"];
  * @endmsc
  * 
+ * Error handling:
+ * <ol>
+ * <li>Given directory exists but there is no plugins inside
+ * <ol>
+ * <li>getPluginNames(int) returns empty list (length 0)
+ * <li>getInstance(final String returns \c null
+ * </ol>
+ * <li>Given directory does not exist
+ * <ol>
+ * <li>Constructor throws QuimpPluginException
+ * </ol>
+ * </ol>
+ * Internally getPluginType(File, String) and getInstance(String) throw
+ * exceptions around class loading and running methods from them. Additionally
+ * getPluginType(File, String) throws exception when unknown type is returned.
+ * These exceptions are catch in callers preventing adding that plugin into
+ * \c availPlugins database (scanDirectory()) or hidden in getInstance that
+ * returns \c null in this case. All exceptions are masked besides
+ * scanDirectory() that can throw checked PluginException that must be
+ * handled by caller. It usually means that given plugin directory does not
+ * exist.
+ * 
  * @author p.baniukiewicz
  * @date 4 Feb 2016
- *
+ * @todo //TODO Add uml documentation here
  */
 public class PluginFactory {
 
@@ -93,13 +116,17 @@ public class PluginFactory {
     private Path root;
 
     /**
+     * Build object connected to plugin directory.
      * 
+     * Can throw exception if there is no directory \c path
+     * 
+     * @throws QuimpPluginException when plugin directory can not be read
      */
-    public PluginFactory(final Path path) {
+    public PluginFactory(final Path path) throws QuimpPluginException {
         LOGGER.debug("Attached " + path.toString());
         root = path;
         availPlugins = new HashMap<String, PluginProperties>();
-        scanDirectory();
+        scanDirectory(); // throw PluginException on wrong path
     }
 
     /**
@@ -113,8 +140,10 @@ public class PluginFactory {
      * -# have extension
      * -# extension is \a .jar or \a .JAR
      * -# contain \c PATTERN in name
+     * If there is no plugins in directory it returns 0 length array
+     * @throws QuimpPluginException when plugin directory can not be read
      */
-    private File[] scanDirectory() {
+    private File[] scanDirectory() throws QuimpPluginException {
         File fi = new File(root.toString());
         File[] listFiles = fi.listFiles(new FilenameFilter() {
 
@@ -126,7 +155,6 @@ public class PluginFactory {
                 int lastIndex = sname.lastIndexOf('.');
                 // get extension
                 String ext = sname.substring(lastIndex);
-                ext.toLowerCase();
                 if (!ext.equals(".jar"))
                     return false; // no jar extension
                 // now we have .jar file, check name pattern
@@ -136,6 +164,9 @@ public class PluginFactory {
                     return false;
             }
         });
+        // check if root path is directory and there is no I/O errors
+        if (listFiles == null)
+            throw new QuimpPluginException("Plugin directory can not be read");
         // decode names from listFiles and fill availPlugins names and paths
         for (File f : listFiles) {
             // build plugin name from file name
@@ -156,6 +187,7 @@ public class PluginFactory {
                         availPlugins.get(pluginName).getClassName());
                 // store type in the same object
                 availPlugins.get(pluginName).setType(type);
+                // catch any error in plugin services - plugin is not stored
             } catch (MalformedURLException | ClassNotFoundException
                     | NoSuchMethodException | SecurityException
                     | InstantiationException | IllegalAccessException
@@ -212,7 +244,8 @@ public class PluginFactory {
      * Return list of plugins of given types.
      * 
      * @param type Type defined in uk.ac.warwick.wsbc.plugin.IQuimpPlugin
-     * @return List of names of plugins of type \c type
+     * @return List of names of plugins of type \c type. If there is no plugins
+     * in directory (this type or any) returned list has length 0
      */
     public ArrayList<String> getPluginNames(int type) {
         ArrayList<String> ret = new ArrayList<String>();
@@ -231,27 +264,36 @@ public class PluginFactory {
      * Return instance of plugin \c name
      * 
      * @param name Name of plugin compatible with general rules
-     * @return reference to plugin of \c name
-     * @throws MalformedURLException when problem with creating instance
-     * @throws ClassNotFoundException when problem with creating instance
-     * @throws IllegalAccessException when problem with creating instance
-     * @throws InstantiationException when problem with creating instance
+     * @return reference to plugin of \c name or \c null when there is any
+     * problem with creating instance or given \c name does not exist in
+     * \c availPlugins base
      */
-    public IQuimpPlugin getInstance(final String name)
-            throws MalformedURLException, ClassNotFoundException,
-            InstantiationException, IllegalAccessException {
-        // usually name of plugin is spelled with Capital letter first
-        // make sure that name is in correct format
-        String qname = name.substring(0, 1).toUpperCase() + name.substring(1);
-        // find name in database
-        PluginProperties pp = availPlugins.get(qname);
-        // load class and create instance
-        URL[] url = new URL[] { pp.getFile().toURI().toURL() };
-        ClassLoader child = new URLClassLoader(url);
-        Class<?> classToLoad =
-                Class.forName(pp.getClassName(), true, child);
-        IQuimpPlugin instance = (IQuimpPlugin) classToLoad.newInstance();
-        return instance;
+    public IQuimpPlugin getInstance(final String name) {
+        try {
+            // usually name of plugin is spelled with Capital letter first
+            // make sure that name is in correct format
+            String qname =
+                    name.substring(0, 1).toUpperCase() + name.substring(1);
+            // find name in database
+            PluginProperties pp = availPlugins.get(qname);
+            if (pp == null)
+                throw new IllegalArgumentException(
+                        "Plugin of name: " + name + " is not loaded");
+            // load class and create instance
+            URL[] url = new URL[] { pp.getFile().toURI().toURL() };
+            ClassLoader child = new URLClassLoader(url);
+            Class<?> classToLoad =
+                    Class.forName(pp.getClassName(), true, child);
+            IQuimpPlugin instance = (IQuimpPlugin) classToLoad.newInstance();
+            return instance;
+        } catch (MalformedURLException | ClassNotFoundException
+                | InstantiationException | IllegalAccessException
+                | IllegalArgumentException e) {
+            LOGGER.error("Plugin " + name + " can not be instanced");
+            LOGGER.error(e);
+            return null;
+        }
+
     }
 }
 

@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
 
 /**
@@ -38,14 +39,12 @@ import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
 public class PluginFactory_Test {
     private static final Logger LOGGER =
             LogManager.getLogger(PluginFactory_Test.class.getName());
-    private PluginFactory pluginFactory;
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
-        pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
     }
 
     /**
@@ -58,16 +57,48 @@ public class PluginFactory_Test {
     /**
      * Test method for {@link wsbc.QuimP.PluginFactory#getPluginNames(int)}.
      * 
-     * @pre Two dummy plugins in src/test/resources/ directory
+     * @pre Two dummy plugins in directory
      * @post Two plugins names \a Plugin1 and \a Plugin2
      */
     @Test
     public void test_GetPluginNames() throws Exception {
+        PluginFactory pluginFactory;
+        pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
         ArrayList<String> ar;
         ar = pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
         HashSet<String> hs = new HashSet<>(ar);
         assertTrue(hs.contains("Plugin1"));
         assertTrue(hs.contains("Plugin2"));
+    }
+
+    /**
+     * Test method for {@link wsbc.QuimP.PluginFactory#getPluginNames(int)}.
+     * 
+     * @pre None plugins in directory
+     * @post empty list
+     */
+    @Test
+    public void test_GetPluginNames_noplugins() throws Exception {
+        PluginFactory pluginFactory;
+        pluginFactory = new PluginFactory(Paths.get("../plugins_test/"));
+        ArrayList<String> ar;
+        ar = pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
+        assertTrue(ar.isEmpty());
+    }
+
+    /**
+     * Test method for {@link wsbc.QuimP.PluginFactory#getPluginNames(int)}.
+     * 
+     * @pre Directory does not exist
+     * @post empty list
+     */
+    @Test(expected = QuimpPluginException.class)
+    public void test_GetPluginNames_nodir() throws Exception {
+        PluginFactory pluginFactory;
+        pluginFactory = new PluginFactory(Paths.get("../fgrtg/"));
+        ArrayList<String> ar;
+        ar = pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
+        assertTrue(ar.isEmpty());
     }
 
     /**
@@ -81,6 +112,8 @@ public class PluginFactory_Test {
      */
     @Test
     public void test_GetInstance() throws Exception {
+        PluginFactory pluginFactory;
+        pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
         HashMap<String, Object> test = new HashMap<>();
         Map<String, Object> ret;
         test.put("window", 0.02);
@@ -103,6 +136,26 @@ public class PluginFactory_Test {
 
     /**
      * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(final String)}
+     * This test try to call plugin that does not exist
+     * 
+     * @pre Empty directory but existing
+     */
+    @Test
+    public void test_GetInstance_noplugin() throws Exception {
+        PluginFactory pluginFactory;
+        pluginFactory = new PluginFactory(Paths.get("../plugins_test/"));
+        // we should be sure that this casting is
+        @SuppressWarnings({ "unchecked" })
+        // correct because we check plugin type before
+        IQuimpPoint2dFilter<Vector2d> filter1 =
+                (IQuimpPoint2dFilter<Vector2d>) pluginFactory
+                        .getInstance("Plugin1");
+        assertTrue(filter1 == null);
+    }
+
+    /**
+     * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#scanDirectory()}
      * 
      * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in
@@ -115,20 +168,27 @@ public class PluginFactory_Test {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
+     * @throws QuimpPluginException
      */
     @Test
     public void test_scanDirectory()
             throws NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException,
-            InvocationTargetException {
+            InvocationTargetException, QuimpPluginException {
+        PluginFactory pluginFactory;
+        pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
         Method m = pluginFactory.getClass().getDeclaredMethod("scanDirectory");
         m.setAccessible(true);
         File[] ret = (File[]) m.invoke(pluginFactory);
         for (File f : ret) {
             LOGGER.debug(f.getName());
         }
-        assertEquals("plugin2_quimp-0.0.1.jar", ret[0].getName());
-        assertEquals("plugin1_quimp-0.0.1.jar", ret[1].getName());
+        assertTrue(ret != null && ret.length > 0);
+        HashSet<String> r = new HashSet<String>();
+        for (File f : ret)
+            r.add(f.getName());
+        assertTrue(r.contains("plugin2_quimp-0.0.1.jar"));
+        assertTrue(r.contains("plugin1_quimp-0.0.1.jar"));
     }
 
     /**
@@ -144,12 +204,15 @@ public class PluginFactory_Test {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
+     * @throws QuimpPluginException
      */
     @Test
     public void test_getPluginType()
             throws NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException,
-            InvocationTargetException {
+            InvocationTargetException, QuimpPluginException {
+        PluginFactory pluginFactory;
+        pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
         Class<?>[] args = new Class<?>[2];
         args[0] = File.class;
         args[1] = String.class;

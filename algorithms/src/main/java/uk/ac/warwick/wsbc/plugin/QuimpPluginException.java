@@ -5,6 +5,8 @@ package uk.ac.warwick.wsbc.plugin;
  * 
  * @author p.baniukiewicz
  * @date 20 Jan 2016
+ * 
+ * @todo //TODO in future it will be top class derived from QuimpException
  */
 @SuppressWarnings("serial")
 public class QuimpPluginException extends Exception {
