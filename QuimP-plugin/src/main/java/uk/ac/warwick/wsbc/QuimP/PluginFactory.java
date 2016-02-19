@@ -52,7 +52,7 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  * letters then first letter is capitalized and then there is \c PACKAGE string
  * appended to the front. All this create \b ClassName
  * 
- * Simplified initialization diagram is as follow:
+ * Simplified initialization diagram is as follows:
  * 
  * @msc
  * hscale="1.0";
@@ -72,11 +72,15 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  * <li>Given directory exists but there is no plugins inside
  * <ol>
  * <li>getPluginNames(int) returns empty list (length 0)
- * <li>getInstance(final String returns \c null
+ * <li>getInstance(final String) returns \c null
  * </ol>
  * <li>Given directory does not exist
  * <ol>
  * <li>Constructor throws QuimpPluginException
+ * </ol>
+ * <li>User asked for unknown name in getInstance(final String)
+ * <ol>
+ * <li>getInstance(final String) throws IllegalArgumentException
  * </ol>
  * </ol>
  * Internally getPluginType(File, String) and getInstance(String) throw
@@ -267,6 +271,7 @@ public class PluginFactory {
      * @return reference to plugin of \c name or \c null when there is any
      * problem with creating instance or given \c name does not exist in
      * \c availPlugins base
+     * @throws IllegalArgumentException when incorrect \c name
      */
     public IQuimpPlugin getInstance(final String name) {
         try {

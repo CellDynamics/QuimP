@@ -974,23 +974,29 @@ public class BOA_ implements PlugIn {
                 // get instance using plugin name (obtained from getPluginNames
                 // from PluginFactory
                 selectedPlugin = (String) firstPluginName.getSelectedItem();
-                inst = pluginFactory.getInstance(selectedPlugin);
-                // remember instance in active plugin list
-                BOAp.sPluginList.set(0, inst);
+                if (selectedPlugin != NONE) { // do no pass NONE to pluginFact
+                    inst = pluginFactory.getInstance(selectedPlugin);
+                    // remember instance in active plugin list
+                    BOAp.sPluginList.set(0, inst);
+                }
             }
             if (b == (JComboBox<String>) secondPluginName) {
                 LOGGER.debug("Used secondPluginName, val: "
                         + secondPluginName.getSelectedItem());
                 selectedPlugin = (String) secondPluginName.getSelectedItem();
-                inst = pluginFactory.getInstance(selectedPlugin);
-                BOAp.sPluginList.set(1, inst);
+                if (selectedPlugin != NONE) {
+                    inst = pluginFactory.getInstance(selectedPlugin);
+                    BOAp.sPluginList.set(1, inst);
+                }
             }
             if (b == (JComboBox<String>) thirdPluginName) {
                 LOGGER.debug("Used thirdPluginName, val: "
                         + thirdPluginName.getSelectedItem());
                 selectedPlugin = (String) thirdPluginName.getSelectedItem();
-                inst = pluginFactory.getInstance(selectedPlugin);
-                BOAp.sPluginList.set(2, inst);
+                if (selectedPlugin != NONE) {
+                    inst = pluginFactory.getInstance(selectedPlugin);
+                    BOAp.sPluginList.set(2, inst);
+                }
             }
             // inform user if PluginFactory returned null for name other 
             // than NONE. this may be problem with plugin
