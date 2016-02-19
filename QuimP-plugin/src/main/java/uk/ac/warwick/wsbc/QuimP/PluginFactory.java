@@ -157,9 +157,8 @@ public class PluginFactory {
      * -# extension is \a .jar or \a .JAR
      * -# contain \c PATTERN in name
      * If there is no plugins in directory it returns 0 length array
-     * @throws QuimpPluginException when plugin directory can not be read
      */
-    private File[] scanDirectory() throws QuimpPluginException {
+    private File[] scanDirectory() {
         File fi = new File(root.toString());
         File[] listFiles = fi.listFiles(new FilenameFilter() {
 
@@ -180,6 +179,8 @@ public class PluginFactory {
                     return false;
             }
         });
+        if (listFiles == null) // should no be because of checking in constr.
+            return new File[0]; // but if yes return empty array
         // decode names from listFiles and fill availPlugins names and paths
         for (File f : listFiles) {
             // build plugin name from file name
