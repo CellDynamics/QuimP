@@ -121,7 +121,7 @@ public class BOA_ implements PlugIn {
      * @throws QuimpPluginException
      */
     private boolean setupTest() {
-        Boolean isActive = true;
+        final Boolean isActive = true;
         LOGGER.warn("setupTest is in use and " + isActive.toString());
         try {
             // must be any but existing directory
@@ -1548,20 +1548,10 @@ public class BOA_ implements PlugIn {
             BOA_.log("Error in filter module: " + qpe.getMessage());
             LOGGER.error(qpe);
         } catch (BoaException be) {
-            BOA_.log("New snake failed to converge"); // FIXME It is not true
-                                                      // now as this catch can
-                                                      // be activated on
-                                                      // unhandled exception
-                                                      // from plugin (if
-                                                      // plugin-creator did not
-                                                      // care on exceptions)
+            BOA_.log("New snake failed to converge");
             LOGGER.error(be);
         } catch (Exception e) {
-            BOA_.log("Undefined error"); // FIXME It is not true now as this
-                                         // catch can be activated on unhandled
-                                         // exception from plugin (if
-                                         // plugin-creator did not care on
-                                         // exceptions)
+            BOA_.log("Undefined error from plugin");
             LOGGER.fatal(e);
         }
         // if any problem with plugin or other, store snake without modification

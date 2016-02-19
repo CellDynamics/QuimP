@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,12 +68,20 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  * Scan->Constructor [label="availPlugins"];
  * @endmsc
  * 
+ * This class try to hide all exceptions that can be thrown during loading
+ * plugins from user. In general only when user pass wrong path to plugins
+ * exceptions are thrown. In all other cases class returns null pointers or
+ * empty lists.
  * Error handling:
  * <ol>
  * <li>Given directory exists but there is no plugins inside
  * <ol>
  * <li>getPluginNames(int) returns empty list (length 0)
- * <li>getInstance(final String) returns \c null
+ * </ol>
+ * <li>Given directory exists but plugins are corrupted - they fulfill naming
+ * criterion but they are not valid QuimP plugins
+ * <ol>
+ * <li>getInstance(final String) returns \c null when correct \c name is given
  * </ol>
  * <li>Given directory does not exist
  * <ol>
@@ -80,7 +89,7 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  * </ol>
  * <li>User asked for unknown name in getInstance(final String)
  * <ol>
- * <li>getInstance(final String) throws IllegalArgumentException
+ * <li>getInstance(final String) return \c null
  * </ol>
  * </ol>
  * Internally getPluginType(File, String) and getInstance(String) throw
@@ -128,6 +137,9 @@ public class PluginFactory {
      */
     public PluginFactory(final Path path) throws QuimpPluginException {
         LOGGER.debug("Attached " + path.toString());
+        // check if dir exists
+        if (Files.notExists(path))
+            throw new QuimpPluginException("Plugin directory can not be read");
         root = path;
         availPlugins = new HashMap<String, PluginProperties>();
         scanDirectory(); // throw PluginException on wrong path
@@ -168,9 +180,6 @@ public class PluginFactory {
                     return false;
             }
         });
-        // check if root path is directory and there is no I/O errors
-        if (listFiles == null)
-            throw new QuimpPluginException("Plugin directory can not be read");
         // decode names from listFiles and fill availPlugins names and paths
         for (File f : listFiles) {
             // build plugin name from file name
