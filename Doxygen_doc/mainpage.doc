@@ -12,4 +12,5 @@ To render Doxygen documentation correctly, the following tools are necessary:
 The description below is simplified version of classes relationship documentation based JavaDoc/Doxygen documentation that can be found deeper in these files.
 - \subpage BOA "BOA Plugin"
 - \subpage Build "Build tool"
+- \subpage SnakePlugin "Snake Plugin Interface"
 */

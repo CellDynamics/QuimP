@@ -108,14 +108,15 @@ FILE_PATTERNS          = *.h \
                          *.cpp \
                          *.md \
                          *.java \
-	            		 *.doc 
+	            		 *.doc \
+                         *.uml
 RECURSIVE              = YES
 EXCLUDE                = 
                         
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        =
-EXAMPLE_PATH           =
+EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       =
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             =
