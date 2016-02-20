@@ -28,6 +28,8 @@ public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
     /**
      * Attach data to process to plugin
      * 
+     * This method allows to process data by plugin without
+     * running it wht is important e.g. for visualizing. 
      * @param data
      */
     void attachData(List<E> data);
