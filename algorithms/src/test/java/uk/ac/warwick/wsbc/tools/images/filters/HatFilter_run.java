@@ -46,8 +46,8 @@ public class HatFilter_run {
         hf.attachData(input);
         hf.setPluginConfig(new HashMap<String, String>() {
             {
-                put("window", "3.0");
-                put("crown", "1.0");
+                put("window", "3");
+                put("crown", "1");
                 put("sigma", "1.0");
             }
         });
@@ -64,7 +64,6 @@ public class HatFilter_run {
         // main thread waits here until Latch reaches 0
         startSignal.await();
     }
-
 }
 
 /**

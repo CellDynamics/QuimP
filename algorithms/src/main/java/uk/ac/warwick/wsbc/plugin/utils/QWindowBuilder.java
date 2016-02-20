@@ -330,7 +330,7 @@ public abstract class QWindowBuilder {
                                                             // in vals must math
                                                             // to keys in
                                                             // BuildWindow(def))
-                    comp.setValue(val); // set value from vals
+                    comp.setValue(Double.parseDouble(val)); // set value from vals
                     SpinnerNumberModel sm = (SpinnerNumberModel) comp
                             .getModel();
                     if (sm.getNextValue() == null)
@@ -399,9 +399,7 @@ public abstract class QWindowBuilder {
      * @see BuildWindow(final Map<String, String[]>)
      */
     public int getIntegerFromUI(final String key) {
-        // get list of all params from ui as <key,val> list
-        HashMap<String, String> uiParam = (HashMap<String, String>) getValues();
-        return Integer.parseInt(uiParam.get(key));
+        return (int)getDoubleFromUI(key);
     }
 
     /**
