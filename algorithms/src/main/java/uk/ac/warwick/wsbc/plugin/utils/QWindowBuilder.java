@@ -306,18 +306,21 @@ public abstract class QWindowBuilder {
      * The name of the parameter is \a key in Map. Every parameter passed to
      * this method must have its representation in GUI and thus it must be
      * present in \c def parameter of BuildWindow(Map<String, String[]>) All
-     * values are passed as: -# \c Double in case of spinners
+     * values are passed as: 
+     * <ol>
+     * <li> \c Double in case of spinners
+     * </ol>
      * 
      * User has to care for correct format passed to UI control. If input values
      * are above range defined in \c def, new range is set for UI control
      * 
      * @param vals <key,value> pairs to fill UI.
      */
-    public void setValues(final Map<String, Object> vals) {
+    public void setValues(final Map<String, String> vals) {
         // iterate over parameters and match names to UIs
-        for (Map.Entry<String, Object> e : vals.entrySet()) {
+        for (Map.Entry<String, String> e : vals.entrySet()) {
             String key = e.getKey();
-            Object val = e.getValue();
+            String val = e.getValue();
             // find key in def and get type of control and its instance
             switch (def.get(key)[UITYPE]) { // first string in vals is type of
                                             // control, see BuildWindow
@@ -331,9 +334,9 @@ public abstract class QWindowBuilder {
                     SpinnerNumberModel sm = (SpinnerNumberModel) comp
                             .getModel();
                     if (sm.getNextValue() == null)
-                        sm.setMaximum((Double) val);
+                        sm.setMaximum(Double.parseDouble(val));
                     else if (sm.getPreviousValue() == null)
-                        sm.setMinimum((Double) val);
+                        sm.setMinimum(Double.parseDouble(val));
                     break;
                 default:
                     throw new IllegalArgumentException(
@@ -355,8 +358,8 @@ public abstract class QWindowBuilder {
      * @see getDoubleFromUI(final String)
      * @see getIntegerFromUI(final String)
      */
-    public Map<String, Object> getValues() {
-        Map<String, Object> ret = new HashMap<String, Object>();
+    public Map<String, String> getValues() {
+        Map<String, String> ret = new HashMap<String, String>();
         // iterate over all UI elements
         Iterator<Map.Entry<String, Component>> entryIterator = ui.entrySet()
                 .iterator();
@@ -367,7 +370,7 @@ public abstract class QWindowBuilder {
             switch (def.get(key)[UITYPE]) {
                 case "spinner":
                     JSpinner val = (JSpinner) m.getValue(); // get value
-                    ret.put(key, val.getValue()); // store it in returned Map at
+                    ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
                                                   // the same key
                     break;
                 default:
@@ -392,13 +395,13 @@ public abstract class QWindowBuilder {
      * responsible to call this method for proper key.
      * 
      * @param key Key to be read from configuration list
-     * @return
+     * @return integer representation of value under \c key
      * @see BuildWindow(final Map<String, String[]>)
      */
     public int getIntegerFromUI(final String key) {
         // get list of all params from ui as <key,val> list
-        HashMap<String, Object> uiParam = (HashMap<String, Object>) getValues();
-        return ((Double) uiParam.get(key)).intValue();
+        HashMap<String, String> uiParam = (HashMap<String, String>) getValues();
+        return Integer.parseInt(uiParam.get(key));
     }
 
     /**
@@ -408,7 +411,7 @@ public abstract class QWindowBuilder {
      */
     public double getDoubleFromUI(final String key) {
         // get list of all params from ui as <key,val> list
-        HashMap<String, Object> uiParam = (HashMap<String, Object>) getValues();
-        return ((Double) uiParam.get(key)).doubleValue();
+        HashMap<String, String> uiParam = (HashMap<String, String>) getValues();
+        return Double.parseDouble(uiParam.get(key));
     }
 }

@@ -32,10 +32,10 @@ public class QWindowBuilder_run {
                 "FlowLayout is the default layout manager for every JPanel. It simply lays out components in a single row, starting a new row if its container is not sufficiently wide. Both panels in CardLayoutDemo, shown previously, use FlowLayout. For further details, see How to Use FlowLayout." });
         inst = new QWindowBuilderInst(); // create window object
 
-        HashMap<String, Object> set = new HashMap<>();
-        HashMap<String, Object> ret;
-        set.put("window", 0.32);
-        set.put("smooth", 8.0);
+        HashMap<String, String> set = new HashMap<>();
+        HashMap<String, String> ret;
+        set.put("window", String.valueOf(0.32));
+        set.put("smooth", String.valueOf(8.0));
         CountDownLatch startSignal = new CountDownLatch(1);
         inst.buildWindow(def1); // main window builder
         inst.setValues(set);
@@ -51,7 +51,7 @@ public class QWindowBuilder_run {
         inst.toggleWindow(); // show window
         // main thread waits here until Latch reaches 0
         startSignal.await();
-        ret = (HashMap<String, Object>) inst.getValues();
+        ret = (HashMap<String, String>) inst.getValues();
         logger.trace("Finishing ");
         logger.debug("window=" + ret.get("window") + " smooth=" + ret.get("smooth"));
         inst = null;

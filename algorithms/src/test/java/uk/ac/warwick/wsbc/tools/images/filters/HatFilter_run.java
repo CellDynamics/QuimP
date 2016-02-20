@@ -44,11 +44,11 @@ public class HatFilter_run {
         // create instance of hatfilter
         HatFilterInst hf = new HatFilterInst();
         hf.attachData(input);
-        hf.setPluginConfig(new HashMap<String, Object>() {
+        hf.setPluginConfig(new HashMap<String, String>() {
             {
-                put("window", 3.0);
-                put("crown", 1.0);
-                put("sigma", 1.0);
+                put("window", "3.0");
+                put("crown", "1.0");
+                put("sigma", "1.0");
             }
         });
         CountDownLatch startSignal = new CountDownLatch(1);

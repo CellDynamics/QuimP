@@ -28,7 +28,7 @@ public class Plugin2 implements IQuimpPoint2dFilter<Vector2d> {
     private static final Logger LOGGER =
             LogManager.getLogger(Plugin2.class.getName());
 
-    private HashMap<String, Object> config;
+    private HashMap<String, String> config;
 
     /**
      * 
@@ -45,7 +45,7 @@ public class Plugin2 implements IQuimpPoint2dFilter<Vector2d> {
     }
 
     @Override
-    public void setPluginConfig(HashMap<String, Object> par)
+    public void setPluginConfig(HashMap<String, String> par)
             throws QuimpPluginException {
         LOGGER.trace("setPluginConfig of Plugin2 called");
         config.putAll(par);
@@ -53,7 +53,7 @@ public class Plugin2 implements IQuimpPoint2dFilter<Vector2d> {
     }
 
     @Override
-    public Map<String, Object> getPluginConfig() {
+    public Map<String, String> getPluginConfig() {
         LOGGER.trace("getPluginConfig of Plugin2 called");
         return config;
     }

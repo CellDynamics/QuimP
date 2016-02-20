@@ -118,9 +118,9 @@ public class InterpolateLoess_testParam {
         ArrayList<Vector2d> out;
         LoessFilter i = new LoessFilter();
         i.attachData(testcase);
-        i.setPluginConfig(new HashMap<String, Object>() {
+        i.setPluginConfig(new HashMap<String, String>() {
             {
-                put("smooth", smoothing);
+                put("smooth", String.valueOf(smoothing));
             }
         });
         out = (ArrayList<Vector2d>) i.runPlugin();

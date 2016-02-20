@@ -51,7 +51,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
                                                         // definitions
         uiDefinition.put("name", new String[] { "MeanFilter" }); // name of win
         // the name of this ui control is "system-wide", now it will define ui
-        // and name of numerical data related to this ui and parameter                                                         // window
+        // and name of numerical data related to this ui and parameter
         uiDefinition.put("window", new String[] { "spinner", "1", "21", "2",
                 Integer.toString(window) });
         uiDefinition.put("help", new String[] { "Window shoud be uneven" });
@@ -156,10 +156,10 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
      * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
      */
     @Override
-    public void setPluginConfig(HashMap<String, Object> par)
+    public void setPluginConfig(HashMap<String, String> par)
             throws QuimpPluginException {
         try {
-            window = ((Double) par.get("window")).intValue(); // by default all
+            window = Integer.parseInt(par.get("window")); // by default all
                                                               // numeric values
                                                               // are passed as
                                                               // double
@@ -181,7 +181,7 @@ public class MeanFilter implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
      * added here manually.
      */
     @Override
-    public Map<String, Object> getPluginConfig() {
+    public Map<String, String> getPluginConfig() {
         return uiInstance.getValues();
     }
 

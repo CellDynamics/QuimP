@@ -115,11 +115,11 @@ public class HatFilter_testParam {
         ArrayList<Vector2d> out;
         HatFilter hf = new HatFilter();
         hf.attachData(testcase);
-        hf.setPluginConfig(new HashMap<String, Object>() {
+        hf.setPluginConfig(new HashMap<String, String>() {
             {
-                put("window", window);
-                put("crown", crown);
-                put("sigma", sig);
+                put("window", String.valueOf(window));
+                put("crown", String.valueOf(crown));
+                put("sigma", String.valueOf(sig));
             }
         });
         out = (ArrayList<Vector2d>) hf.runPlugin();

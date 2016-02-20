@@ -66,9 +66,9 @@ public class MeanFilter_test {
         MeanFilter in = new MeanFilter();
         in.attachData(testcase);
         Double window = 3.0;
-        in.setPluginConfig(new HashMap<String, Object>() {
+        in.setPluginConfig(new HashMap<String, String>() {
             {
-                put("window", window);
+                put("window", String.valueOf(window));
             }
         });
         double[] expected = { 4.3333, 2.0000, 3.0000, 4.0000, 5.0000, 6.0000,

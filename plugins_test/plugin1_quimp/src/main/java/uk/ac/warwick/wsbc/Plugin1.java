@@ -42,14 +42,14 @@ public class Plugin1 implements IQuimpPoint2dFilter<Vector2d> {
     }
 
     @Override
-    public void setPluginConfig(HashMap<String, Object> par)
+    public void setPluginConfig(HashMap<String, String> par)
             throws QuimpPluginException {
         LOGGER.trace("setPluginConfig of Plugin1 called");
 
     }
 
     @Override
-    public Map<String, Object> getPluginConfig() {
+    public Map<String, String> getPluginConfig() {
         LOGGER.trace("getPluginConfig of Plugin1 called");
         return null;
     }

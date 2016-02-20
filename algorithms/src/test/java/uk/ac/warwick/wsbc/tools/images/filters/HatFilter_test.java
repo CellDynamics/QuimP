@@ -75,11 +75,11 @@ public class HatFilter_test {
         LOGGER.debug("input: " + input.toString());
         HatFilter hf = new HatFilter();
         hf.attachData(input);
-        hf.setPluginConfig(new HashMap<String, Object>() {
+        hf.setPluginConfig(new HashMap<String, String>() {
             {
-                put("window", 5.0);
-                put("crown", 3.0);
-                put("sigma", 1.0);
+                put("window", "5.0");
+                put("crown", "3.0");
+                put("sigma", "1.0");
             }
         });
         ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
@@ -100,11 +100,11 @@ public class HatFilter_test {
         LOGGER.debug("input: " + input.toString());
         HatFilter hf = new HatFilter();
         hf.attachData(input);
-        hf.setPluginConfig(new HashMap<String, Object>() {
+        hf.setPluginConfig(new HashMap<String, String>() {
             {
-                put("window", 5.0);
-                put("crown", 3.0);
-                put("sigma", 0.05);
+                put("window", "5.0");
+                put("crown", "3.0");
+                put("sigma", "0.05");
             }
         });
         ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
@@ -133,18 +133,18 @@ public class HatFilter_test {
     public void test_HatFilter_setget() throws QuimpPluginException {
         HatFilter hf = new HatFilter();
         hf.attachData(input);
-        hf.setPluginConfig(new HashMap<String, Object>() {
+        hf.setPluginConfig(new HashMap<String, String>() {
             {
-                put("window", 5.0);
-                put("crown", 3.0);
-                put("sigma", 0.05);
+                put("window", "5.0");
+                put("crown", "3.0");
+                put("sigma", "0.05");
             }
         });
-        HashMap<String, Object> ret = (HashMap<String, Object>) hf
+        HashMap<String, String> ret = (HashMap<String, String>) hf
                 .getPluginConfig();
-        assertEquals(5.0, (Double) ret.get("window"), 1e-4);
-        assertEquals(3.0, (Double) ret.get("crown"), 1e-4);
-        assertEquals(0.05, (Double) ret.get("sigma"), 1e-4);
+        assertEquals(5.0, Double.parseDouble(ret.get("window")), 1e-4);
+        assertEquals(3.0, Double.parseDouble(ret.get("crown")), 1e-4);
+        assertEquals(0.05, Double.parseDouble(ret.get("sigma")), 1e-4);
     }
 
     /**
@@ -158,11 +158,11 @@ public class HatFilter_test {
         try {
             HatFilter hf = new HatFilter(); // even window
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, Object>() {
+            hf.setPluginConfig(new HashMap<String, String>() {
                 {
-                    put("window", 6.0);
-                    put("crown", 3.0);
-                    put("sigma", 1.0);
+                    put("window", "6.0");
+                    put("crown", "3.0");
+                    put("sigma", "1.0");
                 }
             });
             hf.runPlugin();
@@ -174,11 +174,11 @@ public class HatFilter_test {
         try {
             HatFilter hf = new HatFilter(); // even crown
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, Object>() {
+            hf.setPluginConfig(new HashMap<String, String>() {
                 {
-                    put("window", 5.0);
-                    put("crown", 4.0);
-                    put("sigma", 1.0);
+                    put("window", "5.0");
+                    put("crown", "4.0");
+                    put("sigma", "1.0");
                 }
             });
             hf.runPlugin();
@@ -190,11 +190,11 @@ public class HatFilter_test {
         try {
             HatFilter hf = new HatFilter(); // crown>window
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, Object>() {
+            hf.setPluginConfig(new HashMap<String, String>() {
                 {
-                    put("window", 5.0);
-                    put("crown", 5.0);
-                    put("sigma", 1.0);
+                    put("window", "5.0");
+                    put("crown", "5.0");
+                    put("sigma", "1.0");
                 }
             });
             hf.runPlugin();
@@ -206,11 +206,11 @@ public class HatFilter_test {
         try {
             HatFilter hf = new HatFilter(); // bad crown
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, Object>() {
+            hf.setPluginConfig(new HashMap<String, String>() {
                 {
-                    put("window", 5.0);
-                    put("crown", 0.0);
-                    put("sigma", 1.0);
+                    put("window", "5.0");
+                    put("crown", "0.0");
+                    put("sigma", "1.0");
                 }
             });
             hf.runPlugin();
@@ -222,11 +222,11 @@ public class HatFilter_test {
         try {
             HatFilter hf = new HatFilter(); // bad crown
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, Object>() {
+            hf.setPluginConfig(new HashMap<String, String>() {
                 {
-                    put("window", 0.0);
-                    put("crown", 3.0);
-                    put("sigma", 1.0);
+                    put("window", "0.0");
+                    put("crown", "3.0");
+                    put("sigma", "1.0");
                 }
             });
             hf.runPlugin();
@@ -238,11 +238,11 @@ public class HatFilter_test {
         try {
             HatFilter hf = new HatFilter(); // bad crown
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, Object>() {
+            hf.setPluginConfig(new HashMap<String, String>() {
                 {
-                    put("window", 0.0);
-                    put("crown", -3.0);
-                    put("sigma", 1.0);
+                    put("window", "0.0");
+                    put("crown", "-3.0");
+                    put("sigma", "1.0");
                 }
             });
             hf.runPlugin();
@@ -254,11 +254,11 @@ public class HatFilter_test {
         try {
             HatFilter hf = new HatFilter(); // bad crown
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, Object>() {
+            hf.setPluginConfig(new HashMap<String, String>() {
                 {
-                    put("window", 1.0);
-                    put("crown", 1.0);
-                    put("sigma", 1.0);
+                    put("window", "1.0");
+                    put("crown", "1.0");
+                    put("sigma", "1.0");
                 }
             });
             hf.runPlugin();

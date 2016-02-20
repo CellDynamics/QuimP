@@ -43,16 +43,16 @@ public interface IQuimpPlugin {
      * them as the were returned by getPluginConfig() method.
      * 
      * @remarks Numerical values should be passed as Double
-     * @warning setPluginConfig(HashMap<String,Object>) and getPluginConfig()
+     * @warning setPluginConfig(HashMap<String,String>) and getPluginConfig()
      * should use the same convention of key naming and parameters
      * casting
      * @param par
      * @throws QuimpPluginException
      * on problems with understanding parameters by plugin e.g. \b
-     * key is not understood or casting from \c Object \b value to
+     * key is not understood or converting from \c String \b value to
      * other type has not been successful.
      */
-    void setPluginConfig(HashMap<String, Object> par)
+    void setPluginConfig(HashMap<String, String> par)
             throws QuimpPluginException;
 
     /**
@@ -62,9 +62,9 @@ public interface IQuimpPlugin {
      * configuration
      * 
      * @return
-     * @see setPluginConfig(HashMap<String,Object>)
+     * @see setPluginConfig(HashMap<String,String>)
      */
-    Map<String, Object> getPluginConfig();
+    Map<String, String> getPluginConfig();
 
     /**
      * Show or hide plugin UI

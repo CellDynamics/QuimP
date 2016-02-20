@@ -114,10 +114,10 @@ public class PluginFactory_Test {
     public void test_GetInstance() throws Exception {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
-        HashMap<String, Object> test = new HashMap<>();
-        Map<String, Object> ret;
-        test.put("window", 0.02);
-        test.put("alfa", 10.0);
+        HashMap<String, String> test = new HashMap<>();
+        Map<String, String> ret;
+        test.put("window", "0.02");
+        test.put("alfa", "10.0");
         @SuppressWarnings("unchecked") // we should be sure that this casting is
         // correct because we check plugin type before
         IQuimpPoint2dFilter<Vector2d> filter1 =
@@ -130,8 +130,8 @@ public class PluginFactory_Test {
                         .getInstance("Plugin2");
         filter2.setPluginConfig(test);
         ret = filter2.getPluginConfig();
-        assertEquals((Double) ret.get("window"), 0.02, 1e-5);
-        assertEquals((Double) ret.get("alfa"), 10, 1e-5);
+        assertEquals(Double.parseDouble(ret.get("window")), 0.02, 1e-5);
+        assertEquals(Double.parseDouble(ret.get("alfa")), 10, 1e-5);
     }
 
     /**

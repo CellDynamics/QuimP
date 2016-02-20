@@ -122,9 +122,9 @@ public class MeanFilter_testParam {
         ArrayList<Vector2d> out;
         MeanFilter i = new MeanFilter();
         i.attachData(testcase);
-        i.setPluginConfig(new HashMap<String, Object>() {
+        i.setPluginConfig(new HashMap<String, String>() {
             {
-                put("window", window);
+                put("window", String.valueOf(window));
             }
         });
         out = (ArrayList<Vector2d>) i.runPlugin();

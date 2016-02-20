@@ -153,17 +153,10 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
      */
     @Override
-    public void setPluginConfig(HashMap<String, Object> par)
+    public void setPluginConfig(HashMap<String, String> par)
             throws QuimpPluginException {
         try {
-            smoothing = ((Double) par.get("smooth")).doubleValue(); // by
-                                                                    // default
-                                                                    // all
-                                                                    // numeric
-                                                                    // values
-                                                                    // are
-                                                                    // passed as
-                                                                    // double
+            smoothing = Double.parseDouble(par.get("smooth"));
             uiInstance.setValues(par);
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched
@@ -182,7 +175,7 @@ public class LoessFilter implements IQuimpPoint2dFilter<Vector2d> {
      * added here manually.
      */
     @Override
-    public Map<String, Object> getPluginConfig() {
+    public Map<String, String> getPluginConfig() {
         return uiInstance.getValues();
     }
 

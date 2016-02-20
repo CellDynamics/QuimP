@@ -70,11 +70,11 @@ public class QWindowBuilder_Test {
      */
     @Test
     public void test_getValues() {
-        HashMap<String, Object> ret;
+        HashMap<String, String> ret;
         inst.buildWindow(def1);
-        ret = (HashMap<String, Object>) inst.getValues();
-        assertEquals(0, (Double) ret.get("window"), 1e-4);
-        assertEquals(-1, (Double) ret.get("smooth"), 1e-4);
+        ret = (HashMap<String, String>) inst.getValues();
+        assertEquals(0, Double.parseDouble(ret.get("window")), 1e-4);
+        assertEquals(-1, Double.parseDouble(ret.get("smooth")), 1e-4);
     }
 
     /**
@@ -84,15 +84,15 @@ public class QWindowBuilder_Test {
      */
     @Test
     public void test_setgetValues() {
-        HashMap<String, Object> ret;
-        HashMap<String, Object> set = new HashMap<>();
-        set.put("window", 0.32);
-        set.put("smooth", 7.0);
+        HashMap<String, String> ret;
+        HashMap<String, String> set = new HashMap<>();
+        set.put("window", String.valueOf(0.32));
+        set.put("smooth", String.valueOf(7.0));
         inst.buildWindow(def1);
         inst.setValues(set);
-        ret = (HashMap<String, Object>) inst.getValues();
-        assertEquals(0.32, (Double) ret.get("window"), 1e-4);
-        assertEquals(7, (Double) ret.get("smooth"), 1e-4);
+        ret = (HashMap<String, String>) inst.getValues();
+        assertEquals(0.32, Double.parseDouble(ret.get("window")), 1e-4);
+        assertEquals(7, Double.parseDouble(ret.get("smooth")), 1e-4);
     }
 
 }

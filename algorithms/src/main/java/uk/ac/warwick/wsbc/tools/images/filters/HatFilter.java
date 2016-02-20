@@ -256,26 +256,26 @@ public class HatFilter extends QWindowBuilder
     /**
      * Configure plugin and overrides default values.
      * 
-     * Supported keys: -# \c window - size of main window -# \c crown - size of
-     * inner window -# \c sigma - cut-off value (see class description)
+     * Supported keys: 
+     * <ol>
+     * <li> \c window - size of main window 
+     * <li> \c crown - size of inner window 
+     * <li> \c sigma - cut-off value (see class description)
+     * </ol>
      * 
      * @param par configuration as pairs <key,val>. Keys are defined by plugin
      * creator and plugin caller do not modify them.
      * @throws QuimpPluginException on wrong parameters list or wrong parameter
      * conversion
-     * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<
-     * String, Object>)
+     * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, String>)
      */
     @Override
-    public void setPluginConfig(HashMap<String, Object> par)
+    public void setPluginConfig(HashMap<String, String> par)
             throws QuimpPluginException {
         try {
-            window = ((Double) par.get("window")).intValue(); // by default all
-                                                              // numeric values
-                                                              // are passed as
-                                                              // double
-            crown = ((Double) par.get("crown")).intValue();
-            sig = ((Double) par.get("sigma")).doubleValue();
+            window = Integer.parseInt(par.get("window"));
+            crown = Integer.parseInt(par.get("crown"));
+            sig = Double.parseDouble(par.get("sigma"));
             setValues(par); // copy incoming parameters to UI
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched
@@ -294,7 +294,7 @@ public class HatFilter extends QWindowBuilder
      * added here manually.
      */
     @Override
-    public Map<String, Object> getPluginConfig() {
+    public Map<String, String> getPluginConfig() {
         return getValues();
     }
 
