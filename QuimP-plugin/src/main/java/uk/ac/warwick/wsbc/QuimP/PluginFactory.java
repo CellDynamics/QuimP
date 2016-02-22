@@ -21,8 +21,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
-import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
  * Plugin jar loader
@@ -288,7 +288,7 @@ public class PluginFactory {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException When returned type is unknown
      * @throws InvocationTargetException
-     * @see uk.ac.warwick.wsbc.plugin.IQuimpPlugin
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin
      */
     private int getPluginType(final File plugin, final String className)
             throws MalformedURLException, ClassNotFoundException,

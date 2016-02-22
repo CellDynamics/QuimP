@@ -17,13 +17,6 @@
   <!-- Name and licencing and other project informations -->
   <name>DIC_LID_Reconstruction</name>
   
-  <dependencies>
-    <dependency>
-      <groupId>uk.ac.warwick.wsbc</groupId>
-      <artifactId>algorithms</artifactId>
-      <version>1.11.2-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
   
   <build>
       <plugins>
@@ -33,4 +26,11 @@
         </plugin>
       </plugins>
   </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>uk.ac.warwick.wsbc</groupId>
+  		<artifactId>QuimP_plugin</artifactId>
+  		<version>1.11.2-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>

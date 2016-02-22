@@ -57,9 +57,9 @@
 
   <modules>
     <module>QuimP-plugin</module>
-    <module>algorithms</module>
     <module>dic-plugin</module>
     <module>plugins_test</module>
+    <module>plugins</module>
   </modules>
 
   <properties>

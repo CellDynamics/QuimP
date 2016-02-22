@@ -7,8 +7,8 @@ import ij.ImageStack;
 import ij.gui.GenericDialog;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.dic.lid.DICReconstruction;
-import uk.ac.warwick.wsbc.dic.lid.DicException;
+import uk.ac.warwick.wsbc.QuimP.plugin.dic.DicException;
+import uk.ac.warwick.wsbc.QuimP.plugin.dic.LidReconstructor;
 
 /**
  * Main implementation of ImageJ plugin
@@ -23,7 +23,7 @@ public class DIC_LID_Reconstruction implements PlugInFilter {
 
     private static final Logger logger = LogManager
             .getLogger(DIC_LID_Reconstruction.class.getName());
-    private DICReconstruction dic;
+    private LidReconstructor dic;
     private ImagePlus imp;
     private double angle, decay;
 
@@ -59,7 +59,7 @@ public class DIC_LID_Reconstruction implements PlugInFilter {
         if (!showDialog())
             return; // if user clicked Cancel or data were not valid
         try {
-            dic = new DICReconstruction(imp, decay, angle);
+            dic = new LidReconstructor(imp, decay, angle);
             if (imp.getNSlices() == 1) {// if there is no stack we can avoid
                                         // additional rotation here (see
                                         // DICReconstruction documentation)

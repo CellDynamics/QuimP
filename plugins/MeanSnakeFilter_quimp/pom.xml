@@ -4,20 +4,20 @@
 
   <parent>
     <groupId>uk.ac.warwick.wsbc</groupId>
-    <artifactId>plugins_test</artifactId>
+    <artifactId>plugins</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
-  <artifactId>plugin2_quimp</artifactId>
+  <artifactId>MeanSnakeFilter_quimp</artifactId>
   <packaging>jar</packaging>
   <version>0.0.1</version>
 
   <!-- Name and licencing and other project informations -->
-  <name>plugin2_quimp</name>
+  <name>MeanSnakeFilter_quimp</name>
   
-    
+  
   <build>
     <plugins>
      <plugin>

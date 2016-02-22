@@ -1,7 +1,5 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-import static org.mockito.Mockito.when;
-
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Checkbox;
@@ -32,7 +30,6 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -51,7 +48,6 @@ import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mockito.Mockito;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -78,12 +74,9 @@ import ij.process.FloatPolygon;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
-import uk.ac.warwick.wsbc.plugin.IQuimpPlugin;
-import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.plugin.snakes.IQuimpPoint2dFilter;
-import uk.ac.warwick.wsbc.tools.images.filters.HatFilter;
-import uk.ac.warwick.wsbc.tools.images.filters.LoessFilter;
-import uk.ac.warwick.wsbc.tools.images.filters.MeanFilter;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 
 /**
  * Main class implementing BOA plugin.
@@ -120,22 +113,27 @@ public class BOA_ implements PlugIn {
      * @return \c true if enabled
      * @throws QuimpPluginException
      */
+    //    private boolean setupTest() {
+    //        final Boolean isActive = true;
+    //        LOGGER.warn("setupTest is in use and " + isActive.toString());
+    //        try {
+    //            // must be any but existing directory
+    //            pluginFactory = Mockito.spy(new PluginFactory(Paths.get("/tmp/")));
+    //        } catch (QuimpPluginException e) {
+    //            LOGGER.error("setupTest: " + e.getMessage());
+    //        }
+    //        when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
+    //                new ArrayList<String>(Arrays.asList("Mean", "Loess", "Hat")));
+    //        when(pluginFactory.getInstance("Mean"))
+    //                .thenReturn(new MeanSnakeFilter());
+    //        when(pluginFactory.getInstance("Loess"))
+    //                .thenReturn(new LoessSnakeFilter());
+    //        when(pluginFactory.getInstance("Hat")).thenReturn(new HatSnakeFilter());
+    //        when(pluginFactory.getInstance(NONE)).thenReturn(null);
+    //        return isActive;
+    //    }
     private boolean setupTest() {
-        final Boolean isActive = true;
-        LOGGER.warn("setupTest is in use and " + isActive.toString());
-        try {
-            // must be any but existing directory
-            pluginFactory = Mockito.spy(new PluginFactory(Paths.get("/tmp/")));
-        } catch (QuimpPluginException e) {
-            LOGGER.error("setupTest: " + e.getMessage());
-        }
-        when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
-                new ArrayList<String>(Arrays.asList("Mean", "Loess", "Hat")));
-        when(pluginFactory.getInstance("Mean")).thenReturn(new MeanFilter());
-        when(pluginFactory.getInstance("Loess")).thenReturn(new LoessFilter());
-        when(pluginFactory.getInstance("Hat")).thenReturn(new HatFilter());
-        when(pluginFactory.getInstance(NONE)).thenReturn(null);
-        return isActive;
+        return false;
     }
 
     /**
