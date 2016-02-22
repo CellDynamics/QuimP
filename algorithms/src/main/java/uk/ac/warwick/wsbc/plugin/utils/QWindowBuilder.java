@@ -82,7 +82,6 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author p.baniukiewicz
  * @date 29 Jan 2016
- *
  */
 public abstract class QWindowBuilder {
     final protected static Logger LOGGER = LogManager
@@ -306,9 +305,9 @@ public abstract class QWindowBuilder {
      * The name of the parameter is \a key in Map. Every parameter passed to
      * this method must have its representation in GUI and thus it must be
      * present in \c def parameter of BuildWindow(Map<String, String[]>) All
-     * values are passed as: 
+     * values are passed as:
      * <ol>
-     * <li> \c Double in case of spinners
+     * <li>\c Double in case of spinners
      * </ol>
      * 
      * User has to care for correct format passed to UI control. If input values
@@ -371,7 +370,7 @@ public abstract class QWindowBuilder {
                 case "spinner":
                     JSpinner val = (JSpinner) m.getValue(); // get value
                     ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
-                                                  // the same key
+                    // the same key
                     break;
                 default:
                     throw new IllegalArgumentException(
@@ -399,7 +398,7 @@ public abstract class QWindowBuilder {
      * @see BuildWindow(final Map<String, String[]>)
      */
     public int getIntegerFromUI(final String key) {
-        return (int)getDoubleFromUI(key);
+        return (int) getDoubleFromUI(key);
     }
 
     /**

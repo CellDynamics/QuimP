@@ -33,7 +33,7 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
 @RunWith(Parameterized.class)
 public class MeanFilter_testParam {
     private List<Vector2d> testcase;
-    private Double window;
+    private Integer window;
     private Path testfileName;
     private static final Logger LOGGER = LogManager
             .getLogger(MeanFilter_testParam.class.getName());
@@ -49,7 +49,7 @@ public class MeanFilter_testParam {
      * @param window averaging window size
      * @see DataLoader
      */
-    public MeanFilter_testParam(String testFileName, Double window) {
+    public MeanFilter_testParam(String testFileName, Integer window) {
         this.testfileName = Paths.get(testFileName);
         this.window = window;
     }
@@ -81,29 +81,29 @@ public class MeanFilter_testParam {
     @Parameterized.Parameters
     public static Collection<Object[]> testFiles() {
         return Arrays.asList(
-                new Object[][] { { "src/test/resources/testData_75.dat", 1.0 },
-                        { "src/test/resources/testData_75.dat", 3.0 },
-                        { "src/test/resources/testData_75.dat", 5.0 },
-                        { "src/test/resources/testData_75.dat", 9.0 },
-                        { "src/test/resources/testData_75.dat", 15.0 },
+                new Object[][] { { "src/test/resources/testData_75.dat", 1 },
+                        { "src/test/resources/testData_75.dat", 3 },
+                        { "src/test/resources/testData_75.dat", 5 },
+                        { "src/test/resources/testData_75.dat", 9 },
+                        { "src/test/resources/testData_75.dat", 15 },
 
-                        { "src/test/resources/testData_125.dat", 1.0 },
-                        { "src/test/resources/testData_125.dat", 3.0 },
-                        { "src/test/resources/testData_125.dat", 5.0 },
-                        { "src/test/resources/testData_125.dat", 9.0 },
-                        { "src/test/resources/testData_125.dat", 15.0 },
+                        { "src/test/resources/testData_125.dat", 1 },
+                        { "src/test/resources/testData_125.dat", 3 },
+                        { "src/test/resources/testData_125.dat", 5 },
+                        { "src/test/resources/testData_125.dat", 9 },
+                        { "src/test/resources/testData_125.dat", 15 },
 
-                        { "src/test/resources/testData_137.dat", 1.0 },
-                        { "src/test/resources/testData_137.dat", 3.0 },
-                        { "src/test/resources/testData_137.dat", 5.0 },
-                        { "src/test/resources/testData_137.dat", 9.0 },
-                        { "src/test/resources/testData_137.dat", 15.0 },
+                        { "src/test/resources/testData_137.dat", 1 },
+                        { "src/test/resources/testData_137.dat", 3 },
+                        { "src/test/resources/testData_137.dat", 5 },
+                        { "src/test/resources/testData_137.dat", 9 },
+                        { "src/test/resources/testData_137.dat", 15 },
 
-                        { "src/test/resources/testData_1.dat", 1.0 },
-                        { "src/test/resources/testData_1.dat", 3.0 },
-                        { "src/test/resources/testData_1.dat", 5.0 },
-                        { "src/test/resources/testData_1.dat", 9.0 },
-                        { "src/test/resources/testData_1.dat", 15.0 }, });
+                        { "src/test/resources/testData_1.dat", 1 },
+                        { "src/test/resources/testData_1.dat", 3 },
+                        { "src/test/resources/testData_1.dat", 5 },
+                        { "src/test/resources/testData_1.dat", 9 },
+                        { "src/test/resources/testData_1.dat", 15 }, });
     }
 
     /**

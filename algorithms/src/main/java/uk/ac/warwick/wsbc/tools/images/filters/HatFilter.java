@@ -256,11 +256,11 @@ public class HatFilter extends QWindowBuilder
     /**
      * Configure plugin and overrides default values.
      * 
-     * Supported keys: 
+     * Supported keys:
      * <ol>
-     * <li> \c window - size of main window 
-     * <li> \c crown - size of inner window 
-     * <li> \c sigma - cut-off value (see class description)
+     * <li>\c window - size of main window
+     * <li>\c crown - size of inner window
+     * <li>\c sigma - cut-off value (see class description)
      * </ol>
      * 
      * @param par configuration as pairs <key,val>. Keys are defined by plugin

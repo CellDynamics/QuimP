@@ -65,7 +65,7 @@ public class MeanFilter_test {
     public void test_getInterpolationMean() throws QuimpPluginException {
         MeanFilter in = new MeanFilter();
         in.attachData(testcase);
-        Double window = 3.0;
+        Integer window = 3;
         in.setPluginConfig(new HashMap<String, String>() {
             {
                 put("window", String.valueOf(window));
