@@ -5,9 +5,27 @@
 \date 19 Feb 2016
 \tableofcontents
 
+According to general QuimP workflow
+@dot
+digraph QuimP_w {
+    rankdir=LR;
+    node [shape=square]
+    "Snake\nFilter" [style=filled, fillcolor=red]
+    
+    "Load\nImage" -> Segmentation
+    Segmentation -> "Snake\nFilter"
+    "Snake\nFilter" -> "Store\nOutline"
+}
+@enddot
+
+snake plugins exist in the end of chain. They can process cell outlines before
+they are stored in QuimP.  
+
 # Workflow diagrams {#workflowdiagrams}
 
-@startuml "Use cases for plugin interface"
+The use case of snake plugin is as follows:
+
+@startuml
 left to right direction
 
 :User: as user
@@ -24,12 +42,18 @@ rectangle "Plugin Service" {
 note bottom of user : Related to GUI actions
 note top of quimp : Plugin engine
 note right of (Create Engine) : Initialization state
-note "On load/write QuimP setup" as N2
+note "On load/write QuimP configuration" as N2
 (Get plugin\nconfig) .. N2
 N2 .. (Set plugin\nconfig)
 @enduml
+
+QuimP itself creates instances of plugins as well as stores the list of active
+plugins (currently 3, controlled by
+\ref uk.ac.warwick.wsbc.QuimP.BOAp.NUM_SPLINE_PLUGINS "NUM_SPLINE_PLUGINS").
+QuimP can also read and write options from/to plugin but it does not interfere
+with these data.  
  
-@startuml "Sequence diagram for plugin interface"
+@startuml
 actor User
 participant BOA_ as QuimP
 participant CustomStackWindow as GUIBuilder
@@ -53,12 +77,12 @@ PluginFactory -> Plugin : <<create>>
 activate Plugin
 PluginFactory <-- Plugin
 PluginFactory -> Plugin : setup()
-Plugin --> PluginFactory : type
-PluginFactory-->PluginFactory : type
+Plugin --> PluginFactory : //type//
+PluginFactory-->PluginFactory : //type//
 destroy Plugin
 deactivate PluginFactory
-PluginFactory -> PluginFactory : fill availPlugins
-PluginFactory <-- PluginFactory : availPlugins
+PluginFactory -> PluginFactory : fill ""availPlugins""
+PluginFactory <-- PluginFactory : ""availPlugins""
 deactivate PluginFactory
 PluginFactory --> QuimP
 
@@ -67,8 +91,8 @@ PluginFactory --> QuimP
 QuimP -> GUIBuilder : buildSetupPanel()
 activate GUIBuilder
 GUIBuilder -> PluginFactory : getPluginNames
-PluginFactory -> PluginFactory : availPlugins.get(type)
-GUIBuilder <-- PluginFactory : List
+PluginFactory -> PluginFactory : ""availPlugins"".get(""type"")
+GUIBuilder <-- PluginFactory : ""String[]""
 note left #Coral
 Use List to create
 UI controls. Names
@@ -84,13 +108,13 @@ deactivate GUIBuilder
 
 User -\ QuimP : Select plugin
 QuimP -> PluginFactory : getInstance(plugin)
-PluginFactory -> PluginFactory : availPlugins.get(plugin)
+PluginFactory -> PluginFactory : ""availPlugins"".get(""plugin"")
 PluginFactory -> Plugin : <<create>>
 activate Plugin
 PluginFactory <-- Plugin
-PluginFactory --> QuimP : instance
+PluginFactory --> QuimP : ""instance""
 
-QuimP -> QuimP :sPluginList.set
+QuimP -> QuimP :""sPluginList"".set
 
 User -\ QuimP : Show GUI
 QuimP -> Plugin : showUI(true)
@@ -99,29 +123,14 @@ Plugin --> QuimP
 User -\ QuimP : Run Plugin
 note left: Any action like\nAdd Cell or\nRun segmentation
 loop BOAp.sPluginList
-    QuimP -> Plugin : attachData(data)
+    QuimP -> Plugin : attachData(""data"")
     Plugin --> QuimP
-    QuimP -> Plugin : runPlugin
-    Plugin --> QuimP : data
+    QuimP -> Plugin : runPlugin()
+    Plugin --> QuimP : ""data""
 end    
 
 Plugin --> PluginFactory : <<Exit>>
 destroy Plugin
 QuimP <-- PluginFactory : <<Exit>>
 destroy PluginFactory
-@enduml
-
-
-@startuml "PluginFactory initialization"
-
-partition PluginFactory(directory) {
-    (*) --> if "plugin directory exists" then
-      -->[true] "init availPlugins"
-      --> "scanDirectory()"
-      -right-> (*)
-    else
-      ->[false] "throw QuimpPluginException"
-      --> (*)
-    endif
-}
 @enduml

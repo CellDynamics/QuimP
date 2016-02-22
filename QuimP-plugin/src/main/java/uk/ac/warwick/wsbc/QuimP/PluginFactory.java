@@ -51,27 +51,49 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  * First letter in file name can be small nevertheless it is expected that
  * class name starts from capital letter. File name is always converted to small
  * letters then first letter is capitalized and then there is \c PACKAGE string
- * appended to the front. All this create \b ClassName
+ * appended to the front. All this form \b ClassName field.
  * 
- * Simplified initialization diagram is as follows:
+ * Simplified sequence diagrams are as follows:
  * 
- * @msc
- * hscale="1.0";
- * Constructor,Scan,FindJar,GetType;
- * 
- * Constructor=>Scan [label="scanDirectory()"];
- * Scan=>FindJar;
- * FindJar>>Scan [label="listFiles"];
- * Scan=>GetType [label="getPluginType(File,className)"];
- * GetType>>Scan [label="int type"];
- * Scan note FindJar [label="This is inside Scan",textbgcolour="#7f7fff"];
- * Scan->Constructor [label="availPlugins"];
- * @endmsc
+ * @startuml
+ * actor user
+ * participant PluginFactory as PF
+ * participant Plugin as PL
+ * == Create instance of PluginFactory ==
+ * user -> PF : //<<create>>//
+ * activate PF
+ * PF -> PF : init ""availPlugins""
+ * PF -> PF : scanDirectory()
+ * activate PF
+ * PF -> PF : build qname
+ * PF -> PF : getPluginType()
+ * activate PF
+ * PF -> Plugin : //<<create>>//
+ * activate Plugin
+ * PF -> Plugin : setup()
+ * Plugin --> PF : ""type""
+ * destroy Plugin
+ * PF -> PF : store at ""availPlugins""
+ * deactivate PF
+ * deactivate PF
+ * == Get names ==
+ * user -> PF : getPluginNames(type)
+ * loop ""availPlugins""
+ * PF -> PF : check ""type""
+ * end
+ * PF --> user : List
+ * == Get Instance ==
+ * user -> PF : getInstance(name)
+ * PF -> PF : find plugin
+ * PF -> Plugin : //<<create>>//
+ * activate Plugin
+ * PF --> user : ""instance""
+ * @enduml
  * 
  * This class try to hide all exceptions that can be thrown during loading
  * plugins from user. In general only when user pass wrong path to plugins
- * exceptions are thrown. In all other cases class returns null pointers or
- * empty lists.
+ * directory exception is thrown. In all other cases class returns null pointers
+ * or empty lists.
  * Error handling:
  * <ol>
  * <li>Given directory exists but there is no plugins inside
@@ -81,7 +103,9 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  * <li>Given directory exists but plugins are corrupted - they fulfill naming
  * criterion but they are not valid QuimP plugins
  * <ol>
- * <li>getInstance(final String) returns \c null when correct \c name is given
+ * <li>getInstance(final String) returns \c null when correct \c name is given.
+ * It means that plugin has been registered by scanDirectory() so it had correct
+ * name and supported wsbc.plugin.IQuimpPlugin.setup() method
  * </ol>
  * <li>Given directory does not exist
  * <ol>
@@ -92,19 +116,18 @@ import uk.ac.warwick.wsbc.plugin.QuimpPluginException;
  * <li>getInstance(final String) return \c null
  * </ol>
  * </ol>
- * Internally getPluginType(File, String) and getInstance(String) throw
- * exceptions around class loading and running methods from them. Additionally
- * getPluginType(File, String) throws exception when unknown type is returned.
- * These exceptions are catch in callers preventing adding that plugin into
- * \c availPlugins database (scanDirectory()) or hidden in getInstance that
- * returns \c null in this case. All exceptions are masked besides
- * scanDirectory() that can throw checked PluginException that must be
- * handled by caller. It usually means that given plugin directory does not
- * exist.
+ * Internally getPluginType(final File, final String) and getInstance(final
+ * String) throw exceptions around class loading and running methods from them.
+ * Additionally getPluginType(final File, final String) throws exception when
+ * unknown type is returned from valid plugin. These exceptions are caught
+ * preventing adding that plugin into \c availPlugins database (scanDirectory())
+ * or hidden in getInstance that returns \c null in this case. All exceptions
+ * are masked besides scanDirectory() that can throw checked PluginException
+ * that must be handled by caller. It usually means that given plugin directory
+ * does not exist.
  * 
  * @author p.baniukiewicz
  * @date 4 Feb 2016
- * @todo //TODO Add uml documentation here
  */
 public class PluginFactory {
 
@@ -131,7 +154,21 @@ public class PluginFactory {
     /**
      * Build object connected to plugin directory.
      * 
-     * Can throw exception if there is no directory \c path
+     * Can throw exception if there is no directory \c path.
+     * 
+     * @startuml
+     *
+     * partition PluginFactory(directory) {
+     * (*) --> if "plugin directory exists" then
+     * -->[true] init ""availPlugins""
+     * --> "scanDirectory()"
+     * -right-> (*)
+     * else
+     * ->[false] "throw QuimpPluginException"
+     * --> (*)
+     * endif
+     * }
+     * @enduml
      * 
      * @throws QuimpPluginException when plugin directory can not be read
      */
@@ -151,6 +188,25 @@ public class PluginFactory {
      * Fill \c availPlugins field. Field name is filled as Name without
      * dependency how original filename was written. It is converted to small
      * letters and then first char is upper-case written.
+     * 
+     * @startuml
+     * 
+     * partition scanDirectory() {
+     * (*) --> Get file \nfrom ""root""
+     * if "file contains\n**_quimp.jar**" then
+     * -->[true] Create qualified name
+     * --> getPluginType()
+     * --> if Type valid\njar valid\nreadable
+     * -->[true] Store at ""availPlugins""
+     * --> Get file \nfrom ""root""
+     * else
+     * -->[false] log error
+     * --> Get file \nfrom ""root""
+     * endif
+     * else
+     * -->[false] Get file \nfrom ""root""
+     * }
+     * @enduml
      * 
      * @return table of files that fulfill criterion:
      * -# have extension
@@ -276,6 +332,29 @@ public class PluginFactory {
 
     /**
      * Return instance of plugin \c name
+     * 
+     * @startuml
+     * 
+     * partition getInstance(name) {
+     * (*) --> Build qualified name\nfrom ""name""
+     * --> get plugin data from\n ""availPlugins""
+     * if returned ""null""
+     * -->[true] log error
+     * --->[return ""null""] (*)
+     * else
+     * partition "jar loader" {
+     * -->[false] Open jar
+     * --> Load class
+     * -down> Create instance
+     * }
+     * endif
+     * --> if **jar loader**\nsuccess
+     * ->[true return ""instance""](*)
+     * else
+     * ->[false return ""null""](*)
+     * endif
+     * }
+     * @enduml
      * 
      * @param name Name of plugin compatible with general rules
      * @return reference to plugin of \c name or \c null when there is any
