@@ -98,10 +98,11 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ../algorithms/src \
-			             ../dic-plugin/src \
-                        ../QuimP-plugin/src \
-			            ../Doxygen_doc
+INPUT                  = ../plugins \
+                         ../plugins_test \
+			             ../dic-plugin \
+                         ../QuimP-plugin/src \
+			             ../Doxygen_doc
                         
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \

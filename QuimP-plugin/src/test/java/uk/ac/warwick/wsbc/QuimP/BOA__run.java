@@ -47,12 +47,10 @@ public class BOA__run {
         Toolbar t = new Toolbar(); // fake toolbar to allow calls to static
                                    // fields of this class inside boa
         BOA_ ob = new BOA_();
-        ob.run("/home/baniuk/"); // run BOA, control is immediately returned to
-                                 // main
-                                 // add window listener to BOA_ window
-                                 // window is \public field of BOA_ class 
-                                 // representing CustomStackWindow
-                                 // internally extending Frame class
+        ob.run("../plugins/target/"); // run BOA, control is immediately returned
+
+        // add window listener to BOA_ window window is \public field of BOA_ class 
+        // representing CustomStackWindow internally extending Frame class
         ob.window.addWindowListener(new WindowAdapter() {
 
             @Override

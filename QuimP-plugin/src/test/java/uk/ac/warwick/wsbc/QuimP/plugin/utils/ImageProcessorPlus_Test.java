@@ -1,6 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Vector;
 
@@ -19,7 +19,8 @@ import ij.process.ImageProcessor;
 public class ImageProcessorPlus_Test {
 
     private ImagePlus image;
-    private static final Logger LOGGER = LogManager.getLogger(ImageProcessorPlus_Test.class.getName());
+    private static final Logger LOGGER =
+            LogManager.getLogger(ImageProcessorPlus_Test.class.getName());
     private ImageProcessorPlus ipp;
 
     /**
@@ -58,38 +59,40 @@ public class ImageProcessorPlus_Test {
 
     /**
      * @test Test method for
-     *       {@link uk.ac.warwick.wsbc.tools.images.ImageProcessorPlus#rotate(ImageProcessor, double, boolean)}
+     * {@link utils.ImageProcessorPlus.rotate(ImageProcessor,double, boolean)}
      * @post Rotated image should have bas-reliefs oriented horizontally. Saves
-     *       rotated image to /tmp/testrotateImage.tif.
+     * rotated image to /tmp/testrotateImage.tif.
      */
     @Test
     public void test_Rotate() {
         double angle = 135;
         ImageProcessor ret = ipp.rotate(image.getProcessor(), angle, true);
         IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testrotateImage.tif");
-        LOGGER.info("Check /tmp/testrotateImage.tif to see results of rotation");
+        LOGGER.info(
+                "Check /tmp/testrotateImage.tif to see results of rotation");
     }
 
     /**
      * @test Test method for
-     *       {@link uk.ac.warwick.wsbc.tools.images.ImageProcessorPlus#rotate(ImageProcessor, double, boolean)}
-     *       with background settings
+     * {@link utils.ImageProcessorPlus.rotate(ImageProcessor,double, boolean)}
+     * with background settings
      * @post Rotated image should have bas-reliefs oriented horizontally. Saves
-     *       rotated image to /tmp/testrotateImage.tif. There should be 0
-     *       background
+     * rotated image to /tmp/testrotateImage.tif. There should be 0
+     * background
      */
     @Test
     public void test_Rotate_0background() {
         double angle = 135;
         image.getProcessor().setBackgroundValue(0);
         ImageProcessor ret = ipp.rotate(image.getProcessor(), angle, true);
-        IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testrotateImage_0background.tif");
-        LOGGER.info("Check /tmp/testrotateImage_0background.tif to see results of rotation");
+        IJ.saveAsTiff(new ImagePlus("", ret),
+                "/tmp/testrotateImage_0background.tif");
+        LOGGER.info(
+                "Check /tmp/testrotateImage_0background.tif to see results of rotation");
     }
 
     /**
-     * @test Test method for
-     *       {@link uk.ac.warwick.wsbc.tools.images.ImageProcessorPlus#extendImageBeforeRotation(ImageProcessor, double)}
+     * @test Test method for extendImageBeforeRotation(ImageProcessor,double)
      * @post Saves extended image to /tmp/testextendImage_0s.tif.
      */
     @Test
@@ -99,13 +102,13 @@ public class ImageProcessorPlus_Test {
         ret = ipp.extendImageBeforeRotation(image.getProcessor(), angle);
         assertEquals(513, ret.getWidth()); // size of the image
         assertEquals(513, ret.getHeight());
-        IJ.saveAsTiff(new ImagePlus("extended", ret), "/tmp/testextendImage_0s.tif");
+        IJ.saveAsTiff(new ImagePlus("extended", ret),
+                "/tmp/testextendImage_0s.tif");
         LOGGER.info("Check /tmp/testextendImage_0s.tif to see results");
     }
 
     /**
-     * @test Test method for
-     *       {@link uk.ac.warwick.wsbc.tools.images.ImageProcessorPlus#extendImageBeforeRotation(ImageProcessor, double)}
+     * @test Test method for extendImageBeforeRotation(ImageProcessor,double)
      * @post Saves extended image to /tmp/testextendImage_45s.tif.
      */
     @Test
@@ -115,7 +118,8 @@ public class ImageProcessorPlus_Test {
         ret = ipp.extendImageBeforeRotation(image.getProcessor(), angle);
         assertEquals(725, ret.getWidth()); // size of the image
         assertEquals(725, ret.getHeight());
-        IJ.saveAsTiff(new ImagePlus("extended", ret), "/tmp/testextendImage_45s.tif");
+        IJ.saveAsTiff(new ImagePlus("extended", ret),
+                "/tmp/testextendImage_45s.tif");
         LOGGER.info("Check /tmp/testextendImage_45s.tif to see results");
     }
 
@@ -148,7 +152,7 @@ public class ImageProcessorPlus_Test {
     /**
      * @throws Exception
      * @test Test of RectangleBox for square image and angle 0 deg for input
-     *       vectors
+     * vectors
      */
     @Test
     public void test_RectangleBoxVector_0s() throws Exception {
@@ -177,7 +181,7 @@ public class ImageProcessorPlus_Test {
     /**
      * @throws Exception
      * @test Test of RectangleBox for square image and angle 45 deg for input
-     *       vectors
+     * vectors
      */
     @Test
     public void test_RectangleBoxVector_45s() throws Exception {
