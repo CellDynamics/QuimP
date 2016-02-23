@@ -54,7 +54,7 @@ public class LoessSnakeFilter implements IQuimpPoint2dFilter<Vector2d> {
         uiDefinition.put("help", new String[] {
                 "Higher values stand for more smooth output. Resonable range is"
                         + " 0.05 - 0.5. For too small values plugin throws error."
-                        + "Minimal vale depends on polygon shape and can vary." }); // string
+                        + "Minimal vale depends on polygon shape and can vary." });
         uiInstance = new QWindowBuilderInstLoess(); // create window object,
                                                     // class QWindowBuilder is
                                                     // abstract so it must be

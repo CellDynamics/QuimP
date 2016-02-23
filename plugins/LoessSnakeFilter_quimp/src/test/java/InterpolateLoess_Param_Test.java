@@ -31,13 +31,13 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
  *
  */
 @RunWith(Parameterized.class)
-public class InterpolateLoess_testParam {
+public class InterpolateLoess_Param_Test {
 
     private List<Vector2d> testcase;
     private Double smoothing;
     private Path testfileName;
     private static final Logger LOGGER = LogManager
-            .getLogger(InterpolateLoess_testParam.class.getName());
+            .getLogger(InterpolateLoess_Param_Test.class.getName());
 
     /**
      * Parameterized constructor.
@@ -50,7 +50,7 @@ public class InterpolateLoess_testParam {
      * @param smooth smoothing value
      * @see DataLoader
      */
-    public InterpolateLoess_testParam(String testFileName, Double smooth) {
+    public InterpolateLoess_Param_Test(String testFileName, Double smooth) {
         this.testfileName = Paths.get(testFileName);
         this.smoothing = smooth;
     }
@@ -79,29 +79,29 @@ public class InterpolateLoess_testParam {
     @Parameterized.Parameters
     public static Collection<Object[]> testFiles() {
         return Arrays.asList(new Object[][] {
-                { "src/test/resources/testData_75.dat", 0.015 },
-                { "src/test/resources/testData_75.dat", 0.04 },
-                { "src/test/resources/testData_75.dat", 0.06 },
-                { "src/test/resources/testData_75.dat", 0.08 },
-                { "src/test/resources/testData_75.dat", 0.1 },
+                { "../src/test/resources/testData_75.dat", 0.015 },
+                { "../src/test/resources/testData_75.dat", 0.04 },
+                { "../src/test/resources/testData_75.dat", 0.06 },
+                { "../src/test/resources/testData_75.dat", 0.08 },
+                { "../src/test/resources/testData_75.dat", 0.1 },
 
-                { "src/test/resources/testData_125.dat", 0.015 },
-                { "src/test/resources/testData_125.dat", 0.04 },
-                { "src/test/resources/testData_125.dat", 0.06 },
-                { "src/test/resources/testData_125.dat", 0.08 },
-                { "src/test/resources/testData_125.dat", 0.1 },
+                { "../src/test/resources/testData_125.dat", 0.015 },
+                { "../src/test/resources/testData_125.dat", 0.04 },
+                { "../src/test/resources/testData_125.dat", 0.06 },
+                { "../src/test/resources/testData_125.dat", 0.08 },
+                { "../src/test/resources/testData_125.dat", 0.1 },
 
-                { "src/test/resources/testData_137.dat", 0.015 },
-                { "src/test/resources/testData_137.dat", 0.04 },
-                { "src/test/resources/testData_137.dat", 0.06 },
-                { "src/test/resources/testData_137.dat", 0.08 },
-                { "src/test/resources/testData_137.dat", 0.1 },
+                { "../src/test/resources/testData_137.dat", 0.015 },
+                { "../src/test/resources/testData_137.dat", 0.04 },
+                { "../src/test/resources/testData_137.dat", 0.06 },
+                { "../src/test/resources/testData_137.dat", 0.08 },
+                { "../src/test/resources/testData_137.dat", 0.1 },
 
-                { "src/test/resources/testData_1.dat", 0.015 },
-                { "src/test/resources/testData_1.dat", 0.04 },
-                { "src/test/resources/testData_1.dat", 0.06 },
-                { "src/test/resources/testData_1.dat", 0.08 },
-                { "src/test/resources/testData_1.dat", 0.1 }, });
+                { "../src/test/resources/testData_1.dat", 0.015 },
+                { "../src/test/resources/testData_1.dat", 0.04 },
+                { "../src/test/resources/testData_1.dat", 0.06 },
+                { "../src/test/resources/testData_1.dat", 0.08 },
+                { "../src/test/resources/testData_1.dat", 0.1 }, });
     }
 
     /**

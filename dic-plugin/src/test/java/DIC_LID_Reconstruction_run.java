@@ -1,12 +1,12 @@
-import static org.junit.Assert.*;
-import org.junit.Ignore;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class DIC_LID_Reconstruction_Test {
+public class DIC_LID_Reconstruction_run {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -28,7 +28,6 @@ public class DIC_LID_Reconstruction_Test {
      * @test Test of GUI builder for DIC_LID_Reconstruction
      * @post Shows GUI and expect correct inputs (numbers) and OK
      */
-    @Ignore("For manual testing only")
     @Test
     public void TestBuildGUI() {
         DIC_LID_Reconstruction dic = new DIC_LID_Reconstruction();

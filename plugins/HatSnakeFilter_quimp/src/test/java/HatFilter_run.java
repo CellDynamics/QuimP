@@ -3,7 +3,6 @@
  * @date 8 Feb 2016
  */
 
-
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 /**
  * Test class for HatFilter UI
  * 
- * Shows UI for HAtFilter
+ * Shows UI for HatFilter
  * 
  * @author p.baniukiewicz
  * @date 8 Feb 2016
