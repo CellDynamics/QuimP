@@ -193,6 +193,39 @@ public class PluginFactory_Test {
 
     /**
      * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getClassName()}
+     * 
+     * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in
+     * test directory
+     * @post
+     * Return list of files that according to hardcoded criterion. For more
+     * files they may be returned in random order.
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws QuimpPluginException
+     */
+    @Test
+    public void test_getClassName()
+            throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException,
+            InvocationTargetException, QuimpPluginException {
+        PluginFactory pluginFactory;
+        pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
+        Class<?>[] args = new Class<?>[1];
+        args[0] = File.class;
+        Method m = pluginFactory.getClass().getDeclaredMethod("getClassName",
+                args);
+        m.setAccessible(true);
+        File file = new File("../plugins_test/target/plugin2_quimp-0.0.1.jar");
+        String ret = (String) m.invoke(pluginFactory, file);
+
+    }
+
+    /**
+     * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getPluginType()}
      * 
      * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in
@@ -222,12 +255,12 @@ public class PluginFactory_Test {
 
         File file = new File("../plugins_test/target/plugin2_quimp-0.0.1.jar");
         int ret = (int) m.invoke(pluginFactory, file,
-                "uk.ac.warwick.wsbc.Plugin2");
+                "uk.ac.warwick.wsbc.Plugin2_quimp");
         assertEquals(1, ret);
 
         file = new File("../plugins_test/target/plugin1_quimp-0.0.1.jar");
         ret = (int) m.invoke(pluginFactory, file,
-                "uk.ac.warwick.wsbc.Plugin1");
+                "uk.ac.warwick.wsbc.Plugin1_quimp");
         assertEquals(1, ret);
 
     }

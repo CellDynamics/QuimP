@@ -6,6 +6,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,9 +15,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,18 +45,19 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * naming conventions), \b File is handle to file on disk, \b Type is type
  * of plugin according to types defined in warwick.wsbc.plugin.IQuimpPlugin and
  * \b ClassName is qualified name of class of plugin. The \b ClassName is
- * extracted from the plugin file name thus real class name of the plugin must
- * be the same. Assumed is that jar file name with plugin will have structure:
- * 
+ * extracted from the plugin jar file assuming that plugin class contains
+ * underscore _ in its name. If more classes underscored is found in jar, only
+ * the first discovered is loaded. Thus the following conventions are required:
+ * <ol>
+ * <li>Plugin name must contain \a _quimp to be considered as plugin (see
+ * PATTERN field)
  * @code
  * plugin_quimp-other-info.jar
  * @endcode
- * where \a plugin must match to class name \c Plugin.
- * First letter in file name can be small nevertheless it is expected that
- * class name starts from capital letter. File name is always converted to small
- * letters then first letter is capitalized and then there is \c PACKAGE string
- * appended to the front. All this form \b ClassName field.
- * 
+ * <li>Class name in plugin must contain underscoreto be considered as plugin
+ * main class
+ * </ol>
+ *
  * Simplified sequence diagrams are as follows:
  * 
  * @startuml
@@ -65,7 +70,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * PF -> PF : init ""availPlugins""
  * PF -> PF : scanDirectory()
  * activate PF
- * PF -> PF : build qname
+ * PF -> PF : discover qname getClassName
  * PF -> PF : getPluginType()
  * activate PF
  * PF -> Plugin : //<<create>>//
@@ -134,7 +139,6 @@ public class PluginFactory {
     private static final Logger LOGGER =
             LogManager.getLogger(PluginFactory.class.getName());
     private static final String PATTERN = "_quimp"; ///< name pattern of plugins
-    private static final String PACKAGE = "uk.ac.warwick.wsbc"; ///< def package
 
     /**
      * List of plugins found in initial directory \c path passed to constructor
@@ -194,7 +198,7 @@ public class PluginFactory {
      * partition scanDirectory() {
      * (*) --> Get file \nfrom ""root""
      * if "file contains\n**_quimp.jar**" then
-     * -->[true] Create qualified name
+     * -->[true] Discover qualified name
      * --> getPluginType()
      * --> if Type valid\njar valid\nreadable
      * -->[true] Store at ""availPlugins""
@@ -249,19 +253,22 @@ public class PluginFactory {
                     + pluginName.substring(1);
             // check plugin type
             try {
+                // ask for class names in jar
+                String cname = getClassName(f);
                 // create entry with classname and path
-                availPlugins.put(pluginName, new PluginProperties(f,
-                        PACKAGE + "." + pluginName, IQuimpPlugin.GENERAL));
+                availPlugins.put(pluginName,
+                        new PluginProperties(f, cname, IQuimpPlugin.GENERAL));
                 // get type of path.classname plugin
                 int type = getPluginType(f,
                         availPlugins.get(pluginName).getClassName());
                 // store type in the same object
                 availPlugins.get(pluginName).setType(type);
                 // catch any error in plugin services - plugin is not stored
-            } catch (MalformedURLException | ClassNotFoundException
+            } catch (ClassNotFoundException
                     | NoSuchMethodException | SecurityException
                     | InstantiationException | IllegalAccessException
-                    | IllegalArgumentException | InvocationTargetException e) {
+                    | IllegalArgumentException | InvocationTargetException
+                    | ClassCastException | IOException e) {
                 LOGGER.error("Type of plugin " + pluginName + " in jar: "
                         + f.getPath()
                         + " can not be obtained. Ignoring this plugin");
@@ -270,6 +277,51 @@ public class PluginFactory {
 
         }
         return Arrays.copyOf(listFiles, listFiles.length);
+    }
+
+    /**
+     * Extracts qualified name of classes in jar file. Class name must contain
+     * underscore
+     * 
+     * @param pathToJar path to jar file
+     * @return Name of first discovered class with underscore
+     * @throws IOException When jar can not be opened
+     * @throws IllegalArgumentException when there is no classes in jar
+     * @see http://stackoverflow.com/questions/11016092/how-to-load-classes-at-
+     * runtime-from-a-folder-or-jar
+     */
+    private String getClassName(File pathToJar) throws IOException {
+        ArrayList<String> names = new ArrayList<>(); // all discovered names
+        JarFile jarFile = new JarFile(pathToJar);
+        Enumeration<JarEntry> e = jarFile.entries();
+
+        while (e.hasMoreElements()) {
+            JarEntry je = (JarEntry) e.nextElement();
+            String entryname = je.getName();
+            if (je.isDirectory() || !entryname.endsWith(".class")) {
+                continue;
+            }
+            // get class name
+            int pos = entryname.lastIndexOf('/'); // is there / in name
+            if (pos >= 0) // if yes take only last part
+                if (!entryname.substring(pos).contains("_")) // is underscored?
+                    continue;
+            // -6 because of .class
+            String className =
+                    je.getName().substring(0, je.getName().length() - 6);
+            className = className.replace('/', '.');
+            names.add(className);
+            LOGGER.debug(
+                    "In " + pathToJar.toString() + " found class " + entryname);
+        }
+        jarFile.close();
+        if (names.isEmpty())
+            throw new IllegalArgumentException(
+                    "getClassName: There is no classes in jar");
+        if (names.size() > 1)
+            LOGGER.warn(
+                    "More than one underscored class in jar. Take first one");
+        return names.get(0);
     }
 
     /**
