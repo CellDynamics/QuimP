@@ -298,14 +298,9 @@ public class PluginFactory {
         while (e.hasMoreElements()) {
             JarEntry je = (JarEntry) e.nextElement();
             String entryname = je.getName();
-            if (je.isDirectory() || !entryname.endsWith(".class")) {
+            if (je.isDirectory() || !entryname.endsWith("_.class")) {
                 continue;
             }
-            // get class name
-            int pos = entryname.lastIndexOf('/'); // is there / in name
-            if (pos >= 0) // if yes take only last part
-                if (!entryname.substring(pos).contains("_.class")) // is underscored?
-                    continue;
             // -6 because of .class
             String className =
                     je.getName().substring(0, je.getName().length() - 6);
@@ -320,7 +315,9 @@ public class PluginFactory {
                     "getClassName: There is no classes in jar");
         if (names.size() > 1)
             LOGGER.warn(
-                    "More than one underscored class in jar. Take first one");
+                    "More than one underscored class in jar "
+                            + pathToJar.toString() + " Take first one "
+                            + names.get(0));
         return names.get(0);
     }
 

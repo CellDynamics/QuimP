@@ -12,7 +12,7 @@
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>LoessSnakeFilter_quimp</artifactId>
   <packaging>jar</packaging>
-  <version>0.0.1</version>
+  <version>0.0.1-SNAPSHOT</version>
 
   <!-- Name and licencing and other project informations -->
   <name>LoessSnakeFilter_quimp</name>
@@ -20,20 +20,62 @@
   
   <build>
     <plugins>
-     <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
+        
+    <plugin> 
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-assembly-plugin</artifactId> <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
+      <configuration>
+        <descriptorRefs>
+          <descriptorRef>jar-with-dependencies</descriptorRef>
+        </descriptorRefs>
+      </configuration>
+      <executions>
+        <execution> <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
+          <id>simple-command</id>
+          <phase>package</phase>
+          <goals>
+            <goal>single</goal>
+          </goals>
+        </execution>
+      </executions>  
+    </plugin>
+   
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-dependency-plugin</artifactId>
+      <version>2.10</version>
+      <executions>
+        <execution>
+          <id>copy</id>
+          <phase>package</phase>
+          <goals>
+            <goal>copy</goal>
+          </goals>
           <configuration>
-            <outputDirectory>${basedir}/../target/</outputDirectory>
+            <artifactItems>
+              <artifactItem>
+                <groupId>uk.ac.warwick.wsbc</groupId>
+                <artifactId>LoessSnakeFilter_quimp</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+                <type>jar</type>
+                <classifier>jar-with-dependencies</classifier> <!-- http://stackoverflow.com/questions/16450674/how-to-create-a-jar-with-dependencies-as-main-build-artifact-later-used-by-asse -->
+                <overWrite>true</overWrite>
+                <outputDirectory>${basedir}/../target/</outputDirectory>
+            </artifactItem>
+          </artifactItems>
         </configuration>
-        </plugin>
-    </plugins>
+      </execution>
+    </executions>
+  </plugin>     
+  </plugins>
+  
   </build>
   <dependencies>
   	<dependency>
   		<groupId>uk.ac.warwick.wsbc</groupId>
   		<artifactId>QuimP_plugin</artifactId>
   		<version>1.11.2-SNAPSHOT</version>
+  		<scope>provided</scope>
   	</dependency>
   	<dependency>
   		<groupId>org.apache.commons</groupId>
