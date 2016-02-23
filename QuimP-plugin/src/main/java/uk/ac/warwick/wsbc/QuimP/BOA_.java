@@ -1336,10 +1336,8 @@ public class BOA_ implements PlugIn {
                             BOA_.log("Error in filter module: "
                                     + qpe.getMessage());
                             LOGGER.error(qpe);
-                            sH.storeCurrentSnake(frame); // store snake without
-                                                         // modification because
-                                                         // snake.asList()
-                                                         // returns copy
+                            if (!BOAp.stopOnPluginError) // no store on error
+                                sH.storeCurrentSnake(frame);
                         } catch (BoaException be) {
                             imageGroup.drawPath(snake, frame); // failed
                                                                // position
@@ -1506,6 +1504,7 @@ public class BOA_ implements PlugIn {
      */
     // @SuppressWarnings("unchecked")
     void addCell(final Roi r, int f) {
+        boolean isPluginError = false; // any error from plugin?
         SnakeHandler sH = nest.addHandler(r, f);
         Snake snake = sH.getLiveSnake();
         imageGroup.setProcessor(f);
@@ -1522,7 +1521,6 @@ public class BOA_ implements PlugIn {
             // pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES) returns
             // only correct plugins and
             // actionPerformed(ActionEvent e) creates correct BOAp.sPluginList
-            // FIXME plugin call should be in its own try-catch
             if (!BOAp.isRefListEmpty(BOAp.sPluginList)) { // not empty, there is
                                                           // at least one plugin
                                                           // selected
@@ -1543,6 +1541,7 @@ public class BOA_ implements PlugIn {
             sH.storeCurrentSnake(f); // remember temporary LiveSnake for this
                                      // frame and this object
         } catch (QuimpPluginException qpe) {
+            isPluginError = true; // we have error
             BOA_.log("Error in filter module: " + qpe.getMessage());
             LOGGER.error(qpe);
         } catch (BoaException be) {
@@ -1555,12 +1554,17 @@ public class BOA_ implements PlugIn {
         // if any problem with plugin or other, store snake without modification
         // because snake.asList() returns copy
         try {
-            sH.storeCurrentSnake(f);
+            if (isPluginError && BOAp.stopOnPluginError) // no store on error
+                return;
+            else
+                sH.storeCurrentSnake(f); // store in all remaining cases
         } catch (BoaException be) {
             BOA_.log("Could not store new snake");
             LOGGER.error(be);
+        } finally {
+            imageGroup.updateOverlay(f);
         }
-        imageGroup.updateOverlay(f);
+
     }
 
     boolean deleteCell(int x, int y, int frame) {
@@ -4681,6 +4685,13 @@ class BOAp {
     static boolean supressStateChangeBOArun = false;
     static int callCount; // use to test how many times a method is called
     static boolean SEGrunning; ///< is seg running
+
+    /**
+     * When any plugin fails this field defines how QuimP should behave. When
+     * it is \c true QuimP breaks process of segmentation and do not store
+     * snake in SnakeHandler
+     */
+    static boolean stopOnPluginError = true;
 
     /**
      * Ordered list of plugins related to snake processing. Related to GUI,
