@@ -1238,6 +1238,8 @@ public class BOA_ implements PlugIn {
      * @param startF start frame
      * @param endF end frame
      * @throws BoaException
+     * @todo //TODO Rewrite exceptions here
+     * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/65
      */
     public void runBoa(int startF, int endF) throws BoaException {
         System.out.println("run BOA");
@@ -1333,6 +1335,7 @@ public class BOA_ implements PlugIn {
                             sH.storeCurrentSnake(frame);
 
                         } catch (QuimpPluginException qpe) {
+                            // must be rewritten with whole runBOA #65 #67
                             BOA_.log("Error in filter module: "
                                     + qpe.getMessage());
                             LOGGER.error(qpe);
