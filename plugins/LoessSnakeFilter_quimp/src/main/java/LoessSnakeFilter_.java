@@ -24,10 +24,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * @see William S. Cleveland - Robust Locally Weighted Regression and Smoothing
  * Scatterplots
  */
-public class LoessSnakeFilter implements IQuimpPoint2dFilter<Vector2d> {
+public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
 
     private static final Logger LOGGER = LogManager
-            .getLogger(LoessSnakeFilter.class.getName());
+            .getLogger(LoessSnakeFilter_.class.getName());
     private QuimpDataConverter xyData; // input List converted to separate X and
                                        // Y arrays
     private double smoothing; // smoothing value (f according to references)
@@ -41,7 +41,7 @@ public class LoessSnakeFilter implements IQuimpPoint2dFilter<Vector2d> {
      * All default parameters should be declared here. Non-default are passed by
      * setPluginConfig(HashMap<String, Object>)
      */
-    public LoessSnakeFilter() {
+    public LoessSnakeFilter_() {
         LOGGER.trace("Entering constructor");
         this.smoothing = 0.25;
         LOGGER.debug("Set default parameter: smoothing=" + smoothing);

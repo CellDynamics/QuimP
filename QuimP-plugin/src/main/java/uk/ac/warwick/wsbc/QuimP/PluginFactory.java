@@ -54,7 +54,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * @code
  * plugin_quimp-other-info.jar
  * @endcode
- * <li>Class name in plugin must contain underscoreto be considered as plugin
+ * <li>Class name in plugin must end with underscore to be considered as plugin
  * main class
  * </ol>
  *
@@ -304,7 +304,7 @@ public class PluginFactory {
             // get class name
             int pos = entryname.lastIndexOf('/'); // is there / in name
             if (pos >= 0) // if yes take only last part
-                if (!entryname.substring(pos).contains("_")) // is underscored?
+                if (!entryname.substring(pos).contains("_.class")) // is underscored?
                     continue;
             // -6 because of .class
             String className =
@@ -388,7 +388,7 @@ public class PluginFactory {
      * @startuml
      * 
      * partition getInstance(name) {
-     * (*) --> Build qualified name\nfrom ""name""
+     * (*) --> Build qualified name\nfrom ""getClassName()""
      * --> get plugin data from\n ""availPlugins""
      * if returned ""null""
      * -->[true] log error

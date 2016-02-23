@@ -117,7 +117,7 @@ public class InterpolateLoess_Param_Test {
     @Test
     public void test_getInterpolationLoess() throws QuimpPluginException {
         ArrayList<Vector2d> out;
-        LoessSnakeFilter i = new LoessSnakeFilter();
+        LoessSnakeFilter_ i = new LoessSnakeFilter_();
         i.attachData(testcase);
         i.setPluginConfig(new HashMap<String, String>() {
             {

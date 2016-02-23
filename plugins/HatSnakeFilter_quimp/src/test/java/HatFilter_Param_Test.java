@@ -56,7 +56,7 @@ public class HatFilter_Param_Test {
      * @param sig
      * sigma value
      * @see DataLoader
-     * @see HatSnakeFilter
+     * @see HatSnakeFilter_
      */
     public HatFilter_Param_Test(String testFileName, Integer window,
             Integer crown, Double sig) {
@@ -115,7 +115,7 @@ public class HatFilter_Param_Test {
     @Test
     public void test_HatFilter() throws QuimpPluginException {
         ArrayList<Vector2d> out;
-        HatSnakeFilter hf = new HatSnakeFilter();
+        HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(testcase);
         hf.setPluginConfig(new HashMap<String, String>() {
             {

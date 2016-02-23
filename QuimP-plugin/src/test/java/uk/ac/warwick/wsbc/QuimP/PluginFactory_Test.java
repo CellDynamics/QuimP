@@ -198,8 +198,7 @@ public class PluginFactory_Test {
      * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in
      * test directory
      * @post
-     * Return list of files that according to hardcoded criterion. For more
-     * files they may be returned in random order.
+     * Qualified name of class in plugin 2 must be correct
      * @throws NoSuchMethodException
      * @throws SecurityException
      * @throws IllegalAccessException
@@ -221,6 +220,7 @@ public class PluginFactory_Test {
         m.setAccessible(true);
         File file = new File("../plugins_test/target/plugin2_quimp-0.0.1.jar");
         String ret = (String) m.invoke(pluginFactory, file);
+        assertEquals("uk.ac.warwick.wsbc.Plugin2_", ret);
 
     }
 
@@ -255,12 +255,12 @@ public class PluginFactory_Test {
 
         File file = new File("../plugins_test/target/plugin2_quimp-0.0.1.jar");
         int ret = (int) m.invoke(pluginFactory, file,
-                "uk.ac.warwick.wsbc.Plugin2_quimp");
+                "uk.ac.warwick.wsbc.Plugin2_");
         assertEquals(1, ret);
 
         file = new File("../plugins_test/target/plugin1_quimp-0.0.1.jar");
         ret = (int) m.invoke(pluginFactory, file,
-                "uk.ac.warwick.wsbc.Plugin1_quimp");
+                "uk.ac.warwick.wsbc.Plugin1_");
         assertEquals(1, ret);
 
     }

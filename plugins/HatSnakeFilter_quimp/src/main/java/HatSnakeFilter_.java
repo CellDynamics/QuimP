@@ -57,12 +57,12 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * @author p.baniukiewicz
  * @date 25 Jan 2016
  */
-public class HatSnakeFilter extends QWindowBuilder
+public class HatSnakeFilter_ extends QWindowBuilder
         implements IQuimpPoint2dFilter<Vector2d>, IPadArray, ChangeListener,
         ActionListener {
 
     private static final Logger LOGGER = LogManager
-            .getLogger(HatSnakeFilter.class.getName());
+            .getLogger(HatSnakeFilter_.class.getName());
     private final int DRAW_SIZE = 200; // size of draw area in window
 
     private int window; // filter's window size
@@ -82,7 +82,7 @@ public class HatSnakeFilter extends QWindowBuilder
     /**
      * Construct HatFilter Input array with data is virtually circularly padded
      */
-    public HatSnakeFilter() {
+    public HatSnakeFilter_() {
         LOGGER.trace("Entering constructor");
         this.window = 23;
         this.crown = 13;

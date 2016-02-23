@@ -72,7 +72,7 @@ public class HatFilter_run {
  * @date 8 Feb 2016
  *
  */
-class HatFilterInst extends HatSnakeFilter {
+class HatFilterInst extends HatSnakeFilter_ {
 
     public JFrame pluginWnd;
 

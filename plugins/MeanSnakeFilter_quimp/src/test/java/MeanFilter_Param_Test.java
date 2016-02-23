@@ -121,7 +121,7 @@ public class MeanFilter_Param_Test {
     @Test
     public void test_getInterpolationMean() throws QuimpPluginException {
         ArrayList<Vector2d> out;
-        MeanSnakeFilter i = new MeanSnakeFilter();
+        MeanSnakeFilter_ i = new MeanSnakeFilter_();
         i.attachData(testcase);
         i.setPluginConfig(new HashMap<String, String>() {
             {

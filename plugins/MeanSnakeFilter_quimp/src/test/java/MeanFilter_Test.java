@@ -63,7 +63,7 @@ public class MeanFilter_Test {
     @SuppressWarnings("serial")
     @Test
     public void test_getInterpolationMean() throws QuimpPluginException {
-        MeanSnakeFilter in = new MeanSnakeFilter();
+        MeanSnakeFilter_ in = new MeanSnakeFilter_();
         in.attachData(testcase);
         Integer window = 3;
         in.setPluginConfig(new HashMap<String, String>() {

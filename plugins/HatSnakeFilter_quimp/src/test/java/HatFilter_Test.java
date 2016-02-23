@@ -73,7 +73,7 @@ public class HatFilter_Test {
     @Test
     public void test_HatFilter_case1() throws QuimpPluginException {
         LOGGER.debug("input: " + input.toString());
-        HatSnakeFilter hf = new HatSnakeFilter();
+        HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(input);
         hf.setPluginConfig(new HashMap<String, String>() {
             {
@@ -98,7 +98,7 @@ public class HatFilter_Test {
     @Test
     public void test_HatFilter_case2() throws QuimpPluginException {
         LOGGER.debug("input: " + input.toString());
-        HatSnakeFilter hf = new HatSnakeFilter();
+        HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(input);
         hf.setPluginConfig(new HashMap<String, String>() {
             {
@@ -131,7 +131,7 @@ public class HatFilter_Test {
     @SuppressWarnings("serial")
     @Test
     public void test_HatFilter_setget() throws QuimpPluginException {
-        HatSnakeFilter hf = new HatSnakeFilter();
+        HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(input);
         hf.setPluginConfig(new HashMap<String, String>() {
             {
@@ -156,7 +156,7 @@ public class HatFilter_Test {
     @Test
     public void test_HatFilter_case3() {
         try {
-            HatSnakeFilter hf = new HatSnakeFilter(); // even window
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // even window
             hf.attachData(input);
             hf.setPluginConfig(new HashMap<String, String>() {
                 {
@@ -172,7 +172,7 @@ public class HatFilter_Test {
             LOGGER.debug(e.getMessage());
         }
         try {
-            HatSnakeFilter hf = new HatSnakeFilter(); // even crown
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // even crown
             hf.attachData(input);
             hf.setPluginConfig(new HashMap<String, String>() {
                 {
@@ -188,7 +188,7 @@ public class HatFilter_Test {
             LOGGER.debug(e.getMessage());
         }
         try {
-            HatSnakeFilter hf = new HatSnakeFilter(); // crown>window
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // crown>window
             hf.attachData(input);
             hf.setPluginConfig(new HashMap<String, String>() {
                 {
@@ -204,7 +204,7 @@ public class HatFilter_Test {
             LOGGER.debug(e.getMessage());
         }
         try {
-            HatSnakeFilter hf = new HatSnakeFilter(); // bad crown
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
             hf.attachData(input);
             hf.setPluginConfig(new HashMap<String, String>() {
                 {
@@ -220,7 +220,7 @@ public class HatFilter_Test {
             LOGGER.debug(e.getMessage());
         }
         try {
-            HatSnakeFilter hf = new HatSnakeFilter(); // bad crown
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
             hf.attachData(input);
             hf.setPluginConfig(new HashMap<String, String>() {
                 {
@@ -236,7 +236,7 @@ public class HatFilter_Test {
             LOGGER.debug(e.getMessage());
         }
         try {
-            HatSnakeFilter hf = new HatSnakeFilter(); // bad crown
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
             hf.attachData(input);
             hf.setPluginConfig(new HashMap<String, String>() {
                 {
@@ -252,7 +252,7 @@ public class HatFilter_Test {
             LOGGER.debug(e.getMessage());
         }
         try {
-            HatSnakeFilter hf = new HatSnakeFilter(); // bad crown
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
             hf.attachData(input);
             hf.setPluginConfig(new HashMap<String, String>() {
                 {

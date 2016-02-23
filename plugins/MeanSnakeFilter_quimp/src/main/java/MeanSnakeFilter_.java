@@ -24,11 +24,11 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * @date 20 Jan 2016
  *
  */
-public class MeanSnakeFilter
+public class MeanSnakeFilter_
         implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
 
     private static final Logger LOGGER = LogManager
-            .getLogger(MeanSnakeFilter.class.getName());
+            .getLogger(MeanSnakeFilter_.class.getName());
     private QuimpDataConverter xyData; // input List converted to separate X and
                                        // Y arrays
     private int window; // size of processing window
@@ -41,7 +41,7 @@ public class MeanSnakeFilter
      * All default parameters should be declared here. Non-default are passed by
      * setPluginConfig(HashMap<String, Object>)
      */
-    public MeanSnakeFilter() {
+    public MeanSnakeFilter_() {
         LOGGER.trace("Entering constructor");
         this.window = 7; // default value
         LOGGER.debug("Set default parameter: window=" + window);
