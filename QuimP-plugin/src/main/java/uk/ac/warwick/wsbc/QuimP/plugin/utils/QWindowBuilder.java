@@ -39,7 +39,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * 
  * Main function (BuildWindow) accepts HashMap with pairs <name,params> where
  * name is unique name of the parameter and params defines how this parameter
- * will be displayed in UI (see BuildWindow(Map<String, String[]>)). Using this
+ * will be displayed in UI (see BuildWindow(final ParamList)). Using this
  * mapping there is next list \c ui created that contains the same names but now
  * joined with UI components. This list is used for addressing these component
  * basing on theirs names. The UI controls are stored at \c ui which is \a
@@ -49,9 +49,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * shows how to change property of control
  * 
  * @code{.java}
- * String key = "paramname"; JSpinner comp = (JSpinner)
- * ui.get(key); // get control using its name (commonly it is name
- * // of parameter controlled by this UI) ((JSpinner.DefaultEditor)
+ * String key = "paramname"; // case insensitive
+ * JSpinner comp = (JSpinner) ui.get(key); // get control using its name 
  * comp.getEditor()).getTextField().setColumns(5);
  * @endcode
  * 
@@ -68,7 +67,13 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * QWindowBuilder->AWTWindow [label="update UI"];
  * Caller=>QWindowBuilder [label="getValues()"];
  * QWindowBuilder->AWTWindow [label="ask for values"];
- * AWTWindow>>QWindowBuilder; Caller<<QWindowBuilder [label="UI values"];
+ * AWTWindow>>QWindowBuilder [label="ParamList"]; 
+ * Caller<<QWindowBuilder [label="UI values"];
+ * --- [label="Ask for one value associated with name"];
+ * Caller=>QWindowBuilder [label="getDoublefromUI(name)"];
+ * QWindowBuilder=>QWindowBuilder [label="getVales()"];
+ * QWindowBuilder=>QWindowBuilder [label="find name in ParamList"];
+ * Caller<<QWindowBuilder [label="value"];
  * @endmsc
  * 
  * Methods getValues() and setValues() should be used by class extending
