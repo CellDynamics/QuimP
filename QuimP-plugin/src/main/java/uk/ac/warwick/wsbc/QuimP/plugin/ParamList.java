@@ -150,9 +150,8 @@ public class ParamList extends LinkedHashMap<String, String> {
      * 
      * @see java.util.HashMap#get(java.lang.Object)
      */
-    @Override
-    public String get(Object key) {
-        return super.get(((String) key).toLowerCase());
+    public String get(String key) {
+        return super.get(key.toLowerCase());
     }
 
     /**
@@ -164,7 +163,7 @@ public class ParamList extends LinkedHashMap<String, String> {
      * @see StringParser
      * @warning May be used only \c val under \c key can be parsed
      */
-    public String[] getParsed(Object key) {
+    public String[] getParsed(String key) {
         String val = get(key);
         String[] ret;
         try {
@@ -180,9 +179,8 @@ public class ParamList extends LinkedHashMap<String, String> {
      * 
      * @see java.util.HashMap#containsKey(java.lang.Object)
      */
-    @Override
-    public boolean containsKey(Object key) {
-        return super.containsKey(((String) key).toLowerCase());
+    public boolean containsKey(String key) {
+        return super.containsKey(key.toLowerCase());
     }
 
     /**
@@ -203,9 +201,8 @@ public class ParamList extends LinkedHashMap<String, String> {
      * 
      * @see java.util.HashMap#remove(java.lang.Object)
      */
-    @Override
-    public String remove(Object key) {
-        return super.remove(((String) key).toLowerCase());
+    public String remove(String key) {
+        return super.remove(key.toLowerCase());
     }
 
     /**
@@ -223,9 +220,8 @@ public class ParamList extends LinkedHashMap<String, String> {
      * 
      * @see java.util.HashMap#remove(java.lang.Object, java.lang.Object)
      */
-    @Override
-    public boolean remove(Object key, Object value) {
-        return super.remove(((String) key).toLowerCase(), value);
+    public boolean remove(String key, Object value) {
+        return super.remove(key.toLowerCase(), value);
     }
 
     /**

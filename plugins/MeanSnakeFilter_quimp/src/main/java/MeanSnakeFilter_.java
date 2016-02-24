@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
@@ -33,31 +31,28 @@ public class MeanSnakeFilter_
     private QuimpDataConverter xyData; // input List converted to separate X and
                                        // Y arrays
     private int window; // size of processing window
-    private HashMap<String, String[]> uiDefinition; // Definition of UI
+    private ParamList uiDefinition; // Definition of UI
     private QWindowBuilderInst uiInstance;
 
     /**
      * Create running mean filter.
      * 
      * All default parameters should be declared here. Non-default are passed by
-     * setPluginConfig(HashMap<String, Object>)
+     * setPluginConfig(ParamList)
      */
     public MeanSnakeFilter_() {
         LOGGER.trace("Entering constructor");
         this.window = 7; // default value
         LOGGER.debug("Set default parameter: window=" + window);
         // create UI using QWindowBuilder
-        uiDefinition = new HashMap<String, String[]>(); // will hold ui
-                                                        // definitions
-        uiDefinition.put("name", new String[] { "MeanFilter" }); // name of win
-        // the name of this ui control is "system-wide", now it will define ui
-        // and name of numerical data related to this ui and parameter
-        uiDefinition.put("window", new String[] { "spinner", "1", "21", "2",
-                Integer.toString(window) });
-        uiDefinition.put("help", new String[] { "Window shoud be uneven" });
-        uiInstance = new QWindowBuilderInst(); // create window object, class
-                                               // QWindowBuilder is abstract so
-                                               // it must be extended
+        uiDefinition = new ParamList(); // will hold ui definitions
+        // configure window, names of UI elements are also names of variables
+        // exported/imported  by set/getPluginConfig 
+        uiDefinition.put("name", "MeanFilter"); // name of win
+        uiDefinition.put("window",
+                "spinner, 1, 21, 2," + Integer.toString(window));
+        uiDefinition.put("help", "Window shoud be uneven");
+        uiInstance = new QWindowBuilderInst(); // create window object
         uiInstance.buildWindow(uiDefinition); // construct ui (not shown yet)
     }
 
@@ -92,7 +87,7 @@ public class MeanSnakeFilter_
      */
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
-        // collect parameters from window
+        // collect actual parameters from UI
         window = uiInstance.getIntegerFromUI("window");
         LOGGER.debug(
                 String.format("Run plugin with params: window %d", window));
@@ -146,14 +141,16 @@ public class MeanSnakeFilter_
     /**
      * Configure plugin and overrides default values.
      * 
+     * It is called by plugin user to pass configuration to plugin.
+     * 
      * Supported keys:
      * -# \c window - size of window
      * 
      * @param par configuration as pairs <key,val>. Keys are defined by plugin
-     * creator and plugin caller do not modify them.
+     * creator and plugin user do not modify them.
      * @throws QuimpPluginException on wrong parameters list or wrong parameter
      * conversion
-     * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
+     * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(final ParamList)
      */
     @Override
     public void setPluginConfig(final ParamList par)
@@ -219,7 +216,7 @@ class QWindowBuilderInst extends QWindowBuilder {
      * @see BuildWindow
      */
     @Override
-    public void buildWindow(Map<String, String[]> def) {
+    public void buildWindow(final ParamList def) {
         super.buildWindow(def); // window must be built first
         ChangeListener changeListner = new ChangeListener() { // create new
                                                               // listener that

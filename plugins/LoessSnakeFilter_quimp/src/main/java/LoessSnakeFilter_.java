@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.vecmath.Vector2d;
@@ -31,8 +30,8 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
     private QuimpDataConverter xyData; // input List converted to separate X and
                                        // Y arrays
     private double smoothing; // smoothing value (f according to references)
-    private HashMap<String, String[]> uiDefinition; // Definition of UI for this
-                                                    // plugin
+    private ParamList uiDefinition; // Definition of UI for this
+                                    // plugin
     private QWindowBuilderInstLoess uiInstance;
 
     /**
@@ -45,20 +44,15 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
         LOGGER.trace("Entering constructor");
         this.smoothing = 0.25;
         LOGGER.debug("Set default parameter: smoothing=" + smoothing);
-        uiDefinition = new HashMap<String, String[]>(); // will hold ui
-                                                        // definitions
-        uiDefinition.put("name", new String[] { "LoessFilter" }); // name of
-                                                                  // window
-        uiDefinition.put("smooth", new String[] { "spinner", "0.05", "0.5",
-                "0.005", Double.toString(smoothing) });
-        uiDefinition.put("help", new String[] {
-                "Higher values stand for more smooth output. Resonable range is"
-                        + " 0.05 - 0.5. For too small values plugin throws error."
-                        + "Minimal vale depends on polygon shape and can vary." });
+        uiDefinition = new ParamList(); // will hold ui definitions
+        uiDefinition.put("name", "LoessFilter"); // name of window
+        uiDefinition.put("smooth",
+                "spinner, 0.05, 0.5, 0.005," + Double.toString(smoothing));
+        uiDefinition.put("help", "Higher values stand for more smooth output."
+                + " Resonable range is 0.05 - 0.5. For too small values "
+                + "plugin throws error. Minimal vale depends on "
+                + "polygon shape and can vary.");
         uiInstance = new QWindowBuilderInstLoess(); // create window object,
-                                                    // class QWindowBuilder is
-                                                    // abstract so it must be
-                                                    // extended
         uiInstance.buildWindow(uiDefinition); // construct ui (not shown yet)
     }
 
@@ -88,6 +82,7 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
      */
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
+        // collect actual parameters from UI
         smoothing = uiInstance.getDoubleFromUI("smooth");
         LOGGER.debug(String.format("Run plugin with params: smoothing %f",
                 smoothing));
@@ -142,13 +137,16 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
     /**
      * Configure plugin and overrides default values.
      * 
-     * Supported keys: -# \c smoothing - smoothing value of filter
+     * It is called by plugin user to pass configuration to plugin.
+     * 
+     * Supported keys: 
+     * -# \c smoothing - smoothing value of filter
      * 
      * @param par configuration as pairs <key,val>. Keys are defined by plugin
-     * creator and plugin caller do not modify them.
+     * creator and plugin user do not modify them.
      * @throws QuimpPluginException on wrong parameters list or wrong parameter
      * conversion
-     * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
+     * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(final ParamList)
      */
     @Override
     public void setPluginConfig(final ParamList par)

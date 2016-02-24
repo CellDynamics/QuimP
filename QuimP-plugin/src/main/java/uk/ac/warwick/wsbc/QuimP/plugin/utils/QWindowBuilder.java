@@ -99,7 +99,6 @@ public abstract class QWindowBuilder {
     // definition string - positions of configuration data in value string (see
     // BuildWindow)
     final private int UITYPE = 0; ///< type of UI control to create
-    final private int UIDATA = 0; ///< data for ui when only one parameter
     final private int S_MIN = 1; ///< spinner min value
     final private int S_MAX = 2; ///< spinner max value
     final private int S_STEP = 3; ///< spinner step value
@@ -123,24 +122,29 @@ public abstract class QWindowBuilder {
      * The window is constructed using configuration provided by \c def
      * parameter which is Map of <key,value>. The key is the name of the
      * parameter that should be related to value held in it (e.g window, smooth,
-     * step, etc.). The name must be written in small letters. Keys are strictly
-     * related to UI elements that are created by this method window (basing on
+     * step, etc.). The name is not case sensitive. Keys are strictly
+     * related to UI elements that are created by this method (basing on
      * configuration passed in \b value). There are two special names that are
-     * not related to UI directly: -# help - defines textual help provided as
-     * parameter -# name - defines plugin name provided as parameter The
-     * parameter list is defined as String[] and its content is depended on key.
-     * For \b help and \b name it is String[1] table contain single string with
-     * help text and plugin name respectively.
+     * not related to UI directly: 
+     * -# help - defines textual help provided as parameter
+     * -# name - defines plugin name provided as parameter 
      * 
-     * The UI elements are defined for all other cases in \b value filed of Map.
+     * The parameter list is defined as String and its content is depended on 
+     * key.
+     * For \b help and \b name it contains single string with help text and
+     * plugin name respectively. 
+     * 
+     * The UI elements are defined for all other cases in \b value filed of Map
+     * as comma separated string.
      * Known UI are as follows:
      * <ul>
-     * <li>spinner - creates Spinner control. It requires 3 parameters (in
+     * <li>spinner - creates Spinner control. It requires 4 parameters (in
      * order)
      * <ol>
      * <li>minimal range
      * <li>maximal range
      * <li>step
+     * <li>default value
      * </ol>
      * </ul>
      *
@@ -150,13 +154,11 @@ public abstract class QWindowBuilder {
      * configuration is as follows:
      * 
      * @code{.java}
-     * HashMap<String,String[]> def1 = new HashMap<String, String[]>();
-     * def1.put("name", new String[] {"test"}); // nonUI element - name of
-     * // window
-     * def1.put("window", new String[] {"spinner", "-0.5","0.5","0.1"}); // adds
-     * spinner to provide window parameter
-     * def1.put("smooth", new String[] {"spinner","-1", "10", "1"});
-     * def1.put("help", new String[] {"help text}); // non UI element - help
+     *  def1 = new ParamList();
+     *  def1.put("Name", "test");
+     *  def1.put("wIndow", "spinner, -0.5, 0.5, 0.1, 0");
+     *  def1.put("smootH", "spinner, -1, 10, 1, -1");
+     *  def1.put("help","FlowLayout"); 
      * @endcode
      * 
      * By default window is not visible yet. User must call ShowWindow
@@ -164,8 +166,7 @@ public abstract class QWindowBuilder {
      * refocus after change of values in spinners. They are not updated
      * until unfocused.
      * 
-     * @param def
-     * Configuration \c Map<String, String[]> as described
+     * @param def Configuration as described
      * @throw IllegalArgumentException or other unchecked exceptions on wrong
      * syntax of \c def
      */
@@ -399,7 +400,7 @@ public abstract class QWindowBuilder {
      * @remarks In case of wrong conversion it may be exception thrown. User is
      * responsible to call this method for proper key.
      * 
-     * @param key Key to be read from configuration list
+     * @param key Key to be read from configuration list, case insensitive
      * @return integer representation of value under \c key
      * @see BuildWindow(final Map<String, String[]>)
      */
