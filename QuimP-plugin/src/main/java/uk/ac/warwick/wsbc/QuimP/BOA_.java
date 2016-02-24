@@ -307,6 +307,7 @@ public class BOA_ implements PlugIn {
                     String val = attributes.getValue("Implementation-Title");
                     if (val == null)
                         continue;
+                    // name dependent part
                     if (attributes.getValue("Implementation-Title").contains(
                             "QuimP")) {
                         ret = "Build by: " + attributes.getValue("Built-By")
@@ -315,9 +316,11 @@ public class BOA_ implements PlugIn {
                         LOGGER.info(ret);
                     }
                 } catch (Exception e) {
+                    ;
                 }
             }
         } catch (IOException e) {
+            ;
         }
         return ret;
     }
@@ -1421,9 +1424,9 @@ public class BOA_ implements PlugIn {
                     break;
                 }
             }
-            if (i == BOAp.max_iterations - 1) {
-                // BOA_.log("Frame " + frame + "-max iterations reached");
-            }
+            //    if (i == BOAp.max_iterations - 1) {
+            //        BOA_.log("Frame " + frame + "-max iterations reached");
+            //    }
             // break;
         }
         snake.defreeze(); // set freeze tag back to false
@@ -2371,12 +2374,12 @@ class Constrictor {
 
         // check if node erraneously got inside (pixel value > p.sensitivity)
         // if so, push node outside
-        double check = (double) I_outside / I_out / 255.;
+        // double check = (double) I_outside / I_out / 255.;
 
-        if (check > BOAp.sensitivity) // Delta_I += 0.5 * check;
-        {
-            // Delta_I += 0.125 * check;
-        }
+        //if (check > BOAp.sensitivity) // Delta_I += 0.5 * check;
+        //{
+        // Delta_I += 0.125 * check;
+        //}
         // if contrast is positive compute image force as square root of the
         // contrast
         if (Delta_I > 0.) { // else remains at zero
@@ -3851,9 +3854,9 @@ class Snake {
             node1 = node1.getNext(); // next node will be right2 if it cut
 
         } while (!node1.isHead());
-        if (NODES < 4) {
-            // System.out.println("CutLoops. Nodes left after cuts: " + NODES);
-        }
+        //if (NODES < 4) {
+        //    // System.out.println("CutLoops. Nodes left after cuts: " + NODES);
+        //}
     }
 
     /**
@@ -4252,8 +4255,6 @@ class Snake {
         if (sum > 0) {
             // BOA_.log("\tclockwise, reversed");
             this.reverseSnake();
-        } else {
-            // BOA_.log("\tAnti clockwise");
         }
     }
 

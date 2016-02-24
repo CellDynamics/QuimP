@@ -90,7 +90,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
      */
     @Override
     public void putAll(Map<? extends String, ? extends V> m) {
-        for (java.util.Map.Entry<? extends String, ? extends V> e : m
+        for (Map.Entry<? extends String, ? extends V> e : m
                 .entrySet()) {
             put(e.getKey(), e.getValue());
         }

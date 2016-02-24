@@ -80,7 +80,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * QWindowBuilder for setting and achieving parameters from GUI. Note
  * that parameters in UIs are validated only when they become out of
  * focus. Until cursor is in UI its value is not updated internally,
- * thus getValue returns its old snapshot.
+ * thus getValues() returns its old snapshot.
  * 
  * \c RESERVED_KEYS is list of reserved keys that are not UI elements. They are
  * processed in different way.
