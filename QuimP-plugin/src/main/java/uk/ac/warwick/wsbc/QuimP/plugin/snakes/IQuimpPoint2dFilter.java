@@ -22,6 +22,8 @@ public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
      * 
      * @return Filtered points
      * @throws QuimpPluginException on any problems during filter execution
+     * @warning Plugin may be run without attached data. Plugin must deal with
+     * this
      */
     List<E> runPlugin() throws QuimpPluginException;
 
@@ -29,8 +31,10 @@ public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
      * Attach data to process to plugin
      * 
      * This method allows to process data by plugin without
-     * running it wht is important e.g. for visualizing. 
+     * running it what is important e.g. for visualizing. 
      * @param data
+     * @warning \c data may be passed as null from QuimP. Plugin must deal with
+     * this
      */
     void attachData(final List<E> data);
 }

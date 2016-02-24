@@ -74,7 +74,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
     private ExPolygon pout; // output polygon based on \c out
     private List<Vector2d> out; // output after filtering
     private JTextArea logArea;
-    private int err;
+    private int err; // general counter of log entries
 
     /**
      * Construct HatFilter Input array with data is virtually circularly padded
@@ -116,9 +116,14 @@ public class HatSnakeFilter_ extends QWindowBuilder
     public void attachData(List<Vector2d> data) {
         LOGGER.trace("Entering attachData");
         points = data;
+        pout = null; // delete any processed polygon
+        if (points == null) {
+            LOGGER.warn("No data attached");
+            return;
+        }
         p = new ExPolygon(data); // create polygon from points
         p.fitPolygon(DRAW_SIZE); // adjust its size to draw window
-        pout = null; // delete any processed polygon
+
     }
 
     /**
@@ -133,6 +138,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * ActionEvent)
      * @see uk.ac.warwick.wsbc.tools.images.filters.HatFilter.stateChanged(
      * ChangeEvent)
+     * @remarks User can expect that \c points may be \c null if data have not
+     * been attached yet.
      */
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
@@ -141,6 +148,11 @@ public class HatSnakeFilter_ extends QWindowBuilder
                 "Run plugin with params: window %d, crown %d, sigma %f", window,
                 crown, sig));
 
+        // check if we have correct data
+        if (points == null) {
+            LOGGER.warn("No data attached");
+            throw new QuimpPluginException("No data attached?");
+        }
         int cp = window / 2; // left and right range of window
         int cr = crown / 2; // left and right range of crown
         int indexTmp; // temporary index after padding
@@ -430,7 +442,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
                         window, crown, sig));
         // run plugin for set parameters
         try {
-            out = runPlugin();
+            out = runPlugin(); // may throw exception if no data attached
             pout = new ExPolygon(out); // create new figure from out data
             pout.fitPolygon(DRAW_SIZE, p.initbounds, p.scale); // fit to size
                                                                // from original
