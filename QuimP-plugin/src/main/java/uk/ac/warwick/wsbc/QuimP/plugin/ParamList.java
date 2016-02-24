@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
+
 /**
  * List of parameters in <key,value> HashList, where both \c key and \c value
  * are java.lang.String and key is always in lower case.
@@ -151,6 +153,26 @@ public class ParamList extends LinkedHashMap<String, String> {
     @Override
     public String get(Object key) {
         return super.get(((String) key).toLowerCase());
+    }
+
+    /**
+     * Get string associated with \c key and parse it to split according to 
+     * delimiter
+     * 
+     * @param key to be read
+     * @return Split substrings or empty array in case of any error
+     * @see StringParser
+     * @warning May be used only \c val under \c key can be parsed
+     */
+    public String[] getParsed(Object key) {
+        String val = get(key);
+        String[] ret;
+        try {
+            ret = StringParser.getParams(val);
+        } catch (Exception e) {
+            ret = new String[0];
+        }
+        return ret;
     }
 
     /**

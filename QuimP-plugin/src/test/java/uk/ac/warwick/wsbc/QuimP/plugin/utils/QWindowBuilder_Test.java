@@ -6,8 +6,6 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -29,7 +27,7 @@ public class QWindowBuilder_Test {
     @SuppressWarnings("unused")
     private static final Logger LOGGER =
             LogManager.getLogger(QWindowBuilder_Test.class.getName());
-    private HashMap<String, String[]> def1;
+    private ParamList def1;
     QWindowBuilderInst inst;
 
     /**
@@ -48,13 +46,16 @@ public class QWindowBuilder_Test {
 
     @Before
     public void setUp() throws Exception {
-        def1 = new HashMap<String, String[]>(); // setup window params
-        def1.put("name", new String[] { "test" });
-        def1.put("window",
-                new String[] { "spinner", "-0.5", "0.5", "0.1", "0" });
-        def1.put("smooth", new String[] { "spinner", "-1", "10", "1", "-1" });
-        def1.put("help", new String[] {
-                "FlowLayout is the default layout manager for every JPanel. It simply lays out components in a single row, starting a new row if its container is not sufficiently wide. Both panels in CardLayoutDemo, shown previously, use FlowLayout. For further details, see How to Use FlowLayout." });
+        def1 = new ParamList(); // setup window params
+        def1.put("Name", "test");
+        def1.put("wIndow", "spinner, -0.5, 0.5, 0.1, 0");
+        def1.put("smootH", "spinner, -1, 10, 1, -1");
+        def1.put("help",
+                "FlowLayout is the default layout manager for every JPanel."
+                        + " It simply lays out components in a single row, starting a"
+                        + " new row if its container is not sufficiently wide. Both "
+                        + "panels in CardLayoutDemo, shown previously, use FlowLayout."
+                        + " For further details, see How to Use FlowLayout.");
         inst = new QWindowBuilderInst(); // create window object
     }
 
@@ -72,11 +73,11 @@ public class QWindowBuilder_Test {
      */
     @Test
     public void test_getValues() {
-        HashMap<String, String> ret;
+        ParamList ret;
         inst.buildWindow(def1);
-        ret = (HashMap<String, String>) inst.getValues();
-        assertEquals(0, Double.parseDouble(ret.get("window")), 1e-4);
-        assertEquals(-1, Double.parseDouble(ret.get("smooth")), 1e-4);
+        ret = inst.getValues();
+        assertEquals(0, ret.getDoubleValue("window"), 1e-4);
+        assertEquals(-1, ret.getDoubleValue("smooth"), 1e-4);
     }
 
     /**
@@ -88,13 +89,13 @@ public class QWindowBuilder_Test {
     public void test_setgetValues() {
         ParamList ret;
         ParamList set = new ParamList();
-        set.put("window", String.valueOf(0.32));
-        set.put("smooth", String.valueOf(7.0));
+        set.put("windOw", String.valueOf(0.32));
+        set.put("sMooth", String.valueOf(7.0));
         inst.buildWindow(def1);
         inst.setValues(set);
         ret = inst.getValues();
-        assertEquals(0.32, Double.parseDouble(ret.get("window")), 1e-4);
-        assertEquals(7, Double.parseDouble(ret.get("smooth")), 1e-4);
+        assertEquals(0.32, ret.getDoubleValue("window"), 1e-4);
+        assertEquals(7, ret.getDoubleValue("smooth"), 1e-4);
     }
 
 }
