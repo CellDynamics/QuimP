@@ -12,9 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import javax.vecmath.Vector2d;
 
@@ -27,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 
@@ -107,15 +106,15 @@ public class PluginFactory_Test {
      * This test creates instances of plugins and calls methods from them
      * storing and reading data from created object for plugin2
      * 
-     * @pre Two dummy plugins in src/test/resources/ directory of type
+     * @pre Two dummy plugins in ../plugins_test/target/ directory of type
      * DOES_SNAKES
      */
     @Test
     public void test_GetInstance() throws Exception {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
-        HashMap<String, String> test = new HashMap<>();
-        Map<String, String> ret;
+        ParamList test = new ParamList();
+        ParamList ret;
         test.put("window", "0.02");
         test.put("alfa", "10.0");
         @SuppressWarnings("unchecked") // we should be sure that this casting is
@@ -130,7 +129,7 @@ public class PluginFactory_Test {
                         .getInstance("Plugin2");
         filter2.setPluginConfig(test);
         ret = filter2.getPluginConfig();
-        assertEquals(Double.parseDouble(ret.get("window")), 0.02, 1e-5);
+        assertEquals(Double.parseDouble(ret.get("Window")), 0.02, 1e-5);
         assertEquals(Double.parseDouble(ret.get("alfa")), 10, 1e-5);
     }
 

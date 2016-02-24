@@ -4,7 +4,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.vecmath.Vector2d;
@@ -18,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.DataLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
@@ -123,7 +123,7 @@ public class MeanFilter_Param_Test {
         ArrayList<Vector2d> out;
         MeanSnakeFilter_ i = new MeanSnakeFilter_();
         i.attachData(testcase);
-        i.setPluginConfig(new HashMap<String, String>() {
+        i.setPluginConfig(new ParamList() {
             {
                 put("window", String.valueOf(window));
             }

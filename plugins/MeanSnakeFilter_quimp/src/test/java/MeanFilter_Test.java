@@ -6,7 +6,6 @@
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.vecmath.Vector2d;
@@ -17,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
@@ -66,9 +66,9 @@ public class MeanFilter_Test {
         MeanSnakeFilter_ in = new MeanSnakeFilter_();
         in.attachData(testcase);
         Integer window = 3;
-        in.setPluginConfig(new HashMap<String, String>() {
+        in.setPluginConfig(new ParamList() {
             {
-                put("window", String.valueOf(window));
+                put("Window", String.valueOf(window));
             }
         });
         double[] expected = { 4.3333, 2.0000, 3.0000, 4.0000, 5.0000, 6.0000,

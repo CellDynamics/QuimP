@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.vecmath.Vector2d;
@@ -22,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.DataLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
@@ -101,7 +101,7 @@ public class HatFilter_Param_Test {
 
     /**
      * @test Test of getInterpolationLoess method
-     * @pre Real cases extrcted from
+     * @pre Real cases extracted from
      * @post Save image test_HatFilter_* in /tmp/
      * @throws QuimpPluginException
      * @see QuimP-toolbox/algorithms/src/test/resources/HatFilter.m for
@@ -117,7 +117,7 @@ public class HatFilter_Param_Test {
         ArrayList<Vector2d> out;
         HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(testcase);
-        hf.setPluginConfig(new HashMap<String, String>() {
+        hf.setPluginConfig(new ParamList() {
             {
                 put("window", String.valueOf(window));
                 put("crown", String.valueOf(crown));

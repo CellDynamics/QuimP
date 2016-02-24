@@ -11,6 +11,7 @@ import javax.vecmath.Vector2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.IPadArray;
@@ -155,13 +156,10 @@ public class MeanSnakeFilter_
      * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
      */
     @Override
-    public void setPluginConfig(HashMap<String, String> par)
+    public void setPluginConfig(final ParamList par)
             throws QuimpPluginException {
         try {
-            window = Integer.parseInt(par.get("window")); // by default all
-                                                          // numeric values
-                                                          // are passed as
-                                                          // double
+            window = par.getIntValue("window");
             uiInstance.setValues(par); // populate loaded values to UI
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched
@@ -180,7 +178,7 @@ public class MeanSnakeFilter_
      * added here manually.
      */
     @Override
-    public Map<String, String> getPluginConfig() {
+    public ParamList getPluginConfig() {
         return uiInstance.getValues();
     }
 

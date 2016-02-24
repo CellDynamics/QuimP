@@ -1,5 +1,4 @@
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -19,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
@@ -75,7 +75,7 @@ public class HatFilter_Test {
         LOGGER.debug("input: " + input.toString());
         HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(input);
-        hf.setPluginConfig(new HashMap<String, String>() {
+        hf.setPluginConfig(new ParamList() {
             {
                 put("window", "5");
                 put("crown", "3");
@@ -100,7 +100,7 @@ public class HatFilter_Test {
         LOGGER.debug("input: " + input.toString());
         HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(input);
-        hf.setPluginConfig(new HashMap<String, String>() {
+        hf.setPluginConfig(new ParamList() {
             {
                 put("window", "5");
                 put("crown", "3");
@@ -133,7 +133,7 @@ public class HatFilter_Test {
     public void test_HatFilter_setget() throws QuimpPluginException {
         HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(input);
-        hf.setPluginConfig(new HashMap<String, String>() {
+        hf.setPluginConfig(new ParamList() {
             {
                 put("window", "5");
                 put("crown", "3");
@@ -158,7 +158,7 @@ public class HatFilter_Test {
         try {
             HatSnakeFilter_ hf = new HatSnakeFilter_(); // even window
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, String>() {
+            hf.setPluginConfig(new ParamList() {
                 {
                     put("window", "6");
                     put("crown", "3");
@@ -174,7 +174,7 @@ public class HatFilter_Test {
         try {
             HatSnakeFilter_ hf = new HatSnakeFilter_(); // even crown
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, String>() {
+            hf.setPluginConfig(new ParamList() {
                 {
                     put("window", "5");
                     put("crown", "4");
@@ -190,7 +190,7 @@ public class HatFilter_Test {
         try {
             HatSnakeFilter_ hf = new HatSnakeFilter_(); // crown>window
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, String>() {
+            hf.setPluginConfig(new ParamList() {
                 {
                     put("window", "5");
                     put("crown", "5");
@@ -206,7 +206,7 @@ public class HatFilter_Test {
         try {
             HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, String>() {
+            hf.setPluginConfig(new ParamList() {
                 {
                     put("window", "5");
                     put("crown", "0");
@@ -222,7 +222,7 @@ public class HatFilter_Test {
         try {
             HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, String>() {
+            hf.setPluginConfig(new ParamList() {
                 {
                     put("window", "0");
                     put("crown", "3");
@@ -238,7 +238,7 @@ public class HatFilter_Test {
         try {
             HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, String>() {
+            hf.setPluginConfig(new ParamList() {
                 {
                     put("window", "0");
                     put("crown", "-3");
@@ -254,7 +254,7 @@ public class HatFilter_Test {
         try {
             HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
             hf.attachData(input);
-            hf.setPluginConfig(new HashMap<String, String>() {
+            hf.setPluginConfig(new ParamList() {
                 {
                     put("window", "1");
                     put("crown", "1");

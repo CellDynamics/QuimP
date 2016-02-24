@@ -4,9 +4,6 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * General definition of plugin interface for QuimP
  * 
@@ -43,7 +40,7 @@ public interface IQuimpPlugin {
      * them as the were returned by getPluginConfig() method.
      * 
      * @remarks Numerical values should be passed as Double
-     * @warning setPluginConfig(HashMap<String,String>) and getPluginConfig()
+     * @warning setPluginConfig(ParamList) and getPluginConfig()
      * should use the same convention of key naming and parameters
      * casting
      * @param par
@@ -52,7 +49,7 @@ public interface IQuimpPlugin {
      * key is not understood or converting from \c String \b value to
      * other type has not been successful.
      */
-    void setPluginConfig(HashMap<String, String> par)
+    void setPluginConfig(final ParamList par)
             throws QuimpPluginException;
 
     /**
@@ -62,9 +59,9 @@ public interface IQuimpPlugin {
      * configuration
      * 
      * @return
-     * @see setPluginConfig(HashMap<String,String>)
+     * @see setPluginConfig(ParamList)
      */
-    Map<String, String> getPluginConfig();
+    ParamList getPluginConfig();
 
     /**
      * Show or hide plugin UI
@@ -81,7 +78,7 @@ public interface IQuimpPlugin {
      * 
      * Versioning may be used for detecting incompatibilities between
      * configurations. Plugin version is saved in QuimP config files, and then
-     * passed to plugin by setPluginConfig(HashMap<String,Object>) as \a version
+     * passed to plugin by setPluginConfig(ParamList) as \a version
      * key. This key is not available if plugin has not provided its version.
      * The plugin is responsible for parsing this parameter.
      * 

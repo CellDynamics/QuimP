@@ -32,5 +32,5 @@ public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
      * running it wht is important e.g. for visualizing. 
      * @param data
      */
-    void attachData(List<E> data);
+    void attachData(final List<E> data);
 }

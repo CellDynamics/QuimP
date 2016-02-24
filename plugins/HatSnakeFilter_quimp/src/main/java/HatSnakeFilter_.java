@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,6 +27,7 @@ import javax.vecmath.Vector2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.IPadArray;
@@ -268,12 +268,12 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, String>)
      */
     @Override
-    public void setPluginConfig(HashMap<String, String> par)
+    public void setPluginConfig(final ParamList par)
             throws QuimpPluginException {
         try {
-            window = Integer.parseInt(par.get("window"));
-            crown = Integer.parseInt(par.get("crown"));
-            sig = Double.parseDouble(par.get("sigma"));
+            window = par.getIntValue("window");
+            crown = par.getIntValue("crown");
+            sig = par.getDoubleValue("sigma");
             setValues(par); // copy incoming parameters to UI
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched
@@ -292,7 +292,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * added here manually.
      */
     @Override
-    public Map<String, String> getPluginConfig() {
+    public ParamList getPluginConfig() {
         return getValues();
     }
 

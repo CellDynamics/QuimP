@@ -1,3 +1,4 @@
+
 /**
  * @file HatFilter_run.java
  * @date 8 Feb 2016
@@ -6,13 +7,13 @@
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JFrame;
 import javax.vecmath.Vector2d;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
@@ -43,7 +44,7 @@ public class HatFilter_run {
         // create instance of hatfilter
         HatFilterInst hf = new HatFilterInst();
         hf.attachData(input);
-        hf.setPluginConfig(new HashMap<String, String>() {
+        hf.setPluginConfig(new ParamList() {
             {
                 put("window", "3");
                 put("crown", "1");

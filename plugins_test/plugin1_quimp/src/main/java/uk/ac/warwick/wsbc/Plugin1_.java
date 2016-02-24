@@ -4,15 +4,14 @@
  */
 package uk.ac.warwick.wsbc;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 
@@ -42,14 +41,14 @@ public class Plugin1_ implements IQuimpPoint2dFilter<Vector2d> {
     }
 
     @Override
-    public void setPluginConfig(HashMap<String, String> par)
+    public void setPluginConfig(final ParamList par)
             throws QuimpPluginException {
         LOGGER.trace("setPluginConfig of Plugin1 called");
 
     }
 
     @Override
-    public Map<String, String> getPluginConfig() {
+    public ParamList getPluginConfig() {
         LOGGER.trace("getPluginConfig of Plugin1 called");
         return null;
     }

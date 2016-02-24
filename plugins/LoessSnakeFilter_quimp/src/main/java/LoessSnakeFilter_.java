@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.vecmath.Vector2d;
 
@@ -11,6 +10,7 @@ import org.apache.commons.math3.exception.NumberIsTooSmallException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
@@ -151,10 +151,10 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
      * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, Object>)
      */
     @Override
-    public void setPluginConfig(HashMap<String, String> par)
+    public void setPluginConfig(final ParamList par)
             throws QuimpPluginException {
         try {
-            smoothing = Double.parseDouble(par.get("smooth"));
+            smoothing = par.getDoubleValue("smooth");
             uiInstance.setValues(par);
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched
@@ -173,7 +173,7 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
      * added here manually.
      */
     @Override
-    public Map<String, String> getPluginConfig() {
+    public ParamList getPluginConfig() {
         return uiInstance.getValues();
     }
 

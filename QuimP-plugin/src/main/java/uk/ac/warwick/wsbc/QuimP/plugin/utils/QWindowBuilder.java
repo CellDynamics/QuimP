@@ -12,7 +12,6 @@ import java.awt.Panel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -30,6 +29,8 @@ import javax.swing.SpinnerNumberModel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 
 /**
  * Simple window builder for QuimP plugins
@@ -315,7 +316,7 @@ public abstract class QWindowBuilder {
      * 
      * @param vals <key,value> pairs to fill UI.
      */
-    public void setValues(final Map<String, String> vals) {
+    public void setValues(final ParamList vals) {
         // iterate over parameters and match names to UIs
         for (Map.Entry<String, String> e : vals.entrySet()) {
             String key = e.getKey();
@@ -357,8 +358,8 @@ public abstract class QWindowBuilder {
      * @see getDoubleFromUI(final String)
      * @see getIntegerFromUI(final String)
      */
-    public Map<String, String> getValues() {
-        Map<String, String> ret = new HashMap<String, String>();
+    public ParamList getValues() {
+        ParamList ret = new ParamList();
         // iterate over all UI elements
         Iterator<Map.Entry<String, Component>> entryIterator = ui.entrySet()
                 .iterator();
@@ -408,7 +409,7 @@ public abstract class QWindowBuilder {
      */
     public double getDoubleFromUI(final String key) {
         // get list of all params from ui as <key,val> list
-        HashMap<String, String> uiParam = (HashMap<String, String>) getValues();
-        return Double.parseDouble(uiParam.get(key));
+        ParamList uiParam = getValues();
+        return uiParam.getDoubleValue(key);
     }
 }
