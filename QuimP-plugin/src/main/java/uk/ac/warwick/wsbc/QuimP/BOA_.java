@@ -821,6 +821,7 @@ public class BOA_ implements PlugIn {
          * @param e Type of event
          * @see BOAp
          */
+        @SuppressWarnings("unchecked")
         @Override
         public void actionPerformed(final ActionEvent e) {
             boolean run = false; // some actions require to re-run segmentation.
@@ -868,7 +869,7 @@ public class BOA_ implements PlugIn {
                     lastTool = IJ.getToolName();
                     IJ.setTool(Toolbar.LINE);
                     if (nest.size() == 1)
-                        editSeg(0, 0, frame); // if only 1 snake go stright to
+                        editSeg(0, 0, frame); // if only 1 snake go straight to
                                               // edit, if more user must pick
                                               // one
                 } else {
@@ -979,6 +980,10 @@ public class BOA_ implements PlugIn {
                     inst = pluginFactory.getInstance(selectedPlugin);
                     // remember instance in active plugin list
                     BOAp.sPluginList.set(0, inst);
+                    // attach data
+                    //                    SnakeHandler sh = nest.getHandler(0);
+                    //                    ((IQuimpPoint2dFilter<Vector2d>) inst)
+                    //                            .attachData(sh.getLiveSnake().asList());
                 }
             }
             if (b == (JComboBox<String>) secondPluginName) {
