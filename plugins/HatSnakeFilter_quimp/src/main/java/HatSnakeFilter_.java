@@ -11,9 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JPanel;
@@ -69,8 +67,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
     private int crown; // filter's crown size (in middle of \a window)
     private double sig; // acceptance criterion
     private List<Vector2d> points;
-    private LinkedHashMap<String, String[]> uiDefinition; // Definition of UI
-                                                          // for this plugin
+    private ParamList uiDefinition; // Definition of UI for this plugin
     private DrawPanel dp; // Here we will draw. This panel is plot in place of
                           // help field
     private ExPolygon p; // representation of snake as polygon
@@ -89,17 +86,17 @@ public class HatSnakeFilter_ extends QWindowBuilder
         this.sig = 0.3;
         LOGGER.debug("Set default parameter: window=" + window + " crown="
                 + crown + " sig=" + sig);
-        uiDefinition = new LinkedHashMap<String, String[]>(); // will hold ui
-                                                              // definitions
-        uiDefinition.put("name", new String[] { "HatFilter" }); // name of
-                                                                // window
-                                                                // "system-wide"
-        uiDefinition.put("window", new String[] { "spinner", "3", "51", "2",
-                Integer.toString(window) });
-        uiDefinition.put("crown", new String[] { "spinner", "1", "51", "2",
-                Integer.toString(crown) });
-        uiDefinition.put("sigma", new String[] { "spinner", "0.01", "0.9",
-                "0.01", Double.toString(sig) });
+        // create UI using QWindowBuilder
+        uiDefinition = new ParamList(); // will hold ui definitions
+        // configure window, names of UI elements are also names of variables
+        // exported/imported  by set/getPluginConfig 
+        uiDefinition.put("name", "HatFilter"); // name of window
+        uiDefinition.put("window",
+                "spinner, 3, 51, 2," + Integer.toString(window));
+        uiDefinition.put("crown",
+                "spinner, 1, 51, 2," + Integer.toString(crown));
+        uiDefinition.put("sigma",
+                "spinner, 0.01, 0.9,0.01," + Double.toString(sig));
         buildWindow(uiDefinition); // construct ui (not shown yet)
         points = null; // not attached yet
         pout = null; // not calculated yet
@@ -139,6 +136,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
      */
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
+        // internal parameters are not updated here but when user click apply
         LOGGER.debug(String.format(
                 "Run plugin with params: window %d, crown %d, sigma %f", window,
                 crown, sig));
@@ -319,16 +317,16 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * DrawPanel
      */
     @Override
-    public void buildWindow(Map<String, String[]> def) {
+    public void buildWindow(final ParamList def) {
         super.buildWindow(def); // window must be built first
 
         // attach listeners to ui to update window on new parameters
-        ((JSpinner) ui.get("window")).addChangeListener(this); // attach
+        ((JSpinner) ui.get("Window")).addChangeListener(this); // attach
                                                                // listener to
                                                                // selected ui
         ((JSpinner) ui.get("crown")).addChangeListener(this); // attach listener
                                                               // to selected ui
-        ((JSpinner) ui.get("sigma")).addChangeListener(this); // attach listener
+        ((JSpinner) ui.get("Sigma")).addChangeListener(this); // attach listener
                                                               // to selected ui
         applyB.addActionListener(this); // attach listener to aplly button
         // in place of CENTER pane in BorderLayout layout from super.BuildWindow

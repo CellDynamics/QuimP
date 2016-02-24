@@ -4,19 +4,20 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
+
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.LinkedStringMap;
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
 
 /**
  * List of parameters in <key,value> HashList, where both \c key and \c value
- * are java.lang.String and key is always in lower case.
+ * are java.lang.String and key is case insensitive.
  * 
  * @author p.baniukiewicz
  * @date 24 Feb 2016
  *
  */
-public class ParamList extends HashMap<String, String> {
+public class ParamList extends LinkedStringMap<String> {
 
     private static final long serialVersionUID = -8762132735734951785L;
 
@@ -134,108 +135,23 @@ public class ParamList extends HashMap<String, String> {
     }
 
     /**
-     * (non-Javadoc)
+     * Get string associated with \c key and parse it to split according to 
+     * delimiter
      * 
-     * @see java.util.HashMap#put(java.lang.Object, java.lang.Object)
+     * @param key to be read
+     * @return Split substrings or empty array in case of any error
+     * @see StringParser
+     * @warning May be used only \c val under \c key can be parsed
      */
-    @Override
-    public String put(String key, String value) {
-        return super.put(key.toLowerCase(), value);
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#get(java.lang.Object)
-     */
-    @Override
-    public String get(Object key) {
-        return super.get(((String) key).toLowerCase());
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#containsKey(java.lang.Object)
-     */
-    @Override
-    public boolean containsKey(Object key) {
-        return super.containsKey(((String) key).toLowerCase());
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#putAll(java.util.Map)
-     */
-    @Override
-    public void putAll(Map<? extends String, ? extends String> m) {
-        for (java.util.Map.Entry<? extends String, ? extends String> e : m
-                .entrySet()) {
-            put(e.getKey(), e.getValue());
+    public String[] getParsed(String key) {
+        String val = get(key);
+        String[] ret;
+        try {
+            ret = StringParser.getParams(val);
+        } catch (Exception e) {
+            ret = new String[0];
         }
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#remove(java.lang.Object)
-     */
-    @Override
-    public String remove(Object key) {
-        return super.remove(((String) key).toLowerCase());
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#putIfAbsent(java.lang.Object, java.lang.Object)
-     */
-    @Override
-    public String putIfAbsent(String key, String value) {
-        return super.putIfAbsent(key.toLowerCase(), value);
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#remove(java.lang.Object, java.lang.Object)
-     */
-    @Override
-    public boolean remove(Object key, Object value) {
-        return super.remove(((String) key).toLowerCase(), value);
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#replace(java.lang.Object, java.lang.Object,
-     * java.lang.Object)
-     */
-    @Override
-    public boolean replace(String key, String oldValue, String newValue) {
-        return super.replace(key.toLowerCase(), oldValue, newValue);
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#replace(java.lang.Object, java.lang.Object)
-     */
-    @Override
-    public String replace(String key, String value) {
-        return super.replace(key.toLowerCase(), value);
-    }
-
-    /**
-     * This method is not supported
-     * 
-     * @see java.util.HashMap#replaceAll(java.util.function.BiFunction)
-     */
-    @Override
-    public void replaceAll(
-            BiFunction<? super String, ? super String, ? extends String> function) {
-        throw new UnsupportedOperationException("not supported");
+        return ret;
     }
 
 }

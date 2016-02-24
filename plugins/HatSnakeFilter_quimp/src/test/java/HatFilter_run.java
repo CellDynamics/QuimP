@@ -47,8 +47,8 @@ public class HatFilter_run {
         hf.setPluginConfig(new ParamList() {
             {
                 put("window", "3");
-                put("crown", "1");
-                put("sigma", "1.0");
+                put("Crown", "1");
+                put("Sigma", "1.0"); // case insensitive
             }
         });
         CountDownLatch startSignal = new CountDownLatch(1);

@@ -2,7 +2,6 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JFrame;
@@ -22,24 +21,27 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 public class QWindowBuilder_run {
 
     public static void main(String[] args) throws InterruptedException {
-        final Logger logger =
+        final Logger LOGGER =
                 LogManager.getLogger(QWindowBuilder_run.class.getName());
-        HashMap<String, String[]> def1;
+        ParamList def1;
         QWindowBuilderInst inst;
 
-        def1 = new HashMap<String, String[]>(); // setup window params
-        def1.put("name", new String[] { "test" });
-        def1.put("window",
-                new String[] { "spinner", "-0.5", "0.5", "0.1", "0" });
-        def1.put("smooth", new String[] { "spinner", "-1", "10", "1", "-1" });
-        def1.put("help", new String[] {
-                "FlowLayout is the default layout manager for every JPanel. It simply lays out components in a single row, starting a new row if its container is not sufficiently wide. Both panels in CardLayoutDemo, shown previously, use FlowLayout. For further details, see How to Use FlowLayout." });
+        def1 = new ParamList(); // setup window params
+        def1.put("NAME", "test");
+        def1.put("window", "spinner, -0.5, 0.5, 0.1, 0");
+        def1.put("SMOOTH", "spinner, -1, 10, 1, -1");
+        def1.put("help", "FlowLayout is the default layout manager for"
+                + " every JPanel. It simply lays out components in a"
+                + " single row, starting a new row if its container "
+                + "is not sufficiently wide. Both panels in CardLayoutDemo, "
+                + "shown previously, use FlowLayout. For further "
+                + "details, see How to Use FlowLayout.");
         inst = new QWindowBuilderInst(); // create window object
 
         ParamList set = new ParamList();
         ParamList ret;
-        set.put("window", String.valueOf(0.32));
-        set.put("smooth", String.valueOf(8.0));
+        set.setDoubleValue("Window", 0.32);
+        set.setDoubleValue("SMOOTH", 8.0);
         CountDownLatch startSignal = new CountDownLatch(1);
         inst.buildWindow(def1); // main window builder
         inst.setValues(set);
@@ -48,7 +50,7 @@ public class QWindowBuilder_run {
             @Override
             // This method will be called when BOA_ window is closed
             public void windowClosing(WindowEvent arg0) {
-                logger.debug("Listener activated ");
+                LOGGER.debug("Listener activated ");
                 startSignal.countDown(); // decrease latch by 1
             }
         });
@@ -56,8 +58,8 @@ public class QWindowBuilder_run {
         // main thread waits here until Latch reaches 0
         startSignal.await();
         ret = inst.getValues();
-        logger.trace("Finishing ");
-        logger.debug(
+        LOGGER.trace("Finishing ");
+        LOGGER.debug(
                 "window=" + ret.get("window") + " smooth=" + ret.get("smooth"));
         inst = null;
     }

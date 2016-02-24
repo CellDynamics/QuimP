@@ -14,7 +14,6 @@ import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,7 +39,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * 
  * Main function (BuildWindow) accepts HashMap with pairs <name,params> where
  * name is unique name of the parameter and params defines how this parameter
- * will be displayed in UI (see BuildWindow(Map<String, String[]>)). Using this
+ * will be displayed in UI (see BuildWindow(final ParamList)). Using this
  * mapping there is next list \c ui created that contains the same names but now
  * joined with UI components. This list is used for addressing these component
  * basing on theirs names. The UI controls are stored at \c ui which is \a
@@ -50,9 +49,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * shows how to change property of control
  * 
  * @code{.java}
- * String key = "paramname"; JSpinner comp = (JSpinner)
- * ui.get(key); // get control using its name (commonly it is name
- * // of parameter controlled by this UI) ((JSpinner.DefaultEditor)
+ * String key = "paramname"; // case insensitive
+ * JSpinner comp = (JSpinner) ui.get(key); // get control using its name 
  * comp.getEditor()).getTextField().setColumns(5);
  * @endcode
  * 
@@ -69,7 +67,13 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * QWindowBuilder->AWTWindow [label="update UI"];
  * Caller=>QWindowBuilder [label="getValues()"];
  * QWindowBuilder->AWTWindow [label="ask for values"];
- * AWTWindow>>QWindowBuilder; Caller<<QWindowBuilder [label="UI values"];
+ * AWTWindow>>QWindowBuilder [label="ParamList"]; 
+ * Caller<<QWindowBuilder [label="UI values"];
+ * --- [label="Ask for one value associated with name"];
+ * Caller=>QWindowBuilder [label="getDoublefromUI(name)"];
+ * QWindowBuilder=>QWindowBuilder [label="getVales()"];
+ * QWindowBuilder=>QWindowBuilder [label="find name in ParamList"];
+ * Caller<<QWindowBuilder [label="value"];
  * @endmsc
  * 
  * Methods getValues() and setValues() should be used by class extending
@@ -90,8 +94,8 @@ public abstract class QWindowBuilder {
     protected JFrame pluginWnd; ///< main window object
     protected boolean windowState; ///< current window state \c true if visible
     protected JPanel pluginPanel; ///< Main panel extended on whole \c pluginWnd
-    protected LinkedHashMap<String, Component> ui; ///< list of all UI elements
-    private Map<String, String[]> def; ///< definition of window and parameters
+    protected ComponentList ui; ///< list of all UI elements
+    private ParamList def; ///< definition of window and parameters
 
     final private HashSet<String> RESERVED_KEYS = new HashSet<String>(
             Arrays.asList(new String[] { "help", "name" })); ///< reserved keys
@@ -99,7 +103,6 @@ public abstract class QWindowBuilder {
     // definition string - positions of configuration data in value string (see
     // BuildWindow)
     final private int UITYPE = 0; ///< type of UI control to create
-    final private int UIDATA = 0; ///< data for ui when only one parameter
     final private int S_MIN = 1; ///< spinner min value
     final private int S_MAX = 2; ///< spinner max value
     final private int S_STEP = 3; ///< spinner step value
@@ -113,7 +116,7 @@ public abstract class QWindowBuilder {
      */
     public QWindowBuilder() {
         LOGGER.trace("Entering constructor");
-        ui = new LinkedHashMap<String, Component>();
+        ui = new ComponentList();
         def = null;
     }
 
@@ -123,24 +126,29 @@ public abstract class QWindowBuilder {
      * The window is constructed using configuration provided by \c def
      * parameter which is Map of <key,value>. The key is the name of the
      * parameter that should be related to value held in it (e.g window, smooth,
-     * step, etc.). The name must be written in small letters. Keys are strictly
-     * related to UI elements that are created by this method window (basing on
+     * step, etc.). The name is not case sensitive. Keys are strictly
+     * related to UI elements that are created by this method (basing on
      * configuration passed in \b value). There are two special names that are
-     * not related to UI directly: -# help - defines textual help provided as
-     * parameter -# name - defines plugin name provided as parameter The
-     * parameter list is defined as String[] and its content is depended on key.
-     * For \b help and \b name it is String[1] table contain single string with
-     * help text and plugin name respectively.
+     * not related to UI directly: 
+     * -# help - defines textual help provided as parameter
+     * -# name - defines plugin name provided as parameter 
      * 
-     * The UI elements are defined for all other cases in \b value filed of Map.
+     * The parameter list is defined as String and its content is depended on 
+     * key.
+     * For \b help and \b name it contains single string with help text and
+     * plugin name respectively. 
+     * 
+     * The UI elements are defined for all other cases in \b value filed of Map
+     * as comma separated string.
      * Known UI are as follows:
      * <ul>
-     * <li>spinner - creates Spinner control. It requires 3 parameters (in
+     * <li>spinner - creates Spinner control. It requires 4 parameters (in
      * order)
      * <ol>
      * <li>minimal range
      * <li>maximal range
      * <li>step
+     * <li>default value
      * </ol>
      * </ul>
      *
@@ -150,13 +158,11 @@ public abstract class QWindowBuilder {
      * configuration is as follows:
      * 
      * @code{.java}
-     * HashMap<String,String[]> def1 = new HashMap<String, String[]>();
-     * def1.put("name", new String[] {"test"}); // nonUI element - name of
-     * // window
-     * def1.put("window", new String[] {"spinner", "-0.5","0.5","0.1"}); // adds
-     * spinner to provide window parameter
-     * def1.put("smooth", new String[] {"spinner","-1", "10", "1"});
-     * def1.put("help", new String[] {"help text}); // non UI element - help
+     *  def1 = new ParamList();
+     *  def1.put("Name", "test");
+     *  def1.put("wIndow", "spinner, -0.5, 0.5, 0.1, 0");
+     *  def1.put("smootH", "spinner, -1, 10, 1, -1");
+     *  def1.put("help","FlowLayout"); 
      * @endcode
      * 
      * By default window is not visible yet. User must call ShowWindow
@@ -164,12 +170,11 @@ public abstract class QWindowBuilder {
      * refocus after change of values in spinners. They are not updated
      * until unfocused.
      * 
-     * @param def
-     * Configuration \c Map<String, String[]> as described
+     * @param def Configuration as described
      * @throw IllegalArgumentException or other unchecked exceptions on wrong
      * syntax of \c def
      */
-    public void buildWindow(final Map<String, String[]> def) {
+    public void buildWindow(final ParamList def) {
         if (def.size() < 2)
             throw new IllegalArgumentException("Window must contain title and"
                     + " at least one control");
@@ -203,19 +208,25 @@ public abstract class QWindowBuilder {
         // iterate over def entries except first one which is always title
         // every decoded control is put into ordered hashmap together with its
         // descriptor (label)
-        for (Map.Entry<String, String[]> e : def.entrySet()) {
+        for (Map.Entry<String, String> e : def.entrySet()) {
             String key = e.getKey();
             if (RESERVED_KEYS.contains(key))
                 continue;
-            String componentName = e.getValue()[UITYPE]; // get name of UI for
-                                                         // given key
-            switch (componentName.toLowerCase()) {
+            String[] uiparams = StringParser.getParams(e.getValue());
+            if (uiparams.length == 0)
+                throw new IllegalArgumentException(
+                        "Probably wrong syntax in UI definition");
+            switch (uiparams[UITYPE].toLowerCase()) {
                 case "spinner": // by default all spinners are double
+                    if (uiparams.length != 5) // 4+uitype
+                        throw new IllegalArgumentException(
+                                "Probably wrong syntax in UI definition for "
+                                        + uiparams[UITYPE]);
                     SpinnerNumberModel model = new SpinnerNumberModel(
-                            Double.parseDouble(e.getValue()[S_DEFAULT]), // val
-                            Double.parseDouble(e.getValue()[S_MIN]), // min
-                            Double.parseDouble(e.getValue()[S_MAX]), // max
-                            Double.parseDouble(e.getValue()[S_STEP])); // step
+                            Double.parseDouble(uiparams[S_DEFAULT]), // val
+                            Double.parseDouble(uiparams[S_MIN]), // min
+                            Double.parseDouble(uiparams[S_MAX]), // max
+                            Double.parseDouble(uiparams[S_STEP])); // step
                     ui.put(key, new JSpinner(model));
                     ui.put(key + "label", new Label(key)); // add description
                     break;
@@ -232,9 +243,8 @@ public abstract class QWindowBuilder {
         // add non ui elements
         if (def.containsKey("name")) {
             // border on whole window
-            pluginPanel.setBorder(
-                    BorderFactory.createTitledBorder(
-                            "Plugin " + def.get("name")[UIDATA]));
+            pluginPanel.setBorder(BorderFactory.createTitledBorder("Plugin "
+                    + def.get("name")));
         }
         if (def.containsKey("help")) {
             JTextArea helpArea = new JTextArea(10, 10); // default size of text
@@ -243,7 +253,7 @@ public abstract class QWindowBuilder {
             helpArea.setEditable(false);
             pluginPanel.add(helpPanel, BorderLayout.CENTER); // locate at center
                                                              // position
-            helpArea.setText(def.get("help")[UIDATA]); // set help text
+            helpArea.setText(def.get("help")); // set help text
             helpArea.setLineWrap(true); // with wrapping
         }
 
@@ -322,8 +332,8 @@ public abstract class QWindowBuilder {
             String key = e.getKey();
             String val = e.getValue();
             // find key in def and get type of control and its instance
-            switch (def.get(key)[UITYPE]) { // first string in vals is type of
-                                            // control, see BuildWindow
+            switch (def.getParsed(key)[UITYPE]) { // first string in vals is type of
+                // control, see BuildWindow
                 case "spinner":
                     JSpinner comp = (JSpinner) ui.get(key); // get UI component
                                                             // of name key (keys
@@ -367,7 +377,7 @@ public abstract class QWindowBuilder {
             Map.Entry<String, Component> m = entryIterator.next();
             String key = m.getKey();
             // check type of component
-            switch (def.get(key)[UITYPE]) {
+            switch (def.getParsed(key)[UITYPE]) {
                 case "spinner":
                     JSpinner val = (JSpinner) m.getValue(); // get value
                     ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
@@ -394,7 +404,7 @@ public abstract class QWindowBuilder {
      * @remarks In case of wrong conversion it may be exception thrown. User is
      * responsible to call this method for proper key.
      * 
-     * @param key Key to be read from configuration list
+     * @param key Key to be read from configuration list, case insensitive
      * @return integer representation of value under \c key
      * @see BuildWindow(final Map<String, String[]>)
      */
