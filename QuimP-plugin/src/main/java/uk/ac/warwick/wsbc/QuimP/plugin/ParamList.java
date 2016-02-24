@@ -4,21 +4,20 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.LinkedStringMap;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
 
 /**
  * List of parameters in <key,value> HashList, where both \c key and \c value
- * are java.lang.String and key is always in lower case.
+ * are java.lang.String and key is case insensitive.
  * 
  * @author p.baniukiewicz
  * @date 24 Feb 2016
  *
  */
-public class ParamList extends LinkedHashMap<String, String> {
+public class ParamList extends LinkedStringMap<String> {
 
     private static final long serialVersionUID = -8762132735734951785L;
 
@@ -136,25 +135,6 @@ public class ParamList extends LinkedHashMap<String, String> {
     }
 
     /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#put(java.lang.Object, java.lang.Object)
-     */
-    @Override
-    public String put(String key, String value) {
-        return super.put(key.toLowerCase(), value);
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#get(java.lang.Object)
-     */
-    public String get(String key) {
-        return super.get(key.toLowerCase());
-    }
-
-    /**
      * Get string associated with \c key and parse it to split according to 
      * delimiter
      * 
@@ -172,88 +152,6 @@ public class ParamList extends LinkedHashMap<String, String> {
             ret = new String[0];
         }
         return ret;
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#containsKey(java.lang.Object)
-     */
-    public boolean containsKey(String key) {
-        return super.containsKey(key.toLowerCase());
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#putAll(java.util.Map)
-     */
-    @Override
-    public void putAll(Map<? extends String, ? extends String> m) {
-        for (java.util.Map.Entry<? extends String, ? extends String> e : m
-                .entrySet()) {
-            put(e.getKey(), e.getValue());
-        }
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#remove(java.lang.Object)
-     */
-    public String remove(String key) {
-        return super.remove(key.toLowerCase());
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#putIfAbsent(java.lang.Object, java.lang.Object)
-     */
-    @Override
-    public String putIfAbsent(String key, String value) {
-        return super.putIfAbsent(key.toLowerCase(), value);
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#remove(java.lang.Object, java.lang.Object)
-     */
-    public boolean remove(String key, Object value) {
-        return super.remove(key.toLowerCase(), value);
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#replace(java.lang.Object, java.lang.Object,
-     * java.lang.Object)
-     */
-    @Override
-    public boolean replace(String key, String oldValue, String newValue) {
-        return super.replace(key.toLowerCase(), oldValue, newValue);
-    }
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.util.HashMap#replace(java.lang.Object, java.lang.Object)
-     */
-    @Override
-    public String replace(String key, String value) {
-        return super.replace(key.toLowerCase(), value);
-    }
-
-    /**
-     * This method is not supported
-     * 
-     * @see java.util.HashMap#replaceAll(java.util.function.BiFunction)
-     */
-    @Override
-    public void replaceAll(
-            BiFunction<? super String, ? super String, ? extends String> function) {
-        throw new UnsupportedOperationException("not supported");
     }
 
 }

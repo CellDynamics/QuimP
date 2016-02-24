@@ -321,12 +321,12 @@ public class HatSnakeFilter_ extends QWindowBuilder
         super.buildWindow(def); // window must be built first
 
         // attach listeners to ui to update window on new parameters
-        ((JSpinner) ui.get("window")).addChangeListener(this); // attach
+        ((JSpinner) ui.get("Window")).addChangeListener(this); // attach
                                                                // listener to
                                                                // selected ui
         ((JSpinner) ui.get("crown")).addChangeListener(this); // attach listener
                                                               // to selected ui
-        ((JSpinner) ui.get("sigma")).addChangeListener(this); // attach listener
+        ((JSpinner) ui.get("Sigma")).addChangeListener(this); // attach listener
                                                               // to selected ui
         applyB.addActionListener(this); // attach listener to aplly button
         // in place of CENTER pane in BorderLayout layout from super.BuildWindow

@@ -14,7 +14,6 @@ import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -90,7 +89,7 @@ public abstract class QWindowBuilder {
     protected JFrame pluginWnd; ///< main window object
     protected boolean windowState; ///< current window state \c true if visible
     protected JPanel pluginPanel; ///< Main panel extended on whole \c pluginWnd
-    protected LinkedHashMap<String, Component> ui; ///< list of all UI elements
+    protected ComponentList ui; ///< list of all UI elements
     private ParamList def; ///< definition of window and parameters
 
     final private HashSet<String> RESERVED_KEYS = new HashSet<String>(
@@ -112,7 +111,7 @@ public abstract class QWindowBuilder {
      */
     public QWindowBuilder() {
         LOGGER.trace("Entering constructor");
-        ui = new LinkedHashMap<String, Component>();
+        ui = new ComponentList();
         def = null;
     }
 
