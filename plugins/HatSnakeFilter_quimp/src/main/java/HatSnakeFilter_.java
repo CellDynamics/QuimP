@@ -117,7 +117,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
         LOGGER.trace("Entering attachData");
         points = data;
         pout = null; // delete any processed polygon
-        if (points == null) {
+        if (points == null) {//TODO may not be necessary if ExPolygon survives nulls
             LOGGER.warn("No data attached");
             return;
         }
