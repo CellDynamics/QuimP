@@ -4,7 +4,7 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -16,7 +16,7 @@ import java.util.function.BiFunction;
  * @date 24 Feb 2016
  *
  */
-public class ParamList extends HashMap<String, String> {
+public class ParamList extends LinkedHashMap<String, String> {
 
     private static final long serialVersionUID = -8762132735734951785L;
 
