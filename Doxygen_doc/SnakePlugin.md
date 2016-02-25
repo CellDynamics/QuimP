@@ -93,7 +93,7 @@ activate GUIBuilder
 GUIBuilder -> PluginFactory : getPluginNames
 PluginFactory -> PluginFactory : ""availPlugins"".get(""type"")
 GUIBuilder <-- PluginFactory : ""String[]""
-note left #Coral
+note left
 Use List to create
 UI controls. Names
 are related to plugin
@@ -107,7 +107,8 @@ deactivate GUIBuilder
 == Use ==
 
 User -\ QuimP : Select plugin
-QuimP -> PluginFactory : getInstance(plugin)
+note left #GreenYellow : See Activity diagram 1
+QuimP -> PluginFactory : getInstance(name)
 PluginFactory -> PluginFactory : ""availPlugins"".get(""plugin"")
 PluginFactory -> Plugin : <<create>>
 activate Plugin
@@ -115,6 +116,14 @@ PluginFactory <-- Plugin
 PluginFactory --> QuimP : ""instance""
 
 QuimP -> QuimP :""sPluginList"".set
+QuimP -> Plugin :attachData(""data"")
+note left #OrangeRed
+""data"" may be ""null""
+plugin must deal with it
+This may happen when plugin is
+selected when no snakes is yet.
+end note
+Plugin --> QuimP
 
 User -\ QuimP : Show GUI
 QuimP -> Plugin : showUI(true)
@@ -133,4 +142,43 @@ Plugin --> PluginFactory : <<Exit>>
 destroy Plugin
 QuimP <-- PluginFactory : <<Exit>>
 destroy PluginFactory
+@enduml
+
+Activity diagram for use case **Select Plugin**. User selected one plugin on certain slot.
+Plugins have been registered already by **Create Engine** use case.
+
+@startuml
+start
+if (is any snake?) then (yes)
+    :""dataToProcess""=**activesnake**;
+else (no)
+    :""dataToProcess""=**null**;
+endif
+partition instanceSnakePlugin {
+if (selectedPlugin!=NONE) then (yes)
+:getInstance;
+:register instance;
+note left: BOAp
+:attachData;
+else (no)
+note right
+Plugins are identified by names
+which are populated to JComboBoxes as well.
+**NONE** is special keyword that
+means deselected plugin
+end note
+:close plugin UI;
+:deregister instance;
+note right: BOAp
+endif
+if (check on possible plugin error) then (yes)
+:log this situation;
+endif
+note right
+getInstance can return **null** when plugin could not be loaded or 
+instanced. In general ""PluginFactory"" try to mask most of 
+exceptions. Here we can detect this situation.
+end note
+}
+stop
 @enduml

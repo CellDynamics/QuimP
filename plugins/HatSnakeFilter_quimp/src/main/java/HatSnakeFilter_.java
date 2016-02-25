@@ -74,7 +74,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
     private ExPolygon pout; // output polygon based on \c out
     private List<Vector2d> out; // output after filtering
     private JTextArea logArea;
-    private int err;
+    private int err; // general counter of log entries
 
     /**
      * Construct HatFilter Input array with data is virtually circularly padded
@@ -84,19 +84,15 @@ public class HatSnakeFilter_ extends QWindowBuilder
         this.window = 23;
         this.crown = 13;
         this.sig = 0.3;
-        LOGGER.debug("Set default parameter: window=" + window + " crown="
-                + crown + " sig=" + sig);
+        LOGGER.debug("Set default parameter: window=" + window + " crown=" + crown + " sig=" + sig);
         // create UI using QWindowBuilder
         uiDefinition = new ParamList(); // will hold ui definitions
         // configure window, names of UI elements are also names of variables
         // exported/imported  by set/getPluginConfig 
         uiDefinition.put("name", "HatFilter"); // name of window
-        uiDefinition.put("window",
-                "spinner, 3, 51, 2," + Integer.toString(window));
-        uiDefinition.put("crown",
-                "spinner, 1, 51, 2," + Integer.toString(crown));
-        uiDefinition.put("sigma",
-                "spinner, 0.01, 0.9,0.01," + Double.toString(sig));
+        uiDefinition.put("window", "spinner, 3, 51, 2," + Integer.toString(window));
+        uiDefinition.put("crown", "spinner, 1, 51, 2," + Integer.toString(crown));
+        uiDefinition.put("sigma", "spinner, 0.01, 0.9,0.01," + Double.toString(sig));
         buildWindow(uiDefinition); // construct ui (not shown yet)
         points = null; // not attached yet
         pout = null; // not calculated yet
@@ -111,14 +107,20 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * 
      * @param data Polygon points
      * @see plugin.snakes.IQuimpPoint2dFilter.attachData(List<E>)
+     * @warning \c data can be \c null here.
      */
     @Override
     public void attachData(List<Vector2d> data) {
         LOGGER.trace("Entering attachData");
         points = data;
+        pout = null; // delete any processed polygon
+        if (points == null) {//TODO may not be necessary if ExPolygon survives nulls
+            LOGGER.warn("No data attached");
+            return;
+        }
         p = new ExPolygon(data); // create polygon from points
         p.fitPolygon(DRAW_SIZE); // adjust its size to draw window
-        pout = null; // delete any processed polygon
+
     }
 
     /**
@@ -133,6 +135,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * ActionEvent)
      * @see uk.ac.warwick.wsbc.tools.images.filters.HatFilter.stateChanged(
      * ChangeEvent)
+     * @remarks User can expect that \c points will be always valid but they optionally may have
+     * 0 length.
      */
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
@@ -421,6 +425,11 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * Used only for previewing. Repaint window as well
      */
     private void recalculatePlugin() {
+        // check if we have correct data
+        if (points == null) {
+            LOGGER.warn("No data attached");
+            return;
+        }
         // transfer data from ui
         window = getIntegerFromUI("window");
         crown = getIntegerFromUI("crown");
@@ -430,7 +439,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
                         window, crown, sig));
         // run plugin for set parameters
         try {
-            out = runPlugin();
+            out = runPlugin(); // may throw exception if no data attached
             pout = new ExPolygon(out); // create new figure from out data
             pout.fitPolygon(DRAW_SIZE, p.initbounds, p.scale); // fit to size
                                                                // from original
@@ -505,7 +514,6 @@ class ExPolygon extends Polygon {
      * @param data List of points
      */
     public ExPolygon(List<Vector2d> data) {
-
         // convert to polygon
         for (Vector2d v : data)
             addPoint((int) Math.round(v.getX()), (int) Math.round(v.getY()));
