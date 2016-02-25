@@ -968,47 +968,28 @@ public class BOA_ implements PlugIn {
             // Process plugin selection
             // if selected item does not find reference to name it returns
             // null
-            IQuimpPlugin inst = null;
-            String selectedPlugin = NONE;
+            // attach data to all selected plugins. Attached data are the same
+            // for every plugin. This is important only for optional visualization
+            // supported by plugin. Data are attached again on every plugin run
+            List<Vector2d> dataToProcess = null; // default
+            Snake snake;
+            SnakeHandler sH;
+            if (nest != null && nest.size() > 0) {
+                sH = nest.getHandler(nest.size() - 1); // get last added snake
+                snake = sH.getLiveSnake();
+                dataToProcess = snake.asList();
+            }
             if (b == (JComboBox<String>) firstPluginName) {
-                LOGGER.debug("Used firstPluginName, val: "
-                        + firstPluginName.getSelectedItem());
-                // get instance using plugin name (obtained from getPluginNames
-                // from PluginFactory
-                selectedPlugin = (String) firstPluginName.getSelectedItem();
-                if (selectedPlugin != NONE) { // do no pass NONE to pluginFact
-                    inst = pluginFactory.getInstance(selectedPlugin);
-                    // remember instance in active plugin list
-                    BOAp.sPluginList.set(0, inst);
-                    // attach data
-                    //                    SnakeHandler sh = nest.getHandler(0);
-                    //                    ((IQuimpPoint2dFilter<Vector2d>) inst)
-                    //                            .attachData(sh.getLiveSnake().asList());
-                }
+                LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
+                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, dataToProcess);
             }
             if (b == (JComboBox<String>) secondPluginName) {
-                LOGGER.debug("Used secondPluginName, val: "
-                        + secondPluginName.getSelectedItem());
-                selectedPlugin = (String) secondPluginName.getSelectedItem();
-                if (selectedPlugin != NONE) {
-                    inst = pluginFactory.getInstance(selectedPlugin);
-                    BOAp.sPluginList.set(1, inst);
-                }
+                LOGGER.debug("Used secondPluginName, val: " + secondPluginName.getSelectedItem());
+                instanceSnakePlugin((String) secondPluginName.getSelectedItem(), 1, dataToProcess);
             }
             if (b == (JComboBox<String>) thirdPluginName) {
-                LOGGER.debug("Used thirdPluginName, val: "
-                        + thirdPluginName.getSelectedItem());
-                selectedPlugin = (String) thirdPluginName.getSelectedItem();
-                if (selectedPlugin != NONE) {
-                    inst = pluginFactory.getInstance(selectedPlugin);
-                    BOAp.sPluginList.set(2, inst);
-                }
-            }
-            // inform user if PluginFactory returned null for name other 
-            // than NONE. this may be problem with plugin
-            if (inst == null && selectedPlugin != NONE) {
-                LOGGER.warn("Plugin " + selectedPlugin + " cannot be loaded");
-                IJ.log("Plugin " + selectedPlugin + " cannot be loaded");
+                LOGGER.debug("Used thirdPluginName, val: " + thirdPluginName.getSelectedItem());
+                instanceSnakePlugin((String) thirdPluginName.getSelectedItem(), 2, dataToProcess);
             }
 
             // run segmentation for selected cases
@@ -1236,6 +1217,41 @@ public class BOA_ implements PlugIn {
                     "F Interval: " + IJ.d2s(BOAp.imageFrameInterval, 3) + " s");
         }
     } // end of CustomStackWindow
+
+    /**
+     * Create instance of plugin of given name on given UI slot
+     * 
+     * Fills BOAp fields if plugin is created and registered. This is helper method
+     * 
+     * @param selectedPlugin Name of plugin returned from UI elements
+     * @param slot Slot of plugin
+     * @param dataToProcess Data to be attached to plugin
+     */
+    @SuppressWarnings("unchecked")
+    private void instanceSnakePlugin(String selectedPlugin, int slot,
+            List<Vector2d> dataToProcess) {
+
+        IQuimpPlugin inst = null;
+        // get instance using plugin name (obtained from getPluginNames
+        // from PluginFactory
+        if (selectedPlugin != NONE) { // do no pass NONE to pluginFact
+            inst = pluginFactory.getInstance(selectedPlugin);
+            // remember instance in active plugin list
+            BOAp.sPluginList.set(slot, inst);
+            ((IQuimpPoint2dFilter<Vector2d>) inst).attachData(dataToProcess);
+        } else {
+            if (BOAp.sPluginList.get(slot) != null)
+                BOAp.sPluginList.get(slot).showUI(false);
+            BOAp.sPluginList.set(slot, null); // deselect plugin
+        }
+
+        // inform user if PluginFactory returned null for name other 
+        // than NONE. this may be problem with plugin
+        if (inst == null && selectedPlugin != NONE) {
+            LOGGER.warn("Plugin " + selectedPlugin + " cannot be loaded");
+            IJ.log("Plugin " + selectedPlugin + " cannot be loaded");
+        }
+    }
 
     /**
      * Start segmentation process on range of frames
@@ -1535,16 +1551,13 @@ public class BOA_ implements PlugIn {
             if (!BOAp.isRefListEmpty(BOAp.sPluginList)) { // not empty, there is
                                                           // at least one plugin
                                                           // selected
-                ArrayList<Vector2d> dataToProcess =
-                        (ArrayList<Vector2d>) snake.asList();
+                List<Vector2d> dataToProcess = snake.asList();
                 for (IQuimpPlugin qP : BOAp.sPluginList) {
                     if (qP != null) {
                         @SuppressWarnings("unchecked")
-                        IQuimpPoint2dFilter<Vector2d> qPcast =
-                                (IQuimpPoint2dFilter<Vector2d>) qP;
+                        IQuimpPoint2dFilter<Vector2d> qPcast = (IQuimpPoint2dFilter<Vector2d>) qP;
                         qPcast.attachData(dataToProcess);
-                        dataToProcess =
-                                (ArrayList<Vector2d>) qPcast.runPlugin();
+                        dataToProcess = qPcast.runPlugin();
                     }
                 }
                 sH.attachLiveSnake(dataToProcess);
@@ -2517,7 +2530,7 @@ class Nest {
     // private Roi[] startROIs;
 
     private ArrayList<SnakeHandler> sHs;
-    private int NSNAKES;
+    private int NSNAKES; ///< Number of stored snakes in nest
     private int ALIVE;
     private int nextID; // handler ID's
 
