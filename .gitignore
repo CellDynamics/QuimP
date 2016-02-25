@@ -68,3 +68,4 @@ target/
 # not the same as java resources dir
 Resources/
 *.m~
+.*.html
