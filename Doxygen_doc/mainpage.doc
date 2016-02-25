@@ -4,13 +4,9 @@
 \date 30 Nov 2015
 \tableofcontents
 \section generalinfo General information
-To render Doxygen documentation correctly, the following tools are necessary:
-1. http://plantuml.com/ the \c plantuml.jar file should be placed in \c Doxygen_doc/ directory
-1. \c Graphviz package should be available on system path
-1. \c MSC tool should be available on system path
 \section MainDesc Description of plugin structure
 The description below is simplified version of classes relationship documentation based JavaDoc/Doxygen documentation that can be found deeper in these files.
+- \subpage About "Readme"
 - \subpage BOA "BOA Plugin"
-- \subpage Build "Build tool"
 - \subpage SnakePlugin "Snake Plugin Interface"
 */
