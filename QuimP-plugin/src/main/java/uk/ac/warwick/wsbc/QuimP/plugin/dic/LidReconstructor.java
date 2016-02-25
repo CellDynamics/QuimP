@@ -82,20 +82,19 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  */
 public class LidReconstructor {
 
-    private static final Logger LOGGER = LogManager
-            .getLogger(LidReconstructor.class.getName());
-    private final int shift = 1; ///< shift added to original image eliminate 0s
+    private static final Logger LOGGER = LogManager.getLogger(LidReconstructor.class.getName());
+    private final int shift = 1; //!< shift added to original image eliminate 0s
 
-    private ImageProcessor srcIp; ///< local reference of ImageProcessor (const)
+    private ImageProcessor srcIp; //!< local reference of ImageProcessor (const)
     private double decay;
     private double angle;
-    private double[] decays; ///< reference to preallocated decay data created
-    private int maxWidth; ///< Width of image after rotation. Set by getRanges()
-    private int[][] ranges; ///< \b true pixels begin and end on \a x axis.
+    private double[] decays; //!< reference to preallocated decay data created
+    private int maxWidth; //!< Width of image after rotation. Set by getRanges()
+    private int[][] ranges; //!< \b true pixels begin and end on \a x axis.
     private ImageProcessor srcImageCopyProcessor; /// < local \b copy of input
-    private boolean isRotated; ///< \c true if srcImageCopyProcessor is rotated
+    private boolean isRotated; //!< \c true if srcImageCopyProcessor is rotated
     private ImageStatistics is;
-    private ImageProcessorPlus ipp; ///< helper class for rotating images
+    private ImageProcessorPlus ipp; //!< helper class for rotating images
 
     /**
      * Default constructor that accepts ImagePlus. It does not support stacks.
@@ -104,9 +103,8 @@ public class LidReconstructor {
      * @throws DicException
      * Throws exception after generateRanges()
      */
-    public LidReconstructor(final ImagePlus srcImage, double decay,
-            double angle)
-                    throws DicException {
+    public LidReconstructor(final ImagePlus srcImage, double decay, double angle)
+            throws DicException {
         this(srcImage.getProcessor(), decay, angle);
     }
 
@@ -117,9 +115,8 @@ public class LidReconstructor {
      * @throws DicException
      * Throws exception after generateRanges()
      */
-    public LidReconstructor(final ImageProcessor ip, double decay,
-            double angle)
-                    throws DicException {
+    public LidReconstructor(final ImageProcessor ip, double decay, double angle)
+            throws DicException {
         this.angle = angle;
         this.decay = decay;
         this.isRotated = false;
@@ -159,10 +156,8 @@ public class LidReconstructor {
         this.srcIp = ip;
         // make copy of original image to not modify it - converting to 16bit
         this.srcImageCopyProcessor = srcIp.convertToShort(false);
-        srcImageCopyProcessor.resetMinAndMax(); // ensure that minmax will be
-                                                // recalculated (usually they
-                                                // are stored in class field)
-                                                // set interpolation
+        srcImageCopyProcessor.resetMinAndMax(); // ensure that minmax will be recalculated (usually
+                                                // they are stored in class field) set interpolation
         srcImageCopyProcessor.setInterpolationMethod(ImageProcessor.BICUBIC);
         // Rotating image - set 0 background
         srcImageCopyProcessor.setBackgroundValue(0.0);
@@ -194,12 +189,10 @@ public class LidReconstructor {
         // check condition for removing 0 value from image
         maxpixel = srcImageCopyProcessor.getMax();
         if (maxpixel > 65535 - shift) {
-            LOGGER.error(
-                    "Possible image clipping - check if image is saturated");
-            throw new DicException(String.format(
-                    "Possible image clipping - input image has at leas one"
-                            + " pixel with value %d",
-                    65535 - shift));
+            LOGGER.error("Possible image clipping - check if image is saturated");
+            throw new DicException(
+                    String.format("Possible image clipping - input image has at leas one"
+                            + " pixel with value %d", 65535 - shift));
         }
         // scale pixels by adding 1 - we remove any 0 value from source image
         srcImageCopyProcessor.add(shift);
@@ -218,12 +211,11 @@ public class LidReconstructor {
         for (r = 0; r < newHeight; r++) {
             // to not process whole line, detect where starts and ends pixels of
             // image (reject background added during rotation)
-            for (firstpixel = 0; firstpixel < newWidth && srcImageCopyProcessor
-                    .get(firstpixel, r) == 0; firstpixel++)
+            for (firstpixel = 0; firstpixel < newWidth
+                    && srcImageCopyProcessor.get(firstpixel, r) == 0; firstpixel++)
                 ;
             for (lastpixel = newWidth - 1; lastpixel >= 0
-                    && srcImageCopyProcessor.get(lastpixel,
-                            r) == 0; lastpixel--)
+                    && srcImageCopyProcessor.get(lastpixel, r) == 0; lastpixel--)
                 ;
             ranges[r][0] = firstpixel;
             ranges[r][1] = lastpixel;
@@ -252,7 +244,7 @@ public class LidReconstructor {
      * @remarks The reconstruction algorithm assumes that input image
      * bas-reliefs are oriented horizontally, thus correct \c angle
      * should be provided
-     * @warning Used optimisation with detecting of image pixels based on their
+     * @warning Used optimization with detecting of image pixels based on their
      * value may not be accurate when input image will be 16-bit and it
      * will contain saturated pixels
      * @retval ImageProcessor
@@ -266,15 +258,13 @@ public class LidReconstructor {
                           // new Processor added by setIp
             srcImageCopyProcessor.add(shift); // we use different IP so shift
                                               // must be added
-            srcImageCopyProcessor = ipp.rotate(srcImageCopyProcessor, angle,
-                    true);
+            srcImageCopyProcessor = ipp.rotate(srcImageCopyProcessor, angle, true);
         }
         // dereferencing for optimization purposes
         int newWidth = srcImageCopyProcessor.getWidth();
         int newHeight = srcImageCopyProcessor.getHeight();
         // create array for storing results - 32bit float as imageprocessor
-        ImageProcessor outputArrayProcessor = new FloatProcessor(newWidth,
-                newHeight);
+        ImageProcessor outputArrayProcessor = new FloatProcessor(newWidth, newHeight);
         float[] outputPixelArray = (float[]) outputArrayProcessor.getPixels();
 
         // do for every row - bas-relief is oriented horizontally
@@ -287,15 +277,15 @@ public class LidReconstructor {
                 // up
                 cumsumup = 0;
                 for (u = c; u >= ranges[r][0]; u--) {
-                    cumsumup += (srcImageCopyProcessor.get(u, r) - shift
-                            - is.mean) * decays[Math.abs(u - c)];
+                    cumsumup += (srcImageCopyProcessor.get(u, r) - shift - is.mean)
+                            * decays[Math.abs(u - c)];
                 }
                 // down
                 cumsumdown = 0; // cumulative sum from point r to the end of
                                 // column
                 for (d = c; d <= ranges[r][1]; d++) {
-                    cumsumdown += (srcImageCopyProcessor.get(d, r) - shift
-                            - is.mean) * decays[Math.abs(d - c)];
+                    cumsumdown += (srcImageCopyProcessor.get(d, r) - shift - is.mean)
+                            * decays[Math.abs(d - c)];
                 }
                 // integral
                 outputPixelArray[linindex] = (float) (cumsumup - cumsumdown);
@@ -307,8 +297,8 @@ public class LidReconstructor {
         outputArrayProcessor.setBackgroundValue(0.0);
         outputArrayProcessor.rotate(-angle);
         // crop it back to original size
-        outputArrayProcessor = ipp.cropImageAfterRotation(outputArrayProcessor,
-                srcIp.getWidth(), srcIp.getHeight());
+        outputArrayProcessor = ipp.cropImageAfterRotation(outputArrayProcessor, srcIp.getWidth(),
+                srcIp.getHeight());
 
         return outputArrayProcessor.convertToByte(true); // return
                                                          // reconstruction

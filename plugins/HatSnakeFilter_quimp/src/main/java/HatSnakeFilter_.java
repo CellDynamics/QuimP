@@ -56,25 +56,22 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * @date 25 Jan 2016
  */
 public class HatSnakeFilter_ extends QWindowBuilder
-        implements IQuimpPoint2dFilter<Vector2d>, IPadArray, ChangeListener,
-        ActionListener {
+        implements IQuimpPoint2dFilter<Vector2d>, IPadArray, ChangeListener, ActionListener {
 
-    private static final Logger LOGGER = LogManager
-            .getLogger(HatSnakeFilter_.class.getName());
-    private final int DRAW_SIZE = 200; // size of draw area in window
+    private static final Logger LOGGER = LogManager.getLogger(HatSnakeFilter_.class.getName());
+    private final int DRAW_SIZE = 200; //!< size of draw area in window
 
-    private int window; // filter's window size
-    private int crown; // filter's crown size (in middle of \a window)
-    private double sig; // acceptance criterion
+    private int window; //!< filter's window size
+    private int crown; //!< filter's crown size (in middle of \a window)
+    private double sig; //!< acceptance criterion
     private List<Vector2d> points;
-    private ParamList uiDefinition; // Definition of UI for this plugin
-    private DrawPanel dp; // Here we will draw. This panel is plot in place of
-                          // help field
-    private ExPolygon p; // representation of snake as polygon
-    private ExPolygon pout; // output polygon based on \c out
-    private List<Vector2d> out; // output after filtering
+    private ParamList uiDefinition; //!< Definition of UI for this plugin
+    private DrawPanel dp; //!< Here we will draw. This panel is plot in place of help field
+    private ExPolygon p; //!< representation of snake as polygon
+    private ExPolygon pout; //!< output polygon based on \c out
+    private List<Vector2d> out; //!< output after filtering
     private JTextArea logArea;
-    private int err; // general counter of log entries
+    private int err; //!< general counter of log entries
 
     /**
      * Construct HatFilter Input array with data is virtually circularly padded
@@ -88,7 +85,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
         // create UI using QWindowBuilder
         uiDefinition = new ParamList(); // will hold ui definitions
         // configure window, names of UI elements are also names of variables
-        // exported/imported  by set/getPluginConfig 
+        // exported/imported by set/getPluginConfig
         uiDefinition.put("name", "HatFilter"); // name of window
         uiDefinition.put("window", "spinner, 3, 51, 2," + Integer.toString(window));
         uiDefinition.put("crown", "spinner, 1, 51, 2," + Integer.toString(crown));
@@ -114,7 +111,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
         LOGGER.trace("Entering attachData");
         points = data;
         pout = null; // delete any processed polygon
-        if (points == null) {//TODO may not be necessary if ExPolygon survives nulls
+        if (points == null) {// TODO may not be necessary if ExPolygon survives nulls
             LOGGER.warn("No data attached");
             return;
         }
@@ -141,8 +138,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
         // internal parameters are not updated here but when user click apply
-        LOGGER.debug(String.format(
-                "Run plugin with params: window %d, crown %d, sigma %f", window,
+        LOGGER.debug(String.format("Run plugin with params: window %d, crown %d, sigma %f", window,
                 crown, sig));
 
         int cp = window / 2; // left and right range of window
@@ -159,22 +155,20 @@ public class HatSnakeFilter_ extends QWindowBuilder
 
         // check input conditions
         if (window % 2 == 0 || crown % 2 == 0)
-            throw new QuimpPluginException("Input arguments must be uneven,"
-                    + " positive and larger than 0");
+            throw new QuimpPluginException(
+                    "Input arguments must be uneven," + " positive and larger than 0");
         if (window >= points.size() || crown >= points.size())
-            throw new QuimpPluginException(
-                    "Processing window or crown to long");
+            throw new QuimpPluginException("Processing window or crown to long");
         if (crown >= window)
-            throw new QuimpPluginException(
-                    "Crown can not be larger or equal to window");
+            throw new QuimpPluginException("Crown can not be larger or equal to window");
         if (window < 3)
             throw new QuimpPluginException("Window should be larger than 2");
 
         Vector2d[] V = new Vector2d[window]; // temporary array for holding
-                                             // content of window 
+                                             // content of window
                                              // [v1 v2 v3 v4 v5 v6 v7]
         Vector2d[] B = new Vector2d[window - crown]; // array for holding brim
-                                                     // only points 
+                                                     // only points
                                                      // [v1 v2 v6 v7]
         for (int c = 0; c < points.size(); c++) { // for every point in data, c
                                                   // is current window position
@@ -186,8 +180,9 @@ public class HatSnakeFilter_ extends QWindowBuilder
             for (int cc = c - cp; cc <= c + cp; cc++) { // collect points in
                                                         // range c-2 c-1 c-0 c+1
                                                         // c+2 (for window=5)
-                indexTmp = IPadArray.getIndex(points.size(), cc,
-                        IPadArray.CIRCULARPAD); // get padded indexes
+                indexTmp = IPadArray.getIndex(points.size(), cc, IPadArray.CIRCULARPAD); // get
+                                                                                         // padded
+                                                                                         // indexes
                 V[countW] = points.get(indexTmp); // store window content
                                                   // (reference)
                 if (cc < c - cr || cc > c + cr)
@@ -204,8 +199,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
                 lenBrim += getLen(B[i], B[i + 1]);
             // decide whether to remove crown
             double ratio = 1 - lenBrim / lenAll;
-            LOGGER.debug("c: " + c + " lenAll=" + lenAll + " lenBrim=" + lenBrim
-                    + " ratio: " + ratio);
+            LOGGER.debug(
+                    "c: " + c + " lenAll=" + lenAll + " lenBrim=" + lenBrim + " ratio: " + ratio);
             if (ratio > sig) // add crown for current window position c to
                              // remove list. Added are real indexes in points
                              // array (not local window indexes)
@@ -270,8 +265,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(HashMap<String, String>)
      */
     @Override
-    public void setPluginConfig(final ParamList par)
-            throws QuimpPluginException {
+    public void setPluginConfig(final ParamList par) throws QuimpPluginException {
         try {
             window = par.getIntValue("window");
             crown = par.getIntValue("crown");
@@ -279,10 +273,9 @@ public class HatSnakeFilter_ extends QWindowBuilder
             setValues(par); // copy incoming parameters to UI
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched
-            // by caller they are only passed to configuration saver and 
+            // by caller they are only passed to configuration saver and
             // restored from it
-            throw new QuimpPluginException(
-                    "Wrong input argument->" + e.getMessage(), e);
+            throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
         }
     }
 
@@ -348,9 +341,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
         JTextArea helpArea = new JTextArea(); // default size of text area
         JScrollPane helpPanel = new JScrollPane(helpArea);
         helpArea.setEditable(false);
-        helpArea.setText(
-                "About plugin\nPlugin window does not update when new cell"
-                        + " is selected. Please click APPLY to update");
+        helpArea.setText("About plugin\nPlugin window does not update when new cell"
+                + " is selected. Please click APPLY to update");
         helpArea.setLineWrap(true); // with wrapping
 
         logArea = new JTextArea(); // default size of text area
@@ -434,9 +426,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
         window = getIntegerFromUI("window");
         crown = getIntegerFromUI("crown");
         sig = getDoubleFromUI("sigma");
-        LOGGER.debug(
-                String.format("Updated from UI: window %d, crown %d, sigma %f",
-                        window, crown, sig));
+        LOGGER.debug(String.format("Updated from UI: window %d, crown %d, sigma %f", window, crown,
+                sig));
         // run plugin for set parameters
         try {
             out = runPlugin(); // may throw exception if no data attached
@@ -502,8 +493,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
  *
  */
 class ExPolygon extends Polygon {
-    private static final Logger logger = LogManager
-            .getLogger(ExPolygon.class.getName());
+    private static final Logger logger = LogManager.getLogger(ExPolygon.class.getName());
     private static final long serialVersionUID = 5870934217878285135L;
     public Rectangle initbounds; // initial size of polygon, before scaling
     public double scale; // current scale
@@ -547,8 +537,8 @@ class ExPolygon extends Polygon {
             ypoints[i] = (int) Math.round(ypoints[i] * scale);
         }
         // center in window
-        logger.debug("Scale is: " + scale + " BoundsCenters: "
-                + bounds.getCenterX() + " " + bounds.getCenterY());
+        logger.debug("Scale is: " + scale + " BoundsCenters: " + bounds.getCenterX() + " "
+                + bounds.getCenterY());
         translate((int) Math.round(bounds.getCenterX()) + (int) (size / 2),
                 (int) Math.round(bounds.getCenterY()) + (int) (size / 2));
     }
@@ -567,11 +557,9 @@ class ExPolygon extends Polygon {
     public void fitPolygon(double size, Rectangle2D init, double scale) {
         // set in 0,0
         this.scale = scale;
-        logger.debug(
-                "fitPolygon: Scale is: " + scale + " BoundsCenters: "
-                        + init.getCenterX() + " " + init.getCenterY());
-        translate((int) Math.round(-init.getCenterX()),
-                (int) Math.round(-init.getCenterY()));
+        logger.debug("fitPolygon: Scale is: " + scale + " BoundsCenters: " + init.getCenterX() + " "
+                + init.getCenterY());
+        translate((int) Math.round(-init.getCenterX()), (int) Math.round(-init.getCenterY()));
 
         for (int i = 0; i < npoints; i++) {
             xpoints[i] = (int) Math.round(xpoints[i] * scale);

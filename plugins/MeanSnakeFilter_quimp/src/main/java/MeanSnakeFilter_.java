@@ -23,15 +23,12 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * @date 20 Jan 2016
  *
  */
-public class MeanSnakeFilter_
-        implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
+public class MeanSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
 
-    private static final Logger LOGGER = LogManager
-            .getLogger(MeanSnakeFilter_.class.getName());
-    private QuimpDataConverter xyData; // input List converted to separate X and
-                                       // Y arrays
-    private int window; // size of processing window
-    private ParamList uiDefinition; // Definition of UI
+    private static final Logger LOGGER = LogManager.getLogger(MeanSnakeFilter_.class.getName());
+    private QuimpDataConverter xyData; //!< input List converted to separate X and Y arrays
+    private int window; //!< size of processing window
+    private ParamList uiDefinition; //!< Definition of UI
     private QWindowBuilderInst uiInstance;
 
     /**
@@ -47,10 +44,9 @@ public class MeanSnakeFilter_
         // create UI using QWindowBuilder
         uiDefinition = new ParamList(); // will hold ui definitions
         // configure window, names of UI elements are also names of variables
-        // exported/imported  by set/getPluginConfig 
+        // exported/imported by set/getPluginConfig
         uiDefinition.put("name", "MeanFilter"); // name of win
-        uiDefinition.put("window",
-                "spinner, 1, 21, 2," + Integer.toString(window));
+        uiDefinition.put("window", "spinner, 1, 21, 2," + Integer.toString(window));
         uiDefinition.put("help", "Window shoud be uneven");
         uiInstance = new QWindowBuilderInst(); // create window object
         uiInstance.buildWindow(uiDefinition); // construct ui (not shown yet)
@@ -68,8 +64,8 @@ public class MeanSnakeFilter_
     @Override
     public void attachData(List<Vector2d> data) {
         LOGGER.trace("Entering attachData");
-        xyData = new QuimpDataConverter(data); // helper for converting from
-                                               // List<Vector2d> to X[], Y[]
+        xyData = new QuimpDataConverter(data); // helper for converting from List<Vector2d> to X[],
+                                               // Y[]
     }
 
     /**
@@ -89,8 +85,7 @@ public class MeanSnakeFilter_
     public List<Vector2d> runPlugin() throws QuimpPluginException {
         // collect actual parameters from UI
         window = uiInstance.getIntegerFromUI("window");
-        LOGGER.debug(
-                String.format("Run plugin with params: window %d", window));
+        LOGGER.debug(String.format("Run plugin with params: window %d", window));
 
         // do filtering
         int cp = window / 2; // left and right range of window
@@ -109,11 +104,9 @@ public class MeanSnakeFilter_
         for (int c = 0; c < xyData.size(); c++) { // for every point in data
             meanx = 0;
             meany = 0;
-            for (int cc = c - cp; cc <= c + cp; cc++) { // collect points in
-                                                        // range c-2 c-1 c-0 c+1
+            for (int cc = c - cp; cc <= c + cp; cc++) { // collect points in range c-2 c-1 c-0 c+1
                                                         // c+2 (for window=5)
-                indexTmp = IPadArray.getIndex(xyData.size(), cc,
-                        IPadArray.CIRCULARPAD);
+                indexTmp = IPadArray.getIndex(xyData.size(), cc, IPadArray.CIRCULARPAD);
                 meanx += xyData.getX()[indexTmp];
                 meany += xyData.getY()[indexTmp];
             }
@@ -153,8 +146,7 @@ public class MeanSnakeFilter_
      * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(final ParamList)
      */
     @Override
-    public void setPluginConfig(final ParamList par)
-            throws QuimpPluginException {
+    public void setPluginConfig(final ParamList par) throws QuimpPluginException {
         try {
             window = par.getIntValue("window");
             uiInstance.setValues(par); // populate loaded values to UI
@@ -162,8 +154,7 @@ public class MeanSnakeFilter_
             // we should never hit this exception as parameters are not touched
             // by caller they are only passed to configuration saver and
             // restored from it
-            throw new QuimpPluginException(
-                    "Wrong input argument->" + e.getMessage(), e);
+            throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
         }
     }
 
@@ -218,11 +209,8 @@ class QWindowBuilderInst extends QWindowBuilder {
     @Override
     public void buildWindow(final ParamList def) {
         super.buildWindow(def); // window must be built first
-        ChangeListener changeListner = new ChangeListener() { // create new
-                                                              // listener that
-                                                              // will be
-                                                              // attached to ui
-                                                              // element
+        ChangeListener changeListner = new ChangeListener() { // create new listener that will be
+                                                              // attached to ui element
             @Override
             public void stateChanged(ChangeEvent ce) {
                 Object source = ce.getSource();

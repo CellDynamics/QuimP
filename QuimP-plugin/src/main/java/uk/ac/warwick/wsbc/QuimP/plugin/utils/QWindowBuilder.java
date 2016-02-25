@@ -89,24 +89,23 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * @date 29 Jan 2016
  */
 public abstract class QWindowBuilder {
-    final protected static Logger LOGGER = LogManager
-            .getLogger(QWindowBuilder.class.getName());
-    protected JFrame pluginWnd; ///< main window object
-    protected boolean windowState; ///< current window state \c true if visible
-    protected JPanel pluginPanel; ///< Main panel extended on whole \c pluginWnd
-    protected ComponentList ui; ///< list of all UI elements
-    private ParamList def; ///< definition of window and parameters
+    final protected static Logger LOGGER = LogManager.getLogger(QWindowBuilder.class.getName());
+    protected JFrame pluginWnd; //!< main window object
+    protected boolean windowState; //!< current window state \c true if visible
+    protected JPanel pluginPanel; //!< Main panel extended on whole \c pluginWnd
+    protected ComponentList ui; //!< list of all UI elements
+    private ParamList def; //!< definition of window and parameters
 
     final private HashSet<String> RESERVED_KEYS = new HashSet<String>(
-            Arrays.asList(new String[] { "help", "name" })); ///< reserved keys
+            Arrays.asList(new String[] { "help", "name" })); //!< reserved keys
 
     // definition string - positions of configuration data in value string (see
     // BuildWindow)
-    final private int UITYPE = 0; ///< type of UI control to create
-    final private int S_MIN = 1; ///< spinner min value
-    final private int S_MAX = 2; ///< spinner max value
-    final private int S_STEP = 3; ///< spinner step value
-    final private int S_DEFAULT = 4; ///< spinner default value
+    final private int UITYPE = 0; //!< type of UI control to create
+    final private int S_MIN = 1; //!< spinner min value
+    final private int S_MAX = 2; //!< spinner max value
+    final private int S_STEP = 3; //!< spinner step value
+    final private int S_DEFAULT = 4; //!< spinner default value
 
     // definition of constant elements of UI
     protected JButton applyB;
@@ -176,8 +175,8 @@ public abstract class QWindowBuilder {
      */
     public void buildWindow(final ParamList def) {
         if (def.size() < 2)
-            throw new IllegalArgumentException("Window must contain title and"
-                    + " at least one control");
+            throw new IllegalArgumentException(
+                    "Window must contain title and" + " at least one control");
         this.def = def; // remember parameters
         ui.clear(); // clear all ui stored on second call of third method
 
@@ -214,25 +213,23 @@ public abstract class QWindowBuilder {
                 continue;
             String[] uiparams = StringParser.getParams(e.getValue());
             if (uiparams.length == 0)
-                throw new IllegalArgumentException(
-                        "Probably wrong syntax in UI definition");
+                throw new IllegalArgumentException("Probably wrong syntax in UI definition");
             switch (uiparams[UITYPE].toLowerCase()) {
                 case "spinner": // by default all spinners are double
                     if (uiparams.length != 5) // 4+uitype
                         throw new IllegalArgumentException(
-                                "Probably wrong syntax in UI definition for "
-                                        + uiparams[UITYPE]);
-                    SpinnerNumberModel model = new SpinnerNumberModel(
-                            Double.parseDouble(uiparams[S_DEFAULT]), // val
-                            Double.parseDouble(uiparams[S_MIN]), // min
-                            Double.parseDouble(uiparams[S_MAX]), // max
-                            Double.parseDouble(uiparams[S_STEP])); // step
+                                "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
+                    SpinnerNumberModel model =
+                            new SpinnerNumberModel(Double.parseDouble(uiparams[S_DEFAULT]), // val
+                                    Double.parseDouble(uiparams[S_MIN]), // min
+                                    Double.parseDouble(uiparams[S_MAX]), // max
+                                    Double.parseDouble(uiparams[S_STEP])); // step
                     ui.put(key, new JSpinner(model));
                     ui.put(key + "label", new Label(key)); // add description
                     break;
                 default:
-                    throw new IllegalArgumentException("Unknown ui type"
-                            + " provided: " + key); // wrong param syntax
+                    // wrong param syntax
+                    throw new IllegalArgumentException("Unknown ui type" + " provided: " + key);
             }
         }
 
@@ -243,8 +240,7 @@ public abstract class QWindowBuilder {
         // add non ui elements
         if (def.containsKey("name")) {
             // border on whole window
-            pluginPanel.setBorder(BorderFactory.createTitledBorder("Plugin "
-                    + def.get("name")));
+            pluginPanel.setBorder(BorderFactory.createTitledBorder("Plugin " + def.get("name")));
         }
         if (def.containsKey("help")) {
             JTextArea helpArea = new JTextArea(10, 10); // default size of text
@@ -335,22 +331,18 @@ public abstract class QWindowBuilder {
             switch (def.getParsed(key)[UITYPE]) { // first string in vals is type of
                 // control, see BuildWindow
                 case "spinner":
-                    JSpinner comp = (JSpinner) ui.get(key); // get UI component
-                                                            // of name key (keys
-                                                            // in vals must math
-                                                            // to keys in
+                    JSpinner comp = (JSpinner) ui.get(key); // get UI component of name key (keys
+                                                            // in vals must match to keys in
                                                             // BuildWindow(def))
                     comp.setValue(Double.parseDouble(val)); // set value from vals
-                    SpinnerNumberModel sm = (SpinnerNumberModel) comp
-                            .getModel();
+                    SpinnerNumberModel sm = (SpinnerNumberModel) comp.getModel();
                     if (sm.getNextValue() == null)
                         sm.setMaximum(Double.parseDouble(val));
                     else if (sm.getPreviousValue() == null)
                         sm.setMinimum(Double.parseDouble(val));
                     break;
                 default:
-                    throw new IllegalArgumentException(
-                            "Unknown UI type in setValues");
+                    throw new IllegalArgumentException("Unknown UI type in setValues");
             }
         }
     }
@@ -371,8 +363,7 @@ public abstract class QWindowBuilder {
     public ParamList getValues() {
         ParamList ret = new ParamList();
         // iterate over all UI elements
-        Iterator<Map.Entry<String, Component>> entryIterator = ui.entrySet()
-                .iterator();
+        Iterator<Map.Entry<String, Component>> entryIterator = ui.entrySet().iterator();
         while (entryIterator.hasNext()) {
             Map.Entry<String, Component> m = entryIterator.next();
             String key = m.getKey();
@@ -384,8 +375,7 @@ public abstract class QWindowBuilder {
                     // the same key
                     break;
                 default:
-                    throw new IllegalArgumentException(
-                            "Unknown UI type in getValues");
+                    throw new IllegalArgumentException("Unknown UI type in getValues");
             }
             entryIterator.next(); // skip label. ui Map has repeating entries
                                   // UI,label,UI1,label1,...

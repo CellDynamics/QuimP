@@ -42,8 +42,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class DataLoader {
-    private static final Logger LOGGER = LogManager
-            .getLogger(DataLoader.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(DataLoader.class.getName());
     private List<Double> data;
     public List<Vector2d> Vert;
 
@@ -59,8 +58,7 @@ public class DataLoader {
      * @throws IllegalArgumentException
      * when the number of lines in \c fileName is not power of 2
      */
-    public DataLoader(String fileName)
-            throws FileNotFoundException, IllegalArgumentException {
+    public DataLoader(String fileName) throws FileNotFoundException, IllegalArgumentException {
         data = new ArrayList<Double>();
         Vert = new ArrayList<Vector2d>();
         Scanner scanner = new Scanner(new File(fileName));

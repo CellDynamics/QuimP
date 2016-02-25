@@ -17,9 +17,9 @@ import javax.vecmath.Vector2d;
  */
 public class QuimpDataConverter {
 
-    private List<Vector2d> points; ///< reference to input coordinates
-    private double[] X; ///< extracted x coords from Vec2d
-    private double[] Y; ///< extracted y coords from Vec2d
+    private List<Vector2d> points; //!< reference to input coordinates
+    private double[] X; //!< extracted x coords from Vec2d
+    private double[] Y; //!< extracted y coords from Vec2d
 
     /**
      * Default constructor

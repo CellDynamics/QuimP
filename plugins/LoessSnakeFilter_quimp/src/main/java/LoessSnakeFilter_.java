@@ -25,13 +25,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  */
 public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
 
-    private static final Logger LOGGER = LogManager
-            .getLogger(LoessSnakeFilter_.class.getName());
-    private QuimpDataConverter xyData; // input List converted to separate X and
-                                       // Y arrays
-    private double smoothing; // smoothing value (f according to references)
-    private ParamList uiDefinition; // Definition of UI for this
-                                    // plugin
+    private static final Logger LOGGER = LogManager.getLogger(LoessSnakeFilter_.class.getName());
+    private QuimpDataConverter xyData; //!< input List converted to separate X and Y arrays
+    private double smoothing; //!< smoothing value (f according to references)
+    private ParamList uiDefinition; //!< Definition of UI for this plugin
     private QWindowBuilderInstLoess uiInstance;
 
     /**
@@ -46,12 +43,10 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
         LOGGER.debug("Set default parameter: smoothing=" + smoothing);
         uiDefinition = new ParamList(); // will hold ui definitions
         uiDefinition.put("name", "LoessFilter"); // name of window
-        uiDefinition.put("smooth",
-                "spinner, 0.05, 0.5, 0.005," + Double.toString(smoothing));
+        uiDefinition.put("smooth", "spinner, 0.05, 0.5, 0.005," + Double.toString(smoothing));
         uiDefinition.put("help", "Higher values stand for more smooth output."
                 + " Resonable range is 0.05 - 0.5. For too small values "
-                + "plugin throws error. Minimal vale depends on "
-                + "polygon shape and can vary.");
+                + "plugin throws error. Minimal vale depends on " + "polygon shape and can vary.");
         uiInstance = new QWindowBuilderInstLoess(); // create window object,
         uiInstance.buildWindow(uiDefinition); // construct ui (not shown yet)
     }
@@ -84,22 +79,16 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
     public List<Vector2d> runPlugin() throws QuimpPluginException {
         // collect actual parameters from UI
         smoothing = uiInstance.getDoubleFromUI("smooth");
-        LOGGER.debug(String.format("Run plugin with params: smoothing %f",
-                smoothing));
+        LOGGER.debug(String.format("Run plugin with params: smoothing %f", smoothing));
 
         double density = 1.0f; // If smaller than 1 output points will be
                                // refined. For 1 numbers of output points and
                                // input points are equal.
         LoessInterpolator sI;
-        double[] i = new double[xyData.size()]; // table of linear indexes that
-                                                // stand for x values for X,Y
-                                                // vectors (treated separately
-                                                // now)
-        List<Vector2d> out = new ArrayList<Vector2d>(); // output interpolated
-                                                        // data
-        PolynomialSplineFunction psfX; // result of
-                                       // LoessInterpolator.interpolate for X
-                                       // and Y data
+        double[] i = new double[xyData.size()]; // table of linear indexes that stand for x values
+                                                // for X,Y vectors (treated separately now)
+        List<Vector2d> out = new ArrayList<Vector2d>(); // output interpolated data
+        PolynomialSplineFunction psfX; // result of LoessInterpolator.interpolate for X and Y data
         PolynomialSplineFunction psfY;
         for (int ii = 0; ii < xyData.size(); ii++)
             i[ii] = ii; // create linear indexes for X and Y
@@ -149,17 +138,14 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
      * @see wsbc.plugin.IQuimpPlugin.setPluginConfig(final ParamList)
      */
     @Override
-    public void setPluginConfig(final ParamList par)
-            throws QuimpPluginException {
+    public void setPluginConfig(final ParamList par) throws QuimpPluginException {
         try {
             smoothing = par.getDoubleValue("smooth");
             uiInstance.setValues(par);
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched
-            // by caller
-            // they are only passed to configuration saver and restored from it
-            throw new QuimpPluginException(
-                    "Wrong input argument->" + e.getMessage(), e);
+            // by caller they are only passed to configuration saver and restored from it
+            throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
         }
     }
 

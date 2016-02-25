@@ -51,8 +51,8 @@ project should be build in two stages. The simplest approach is as follows:
 the following tools are necessary:
 
 1. [plantuml.jar](http://plantuml.com/) file should be placed in `Doxygen_doc/` folder
-1. [Graphviz](www.graphviz.org/) package should be available on system path
-1. [mscgen](http://www.mcternan.me.uk/mscgen/) tool should be available on system path
+2. [Graphviz](www.graphviz.org/) package should be available on system path
+3. [mscgen](http://www.mcternan.me.uk/mscgen/) tool should be available on system path
 
 To render documentation use `generatedoc.sh` script (currently tailored to developer system) 
 or simply type:

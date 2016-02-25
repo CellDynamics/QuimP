@@ -18,9 +18,9 @@ public interface IQuimpPlugin {
 
     // any change here should be reflected in
     // uk.ac.warwick.wsbc.QuimP.PluginFactory.getPluginType(File, String)
-    int GENERAL = 0; ///< Type of plugin not defined
-    int DOES_SNAKES = 1; ///< Plugin process snakes only
-    int CHANGE_SIZE = 32; ///< Plugin change size of input data
+    int GENERAL = 0; //!< Type of plugin not defined
+    int DOES_SNAKES = 1; //!< Plugin process snakes only
+    int CHANGE_SIZE = 32; //!< Plugin change size of input data
 
     /**
      * Provide basic information to QuimP about plugin
@@ -49,8 +49,7 @@ public interface IQuimpPlugin {
      * key is not understood or converting from \c String \b value to
      * other type has not been successful.
      */
-    void setPluginConfig(final ParamList par)
-            throws QuimpPluginException;
+    void setPluginConfig(final ParamList par) throws QuimpPluginException;
 
     /**
      * Retrieve plugin configuration data as pairs <key,value>

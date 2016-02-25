@@ -9,8 +9,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
  *
  */
 public interface IPadArray {
-    int CIRCULARPAD = 1; ///< defines circular padding
-    int SYMMETRICPAD = 2; ///< defines symmetric padding
+    int CIRCULARPAD = 1; //!< defines circular padding
+    int SYMMETRICPAD = 2; //!< defines symmetric padding
 
     /**
      * Helper method to pick values from X, Y arrays.
@@ -35,7 +35,7 @@ public interface IPadArray {
                 if (index < 0)
                     return (dataLength + index); // for -1 points last element
                 if (index >= dataLength)
-                    return (index - dataLength); // for after last points 
+                    return (index - dataLength); // for after last points
                                                  // to first
                 break;
             case SYMMETRICPAD:
@@ -45,8 +45,7 @@ public interface IPadArray {
                     return (dataLength - (index - dataLength) - 1);
                 break;
             default:
-                throw new IllegalArgumentException(
-                        "Padding mode not supported");
+                throw new IllegalArgumentException("Padding mode not supported");
         }
 
         return index; // for all remaining cases
