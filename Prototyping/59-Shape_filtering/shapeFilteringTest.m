@@ -144,10 +144,13 @@ set(handles.image,'ytick',[]);
 
 % plot outline
 axes(handles.outlineImage)
-plot(coords(:,1),coords(:,2),'-b')
+plot(coords(:,1),coords(:,2),'-bo','markersize',3,'markerfacecolor','g')
 hold on
 plot(xcoordf,ycoordf,'-r');
 hold off
+text(coords(1,1),coords(1,2),'1','fontsize',9)
+text(coords(4,1),coords(4,2),'4','fontsize',9)
+text(coords(end,1),coords(end,2),[num2str(length(coords))],'fontsize',9,'HorizontalAlignment','center')
 grid on
 axis square
 legend('org','processed');

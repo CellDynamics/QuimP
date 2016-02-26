@@ -22,9 +22,9 @@ for i=start:length(coord)+start-1
     nocrownpoints(dp+1-floor(crown/2):dp+1+floor(crown/2),:) = [];
     nocrownvectors = diff(nocrownpoints);
     lennocrownvectors = sum(sqrt(sum(nocrownvectors.^2,2)));
-    ratio(i-start+1) = 1-lennocrownvectors/lenallvectors;    
+    ratio(i-start+1) = (1-(lennocrownvectors/lenallvectors))/(window*crown);    
 end
-ratio
+assignin('base','ratio',ratio');
 indtoremovetest = [];
 for i=1:length(ratio)
     if(ratio(i))>sig
