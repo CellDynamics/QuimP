@@ -24,11 +24,11 @@ The project is maintained by Maven build system and consists of several sub-proj
 
 ![ProjectStructure](Doxygen_doc/maven-structure.png)
 
-The light gray components are pure *pom* artifacts that collect related sub-projects. the blue 
+The light gray components are pure *pom* artifacts that collect related sub-projects. The blue 
 projects are for testing only, orange is the main product and three yellow projects are plugins for 
 QuimP.
 
-Because of loop dependencies (plugins depend on QuimP but QuimP require blue plugins for tests) the 
+Because of loop dependencies (plugins depend on QuimP but QuimP requires blue plugins for tests) the 
 project should be build in two stages. The simplest approach is as follows:
 
  ```bash

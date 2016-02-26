@@ -34,7 +34,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
      * @param m
      */
     public LinkedStringMap(Map<? extends String, ? extends V> m) {
-        super(m);
+        throw new UnsupportedOperationException("not supported");
     }
 
     /**
@@ -50,8 +50,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
      * @param loadFactor
      * @param accessOrder
      */
-    public LinkedStringMap(int initialCapacity, float loadFactor,
-            boolean accessOrder) {
+    public LinkedStringMap(int initialCapacity, float loadFactor, boolean accessOrder) {
         super(initialCapacity, loadFactor, accessOrder);
     }
 
@@ -90,8 +89,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
      */
     @Override
     public void putAll(Map<? extends String, ? extends V> m) {
-        for (Map.Entry<? extends String, ? extends V> e : m
-                .entrySet()) {
+        for (Map.Entry<? extends String, ? extends V> e : m.entrySet()) {
             put(e.getKey(), e.getValue());
         }
     }
@@ -151,8 +149,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
      * @see java.util.HashMap#replaceAll(java.util.function.BiFunction)
      */
     @Override
-    public void replaceAll(
-            BiFunction<? super String, ? super V, ? extends V> function) {
+    public void replaceAll(BiFunction<? super String, ? super V, ? extends V> function) {
         throw new UnsupportedOperationException("not supported");
     }
 

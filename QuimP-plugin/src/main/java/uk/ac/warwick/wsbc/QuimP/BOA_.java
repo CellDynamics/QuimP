@@ -1160,8 +1160,8 @@ public class BOA_ implements PlugIn {
      * @param dataToProcess Data to be attached to plugin
      */
     @SuppressWarnings("unchecked")
-    private void instanceSnakePlugin(String selectedPlugin, int slot,
-            List<Vector2d> dataToProcess) {
+    private void instanceSnakePlugin(final String selectedPlugin, int slot,
+            final List<Vector2d> dataToProcess) {
 
         IQuimpPlugin inst = null;
         // get instance using plugin name (obtained from getPluginNames from PluginFactory
@@ -1266,8 +1266,7 @@ public class BOA_ implements PlugIn {
                             // correct plugins and actionPerformed(ActionEvent e) creates correct
                             // BOAp.sPluginList
                             if (!BOAp.isRefListEmpty(BOAp.sPluginList)) {
-                                ArrayList<Vector2d> dataToProcess =
-                                        (ArrayList<Vector2d>) snake.asList();
+                                List<Vector2d> dataToProcess = snake.asList();
                                 for (IQuimpPlugin qP : BOAp.sPluginList) {
                                     if (qP == null)
                                         continue; // no plugin on this slot
@@ -1275,7 +1274,7 @@ public class BOA_ implements PlugIn {
                                     IQuimpPoint2dFilter<Vector2d> qPcast =
                                             (IQuimpPoint2dFilter<Vector2d>) qP;
                                     qPcast.attachData(dataToProcess);
-                                    dataToProcess = (ArrayList<Vector2d>) qPcast.runPlugin();
+                                    dataToProcess = qPcast.runPlugin();
                                 }
                                 sH.attachLiveSnake(dataToProcess);
                             }
@@ -4495,8 +4494,7 @@ class Node {
  */
 class BOAp {
 
-    static final private int NUM_SPLINE_PLUGINS = 3; /// < number of Spline
-                                                     /// plugins
+    static final private int NUM_SPLINE_PLUGINS = 3; //!< number of Spline plugins
 
     static File orgFile, outFile; //!< paramFile;
     static String fileName; //!< file name only, no extension

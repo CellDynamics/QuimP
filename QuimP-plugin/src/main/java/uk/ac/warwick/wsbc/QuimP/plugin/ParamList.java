@@ -4,8 +4,6 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
-import java.util.Map;
-
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.LinkedStringMap;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
 
@@ -20,35 +18,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
 public class ParamList extends LinkedStringMap<String> {
 
     private static final long serialVersionUID = -8762132735734951785L;
-
-    public ParamList() {
-    }
-
-    /**
-     * @param initialCapacity
-     * @see https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html#put(K,%20V)
-     */
-    public ParamList(int initialCapacity) {
-        super(initialCapacity);
-    }
-
-    /**
-     * @param m
-     * @see https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html#put(K,%20V)
-     */
-    public ParamList(Map<? extends String, ? extends String> m) {
-        super(m);
-    }
-
-    /**
-     * @param initialCapacity
-     * @param loadFactor
-     * @see https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html#put
-     * (K,%20V)
-     */
-    public ParamList(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
-    }
 
     /**
      * Store Integer value in List. Key is not case sensitive

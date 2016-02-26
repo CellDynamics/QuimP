@@ -4,9 +4,8 @@
 \date 30 Nov 2015
 \tableofcontents
 \section generalinfo General information
-\section MainDesc Description of plugin structure
-The description below is simplified version of classes relationship documentation based JavaDoc/Doxygen documentation that can be found deeper in these files.
-- \subpage About "Readme"
-- \subpage BOA "BOA Plugin"
-- \subpage SnakePlugin "Snake Plugin Interface"
+\section MainDesc Description of QuimP structure
+- \subpage About "Readme" - Readme file
+- \subpage BOA "BOA Plugin" - How QuimP works - free notes about.
+- \subpage SnakePlugin "Snake Plugin Interface" - Description of plugin interface
 */

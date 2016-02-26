@@ -128,10 +128,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * 
      * @return Processed \a input list, size of output list may be different
      * than input. Empty output is also allowed.
-     * @see uk.ac.warwick.wsbc.tools.images.filters.HatFilter.actionPerformed(
-     * ActionEvent)
-     * @see uk.ac.warwick.wsbc.tools.images.filters.HatFilter.stateChanged(
-     * ChangeEvent)
+     * @see HatSnakeFilter_.actionPerformed(ActionEvent)
+     * @see HatSnakeFilter_.stateChanged(ChangeEvent)
      * @remarks User can expect that \c points will be always valid but they optionally may have
      * 0 length.
      */
@@ -149,14 +147,12 @@ public class HatSnakeFilter_ extends QWindowBuilder
         double lenAll; // length of curve in window
         double lenBrim; // length of curve in window without crown
         Set<Integer> indToRemove = new HashSet<Integer>();
-        List<Vector2d> out = new ArrayList<Vector2d>(); // output table for
-                                                        // plotting temporary
+        List<Vector2d> out = new ArrayList<Vector2d>(); // output table for plotting temporary
                                                         // results of filter
-
         // check input conditions
         if (window % 2 == 0 || crown % 2 == 0)
             throw new QuimpPluginException(
-                    "Input arguments must be uneven," + " positive and larger than 0");
+                    "Input arguments must be uneven, positive and larger than 0");
         if (window >= points.size() || crown >= points.size())
             throw new QuimpPluginException("Processing window or crown to long");
         if (crown >= window)
@@ -164,30 +160,24 @@ public class HatSnakeFilter_ extends QWindowBuilder
         if (window < 3)
             throw new QuimpPluginException("Window should be larger than 2");
 
-        Vector2d[] V = new Vector2d[window]; // temporary array for holding
-                                             // content of window
+        Vector2d[] V = new Vector2d[window]; // temporary array for holding content of window
                                              // [v1 v2 v3 v4 v5 v6 v7]
-        Vector2d[] B = new Vector2d[window - crown]; // array for holding brim
-                                                     // only points
-                                                     // [v1 v2 v6 v7]
-        for (int c = 0; c < points.size(); c++) { // for every point in data, c
-                                                  // is current window position
-                                                  // - middle point
+        Vector2d[] B = new Vector2d[window - crown]; // array for holding brim only points [v1 v2 v6
+                                                     // v7]
+        for (int c = 0; c < points.size(); c++) { // for every point in data, c is current window
+                                                  // position - middle point
             countW = 0;
             countC = 0;
             lenAll = 0;
             lenBrim = 0;
-            for (int cc = c - cp; cc <= c + cp; cc++) { // collect points in
-                                                        // range c-2 c-1 c-0 c+1
+            for (int cc = c - cp; cc <= c + cp; cc++) { // collect points in range c-2 c-1 c-0 c+1
                                                         // c+2 (for window=5)
                 indexTmp = IPadArray.getIndex(points.size(), cc, IPadArray.CIRCULARPAD); // get
                                                                                          // padded
                                                                                          // indexes
-                V[countW] = points.get(indexTmp); // store window content
-                                                  // (reference)
+                V[countW] = points.get(indexTmp); // store window content (reference)
                 if (cc < c - cr || cc > c + cr)
-                    B[countC++] = points.get(indexTmp); // store only brim
-                                                        // (reference)
+                    B[countC++] = points.get(indexTmp); // store only brim (reference)
                 countW++;
             }
 
@@ -201,9 +191,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
             double ratio = 1 - lenBrim / lenAll;
             LOGGER.debug(
                     "c: " + c + " lenAll=" + lenAll + " lenBrim=" + lenBrim + " ratio: " + ratio);
-            if (ratio > sig) // add crown for current window position c to
-                             // remove list. Added are real indexes in points
-                             // array (not local window indexes)
+            if (ratio > sig) // add crown for current window position c to remove list. Added are
+                             // real indexes in points array (not local window indexes)
                 for (int i = c - cr; i <= c + cr; i++)
                     indToRemove.add(i); // add only if not present in set
         }
@@ -272,9 +261,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
             sig = par.getDoubleValue("sigma");
             setValues(par); // copy incoming parameters to UI
         } catch (Exception e) {
-            // we should never hit this exception as parameters are not touched
-            // by caller they are only passed to configuration saver and
-            // restored from it
+            // we should never hit this exception as parameters are not touched by caller they are
+            // only passed to configuration saver and restored from it
             throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
         }
     }
@@ -318,13 +306,9 @@ public class HatSnakeFilter_ extends QWindowBuilder
         super.buildWindow(def); // window must be built first
 
         // attach listeners to ui to update window on new parameters
-        ((JSpinner) ui.get("Window")).addChangeListener(this); // attach
-                                                               // listener to
-                                                               // selected ui
-        ((JSpinner) ui.get("crown")).addChangeListener(this); // attach listener
-                                                              // to selected ui
-        ((JSpinner) ui.get("Sigma")).addChangeListener(this); // attach listener
-                                                              // to selected ui
+        ((JSpinner) ui.get("Window")).addChangeListener(this); // attach listener to selected ui
+        ((JSpinner) ui.get("crown")).addChangeListener(this); // attach listener to selected ui
+        ((JSpinner) ui.get("Sigma")).addChangeListener(this); // attach listener to selected ui
         applyB.addActionListener(this); // attach listener to aplly button
         // in place of CENTER pane in BorderLayout layout from super.BuildWindow
         // we create few extra controls
@@ -355,8 +339,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
         jp1.add(logPanel);
         jp.add(jp1);
 
-        pluginPanel.add(jp, BorderLayout.CENTER); // add in center position (in
-                                                  // place of help zone)
+        pluginPanel.add(jp, BorderLayout.CENTER); // add in center position (in place of help zone)
         pluginWnd.pack();
     }
 
@@ -385,9 +368,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
      */
     @Override
     public void stateChanged(ChangeEvent ce) {
-        if (isWindowVisible() == true) // prevent applying default values before
-                                       // setPluginConfig is used because method
-                                       // is called on window creation
+        if (isWindowVisible() == true) // prevent applying default values before setPluginConfig is
+                                       // used because method is called on window creation
             recalculatePlugin();
     }
 
@@ -432,12 +414,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
         try {
             out = runPlugin(); // may throw exception if no data attached
             pout = new ExPolygon(out); // create new figure from out data
-            pout.fitPolygon(DRAW_SIZE, p.initbounds, p.scale); // fit to size
-                                                               // from original
-                                                               // polygon,
-                                                               // modified one
-                                                               // will be
-                                                               // centered to
+            pout.fitPolygon(DRAW_SIZE, p.initbounds, p.scale); // fit to size from original polygon,
+                                                               // modified one will be centered to
                                                                // original one
             dp.repaint(); // repaint window
         } catch (QuimpPluginException e1) { // ignore exception in general

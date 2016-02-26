@@ -5,6 +5,9 @@
 \date 19 Feb 2016
 \tableofcontents
 
+# Description of use {#dou}
+
+The snake plugin use case support user plugins for processing snakes after segmentation.
 According to general QuimP workflow
 @dot
 digraph QuimP_w {
@@ -19,9 +22,18 @@ digraph QuimP_w {
 @enddot
 
 snake plugins exist in the end of chain. They can process cell outlines before
-they are stored in QuimP.  
+they are stored in QuimP.
 
-# Workflow diagrams {#workflowdiagrams}
+Plugins are separate jar files that must be available on path passed to uk.ac.warwick.wsbc.QuimP.PluginFactory(final Path)
+which is the main engine for loading jars and creating their instances. Snake plugins must be
+derived from uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter interface and they must
+keep correct naming conventions. The default type `E` usually is `Vector2d`. QuimP provides
+uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter class for converting this type to separate 
+`x` and `y` arrays of coordinates.
+
+See uk.ac.warwick.wsbc.QuimP.PluginFactory class documentation for details.
+
+## Use case diagram {#ucd}
 
 The use case of snake plugin is as follows:
 
@@ -32,12 +44,15 @@ left to right direction
 rectangle "Plugin Service" {
     :QuimP: as quimp
     quimp--(Create Engine)
-    (Create Engine) .> (Scan dir) : include
     user--(Run plugin)
     user--(Select plugin)
     user--(Show GUI)
     quimp--(Get plugin\nconfig)
     quimp--(Set plugin\nconfig)
+    (Get plugin\nconfig)-|>(Write\nconfig):<<extend>>
+    (Set plugin\nconfig)-|>(Load\nconfig):<<extend>>
+    (Write\nconfig)-|>(Handle\nconfiguration):<<extend>>
+    (Load\nconfig)-|>(Handle\nconfiguration):<<extend>>
 }
 note bottom of user : Related to GUI actions
 note top of quimp : Plugin engine
@@ -46,6 +61,8 @@ note "On load/write QuimP configuration" as N2
 (Get plugin\nconfig) .. N2
 N2 .. (Set plugin\nconfig)
 @enduml
+
+## General workflow for all cases {#gw}
 
 QuimP itself creates instances of plugins as well as stores the list of active
 plugins (currently 3, controlled by
@@ -144,8 +161,59 @@ QuimP <-- PluginFactory : <<Exit>>
 destroy PluginFactory
 @enduml
 
-Activity diagram for use case **Select Plugin**. User selected one plugin on certain slot.
-Plugins have been registered already by **Create Engine** use case.
+## Description of Use Cases {#douc}
+
+### Run Plugin {#rp}
+
+Related classes and methods:
+
+1. uk.ac.warwick.wsbc.QuimP.BOA_.addCell(final Roi, int)
+2. uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int)
+3. uk.ac.warwick.wsbc.QuimP.BOAp.sPluginList
+4. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.attachData(final List<E>)
+5. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.runPlugin()
+
+Activity diagram for use case **Run Plugin**. 
+
+Conditions:
+
+* User selected one plugin on certain slot.
+* Plugins have been registered already by **Create Engine** use case. 
+* User started segmentation or added a cell.
+
+@startuml
+start
+if (is any plugin selected) then (true)
+note left: There is any instance in BOAp.sPluginList\ncreated on **Select Plugin**
+:get ""liveSnake"";
+:set **c**=""liveSnake"";
+while (for every BOAp.sPluginList)
+if (is **not** null) then (true)
+:attach data;
+:runPlugin(**c**);
+:assign result to **c**;
+endif
+endwhile
+endif
+:attach **c** to liveSnake;
+stop
+@enduml
+
+### Select Plugin {#sp}
+
+Related classes and methods:
+
+1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(final ActionEvent)
+2. uk.ac.warwick.wsbc.QuimP.BOA_.instanceSnakePlugin(final String, int, final List<Vector2d>)
+  1. uk.ac.warwick.wsbc.QuimP.PluginFactory.getInstance(final String)
+  2. uk.ac.warwick.wsbc.QuimP.BOAp.sPluginList
+  
+Activity diagram for use case **Select Plugin**.
+  
+Conditions:
+
+* User selected one plugin on certain slot.
+* Plugins have been registered already by **Create Engine** use case.
 
 @startuml
 start
@@ -182,3 +250,77 @@ end note
 }
 stop
 @enduml
+
+### Show GUI {#sg}
+
+Related classes and methods:
+
+1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(final ActionEvent)
+2. uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin.showUI(boolean)
+3. uk.ac.warwick.wsbc.QuimP.BOA_.instanceSnakePlugin(final String, int, final List<Vector2d>)
+  1. uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin.showUI(boolean)
+
+Activity diagram for use case **Show GUI**.
+  
+Conditions:
+
+* User selected one plugin on certain slot.
+* Plugins have been registered already by **Create Engine** use case.
+* User clicked GUI button
+
+@startuml
+start
+:get instance;
+note left: for selected slot from ""BOAp.sPluginList""
+if (is **not** ""null"") then (true)
+:showUI(true);
+note left: call interface method\nfrom plugin
+endif
+stop
+@enduml 
+
+### Create Engine {#ce}
+
+Related classes and methods:
+
+1. uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
+2. uk.ac.warwick.wsbc.QuimP.PluginFactory.PluginFactory(final Path)
+3. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.buildSetupPanel()
+    1. uk.ac.warwick.wsbc.QuimP.PluginFactory.getPluginNames(int)
+
+Conditions:
+
+* QuimP is starting
+* Plugin dir is passed to QuimP
+
+@startuml
+start
+partition BOA_:run() {
+:create PluginFactory;
+note left 
+See ""PluginFactory"" for details
+end note
+}
+partition buildSetupPanel {
+:get plugin names;
+note left: names of all plugins\nof given type
+:add **NONE** to this list;
+note left: **NONE** has special meaning as name\nit stands for empty slot
+:create ComboBox filled with names;
+}
+stop
+legend
+""PluginFactory"" is most important
+player here. All acctions related
+to plugins have place there.
+end legend
+@enduml
+
+### set/get Plugin Config {#sgpc}
+
+This use cases are important for storing and restoring plugin configuration inside QuimP configuration files. 
+
+__This feature is not developed yet.__
+
+@todo Add description here
+
