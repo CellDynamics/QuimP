@@ -41,7 +41,9 @@ public class HatFilter_Test {
      * 
      * Three middle nodes are moved to y=1:
      * 
-     * @code --- ----------------- -------------------- 0 39
+     * @code 
+     *                   ---    
+     * ------------------   ---------------------- 0 39
      * @endcode
      * 
      * @throws Exception
