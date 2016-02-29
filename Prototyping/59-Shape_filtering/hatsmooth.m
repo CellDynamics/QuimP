@@ -112,8 +112,8 @@ else
     coordrem = coord;
 end
 
-out(:,1) = smooth(coordrem(:,1),sm);
-out(:,2) = smooth(coordrem(:,2),sm);
+out(:,1) = medfilt1(coordrem(:,1),sm); % or smooth here
+out(:,2) = medfilt1(coordrem(:,2),sm);
 % [xDatax, yDatax] = prepareCurveData( [], coordrem(:,1) );
 % [xDatay, yDatay] = prepareCurveData( [], coordrem(:,2) );
 % ft = fittype( 'smoothingspline' );

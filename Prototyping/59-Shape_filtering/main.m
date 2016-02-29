@@ -458,6 +458,7 @@ plot(coordppf(:,1),coordppf(:,2),'-k');
 % for every candidates there is additional factor evaluated Pc (different
 % methods are proposed. This factor weights circularity.
 % All constrictions are:
+% 0. Biggest circularity coefficient must be greater than acceptance level
 % 1. windows can not overleap
 % 2. All window pixels must be convex comparing to polygon without these
 % pixels
@@ -577,6 +578,9 @@ else
     coordrem = coord;
 end
 
+% final processing results can be filtered by running mean or running
+% median what helps in dealing with particular points on end or beginig of
+% removed window.
 figure
 plot(coord(:,1),coord(:,2),'-bs','markersize',5);
 hold on
