@@ -456,7 +456,7 @@ plot(coordppf(:,1),coordppf(:,2),'-k');
 % of edges of sections to remove is performed.
 
 
-c = 3;
+c = 1;
 w = 15;
 
 wp = floor(w/2);
@@ -474,6 +474,7 @@ circ = (4*pi*A)/(P.^2);
 
 l = 1;
 cc = [];
+Pc = [];
 for i=wp+1:length(coord)
     indtorem = ind(i-wp:i+wp);
     coordrem = coord;
@@ -482,13 +483,26 @@ for i=wp+1:length(coord)
     coordrem = [coordrem;coordrem(1,:)];
     d = diff(coordrem);
     P = sum(sqrt(sum(d.^2,2)));
+    
+    coordrem = coord(indtorem,:);
+%     d = coordrem(1,:) - coordrem(end,:);
+%     Pc = [Pc sum(sqrt(sum(d.^2,2)))];
+    
+    center = coordrem(wp+1,:);
+%     center = (coordrem(1,:) - coordrem(end,:))/2;
+    d = coordrem - repmat(center,length(coordrem),1);
+    Pc = [Pc std(sum(d.^2,2))];
+    
+    
+    
     cc = [cc (4*pi*A)/(P.^2)];
 end
+cc = cc./(Pc);
 cc = cc/circ;
 
 ccsort = sort(cc,'descend');
 
-ile = 2;
+ile = 3;
 coordrem = coord;
 clear indtorem;
 i = 1;
@@ -516,6 +530,7 @@ while(found<ile)
                 indtorem(found,:) = ind(m-wp:m+wp);
             else
                 i = i + 1; % check next
+                continue;
             end
         end
     else
@@ -523,6 +538,18 @@ while(found<ile)
         i = i + 1; % for one accept it and go to next candidate
         found = found + 1;
         indtorem(found,:) = ind(m-wp:m+wp);
+    end
+    % verify if found protrusion is inside or ouside polygon
+    % temporary remove just found indexes
+    it = indtorem(found,:);
+    tmppol = coord;
+    tmppol(it,:) = [];
+    tp = coord(it,:); % middle point of window
+    if(any( inpolygon(tp(:,1),tp(:,2),tmppol(:,1),tmppol(:,2)) ))
+        disp('ins');
+        % delete found
+        indtorem(found,:) = [];
+        found = found - 1;
     end
     
 end
