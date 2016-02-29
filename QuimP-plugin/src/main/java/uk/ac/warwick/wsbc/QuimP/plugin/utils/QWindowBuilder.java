@@ -85,13 +85,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * \c RESERVED_KEYS is list of reserved keys that are not UI elements. They are
  * processed in different way.
  * 
- * @warning UI type as JSpinner keeps data in double format even in values passed through by
- * setValues(ParamList) are integer (ParamList keeps data as String). Therefore getValues can 
- * return this list with the same data but in double syntax (5 -> 5.0). Any try of convention of
- *  "5.0" to integer value will cause NumberFormatException. To avoid this problem use 
- *  QuimP.plugin.ParamList.getIntValue(String) from ParamList of treat all strings in ParamList as
- *  Double.
- * 
  * @author p.baniukiewicz
  * @date 29 Jan 2016
  */
@@ -366,9 +359,6 @@ public abstract class QWindowBuilder {
      * associated to them.
      * @see getDoubleFromUI(final String)
      * @see getIntegerFromUI(final String)
-     * @warning JSpinners are set to support \b double values and that values are returned here
-     * It means that originally pushed to UI integers are changed to Double what can affect 
-     * set/getpluginConfig from filter interface as well
      */
     public ParamList getValues() {
         ParamList ret = new ParamList();
@@ -387,7 +377,8 @@ public abstract class QWindowBuilder {
                 default:
                     throw new IllegalArgumentException("Unknown UI type in getValues");
             }
-            entryIterator.next(); // skip label. ui Map has repeating entries UI,label,UI1,label1,..
+            entryIterator.next(); // skip label. ui Map has repeating entries
+                                  // UI,label,UI1,label1,...
         }
         return ret;
     }
