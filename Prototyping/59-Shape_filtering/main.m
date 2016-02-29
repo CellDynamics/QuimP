@@ -454,6 +454,15 @@ plot(coordppf(:,1),coordppf(:,2),'-k');
 % removed. This is done in loop where user can set number
 % of windows to remove. Windows can not overleap so checking
 % of edges of sections to remove is performed.
+% Additionally to elimitae cases where points laying on line are removed,
+% for every candidates there is additional factor evaluated Pc (different
+% methods are proposed. This factor weights circularity.
+% All constrictions are:
+% 1. windows can not overleap
+% 2. All window pixels must be convex comparing to polygon without these
+% pixels
+% Error is thrown if there is no avaiable candidates according to these
+% rules.
 
 
 c = 3;
@@ -470,6 +479,7 @@ Xt = [X; X(1)];
 Yt = [Y; Y(1)];
 dx = diff(Xt); dy = diff(Yt);
 P = sum(sqrt(dx.^2+dy.^2));
+A = polyarea(X,Y);
 circ = (4*pi*A)/(P.^2);
 
 l = 1;
@@ -506,59 +516,81 @@ cc = cc/circ;
 ccsort = sort(cc,'descend');
 
 ile = 3;
-coordrem = coord;
-clear indtorem;
-i = 1;
-found = 0;
-while(found<ile)
-    m = find(cc==ccsort(i));    
-    m = m + wp+1;
-    if found>0
-        sub = indtorem;   % all previous cases (indexes)
-        mmsub = minmax(sub(:)');    % range of previous results
-        mmcurr = minmax(ind(m-wp:m+wp)'); % current indexes (candidates)
-        % check if current indexes are common with any of previous cases
-        if mmcurr(2) < mmsub(1) % maximum current < min prev
-            % found candidate
-            found = found + 1;
-            disp([find(cc==ccsort(i)) ccsort(i)])
-            i = i + 1;
-            indtorem(found,:) = ind(m-wp:m+wp);
-        else
-            if mmcurr(1) > mmsub(2) % min current > max prev
+level = 0; 
+if ccsort(1)>level
+    coordrem = coord;
+    clear indtorem;
+    i = 1;
+    found = 0;
+    while(found<ile)
+        if(i>length(ccsort))
+            warning('Can find next candidate. Use smaller window');
+            break;
+        end
+        m = find(cc==ccsort(i));    
+        m = m + wp+1;
+        if found>0
+            sub = indtorem;   % all previous cases (indexes)
+            mmsub = minmax(sub(:)');    % range of previous results
+            mmcurr = minmax(ind(m-wp:m+wp)'); % current indexes (candidates)
+            % check if current indexes are common with any of previous cases
+            if mmcurr(2) < mmsub(1) % maximum current < min prev
                 % found candidate
                 found = found + 1;
                 disp([find(cc==ccsort(i)) ccsort(i)])
                 i = i + 1;
                 indtorem(found,:) = ind(m-wp:m+wp);
             else
-                i = i + 1; % check next
-                continue;
+                if mmcurr(1) > mmsub(2) % min current > max prev
+                    % found candidate
+                    found = found + 1;
+                    disp([find(cc==ccsort(i)) ccsort(i)])
+                    i = i + 1;
+                    indtorem(found,:) = ind(m-wp:m+wp);
+                else
+                    i = i + 1; % check next
+                    continue;
+                end
             end
+        else
+            disp([find(cc==ccsort(i)) ccsort(i)])
+            i = i + 1; % for one accept it and go to next candidate
+            found = found + 1;
+            indtorem(found,:) = ind(m-wp:m+wp);
         end
-    else
-        disp([find(cc==ccsort(i)) ccsort(i)])
-        i = i + 1; % for one accept it and go to next candidate
-        found = found + 1;
-        indtorem(found,:) = ind(m-wp:m+wp);
+        % verify if found protrusion is inside or ouside polygon
+        % temporary remove just found indexes
+        it = indtorem(found,:);
+        tmppol = coord;
+        tmppol(it,:) = [];
+        tp = coord(it,:); % middle point of window
+        if(any( inpolygon(tp(:,1),tp(:,2),tmppol(:,1),tmppol(:,2)) ))
+            disp('ins');
+            % delete found
+            indtorem(found,:) = [];
+            found = found - 1;
+        end
+
     end
-    % verify if found protrusion is inside or ouside polygon
-    % temporary remove just found indexes
-    it = indtorem(found,:);
-    tmppol = coord;
-    tmppol(it,:) = [];
-    tp = coord(it,:); % middle point of window
-    if(any( inpolygon(tp(:,1),tp(:,2),tmppol(:,1),tmppol(:,2)) ))
-        disp('ins');
-        % delete found
-        indtorem(found,:) = [];
-        found = found - 1;
-    end
-    
+    coordrem(reshape(indtorem,1,[]),:) = [];
+else
+    coordrem = coord;
 end
-coordrem(reshape(indtorem,1,[]),:) = [];
 
 figure
 plot(coord(:,1),coord(:,2),'-bs','markersize',5);
 hold on
 plot(coordrem(:,1),coordrem(:,2),'-rs','markersize',5);
+%% test of hatsmooth for previous algorithm
+c = 3;
+w = 15;
+ile = 2;
+
+coord = coords{c};
+
+out = hatsmooth(coord,[w,ile,1]);
+
+figure
+plot(coord(:,1),coord(:,2),'-bs','markersize',5);
+hold on
+plot(out(:,1),out(:,2),'-rs','markersize',5);

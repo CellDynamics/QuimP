@@ -1,60 +1,125 @@
 function out = hatsmooth(in,params)
 % apply running median on vector in
-% params: [window crown sig smooth]
+% params: [window ile smooth]
 
-window = params(1);
-crown = params(2);
-sig = params(3);
-sm = params(4);
+w = params(1);
+ile = params(2);
+sm = params(3);
+level = params(4);
 
 coord = in;
+wp = floor(w/2);
+ind = padarray([1:length(coord)]',wp,'circular');
 
-% dp = floor(crown/2)+brim;
-dp = floor(window/2);
-coordp = padarray(coord,dp,'circular');
-start = dp+1;
-indtoremove = cell(1,length(start:length(coord)+start-1));
-for i=start:length(coord)+start-1
-    allpoints = coordp(i-dp:i+dp,:);
-    allvectors = diff(allpoints);
-    lenallvectors = sum(sqrt(sum(allvectors.^2,2)));
-    nocrownpoints = allpoints;
-    nocrownpoints(dp+1-floor(crown/2):dp+1+floor(crown/2),:) = [];
-    nocrownvectors = diff(nocrownpoints);
-    lennocrownvectors = sum(sqrt(sum(nocrownvectors.^2,2)));
-    ratio(i-start+1) = (1-(lennocrownvectors/lenallvectors))/(window*crown);    
+X = coord(:,1); Y = coord(:,2);
+Xt = [X; X(1)];
+Yt = [Y; Y(1)];
+dx = diff(Xt); dy = diff(Yt);
+P = sum(sqrt(dx.^2+dy.^2));
+A = polyarea(X,Y);
+circ = (4*pi*A)/(P.^2);
+
+l = 1;
+cc = [];
+Pc = [];
+for i=wp+1:length(coord)
+    indtorem = ind(i-wp:i+wp);
+    coordrem = coord;
+    coordrem(indtorem,:) = [];
+    A = polyarea(coordrem(:,1),coordrem(:,2));
+    coordrem = [coordrem;coordrem(1,:)];
+    d = diff(coordrem);
+    P = sum(sqrt(sum(d.^2,2)));
+    
+    coordrem = coord(indtorem,:);
+    
+      % candidate 1
+%     center = coordrem(wp+1,:);
+%     d = coordrem - repmat(center,length(coordrem),1);
+%     Pc = [Pc std(sqrt(sum(d.^2,2)))];
+    
+    % candidate 2
+    center = coordrem(wp+1,:); %coordrem(wp+1,:);
+    d = coordrem - repmat(center,length(coordrem),1);
+    Pc = [Pc mean(sqrt(sum(d.^2,2)))];
+    
+    
+    
+    cc = [cc (4*pi*A)/(P.^2)];
 end
-assignin('base','ratio',ratio');
-indtoremovetest = [];
-for i=1:length(ratio)
-    if(ratio(i))>sig
-        indtoremove{i} = (i+start-1) - floor(crown/2):(i+start-1)+floor(crown/2);
-        indtoremovetest = [indtoremovetest indtoremove{i}];
+cc = cc./(Pc);
+cc = cc/circ;
+
+ccsort = sort(cc,'descend');
+
+if ccsort(1)>level
+    coordrem = coord;
+    clear indtorem;
+    i = 1;
+    found = 0;
+    while(found<ile)
+        if(i>length(ccsort))
+            warning('Can find next candidate. Use smaller window');
+            break;
+        end
+        m = find(cc==ccsort(i));    
+        m = m + wp+1;
+        if found>0
+            sub = indtorem;   % all previous cases (indexes)
+            mmsub = minmax(sub(:)');    % range of previous results
+            mmcurr = minmax(ind(m-wp:m+wp)'); % current indexes (candidates)
+            % check if current indexes are common with any of previous cases
+            if mmcurr(2) < mmsub(1) % maximum current < min prev
+                % found candidate
+                found = found + 1;
+                disp([find(cc==ccsort(i)) ccsort(i)])
+                i = i + 1;
+                indtorem(found,:) = ind(m-wp:m+wp);
+            else
+                if mmcurr(1) > mmsub(2) % min current > max prev
+                    % found candidate
+                    found = found + 1;
+                    disp([find(cc==ccsort(i)) ccsort(i)])
+                    i = i + 1;
+                    indtorem(found,:) = ind(m-wp:m+wp);
+                else
+                    i = i + 1; % check next
+                    continue;
+                end
+            end
+        else
+            disp([find(cc==ccsort(i)) ccsort(i)])
+            i = i + 1; % for one accept it and go to next candidate
+            found = found + 1;
+            indtorem(found,:) = ind(m-wp:m+wp);
+        end
+        % verify if found protrusion is inside or ouside polygon
+        % temporary remove just found indexes
+        it = indtorem(found,:);
+        tmppol = coord;
+        tmppol(it,:) = [];
+        tp = coord(it,:); % middle point of window
+        if(any( inpolygon(tp(:,1),tp(:,2),tmppol(:,1),tmppol(:,2)) ))
+            disp('ins');
+            % delete found
+            indtorem(found,:) = [];
+            found = found - 1;
+        end
+
     end
+    coordrem(reshape(indtorem,1,[]),:) = [];
+else
+    coordrem = coord;
 end
 
-% set NaN for vertexes to remove
-for i=1:length(indtoremove)
-   if ~isempty(indtoremove{i})
-       coordp(indtoremove{i},:) = NaN;
-   end
-end
-
-% delete padding (on beginig)
-coordp(1:dp,:) = [];
-% and on the end
-coordp = coordp(1:length(coord),:);
-% find positions of NaNs (vertices to remove)
-isnotnan = ~any(isnan(coordp),2);
-% and remove them
-coordpp = coordp(isnotnan,:);
-
-[xDatax, yDatax] = prepareCurveData( [], coordpp(:,1) );
-[xDatay, yDatay] = prepareCurveData( [], coordpp(:,2) );
-ft = fittype( 'smoothingspline' );
-opts = fitoptions( 'Method', 'SmoothingSpline' );
-opts.SmoothingParam = sm;
-[fitresult, ~] = fit( xDatax, yDatax, ft, opts );
-out(:,1) = fitresult(xDatax);
-[fitresult, ~] = fit( xDatay, yDatay, ft, opts );
-out(:,2) = fitresult(xDatay);
+out(:,1) = smooth(coordrem(:,1),sm);
+out(:,2) = smooth(coordrem(:,2),sm);
+% [xDatax, yDatax] = prepareCurveData( [], coordrem(:,1) );
+% [xDatay, yDatay] = prepareCurveData( [], coordrem(:,2) );
+% ft = fittype( 'smoothingspline' );
+% opts = fitoptions( 'Method', 'SmoothingSpline' );
+% opts.SmoothingParam = sm;
+% [fitresult, ~] = fit( xDatax, yDatax, ft, opts );
+% out(:,1) = fitresult(xDatax);
+% [fitresult, ~] = fit( xDatay, yDatay, ft, opts );
+% out(:,2) = fitresult(xDatay);
