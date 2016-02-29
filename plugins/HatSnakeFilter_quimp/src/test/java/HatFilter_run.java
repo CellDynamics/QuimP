@@ -28,8 +28,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 public class HatFilter_run {
 
     @SuppressWarnings("serial")
-    public static void main(String[] args)
-            throws QuimpPluginException, InterruptedException {
+    public static void main(String[] args) throws QuimpPluginException, InterruptedException {
         List<Vector2d> input;
         // test data
         input = new ArrayList<>();
@@ -46,9 +45,9 @@ public class HatFilter_run {
         hf.attachData(input);
         hf.setPluginConfig(new ParamList() {
             {
-                put("window", "3");
-                put("Crown", "1");
-                put("Sigma", "1.0"); // case insensitive
+                put("window", "15");
+                put("pnum", "1");
+                put("alev", "0.0"); // case insensitive
             }
         });
         CountDownLatch startSignal = new CountDownLatch(1);

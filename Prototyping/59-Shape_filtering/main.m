@@ -442,3 +442,161 @@ plot(coord(:,1),coord(:,2),'-bs','markersize',5);
 hold on
 plot(coordpp(:,1),coordpp(:,2),'-rs','markersize',5);
 plot(coordppf(:,1),coordppf(:,2),'-k');
+%% roundness
+% The sliding window of given size is moved along
+% outline. For every position of the window its content is
+% removed and for such new outline the circularity is
+% computed. Its is expected that curved parts of outline 
+% affect shape the most therefore, circularity without
+% these parts will differ from original one. Such differences
+% are calculated for every position of the window and then points
+% for window for which the biggest difference was denoted are
+% removed. This is done in a loop where a user can set number
+% of windows to remove. Windows can not overlap so checking
+% of edges of sections to remove is performed.
+% Additionally to eliminate cases where points laying on line are removed,
+% for all candidates there is additional factor evaluated Pc (different
+% methods are proposed. This factor weights circularity.
+% All constructions are:
+% 0. Biggest circularity coefficient must be greater than acceptance level
+% 1. windows can not overlap
+% 2. All window pixels must be convex comparing to polygon without these
+% pixels
+% Error is thrown if there are no available candidates according to these
+% rules.
+
+% Point 0 allows switchnig off algorithm for certain images.
+
+
+c = 3;
+w = 15;
+
+wp = floor(w/2);
+
+coord = coords{c};
+
+ind = padarray([1:length(coord)]',wp,'circular');
+
+X = coord(:,1); Y = coord(:,2);
+Xt = [X; X(1)];
+Yt = [Y; Y(1)];
+dx = diff(Xt); dy = diff(Yt);
+P = sum(sqrt(dx.^2+dy.^2));
+A = polyarea(X,Y);
+circ = (4*pi*A)/(P.^2);
+
+l = 1;
+cc = [];
+Pc = [];
+for i=wp+1:length(coord)
+    indtorem = ind(i-wp:i+wp);
+    coordrem = coord;
+    coordrem(indtorem,:) = [];
+    A = polyarea(coordrem(:,1),coordrem(:,2));
+    coordrem = [coordrem;coordrem(1,:)];
+    d = diff(coordrem);
+    P = sum(sqrt(sum(d.^2,2)));
+    
+    coordrem = coord(indtorem,:);
+    
+      % candidate 1
+%     center = coordrem(wp+1,:);
+%     d = coordrem - repmat(center,length(coordrem),1);
+%     Pc = [Pc std(sqrt(sum(d.^2,2)))];
+    
+    % candidate 2
+    center = coordrem(wp+1,:); %coordrem(wp+1,:);
+    d = coordrem - repmat(center,length(coordrem),1);
+    Pc = [Pc mean(sqrt(sum(d.^2,2)))];
+    
+    
+    
+    cc = [cc (4*pi*A)/(P.^2)];
+end
+cc = cc./(Pc);
+cc = cc/circ;
+
+ccsort = sort(cc,'descend');
+
+ile = 3;
+level = 0; 
+if ccsort(1)>level
+    coordrem = coord;
+    clear indtorem;
+    i = 1;
+    found = 0;
+    while(found<ile)
+        if(i>length(ccsort))
+            warning('Can find next candidate. Use smaller window');
+            break;
+        end
+        m = find(cc==ccsort(i));    
+        m = m + wp+1;
+        if found>0
+            sub = indtorem;   % all previous cases (indexes)
+            mmsub = minmax(sub(:)');    % range of previous results
+            mmcurr = minmax(ind(m-wp:m+wp)'); % current indexes (candidates)
+            % check if current indexes are common with any of previous cases
+            if mmcurr(2) < mmsub(1) % maximum current < min prev
+                % found candidate
+                found = found + 1;
+                disp([find(cc==ccsort(i)) ccsort(i)])
+                i = i + 1;
+                indtorem(found,:) = ind(m-wp:m+wp);
+            else
+                if mmcurr(1) > mmsub(2) % min current > max prev
+                    % found candidate
+                    found = found + 1;
+                    disp([find(cc==ccsort(i)) ccsort(i)])
+                    i = i + 1;
+                    indtorem(found,:) = ind(m-wp:m+wp);
+                else
+                    i = i + 1; % check next
+                    continue;
+                end
+            end
+        else
+            disp([find(cc==ccsort(i)) ccsort(i)])
+            i = i + 1; % for one accept it and go to next candidate
+            found = found + 1;
+            indtorem(found,:) = ind(m-wp:m+wp);
+        end
+        % verify if found protrusion is inside or ouside polygon
+        % temporary remove just found indexes
+        it = indtorem(found,:);
+        tmppol = coord;
+        tmppol(it,:) = [];
+        tp = coord(it,:); % middle point of window
+        if(any( inpolygon(tp(:,1),tp(:,2),tmppol(:,1),tmppol(:,2)) ))
+            disp('ins');
+            % delete found
+            indtorem(found,:) = [];
+            found = found - 1;
+        end
+
+    end
+    coordrem(reshape(indtorem,1,[]),:) = [];
+else
+    coordrem = coord;
+end
+
+% final processing results can be filtered by running mean or running
+% median what helps in dealing with particular points on end or beginig of
+% removed window.
+figure
+plot(coord(:,1),coord(:,2),'-bs','markersize',5);
+hold on
+plot(coordrem(:,1),coordrem(:,2),'-rs','markersize',5);
+%% test of hatsmooth for previous algorithm
+c = 3;
+w = 3;
+ile = 2;
+
+coord = coords{c};
+
+out = hatsmooth(coord,[w,ile,1,0]);
+
+figure
+plot(coord(:,1),coord(:,2),'-bs','markersize',5);
+hold on
+plot(out(:,1),out(:,2),'-rs','markersize',5);
