@@ -442,3 +442,93 @@ plot(coord(:,1),coord(:,2),'-bs','markersize',5);
 hold on
 plot(coordpp(:,1),coordpp(:,2),'-rs','markersize',5);
 plot(coordppf(:,1),coordppf(:,2),'-k');
+%% roundness
+% The sliding window of given size is moved along
+% outline. For every position of window its content is
+% removed and for such new outline the circularity is
+% computed. Its is expecdted that curved parts of outline 
+% affect shape the most therefore circularity without
+% these parts will differ from original one. Such differences
+% are calculatd for every position of window and then points
+% for window for which the biggest difference was denoted are
+% removed. This is done in loop where user can set number
+% of windows to remove. Windows can not overleap so checking
+% of edges of sections to remove is performed.
+
+
+c = 3;
+w = 15;
+
+wp = floor(w/2);
+
+coord = coords{c};
+
+ind = padarray([1:length(coord)]',wp,'circular');
+
+X = coord(:,1); Y = coord(:,2);
+Xt = [X; X(1)];
+Yt = [Y; Y(1)];
+dx = diff(Xt); dy = diff(Yt);
+P = sum(sqrt(dx.^2+dy.^2));
+circ = (4*pi*A)/(P.^2);
+
+l = 1;
+cc = [];
+for i=wp+1:length(coord)
+    indtorem = ind(i-wp:i+wp);
+    coordrem = coord;
+    coordrem(indtorem,:) = [];
+    A = polyarea(coordrem(:,1),coordrem(:,2));
+    coordrem = [coordrem;coordrem(1,:)];
+    d = diff(coordrem);
+    P = sum(sqrt(sum(d.^2,2)));
+    cc = [cc (4*pi*A)/(P.^2)];
+end
+cc = cc/circ;
+
+ccsort = sort(cc,'descend');
+
+ile = 2;
+coordrem = coord;
+clear indtorem;
+i = 1;
+found = 0;
+while(found<ile)
+    m = find(cc==ccsort(i));    
+    m = m + wp+1;
+    if found>0
+        sub = indtorem;   % all previous cases (indexes)
+        mmsub = minmax(sub(:)');    % range of previous results
+        mmcurr = minmax(ind(m-wp:m+wp)'); % current indexes (candidates)
+        % check if current indexes are common with any of previous cases
+        if mmcurr(2) < mmsub(1) % maximum current < min prev
+            % found candidate
+            found = found + 1;
+            disp([find(cc==ccsort(i)) ccsort(i)])
+            i = i + 1;
+            indtorem(found,:) = ind(m-wp:m+wp);
+        else
+            if mmcurr(1) > mmsub(2) % min current > max prev
+                % found candidate
+                found = found + 1;
+                disp([find(cc==ccsort(i)) ccsort(i)])
+                i = i + 1;
+                indtorem(found,:) = ind(m-wp:m+wp);
+            else
+                i = i + 1; % check next
+            end
+        end
+    else
+        disp([find(cc==ccsort(i)) ccsort(i)])
+        i = i + 1; % for one accept it and go to next candidate
+        found = found + 1;
+        indtorem(found,:) = ind(m-wp:m+wp);
+    end
+    
+end
+coordrem(reshape(indtorem,1,[]),:) = [];
+
+figure
+plot(coord(:,1),coord(:,2),'-bs','markersize',5);
+hold on
+plot(coordrem(:,1),coordrem(:,2),'-rs','markersize',5);
