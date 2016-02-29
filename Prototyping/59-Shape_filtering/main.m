@@ -594,7 +594,7 @@ ile = 2;
 
 coord = coords{c};
 
-out = hatsmooth(coord,[w,ile,1]);
+out = hatsmooth(coord,[w,ile,1,0]);
 
 figure
 plot(coord(:,1),coord(:,2),'-bs','markersize',5);

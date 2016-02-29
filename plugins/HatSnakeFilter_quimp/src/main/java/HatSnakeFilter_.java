@@ -62,8 +62,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
     private final int DRAW_SIZE = 200; //!< size of draw area in window
 
     private int window; //!< filter's window size
-    private int crown; //!< filter's crown size (in middle of \a window)
-    private double sig; //!< acceptance criterion
+    private int pnum; //!< how many protrusions to remove
+    private double alev; //!< minimal acceptance level
     private List<Vector2d> points;
     private ParamList uiDefinition; //!< Definition of UI for this plugin
     private DrawPanel dp; //!< Here we will draw. This panel is plot in place of help field
@@ -78,18 +78,18 @@ public class HatSnakeFilter_ extends QWindowBuilder
      */
     public HatSnakeFilter_() {
         LOGGER.trace("Entering constructor");
-        this.window = 23;
-        this.crown = 13;
-        this.sig = 0.3;
-        LOGGER.debug("Set default parameter: window=" + window + " crown=" + crown + " sig=" + sig);
+        this.window = 15;
+        this.pnum = 1;
+        this.alev = 0;
+        LOGGER.debug("Set default parameter: window=" + window + " pnum=" + pnum + " alev=" + alev);
         // create UI using QWindowBuilder
         uiDefinition = new ParamList(); // will hold ui definitions
         // configure window, names of UI elements are also names of variables
         // exported/imported by set/getPluginConfig
         uiDefinition.put("name", "HatFilter"); // name of window
         uiDefinition.put("window", "spinner, 3, 51, 2," + Integer.toString(window));
-        uiDefinition.put("crown", "spinner, 1, 51, 2," + Integer.toString(crown));
-        uiDefinition.put("sigma", "spinner, 0.01, 0.9,0.01," + Double.toString(sig));
+        uiDefinition.put("pnum", "spinner, 1, 6, 1," + Integer.toString(pnum));
+        uiDefinition.put("alev", "spinner, 0, 1,0.01," + Double.toString(alev));
         buildWindow(uiDefinition); // construct ui (not shown yet)
         points = null; // not attached yet
         pout = null; // not calculated yet
@@ -136,11 +136,10 @@ public class HatSnakeFilter_ extends QWindowBuilder
     @Override
     public List<Vector2d> runPlugin() throws QuimpPluginException {
         // internal parameters are not updated here but when user click apply
-        LOGGER.debug(String.format("Run plugin with params: window %d, crown %d, sigma %f", window,
-                crown, sig));
+        LOGGER.debug(String.format("Run plugin with params: window %d, pnum %d, alev %f", window,
+                pnum, alev));
 
         int cp = window / 2; // left and right range of window
-        int cr = crown / 2; // left and right range of crown
         int indexTmp; // temporary index after padding
         int countW = 0; // window indexer
         int countC = 0; // crown indexer
@@ -150,16 +149,17 @@ public class HatSnakeFilter_ extends QWindowBuilder
         List<Vector2d> out = new ArrayList<Vector2d>(); // output table for plotting temporary
                                                         // results of filter
         // check input conditions
-        if (window % 2 == 0 || crown % 2 == 0)
-            throw new QuimpPluginException(
-                    "Input arguments must be uneven, positive and larger than 0");
-        if (window >= points.size() || crown >= points.size())
-            throw new QuimpPluginException("Processing window or crown to long");
-        if (crown >= window)
-            throw new QuimpPluginException("Crown can not be larger or equal to window");
+        if (window % 2 == 0 || window < 0)
+            throw new QuimpPluginException("Window must be uneven, positive and larger than 0");
+        if (window >= points.size())
+            throw new QuimpPluginException("Processing window to long");
         if (window < 3)
             throw new QuimpPluginException("Window should be larger than 2");
-
+        if (pnum <= 0)
+            throw new QuimpPluginException("Number of protrusions should be larger than 0");
+        if (alev < 0)
+            throw new QuimpPluginException("Acceptacne level should be positive");
+        /*
         Vector2d[] V = new Vector2d[window]; // temporary array for holding content of window
                                              // [v1 v2 v3 v4 v5 v6 v7]
         Vector2d[] B = new Vector2d[window - crown]; // array for holding brim only points [v1 v2 v6
@@ -200,7 +200,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
         // copy old array to new skipping points marked to remove
         for (int i = 0; i < points.size(); i++)
             if (!indToRemove.contains(i))
-                out.add(points.get(i));
+                out.add(points.get(i));*/
         return out;
     }
 
@@ -257,8 +257,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
     public void setPluginConfig(final ParamList par) throws QuimpPluginException {
         try {
             window = par.getIntValue("window");
-            crown = par.getIntValue("crown");
-            sig = par.getDoubleValue("sigma");
+            pnum = par.getIntValue("pnum");
+            alev = par.getDoubleValue("alev");
             setValues(par); // copy incoming parameters to UI
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched by caller they are
@@ -307,8 +307,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
 
         // attach listeners to ui to update window on new parameters
         ((JSpinner) ui.get("Window")).addChangeListener(this); // attach listener to selected ui
-        ((JSpinner) ui.get("crown")).addChangeListener(this); // attach listener to selected ui
-        ((JSpinner) ui.get("Sigma")).addChangeListener(this); // attach listener to selected ui
+        ((JSpinner) ui.get("pnum")).addChangeListener(this); // attach listener to selected ui
+        ((JSpinner) ui.get("alev")).addChangeListener(this); // attach listener to selected ui
         applyB.addActionListener(this); // attach listener to aplly button
         // in place of CENTER pane in BorderLayout layout from super.BuildWindow
         // we create few extra controls
@@ -406,10 +406,10 @@ public class HatSnakeFilter_ extends QWindowBuilder
         }
         // transfer data from ui
         window = getIntegerFromUI("window");
-        crown = getIntegerFromUI("crown");
-        sig = getDoubleFromUI("sigma");
-        LOGGER.debug(String.format("Updated from UI: window %d, crown %d, sigma %f", window, crown,
-                sig));
+        pnum = getIntegerFromUI("pnum");
+        alev = getDoubleFromUI("alev");
+        LOGGER.debug(
+                String.format("Updated from UI: window %d, pnum %d, alev %f", window, pnum, alev));
         // run plugin for set parameters
         try {
             out = runPlugin(); // may throw exception if no data attached

@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.vecmath.Vector2d;
@@ -30,8 +29,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  */
 public class HatFilter_Test {
 
-    private static final Logger LOGGER = LogManager
-            .getLogger(HatFilter_Test.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(HatFilter_Test.class.getName());
     private List<Vector2d> input;
 
     @Rule
@@ -78,8 +76,8 @@ public class HatFilter_Test {
         hf.setPluginConfig(new ParamList() {
             {
                 put("window", "5");
-                put("crown", "3");
-                put("sigma", "1.0");
+                put("pnum", "1");
+                put("alev", "0");
             }
         });
         ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
@@ -103,16 +101,15 @@ public class HatFilter_Test {
         hf.setPluginConfig(new ParamList() {
             {
                 put("window", "5");
-                put("crown", "3");
-                put("sigma", "0.05");
+                put("pnum", "1");
+                put("alev", "0");
             }
         });
         ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
         LOGGER.debug("  out: " + out.toString());
 
         // remove precalculated indexes from input array (see Matlab test code)
-        int removed[] = { 0, 1, 2, 37, 38, 39, 15, 16, 17, 18, 19, 20, 21, 22,
-                23 };
+        int removed[] = { 0, 1, 2, 37, 38, 39, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
         Arrays.sort(removed);
         int lr = 0;
         for (int el : removed)
@@ -136,15 +133,14 @@ public class HatFilter_Test {
         hf.setPluginConfig(new ParamList() {
             {
                 put("window", "5");
-                put("crown", "3");
-                put("sigma", "0.05");
+                put("pnum", "1");
+                put("alev", "0.23");
             }
         });
-        HashMap<String, String> ret = (HashMap<String, String>) hf
-                .getPluginConfig();
-        assertEquals(5.0, Double.parseDouble(ret.get("window")), 1e-4);
-        assertEquals(3.0, Double.parseDouble(ret.get("crown")), 1e-4);
-        assertEquals(0.05, Double.parseDouble(ret.get("sigma")), 1e-4);
+        ParamList ret = hf.getPluginConfig();
+        assertEquals(5, ret.getIntValue("Window"));
+        assertEquals(1, ret.getIntValue("pnum"));
+        assertEquals(0.23, ret.getDoubleValue("alev"), 1e-4);
     }
 
     /**
@@ -161,8 +157,8 @@ public class HatFilter_Test {
             hf.setPluginConfig(new ParamList() {
                 {
                     put("window", "6");
-                    put("crown", "3");
-                    put("sigma", "1.0");
+                    put("pnum", "3");
+                    put("alev", "1.0");
                 }
             });
             hf.runPlugin();
@@ -172,13 +168,13 @@ public class HatFilter_Test {
             LOGGER.debug(e.getMessage());
         }
         try {
-            HatSnakeFilter_ hf = new HatSnakeFilter_(); // even crown
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // neg crown
             hf.attachData(input);
             hf.setPluginConfig(new ParamList() {
                 {
-                    put("window", "5");
-                    put("crown", "4");
-                    put("sigma", "1.0");
+                    put("window", "-5");
+                    put("pnum", "3");
+                    put("alev", "1.0");
                 }
             });
             hf.runPlugin();
@@ -188,13 +184,13 @@ public class HatFilter_Test {
             LOGGER.debug(e.getMessage());
         }
         try {
-            HatSnakeFilter_ hf = new HatSnakeFilter_(); // crown>window
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // too long win
             hf.attachData(input);
             hf.setPluginConfig(new ParamList() {
                 {
-                    put("window", "5");
-                    put("crown", "5");
-                    put("sigma", "1.0");
+                    put("window", "600");
+                    put("pnum", "3");
+                    put("alev", "1.0");
                 }
             });
             hf.runPlugin();
@@ -204,61 +200,61 @@ public class HatFilter_Test {
             LOGGER.debug(e.getMessage());
         }
         try {
-            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
-            hf.attachData(input);
-            hf.setPluginConfig(new ParamList() {
-                {
-                    put("window", "5");
-                    put("crown", "0");
-                    put("sigma", "1.0");
-                }
-            });
-            hf.runPlugin();
-            fail("Exception not thrown");
-        } catch (QuimpPluginException e) {
-            assertTrue(e != null);
-            LOGGER.debug(e.getMessage());
-        }
-        try {
-            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
-            hf.attachData(input);
-            hf.setPluginConfig(new ParamList() {
-                {
-                    put("window", "0");
-                    put("crown", "3");
-                    put("sigma", "1.0");
-                }
-            });
-            hf.runPlugin();
-            fail("Exception not thrown");
-        } catch (QuimpPluginException e) {
-            assertTrue(e != null);
-            LOGGER.debug(e.getMessage());
-        }
-        try {
-            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
-            hf.attachData(input);
-            hf.setPluginConfig(new ParamList() {
-                {
-                    put("window", "0");
-                    put("crown", "-3");
-                    put("sigma", "1.0");
-                }
-            });
-            hf.runPlugin();
-            fail("Exception not thrown");
-        } catch (QuimpPluginException e) {
-            assertTrue(e != null);
-            LOGGER.debug(e.getMessage());
-        }
-        try {
-            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // to small window
             hf.attachData(input);
             hf.setPluginConfig(new ParamList() {
                 {
                     put("window", "1");
-                    put("crown", "1");
-                    put("sigma", "1.0");
+                    put("pnum", "3");
+                    put("alev", "1.0");
+                }
+            });
+            hf.runPlugin();
+            fail("Exception not thrown");
+        } catch (QuimpPluginException e) {
+            assertTrue(e != null);
+            LOGGER.debug(e.getMessage());
+        }
+        try {
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad protrusions
+            hf.attachData(input);
+            hf.setPluginConfig(new ParamList() {
+                {
+                    put("window", "5");
+                    put("pnum", "0");
+                    put("alev", "1.0");
+                }
+            });
+            hf.runPlugin();
+            fail("Exception not thrown");
+        } catch (QuimpPluginException e) {
+            assertTrue(e != null);
+            LOGGER.debug(e.getMessage());
+        }
+        try {
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad acceptance
+            hf.attachData(input);
+            hf.setPluginConfig(new ParamList() {
+                {
+                    put("window", "5");
+                    put("pnum", "3");
+                    put("alev", "-1.0");
+                }
+            });
+            hf.runPlugin();
+            fail("Exception not thrown");
+        } catch (QuimpPluginException e) {
+            assertTrue(e != null);
+            LOGGER.debug(e.getMessage());
+        }
+        try {
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // bad crown
+            hf.attachData(input);
+            hf.setPluginConfig(new ParamList() {
+                {
+                    put("window", "6");
+                    put("pnum", "-4");
+                    put("alev", "1.0");
                 }
             });
             hf.runPlugin();
