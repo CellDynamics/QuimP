@@ -62,12 +62,15 @@ public class ParamList extends LinkedStringMap<String> {
     /**
      * Get Integer value from list associated with \c key. Key is not case
      * sensitive
-     * 
      * @param key name of key
      * @return associated value
+     * @remarks
+     * For safety it take double and then converts it to integer. It helps with dealing with type
+     * changing in QWindowBuilder. By default it keeps all in double and passed data returns in
+     * double as well
      */
     public int getIntValue(String key) {
-        return Integer.parseInt(get(key));
+        return new Double(getDoubleValue(key)).intValue();
     }
 
     /**
