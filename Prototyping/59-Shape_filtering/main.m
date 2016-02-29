@@ -456,7 +456,7 @@ plot(coordppf(:,1),coordppf(:,2),'-k');
 % of edges of sections to remove is performed.
 
 
-c = 1;
+c = 3;
 w = 15;
 
 wp = floor(w/2);
@@ -485,13 +485,16 @@ for i=wp+1:length(coord)
     P = sum(sqrt(sum(d.^2,2)));
     
     coordrem = coord(indtorem,:);
-%     d = coordrem(1,:) - coordrem(end,:);
-%     Pc = [Pc sum(sqrt(sum(d.^2,2)))];
     
-    center = coordrem(wp+1,:);
-%     center = (coordrem(1,:) - coordrem(end,:))/2;
+      % candidate 1
+%     center = coordrem(wp+1,:);
+%     d = coordrem - repmat(center,length(coordrem),1);
+%     Pc = [Pc std(sqrt(sum(d.^2,2)))];
+    
+    % candidate 2
+    center = coordrem(wp+1,:); %coordrem(wp+1,:);
     d = coordrem - repmat(center,length(coordrem),1);
-    Pc = [Pc std(sum(d.^2,2))];
+    Pc = [Pc mean(sqrt(sum(d.^2,2)))];
     
     
     
