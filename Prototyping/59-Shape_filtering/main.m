@@ -444,26 +444,28 @@ plot(coordpp(:,1),coordpp(:,2),'-rs','markersize',5);
 plot(coordppf(:,1),coordppf(:,2),'-k');
 %% roundness
 % The sliding window of given size is moved along
-% outline. For every position of window its content is
+% outline. For every position of the window its content is
 % removed and for such new outline the circularity is
-% computed. Its is expecdted that curved parts of outline 
-% affect shape the most therefore circularity without
+% computed. Its is expected that curved parts of outline 
+% affect shape the most therefore, circularity without
 % these parts will differ from original one. Such differences
-% are calculatd for every position of window and then points
+% are calculated for every position of the window and then points
 % for window for which the biggest difference was denoted are
-% removed. This is done in loop where user can set number
-% of windows to remove. Windows can not overleap so checking
+% removed. This is done in a loop where a user can set number
+% of windows to remove. Windows can not overlap so checking
 % of edges of sections to remove is performed.
-% Additionally to elimitae cases where points laying on line are removed,
-% for every candidates there is additional factor evaluated Pc (different
+% Additionally to eliminate cases where points laying on line are removed,
+% for all candidates there is additional factor evaluated Pc (different
 % methods are proposed. This factor weights circularity.
-% All constrictions are:
+% All constructions are:
 % 0. Biggest circularity coefficient must be greater than acceptance level
-% 1. windows can not overleap
+% 1. windows can not overlap
 % 2. All window pixels must be convex comparing to polygon without these
 % pixels
-% Error is thrown if there is no avaiable candidates according to these
+% Error is thrown if there are no available candidates according to these
 % rules.
+
+% Point 0 allows switchnig off algorithm for certain images.
 
 
 c = 3;
