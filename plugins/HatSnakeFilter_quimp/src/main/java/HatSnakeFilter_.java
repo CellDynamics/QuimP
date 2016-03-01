@@ -10,9 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,6 +25,7 @@ import javax.vecmath.Vector2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.geom.BasicPolygons;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
@@ -140,12 +141,6 @@ public class HatSnakeFilter_ extends QWindowBuilder
                 pnum, alev));
 
         int cp = window / 2; // left and right range of window
-        int indexTmp; // temporary index after padding
-        int countW = 0; // window indexer
-        int countC = 0; // crown indexer
-        double lenAll; // length of curve in window
-        double lenBrim; // length of curve in window without crown
-        Set<Integer> indToRemove = new HashSet<Integer>();
         List<Vector2d> out = new ArrayList<Vector2d>(); // output table for plotting temporary
                                                         // results of filter
         // check input conditions
@@ -159,49 +154,128 @@ public class HatSnakeFilter_ extends QWindowBuilder
             throw new QuimpPluginException("Number of protrusions should be larger than 0");
         if (alev < 0)
             throw new QuimpPluginException("Acceptacne level should be positive");
-        /*
-        Vector2d[] V = new Vector2d[window]; // temporary array for holding content of window
-                                             // [v1 v2 v3 v4 v5 v6 v7]
-        Vector2d[] B = new Vector2d[window - crown]; // array for holding brim only points [v1 v2 v6
-                                                     // v7]
-        for (int c = 0; c < points.size(); c++) { // for every point in data, c is current window
-                                                  // position - middle point
-            countW = 0;
-            countC = 0;
-            lenAll = 0;
-            lenBrim = 0;
-            for (int cc = c - cp; cc <= c + cp; cc++) { // collect points in range c-2 c-1 c-0 c+1
-                                                        // c+2 (for window=5)
-                indexTmp = IPadArray.getIndex(points.size(), cc, IPadArray.CIRCULARPAD); // get
-                                                                                         // padded
-                                                                                         // indexes
-                V[countW] = points.get(indexTmp); // store window content (reference)
-                if (cc < c - cr || cc > c + cr)
-                    B[countC++] = points.get(indexTmp); // store only brim (reference)
-                countW++;
-            }
 
-            // converting node points to vectors between them and get that
-            // vector length
-            for (int i = 0; i < V.length - 1; i++)
-                lenAll += getLen(V[i], V[i + 1]);
-            for (int i = 0; i < B.length - 1; i++)
-                lenBrim += getLen(B[i], B[i + 1]);
-            // decide whether to remove crown
-            double ratio = 1 - lenBrim / lenAll;
-            LOGGER.debug(
-                    "c: " + c + " lenAll=" + lenAll + " lenBrim=" + lenBrim + " ratio: " + ratio);
-            if (ratio > sig) // add crown for current window position c to remove list. Added are
-                             // real indexes in points array (not local window indexes)
-                for (int i = c - cr; i <= c + cr; i++)
-                    indToRemove.add(i); // add only if not present in set
+        WindowIndRange indexTest = new WindowIndRange(); // temporary variable for keeping index
+                                                         // that is tested to be or not in range
+                                                         // winpos
+
+        // Step 1 - Build circularity table
+        ArrayList<Double> circ = new ArrayList<Double>(); // array to store circularity for window
+                                                          // positions. Index is related to window
+                                                          // position (negative shift in rotate)
+        double tmpCirc;
+        for (int r = 0; r < points.size(); r++) {
+            LOGGER.debug("points: " + points.toString());
+            // get all points except window. Window has constant position 0 - (window-1)
+            List<Vector2d> sub = points.subList(window, points.size());
+            LOGGER.debug("sub: " + sub.toString());
+            tmpCirc = getCircularity(sub);
+            LOGGER.debug("circ " + tmpCirc);
+            // calculate weighting for circularity
+            List<Vector2d> w = points.subList(0, window); // get window position
+            LOGGER.debug("win: " + w.toString());
+            tmpCirc /= getWeighting(w); // calculate weighting for window content
+            circ.add(tmpCirc); // store weighted circularity for shape without window
+            // move window to next position
+            Collections.rotate(points, -1); // rotates by -1 what means that on first n positions
+                                            // of points there are different values simulate window
+                                            // first iter 0 1 2 3 4 5... (w=[0 1 2])
+                                            // second itr 1 2 3 4 5 0... (w=[1 2 3])
+                                            // last itera 5 0 1 2 3 4... (w=[5 0 1])
+
         }
-        LOGGER.debug("Points to remove: " + indToRemove.toString());
-        // copy old array to new skipping points marked to remove
-        for (int i = 0; i < points.size(); i++)
-            if (!indToRemove.contains(i))
-                out.add(points.get(i));*/
+
+        // Step 2 - Check criterion for all windows
+        TreeSet<WindowIndRange> ind2rem = new TreeSet<>(); // <l;u> range of indexes to remove
+        ArrayList<Double> circsorted = new ArrayList<>(circ); // need sorted but the old one as well
+                                                              // to identify windows positions
+        circsorted.sort(Collections.reverseOrder()); // sort in descending order
+        LOGGER.debug("cirs: " + circsorted.toString());
+        LOGGER.debug("circ: " + circ.toString());
+
+        if (circsorted.get(0) < alev) // if maximal circularity smaller than acceptance level
+            return points; // just return non-modified data;
+        int found = 0; // how many protrusions we have found already
+        int i = 0; // current index in circsorted - number of window to analyze. Real position of
+                   // window on data can be retrieved by finding value from sorted array circularity
+                   // in non sorted, where order of data is related to window position starting
+                   // from 0 for most left point of window
+        while (found < pnum) { // do as long as we find pnum protrusions (or to end of candidates)
+            if (i >= circsorted.size()) { // no more data to check, probably we have less prot. pnum
+                throw new QuimpPluginException("Can find next candidate. Use smaller window");
+            }
+            if (found > 0) {
+                // find where it was before sorting and store in window positions
+                int startpos = circ.indexOf(circsorted.get(i));
+                // check if we have this index in indexes to remove
+                indexTest.setRange(startpos, startpos + window - 1);
+                if (!ind2rem.contains(indexTest)) {// index isnt in already collected indexes to rm
+                    // store range of indexes that belongs to window
+                    ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
+                    found++;
+                } else // search next candidate in sorted circularities
+                    i++;
+            } else { // first candidate always accepted
+                // find where it was before sorting and store in window positions
+                int startpos = circ.indexOf(circsorted.get(i));
+                // store range of indexes that belongs to window
+                ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
+                i++;
+                found++;
+            }
+        }
+        LOGGER.debug("winpos: " + ind2rem.toString());
+
+        // Step 3 - remove selected windows from input data
+        // array will be copied to new one skipping points to remove
+        for (i = 0; i < points.size(); i++) {
+            indexTest.setSame(i); // set upper and lower index to the same value - allows to test
+                                  // particular index for its presence in any defined range
+            if (!ind2rem.contains(indexTest)) // check if any window position (l and u bound)
+                out.add(new Vector2d(points.get(i))); // include tested point. Copy it to new array
+                                                      // if not
+        }
+
         return out;
+    }
+
+    /**
+     * Calculate circularity of polygon
+     * 
+     * @param p Polygon vertices
+     * @return circularity
+     */
+    private double getCircularity(final List<Vector2d> p) {
+        double area;
+        double perim;
+        BasicPolygons<Vector2d> b = new BasicPolygons<>();
+        area = b.getPolyArea(p);
+        perim = b.getPolyPerim(p);
+
+        return ((4 * Math.PI * area) / (perim * perim));
+    }
+
+    /**
+     * Calculates weighting based on distribution of window points
+     * 
+     * Calculates lengths of vectors between ever point \c n and middle point \c nm in list \c p.
+     * Then those lengths are averaged
+     *  
+     * @param p Polygon vertices
+     * @return Weight
+     */
+    private double getWeighting(final List<Vector2d> p) {
+        double len = 0;
+
+        Vector2d middle = p.get(p.size() / 2 + 1); // middle point of window
+        for (Vector2d v : p) {
+            Vector2d vec = new Vector2d(middle); // vector between px and middle
+            vec.sub(v);
+            len += vec.length();
+        }
+
+        LOGGER.debug("w " + len / p.size());
+        return len / p.size();
     }
 
     /**
@@ -466,6 +540,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
 /**
  * Helper class supporting scaling and fitting polygon to DrawWindow
  * 
+ * This class is strictly TreeSet related. \c equals method does not assure correct comparison
  * @author p.baniukiewicz
  * @date 8 Feb 2016
  *
@@ -525,8 +600,8 @@ class ExPolygon extends Polygon {
      * Scale polygon to fit in rectangular window of \c size using pre-computed
      * bounding box and scale
      * 
-     * Use for setting next polygon on base of previous, when nex has different
-     * shape but must be centerd with previous one.
+     * Use for setting next polygon on base of previous, when next has different
+     * shape but must be centered with previous one.
      * 
      * @param size Size of window to fit polygon
      * @param init Bounding box to fit new polygon
@@ -545,4 +620,120 @@ class ExPolygon extends Polygon {
         }
         translate((int) (size / 2), (int) (size / 2));
     }
+}
+
+/**
+ * Class holding lower and upper index of window. supports comparisons.
+ * 
+ * @author p.baniukiewicz
+ * @date 1 Mar 2016
+ * @see WindowIndRange.compareTo(Object)
+ */
+class WindowIndRange implements Comparable<Object> {
+    public int l, u;
+
+    public WindowIndRange() {
+        u = 0;
+        l = 0;
+    }
+
+    /**
+     * Create pair of indexes that define window
+     * @param l lower index
+     * @param u upper index
+     */
+    WindowIndRange(int l, int u) {
+        setRange(l, u);
+    }
+
+    @Override
+    public String toString() {
+        return "{" + l + "," + u + "}";
+    }
+
+    public int hashCode() {
+        int result = 1;
+        result = 31 * result + l;
+        result = 31 * result + u;
+        return result;
+    }
+
+    /**
+     * Compare two WindowIndRange objects.
+     * @param obj
+     * @return \c true only if ranges does not overlap
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+
+        final WindowIndRange other = (WindowIndRange) obj;
+        if (u < other.l)
+            return true;
+        else if (l > other.u)
+            return true;
+        else
+            return false;
+
+    }
+
+    /**
+     * Compare two WindowIndRange objects.
+     * 
+     * The following rules of comparison are used:
+     * -# If range1 is below range2 they are not equal
+     * -# If range1 is above range2 they are not equal
+     * -# They are qual in all other cases:
+     *  -# They are sticked
+     *  -# One includes other
+     *  -# They overlap
+     *  
+     * @param obj Object to compare to \c this 
+     * @return -1,0,1 expressing relations in windows positions
+     */
+    @Override
+    public int compareTo(Object obj) {
+        final WindowIndRange other = (WindowIndRange) obj;
+        if (this == obj)
+            return 0;
+
+        if (u < other.l)
+            return -1;
+        else if (l > other.u)
+            return 1;
+        else
+            return 0;
+    }
+
+    /**
+     * Sets upper and lower indexes to the same value
+     * 
+     * @param i Value to set for \c u and \c l
+     */
+    public void setSame(int i) {
+        l = i;
+        u = i;
+    }
+
+    /**
+     * Set pair of indexes that define window
+     * 
+     * @param l lower index
+     * @param u upper index
+     */
+    public void setRange(int l, int u) {
+        if (l > u) {
+            this.l = u;
+            this.u = l;
+        } else {
+            this.l = l;
+            this.u = u;
+        }
+    }
+
 }

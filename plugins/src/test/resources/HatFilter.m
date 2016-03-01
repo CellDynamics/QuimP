@@ -1,3 +1,6 @@
+%% info
+% see main.m in Prototyping as well for real case test generator
+
 %% hatfilter test generator
 in = [1:40; zeros(1,40)];
 in(:,19:21) = [19:21;1 1 1];
@@ -58,3 +61,42 @@ hold on
 plot(coordpp(:,1),repmat(sig,length(coordpp),1),'-g')
 hold off
 unique(indtoremovetest)
+
+%% circular object
+clear x y
+a = 0:6:359;
+x = 20*cosd(a);
+y = 20*sind(a);
+figure;plot(x,y,'o')
+axis square
+xy = [x' y'];
+xyr = reshape(xy',[],1); % x first
+fid = fopen('testData_circle.dat', 'w');
+fprintf(fid,'%.4f\n',xyr);
+fclose(fid);
+%% protrusions
+
+Ro = 150;
+R1 = Ro/5;
+R2 = Ro/8;
+R3 = Ro/2;
+R4 = Ro/12;
+% get size of lightField
+ls = linspace(-250,250,500);
+[X, Y] = meshgrid(ls,ls);
+% create empty light field
+Object = zeros(size(X,1),size(Y,2));
+% filling the circle directly from equation
+Object(X.^2+Y.^2<=Ro^2) = 255;
+Object((X-max(ls)/2.2).^2+(Y-max(ls)/2.2).^2<=R1^2) = 255;
+Object((X+max(ls)/2.4).^2+(Y+max(ls)/2.4).^2<=R2^2) = 255;
+Object((X+max(ls)/3.8).^2+(Y-max(ls)/3.8).^2<=R3^2) = 255;
+
+% Object((X+max(spatialSpace)/2).^2+(Y+max(spatialSpace)/2).^2<=R3^2) = 255;
+% Object((X-max(spatialSpace)*3/4).^2+(Y-max(spatialSpace)*3/4).^2<=R2^2) = 255;
+
+% Object((X-max(spatialSpace)*3/4).^2+(Y+max(spatialSpace)*3/4).^2/5<=R2^2) = 255;
+Object((X-max(ls)*0.6).^2/4+(Y-max(ls)*0.0).^2<=R4^2) = 255;
+
+% control plotting
+figure;imagesc(ls,ls,Object); axis square;colormap gray

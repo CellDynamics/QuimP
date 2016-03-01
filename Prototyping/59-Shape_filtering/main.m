@@ -23,6 +23,7 @@ for i=1:length(testFrames)
    fprintf(fid,'%.4f\n',xyr);
    fclose(fid);
 end
+
 %% Tools - Plot
 i = 1;
 figure

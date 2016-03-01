@@ -1,11 +1,13 @@
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 
 import javax.vecmath.Vector2d;
 
@@ -13,12 +15,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.DataLoader;
 
 /**
  * Test class for HatFilter
@@ -31,10 +35,11 @@ public class HatFilter_Test {
 
     private static final Logger LOGGER = LogManager.getLogger(HatFilter_Test.class.getName());
     private List<Vector2d> input;
+    private List<Vector2d> lininput; //!< line at 45 deg
+    private List<Vector2d> circ;
 
     @Rule
-    public TestName name = new TestName(); /// < Allow to get tested method name
-                                           /// (called at setUp())
+    public TestName name = new TestName(); //!< Allow to get tested method name (called at setUp())
 
     /**
      * Create line with nodes in every 1 unit.
@@ -57,10 +62,66 @@ public class HatFilter_Test {
         input.set(19, new Vector2d(19, 1));
         input.set(20, new Vector2d(20, 1));
         LOGGER.info("Entering " + name.getMethodName());
+
+        lininput = new ArrayList<>();
+        for (int i = 0; i < 20; i++)
+            lininput.add(new Vector2d(i, i));
+
+        circ = new DataLoader("../src/test/resources/testData_circle.dat").getData();
     }
 
     @After
     public void tearDown() throws Exception {
+    }
+
+    /**
+     * @test Test of HatSnakeFilter_.runPlugin()
+     * @pre Ideally circular object
+     * @post In logs:
+     * -# Weighting the same
+     * -# circularity the same 
+     * @throws QuimpPluginException
+     */
+    @SuppressWarnings("serial")
+    @Test
+    public void test_HatFilter_run() throws QuimpPluginException {
+        LOGGER.debug("input: " + lininput.toString());
+        HatSnakeFilter_ hf = new HatSnakeFilter_();
+        hf.attachData(circ);
+        hf.setPluginConfig(new ParamList() {
+            {
+                put("window", "5");
+                put("pnum", "1");
+                put("alev", "0");
+            }
+        });
+        hf.runPlugin();
+    }
+
+    /**
+     * @test Test of HatSnakeFilter_.runPlugin()
+     * @pre Linear object
+     * @post In logs:
+     * -# Weighting differ at end
+     * -# circularity differ at end
+     * -# Window is moving and has circular padding
+     * @throws QuimpPluginException
+     */
+    @SuppressWarnings("serial")
+    @Test
+    @Ignore
+    public void test_HatFilter_run_1() throws QuimpPluginException {
+        LOGGER.debug("input: " + lininput.toString());
+        HatSnakeFilter_ hf = new HatSnakeFilter_();
+        hf.attachData(lininput);
+        hf.setPluginConfig(new ParamList() {
+            {
+                put("window", "5");
+                put("pnum", "1");
+                put("alev", "0");
+            }
+        });
+        hf.runPlugin();
     }
 
     /**
@@ -71,6 +132,7 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
+    @Ignore
     public void test_HatFilter_case1() throws QuimpPluginException {
         LOGGER.debug("input: " + input.toString());
         HatSnakeFilter_ hf = new HatSnakeFilter_();
@@ -96,6 +158,7 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
+    @Ignore
     public void test_HatFilter_case2() throws QuimpPluginException {
         LOGGER.debug("input: " + input.toString());
         HatSnakeFilter_ hf = new HatSnakeFilter_();
@@ -129,6 +192,7 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
+    @Ignore
     public void test_HatFilter_setget() throws QuimpPluginException {
         HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(input);
@@ -152,6 +216,7 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
+    @Ignore
     public void test_HatFilter_case3() {
         try {
             HatSnakeFilter_ hf = new HatSnakeFilter_(); // even window
@@ -265,6 +330,25 @@ public class HatFilter_Test {
             assertTrue(e != null);
             LOGGER.debug(e.getMessage());
         }
+    }
+
+    @Test
+    public void testWindowIndRange_1() {
+        TreeSet<WindowIndRange> p = new TreeSet<>();
+        assertTrue(p.add(new WindowIndRange(1, 5)));
+        assertTrue(p.add(new WindowIndRange(6, 10)));
+        assertTrue(p.add(new WindowIndRange(-5, 0)));
+
+        assertFalse(p.add(new WindowIndRange(7, 8)));
+        assertFalse(p.add(new WindowIndRange(10, 12)));
+        assertFalse(p.add(new WindowIndRange(4, 7)));
+        assertFalse(p.add(new WindowIndRange(-5, 0)));
+
+        assertTrue(p.contains(new WindowIndRange(2, 2)));
+        assertTrue(p.contains(new WindowIndRange(6, 6)));
+        assertFalse(p.contains(new WindowIndRange(11, 11)));
+
+        LOGGER.debug(p.toString());
     }
 
 }
