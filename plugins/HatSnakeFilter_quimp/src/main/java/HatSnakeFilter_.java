@@ -225,13 +225,15 @@ public class HatSnakeFilter_ extends QWindowBuilder
                 // find where it was before sorting and store in window positions
                 int startpos = circ.indexOf(circsorted.get(i));
                 // check if we have this index in indexes to remove
-                indexTest.setRange(startpos, startpos + window - 1);
+                indexTest.setRange(startpos, startpos + window - 1); // TODO may be bug if startpos
+                                                                     // will be last element?
                 if (!ind2rem.contains(indexTest) && !convex.get(i)) {// this window doesnt overlap
                                                                      // with those found already and
                                                                      // it is convex
                     // store range of indexes that belongs to window
                     ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
-                    LOGGER.debug("added win for i=" + i + " startpos=" + startpos);
+                    LOGGER.debug("added win for i=" + i + " startpos=" + startpos + " coord:"
+                            + points.get(startpos).toString());
                     found++;
                     i++;
                 } else // search next candidate in sorted circularities
@@ -241,7 +243,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
                 int startpos = circ.indexOf(circsorted.get(i));
                 // store range of indexes that belongs to window
                 ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
-                LOGGER.debug("added win for i=" + i + " startpos=" + startpos);
+                LOGGER.debug("added win for i=" + i + " startpos=" + startpos + " coord:"
+                        + points.get(startpos).toString());
                 i++;
                 found++;
             }

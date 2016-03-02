@@ -110,7 +110,6 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
-    @Ignore
     public void test_HatFilter_run_2() throws QuimpPluginException {
         LOGGER.debug("input: " + prot.toString());
         HatSnakeFilter_ hf = new HatSnakeFilter_();
@@ -137,6 +136,7 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
+    @Ignore
     public void test_HatFilter_run_1() throws QuimpPluginException {
         LOGGER.debug("input: " + lininput.toString());
         HatSnakeFilter_ hf = new HatSnakeFilter_();
@@ -321,12 +321,14 @@ public class HatFilter_Test {
     public void testWindowIndRange_2() {
         TreeSet<WindowIndRange> p = new TreeSet<>();
         assertTrue(p.add(new WindowIndRange(1, 5)));
-        assertTrue(p.add(new WindowIndRange(6, 10)));
+        assertTrue(p.add(new WindowIndRange(7, 10)));
         assertTrue(p.add(new WindowIndRange(-5, 0)));
 
         assertFalse(p.add(new WindowIndRange(7, 8)));
         assertFalse(p.add(new WindowIndRange(10, 12)));
+        assertFalse(p.add(new WindowIndRange(9, 12)));
         assertFalse(p.add(new WindowIndRange(4, 7)));
+        assertFalse(p.add(new WindowIndRange(4, 6)));
         assertFalse(p.add(new WindowIndRange(-5, 0)));
         LOGGER.debug(p.toString());
     }

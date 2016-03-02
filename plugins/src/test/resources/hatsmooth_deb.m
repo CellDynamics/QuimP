@@ -1,4 +1,4 @@
-function out = hatsmooth(in,params)
+function out = hatsmooth_deb(in,params)
 % apply running median on vector in
 % params: [window ile smooth level]
 
@@ -12,7 +12,7 @@ level = params(4);
 
 coord = in;
 wp = floor(w/2);
-ind = padarray([1:length(coord)]',wp,'circular');
+ind = padarray([1:length(coord)]',w,'circular','post');
 
 X = coord(:,1); Y = coord(:,2);
 Xt = [X; X(1)];
@@ -25,8 +25,8 @@ circ = (4*pi*A)/(P.^2)
 l = 1;
 cc = [];
 Pc = [];
-for i=wp+1:length(coord)
-    indtorem = ind(i-wp:i+wp);
+for i=1:length(coord)
+    indtorem = ind(i:i+w-1);
     coordrem = coord;
     coordrem(indtorem,:) = [];
     A = polyarea(coordrem(:,1),coordrem(:,2));
@@ -46,12 +46,12 @@ for i=wp+1:length(coord)
     d = coordrem - repmat(center,length(coordrem),1);
     Pc = [Pc mean(sqrt(sum(d.^2,2)))];
     
-    coordrem % the same values for window range in java
-    Pc(end) % the same weighting
+    retcoordrem{i} = coordrem;% the same values for window range in java
+    retPC{i} = Pc(end); % the same weighting
     
     cc = [cc (4*pi*A)/(P.^2)];
-    cc(end)
-    cc(end)/Pc(end)/circ
+    retcc{i} = cc(end);
+    retccw{i} = cc(end)/Pc(end)/circ;
 end
 
 cc = cc./(Pc);
@@ -64,41 +64,36 @@ if ccsort(1)>level
     clear indtorem;
     i = 1;
     found = 0;
+    disp(['Process ' num2str(i)])
     while(found<ile)
         if(i>length(ccsort))
             warning('Can find next candidate. Use smaller window');
             break;
         end
         m = find(cc==ccsort(i));    
-        m = m + wp+1;
         if found>0
             sub = indtorem;   % all previous cases (indexes)
-            mmsub = minmax(sub(:)');    % range of previous results
-            mmcurr = minmax(ind(m-wp:m+wp)'); % current indexes (candidates)
+            mmsub = minmax(sub);    % range of previous results
+            mmcurr = minmax(ind(m:m+w-1)'); % current indexes (candidates)
             % check if current indexes are common with any of previous cases
-            if mmcurr(2) < mmsub(1) % maximum current < min prev
+            if mycontains(mmsub,mmcurr)==1
                 % found candidate
                 found = found + 1;
+                disp(['add ' num2str(i)])
                 disp([find(cc==ccsort(i)) ccsort(i)])
                 i = i + 1;
-                indtorem(found,:) = ind(m-wp:m+wp);
+                indtorem(found,:) = ind(m:m+w-1);
             else
-                if mmcurr(1) > mmsub(2) % min current > max prev
-                    % found candidate
-                    found = found + 1;
-                    disp([find(cc==ccsort(i)) ccsort(i)])
-                    i = i + 1;
-                    indtorem(found,:) = ind(m-wp:m+wp);
-                else
-                    i = i + 1; % check next
-                    continue;
-                end
+                disp(['Skip ' num2str(i)])
+                i = i + 1; % check next
+                continue;
             end
         else
+            disp(['add ' num2str(i)])
             disp([find(cc==ccsort(i)) ccsort(i)])
             i = i + 1; % for one accept it and go to next candidate
             found = found + 1;
-            indtorem(found,:) = ind(m-wp:m+wp);
+            indtorem(found,:) = ind(m:m+w-1);
         end
         % verify if found protrusion is inside or ouside polygon
         % temporary remove just found indexes
@@ -114,6 +109,7 @@ if ccsort(1)>level
         end
 
     end
+    indtorem
     coordrem(reshape(indtorem,1,[]),:) = [];
 else
     coordrem = coord;
@@ -130,3 +126,25 @@ out(:,2) = medfilt1(coordrem(:,2),sm);
 % out(:,1) = fitresult(xDatax);
 % [fitresult, ~] = fit( xDatay, yDatay, ft, opts );
 % out(:,2) = fitresult(xDatay);
+assignin('base','retcoordrem',retcoordrem);
+assignin('base','retcc',retcc);
+assignin('base','retPC',retPC);
+assignin('base','retccw',retccw);
+end
+
+function ret=mycontains(mm,cur)
+
+x = zeros(1:size(mm,1));
+cor = sort(cur);
+for i=1:size(mm,1)
+    c = mm(i,:);
+    if cur(1)>c(2)
+        x(i) = 1;
+    else
+        if cur(2)<c(1)
+            x(i) = 1;
+        end
+    end
+end
+ret = all(x);
+end

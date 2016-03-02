@@ -135,4 +135,29 @@ public class BasicPolygons<T extends Tuple2d> {
         return result;
     }
 
+    public Point2d polygonCenterOfMass(final List<T> P) {
+
+        int N = P.size();
+        Point2d[] polygon = new Point2d[N];
+
+        for (int q = 0; q < N; q++)
+            polygon[q] = new Point2d(P.get(q));
+
+        double cx = 0, cy = 0;
+        double A = getPolyArea(P);
+        int i, j;
+
+        double factor = 0;
+        for (i = 0; i < N; i++) {
+            j = (i + 1) % N;
+            factor = (polygon[i].x * polygon[j].y - polygon[j].x * polygon[i].y);
+            cx += (polygon[i].x + polygon[j].x) * factor;
+            cy += (polygon[i].y + polygon[j].y) * factor;
+        }
+        factor = 1.0 / (6.0 * A);
+        cx *= factor;
+        cy *= factor;
+        return new Point2d(Math.abs(cx), Math.abs((cy)));
+    }
+
 }
