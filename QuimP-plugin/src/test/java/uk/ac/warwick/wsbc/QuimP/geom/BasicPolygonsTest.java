@@ -180,4 +180,33 @@ public class BasicPolygonsTest {
         assertFalse(p);
     }
 
+    /**
+     * @test Test method for QuimP.geom.BasicPolygons.isanyPointInside(final List<E>, final List<E>)
+     * @pre Points inside and one outside
+     * @post Return true
+     */
+    @Test
+    public void testisanyPointInside() throws Exception {
+        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        ArrayList<Point2d> c = new ArrayList<>(inpoints);
+        c.add(new Point2d(10, 10));
+        boolean p = b.isanyPointInside(points, c);
+        assertTrue(p);
+    }
+
+    /**
+     * @test Test method for QuimP.geom.BasicPolygons.isanyPointInside(final List<E>, final List<E>)
+     * @pre All outside
+     * @post Return true
+     */
+    @Test
+    public void testisanyPointInside_1() throws Exception {
+        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        ArrayList<Point2d> c = new ArrayList<>();
+        c.add(new Point2d(10, 10));
+        c.add(new Point2d(40, 40));
+        boolean p = b.isanyPointInside(points, c);
+        assertFalse(p);
+    }
+
 }

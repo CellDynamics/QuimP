@@ -2,6 +2,9 @@ function out = hatsmooth(in,params)
 % apply running median on vector in
 % params: [window ile smooth level]
 
+% this is version based on hatsmooth from Prototyping.
+% java version is based on this one and agree in values
+
 w = params(1);
 ile = params(2);
 sm = params(3);
@@ -17,7 +20,7 @@ Yt = [Y; Y(1)];
 dx = diff(Xt); dy = diff(Yt);
 P = sum(sqrt(dx.^2+dy.^2));
 A = polyarea(X,Y);
-circ = (4*pi*A)/(P.^2);
+circ = (4*pi*A)/(P.^2)
 
 l = 1;
 cc = [];
@@ -43,13 +46,18 @@ for i=wp+1:length(coord)
     d = coordrem - repmat(center,length(coordrem),1);
     Pc = [Pc mean(sqrt(sum(d.^2,2)))];
     
+    coordrem % the same values for window range in java
+    Pc(end) % the same weighting
+    
     cc = [cc (4*pi*A)/(P.^2)];
+    cc(end)
+    cc(end)/Pc(end)/circ
 end
 
 cc = cc./(Pc);
 cc = cc/circ;
 
-ccsort = sort(cc,'descend')
+ccsort = sort(cc,'descend') % the same in java log cirs
 
 if ccsort(1)>level
     coordrem = coord;

@@ -5,6 +5,7 @@
 package uk.ac.warwick.wsbc.QuimP.geom;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.vecmath.Point2d;
@@ -17,7 +18,7 @@ import javax.vecmath.Vector2d;
  * @author p.baniukiewicz
  * @date 29 Feb 2016
  * @see http://www.mathopenref.com/coordpolygonarea.html
- * @todo integrate this class with awt.polygona maybe
+ * @todo integrate this class with awt.polygon maybe
  */
 public class BasicPolygons<T extends Tuple2d> {
 
@@ -108,13 +109,28 @@ public class BasicPolygons<T extends Tuple2d> {
     }
 
     /**
-     * Test if all points \c Ptest are inside polygon
-     * @copydetails isPointInside(final List<E>, final Tuple2d)
+     * Test if \b all points \c Ptest are inside polygon
+     * @copydetails isPointInside(final List<T>, final Tuple2d)
      */
     public boolean arePointsInside(final List<T> P, final List<T> Ptest) {
         boolean result = true;
-        for (T p : Ptest) {
-            result &= isPointInside(P, p);
+        Iterator<T> it = Ptest.iterator();
+        while (it.hasNext() && result) {
+            result = isPointInside(P, it.next());
+        }
+        return result;
+    }
+
+    /**
+     * Test if \b any point from \c Ptest is inside of \c P
+     * 
+     * @copydetails isPointInside(final List<T>, final Tuple2d)
+     */
+    public boolean isanyPointInside(final List<T> P, final List<T> Ptest) {
+        boolean result = false;
+        Iterator<T> it = Ptest.iterator();
+        while (it.hasNext() && !result) {
+            result = isPointInside(P, it.next());
         }
         return result;
     }

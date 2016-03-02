@@ -35,11 +35,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
  */
 @RunWith(Parameterized.class)
 public class HatFilter_Param_Test {
-    private static final Logger LOGGER = LogManager
-            .getLogger(HatFilter_Param_Test.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(HatFilter_Param_Test.class.getName());
     private Integer window;
-    private Integer crown;
-    private Double sig;
+    private Integer pnum;
+    private Double alev;
     private List<Vector2d> testcase;
     private Path testfileName;
 
@@ -58,12 +57,11 @@ public class HatFilter_Param_Test {
      * @see DataLoader
      * @see HatSnakeFilter_
      */
-    public HatFilter_Param_Test(String testFileName, Integer window,
-            Integer crown, Double sig) {
+    public HatFilter_Param_Test(String testFileName, Integer window, Integer pnum, Double alev) {
         this.testfileName = Paths.get(testFileName);
         this.window = window;
-        this.crown = crown;
-        this.sig = sig;
+        this.pnum = pnum;
+        this.alev = alev;
     }
 
     /**
@@ -92,11 +90,11 @@ public class HatFilter_Param_Test {
      */
     @Parameterized.Parameters
     public static Collection<Object[]> testFiles() {
-        return Arrays.asList(new Object[][] {
-                { "../src/test/resources/testData_137.dat", 23, 13, 0.3 },
-                { "../src/test/resources/testData_1.dat", 23, 13, 0.3 },
-                { "../src/test/resources/testData_125.dat", 23, 13, 0.3 },
-                { "../src/test/resources/testData_75.dat", 23, 13, 0.3 } });
+        return Arrays
+                .asList(new Object[][] { { "../src/test/resources/testData_137.dat", 23, 1, 0 },
+                        { "../src/test/resources/testData_1.dat", 23, 1, 0 },
+                        { "../src/test/resources/testData_125.dat", 23, 1, 0 },
+                        { "../src/test/resources/testData_75.dat", 23, 1, 0 } });
     }
 
     /**
@@ -120,14 +118,13 @@ public class HatFilter_Param_Test {
         hf.setPluginConfig(new ParamList() {
             {
                 put("window", String.valueOf(window));
-                put("crown", String.valueOf(crown));
-                put("sigma", String.valueOf(sig));
+                put("pnum", String.valueOf(pnum));
+                put("alev", String.valueOf(alev));
             }
         });
         out = (ArrayList<Vector2d>) hf.runPlugin();
-        RoiSaver.saveROI("/tmp/test_HatFilter_" + testfileName.getFileName()
-                + "_" + window.toString() + "_"
-                + crown.toString() + "_" + sig.toString() + ".tif", out);
+        RoiSaver.saveROI("/tmp/test_HatFilter_" + testfileName.getFileName() + "_"
+                + window.toString() + "_" + pnum.toString() + "_" + alev.toString() + ".tif", out);
         LOGGER.debug("setUp: " + testcase.toString());
     }
 
@@ -138,8 +135,8 @@ public class HatFilter_Param_Test {
      */
     @Test
     public void test_roiSaver() {
-        RoiSaver.saveROI("/tmp/ref_HatFilter_" + testfileName.getFileName()
-                + "_" + window.toString() + "_"
-                + crown.toString() + "_" + sig.toString() + ".tif", testcase);
+        RoiSaver.saveROI("/tmp/ref_HatFilter_" + testfileName.getFileName() + "_"
+                + window.toString() + "_" + pnum.toString() + "_" + alev.toString() + ".tif",
+                testcase);
     }
 }

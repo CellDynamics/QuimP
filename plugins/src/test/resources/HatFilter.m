@@ -74,7 +74,8 @@ xyr = reshape(xy',[],1); % x first
 fid = fopen('testData_circle.dat', 'w');
 fprintf(fid,'%.4f\n',xyr);
 fclose(fid);
-%% protrusions
+%% protrusions - generate test data
+% generate test case with protrusions
 
 Ro = 150;
 R1 = Ro/5;
@@ -91,12 +92,30 @@ Object(X.^2+Y.^2<=Ro^2) = 255;
 Object((X-max(ls)/2.2).^2+(Y-max(ls)/2.2).^2<=R1^2) = 255;
 Object((X+max(ls)/2.4).^2+(Y+max(ls)/2.4).^2<=R2^2) = 255;
 Object((X+max(ls)/3.8).^2+(Y-max(ls)/3.8).^2<=R3^2) = 255;
-
-% Object((X+max(spatialSpace)/2).^2+(Y+max(spatialSpace)/2).^2<=R3^2) = 255;
-% Object((X-max(spatialSpace)*3/4).^2+(Y-max(spatialSpace)*3/4).^2<=R2^2) = 255;
-
-% Object((X-max(spatialSpace)*3/4).^2+(Y+max(spatialSpace)*3/4).^2/5<=R2^2) = 255;
+Object((X-60).^2+(Y+130).^2<=R2^2) = 0;
 Object((X-max(ls)*0.6).^2/4+(Y-max(ls)*0.0).^2<=R4^2) = 255;
 
 % control plotting
 figure;imagesc(ls,ls,Object); axis square;colormap gray
+B = bwboundaries(Object);
+xy = B{1}(1:6:end,:);
+xyr = reshape(xy',[],1); % x first
+fid = fopen('testData_prot.dat', 'w');
+fprintf(fid,'%.4f\n',xyr);
+fclose(fid);
+save prot.mat xy
+%% protrusions - load java results and comapre with matlab
+
+clc;out = hatsmooth_deb(xy,[15 3 1 0]); % compare logs with this version
+figure;plot(xy(:,1),xy(:,2),'go');grid on;axis square
+hold on
+plot(out(:,1),out(:,2),'rs')
+
+% load output from test
+im = imread('/tmp/test_HatFilter_run_2.tif');
+figure;imagesc((im)); axis square
+hold on
+plot(out(:,1)-(135-66),out(:,2)-(132-62),'rs','MarkerFaceColor','r') % manual matching
+plot(xy(:,1)-(135-66),xy(:,2)-(132-62),'go')
+legend('orginal','removed')
+title('Test image on background - compared to matlab results')

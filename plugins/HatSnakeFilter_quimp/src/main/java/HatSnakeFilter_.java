@@ -140,7 +140,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
         LOGGER.debug(String.format("Run plugin with params: window %d, pnum %d, alev %f", window,
                 pnum, alev));
 
-        int cp = window / 2; // left and right range of window
+        BasicPolygons<Vector2d> bp = new BasicPolygons<Vector2d>(); // provide geometry processing
         List<Vector2d> out = new ArrayList<Vector2d>(); // output table for plotting temporary
                                                         // results of filter
         // check input conditions
@@ -163,19 +163,32 @@ public class HatSnakeFilter_ extends QWindowBuilder
         ArrayList<Double> circ = new ArrayList<Double>(); // array to store circularity for window
                                                           // positions. Index is related to window
                                                           // position (negative shift in rotate)
+        ArrayList<Boolean> convex = new ArrayList<Boolean>(); // store information if points for
+                                                              // window at r position are convex
+                                                              // compared to shape without these
+                                                              // points
+
+        // get original shape circularity
+        double orgCirc = getCircularity(points);
         double tmpCirc;
         for (int r = 0; r < points.size(); r++) {
+            LOGGER.debug("------- Iter: " + r + "-------");
             LOGGER.debug("points: " + points.toString());
             // get all points except window. Window has constant position 0 - (window-1)
-            List<Vector2d> sub = points.subList(window, points.size());
-            LOGGER.debug("sub: " + sub.toString());
-            tmpCirc = getCircularity(sub);
+            List<Vector2d> pointsnowindow = points.subList(window, points.size());
+            LOGGER.debug("sub: " + pointsnowindow.toString());
+            tmpCirc = getCircularity(pointsnowindow);
             LOGGER.debug("circ " + tmpCirc);
             // calculate weighting for circularity
-            List<Vector2d> w = points.subList(0, window); // get window position
-            LOGGER.debug("win: " + w.toString());
-            tmpCirc /= getWeighting(w); // calculate weighting for window content
+            List<Vector2d> pointswindow = points.subList(0, window); // get points for window only
+            LOGGER.debug("win: " + pointswindow.toString());
+            tmpCirc /= getWeighting(pointswindow); // calculate weighting for window content
+            tmpCirc /= orgCirc;
+            LOGGER.debug("Wcirc " + tmpCirc);
             circ.add(tmpCirc); // store weighted circularity for shape without window
+            // check if points of window are convex according to shape without these points
+            convex.add(bp.isanyPointInside(pointsnowindow, pointswindow)); // true if concave
+            LOGGER.debug("con: " + convex.get(convex.size() - 1));
             // move window to next position
             Collections.rotate(points, -1); // rotates by -1 what means that on first n positions
                                             // of points there are different values simulate window
@@ -195,6 +208,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
 
         if (circsorted.get(0) < alev) // if maximal circularity smaller than acceptance level
             return points; // just return non-modified data;
+
         int found = 0; // how many protrusions we have found already
         int i = 0; // current index in circsorted - number of window to analyze. Real position of
                    // window on data can be retrieved by finding value from sorted array circularity
@@ -202,17 +216,24 @@ public class HatSnakeFilter_ extends QWindowBuilder
                    // from 0 for most left point of window
         while (found < pnum) { // do as long as we find pnum protrusions (or to end of candidates)
             if (i >= circsorted.size()) { // no more data to check, probably we have less prot. pnum
-                throw new QuimpPluginException("Can find next candidate. Use smaller window");
+                LOGGER.warn("Can find next candidate. Use smaller window");
+                break;
             }
             if (found > 0) {
+                if (circsorted.get(i) < alev) // if ith circularity smaller than limit
+                    break; // stop searching because all i+n are smaller as well
                 // find where it was before sorting and store in window positions
                 int startpos = circ.indexOf(circsorted.get(i));
                 // check if we have this index in indexes to remove
                 indexTest.setRange(startpos, startpos + window - 1);
-                if (!ind2rem.contains(indexTest)) {// index isnt in already collected indexes to rm
+                if (!ind2rem.contains(indexTest) && !convex.get(i)) {// this window doesnt overlap
+                                                                     // with those found already and
+                                                                     // it is convex
                     // store range of indexes that belongs to window
                     ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
+                    LOGGER.debug("added win for i=" + i + " startpos=" + startpos);
                     found++;
+                    i++;
                 } else // search next candidate in sorted circularities
                     i++;
             } else { // first candidate always accepted
@@ -220,12 +241,13 @@ public class HatSnakeFilter_ extends QWindowBuilder
                 int startpos = circ.indexOf(circsorted.get(i));
                 // store range of indexes that belongs to window
                 ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
+                LOGGER.debug("added win for i=" + i + " startpos=" + startpos);
                 i++;
                 found++;
             }
         }
         LOGGER.debug("winpos: " + ind2rem.toString());
-
+        LOGGER.debug("CIRC: " + orgCirc);
         // Step 3 - remove selected windows from input data
         // array will be copied to new one skipping points to remove
         for (i = 0; i < points.size(); i++) {
@@ -267,7 +289,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
     private double getWeighting(final List<Vector2d> p) {
         double len = 0;
 
-        Vector2d middle = p.get(p.size() / 2 + 1); // middle point of window
+        Vector2d middle = p.get(p.size() / 2); // middle point of window
         for (Vector2d v : p) {
             Vector2d vec = new Vector2d(middle); // vector between px and middle
             vec.sub(v);
@@ -623,7 +645,12 @@ class ExPolygon extends Polygon {
 }
 
 /**
- * Class holding lower and upper index of window. supports comparisons.
+ * Class holding lower and upper index of window. Supports comparisons.
+ * 
+ * Two ranges <l;u> and <l1;u1> are equal if any ot these conditions is met:
+ * 1. they overlap
+ * 1. they are the same
+ * 1. one is included in second
  * 
  * @author p.baniukiewicz
  * @date 1 Mar 2016
@@ -688,7 +715,7 @@ class WindowIndRange implements Comparable<Object> {
      * The following rules of comparison are used:
      * -# If range1 is below range2 they are not equal
      * -# If range1 is above range2 they are not equal
-     * -# They are qual in all other cases:
+     * -# They are equal in all other cases:
      *  -# They are sticked
      *  -# One includes other
      *  -# They overlap
@@ -721,9 +748,9 @@ class WindowIndRange implements Comparable<Object> {
     }
 
     /**
-     * Set pair of indexes that define window
+     * Set pair of indexes that define window assuring that l<u
      * 
-     * @param l lower index
+     * @param l lower index, always smaller
      * @param u upper index
      */
     public void setRange(int l, int u) {

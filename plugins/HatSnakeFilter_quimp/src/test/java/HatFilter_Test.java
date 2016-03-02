@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -23,6 +22,7 @@ import org.junit.rules.TestName;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.DataLoader;
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
  * Test class for HatFilter
@@ -36,22 +36,21 @@ public class HatFilter_Test {
     private static final Logger LOGGER = LogManager.getLogger(HatFilter_Test.class.getName());
     private List<Vector2d> input;
     private List<Vector2d> lininput; //!< line at 45 deg
-    private List<Vector2d> circ;
+    private List<Vector2d> circ; //!< circular object <EM>../src/test/resources/HatFilter.m</EM>
+    /**
+     * simulated protrusions
+     * %% protrusions - generate test data from <EM>../src/test/resources/HatFilter.m</EM>
+     */
+    private List<Vector2d> prot;
 
     @Rule
     public TestName name = new TestName(); //!< Allow to get tested method name (called at setUp())
 
     /**
-     * Create line with nodes in every 1 unit.
-     * 
-     * Three middle nodes are moved to y=1:
-     * 
-     * @code 
-     *                   ---    
-     * ------------------   ---------------------- 0 39
-     * @endcode
+     * Load all data
      * 
      * @throws Exception
+     * @see ../src/test/resources/HatFilter.m
      */
     @Before
     public void setUp() throws Exception {
@@ -68,6 +67,8 @@ public class HatFilter_Test {
             lininput.add(new Vector2d(i, i));
 
         circ = new DataLoader("../src/test/resources/testData_circle.dat").getData();
+
+        prot = new DataLoader("../src/test/resources/testData_prot.dat").getData();
     }
 
     @After
@@ -84,8 +85,9 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
+    @Ignore
     public void test_HatFilter_run() throws QuimpPluginException {
-        LOGGER.debug("input: " + lininput.toString());
+        LOGGER.debug("input: " + circ.toString());
         HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(circ);
         hf.setPluginConfig(new ParamList() {
@@ -100,6 +102,32 @@ public class HatFilter_Test {
 
     /**
      * @test Test of HatSnakeFilter_.runPlugin()
+     * @pre Simulated protrusions
+     * @post Logs are comparable with script <EM>../src/test/resources/HatFilter.m</EM>
+     * After run go to folder mentioned above and run 
+     * <EM>%% protrusions - load java results and compare with matlab</EM> to verify results
+     * @throws QuimpPluginException
+     */
+    @SuppressWarnings("serial")
+    @Test
+    @Ignore
+    public void test_HatFilter_run_2() throws QuimpPluginException {
+        LOGGER.debug("input: " + prot.toString());
+        HatSnakeFilter_ hf = new HatSnakeFilter_();
+        hf.attachData(prot);
+        hf.setPluginConfig(new ParamList() {
+            {
+                put("window", "15");
+                put("pnum", "3");
+                put("alev", "0");
+            }
+        });
+        List<Vector2d> out = hf.runPlugin();
+        RoiSaver.saveROI("/tmp/test_HatFilter_run_2.tif", out);
+    }
+
+    /**
+     * @test Test of HatSnakeFilter_.runPlugin()
      * @pre Linear object
      * @post In logs:
      * -# Weighting differ at end
@@ -109,7 +137,6 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
-    @Ignore
     public void test_HatFilter_run_1() throws QuimpPluginException {
         LOGGER.debug("input: " + lininput.toString());
         HatSnakeFilter_ hf = new HatSnakeFilter_();
@@ -125,65 +152,6 @@ public class HatFilter_Test {
     }
 
     /**
-     * @test test of HatFilter method
-     * @pre vector line defined in setUp()
-     * @post all nodes accepted. input==output
-     * @throws QuimpPluginException
-     */
-    @SuppressWarnings("serial")
-    @Test
-    @Ignore
-    public void test_HatFilter_case1() throws QuimpPluginException {
-        LOGGER.debug("input: " + input.toString());
-        HatSnakeFilter_ hf = new HatSnakeFilter_();
-        hf.attachData(input);
-        hf.setPluginConfig(new ParamList() {
-            {
-                put("window", "5");
-                put("pnum", "1");
-                put("alev", "0");
-            }
-        });
-        ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
-        LOGGER.debug("  out: " + out.toString());
-        assertEquals(input, out);
-    }
-
-    /**
-     * @test test of HatFilter method
-     * @pre vector line defined in setUp()
-     * @post nodes 0, 1, 2, 37, 38, 39, 15, 16, 17, 18, 19, 20, 21, 22, 23
-     * removed
-     * @throws QuimpPluginException
-     */
-    @SuppressWarnings("serial")
-    @Test
-    @Ignore
-    public void test_HatFilter_case2() throws QuimpPluginException {
-        LOGGER.debug("input: " + input.toString());
-        HatSnakeFilter_ hf = new HatSnakeFilter_();
-        hf.attachData(input);
-        hf.setPluginConfig(new ParamList() {
-            {
-                put("window", "5");
-                put("pnum", "1");
-                put("alev", "0");
-            }
-        });
-        ArrayList<Vector2d> out = (ArrayList<Vector2d>) hf.runPlugin();
-        LOGGER.debug("  out: " + out.toString());
-
-        // remove precalculated indexes from input array (see Matlab test code)
-        int removed[] = { 0, 1, 2, 37, 38, 39, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
-        Arrays.sort(removed);
-        int lr = 0;
-        for (int el : removed)
-            input.remove(el - lr++);
-        LOGGER.debug(input.toString());
-        assertEquals(input, out);
-    }
-
-    /**
      * @test test set and get parameters to/from filter
      * @pre given parameters
      * @post the same parameters received from filter
@@ -192,7 +160,6 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
-    @Ignore
     public void test_HatFilter_setget() throws QuimpPluginException {
         HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(input);
@@ -216,7 +183,6 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
-    @Ignore
     public void test_HatFilter_case3() {
         try {
             HatSnakeFilter_ hf = new HatSnakeFilter_(); // even window
@@ -235,7 +201,7 @@ public class HatFilter_Test {
             LOGGER.debug(e.getMessage());
         }
         try {
-            HatSnakeFilter_ hf = new HatSnakeFilter_(); // neg crown
+            HatSnakeFilter_ hf = new HatSnakeFilter_(); // neg window
             hf.attachData(input);
             hf.setPluginConfig(new ParamList() {
                 {
@@ -332,8 +298,27 @@ public class HatFilter_Test {
         }
     }
 
+    /**
+     * @test Test of WindowIndRange class
+     * @pre Separated ranges of indexes
+     * @post All ranges are added to list
+     */
     @Test
     public void testWindowIndRange_1() {
+        TreeSet<WindowIndRange> p = new TreeSet<>();
+        assertTrue(p.add(new WindowIndRange(1, 5)));
+        assertTrue(p.add(new WindowIndRange(6, 10)));
+        assertTrue(p.add(new WindowIndRange(-5, 0)));
+        LOGGER.debug(p.toString());
+    }
+
+    /**
+     * @test Test of WindowIndRange class
+     * @pre Overlap ranges of indexes
+     * @post Overlap ranges are not added to list
+     */
+    @Test
+    public void testWindowIndRange_2() {
         TreeSet<WindowIndRange> p = new TreeSet<>();
         assertTrue(p.add(new WindowIndRange(1, 5)));
         assertTrue(p.add(new WindowIndRange(6, 10)));
@@ -343,6 +328,19 @@ public class HatFilter_Test {
         assertFalse(p.add(new WindowIndRange(10, 12)));
         assertFalse(p.add(new WindowIndRange(4, 7)));
         assertFalse(p.add(new WindowIndRange(-5, 0)));
+        LOGGER.debug(p.toString());
+    }
+
+    /**
+     * @test Test of WindowIndRange class
+     * Test if particular point is included in any range stored in TreeSet
+     */
+    @Test
+    public void testWindowIndRange_3() {
+        TreeSet<WindowIndRange> p = new TreeSet<>();
+        assertTrue(p.add(new WindowIndRange(1, 5)));
+        assertTrue(p.add(new WindowIndRange(6, 10)));
+        assertTrue(p.add(new WindowIndRange(-5, 0)));
 
         assertTrue(p.contains(new WindowIndRange(2, 2)));
         assertTrue(p.contains(new WindowIndRange(6, 6)));
