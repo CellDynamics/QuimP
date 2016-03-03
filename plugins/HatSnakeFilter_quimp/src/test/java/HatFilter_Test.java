@@ -107,6 +107,8 @@ public class HatFilter_Test {
      * After run go to folder mentioned above and run 
      * <EM>%% protrusions - load java results and compare with matlab</EM> to verify results
      * @throws QuimpPluginException
+     * @warning This matlab code is not fully compatible with java. Some results differ
+     * Matlab dont accept windows lying on beginnig because they have indexes 1-max.
      */
     @SuppressWarnings("serial")
     @Test

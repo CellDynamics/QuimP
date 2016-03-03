@@ -42,8 +42,8 @@ for i=1:length(coord)
 %     Pc = [Pc std(sqrt(sum(d.^2,2)))];
     
     % candidate 2
-    center = coordrem(wp+1,:); %coordrem(wp+1,:);
-    d = coordrem - repmat(center,length(coordrem),1);
+    center = coordrem(1,:); %coordrem(wp+1,:);
+    d = coordrem(1,:) - coordrem(end,:);
     Pc = [Pc mean(sqrt(sum(d.^2,2)))];
     
     retcoordrem{i} = coordrem;% the same values for window range in java
@@ -74,9 +74,9 @@ if ccsort(1)>level
         if found>0
             sub = indtorem;   % all previous cases (indexes)
             mmsub = minmax(sub);    % range of previous results
-            mmcurr = minmax(ind(m:m+w-1)'); % current indexes (candidates)
+            mmcurr = minmax(ind(m:m+w-1)'); % current indexes (candidates) - THIS is difference to java, here some windows can ha indexes 1-max when they are on beginning or end of points
             % check if current indexes are common with any of previous cases
-            if mycontains(mmsub,mmcurr)==1
+            if mycontains(mmsub,mmcurr)==1 
                 % found candidate
                 found = found + 1;
                 disp(['add ' num2str(i)])

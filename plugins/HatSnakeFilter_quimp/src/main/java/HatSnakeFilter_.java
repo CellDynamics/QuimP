@@ -214,6 +214,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
                    // window on data can be retrieved by finding value from sorted array circularity
                    // in non sorted, where order of data is related to window position starting
                    // from 0 for most left point of window
+        boolean contains; // temporary result of test if current window is included in any prev
         while (found < pnum) { // do as long as we find pnum protrusions (or to end of candidates)
             if (i >= circsorted.size()) { // no more data to check, probably we have less prot. pnum
                 LOGGER.warn("Can find next candidate. Use smaller window");
@@ -225,11 +226,18 @@ public class HatSnakeFilter_ extends QWindowBuilder
                 // find where it was before sorting and store in window positions
                 int startpos = circ.indexOf(circsorted.get(i));
                 // check if we have this index in indexes to remove
-                indexTest.setRange(startpos, startpos + window - 1); // TODO may be bug if startpos
-                                                                     // will be last element?
-                if (!ind2rem.contains(indexTest) && !convex.get(i)) {// this window doesnt overlap
-                                                                     // with those found already and
-                                                                     // it is convex
+                if (startpos + window - 1 >= points.size()) { // if at end, we must turn to begin
+                    indexTest.setRange(startpos, points.size() - 1); // to end
+                    contains = ind2rem.contains(indexTest); // beginning of window at the end of dat
+                    indexTest.setRange(0, window - (points.size() - startpos) - 1); // rotated to
+                                                                                    // begin
+                    contains &= ind2rem.contains(indexTest); // and rotated part at beginning
+                } else {
+                    indexTest.setRange(startpos, startpos + window - 1);
+                    contains = ind2rem.contains(indexTest);
+                }
+                if (!contains && !convex.get(i)) {// this window doesnt overlap
+                                                  // with those found already and it is convex
                     // store range of indexes that belongs to window
                     ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
                     LOGGER.debug("added win for i=" + i + " startpos=" + startpos + " coord:"
@@ -283,24 +291,27 @@ public class HatSnakeFilter_ extends QWindowBuilder
     /**
      * Calculates weighting based on distribution of window points
      * 
-     * Calculates lengths of vectors between ever point \c n and middle point \c nm in list \c p.
-     * Then those lengths are averaged
+     * Calculates length between first and last point of window
      *  
      * @param p Polygon vertices
      * @return Weight
      */
     private double getWeighting(final List<Vector2d> p) {
         double len = 0;
+        // BasicPolygons<Vector2d> bp = new BasicPolygons<Vector2d>();
+        // // Vector2d middle = p.get(p.size() / 2); // middle point of window
+        // Vector2d middle = new Vector2d(bp.polygonCenterOfMass(p));
+        // for (Vector2d v : p) {
+        // Vector2d vec = new Vector2d(middle); // vector between px and middle
+        // vec.sub(v);
+        // len += vec.length();
+        // }
+        Vector2d last = new Vector2d(p.get(p.size() - 1));
+        last.sub(p.get(0));
+        len = last.length();
 
-        Vector2d middle = p.get(p.size() / 2); // middle point of window
-        for (Vector2d v : p) {
-            Vector2d vec = new Vector2d(middle); // vector between px and middle
-            vec.sub(v);
-            len += vec.length();
-        }
-
-        LOGGER.debug("w " + len / p.size());
-        return len / p.size();
+        LOGGER.debug("w " + len);
+        return len;
     }
 
     /**

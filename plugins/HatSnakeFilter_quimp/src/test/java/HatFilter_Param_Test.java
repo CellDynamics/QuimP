@@ -91,10 +91,10 @@ public class HatFilter_Param_Test {
     @Parameterized.Parameters
     public static Collection<Object[]> testFiles() {
         return Arrays
-                .asList(new Object[][] { { "../src/test/resources/testData_137.dat", 23, 1, 0 },
-                        { "../src/test/resources/testData_1.dat", 23, 1, 0 },
-                        { "../src/test/resources/testData_125.dat", 23, 1, 0 },
-                        { "../src/test/resources/testData_75.dat", 23, 1, 0 } });
+                .asList(new Object[][] { { "../src/test/resources/testData_137.dat", 23, 1, 0.0 },
+                        { "../src/test/resources/testData_1.dat", 23, 1, 0.0 },
+                        { "../src/test/resources/testData_125.dat", 23, 1, 0.0 },
+                        { "../src/test/resources/testData_75.dat", 23, 1, 0.0 } });
     }
 
     /**
