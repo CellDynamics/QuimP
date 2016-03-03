@@ -115,7 +115,7 @@ plot(out(:,1),out(:,2),'rs')
 im = imread('/tmp/test_HatFilter_run_2.tif');
 figure;imagesc((im)); axis square
 hold on
-plot(out(:,1)-(135-66),out(:,2)-(132-62),'rs','MarkerFaceColor','r') % manual matching
+% plot(out(:,1)-(135-66),out(:,2)-(132-62),'rs','MarkerFaceColor','r') % manual matching
 plot(xy(:,1)-(135-66),xy(:,2)-(132-62),'go')
 legend('orginal','removed')
 title('Test image on background - compared to matlab results')

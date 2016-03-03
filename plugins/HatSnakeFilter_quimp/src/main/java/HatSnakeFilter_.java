@@ -236,8 +236,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
                     indexTest.setRange(startpos, startpos + window - 1);
                     contains = ind2rem.contains(indexTest);
                 }
-                if (!contains && !convex.get(i)) {// this window doesnt overlap
-                                                  // with those found already and it is convex
+                if (!contains && !convex.get(startpos)) {// this window doesnt overlap
+                    // with those found already and it is convex
                     // store range of indexes that belongs to window
                     ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
                     LOGGER.debug("added win for i=" + i + " startpos=" + startpos + " coord:"
@@ -294,6 +294,9 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * Calculates center of mass of window points and then standard deviations of lengths between
      * this point and every other point. Cumulated distributions like protrusions give smaller
      * values than elongated ones.
+     * 
+     * If input polygon /c p (which is only part of whole cell shape) is defective, i.e its edges
+     * cross, the weight is calculated using middle vector defined as mean of coordinates. 
      *  
      * @param p Polygon vertices
      * @return Weight
@@ -301,7 +304,17 @@ public class HatSnakeFilter_ extends QWindowBuilder
     private double getWeighting(final List<Vector2d> p) {
         double[] len = new double[p.size()];
         BasicPolygons<Vector2d> bp = new BasicPolygons<Vector2d>();
-        Vector2d middle = new Vector2d(bp.polygonCenterOfMass(p));
+        Vector2d middle;
+        try { // check if input polygon is correct
+            middle = new Vector2d(bp.polygonCenterOfMass(p));
+        } catch (IllegalArgumentException e) { // if not get middle point as mean
+            double mx = 0, my = 0;
+            for (Vector2d v : p) {
+                mx += v.x;
+                my += v.y;
+            }
+            middle = new Vector2d(mx / p.size(), my / p.size());
+        }
         int i = 0;
         // get lengths
         for (Vector2d v : p) {

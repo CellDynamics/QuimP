@@ -12,6 +12,9 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Tuple2d;
 import javax.vecmath.Vector2d;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Calculates basic geometry on polygons defined as list of point in specified direction
  * 
@@ -21,6 +24,8 @@ import javax.vecmath.Vector2d;
  * @todo integrate this class with awt.polygon maybe
  */
 public class BasicPolygons<T extends Tuple2d> {
+
+    private static final Logger LOGGER = LogManager.getLogger(BasicPolygons.class.getName());
 
     public BasicPolygons() {
 
@@ -135,6 +140,14 @@ public class BasicPolygons<T extends Tuple2d> {
         return result;
     }
 
+    /**
+     * Get center of mass of polygon.
+     * 
+     * @param P Vertices of polygon in specified order
+     * @return Point of center of mass
+     * @warning Require correct polygon with non crossing edges.
+     * @throws IllegalArgumentException when defective polygon is given (area equals 0)
+     */
     public Point2d polygonCenterOfMass(final List<T> P) {
 
         int N = P.size();
@@ -145,6 +158,8 @@ public class BasicPolygons<T extends Tuple2d> {
 
         double cx = 0, cy = 0;
         double A = getPolyArea(P);
+        if (A == 0) // defective polygon
+            throw new IllegalArgumentException("Defective polygon, area is 0");
         int i, j;
 
         double factor = 0;
