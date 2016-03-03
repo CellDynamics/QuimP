@@ -106,7 +106,7 @@ fclose(fid);
 save prot.mat xy
 %% protrusions - load java results and comapre with matlab
 
-clc;out = hatsmooth_deb(xy,[15 3 1 0]); % compare logs with this version
+clc;out = hatsmooth_deb(xy,[9 3 1 0]); % compare logs with this version
 figure;plot(xy(:,1),xy(:,2),'go');grid on;axis square
 hold on
 plot(out(:,1),out(:,2),'rs')

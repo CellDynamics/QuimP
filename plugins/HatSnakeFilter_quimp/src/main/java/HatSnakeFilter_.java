@@ -291,46 +291,38 @@ public class HatSnakeFilter_ extends QWindowBuilder
     /**
      * Calculates weighting based on distribution of window points
      * 
-     * Calculates length between first and last point of window
+     * Calculates center of mass of window points and then standard deviations of lengths between
+     * this point and every other point. Cumulated distributions like protrusions give smaller
+     * values than elongated ones.
      *  
      * @param p Polygon vertices
      * @return Weight
      */
     private double getWeighting(final List<Vector2d> p) {
-        double len = 0;
-        // BasicPolygons<Vector2d> bp = new BasicPolygons<Vector2d>();
-        // // Vector2d middle = p.get(p.size() / 2); // middle point of window
-        // Vector2d middle = new Vector2d(bp.polygonCenterOfMass(p));
-        // for (Vector2d v : p) {
-        // Vector2d vec = new Vector2d(middle); // vector between px and middle
-        // vec.sub(v);
-        // len += vec.length();
-        // }
-        Vector2d last = new Vector2d(p.get(p.size() - 1));
-        last.sub(p.get(0));
-        len = last.length();
+        double[] len = new double[p.size()];
+        BasicPolygons<Vector2d> bp = new BasicPolygons<Vector2d>();
+        Vector2d middle = new Vector2d(bp.polygonCenterOfMass(p));
+        int i = 0;
+        // get lengths
+        for (Vector2d v : p) {
+            Vector2d vec = new Vector2d(middle); // vector between px and middle
+            vec.sub(v);
+            len[i++] = vec.length();
+        }
+        // get mean
+        double mean = 0;
+        for (double d : len)
+            mean += d;
+        mean /= p.size();
+        // get std
+        double std = 0;
+        for (double d : len)
+            std += Math.pow(d - mean, 2.0);
+        std /= points.size();
+        std = Math.sqrt(std);
 
-        LOGGER.debug("w " + len);
-        return len;
-    }
-
-    /**
-     * Get length of vector v = v1-v2
-     * 
-     * Avoid creating new Vector2d object when using build-in Vector2d::sub
-     * method method
-     * 
-     * @param v1 Vector
-     * @param v2 Vector
-     * @return ||v1-v2||
-     */
-    private double getLen(Vector2d v1, Vector2d v2) {
-        double dx;
-        double dy;
-        dx = v1.x - v2.x;
-        dy = v1.y - v2.y;
-
-        return Math.sqrt(dx * dx + dy * dy);
+        LOGGER.debug("w " + std);
+        return std;
     }
 
     /**

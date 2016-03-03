@@ -118,7 +118,7 @@ public class HatFilter_Test {
         hf.attachData(prot);
         hf.setPluginConfig(new ParamList() {
             {
-                put("window", "15");
+                put("window", "9");
                 put("pnum", "3");
                 put("alev", "0");
             }
