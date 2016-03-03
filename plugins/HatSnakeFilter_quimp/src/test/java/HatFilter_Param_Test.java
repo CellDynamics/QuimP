@@ -29,6 +29,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 /**
  * Parameterized test for HatFilter
  * 
+ * Generates images of processed data as well as images of original data. Those can be viewed in 
+ * <EM>../src/test/resources/HatFilter.m</EM>
  * @author p.baniukiewicz
  * @date 25 Jan 2016
  *
@@ -51,9 +53,8 @@ public class HatFilter_Param_Test {
      * 
      * @param testFileName test file name
      * @param window filter window size
-     * @param crown filter crown size
-     * @param sig
-     * sigma value
+     * @param pnum number of protrusions to find
+     * @param alev acceptance level
      * @see DataLoader
      * @see HatSnakeFilter_
      */
@@ -94,7 +95,11 @@ public class HatFilter_Param_Test {
                 .asList(new Object[][] { { "../src/test/resources/testData_137.dat", 23, 1, 0.0 },
                         { "../src/test/resources/testData_1.dat", 23, 1, 0.0 },
                         { "../src/test/resources/testData_125.dat", 23, 1, 0.0 },
-                        { "../src/test/resources/testData_75.dat", 23, 1, 0.0 } });
+                        { "../src/test/resources/testData_75.dat", 23, 1, 0.0 },
+                        { "../src/test/resources/testData_137.dat", 23, 2, 0.0 },
+                        { "../src/test/resources/testData_1.dat", 23, 2, 0.0 },
+                        { "../src/test/resources/testData_125.dat", 23, 2, 0.0 },
+                        { "../src/test/resources/testData_75.dat", 23, 2, 0.0 } });
     }
 
     /**
@@ -102,12 +107,10 @@ public class HatFilter_Param_Test {
      * @pre Real cases extracted from
      * @post Save image test_HatFilter_* in /tmp/
      * @throws QuimpPluginException
-     * @see QuimP-toolbox/algorithms/src/test/resources/HatFilter.m for
-     * verification of logs (ratios, indexes, etc)
-     * @see QuimP-toolbox/algorithms/src/test/resources/
-     * Interpolate_Test_Analyzer.m for plotting results
-     * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating
-     * *.dat files
+     * @see QuimP-toolbox/algorithms/src/test/resources/HatFilter.m for verification of logs
+     * (ratios, indexes, etc)
+     * @see <EM>../src/test/resources/HatFilter.m</EM> for plotting results
+     * @see QuimP-toolbox/Prototyping/59-Shape_filtering/main.m for creating *.dat files
      */
     @SuppressWarnings("serial")
     @Test
@@ -129,9 +132,10 @@ public class HatFilter_Param_Test {
     }
 
     /**
-     * @test Simple test of RoiSaver class, create reference images without
-     * processing but with the same name scheme
-     * @post Save image /tmp/testroiSaver_*.tif
+     * @test Simple test of RoiSaver class, create reference images without processing but with the
+     * same name scheme as processed data
+     * @post Save image in /tmp
+     * @see <EM>../src/test/resources/HatFilter.m</EM> for plotting results
      */
     @Test
     public void test_roiSaver() {

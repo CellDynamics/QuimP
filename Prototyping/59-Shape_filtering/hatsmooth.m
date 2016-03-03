@@ -2,6 +2,8 @@ function out = hatsmooth(in,params)
 % apply running median on vector in
 % params: [window ile smooth level]
 
+% warning - this implementation differs from filter implemented in java
+% which is less buggy. See plugins.test.resources for more actual verison
 w = params(1);
 ile = params(2);
 sm = params(3);

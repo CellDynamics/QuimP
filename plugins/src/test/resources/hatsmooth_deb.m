@@ -4,6 +4,7 @@ function out = hatsmooth_deb(in,params)
 
 % this is version based on hatsmooth from Prototyping.
 % java version is based on this one and agree in values
+% java version may differ
 
 w = params(1);
 ile = params(2);
@@ -48,6 +49,8 @@ for i=1:length(coord)
     
     retcoordrem{i} = coordrem;% the same values for window range in java
     retPC{i} = Pc(end); % the same weighting
+    
+    % currently java uses different veighting
     
     cc = [cc (4*pi*A)/(P.^2)];
     retcc{i} = cc(end);

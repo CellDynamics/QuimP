@@ -35,23 +35,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
 /**
  * Implementation of HatFilter for removing convexities from polygon
  * 
- * This filter run mask of size \b M along path defined by vertexes on 2D plane.
- * The mask \b M contains smaller inner part called crown \b C. There is always
- * relation that \b C < \b M and \b M and \b C are uneven. For example for \b
- * M=9 and \b C=5 the mask is: \c MMCCCCCMM. For every position \a i of mask \b
- * M on path two distances are calculated: -# the distance \a dM that is total
- * length of path covered by \b M (sum of lengths of vectors between vertexes
- * V(i+1) and V(i) for all i included in \b M -# the distance \a dC that is
- * total length of curve with \b removed points from crown \b C.
- * 
- * For straight line \a dM and \a dC will be equal just because removing some
- * inner points does not change length of path. For strong curvature, if this
- * curvature is matched in position to crown window \b C, those length will
- * differ. The distance calculated without \b C points will be significantly
- * shorter. The ratio defined as: \f[ ratio=1-\frac{\left \|dC\right \|}{\left
- * \|dM\right \|} \f] All points inside window \b M for given \a i that belong
- * to crown \b C are removed if \a ratio for current \a i is bigger than
- * \f$\sigma\f$
  * 
  * @author p.baniukiewicz
  * @date 25 Jan 2016
@@ -155,10 +138,9 @@ public class HatSnakeFilter_ extends QWindowBuilder
         if (alev < 0)
             throw new QuimpPluginException("Acceptacne level should be positive");
 
-        WindowIndRange indexTest = new WindowIndRange(); // temporary variable for keeping index
-                                                         // that is tested to be or not in range
-                                                         // winpos
-
+        WindowIndRange indexTest = new WindowIndRange(); // temporary variable for keeping window
+                                                         // currently tested for containing in
+                                                         // ind2rem
         // Step 1 - Build circularity table
         ArrayList<Double> circ = new ArrayList<Double>(); // array to store circularity for window
                                                           // positions. Index is related to window
@@ -168,8 +150,6 @@ public class HatSnakeFilter_ extends QWindowBuilder
                                                               // compared to shape without these
                                                               // points
 
-        // get original shape circularity
-        double orgCirc = getCircularity(points);
         double tmpCirc;
         for (int r = 0; r < points.size(); r++) {
             LOGGER.debug("------- Iter: " + r + "-------");
@@ -183,7 +163,6 @@ public class HatSnakeFilter_ extends QWindowBuilder
             List<Vector2d> pointswindow = points.subList(0, window); // get points for window only
             LOGGER.debug("win: " + pointswindow.toString());
             tmpCirc /= getWeighting(pointswindow); // calculate weighting for window content
-            tmpCirc /= orgCirc;
             LOGGER.debug("Wcirc " + tmpCirc);
             circ.add(tmpCirc); // store weighted circularity for shape without window
             // check if points of window are convex according to shape without these points
@@ -197,6 +176,10 @@ public class HatSnakeFilter_ extends QWindowBuilder
                                             // last itera 5 0 1 2 3 4... (w=[5 0 1])
 
         }
+        // normalize circularity to 1
+        double maxCirc = Collections.max(circ);
+        for (int r = 0; r < circ.size(); r++)
+            circ.set(r, circ.get(r) / maxCirc);
 
         // Step 2 - Check criterion for all windows
         TreeSet<WindowIndRange> ind2rem = new TreeSet<>(); // <l;u> range of indexes to remove
@@ -225,32 +208,43 @@ public class HatSnakeFilter_ extends QWindowBuilder
                     break; // stop searching because all i+n are smaller as well
                 // find where it was before sorting and store in window positions
                 int startpos = circ.indexOf(circsorted.get(i));
-                // check if we have this index in indexes to remove
+                // check if we already have this index in list indexes to remove
                 if (startpos + window - 1 >= points.size()) { // if at end, we must turn to begin
                     indexTest.setRange(startpos, points.size() - 1); // to end
                     contains = ind2rem.contains(indexTest); // beginning of window at the end of dat
-                    indexTest.setRange(0, window - (points.size() - startpos) - 1); // rotated to
-                                                                                    // begin
-                    contains &= ind2rem.contains(indexTest); // and rotated part at beginning
+                    indexTest.setRange(0, window - (points.size() - startpos) - 1); // turn to start
+                    contains &= ind2rem.contains(indexTest); // check rotated part at beginning
                 } else {
                     indexTest.setRange(startpos, startpos + window - 1);
                     contains = ind2rem.contains(indexTest);
                 }
-                if (!contains && !convex.get(startpos)) {// this window doesnt overlap
-                    // with those found already and it is convex
+                if (!contains && !convex.get(startpos)) {// this window doesnt overlap with those
+                                                         // found already and it is convex
                     // store range of indexes that belongs to window
-                    ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
+                    if (startpos + window - 1 >= points.size()) { // as prev split to two windows
+                        // if we are on the end of data
+                        ind2rem.add(new WindowIndRange(startpos, points.size() - 1));
+                        // turn window to beginning
+                        ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
+                    } else
+                        ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
                     LOGGER.debug("added win for i=" + i + " startpos=" + startpos + " coord:"
                             + points.get(startpos).toString());
                     found++;
                     i++;
-                } else // search next candidate in sorted circularities
+                } else // go to next candidate in sorted circularities
                     i++;
             } else { // first candidate always accepted
                 // find where it was before sorting and store in window positions
                 int startpos = circ.indexOf(circsorted.get(i));
                 // store range of indexes that belongs to window
-                ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
+                if (startpos + window - 1 >= points.size()) { // as prev split to two windows
+                    // if we are on the end of data
+                    ind2rem.add(new WindowIndRange(startpos, points.size() - 1));
+                    // turn window to beginning
+                    ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
+                } else
+                    ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
                 LOGGER.debug("added win for i=" + i + " startpos=" + startpos + " coord:"
                         + points.get(startpos).toString());
                 i++;
@@ -258,7 +252,6 @@ public class HatSnakeFilter_ extends QWindowBuilder
             }
         }
         LOGGER.debug("winpos: " + ind2rem.toString());
-        LOGGER.debug("CIRC: " + orgCirc);
         // Step 3 - remove selected windows from input data
         // array will be copied to new one skipping points to remove
         for (i = 0; i < points.size(); i++) {

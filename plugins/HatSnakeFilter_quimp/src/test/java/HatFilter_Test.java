@@ -14,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -85,7 +84,6 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
-    @Ignore
     public void test_HatFilter_run() throws QuimpPluginException {
         LOGGER.debug("input: " + circ.toString());
         HatSnakeFilter_ hf = new HatSnakeFilter_();
@@ -138,7 +136,6 @@ public class HatFilter_Test {
      */
     @SuppressWarnings("serial")
     @Test
-    @Ignore
     public void test_HatFilter_run_1() throws QuimpPluginException {
         LOGGER.debug("input: " + lininput.toString());
         HatSnakeFilter_ hf = new HatSnakeFilter_();
