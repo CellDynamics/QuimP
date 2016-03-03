@@ -23,6 +23,7 @@ for i=1:length(testFrames)
    fprintf(fid,'%.4f\n',xyr);
    fclose(fid);
 end
+
 %% Tools - Plot
 i = 1;
 figure
@@ -589,7 +590,7 @@ hold on
 plot(coordrem(:,1),coordrem(:,2),'-rs','markersize',5);
 %% test of hatsmooth for previous algorithm
 c = 3;
-w = 3;
+w = 15;
 ile = 2;
 
 coord = coords{c};

@@ -85,6 +85,13 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * \c RESERVED_KEYS is list of reserved keys that are not UI elements. They are
  * processed in different way.
  * 
+ * @warning UI type as JSpinner keeps data in double format even in values passed through by
+ * setValues(ParamList) are integer (ParamList keeps data as String). Therefore getValues can 
+ * return this list with the same data but in double syntax (5 -> 5.0). Any try of convention of
+ *  "5.0" to integer value will cause NumberFormatException. To avoid this problem use 
+ *  QuimP.plugin.ParamList.getIntValue(String) from ParamList of treat all strings in ParamList as
+ *  Double.
+ * 
  * @author p.baniukiewicz
  * @date 29 Jan 2016
  */
@@ -359,6 +366,9 @@ public abstract class QWindowBuilder {
      * associated to them.
      * @see getDoubleFromUI(final String)
      * @see getIntegerFromUI(final String)
+     * @warning JSpinners are set to support \b double values and that values are returned here
+     * It means that originally pushed to UI integers are changed to Double what can affect 
+     * set/getpluginConfig from filter interface as well
      */
     public ParamList getValues() {
         ParamList ret = new ParamList();
@@ -377,8 +387,7 @@ public abstract class QWindowBuilder {
                 default:
                     throw new IllegalArgumentException("Unknown UI type in getValues");
             }
-            entryIterator.next(); // skip label. ui Map has repeating entries
-                                  // UI,label,UI1,label1,...
+            entryIterator.next(); // skip label. ui Map has repeating entries UI,label,UI1,label1,..
         }
         return ret;
     }
@@ -388,7 +397,7 @@ public abstract class QWindowBuilder {
      * 
      * Value is retrieved from ui element related to given \b key. Relation
      * between keys and ui elements is defined by user in configuration list
-     * provided to BuildWindow().
+     * provided to buildWindow(final ParamList).
      * 
      * @remarks The key must be defined and exists in that list.
      * @remarks In case of wrong conversion it may be exception thrown. User is
@@ -396,7 +405,7 @@ public abstract class QWindowBuilder {
      * 
      * @param key Key to be read from configuration list, case insensitive
      * @return integer representation of value under \c key
-     * @see BuildWindow(final Map<String, String[]>)
+     * @see buildWindow(final ParamList)
      */
     public int getIntegerFromUI(final String key) {
         return (int) getDoubleFromUI(key);
@@ -411,5 +420,18 @@ public abstract class QWindowBuilder {
         // get list of all params from ui as <key,val> list
         ParamList uiParam = getValues();
         return uiParam.getDoubleValue(key);
+    }
+
+    /**
+     * Stores components under \c Keys that are not case insensitive
+     * 
+     * @author p.baniukiewicz
+     * @date 24 Feb 2016
+     *
+     */
+    public class ComponentList extends LinkedStringMap<Component> {
+
+        private static final long serialVersionUID = -5157229346595354602L;
+
     }
 }
