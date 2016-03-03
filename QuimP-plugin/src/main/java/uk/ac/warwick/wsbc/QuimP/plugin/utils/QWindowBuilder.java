@@ -397,7 +397,7 @@ public abstract class QWindowBuilder {
      * 
      * Value is retrieved from ui element related to given \b key. Relation
      * between keys and ui elements is defined by user in configuration list
-     * provided to BuildWindow().
+     * provided to buildWindow(final ParamList).
      * 
      * @remarks The key must be defined and exists in that list.
      * @remarks In case of wrong conversion it may be exception thrown. User is
@@ -405,7 +405,7 @@ public abstract class QWindowBuilder {
      * 
      * @param key Key to be read from configuration list, case insensitive
      * @return integer representation of value under \c key
-     * @see BuildWindow(final Map<String, String[]>)
+     * @see buildWindow(final ParamList)
      */
     public int getIntegerFromUI(final String key) {
         return (int) getDoubleFromUI(key);
@@ -423,7 +423,7 @@ public abstract class QWindowBuilder {
     }
 
     /**
-     * Stores components under \c Keys that are case insensitive
+     * Stores components under \c Keys that are not case insensitive
      * 
      * @author p.baniukiewicz
      * @date 24 Feb 2016

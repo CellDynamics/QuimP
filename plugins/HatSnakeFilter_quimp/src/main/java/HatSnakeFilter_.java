@@ -33,9 +33,79 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.IPadArray;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
 
 /**
- * Implementation of HatFilter for removing convexities from polygon
+ * Implementation of HatFilter for removing convexes from polygon
  * 
+ * <H1>List of user parameters</H1>
+ * -# \c window - Size of window in pixels. It is responsible for sensitivity to protrusions of 
+ * given size. Larger window can eliminate small and large protrusions whereas smaller window is 
+ * sensitive only to small protrusions.
+ *  -# \c window should be from 3 to number of outline points.
+ * -# \c pnum - Number of protrusions that will be found in outline. If not limited by \c alev
+ * parameter the algorithm will eliminate \c pnum objects from outline without considering
+ * if they are protrusions or not.
+ *  -# \c pnum should be from 1 to any value. Algorithm stops searching when there is no candidates
+ *  to remove.
+ * -# \c alev - Threshold value, if circularity computed for given window position is lower than
+ * threshold this window is not eliminated regarding \c pnum or its rank in circularities.
+ *  -# \c alev should be in range form 0 to 1, where 0 stands for accepting every candidate
  * 
+ * <H1>General description of algorithm</H1>
+ * The window slides over the wrapped contour. Points inside window for its position \a p are
+ * considered as candidates to removal from contour if they meet the following criterion: 
+ * -# The window has achieved for position \a p circularity parameter \a c larger than \c alev
+ * -# The window on position \a p does not touch any other previously found window.
+ * 
+ * Every window \a p has assigned a \a rank. Bigger \a rank stands for better candidate to remove.
+ * Algorithm tries to remove first \c pnum windows (those with biggest ranks) that meet above rules.  
+ * 
+ * <H1>Detailed description of algorithm</H1>
+ * The algorithm comprises of three main steps:
+ * -# Preparing \a rank table of candidates to remove
+ * -# Iterating over \a rank table to remove demanded \c pnum protrusions
+ * -# Forming output table without protrusions.
+ * 
+ * <H2>First step</H2>
+ * The window of size \c window slides over wrapped data. Wrapping is performed by 
+ * java.util.Collections.rotate method that shift data left copying falling out indexes to end of
+ * the set. Finally the window if settled in constant position between indexes <0;window-1>. For 
+ * each its position \c r the candidate points are deleted from original contour and circularity
+ * is computed (see getCircularity(final List<Vector2d>)). Then candidate points are passed to
+ * getWeighting(final List<Vector2d>) method where weight is evaluated. The role of weight is to
+ * promote in \a rank candidate points that are cumulated in small area over distributed sets. Thus
+ * weight should give larger values for that latter distribution than for cumulated one. Currently
+ * weights are calculated as standard deviation of distances of all candidate points to center of
+ * mass of these points (or mean point if polygon is invalid). Finally circularity(r) is divided by 
+ * weight(r) and stored in \c circ array. Additionally in this step convexity is checked. All 
+ * candidate points are tested for inclusion in contour without these points. This information is 
+ * stored in \c convex array. Finally rank array \c circ is normalized to maximum element.
+ * 
+ * <H2>Second step</H2>
+ * In second step array of ranks \c circ is sorted in descending order. For every rank in sorted 
+ * table the real position of window is retrieved (that gave this rank). The window position is
+ * defined here by two numbers - \c lover and \c upper range of indexes covered by it. The candidate
+ * points from this window are validated for criterion: 
+ * -# \a rank must be greater than \a alev
+ * -# lower and upper index of window (index means here number of polygon vertex in array) must not
+ * be included in any previously found window. This checking is done by deriving own class
+ * WindowIndRange with overwritten WindowIndRange.compareTo(Object) method that defines rules of
+ * equality and non relations between ranges. Basically any overlapping range or included is
+ * considered as equal and rejected from storing in \c ind2rem array.
+ * -# candidate points must be convex.
+ * -# current \a rank (\c circ) is greater than \c alev 
+ * 
+ * If all above criterion are meet the window <l;u> is stored in \c ind2rem. Windows on end of 
+ * data are wrapped by dividing them for two sub-windows: <w;end> and <0;c> otherwise they may 
+ * cover the whole range (e.g. <10;3> does not stand for window from 10 wrapped to 3 but window
+ * from 3 to 10).
+ * 
+ * The second step i repeated until \c pnum object will be found or end of candidates will be 
+ * reached. 
+ * 
+ * <H2>Third step</H2>
+ * In third step every point from original contour is tested for including in array \c ind2rem
+ * that contains ranges of indexes to remove. Points on index that is not included in any of 
+ * ranges stored in \c ind2rem are copied to output. 
+ *  
  * @author p.baniukiewicz
  * @date 25 Jan 2016
  */
@@ -77,7 +147,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
         buildWindow(uiDefinition); // construct ui (not shown yet)
         points = null; // not attached yet
         pout = null; // not calculated yet
-        err = 1;
+        err = 1; // first line in log window
     }
 
     /**
@@ -95,7 +165,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
         LOGGER.trace("Entering attachData");
         points = data;
         pout = null; // delete any processed polygon
-        if (points == null) {// TODO may not be necessary if ExPolygon survives nulls
+        if (points == null) {
             LOGGER.warn("No data attached");
             return;
         }
@@ -261,13 +331,15 @@ public class HatSnakeFilter_ extends QWindowBuilder
                 out.add(new Vector2d(points.get(i))); // include tested point. Copy it to new array
                                                       // if not
         }
-
         return out;
     }
 
     /**
      * Calculate circularity of polygon
      * 
+     * Circularity is computed as:
+     * \f[ circ=\frac{4*\pi*A}{P^2} \f]
+     * where \f$A\f$ is polygon area and \f$P\f$ is its perimeter
      * @param p Polygon vertices
      * @return circularity
      */
@@ -497,7 +569,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
     public void actionPerformed(ActionEvent e) {
         Object b = e.getSource();
         if (b == applyB) { // pressed apply, copy ui data to plugin
-            recalculatePlugin();
+            recalculatePlugin(); // transfers data from ui to plugin and plot example on screen
         }
     }
 
