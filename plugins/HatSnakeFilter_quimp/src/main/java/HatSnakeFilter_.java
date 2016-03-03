@@ -61,7 +61,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * <H1>Detailed description of algorithm</H1>
  * The algorithm comprises of three main steps:
  * -# Preparing \a rank table of candidates to remove
- * -# Iterating over \a rank table to remove demanded \c pnum protrusions
+ * -# Iterating over \a rank table to find \c pnum such candidates who meet rules and store their
+ * coordinates in \c ind2rem array. By candidates it is understood sets of polygon indexes that 
+ * is covered by window on given position. For simplification those vertexes are identified by
+ * lover and upper index of window in outline array (input). 
  * -# Forming output table without protrusions.
  * 
  * <H2>First step</H2>
@@ -107,7 +110,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * ranges stored in \c ind2rem are copied to output. 
  *  
  * @author p.baniukiewicz
- * @date 25 Jan 2016
+ * @date 03 Jan 2016
  */
 public class HatSnakeFilter_ extends QWindowBuilder
         implements IQuimpPoint2dFilter<Vector2d>, IPadArray, ChangeListener, ActionListener {
