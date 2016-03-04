@@ -54,6 +54,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * considered as candidates to removal from contour if they meet the following criterion: 
  * -# The window has achieved for position \a p circularity parameter \a c larger than \c alev
  * -# The window on position \a p does not touch any other previously found window.
+ * -# Points of window \a p are convex.
  * 
  * Every window \a p has assigned a \a rank. Bigger \a rank stands for better candidate to remove.
  * Algorithm tries to remove first \c pnum windows (those with biggest ranks) that meet above rules.  
@@ -70,7 +71,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * <H2>First step</H2>
  * The window of size \c window slides over wrapped data. Wrapping is performed by 
  * java.util.Collections.rotate method that shift data left copying falling out indexes to end of
- * the set. Finally the window if settled in constant position between indexes <0;window-1>. For 
+ * the set. Finally the window is settled in constant position between indexes <0;window-1>. For 
  * each its position \c r the candidate points are deleted from original contour and circularity
  * is computed (see getCircularity(final List<Vector2d>)). Then candidate points are passed to
  * getWeighting(final List<Vector2d>) method where weight is evaluated. The role of weight is to
@@ -78,7 +79,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * weight should give larger values for that latter distribution than for cumulated one. Currently
  * weights are calculated as standard deviation of distances of all candidate points to center of
  * mass of these points (or mean point if polygon is invalid). Finally circularity(r) is divided by 
- * weight(r) and stored in \c circ array. Additionally in this step convexity is checked. All 
+ * weight(r) and stored in \c circ array. Additionally in this step the convex is checked. All 
  * candidate points are tested for inclusion in contour without these points. This information is 
  * stored in \c convex array. Finally rank array \c circ is normalized to maximum element.
  * 
@@ -93,7 +94,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * WindowIndRange with overwritten WindowIndRange.compareTo(Object) method that defines rules of
  * equality and non relations between ranges. Basically any overlapping range or included is
  * considered as equal and rejected from storing in \c ind2rem array.
- * -# candidate points must be convex.
+ * -# candidate points must be convex. As mentioned before \a convex means that \b all candidate
+ * points are outside the original contour formed without these points.   
  * -# current \a rank (\c circ) is greater than \c alev 
  * 
  * If all above criterion are meet the window <l;u> is stored in \c ind2rem. Windows on end of 
@@ -101,7 +103,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * cover the whole range (e.g. <10;3> does not stand for window from 10 wrapped to 3 but window
  * from 3 to 10).
  * 
- * The second step i repeated until \c pnum object will be found or end of candidates will be 
+ * The second step is repeated until \c pnum object will be found or end of candidates will be 
  * reached. 
  * 
  * <H2>Third step</H2>
@@ -110,7 +112,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * ranges stored in \c ind2rem are copied to output. 
  *  
  * @author p.baniukiewicz
- * @date 03 Jan 2016
+ * @date 25 Jan 2016 First version
+ * @date 03 Jan 2016 Modified algorithm
  */
 public class HatSnakeFilter_ extends QWindowBuilder
         implements IQuimpPoint2dFilter<Vector2d>, IPadArray, ChangeListener, ActionListener {
@@ -734,10 +737,10 @@ class ExPolygon extends Polygon {
 /**
  * Class holding lower and upper index of window. Supports comparisons.
  * 
- * Two ranges <l;u> and <l1;u1> are equal if any ot these conditions is met:
- * 1. they overlap
- * 1. they are the same
- * 1. one is included in second
+ * Two ranges <l;u> and <l1;u1> are equal if any of these conditions is met:
+ * -# they overlap
+ * -# they are the same
+ * -# one is included in second
  * 
  * @author p.baniukiewicz
  * @date 1 Mar 2016
