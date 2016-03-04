@@ -333,9 +333,17 @@ public class BOA_ implements PlugIn {
 
     /**
      * Redraw current view using all stored snakes processed by all selected plugins
+     * @todo //TODO try not run segementation again but only update view taking liveSnakes, process
+     * them and store in SnakeHandler storeCurrentSnake
      */
     public void updateView() {
-        LOGGER.trace("updateView called");
+        LOGGER.trace("BOA: updateView called");
+        try {
+            runBoa(frame, frame);
+        } catch (BoaException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -933,14 +941,18 @@ public class BOA_ implements PlugIn {
             if (b == (JComboBox<String>) firstPluginName) {
                 LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
                 instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, dataToProcess);
+                run = true; // TODO should not run boa but only process data from live snakes and
+                            // store them in sH. updateView should be called
             }
             if (b == (JComboBox<String>) secondPluginName) {
                 LOGGER.debug("Used secondPluginName, val: " + secondPluginName.getSelectedItem());
                 instanceSnakePlugin((String) secondPluginName.getSelectedItem(), 1, dataToProcess);
+                run = true;
             }
             if (b == (JComboBox<String>) thirdPluginName) {
                 LOGGER.debug("Used thirdPluginName, val: " + thirdPluginName.getSelectedItem());
                 instanceSnakePlugin((String) thirdPluginName.getSelectedItem(), 2, dataToProcess);
+                run = true;
             }
 
             // run segmentation for selected cases

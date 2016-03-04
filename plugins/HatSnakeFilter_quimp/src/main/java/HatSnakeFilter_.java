@@ -495,7 +495,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
         ((JSpinner) ui.get("Window")).addChangeListener(this); // attach listener to selected ui
         ((JSpinner) ui.get("pnum")).addChangeListener(this); // attach listener to selected ui
         ((JSpinner) ui.get("alev")).addChangeListener(this); // attach listener to selected ui
-        applyB.addActionListener(this); // attach listener to aplly button
+        applyB.addActionListener(this); // attach listener to apply button
         // in place of CENTER pane in BorderLayout layout from super.BuildWindow
         // we create few extra controls
         GridLayout gc = new GridLayout(2, 1, 5, 5);
@@ -598,7 +598,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
                 String.format("Updated from UI: window %d, pnum %d, alev %f", window, pnum, alev));
         // run plugin for set parameters
         try {
-            out = runPlugin(); // may throw exception if no data attached
+            out = runPlugin(); // may throw if no data attached this is inly to get preview
             pout = new ExPolygon(out); // create new figure from out data
             pout.fitPolygon(DRAW_SIZE, p.initbounds, p.scale); // fit to size from original polygon,
                                                                // modified one will be centered to

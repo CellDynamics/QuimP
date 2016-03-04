@@ -48,8 +48,8 @@ public class BOA__run {
                                    // fields of this class inside boa
         BOA_ ob = new BOA_();
 
-        // ob.run("../plugins/target/"); // run BOA, control is immediately returned
-        ob.run("../plugins_test/target/"); // run BOA, control is immediately returned
+        ob.run("../plugins/target/"); // run BOA, control is immediately returned
+        // ob.run("../plugins_test/target/"); // run BOA, control is immediately returned
 
         // add window listener to BOA_ window window is \public field of BOA_ class
         // representing CustomStackWindow internally extending Frame class

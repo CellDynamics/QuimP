@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.vecmath.Vector2d;
@@ -133,18 +134,25 @@ public class Plugin1_ extends QWindowBuilder
     @Override
     public void buildWindow(final ParamList def) {
         super.buildWindow(def); // window must be built first
+
+        ((JSpinner) ui.get("every")).addChangeListener(this); // attach listener to selected ui
+        applyB.addActionListener(this); // attach listener to apply button
     }
 
     @Override
     public void stateChanged(ChangeEvent ce) {
+        LOGGER.trace("stateChanged of Plugin1 called");
         if (isWindowVisible() == true)
-            ; // prevent applying default values before setPluginConfig is
-              // used because method is called on window creation
+            qcontext.updateView();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        LOGGER.trace("actionPerformed of Plugin1 called");
         Object b = e.getSource();
+        if (b == applyB) { // pressed apply, copy ui data to plugin
+            qcontext.updateView(); // transfers data from ui to plugin and plot example on screen
+        }
     }
 
 }
