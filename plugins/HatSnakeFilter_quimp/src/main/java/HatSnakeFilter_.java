@@ -124,7 +124,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
     private int window; //!< filter's window size
     private int pnum; //!< how many protrusions to remove
     private double alev; //!< minimal acceptance level
-    private List<Vector2d> points;
+    private List<Vector2d> points; //!< original contour passed from QuimP
     private ParamList uiDefinition; //!< Definition of UI for this plugin
     private DrawPanel dp; //!< Here we will draw. This panel is plot in place of help field
     private ExPolygon p; //!< representation of snake as polygon

@@ -22,6 +22,6 @@ public interface IPluginSynchro {
      * 
      * @param b Reference to main QuimP object 
      */
-    void attachContext(ViewUpdater b);
+    void attachContext(final ViewUpdater b);
 
 }

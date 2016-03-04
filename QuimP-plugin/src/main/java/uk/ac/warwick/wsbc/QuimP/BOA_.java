@@ -331,8 +331,11 @@ public class BOA_ implements PlugIn {
         logArea.append(s + '\n');
     }
 
+    /**
+     * Redraw current view using all stored snakes processed by all selected plugins
+     */
     public void updateView() {
-
+        LOGGER.trace("updateView called");
     }
 
     /**
