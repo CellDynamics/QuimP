@@ -74,6 +74,7 @@ import ij.process.FloatPolygon;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
+import uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
@@ -99,11 +100,14 @@ public class BOA_ implements PlugIn {
     private int frame;
     private Constrictor constrictor;
     private PluginFactory pluginFactory; // load and maintain plugins
-    private String lastTool; // last selection tool selected in IJ remember last
-                             // tool to reselect it after truncating or deleting
-                             // operation
-    private final static String NONE = "NONE"; // reserved word that stands for
-                                               // plugin that is not selected
+    private String lastTool; // last selection tool selected in IJ remember last tool to reselect
+                             // it after truncating or deleting operation
+    private final static String NONE = "NONE"; // reserved word that stands for plugin that is not
+                                               // selected
+    private ViewUpdater viewUpdater; // hold current BOA object and provide access to only one
+                                     // method from plugin. Reference to this field is passed to
+                                     // plugins and give them possibility to call selected methods
+                                     // from BOA class
 
     /**
      * Temporary method for test
@@ -152,6 +156,9 @@ public class BOA_ implements PlugIn {
             IJ.error("Warning: Only have one instance of BOA running at a time");
             return;
         }
+        // assign object to ViewUpdater
+        viewUpdater = new ViewUpdater(this);
+
         ImagePlus ip = WindowManager.getCurrentImage();
         lastTool = IJ.getToolName();
         // stack or single image?
@@ -322,6 +329,10 @@ public class BOA_ implements PlugIn {
      */
     static void log(final String s) {
         logArea.append(s + '\n');
+    }
+
+    public void updateView() {
+
     }
 
     /**
@@ -1166,7 +1177,9 @@ public class BOA_ implements PlugIn {
         IQuimpPlugin inst = null;
         // get instance using plugin name (obtained from getPluginNames from PluginFactory
         if (selectedPlugin != NONE) { // do no pass NONE to pluginFact
-            inst = pluginFactory.getInstance(selectedPlugin);
+            inst = pluginFactory.getInstance(selectedPlugin); // get instance
+            if (inst instanceof IPluginSynchro) // if it support backward synchronization
+                ((IPluginSynchro) inst).attachContext(viewUpdater); // attach BOA context
             // remember instance in active plugin list
             BOAp.sPluginList.set(slot, inst);
             ((IQuimpPoint2dFilter<Vector2d>) inst).attachData(dataToProcess);

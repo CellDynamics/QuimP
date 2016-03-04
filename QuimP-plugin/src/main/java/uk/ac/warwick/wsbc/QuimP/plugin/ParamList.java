@@ -8,8 +8,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.LinkedStringMap;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
 
 /**
- * List of parameters in <key,value> HashList, where both \c key and \c value
- * are java.lang.String and key is case insensitive.
+ * List of parameters in <\a key,\a value> HashList, where both \a key and \a value
+ * are java.lang.String and \a key is case insensitive.
  * 
  * @author p.baniukiewicz
  * @date 24 Feb 2016
