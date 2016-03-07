@@ -141,6 +141,12 @@ This may happen when plugin is
 selected when no snakes is yet.
 end note
 Plugin --> QuimP
+QuimP -> Plugin :attachContext(""ViewUpdater"")
+note left #aqua
+Only if plugin supports
+""IPluginSynchro"" interface
+end note
+Plugin --> QuimP
 
 User -\ QuimP : Show GUI
 QuimP -> Plugin : showUI(true)
@@ -207,6 +213,8 @@ Related classes and methods:
 2. uk.ac.warwick.wsbc.QuimP.BOA_.instanceSnakePlugin(final String, int, final List<Vector2d>)
   1. uk.ac.warwick.wsbc.QuimP.PluginFactory.getInstance(final String)
   2. uk.ac.warwick.wsbc.QuimP.BOAp.sPluginList
+  3. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.attachData(final List<E>)
+  4. uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro.attachContext(final ViewUpdater)
   
 Activity diagram for use case **Select Plugin**.
   
@@ -225,6 +233,10 @@ endif
 partition instanceSnakePlugin {
 if (selectedPlugin!=NONE) then (yes)
 :getInstance;
+if (IPluginSynchro) then (yes)
+:attachContext;
+note left :Attaches ViewUpdater
+endif
 :register instance;
 note left: BOAp
 :attachData;

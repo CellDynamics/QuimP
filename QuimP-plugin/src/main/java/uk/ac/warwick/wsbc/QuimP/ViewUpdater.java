@@ -5,7 +5,7 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 /**
- * Accessor that masks all public methods from object it holds except those allowed to be exposed.
+ * Accessor that masks all public methods from object it holds except those manually exposed.
  * 
  * This class is used for limiting access to public methods of QuimP from external plugins. It 
  * prevents calling those methods in unchecked way.
