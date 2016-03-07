@@ -4075,7 +4075,7 @@ class Snake {
     /**
      * Returns current Snake as list of Nodes (copy)
      * 
-     * @return List of Vect2d objects representing coordinates of Snake Nodes
+     * @return List of Vector2d objects representing coordinates of Snake Nodes
      */
     public List<Vector2d> asList() {
         List<Vector2d> al = new ArrayList<Vector2d>(NODES);
