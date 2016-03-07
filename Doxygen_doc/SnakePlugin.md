@@ -141,6 +141,12 @@ This may happen when plugin is
 selected when no snakes is yet.
 end note
 Plugin --> QuimP
+QuimP -> Plugin :attachContext(""ViewUpdater"")
+note left #aqua
+Only if plugin supports
+""IPluginSynchro"" interface
+end note
+Plugin --> QuimP
 
 User -\ QuimP : Show GUI
 QuimP -> Plugin : showUI(true)
@@ -207,6 +213,8 @@ Related classes and methods:
 2. uk.ac.warwick.wsbc.QuimP.BOA_.instanceSnakePlugin(final String, int, final List<Vector2d>)
   1. uk.ac.warwick.wsbc.QuimP.PluginFactory.getInstance(final String)
   2. uk.ac.warwick.wsbc.QuimP.BOAp.sPluginList
+  3. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.attachData(final List<E>)
+  4. uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro.attachContext(final ViewUpdater)
   
 Activity diagram for use case **Select Plugin**.
   
@@ -225,6 +233,10 @@ endif
 partition instanceSnakePlugin {
 if (selectedPlugin!=NONE) then (yes)
 :getInstance;
+if (IPluginSynchro) then (yes)
+:attachContext;
+note left :Attaches ViewUpdater
+endif
 :register instance;
 note left: BOAp
 :attachData;
@@ -311,7 +323,7 @@ note left: **NONE** has special meaning as name\nit stands for empty slot
 stop
 legend
 ""PluginFactory"" is most important
-player here. All acctions related
+player here. All actions related
 to plugins have place there.
 end legend
 @enduml
@@ -324,3 +336,31 @@ __This feature is not developed yet.__
 
 @todo Add description here
 
+# Technical details {#td}
+
+The main storage for snakes is uk.ac.warwick.wsbc.QuimP.SnakeHandler class which basically contains
+two important fields:
+
+```java
+    private Snake liveSnake;
+    private Snake[] snakes; // series of snakes
+```
+The `liveSnake` is initialized during object creation and it references *Snake* that is currently 
+processed. Usually it means that the *snake* has been already created and can be segmented. 
+Initially this *snake* is created from e.g. *Roi* as rough approximation of object's shape and then
+it is processed by segmentation algorithm.
+
+The `snakes` array holds *snakes* (segmented cells, outlines) that are considered as ready and 
+stable. Content of this array is displayed on screen and saved on disk.
+
+The plugins work on both these data. They get *snake* stored in `liveSnake` and return modified 
+new *snake* that is copied to final `snakes`. Assuming that `liveSnake` always contains only 
+segmented (or raw) contours, plugins can process these data and store results in final array. The
+most important methods that are responsible for running plugins and setting/getting data are: 
+
+1. uk.ac.warwick.wsbc.QuimP.BOA_.addCell(final Roi, int) - run segmentation for freshly selected cell
+2. uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) - run segmentation for all frames and all SnakeHandlers
+3. uk.ac.warwick.wsbc.QuimP.BOA_.recalculatePlugins() - process all outlines (`liveSnake`) by
+active plugins and copy results to `snakes`. This method does not run segmentation again so it 
+is used for updating screen after any plugin action (inside plugin by interface IPluginSynchro or
+by JSpinners in QuimP UI related to plugins)   

@@ -9,8 +9,10 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 /**
- * Extension of LinkedHashMap that assumes that \c Key is \c String case
+ * Extension of LinkedHashMap that assumes that \a Key is \a String are case
  * insensitive
+ * 
+ * All keys are converted to lower case.
  * 
  * @author p.baniukiewicz
  * @date 24 Feb 2016

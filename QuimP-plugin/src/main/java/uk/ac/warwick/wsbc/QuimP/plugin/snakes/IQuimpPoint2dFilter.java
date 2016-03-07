@@ -11,6 +11,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * @author p.baniukiewicz
  * @todo TODO Finish documentation
  * @todo TODO General specification E may not be useful here as QuimP always
+ * @todo TODO Switch to strict <Vector2d> to prevent user for using other types that are not convertable
  * call it as \c Vector2d. Remove if not useful
  */
 public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {

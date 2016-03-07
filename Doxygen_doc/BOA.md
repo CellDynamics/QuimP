@@ -152,7 +152,7 @@ The main method that runs segmentation is uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(i
 The following structures are used to hold and process segmented data:
 
 1. \ref uk.ac.warwick.wsbc.QuimP.Nest "Nest" - this class holds segmented objects. Every selected cell on image is kept inside this class at `sHs` list.
-2. \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandler" - this class stores snakes in `snakes` array. It operates with two forms of snakes. The first one is `Snake liveSnake` which is snake object being processed, the second one is array `Snake[] snakes` where already processed snakes are stored. This array has size of `FRAMES-f`, where `f` is the frame which object has been added for segmentation in. `SnakeHandler` holds all snake objects for one cell for all successive frames after frame where cell has been added. This class also performs writing/reading operations.
+2. \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandler" - this class stores snakes in `snakes` array. It operates with two forms of snakes. The first one is `Snake liveSnake` which is snake object being processed, the second one is array `Snake[] snakes` where already processed snakes are stored. This array has size of `FRAMES-f`, where `f` is the frame which object has been added for segmentation in. `SnakeHandler` holds all snake objects for one cell for all successive frames after frame where cell has been added. This class also performs writing/reading operations. Once initialized this object contains only `live` snakes which are modified by segmentation methods from `BOA`. After modification they are **copied** to `snakes[]` array. The `snakes[]` array is the array displayed on screen. There are two ways fo snakes to get there. First one is by method `storeLiveSnake` and second one is by method `storeThisSnake`. The difference is that the first one just copies internal `liveSnake` to array `snakes[]` whereas the second one copies external `Snake` to this array. `storeThisSnake` is used in plugin processing.
 3. \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" this class holds snake for one frame and it is responsible for preparing segmentation process basing on passed ROI. **It does not do segmentation itself** but provides functions for scaling, changing orientation, cutting loops, etc.
 4. \ref uk.ac.warwick.wsbc.QuimP.Node "Node" represents vertex on snake and allows to add extra properties (forces, normals) to them. It has form of linked list, every Node knows its predecessor and successor. Simplified diagram below shows basic class relations and most important methods and fields. This class has `prelimPoint` field that keeps preliminary vector values which can be later promoted to regular vale of current object by using \ref uk.ac.warwick.wsbc.QuimP.Node.update() "update()" method. **List is looped - last element points to first and first to last** 
 
@@ -166,7 +166,7 @@ The following structures are used to hold and process segmented data:
 	SnakeHandler : -Snake liveSnake;
     SnakeHandler : -Snake[] snakes;
 	SnakeHandler : +void SnakeHandler(roi, frame, id)
-	SnakeHandler : +void storeCurrentSnake(frame)
+	SnakeHandler : +void storeLiveSnake(frame)
 	Snake : -Node head
 	Snake : +void Snake(roi, id, direction)
 	Snake : -void addNode(Node)
@@ -246,7 +246,7 @@ it guarantees the created list is looped. Last Node points to first by \ref uk.a
 
 The segmentation is started after initialization described at \ref createsnakes, \ref runBOAStructures and \ref setupBOAGeneral. Process of segmentation of whole stack is started by clicking:
 
-- \ref uk.ac.warwick.wsbc.QuimP.BOA_.addCell(final Roi, int) "addCell" - refers to \ref uk.ac.warwick.wsbc.QuimP.BOA_.tightenSnake(final Snake) "tightenSnake" that performs `Snake` modification and fits it to cell shape. `addCell` performs basic segmentation.`tightenSnake` is segmentation procedure that modifies `liveSnake` obtained from `SnakeHandler`. After modification this Snake is stored back to SnakeHandler to `snakes[f]` array deleting snake at index `f`. The method \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler.storeCurrentSnake(int) "storeCurrentSnake(int)" copies whole linked list given by `head` to mentioned table closing the Snake.  
+- \ref uk.ac.warwick.wsbc.QuimP.BOA_.addCell(final Roi, int) "addCell" - refers to \ref uk.ac.warwick.wsbc.QuimP.BOA_.tightenSnake(final Snake) "tightenSnake" that performs `Snake` modification and fits it to cell shape. `addCell` performs basic segmentation.`tightenSnake` is segmentation procedure that modifies `liveSnake` obtained from `SnakeHandler`. After modification this Snake is stored back to SnakeHandler to `snakes[f]` array deleting snake at index `f`. The method \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler.storeLiveSnake(int) "storeLiveSnake(int)" copies whole linked list given by `head` to mentioned table closing the Snake.  
 - **Segmentation** calls \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA" method.
 - Modifying other parameters of GUI that result in calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA" method
 
@@ -267,11 +267,11 @@ digraph segment {
 	constrictorimplode [label="constrictor::implode(nest, startF)"];
 	imageGroupdrawPath [label="imageGroup::drawPath(snake, frame)"]; 
 	tightenSnake [label="tightenSnake(snake)",style=filled,fillcolor=yellow];
-	sHstoreCurrentSnake [label="SnakeHandler::storeCurrentSnake(frame)"];
+	sHstoreLiveSnake [label="SnakeHandler::storeLiveSnake(frame)"];
 	
 	nestresetForFrame->constrictorloosen->imageGroupdrawPath;
 	nestresetForFrame->constrictorimplode->imageGroupdrawPath;
-	imageGroupdrawPath->tightenSnake->sHstoreCurrentSnake;
+	imageGroupdrawPath->tightenSnake->sHstoreLiveSnake;
 }
 @enddot
 
