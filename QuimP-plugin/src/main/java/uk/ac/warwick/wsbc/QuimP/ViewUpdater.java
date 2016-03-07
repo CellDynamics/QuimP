@@ -31,7 +31,7 @@ public class ViewUpdater {
      */
     public void updateView() {
         if (o instanceof BOA_) {
-            ((BOA_) o).updateView();
+            ((BOA_) o).recalculatePlugins();
         } else
             throw new RuntimeException("Class not supported");
     }

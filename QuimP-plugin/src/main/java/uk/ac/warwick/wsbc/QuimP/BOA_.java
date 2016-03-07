@@ -332,9 +332,9 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Redraw current view using all stored snakes processed by all selected plugins
+     * Redraw current view. Process outlines by all active plugins. Do not run segmentation again
      */
-    public void updateView() {
+    public void recalculatePlugins() {
         LOGGER.trace("BOA: updateView called");
         SnakeHandler sH;
         if (nest.isVacant())
@@ -349,18 +349,14 @@ public class BOA_ implements PlugIn {
                 try {
                     if (!snake.alive || frame < sH.getStartframe())
                         continue;
-                    iterateOverSnakePlugins(sH);
-                    sH.storeProcessedSnake(frame);
-                    // iterateOverSnakePlugins(sH); // run active plugins and change liveSnake
-                    // sH.storeCurrentSnake(frame); // store liveSnake as final one
+                    Snake out = iterateOverSnakePlugins(snake);
+                    sH.storeThisSnake(out, frame);
                 } catch (QuimpPluginException qpe) {
                     // must be rewritten with whole runBOA #65 #67
                     BOA_.log("Error in filter module: " + qpe.getMessage());
                     LOGGER.error(qpe);
-                    if (!BOAp.stopOnPluginError) // no store on error
+                    if (BOAp.stopOnPluginError) // no store on error
                         sH.storeLiveSnake(frame);
-                } catch (BoaException be) {
-
                 }
             }
         } catch (Exception e) {
@@ -966,19 +962,19 @@ public class BOA_ implements PlugIn {
                 instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, dataToProcess);
                 // run = true; // TODO should not run boa but only process data from live snakes and
                 // store them in sH. updateView should be called
-                updateView();
+                recalculatePlugins();
             }
             if (b == (JComboBox<String>) secondPluginName) {
                 LOGGER.debug("Used secondPluginName, val: " + secondPluginName.getSelectedItem());
                 instanceSnakePlugin((String) secondPluginName.getSelectedItem(), 1, dataToProcess);
                 // run = true;
-                updateView();
+                recalculatePlugins();
             }
             if (b == (JComboBox<String>) thirdPluginName) {
                 LOGGER.debug("Used thirdPluginName, val: " + thirdPluginName.getSelectedItem());
                 instanceSnakePlugin((String) thirdPluginName.getSelectedItem(), 2, dataToProcess);
                 // run = true;
-                updateView();
+                recalculatePlugins();
             }
 
             // run segmentation for selected cases
@@ -1311,8 +1307,8 @@ public class BOA_ implements PlugIn {
                             // iterateOverSnakePlugins(sH); // run active plugins and change
                             // liveSnake
                             // sH.storeCurrentSnake(frame); // store liveSnake as final one
-                            iterateOverSnakePlugins(sH);
-                            sH.storeProcessedSnake(frame);
+                            Snake out = iterateOverSnakePlugins(snake);
+                            sH.storeThisSnake(out, frame);
 
                         } catch (QuimpPluginException qpe) {
                             // must be rewritten with whole runBOA #65 #67
@@ -1364,32 +1360,13 @@ public class BOA_ implements PlugIn {
 
     /**
      * Process \c liveSnake from current frame for SnakeHandler by all active plugins. Processed
-     * \c liveSnake replaces the old one
+     * \c liveSnake is returned as new Snake with the same ID
      *
-     * @param sH SnakeHandler to be processed
-     * @throws QuimpPluginException
+     * @param snake snake to be processed
+     * @return Processed snake or original input one when there is no plugin selected
+     * @throws QuimpPluginException on plugin error
      * @throws Exception
      */
-    private void iterateOverSnakePlugins(final SnakeHandler sH)
-            throws QuimpPluginException, Exception {
-        Snake snake = sH.getLiveSnake();
-        if (!BOAp.isRefListEmpty(BOAp.sPluginList)) {
-            List<Vector2d> dataToProcess = snake.asList();
-            for (IQuimpPlugin qP : BOAp.sPluginList) {
-                if (qP == null)
-                    continue; // no plugin on this slot
-                @SuppressWarnings("unchecked") // all plugins are of IQuimpPoint2dFilter type
-                // because it is guaranteed by pluginFactory.getPluginNames(DOES_SNAKES) used
-                // when populating GUI names and BOAp.sPluginList in actionPerformed(ActionEvent e).
-                IQuimpPoint2dFilter<Vector2d> qPcast = (IQuimpPoint2dFilter<Vector2d>) qP;
-                qPcast.attachData(dataToProcess);
-                dataToProcess = qPcast.runPlugin();
-            }
-            sH.attachProcessedSnake(dataToProcess);
-        } else
-            ; // copy live to processed
-    }
-
     private Snake iterateOverSnakePlugins(final Snake snake)
             throws QuimpPluginException, Exception {
         Snake outsnake = snake;
@@ -1534,11 +1511,8 @@ public class BOA_ implements PlugIn {
             tightenSnake(snake);
             imageGroup.drawPath(snake, f); // post tightned snake on path
 
-            // iterateOverSnakePlugins(sH);
-            // sH.storeCurrentSnake(f); // remember temporary LiveSnake for this frame and this
-            // object
-            iterateOverSnakePlugins(sH);
-            sH.storeProcessedSnake(f);
+            Snake out = iterateOverSnakePlugins(snake); // process segmented snake by plugins
+            sH.storeThisSnake(out, f); // store processed snake as final
         } catch (QuimpPluginException qpe) {
             isPluginError = true; // we have error
             BOA_.log("Error in filter module: " + qpe.getMessage());
@@ -1553,10 +1527,8 @@ public class BOA_ implements PlugIn {
         // if any problem with plugin or other, store snake without modification
         // because snake.asList() returns copy
         try {
-            if (isPluginError && BOAp.stopOnPluginError) // no store on error
-                return;
-            else
-                sH.storeProcessedSnake(f); // store in all remaining cases
+            if (isPluginError && BOAp.stopOnPluginError) // no store on error?
+                sH.storeLiveSnake(f); // so store original livesnake after segmentation
         } catch (BoaException be) {
             BOA_.log("Could not store new snake");
             LOGGER.error(be);
@@ -2683,7 +2655,6 @@ class SnakeHandler {
     private int startFrame;
     private int endFrame;
     private Snake liveSnake;
-    private Snake processedSnake;
     private Snake[] snakes; // series of snakes
     private int ID;
 
@@ -2704,14 +2675,13 @@ class SnakeHandler {
         snakes = new Snake[BOAp.FRAMES - startFrame + 1]; // stored snakes
         ID = id;
         attachLiveSnake(r); // initialize liveSnake
-        attachProcessedSnake(r);
     }
 
     /**
      * Make copy of \c liveSnake into \c snakes array
      * 
      * @param frame Frame for which \c liveSnake will be copied to
-     * @throws Exception
+     * @throws BoaException
      */
     public void storeLiveSnake(int frame) throws BoaException {
         // BOA_.log("Store snake " + ID + " at frame " + frame);
@@ -2744,16 +2714,23 @@ class SnakeHandler {
 
     }
 
-    public void storeProcessedSnake(int frame) throws BoaException {
+    /**
+     * Makes copy of \c snake and store it to final snakes.
+     * 
+     * @param snake Snake to store
+     * @param frame Frame for which \c liveSnake will be copied to
+     * @throws BoaException
+     */
+    public void storeThisSnake(Snake snake, int frame) throws BoaException {
         // BOA_.log("Store snake " + ID + " at frame " + frame);
         snakes[frame - startFrame] = null; // delete at current frame
-        // TODO this copy may be moved to SNAKE constructor that allows to make deep copy of snake
+
         Node head = new Node(0); // dummy head node
         head.setHead(true);
 
         Node prev = head;
         Node nn;
-        Node sn = processedSnake.getHead();
+        Node sn = snake.getHead();
         do {
             nn = new Node(sn.getTrackNum());
             nn.setX(sn.getX());
@@ -2768,9 +2745,9 @@ class SnakeHandler {
         nn.setNext(head); // link round tail
         head.setPrev(nn);
 
-        snakes[frame - startFrame] = new Snake(head, processedSnake.getNODES() + 1, ID); // +1
-        // dummy
-        // head
+        snakes[frame - startFrame] = new Snake(head, snake.getNODES() + 1, ID); // +1
+                                                                                // dummy
+                                                                                // head
         snakes[frame - startFrame].calcCentroid();
 
     }
@@ -2785,14 +2762,6 @@ class SnakeHandler {
      */
     public void attachLiveSnake(final List<Vector2d> data) throws Exception {
         liveSnake = new Snake(data, ID);
-    }
-
-    public void attachProcessedSnake(final List<Vector2d> data) throws Exception {
-        processedSnake = new Snake(data, ID);
-    }
-
-    public void attachProcessedSnake(final Roi data) throws Exception {
-        processedSnake = new Snake(data, ID, false);
     }
 
     /**
@@ -2939,10 +2908,6 @@ class SnakeHandler {
 
     public Snake getLiveSnake() {
         return liveSnake;
-    }
-
-    public Snake getProcessedSnake() {
-        return processedSnake;
     }
 
     public Snake getStoredSnake(int f) {
