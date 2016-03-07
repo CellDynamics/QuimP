@@ -333,9 +333,10 @@ public class BOA_ implements PlugIn {
 
     /**
      * Redraw current view. Process outlines by all active plugins. Do not run segmentation again
+     * Updates \c liveSnake.
      */
     public void recalculatePlugins() {
-        LOGGER.trace("BOA: updateView called");
+        LOGGER.trace("BOA: recalculatePlugins called");
         SnakeHandler sH;
         if (nest.isVacant())
             return;
@@ -349,14 +350,14 @@ public class BOA_ implements PlugIn {
                 try {
                     if (!snake.alive || frame < sH.getStartframe())
                         continue;
-                    Snake out = iterateOverSnakePlugins(snake);
-                    sH.storeThisSnake(out, frame);
+                    Snake out = iterateOverSnakePlugins(snake); // apply all plugins
+                    sH.storeThisSnake(out, frame); // set processed snake as final
                 } catch (QuimpPluginException qpe) {
                     // must be rewritten with whole runBOA #65 #67
                     BOA_.log("Error in filter module: " + qpe.getMessage());
                     LOGGER.error(qpe);
                     if (BOAp.stopOnPluginError) // no store on error
-                        sH.storeLiveSnake(frame);
+                        sH.storeLiveSnake(frame); // so store only segmented snake as final
                 }
             }
         } catch (Exception e) {
@@ -1315,7 +1316,7 @@ public class BOA_ implements PlugIn {
                             BOA_.log("Error in filter module: " + qpe.getMessage());
                             LOGGER.error(qpe);
                             if (!BOAp.stopOnPluginError) // no store on error
-                                sH.storeLiveSnake(frame);
+                                sH.storeLiveSnake(frame); // store segemented nonmodified
                         } catch (BoaException be) {
                             imageGroup.drawPath(snake, frame); // failed
                                                                // position
@@ -1359,8 +1360,8 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Process \c liveSnake from current frame for SnakeHandler by all active plugins. Processed
-     * \c liveSnake is returned as new Snake with the same ID
+     * Process \c Snake by all active plugins. Processed \c Snake is returned as new Snake with
+     * the same ID
      *
      * @param snake snake to be processed
      * @return Processed snake or original input one when there is no plugin selected
