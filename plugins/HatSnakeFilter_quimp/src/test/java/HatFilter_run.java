@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JFrame;
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
@@ -29,14 +29,14 @@ public class HatFilter_run {
 
     @SuppressWarnings("serial")
     public static void main(String[] args) throws QuimpPluginException, InterruptedException {
-        List<Vector2d> input;
+        List<Point2d> input;
         // test data
         input = new ArrayList<>();
-        input.add(new Vector2d(923, 700));
-        input.add(new Vector2d(577.5, 1175));
-        input.add(new Vector2d(18, 993));
-        input.add(new Vector2d(18, 406));
-        input.add(new Vector2d(577, 224));
+        input.add(new Point2d(923, 700));
+        input.add(new Point2d(577.5, 1175));
+        input.add(new Point2d(18, 993));
+        input.add(new Point2d(18, 406));
+        input.add(new Point2d(577, 224));
         // input.add(new Vector2d( 428, -4.87));
         // input.add(new Vector2d( 3.11, -3.9));
 

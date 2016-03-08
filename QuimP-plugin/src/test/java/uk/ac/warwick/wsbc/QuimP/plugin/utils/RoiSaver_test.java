@@ -4,14 +4,11 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
  * @date 25 Jan 2016
  */
 
-
 import java.util.ArrayList;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.junit.Test;
-
-import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
  * Test class for ROI saver
@@ -30,10 +27,10 @@ public class RoiSaver_test {
      */
     @Test
     public void test_SaveROI_case1() {
-        ArrayList<Vector2d> testcase = new ArrayList<>();
-        testcase.add(new Vector2d(0, 0));
-        testcase.add(new Vector2d(50, 100));
-        testcase.add(new Vector2d(100, 0));
+        ArrayList<Point2d> testcase = new ArrayList<>();
+        testcase.add(new Point2d(0, 0));
+        testcase.add(new Point2d(50, 100));
+        testcase.add(new Point2d(100, 0));
         RoiSaver.saveROI("/tmp/test_SaveROI_case1.tif", testcase);
     }
 
@@ -45,7 +42,7 @@ public class RoiSaver_test {
      */
     @Test
     public void test_SaveROI_case2() {
-        ArrayList<Vector2d> testcase = new ArrayList<>();
+        ArrayList<Point2d> testcase = new ArrayList<>();
         RoiSaver.saveROI("/tmp/test_SaveROI_case2.tif", testcase);
     }
 

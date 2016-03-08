@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,7 +44,7 @@ import org.apache.logging.log4j.Logger;
 public class DataLoader {
     private static final Logger LOGGER = LogManager.getLogger(DataLoader.class.getName());
     private List<Double> data;
-    public List<Vector2d> Vert;
+    public List<Point2d> Vert;
 
     /**
      * Construct dataLoader object.
@@ -60,26 +60,26 @@ public class DataLoader {
      */
     public DataLoader(String fileName) throws FileNotFoundException, IllegalArgumentException {
         data = new ArrayList<Double>();
-        Vert = new ArrayList<Vector2d>();
+        Vert = new ArrayList<Point2d>();
         Scanner scanner = new Scanner(new File(fileName));
         while (scanner.hasNextDouble())
             data.add(scanner.nextDouble());
         scanner.close();
-        convertToVector();
+        convertToPoint2d();
         LOGGER.debug("File: " + fileName + " loaded");
     }
 
     /**
-     * Convert read List<Double> to List<Vector2d>
+     * Convert read List<Double> to List<Point2d>
      * 
      * @throws IllegalArgumentException
      */
-    private void convertToVector() throws IllegalArgumentException {
+    private void convertToPoint2d() throws IllegalArgumentException {
         if (data.size() % 2 != 0)
             throw new IllegalArgumentException("Data must be multiply of 2");
         ListIterator<Double> it = data.listIterator();
         while (it.hasNext()) {
-            Vert.add(new Vector2d(it.next().doubleValue(), // x coord
+            Vert.add(new Point2d(it.next().doubleValue(), // x coord
                     it.next().doubleValue())); // y coord from input file
         }
     }
@@ -87,10 +87,10 @@ public class DataLoader {
     /**
      * Return loaded data
      * 
-     * @return loaded polygon as List<Vector2d>
+     * @return loaded polygon as List<Point2d>
      * @retval List<Vector2d>
      */
-    public List<Vector2d> getData() {
+    public List<Point2d> getData() {
         return Vert;
     }
 }

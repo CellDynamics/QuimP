@@ -2,6 +2,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.snakes;
 
 import java.util.List;
 
+import javax.vecmath.Point2d;
+
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
@@ -11,10 +13,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * @author p.baniukiewicz
  * @todo TODO Finish documentation
  * @todo TODO General specification E may not be useful here as QuimP always
- * @todo TODO Switch to strict <Vector2d> to prevent user for using other types that are not convertable
- * call it as \c Vector2d. Remove if not useful
  */
-public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
+public interface IQuimpPoint2dFilter extends IQuimpPlugin {
 
     /**
      * Runs filter and return filtered points in the same order as input points
@@ -26,7 +26,7 @@ public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
      * @warning Plugin may be run without attached data. Plugin must deal with
      * this
      */
-    List<E> runPlugin() throws QuimpPluginException;
+    List<Point2d> runPlugin() throws QuimpPluginException;
 
     /**
      * Attach data to process to plugin
@@ -37,5 +37,5 @@ public interface IQuimpPoint2dFilter<E> extends IQuimpPlugin {
      * @warning \c data may be passed as null from QuimP. Plugin must deal with
      * this
      */
-    void attachData(final List<E> data);
+    void attachData(final List<Point2d> data);
 }

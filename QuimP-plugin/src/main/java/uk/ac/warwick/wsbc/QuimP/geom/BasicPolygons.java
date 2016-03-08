@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
  * @see http://www.mathopenref.com/coordpolygonarea.html
  * @todo integrate this class with awt.polygon maybe
  */
-public class BasicPolygons<T extends Tuple2d> {
+public class BasicPolygons {
 
     private static final Logger LOGGER = LogManager.getLogger(BasicPolygons.class.getName());
 
@@ -40,7 +40,7 @@ public class BasicPolygons<T extends Tuple2d> {
      * @return Area
      * @warning Polygon can not intersect itself.
      */
-    public double getPolyArea(final List<T> P) {
+    public double getPolyArea(final List<? extends Tuple2d> P) {
         int i, j;
         double area = 0;
 
@@ -61,7 +61,7 @@ public class BasicPolygons<T extends Tuple2d> {
      * @param P Vertices of polygon in specified order
      * @return Perimeter
      */
-    public double getPolyPerim(final List<T> P) {
+    public double getPolyPerim(final List<? extends Tuple2d> P) {
         int i, j;
         double len = 0;
         ArrayList<Vector2d> V = new ArrayList<>();
@@ -86,7 +86,7 @@ public class BasicPolygons<T extends Tuple2d> {
      * @return \c true if \c Ptest is inside \c P, \c false otherwise
      * @see http://www.shodor.org/~jmorrell/interactivate/org/shodor/util11/PolygonUtils.java
      */
-    public boolean isPointInside(final List<T> P, final Tuple2d Ptest) {
+    public boolean isPointInside(final List<? extends Tuple2d> P, final Tuple2d Ptest) {
         double angle = 0;
         Point2d p1 = null, p2 = null;
         for (int i = 0; i < P.size(); i++) {
@@ -117,9 +117,10 @@ public class BasicPolygons<T extends Tuple2d> {
      * Test if \b all points \c Ptest are inside polygon
      * @copydetails isPointInside(final List<T>, final Tuple2d)
      */
-    public boolean arePointsInside(final List<T> P, final List<T> Ptest) {
+    public boolean arePointsInside(final List<? extends Tuple2d> P,
+            final List<? extends Tuple2d> Ptest) {
         boolean result = true;
-        Iterator<T> it = Ptest.iterator();
+        Iterator<? extends Tuple2d> it = Ptest.iterator();
         while (it.hasNext() && result) {
             result = isPointInside(P, it.next());
         }
@@ -131,9 +132,10 @@ public class BasicPolygons<T extends Tuple2d> {
      * 
      * @copydetails isPointInside(final List<T>, final Tuple2d)
      */
-    public boolean isanyPointInside(final List<T> P, final List<T> Ptest) {
+    public boolean isanyPointInside(final List<? extends Tuple2d> P,
+            final List<? extends Tuple2d> Ptest) {
         boolean result = false;
-        Iterator<T> it = Ptest.iterator();
+        Iterator<? extends Tuple2d> it = Ptest.iterator();
         while (it.hasNext() && !result) {
             result = isPointInside(P, it.next());
         }
@@ -148,7 +150,7 @@ public class BasicPolygons<T extends Tuple2d> {
      * @warning Require correct polygon with non crossing edges.
      * @throws IllegalArgumentException when defective polygon is given (area equals 0)
      */
-    public Point2d polygonCenterOfMass(final List<T> P) {
+    public Point2d polygonCenterOfMass(final List<? extends Tuple2d> P) {
 
         int N = P.size();
         Point2d[] polygon = new Point2d[N];

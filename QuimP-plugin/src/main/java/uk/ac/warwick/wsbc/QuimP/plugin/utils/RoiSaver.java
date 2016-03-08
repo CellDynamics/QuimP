@@ -3,7 +3,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 import java.awt.Color;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,8 +21,7 @@ import ij.process.ImageProcessor;
  *
  */
 public class RoiSaver {
-    private static final Logger LOGGER =
-            LogManager.getLogger(RoiSaver.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(RoiSaver.class.getName());
 
     /**
      * Dummy constructor
@@ -39,14 +38,14 @@ public class RoiSaver {
      * @param fileName file to save image with path
      * @param vert list of vertices
      */
-    public static void saveROI(String fileName, List<Vector2d> vert) {
+    public static void saveROI(String fileName, List<Point2d> vert) {
         try {
             double[] bb;
             float[] x = new float[vert.size()];
             float[] y = new float[vert.size()];
             int l = 0;
             // copy to arrays
-            for (Vector2d el : vert) {
+            for (Point2d el : vert) {
                 x[l] = (float) el.getX();
                 y[l] = (float) el.getY();
                 l++;
@@ -54,11 +53,10 @@ public class RoiSaver {
             bb = getBoundingBox(vert); // get size of output image
             PolygonRoi pR = new PolygonRoi(x, y, Roi.POLYGON); // create polygon
                                                                // object
-            LOGGER.debug("Creating image of size [" + (int) Math.round(bb[0])
-                    + "," + (int) Math.round(bb[1]) + "]");
-            ImagePlus outputImage = IJ.createImage("",
-                    (int) Math.round(bb[0] + 0.2 * bb[0]),
-                    (int) Math.round(bb[1] + 0.2 * bb[1]), 1, 8); // output                                                                        // margins
+            LOGGER.debug("Creating image of size [" + (int) Math.round(bb[0]) + ","
+                    + (int) Math.round(bb[1]) + "]");
+            ImagePlus outputImage = IJ.createImage("", (int) Math.round(bb[0] + 0.2 * bb[0]),
+                    (int) Math.round(bb[1] + 0.2 * bb[1]), 1, 8); // output // margins
             ImageProcessor ip = outputImage.getProcessor(); // get processor
                                                             // required later
             ip.setColor(Color.WHITE); // set pen
@@ -87,13 +85,13 @@ public class RoiSaver {
      * @return two elements array where [width height]
      * @retval double[2]
      */
-    private static double[] getBoundingBox(List<Vector2d> vert) {
+    private static double[] getBoundingBox(List<Point2d> vert) {
         double minx = vert.get(0).getX();
         double maxx = minx;
         double miny = vert.get(0).getY();
         double maxy = miny;
         double[] out = new double[2];
-        for (Vector2d el : vert) {
+        for (Point2d el : vert) {
             if (el.getX() > maxx)
                 maxx = el.getX();
             if (el.getX() < minx)

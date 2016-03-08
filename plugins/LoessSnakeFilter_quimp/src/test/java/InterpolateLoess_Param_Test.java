@@ -1,12 +1,11 @@
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,11 +32,11 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 @RunWith(Parameterized.class)
 public class InterpolateLoess_Param_Test {
 
-    private List<Vector2d> testcase;
+    private List<Point2d> testcase;
     private Double smoothing;
     private Path testfileName;
-    private static final Logger LOGGER = LogManager
-            .getLogger(InterpolateLoess_Param_Test.class.getName());
+    private static final Logger LOGGER =
+            LogManager.getLogger(InterpolateLoess_Param_Test.class.getName());
 
     /**
      * Parameterized constructor.
@@ -78,8 +77,7 @@ public class InterpolateLoess_Param_Test {
      */
     @Parameterized.Parameters
     public static Collection<Object[]> testFiles() {
-        return Arrays.asList(new Object[][] {
-                { "../src/test/resources/testData_75.dat", 0.015 },
+        return Arrays.asList(new Object[][] { { "../src/test/resources/testData_75.dat", 0.015 },
                 { "../src/test/resources/testData_75.dat", 0.04 },
                 { "../src/test/resources/testData_75.dat", 0.06 },
                 { "../src/test/resources/testData_75.dat", 0.08 },
@@ -116,7 +114,7 @@ public class InterpolateLoess_Param_Test {
     @SuppressWarnings("serial")
     @Test
     public void test_getInterpolationLoess() throws QuimpPluginException {
-        ArrayList<Vector2d> out;
+        List<Point2d> out;
         LoessSnakeFilter_ i = new LoessSnakeFilter_();
         i.attachData(testcase);
         i.setPluginConfig(new ParamList() {
@@ -124,11 +122,9 @@ public class InterpolateLoess_Param_Test {
                 put("smooth", String.valueOf(smoothing));
             }
         });
-        out = (ArrayList<Vector2d>) i.runPlugin();
-        RoiSaver.saveROI(
-                "/tmp/test_getInterpolationLoess_" + testfileName.getFileName()
-                        + "_" + smoothing.toString() + ".tif",
-                out);
+        out = i.runPlugin();
+        RoiSaver.saveROI("/tmp/test_getInterpolationLoess_" + testfileName.getFileName() + "_"
+                + smoothing.toString() + ".tif", out);
         LOGGER.debug("setUp: " + testcase.toString());
         if (out.size() < 100)
             LOGGER.debug("testInterpolate: " + out.toString());
@@ -141,9 +137,8 @@ public class InterpolateLoess_Param_Test {
      */
     @Test
     public void test_roiSaver() {
-        RoiSaver.saveROI("/tmp/test_roiSaver_" + testfileName.getFileName()
-                + "_" + smoothing.toString() + ".tif",
-                testcase);
+        RoiSaver.saveROI("/tmp/test_roiSaver_" + testfileName.getFileName() + "_"
+                + smoothing.toString() + ".tif", testcase);
     }
 
 }

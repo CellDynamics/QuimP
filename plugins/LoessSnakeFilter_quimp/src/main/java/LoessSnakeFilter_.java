@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
@@ -20,10 +20,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * 
  * @author p.baniukiewicz
  * @date 20 Jan 2016
- * @see William S. Cleveland - Robust Locally Weighted Regression and Smoothing
- * Scatterplots
+ * @see William S. Cleveland - Robust Locally Weighted Regression and Smoothing Scatterplots
  */
-public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
+public class LoessSnakeFilter_ implements IQuimpPoint2dFilter {
 
     private static final Logger LOGGER = LogManager.getLogger(LoessSnakeFilter_.class.getName());
     private QuimpDataConverter xyData; //!< input List converted to separate X and Y arrays
@@ -62,7 +61,7 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
      * @see wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List<E>)
      */
     @Override
-    public void attachData(List<Vector2d> data) {
+    public void attachData(List<Point2d> data) {
         LOGGER.trace("Entering attachData");
         xyData = new QuimpDataConverter(data);
     }
@@ -76,7 +75,7 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
      * it depends on data)
      */
     @Override
-    public List<Vector2d> runPlugin() throws QuimpPluginException {
+    public List<Point2d> runPlugin() throws QuimpPluginException {
         // collect actual parameters from UI
         smoothing = uiInstance.getDoubleFromUI("smooth");
         LOGGER.debug(String.format("Run plugin with params: smoothing %f", smoothing));
@@ -87,7 +86,7 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
         LoessInterpolator sI;
         double[] i = new double[xyData.size()]; // table of linear indexes that stand for x values
                                                 // for X,Y vectors (treated separately now)
-        List<Vector2d> out = new ArrayList<Vector2d>(); // output interpolated data
+        List<Point2d> out = new ArrayList<Point2d>(); // output interpolated data
         PolynomialSplineFunction psfX; // result of LoessInterpolator.interpolate for X and Y data
         PolynomialSplineFunction psfY;
         for (int ii = 0; ii < xyData.size(); ii++)
@@ -104,7 +103,7 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d> {
         }
         // copy to Vector2d List
         for (double ii = 0; ii <= xyData.size() - 1; ii += density) {
-            out.add(new Vector2d(psfX.value(ii), psfY.value(ii)));
+            out.add(new Point2d(psfX.value(ii), psfY.value(ii)));
         }
         return out;
     }
