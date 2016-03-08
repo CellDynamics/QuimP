@@ -21,8 +21,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 public class QWindowBuilder_run {
 
     public static void main(String[] args) throws InterruptedException {
-        final Logger LOGGER =
-                LogManager.getLogger(QWindowBuilder_run.class.getName());
+        final Logger LOGGER = LogManager.getLogger(QWindowBuilder_run.class.getName());
         ParamList def1;
         QWindowBuilderInst inst;
 
@@ -30,12 +29,13 @@ public class QWindowBuilder_run {
         def1.put("NAME", "test");
         def1.put("window", "spinner, -0.5, 0.5, 0.1, 0");
         def1.put("SMOOTH", "spinner, -1, 10, 1, -1");
-        def1.put("help", "FlowLayout is the default layout manager for"
-                + " every JPanel. It simply lays out components in a"
-                + " single row, starting a new row if its container "
-                + "is not sufficiently wide. Both panels in CardLayoutDemo, "
-                + "shown previously, use FlowLayout. For further "
-                + "details, see How to Use FlowLayout.");
+        def1.put("help",
+                "FlowLayout is the default layout manager for"
+                        + " every JPanel. It simply lays out components in a"
+                        + " single row, starting a new row if its container "
+                        + "is not sufficiently wide. Both panels in CardLayoutDemo, "
+                        + "shown previously, use FlowLayout. For further "
+                        + "details, see How to Use FlowLayout.");
         inst = new QWindowBuilderInst(); // create window object
 
         ParamList set = new ParamList();
@@ -54,13 +54,12 @@ public class QWindowBuilder_run {
                 startSignal.countDown(); // decrease latch by 1
             }
         });
-        inst.toggleWindow(); // show window
+        inst.toggleWindow(true); // show window
         // main thread waits here until Latch reaches 0
         startSignal.await();
         ret = inst.getValues();
         LOGGER.trace("Finishing ");
-        LOGGER.debug(
-                "window=" + ret.get("window") + " smooth=" + ret.get("smooth"));
+        LOGGER.debug("window=" + ret.get("window") + " smooth=" + ret.get("smooth"));
         inst = null;
     }
 

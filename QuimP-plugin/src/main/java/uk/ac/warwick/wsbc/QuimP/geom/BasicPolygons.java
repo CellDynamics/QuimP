@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class BasicPolygons {
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(BasicPolygons.class.getName());
 
     public BasicPolygons() {

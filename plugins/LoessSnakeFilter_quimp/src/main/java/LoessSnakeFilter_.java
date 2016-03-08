@@ -163,7 +163,7 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter {
     @Override
     public void showUI(boolean val) {
         LOGGER.debug("Got message to show UI");
-        uiInstance.toggleWindow();
+        uiInstance.toggleWindow(val);
     }
 
     @Override

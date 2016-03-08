@@ -349,9 +349,9 @@ public class BOA_ implements PlugIn {
                 sH = nest.getHandler(s);
                 Snake snake = sH.getLiveSnake();
                 try {
-                    if (!snake.alive || frame < sH.getStartframe())
+                    if (!snake.alive || frame < sH.getStartframe()) // if snake does exist on frame
                         continue;
-                    Snake out = iterateOverSnakePlugins(snake); // apply all plugins
+                    Snake out = iterateOverSnakePlugins(snake); // apply all plugins to snake
                     sH.storeThisSnake(out, frame); // set processed snake as final
                 } catch (QuimpPluginException qpe) {
                     // must be rewritten with whole runBOA #65 #67
@@ -469,7 +469,7 @@ public class BOA_ implements PlugIn {
             implements ActionListener, ItemListener, ChangeListener {
 
         final static int DEFAULT_SPINNER_SIZE = 5;
-
+        final static int SNAKE_PLUGIN_NUM = 3; //!< number of currently supported plugins
         private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
         private Button bAdd, bDel, bDelSeg, bQuit;
         private Checkbox cPrevSnake, cExpSnake, cPath, cZoom;

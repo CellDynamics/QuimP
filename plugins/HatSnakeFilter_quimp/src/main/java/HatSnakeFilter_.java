@@ -470,7 +470,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
     @Override
     public void showUI(boolean val) {
         LOGGER.debug("Got message to show UI");
-        if (toggleWindow() == true)
+        if (toggleWindow(val) == true)
             recalculatePlugin();
     }
 
