@@ -5,6 +5,8 @@
 
 package uk.ac.warwick.wsbc.QuimP;
 
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+
 /**
  *
  * @author rtyson

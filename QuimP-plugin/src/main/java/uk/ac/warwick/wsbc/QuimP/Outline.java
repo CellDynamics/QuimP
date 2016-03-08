@@ -7,6 +7,7 @@ package uk.ac.warwick.wsbc.QuimP;
 import ij.IJ;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 import java.awt.Polygon;
 

@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.geom;
 
 import java.util.ArrayList;
 
@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 /**
- * Simple testing class for Vec2d class
+ * Simple testing class for ExtendedVector2d class
  * 
  * @remarks Will be removed in final version
  * @todo Remove this class in future

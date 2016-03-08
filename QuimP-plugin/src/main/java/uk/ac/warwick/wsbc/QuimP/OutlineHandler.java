@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import ij.*;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 import java.io.*;
 

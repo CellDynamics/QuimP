@@ -74,6 +74,7 @@ import ij.process.FloatPolygon;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
@@ -1244,7 +1245,7 @@ public class BOA_ implements PlugIn {
      * @param startF start frame
      * @param endF end frame
      * @throws BoaException
-     * @todo //TODO Rewrite exceptions here
+     * @todo TODO Rewrite exceptions here
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/65
      */
     public void runBoa(int startF, int endF) throws BoaException {
@@ -1304,11 +1305,8 @@ public class BOA_ implements PlugIn {
                             imageGroup.drawPath(snake, frame); // pre tightned snake on path
                             tightenSnake(snake);
                             imageGroup.drawPath(snake, frame); // post tightned snake on path
-                            // iterateOverSnakePlugins(sH); // run active plugins and change
-                            // liveSnake
-                            // sH.storeCurrentSnake(frame); // store liveSnake as final one
                             Snake out = iterateOverSnakePlugins(snake);
-                            sH.storeThisSnake(out, frame);
+                            sH.storeThisSnake(out, frame); // store resulting snake as final
 
                         } catch (QuimpPluginException qpe) {
                             // must be rewritten with whole runBOA #65 #67
