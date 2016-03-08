@@ -7,7 +7,7 @@ package uk.ac.warwick.wsbc;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,12 +23,12 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  * @date 17 Feb 2016
  *
  */
-public class Plugin2_ implements IQuimpPoint2dFilter<Vector2d> {
+public class Plugin2_ implements IQuimpPoint2dFilter {
 
     private static final Logger LOGGER = LogManager.getLogger(Plugin2_.class.getName());
 
     private ParamList config;
-    private List<Vector2d> points;
+    private List<Point2d> points;
 
     /**
      * 
@@ -70,16 +70,16 @@ public class Plugin2_ implements IQuimpPoint2dFilter<Vector2d> {
     }
 
     @Override
-    public List<Vector2d> runPlugin() throws QuimpPluginException {
+    public List<Point2d> runPlugin() throws QuimpPluginException {
         LOGGER.trace("runPlugin of Plugin2 called");
-        ArrayList<Vector2d> out = new ArrayList<Vector2d>();
+        ArrayList<Point2d> out = new ArrayList<Point2d>();
         for (int i = 0; i < points.size(); i += 4)
             out.add(points.get(i));
         return out;
     }
 
     @Override
-    public void attachData(List<Vector2d> data) {
+    public void attachData(List<Point2d> data) {
         LOGGER.trace("attachData of Plugin2 called");
         points = data;
     }

@@ -6,12 +6,11 @@
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +40,7 @@ public class HatFilter_Param_Test {
     private Integer window;
     private Integer pnum;
     private Double alev;
-    private List<Vector2d> testcase;
+    private List<Point2d> testcase;
     private Path testfileName;
 
     /**
@@ -115,7 +114,7 @@ public class HatFilter_Param_Test {
     @SuppressWarnings("serial")
     @Test
     public void test_HatFilter() throws QuimpPluginException {
-        ArrayList<Vector2d> out;
+        List<Point2d> out;
         HatSnakeFilter_ hf = new HatSnakeFilter_();
         hf.attachData(testcase);
         hf.setPluginConfig(new ParamList() {
@@ -125,7 +124,7 @@ public class HatFilter_Param_Test {
                 put("alev", String.valueOf(alev));
             }
         });
-        out = (ArrayList<Vector2d>) hf.runPlugin();
+        out = hf.runPlugin();
         RoiSaver.saveROI("/tmp/test_HatFilter_" + testfileName.getFileName() + "_"
                 + window.toString() + "_" + pnum.toString() + "_" + alev.toString() + ".tif", out);
         LOGGER.debug("setUp: " + testcase.toString());

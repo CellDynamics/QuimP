@@ -2,7 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
 import java.util.List;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Tuple2d;
 
 /**
  * Convert Vector2d ordered list into separate X, Y arrays.
@@ -17,7 +17,7 @@ import javax.vecmath.Vector2d;
  */
 public class QuimpDataConverter {
 
-    private List<Vector2d> points; //!< reference to input coordinates
+    private List<? extends Tuple2d> points; //!< reference to input coordinates
     private double[] X; //!< extracted x coords from Vec2d
     private double[] Y; //!< extracted y coords from Vec2d
 
@@ -26,7 +26,7 @@ public class QuimpDataConverter {
      * 
      * @param input list of vertices
      */
-    public QuimpDataConverter(final List<Vector2d> input) {
+    public QuimpDataConverter(final List<? extends Tuple2d> input) {
         this.points = input;
         toArrays();
     }
@@ -39,7 +39,7 @@ public class QuimpDataConverter {
         int i = 0;
         X = new double[points.size()];
         Y = new double[points.size()];
-        for (Vector2d el : points) {
+        for (Tuple2d el : points) {
             X[i] = el.getX();
             Y[i] = el.getY();
             i++;
@@ -71,16 +71,6 @@ public class QuimpDataConverter {
      */
     public int size() {
         return points.size();
-    }
-
-    /**
-     * Data accessor
-     * 
-     * @return List of vertices as list
-     * @todo consider creating copy here
-     */
-    public List<Vector2d> getList() {
-        return points;
     }
 
 }

@@ -12,6 +12,7 @@ import ij.gui.YesNoCancelDialog;
 import ij.io.*;
 //import ij.process.ColorProcessor;
 import ij.process.*;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 import java.io.*;
 import java.util.ArrayList;

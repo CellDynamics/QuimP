@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.geom;
 
 import java.awt.geom.Line2D;
 
@@ -128,8 +128,8 @@ public class ExtendedVector2d extends Vector2d {
      * @deprecated Actually not used in this version of QuimP
      */
     @Deprecated
-    public static ExtendedVector2d lineIntersectionOLD(ExtendedVector2d nA1, ExtendedVector2d nA2, ExtendedVector2d nB1,
-            ExtendedVector2d nB2) {
+    public static ExtendedVector2d lineIntersectionOLD(ExtendedVector2d nA1, ExtendedVector2d nA2,
+            ExtendedVector2d nB1, ExtendedVector2d nB2) {
         double aA, bB, aB, bA, denom;
         aA = nA2.getY() - nA1.getY();
         bA = nA1.getX() - nA2.getX();
@@ -169,7 +169,8 @@ public class ExtendedVector2d extends Vector2d {
         eB1 = cp.getY() - nB1.getY(); // line2.getY1();
         eB2 = cp.getY() - nB2.getY(); // line2.getY2();
 
-        if ((Math.abs(bA) >= (Math.abs(dA1) + Math.abs(dA2))) && (Math.abs(aA) >= (Math.abs(eA1) + Math.abs(eA2)))) {
+        if ((Math.abs(bA) >= (Math.abs(dA1) + Math.abs(dA2)))
+                && (Math.abs(aA) >= (Math.abs(eA1) + Math.abs(eA2)))) {
 
             if ((Math.abs(bB) >= (Math.abs(dB1) + Math.abs(dB2)))
                     && (Math.abs(aB) >= (Math.abs(eB1) + Math.abs(eB2)))) {
@@ -188,8 +189,8 @@ public class ExtendedVector2d extends Vector2d {
     @Deprecated
     public static ExtendedVector2d lineIntersectionOLD2(ExtendedVector2d nA1, ExtendedVector2d nA2,
             ExtendedVector2d nB1, ExtendedVector2d nB2) {
-        if (Line2D.linesIntersect(nA1.getX(), nA1.getY(), nA2.getX(), nA2.getY(), nB1.getX(), nB1.getY(), nB2.getX(),
-                nB2.getY())) {
+        if (Line2D.linesIntersect(nA1.getX(), nA1.getY(), nA2.getX(), nA2.getY(), nB1.getX(),
+                nB1.getY(), nB2.getX(), nB2.getY())) {
 
             double aA, bB, aB, bA, denom;
             aA = nA2.getY() - nA1.getY();
@@ -217,11 +218,11 @@ public class ExtendedVector2d extends Vector2d {
 
             // cp.print("Intersect at: ");
 
-            System.out.println(
-                    "plot([" + nA1.getX() + "," + nA2.getX() + "],[" + nA1.getY() + "," + nA2.getY() + "],'-ob');"); // matlab
-                                                                                                                     // output
-            System.out.println("hold on; plot([" + nB1.getX() + "," + nB2.getX() + "],[" + nB1.getY() + "," + nB2.getY()
-                    + "],'-or');");
+            System.out.println("plot([" + nA1.getX() + "," + nA2.getX() + "],[" + nA1.getY() + ","
+                    + nA2.getY() + "],'-ob');"); // matlab
+                                                 // output
+            System.out.println("hold on; plot([" + nB1.getX() + "," + nB2.getX() + "],["
+                    + nB1.getY() + "," + nB2.getY() + "],'-or');");
             System.out.println("plot(" + cp.x + "," + cp.y + ", 'og');");
 
             return cp;
@@ -248,8 +249,8 @@ public class ExtendedVector2d extends Vector2d {
      *         (x,y set) +1 if segments intersect (x,y set)
      * @see http://geosoft.no/software/geometry/Geometry.java.html
      */
-    public static int segmentIntersection(double x0, double y0, double x1, double y1, double x2, double y2, double x3,
-            double y3, double[] intersection) {
+    public static int segmentIntersection(double x0, double y0, double x1, double y1, double x2,
+            double y2, double x3, double y3, double[] intersection) {
 
         final double LIMIT = 1e-5;
         final double INFINITY = 1e8;
@@ -274,16 +275,20 @@ public class ExtendedVector2d extends Vector2d {
 
             } else {
                 if (equals(x0, x1, LIMIT)) {
-                    if (Math.min(y0, y1) < Math.max(y2, y3) || Math.max(y0, y1) > Math.min(y2, y3)) {
-                        double twoMiddle = y0 + y1 + y2 + y3 - min(y0, y1, y2, y3) - max(y0, y1, y2, y3);
+                    if (Math.min(y0, y1) < Math.max(y2, y3)
+                            || Math.max(y0, y1) > Math.min(y2, y3)) {
+                        double twoMiddle =
+                                y0 + y1 + y2 + y3 - min(y0, y1, y2, y3) - max(y0, y1, y2, y3);
                         y = (twoMiddle) / 2.0;
                         x = (y - b0) / a0;
                     } else {
                         return -1;
                     } // Parallel non-overlapping
                 } else {
-                    if (Math.min(x0, x1) < Math.max(x2, x3) || Math.max(x0, x1) > Math.min(x2, x3)) {
-                        double twoMiddle = x0 + x1 + x2 + x3 - min(x0, x1, x2, x3) - max(x0, x1, x2, x3);
+                    if (Math.min(x0, x1) < Math.max(x2, x3)
+                            || Math.max(x0, x1) > Math.min(x2, x3)) {
+                        double twoMiddle =
+                                x0 + x1 + x2 + x3 - min(x0, x1, x2, x3) - max(x0, x1, x2, x3);
                         x = (twoMiddle) / 2.0;
                         y = a0 * x + b0;
                     } else {
@@ -316,36 +321,52 @@ public class ExtendedVector2d extends Vector2d {
         double distanceFrom1;
         if (equals(x0, x1, LIMIT)) {
             if (y0 < y1)
-                distanceFrom1 = y < y0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0))
-                        : y > y1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1)) : 0.0;
+                distanceFrom1 =
+                        y < y0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0))
+                                : y > y1 ? lengthP2P(new ExtendedVector2d(x, y),
+                                        new ExtendedVector2d(x1, y1)) : 0.0;
             else
-                distanceFrom1 = y < y1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1))
-                        : y > y0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0)) : 0.0;
+                distanceFrom1 =
+                        y < y1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1))
+                                : y > y0 ? lengthP2P(new ExtendedVector2d(x, y),
+                                        new ExtendedVector2d(x0, y0)) : 0.0;
         } else {
             if (x0 < x1)
-                distanceFrom1 = x < x0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0))
-                        : x > x1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1)) : 0.0;
+                distanceFrom1 =
+                        x < x0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0))
+                                : x > x1 ? lengthP2P(new ExtendedVector2d(x, y),
+                                        new ExtendedVector2d(x1, y1)) : 0.0;
             else
-                distanceFrom1 = x < x1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1))
-                        : x > x0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0)) : 0.0;
+                distanceFrom1 =
+                        x < x1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1))
+                                : x > x0 ? lengthP2P(new ExtendedVector2d(x, y),
+                                        new ExtendedVector2d(x0, y0)) : 0.0;
         }
 
         double distanceFrom2;
         if (equals(x2, x3, LIMIT)) {
 
             if (y2 < y3)
-                distanceFrom2 = y < y2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2))
-                        : y > y3 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x3, y3)) : 0.0;
+                distanceFrom2 =
+                        y < y2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2))
+                                : y > y3 ? lengthP2P(new ExtendedVector2d(x, y),
+                                        new ExtendedVector2d(x3, y3)) : 0.0;
             else
-                distanceFrom2 = y < y3 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x3, y3))
-                        : y > y2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2)) : 0.0;
+                distanceFrom2 =
+                        y < y3 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x3, y3))
+                                : y > y2 ? lengthP2P(new ExtendedVector2d(x, y),
+                                        new ExtendedVector2d(x2, y2)) : 0.0;
         } else {
             if (x2 < x3)
-                distanceFrom2 = x < x2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2))
-                        : x > x3 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x3, y3)) : 0.0;
+                distanceFrom2 =
+                        x < x2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2))
+                                : x > x3 ? lengthP2P(new ExtendedVector2d(x, y),
+                                        new ExtendedVector2d(x3, y3)) : 0.0;
             else
-                distanceFrom2 = x < x3 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x3, y3))
-                        : x > x2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2)) : 0.0;
+                distanceFrom2 =
+                        x < x3 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x3, y3))
+                                : x > x2 ? lengthP2P(new ExtendedVector2d(x, y),
+                                        new ExtendedVector2d(x2, y2)) : 0.0;
         }
 
         return equals(distanceFrom1, 0.0, LIMIT) && equals(distanceFrom2, 0.0, LIMIT) ? 1 : 0;
@@ -353,10 +374,12 @@ public class ExtendedVector2d extends Vector2d {
 
     public static double triangleArea(ExtendedVector2d a, ExtendedVector2d b, ExtendedVector2d c) {
         // calc area of a triangle (can be negative)
-        return (b.getX() - a.getX()) * (c.getY() - a.getY()) - (c.getX() - a.getX()) * (b.getY() - a.getY());
+        return (b.getX() - a.getX()) * (c.getY() - a.getY())
+                - (c.getX() - a.getX()) * (b.getY() - a.getY());
     }
 
-    public static ExtendedVector2d PointToSegment(ExtendedVector2d P, ExtendedVector2d S0, ExtendedVector2d S1) {
+    public static ExtendedVector2d PointToSegment(ExtendedVector2d P, ExtendedVector2d S0,
+            ExtendedVector2d S1) {
         // calculate the closest point on a segment to point P
         ExtendedVector2d v = ExtendedVector2d.vecP2P(S0, S1);
         ExtendedVector2d w = ExtendedVector2d.vecP2P(S0, P);
@@ -379,7 +402,8 @@ public class ExtendedVector2d extends Vector2d {
         return v;
     }
 
-    public static double distPointToSegment(ExtendedVector2d P, ExtendedVector2d S0, ExtendedVector2d S1) {
+    public static double distPointToSegment(ExtendedVector2d P, ExtendedVector2d S0,
+            ExtendedVector2d S1) {
         ExtendedVector2d closest = ExtendedVector2d.PointToSegment(P, S0, S1);
         return ExtendedVector2d.lengthP2P(P, closest);
     }
@@ -414,7 +438,8 @@ public class ExtendedVector2d extends Vector2d {
         return Math.atan2(b.getY(), b.getX()) - Math.atan2(a.getY(), a.getX());
     }
 
-    public static double distPoinToInfLine(ExtendedVector2d p, ExtendedVector2d a, ExtendedVector2d b) {
+    public static double distPoinToInfLine(ExtendedVector2d p, ExtendedVector2d a,
+            ExtendedVector2d b) {
         return (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
     }
 

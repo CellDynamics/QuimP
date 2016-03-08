@@ -14,8 +14,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import javax.vecmath.Vector2d;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -36,8 +34,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PluginFactory_Test {
-    private static final Logger LOGGER =
-            LogManager.getLogger(PluginFactory_Test.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(PluginFactory_Test.class.getName());
 
     /**
      * @throws java.lang.Exception
@@ -117,16 +114,10 @@ public class PluginFactory_Test {
         ParamList ret;
         test.put("window", "0.02");
         test.put("alfa", "10.0");
-        @SuppressWarnings("unchecked") // we should be sure that this casting is
         // correct because we check plugin type before
-        IQuimpPoint2dFilter<Vector2d> filter1 =
-                (IQuimpPoint2dFilter<Vector2d>) pluginFactory
-                        .getInstance("Plugin1");
+        IQuimpPoint2dFilter filter1 = (IQuimpPoint2dFilter) pluginFactory.getInstance("Plugin1");
         assertEquals(filter1.getVersion(), "0.0.2");
-        @SuppressWarnings("unchecked")
-        IQuimpPoint2dFilter<Vector2d> filter2 =
-                (IQuimpPoint2dFilter<Vector2d>) pluginFactory
-                        .getInstance("Plugin2");
+        IQuimpPoint2dFilter filter2 = (IQuimpPoint2dFilter) pluginFactory.getInstance("Plugin2");
         filter2.setPluginConfig(test);
         ret = filter2.getPluginConfig();
         assertEquals(Double.parseDouble(ret.get("Window")), 0.02, 1e-5);
@@ -144,12 +135,8 @@ public class PluginFactory_Test {
     public void test_GetInstance_noplugin() throws Exception {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("../plugins_test/"));
-        // we should be sure that this casting is
-        @SuppressWarnings({ "unchecked" })
-        // correct because we check plugin type before
-        IQuimpPoint2dFilter<Vector2d> filter1 =
-                (IQuimpPoint2dFilter<Vector2d>) pluginFactory
-                        .getInstance("Plugin1");
+        // we should be sure that this casting is correct because we check plugin type before
+        IQuimpPoint2dFilter filter1 = (IQuimpPoint2dFilter) pluginFactory.getInstance("Plugin1");
         assertTrue(filter1 == null);
     }
 
@@ -171,9 +158,8 @@ public class PluginFactory_Test {
      */
     @Test
     public void test_scanDirectory()
-            throws NoSuchMethodException, SecurityException,
-            IllegalAccessException, IllegalArgumentException,
-            InvocationTargetException, QuimpPluginException {
+            throws NoSuchMethodException, SecurityException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException, QuimpPluginException {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
         Method m = pluginFactory.getClass().getDeclaredMethod("scanDirectory");
@@ -207,15 +193,13 @@ public class PluginFactory_Test {
      */
     @Test
     public void test_getClassName()
-            throws NoSuchMethodException, SecurityException,
-            IllegalAccessException, IllegalArgumentException,
-            InvocationTargetException, QuimpPluginException {
+            throws NoSuchMethodException, SecurityException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException, QuimpPluginException {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
         Class<?>[] args = new Class<?>[1];
         args[0] = File.class;
-        Method m = pluginFactory.getClass().getDeclaredMethod("getClassName",
-                args);
+        Method m = pluginFactory.getClass().getDeclaredMethod("getClassName", args);
         m.setAccessible(true);
         File file = new File("../plugins_test/target/plugin2_quimp-0.0.1.jar");
         String ret = (String) m.invoke(pluginFactory, file);
@@ -240,26 +224,22 @@ public class PluginFactory_Test {
      */
     @Test
     public void test_getPluginType()
-            throws NoSuchMethodException, SecurityException,
-            IllegalAccessException, IllegalArgumentException,
-            InvocationTargetException, QuimpPluginException {
+            throws NoSuchMethodException, SecurityException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException, QuimpPluginException {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
         Class<?>[] args = new Class<?>[2];
         args[0] = File.class;
         args[1] = String.class;
-        Method m = pluginFactory.getClass().getDeclaredMethod("getPluginType",
-                args);
+        Method m = pluginFactory.getClass().getDeclaredMethod("getPluginType", args);
         m.setAccessible(true);
 
         File file = new File("../plugins_test/target/plugin2_quimp-0.0.1.jar");
-        int ret = (int) m.invoke(pluginFactory, file,
-                "uk.ac.warwick.wsbc.Plugin2_");
+        int ret = (int) m.invoke(pluginFactory, file, "uk.ac.warwick.wsbc.Plugin2_");
         assertEquals(1, ret);
 
         file = new File("../plugins_test/target/plugin1_quimp-0.0.1.jar");
-        ret = (int) m.invoke(pluginFactory, file,
-                "uk.ac.warwick.wsbc.Plugin1_");
+        ret = (int) m.invoke(pluginFactory, file, "uk.ac.warwick.wsbc.Plugin1_");
         assertEquals(1, ret);
 
     }

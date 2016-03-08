@@ -20,6 +20,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.vecmath.Point2d;
+import javax.vecmath.Tuple2d;
 import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
@@ -116,7 +118,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * @date 03 Jan 2016 Modified algorithm
  */
 public class HatSnakeFilter_ extends QWindowBuilder
-        implements IQuimpPoint2dFilter<Vector2d>, IPadArray, ChangeListener, ActionListener {
+        implements IQuimpPoint2dFilter, IPadArray, ChangeListener, ActionListener {
 
     private static final Logger LOGGER = LogManager.getLogger(HatSnakeFilter_.class.getName());
     private final int DRAW_SIZE = 200; //!< size of draw area in window
@@ -124,12 +126,12 @@ public class HatSnakeFilter_ extends QWindowBuilder
     private int window; //!< filter's window size
     private int pnum; //!< how many protrusions to remove
     private double alev; //!< minimal acceptance level
-    private List<Vector2d> points; //!< original contour passed from QuimP
+    private List<Point2d> points; //!< original contour passed from QuimP
     private ParamList uiDefinition; //!< Definition of UI for this plugin
     private DrawPanel dp; //!< Here we will draw. This panel is plot in place of help field
     private ExPolygon p; //!< representation of snake as polygon
     private ExPolygon pout; //!< output polygon based on \c out
-    private List<Vector2d> out; //!< output after filtering
+    private List<Point2d> out; //!< output after filtering
     private JTextArea logArea;
     private int err; //!< general counter of log entries
 
@@ -167,7 +169,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * @warning \c data can be \c null here.
      */
     @Override
-    public void attachData(List<Vector2d> data) {
+    public void attachData(List<Point2d> data) {
         LOGGER.trace("Entering attachData");
         points = data;
         pout = null; // delete any processed polygon
@@ -194,14 +196,14 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * 0 length.
      */
     @Override
-    public List<Vector2d> runPlugin() throws QuimpPluginException {
+    public List<Point2d> runPlugin() throws QuimpPluginException {
         // internal parameters are not updated here but when user click apply
         LOGGER.debug(String.format("Run plugin with params: window %d, pnum %d, alev %f", window,
                 pnum, alev));
 
-        BasicPolygons<Vector2d> bp = new BasicPolygons<Vector2d>(); // provide geometry processing
-        List<Vector2d> out = new ArrayList<Vector2d>(); // output table for plotting temporary
-                                                        // results of filter
+        BasicPolygons bp = new BasicPolygons(); // provide geometry processing
+        List<Point2d> out = new ArrayList<Point2d>(); // output table for plotting temporary
+                                                      // results of filter
         // check input conditions
         if (window % 2 == 0 || window < 0)
             throw new QuimpPluginException("Window must be uneven, positive and larger than 0");
@@ -231,12 +233,12 @@ public class HatSnakeFilter_ extends QWindowBuilder
             LOGGER.debug("------- Iter: " + r + "-------");
             LOGGER.debug("points: " + points.toString());
             // get all points except window. Window has constant position 0 - (window-1)
-            List<Vector2d> pointsnowindow = points.subList(window, points.size());
+            List<Point2d> pointsnowindow = points.subList(window, points.size());
             LOGGER.debug("sub: " + pointsnowindow.toString());
             tmpCirc = getCircularity(pointsnowindow);
             LOGGER.debug("circ " + tmpCirc);
             // calculate weighting for circularity
-            List<Vector2d> pointswindow = points.subList(0, window); // get points for window only
+            List<Point2d> pointswindow = points.subList(0, window); // get points for window only
             LOGGER.debug("win: " + pointswindow.toString());
             tmpCirc /= getWeighting(pointswindow); // calculate weighting for window content
             LOGGER.debug("Wcirc " + tmpCirc);
@@ -334,8 +336,8 @@ public class HatSnakeFilter_ extends QWindowBuilder
             indexTest.setSame(i); // set upper and lower index to the same value - allows to test
                                   // particular index for its presence in any defined range
             if (!ind2rem.contains(indexTest)) // check if any window position (l and u bound)
-                out.add(new Vector2d(points.get(i))); // include tested point. Copy it to new array
-                                                      // if not
+                out.add(new Point2d(points.get(i))); // include tested point. Copy it to new array
+                                                     // if not
         }
         return out;
     }
@@ -349,10 +351,10 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * @param p Polygon vertices
      * @return circularity
      */
-    private double getCircularity(final List<Vector2d> p) {
+    private double getCircularity(final List<? extends Tuple2d> p) {
         double area;
         double perim;
-        BasicPolygons<Vector2d> b = new BasicPolygons<>();
+        BasicPolygons b = new BasicPolygons();
         area = b.getPolyArea(p);
         perim = b.getPolyPerim(p);
 
@@ -372,15 +374,15 @@ public class HatSnakeFilter_ extends QWindowBuilder
      * @param p Polygon vertices
      * @return Weight
      */
-    private double getWeighting(final List<Vector2d> p) {
+    private double getWeighting(final List<Point2d> p) {
         double[] len = new double[p.size()];
-        BasicPolygons<Vector2d> bp = new BasicPolygons<Vector2d>();
+        BasicPolygons bp = new BasicPolygons();
         Vector2d middle;
         try { // check if input polygon is correct
             middle = new Vector2d(bp.polygonCenterOfMass(p));
         } catch (IllegalArgumentException e) { // if not get middle point as mean
             double mx = 0, my = 0;
-            for (Vector2d v : p) {
+            for (Point2d v : p) {
                 mx += v.x;
                 my += v.y;
             }
@@ -388,7 +390,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
         }
         int i = 0;
         // get lengths
-        for (Vector2d v : p) {
+        for (Point2d v : p) {
             Vector2d vec = new Vector2d(middle); // vector between px and middle
             vec.sub(v);
             len[i++] = vec.length();
@@ -668,9 +670,9 @@ class ExPolygon extends Polygon {
      * 
      * @param data List of points
      */
-    public ExPolygon(List<Vector2d> data) {
+    public ExPolygon(List<? extends Tuple2d> data) {
         // convert to polygon
-        for (Vector2d v : data)
+        for (Tuple2d v : data)
             addPoint((int) Math.round(v.getX()), (int) Math.round(v.getY()));
         initbounds = new Rectangle(getBounds()); // remember original size
         scale = 1;

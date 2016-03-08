@@ -7,6 +7,8 @@ import ij.gui.Roi;
 import ij.measure.Measurements;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+
 //import ij.process.PolygonFiller;
 import java.awt.Polygon;
 //import java.awt.Rectangle;

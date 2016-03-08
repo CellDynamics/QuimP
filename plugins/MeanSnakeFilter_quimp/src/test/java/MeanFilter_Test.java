@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,9 +29,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  */
 public class MeanFilter_Test {
 
-    private List<Vector2d> testcase;
-    private static final Logger LOGGER =
-            LogManager.getLogger(MeanFilter_Test.class.getName());
+    private List<Point2d> testcase;
+    private static final Logger LOGGER = LogManager.getLogger(MeanFilter_Test.class.getName());
 
     /**
      * Called after construction but before tests
@@ -40,9 +39,9 @@ public class MeanFilter_Test {
      */
     @Before
     public void setUp() throws Exception {
-        testcase = new ArrayList<Vector2d>();
+        testcase = new ArrayList<Point2d>();
         for (int i = 1; i <= 10; i++)
-            testcase.add(new Vector2d(i, i));
+            testcase.add(new Point2d(i, i));
     }
 
     /**
@@ -71,11 +70,11 @@ public class MeanFilter_Test {
                 put("Window", String.valueOf(window));
             }
         });
-        double[] expected = { 4.3333, 2.0000, 3.0000, 4.0000, 5.0000, 6.0000,
-                7.0000, 8.0000, 9.0000, 6.6667 };
+        double[] expected =
+                { 4.3333, 2.0000, 3.0000, 4.0000, 5.0000, 6.0000, 7.0000, 8.0000, 9.0000, 6.6667 };
 
-        List<Vector2d> out;
-        out = (List<Vector2d>) in.runPlugin();
+        List<Point2d> out;
+        out = in.runPlugin();
         LOGGER.debug("org     : " + testcase.toString());
         LOGGER.debug("Window 3: " + out.toString());
 

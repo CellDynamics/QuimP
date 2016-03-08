@@ -13,6 +13,8 @@ import ij.measure.Measurements;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+
 import java.awt.*;
 import java.io.*;
 

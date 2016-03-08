@@ -4,7 +4,7 @@ import java.util.List;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +23,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * @date 20 Jan 2016
  *
  */
-public class MeanSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d>, IPadArray {
+public class MeanSnakeFilter_ implements IQuimpPoint2dFilter, IPadArray {
 
     private static final Logger LOGGER = LogManager.getLogger(MeanSnakeFilter_.class.getName());
     private QuimpDataConverter xyData; //!< input List converted to separate X and Y arrays
@@ -62,7 +62,7 @@ public class MeanSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d>, IPadArra
      * @see wsbc.plugin.snakes.IQuimpPoint2dFilter.attachData(List<E>)
      */
     @Override
-    public void attachData(List<Vector2d> data) {
+    public void attachData(List<Point2d> data) {
         LOGGER.trace("Entering attachData");
         xyData = new QuimpDataConverter(data); // helper for converting from List<Vector2d> to X[],
                                                // Y[]
@@ -82,7 +82,7 @@ public class MeanSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d>, IPadArra
      * data - window is negative
      */
     @Override
-    public List<Vector2d> runPlugin() throws QuimpPluginException {
+    public List<Point2d> runPlugin() throws QuimpPluginException {
         // collect actual parameters from UI
         window = uiInstance.getIntegerFromUI("window");
         LOGGER.debug(String.format("Run plugin with params: window %d", window));
@@ -92,7 +92,7 @@ public class MeanSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d>, IPadArra
         double meanx = 0;
         double meany = 0; // mean of window
         int indexTmp; // temporary index after padding
-        List<Vector2d> out = new ArrayList<Vector2d>();
+        List<Point2d> out = new ArrayList<Point2d>();
 
         if (window % 2 == 0)
             throw new QuimpPluginException("Input argument must be uneven");
@@ -112,7 +112,7 @@ public class MeanSnakeFilter_ implements IQuimpPoint2dFilter<Vector2d>, IPadArra
             }
             meanx = meanx / window;
             meany = meany / window;
-            out.add(new Vector2d(meanx, meany));
+            out.add(new Point2d(meanx, meany));
         }
         return out;
     }

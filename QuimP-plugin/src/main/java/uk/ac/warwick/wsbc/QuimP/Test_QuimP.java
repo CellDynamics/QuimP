@@ -8,6 +8,7 @@ import ij.measure.Measurements;
 import ij.plugin.PlugIn;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 import java.awt.Polygon;
 import java.io.File;

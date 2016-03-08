@@ -44,7 +44,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -74,6 +74,7 @@ import ij.process.FloatPolygon;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
@@ -950,7 +951,7 @@ public class BOA_ implements PlugIn {
             // null attach data to all selected plugins. Attached data are the same for every
             // plugin. This is important only for optional visualization supported by plugin. Data
             // are attached again on every plugin run
-            List<Vector2d> dataToProcess = null; // default
+            List<Point2d> dataToProcess = null; // default
             Snake snake;
             SnakeHandler sH;
             if (nest != null && nest.size() > 0) {
@@ -1209,9 +1210,8 @@ public class BOA_ implements PlugIn {
      * @param slot Slot of plugin
      * @param dataToProcess Data to be attached to plugin
      */
-    @SuppressWarnings("unchecked")
     private void instanceSnakePlugin(final String selectedPlugin, int slot,
-            final List<Vector2d> dataToProcess) {
+            final List<Point2d> dataToProcess) {
 
         IQuimpPlugin inst = null;
         // get instance using plugin name (obtained from getPluginNames from PluginFactory
@@ -1221,7 +1221,7 @@ public class BOA_ implements PlugIn {
                 ((IPluginSynchro) inst).attachContext(viewUpdater); // attach BOA context
             // remember instance in active plugin list
             BOAp.sPluginList.set(slot, inst);
-            ((IQuimpPoint2dFilter<Vector2d>) inst).attachData(dataToProcess);
+            ((IQuimpPoint2dFilter) inst).attachData(dataToProcess);
         } else {
             if (BOAp.sPluginList.get(slot) != null)
                 BOAp.sPluginList.get(slot).showUI(false);
@@ -1245,7 +1245,7 @@ public class BOA_ implements PlugIn {
      * @param startF start frame
      * @param endF end frame
      * @throws BoaException
-     * @todo //TODO Rewrite exceptions here
+     * @todo TODO Rewrite exceptions here
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/65
      */
     public void runBoa(int startF, int endF) throws BoaException {
@@ -1305,17 +1305,14 @@ public class BOA_ implements PlugIn {
                             imageGroup.drawPath(snake, frame); // pre tightned snake on path
                             tightenSnake(snake);
                             imageGroup.drawPath(snake, frame); // post tightned snake on path
-                            // iterateOverSnakePlugins(sH); // run active plugins and change
-                            // liveSnake
-                            // sH.storeCurrentSnake(frame); // store liveSnake as final one
                             Snake out = iterateOverSnakePlugins(snake);
-                            sH.storeThisSnake(out, frame);
+                            sH.storeThisSnake(out, frame); // store resulting snake as final
 
                         } catch (QuimpPluginException qpe) {
                             // must be rewritten with whole runBOA #65 #67
                             BOA_.log("Error in filter module: " + qpe.getMessage());
                             LOGGER.error(qpe);
-                            if (!BOAp.stopOnPluginError) // no store on error
+                            if (BOAp.stopOnPluginError) // no store on error
                                 sH.storeLiveSnake(frame); // store segemented nonmodified
                         } catch (BoaException be) {
                             imageGroup.drawPath(snake, frame); // failed
@@ -1372,14 +1369,13 @@ public class BOA_ implements PlugIn {
             throws QuimpPluginException, Exception {
         Snake outsnake = snake;
         if (!BOAp.isRefListEmpty(BOAp.sPluginList)) {
-            List<Vector2d> dataToProcess = snake.asList();
+            List<Point2d> dataToProcess = snake.asList();
             for (IQuimpPlugin qP : BOAp.sPluginList) {
                 if (qP == null)
                     continue; // no plugin on this slot
-                @SuppressWarnings("unchecked") // all plugins are of IQuimpPoint2dFilter type
                 // because it is guaranteed by pluginFactory.getPluginNames(DOES_SNAKES) used
                 // when populating GUI names and BOAp.sPluginList in actionPerformed(ActionEvent e).
-                IQuimpPoint2dFilter<Vector2d> qPcast = (IQuimpPoint2dFilter<Vector2d>) qP;
+                IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP;
                 qPcast.attachData(dataToProcess);
                 dataToProcess = qPcast.runPlugin();
             }
@@ -2761,15 +2757,15 @@ class SnakeHandler {
      * @param data data to create Snake from
      * @throws Exception
      */
-    public void attachLiveSnake(final List<Vector2d> data) throws Exception {
+    public void attachLiveSnake(final List<Point2d> data) throws Exception {
         liveSnake = new Snake(data, ID);
     }
 
     /**
-     * @copybrief attachLiveSnake(final List<Vector2d>)
-     * @copydetails attachLiveSnake(final List<Vector2d>)
+     * @copybrief attachLiveSnake(final List<Point2d>)
+     * @copydetails attachLiveSnake(final List<Point2d>)
      */
-    public void attachLiveSnake(Roi data) throws Exception {
+    public void attachLiveSnake(final Roi data) throws Exception {
         liveSnake = new Snake(data, ID, false);
     }
 
@@ -3193,7 +3189,7 @@ class Snake {
      * @param id id of Snake
      * @throws Exception
      */
-    public Snake(final List<Vector2d> list, int id) throws Exception {
+    public Snake(final List<Point2d> list, int id) throws Exception {
         snakeID = id;
         initializeArrayList(list);
         startingNnodes = NODES / 100;
@@ -3348,7 +3344,7 @@ class Snake {
      * @param p
      * @throws Exception
      */
-    private void initializeArrayList(final List<Vector2d> p) throws Exception {
+    private void initializeArrayList(final List<Point2d> p) throws Exception {
         head = new Node(0);
         NODES = 1;
         FROZEN = 0;
@@ -3357,7 +3353,7 @@ class Snake {
         head.setHead(true);
 
         Node node;
-        for (Vector2d el : p) {
+        for (Point2d el : p) {
             node = new Node(el.getX(), el.getY(), nextTrackNumber++);
             addNode(node);
         }
@@ -4077,12 +4073,12 @@ class Snake {
      * 
      * @return List of Vector2d objects representing coordinates of Snake Nodes
      */
-    public List<Vector2d> asList() {
-        List<Vector2d> al = new ArrayList<Vector2d>(NODES);
+    public List<Point2d> asList() {
+        List<Point2d> al = new ArrayList<Point2d>(NODES);
         // iterate over nodes at Snake
         Node n = head;
         do {
-            al.add(new Vector2d(n.getX(), n.getY()));
+            al.add(new Point2d(n.getX(), n.getY()));
             n = n.getNext();
         } while (!n.isHead());
         return al;

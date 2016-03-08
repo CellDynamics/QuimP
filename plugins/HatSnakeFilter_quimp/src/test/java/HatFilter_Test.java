@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,14 +33,14 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 public class HatFilter_Test {
 
     private static final Logger LOGGER = LogManager.getLogger(HatFilter_Test.class.getName());
-    private List<Vector2d> input;
-    private List<Vector2d> lininput; //!< line at 45 deg
-    private List<Vector2d> circ; //!< circular object <EM>../src/test/resources/HatFilter.m</EM>
+    private List<Point2d> input;
+    private List<Point2d> lininput; //!< line at 45 deg
+    private List<Point2d> circ; //!< circular object <EM>../src/test/resources/HatFilter.m</EM>
     /**
      * simulated protrusions
      * %% protrusions - generate test data from <EM>../src/test/resources/HatFilter.m</EM>
      */
-    private List<Vector2d> prot;
+    private List<Point2d> prot;
 
     @Rule
     public TestName name = new TestName(); //!< Allow to get tested method name (called at setUp())
@@ -55,15 +55,15 @@ public class HatFilter_Test {
     public void setUp() throws Exception {
         input = new ArrayList<>();
         for (int i = 0; i < 40; i++)
-            input.add(new Vector2d(i, 0));
-        input.set(18, new Vector2d(18, 1));
-        input.set(19, new Vector2d(19, 1));
-        input.set(20, new Vector2d(20, 1));
+            input.add(new Point2d(i, 0));
+        input.set(18, new Point2d(18, 1));
+        input.set(19, new Point2d(19, 1));
+        input.set(20, new Point2d(20, 1));
         LOGGER.info("Entering " + name.getMethodName());
 
         lininput = new ArrayList<>();
         for (int i = 0; i < 20; i++)
-            lininput.add(new Vector2d(i, i));
+            lininput.add(new Point2d(i, i));
 
         circ = new DataLoader("../src/test/resources/testData_circle.dat").getData();
 
@@ -121,7 +121,7 @@ public class HatFilter_Test {
                 put("alev", "0");
             }
         });
-        List<Vector2d> out = hf.runPlugin();
+        List<Point2d> out = hf.runPlugin();
         RoiSaver.saveROI("/tmp/test_HatFilter_run_2.tif", out);
     }
 

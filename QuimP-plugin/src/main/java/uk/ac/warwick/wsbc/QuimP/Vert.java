@@ -2,6 +2,7 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import ij.IJ;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
  * Represents a vertex in the outline Contains several methods that operate on

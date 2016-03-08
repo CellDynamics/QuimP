@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
@@ -38,11 +39,11 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  *
  */
 public class Plugin1_ extends QWindowBuilder
-        implements IQuimpPoint2dFilter<Vector2d>, IPluginSynchro, ChangeListener, ActionListener {
+        implements IQuimpPoint2dFilter, IPluginSynchro, ChangeListener, ActionListener {
 
     private static final Logger LOGGER = LogManager.getLogger(Plugin1_.class.getName());
 
-    private List<Vector2d> points;
+    private List<Point2d> points;
     private ViewUpdater qcontext;
     private ParamList uiDefinition; //!< Definition of UI for this plugin
     private int every; // every point to delete
@@ -95,24 +96,24 @@ public class Plugin1_ extends QWindowBuilder
      * Simply modify every \c every node
      */
     @Override
-    public List<Vector2d> runPlugin() throws QuimpPluginException {
+    public List<Point2d> runPlugin() throws QuimpPluginException {
         every = getIntegerFromUI("every");
         LOGGER.trace("runPlugin of Plugin1 called wit param every= " + every);
-        ArrayList<Vector2d> out = new ArrayList<>();
+        ArrayList<Point2d> out = new ArrayList<>();
         Vector2d v;
         out.add(points.get(0));
         for (int i = 1; i < points.size() - 1; i++) {
             if (i % every == 0) {
-                Vector2d cur = points.get(i);
-                Vector2d curm1 = points.get(i - 1);
-                Vector2d curp1 = points.get(i + 1);
+                Vector2d cur = new Vector2d(points.get(i));
+                Vector2d curm1 = new Vector2d(points.get(i - 1));
+                Vector2d curp1 = new Vector2d(points.get(i + 1));
                 v = new Vector2d(curp1.x - curm1.x, curp1.y - curm1.y);
                 v = new Vector2d(-v.y, v.x);
                 double l = v.length();
                 v.normalize();
                 v.scale(l); // move current node to distance current-1 - current+1
                 cur.add(v);
-                out.add(cur);
+                out.add(new Point2d(cur));
             } else
                 out.add(points.get(i));
         }
@@ -121,7 +122,7 @@ public class Plugin1_ extends QWindowBuilder
     }
 
     @Override
-    public void attachData(List<Vector2d> data) {
+    public void attachData(List<Point2d> data) {
         LOGGER.trace("attachData of Plugin1 called");
         points = data;
     }

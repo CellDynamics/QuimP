@@ -14,6 +14,7 @@ import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
 import ij.plugin.TextReader;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;

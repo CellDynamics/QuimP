@@ -65,7 +65,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testGetPolyPerim() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         double p = b.getPolyPerim(points);
         assertEquals(32.055, p, 1e-5);
     }
@@ -77,7 +77,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testGetPolyPerim_1() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         double p = b.getPolyPerim(point);
         assertEquals(0.0, p, 1e-5);
     }
@@ -89,7 +89,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testGetPolyArea() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         double p = b.getPolyArea(points);
         assertEquals(17.0, p, 1e-5);
     }
@@ -101,7 +101,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testGetPolyArea_1() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         double p = b.getPolyArea(point);
         assertEquals(0.0, p, 1e-5);
     }
@@ -113,7 +113,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testGetPolyArea_2() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         double p = b.getPolyArea(points2);
         assertEquals(0.0, p, 1e-5);
     }
@@ -125,7 +125,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testIsPointInside() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         boolean p = b.isPointInside(points, inpoints.get(0));
         assertTrue(p);
     }
@@ -137,7 +137,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testIsPointInside_1() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         boolean p = b.isPointInside(points, new Point2d(6, 4));
         assertTrue(p);
     }
@@ -149,7 +149,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testIsPointInside_2() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         boolean p = b.isPointInside(points, new Point2d(7, 4));
         assertFalse(p);
     }
@@ -161,7 +161,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testarePointsInside() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         boolean p = b.arePointsInside(points, inpoints);
         assertTrue(p);
     }
@@ -173,7 +173,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testarePointsInside_1() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         ArrayList<Point2d> c = new ArrayList<>(inpoints);
         c.add(new Point2d(10, 10));
         boolean p = b.arePointsInside(points, c);
@@ -187,7 +187,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testisanyPointInside() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         ArrayList<Point2d> c = new ArrayList<>(inpoints);
         c.add(new Point2d(10, 10));
         boolean p = b.isanyPointInside(points, c);
@@ -201,7 +201,7 @@ public class BasicPolygonsTest {
      */
     @Test
     public void testisanyPointInside_1() throws Exception {
-        BasicPolygons<Point2d> b = new BasicPolygons<Point2d>();
+        BasicPolygons b = new BasicPolygons();
         ArrayList<Point2d> c = new ArrayList<>();
         c.add(new Point2d(10, 10));
         c.add(new Point2d(40, 40));

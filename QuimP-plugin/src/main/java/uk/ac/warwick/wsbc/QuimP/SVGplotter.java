@@ -6,6 +6,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.*;
 import ij.*;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 public class SVGplotter {
     OutlineHandler oH;

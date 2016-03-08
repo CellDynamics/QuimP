@@ -1,12 +1,11 @@
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,11 +32,11 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
  */
 @RunWith(Parameterized.class)
 public class MeanFilter_Param_Test {
-    private List<Vector2d> testcase;
+    private List<Point2d> testcase;
     private Integer window;
     private Path testfileName;
-    private static final Logger LOGGER = LogManager
-            .getLogger(MeanFilter_Param_Test.class.getName());
+    private static final Logger LOGGER =
+            LogManager.getLogger(MeanFilter_Param_Test.class.getName());
 
     /**
      * Parameterized constructor.
@@ -81,30 +80,29 @@ public class MeanFilter_Param_Test {
      */
     @Parameterized.Parameters
     public static Collection<Object[]> testFiles() {
-        return Arrays.asList(
-                new Object[][] { { "../src/test/resources/testData_75.dat", 1 },
-                        { "../src/test/resources/testData_75.dat", 3 },
-                        { "../src/test/resources/testData_75.dat", 5 },
-                        { "../src/test/resources/testData_75.dat", 9 },
-                        { "../src/test/resources/testData_75.dat", 15 },
+        return Arrays.asList(new Object[][] { { "../src/test/resources/testData_75.dat", 1 },
+                { "../src/test/resources/testData_75.dat", 3 },
+                { "../src/test/resources/testData_75.dat", 5 },
+                { "../src/test/resources/testData_75.dat", 9 },
+                { "../src/test/resources/testData_75.dat", 15 },
 
-                        { "../src/test/resources/testData_125.dat", 1 },
-                        { "../src/test/resources/testData_125.dat", 3 },
-                        { "../src/test/resources/testData_125.dat", 5 },
-                        { "../src/test/resources/testData_125.dat", 9 },
-                        { "../src/test/resources/testData_125.dat", 15 },
+                { "../src/test/resources/testData_125.dat", 1 },
+                { "../src/test/resources/testData_125.dat", 3 },
+                { "../src/test/resources/testData_125.dat", 5 },
+                { "../src/test/resources/testData_125.dat", 9 },
+                { "../src/test/resources/testData_125.dat", 15 },
 
-                        { "../src/test/resources/testData_137.dat", 1 },
-                        { "../src/test/resources/testData_137.dat", 3 },
-                        { "../src/test/resources/testData_137.dat", 5 },
-                        { "../src/test/resources/testData_137.dat", 9 },
-                        { "../src/test/resources/testData_137.dat", 15 },
+                { "../src/test/resources/testData_137.dat", 1 },
+                { "../src/test/resources/testData_137.dat", 3 },
+                { "../src/test/resources/testData_137.dat", 5 },
+                { "../src/test/resources/testData_137.dat", 9 },
+                { "../src/test/resources/testData_137.dat", 15 },
 
-                        { "../src/test/resources/testData_1.dat", 1 },
-                        { "../src/test/resources/testData_1.dat", 3 },
-                        { "../src/test/resources/testData_1.dat", 5 },
-                        { "../src/test/resources/testData_1.dat", 9 },
-                        { "../src/test/resources/testData_1.dat", 15 }, });
+                { "../src/test/resources/testData_1.dat", 1 },
+                { "../src/test/resources/testData_1.dat", 3 },
+                { "../src/test/resources/testData_1.dat", 5 },
+                { "../src/test/resources/testData_1.dat", 9 },
+                { "../src/test/resources/testData_1.dat", 15 }, });
     }
 
     /**
@@ -120,7 +118,7 @@ public class MeanFilter_Param_Test {
     @SuppressWarnings("serial")
     @Test
     public void test_getInterpolationMean() throws QuimpPluginException {
-        ArrayList<Vector2d> out;
+        List<Point2d> out;
         MeanSnakeFilter_ i = new MeanSnakeFilter_();
         i.attachData(testcase);
         i.setPluginConfig(new ParamList() {
@@ -128,11 +126,9 @@ public class MeanFilter_Param_Test {
                 put("window", String.valueOf(window));
             }
         });
-        out = (ArrayList<Vector2d>) i.runPlugin();
-        RoiSaver.saveROI(
-                "/tmp/test_getInterpolationMean_" + testfileName.getFileName()
-                        + "_" + window.toString() + ".tif",
-                out);
+        out = i.runPlugin();
+        RoiSaver.saveROI("/tmp/test_getInterpolationMean_" + testfileName.getFileName() + "_"
+                + window.toString() + ".tif", out);
         LOGGER.debug("setUp: " + testcase.toString());
         if (out.size() < 100)
             LOGGER.debug("testInterpolate: " + out.toString());
@@ -146,9 +142,8 @@ public class MeanFilter_Param_Test {
     @Test
     @Ignore
     public void test_roiSaver() {
-        RoiSaver.saveROI("/tmp/test_roiSaver_" + testfileName.getFileName()
-                + "_" + window.toString() + ".tif",
-                testcase);
+        RoiSaver.saveROI("/tmp/test_roiSaver_" + testfileName.getFileName() + "_"
+                + window.toString() + ".tif", testcase);
     }
 
 }

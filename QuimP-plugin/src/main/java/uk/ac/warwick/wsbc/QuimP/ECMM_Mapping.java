@@ -10,6 +10,8 @@ import ij.gui.*;
 import ij.io.OpenDialog;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+
 import java.io.*;
 import java.util.ArrayList;
 //import java.util.Vector;

@@ -13,6 +13,8 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 //import org.cybergarage.x3d.j3d.VRML97Saver;
 
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+
 /**
  *
  * @author rtyson
