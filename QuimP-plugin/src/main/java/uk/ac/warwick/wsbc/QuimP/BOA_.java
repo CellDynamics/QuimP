@@ -1209,7 +1209,6 @@ public class BOA_ implements PlugIn {
      * @param slot Slot of plugin
      * @param dataToProcess Data to be attached to plugin
      */
-    @SuppressWarnings("unchecked")
     private void instanceSnakePlugin(final String selectedPlugin, int slot,
             final List<Point2d> dataToProcess) {
 
@@ -1315,7 +1314,7 @@ public class BOA_ implements PlugIn {
                             // must be rewritten with whole runBOA #65 #67
                             BOA_.log("Error in filter module: " + qpe.getMessage());
                             LOGGER.error(qpe);
-                            if (!BOAp.stopOnPluginError) // no store on error
+                            if (BOAp.stopOnPluginError) // no store on error
                                 sH.storeLiveSnake(frame); // store segemented nonmodified
                         } catch (BoaException be) {
                             imageGroup.drawPath(snake, frame); // failed
@@ -1376,7 +1375,6 @@ public class BOA_ implements PlugIn {
             for (IQuimpPlugin qP : BOAp.sPluginList) {
                 if (qP == null)
                     continue; // no plugin on this slot
-                @SuppressWarnings("unchecked") // all plugins are of IQuimpPoint2dFilter type
                 // because it is guaranteed by pluginFactory.getPluginNames(DOES_SNAKES) used
                 // when populating GUI names and BOAp.sPluginList in actionPerformed(ActionEvent e).
                 IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP;
@@ -2766,10 +2764,10 @@ class SnakeHandler {
     }
 
     /**
-     * @copybrief attachLiveSnake(final List<Vector2d>)
-     * @copydetails attachLiveSnake(final List<Vector2d>)
+     * @copybrief attachLiveSnake(final List<Point2d>)
+     * @copydetails attachLiveSnake(final List<Point2d>)
      */
-    public void attachLiveSnake(Roi data) throws Exception {
+    public void attachLiveSnake(final Roi data) throws Exception {
         liveSnake = new Snake(data, ID, false);
     }
 

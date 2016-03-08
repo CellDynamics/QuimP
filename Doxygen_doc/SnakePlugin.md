@@ -27,7 +27,7 @@ they are stored in QuimP.
 Plugins are separate jar files that must be available on path passed to uk.ac.warwick.wsbc.QuimP.PluginFactory(final Path)
 which is the main engine for loading jars and creating their instances. Snake plugins must be
 derived from uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter interface and they must
-keep correct naming conventions. The default type `E` usually is `Vector2d`. QuimP provides
+keep correct naming conventions. QuimP provides
 uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter class for converting this type to separate 
 `x` and `y` arrays of coordinates.
 
@@ -49,8 +49,10 @@ rectangle "Plugin Service" {
     user--(Show GUI)
     quimp--(Get plugin\nconfig)
     quimp--(Set plugin\nconfig)
-    (Get plugin\nconfig)-|>(Write\nconfig):<<extend>>
-    (Set plugin\nconfig)-|>(Load\nconfig):<<extend>>
+    quimp--(Update View)
+    user--(Update View)
+    (Get plugin\nconfig)<|-(Write\nconfig):<<include>>
+    (Set plugin\nconfig)<|-(Load\nconfig):<<include>>
     (Write\nconfig)-|>(Handle\nconfiguration):<<extend>>
     (Load\nconfig)-|>(Handle\nconfiguration):<<extend>>
 }
@@ -153,7 +155,7 @@ QuimP -> Plugin : showUI(true)
 Plugin --> QuimP
 
 User -\ QuimP : Run Plugin
-note left: Any action like\nAdd Cell or\nRun segmentation
+note left: Any action like\nAdd Cell or\nRun segmentation or\nUpdate view
 loop BOAp.sPluginList
     QuimP -> Plugin : attachData(""data"")
     Plugin --> QuimP
@@ -176,8 +178,9 @@ Related classes and methods:
 1. uk.ac.warwick.wsbc.QuimP.BOA_.addCell(final Roi, int)
 2. uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int)
 3. uk.ac.warwick.wsbc.QuimP.BOAp.sPluginList
-4. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.attachData(final List<E>)
+4. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.attachData(final List<Point2d>)
 5. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.runPlugin()
+6. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(final Snake)
 
 Activity diagram for use case **Run Plugin**. 
 
@@ -189,6 +192,7 @@ Conditions:
 
 @startuml
 start
+partition iterateOverSnakePlugins {
 if (is any plugin selected) then (true)
 note left: There is any instance in BOAp.sPluginList\ncreated on **Select Plugin**
 :get ""liveSnake"";
@@ -201,7 +205,15 @@ if (is **not** null) then (true)
 endif
 endwhile
 endif
+}
 :attach **c** to liveSnake;
+note left
+Attaching is done locally in e.g. runBoa
+or addCell. This method is also used for
+updating outlines after changing plugin 
+configuration. 
+See **Update View**
+end note
 stop
 @enduml
 
@@ -210,10 +222,10 @@ stop
 Related classes and methods:
 
 1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(final ActionEvent)
-2. uk.ac.warwick.wsbc.QuimP.BOA_.instanceSnakePlugin(final String, int, final List<Vector2d>)
+2. uk.ac.warwick.wsbc.QuimP.BOA_.instanceSnakePlugin(final String, int, final List<Point2d>)
   1. uk.ac.warwick.wsbc.QuimP.PluginFactory.getInstance(final String)
   2. uk.ac.warwick.wsbc.QuimP.BOAp.sPluginList
-  3. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.attachData(final List<E>)
+  3. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.attachData(final List<Point2d>)
   4. uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro.attachContext(final ViewUpdater)
   
 Activity diagram for use case **Select Plugin**.
@@ -269,7 +281,7 @@ Related classes and methods:
 
 1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(final ActionEvent)
 2. uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin.showUI(boolean)
-3. uk.ac.warwick.wsbc.QuimP.BOA_.instanceSnakePlugin(final String, int, final List<Vector2d>)
+3. uk.ac.warwick.wsbc.QuimP.BOA_.instanceSnakePlugin(final String, int, final List<Point2d>)
   1. uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin.showUI(boolean)
 
 Activity diagram for use case **Show GUI**.
@@ -328,9 +340,44 @@ to plugins have place there.
 end legend
 @enduml
 
+### Update View {#upv}
+
+This use case is activated when any changes in plugin configuration
+is made during its activity. The configuration may be related to internal state of plugin as well as to plugin setup in QuimP. All these actions may require redrawing of current screen and updating current outlines.
+
+Conditions:
+
+* User selected one plugin on certain slot.
+* Plugins have been already registered by **Create Engine** use case.
+* Plugin supports [IPluginSynchro](uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro) interface
+
+Related classes and methods:
+
+1. uk.ac.warwick.wsbc.QuimP.BOA_.recalculatePlugins()
+2. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(final ActionEvent)
+
+@startuml
+start
+if (are any snakes) then (true)
+repeat
+    :getLivesSnake;
+    :iterateOverSnakePlugins(snake);
+    note left: see **Run Plugin**
+    :storeThisSnake(snake);
+    note left: Store result as **final** snake
+repeat while (more snakes?) is (true)
+endif
+stop
+legend
+Depending on ""BOAp.stopOnPluginError"" state on any error
+called from plugin, **final** snake can be ""liveSnake"" 
+(after segmentation) or nothing.
+end legend
+@enduml
+
 ### set/get Plugin Config {#sgpc}
 
-This use cases are important for storing and restoring plugin configuration inside QuimP configuration files. 
+These use cases are important for storing and restoring plugin configuration inside QuimP configuration files. 
 
 __This feature is not developed yet.__
 
@@ -363,4 +410,6 @@ most important methods that are responsible for running plugins and setting/gett
 3. uk.ac.warwick.wsbc.QuimP.BOA_.recalculatePlugins() - process all outlines (`liveSnake`) by
 active plugins and copy results to `snakes`. This method does not run segmentation again so it 
 is used for updating screen after any plugin action (inside plugin by interface IPluginSynchro or
-by JSpinners in QuimP UI related to plugins)   
+by JSpinners in QuimP UI related to plugins)
+
+Plugins can call errors during execution. In this case the `BOAp.stopOnPluginError` decides what data will be stored in `snakes`. They can be original segmented only `liveSnake` or nothing. 
