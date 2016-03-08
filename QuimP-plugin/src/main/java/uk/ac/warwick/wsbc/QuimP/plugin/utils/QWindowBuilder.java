@@ -293,13 +293,20 @@ public abstract class QWindowBuilder {
     }
 
     /**
-     * Toggle window visibility
+     * Toggle window visibility if input is \c true. Close it immediately if input is \c false
      * 
+     * @param val Demanded state of window. If \c true visibility of window is toggled, if \c false
+     * window is closing.
      * @return Current status of window \c true if visible, \c false if not
      */
-    public boolean toggleWindow() {
-        windowState = !windowState;
-        showWindow(windowState);
+    public boolean toggleWindow(boolean val) {
+        if (!val) {
+            windowState = false;
+            showWindow(windowState);
+        } else {
+            windowState = !windowState;
+            showWindow(windowState);
+        }
         return windowState;
     }
 

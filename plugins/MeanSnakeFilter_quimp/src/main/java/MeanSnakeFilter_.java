@@ -173,7 +173,7 @@ public class MeanSnakeFilter_ implements IQuimpPoint2dFilter, IPadArray {
     @Override
     public void showUI(boolean val) {
         LOGGER.debug("Got message to show UI");
-        uiInstance.toggleWindow();
+        uiInstance.toggleWindow(val);
     }
 
     @Override

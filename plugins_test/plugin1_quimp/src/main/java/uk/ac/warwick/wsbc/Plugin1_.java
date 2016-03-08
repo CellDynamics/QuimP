@@ -83,7 +83,7 @@ public class Plugin1_ extends QWindowBuilder
     @Override
     public void showUI(boolean val) {
         LOGGER.trace("showUI of Plugin1 called");
-        toggleWindow();
+        toggleWindow(val);
     }
 
     @Override

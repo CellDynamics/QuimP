@@ -4,8 +4,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -19,8 +17,8 @@ import org.junit.Test;
  */
 public class StringParserTest {
 
-    private static final Logger LOGGER =
-            LogManager.getLogger(StringParserTest.class.getName());
+    @SuppressWarnings("unused")
+    private static final Logger LOGGER = LogManager.getLogger(StringParserTest.class.getName());
 
     @Test
     public void testGetNumofParam() throws Exception {
@@ -80,8 +78,7 @@ public class StringParserTest {
      */
     @Test
     public void testGetParams_1() throws Exception {
-        String s = "1,   2,"
-                + " 3.1";
+        String s = "1,   2," + " 3.1";
         String[] ret = StringParser.getParams(s);
         String[] exp = { "1", "2", "3.1" };
         assertArrayEquals(exp, ret);
@@ -94,11 +91,10 @@ public class StringParserTest {
      */
     @Test
     public void testGetParams_2() throws Exception {
-        String s = "1,,  2,"
-                + " 3.1";
+        String s = "1,,  2," + " 3.1";
         String[] ret = StringParser.getParams(s);
-        String[] exp = { "1", "2", "3.1" };
-        LOGGER.debug(Arrays.toString(ret));
+        String[] exp = { "1", "", "2", "3.1" };
+        assertArrayEquals(exp, ret);
     }
 
 }
