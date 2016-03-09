@@ -115,7 +115,7 @@ public abstract class QWindowBuilder {
     final private int S_DEFAULT = 4; //!< spinner default value
 
     // definition of constant elements of UI
-    protected JButton applyB;
+    protected JButton applyB; //!< Apply button 
 
     /**
      * Default constructor

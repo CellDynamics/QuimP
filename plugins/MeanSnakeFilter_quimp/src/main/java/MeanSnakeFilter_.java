@@ -1,3 +1,5 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,8 @@ import javax.vecmath.Point2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
@@ -23,13 +27,14 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * @date 20 Jan 2016
  *
  */
-public class MeanSnakeFilter_ implements IQuimpPoint2dFilter, IPadArray {
+public class MeanSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilter, IPadArray,
+        IQuimpPluginSynchro, ChangeListener, ActionListener {
 
     private static final Logger LOGGER = LogManager.getLogger(MeanSnakeFilter_.class.getName());
     private QuimpDataConverter xyData; //!< input List converted to separate X and Y arrays
     private int window; //!< size of processing window
     private ParamList uiDefinition; //!< Definition of UI
-    private QWindowBuilderInst uiInstance;
+    protected ViewUpdater qcontext; //!< remember QuimP context to recalculate and update its view 
 
     /**
      * Create running mean filter.
@@ -48,8 +53,7 @@ public class MeanSnakeFilter_ implements IQuimpPoint2dFilter, IPadArray {
         uiDefinition.put("name", "MeanFilter"); // name of win
         uiDefinition.put("window", "spinner, 1, 21, 2," + Integer.toString(window));
         uiDefinition.put("help", "Window shoud be uneven");
-        uiInstance = new QWindowBuilderInst(); // create window object
-        uiInstance.buildWindow(uiDefinition); // construct ui (not shown yet)
+        buildWindow(uiDefinition); // construct ui (not shown yet)
     }
 
     /**
@@ -84,7 +88,7 @@ public class MeanSnakeFilter_ implements IQuimpPoint2dFilter, IPadArray {
     @Override
     public List<Point2d> runPlugin() throws QuimpPluginException {
         // collect actual parameters from UI
-        window = uiInstance.getIntegerFromUI("window");
+        window = getIntegerFromUI("window");
         LOGGER.debug(String.format("Run plugin with params: window %d", window));
 
         // do filtering
@@ -149,12 +153,12 @@ public class MeanSnakeFilter_ implements IQuimpPoint2dFilter, IPadArray {
     public void setPluginConfig(final ParamList par) throws QuimpPluginException {
         try {
             window = par.getIntValue("window");
-            uiInstance.setValues(par); // populate loaded values to UI
+            setValues(par); // populate loaded values to UI
         } catch (Exception e) {
             // we should never hit this exception as parameters are not touched
             // by caller they are only passed to configuration saver and
             // restored from it
-            throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
+            throw new QuimpPluginException("Wrong input argument-> " + e.getMessage(), e);
         }
     }
 
@@ -167,63 +171,51 @@ public class MeanSnakeFilter_ implements IQuimpPoint2dFilter, IPadArray {
      */
     @Override
     public ParamList getPluginConfig() {
-        return uiInstance.getValues();
+        return getValues();
     }
 
     @Override
     public void showUI(boolean val) {
         LOGGER.debug("Got message to show UI");
-        uiInstance.toggleWindow(val);
+        toggleWindow(val);
     }
 
     @Override
     public String getVersion() {
         return null;
     }
-}
 
-/**
- * Instance private class for tested QWindowBuilder
- * 
- * Any overrides of UI methods can be done here. For example user can attach
- * listener to ui object.
- * 
- * @author p.baniukiewicz
- * @date 5 Feb 2016
- *
- */
-class QWindowBuilderInst extends QWindowBuilder {
+    @Override
+    public void attachContext(ViewUpdater b) {
+        qcontext = b;
+    }
 
-    /**
-     * Example how to protect against even values for \c window parameter First
-     * override BuildWindow method. It provides \a protected access to \c ui
-     * HashMap list that keeps references to all ui elements under relevant
-     * keys, the keys relates to those names that were put in ui definition
-     * string. The initial values provided in ui definition string start from 1
-     * with step 2, therefore only one possibility to get even value here is by
-     * editing it manually
-     * 
-     * @param def window definition string
-     * @see BuildWindow
-     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object b = e.getSource();
+        if (b == applyB) { // pressed apply, copy ui data to plugin
+            qcontext.updateView();
+        }
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent ce) {
+        Object source = ce.getSource();
+        JSpinner s = (JSpinner) ui.get("window"); // get ui element
+        if (source == s) { // check if this event concerns it
+            LOGGER.debug("Spinner used");
+            if (((Double) s.getValue()).intValue() % 2 == 0)
+                s.setValue((Double) s.getValue() + 1);
+        }
+        if (isWindowVisible() == true)
+            qcontext.updateView();
+    }
+
     @Override
     public void buildWindow(final ParamList def) {
         super.buildWindow(def); // window must be built first
-        ChangeListener changeListner = new ChangeListener() { // create new listener that will be
-                                                              // attached to ui element
-            @Override
-            public void stateChanged(ChangeEvent ce) {
-                Object source = ce.getSource();
-                JSpinner s = (JSpinner) ui.get("window"); // get ui element
-                if (source == s) { // check if this event concerns it
-                    LOGGER.debug("Spinner used");
-                    if (((Double) s.getValue()).intValue() % 2 == 0)
-                        s.setValue((Double) s.getValue() + 1);
-                }
-
-            }
-        };
         // attach listener to selected ui
-        ((JSpinner) ui.get("window")).addChangeListener(changeListner);
+        ((JSpinner) ui.get("window")).addChangeListener(this);
+        applyB.addActionListener(this); // attach listener to apply button
     }
 }

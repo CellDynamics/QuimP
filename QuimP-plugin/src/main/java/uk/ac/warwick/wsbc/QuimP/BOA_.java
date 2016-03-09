@@ -80,7 +80,7 @@ import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-import uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
@@ -103,7 +103,7 @@ public class BOA_ implements PlugIn {
     static boolean running = false;
     ImageGroup imageGroup;
     private Nest nest;
-    private int frame;
+    private int frame; // current frame, CustomStackWindow.updateSliceSelector()
     private Constrictor constrictor;
     private PluginFactory pluginFactory; // load and maintain plugins
     private String lastTool; // last selection tool selected in IJ remember last tool to reselect
@@ -291,7 +291,7 @@ public class BOA_ implements PlugIn {
     /**
      * Display about information in BOA window. 
      * 
-     * Called from menu bar. Reads also inforamtion from all found plugins.
+     * Called from menu bar. Reads also information from all found plugins.
      */
     void about() {
         String authors = "###################################\n" + "BOA plugin, by\n"
@@ -406,7 +406,7 @@ public class BOA_ implements PlugIn {
                 sH = nest.getHandler(s);
                 Snake snake = sH.getLiveSnake();
                 try {
-                    if (!snake.alive || frame < sH.getStartframe()) // if snake does exist on frame
+                    if (!snake.alive || frame != sH.getStartframe()) // if snake does exist on frame
                         continue;
                     Snake out = iterateOverSnakePlugins(snake); // apply all plugins to snake
                     sH.storeThisSnake(out, frame); // set processed snake as final
@@ -734,6 +734,7 @@ public class BOA_ implements PlugIn {
             bEdit = addButton("Edit", segEditPanel);
             paramPanel.add(segEditPanel);
 
+            // mini panel comprised from slice selector and frame number (if not single image)
             Panel sliderPanel = new Panel();
             sliderPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -741,6 +742,7 @@ public class BOA_ implements PlugIn {
                 sliceSelector.setPreferredSize(new Dimension(165, 20));
                 sliceSelector.addAdjustmentListener(this);
                 sliderPanel.add(sliceSelector);
+                // frame number on right of slice selector
                 frameLabel = new Label(imageGroup.getOrgIpl().getSlice() + "  ");
                 sliderPanel.add(frameLabel);
             }
@@ -1301,8 +1303,8 @@ public class BOA_ implements PlugIn {
         // get instance using plugin name (obtained from getPluginNames from PluginFactory
         if (selectedPlugin != NONE) { // do no pass NONE to pluginFact
             inst = pluginFactory.getInstance(selectedPlugin); // get instance
-            if (inst instanceof IPluginSynchro) // if it support backward synchronization
-                ((IPluginSynchro) inst).attachContext(viewUpdater); // attach BOA context
+            if (inst instanceof IQuimpPluginSynchro) // if it support backward synchronization
+                ((IQuimpPluginSynchro) inst).attachContext(viewUpdater); // attach BOA context
             // remember instance in active plugin list
             BOAp.sPluginList.set(slot, inst);
             ((IQuimpPoint2dFilter) inst).attachData(dataToProcess);

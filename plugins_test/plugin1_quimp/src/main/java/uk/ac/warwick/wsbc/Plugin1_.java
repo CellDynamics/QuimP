@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
-import uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
@@ -39,7 +39,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  *
  */
 public class Plugin1_ extends QWindowBuilder
-        implements IQuimpPoint2dFilter, IPluginSynchro, ChangeListener, ActionListener {
+        implements IQuimpPoint2dFilter, IQuimpPluginSynchro, ChangeListener, ActionListener {
 
     private static final Logger LOGGER = LogManager.getLogger(Plugin1_.class.getName());
 
@@ -97,21 +97,22 @@ public class Plugin1_ extends QWindowBuilder
      */
     @Override
     public List<Point2d> runPlugin() throws QuimpPluginException {
-        every = getIntegerFromUI("every");
-        LOGGER.trace("runPlugin of Plugin1 called wit param every= " + every);
+        every = getIntegerFromUI("every"); // transfer data from UI on plugin run
+        LOGGER.trace("runPlugin of Plugin1 called with param every= " + every);
         ArrayList<Point2d> out = new ArrayList<>();
         Vector2d v;
         out.add(points.get(0));
         for (int i = 1; i < points.size() - 1; i++) {
+            int sign = (i % 2) * 2 - 1; // -1 1 -1 1
             if (i % every == 0) {
                 Vector2d cur = new Vector2d(points.get(i));
                 Vector2d curm1 = new Vector2d(points.get(i - 1));
                 Vector2d curp1 = new Vector2d(points.get(i + 1));
                 v = new Vector2d(curp1.x - curm1.x, curp1.y - curm1.y);
-                v = new Vector2d(-v.y, v.x);
+                v = new Vector2d(-v.y, v.x); // parallel
                 double l = v.length();
                 v.normalize();
-                v.scale(l); // move current node to distance current-1 - current+1
+                v.scale(sign * l); // move current node to distance current-1 - current+1
                 cur.add(v);
                 out.add(new Point2d(cur));
             } else
@@ -152,7 +153,8 @@ public class Plugin1_ extends QWindowBuilder
         LOGGER.trace("actionPerformed of Plugin1 called");
         Object b = e.getSource();
         if (b == applyB) { // pressed apply, copy ui data to plugin
-            qcontext.updateView(); // transfers data from ui to plugin and plot example on screen
+            qcontext.updateView(); // run plugin from QuimP context. Take care for transferring
+                                   // data from UI earlier (e.g. in runPlugin)
         }
     }
 

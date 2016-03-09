@@ -27,7 +27,9 @@ import javax.vecmath.Vector2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
 import uk.ac.warwick.wsbc.QuimP.geom.BasicPolygons;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
@@ -117,8 +119,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * @date 25 Jan 2016 First version
  * @date 03 Jan 2016 Modified algorithm
  */
-public class HatSnakeFilter_ extends QWindowBuilder
-        implements IQuimpPoint2dFilter, IPadArray, ChangeListener, ActionListener {
+public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilter, IPadArray,
+        ChangeListener, ActionListener, IQuimpPluginSynchro {
 
     private static final Logger LOGGER = LogManager.getLogger(HatSnakeFilter_.class.getName());
     private final int DRAW_SIZE = 200; //!< size of draw area in window
@@ -134,6 +136,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
     private List<Point2d> out; //!< output after filtering
     private JTextArea logArea;
     private int err; //!< general counter of log entries
+    private ViewUpdater qcontext; //!< remember QuimP context to recalculate and update its view 
 
     /**
      * Construct HatFilter Input array with data is virtually circularly padded
@@ -485,9 +488,10 @@ public class HatSnakeFilter_ extends QWindowBuilder
     /**
      * Override of uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder.BuildWindow()
      * 
-     * The aim is to: -# attach listeners for spinners ro preventing even
-     * numbers -# attach listener for build-in apply button -# add draw field
-     * DrawPanel
+     * The aim is to: 
+     * -# attach listeners for spinners for preventing even numbers
+     * -# attach listener for build-in apply button 
+     * -# add draw field DrawPanel
      */
     @Override
     public void buildWindow(final ParamList def) {
@@ -611,6 +615,7 @@ public class HatSnakeFilter_ extends QWindowBuilder
             logArea.append("#" + err + ": " + e1.getMessage() + '\n');
             err++;
         }
+        qcontext.updateView();
     }
 
     /**
@@ -648,6 +653,11 @@ public class HatSnakeFilter_ extends QWindowBuilder
                 g.drawPolygon(pout); // draw output polygon (processed)
             }
         }
+    }
+
+    @Override
+    public void attachContext(ViewUpdater b) {
+        qcontext = b;
     }
 }
 

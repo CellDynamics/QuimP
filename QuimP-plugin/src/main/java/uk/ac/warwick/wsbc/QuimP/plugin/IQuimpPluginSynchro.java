@@ -16,7 +16,7 @@ import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
  * @date 4 Mar 2016
  *
  */
-public interface IPluginSynchro {
+public interface IQuimpPluginSynchro {
 
     /**
      * Pass to plugin ViewUpdater object which is accessor to selected methods from QuimP interface.

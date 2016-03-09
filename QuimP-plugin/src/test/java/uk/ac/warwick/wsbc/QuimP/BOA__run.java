@@ -18,10 +18,9 @@ import ij.gui.Toolbar;
  * @author baniuk
  * @note The window is run in separate thread therefore when control is returned
  * to main thread (\c main) (immediately after the window has been
- * created) and the main thread ends everything is removed from memory and
- * the window closes. To prevent this behavior thread synchronization is
- * used. Window listener is added to BOA_ window. \c window is \c public
- * field of BOA_ class representing \c CustomStackWindow internally
+ * created) then the main thread ends that results in closing of the program To prevent this
+ *  behavior thread synchronization is used. Window listener is added to BOA_ window. \c window is
+ *  \c public field of BOA_ class representing \c CustomStackWindow internally
  * extending \c Frame class.
  * @see BOA_
  * @remarks This process will not finish because \c window default behavior is
@@ -41,7 +40,7 @@ public class BOA__run {
         ImagePlus img;
         // create synchronization latch
         CountDownLatch startSignal = new CountDownLatch(1);
-        img = IJ.openImage("src/test/resources/movie03_8bit.tif");
+        img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");
         img.show(); // this is necessary for plugin as it uses getcurrentimage
                     // to work
         Toolbar t = new Toolbar(); // fake toolbar to allow calls to static
