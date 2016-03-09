@@ -24,6 +24,13 @@ import java.util.Date;
  */
 public class Tool {
 
+    /**
+     * Gets QuimP version
+     * 
+     * @return Formatted string with QuimP version
+     * @deprecated This method should not be used due to changes in QuimP versioning scheme
+     */
+    @Deprecated
     public static String getQuimPversion() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
         Date date = new Date();

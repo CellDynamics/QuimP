@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +52,7 @@ public class PluginFactory_Test {
     }
 
     /**
-     * Test method for {@link wsbc.QuimP.PluginFactory#getPluginNames(int)}.
+     * @test Test method for {@link wsbc.QuimP.PluginFactory#getPluginNames(int)}.
      * 
      * @pre Two dummy plugins in directory
      * @post Two plugins names \a Plugin1 and \a Plugin2
@@ -83,7 +84,7 @@ public class PluginFactory_Test {
     }
 
     /**
-     * Test method for {@link wsbc.QuimP.PluginFactory#getPluginNames(int)}.
+     * @test Test method for {@link wsbc.QuimP.PluginFactory#getPluginNames(int)}.
      * 
      * @pre Directory does not exist
      * @post empty list
@@ -98,7 +99,7 @@ public class PluginFactory_Test {
     }
 
     /**
-     * Test method for
+     * @test Test method for 
      * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(final String)}
      * This test creates instances of plugins and calls methods from them
      * storing and reading data from created object for plugin2
@@ -125,7 +126,7 @@ public class PluginFactory_Test {
     }
 
     /**
-     * Test method for
+     * @test Test method for 
      * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(final String)}
      * This test try to call plugin that does not exist
      * 
@@ -141,8 +142,7 @@ public class PluginFactory_Test {
     }
 
     /**
-     * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#scanDirectory()}
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#scanDirectory()}
      * 
      * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in
      * test directory
@@ -177,13 +177,11 @@ public class PluginFactory_Test {
     }
 
     /**
-     * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getClassName()}
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getClassName()}
      * 
      * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in
      * test directory
-     * @post
-     * Qualified name of class in plugin 2 must be correct
+     * @post Qualified name of class in plugin 2 must be correct
      * @throws NoSuchMethodException
      * @throws SecurityException
      * @throws IllegalAccessException
@@ -208,40 +206,25 @@ public class PluginFactory_Test {
     }
 
     /**
-     * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getPluginType()}
-     * 
-     * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in
-     * test directory
-     * @post
-     * Types \c DOES_SNAKES returned from plugins
-     * @throws NoSuchMethodException
-     * @throws SecurityException
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
-     * @throws QuimpPluginException
+     * @test Test of reading type and version from plugins
+     * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
+     * @post proper versions, types and qnames
+     * @throws QuimpPluginException 
      */
     @Test
-    public void test_getPluginType()
-            throws NoSuchMethodException, SecurityException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException, QuimpPluginException {
+    public void test_getAllPlugins() throws QuimpPluginException {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("../plugins_test/target/"));
-        Class<?>[] args = new Class<?>[2];
-        args[0] = File.class;
-        args[1] = String.class;
-        Method m = pluginFactory.getClass().getDeclaredMethod("getPluginType", args);
-        m.setAccessible(true);
+        Map<String, PluginProperties> pp = pluginFactory.getRegisterdPlugins();
+        PluginProperties p1 = pp.get("Plugin1");
+        assertEquals(IQuimpPlugin.DOES_SNAKES, p1.getType());
+        assertEquals("uk.ac.warwick.wsbc.Plugin1_", p1.getClassName());
+        assertEquals("0.0.2", p1.getVersion());
 
-        File file = new File("../plugins_test/target/plugin2_quimp-0.0.1.jar");
-        int ret = (int) m.invoke(pluginFactory, file, "uk.ac.warwick.wsbc.Plugin2_");
-        assertEquals(1, ret);
-
-        file = new File("../plugins_test/target/plugin1_quimp-0.0.1.jar");
-        ret = (int) m.invoke(pluginFactory, file, "uk.ac.warwick.wsbc.Plugin1_");
-        assertEquals(1, ret);
+        PluginProperties p2 = pp.get("Plugin2");
+        assertEquals(IQuimpPlugin.DOES_SNAKES, p2.getType());
+        assertEquals("uk.ac.warwick.wsbc.Plugin2_", p2.getClassName());
+        assertEquals("0.0.1", p2.getVersion());
 
     }
-
 }
