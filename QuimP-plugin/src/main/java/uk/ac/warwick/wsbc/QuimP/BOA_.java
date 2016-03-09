@@ -244,7 +244,7 @@ public class BOA_ implements PlugIn {
         canvas = new CustomCanvas(imageGroup.getOrgIpl());
         window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
         window.buildWindow();
-        window.setTitle(window.getTitle() + " :QuimP: " + getQuimPBuildInfo());
+        window.setTitle(window.getTitle() + " :QuimP: " + getQuimPBuildInfo()[0]);
         // warn about scale
         if (BOAp.scaleAdjusted) {
             BOA_.log("WARNING Scale was zero...\n\tset to 1");
@@ -283,7 +283,7 @@ public class BOA_ implements PlugIn {
      * Display about information in BOA window
      */
     void about() {
-        BOA_.log("\n############################\n" + "Build: " + Tool.getQuimPversion() + "\n"
+        BOA_.log("\n############################\n"
                 + "BOA plugin,by Richard Tyson (richard.tyson@warwick.ac.uk)\n"
                 + "& Till Bretschneider\n(Till.Bretschneider@warwick.ac.uk)\n"
                 + "############################\n \n");
@@ -292,11 +292,16 @@ public class BOA_ implements PlugIn {
     /**
      * Get build info read from jar file
      * 
-     * @return Formatted string with build info
-     * @warning This method is jar-name dependent
+     * @return Formatted strings with build info and version:
+     * -# [0] - contains only version string read from \a MANIFEST.MF
+     * -# [1] - contains formatted string with build time and name of builder read from \a MANIFEST.MF
+     * @warning This method is jar-name dependent - looks for manifest with \a Implementation-Title
+     * that contains \c QuimP string.
      */
-    public String getQuimPBuildInfo() {
-        String ret = "version not found in jar";
+    public String[] getQuimPBuildInfo() {
+        String[] ret = new String[2];
+        ret[0] = "version not found in jar";
+        ret[1] = "build info not found in jar";
         try {
             Enumeration<URL> resources =
                     getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
@@ -309,9 +314,10 @@ public class BOA_ implements PlugIn {
                         continue;
                     // name dependent part
                     if (attributes.getValue("Implementation-Title").contains("QuimP")) {
-                        ret = "Build by: " + attributes.getValue("Built-By") + " on: "
+                        ret[1] = "Build by: " + attributes.getValue("Built-By") + " on: "
                                 + attributes.getValue("Implementation-Build");
-                        LOGGER.info(ret);
+                        ret[0] = attributes.getValue("Implementation-Version");
+                        LOGGER.debug(ret);
                     }
                 } catch (Exception e) {
                     ;
