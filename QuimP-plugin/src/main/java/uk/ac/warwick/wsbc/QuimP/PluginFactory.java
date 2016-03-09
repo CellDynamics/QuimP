@@ -274,8 +274,8 @@ public class PluginFactory {
                 String ver = getPluginVersion(inst);
                 // create entry with classname and path
                 availPlugins.put(pluginName, new PluginProperties(f, cname, type, ver));
-                LOGGER.debug("Registered plugin: " + pluginName + " at: " + f.toString()
-                        + " cname: " + cname + " type: " + type + " ver: " + ver);
+                LOGGER.debug("Registered plugin: " + pluginName + " "
+                        + availPlugins.get(pluginName).toString());
                 // catch any error in plugin services - plugin is not stored
             } catch (ClassNotFoundException | NoSuchMethodException | SecurityException
                     | InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -539,5 +539,10 @@ class PluginProperties {
      */
     public int getType() {
         return type;
+    }
+
+    @Override
+    public String toString() {
+        return "ClassName: " + className + " path: " + file + " type: " + type + " ver: " + version;
     }
 }

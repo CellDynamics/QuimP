@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -166,7 +167,7 @@ public class BOA_ implements PlugIn {
         }
         // assign current object to ViewUpdater
         viewUpdater = new ViewUpdater(this);
-        // collect information about quimp version
+        // collect information about quimp version read frm jar
         quimpInfo = getQuimPBuildInfo();
 
         ImagePlus ip = WindowManager.getCurrentImage();
@@ -200,7 +201,7 @@ public class BOA_ implements PlugIn {
             String path = IJ.getDirectory("plugins");
             if (path == null) {
                 IJ.log("BOA: Plugin directory not found");
-                LOGGER.warn("BOA: Plugin directory not found");
+                LOGGER.warn("BOA: Plugin directory not found, use provided with arg");
                 path = arg;
             }
             if (!setupTest()) // if not created in test
@@ -288,7 +289,9 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Display about information in BOA window. Called from manu bar
+     * Display about information in BOA window. 
+     * 
+     * Called from menu bar. Reads also inforamtion from all found plugins.
      */
     void about() {
         String authors = "###################################\n" + "BOA plugin, by\n"
@@ -308,18 +311,29 @@ public class BOA_ implements PlugIn {
         aboutWnd.setBounds(orgBounds.x + orgBounds.width / 2, orgBounds.y + orgBounds.height / 2,
                 500, 300);
         Panel p = new Panel();
-        p.setLayout(new GridLayout(1, 1)); // one panel
+        p.setLayout(new GridLayout(1, 1)); // main window panel
+        Panel tp = new Panel(); // panel with text area
+        tp.setLayout(new GridLayout(1, 1));
         TextArea info = new TextArea(10, 60); // area to write
         // fill with information
         info.append(authors + '\n');
         info.append("QuimP version: " + quimpInfo[0] + '\n');
         info.append("Released: " + quimpInfo[1] + '\n');
         // get list of found plugins
-        ArrayList<String> pluginList = pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
-
+        info.append("List of found plugins:\n");
+        Map<String, PluginProperties> mp = pluginFactory.getRegisterdPlugins();
+        // iterate over set
+        for (Map.Entry<String, PluginProperties> entry : mp.entrySet()) {
+            info.append("\n");
+            info.append("Plugin name: " + entry.getKey() + "\n");
+            info.append("   Plugin type: " + entry.getValue().getType() + "\n");
+            info.append("   Plugin path: " + entry.getValue().getFile().toString() + "\n");
+            info.append("   Plugin vers: " + entry.getValue().getVersion() + "\n");
+        }
         info.setEditable(false);
-        JScrollPane logPanel = new JScrollPane(info);
-        p.add(logPanel);
+        tp.add(info); // add to panel
+        JScrollPane infoPanel = new JScrollPane(tp);
+        p.add(infoPanel);
 
         aboutWnd.add(p);
         aboutWnd.pack();
@@ -881,8 +895,9 @@ public class BOA_ implements PlugIn {
         /**
          * Main method that handles all actions performed on UI elements.
          * 
-         * Do not support mouse events, only UI elements like buttons. Contain
-         * also logic of GUI Runs also main algorithm on specified input state.
+         * Do not support mouse events, only UI elements like buttons, spinners and menus. 
+         * Runs also main algorithm on specified input state and update screen on plugins
+         * operations.
          * 
          * @param e Type of event
          * @see BOAp
@@ -1045,7 +1060,6 @@ public class BOA_ implements PlugIn {
 
             // menu listeners
             if (b == menuVersion) {
-                LOGGER.debug("Got menu");
                 about();
             }
 
