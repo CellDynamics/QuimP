@@ -5,11 +5,15 @@ import java.awt.Button;
 import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Label;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.awt.Panel;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -109,6 +113,9 @@ public class BOA_ implements PlugIn {
                                      // method from plugin. Reference to this field is passed to
                                      // plugins and give them possibility to call selected methods
                                      // from BOA class
+    private String[] quimpInfo; // keeps data from getQuimPBuildInfo() to prevent using this method
+                                // too often. These information are used for About dialog and they
+                                // re presented on window title bar
 
     /**
      * Temporary method for test
@@ -159,6 +166,8 @@ public class BOA_ implements PlugIn {
         }
         // assign current object to ViewUpdater
         viewUpdater = new ViewUpdater(this);
+        // collect information about quimp version
+        quimpInfo = getQuimPBuildInfo();
 
         ImagePlus ip = WindowManager.getCurrentImage();
         lastTool = IJ.getToolName();
@@ -187,11 +196,11 @@ public class BOA_ implements PlugIn {
         }
 
         // scan for plugins
-
         try {
             String path = IJ.getDirectory("plugins");
             if (path == null) {
                 IJ.log("BOA: Plugin directory not found");
+                LOGGER.warn("BOA: Plugin directory not found");
                 path = arg;
             }
             if (!setupTest()) // if not created in test
@@ -203,7 +212,6 @@ public class BOA_ implements PlugIn {
 
         BOA_.running = true;
         setup(ip);
-        about();
 
         if (BOAp.useSubPixel == false) {
             BOA_.log("Upgrade to ImageJ 1.46, or higher," + "\nto get sub-pixel editing.");
@@ -244,7 +252,7 @@ public class BOA_ implements PlugIn {
         canvas = new CustomCanvas(imageGroup.getOrgIpl());
         window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
         window.buildWindow();
-        window.setTitle(window.getTitle() + " :QuimP: " + getQuimPBuildInfo()[0]);
+        window.setTitle(window.getTitle() + " :QuimP: " + quimpInfo[0]);
         // warn about scale
         if (BOAp.scaleAdjusted) {
             BOA_.log("WARNING Scale was zero...\n\tset to 1");
@@ -280,13 +288,42 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Display about information in BOA window
+     * Display about information in BOA window. Called from manu bar
      */
     void about() {
-        BOA_.log("\n############################\n"
-                + "BOA plugin,by Richard Tyson (richard.tyson@warwick.ac.uk)\n"
-                + "& Till Bretschneider\n(Till.Bretschneider@warwick.ac.uk)\n"
-                + "############################\n \n");
+        String authors = "###################################\n" + "BOA plugin, by\n"
+                + "Richard Tyson (richard.tyson@warwick.ac.uk)\n"
+                + "Till Bretschneider (Till.Bretschneider@warwick.ac.uk)\n"
+                + "###################################\n";
+
+        // build modal dialog
+        Dialog aboutWnd = new Dialog(window, "Info", Dialog.ModalityType.DOCUMENT_MODAL);
+        aboutWnd.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                aboutWnd.dispose();
+            }
+        });
+        // located in middle of quimp qindow
+        Rectangle orgBounds = window.getBounds();
+        aboutWnd.setBounds(orgBounds.x + orgBounds.width / 2, orgBounds.y + orgBounds.height / 2,
+                500, 300);
+        Panel p = new Panel();
+        p.setLayout(new GridLayout(1, 1)); // one panel
+        TextArea info = new TextArea(10, 60); // area to write
+        // fill with information
+        info.append(authors + '\n');
+        info.append("QuimP version: " + quimpInfo[0] + '\n');
+        info.append("Released: " + quimpInfo[1] + '\n');
+        // get list of found plugins
+        ArrayList<String> pluginList = pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
+
+        info.setEditable(false);
+        JScrollPane logPanel = new JScrollPane(info);
+        p.add(logPanel);
+
+        aboutWnd.add(p);
+        aboutWnd.pack();
+        aboutWnd.setVisible(true);
     }
 
     /**
@@ -486,6 +523,8 @@ public class BOA_ implements PlugIn {
         private JComboBox<String> firstPluginName, secondPluginName, thirdPluginName;
         private Button firstPluginGUI, secondPluginGUI, thirdPluginGUI;
 
+        private MenuItem menuVersion; // item in menu
+        
         /**
          * Default constructor
          * 
@@ -499,9 +538,9 @@ public class BOA_ implements PlugIn {
         /**
          * Build user interface.
          * 
-         * This method is called as first. The interface is built in two steps:
+         * This method is called as first. The interface is built in three steps:
          * Left side of window (configuration zone) and right side of main
-         * window (logs and other info and buttons)
+         * window (logs and other info and buttons) and finaly upper menubar
          */
         private void buildWindow() {
             setLayout(new FlowLayout());
@@ -513,7 +552,31 @@ public class BOA_ implements PlugIn {
             }
             add(buildControlPanel(), 0); // add to the left, position 0
             add(buildSetupPanel());
+            setMenuBar(buildMenu());
             pack();
+        }
+
+        /**
+         * Build window menu.
+         * 
+         * @return Reference to menu bar
+         */
+        final MenuBar buildMenu() {
+            MenuBar menuBar; // main menu bar
+            Menu menuAbout; // menu in menubar
+
+            menuBar = new MenuBar();
+
+            menuAbout = new Menu("About");
+            menuAbout.getAccessibleContext()
+                    .setAccessibleDescription("The only menu in this program that has menu items");
+            menuBar.add(menuAbout);
+
+            menuVersion = new MenuItem("Version");
+            menuVersion.addActionListener(this);
+            menuAbout.add(menuVersion);
+
+            return menuBar;
         }
 
         /**
@@ -543,8 +606,7 @@ public class BOA_ implements PlugIn {
             groupBoxLabel.add(pixelLabel);
 
             // build subpanel with cell buttons
-            JPanel groupBoxCell = new JPanel(); // contain 4 buttons related to
-                                                // cell operation
+            JPanel groupBoxCell = new JPanel(); // contain 4 buttons related to cell operation
             groupBoxCell.setBorder(BorderFactory.createTitledBorder("Cell operations"));
             groupBoxCell.setLayout(new GridLayout(2, 2));
             bScale = addButton("Set Scale", groupBoxCell);
@@ -583,7 +645,7 @@ public class BOA_ implements PlugIn {
             northPanel.add(groupBoxSnakePlugins); // postprocessing
 
             // --------build log---------
-            JPanel groupBoxLog = new JPanel(); // conatain two static fields wit
+            JPanel groupBoxLog = new JPanel(); // conatain two static fields with
                                                // image scale info
             groupBoxLog.setBorder(BorderFactory.createTitledBorder("Log"));
             logArea = new TextArea(10, 25);
@@ -953,36 +1015,38 @@ public class BOA_ implements PlugIn {
                     BOAp.sPluginList.get(2).showUI(true);
             }
 
-            // Process plugin selection if selected item does not find reference to name it returns
-            // null attach data to all selected plugins. Attached data are the same for every
-            // plugin. This is important only for optional visualization supported by plugin. Data
-            // are attached again on every plugin run
+            // Process plugin selection
+            // attach also data to all selected plugins. Attached data are the same for every
+            // plugin. This is only for optional visualization supported by plugin.
+            // Data are attached again on every plugin run
             List<Point2d> dataToProcess = null; // default
             Snake snake;
             SnakeHandler sH;
             if (nest != null && nest.size() > 0) {
                 sH = nest.getHandler(nest.size() - 1); // get last added snake
                 snake = sH.getLiveSnake();
-                dataToProcess = snake.asList();
+                dataToProcess = snake.asList(); // will be passed to plugin in this stage
             }
             if (b == (JComboBox<String>) firstPluginName) {
                 LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
                 instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, dataToProcess);
-                // run = true; // TODO should not run boa but only process data from live snakes and
-                // store them in sH. updateView should be called
                 recalculatePlugins();
             }
             if (b == (JComboBox<String>) secondPluginName) {
                 LOGGER.debug("Used secondPluginName, val: " + secondPluginName.getSelectedItem());
                 instanceSnakePlugin((String) secondPluginName.getSelectedItem(), 1, dataToProcess);
-                // run = true;
                 recalculatePlugins();
             }
             if (b == (JComboBox<String>) thirdPluginName) {
                 LOGGER.debug("Used thirdPluginName, val: " + thirdPluginName.getSelectedItem());
                 instanceSnakePlugin((String) thirdPluginName.getSelectedItem(), 2, dataToProcess);
-                // run = true;
                 recalculatePlugins();
+            }
+
+            // menu listeners
+            if (b == menuVersion) {
+                LOGGER.debug("Got menu");
+                about();
             }
 
             // run segmentation for selected cases
