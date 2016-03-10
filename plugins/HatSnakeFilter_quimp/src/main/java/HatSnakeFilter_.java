@@ -177,7 +177,7 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
         points = data;
         pout = null; // delete any processed polygon
         if (points == null) {
-            LOGGER.warn("No data attached");
+            LOGGER.info("No data attached");
             return;
         }
         p = new ExPolygon(data); // create polygon from points
@@ -233,22 +233,22 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
 
         double tmpCirc;
         for (int r = 0; r < points.size(); r++) {
-            LOGGER.debug("------- Iter: " + r + "-------");
-            LOGGER.debug("points: " + points.toString());
+            LOGGER.info("------- Iter: " + r + "-------");
+            LOGGER.info("points: " + points.toString());
             // get all points except window. Window has constant position 0 - (window-1)
             List<Point2d> pointsnowindow = points.subList(window, points.size());
-            LOGGER.debug("sub: " + pointsnowindow.toString());
+            LOGGER.info("sub: " + pointsnowindow.toString());
             tmpCirc = getCircularity(pointsnowindow);
-            LOGGER.debug("circ " + tmpCirc);
+            LOGGER.info("circ " + tmpCirc);
             // calculate weighting for circularity
             List<Point2d> pointswindow = points.subList(0, window); // get points for window only
-            LOGGER.debug("win: " + pointswindow.toString());
+            LOGGER.info("win: " + pointswindow.toString());
             tmpCirc /= getWeighting(pointswindow); // calculate weighting for window content
-            LOGGER.debug("Wcirc " + tmpCirc);
+            LOGGER.info("Wcirc " + tmpCirc);
             circ.add(tmpCirc); // store weighted circularity for shape without window
             // check if points of window are convex according to shape without these points
             convex.add(bp.isanyPointInside(pointsnowindow, pointswindow)); // true if concave
-            LOGGER.debug("con: " + convex.get(convex.size() - 1));
+            LOGGER.info("con: " + convex.get(convex.size() - 1));
             // move window to next position
             Collections.rotate(points, -1); // rotates by -1 what means that on first n positions
                                             // of points there are different values simulate window
@@ -267,8 +267,8 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
         ArrayList<Double> circsorted = new ArrayList<>(circ); // need sorted but the old one as well
                                                               // to identify windows positions
         circsorted.sort(Collections.reverseOrder()); // sort in descending order
-        LOGGER.debug("cirs: " + circsorted.toString());
-        LOGGER.debug("circ: " + circ.toString());
+        LOGGER.info("cirs: " + circsorted.toString());
+        LOGGER.info("circ: " + circ.toString());
 
         if (circsorted.get(0) < alev) // if maximal circularity smaller than acceptance level
             return points; // just return non-modified data;
@@ -309,7 +309,7 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
                         ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
                     } else
                         ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
-                    LOGGER.debug("added win for i=" + i + " startpos=" + startpos + " coord:"
+                    LOGGER.info("added win for i=" + i + " startpos=" + startpos + " coord:"
                             + points.get(startpos).toString());
                     found++;
                     i++;
@@ -326,13 +326,13 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
                     ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
                 } else
                     ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
-                LOGGER.debug("added win for i=" + i + " startpos=" + startpos + " coord:"
+                LOGGER.info("added win for i=" + i + " startpos=" + startpos + " coord:"
                         + points.get(startpos).toString());
                 i++;
                 found++;
             }
         }
-        LOGGER.debug("winpos: " + ind2rem.toString());
+        LOGGER.info("winpos: " + ind2rem.toString());
         // Step 3 - remove selected windows from input data
         // array will be copied to new one skipping points to remove
         for (i = 0; i < points.size(); i++) {
@@ -410,7 +410,7 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
         std /= points.size();
         std = Math.sqrt(std);
 
-        LOGGER.debug("w " + std);
+        LOGGER.info("w " + std);
         return std;
     }
 
@@ -472,7 +472,7 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
 
     @Override
     public void showUI(boolean val) {
-        LOGGER.debug("Got message to show UI");
+        LOGGER.trace("Got message to show UI");
         if (toggleWindow(val) == true)
             recalculatePlugin();
     }

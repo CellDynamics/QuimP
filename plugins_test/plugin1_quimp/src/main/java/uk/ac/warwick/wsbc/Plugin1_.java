@@ -82,7 +82,7 @@ public class Plugin1_ extends QWindowBuilder
 
     @Override
     public void showUI(boolean val) {
-        LOGGER.trace("showUI of Plugin1 called");
+        LOGGER.trace("showUI of Plugin1 called with val " + val);
         toggleWindow(val);
     }
 
@@ -98,7 +98,7 @@ public class Plugin1_ extends QWindowBuilder
     @Override
     public List<Point2d> runPlugin() throws QuimpPluginException {
         every = getIntegerFromUI("every"); // transfer data from UI on plugin run
-        LOGGER.trace("runPlugin of Plugin1 called with param every= " + every);
+        LOGGER.debug("runPlugin of Plugin1 called with param every= " + every);
         ArrayList<Point2d> out = new ArrayList<>();
         Vector2d v;
         out.add(points.get(0));

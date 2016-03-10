@@ -405,7 +405,7 @@ public class BOA_ implements PlugIn {
                 sH = nest.getHandler(s);
                 Snake snake = sH.getLiveSnake();
                 try {
-                    if (!snake.alive || frame != sH.getStartframe()) // if snake does exist on frame
+                    if (!snake.alive || frame < sH.getStartframe()) // if snake does exist on frame
                         continue;
                     Snake out = iterateOverSnakePlugins(snake); // apply all plugins to snake
                     sH.storeThisSnake(out, frame); // set processed snake as final
@@ -1045,7 +1045,7 @@ public class BOA_ implements PlugIn {
             }
             if (b == (JComboBox<String>) firstPluginName) {
                 LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
-                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, dataToProcess);
+                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, null);
                 recalculatePlugins();
             }
             if (b == (JComboBox<String>) secondPluginName) {
@@ -1443,7 +1443,7 @@ public class BOA_ implements PlugIn {
 
     /**
      * Process \c Snake by all active plugins. Processed \c Snake is returned as new Snake with
-     * the same ID
+     * the same ID. Input snake is not modified
      *
      * @param snake snake to be processed
      * @return Processed snake or original input one when there is no plugin selected
@@ -1454,6 +1454,7 @@ public class BOA_ implements PlugIn {
             throws QuimpPluginException, Exception {
         Snake outsnake = snake;
         if (!BOAp.isRefListEmpty(BOAp.sPluginList)) {
+            LOGGER.debug("sPluginList not empty");
             List<Point2d> dataToProcess = snake.asList();
             for (IQuimpPlugin qP : BOAp.sPluginList) {
                 if (qP == null)
@@ -1465,7 +1466,8 @@ public class BOA_ implements PlugIn {
                 dataToProcess = qPcast.runPlugin();
             }
             outsnake = new Snake(dataToProcess, snake.snakeID);
-        }
+        } else
+            LOGGER.debug("sPluginList empty");
         return outsnake;
     }
 
@@ -2411,12 +2413,14 @@ class Constrictor {
         return (result);
     }
 
+    /**
+     * Expand all snakes while preventing overlaps. Dead snakes are ignored. Count snakes on frame
+     * 
+     * @param nest
+     * @param frame
+     * @throws Exception
+     */
     public void loosen(final Nest nest, int frame) throws Exception {
-        // expand all snakes while preventing overlaps
-        // dead snakes are ignored
-
-        // count snakes on frame
-
         int N = nest.size();
         Snake snakeA, snakeB;
 
@@ -3126,7 +3130,7 @@ class SnakeHandler {
     /**
      * Prepare current frame \c for segmentation
      * 
-     * Create \c liveSnake using previous frame or ROI
+     * Create \c liveSnake using final snake stored in previous frame
      * 
      * @param f Current segmented frame
      */
