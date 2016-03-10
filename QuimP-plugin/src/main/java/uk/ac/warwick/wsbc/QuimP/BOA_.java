@@ -403,7 +403,7 @@ public class BOA_ implements PlugIn {
         try {
             for (int s = 0; s < nest.size(); s++) { // for each snake
                 sH = nest.getHandler(s);
-                Snake snake = sH.getLiveSnake();
+                Snake snake = sH.getSegSnake(frame);
                 try {
                     if (!snake.alive || frame < sH.getStartframe()) // if snake does exist on frame
                         continue;
@@ -419,6 +419,7 @@ public class BOA_ implements PlugIn {
             }
         } catch (Exception e) {
             LOGGER.error("Can not update view. Output snake may be defective: " + e.getMessage());
+            LOGGER.error(e);
         }
         imageGroup.updateOverlay(frame);
     }
@@ -1390,6 +1391,7 @@ public class BOA_ implements PlugIn {
                             imageGroup.drawPath(snake, frame); // pre tightned snake on path
                             tightenSnake(snake);
                             imageGroup.drawPath(snake, frame); // post tightned snake on path
+                            sH.storeLiveasSegSnake(frame);
                             Snake out = iterateOverSnakePlugins(snake);
                             sH.storeThisSnake(out, frame); // store resulting snake as final
 
@@ -1397,13 +1399,16 @@ public class BOA_ implements PlugIn {
                             // must be rewritten with whole runBOA #65 #67
                             BOA_.log("Error in filter module: " + qpe.getMessage());
                             LOGGER.error(qpe);
-                            if (BOAp.stopOnPluginError) // no store on error
+                            if (BOAp.stopOnPluginError) {// no store on error
                                 sH.storeLiveSnake(frame); // store segemented nonmodified
+                                sH.storeLiveasSegSnake(frame);
+                            }
                         } catch (BoaException be) {
                             imageGroup.drawPath(snake, frame); // failed
                                                                // position
                                                                // sH.deleteStoreAt(frame);
                             sH.storeLiveSnake(frame);
+                            sH.storeLiveasSegSnake(frame);
                             nest.kill(sH);
                             snake.defreeze();
                             BOA_.log("Snake " + snake.snakeID + " died, frame " + frame);
@@ -1594,6 +1599,7 @@ public class BOA_ implements PlugIn {
             imageGroup.drawPath(snake, f); // pre tightned snake on path
             tightenSnake(snake);
             imageGroup.drawPath(snake, f); // post tightned snake on path
+            sH.storeLiveasSegSnake(f);
 
             Snake out = iterateOverSnakePlugins(snake); // process segmented snake by plugins
             sH.storeThisSnake(out, f); // store processed snake as final
@@ -1611,8 +1617,10 @@ public class BOA_ implements PlugIn {
         // if any problem with plugin or other, store snake without modification
         // because snake.asList() returns copy
         try {
-            if (isPluginError && BOAp.stopOnPluginError) // no store on error?
+            if (isPluginError && BOAp.stopOnPluginError) {// no store on error?
                 sH.storeLiveSnake(f); // so store original livesnake after segmentation
+                sH.storeLiveasSegSnake(f);
+            }
         } catch (BoaException be) {
             BOA_.log("Could not store new snake");
             LOGGER.error(be);
@@ -2741,7 +2749,9 @@ class SnakeHandler {
     private int startFrame;
     private int endFrame;
     private Snake liveSnake;
-    private Snake[] snakes; // series of snakes
+    private Snake[] finalSnakes; // series of snakes, result of cell segmentation and plugin
+                                 // processing
+    private Snake[] segSnakes; // series of snakes, result of cell segmentation
     private int ID;
 
     /**
@@ -2758,9 +2768,11 @@ class SnakeHandler {
         roi = r;
         // snakes array keeps snakes across frames from current to end. Current
         // is that one for which cell has been added
-        snakes = new Snake[BOAp.FRAMES - startFrame + 1]; // stored snakes
+        finalSnakes = new Snake[BOAp.FRAMES - startFrame + 1]; // stored snakes
+        segSnakes = new Snake[BOAp.FRAMES - startFrame + 1]; // stored snakes
         ID = id;
         attachLiveSnake(r); // initialize liveSnake
+        storeLiveasSegSnake(frame);
     }
 
     /**
@@ -2771,7 +2783,7 @@ class SnakeHandler {
      */
     public void storeLiveSnake(int frame) throws BoaException {
         // BOA_.log("Store snake " + ID + " at frame " + frame);
-        snakes[frame - startFrame] = null; // delete at current frame
+        finalSnakes[frame - startFrame] = null; // delete at current frame
 
         Node head = new Node(0); // dummy head node
         head.setHead(true);
@@ -2793,10 +2805,41 @@ class SnakeHandler {
         nn.setNext(head); // link round tail
         head.setPrev(nn);
 
-        snakes[frame - startFrame] = new Snake(head, liveSnake.getNODES() + 1, ID); // +1
-                                                                                    // dummy
-                                                                                    // head
-        snakes[frame - startFrame].calcCentroid();
+        finalSnakes[frame - startFrame] = new Snake(head, liveSnake.getNODES() + 1, ID); // +1
+        // dummy
+        // head
+        finalSnakes[frame - startFrame].calcCentroid();
+
+    }
+
+    public void storeLiveasSegSnake(int frame) throws BoaException {
+        // BOA_.log("Store snake " + ID + " at frame " + frame);
+        segSnakes[frame - startFrame] = null; // delete at current frame
+
+        Node head = new Node(0); // dummy head node
+        head.setHead(true);
+
+        Node prev = head;
+        Node nn;
+        Node sn = liveSnake.getHead();
+        do {
+            nn = new Node(sn.getTrackNum());
+            nn.setX(sn.getX());
+            nn.setY(sn.getY());
+
+            nn.setPrev(prev);
+            prev.setNext(nn);
+
+            prev = nn;
+            sn = sn.getNext();
+        } while (!sn.isHead());
+        nn.setNext(head); // link round tail
+        head.setPrev(nn);
+
+        segSnakes[frame - startFrame] = new Snake(head, liveSnake.getNODES() + 1, ID); // +1
+        // dummy
+        // head
+        segSnakes[frame - startFrame].calcCentroid();
 
     }
 
@@ -2809,7 +2852,7 @@ class SnakeHandler {
      */
     public void storeThisSnake(Snake snake, int frame) throws BoaException {
         // BOA_.log("Store snake " + ID + " at frame " + frame);
-        snakes[frame - startFrame] = null; // delete at current frame
+        finalSnakes[frame - startFrame] = null; // delete at current frame
 
         Node head = new Node(0); // dummy head node
         head.setHead(true);
@@ -2831,10 +2874,10 @@ class SnakeHandler {
         nn.setNext(head); // link round tail
         head.setPrev(nn);
 
-        snakes[frame - startFrame] = new Snake(head, snake.getNODES() + 1, ID); // +1
-                                                                                // dummy
-                                                                                // head
-        snakes[frame - startFrame].calcCentroid();
+        finalSnakes[frame - startFrame] = new Snake(head, snake.getNODES() + 1, ID); // +1
+        // dummy
+        // head
+        finalSnakes[frame - startFrame].calcCentroid();
 
     }
 
@@ -2928,16 +2971,16 @@ class SnakeHandler {
         PrintWriter pw = new PrintWriter(new FileWriter(OLD), true); // auto
                                                                      // flush
 
-        for (int i = 0; i < snakes.length; i++) {
-            if (snakes[i] == null) {
+        for (int i = 0; i < finalSnakes.length; i++) {
+            if (finalSnakes[i] == null) {
                 break;
             }
             if (i != 0) {
                 pw.print("\n");
             } // no new line at top
-            pw.print(snakes[i].getNODES());
+            pw.print(finalSnakes[i].getNODES());
 
-            Node n = snakes[i].getHead();
+            Node n = finalSnakes[i].getHead();
             do {
                 pw.print("\n" + IJ.d2s(n.getX(), 6));
                 pw.print("\n" + IJ.d2s(n.getY(), 6));
@@ -2949,16 +2992,16 @@ class SnakeHandler {
         OLD = new File(BOAp.outFile.getParent(), BOAp.fileName + ".dat_tn");
         pw = new PrintWriter(new FileWriter(OLD), true); // auto flush
 
-        for (int i = 0; i < snakes.length; i++) {
-            if (snakes[i] == null) {
+        for (int i = 0; i < finalSnakes.length; i++) {
+            if (finalSnakes[i] == null) {
                 break;
             }
             if (i != 0) {
                 pw.print("\n");
             } // no new line at top
-            pw.print(snakes[i].getNODES());
+            pw.print(finalSnakes[i].getNODES());
 
-            Node n = snakes[i].getHead();
+            Node n = finalSnakes[i].getHead();
             do {
                 pw.print("\n" + IJ.d2s(n.getX(), 6));
                 pw.print("\n" + IJ.d2s(n.getY(), 6));
@@ -2996,19 +3039,23 @@ class SnakeHandler {
         return liveSnake;
     }
 
+    public Snake getSegSnake(int f) {
+        return segSnakes[f - startFrame];
+    }
+
     public Snake getStoredSnake(int f) {
         if (f - startFrame < 0) {
             BOA_.log("Tried to access negative frame store\n\tframe:" + f + "\n\tsnakeID:" + ID);
             return null;
         }
         // BOA_.log("Fetch stored snake " + ID + " frame " + f);
-        return snakes[f - startFrame];
+        return finalSnakes[f - startFrame];
     }
 
     boolean isStoredAt(int f) {
         if (f - startFrame < 0) {
             return false;
-        } else if (snakes[f - startFrame] == null) {
+        } else if (finalSnakes[f - startFrame] == null) {
             return false;
         } else {
             return true;
@@ -3055,8 +3102,8 @@ class SnakeHandler {
                 prevn.setNext(head);
                 head.setPrev(prevn);
 
-                snakes[s] = new Snake(head, N + 1, ID); // dont forget the head
-                                                        // node
+                finalSnakes[s] = new Snake(head, N + 1, ID); // dont forget the head
+                // node
                 s++;
             } // end while
         } catch (IOException e) {
@@ -3099,7 +3146,7 @@ class SnakeHandler {
             BOA_.log(
                     "Tried to delete negative frame store\n\tframe:" + frame + "\n\tsnakeID:" + ID);
         } else {
-            snakes[frame - startFrame] = null;
+            finalSnakes[frame - startFrame] = null;
         }
     }
 
@@ -3115,7 +3162,7 @@ class SnakeHandler {
             BOA_.log("Tried to store at negative frame\n\tframe:" + frame + "\n\tsnakeID:" + ID);
         } else {
             // BOA_.log("Storing snake " + ID + " frame " + frame);
-            snakes[frame - startFrame] = s;
+            finalSnakes[frame - startFrame] = s;
         }
     }
 
