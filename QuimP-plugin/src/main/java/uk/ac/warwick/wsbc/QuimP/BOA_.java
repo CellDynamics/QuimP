@@ -1879,17 +1879,25 @@ class ImageGroup {
 
     public void updateOverlay(int frame) {
         SnakeHandler sH;
-        Snake snake;
+        Snake snake, back;
         int x, y;
         TextRoi text;
         overlay = new Overlay();
-
         for (int i = 0; i < nest.size(); i++) {
             sH = nest.getHandler(i);
             if (sH.isStoredAt(frame)) { // is there a snake a;t f?
+                // plot segmented snake
+                back = sH.getBackupSnake(frame);
+                // Roi r = snake.asRoi();
+                Roi r = back.asFloatRoi();
+                r.setStrokeColor(Color.RED);
+                overlay.add(r);
+
+                // plot segmented and filtered snake
                 snake = sH.getStoredSnake(frame);
                 // Roi r = snake.asRoi();
-                Roi r = snake.asFloatRoi();
+                r = snake.asFloatRoi();
+                r.setStrokeColor(Color.YELLOW);
                 overlay.add(r);
                 x = (int) Math.round(snake.getHead().getX()) - 15;
                 y = (int) Math.round(snake.getHead().getY()) - 15;
