@@ -514,11 +514,13 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
         Panel jp1 = new Panel(); // subpanel for two text fields
         jp1.setLayout(gc);
 
+        // help is supported by QBuildWindow but here we moved it on different than default position
         JTextArea helpArea = new JTextArea(); // default size of text area
         JScrollPane helpPanel = new JScrollPane(helpArea);
         helpArea.setEditable(false);
-        helpArea.setText("About plugin\nPlugin window does not update when new cell"
-                + " is selected. Please click APPLY to update");
+        helpArea.setText("About plugin\n"
+                + "Click Apply to update main view. Preview is showing only last selected"
+                + " obejct and it is updated on any change of plugin parameters");
         helpArea.setLineWrap(true); // with wrapping
 
         logArea = new JTextArea(); // default size of text area

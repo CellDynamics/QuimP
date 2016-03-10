@@ -44,7 +44,7 @@ public class MeanSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFil
      */
     public MeanSnakeFilter_() {
         LOGGER.trace("Entering constructor");
-        this.window = 7; // default value
+        this.window = 3; // default value
         LOGGER.debug("Set default parameter: window=" + window);
         // create UI using QWindowBuilder
         uiDefinition = new ParamList(); // will hold ui definitions
@@ -52,7 +52,7 @@ public class MeanSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFil
         // exported/imported by set/getPluginConfig
         uiDefinition.put("name", "MeanFilter"); // name of win
         uiDefinition.put("window", "spinner, 1, 21, 2," + Integer.toString(window));
-        uiDefinition.put("help", "Window shoud be uneven");
+        uiDefinition.put("help", "Window must be uneven. Set 1 to switch filter off.");
         buildWindow(uiDefinition); // construct ui (not shown yet)
     }
 
@@ -68,6 +68,8 @@ public class MeanSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFil
     @Override
     public void attachData(List<Point2d> data) {
         LOGGER.trace("Entering attachData");
+        if (data == null)
+            return;
         xyData = new QuimpDataConverter(data); // helper for converting from List<Vector2d> to X[],
                                                // Y[]
     }
