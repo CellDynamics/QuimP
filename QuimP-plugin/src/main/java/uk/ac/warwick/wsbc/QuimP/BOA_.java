@@ -2965,7 +2965,7 @@ class SnakeHandler {
     public Snake getBackupSnake(int f) {
         LOGGER.debug("Asked for backup snake at frame " + f + " ID " + ID);
         if (f - startFrame < 0) {
-            LOGGER.debug("Tried to access negative frame store");
+            LOGGER.warn("Tried to access negative frame store");
             return null;
         }
         return segSnakes[f - startFrame];
@@ -3095,7 +3095,6 @@ class SnakeHandler {
     }
 
     int getStartframe() {
-        LOGGER.debug("Snake of ID " + ID + " lives from frame " + startFrame);
         return startFrame;
     }
 
