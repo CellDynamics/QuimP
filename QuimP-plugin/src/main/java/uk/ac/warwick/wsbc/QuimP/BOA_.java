@@ -2784,31 +2784,7 @@ class SnakeHandler {
         // BOA_.log("Store snake " + ID + " at frame " + frame);
         finalSnakes[frame - startFrame] = null; // delete at current frame
 
-        Node head = new Node(0); // dummy head node
-        head.setHead(true);
-
-        Node prev = head;
-        Node nn;
-        Node sn = liveSnake.getHead();
-        do {
-            nn = new Node(sn.getTrackNum());
-            nn.setX(sn.getX());
-            nn.setY(sn.getY());
-
-            nn.setPrev(prev);
-            prev.setNext(nn);
-
-            prev = nn;
-            sn = sn.getNext();
-        } while (!sn.isHead());
-        nn.setNext(head); // link round tail
-        head.setPrev(nn);
-
-        finalSnakes[frame - startFrame] = new Snake(head, liveSnake.getNODES() + 1, ID); // +1
-                                                                                         // dummy
-                                                                                         // head
-        finalSnakes[frame - startFrame].calcCentroid();
-
+        finalSnakes[frame - startFrame] = new Snake(liveSnake, ID);
     }
 
     /**
@@ -2827,30 +2803,7 @@ class SnakeHandler {
         // BOA_.log("Store snake " + ID + " at frame " + frame);
         segSnakes[frame - startFrame] = null; // delete at current frame
 
-        Node head = new Node(0); // dummy head node
-        head.setHead(true);
-
-        Node prev = head;
-        Node nn;
-        Node sn = liveSnake.getHead();
-        do {
-            nn = new Node(sn.getTrackNum());
-            nn.setX(sn.getX());
-            nn.setY(sn.getY());
-
-            nn.setPrev(prev);
-            prev.setNext(nn);
-
-            prev = nn;
-            sn = sn.getNext();
-        } while (!sn.isHead());
-        nn.setNext(head); // link round tail
-        head.setPrev(nn);
-
-        segSnakes[frame - startFrame] = new Snake(head, liveSnake.getNODES() + 1, ID); // +1
-        // dummy
-        // head
-        segSnakes[frame - startFrame].calcCentroid();
+        segSnakes[frame - startFrame] = new Snake(liveSnake, ID);
     }
 
     /**
@@ -2864,30 +2817,7 @@ class SnakeHandler {
         // BOA_.log("Store snake " + ID + " at frame " + frame);
         finalSnakes[frame - startFrame] = null; // delete at current frame
 
-        Node head = new Node(0); // dummy head node
-        head.setHead(true);
-
-        Node prev = head;
-        Node nn;
-        Node sn = snake.getHead();
-        do {
-            nn = new Node(sn.getTrackNum());
-            nn.setX(sn.getX());
-            nn.setY(sn.getY());
-
-            nn.setPrev(prev);
-            prev.setNext(nn);
-
-            prev = nn;
-            sn = sn.getNext();
-        } while (!sn.isHead());
-        nn.setNext(head); // link round tail
-        head.setPrev(nn);
-
-        finalSnakes[frame - startFrame] = new Snake(head, snake.getNODES() + 1, ID); // +1
-        // dummy
-        // head
-        finalSnakes[frame - startFrame].calcCentroid();
+        finalSnakes[frame - startFrame] = new Snake(snake, ID);
 
     }
 
@@ -3282,6 +3212,7 @@ class Snake {
         } while (!sn.isHead());
         nn.setNext(head); // link round tail
         head.setPrev(nn);
+
         snakeID = id;
         NODES = snake.getNODES() + 1;
         FROZEN = NODES;
@@ -3293,6 +3224,25 @@ class Snake {
         this.updateNormales();
         alive = snake.alive;
         startingNnodes = snake.startingNnodes;
+
+        /*       from initializearraylist
+        head = new Node(0);
+        NODES = 1;
+        FROZEN = 0;
+        head.setPrev(head);
+        head.setNext(head);
+        head.setHead(true);
+
+        Node node;
+        for (Point2d el : p) {
+            node = new Node(el.getX(), el.getY(), nextTrackNumber++);
+            addNode(node);
+        }
+
+        removeNode(head);
+        this.makeAntiClockwise();
+        updateNormales();
+        */
     }
 
     /**
