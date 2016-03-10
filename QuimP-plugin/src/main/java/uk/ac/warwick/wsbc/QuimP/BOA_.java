@@ -407,7 +407,7 @@ public class BOA_ implements PlugIn {
                     continue;
                 // but if one is on frame f+n and strtFrame is e.g. 1 it may happen that there is
                 // no continuity of this snake between frames. In this case getBackupSnake
-                // returns null. In general QuimP assumes that is there is cell on frame f, it
+                // returns null. In general QuimP assumes that if there is a cell on frame f, it
                 // will exist on all consecutive frames.
                 Snake snake = sH.getBackupSnake(frame); // if exist get its backup copy (segm)
                 if (snake == null || !snake.alive) // if not alive
@@ -3231,13 +3231,12 @@ class Snake {
         FROZEN = NODES;
         nextTrackNumber = NODES + 1;
         centroid = new ExtendedVector2d(0d, 0d);
-        this.calcCentroid();
         removeNode(head);
         this.makeAntiClockwise();
         this.updateNormales();
         alive = snake.alive;
         startingNnodes = snake.startingNnodes;
-
+        this.calcCentroid();
         /*       from initializearraylist
         head = new Node(0);
         NODES = 1;

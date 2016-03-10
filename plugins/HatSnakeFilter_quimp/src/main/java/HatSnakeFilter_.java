@@ -233,22 +233,22 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
 
         double tmpCirc;
         for (int r = 0; r < points.size(); r++) {
-            LOGGER.info("------- Iter: " + r + "-------");
-            LOGGER.info("points: " + points.toString());
+            LOGGER.trace("------- Iter: " + r + "-------");
+            LOGGER.trace("points: " + points.toString());
             // get all points except window. Window has constant position 0 - (window-1)
             List<Point2d> pointsnowindow = points.subList(window, points.size());
-            LOGGER.info("sub: " + pointsnowindow.toString());
+            LOGGER.trace("sub: " + pointsnowindow.toString());
             tmpCirc = getCircularity(pointsnowindow);
-            LOGGER.info("circ " + tmpCirc);
+            LOGGER.trace("circ " + tmpCirc);
             // calculate weighting for circularity
             List<Point2d> pointswindow = points.subList(0, window); // get points for window only
-            LOGGER.info("win: " + pointswindow.toString());
+            LOGGER.trace("win: " + pointswindow.toString());
             tmpCirc /= getWeighting(pointswindow); // calculate weighting for window content
-            LOGGER.info("Wcirc " + tmpCirc);
+            LOGGER.trace("Wcirc " + tmpCirc);
             circ.add(tmpCirc); // store weighted circularity for shape without window
             // check if points of window are convex according to shape without these points
             convex.add(bp.isanyPointInside(pointsnowindow, pointswindow)); // true if concave
-            LOGGER.info("con: " + convex.get(convex.size() - 1));
+            LOGGER.trace("con: " + convex.get(convex.size() - 1));
             // move window to next position
             Collections.rotate(points, -1); // rotates by -1 what means that on first n positions
                                             // of points there are different values simulate window
@@ -582,6 +582,7 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
         Object b = e.getSource();
         if (b == applyB) { // pressed apply, copy ui data to plugin
             recalculatePlugin(); // transfers data from ui to plugin and plot example on screen
+            qcontext.updateView();
         }
     }
 
@@ -615,7 +616,6 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
             logArea.append("#" + err + ": " + e1.getMessage() + '\n');
             err++;
         }
-        qcontext.updateView();
     }
 
     /**
