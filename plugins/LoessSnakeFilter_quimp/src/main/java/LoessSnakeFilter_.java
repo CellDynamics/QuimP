@@ -63,6 +63,8 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter {
     @Override
     public void attachData(List<Point2d> data) {
         LOGGER.trace("Entering attachData");
+        if (data == null)
+            return;
         xyData = new QuimpDataConverter(data);
     }
 
