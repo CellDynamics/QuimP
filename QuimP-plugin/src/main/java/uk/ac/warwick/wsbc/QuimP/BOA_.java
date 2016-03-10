@@ -3,6 +3,7 @@ package uk.ac.warwick.wsbc.QuimP;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Checkbox;
+import java.awt.CheckboxMenuItem;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
@@ -544,6 +545,7 @@ public class BOA_ implements PlugIn {
         private Button firstPluginGUI, secondPluginGUI, thirdPluginGUI;
 
         private MenuItem menuVersion; // item in menu
+        private CheckboxMenuItem cbMenuPlotProcessedSnakes;
         
         /**
          * Default constructor
@@ -583,18 +585,27 @@ public class BOA_ implements PlugIn {
          */
         final MenuBar buildMenu() {
             MenuBar menuBar; // main menu bar
-            Menu menuAbout; // menu in menubar
+            Menu menuAbout; // menu About in menubar
+            Menu menuConfig; // meny Config in menubar
 
             menuBar = new MenuBar();
 
+            menuConfig = new Menu("Preferences");
+
             menuAbout = new Menu("About");
-            menuAbout.getAccessibleContext()
-                    .setAccessibleDescription("The only menu in this program that has menu items");
+
+            // build main line
+            menuBar.add(menuConfig);
             menuBar.add(menuAbout);
 
+            // add entries
             menuVersion = new MenuItem("Version");
             menuVersion.addActionListener(this);
             menuAbout.add(menuVersion);
+
+            cbMenuPlotProcessedSnakes = new CheckboxMenuItem("Plot processed");
+            cbMenuPlotProcessedSnakes.addItemListener(this);
+            menuConfig.add(cbMenuPlotProcessedSnakes);
 
             return menuBar;
         }
@@ -1122,6 +1133,12 @@ public class BOA_ implements PlugIn {
                 } else {
                     imageGroup.unzoom(canvas);
                 }
+            }
+
+            if (source == cbMenuPlotProcessedSnakes) {
+                LOGGER.debug("got cbMenuPlotProcessedSnakes");
+                BOAp.isProcessedSnakePlotted = cbMenuPlotProcessedSnakes.getState();
+                recalculatePlugins();
             }
 
             if (run) {
@@ -1877,19 +1894,40 @@ class ImageGroup {
         return orgIp;
     }
 
+    /**
+     * Plots snakes on current frame.
+     * 
+     * Depending on configuration this method can plot:
+     * -# Snake after segmentation, without processing by plugins
+     * -# Snake after segmentation and after processing by all active plugins
+     * 
+     * @param frame Current frame
+     */
+    @SuppressWarnings("unused")
     public void updateOverlay(int frame) {
         SnakeHandler sH;
-        Snake snake;
+        Snake snake, back;
         int x, y;
         TextRoi text;
+        Roi r;
         overlay = new Overlay();
-
         for (int i = 0; i < nest.size(); i++) {
             sH = nest.getHandler(i);
             if (sH.isStoredAt(frame)) { // is there a snake a;t f?
+                // plot segmented snake
+                if (BOAp.isProcessedSnakePlotted == true) {
+                    back = sH.getBackupSnake(frame);
+                    // Roi r = snake.asRoi();
+                    r = back.asFloatRoi();
+                    r.setStrokeColor(Color.RED);
+                    overlay.add(r);
+                }
+
+                // plot segmented and filtered snake
                 snake = sH.getStoredSnake(frame);
                 // Roi r = snake.asRoi();
-                Roi r = snake.asFloatRoi();
+                r = snake.asFloatRoi();
+                r.setStrokeColor(Color.YELLOW);
                 overlay.add(r);
                 x = (int) Math.round(snake.getHead().getX()) - 15;
                 y = (int) Math.round(snake.getHead().getY()) - 15;
@@ -4743,7 +4781,12 @@ class BOAp {
     static boolean supressStateChangeBOArun = false;
     static int callCount; // use to test how many times a method is called
     static boolean SEGrunning; //!< is seg running
-
+    
+    /**
+     * Plot or not snakes after processing by plugins. If \c yes both snakes, after 
+     * segmentation and after filtering are plotted.
+     */
+    static boolean isProcessedSnakePlotted = false;
     /**
      * When any plugin fails this field defines how QuimP should behave. When
      * it is \c true QuimP breaks process of segmentation and do not store
