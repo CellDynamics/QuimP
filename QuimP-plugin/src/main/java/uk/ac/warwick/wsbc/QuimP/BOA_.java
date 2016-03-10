@@ -403,10 +403,16 @@ public class BOA_ implements PlugIn {
         try {
             for (int s = 0; s < nest.size(); s++) { // for each snake
                 sH = nest.getHandler(s);
-                Snake snake = sH.getSegSnake(frame);
+                if (frame < sH.getStartframe()) // if snake does not exist on current frame
+                    continue;
+                // but if one is on frame f+n and strtFrame is e.g. 1 it may happen that there is
+                // no continuity of this snake between frames. In this case getBackupSnake
+                // returns null. In general QuimP assumes that is there is cell on frame f, it
+                // will exist on all consecutive frames.
+                Snake snake = sH.getBackupSnake(frame); // if exist get its backup copy (segm)
+                if (snake == null || !snake.alive) // if not alive
+                    continue;
                 try {
-                    if (!snake.alive || frame < sH.getStartframe()) // if snake does exist on frame
-                        continue;
                     Snake out = iterateOverSnakePlugins(snake); // apply all plugins to snake
                     sH.storeThisSnake(out, frame); // set processed snake as final
                 } catch (QuimpPluginException qpe) {
@@ -2745,6 +2751,7 @@ class Nest {
  *
  */
 class SnakeHandler {
+    private static final Logger LOGGER = LogManager.getLogger(SnakeHandler.class.getName());
     private Roi roi; // inital ROI
     private int startFrame;
     private int endFrame;
@@ -2824,7 +2831,8 @@ class SnakeHandler {
      * @throws BoaException
      */
     public void backupLiveSnake(int frame) throws BoaException {
-        // BOA_.log("Store snake " + ID + " at frame " + frame);
+
+        LOGGER.debug("Stored live snake in frame " + frame + " ID " + ID);
         segSnakes[frame - startFrame] = null; // delete at current frame
 
         Node head = new Node(0); // dummy head node
@@ -3024,7 +3032,12 @@ class SnakeHandler {
         return liveSnake;
     }
 
-    public Snake getSegSnake(int f) {
+    public Snake getBackupSnake(int f) {
+        LOGGER.debug("Asked for backup snake at frame " + f + " ID " + ID);
+        if (f - startFrame < 0) {
+            LOGGER.debug("Tried to access negative frame store");
+            return null;
+        }
         return segSnakes[f - startFrame];
     }
 
@@ -3152,6 +3165,7 @@ class SnakeHandler {
     }
 
     int getStartframe() {
+        LOGGER.debug("Snake of ID " + ID + " lives from frame " + startFrame);
         return startFrame;
     }
 
@@ -3213,7 +3227,7 @@ class SnakeHandler {
  *
  */
 class Snake {
-
+    private static final Logger LOGGER = LogManager.getLogger(Snake.class.getName());
     public boolean alive; // snake is alive
     public int snakeID;
     private int nextTrackNumber = 1; // node ID's
