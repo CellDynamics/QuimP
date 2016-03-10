@@ -1391,7 +1391,7 @@ public class BOA_ implements PlugIn {
                             imageGroup.drawPath(snake, frame); // pre tightned snake on path
                             tightenSnake(snake);
                             imageGroup.drawPath(snake, frame); // post tightned snake on path
-                            sH.storeLiveasSegSnake(frame);
+                            sH.backupLiveSnake(frame);
                             Snake out = iterateOverSnakePlugins(snake);
                             sH.storeThisSnake(out, frame); // store resulting snake as final
 
@@ -1401,14 +1401,14 @@ public class BOA_ implements PlugIn {
                             LOGGER.error(qpe);
                             if (BOAp.stopOnPluginError) {// no store on error
                                 sH.storeLiveSnake(frame); // store segemented nonmodified
-                                sH.storeLiveasSegSnake(frame);
+                                sH.backupLiveSnake(frame);
                             }
                         } catch (BoaException be) {
                             imageGroup.drawPath(snake, frame); // failed
                                                                // position
                                                                // sH.deleteStoreAt(frame);
                             sH.storeLiveSnake(frame);
-                            sH.storeLiveasSegSnake(frame);
+                            sH.backupLiveSnake(frame);
                             nest.kill(sH);
                             snake.defreeze();
                             BOA_.log("Snake " + snake.snakeID + " died, frame " + frame);
@@ -1599,7 +1599,7 @@ public class BOA_ implements PlugIn {
             imageGroup.drawPath(snake, f); // pre tightned snake on path
             tightenSnake(snake);
             imageGroup.drawPath(snake, f); // post tightned snake on path
-            sH.storeLiveasSegSnake(f);
+            sH.backupLiveSnake(f);
 
             Snake out = iterateOverSnakePlugins(snake); // process segmented snake by plugins
             sH.storeThisSnake(out, f); // store processed snake as final
@@ -1619,7 +1619,7 @@ public class BOA_ implements PlugIn {
         try {
             if (isPluginError && BOAp.stopOnPluginError) {// no store on error?
                 sH.storeLiveSnake(f); // so store original livesnake after segmentation
-                sH.storeLiveasSegSnake(f);
+                sH.backupLiveSnake(f);
             }
         } catch (BoaException be) {
             BOA_.log("Could not store new snake");
@@ -2738,7 +2738,7 @@ class Nest {
 }
 
 /**
- * Store all the snakes computed for one cell across frames and is responsible
+ * Store all the snakes computed for one cell across frames and it is responsible
  * for writing them to file.
  * 
  * @author rtyson
@@ -2749,9 +2749,8 @@ class SnakeHandler {
     private int startFrame;
     private int endFrame;
     private Snake liveSnake;
-    private Snake[] finalSnakes; // series of snakes, result of cell segmentation and plugin
-                                 // processing
-    private Snake[] segSnakes; // series of snakes, result of cell segmentation
+    private Snake[] finalSnakes; //!< series of snakes, result of cell segm. and plugin processing
+    private Snake[] segSnakes; //!< series of snakes, result of cell segmentation only
     private int ID;
 
     /**
@@ -2771,12 +2770,12 @@ class SnakeHandler {
         finalSnakes = new Snake[BOAp.FRAMES - startFrame + 1]; // stored snakes
         segSnakes = new Snake[BOAp.FRAMES - startFrame + 1]; // stored snakes
         ID = id;
-        attachLiveSnake(r); // initialize liveSnake
-        storeLiveasSegSnake(frame);
+        liveSnake = new Snake(r, ID, false);
+        backupLiveSnake(frame);
     }
 
     /**
-     * Make copy of \c liveSnake into \c snakes array
+     * Make copy of \c liveSnake into \c final \c snakes array
      * 
      * @param frame Frame for which \c liveSnake will be copied to
      * @throws BoaException
@@ -2806,13 +2805,25 @@ class SnakeHandler {
         head.setPrev(nn);
 
         finalSnakes[frame - startFrame] = new Snake(head, liveSnake.getNODES() + 1, ID); // +1
-        // dummy
-        // head
+                                                                                         // dummy
+                                                                                         // head
         finalSnakes[frame - startFrame].calcCentroid();
 
     }
 
-    public void storeLiveasSegSnake(int frame) throws BoaException {
+    /**
+     * Stores \c liveSnake (currently processed) in \c segSnakes array. 
+     * 
+     * For one SnakeHandler there is only one \c liveSnake which is processed "in place" by
+     * segmentation methods. It is virtually moved from frame to frame and copied to final snakes
+     * after segmentation on current frame and processing by plugins. 
+     * It must be backed up for every frame to make possible restoring  original snakes when 
+     * active plugin has been deselected. 
+     *  
+     * @param frame current frame
+     * @throws BoaException
+     */
+    public void backupLiveSnake(int frame) throws BoaException {
         // BOA_.log("Store snake " + ID + " at frame " + frame);
         segSnakes[frame - startFrame] = null; // delete at current frame
 
@@ -2840,11 +2851,10 @@ class SnakeHandler {
         // dummy
         // head
         segSnakes[frame - startFrame].calcCentroid();
-
     }
 
     /**
-     * Makes copy of \c snake and store it to final snakes.
+     * Makes copy of \c snake and store it as final snake.
      * 
      * @param snake Snake to store
      * @param frame Frame for which \c liveSnake will be copied to
@@ -2879,31 +2889,6 @@ class SnakeHandler {
         // head
         finalSnakes[frame - startFrame].calcCentroid();
 
-    }
-
-    /**
-     * Create Snake and attach it to \c liveSnake (current one not stored yet)
-     * 
-     * Created snake has correct \c ID set in SnakeHandler constructor
-     * 
-     * @param data data to create Snake from
-     * @throws Exception
-     */
-    public void attachLiveSnake(final List<Point2d> data) throws Exception {
-        liveSnake = new Snake(data, ID);
-    }
-
-    /**
-     * @copybrief attachLiveSnake(final List<Point2d>)
-     * @copydetails attachLiveSnake(final List<Point2d>)
-     */
-    public void attachLiveSnake(final Roi data) throws Exception {
-        liveSnake = new Snake(data, ID, false);
-    }
-
-    public void updateLiveSnake() {
-        // TODO Possible updating only when new snake has the same Nodes but
-        // slightly shifted
     }
 
     public boolean writeSnakes() throws Exception {
@@ -3267,6 +3252,47 @@ class Snake {
         alive = true;
         startingNnodes = NODES / 100.; // as 1%. limit to X%
         // calcOrientation();
+    }
+
+    /**
+     * Copy constructor
+     * 
+     * @param s
+     * @param id
+     * @throws BoaException 
+     */
+    public Snake(final Snake snake, int id) throws BoaException {
+
+        head = new Node(0); // dummy head node
+        head.setHead(true);
+
+        Node prev = head;
+        Node nn;
+        Node sn = snake.getHead();
+        do {
+            nn = new Node(sn.getTrackNum());
+            nn.setX(sn.getX());
+            nn.setY(sn.getY());
+
+            nn.setPrev(prev);
+            prev.setNext(nn);
+
+            prev = nn;
+            sn = sn.getNext();
+        } while (!sn.isHead());
+        nn.setNext(head); // link round tail
+        head.setPrev(nn);
+        snakeID = id;
+        NODES = snake.getNODES() + 1;
+        FROZEN = NODES;
+        nextTrackNumber = NODES + 1;
+        centroid = new ExtendedVector2d(0d, 0d);
+        this.calcCentroid();
+        removeNode(head);
+        this.makeAntiClockwise();
+        this.updateNormales();
+        alive = snake.alive;
+        startingNnodes = snake.startingNnodes;
     }
 
     /**
