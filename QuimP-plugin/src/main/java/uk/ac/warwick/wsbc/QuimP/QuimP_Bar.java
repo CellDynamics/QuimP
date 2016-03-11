@@ -1,12 +1,24 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-import ij.*;
-import ij.plugin.*;
-import ij.macro.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.URL;
-import javax.swing.*;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JToolBar;
+
+import ij.IJ;
+import ij.Prefs;
+import ij.WindowManager;
+import ij.macro.MacroRunner;
+import ij.plugin.PlugIn;
 
 public class QuimP_Bar implements PlugIn, ActionListener {
     String name, title;
@@ -70,13 +82,18 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
     }
 
+    /**
+     * Build QuimP panel and run macros. MAcros are defined in plugins.conf file, where
+     * the name of the macro is related to class name to run.
+     */
     private void buildPanel() {
         toolBar = new JToolBar();
 
         button = makeNavigationButton("x.jpg", "open()", "Open a file", "OPEN IMAGE");
         toolBar.add(button);
 
-        button = makeNavigationButton("x.jpg", "run(\"ROI Manager...\");", "Open the ROI manager", "ROI");
+        button = makeNavigationButton("x.jpg", "run(\"ROI Manager...\");", "Open the ROI manager",
+                "ROI");
         toolBar.add(button);
 
         toolBar.addSeparator();
@@ -88,7 +105,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         // "Binary Segmentation", "Binary Seg");
         // toolBar.add(button);
 
-        button = makeNavigationButton("ecmm.jpg", "run(\"ECMM Mapping\")", "Cell membrane tracking", "ECMM");
+        button = makeNavigationButton("ecmm.jpg", "run(\"ECMM Mapping\")", "Cell membrane tracking",
+                "ECMM");
         toolBar.add(button);
 
         button = makeNavigationButton("ana.jpg", "run(\"ANA\")", "Measure fluorescence", "ANA");
@@ -96,14 +114,20 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
         toolBar.addSeparator();
 
-        button = makeNavigationButton("qanalysis.jpg", "run(\"QuimP Analysis\")", "Q Analysis of data", "Q Analysis");
+        button = makeNavigationButton("qanalysis.jpg", "run(\"QuimP Analysis\")",
+                "Q Analysis of data", "Q Analysis");
+        toolBar.add(button);
+
+        button = makeNavigationButton("qanalysis.jpg", "run(\"DIC\")",
+                "Reconstruction of DIC images by Line Integral Method", "DIC LID");
         toolBar.add(button);
 
         toolBar.setFloatable(false);
         frame.getContentPane().add(toolBar);
     }
 
-    protected JButton makeNavigationButton(String imageName, String actionCommand, String toolTipText, String altText) {
+    protected JButton makeNavigationButton(String imageName, String actionCommand,
+            String toolTipText, String altText) {
 
         String imgLocation = "icons/" + imageName;
         URL imageURL = QuimP_Bar.class.getResource(imgLocation);
