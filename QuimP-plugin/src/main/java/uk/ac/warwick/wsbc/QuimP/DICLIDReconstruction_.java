@@ -1,3 +1,5 @@
+package uk.ac.warwick.wsbc.QuimP;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,10 +21,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.dic.LidReconstructor;
  * @date 14 Dec 2015
  * @see DICReconstruction for algorithm details *
  */
-public class DIC_LID_Reconstruction implements PlugInFilter {
+public class DICLIDReconstruction_ implements PlugInFilter {
 
     private static final Logger logger =
-            LogManager.getLogger(DIC_LID_Reconstruction.class.getName());
+            LogManager.getLogger(DICLIDReconstruction_.class.getName());
     private LidReconstructor dic;
     private ImagePlus imp;
     private double angle, decay;
