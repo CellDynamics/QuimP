@@ -80,7 +80,7 @@ participant PluginFactory
 participant IQuimpPlugin as Plugin
 
 note over GUIBuilder : Window builder
-note over User : Cooperate with\nGUI by\nactionPerformed()
+note over User : Cooperate with\nGUI by\nactionPerformed() and\n itemStateChanged()
 note over Plugin : Any plugin referenced\nby instance
 note over QuimP : Main class instance
 
@@ -192,11 +192,16 @@ Conditions:
 
 @startuml
 start
+:get ""liveSnake"";
+:backup ""liveSnake"";
+note left
+""liveSnake"" from current ""SnakeHandler""
+is stored in ""segSnakes"" for current frame
+end note
 partition iterateOverSnakePlugins {
+:c = snake;
 if (is any plugin selected) then (true)
 note left: There is any instance in BOAp.sPluginList\ncreated on **Select Plugin**
-:get ""liveSnake"";
-:set **c**=""liveSnake"";
 while (for every BOAp.sPluginList)
 if (is **not** null) then (true)
 :attach data;
@@ -206,12 +211,11 @@ endif
 endwhile
 endif
 }
-:attach **c** to liveSnake;
+:return **c**;
+:storeThisSnake();
 note left
-Attaching is done locally in e.g. runBoa
-or addCell. This method is also used for
-updating outlines after changing plugin 
-configuration. 
+Returned and processed snake is then 
+stored in finalSnakes[] array
 See **Update View**
 end note
 stop
@@ -221,7 +225,7 @@ stop
 
 Related classes and methods:
 
-1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(final ActionEvent)
+1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent)
 2. uk.ac.warwick.wsbc.QuimP.BOA_.instanceSnakePlugin(final String, int, final List<Point2d>)
   1. uk.ac.warwick.wsbc.QuimP.PluginFactory.getInstance(final String)
   2. uk.ac.warwick.wsbc.QuimP.BOAp.sPluginList
@@ -343,7 +347,7 @@ end legend
 ### Update View {#upv}
 
 This use case is activated when any changes in plugin configuration
-is made during its activity. The configuration may be related to internal state of plugin as well as to plugin setup in QuimP. All these actions may require redrawing of current screen and updating current outlines.
+is made during its activity. The configuration may be related to internal state of plugin as well as to plugin setup in QuimP. All these actions may require redrawing of current screen and updating current outlines. For this purpose the original segmented snakes are store as well. See [technical notes](@ref td)
 
 Conditions:
 
@@ -359,19 +363,20 @@ Related classes and methods:
 @startuml
 start
 if (are any snakes) then (true)
-repeat
-    :getLivesSnake;
-    :iterateOverSnakePlugins(snake);
-    note left: see **Run Plugin**
-    :storeThisSnake(snake);
-    note left: Store result as **final** snake
-repeat while (more snakes?) is (true)
+while (SnakeHandlers available?) is (yes)
+    if (sH starts from current frame\nor earlier) then (yes)
+    :getBacupedSnake for this frame;
+    if (it is valid) then (yes)
+        :iterateOverSnakePlugins;
+        note left: see **Run Plugin**
+        :store result as **final**;
+    endif
+    endif
+end while
 endif
 stop
 legend
-Depending on ""BOAp.stopOnPluginError"" state on any error
-called from plugin, **final** snake can be ""liveSnake"" 
-(after segmentation) or nothing.
+On plugin exception, ""liveSnake"" is stored as **final**
 end legend
 @enduml
 
@@ -394,18 +399,17 @@ three important fields:
     private Snake[] segSnakes; //!< series of snakes, result of cell segmentation only
 ```
 The `liveSnake` is initialized during object creation and it references *Snake* that is currently 
-processed. There is only one `liveSnake` in every `SnakeHandler` that may contain many snakes for
-successive frames starting from `startFrame`. The `SnakeHandler` is created when cell is selected
-and in assumption should contain all snakes resulting from segmentation of this cell in time. On the beginning
+processed. There is only one `liveSnake` in every `SnakeHandler` but `SnakeHandler` may contain many *snakes* for
+successive frames starting from `startFrame`. The `SnakeHandler` is created when cell is selected ([addCell](uk.ac.warwick.wsbc.QuimP.BOA_.addCell(final Roi, int)))
+and in assumption it should contain all snakes resulting from segmentation of this cell in time. On the beginning
 the `liveSnake` simply contains segmentation result for `startFrame`, then it is modified **in place**
-by segmentation methods for every next frame and stored in `finalSnakes` and `segSnakes`. These two
-arrays are filled in the same manner. The `finalSnakes` contains snakes after processing by plugin stack
-whereas the `segSnakes` contains pure snakes after segmentation. The `segSnakes` are snapshots of
+by segmentation methods (mainly during [runBoa](uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int)) execution) for every next frame and stored in `finalSnakes` and `segSnakes`. These two
+arrays are filled in the same manner. The `finalSnakes` contains *snakes* after processing by plugin stack
+whereas the `segSnakes` contains pure *snakes* after segmentation. The `segSnakes` are snapshots of
 `liveSnake` taken during segmentation process for all frames. This array is necessary for restoring 
 initial state when all plugins are deselected. 
 
-> ? The `liveSnake` is **not modified** by plugins thus segmentation starts for frame `f` from clean 
-snake from frame `f-1`.  
+> The `liveSnake` is **not modified** by plugins  
 
 
 The `finalSnakes` array holds *snakes* (segmented cells, outlines) that are considered as ready and 
@@ -425,5 +429,6 @@ by `JSpinners` in QuimP UI related to plugins)
 4. uk.ac.warwick.wsbc.QuimP.SnakeHandler.backupLiveSnake(int) - this method makes copy of actual `liveSnake`
 for frame *f* (`liveSnake` is modified for every next segmented frame). It must be called for every frame 
 during segmentation before applying plugins. 
-.
-Plugins can call errors during execution. In this case the `BOAp.stopOnPluginError` decides what data will be stored in `snakes`. They can be original segmented only `liveSnake` or nothing. 
+
+Plugins can call errors during execution. In this case the `liveSnake` is taken as final (last state 
+during segmentation) 

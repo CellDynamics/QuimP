@@ -420,8 +420,7 @@ public class BOA_ implements PlugIn {
                     // must be rewritten with whole runBOA #65 #67
                     BOA_.log("Error in filter module: " + qpe.getMessage());
                     LOGGER.error(qpe);
-                    if (BOAp.stopOnPluginError) // no store on error
-                        sH.storeLiveSnake(frame); // so store only segmented snake as final
+                    sH.storeLiveSnake(frame); // so store only segmented snake as final
                 }
             }
         } catch (Exception e) {
@@ -1418,10 +1417,8 @@ public class BOA_ implements PlugIn {
                             // must be rewritten with whole runBOA #65 #67
                             BOA_.log("Error in filter module: " + qpe.getMessage());
                             LOGGER.error(qpe);
-                            if (BOAp.stopOnPluginError) {// no store on error
-                                sH.storeLiveSnake(frame); // store segemented nonmodified
-                                sH.backupLiveSnake(frame);
-                            }
+                            sH.storeLiveSnake(frame); // store segmented nonmodified
+
                         } catch (BoaException be) {
                             imageGroup.drawPath(snake, frame); // failed
                                                                // position
@@ -1636,10 +1633,8 @@ public class BOA_ implements PlugIn {
         // if any problem with plugin or other, store snake without modification
         // because snake.asList() returns copy
         try {
-            if (isPluginError && BOAp.stopOnPluginError) {// no store on error?
+            if (isPluginError)
                 sH.storeLiveSnake(f); // so store original livesnake after segmentation
-                sH.backupLiveSnake(f);
-            }
         } catch (BoaException be) {
             BOA_.log("Could not store new snake");
             LOGGER.error(be);
@@ -4786,7 +4781,10 @@ class BOAp {
     /**
      * When any plugin fails this field defines how QuimP should behave. When
      * it is \c true QuimP breaks process of segmentation and do not store
-     * snake in SnakeHandler
+     * filtered snake in SnakeHandler
+     * @warning Currently not used
+     * @todo TODO Implement this feature
+     * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/81
      */
     static boolean stopOnPluginError = true;
 
