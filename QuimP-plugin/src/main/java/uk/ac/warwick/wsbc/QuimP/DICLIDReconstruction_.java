@@ -19,18 +19,18 @@ import uk.ac.warwick.wsbc.QuimP.plugin.dic.LidReconstructor;
  * 
  * @author p.baniukiewicz
  * @date 14 Dec 2015
- * @see DICReconstruction for algorithm details *
+ * @see LidReconstructor for algorithm details *
  */
 public class DICLIDReconstruction_ implements PlugInFilter {
 
-    private static final Logger logger =
+    private static final Logger LOGGER =
             LogManager.getLogger(DICLIDReconstruction_.class.getName());
     private LidReconstructor dic;
     private ImagePlus imp;
     private double angle, decay;
 
     /**
-     * This method gets called by ImageJ / Fiji to determine whether the current
+     * This method gets called by ImageJ/Fiji to determine whether the current
      * image is of an appropriate type.
      * 
      * @param arg can be specified in plugins.config
@@ -61,19 +61,23 @@ public class DICLIDReconstruction_ implements PlugInFilter {
             dic = new LidReconstructor(imp, decay, angle);
             if (imp.getNSlices() == 1) {// if there is no stack we can avoid additional rotation
                                         // here (see DICReconstruction documentation)
+                IJ.showProgress(0.0);
                 ret = dic.reconstructionDicLid();
                 ip.setPixels(ret.getPixels()); // DICReconstruction works with duplicates. Copy
                                                // resulting array to current image
+                IJ.showProgress(1.0);
             } else { // we have stack. Process slice by slice
                 ImageStack stack = imp.getStack();
                 for (int s = 1; s <= stack.getSize(); s++) {
+                    IJ.showProgress(s / (double) stack.getSize());
                     dic.setIp(stack.getProcessor(s));
                     ret = dic.reconstructionDicLid();
                     stack.setPixels(ret.getPixels(), s);
                 }
             }
         } catch (DicException e) { // exception can be thrown if input image is 16-bit and saturated
-            logger.error(e);
+            IJ.log(e.getMessage());
+            LOGGER.error(e);
         } finally {
             imp.updateAndDraw();
         }
@@ -102,7 +106,7 @@ public class DICLIDReconstruction_ implements PlugInFilter {
         decay = gd.getNextNumber();
         if (gd.invalidNumber()) { // check if numbers in fields were correct
             IJ.error("Not valid number");
-            logger.error("One of the numbers in dialog box is not valid");
+            LOGGER.error("One of the numbers in dialog box is not valid");
             return false;
         }
         return true;
