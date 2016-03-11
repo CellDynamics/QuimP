@@ -184,7 +184,7 @@ public class MeanSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFil
 
     @Override
     public String getVersion() {
-        return null;
+        return "16.03.31";
     }
 
     @Override

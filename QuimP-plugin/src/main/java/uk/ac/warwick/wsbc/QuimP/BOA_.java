@@ -318,7 +318,7 @@ public class BOA_ implements PlugIn {
         // fill with information
         info.append(authors + '\n');
         info.append("QuimP version: " + quimpInfo[0] + '\n');
-        info.append("Released: " + quimpInfo[1] + '\n');
+        info.append(quimpInfo[1] + '\n');
         // get list of found plugins
         info.append("List of found plugins:\n");
         Map<String, PluginProperties> mp = pluginFactory.getRegisterdPlugins();
@@ -1027,7 +1027,6 @@ public class BOA_ implements PlugIn {
                 quit();
             }
             // process plugin GUI buttons
-            // TODO This should update current screen
             if (b == firstPluginGUI) {
                 LOGGER.debug("First plugin GUI, state of BOAp is " + BOAp.sPluginList.get(0));
                 if (BOAp.sPluginList.get(0) != null) // call 0 instance

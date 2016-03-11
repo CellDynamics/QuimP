@@ -170,7 +170,7 @@ public class LoessSnakeFilter_ implements IQuimpPoint2dFilter {
 
     @Override
     public String getVersion() {
-        return null;
+        return "16.03.31";
     }
 }
 
