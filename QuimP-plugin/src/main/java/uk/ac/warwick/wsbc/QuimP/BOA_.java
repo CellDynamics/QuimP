@@ -1471,7 +1471,7 @@ public class BOA_ implements PlugIn {
 
     /**
      * Process \c Snake by all active plugins. Processed \c Snake is returned as new Snake with
-     * the same ID. Input snake is not modified
+     * the same ID. Input snake is not modified. For empty plugin list it just return input snake
      *
      * @param snake snake to be processed
      * @return Processed snake or original input one when there is no plugin selected
@@ -3238,8 +3238,8 @@ class Snake {
     /**
      * Copy constructor
      * 
-     * @param s
-     * @param id
+     * @param snake Snake to be duplicated
+     * @param id New id
      * @throws BoaException 
      */
     public Snake(final Snake snake, int id) throws BoaException {

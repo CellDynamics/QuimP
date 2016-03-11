@@ -204,7 +204,7 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
         LOGGER.debug(String.format("Run plugin with params: window %d, pnum %d, alev %f", window,
                 pnum, alev));
 
-        BasicPolygons bp = new BasicPolygons(); // provide geometry processing
+        BasicPolygons bp = new BasicPolygons(); // provides geometry processing
         List<Point2d> out = new ArrayList<Point2d>(); // output table for plotting temporary
                                                       // results of filter
         // check input conditions
@@ -519,8 +519,8 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
         JScrollPane helpPanel = new JScrollPane(helpArea);
         helpArea.setEditable(false);
         helpArea.setText("About plugin\n"
-                + "Click Apply to update main view. Preview is showing only last selected"
-                + " obejct and it is updated on any change of plugin parameters");
+                + "Click Apply to update main view. Preview shows only last selected"
+                + " object and update it on any change of plugin parameters");
         helpArea.setLineWrap(true); // with wrapping
 
         logArea = new JTextArea(); // default size of text area

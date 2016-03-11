@@ -385,31 +385,45 @@ __This feature is not developed yet.__
 
 # Technical details {#td}
 
-The main storage for snakes is uk.ac.warwick.wsbc.QuimP.SnakeHandler class which basically contains
-two important fields:
+The main storage for snakes is uk.ac.warwick.wsbc.QuimP.SnakeHandler class which contains
+three important fields:
 
 ```java
     private Snake liveSnake;
-    private Snake[] snakes; // series of snakes
+    private Snake[] finalSnakes; //!< series of snakes, result of cell segm. and plugin processing
+    private Snake[] segSnakes; //!< series of snakes, result of cell segmentation only
 ```
 The `liveSnake` is initialized during object creation and it references *Snake* that is currently 
-processed. Usually it means that the *snake* has been already created and can be segmented. 
-Initially this *snake* is created from e.g. *Roi* as rough approximation of object's shape and then
-it is processed by segmentation algorithm.
+processed. There is only one `liveSnake` in every `SnakeHandler` that may contain many snakes for
+successive frames starting from `startFrame`. The `SnakeHandler` is created when cell is selected
+and in assumption should contain all snakes resulting from segmentation of this cell in time. On the beginning
+the `liveSnake` simply contains segmentation result for `startFrame`, then it is modified **in place**
+by segmentation methods for every next frame and stored in `finalSnakes` and `segSnakes`. These two
+arrays are filled in the same manner. The `finalSnakes` contains snakes after processing by plugin stack
+whereas the `segSnakes` contains pure snakes after segmentation. The `segSnakes` are snapshots of
+`liveSnake` taken during segmentation process for all frames. This array is necessary for restoring 
+initial state when all plugins are deselected. 
 
-The `snakes` array holds *snakes* (segmented cells, outlines) that are considered as ready and 
+> ? The `liveSnake` is **not modified** by plugins thus segmentation starts for frame `f` from clean 
+snake from frame `f-1`.  
+
+
+The `finalSnakes` array holds *snakes* (segmented cells, outlines) that are considered as ready and 
 stable. Content of this array is displayed on screen and saved on disk.
 
-The plugins work on both these data. They get *snake* stored in `liveSnake` and return modified 
-new *snake* that is copied to final `snakes`. Assuming that `liveSnake` always contains only 
-segmented (or raw) contours, plugins can process these data and store results in final array. The
-most important methods that are responsible for running plugins and setting/getting data are: 
+The most important methods that are responsible for running plugins and setting/getting data are: 
 
 1. uk.ac.warwick.wsbc.QuimP.BOA_.addCell(final Roi, int) - run segmentation for freshly selected cell
 2. uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) - run segmentation for all frames and all SnakeHandlers
-3. uk.ac.warwick.wsbc.QuimP.BOA_.recalculatePlugins() - process all outlines (`liveSnake`) by
-active plugins and copy results to `snakes`. This method does not run segmentation again so it 
-is used for updating screen after any plugin action (inside plugin by interface IPluginSynchro or
-by JSpinners in QuimP UI related to plugins)
-
+3. uk.ac.warwick.wsbc.QuimP.BOA_.recalculatePlugins() - process all outlines from (`segSnakes`) by
+active plugins and copy results to `finalSnakes`. This method does not run segmentation again so it 
+is used for updating screen after any plugin action (inside plugin by interface `IPluginSynchro` or
+by `JSpinners` in QuimP UI related to plugins)
+ 1. uk.ac.warwick.wsbc.QuimP.SnakeHandler.getBackupSnake(int)
+ 2. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(Snake)
+ 3. uk.ac.warwick.wsbc.QuimP.SnakeHandler.storeThisSnake(Snake, int)
+4. uk.ac.warwick.wsbc.QuimP.SnakeHandler.backupLiveSnake(int) - this method makes copy of actual `liveSnake`
+for frame *f* (`liveSnake` is modified for every next segmented frame). It must be called for every frame 
+during segmentation before applying plugins. 
+.
 Plugins can call errors during execution. In this case the `BOAp.stopOnPluginError` decides what data will be stored in `snakes`. They can be original segmented only `liveSnake` or nothing. 

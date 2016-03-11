@@ -29,12 +29,13 @@ public interface IQuimpPoint2dFilter extends IQuimpPlugin {
     List<Point2d> runPlugin() throws QuimpPluginException;
 
     /**
-     * Attach data to process to plugin
+     * Attach processed data to plugin
      * 
-     * This method allows to process data by plugin without
-     * running it what is important e.g. for visualizing. 
+     * This method allows to process data by plugin without running it what is important e.g. 
+     * for visualizing. 
+     * 
      * @param data
-     * @warning \c data may be passed as null from QuimP. Plugin must deal with
+     * @warning \c data may be passed as \c null from QuimP. Plugin must deal with
      * this
      */
     void attachData(final List<Point2d> data);
