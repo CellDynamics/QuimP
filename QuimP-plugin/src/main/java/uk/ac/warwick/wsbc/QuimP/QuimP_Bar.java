@@ -118,7 +118,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
                 "Q Analysis of data", "Q Analysis");
         toolBar.add(button);
 
-        button = makeNavigationButton("qanalysis.jpg", "run(\"DIC\")",
+        button = makeNavigationButton("diclid.jpg", "run(\"DIC\")",
                 "Reconstruction of DIC images by Line Integral Method", "DIC LID");
         toolBar.add(button);
 
