@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Checkbox;
 import java.awt.CheckboxMenuItem;
+import java.awt.Choice;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
@@ -42,9 +43,7 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
+import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -117,6 +116,7 @@ public class BOA_ implements PlugIn {
     private String[] quimpInfo; // keeps data from getQuimPBuildInfo() to prevent using this method
                                 // too often. These information are used for About dialog and they
                                 // re presented on window title bar
+    private static int logCount = 1; // adds counter to logged messages
 
     /**
      * Temporary method for test
@@ -256,10 +256,10 @@ public class BOA_ implements PlugIn {
         window.setTitle(window.getTitle() + " :QuimP: " + quimpInfo[0]);
         // warn about scale
         if (BOAp.scaleAdjusted) {
-            BOA_.log("WARNING Scale was zero...\n\tset to 1");
+            BOA_.log("WARNING Scale was zero - set to 1");
         }
         if (BOAp.fIAdjusted) {
-            BOA_.log("WARNING Frame interval was zero...\n\tset to 1");
+            BOA_.log("WARNING Frame interval was zero - set to 1");
         }
 
         // adds window listener called on plugin closing
@@ -386,7 +386,7 @@ public class BOA_ implements PlugIn {
      * @param s String to display in BOA window
      */
     static void log(final String s) {
-        logArea.append(s + '\n');
+        logArea.append("[" + logCount++ + "] " + s + '\n');
     }
 
     /**
@@ -541,7 +541,7 @@ public class BOA_ implements PlugIn {
         Label fpsLabel, pixelLabel, frameLabel;
         JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
         JSpinner isMaxIterations, isBlowup, isSample_tan, isSample_norm;
-        private JComboBox<String> firstPluginName, secondPluginName, thirdPluginName;
+        private Choice firstPluginName, secondPluginName, thirdPluginName;
         private Button firstPluginGUI, secondPluginGUI, thirdPluginGUI;
 
         private MenuItem menuVersion; // item in menu
@@ -573,7 +573,7 @@ public class BOA_ implements PlugIn {
                 remove(this.getComponent(1)); // remove the play/pause button
             }
             add(buildControlPanel(), 0); // add to the left, position 0
-            add(buildSetupPanel());
+            add(buildSetupPanel(), 2);
             setMenuBar(buildMenu());
             pack();
         }
@@ -622,37 +622,30 @@ public class BOA_ implements PlugIn {
                                             // Truncate, Add, Delete)
             Panel southPanel = new Panel(); // Quit and Finish
 
+            Panel centerPanel = new Panel();
+
+            Panel pluginPanel = new Panel();
+
             setupPanel.setLayout(new BorderLayout());
-            northPanel.setLayout(new GridLayout(3, 1));
+            northPanel.setLayout(new GridLayout(3, 2));
             southPanel.setLayout(new GridLayout(2, 2));
+            centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
 
-            // build subpanel with info
-            JPanel groupBoxLabel = new JPanel(); // Contain two static fields
-                                                 // with image scale info
-            groupBoxLabel.setBorder(BorderFactory.createTitledBorder("Image scale"));
-            groupBoxLabel.setLayout(new GridLayout(1, 2));
+            pluginPanel.setLayout(new GridLayout(3, 2));
+
             fpsLabel = new Label("F Interval: " + IJ.d2s(BOAp.imageFrameInterval, 3) + " s");
-            groupBoxLabel.add(fpsLabel);
+            northPanel.add(fpsLabel);
             pixelLabel = new Label("Scale: " + IJ.d2s(BOAp.imageScale, 6) + " \u00B5m");
-            groupBoxLabel.add(pixelLabel);
+            northPanel.add(pixelLabel);
 
-            // build subpanel with cell buttons
-            JPanel groupBoxCell = new JPanel(); // contain 4 buttons related to cell operation
-            groupBoxCell.setBorder(BorderFactory.createTitledBorder("Cell operations"));
-            groupBoxCell.setLayout(new GridLayout(2, 2));
-            bScale = addButton("Set Scale", groupBoxCell);
-            bDelSeg = addButton("Truncate Seg", groupBoxCell);
-            bAdd = addButton("Add cell", groupBoxCell);
-            bDel = addButton("Delete cell", groupBoxCell);
+            bScale = addButton("Set Scale", northPanel);
+            bDelSeg = addButton("Truncate Seg", northPanel);
+            bAdd = addButton("Add cell", northPanel);
+            bDel = addButton("Delete cell", northPanel);
 
             // build subpanel with plugins
             // get plugins names collected by PluginFactory
             ArrayList<String> pluginList = pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
-            // verify if any plugin is available
-            if (pluginList.isEmpty()) {
-                IJ.log("No plugins found");
-                LOGGER.warn("No plugins found");
-            }
             // add NONE to list
             pluginList.add(0, NONE);
             // plugins are recognized by their names returned from pluginFactory.getPluginNames() so
@@ -660,41 +653,42 @@ public class BOA_ implements PlugIn {
             // are made using plugin names. see actionPerformed. If plugin of given name (NONE) is
             // not found getInstance return null which is stored in BOAp.sPluginList and checked
             // during run
-            JPanel groupBoxSnakePlugins = new JPanel();
-            groupBoxSnakePlugins.setBorder(BorderFactory.createTitledBorder("Snake Plugins"));
-            groupBoxSnakePlugins.setLayout(new GridLayout(3, 2));
-            firstPluginName = addComboBox(pluginList.toArray(new String[0]), groupBoxSnakePlugins);
-            firstPluginGUI = addButton("GUI", groupBoxSnakePlugins);
-            secondPluginName = addComboBox(pluginList.toArray(new String[0]), groupBoxSnakePlugins);
-            secondPluginGUI = addButton("GUI", groupBoxSnakePlugins);
-            thirdPluginName = addComboBox(pluginList.toArray(new String[0]), groupBoxSnakePlugins);
-            thirdPluginGUI = addButton("GUI", groupBoxSnakePlugins);
-
-            // -----build north panel------
-            northPanel.add(groupBoxLabel); // image info
-            northPanel.add(groupBoxCell); // cell operations
-            northPanel.add(groupBoxSnakePlugins); // postprocessing
+            firstPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+            firstPluginGUI = addButton("GUI", pluginPanel);
+            secondPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+            secondPluginGUI = addButton("GUI", pluginPanel);
+            thirdPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+            thirdPluginGUI = addButton("GUI", pluginPanel);
 
             // --------build log---------
-            JPanel groupBoxLog = new JPanel(); // conatain two static fields with
-                                               // image scale info
-            groupBoxLog.setBorder(BorderFactory.createTitledBorder("Log"));
-            logArea = new TextArea(10, 25);
+            Panel tp = new Panel(); // panel with text area
+            tp.setLayout(new GridLayout(1, 1));
+            logArea = new TextArea(15, 25);
             logArea.setEditable(false);
-            logPanel = new JScrollPane(logArea);
-            groupBoxLog.add(logPanel);
+            tp.add(logArea);
+            logPanel = new JScrollPane(tp);
+
             // ------------------------------
 
             // --------build south--------------
             southPanel.add(new Label("")); // blankes
-            southPanel.add(new Label(""));
+            southPanel.add(new Label("")); // blankes
             bQuit = addButton("Quit", southPanel);
             bFinish = addButton("FINISH", southPanel);
             // ------------------------------
 
+            centerPanel.add(new Label("Snake Plugins:"));
+            centerPanel.add(pluginPanel);
+            centerPanel.add(new Label("Logs:"));
+            centerPanel.add(logPanel);
             setupPanel.add(northPanel, BorderLayout.PAGE_START);
-            setupPanel.add(logPanel, BorderLayout.CENTER);
-            setupPanel.add(southPanel, BorderLayout.SOUTH);
+            setupPanel.add(centerPanel, BorderLayout.CENTER);
+            setupPanel.add(southPanel, BorderLayout.PAGE_END);
+
+            if (pluginList.isEmpty())
+                BOA_.log("No plugins found");
+            else
+                BOA_.log("Found " + (pluginList.size() - 1) + " plugins (see About)");
 
             return setupPanel;
         }
@@ -815,10 +809,12 @@ public class BOA_ implements PlugIn {
          * @param mp Reference to the panel where ComboBox is located
          * @return Reference to created ComboBox
          */
-        private JComboBox<String> addComboBox(final String[] s, final Container mp) {
-            JComboBox<String> c = new JComboBox<String>(s);
-            c.setSelectedIndex(0);
-            c.addActionListener(this);
+        private Choice addComboBox(final String[] s, final Container mp) {
+            Choice c = new Choice();
+            for (String st : s)
+                c.add(st);
+            c.select(0);
+            c.addItemListener(this);
             mp.add(c);
             return c;
         }
@@ -1049,34 +1045,6 @@ public class BOA_ implements PlugIn {
                     BOAp.sPluginList.get(2).showUI(true);
             }
 
-            // Process plugin selection
-            // attach also data to all selected plugins. Attached data are the same for every
-            // plugin. This is only for optional visualization supported by plugin.
-            // Data are attached again on every plugin run
-            List<Point2d> dataToProcess = null; // default
-            Snake snake;
-            SnakeHandler sH;
-            if (nest != null && nest.size() > 0) {
-                sH = nest.getHandler(nest.size() - 1); // get last added snake
-                snake = sH.getLiveSnake();
-                dataToProcess = snake.asList(); // will be passed to plugin in this stage
-            }
-            if (b == (JComboBox<String>) firstPluginName) {
-                LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
-                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, null);
-                recalculatePlugins();
-            }
-            if (b == (JComboBox<String>) secondPluginName) {
-                LOGGER.debug("Used secondPluginName, val: " + secondPluginName.getSelectedItem());
-                instanceSnakePlugin((String) secondPluginName.getSelectedItem(), 1, dataToProcess);
-                recalculatePlugins();
-            }
-            if (b == (JComboBox<String>) thirdPluginName) {
-                LOGGER.debug("Used thirdPluginName, val: " + thirdPluginName.getSelectedItem());
-                instanceSnakePlugin((String) thirdPluginName.getSelectedItem(), 2, dataToProcess);
-                recalculatePlugins();
-            }
-
             // menu listeners
             if (b == menuVersion) {
                 about();
@@ -1138,6 +1106,34 @@ public class BOA_ implements PlugIn {
             if (source == cbMenuPlotProcessedSnakes) {
                 LOGGER.debug("got cbMenuPlotProcessedSnakes");
                 BOAp.isProcessedSnakePlotted = cbMenuPlotProcessedSnakes.getState();
+                recalculatePlugins();
+            }
+
+            // Process plugin selection
+            // attach also data to all selected plugins. Attached data are the same for every
+            // plugin. This is only for optional visualization supported by plugin.
+            // Data are attached again on every plugin run
+            List<Point2d> dataToProcess = null; // default
+            Snake snake;
+            SnakeHandler sH;
+            if (nest != null && nest.size() > 0) {
+                sH = nest.getHandler(nest.size() - 1); // get last added snake
+                snake = sH.getLiveSnake();
+                dataToProcess = snake.asList(); // will be passed to plugin in this stage
+            }
+            if (source == firstPluginName) {
+                LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
+                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, null);
+                recalculatePlugins();
+            }
+            if (source == secondPluginName) {
+                LOGGER.debug("Used secondPluginName, val: " + secondPluginName.getSelectedItem());
+                instanceSnakePlugin((String) secondPluginName.getSelectedItem(), 1, dataToProcess);
+                recalculatePlugins();
+            }
+            if (source == thirdPluginName) {
+                LOGGER.debug("Used thirdPluginName, val: " + thirdPluginName.getSelectedItem());
+                instanceSnakePlugin((String) thirdPluginName.getSelectedItem(), 2, dataToProcess);
                 recalculatePlugins();
             }
 

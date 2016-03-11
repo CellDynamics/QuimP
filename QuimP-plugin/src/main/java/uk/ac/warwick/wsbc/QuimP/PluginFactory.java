@@ -418,6 +418,8 @@ public class PluginFactory {
             if (me.getValue().getType() == type) // if type found
                 ret.add(me.getKey()); // add to list of plugins of this type
         }
+        if (ret.isEmpty())
+            LOGGER.warn("No plugins found");
         return ret;
     }
 
