@@ -100,7 +100,6 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = ../plugins \
                          ../plugins_test \
-			             ../dic-plugin \
                          ../QuimP-plugin/src \
 			             ../Doxygen_doc \
                          ../Readme.md
