@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class DIC_LID_Reconstruction_run {
+public class DIC_LID_ReconstructionTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
