@@ -231,7 +231,7 @@ public class LidReconstructor {
      */
     private void recalculate() throws DicException {
         // calculate preallocated decay data
-        // generateRanges() must be called first as it initialises fields used
+        // generateRanges() must be called first as it initializes fields used
         // by generateDecay()
         getRanges();
         generateDeacy(decay, maxWidth);
