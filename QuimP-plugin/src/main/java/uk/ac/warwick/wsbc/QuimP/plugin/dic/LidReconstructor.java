@@ -300,8 +300,7 @@ public class LidReconstructor {
         outputArrayProcessor = ipp.cropImageAfterRotation(outputArrayProcessor, srcIp.getWidth(),
                 srcIp.getHeight());
 
-        return outputArrayProcessor.convertToByte(true); // return
-                                                         // reconstruction
+        return outputArrayProcessor.convertToByte(true); // return reconstruction
     }
 
     /**

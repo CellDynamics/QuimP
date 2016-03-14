@@ -18,5 +18,6 @@
     <module>LoessSnakeFilter_quimp</module>
     <module>MeanSnakeFilter_quimp</module>
     <module>HatSnakeFilter_quimp</module>
+    <module>HedgehogSnakeFilter_quimp</module>
   </modules>
 </project>
