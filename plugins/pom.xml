@@ -1,19 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>uk.ac.warwick.wsbc</groupId>
     <artifactId>QuimP-toolbox</artifactId>
     <version>1.11.2-SNAPSHOT</version>
   </parent>
-
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>plugins</artifactId>
-  <version>0.0.1-SNAPSHOT</version> <!-- http://stackoverflow.com/questions/5901378/what-exactly-is-a-maven-snapshot-and-why-do-we-need-it -->
+  <version>0.0.1-SNAPSHOT</version>
+  <!-- http://stackoverflow.com/questions/5901378/what-exactly-is-a-maven-snapshot-and-why-do-we-need-it -->
   <packaging>pom</packaging>
-
   <modules>
     <module>LoessSnakeFilter_quimp</module>
     <module>MeanSnakeFilter_quimp</module>
