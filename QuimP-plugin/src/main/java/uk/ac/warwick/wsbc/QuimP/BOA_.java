@@ -576,8 +576,6 @@ public class BOA_ implements PlugIn {
          * 
          * @param imp Image loaded to plugin
          * @param ic Image canvas
-         * @todo TODO dirty hack on wrong window composition
-         * @see http://stackoverflow.com/questions/4061010/setmaximumsize-not-working-in-java
          */
         CustomStackWindow(final ImagePlus imp, final ImageCanvas ic) {
             super(imp, ic);
@@ -589,7 +587,7 @@ public class BOA_ implements PlugIn {
          * 
          * This method is called as first. The interface is built in three steps:
          * Left side of window (configuration zone) and right side of main
-         * window (logs and other info and buttons) and finaly upper menubar
+         * window (logs and other info and buttons) and finally upper menubar
          */
         private void buildWindow() {
 
@@ -619,6 +617,10 @@ public class BOA_ implements PlugIn {
         /**
          * Build window menu.
          * 
+         * Menu is local for this window of QuimP and it is stored in \c quimpMenuBar variable.
+         * On every time when QuimP is active, this menu is restored in 
+         * uk.ac.warwick.wsbc.QuimP.BOA_.CustomWindowAdapter.windowActivated(WindowEvent) method
+         * This is due to overwriting menu by IJ on Mac (all menus are on top screen bar)
          * @return Reference to menu bar
          */
         final MenuBar buildMenu() {
