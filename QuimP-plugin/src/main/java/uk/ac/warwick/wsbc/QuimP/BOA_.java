@@ -551,9 +551,20 @@ public class BOA_ implements PlugIn {
          * 
          * @param imp Image loaded to plugin
          * @param ic Image canvas
+         * @todo TODO dirty hack on wrong window composition
+         * @see http://stackoverflow.com/questions/4061010/setmaximumsize-not-working-in-java
          */
         CustomStackWindow(final ImagePlus imp, final ImageCanvas ic) {
             super(imp, ic);
+            int delh = 120;
+            int delw = 600;
+            int h = ic.getHeight() + delh;
+            int w = ic.getWidth() + delw;
+            setPreferredSize(new Dimension(w, h));
+            setMinimumSize(new Dimension(w, h));
+            setMaximumSize(new Dimension(w, (int) (h * 0.2)));
+            setSize(new Dimension(w, h));
+            revalidate();
         }
 
         /**
@@ -573,8 +584,10 @@ public class BOA_ implements PlugIn {
             }
             add(buildControlPanel(), 0); // add to the left, position 0
             add(buildSetupPanel(), 2);
+            LOGGER.debug("Menu: " + getMenuBar());
             setMenuBar(buildMenu());
             pack();
+
         }
 
         /**
@@ -603,6 +616,7 @@ public class BOA_ implements PlugIn {
             menuAbout.add(menuVersion);
 
             cbMenuPlotProcessedSnakes = new CheckboxMenuItem("Plot processed");
+            cbMenuPlotProcessedSnakes.setState(BOAp.isProcessedSnakePlotted);
             cbMenuPlotProcessedSnakes.addItemListener(this);
             menuConfig.add(cbMenuPlotProcessedSnakes);
 
@@ -662,7 +676,7 @@ public class BOA_ implements PlugIn {
             // --------build log---------
             Panel tp = new Panel(); // panel with text area
             tp.setLayout(new GridLayout(1, 1));
-            logArea = new TextArea(15, 25);
+            logArea = new TextArea(15, 15);
             logArea.setEditable(false);
             tp.add(logArea);
             logPanel = new JScrollPane(tp);
@@ -4776,7 +4790,7 @@ class BOAp {
      * Plot or not snakes after processing by plugins. If \c yes both snakes, after 
      * segmentation and after filtering are plotted.
      */
-    static boolean isProcessedSnakePlotted = false;
+    static boolean isProcessedSnakePlotted = true;
     /**
      * When any plugin fails this field defines how QuimP should behave. When
      * it is \c true QuimP breaks process of segmentation and do not store
