@@ -2,21 +2,17 @@
   <modelVersion>4.0.0</modelVersion>
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
-  <artifactId>QuimP-toolbox</artifactId>
-  <version>1.11.2-SNAPSHOT</version>
+  <artifactId>quimp-persistence-deps</artifactId>
+  <version>1.0.0</version>
   <!-- http://stackoverflow.com/questions/5901378/what-exactly-is-a-maven-snapshot-and-why-do-we-need-it -->
   <packaging>pom</packaging>
-  <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
-  <scm>
-    <connection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP-toolbox</connection>
-    <developerConnection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP-toolbox</developerConnection>
-    <url>scm:git:ssh://trac-wsbc.linkpc.net:2222/var/GIT/QuimP.git</url>
-  </scm>
+
   <!-- Name and licencing and other project informations -->
-  <name>QuimP-toolbox</name>
-  <description>Collection of tools related to QuimP software</description>
+  <name>quimp-persistence-deps</name>
+  <description>Collection of dependencies related to QuimP software</description>
   <licenses>
     <license>
+      <name>TBA</name>
       <comments>Must be reviewed</comments>
     </license>
   </licenses>
@@ -48,11 +44,7 @@
       <timezone>London</timezone>
     </developer>
   </developers>
-  <modules>
-    <module>QuimP-plugin</module>
-    <module>plugins_test</module>
-    <module>plugins</module>
-  </modules>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
