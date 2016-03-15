@@ -453,7 +453,7 @@ public class BOA_ implements PlugIn {
         // This method will be called when BOA_ window is closed already
         // It is too late for asking user
         public void windowClosed(final WindowEvent arg0) {
-            LOGGER.debug("CLOSED");
+            LOGGER.trace("CLOSED");
             BOA_.running = false;
             canvas = null;
             imageGroup = null;
@@ -464,7 +464,17 @@ public class BOA_ implements PlugIn {
         // This method will be called when BOA_ window is closed already
         // It is too late for asking user
         public void windowClosing(final WindowEvent arg0) {
-            LOGGER.debug("CLOSING");
+            LOGGER.trace("CLOSING");
+        }
+
+        @Override
+        public void windowActivated(final WindowEvent e) {
+            LOGGER.trace("ACTIVATED");
+            // rebuild manu for this local window
+            // workaround for Mac and theirs menus om top screen bar
+            // IJ is doing the same for activation of its window so every time one has correct menu
+            // on top
+            window.setMenuBar(window.quimpMenuBar);
         }
     }
 
@@ -556,8 +566,10 @@ public class BOA_ implements PlugIn {
         private Choice firstPluginName, secondPluginName, thirdPluginName;
         private Button firstPluginGUI, secondPluginGUI, thirdPluginGUI;
 
+        private MenuBar quimpMenuBar;
         private MenuItem menuVersion; // item in menu
         private CheckboxMenuItem cbMenuPlotProcessedSnakes;
+        
         
         /**
          * Default constructor
@@ -598,16 +610,10 @@ public class BOA_ implements PlugIn {
             add(new Label(""), BorderLayout.SOUTH);
 
             LOGGER.debug("Menu: " + getMenuBar());
-            setMenuBar(buildMenu());
+            quimpMenuBar = buildMenu(); // store menu in var to reuse on window activation
+            setMenuBar(quimpMenuBar);
             pack();
 
-            /*int delw = 600;
-            int w = ic.getWidth() + delw;
-            setPreferredSize(new Dimension(w, getPreferredSize().height));
-            setMinimumSize(new Dimension(w, getPreferredSize().height));
-            setMaximumSize(new Dimension(w, getPreferredSize().height));
-            setSize(new Dimension(w, getPreferredSize().height));
-            revalidate();*/
         }
 
         /**
@@ -620,10 +626,10 @@ public class BOA_ implements PlugIn {
             Menu menuAbout; // menu About in menubar
             Menu menuConfig; // meny Config in menubar
 
-            if (getMenuBar() != null)
-                menuBar = getMenuBar();
-            else
-                menuBar = new MenuBar();
+            // if (getMenuBar() != null)
+            // menuBar = getMenuBar();
+            // else
+            menuBar = new MenuBar();
 
             menuConfig = new Menu("Preferences");
 
