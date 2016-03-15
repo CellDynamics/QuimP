@@ -53,6 +53,7 @@ import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -117,6 +118,10 @@ public class BOA_ implements PlugIn {
                                 // too often. These information are used for About dialog and they
                                 // re presented on window title bar
     private static int logCount = 1; // adds counter to logged messages
+
+    public BOA_() {
+        Configurator.initialize(null, "qlog4j2.xml");
+    }
 
     /**
      * Temporary method for test
@@ -448,10 +453,18 @@ public class BOA_ implements PlugIn {
         // This method will be called when BOA_ window is closed already
         // It is too late for asking user
         public void windowClosed(final WindowEvent arg0) {
+            LOGGER.debug("CLOSED");
             BOA_.running = false;
             canvas = null;
             imageGroup = null;
             window = null;
+        }
+
+        @Override
+        // This method will be called when BOA_ window is closed already
+        // It is too late for asking user
+        public void windowClosing(final WindowEvent arg0) {
+            LOGGER.debug("CLOSING");
         }
     }
 
@@ -556,15 +569,7 @@ public class BOA_ implements PlugIn {
          */
         CustomStackWindow(final ImagePlus imp, final ImageCanvas ic) {
             super(imp, ic);
-            int delh = 120;
-            int delw = 600;
-            int h = ic.getHeight() + delh;
-            int w = ic.getWidth() + delw;
-            setPreferredSize(new Dimension(w, h));
-            setMinimumSize(new Dimension(w, h));
-            setMaximumSize(new Dimension(w, (int) (h * 0.2)));
-            setSize(new Dimension(w, h));
-            revalidate();
+
         }
 
         /**
@@ -575,19 +580,34 @@ public class BOA_ implements PlugIn {
          * window (logs and other info and buttons) and finaly upper menubar
          */
         private void buildWindow() {
-            setLayout(new FlowLayout());
+
+            setLayout(new BorderLayout(10, 3));
+
             if (!BOAp.singleImage) {
                 remove(sliceSelector);
             }
             if (!BOAp.singleImage) {
                 remove(this.getComponent(1)); // remove the play/pause button
             }
-            add(buildControlPanel(), 0); // add to the left, position 0
-            add(buildSetupPanel(), 2);
+            Panel cp = buildControlPanel();
+            Panel sp = buildSetupPanel();
+            add(new Label(""), BorderLayout.NORTH);
+            add(cp, BorderLayout.WEST); // add to the left, position 0
+            add(ic, BorderLayout.CENTER);
+            add(sp, BorderLayout.EAST);
+            add(new Label(""), BorderLayout.SOUTH);
+
             LOGGER.debug("Menu: " + getMenuBar());
             setMenuBar(buildMenu());
             pack();
 
+            /*int delw = 600;
+            int w = ic.getWidth() + delw;
+            setPreferredSize(new Dimension(w, getPreferredSize().height));
+            setMinimumSize(new Dimension(w, getPreferredSize().height));
+            setMaximumSize(new Dimension(w, getPreferredSize().height));
+            setSize(new Dimension(w, getPreferredSize().height));
+            revalidate();*/
         }
 
         /**
@@ -600,7 +620,10 @@ public class BOA_ implements PlugIn {
             Menu menuAbout; // menu About in menubar
             Menu menuConfig; // meny Config in menubar
 
-            menuBar = new MenuBar();
+            if (getMenuBar() != null)
+                menuBar = getMenuBar();
+            else
+                menuBar = new MenuBar();
 
             menuConfig = new Menu("Preferences");
 

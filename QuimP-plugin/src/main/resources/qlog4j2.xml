@@ -16,7 +16,7 @@
 		<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{2}.[%M] - %msg%n"></PatternLayout></File>
 	</Appenders>
 	<Loggers>
-		<Root level="debug">
+		<Root level="info">
 			<AppenderRef ref="Console_err"></AppenderRef>
 			<AppenderRef ref="Console_out"></AppenderRef><!--Here is global loglevel above which is logging-->
 			<AppenderRef ref="File_log"></AppenderRef>
