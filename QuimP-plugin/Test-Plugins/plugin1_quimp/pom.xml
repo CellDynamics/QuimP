@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>uk.ac.warwick.wsbc</groupId>
+    <artifactId>plugins_test</artifactId>
+    <version>0.0.1</version>
+  </parent>
+  <!-- Project's coordinates -->
+  <groupId>uk.ac.warwick.wsbc</groupId>
+  <artifactId>plugin1_quimp</artifactId>
+  <packaging>jar</packaging>
+  <version>0.0.1</version>
+  <!-- Name and licencing and other project informations -->
+  <name>plugin1_quimp</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <outputDirectory>${basedir}/../target/</outputDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>uk.ac.warwick.wsbc</groupId>
+      <artifactId>QuimP</artifactId>
+      <version>1.11.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>

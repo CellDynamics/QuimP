@@ -2,19 +2,24 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>uk.ac.warwick.wsbc</groupId>
-    <artifactId>quimp-persistence-deps</artifactId>
-    <version>1.0.0</version>
-    <relativePath></relativePath>
-    <!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
+    <artifactId>QuimP-plugin</artifactId>
+    <version>0.0.1</version>
   </parent>
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
-  <artifactId>QuimP-plugin</artifactId>
+  <artifactId>plugins_test</artifactId>
   <version>0.0.1</version>
   <!-- http://stackoverflow.com/questions/5901378/what-exactly-is-a-maven-snapshot-and-why-do-we-need-it -->
   <packaging>pom</packaging>
   <modules>
-    <module>QuimP</module>
-    <module>Test-Plugins</module>
+    <module>plugin1_quimp</module>
+    <module>plugin2_quimp</module>
   </modules>
+  <dependencies>
+    <dependency>
+      <groupId>javax.vecmath</groupId>
+      <artifactId>vecmath</artifactId>
+      <version>1.5.2</version>
+    </dependency>
+  </dependencies>
 </project>
