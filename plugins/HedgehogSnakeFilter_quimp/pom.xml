@@ -2,8 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>uk.ac.warwick.wsbc</groupId>
-    <artifactId>quimp-persistence-deps</artifactId>
-    <version>1.0.0</version>
+  <artifactId>pom-quimp</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
     <relativePath></relativePath>
     <!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
   </parent>

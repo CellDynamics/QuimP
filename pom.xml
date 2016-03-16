@@ -2,12 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
-  <artifactId>quimp-persistence-deps</artifactId>
-  <version>1.0.0</version>
+  <artifactId>pom-quimp</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
   <!-- http://stackoverflow.com/questions/5901378/what-exactly-is-a-maven-snapshot-and-why-do-we-need-it -->
   <packaging>pom</packaging>
   <!-- Name and licencing and other project informations -->
-  <name>quimp-persistence-deps</name>
+  <name>pom-quimp</name>
   <description>Collection of dependencies related to QuimP software</description>
   <licenses>
     <license>
@@ -71,11 +71,6 @@
       <artifactId>log4j-core</artifactId>
       <version>2.4.1</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>uk.ac.warwick.wsbc</groupId>
-      <artifactId>quimp-shared-resources</artifactId>
-      <version>1.0.0</version>
     </dependency>
   </dependencies>
   <build>

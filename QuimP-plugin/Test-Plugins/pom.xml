@@ -21,5 +21,10 @@
       <artifactId>vecmath</artifactId>
       <version>1.5.2</version>
     </dependency>
+    <dependency>
+      <groupId>uk.ac.warwick.wsbc</groupId>
+      <artifactId>QuimP</artifactId>
+      <version>1.11.2-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>
