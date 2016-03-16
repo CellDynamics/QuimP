@@ -119,6 +119,9 @@ public class BOA_ implements PlugIn {
                                 // re presented on window title bar
     private static int logCount = 1; // adds counter to logged messages
 
+    /**
+     * Main constructor. Load logger settings from dedicated file (sealed in jar)
+     */
     public BOA_() {
         Configurator.initialize(null, "qlog4j2.xml");
     }
@@ -443,8 +446,11 @@ public class BOA_ implements PlugIn {
      * @bug
      * When user closes window by system button QuimP does not ask for
      * saving current work. This is because by default QuimP window is
-     * managed by ImageJ and it by \a probably only hides it when window
-     * close button is clicked.
+     * managed by ImageJ and it \a probably only hides it on closing
+     * 
+     * @remarks
+     * This class could be located directly in CustomStackWindow which is 
+     * included in BOA_. But it need to have access to BOA field \c running.
      * 
      * @author p.baniukiewicz
      */
@@ -461,8 +467,6 @@ public class BOA_ implements PlugIn {
         }
 
         @Override
-        // This method will be called when BOA_ window is closed already
-        // It is too late for asking user
         public void windowClosing(final WindowEvent arg0) {
             LOGGER.trace("CLOSING");
         }
