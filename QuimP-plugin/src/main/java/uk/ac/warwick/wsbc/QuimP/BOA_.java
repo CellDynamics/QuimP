@@ -53,6 +53,7 @@ import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -117,6 +118,13 @@ public class BOA_ implements PlugIn {
                                 // too often. These information are used for About dialog and they
                                 // re presented on window title bar
     private static int logCount = 1; // adds counter to logged messages
+
+    /**
+     * Main constructor. Load logger settings from dedicated file (sealed in jar)
+     */
+    public BOA_() {
+        Configurator.initialize(null, "qlog4j2.xml");
+    }
 
     /**
      * Temporary method for test
@@ -438,8 +446,11 @@ public class BOA_ implements PlugIn {
      * @bug
      * When user closes window by system button QuimP does not ask for
      * saving current work. This is because by default QuimP window is
-     * managed by ImageJ and it by \a probably only hides it when window
-     * close button is clicked.
+     * managed by ImageJ and it \a probably only hides it on closing
+     * 
+     * @remarks
+     * This class could be located directly in CustomStackWindow which is 
+     * included in BOA_. But it need to have access to BOA field \c running.
      * 
      * @author p.baniukiewicz
      */
@@ -448,10 +459,26 @@ public class BOA_ implements PlugIn {
         // This method will be called when BOA_ window is closed already
         // It is too late for asking user
         public void windowClosed(final WindowEvent arg0) {
+            LOGGER.trace("CLOSED");
             BOA_.running = false;
             canvas = null;
             imageGroup = null;
             window = null;
+        }
+
+        @Override
+        public void windowClosing(final WindowEvent arg0) {
+            LOGGER.trace("CLOSING");
+        }
+
+        @Override
+        public void windowActivated(final WindowEvent e) {
+            LOGGER.trace("ACTIVATED");
+            // rebuild manu for this local window
+            // workaround for Mac and theirs menus om top screen bar
+            // IJ is doing the same for activation of its window so every time one has correct menu
+            // on top
+            window.setMenuBar(window.quimpMenuBar);
         }
     }
 
@@ -543,8 +570,10 @@ public class BOA_ implements PlugIn {
         private Choice firstPluginName, secondPluginName, thirdPluginName;
         private Button firstPluginGUI, secondPluginGUI, thirdPluginGUI;
 
+        private MenuBar quimpMenuBar;
         private MenuItem menuVersion; // item in menu
         private CheckboxMenuItem cbMenuPlotProcessedSnakes;
+        
         
         /**
          * Default constructor
@@ -554,6 +583,7 @@ public class BOA_ implements PlugIn {
          */
         CustomStackWindow(final ImagePlus imp, final ImageCanvas ic) {
             super(imp, ic);
+
         }
 
         /**
@@ -561,25 +591,40 @@ public class BOA_ implements PlugIn {
          * 
          * This method is called as first. The interface is built in three steps:
          * Left side of window (configuration zone) and right side of main
-         * window (logs and other info and buttons) and finaly upper menubar
+         * window (logs and other info and buttons) and finally upper menubar
          */
         private void buildWindow() {
-            setLayout(new FlowLayout());
+
+            setLayout(new BorderLayout(10, 3));
+
             if (!BOAp.singleImage) {
                 remove(sliceSelector);
             }
             if (!BOAp.singleImage) {
                 remove(this.getComponent(1)); // remove the play/pause button
             }
-            add(buildControlPanel(), 0); // add to the left, position 0
-            add(buildSetupPanel(), 2);
-            setMenuBar(buildMenu());
+            Panel cp = buildControlPanel();
+            Panel sp = buildSetupPanel();
+            add(new Label(""), BorderLayout.NORTH);
+            add(cp, BorderLayout.WEST); // add to the left, position 0
+            add(ic, BorderLayout.CENTER);
+            add(sp, BorderLayout.EAST);
+            add(new Label(""), BorderLayout.SOUTH);
+
+            LOGGER.debug("Menu: " + getMenuBar());
+            quimpMenuBar = buildMenu(); // store menu in var to reuse on window activation
+            setMenuBar(quimpMenuBar);
             pack();
+
         }
 
         /**
          * Build window menu.
          * 
+         * Menu is local for this window of QuimP and it is stored in \c quimpMenuBar variable.
+         * On every time when QuimP is active, this menu is restored in 
+         * uk.ac.warwick.wsbc.QuimP.BOA_.CustomWindowAdapter.windowActivated(WindowEvent) method
+         * This is due to overwriting menu by IJ on Mac (all menus are on top screen bar)
          * @return Reference to menu bar
          */
         final MenuBar buildMenu() {
@@ -587,6 +632,9 @@ public class BOA_ implements PlugIn {
             Menu menuAbout; // menu About in menubar
             Menu menuConfig; // meny Config in menubar
 
+            // if (getMenuBar() != null)
+            // menuBar = getMenuBar();
+            // else
             menuBar = new MenuBar();
 
             menuConfig = new Menu("Preferences");
@@ -603,6 +651,7 @@ public class BOA_ implements PlugIn {
             menuAbout.add(menuVersion);
 
             cbMenuPlotProcessedSnakes = new CheckboxMenuItem("Plot processed");
+            cbMenuPlotProcessedSnakes.setState(BOAp.isProcessedSnakePlotted);
             cbMenuPlotProcessedSnakes.addItemListener(this);
             menuConfig.add(cbMenuPlotProcessedSnakes);
 
@@ -662,7 +711,7 @@ public class BOA_ implements PlugIn {
             // --------build log---------
             Panel tp = new Panel(); // panel with text area
             tp.setLayout(new GridLayout(1, 1));
-            logArea = new TextArea(15, 25);
+            logArea = new TextArea(15, 15);
             logArea.setEditable(false);
             tp.add(logArea);
             logPanel = new JScrollPane(tp);
@@ -4776,7 +4825,7 @@ class BOAp {
      * Plot or not snakes after processing by plugins. If \c yes both snakes, after 
      * segmentation and after filtering are plotted.
      */
-    static boolean isProcessedSnakePlotted = false;
+    static boolean isProcessedSnakePlotted = true;
     /**
      * When any plugin fails this field defines how QuimP should behave. When
      * it is \c true QuimP breaks process of segmentation and do not store

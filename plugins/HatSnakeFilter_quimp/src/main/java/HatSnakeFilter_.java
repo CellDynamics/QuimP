@@ -201,7 +201,7 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
     @Override
     public List<Point2d> runPlugin() throws QuimpPluginException {
         // internal parameters are not updated here but when user click apply
-        LOGGER.debug(String.format("Run plugin with params: window %d, pnum %d, alev %f", window,
+        LOGGER.info(String.format("Run plugin with params: window %d, pnum %d, alev %f", window,
                 pnum, alev));
 
         BasicPolygons bp = new BasicPolygons(); // provides geometry processing
@@ -267,8 +267,8 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
         ArrayList<Double> circsorted = new ArrayList<>(circ); // need sorted but the old one as well
                                                               // to identify windows positions
         circsorted.sort(Collections.reverseOrder()); // sort in descending order
-        LOGGER.info("cirs: " + circsorted.toString());
-        LOGGER.info("circ: " + circ.toString());
+        LOGGER.debug("cirs: " + circsorted.toString());
+        LOGGER.debug("circ: " + circ.toString());
 
         if (circsorted.get(0) < alev) // if maximal circularity smaller than acceptance level
             return points; // just return non-modified data;
@@ -309,7 +309,7 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
                         ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
                     } else
                         ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
-                    LOGGER.info("added win for i=" + i + " startpos=" + startpos + " coord:"
+                    LOGGER.debug("added win for i=" + i + " startpos=" + startpos + " coord:"
                             + points.get(startpos).toString());
                     found++;
                     i++;
@@ -326,13 +326,13 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
                     ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
                 } else
                     ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
-                LOGGER.info("added win for i=" + i + " startpos=" + startpos + " coord:"
+                LOGGER.debug("added win for i=" + i + " startpos=" + startpos + " coord:"
                         + points.get(startpos).toString());
                 i++;
                 found++;
             }
         }
-        LOGGER.info("winpos: " + ind2rem.toString());
+        LOGGER.debug("winpos: " + ind2rem.toString());
         // Step 3 - remove selected windows from input data
         // array will be copied to new one skipping points to remove
         for (i = 0; i < points.size(); i++) {
@@ -410,7 +410,7 @@ public class HatSnakeFilter_ extends QWindowBuilder implements IQuimpPoint2dFilt
         std /= points.size();
         std = Math.sqrt(std);
 
-        LOGGER.info("w " + std);
+        LOGGER.debug("w " + std);
         return std;
     }
 
