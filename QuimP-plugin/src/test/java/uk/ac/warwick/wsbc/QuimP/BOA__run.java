@@ -40,7 +40,10 @@ public class BOA__run {
         ImagePlus img;
         // create synchronization latch
         CountDownLatch startSignal = new CountDownLatch(1);
-        img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");
+        // img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");
+        // img = IJ.openImage("src/test/resources/movie03_8bit.tif");
+        img = IJ.openImage("src/test/resources/Composite-after-macro_cut.tif");
+
         img.show(); // this is necessary for plugin as it uses getcurrentimage
                     // to work
         Toolbar t = new Toolbar(); // fake toolbar to allow calls to static
