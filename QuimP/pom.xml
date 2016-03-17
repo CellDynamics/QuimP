@@ -9,7 +9,7 @@
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>QuimP</artifactId>
   <packaging>jar</packaging>
-  <version>1.11.2-SNAPSHOT</version>
+  <version>16.03.17-SNAPSHOT</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/bretschneider/quimp/</url>
