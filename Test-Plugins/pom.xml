@@ -23,8 +23,8 @@
     </dependency>
     <dependency>
       <groupId>uk.ac.warwick.wsbc</groupId>
-      <artifactId>QuimP</artifactId>
-      <version>1.11.2-SNAPSHOT</version>
+      <artifactId>QuimP_</artifactId>
+      <version>16.03.18-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
