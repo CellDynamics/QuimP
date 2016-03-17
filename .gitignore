@@ -1,6 +1,6 @@
-Doxygen_doc/html/
-Doxygen_doc/latex/
-Doxygen_doc/Doxygen_doc/
+**/Doxygen_doc/html/
+**/Doxygen_doc/latex/
+**/Doxygen_doc/Doxygen_doc/
 
 .directory
 .DS_Store
@@ -62,7 +62,6 @@ hs_err_pid*
 
 build/
 
-QuimP_plugin/src/**/plugins.config
 
 target/
 *.m~
