@@ -98,9 +98,8 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ../plugins \
-                         ../plugins_test \
-                         ../QuimP-plugin/src \
+INPUT                  = ../QuimP/src \
+                         ../Test-Plugins \
 			             ../Doxygen_doc \
                          ../Readme.md
                         
@@ -277,7 +276,7 @@ SKIP_FUNCTION_MACROS   = YES
 # Configuration options related to external references
 #---------------------------------------------------------------------------
 TAGFILES               = 
-GENERATE_TAGFILE       = 
+GENERATE_TAGFILE       = html/quimp.tag
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 EXTERNAL_PAGES         = YES

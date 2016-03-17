@@ -14,4 +14,4 @@ fi
 find ../Fiji.app.test/plugins -name Quim[Pp]_plugin*.jar | xargs rm -fv
 
 # copy package
-cp -v QuimP-plugin/target/QuimP_plugin-*-jar-*.jar ../Fiji.app.test/plugins
+cp -v QuimP/target/QuimP-*-jar-*.jar ../Fiji.app.test/plugins

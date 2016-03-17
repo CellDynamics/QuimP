@@ -32,15 +32,26 @@ Because of loop dependencies (plugins depend on QuimP but QuimP requires blue pl
 project should be build in two stages. The simplest approach is as follows:
 
  ```bash
- cd QuimP-toolbox
+ cd QuimP-plugin
  mvn clean
  # First build all projects but without tests
  # Actually we need only plugins_test
  mvn package -Dmaven.test.skip=true -am -pl Test-Plugins/plugin1_quimp/,Test-Plugins/plugin2_quimp/
  # build with tests
  mvn package
+ # generate sit
+ mvn site
  ```
- 
+
+The project requires **master pom** that currently exists in separate repository and it should be installed into local Maven repo:
+
+ ```bash
+cd pom-quimp
+mvn install
+ ```
+
+_Due to issues with `Cobertura` project can not be build calling `mvn package site`_
+
  For QuimP two separate files are built:
 - *NAME-VER.jar* - without dependencies
 - *NAME-VER-jar-with-dependencies.jar* - with dependencies but without IJ and test classes.

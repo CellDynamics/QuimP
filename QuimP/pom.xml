@@ -39,11 +39,35 @@
   </dependencies>
   <build>
     <plugins>
-        <plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <!-- http://stackoverflow.com/questions/1625492/execute-maven-plugin-goal-on-child-modules-but-not-on-parent -->
         <artifactId>maven-assembly-plugin</artifactId>
-        <!-- https://maven.apache.org/pom.html -->
+        <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
+        <version>2.6</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Implementation-Build>${buildNumber}</Implementation-Build>
+            </manifestEntries>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
+            <!-- https://maven.apache.org/guides/mini/guide-default-execution-ids.html -->
+            <id>simple-command</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -52,10 +76,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

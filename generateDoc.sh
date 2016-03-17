@@ -10,4 +10,4 @@ cp Doxygen_doc/maven-structure.png Doxygen_doc/Doxygen_doc/maven-structure.png
 cd Doxygen_doc
 rm -rf html/*
 doxygen Doxyfile >/dev/null
-rsync -az -e 'ssh -p2222' --stats --delete Doxygen_doc html/ trac@trac-wsbc.linkpc.net:/var/www/restricted/Doxygen_doc/
+rsync -az -e 'ssh -p2222' --stats --delete Doxygen_doc html/ trac@trac-wsbc.linkpc.net:/var/www/restricted/Doxygen_doc/QuimP
