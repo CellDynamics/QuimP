@@ -4,13 +4,10 @@
  */
 package uk.ac.warwick.wsbc.QuimP.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import uk.ac.warwick.wsbc.QuimP.utils.ConfigReader;
-import uk.ac.warwick.wsbc.QuimP.utils.ConfigReaderException;
 
 /**
  * Test class for ConfigReader
@@ -21,6 +18,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.ConfigReaderException;
  */
 public class ConfigReader_Test {
 
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
     private ConfigReader cR;
 
     @Before

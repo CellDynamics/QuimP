@@ -53,7 +53,6 @@ import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -96,6 +95,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  * @date 4 Feb 2016
  */
 public class BOA_ implements PlugIn {
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
     private static final Logger LOGGER = LogManager.getLogger(BOA_.class.getName());
     CustomCanvas canvas;
     CustomStackWindow window;
@@ -118,13 +121,6 @@ public class BOA_ implements PlugIn {
                                 // too often. These information are used for About dialog and they
                                 // re presented on window title bar
     private static int logCount = 1; // adds counter to logged messages
-
-    /**
-     * Main constructor. Load logger settings from dedicated file (sealed in jar)
-     */
-    public BOA_() {
-        Configurator.initialize(null, "qlog4j2.xml");
-    }
 
     /**
      * Temporary method for test

@@ -17,6 +17,10 @@ import org.junit.Test;
  */
 public class StringParserTest {
 
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(StringParserTest.class.getName());
 

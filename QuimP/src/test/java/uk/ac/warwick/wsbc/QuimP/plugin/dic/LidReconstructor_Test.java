@@ -23,6 +23,10 @@ import ij.process.ImageProcessor;
  */
 public class LidReconstructor_Test {
 
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
     private ImagePlus image;
     private ImagePlus stack;
     private static final Logger LOGGER =
@@ -82,11 +86,8 @@ public class LidReconstructor_Test {
 
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
-            IJ.saveAsTiff(outputImage,
-                    "/tmp/testDicReconstructionLidMatrix.tif");
-            LOGGER.trace(
-                    "Check /tmp/testDicReconstructionLidMatrix.tif"
-                            + " to see results");
+            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix.tif");
+            LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix.tif" + " to see results");
         } catch (DicException e) {
             LOGGER.error(e);
         }
@@ -116,11 +117,8 @@ public class LidReconstructor_Test {
             ImagePlus outputImage = new ImagePlus("", ret);
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
-            IJ.saveAsTiff(outputImage,
-                    "/tmp/testDicReconstructionLidMatrix_sat.tif");
-            LOGGER.trace(
-                    "Check /tmp/testDicReconstructionLidMatrix_sat.tif"
-                            + " to see results");
+            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_sat.tif");
+            LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_sat.tif" + " to see results");
         } catch (DicException e) {
             throw e;
         }
@@ -151,11 +149,8 @@ public class LidReconstructor_Test {
 
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
-            IJ.saveAsTiff(outputImage,
-                    "/tmp/testDicReconstructionLidMatrix_stack.tif");
-            LOGGER.trace(
-                    "Check /tmp/testDicReconstructionLidMatrix_stack.tif to"
-                            + " see results");
+            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_stack.tif");
+            LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_stack.tif to" + " see results");
         } catch (DicException e) {
             LOGGER.error(e);
         }

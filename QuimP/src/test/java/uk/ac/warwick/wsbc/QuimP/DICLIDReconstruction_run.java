@@ -8,6 +8,11 @@ package uk.ac.warwick.wsbc.QuimP;
  */
 public class DICLIDReconstruction_run {
 
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
+
     /**
      * @param args
      * @throws InterruptedException

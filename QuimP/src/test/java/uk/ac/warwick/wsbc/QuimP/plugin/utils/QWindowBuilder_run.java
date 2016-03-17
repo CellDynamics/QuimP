@@ -20,6 +20,11 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  */
 public class QWindowBuilder_run {
 
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
+
     public static void main(String[] args) throws InterruptedException {
         final Logger LOGGER = LogManager.getLogger(QWindowBuilder_run.class.getName());
         ParamList def1;

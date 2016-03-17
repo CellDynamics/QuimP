@@ -22,7 +22,10 @@ import org.junit.Test;
  *
  */
 public class BasicPolygonsTest {
-
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
     private ArrayList<Point2d> points;
     private ArrayList<Point2d> point;
     private ArrayList<Point2d> points2;

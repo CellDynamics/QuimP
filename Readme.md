@@ -36,7 +36,7 @@ project should be build in two stages. The simplest approach is as follows:
  mvn clean
  # First build all projects but without tests
  # Actually we need only plugins_test
- mvn package -Dmaven.test.skip=true -pl plugins_test/plugin1_quimp/,plugins_test/plugin2_quimp/ -am
+ mvn package -Dmaven.test.skip=true -am -pl Test-Plugins/plugin1_quimp/,Test-Plugins/plugin2_quimp/
  # build with tests
  mvn package
  ```

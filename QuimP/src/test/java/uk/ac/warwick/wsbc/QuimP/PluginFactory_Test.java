@@ -35,6 +35,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PluginFactory_Test {
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
     private static final Logger LOGGER = LogManager.getLogger(PluginFactory_Test.class.getName());
 
     /**

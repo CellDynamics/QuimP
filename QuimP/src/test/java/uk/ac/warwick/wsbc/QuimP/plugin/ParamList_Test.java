@@ -18,6 +18,10 @@ import org.junit.Test;
  *
  */
 public class ParamList_Test {
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
     private ParamList l;
 
     @Before

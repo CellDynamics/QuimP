@@ -19,6 +19,11 @@ import org.junit.Test;
  */
 public class RoiSaver_test {
 
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
+
     /**
      * @test Test method for
      * tools.images.filters.RoiSaver.saveROI(String, List<Vector2d>)

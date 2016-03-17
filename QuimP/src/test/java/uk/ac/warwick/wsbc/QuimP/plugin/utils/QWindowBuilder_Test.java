@@ -24,9 +24,12 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  *
  */
 public class QWindowBuilder_Test {
+    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
     @SuppressWarnings("unused")
-    private static final Logger LOGGER =
-            LogManager.getLogger(QWindowBuilder_Test.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(QWindowBuilder_Test.class.getName());
     private ParamList def1;
     QWindowBuilderInst inst;
 
