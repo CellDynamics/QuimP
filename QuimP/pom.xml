@@ -7,7 +7,7 @@
   </parent>
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
-  <artifactId>QuimP</artifactId>
+  <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
   <version>16.03.17</version>
   <!-- Name and licencing and other project informations -->
