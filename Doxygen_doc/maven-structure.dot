@@ -1,0 +1,23 @@
+digraph G {
+node [shape = square,fontsize=10];
+qt [color=lightgray,style=filled,label="QuimP\ntoolbox"];
+pt [color=lightgray,style=filled,label="plugin_\ntest"];
+p [color=lightgray,style=filled,label="plugins"];
+qp [label="QuimP\nplugin",color=Orange,style=filled];
+p1 [label="plugin1\nquimp",color=Blue,style=filled];
+p2 [label="plugin2\nquimp",color=Blue,style=filled];
+H [label="Hat\nSnake\nFilter",color=Khaki,style=filled];
+L [label="Loess\nSnake\nFilter",color=Khaki,style=filled];
+M [label="Mean\nSnake\nFilter",color=Khaki,style=filled];
+HE [label="Hedgehog\nSnake\nFilter",color=Khaki,style=filled];
+
+qt->qp
+qt->pt
+qt->p
+pt->p1
+pt->p2
+p->H
+p->L
+p->M
+p->HE
+}

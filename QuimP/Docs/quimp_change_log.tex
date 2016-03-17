@@ -1,0 +1,186 @@
+%% LyX 1.6.4.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage[a4paper]{geometry}
+\geometry{verbose,tmargin=2cm,bmargin=4cm,lmargin=3cm,rmargin=3cm,headheight=2cm,headsep=2cm,footskip=2cm}
+\usepackage{babel}
+\usepackage{graphicx}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2ex}  
+
+\begin{document}
+
+\title{QuimP2 Change Log}
+
+
+\author{by Richard Tyson\\Systems Biology DTC, Warwick University\\r.a.tyson@warwick.ac.uk}
+
+
+\maketitle
+
+\section{QuimP10b}
+
+\subsection{07-01-2011}
+
+\subsubsection{Fixes}
+
+\begin{itemize}
+
+\item BOA - now checks the scale of the image and utilises it to output all measurements in microns (if the time interval < 0, it is set to 1).
+
+\end{itemize}
+
+\subsubsection{Known Issues}
+
+\begin{itemize}
+
+\item NONE
+
+\end{itemize}
+
+
+\section{BOA}
+
+\subsection{BOA Version 3.1.  1-07-2010}
+
+\subsubsection{Fixes}
+
+\begin{itemize}
+
+\item Nodes always drawn white on cell paths
+\item Zoom now works with single cells
+\item Node pixels size is now scaled according to the size of the image - no more disappearing nodes
+\item Paths are now displayed optionally
+\item No more 'preview' button.  What was the preview is now saved as the final result.  Hence, BOA is not re-run when clicking 'save'.
+\item Re-wrote 'cut loops' function to be faster, and included a method to cut any intersects within the final contour. 
+\item BOA output now has labelled columns and comments (preceded by a hash)
+
+\end{itemize}
+
+\subsubsection{Known Issues}
+
+\begin{itemize}
+
+\item Nodes of interacting chains can eclipse each other when drawing.
+\item Interacting chains become warped due to them being frozen during close cell proximity.
+
+\end{itemize}
+
+\subsection{BOA Nest Version 1.0.  15-05-2010}
+
+\subsubsection{Fixes}
+
+\begin{itemize}
+
+\item User can now make several selections and add them to the ROI manager.  All selections will be tracked at once.
+\item Multiple chains can now interact to prevent them crossing one another
+\item Re-structured drawing of the contours. Now faster and more predictable.
+
+\end{itemize}
+
+\subsubsection{Known Issues}
+
+\begin{itemize}
+
+\item Drawing black nodes on white areas means that white nodes get covered in black if nodes overlap, and so both pixels appear to vanish. Temporary fix->draw all pixels white.
+\item zoom functionality no longer works as multiple chains now involved.
+\item When imageJ downscales images to draw them to screen nodes can become invisible. Temporary fix-> draw pixels 2x2. Need to set node size to the zoom level of the image.
+
+\end{itemize}
+
+\subsection{BOA + Version 2.1.  28-01-2010}
+
+\subsubsection{Fixes}
+
+\begin{itemize}
+
+\item Fixed infinite looping when node resolution equals zero.  Limit is now 1 pixel.
+\item Exception stacks now print to the IJ results window when asked to save the cause of a crash.
+\item Debugged the zoom functionality
+\item Fixed window positioning.  Windows are now sized and positioned according to the screen resolution.
+\item Fixed cell selection when using rectangular selection.
+\item Fixed drawing of the snake.  Pixels are now drawn black if in white regions.
+\item Increased the drawing resolution of the trace during contraction (draws every 10 iterations)
+\item Re-written node distance correction for more evenly spaced nodes
+\item Fixed a bug that left some nodes hanging after final scaling
+
+\end{itemize}
+
+\subsubsection{Known Issues}
+
+\begin{itemize}
+
+\item NONE
+
+\end{itemize}
+
+\section{ECMM}
+
+\subsection{07-01-2011}
+
+\subsubsection{Fixes}
+
+\begin{itemize}
+
+\item Now includes a visual output
+\item Lowered res of visual output to reduce memory requirements.
+\item Fixed a bug with the tracking of node co-ordinates that caused them to leave the range 0-1 (coords were not being reset correctly)
+
+\end{itemize}
+
+\subsubsection{Known Issues}
+
+\begin{itemize}
+
+\item A large stack can still cause a too much memory to be used for the visual output.
+
+\end{itemize}
+
+
+\section{ANA}
+
+\subsection{07-01-2011}
+
+\subsubsection{Fixes}
+
+\begin{itemize}
+
+\item Measurements of total fluorescence/area where wrong as imageJ was using a bounding box rather than the specified polygon. Now fixed. 
+
+\end{itemize}
+
+\subsubsection{Known Issues}
+
+\begin{itemize}
+
+\item NONE
+
+\end{itemize}
+
+\section{Q Analysis}
+
+
+
+\end{document}
+
+\subsection{28-01-2010}
+
+\subsubsection{Fixes}
+
+\begin{itemize}
+
+\item 
+
+\end{itemize}
+
+\subsubsection{Known Issues}
+
+\begin{itemize}
+
+\item NONE
+
+\end{itemize}
+

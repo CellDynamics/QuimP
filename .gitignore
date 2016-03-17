@@ -1,5 +1,7 @@
-Doxygen_doc/html/
-Doxygen_doc/latex/
+**/Doxygen_doc/html/
+**/Doxygen_doc/latex/
+**/Doxygen_doc/Doxygen_doc/
+
 .directory
 .DS_Store
 .fuse*
@@ -49,6 +51,9 @@ local.properties
 .mtj.tmp/
 
 # Package Files #
+*.jar
+*.war
+*.ear
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -57,6 +62,7 @@ hs_err_pid*
 
 build/
 
-QuimP_plugin/src/**/plugins.config
-!Release
-gradle
+
+target/
+*.m~
+.*.html

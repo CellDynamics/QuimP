@@ -98,23 +98,28 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ../QuimP_plugin/src \
-			 ../DIC_/src \
-			 ../Doxygen_doc
+INPUT                  = ../QuimP/src \
+                         ../Test-Plugins \
+			             ../Doxygen_doc \
+                         ../Readme.md \
+                         ../../HatSnakeFilter_quimp/src \
+                         ../../HedgehogSnakeFilter_quimp/src \
+                         ../../MeanSnakeFilter_quimp/src
                         
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
                          *.cpp \
                          *.md \
                          *.java \
-			 *.doc
+	            		 *.doc \
+                         *.uml
 RECURSIVE              = YES
 EXCLUDE                = 
                         
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        =
-EXAMPLE_PATH           =
+EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       =
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             =
@@ -274,7 +279,7 @@ SKIP_FUNCTION_MACROS   = YES
 # Configuration options related to external references
 #---------------------------------------------------------------------------
 TAGFILES               = 
-GENERATE_TAGFILE       = 
+GENERATE_TAGFILE       = html/quimp.tag
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 EXTERNAL_PAGES         = YES
@@ -309,7 +314,7 @@ DOT_PATH               =
 DOTFILE_DIRS           =
 MSCFILE_DIRS           =
 DIAFILE_DIRS           =
-PLANTUML_JAR_PATH      =
+PLANTUML_JAR_PATH      = ./
 DOT_GRAPH_MAX_NODES    = 250
 MAX_DOT_GRAPH_DEPTH    = 0
 DOT_TRANSPARENT        = NO
