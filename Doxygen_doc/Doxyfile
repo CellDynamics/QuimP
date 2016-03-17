@@ -98,11 +98,13 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ../plugins \
-                         ../plugins_test \
-                         ../QuimP-plugin/src \
+INPUT                  = ../QuimP/src \
+                         ../Test-Plugins \
 			             ../Doxygen_doc \
-                         ../Readme.md
+                         ../Readme.md \
+                         ../../HatSnakeFilter_quimp/src \
+                         ../../HedgehogSnakeFilter_quimp/src \
+                         ../../MeanSnakeFilter_quimp/src
                         
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
@@ -277,7 +279,7 @@ SKIP_FUNCTION_MACROS   = YES
 # Configuration options related to external references
 #---------------------------------------------------------------------------
 TAGFILES               = 
-GENERATE_TAGFILE       = 
+GENERATE_TAGFILE       = html/quimp.tag
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 EXTERNAL_PAGES         = YES

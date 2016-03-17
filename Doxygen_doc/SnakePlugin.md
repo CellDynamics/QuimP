@@ -146,7 +146,7 @@ Plugin --> QuimP
 QuimP -> Plugin :attachContext(""ViewUpdater"")
 note left #aqua
 Only if plugin supports
-""IPluginSynchro"" interface
+""IQuimpPluginSynchro"" interface
 end note
 Plugin --> QuimP
 
@@ -230,7 +230,7 @@ Related classes and methods:
   1. uk.ac.warwick.wsbc.QuimP.PluginFactory.getInstance(final String)
   2. uk.ac.warwick.wsbc.QuimP.BOAp.sPluginList
   3. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.attachData(final List<Point2d>)
-  4. uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro.attachContext(final ViewUpdater)
+  4. uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro.attachContext(final ViewUpdater)
   
 Activity diagram for use case **Select Plugin**.
   
@@ -249,7 +249,7 @@ endif
 partition instanceSnakePlugin {
 if (selectedPlugin!=NONE) then (yes)
 :getInstance;
-if (IPluginSynchro) then (yes)
+if (IQuimpPluginSynchro) then (yes)
 :attachContext;
 note left :Attaches ViewUpdater
 endif
@@ -353,7 +353,7 @@ Conditions:
 
 * User selected one plugin on certain slot.
 * Plugins have been already registered by **Create Engine** use case.
-* Plugin supports [IPluginSynchro](uk.ac.warwick.wsbc.QuimP.plugin.IPluginSynchro) interface
+* Plugin supports [IQuimpPluginSynchro](uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro) interface
 
 Related classes and methods:
 
@@ -421,7 +421,7 @@ The most important methods that are responsible for running plugins and setting/
 2. uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) - run segmentation for all frames and all SnakeHandlers
 3. uk.ac.warwick.wsbc.QuimP.BOA_.recalculatePlugins() - process all outlines from (`segSnakes`) by
 active plugins and copy results to `finalSnakes`. This method does not run segmentation again so it 
-is used for updating screen after any plugin action (inside plugin by interface `IPluginSynchro` or
+is used for updating screen after any plugin action (inside plugin by interface `IQuimpPluginSynchro` or
 by `JSpinners` in QuimP UI related to plugins)
  1. uk.ac.warwick.wsbc.QuimP.SnakeHandler.getBackupSnake(int)
  2. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(Snake)
