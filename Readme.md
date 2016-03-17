@@ -37,10 +37,12 @@ project should be build in two stages. The simplest approach is as follows:
  # First build all projects but without tests
  # Actually we need only plugins_test
  mvn package -Dmaven.test.skip=true -am -pl Test-Plugins/plugin1_quimp/,Test-Plugins/plugin2_quimp/
- # build with tests
- mvn package
- # generate sit
+ # build with tests fat jar
+ mvn package -P uber
+ # generate site
  mvn site
+ # install QuimP to repo (no fat jar)
+ mvn install
  ```
 
 The project requires **master pom** that currently exists in separate repository and it should be installed into local Maven repo:
