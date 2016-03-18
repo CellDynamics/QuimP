@@ -101,9 +101,9 @@ WARN_LOGFILE           =
 INPUT                  = ../src \
      	               ../Doxygen_doc \
                          ../Readme.md \
-                         ../HatSnakeFilter_quimp/src \
-                         ../HedgehogSnakeFilter_quimp/src \
-                         ../MeanSnakeFilter_quimp/src
+                         ../../HatSnakeFilter_quimp/src \
+                         ../../HedgehogSnakeFilter_quimp/src \
+                         ../../MeanSnakeFilter_quimp/src
                         
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
