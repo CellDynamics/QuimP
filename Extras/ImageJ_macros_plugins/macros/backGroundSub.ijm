@@ -1,0 +1,13 @@
+macro "backgouroundSubtraction"{
+
+roiManager("reset") 
+roiManager("Add");
+for (i=1;i<=nSlices;i++) { 
+	setSlice(i); 
+	getStatistics(area, mean, min, max, std, histogram); 
+	run("Select All"); 
+	run("Subtract...", "value="+mean); 
+	roiManager("select", 0); 
+}
+
+}
