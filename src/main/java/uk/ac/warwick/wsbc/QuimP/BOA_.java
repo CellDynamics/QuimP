@@ -568,7 +568,7 @@ public class BOA_ implements PlugIn {
 
         private MenuBar quimpMenuBar;
         private MenuItem menuVersion; // item in menu
-        private CheckboxMenuItem cbMenuPlotProcessedSnakes;
+        private CheckboxMenuItem cbMenuPlotOriginalSnakes;
         
         
         /**
@@ -646,10 +646,10 @@ public class BOA_ implements PlugIn {
             menuVersion.addActionListener(this);
             menuAbout.add(menuVersion);
 
-            cbMenuPlotProcessedSnakes = new CheckboxMenuItem("Plot processed");
-            cbMenuPlotProcessedSnakes.setState(BOAp.isProcessedSnakePlotted);
-            cbMenuPlotProcessedSnakes.addItemListener(this);
-            menuConfig.add(cbMenuPlotProcessedSnakes);
+            cbMenuPlotOriginalSnakes = new CheckboxMenuItem("Plot original");
+            cbMenuPlotOriginalSnakes.setState(BOAp.isProcessedSnakePlotted);
+            cbMenuPlotOriginalSnakes.addItemListener(this);
+            menuConfig.add(cbMenuPlotOriginalSnakes);
 
             return menuBar;
         }
@@ -1146,9 +1146,9 @@ public class BOA_ implements PlugIn {
                 }
             }
 
-            if (source == cbMenuPlotProcessedSnakes) {
+            if (source == cbMenuPlotOriginalSnakes) {
                 LOGGER.debug("got cbMenuPlotProcessedSnakes");
-                BOAp.isProcessedSnakePlotted = cbMenuPlotProcessedSnakes.getState();
+                BOAp.isProcessedSnakePlotted = cbMenuPlotOriginalSnakes.getState();
                 recalculatePlugins();
             }
 
