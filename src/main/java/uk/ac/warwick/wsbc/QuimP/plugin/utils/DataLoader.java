@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Scanner;
 
 import javax.vecmath.Point2d;
@@ -62,6 +63,7 @@ public class DataLoader {
         data = new ArrayList<Double>();
         Vert = new ArrayList<Point2d>();
         Scanner scanner = new Scanner(new File(fileName));
+        scanner.useLocale(Locale.US);
         while (scanner.hasNextDouble())
             data.add(scanner.nextDouble());
         scanner.close();
