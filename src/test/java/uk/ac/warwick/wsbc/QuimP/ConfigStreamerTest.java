@@ -28,7 +28,7 @@ public class ConfigStreamerTest {
         System.setProperty("log4j.configurationFile", "qlog4j2_test.xml");
     }
     private static final Logger LOGGER = LogManager.getLogger(ConfigStreamerTest.class.getName());
-    private tSnakePluginList p;
+    private Configurator p;
 
     @Before
     public void setUp() throws Exception {
@@ -41,13 +41,13 @@ public class ConfigStreamerTest {
         config1.put("alpha", "0.0");
         config1.put("Beta", "0.32");
 
-        p = new tSnakePluginList(2);
+        p = new Configurator();
 
-        p.sPluginList.get(0).name = "Plugin1_quimp";
-        p.sPluginList.get(0).ver = "0.01";
-        p.sPluginList.get(0).config = config;
-        p.sPluginList.get(0).isActive = true;
-        p.sPluginList.get(0).ref = new IQuimpPlugin() {
+        p.pluginList.sPluginList.get(0).name = "Plugin1_quimp";
+        p.pluginList.sPluginList.get(0).ver = "0.01";
+        p.pluginList.sPluginList.get(0).config = config;
+        p.pluginList.sPluginList.get(0).isActive = true;
+        p.pluginList.sPluginList.get(0).ref = new IQuimpPlugin() {
 
             @Override
             public void showUI(boolean val) {
@@ -80,11 +80,11 @@ public class ConfigStreamerTest {
             }
         };
 
-        p.sPluginList.get(1).name = "Plugin2_quimp";
-        p.sPluginList.get(1).ver = "0.02";
-        p.sPluginList.get(1).config = config1;
-        p.sPluginList.get(1).isActive = false;
-        p.sPluginList.get(1).ref = new IQuimpPlugin() {
+        p.pluginList.sPluginList.get(1).name = "Plugin2_quimp";
+        p.pluginList.sPluginList.get(1).ver = "0.02";
+        p.pluginList.sPluginList.get(1).config = config1;
+        p.pluginList.sPluginList.get(1).isActive = false;
+        p.pluginList.sPluginList.get(1).ref = new IQuimpPlugin() {
 
             @Override
             public void showUI(boolean val) {
@@ -161,6 +161,15 @@ public class ConfigStreamerTest {
 
     }
 
+}
+
+class Configurator {
+	public String ver = "3.0.0";
+	public tSnakePluginList pluginList;
+	
+	public Configurator() {
+		pluginList = new tSnakePluginList(2);
+	}
 }
 
 class tSnakePluginList {
