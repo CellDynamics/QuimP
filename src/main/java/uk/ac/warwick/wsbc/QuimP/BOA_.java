@@ -1196,6 +1196,21 @@ public class BOA_ implements PlugIn {
                 } else {
                     imageGroup.unzoom(canvas);
                 }
+            } else if (source == cFirstPlugin) {
+                {
+                    BOAp.snakePluginList.setActive(0, cFirstPlugin.getState());
+                    recalculatePlugins();
+                }
+            } else if (source == cSecondPlugin) {
+                BOAp.snakePluginList.setActive(1, cSecondPlugin.getState());
+                {
+                    recalculatePlugins();
+                }
+            } else if (source == cThirdPlugin) {
+                BOAp.snakePluginList.setActive(2, cThirdPlugin.getState());
+                {
+                    recalculatePlugins();
+                }
             }
 
             if (source == cbMenuPlotOriginalSnakes) {
