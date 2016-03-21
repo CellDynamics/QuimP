@@ -5032,7 +5032,7 @@ class BOAp {
         SEGrunning = false;
 
         // initialize arrays for plugins instances and give them initial values
-        snakePluginList = new SnakePluginList(NUM_SPLINE_PLUGINS);
+        snakePluginList = new SnakePluginList(NUM_SPLINE_PLUGINS,pluginFactory);
 
     }
 
@@ -5137,6 +5137,7 @@ class BOAp {
  * @see BOAp.setup()
  */
 class SnakePluginList {
+	private transient PluginFactory pluginFactory;
 
     /**
      * Keeps all Plugin related information
@@ -5184,7 +5185,7 @@ class SnakePluginList {
      * 
      * @param s Number of supported plugins
      */
-    public SnakePluginList(int s) {
+    public SnakePluginList(int s, PluginFactory pf) {
         // Array that keeps references for SPLINE plugins activated by user
         // in QuimP GUI
         // initialize list with null pointers - this is how QuimP detect that
@@ -5192,6 +5193,7 @@ class SnakePluginList {
         sPluginList = new ArrayList<Plugin>(s);
         for (int i = 0; i < s; i++)
             sPluginList.add(new Plugin(null, true));
+        pluginFactory = pf;
     }
 
     /**

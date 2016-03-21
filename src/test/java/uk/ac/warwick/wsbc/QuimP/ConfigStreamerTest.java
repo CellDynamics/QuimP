@@ -28,7 +28,8 @@ public class ConfigStreamerTest {
         System.setProperty("log4j.configurationFile", "qlog4j2_test.xml");
     }
     private static final Logger LOGGER = LogManager.getLogger(ConfigStreamerTest.class.getName());
-    private Configurator p;
+    private tSnakePluginList p;
+    private ConfigContainer cc;
 
     @Before
     public void setUp() throws Exception {
@@ -41,50 +42,14 @@ public class ConfigStreamerTest {
         config1.put("alpha", "0.0");
         config1.put("Beta", "0.32");
 
-        p = new Configurator();
+        cc = new ConfigContainer();
+        p = new tSnakePluginList(2);
 
-        p.pluginList.sPluginList.get(0).name = "Plugin1_quimp";
-        p.pluginList.sPluginList.get(0).ver = "0.01";
-        p.pluginList.sPluginList.get(0).config = config;
-        p.pluginList.sPluginList.get(0).isActive = true;
-        p.pluginList.sPluginList.get(0).ref = new IQuimpPlugin() {
-
-            @Override
-            public void showUI(boolean val) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public int setup() {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-
-            @Override
-            public void setPluginConfig(ParamList par) throws QuimpPluginException {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public String getVersion() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ParamList getPluginConfig() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-        };
-
-        p.pluginList.sPluginList.get(1).name = "Plugin2_quimp";
-        p.pluginList.sPluginList.get(1).ver = "0.02";
-        p.pluginList.sPluginList.get(1).config = config1;
-        p.pluginList.sPluginList.get(1).isActive = false;
-        p.pluginList.sPluginList.get(1).ref = new IQuimpPlugin() {
+        p.snakePluginList.get(0).name = "Plugin1_quimp";
+        p.snakePluginList.get(0).ver = "0.01";
+        p.snakePluginList.get(0).config = config;
+        p.snakePluginList.get(0).isActive = true;
+        p.snakePluginList.get(0).ref = new IQuimpPlugin() {
 
             @Override
             public void showUI(boolean val) {
@@ -116,6 +81,45 @@ public class ConfigStreamerTest {
                 return null;
             }
         };
+
+        p.snakePluginList.get(1).name = "Plugin2_quimp";
+        p.snakePluginList.get(1).ver = "0.02";
+        p.snakePluginList.get(1).config = config1;
+        p.snakePluginList.get(1).isActive = false;
+        p.snakePluginList.get(1).ref = new IQuimpPlugin() {
+
+            @Override
+            public void showUI(boolean val) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public int setup() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public void setPluginConfig(ParamList par) throws QuimpPluginException {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public String getVersion() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public ParamList getPluginConfig() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
+        
+        cc.activePluginList = p;
 
     }
 
@@ -126,9 +130,9 @@ public class ConfigStreamerTest {
     @Test
     public void test_create() throws IOException {
         Gson gson = new Gson();
-        LOGGER.trace(gson.toJson(p));
+        LOGGER.trace(gson.toJson(cc));
         FileWriter f = new FileWriter(new File("/tmp/t1.json"));
-        f.write(gson.toJson(p));
+        f.write(gson.toJson(cc));
         f.close();
 
     }
@@ -136,9 +140,9 @@ public class ConfigStreamerTest {
     @Test
     public void test_create_pretty() throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        LOGGER.trace(gson.toJson(p));
+        LOGGER.trace(gson.toJson(cc));
         FileWriter f = new FileWriter(new File("/tmp/t2.json"));
-        f.write(gson.toJson(p));
+        f.write(gson.toJson(cc));
         f.close();
     }
 
@@ -156,20 +160,17 @@ public class ConfigStreamerTest {
         local = gson.fromJson(f, tSnakePluginList.class);
         f.close();
 
-        assertEquals("Plugin1_quimp", local.sPluginList.get(0).name);
-        assertEquals("0.32", local.sPluginList.get(1).config.get("Beta"));
+        assertEquals("Plugin1_quimp", local.snakePluginList.get(0).name);
+        assertEquals("0.32", local.snakePluginList.get(1).config.get("Beta"));
 
     }
 
 }
 
-class Configurator {
-	public String ver = "3.0.0";
-	public tSnakePluginList pluginList;
-	
-	public Configurator() {
-		pluginList = new tSnakePluginList(2);
-	}
+class ConfigContainer {
+	public String version = "3.0.0";
+	public String softwareName = "QuimP::BOA";
+	public tSnakePluginList activePluginList;
 }
 
 class tSnakePluginList {
@@ -201,7 +202,7 @@ class tSnakePluginList {
         }
     }
 
-    public ArrayList<Plugin> sPluginList; //!< Holds list of plugins up to max allowed
+    public ArrayList<Plugin> snakePluginList; //!< Holds list of plugins up to max allowed
 
     /**
      * Main constructor
@@ -213,9 +214,9 @@ class tSnakePluginList {
         // in QuimP GUI
         // initialize list with null pointers - this is how QuimP detect that
         // there is plugin selected
-        sPluginList = new ArrayList<Plugin>(s);
+        snakePluginList = new ArrayList<Plugin>(s);
         for (int i = 0; i < s; i++)
-            sPluginList.add(new Plugin(null, true));
+            snakePluginList.add(new Plugin(null, true));
     }
 }
 
