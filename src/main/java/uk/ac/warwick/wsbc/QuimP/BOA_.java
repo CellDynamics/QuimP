@@ -5248,7 +5248,6 @@ class SnakePluginList {
      * 
      * RefLists are always non-empty as they are initialized with null values
      * 
-     * @param in List to check
      * @return \c true if list contains all null pointers, \c false otherwise
      */
     public boolean isRefListEmpty() {

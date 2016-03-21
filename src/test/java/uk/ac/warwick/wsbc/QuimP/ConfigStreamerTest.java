@@ -1,0 +1,203 @@
+package uk.ac.warwick.wsbc.QuimP;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
+import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
+
+public class ConfigStreamerTest {
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2_test.xml");
+    }
+    private static final Logger LOGGER = LogManager.getLogger(ConfigStreamerTest.class.getName());
+    private tSnakePluginList p;
+
+    @Before
+    public void setUp() throws Exception {
+        ParamList config = new ParamList();
+        ParamList config1 = new ParamList();
+        config.put("window", "10");
+        config.put("alpha", "0.02");
+        config.put("Beta", "-0.32");
+        config1.put("window", "30");
+        config1.put("alpha", "0.0");
+        config1.put("Beta", "0.32");
+
+        p = new tSnakePluginList(2);
+
+        p.sPluginList.get(0).name = "Plugin1_quimp";
+        p.sPluginList.get(0).ver = "0.01";
+        p.sPluginList.get(0).config = config;
+        p.sPluginList.get(0).isActive = true;
+        p.sPluginList.get(0).ref = new IQuimpPlugin() {
+
+            @Override
+            public void showUI(boolean val) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public int setup() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public void setPluginConfig(ParamList par) throws QuimpPluginException {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public String getVersion() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public ParamList getPluginConfig() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
+
+        p.sPluginList.get(1).name = "Plugin2_quimp";
+        p.sPluginList.get(1).ver = "0.02";
+        p.sPluginList.get(1).config = config1;
+        p.sPluginList.get(1).isActive = false;
+        p.sPluginList.get(1).ref = new IQuimpPlugin() {
+
+            @Override
+            public void showUI(boolean val) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public int setup() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public void setPluginConfig(ParamList par) throws QuimpPluginException {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public String getVersion() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public ParamList getPluginConfig() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    @Test
+    public void test_create() throws IOException {
+        Gson gson = new Gson();
+        LOGGER.trace(gson.toJson(p));
+        FileWriter f = new FileWriter(new File("/tmp/t1.json"));
+        f.write(gson.toJson(p));
+        f.close();
+
+    }
+
+    @Test
+    public void test_create_pretty() throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        LOGGER.trace(gson.toJson(p));
+        FileWriter f = new FileWriter(new File("/tmp/t2.json"));
+        f.write(gson.toJson(p));
+        f.close();
+    }
+
+    @Test
+    public void test_load() throws IOException {
+        Gson gson = new Gson();
+        FileReader f = new FileReader(new File("/tmp/t2.json"));
+        tSnakePluginList local;
+        local = new tSnakePluginList(2);
+        local = gson.fromJson(f, tSnakePluginList.class);
+        f.close();
+
+        assertEquals("Plugin1_quimp", local.sPluginList.get(0).name);
+        assertEquals("0.32", local.sPluginList.get(1).config.get("Beta"));
+
+    }
+
+}
+
+class tSnakePluginList {
+
+    /**
+     * Keeps all Plugin related information
+     * 
+     * @author p.baniukiewicz
+     * @date 21 Mar 2016
+     *
+     */
+    class Plugin {
+        public IQuimpPlugin ref; //!< Reference to plugin instance
+        public boolean isActive; //!< Is activate in GUI?
+        public ParamList config;
+        public String name;
+        public String ver;
+
+        /**
+         * Main constructor
+         * 
+         * @param ref Instance of plugin
+         * @param isActive 
+         */
+        Plugin(IQuimpPlugin ref, boolean isActive) {
+            this.ref = ref;
+            this.isActive = isActive;
+        }
+    }
+
+    public ArrayList<Plugin> sPluginList; //!< Holds list of plugins up to max allowed
+
+    /**
+     * Main constructor
+     * 
+     * @param s Number of supported plugins
+     */
+    public tSnakePluginList(int s) {
+        // Array that keeps references for SPLINE plugins activated by user
+        // in QuimP GUI
+        // initialize list with null pointers - this is how QuimP detect that
+        // there is plugin selected
+        sPluginList = new ArrayList<Plugin>(s);
+        for (int i = 0; i < s; i++)
+            sPluginList.add(new Plugin(null, true));
+    }
+}
