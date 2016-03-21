@@ -11,6 +11,8 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Menu;
@@ -79,6 +81,7 @@ import ij.process.FloatPolygon;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
+import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
@@ -205,7 +208,7 @@ public class BOA_ implements PlugIn {
             String path = IJ.getDirectory("plugins");
             if (path == null) {
                 IJ.log("BOA: Plugin directory not found");
-                LOGGER.warn("BOA: Plugin directory not found, use provided with arg");
+                LOGGER.warn("BOA: Plugin directory not found, use provided with arg: " + arg);
                 path = arg;
             }
             if (!setupTest()) // if not created in test
@@ -564,8 +567,9 @@ public class BOA_ implements PlugIn {
         JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
         JSpinner isMaxIterations, isBlowup, isSample_tan, isSample_norm;
         private Choice firstPluginName, secondPluginName, thirdPluginName;
-        private Button firstPluginGUI, secondPluginGUI, thirdPluginGUI;
-
+        private Button bFirstPluginGUI, bSecondPluginGUI, bThirdPluginGUI;
+        private Checkbox cFirstPlugin, cSecondPlugin, cThirdPlugin;
+        
         private MenuBar quimpMenuBar;
         private MenuItem menuVersion; // item in menu
         private CheckboxMenuItem cbMenuPlotOriginalSnakes;
@@ -675,7 +679,13 @@ public class BOA_ implements PlugIn {
             southPanel.setLayout(new GridLayout(2, 2));
             centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
 
-            pluginPanel.setLayout(new GridLayout(3, 2));
+            // Grid bag for plugin zone
+            GridBagLayout gridbag = new GridBagLayout();
+            GridBagConstraints c = new GridBagConstraints();
+            c.weightx = 0.5;
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.anchor = GridBagConstraints.LINE_START;
+            pluginPanel.setLayout(gridbag);
 
             fpsLabel = new Label("F Interval: " + IJ.d2s(BOAp.imageFrameInterval, 3) + " s");
             northPanel.add(fpsLabel);
@@ -697,12 +707,51 @@ public class BOA_ implements PlugIn {
             // are made using plugin names. see actionPerformed. If plugin of given name (NONE) is
             // not found getInstance return null which is stored in BOAp.sPluginList and checked
             // during run
+
             firstPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
-            firstPluginGUI = addButton("GUI", pluginPanel);
+            c.gridx = 0;
+            c.gridy = 0;
+            pluginPanel.add(firstPluginName, c);
+
+            bFirstPluginGUI = addButton("GUI", pluginPanel);
+            c.gridx = 1;
+            c.gridy = 0;
+            pluginPanel.add(bFirstPluginGUI, c);
+
+            cFirstPlugin = addCheckbox("A", pluginPanel, BOAp.snakePluginList.isActive(0));
+            c.gridx = 2;
+            c.gridy = 0;
+            pluginPanel.add(cFirstPlugin, c);
+
             secondPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
-            secondPluginGUI = addButton("GUI", pluginPanel);
+            c.gridx = 0;
+            c.gridy = 1;
+            pluginPanel.add(secondPluginName, c);
+
+            bSecondPluginGUI = addButton("GUI", pluginPanel);
+            c.gridx = 1;
+            c.gridy = 1;
+            pluginPanel.add(bSecondPluginGUI, c);
+
+            cSecondPlugin = addCheckbox("A", pluginPanel, BOAp.snakePluginList.isActive(1));
+            c.gridx = 2;
+            c.gridy = 1;
+            pluginPanel.add(cSecondPlugin, c);
+
             thirdPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
-            thirdPluginGUI = addButton("GUI", pluginPanel);
+            c.gridx = 0;
+            c.gridy = 2;
+            pluginPanel.add(thirdPluginName, c);
+
+            bThirdPluginGUI = addButton("GUI", pluginPanel);
+            c.gridx = 1;
+            c.gridy = 2;
+            pluginPanel.add(bThirdPluginGUI, c);
+
+            cThirdPlugin = addCheckbox("A", pluginPanel, BOAp.snakePluginList.isActive(2));
+            c.gridx = 2;
+            c.gridy = 2;
+            pluginPanel.add(cThirdPlugin, c);
 
             // --------build log---------
             Panel tp = new Panel(); // panel with text area
@@ -818,7 +867,7 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Helper method for adding buttons to UI
+         * Helper method for adding buttons to UI. Creates UI element and adds it to panel
          * 
          * @param label Label on button
          * @param p Reference to the panel where button is located
@@ -839,7 +888,7 @@ public class BOA_ implements PlugIn {
          * @param d Initial state of checkbox
          * @return Reference to created checkbox
          */
-        private Checkbox addCheckbox(final String label, final Container p, final boolean d) {
+        private Checkbox addCheckbox(final String label, final Container p, boolean d) {
             Checkbox c = new Checkbox(label, d);
             c.addItemListener(this);
             p.add(c);
@@ -847,7 +896,7 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Helper method for creating ComboBox in UI
+         * Helper method for creating ComboBox in UI. Creates UI element and adds it to panel
          *
          * @param s Strings to be included in ComboBox
          * @param mp Reference to the panel where ComboBox is located
@@ -1072,20 +1121,23 @@ public class BOA_ implements PlugIn {
                 quit();
             }
             // process plugin GUI buttons
-            if (b == firstPluginGUI) {
-                LOGGER.debug("First plugin GUI, state of BOAp is " + BOAp.sPluginList.get(0));
-                if (BOAp.sPluginList.get(0) != null) // call 0 instance
-                    BOAp.sPluginList.get(0).showUI(true);
+            if (b == bFirstPluginGUI) {
+                LOGGER.debug("First plugin GUI, state of BOAp is "
+                        + BOAp.snakePluginList.getInstance(0));
+                if (BOAp.snakePluginList.getInstance(0) != null) // call 0 instance
+                    BOAp.snakePluginList.getInstance(0).showUI(true);
             }
-            if (b == secondPluginGUI) {
-                LOGGER.debug("Second plugin GUI, state of BOAp is " + BOAp.sPluginList.get(1));
-                if (BOAp.sPluginList.get(1) != null) // call 1 instance
-                    BOAp.sPluginList.get(1).showUI(true);
+            if (b == bSecondPluginGUI) {
+                LOGGER.debug("Second plugin GUI, state of BOAp is "
+                        + BOAp.snakePluginList.getInstance(1));
+                if (BOAp.snakePluginList.getInstance(1) != null) // call 1 instance
+                    BOAp.snakePluginList.getInstance(1).showUI(true);
             }
-            if (b == thirdPluginGUI) {
-                LOGGER.debug("Third plugin GUI, state of BOAp is " + BOAp.sPluginList.get(2));
-                if (BOAp.sPluginList.get(2) != null) // call 2 instance
-                    BOAp.sPluginList.get(2).showUI(true);
+            if (b == bThirdPluginGUI) {
+                LOGGER.debug("Third plugin GUI, state of BOAp is "
+                        + BOAp.snakePluginList.getInstance(2));
+                if (BOAp.snakePluginList.getInstance(2) != null) // call 2 instance
+                    BOAp.snakePluginList.getInstance(2).showUI(true);
             }
 
             // menu listeners
@@ -1166,7 +1218,7 @@ public class BOA_ implements PlugIn {
             }
             if (source == firstPluginName) {
                 LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
-                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, null);
+                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, dataToProcess);
                 recalculatePlugins();
             }
             if (source == secondPluginName) {
@@ -1368,12 +1420,12 @@ public class BOA_ implements PlugIn {
             if (inst instanceof IQuimpPluginSynchro) // if it support backward synchronization
                 ((IQuimpPluginSynchro) inst).attachContext(viewUpdater); // attach BOA context
             // remember instance in active plugin list
-            BOAp.sPluginList.set(slot, inst);
+            BOAp.snakePluginList.setInstance(slot, inst);
             ((IQuimpPoint2dFilter) inst).attachData(dataToProcess);
         } else {
-            if (BOAp.sPluginList.get(slot) != null)
-                BOAp.sPluginList.get(slot).showUI(false);
-            BOAp.sPluginList.set(slot, null); // deselect plugin
+            if (BOAp.snakePluginList.getInstance(slot) != null)
+                BOAp.snakePluginList.getInstance(slot).showUI(false);
+            BOAp.snakePluginList.deletePlugin(slot);
         }
 
         // inform user if PluginFactory returned null for name other than NONE. this may be problem
@@ -1518,15 +1570,15 @@ public class BOA_ implements PlugIn {
     private Snake iterateOverSnakePlugins(final Snake snake)
             throws QuimpPluginException, Exception {
         Snake outsnake = snake;
-        if (!BOAp.isRefListEmpty(BOAp.sPluginList)) {
+        if (!BOAp.snakePluginList.isRefListEmpty()) {
             LOGGER.debug("sPluginList not empty");
             List<Point2d> dataToProcess = snake.asList();
-            for (IQuimpPlugin qP : BOAp.sPluginList) {
-                if (qP == null)
-                    continue; // no plugin on this slot
+            for (Plugin qP : BOAp.snakePluginList.sPluginList) {
+                if (!qP.isExecutable())
+                    continue; // no plugin on this slot or not active
                 // because it is guaranteed by pluginFactory.getPluginNames(DOES_SNAKES) used
                 // when populating GUI names and BOAp.sPluginList in actionPerformed(ActionEvent e).
-                IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP;
+                IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP.ref;
                 qPcast.attachData(dataToProcess);
                 dataToProcess = qPcast.runPlugin();
             }
@@ -4822,6 +4874,7 @@ class BOAp {
      * segmentation and after filtering are plotted.
      */
     static boolean isProcessedSnakePlotted = true;
+
     /**
      * When any plugin fails this field defines how QuimP should behave. When
      * it is \c true QuimP breaks process of segmentation and do not store
@@ -4833,14 +4886,11 @@ class BOAp {
     static boolean stopOnPluginError = true;
 
     /**
-     * Ordered list of plugins related to snake processing. Related to GUI,
-     * first plugin is at index 0, etc.
-     * Can contain \c null when there is no plugin on this slot or loading
-     * of plugin failed
-     * 
+     * List of plugins selected in plugin stack and information if the are active or not
      * @see BOAp.setup()
+     * @see SnakePluginList
      */
-    static ArrayList<IQuimpPlugin> sPluginList;
+    static SnakePluginList snakePluginList;
 
     /**
      * Return nodeRes
@@ -4865,21 +4915,6 @@ class BOAp {
         }
         min_dist = nodeRes; // min distance between nodes
         max_dist = nodeRes * 1.9; // max distance between nodes
-    }
-
-    /**
-     * Check if list of references contains all null elements.
-     * 
-     * RefLists are always non-empty as they are initialized with null values
-     * 
-     * @param in List to check
-     * @return \c true if list contains all null pointers, \c false otherwise
-     */
-    static public boolean isRefListEmpty(final List<IQuimpPlugin> in) {
-        for (IQuimpPlugin i : in)
-            if (i != null)
-                return false;
-        return true;
     }
 
     static public double getMax_dist() {
@@ -4981,13 +5016,9 @@ class BOAp {
         callCount = 0;
         SEGrunning = false;
 
-        // Array that keeps references for SPLINE plugins activated by user
-        // in QuimP GUI
-        sPluginList = new ArrayList<IQuimpPlugin>(NUM_SPLINE_PLUGINS);
-        // initialize list with null pointers - this is how QuimP detect that
-        // there is plugin selected
-        for (int i = 0; i < NUM_SPLINE_PLUGINS; i++)
-            sPluginList.add(i, null);
+        // initialize arrays for plugins instances and give them initial values
+        snakePluginList = new SnakePluginList(NUM_SPLINE_PLUGINS);
+
     }
 
     /**
@@ -5076,6 +5107,142 @@ class BOAp {
         BOA_.log("Successfully read parameters");
         return true;
     }
+}
+
+/**
+ * Ordered list of plugins related to snake processing. 
+ * 
+ * Related to GUI, first plugin is at index 0, etc. Keeps also UI settings activating or
+ * deactivating plugins.
+ * Can contain \c null when there is no plugin on this slot or loading of plugin failed
+ * 
+ * This class defines default behavior of activation box when new plugin is selected in place
+ * of old one. Currently status of plugin activation is retained.
+ * 
+ * @see BOAp.setup()
+ */
+class SnakePluginList {
+
+    /**
+     * Keeps all Plugin related information
+     * 
+     * @author p.baniukiewicz
+     * @date 21 Mar 2016
+     *
+     */
+    class Plugin {
+        public IQuimpPlugin ref; //!< Reference to plugin instance
+        public boolean isActive; //!< Is activate in GUI?
+
+        /**
+         * Main constructor
+         * 
+         * @param ref Instance of plugin
+         * @param isActive 
+         */
+        Plugin(IQuimpPlugin ref, boolean isActive) {
+            this.ref = ref;
+            this.isActive = isActive;
+        }
+
+        /**
+         * Check if all execution conditions are met
+         * 
+         * These conditions are:
+         * -# Plugin exist
+         * -# Plugin is activated in UI
+         * 
+         * @return \c true if plugin can be executed
+         */
+        public boolean isExecutable() {
+            if (ref == null)
+                return false;
+            else
+                return isActive;
+        }
+    }
+
+    public ArrayList<Plugin> sPluginList; //!< Holds list of plugins up to max allowed
+
+    /**
+     * Main constructor
+     * 
+     * @param s Number of supported plugins
+     */
+    public SnakePluginList(int s) {
+        // Array that keeps references for SPLINE plugins activated by user
+        // in QuimP GUI
+        // initialize list with null pointers - this is how QuimP detect that
+        // there is plugin selected
+        sPluginList = new ArrayList<Plugin>(s);
+        for (int i = 0; i < s; i++)
+            sPluginList.add(new Plugin(null, true));
+    }
+
+    /**
+     * Return i-th instance of plugin
+     * 
+     * @param i Number of plugin to return
+     */
+    public IQuimpPlugin getInstance(int i) {
+        return sPluginList.get(i).ref;
+    }
+
+    /**
+     * Return \c bool if i-th plugin is active or not
+     * 
+     * @param i Number of plugin to check
+     */
+    public boolean isActive(int i) {
+        return sPluginList.get(i).isActive;
+    }
+
+    /**
+     * Sets instance of plugin on slot \c i
+     * 
+     * If there is other plugin there, it replaces instance keeping its selection
+     * 
+     * @param i Slot to be set
+     * @param inst Instance
+     */
+    public void setInstance(int i, IQuimpPlugin inst) {
+        sPluginList.get(i).ref = inst;
+    }
+
+    /**
+     * Activate or deactivate plugin
+     * 
+     * @param i Slot to be set
+     * @param act \c true for active plugin, \c false for inactive
+     */
+    public void setActive(int i, boolean act) {
+        sPluginList.get(i).isActive = act;
+    }
+
+    /**
+     * Deletes plugin from memory
+     * 
+     * @param i Number of slot to delete
+     */
+    public void deletePlugin(int i) {
+        sPluginList.get(i).ref = null;
+    }
+
+    /**
+     * Check if list of references contains all null elements.
+     * 
+     * RefLists are always non-empty as they are initialized with null values
+     * 
+     * @param in List to check
+     * @return \c true if list contains all null pointers, \c false otherwise
+     */
+    public boolean isRefListEmpty() {
+        for (Plugin i : sPluginList)
+            if (i.ref != null)
+                return false;
+        return true;
+    }
+
 }
 
 /**
