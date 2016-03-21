@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +17,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
@@ -142,10 +144,15 @@ public class ConfigStreamerTest {
 
     @Test
     public void test_load() throws IOException {
-        Gson gson = new Gson();
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        // http: //
+        // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
+        gsonbuilder.registerTypeAdapter(tSnakePluginList.class,
+                new tSnakePluginListInstanceCreator(3));
+        Gson gson = gsonbuilder.create();
         FileReader f = new FileReader(new File("/tmp/t2.json"));
         tSnakePluginList local;
-        local = new tSnakePluginList(2);
+        // local = new tSnakePluginList(2);
         local = gson.fromJson(f, tSnakePluginList.class);
         f.close();
 
@@ -181,6 +188,7 @@ class tSnakePluginList {
         Plugin(IQuimpPlugin ref, boolean isActive) {
             this.ref = ref;
             this.isActive = isActive;
+            // ver = ref.getVersion();
         }
     }
 
@@ -200,4 +208,19 @@ class tSnakePluginList {
         for (int i = 0; i < s; i++)
             sPluginList.add(new Plugin(null, true));
     }
+}
+
+class tSnakePluginListInstanceCreator implements InstanceCreator<tSnakePluginList> {
+
+    private int size;
+
+    public tSnakePluginListInstanceCreator(int size) {
+        this.size = size;
+    }
+
+    @Override
+    public tSnakePluginList createInstance(Type arg0) {
+        return new tSnakePluginList(size);
+    }
+
 }
