@@ -56,7 +56,7 @@ class SnakePluginList {
             isActive = true; // !< Default value
             name = "";
             config = null; // no config or not supported by plugin
-            ver = ""; // no version or not suported
+            ver = ""; // no version or not supported
         }
 
         /**
@@ -124,6 +124,14 @@ class SnakePluginList {
          * -# Config can not be restored
          */
         public void reinitialize(PluginFactory pf) throws SnakePluginException {
+            // Skip on empty slot
+            // Empty name is not NONE because on NONE SnakePluginList.setInstance is not called
+            // and this slot has its default values initialized in Plugin constructor. On delete
+            // plugin from slot (selecting NONE) new default Plugin is created as well
+            if (name == "") { // This is default name of empty slot.
+                ref = null;
+                return;
+            }
             ref = pf.getInstance(name);
             if (ref == null)
                 throw new SnakePluginException("Plugin initialization failed. Plugin " + name

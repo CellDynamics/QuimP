@@ -103,6 +103,11 @@ public class SnakePluginListTest {
 
             @Override
             public void setPluginConfig(ParamList par) throws QuimpPluginException {
+                try {
+                    int window = par.getIntValue("window");
+                } catch (Exception e) {
+                    throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
+                }
             }
 
             @Override
@@ -285,6 +290,27 @@ public class SnakePluginListTest {
         f.close();
     }
 
+    /**
+     * @pre There is gap in plugin list
+     * @post Empty slot is saved with empty name
+     * @throws IOException
+     */
+    @Test
+    public void testSaveConfig_gap() throws IOException {
+        ConfigContainer localcc = new ConfigContainer();
+        SnakePluginList localsnakePluginList = new SnakePluginList(3, pluginFactory);
+        localcc.activePluginList = localsnakePluginList;
+        localsnakePluginList.setInstance(0, "Test1", false); // slot 0
+        localsnakePluginList.setInstance(2, "toDelete", true); // slot 2
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        snakePluginList.beforeSerialize();
+        LOGGER.trace(gson.toJson(localcc));
+        // FileWriter f = new FileWriter(new File("/tmp/snakePluginList.json"));
+        // f.write(gson.toJson(cc));
+        // f.close();
+    }
+
     @Test
     public void testloadConfig() throws IOException {
         GsonBuilder gsonbuilder = new GsonBuilder();
@@ -314,7 +340,9 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Wrong name of plugin
+     * @pre Wrong name of plugin in config
+     * @post This slot is null
+     * 
      * @throws IOException
      */
     @Test
@@ -360,7 +388,205 @@ public class SnakePluginListTest {
 
         // after plugin initialization - restore transient fields
         local.afterdeSerialize();
-        assertEquals(null, snakePluginList.getInstance(0));
+        assertEquals(null, local.getInstance(0));
+    }
+
+    /**
+     * @pre Incorrect version
+     * @post Plugin loaded with message
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testloadConfig_bad1() throws IOException {
+        //formatoff
+        String json = "{ \"version\": \"3.0.0\","
+                + "\"softwareName\": \"QuimP::BOA\","
+                + " \"activePluginList\": {"
+                + "\"sPluginList\": ["
+                + "{"
+                    + "\"isActive\": false,"
+                    + "\"name\": \"Test1\"," 
+                    + "\"ver\": \"1.2.3\""
+                + "},"
+                + "{"
+                    + "\"isActive\": true,"
+                    + "\"name\": \"Test2\","
+                    + "\"config\":"
+                    + " {"
+                        + "\"window\": \"10\""
+                        + ",\"alpha\": \"-0.45\""
+                    + "},"
+                + "\"ver\": \"20.3.4\"}," // here wrong name
+                + "{"
+                    + "\"isActive\": true,"
+                    + "\"name\": \"toDelete\","
+                    + "\"ver\": \"2.3.4\""
+                + "}]}}";
+        //formaton
+
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        // http: //
+        // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
+        gsonbuilder.registerTypeAdapter(SnakePluginList.class,
+                new SnakePluginListInstanceCreator(3, pluginFactory));
+        Gson gson = gsonbuilder.create();
+        ConfigContainer localcc;
+        localcc = gson.fromJson(json, ConfigContainer.class);
+
+        // test fields that exists without initialization of plugins
+        SnakePluginList local = localcc.activePluginList; // newly created class
+        assertEquals(3, local.getList().size());
+
+        // after plugin initialization - restore transient fields
+        local.afterdeSerialize();
+        assertEquals("2.3.4", local.getInstance(1).getVersion());
+    }
+
+    /**
+     * @pre Incompatibile config
+     * @post Plugin loaded but config not restored
+     * @warn This depends on plugin configuration. Wrong config is detected by exception thrown from
+     * setPluginConfig() from IQuimpPlugin
+     * @throws IOException
+     */
+    @Test
+    public void testloadConfig_bad2() throws IOException {
+        //formatoff
+        String json = "{ \"version\": \"3.0.0\","
+                + "\"softwareName\": \"QuimP::BOA\","
+                + " \"activePluginList\": {"
+                + "\"sPluginList\": ["
+                + "{"
+                    + "\"isActive\": false,"
+                    + "\"name\": \"Test1\"," 
+                    + "\"ver\": \"1.2.3\""
+                + "},"
+                + "{"
+                    + "\"isActive\": true,"
+                    + "\"name\": \"Test2\","
+                    + "\"config\":"
+                    + " {"
+                        + "\"window10\": \"5\"" // here wrong name
+                        + ",\"alpha\": \"-0.45\""
+                    + "},"
+                + "\"ver\": \"2.3.4\"}," 
+                + "{"
+                    + "\"isActive\": true,"
+                    + "\"name\": \"toDelete\","
+                    + "\"ver\": \"2.3.4\""
+                + "}]}}";
+        //formaton
+
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        // http: //
+        // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
+        gsonbuilder.registerTypeAdapter(SnakePluginList.class,
+                new SnakePluginListInstanceCreator(3, pluginFactory));
+        Gson gson = gsonbuilder.create();
+        ConfigContainer localcc;
+        localcc = gson.fromJson(json, ConfigContainer.class);
+
+        // test fields that exists without initialization of plugins
+        SnakePluginList local = localcc.activePluginList; // newly created class
+        assertEquals(3, local.getList().size());
+
+        // after plugin initialization - restore transient fields
+        local.afterdeSerialize();
+        assertEquals("2.3.4", local.getInstance(1).getVersion());
+        assertEquals("10", local.getInstance(1).getPluginConfig().get("window"));
+    }
+
+    /**
+     * @pre Less plugins
+     * @post List is adjusted
+     * @warn This situation must be detected on load and reported
+     * @throws IOException
+     */
+    @Test
+    public void testloadConfig_bad3() throws IOException {
+        //formatoff
+        String json = "{ \"version\": \"3.0.0\","
+                + "\"softwareName\": \"QuimP::BOA\","
+                + " \"activePluginList\": {"
+                + "\"sPluginList\": ["
+                + "{"
+                    + "\"isActive\": false,"
+                    + "\"name\": \"Test1\"," 
+                    + "\"ver\": \"1.2.3\""
+                + "},"
+                + "{"
+                    + "\"isActive\": true,"
+                    + "\"name\": \"toDelete\","
+                    + "\"ver\": \"2.3.4\""
+                + "}]}}";
+        //formaton
+
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        // http: //
+        // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
+        gsonbuilder.registerTypeAdapter(SnakePluginList.class,
+                new SnakePluginListInstanceCreator(3, pluginFactory));
+        Gson gson = gsonbuilder.create();
+        ConfigContainer localcc;
+        localcc = gson.fromJson(json, ConfigContainer.class);
+
+        // test fields that exists without initialization of plugins
+        SnakePluginList local = localcc.activePluginList; // newly created class
+        assertEquals(2, local.getList().size());
+
+        // after plugin initialization - restore transient fields
+        local.afterdeSerialize();
+        assertEquals("1.2.3", local.getInstance(0).getVersion());
+        assertEquals("2.3.4", local.getInstance(1).getVersion());
+    }
+
+    /**
+     * @pre Empty slot
+     * @post Correct order of plugins
+     * @throws IOException
+     */
+    @Test
+    public void testloadConfig_bad4() throws IOException {
+      //formatoff
+        String json = "{ \"version\": \"3.0.0\","
+                + "\"softwareName\": \"QuimP::BOA\","
+                + " \"activePluginList\": {"
+                + "\"sPluginList\": ["
+                + "{"
+                    + "\"isActive\": false,"
+                    + "\"name\": \"Test1\"," 
+                    + "\"ver\": \"1.2.3\""
+                + "},"
+                + "{"
+                    + "\"isActive\": true," // see testSaveConfig_gap
+                    + "\"name\": \"\","
+                    + "\"ver\": \"\"}," 
+                + "{"
+                    + "\"isActive\": true,"
+                    + "\"name\": \"toDelete\","
+                    + "\"ver\": \"2.3.4\""
+                + "}]}}";
+        //formaton
+
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        // http: //
+        // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
+        gsonbuilder.registerTypeAdapter(SnakePluginList.class,
+                new SnakePluginListInstanceCreator(3, pluginFactory));
+        Gson gson = gsonbuilder.create();
+        ConfigContainer localcc;
+        localcc = gson.fromJson(json, ConfigContainer.class);
+
+        // test fields that exists without initialization of plugins
+        SnakePluginList local = localcc.activePluginList; // newly created class
+        assertEquals(3, local.getList().size());
+
+        // after plugin initialization - restore transient fields
+        local.afterdeSerialize();
+        assertEquals("1.2.3", local.getInstance(0).getVersion());
+        assertEquals(null, local.getInstance(1));
+        assertEquals("2.3.4", local.getInstance(2).getVersion());
     }
 
 }
