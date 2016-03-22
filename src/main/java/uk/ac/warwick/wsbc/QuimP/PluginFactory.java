@@ -453,7 +453,6 @@ public class PluginFactory {
      * @return reference to plugin of \c name or \c null when there is any
      * problem with creating instance or given \c name does not exist in
      * \c availPlugins base
-     * @throws IllegalArgumentException when incorrect \c name
      */
     public IQuimpPlugin getInstance(final String name) {
         try {
@@ -486,10 +485,10 @@ public class PluginFactory {
  *
  */
 class PluginProperties {
-    private File file; //!< handle to file on disk
-    private int type; //!< type of plugin
-    private String className; //!< name of plugin class
-    private String version; //!< version returned from plugin
+    private File file; // !< handle to file on disk
+    private int type; // !< type of plugin
+    private String className; // !< name of plugin class
+    private String version; // !< version returned from plugin
 
     /**
      * Version getter 

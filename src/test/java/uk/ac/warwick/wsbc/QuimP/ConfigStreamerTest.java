@@ -29,7 +29,7 @@ public class ConfigStreamerTest {
     }
     private static final Logger LOGGER = LogManager.getLogger(ConfigStreamerTest.class.getName());
     private tSnakePluginList p;
-    private ConfigContainer cc;
+    private ConfigContainer1 cc;
 
     @Before
     public void setUp() throws Exception {
@@ -42,7 +42,7 @@ public class ConfigStreamerTest {
         config1.put("alpha", "0.0");
         config1.put("Beta", "0.32");
 
-        cc = new ConfigContainer();
+        cc = new ConfigContainer1();
         p = new tSnakePluginList(2);
 
         p.snakePluginList.get(0).name = "Plugin1_quimp";
@@ -118,7 +118,7 @@ public class ConfigStreamerTest {
                 return null;
             }
         };
-        
+
         cc.activePluginList = p;
 
     }
@@ -167,10 +167,10 @@ public class ConfigStreamerTest {
 
 }
 
-class ConfigContainer {
-	public String version = "3.0.0";
-	public String softwareName = "QuimP::BOA";
-	public tSnakePluginList activePluginList;
+class ConfigContainer1 {
+    public String version = "3.0.0";
+    public String softwareName = "QuimP::BOA";
+    public tSnakePluginList activePluginList;
 }
 
 class tSnakePluginList {

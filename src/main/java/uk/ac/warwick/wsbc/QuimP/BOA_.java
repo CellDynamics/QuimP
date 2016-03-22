@@ -1605,7 +1605,7 @@ public class BOA_ implements PlugIn {
         if (!snakePluginList.isRefListEmpty()) {
             LOGGER.debug("sPluginList not empty");
             List<Point2d> dataToProcess = snake.asList();
-            for (Plugin qP : snakePluginList.sPluginList) {
+            for (Plugin qP : snakePluginList.getList()) {
                 if (!qP.isExecutable())
                     continue; // no plugin on this slot or not active
                 // because it is guaranteed by pluginFactory.getPluginNames(DOES_SNAKES) used
