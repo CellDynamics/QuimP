@@ -31,6 +31,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -55,9 +56,6 @@ import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -1175,20 +1173,11 @@ public class BOA_ implements PlugIn {
                 SaveDialog sd = new SaveDialog("Save plugin config data...", saveIn, BOAp.fileName,
                         ".pgQP");
                 if (sd.getFileName() != null) {
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                    qConfig.beforeSave();
-                    LOGGER.debug(gson.toJson(qConfig));
-
-                    FileWriter f;
                     try {
-                        f = new FileWriter(new File(sd.getDirectory() + sd.getFileName()));
-                        f.write(gson.toJson(qConfig));
-                        f.close();
-                    } catch (IOException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                        qConfig.save(sd.getDirectory() + sd.getFileName());
+                    } catch (FileNotFoundException e1) {
+                        LOGGER.error("Problem with saving plugin config");
                     }
-
                 }
 
             }

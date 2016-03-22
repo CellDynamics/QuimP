@@ -45,18 +45,18 @@ class SnakePluginList {
      *
      */
     class Plugin {
-        public transient IQuimpPlugin ref; // !< Reference to plugin instance
-        public boolean isActive; // !< Is activate in GUI?
-        public String name; // !< Name of plugin delivered from PluginFactory, used to create plugin
-        public ParamList config; // !< Configuration read from plugin on save operation
-        public String ver; // !< Version read from plugin on save operation
+        public transient IQuimpPlugin ref; /*!< Reference to plugin instance */
+        public boolean isActive;/*!< Is activate in GUI?*/
+        public String name; /*!< Name of plugin delivered from PluginFactory */
+        public ParamList config; /*!< Configuration read from plugin on save operation */
+        public String ver; /*!< Version read from plugin on save operation */
 
         /**
          * Initializes empty default plugin
          */
         public Plugin() {
             ref = null;
-            isActive = true; // !< Default value
+            isActive = true; /*!< Default value */
             name = "";
             config = null; // no config or not supported by plugin
             ver = ""; // no version or not supported
