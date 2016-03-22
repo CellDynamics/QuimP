@@ -12,7 +12,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Type;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +27,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
@@ -39,6 +39,25 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SnakePluginListTest {
+
+    /**
+     * Accessor to private fields
+     * @param name Name of private method
+     * @param ref Object
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     */
+    static void accessPrivate(String name, Class<SnakePluginList> ref, SnakePluginList obj)
+            throws NoSuchMethodException, SecurityException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException {
+        Method prv = ref.getDeclaredMethod(name, (Class[]) null);
+        prv.setAccessible(true);
+        prv.invoke(obj, (Object[]) null);
+    }
+
     static {
         System.setProperty("log4j.configurationFile", "qlog4j2_test.xml");
     }
@@ -271,7 +290,8 @@ public class SnakePluginListTest {
 
     @Test
     public void testBeforeSerialize() throws Exception {
-        snakePluginList.beforeSerialize();
+        SnakePluginListTest.accessPrivate("beforeSerialize", SnakePluginList.class,
+                snakePluginList);
         for (int i = 0; i < 3; i++) {
             IQuimpPlugin inst = snakePluginList.getInstance(i);
             assertEquals(inst.getVersion(), snakePluginList.getList().get(i).ver);
@@ -281,9 +301,11 @@ public class SnakePluginListTest {
     }
 
     @Test
-    public void testSaveConfig() throws IOException {
+    public void testSaveConfig() throws IOException, NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        snakePluginList.beforeSerialize();
+        SnakePluginListTest.accessPrivate("beforeSerialize", SnakePluginList.class,
+                snakePluginList);
         LOGGER.trace(gson.toJson(cc));
         FileWriter f = new FileWriter(new File("/tmp/snakePluginList.json"));
         f.write(gson.toJson(cc));
@@ -294,9 +316,15 @@ public class SnakePluginListTest {
      * @pre There is gap in plugin list
      * @post Empty slot is saved with empty name
      * @throws IOException
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
      */
     @Test
-    public void testSaveConfig_gap() throws IOException {
+    public void testSaveConfig_gap() throws IOException, NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         ConfigContainer localcc = new ConfigContainer();
         SnakePluginList localsnakePluginList = new SnakePluginList(3, pluginFactory);
         localcc.activePluginList = localsnakePluginList;
@@ -304,7 +332,8 @@ public class SnakePluginListTest {
         localsnakePluginList.setInstance(2, "toDelete", true); // slot 2
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        snakePluginList.beforeSerialize();
+        SnakePluginListTest.accessPrivate("beforeSerialize", SnakePluginList.class,
+                snakePluginList);
         LOGGER.trace(gson.toJson(localcc));
         // FileWriter f = new FileWriter(new File("/tmp/snakePluginList.json"));
         // f.write(gson.toJson(cc));
@@ -312,7 +341,8 @@ public class SnakePluginListTest {
     }
 
     @Test
-    public void testloadConfig() throws IOException {
+    public void testloadConfig() throws IOException, NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         GsonBuilder gsonbuilder = new GsonBuilder();
         // http: //
         // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
@@ -332,7 +362,7 @@ public class SnakePluginListTest {
         assertEquals("1.2.3", local.getList().get(0).ver);
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        SnakePluginListTest.accessPrivate("afterdeSerialize", SnakePluginList.class, local);
         assertEquals(snakePluginList.getInstance(1).getPluginConfig(),
                 local.getInstance(1).getPluginConfig());
         assertEquals(snakePluginList.getInstance(2).getPluginConfig(),
@@ -344,9 +374,15 @@ public class SnakePluginListTest {
      * @post This slot is null
      * 
      * @throws IOException
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
      */
     @Test
-    public void testloadConfig_bad() throws IOException {
+    public void testloadConfig_bad() throws IOException, NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         //formatoff
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
@@ -387,7 +423,7 @@ public class SnakePluginListTest {
         assertEquals(3, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        SnakePluginListTest.accessPrivate("afterdeSerialize", SnakePluginList.class, local);
         assertEquals(null, local.getInstance(0));
     }
 
@@ -396,9 +432,15 @@ public class SnakePluginListTest {
      * @post Plugin loaded with message
      * 
      * @throws IOException
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
      */
     @Test
-    public void testloadConfig_bad1() throws IOException {
+    public void testloadConfig_bad1() throws IOException, NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         //formatoff
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
@@ -439,7 +481,7 @@ public class SnakePluginListTest {
         assertEquals(3, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        SnakePluginListTest.accessPrivate("afterdeSerialize", SnakePluginList.class, local);
         assertEquals("2.3.4", local.getInstance(1).getVersion());
     }
 
@@ -449,9 +491,15 @@ public class SnakePluginListTest {
      * @warn This depends on plugin configuration. Wrong config is detected by exception thrown from
      * setPluginConfig() from IQuimpPlugin
      * @throws IOException
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
      */
     @Test
-    public void testloadConfig_bad2() throws IOException {
+    public void testloadConfig_bad2() throws IOException, NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         //formatoff
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
@@ -492,7 +540,7 @@ public class SnakePluginListTest {
         assertEquals(3, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        SnakePluginListTest.accessPrivate("afterdeSerialize", SnakePluginList.class, local);
         assertEquals("2.3.4", local.getInstance(1).getVersion());
         assertEquals("10", local.getInstance(1).getPluginConfig().get("window"));
     }
@@ -502,9 +550,15 @@ public class SnakePluginListTest {
      * @post List is adjusted
      * @warn This situation must be detected on load and reported
      * @throws IOException
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
      */
     @Test
-    public void testloadConfig_bad3() throws IOException {
+    public void testloadConfig_bad3() throws IOException, NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         //formatoff
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
@@ -536,7 +590,7 @@ public class SnakePluginListTest {
         assertEquals(2, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        SnakePluginListTest.accessPrivate("afterdeSerialize", SnakePluginList.class, local);
         assertEquals("1.2.3", local.getInstance(0).getVersion());
         assertEquals("2.3.4", local.getInstance(1).getVersion());
     }
@@ -545,9 +599,15 @@ public class SnakePluginListTest {
      * @pre Empty slot
      * @post Correct order of plugins
      * @throws IOException
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
      */
     @Test
-    public void testloadConfig_bad4() throws IOException {
+    public void testloadConfig_bad4() throws IOException, NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
       //formatoff
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
@@ -583,7 +643,7 @@ public class SnakePluginListTest {
         assertEquals(3, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        SnakePluginListTest.accessPrivate("afterdeSerialize", SnakePluginList.class, local);
         assertEquals("1.2.3", local.getInstance(0).getVersion());
         assertEquals(null, local.getInstance(1));
         assertEquals("2.3.4", local.getInstance(2).getVersion());
@@ -595,21 +655,4 @@ class ConfigContainer {
     public String version = "3.0.0";
     public String softwareName = "QuimP::BOA";
     public SnakePluginList activePluginList;
-}
-
-class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {
-
-    private int size;
-    private PluginFactory pf;
-
-    public SnakePluginListInstanceCreator(int size, PluginFactory pf) {
-        this.size = size;
-        this.pf = pf;
-    }
-
-    @Override
-    public SnakePluginList createInstance(Type arg0) {
-        return new SnakePluginList(size, pf);
-    }
-
 }

@@ -4,12 +4,15 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.google.gson.InstanceCreator;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
@@ -60,7 +63,8 @@ class SnakePluginList {
         }
 
         /**
-         * Main constructor
+         * Main constructor. Creates instance of plugin \c name if \c name is known to provided
+         * PluginFactory.
          * 
          * @remarks If \c name is not found in registered names of plugins in provided 
          * PluginFactory \c pf, the reference \c ref will be \c null
@@ -72,6 +76,7 @@ class SnakePluginList {
             this.isActive = isActive;
             ref = pf.getInstance(name); // create instance of plugin
             this.name = name;
+            downloadPluginConfig();
         }
 
         /**
@@ -91,21 +96,10 @@ class SnakePluginList {
         }
 
         /**
-         * Load configuration stored in \c config into plugin. 
-         * 
-         * Used during restoring state of plugin on load. 
-         * @return
-         * @throws QuimpPluginException When configuration has not been accepted
+         * Copies plugin configuration to local object. Local copy of configuration
+         * is necessary for saving/loading. Should be called before saving to make sure that 
+         * latest settings are stored.
          */
-        public void uploadPluginConfig() throws QuimpPluginException {
-            if (ref != null && config != null) {
-                ref.setPluginConfig(config);
-            } else
-                LOGGER.warn(
-                        "Config can not be loaded to plugin. Reference is null or config is null");
-
-        }
-
         public void downloadPluginConfig() {
             if (ref != null) {
                 config = ref.getPluginConfig();
@@ -252,7 +246,7 @@ class SnakePluginList {
      * Fills fields in Plugin class related to configuration and version. These fields are 
      * serialized then
      * 
-     * @remarks This method should be called directly before saving.  
+     * @remarks This method should be called directly before saving to have most recent options.  
      */
     public void beforeSerialize() {
         for (Plugin i : sPluginList)
@@ -267,13 +261,13 @@ class SnakePluginList {
             try {
                 i.reinitialize(pluginFactory);
             } catch (SnakePluginException e) {
-                LOGGER.warn(e);
+                LOGGER.warn(e.getMessage());
             }
     }
 }
 
 /**
- * Local class derived from Exception for purposes of SnakePluginList
+ * Local class derived from Exception for purposes of SnakePluginList. It is not thrown outside
  * 
  * @author p.baniukiewicz
  * @date 22 Mar 2016
@@ -302,4 +296,27 @@ class SnakePluginException extends Exception {
     public SnakePluginException(String arg0, Throwable cause) {
         super(arg0, cause);
     }
+}
+
+/**
+ * Object builde for GSon and SnakePluginList class
+ * @author p.baniukiewicz
+ * @date 22 Mar 2016
+ *
+ */
+class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {
+
+    private int size;
+    private PluginFactory pf;
+
+    public SnakePluginListInstanceCreator(int size, PluginFactory pf) {
+        this.size = size;
+        this.pf = pf;
+    }
+
+    @Override
+    public SnakePluginList createInstance(Type arg0) {
+        return new SnakePluginList(size, pf);
+    }
+
 }
