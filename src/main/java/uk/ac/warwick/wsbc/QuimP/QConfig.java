@@ -36,12 +36,12 @@ public class QConfig {
     /**
      * Do everything before save
      */
-    public void beforeSave() {
+    private void beforeSave() {
         activePluginList.beforeSerialize();
 
     }
 
-    public void afterLoad() {
+    private void afterLoad() {
         activePluginList.afterdeSerialize();
     }
 
