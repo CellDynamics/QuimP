@@ -7,6 +7,7 @@ package uk.ac.warwick.wsbc.QuimP;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileReader;
@@ -494,7 +495,7 @@ public class SnakePluginListTest {
      * @throws QuimpPluginException 
      */
     @Test
-    public void testloadConfig_bad() throws IOException, QuimpPluginException {
+    public void testloadConfig_bad() throws IOException {
         //!<
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
@@ -535,7 +536,12 @@ public class SnakePluginListTest {
         assertEquals(3, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        try {
+            local.afterdeSerialize();
+            fail("Not thrown");
+        } catch (Exception e) {
+            assertTrue((e instanceof QuimpPluginException));
+        }
         assertEquals(null, local.getInstance(0));
     }
 
@@ -601,7 +607,7 @@ public class SnakePluginListTest {
      * @throws QuimpPluginException 
      */
     @Test
-    public void testloadConfig_bad2() throws IOException, QuimpPluginException {
+    public void testloadConfig_bad2() throws IOException {
         //!<
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
@@ -642,7 +648,12 @@ public class SnakePluginListTest {
         assertEquals(3, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        try {
+            local.afterdeSerialize();
+            fail("Not thrown");
+        } catch (Exception e) {
+            assertTrue((e instanceof QuimpPluginException));
+        }
         assertEquals("2.3.4", local.getInstance(1).getVersion());
         assertEquals("10", local.getInstance(1).getPluginConfig().get("window"));
     }
