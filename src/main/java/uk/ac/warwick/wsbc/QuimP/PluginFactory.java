@@ -456,6 +456,8 @@ public class PluginFactory {
      */
     public IQuimpPlugin getInstance(final String name) {
         try {
+            if (name.isEmpty())
+                throw new IllegalArgumentException("Plugin of name: " + name + " is not loaded");
             // usually name of plugin is spelled with Capital letter first
             // make sure that name is in correct format
             String qname = name.substring(0, 1).toUpperCase() + name.substring(1);

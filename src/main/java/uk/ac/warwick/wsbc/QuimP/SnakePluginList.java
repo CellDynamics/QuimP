@@ -9,14 +9,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.vecmath.Point2d;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.InstanceCreator;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 
 /**
  * Ordered list of plugins related to snake processing. 
@@ -32,7 +36,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  */
 class SnakePluginList {
     private static final Logger LOGGER = LogManager.getLogger(SnakePluginList.class.getName());
+    // all other data that are necessary for plugins
     private transient PluginFactory pluginFactory;
+    private transient List<Point2d> dataToProcess;
+    private transient ViewUpdater viewUpdater;
 
     /**
      * Keeps all Plugin related information and produces plugin instance using PluginFactory
@@ -71,11 +78,21 @@ class SnakePluginList {
          * @param name Name of plugin to be instanced
          * @param isActive 
          * @param pf PluginFactory that provides plugin objects
+         * @throws QuimpPluginException 
          */
-        public Plugin(String name, boolean isActive, PluginFactory pf) {
+        public Plugin(String name, boolean isActive, PluginFactory pf) throws QuimpPluginException {
             this.isActive = isActive;
             ref = pf.getInstance(name); // create instance of plugin
+            if (ref == null)
+                throw new QuimpPluginException("Plugin initialization failed. Plugin " + name
+                        + " can not be loaded or instanced");
             this.name = name;
+        }
+
+        public Plugin(String name, boolean isActive, PluginFactory pf, ParamList config)
+                throws QuimpPluginException {
+            this(name, isActive, pf);
+            ref.setPluginConfig(config);
         }
 
         /**
@@ -106,41 +123,9 @@ class SnakePluginList {
             }
         }
 
-        /**
-         * Build new instance of plugin using name field. Used to reinitialize plugin after
-         * loading config. 
-         * 
-         * @param pf Deliverer of plugins
-         * @throws SnakePluginException When:
-         * -# Plugin can not be loaded (can not be delivered by PluginFactory)
-         * -# Loaded plugin is different version than saved
-         * -# Config can not be restored
-         */
-        public void reinitialize(PluginFactory pf) throws SnakePluginException {
-            // Skip on empty slot
-            // Empty name is not NONE because on NONE SnakePluginList.setInstance is not called
-            // and this slot has its default values initialized in Plugin constructor. On delete
-            // plugin from slot (selecting NONE) new default Plugin is created as well
-            if (name == "") { // This is default name of empty slot.
-                ref = null;
-                return;
-            }
-            ref = pf.getInstance(name);
-            if (ref == null)
-                throw new SnakePluginException("Plugin initialization failed. Plugin " + name
-                        + " can not be loaded or instanced");
-            // restore config
-            try {
+        public void uploadPluginConfig(ParamList config) throws QuimpPluginException {
+            if (ref != null)
                 ref.setPluginConfig(config);
-            } catch (QuimpPluginException e) {
-                throw new SnakePluginException(e);
-            }
-            // check version compatibility but do nothing on lack. Just try to load
-            if (!ver.equals(ref.getVersion())) {
-                throw new SnakePluginException(
-                        "Loaded plugin (" + name + ") is in different version than saved ("
-                                + ref.getVersion() + " vs. " + ver + ")");
-            }
         }
     }
 
@@ -156,6 +141,8 @@ class SnakePluginList {
     public SnakePluginList() {
         sPluginList = new ArrayList<Plugin>();
         pluginFactory = null;
+        dataToProcess = null;
+        viewUpdater = null;
     }
 
     /**
@@ -163,12 +150,17 @@ class SnakePluginList {
      * 
      * @param s Number of supported plugins
      * @param pf Deliverer of plugins
+     * @param dataToProcess data to be connected to plugin (not obligatory)
+     * @param vu ViewUpdater to be connected to plugin
      */
-    public SnakePluginList(int s, PluginFactory pf) {
+    public SnakePluginList(int s, final PluginFactory pf, final List<Point2d> dataToProcess,
+            final ViewUpdater vu) {
         this();
         for (int i = 0; i < s; i++)
             sPluginList.add(new Plugin());
-        pluginFactory = pf;
+        this.pluginFactory = pf;
+        this.dataToProcess = dataToProcess;
+        this.viewUpdater = vu;
     }
 
     /**
@@ -211,14 +203,47 @@ class SnakePluginList {
     /**
      * Sets instance of plugin on slot \c i
      * 
-     * If there is other plugin there, it replaces instance keeping its selection
+     * If there is other plugin there, it replaces instance keeping its selection. 
+     * Connects also ViewUpdater and data to plugin if necessary
      * 
      * @param i Slot to be set
      * @param name Name of plugin - must be registered in PluginFactory or ref will be \c null
      * @param act \c true for active plugin, \c false for inactive
+     * @throws QuimpPluginException 
      */
-    public void setInstance(int i, String name, boolean act) {
+    public void setInstance(int i, String name, boolean act) throws QuimpPluginException {
+
+        if (name.isEmpty()) {
+            sPluginList.set(i, new Plugin());
+            return;
+        }
         sPluginList.set(i, new Plugin(name, act, pluginFactory));
+
+        IQuimpPlugin ref = getInstance(i);
+        if (ref != null) {
+            if (ref instanceof IQuimpPluginSynchro) // if it support backward synchronization
+                ((IQuimpPluginSynchro) ref).attachContext(viewUpdater); // attach BOA context
+            if (ref instanceof IQuimpPoint2dFilter)
+                ((IQuimpPoint2dFilter) ref).attachData(dataToProcess);
+        }
+    }
+
+    /**
+     * Sets instance of plugin on slot \c i
+     * 
+     * If there is other plugin there, it replaces instance keeping its selection. 
+     * Connects also ViewUpdater and data to plugin if necessary
+     * 
+     * @param i Slot to be set
+     * @param name Name of plugin - must be registered in PluginFactory or ref will be \c null
+     * @param act \c true for active plugin, \c false for inactive
+     * @throws QuimpPluginException 
+     */
+    public void setInstance(int i, String name, boolean act, ParamList config)
+            throws QuimpPluginException {
+        setInstance(i, name, act);
+        sPluginList.get(i).uploadPluginConfig(config);
+
     }
 
     /**
@@ -265,15 +290,30 @@ class SnakePluginList {
     }
 
     /**
-     * Restore plugins instances after deserialziation
+     * Restore plugins instances after deserialization
+     * @throws QuimpPluginException 
      */
-    public void afterdeSerialize() {
-        for (Plugin i : sPluginList)
-            try {
-                i.reinitialize(pluginFactory);
-            } catch (SnakePluginException e) {
-                LOGGER.warn(e.getMessage());
+    public void afterdeSerialize() throws QuimpPluginException {
+        // go through list and create new Plugin using old values that were restored after loading
+        for (int i = 0; i < sPluginList.size(); i++) {
+            String ver = sPluginList.get(i).ver;
+            setInstance(i, getName(i), isActive(i), sPluginList.get(i).config);
+            if (getInstance(i) != null) {
+                if (!ver.equals(sPluginList.get(i).ref.getVersion()))
+                    LOGGER.warn("Loaded plugin (" + sPluginList.get(i).name
+                            + ") is in different version than saved ("
+                            + sPluginList.get(i).ref.getVersion() + " vs. " + ver + ")");
             }
+        }
+    }
+
+    /**
+     * Close all opened plugins windows
+     */
+    public void closeAllWindows() {
+        for (int i = 0; i < sPluginList.size(); i++)
+            if (getInstance(i) != null)
+                getInstance(i).showUI(false);
     }
 }
 
@@ -319,15 +359,20 @@ class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList>
 
     private int size;
     private PluginFactory pf;
+    private List<Point2d> dt;
+    private ViewUpdater vu;
 
-    public SnakePluginListInstanceCreator(int size, PluginFactory pf) {
+    public SnakePluginListInstanceCreator(int size, final PluginFactory pf,
+            final List<Point2d> dataToProcess, final ViewUpdater vu) {
         this.size = size;
         this.pf = pf;
+        this.dt = dataToProcess;
+        this.vu = vu;
     }
 
     @Override
     public SnakePluginList createInstance(Type arg0) {
-        return new SnakePluginList(size, pf);
+        return new SnakePluginList(size, pf, dt, vu);
     }
 
 }

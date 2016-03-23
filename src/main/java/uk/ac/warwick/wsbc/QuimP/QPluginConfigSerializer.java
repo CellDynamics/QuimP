@@ -16,6 +16,8 @@ import org.apache.logging.log4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
+
 /**
  * Serves save and load operations for plugin configuration. Saved is current plugin stack with 
  * plugins settings.
@@ -57,8 +59,9 @@ public class QPluginConfigSerializer {
 
     /**
      * Do everything after load
+     * @throws QuimpPluginException 
      */
-    private void afterLoad() {
+    private void afterLoad() throws QuimpPluginException {
         activePluginList.afterdeSerialize();
     }
 
@@ -70,6 +73,7 @@ public class QPluginConfigSerializer {
     public void save(String filename) throws FileNotFoundException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         beforeSave();
+        LOGGER.debug("Saving at: " + filename);
         LOGGER.debug(gson.toJson(this));
         PrintWriter f;
         f = new PrintWriter(new File(filename));
@@ -86,9 +90,10 @@ public class QPluginConfigSerializer {
      * @param filename File to load
      * @throws IOException 
      * @return New object of QPluginConfigSerializer with values read from file \c filename
+     * @throws QuimpPluginException 
      * @see getBuilder()
      */
-    public QPluginConfigSerializer load(String filename) throws IOException {
+    public QPluginConfigSerializer load(String filename) throws IOException, QuimpPluginException {
         Gson gson = gsonbuilder.create();
         FileReader f = new FileReader(new File(filename));
         QPluginConfigSerializer localref;

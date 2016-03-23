@@ -85,7 +85,6 @@ import ij.process.StackConverter;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 
@@ -125,7 +124,7 @@ public class BOA_ implements PlugIn {
                                 // too often. These information are used for About dialog and they
                                 // re presented on window title bar
     private static int logCount = 1; // adds counter to logged messages
-    static final private int NUM_SPLINE_PLUGINS = 3; // !< number of Spline plugins
+    static final private int NUM_SPLINE_PLUGINS = 3; /*!< number of Spline plugins  */
     /**
      * List of plugins selected in plugin stack and information if the are active or not
      * This field is serializable.
@@ -224,7 +223,8 @@ public class BOA_ implements PlugIn {
             if (!setupTest()) {// if not created in test
                 pluginFactory = new PluginFactory(Paths.get(path));
                 // initialize arrays for plugins instances and give them initial values
-                snakePluginList = new SnakePluginList(NUM_SPLINE_PLUGINS, pluginFactory);
+                snakePluginList =
+                        new SnakePluginList(NUM_SPLINE_PLUGINS, pluginFactory, null, viewUpdater);
             }
         } catch (Exception e) {
             // temporary catching may in future be removed
@@ -571,7 +571,7 @@ public class BOA_ implements PlugIn {
             implements ActionListener, ItemListener, ChangeListener {
 
         final static int DEFAULT_SPINNER_SIZE = 5;
-        final static int SNAKE_PLUGIN_NUM = 3; // !< number of currently supported plugins
+        final static int SNAKE_PLUGIN_NUM = 3; /*!< number of currently supported plugins  */
         private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
         private Button bAdd, bDel, bDelSeg, bQuit;
         private Checkbox cPrevSnake, cExpSnake, cPath, cZoom;
@@ -1230,16 +1230,19 @@ public class BOA_ implements PlugIn {
                         // Register nondefault constructor
                         qConfig.getBuilder().registerTypeAdapter(SnakePluginList.class,
                                 new SnakePluginListInstanceCreator(NUM_SPLINE_PLUGINS,
-                                        pluginFactory));
+                                        pluginFactory, null, viewUpdater));
                         QPluginConfigSerializer local;
                         local = qConfig.load(od.getDirectory() + od.getFileName());
                         // restore loaded objects
+                        snakePluginList.closeAllWindows(); // close all opened windows from old inst
                         snakePluginList = local.getSnakePluginList();
                         updateCheckBoxes(); // update checkboxes
                         updateChoices(); // and choices
                         recalculatePlugins(); // and screen
                     } catch (IOException e1) {
                         LOGGER.error("Problem with loading plugin config");
+                    } catch (QuimpPluginException e1) {
+                        LOGGER.warn("One of plugins can not be instanced: " + e1.getMessage());
                     }
                 }
             }
@@ -1523,34 +1526,29 @@ public class BOA_ implements PlugIn {
      * Fills SnakePluginList fields if plugin is created and registered. 
      * Assigns all required contexts from QuimP to plugins
      * 
+     * @warning The same contexts should be restored after plugin load
+     * 
      * @param selectedPlugin Name of plugin returned from UI elements
      * @param slot Slot of plugin
      * @param dataToProcess Data to be attached to plugin
      * @param act Indicates if plugins is activated in GUI
+     * @see QuimP.SnakePluginList.Plugin.reinitialize(final PluginFactory, final List<Point2d>, final ViewUpdater)
      */
     private void instanceSnakePlugin(final String selectedPlugin, int slot,
             final List<Point2d> dataToProcess, boolean act) {
 
         IQuimpPlugin inst = null;
-        // get instance using plugin name (obtained from getPluginNames from PluginFactory
-        if (selectedPlugin != NONE) { // do no pass NONE to pluginFact
-            snakePluginList.setInstance(slot, selectedPlugin, act); // build instance
-            // add extra capabilities
-            inst = snakePluginList.getInstance(slot);
-            if (inst instanceof IQuimpPluginSynchro) // if it support backward synchronization
-                ((IQuimpPluginSynchro) inst).attachContext(viewUpdater); // attach BOA context
-            ((IQuimpPoint2dFilter) inst).attachData(dataToProcess);
-        } else {
-            if (snakePluginList.getInstance(slot) != null)
-                snakePluginList.getInstance(slot).showUI(false);
-            snakePluginList.deletePlugin(slot);
-        }
-
-        // inform user if PluginFactory returned null for name other than NONE. this may be problem
-        // with plugin
-        if (inst == null && selectedPlugin != NONE) {
+        try {
+            // get instance using plugin name (obtained from getPluginNames from PluginFactory
+            if (selectedPlugin != NONE) { // do no pass NONE to pluginFact
+                snakePluginList.setInstance(slot, selectedPlugin, act); // build instance
+            } else {
+                if (snakePluginList.getInstance(slot) != null)
+                    snakePluginList.getInstance(slot).showUI(false);
+                snakePluginList.deletePlugin(slot);
+            }
+        } catch (QuimpPluginException e) {
             LOGGER.warn("Plugin " + selectedPlugin + " cannot be loaded");
-            IJ.log("Plugin " + selectedPlugin + " cannot be loaded");
         }
     }
 
@@ -1987,6 +1985,9 @@ public class BOA_ implements PlugIn {
     void deleteSeg(int x, int y) {
     }
 
+    /**
+     * Initializing all data saving and exporting results to disk and IJ
+     */
     private void finish() {
         IJ.showStatus("BOA-FINISHING");
         YesNoCancelDialog ync;
@@ -1995,6 +1996,11 @@ public class BOA_ implements PlugIn {
             try {
                 if (nest.writeSnakes()) {
                     nest.analyse(imageGroup.getOrgIpl());
+                    // auto save plugin config
+                    QPluginConfigSerializer qConfig =
+                            new QPluginConfigSerializer(quimpInfo, snakePluginList);
+                    qConfig.save(
+                            BOAp.outFile.getParent() + File.separator + BOAp.fileName + ".pgQP");
                 } else {
                     ync = new YesNoCancelDialog(window, "Save Segmentation",
                             "Quit without saving?");
@@ -2788,7 +2794,7 @@ class Constrictor {
 class Nest {
 
     private ArrayList<SnakeHandler> sHs;
-    private int NSNAKES; // !< Number of stored snakes in nest
+    private int NSNAKES; /*!< Number of stored snakes in nest  */
     private int ALIVE;
     private int nextID; // handler ID's
 
@@ -2999,8 +3005,8 @@ class SnakeHandler {
     private int startFrame;
     private int endFrame;
     private Snake liveSnake;
-    private Snake[] finalSnakes; // !< series of snakes, result of cell segm. and plugin processing
-    private Snake[] segSnakes; // !< series of snakes, result of cell segmentation only
+    private Snake[] finalSnakes; /*!< series of snakes, result of cell segm. and plugin processing*/
+    private Snake[] segSnakes; /*!< series of snakes, result of cell segmentation only  */
     private int ID;
 
     /**
@@ -4926,41 +4932,41 @@ class Node {
  */
 class BOAp {
 
-    static File orgFile, outFile; // !< paramFile;
-    static String fileName; // !< file name only, no extension
-    static QParams readQp; // !< read in parameter file
+    static File orgFile, outFile; /*!< paramFile; */
+    static String fileName; /*!< file name only, no extension */
+    static QParams readQp; /*!< read in parameter file */
     //
     // Parameters Numeric
-    static private double nodeRes; // !< Number of nodes on ROI edge
-    static int blowup; // !< distance to blow up chain
+    static private double nodeRes; /*!< Number of nodes on ROI edge */
+    static int blowup; /*!< distance to blow up chain */
     static double vel_crit;
     static double f_central;
-    static double f_image; // !< image force
-    static int max_iterations; // !< max iterations per contraction
+    static double f_image; /*!< image force */
+    static int max_iterations; /*!< max iterations per contraction */
     static int sample_tan;
     static int sample_norm;
     static double f_contract;
     static double finalShrink;
     // Switch Params
-    static boolean use_previous_snake;// !< next contraction begins with prev chain
+    static boolean use_previous_snake;/*!< next contraction begins with prev chain */
     static boolean showPaths;
-    static boolean expandSnake; // !< whether to act as an expanding snake
+    static boolean expandSnake; /*!< whether to act as an expanding snake */
     // internal parameters
-    static int NMAX; // !< maximum number of nodes (% of starting nodes)
+    static int NMAX; /*!< maximum number of nodes (% of starting nodes) */
     static double delta_t;
     static double sensitivity;
     static double f_friction;
-    static int FRAMES; // !< Number of frames in stack
+    static int FRAMES; /*!< Number of frames in stack */
     static int WIDTH, HEIGHT;
-    static int cut_every; // !< cut loops in chain every X frames
-    static boolean oldFormat; // !< output old QuimP format?
-    static boolean saveSnake; // !< save snake data
-    static private double min_dist; // !< min distance between nodes
-    static private double max_dist; // !< max distance between nodes
-    static double proximity; // !< distance between centroids at which contact is tested for
-    static double proxFreeze; // !< proximity of nodes to freeze when blowing up
+    static int cut_every; /*!< cut loops in chain every X frames */
+    static boolean oldFormat; /*!< output old QuimP format? */
+    static boolean saveSnake; /*!< save snake data */
+    static private double min_dist; /*!< min distance between nodes */
+    static private double max_dist; /*!< max distance between nodes */
+    static double proximity; /*!< distance between centroids at which contact is tested for */
+    static double proxFreeze; /*!< proximity of nodes to freeze when blowing up */
     static boolean savedOne;
-    static double imageScale; // !< scale of image in
+    static double imageScale; /*!< scale of image in */
     static double imageFrameInterval;
     static boolean scaleAdjusted;
     static boolean fIAdjusted;
@@ -4969,12 +4975,12 @@ class BOAp {
     static boolean zoom;
     static boolean doDelete;
     static boolean doDeleteSeg;
-    static boolean editMode; // !< is select a cell for editing active?
+    static boolean editMode; /*!< is select a cell for editing active? */
     static int editingID; // currently editing cell iD. -1 if not editing
     static boolean useSubPixel = true;
     static boolean supressStateChangeBOArun = false;
     static int callCount; // use to test how many times a method is called
-    static boolean SEGrunning; // !< is seg running
+    static boolean SEGrunning; /*!< is seg running */
 
     /**
      * Plot or not snakes after processing by plugins. If \c yes both snakes, after 
