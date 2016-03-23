@@ -318,38 +318,6 @@ class SnakePluginList {
 }
 
 /**
- * Local class derived from Exception for purposes of SnakePluginList. It is not thrown outside
- * 
- * @author p.baniukiewicz
- * @date 22 Mar 2016
- */
-class SnakePluginException extends Exception {
-
-    private static final long serialVersionUID = 1L;
-
-    public SnakePluginException() {
-        super();
-    }
-
-    public SnakePluginException(String message, Throwable cause, boolean enableSuppression,
-            boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-
-    public SnakePluginException(Throwable cause) {
-        super(cause);
-    }
-
-    public SnakePluginException(String arg0) {
-        super(arg0);
-    }
-
-    public SnakePluginException(String arg0, Throwable cause) {
-        super(arg0, cause);
-    }
-}
-
-/**
  * Object builder for GSon and SnakePluginList class
  * @author p.baniukiewicz
  * @date 22 Mar 2016
