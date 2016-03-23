@@ -453,10 +453,11 @@ public class PluginFactory {
      * @return reference to plugin of \c name or \c null when there is any
      * problem with creating instance or given \c name does not exist in
      * \c availPlugins base
-     * @throws IllegalArgumentException when incorrect \c name
      */
     public IQuimpPlugin getInstance(final String name) {
         try {
+            if (name.isEmpty())
+                throw new IllegalArgumentException("Plugin of name: " + name + " is not loaded");
             // usually name of plugin is spelled with Capital letter first
             // make sure that name is in correct format
             String qname = name.substring(0, 1).toUpperCase() + name.substring(1);
@@ -470,8 +471,8 @@ public class PluginFactory {
             return instance;
         } catch (MalformedURLException | ClassNotFoundException | InstantiationException
                 | IllegalAccessException | IllegalArgumentException e) {
-            LOGGER.error("Plugin " + name + " can not be instanced");
-            LOGGER.error(e);
+            LOGGER.error(
+                    "Plugin " + name + " can not be instanced (reason: " + e.getMessage() + ")");
             return null;
         }
 
@@ -486,10 +487,10 @@ public class PluginFactory {
  *
  */
 class PluginProperties {
-    private File file; //!< handle to file on disk
-    private int type; //!< type of plugin
-    private String className; //!< name of plugin class
-    private String version; //!< version returned from plugin
+    private File file; // !< handle to file on disk
+    private int type; // !< type of plugin
+    private String className; // !< name of plugin class
+    private String version; // !< version returned from plugin
 
     /**
      * Version getter 

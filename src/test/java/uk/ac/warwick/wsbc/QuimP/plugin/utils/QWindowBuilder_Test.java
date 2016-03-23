@@ -44,8 +44,7 @@ public class QWindowBuilder_Test {
     }
 
     @Rule
-    public TestName name = new TestName(); /// < Allow to get tested method name
-                                           /// (called at setUp())
+    public TestName name = new TestName(); // !< Allow to get tested method name (called at setUp())
 
     @Before
     public void setUp() throws Exception {
