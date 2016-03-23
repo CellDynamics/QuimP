@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -370,6 +371,63 @@ public class SnakePluginListTest {
     }
 
     /**
+     * Try to load config where is more than one json structure
+     */
+    @Test
+    @Ignore("Does not work - two json in one file")
+    public void testloadConfig_1() {
+      //!<
+        String json = "{}"
+                + "{ \"version\": \"3.0.0\","
+                + "\"softwareName\": \"QuimP::BOA\","
+                + " \"activePluginList\": {"
+                + "\"sPluginList\": ["
+                + "{"
+                    + "\"isActive\": false,"
+                    + "\"name\": \"Test1\"," 
+                    + "\"ver\": \"1.2.3\""
+                + "},"
+                + "{"
+                    + "\"isActive\": true,"
+                    + "\"name\": \"Test2\","
+                    + "\"config\":"
+                    + " {"
+                        + "\"window\": \"10\""
+                        + ",\"alpha\": \"-0.45\""
+                    + "},"
+                + "\"ver\": \"2.3.4\"},"
+                + "{"
+                    + "\"isActive\": true,"
+                    + "\"name\": \"toDelete\","
+                    + "\"ver\": \"2.3.4\""
+                + "}]}}";
+        // */
+
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        // http: //
+        // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
+        gsonbuilder.registerTypeAdapter(SnakePluginList.class,
+                new SnakePluginListInstanceCreator(3, pluginFactory));
+        Gson gson = gsonbuilder.create();
+        ConfigContainer localcc;
+        localcc = gson.fromJson(json, ConfigContainer.class);
+
+        // test fields that exists without initialization of plugins
+        SnakePluginList local = localcc.activePluginList; // newly created class
+        assertEquals(3, local.getList().size());
+        assertFalse(local.isActive(0));
+        assertEquals("Test1", local.getList().get(0).name);
+        assertEquals("1.2.3", local.getList().get(0).ver);
+
+        // after plugin initialization - restore transient fields
+        local.afterdeSerialize();
+        assertEquals(snakePluginList.getInstance(1).getPluginConfig(),
+                local.getInstance(1).getPluginConfig());
+        assertEquals(snakePluginList.getInstance(2).getPluginConfig(),
+                local.getInstance(2).getPluginConfig());
+    }
+
+    /**
      * @pre Wrong name of plugin in config
      * @post This slot is null
      * 
@@ -383,7 +441,7 @@ public class SnakePluginListTest {
     @Test
     public void testloadConfig_bad() throws IOException, NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        //formatoff
+        //!<
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
                 + " \"activePluginList\": {"
@@ -407,7 +465,7 @@ public class SnakePluginListTest {
                     + "\"name\": \"toDelete\","
                     + "\"ver\": \"2.3.4\""
                 + "}]}}";
-        //formaton
+        // */
 
         GsonBuilder gsonbuilder = new GsonBuilder();
         // http: //
@@ -441,7 +499,7 @@ public class SnakePluginListTest {
     @Test
     public void testloadConfig_bad1() throws IOException, NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        //formatoff
+        //!<
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
                 + " \"activePluginList\": {"
@@ -465,7 +523,7 @@ public class SnakePluginListTest {
                     + "\"name\": \"toDelete\","
                     + "\"ver\": \"2.3.4\""
                 + "}]}}";
-        //formaton
+        // */
 
         GsonBuilder gsonbuilder = new GsonBuilder();
         // http: //
@@ -500,7 +558,7 @@ public class SnakePluginListTest {
     @Test
     public void testloadConfig_bad2() throws IOException, NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        //formatoff
+        //!<
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
                 + " \"activePluginList\": {"
@@ -524,7 +582,7 @@ public class SnakePluginListTest {
                     + "\"name\": \"toDelete\","
                     + "\"ver\": \"2.3.4\""
                 + "}]}}";
-        //formaton
+        // */
 
         GsonBuilder gsonbuilder = new GsonBuilder();
         // http: //
@@ -559,7 +617,7 @@ public class SnakePluginListTest {
     @Test
     public void testloadConfig_bad3() throws IOException, NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        //formatoff
+        //!<
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
                 + " \"activePluginList\": {"
@@ -574,7 +632,7 @@ public class SnakePluginListTest {
                     + "\"name\": \"toDelete\","
                     + "\"ver\": \"2.3.4\""
                 + "}]}}";
-        //formaton
+        // */
 
         GsonBuilder gsonbuilder = new GsonBuilder();
         // http: //
@@ -608,7 +666,7 @@ public class SnakePluginListTest {
     @Test
     public void testloadConfig_bad4() throws IOException, NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-      //formatoff
+        //!<
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
                 + " \"activePluginList\": {"
@@ -627,7 +685,7 @@ public class SnakePluginListTest {
                     + "\"name\": \"toDelete\","
                     + "\"ver\": \"2.3.4\""
                 + "}]}}";
-        //formaton
+        // */
 
         GsonBuilder gsonbuilder = new GsonBuilder();
         // http: //

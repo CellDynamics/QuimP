@@ -76,7 +76,6 @@ class SnakePluginList {
             this.isActive = isActive;
             ref = pf.getInstance(name); // create instance of plugin
             this.name = name;
-            downloadPluginConfig();
         }
 
         /**
@@ -138,8 +137,9 @@ class SnakePluginList {
             }
             // check version compatibility but do nothing on lack. Just try to load
             if (!ver.equals(ref.getVersion())) {
-                throw new SnakePluginException("Loaded plugin is in different version than saved ("
-                        + ref.getVersion() + " vs. " + ver + ")");
+                throw new SnakePluginException(
+                        "Loaded plugin (" + name + ") is in different version than saved ("
+                                + ref.getVersion() + " vs. " + ver + ")");
             }
         }
     }
@@ -183,9 +183,20 @@ class SnakePluginList {
      * Return i-th instance of plugin
      * 
      * @param i Number of plugin to return
+     * @return Instance of plugin
      */
     public IQuimpPlugin getInstance(int i) {
         return sPluginList.get(i).ref;
+    }
+
+    /**
+     * Return i-th plugin name
+     * 
+     * @param i Number of plugin to return
+     * @return Name of plugin
+     */
+    public String getName(int i) {
+        return sPluginList.get(i).name;
     }
 
     /**
@@ -299,7 +310,7 @@ class SnakePluginException extends Exception {
 }
 
 /**
- * Object builde for GSon and SnakePluginList class
+ * Object builder for GSon and SnakePluginList class
  * @author p.baniukiewicz
  * @date 22 Mar 2016
  *

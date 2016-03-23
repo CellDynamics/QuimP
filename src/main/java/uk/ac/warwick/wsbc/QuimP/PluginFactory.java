@@ -469,8 +469,8 @@ public class PluginFactory {
             return instance;
         } catch (MalformedURLException | ClassNotFoundException | InstantiationException
                 | IllegalAccessException | IllegalArgumentException e) {
-            LOGGER.error("Plugin " + name + " can not be instanced");
-            LOGGER.error(e);
+            LOGGER.error(
+                    "Plugin " + name + " can not be instanced (reason: " + e.getMessage() + ")");
             return null;
         }
 

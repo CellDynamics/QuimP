@@ -124,7 +124,6 @@ public class BOA_ implements PlugIn {
     private String[] quimpInfo; // keeps data from getQuimPBuildInfo() to prevent using this method
                                 // too often. These information are used for About dialog and they
                                 // re presented on window title bar
-    public QConfig qConfig; // Serialization object. Hold all other classes that should be saved
     private static int logCount = 1; // adds counter to logged messages
     static final private int NUM_SPLINE_PLUGINS = 3; // !< number of Spline plugins
     /**
@@ -187,8 +186,6 @@ public class BOA_ implements PlugIn {
         viewUpdater = new ViewUpdater(this);
         // collect information about quimp version read frm jar
         quimpInfo = getQuimPBuildInfo();
-        // Create Serialization object
-        qConfig = new QConfig(quimpInfo[0]);
 
         ImagePlus ip = WindowManager.getCurrentImage();
         lastTool = IJ.getToolName();
@@ -228,8 +225,6 @@ public class BOA_ implements PlugIn {
                 pluginFactory = new PluginFactory(Paths.get(path));
                 // initialize arrays for plugins instances and give them initial values
                 snakePluginList = new SnakePluginList(NUM_SPLINE_PLUGINS, pluginFactory);
-                qConfig.activePluginList = snakePluginList; // assign reference as this class
-                // will be saved
             }
         } catch (Exception e) {
             // temporary catching may in future be removed
@@ -1025,6 +1020,46 @@ public class BOA_ implements PlugIn {
         }
 
         /**
+         * Update checkboxes
+         * 
+         * @see SnakePluginList
+         * @see itemStateChanged(ItemEvent)
+         */
+        private void updateCheckBoxes() {
+            // first plugin activity
+            cFirstPlugin.setState(snakePluginList.isActive(0));
+            // second plugin activity
+            cSecondPlugin.setState(snakePluginList.isActive(1));
+            // third plugin activity
+            cThirdPlugin.setState(snakePluginList.isActive(2));
+        }
+
+        /**
+         * Update Choices
+         * 
+         * @see SnakePluginList
+         * @see itemStateChanged(ItemEvent)
+         */
+        private void updateChoices() {
+            // first slot snake plugin
+            if (snakePluginList.getInstance(0) == null)
+                firstPluginName.select(NONE);
+            else
+                firstPluginName.select(snakePluginList.getName(0));
+            // second slot snake plugin
+            if (snakePluginList.getInstance(1) == null)
+                secondPluginName.select(NONE);
+            else
+                secondPluginName.select(snakePluginList.getName(1));
+            // third slot snake plugin
+            if (snakePluginList.getInstance(2) == null)
+                thirdPluginName.select(NONE);
+            else
+                thirdPluginName.select(snakePluginList.getName(2));
+
+        }
+
+        /**
          * Main method that handles all actions performed on UI elements.
          * 
          * Do not support mouse events, only UI elements like buttons, spinners and menus. 
@@ -1174,7 +1209,11 @@ public class BOA_ implements PlugIn {
                         ".pgQP");
                 if (sd.getFileName() != null) {
                     try {
+                        // Create Serialization object
+                        QPluginConfigSerializer qConfig =
+                                new QPluginConfigSerializer(quimpInfo, snakePluginList);
                         qConfig.save(sd.getDirectory() + sd.getFileName());
+                        qConfig = null;
                     } catch (FileNotFoundException e1) {
                         LOGGER.error("Problem with saving plugin config");
                     }
@@ -1182,7 +1221,27 @@ public class BOA_ implements PlugIn {
 
             }
             if (b == menuLoadConfig) {
-                LOGGER.warn("Not implemented yet");
+                OpenDialog od = new OpenDialog("Load plugin config data...", "");
+                if (od.getFileName() != null) {
+                    try {
+                        // Create Serialization object
+                        QPluginConfigSerializer qConfig =
+                                new QPluginConfigSerializer(quimpInfo, snakePluginList);
+                        // Register nondefault constructor
+                        qConfig.getBuilder().registerTypeAdapter(SnakePluginList.class,
+                                new SnakePluginListInstanceCreator(NUM_SPLINE_PLUGINS,
+                                        pluginFactory));
+                        QPluginConfigSerializer local;
+                        local = qConfig.load(od.getDirectory() + od.getFileName());
+                        // restore loaded objects
+                        snakePluginList = local.getSnakePluginList();
+                        updateCheckBoxes(); // update checkboxes
+                        updateChoices(); // and choices
+                        recalculatePlugins(); // and screen
+                    } catch (IOException e1) {
+                        LOGGER.error("Problem with loading plugin config");
+                    }
+                }
             }
 
             // run segmentation for selected cases
