@@ -54,7 +54,6 @@ public class QPluginConfigSerializer {
      */
     private void beforeSave() {
         activePluginList.beforeSerialize();
-
     }
 
     /**

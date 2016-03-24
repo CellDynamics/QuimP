@@ -52,11 +52,11 @@ class SnakePluginList {
      *
      */
     class Plugin {
-        public transient IQuimpPlugin ref; /*!< Reference to plugin instance */
-        public boolean isActive;/*!< Is activate in GUI?*/
-        public String name; /*!< Name of plugin delivered from PluginFactory */
-        public ParamList config; /*!< Configuration read from plugin on save operation */
-        public String ver; /*!< Version read from plugin on save operation */
+        private transient IQuimpPlugin ref; /*!< Reference to plugin instance */
+        private boolean isActive;/*!< Is activate in GUI?*/
+        private String name; /*!< Name of plugin delivered from PluginFactory */
+        private ParamList config; /*!< Configuration read from plugin on save operation */
+        private String ver; /*!< Version read from plugin on save operation */
 
         /**
          * Initializes empty default plugin
@@ -80,7 +80,8 @@ class SnakePluginList {
          * @param pf PluginFactory that provides plugin objects
          * @throws QuimpPluginException 
          */
-        public Plugin(String name, boolean isActive, PluginFactory pf) throws QuimpPluginException {
+        public Plugin(final String name, boolean isActive, final PluginFactory pf)
+                throws QuimpPluginException {
             this.isActive = isActive;
             ref = pf.getInstance(name); // create instance of plugin
             if (ref == null)
@@ -89,8 +90,8 @@ class SnakePluginList {
             this.name = name;
         }
 
-        public Plugin(String name, boolean isActive, PluginFactory pf, ParamList config)
-                throws QuimpPluginException {
+        public Plugin(final String name, boolean isActive, final PluginFactory pf,
+                final ParamList config) throws QuimpPluginException {
             this(name, isActive, pf);
             ref.setPluginConfig(config);
         }
@@ -123,9 +124,24 @@ class SnakePluginList {
             }
         }
 
-        public void uploadPluginConfig(ParamList config) throws QuimpPluginException {
+        /**
+         * Upload provided configuration to plugin
+         * 
+         * @param config Configuration to upload
+         * @throws QuimpPluginException when \c config can not be uploaded to plugin
+         */
+        public void uploadPluginConfig(final ParamList config) throws QuimpPluginException {
             if (ref != null)
                 ref.setPluginConfig(config);
+        }
+
+        /**
+         * Return reference to plugin loaded from jar
+         * 
+         * @return reference to jar
+         */
+        public IQuimpPlugin getRef() {
+            return ref;
         }
     }
 
@@ -192,6 +208,29 @@ class SnakePluginList {
     }
 
     /**
+     * Return i-th plugin version
+     * 
+     * @param i Number of plugin to return
+     * @return Version of plugin
+     */
+    public String getVer(int i) {
+        return sPluginList.get(i).ver;
+    }
+
+    /**
+     * Return i-th plugin configuration
+     * 
+     * @param i Number of plugin to return
+     * @return \b Copy of configuration of plugin
+     */
+    public ParamList getConfig(int i) {
+        if (sPluginList.get(i).config != null)
+            return new ParamList(sPluginList.get(i).config);
+        else
+            return null;
+    }
+
+    /**
      * Return \c bool if i-th plugin is active or not
      * 
      * @param i Number of plugin to check
@@ -203,15 +242,15 @@ class SnakePluginList {
     /**
      * Sets instance of plugin on slot \c i
      * 
-     * If there is other plugin there, it replaces instance keeping its selection. 
-     * Connects also ViewUpdater and data to plugin if necessary
+     * If there is other plugin there, it replaces instance keeping its selection state. 
+     * Connects also ViewUpdater and data to plugin if necessary.
      * 
      * @param i Slot to be set
      * @param name Name of plugin - must be registered in PluginFactory or ref will be \c null
      * @param act \c true for active plugin, \c false for inactive
      * @throws QuimpPluginException 
      */
-    public void setInstance(int i, String name, boolean act) throws QuimpPluginException {
+    public void setInstance(int i, final String name, boolean act) throws QuimpPluginException {
 
         if (name.isEmpty()) {
             sPluginList.set(i, new Plugin());
@@ -237,9 +276,10 @@ class SnakePluginList {
      * @param i Slot to be set
      * @param name Name of plugin - must be registered in PluginFactory or ref will be \c null
      * @param act \c true for active plugin, \c false for inactive
-     * @throws QuimpPluginException 
+     * @param config Configuration to connect to plugin
+     * @throws QuimpPluginException When \c config is not compatible
      */
-    public void setInstance(int i, String name, boolean act, ParamList config)
+    public void setInstance(int i, final String name, boolean act, final ParamList config)
             throws QuimpPluginException {
         setInstance(i, name, act);
         sPluginList.get(i).uploadPluginConfig(config);
@@ -267,7 +307,6 @@ class SnakePluginList {
 
     /**
      * Check if list of references contains all null elements.
-     * 
      * 
      * @return \c true if list does not contain any valid plugin, \c false otherwise
      */
@@ -297,6 +336,7 @@ class SnakePluginList {
         // go through list and create new Plugin using old values that were restored after loading
         for (int i = 0; i < sPluginList.size(); i++) {
             String ver = sPluginList.get(i).ver;
+            // sets new instance of plugin using old configuration loaded
             setInstance(i, getName(i), isActive(i), sPluginList.get(i).config);
             if (getInstance(i) != null) {
                 if (!ver.equals(sPluginList.get(i).ref.getVersion()))

@@ -44,8 +44,10 @@ public class SnakePluginListTest {
 
     /**
      * Accessor to private fields
+     * 
      * @param name Name of private method
      * @param ref Object
+     * @param obj 
      * @throws SecurityException 
      * @throws NoSuchMethodException 
      * @throws InvocationTargetException 
@@ -214,8 +216,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Test method for 
-     * {@link wsbc.QuimP.SnakePluginList#SnakePluginList(int, uk.ac.warwick.wsbc.QuimP.PluginFactory)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList.SnakePluginList(int, final PluginFactory, final List<Point2d>, final ViewUpdater)}
      */
     @Test
     public void testSnakePluginListIntPluginFactory() throws Exception {
@@ -242,7 +243,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setInstance(int, java.lang.String)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setInstance(int, final String, boolean)}.
      */
     @Test
     public void testSetInstance() throws Exception {
@@ -296,9 +297,9 @@ public class SnakePluginListTest {
                 snakePluginList);
         for (int i = 0; i < 3; i++) {
             IQuimpPlugin inst = snakePluginList.getInstance(i);
-            assertEquals(inst.getVersion(), snakePluginList.getList().get(i).ver);
+            assertEquals(inst.getVersion(), snakePluginList.getVer(i));
             assertEquals(snakePluginList.getInstance(i).getPluginConfig(),
-                    snakePluginList.getList().get(i).config);
+                    snakePluginList.getConfig(i));
         }
     }
 
@@ -363,8 +364,8 @@ public class SnakePluginListTest {
         SnakePluginList local = localcc.activePluginList; // newly created class
         assertEquals(3, local.getList().size());
         assertFalse(local.isActive(0));
-        assertEquals("Test1", local.getList().get(0).name);
-        assertEquals("1.2.3", local.getList().get(0).ver);
+        assertEquals("Test1", local.getName(0));
+        assertEquals("1.2.3", local.getVer(0));
 
         // after plugin initialization - restore transient fields
         local.afterdeSerialize();
@@ -421,8 +422,8 @@ public class SnakePluginListTest {
         SnakePluginList local = localcc.activePluginList; // newly created class
         assertEquals(3, local.getList().size());
         assertFalse(local.isActive(0));
-        assertEquals("Test1", local.getList().get(0).name);
-        assertEquals("1.2.3", local.getList().get(0).ver);
+        assertEquals("Test1", local.getName(0));
+        assertEquals("1.2.3", local.getVer(0));
 
         // after plugin initialization - restore transient fields
         local.afterdeSerialize();
@@ -477,8 +478,8 @@ public class SnakePluginListTest {
         SnakePluginList local = localcc.activePluginList; // newly created class
         assertEquals(3, local.getList().size());
         assertFalse(local.isActive(0));
-        assertEquals("", local.getList().get(0).name);
-        assertEquals("", local.getList().get(0).ver);
+        assertEquals("", local.getName(0));
+        assertEquals("", local.getVer(0));
 
         // after plugin initialization - restore transient fields
         local.afterdeSerialize();
@@ -601,7 +602,7 @@ public class SnakePluginListTest {
     /**
      * @pre Incompatibile config
      * @post Plugin loaded but config not restored
-     * @warn This depends on plugin configuration. Wrong config is detected by exception thrown from
+     * @warning This depends on plugin configuration. Wrong config is detected by exception thrown from
      * setPluginConfig() from IQuimpPlugin
      * @throws IOException
      * @throws QuimpPluginException 
@@ -661,7 +662,7 @@ public class SnakePluginListTest {
     /**
      * @pre Less plugins
      * @post List is adjusted
-     * @warn This situation must be detected on load and reported
+     * @warning This situation must be detected on load and reported
      * @throws IOException
      * @throws QuimpPluginException 
      */

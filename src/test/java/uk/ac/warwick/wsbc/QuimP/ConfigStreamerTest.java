@@ -24,6 +24,13 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
+/**
+ * Test case of GSon, not related with any class in project
+ * 
+ * @author p.baniukiewicz
+ * @date 23 Mar 2016
+ *
+ */
 public class ConfigStreamerTest {
     static {
         System.setProperty("log4j.configurationFile", "qlog4j2_test.xml");

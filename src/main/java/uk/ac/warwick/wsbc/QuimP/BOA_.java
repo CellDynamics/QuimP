@@ -1523,8 +1523,7 @@ public class BOA_ implements PlugIn {
     /**
      * Creates instance (through SnakePluginList) of plugin of given name on given UI slot.
      * 
-     * Fills SnakePluginList fields if plugin is created and registered. 
-     * Assigns all required contexts from QuimP to plugins
+     * Decides if plugin will be created or destroyed basing on plugin \b name from Choice list
      * 
      * @warning The same contexts should be restored after plugin load
      * 
@@ -1537,7 +1536,6 @@ public class BOA_ implements PlugIn {
     private void instanceSnakePlugin(final String selectedPlugin, int slot,
             final List<Point2d> dataToProcess, boolean act) {
 
-        IQuimpPlugin inst = null;
         try {
             // get instance using plugin name (obtained from getPluginNames from PluginFactory
             if (selectedPlugin != NONE) { // do no pass NONE to pluginFact
@@ -1694,7 +1692,7 @@ public class BOA_ implements PlugIn {
                     continue; // no plugin on this slot or not active
                 // because it is guaranteed by pluginFactory.getPluginNames(DOES_SNAKES) used
                 // when populating GUI names and BOAp.sPluginList in actionPerformed(ActionEvent e).
-                IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP.ref;
+                IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP.getRef();
                 qPcast.attachData(dataToProcess);
                 dataToProcess = qPcast.runPlugin();
             }

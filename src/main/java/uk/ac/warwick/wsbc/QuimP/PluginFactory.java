@@ -429,7 +429,9 @@ public class PluginFactory {
      * @startuml
      * 
      * partition getInstance(name) {
-     * (*) --> Build qualified name\nfrom ""getClassName()""
+     * 
+     * (*) -->if name is not empty 
+     *  --> Build qualified name\nfrom ""getClassName()""
      * --> get plugin data from\n ""availPlugins""
      * if returned ""null""
      * -->[true] log error
@@ -445,6 +447,7 @@ public class PluginFactory {
      * ->[true return ""instance""](*)
      * else
      * ->[false return ""null""](*)
+     * endif
      * endif
      * }
      * @enduml
