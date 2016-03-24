@@ -584,7 +584,8 @@ public class BOA_ implements PlugIn {
         private Checkbox cFirstPlugin, cSecondPlugin, cThirdPlugin;
 
         private MenuBar quimpMenuBar;
-        private MenuItem menuVersion, menuSaveConfig, menuLoadConfig; // item in menu
+        private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory; // items in
+                                                                                       // menu
         private CheckboxMenuItem cbMenuPlotOriginalSnakes;
 
         /**
@@ -666,12 +667,18 @@ public class BOA_ implements PlugIn {
             cbMenuPlotOriginalSnakes.setState(BOAp.isProcessedSnakePlotted);
             cbMenuPlotOriginalSnakes.addItemListener(this);
             menuConfig.add(cbMenuPlotOriginalSnakes);
+
             menuSaveConfig = new MenuItem("Save preferences");
             menuSaveConfig.addActionListener(this);
             menuConfig.add(menuSaveConfig);
+
             menuLoadConfig = new MenuItem("Load preferences");
             menuLoadConfig.addActionListener(this);
             menuConfig.add(menuLoadConfig);
+
+            menuShowHistory = new MenuItem("Show history");
+            menuShowHistory.addActionListener(this);
+            menuConfig.add(menuShowHistory);
 
             return menuBar;
         }
