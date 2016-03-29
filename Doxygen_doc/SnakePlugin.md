@@ -187,7 +187,7 @@ extra fields related to QuimP version
 
 Note:
 
-> Plugins inside QuimP are defined by their **names** that are simply names of classes. **Name** of plugin uniquely identifies its jar. All communication between all components is based on **names**
+> Plugins inside QuimP are defined by their **names** that are simply names of classes. **Name** of plugin uniquely identifies its jar. All communication between all components is based on their **names**
    
 The cooperation between first two modules is as follows:
 

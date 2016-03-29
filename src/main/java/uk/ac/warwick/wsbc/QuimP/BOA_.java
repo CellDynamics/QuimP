@@ -125,6 +125,7 @@ public class BOA_ implements PlugIn {
                                 // re presented on window title bar
     private static int logCount = 1; // adds counter to logged messages
     static final private int NUM_SPLINE_PLUGINS = 3; /*!< number of Spline plugins  */
+    private HistoryLogger historyLogger; // logger
     /**
      * List of plugins selected in plugin stack and information if the are active or not
      * This field is serializable.
@@ -183,8 +184,10 @@ public class BOA_ implements PlugIn {
         }
         // assign current object to ViewUpdater
         viewUpdater = new ViewUpdater(this);
-        // collect information about quimp version read frm jar
+        // collect information about quimp version read from jar
         quimpInfo = getQuimPBuildInfo();
+        // create history logger
+        historyLogger = new HistoryLogger();
 
         ImagePlus ip = WindowManager.getCurrentImage();
         lastTool = IJ.getToolName();
@@ -584,8 +587,7 @@ public class BOA_ implements PlugIn {
         private Checkbox cFirstPlugin, cSecondPlugin, cThirdPlugin;
 
         private MenuBar quimpMenuBar;
-        private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory; // items in
-                                                                                       // menu
+        private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory; // items
         private CheckboxMenuItem cbMenuPlotOriginalSnakes;
 
         /**
@@ -1254,6 +1256,15 @@ public class BOA_ implements PlugIn {
                 }
             }
 
+            // history
+            if (b == menuShowHistory) {
+                LOGGER.debug("got ShowHistory");
+                if (historyLogger.isOpened())
+                    historyLogger.closeHistory();
+                else
+                    historyLogger.openHistory();
+            }
+
             // run segmentation for selected cases
             if (run) {
                 System.out.println("running from in stackwindow");
@@ -1342,19 +1353,19 @@ public class BOA_ implements PlugIn {
             }
             if (source == firstPluginName) {
                 LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
-                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0, dataToProcess,
+                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0,
                         cFirstPlugin.getState());
                 recalculatePlugins();
             }
             if (source == secondPluginName) {
                 LOGGER.debug("Used secondPluginName, val: " + secondPluginName.getSelectedItem());
-                instanceSnakePlugin((String) secondPluginName.getSelectedItem(), 1, dataToProcess,
+                instanceSnakePlugin((String) secondPluginName.getSelectedItem(), 1,
                         cSecondPlugin.getState());
                 recalculatePlugins();
             }
             if (source == thirdPluginName) {
                 LOGGER.debug("Used thirdPluginName, val: " + thirdPluginName.getSelectedItem());
-                instanceSnakePlugin((String) thirdPluginName.getSelectedItem(), 2, dataToProcess,
+                instanceSnakePlugin((String) thirdPluginName.getSelectedItem(), 2,
                         cThirdPlugin.getState());
                 recalculatePlugins();
             }
@@ -1536,12 +1547,10 @@ public class BOA_ implements PlugIn {
      * 
      * @param selectedPlugin Name of plugin returned from UI elements
      * @param slot Slot of plugin
-     * @param dataToProcess Data to be attached to plugin
      * @param act Indicates if plugins is activated in GUI
-     * @see QuimP.SnakePluginList.Plugin.reinitialize(final PluginFactory, final List<Point2d>, final ViewUpdater)
+     * @see QuimP.SnakePluginList
      */
-    private void instanceSnakePlugin(final String selectedPlugin, int slot,
-            final List<Point2d> dataToProcess, boolean act) {
+    private void instanceSnakePlugin(final String selectedPlugin, int slot, boolean act) {
 
         try {
             // get instance using plugin name (obtained from getPluginNames from PluginFactory
@@ -1819,8 +1828,6 @@ public class BOA_ implements PlugIn {
      * @param r ROI object (IJ)
      * @param f number of current frame
      * @see tightenSnake(Snake)
-     * @todo sH.storeCurrentSnake(f); is called two times just to know who
-     * thrown exception
      */
     // @SuppressWarnings("unchecked")
     void addCell(final Roi r, int f) {
@@ -1857,6 +1864,7 @@ public class BOA_ implements PlugIn {
             LOGGER.error(be);
         } finally {
             imageGroup.updateOverlay(f);
+            historyLogger.addEntry("Added cell", snakePluginList); // log this activity
         }
 
     }

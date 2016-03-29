@@ -12,8 +12,8 @@ public class HistoryLogger_run {
         HistoryLogger_run hsr = new HistoryLogger_run();
         hsr.hs.openHistory();
 
-        hsr.hs.addEntry("Test 1");
-        hsr.hs.addEntry("Test 2");
+        hsr.hs.addEntry("Test 1", new SnakePluginList());
+        hsr.hs.addEntry("Test 2", new SnakePluginList());
 
     }
 

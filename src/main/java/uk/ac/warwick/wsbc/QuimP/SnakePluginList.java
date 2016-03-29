@@ -28,6 +28,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  * Related to GUI, first plugin is at index 0, etc. Keeps also UI settings activating or
  * deactivating plugins. Produces plugins from their names using provided 
  * uk.ac.warwick.wsbc.QuimP.PluginFactory
+ * The \c sPluginList is serialized (saved as JSON object). Because serialization does not touch
+ * plugins (understood as jars) directly, their configuration and state must be copied locally to
+ * \c Plugin objects. This is done during preparation to serialization and then after 
+ * deserialization.
  * 
  * @remarks This class is serializable and it is part of QuimP config.  
  * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
@@ -225,7 +229,7 @@ class SnakePluginList {
      */
     public ParamList getConfig(int i) {
         if (sPluginList.get(i).config != null)
-            return new ParamList(sPluginList.get(i).config);
+            return new ParamList(sPluginList.get(i).config); // makes copy of plugin configuration
         else
             return null;
     }
@@ -253,12 +257,14 @@ class SnakePluginList {
     public void setInstance(int i, final String name, boolean act) throws QuimpPluginException {
 
         if (name.isEmpty()) {
-            sPluginList.set(i, new Plugin());
+            sPluginList.set(i, new Plugin()); // just create new empty plugin with no instance
             return;
         }
-        sPluginList.set(i, new Plugin(name, act, pluginFactory));
+        sPluginList.set(i, new Plugin(name, act, pluginFactory)); // create new Plugin using
+                                                                  // name and PluginFactory
 
         IQuimpPlugin ref = getInstance(i);
+        // connects all goods to created plugin
         if (ref != null) {
             if (ref instanceof IQuimpPluginSynchro) // if it support backward synchronization
                 ((IQuimpPluginSynchro) ref).attachContext(viewUpdater); // attach BOA context
@@ -279,7 +285,7 @@ class SnakePluginList {
      * @param config Configuration to connect to plugin
      * @throws QuimpPluginException When \c config is not compatible
      */
-    public void setInstance(int i, final String name, boolean act, final ParamList config)
+    private void setInstance(int i, final String name, boolean act, final ParamList config)
             throws QuimpPluginException {
         setInstance(i, name, act);
         sPluginList.get(i).uploadPluginConfig(config);
@@ -330,6 +336,10 @@ class SnakePluginList {
 
     /**
      * Restore plugins instances after deserialization
+     * 
+     * On load all fields of Plugin object are restored from JSON file except plugin instance. In
+     * this step this instance is created using those fields loaded from disk.
+     * 
      * @throws QuimpPluginException 
      */
     public void afterdeSerialize() throws QuimpPluginException {
