@@ -449,6 +449,8 @@ public class BOA_ implements PlugIn {
         } catch (Exception e) {
             LOGGER.error("Can not update view. Output snake may be defective: " + e.getMessage());
             LOGGER.error(e);
+        } finally {
+            historyLogger.addEntry("Plugin settings", snakePluginList);
         }
         imageGroup.updateOverlay(frame);
     }
@@ -1339,18 +1341,6 @@ public class BOA_ implements PlugIn {
                 recalculatePlugins();
             }
 
-            // Process plugin selection
-            // attach also data to all selected plugins. Attached data are the same for every
-            // plugin. This is only for optional visualization supported by plugin.
-            // Data are attached again on every plugin run
-            List<Point2d> dataToProcess = null; // default
-            Snake snake;
-            SnakeHandler sH;
-            if (nest != null && nest.size() > 0) {
-                sH = nest.getHandler(nest.size() - 1); // get last added snake
-                snake = sH.getLiveSnake();
-                dataToProcess = snake.asList(); // will be passed to plugin in this stage
-            }
             if (source == firstPluginName) {
                 LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
                 instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0,

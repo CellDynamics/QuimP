@@ -13,7 +13,7 @@ public class HistoryLogger_run {
         hsr.hs.openHistory();
 
         hsr.hs.addEntry("Test 1", new SnakePluginList());
-        hsr.hs.addEntry("Test 2", new SnakePluginList());
+        hsr.hs.addEntry("Test 2", null);
 
     }
 

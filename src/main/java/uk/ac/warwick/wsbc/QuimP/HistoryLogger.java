@@ -88,7 +88,8 @@ public class HistoryLogger implements WindowListener {
      */
     public void addEntry(String m, SnakePluginList sp) {
         if (historyWnd.isVisible()) {
-            sp.beforeSerialize();
+            if (sp != null)
+                sp.beforeSerialize();
             Entry en = new Entry(counter++, m, sp);
             String jsontmp = en.getJSon();
             history.add(jsontmp);
