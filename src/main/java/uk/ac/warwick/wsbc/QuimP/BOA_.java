@@ -82,6 +82,7 @@ import ij.process.FloatPolygon;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
+import uk.ac.warwick.wsbc.QuimP.BOAp.SEGp;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
@@ -109,7 +110,7 @@ public class BOA_ implements PlugIn {
     static boolean running = false;
     ImageGroup imageGroup;
     private Nest nest;
-    private int frame; // current frame, CustomStackWindow.updateSliceSelector()
+    // private int frame; // current frame, CustomStackWindow.updateSliceSelector()
     private Constrictor constrictor;
     private PluginFactory pluginFactory; // load and maintain plugins
     private String lastTool; // last selection tool selected in IJ remember last tool to reselect
@@ -128,15 +129,20 @@ public class BOA_ implements PlugIn {
     private HistoryLogger historyLogger; // logger
 
     static final public BOAp boap = new BOAp(); // configuration object, available from all modules
+    private BOAState boaState;
 
-    /**
-     * List of plugins selected in plugin stack and information if the are active or not
-     * This field is serializable.
-     * 
-     * @see SnakePluginList
-     * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
-     */
-    private SnakePluginList snakePluginList;
+    class BOAState {
+        public int frame; // current frame, CustomStackWindow.updateSliceSelector()
+        public SEGp segp;
+        /**
+         * List of plugins selected in plugin stack and information if the are active or not
+         * This field is serializable.
+         * 
+         * @see SnakePluginList
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
+         */
+        public SnakePluginList snakePluginList;
+    }
 
     /**
      * Temporary method for test
@@ -175,6 +181,9 @@ public class BOA_ implements PlugIn {
         if (IJ.versionLessThan("1.45")) {
             return;
         }
+        boaState = new BOAState();
+        boaState.segp = boap.segp;
+
         if (IJ.getVersion().compareTo("1.46") < 0) {
             boap.useSubPixel = false;
         } else {
@@ -229,7 +238,7 @@ public class BOA_ implements PlugIn {
             if (!setupTest()) {// if not created in test
                 pluginFactory = new PluginFactory(Paths.get(path));
                 // initialize arrays for plugins instances and give them initial values
-                snakePluginList =
+                boaState.snakePluginList =
                         new SnakePluginList(NUM_SPLINE_PLUGINS, pluginFactory, null, viewUpdater);
             }
         } catch (Exception e) {
@@ -274,7 +283,7 @@ public class BOA_ implements PlugIn {
 
         nest = new Nest();
         imageGroup = new ImageGroup(ip, nest);
-        frame = 1;
+        boaState.frame = 1;
         // build window and set its title
         canvas = new CustomCanvas(imageGroup.getOrgIpl());
         window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
@@ -424,38 +433,39 @@ public class BOA_ implements PlugIn {
         SnakeHandler sH;
         if (nest.isVacant())
             return;
-        imageGroup.clearPaths(frame);
-        imageGroup.setProcessor(frame);
-        imageGroup.setIpSliceAll(frame);
+        imageGroup.clearPaths(boaState.frame);
+        imageGroup.setProcessor(boaState.frame);
+        imageGroup.setIpSliceAll(boaState.frame);
         try {
             for (int s = 0; s < nest.size(); s++) { // for each snake
                 sH = nest.getHandler(s);
-                if (frame < sH.getStartframe()) // if snake does not exist on current frame
+                if (boaState.frame < sH.getStartframe()) // if snake does not exist on current frame
                     continue;
                 // but if one is on frame f+n and strtFrame is e.g. 1 it may happen that there is
                 // no continuity of this snake between frames. In this case getBackupSnake
                 // returns null. In general QuimP assumes that if there is a cell on frame f, it
                 // will exist on all consecutive frames.
-                Snake snake = sH.getBackupSnake(frame); // if exist get its backup copy (segm)
+                Snake snake = sH.getBackupSnake(boaState.frame); // if exist get its backup copy
+                                                                 // (segm)
                 if (snake == null || !snake.alive) // if not alive
                     continue;
                 try {
                     Snake out = iterateOverSnakePlugins(snake); // apply all plugins to snake
-                    sH.storeThisSnake(out, frame); // set processed snake as final
+                    sH.storeThisSnake(out, boaState.frame); // set processed snake as final
                 } catch (QuimpPluginException qpe) {
                     // must be rewritten with whole runBOA #65 #67
                     BOA_.log("Error in filter module: " + qpe.getMessage());
                     LOGGER.error(qpe);
-                    sH.storeLiveSnake(frame); // so store only segmented snake as final
+                    sH.storeLiveSnake(boaState.frame); // so store only segmented snake as final
                 }
             }
         } catch (Exception e) {
             LOGGER.error("Can not update view. Output snake may be defective: " + e.getMessage());
             LOGGER.error(e);
         } finally {
-            historyLogger.addEntry("Plugin settings", snakePluginList);
+            historyLogger.addEntry("Plugin settings", boaState);
         }
-        imageGroup.updateOverlay(frame);
+        imageGroup.updateOverlay(boaState.frame);
     }
 
     /**
@@ -549,18 +559,18 @@ public class BOA_ implements PlugIn {
             if (boap.doDelete) {
                 // BOA_.log("Delete at:
                 // ("+offScreenX(e.getX())+","+offScreenY(e.getY())+")");
-                deleteCell(offScreenX(e.getX()), offScreenY(e.getY()), frame);
+                deleteCell(offScreenX(e.getX()), offScreenY(e.getY()), boaState.frame);
                 IJ.setTool(lastTool);
             }
             if (boap.doDeleteSeg) {
                 // BOA_.log("Delete at:
                 // ("+offScreenX(e.getX())+","+offScreenY(e.getY())+")");
-                deleteSegmentation(offScreenX(e.getX()), offScreenY(e.getY()), frame);
+                deleteSegmentation(offScreenX(e.getX()), offScreenY(e.getY()), boaState.frame);
             }
             if (boap.editMode && boap.editingID == -1) {
                 // BOA_.log("Delete at:
                 // ("+offScreenX(e.getX())+","+offScreenY(e.getY())+")");
-                editSeg(offScreenX(e.getX()), offScreenY(e.getY()), frame);
+                editSeg(offScreenX(e.getX()), offScreenY(e.getY()), boaState.frame);
             }
         }
     } // end of CustomCanvas
@@ -751,7 +761,7 @@ public class BOA_ implements PlugIn {
             c.gridy = 0;
             pluginPanel.add(bFirstPluginGUI, c);
 
-            cFirstPlugin = addCheckbox("A", pluginPanel, snakePluginList.isActive(0));
+            cFirstPlugin = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(0));
             c.gridx = 2;
             c.gridy = 0;
             pluginPanel.add(cFirstPlugin, c);
@@ -766,7 +776,7 @@ public class BOA_ implements PlugIn {
             c.gridy = 1;
             pluginPanel.add(bSecondPluginGUI, c);
 
-            cSecondPlugin = addCheckbox("A", pluginPanel, snakePluginList.isActive(1));
+            cSecondPlugin = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(1));
             c.gridx = 2;
             c.gridy = 1;
             pluginPanel.add(cSecondPlugin, c);
@@ -781,7 +791,7 @@ public class BOA_ implements PlugIn {
             c.gridy = 2;
             pluginPanel.add(bThirdPluginGUI, c);
 
-            cThirdPlugin = addCheckbox("A", pluginPanel, snakePluginList.isActive(2));
+            cThirdPlugin = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(2));
             c.gridx = 2;
             c.gridy = 2;
             pluginPanel.add(cThirdPlugin, c);
@@ -1042,11 +1052,11 @@ public class BOA_ implements PlugIn {
          */
         private void updateCheckBoxes() {
             // first plugin activity
-            cFirstPlugin.setState(snakePluginList.isActive(0));
+            cFirstPlugin.setState(boaState.snakePluginList.isActive(0));
             // second plugin activity
-            cSecondPlugin.setState(snakePluginList.isActive(1));
+            cSecondPlugin.setState(boaState.snakePluginList.isActive(1));
             // third plugin activity
-            cThirdPlugin.setState(snakePluginList.isActive(2));
+            cThirdPlugin.setState(boaState.snakePluginList.isActive(2));
         }
 
         /**
@@ -1057,20 +1067,20 @@ public class BOA_ implements PlugIn {
          */
         private void updateChoices() {
             // first slot snake plugin
-            if (snakePluginList.getInstance(0) == null)
+            if (boaState.snakePluginList.getInstance(0) == null)
                 firstPluginName.select(NONE);
             else
-                firstPluginName.select(snakePluginList.getName(0));
+                firstPluginName.select(boaState.snakePluginList.getName(0));
             // second slot snake plugin
-            if (snakePluginList.getInstance(1) == null)
+            if (boaState.snakePluginList.getInstance(1) == null)
                 secondPluginName.select(NONE);
             else
-                secondPluginName.select(snakePluginList.getName(1));
+                secondPluginName.select(boaState.snakePluginList.getName(1));
             // third slot snake plugin
-            if (snakePluginList.getInstance(2) == null)
+            if (boaState.snakePluginList.getInstance(2) == null)
                 thirdPluginName.select(NONE);
             else
-                thirdPluginName.select(snakePluginList.getName(2));
+                thirdPluginName.select(boaState.snakePluginList.getName(2));
 
         }
 
@@ -1131,8 +1141,9 @@ public class BOA_ implements PlugIn {
                     lastTool = IJ.getToolName();
                     IJ.setTool(Toolbar.LINE);
                     if (nest.size() == 1)
-                        editSeg(0, 0, frame); // if only 1 snake go straight to edit, if more user
-                                              // must pick one
+                        editSeg(0, 0, boaState.frame); // if only 1 snake go straight to edit, if
+                                                       // more user
+                    // must pick one
                 } else {
                     boap.editMode = false;
                     if (boap.editingID != -1) {
@@ -1155,7 +1166,7 @@ public class BOA_ implements PlugIn {
                 bSeg.setLabel("computing");
                 int framesCompleted;
                 try {
-                    runBoa(frame, boap.FRAMES);
+                    runBoa(boaState.frame, boap.FRAMES);
                     framesCompleted = boap.FRAMES;
                     IJ.showStatus("COMPLETE");
                 } catch (BoaException be) {
@@ -1185,7 +1196,7 @@ public class BOA_ implements PlugIn {
                 pixelLabel.setText("Scale: " + IJ.d2s(boap.imageScale, 6) + " \u00B5m");
                 fpsLabel.setText("F Interval: " + IJ.d2s(boap.imageFrameInterval, 3) + " s");
             } else if (b == bAdd) {
-                addCell(canvas.getImage().getRoi(), frame);
+                addCell(canvas.getImage().getRoi(), boaState.frame);
                 canvas.getImage().killRoi();
             } else if (b == bFinish) {
                 BOA_.log("Finish: Exiting BOA...");
@@ -1196,22 +1207,22 @@ public class BOA_ implements PlugIn {
             }
             // process plugin GUI buttons
             if (b == bFirstPluginGUI) {
-                LOGGER.debug(
-                        "First plugin GUI, state of BOAp is " + snakePluginList.getInstance(0));
-                if (snakePluginList.getInstance(0) != null) // call 0 instance
-                    snakePluginList.getInstance(0).showUI(true);
+                LOGGER.debug("First plugin GUI, state of BOAp is "
+                        + boaState.snakePluginList.getInstance(0));
+                if (boaState.snakePluginList.getInstance(0) != null) // call 0 instance
+                    boaState.snakePluginList.getInstance(0).showUI(true);
             }
             if (b == bSecondPluginGUI) {
-                LOGGER.debug(
-                        "Second plugin GUI, state of BOAp is " + snakePluginList.getInstance(1));
-                if (snakePluginList.getInstance(1) != null) // call 1 instance
-                    snakePluginList.getInstance(1).showUI(true);
+                LOGGER.debug("Second plugin GUI, state of BOAp is "
+                        + boaState.snakePluginList.getInstance(1));
+                if (boaState.snakePluginList.getInstance(1) != null) // call 1 instance
+                    boaState.snakePluginList.getInstance(1).showUI(true);
             }
             if (b == bThirdPluginGUI) {
-                LOGGER.debug(
-                        "Third plugin GUI, state of BOAp is " + snakePluginList.getInstance(2));
-                if (snakePluginList.getInstance(2) != null) // call 2 instance
-                    snakePluginList.getInstance(2).showUI(true);
+                LOGGER.debug("Third plugin GUI, state of BOAp is "
+                        + boaState.snakePluginList.getInstance(2));
+                if (boaState.snakePluginList.getInstance(2) != null) // call 2 instance
+                    boaState.snakePluginList.getInstance(2).showUI(true);
             }
 
             // menu listeners
@@ -1226,7 +1237,7 @@ public class BOA_ implements PlugIn {
                     try {
                         // Create Serialization object
                         QPluginConfigSerializer qConfig =
-                                new QPluginConfigSerializer(quimpInfo, snakePluginList);
+                                new QPluginConfigSerializer(quimpInfo, boaState.snakePluginList);
                         qConfig.save(sd.getDirectory() + sd.getFileName());
                         qConfig = null;
                     } catch (FileNotFoundException e1) {
@@ -1241,7 +1252,7 @@ public class BOA_ implements PlugIn {
                     try {
                         // Create Serialization object
                         QPluginConfigSerializer qConfig =
-                                new QPluginConfigSerializer(quimpInfo, snakePluginList);
+                                new QPluginConfigSerializer(quimpInfo, boaState.snakePluginList);
                         // Register nondefault constructor
                         qConfig.getBuilder().registerTypeAdapter(SnakePluginList.class,
                                 new SnakePluginListInstanceCreator(NUM_SPLINE_PLUGINS,
@@ -1249,8 +1260,9 @@ public class BOA_ implements PlugIn {
                         QPluginConfigSerializer local;
                         local = qConfig.load(od.getDirectory() + od.getFileName());
                         // restore loaded objects
-                        snakePluginList.closeAllWindows(); // close all opened windows from old inst
-                        snakePluginList = local.getSnakePluginList();
+                        boaState.snakePluginList.closeAllWindows(); // close all opened windows from
+                                                                    // old inst
+                        boaState.snakePluginList = local.getSnakePluginList();
                         updateCheckBoxes(); // update checkboxes
                         updateChoices(); // and choices
                         recalculatePlugins(); // and screen
@@ -1276,7 +1288,7 @@ public class BOA_ implements PlugIn {
                 System.out.println("running from in stackwindow");
                 // run on current frame
                 try {
-                    runBoa(frame, frame);
+                    runBoa(boaState.frame, boaState.frame);
                 } catch (BoaException be) {
                     BOA_.log(be.getMessage());
                 }
@@ -1308,7 +1320,7 @@ public class BOA_ implements PlugIn {
                     this.setImage(imageGroup.getOrgIpl());
                 }
                 if (boap.zoom && !nest.isVacant()) { // set zoom
-                    imageGroup.zoom(canvas, frame);
+                    imageGroup.zoom(canvas, boaState.frame);
                 }
             } else if (source == cPrevSnake) {
                 boap.segp.use_previous_snake = cPrevSnake.getState();
@@ -1318,22 +1330,22 @@ public class BOA_ implements PlugIn {
             } else if (source == cZoom) {
                 boap.zoom = cZoom.getState();
                 if (boap.zoom && !nest.isVacant()) {
-                    imageGroup.zoom(canvas, frame);
+                    imageGroup.zoom(canvas, boaState.frame);
                 } else {
                     imageGroup.unzoom(canvas);
                 }
             } else if (source == cFirstPlugin) {
                 {
-                    snakePluginList.setActive(0, cFirstPlugin.getState());
+                    boaState.snakePluginList.setActive(0, cFirstPlugin.getState());
                     recalculatePlugins();
                 }
             } else if (source == cSecondPlugin) {
-                snakePluginList.setActive(1, cSecondPlugin.getState());
+                boaState.snakePluginList.setActive(1, cSecondPlugin.getState());
                 {
                     recalculatePlugins();
                 }
             } else if (source == cThirdPlugin) {
-                snakePluginList.setActive(2, cThirdPlugin.getState());
+                boaState.snakePluginList.setActive(2, cThirdPlugin.getState());
                 {
                     recalculatePlugins();
                 }
@@ -1373,7 +1385,7 @@ public class BOA_ implements PlugIn {
                 }
                 // run on current frame
                 try {
-                    runBoa(frame, frame);
+                    runBoa(boaState.frame, boaState.frame);
                 } catch (BoaException be) {
                     BOA_.log(be.getMessage());
                 }
@@ -1449,7 +1461,7 @@ public class BOA_ implements PlugIn {
                 // System.out.println("run from state change");
                 // run on current frame
                 try {
-                    runBoa(frame, frame);
+                    runBoa(boaState.frame, boaState.frame);
                 } catch (BoaException be) {
                     BOA_.log(be.getMessage());
                 }
@@ -1475,16 +1487,16 @@ public class BOA_ implements PlugIn {
                 stopEdit();
             }
 
-            frame = imp.getCurrentSlice();
-            frameLabel.setText("" + frame);
-            imageGroup.updateOverlay(frame); // draw overlay
-            imageGroup.setIpSliceAll(frame);
+            boaState.frame = imp.getCurrentSlice();
+            frameLabel.setText("" + boaState.frame);
+            imageGroup.updateOverlay(boaState.frame); // draw overlay
+            imageGroup.setIpSliceAll(boaState.frame);
 
             // zoom to snake zero
             if (boap.zoom && !nest.isVacant()) {
                 SnakeHandler sH = nest.getHandler(0);
-                if (sH.isStoredAt(frame)) {
-                    imageGroup.zoom(canvas, frame);
+                if (sH.isStoredAt(boaState.frame)) {
+                    imageGroup.zoom(canvas, boaState.frame);
                 }
             }
 
@@ -1494,7 +1506,7 @@ public class BOA_ implements PlugIn {
                 boap.editMode = true;
                 lastTool = IJ.getToolName();
                 IJ.setTool(Toolbar.LINE);
-                editSeg(0, 0, frame);
+                editSeg(0, 0, boaState.frame);
                 IJ.setTool(lastTool);
             }
         }
@@ -1549,11 +1561,11 @@ public class BOA_ implements PlugIn {
         try {
             // get instance using plugin name (obtained from getPluginNames from PluginFactory
             if (selectedPlugin != NONE) { // do no pass NONE to pluginFact
-                snakePluginList.setInstance(slot, selectedPlugin, act); // build instance
+                boaState.snakePluginList.setInstance(slot, selectedPlugin, act); // build instance
             } else {
-                if (snakePluginList.getInstance(slot) != null)
-                    snakePluginList.getInstance(slot).showUI(false);
-                snakePluginList.deletePlugin(slot);
+                if (boaState.snakePluginList.getInstance(slot) != null)
+                    boaState.snakePluginList.getInstance(slot).showUI(false);
+                boaState.snakePluginList.deletePlugin(slot);
             }
         } catch (QuimpPluginException e) {
             LOGGER.warn("Plugin " + selectedPlugin + " cannot be loaded");
@@ -1599,20 +1611,20 @@ public class BOA_ implements PlugIn {
             Snake snake;
             imageGroup.clearPaths(startF);
 
-            for (frame = startF; frame <= endF; frame++) { // per frame
+            for (boaState.frame = startF; boaState.frame <= endF; boaState.frame++) { // per frame
                 // System.out.println("\n737 Frame: " + frame);
-                imageGroup.setProcessor(frame);
-                imageGroup.setIpSliceAll(frame);
+                imageGroup.setProcessor(boaState.frame);
+                imageGroup.setIpSliceAll(boaState.frame);
 
                 try {
-                    if (frame != startF) {// expand snakes for next frame
+                    if (boaState.frame != startF) {// expand snakes for next frame
                         if (!boap.segp.use_previous_snake) {
-                            nest.resetForFrame(frame);
+                            nest.resetForFrame(boaState.frame);
                         } else {
                             if (!boap.segp.expandSnake) {
-                                constrictor.loosen(nest, frame);
+                                constrictor.loosen(nest, boaState.frame);
                             } else {
-                                constrictor.implode(nest, frame);
+                                constrictor.implode(nest, boaState.frame);
                             }
                         }
                     }
@@ -1624,53 +1636,58 @@ public class BOA_ implements PlugIn {
                         sH = nest.getHandler(s);
                         snake = sH.getLiveSnake();
                         try {
-                            if (!snake.alive || frame < sH.getStartframe()) {
+                            if (!snake.alive || boaState.frame < sH.getStartframe()) {
                                 continue;
                             }
-                            imageGroup.drawPath(snake, frame); // pre tightned snake on path
+                            imageGroup.drawPath(snake, boaState.frame); // pre tightned snake on
+                                                                        // path
                             tightenSnake(snake);
-                            imageGroup.drawPath(snake, frame); // post tightned snake on path
-                            sH.backupLiveSnake(frame);
+                            imageGroup.drawPath(snake, boaState.frame); // post tightned snake on
+                                                                        // path
+                            sH.backupLiveSnake(boaState.frame);
                             Snake out = iterateOverSnakePlugins(snake);
-                            sH.storeThisSnake(out, frame); // store resulting snake as final
+                            sH.storeThisSnake(out, boaState.frame); // store resulting snake as
+                                                                    // final
 
                         } catch (QuimpPluginException qpe) {
                             // must be rewritten with whole runBOA #65 #67
                             BOA_.log("Error in filter module: " + qpe.getMessage());
                             LOGGER.error(qpe);
-                            sH.storeLiveSnake(frame); // store segmented nonmodified
+                            sH.storeLiveSnake(boaState.frame); // store segmented nonmodified
 
                         } catch (BoaException be) {
-                            imageGroup.drawPath(snake, frame); // failed
-                                                               // position
-                                                               // sH.deleteStoreAt(frame);
-                            sH.storeLiveSnake(frame);
-                            sH.backupLiveSnake(frame);
+                            imageGroup.drawPath(snake, boaState.frame); // failed
+                            // position
+                            // sH.deleteStoreAt(frame);
+                            sH.storeLiveSnake(boaState.frame);
+                            sH.backupLiveSnake(boaState.frame);
                             nest.kill(sH);
                             snake.defreeze();
-                            BOA_.log("Snake " + snake.snakeID + " died, frame " + frame);
+                            BOA_.log("Snake " + snake.snakeID + " died, frame " + boaState.frame);
                             boap.SEGrunning = false;
                             if (nest.allDead()) {
-                                throw new BoaException("All snakes dead: " + be.getMessage(), frame,
-                                        1);
+                                throw new BoaException("All snakes dead: " + be.getMessage(),
+                                        boaState.frame, 1);
                             }
                         }
 
                     }
-                    imageGroup.updateOverlay(frame);
-                    IJ.showProgress(frame, endF);
+                    imageGroup.updateOverlay(boaState.frame);
+                    IJ.showProgress(boaState.frame, endF);
                 } catch (BoaException be) {
                     boap.SEGrunning = false;
                     if (!boap.segp.use_previous_snake) {
-                        imageGroup.setIpSliceAll(frame);
-                        imageGroup.updateOverlay(frame);
+                        imageGroup.setIpSliceAll(boaState.frame);
+                        imageGroup.updateOverlay(boaState.frame);
                     } else {
                         System.out.println("\nL811. Exception");
                         throw be;
                     }
+                } finally {
+                    historyLogger.addEntry("Processing", boaState);
                 }
             }
-            frame = endF;
+            boaState.frame = endF;
 
         } catch (Exception e) {
             // e.printStackTrace();
@@ -1678,7 +1695,8 @@ public class BOA_ implements PlugIn {
             // imageGroup.updateAndDraw();
             boap.SEGrunning = false;
             e.printStackTrace();
-            throw new BoaException("Frame " + frame + ": " + e.getMessage(), frame, 1);
+            throw new BoaException("Frame " + boaState.frame + ": " + e.getMessage(),
+                    boaState.frame, 1);
         }
         boap.SEGrunning = false;
     }
@@ -1695,10 +1713,10 @@ public class BOA_ implements PlugIn {
     private Snake iterateOverSnakePlugins(final Snake snake)
             throws QuimpPluginException, Exception {
         Snake outsnake = snake;
-        if (!snakePluginList.isRefListEmpty()) {
+        if (!boaState.snakePluginList.isRefListEmpty()) {
             LOGGER.debug("sPluginList not empty");
             List<Point2d> dataToProcess = snake.asList();
-            for (Plugin qP : snakePluginList.getList()) {
+            for (Plugin qP : boaState.snakePluginList.getList()) {
                 if (!qP.isExecutable())
                     continue; // no plugin on this slot or not active
                 // because it is guaranteed by pluginFactory.getPluginNames(DOES_SNAKES) used
@@ -1730,7 +1748,7 @@ public class BOA_ implements PlugIn {
                 break;
             }
             if (i % 4 == 0) {
-                imageGroup.drawPath(snake, frame); // draw current snake
+                imageGroup.drawPath(snake, boaState.frame); // draw current snake
             }
 
             if ((snake.getNODES() / snake.startingNnodes) > boap.NMAX) {
@@ -1739,9 +1757,10 @@ public class BOA_ implements PlugIn {
                     // imageGroup.drawContour(snake, frame);
                     // imageGroup.updateAndDraw();
                     throw new BoaException(
-                            "Frame " + frame + "-max nodes reached " + snake.getNODES(), frame, 1);
+                            "Frame " + boaState.frame + "-max nodes reached " + snake.getNODES(),
+                            boaState.frame, 1);
                 } else {
-                    BOA_.log("Frame " + frame + "-max nodes reached..continue");
+                    BOA_.log("Frame " + boaState.frame + "-max nodes reached..continue");
                     break;
                 }
             }
@@ -1859,7 +1878,7 @@ public class BOA_ implements PlugIn {
             LOGGER.error(be);
         } finally {
             imageGroup.updateOverlay(f);
-            historyLogger.addEntry("Added cell", snakePluginList); // log this activity
+            historyLogger.addEntry("Added cell", boaState);
         }
 
     }
@@ -1984,9 +2003,9 @@ public class BOA_ implements PlugIn {
         Roi r = canvas.getImage().getRoi();
         Roi.setColor(Color.yellow);
         SnakeHandler sH = nest.getHandler(boap.editingID);
-        sH.storeRoi((PolygonRoi) r, frame);
+        sH.storeRoi((PolygonRoi) r, boaState.frame);
         canvas.getImage().killRoi();
-        imageGroup.updateOverlay(frame);
+        imageGroup.updateOverlay(boaState.frame);
         boap.editingID = -1;
     }
 
@@ -2006,7 +2025,7 @@ public class BOA_ implements PlugIn {
                     nest.analyse(imageGroup.getOrgIpl());
                     // auto save plugin config
                     QPluginConfigSerializer qConfig =
-                            new QPluginConfigSerializer(quimpInfo, snakePluginList);
+                            new QPluginConfigSerializer(quimpInfo, boaState.snakePluginList);
                     qConfig.save(
                             boap.outFile.getParent() + File.separator + boap.fileName + ".pgQP");
                 } else {

@@ -15,7 +15,13 @@ import java.util.ArrayList;
 
 import javax.swing.JScrollPane;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.gson.Gson;
+
+import uk.ac.warwick.wsbc.QuimP.BOA_.BOAState;
+import uk.ac.warwick.wsbc.QuimP.BOAp.SEGp;
 
 /**
  * Builds history logger window and logs
@@ -32,16 +38,17 @@ import com.google.gson.Gson;
  */
 public class HistoryLogger implements WindowListener {
 
+    private static final Logger LOGGER = LogManager.getLogger(HistoryLogger.class.getName());
     private Frame historyWnd;
     private ArrayList<String> history; /*!< array with all entries */
     private TextArea info;
-    private int counter; /*!< message counter */
+    private int id; /*!< message counter */
 
     /**
      * Construct main window
      */
     public HistoryLogger() {
-        counter = 1;
+        id = 1;
         historyWnd = new Frame("History");
         Panel p = new Panel();
         p.setLayout(new GridLayout(1, 1)); // main window panel
@@ -81,19 +88,49 @@ public class HistoryLogger implements WindowListener {
      * 
      * Gather all BOA state and include in log. Uses \c Entry class to pack these information to
      * JSon object. 
-     * 
+     * Particular entries can be null if they may not be logged
+     *  
      * @param m General message to be included
      * @param sp Active plugins
+     * @param segp Segmentation params
      * @todo TODO This method should accept more detailed BOA state (e.g. all segm. params)
      */
-    public void addEntry(String m, SnakePluginList sp) {
+    public void addEntry(String m, SnakePluginList sp, SEGp segp) {
         if (historyWnd.isVisible()) {
             if (sp != null)
                 sp.beforeSerialize();
-            Entry en = new Entry(counter++, m, sp);
+            Entry en = new Entry(id++, m, sp, segp);
             String jsontmp = en.getJSon();
             history.add(jsontmp);
             info.append(jsontmp + '\n');
+            LOGGER.debug(jsontmp);
+            en = null;
+        }
+
+    }
+
+    /**
+     * Add entry to log.
+     * 
+     * Gather all BOA state and include in log. Uses \c Entry class to pack these information to
+     * JSon object. 
+     * Particular entries can be null if they may not be logged
+     *  
+     * @param m General message to be included
+     * @param sp Active plugins
+     * @param segp Segmentation params
+     * @todo TODO This method should accept more detailed BOA state (e.g. all segm. params)
+     */
+    public void addEntry(String m, BOAState bs) {
+        if (historyWnd.isVisible()) {
+            if (bs.snakePluginList != null)
+                bs.snakePluginList.beforeSerialize();
+            Entry1 en = new Entry1(id++, m, bs);
+            String jsontmp = en.getJSon();
+            history.add(jsontmp);
+            info.append(jsontmp + '\n');
+            LOGGER.debug(jsontmp);
+            en = null;
         }
 
     }
@@ -116,7 +153,7 @@ public class HistoryLogger implements WindowListener {
     @Override
     public void windowClosing(WindowEvent e) {
         historyWnd.setVisible(false);
-        counter = 1;
+        id = 1;
         history.clear();
         historyWnd.dispose();
 
@@ -125,7 +162,7 @@ public class HistoryLogger implements WindowListener {
     @Override
     public void windowClosed(WindowEvent e) {
         historyWnd.setVisible(false);
-        counter = 1;
+        id = 1;
         history.clear();
         historyWnd.dispose();
 
@@ -161,9 +198,10 @@ public class HistoryLogger implements WindowListener {
  *
  */
 class Entry {
-    public int counter; /*!< Number of entry */
+    public int id; /*!< Number of entry */
     public String action; /*!< Textual description of taken action */
     public SnakePluginList snakePluginList; /*!< Active plugins */
+    public SEGp segp;
 
     /**
      * Main constructor
@@ -174,11 +212,51 @@ class Entry {
      * @param action
      * @param snakePluginList
      */
-    public Entry(int counter, String action, SnakePluginList snakePluginList) {
+    public Entry(int counter, String action, SnakePluginList snakePluginList, SEGp segp) {
         super();
-        this.counter = counter;
+        this.id = counter;
         this.action = action;
         this.snakePluginList = snakePluginList;
+        this.segp = segp;
+    }
+
+    /**
+     * Produce string representation of this object in JSon format
+     * 
+     * @return JSon representation of this class
+     */
+    public String getJSon() {
+        Gson gs = new Gson();
+        return gs.toJson(this);
+    }
+}
+
+/**
+ * Serialization class. Holds all data that should be included in log
+ * 
+ * @author p.baniukiewicz
+ * @date 29 Mar 2016
+ *
+ */
+class Entry1 {
+    public int id; /*!< Number of entry */
+    public String action; /*!< Textual description of taken action */
+    public BOAState BOA;
+
+    /**
+     * Main constructor
+     * 
+     * Object of this class is created temporarily only for logging purposes.
+     * 
+     * @param counter
+     * @param action
+     * @param snakePluginList
+     */
+    public Entry1(int counter, String action, BOAState bs) {
+        super();
+        this.id = counter;
+        this.action = action;
+        this.BOA = bs;
     }
 
     /**
