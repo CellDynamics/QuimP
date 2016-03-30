@@ -82,7 +82,7 @@ import ij.process.FloatPolygon;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
-import uk.ac.warwick.wsbc.QuimP.BOAp.SEGp;
+import uk.ac.warwick.wsbc.QuimP.BOAp.SegParam;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
@@ -129,11 +129,19 @@ public class BOA_ implements PlugIn {
     private HistoryLogger historyLogger; // logger
 
     static final public BOAp boap = new BOAp(); // configuration object, available from all modules
-    private BOAState boaState;
+    private BOAState boaState; // current state of BOA module
 
+    /**
+     * Hold current BOA state that can be serialized
+     * 
+     * @author p.baniukiewicz
+     * @date 30 Mar 2016
+     *
+     */
     class BOAState {
-        public int frame; // current frame, CustomStackWindow.updateSliceSelector()
-        public SEGp segp;
+        public int frame; /*!< current frame, CustomStackWindow.updateSliceSelector() */
+        public SegParam segParam; /*!< Reference to segmentation parameters */
+        public String fileName;
         /**
          * List of plugins selected in plugin stack and information if the are active or not
          * This field is serializable.
@@ -142,35 +150,15 @@ public class BOA_ implements PlugIn {
          * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
          */
         public SnakePluginList snakePluginList;
-    }
 
-    /**
-     * Temporary method for test
-     * 
-     * @return \c true if enabled
-     * @throws QuimpPluginException
-     */
-    // private boolean setupTest() {
-    // final Boolean isActive = true;
-    // LOGGER.warn("setupTest is in use and " + isActive.toString());
-    // try {
-    // // must be any but existing directory
-    // pluginFactory = Mockito.spy(new PluginFactory(Paths.get("/tmp/")));
-    // } catch (QuimpPluginException e) {
-    // LOGGER.error("setupTest: " + e.getMessage());
-    // }
-    // when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES)).thenReturn(
-    // new ArrayList<String>(Arrays.asList("Mean", "Loess", "Hat")));
-    // when(pluginFactory.getInstance("Mean"))
-    // .thenReturn(new MeanSnakeFilter());
-    // when(pluginFactory.getInstance("Loess"))
-    // .thenReturn(new LoessSnakeFilter());
-    // when(pluginFactory.getInstance("Hat")).thenReturn(new HatSnakeFilter());
-    // when(pluginFactory.getInstance(NONE)).thenReturn(null);
-    // return isActive;
-    // }
-    private boolean setupTest() {
-        return false;
+        /**
+         * Should be called before serialization. Fills extra fields from BOAp
+         * @warning This may be temporary method.
+         */
+        public void beforeSerialize() {
+            fileName = boap.fileName;
+            snakePluginList.beforeSerialize();
+        }
     }
 
     /**
@@ -181,9 +169,9 @@ public class BOA_ implements PlugIn {
         if (IJ.versionLessThan("1.45")) {
             return;
         }
-        boaState = new BOAState();
-        boaState.segp = boap.segp;
-
+        boaState = new BOAState(); // create BOA state machine
+        boaState.segParam = boap.segParam; // assign reference of segmentation parameters to state
+        // machine
         if (IJ.getVersion().compareTo("1.46") < 0) {
             boap.useSubPixel = false;
         } else {
@@ -235,12 +223,12 @@ public class BOA_ implements PlugIn {
                 LOGGER.warn("BOA: Plugin directory not found, use provided with arg: " + arg);
                 path = arg;
             }
-            if (!setupTest()) {// if not created in test
-                pluginFactory = new PluginFactory(Paths.get(path));
-                // initialize arrays for plugins instances and give them initial values
-                boaState.snakePluginList =
-                        new SnakePluginList(NUM_SPLINE_PLUGINS, pluginFactory, null, viewUpdater);
-            }
+
+            pluginFactory = new PluginFactory(Paths.get(path));
+            // initialize arrays for plugins instances and give them initial values
+            boaState.snakePluginList =
+                    new SnakePluginList(NUM_SPLINE_PLUGINS, pluginFactory, null, viewUpdater);
+
         } catch (Exception e) {
             // temporary catching may in future be removed
             LOGGER.error("run " + e);
@@ -277,7 +265,7 @@ public class BOA_ implements PlugIn {
      */
     void setup(final ImagePlus ip) {
         if (boap.paramsExist == null) {
-            boap.segp.setDefaults();
+            boap.segParam.setDefaults();
         }
         boap.setup(ip);
 
@@ -851,30 +839,31 @@ public class BOA_ implements PlugIn {
             // -----------------------
 
             // --------build paramPanel--------------
-            dsNodeRes = addDoubleSpinner("Node Spacing:", paramPanel, boap.segp.getNodeRes(), 1.,
-                    20., 0.2, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-            isMaxIterations = addIntSpinner("Max Iterations:", paramPanel, boap.segp.max_iterations,
-                    100, 10000, 100, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-            isBlowup = addIntSpinner("Blowup:", paramPanel, boap.segp.blowup, 0, 200, 2,
+            dsNodeRes = addDoubleSpinner("Node Spacing:", paramPanel, boap.segParam.getNodeRes(),
+                    1., 20., 0.2, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+            isMaxIterations =
+                    addIntSpinner("Max Iterations:", paramPanel, boap.segParam.max_iterations, 100,
+                            10000, 100, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+            isBlowup = addIntSpinner("Blowup:", paramPanel, boap.segParam.blowup, 0, 200, 2,
                     CustomStackWindow.DEFAULT_SPINNER_SIZE);
-            dsVel_crit = addDoubleSpinner("Crit velocity:", paramPanel, boap.segp.vel_crit, 0.0001,
-                    2., 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-            dsF_image = addDoubleSpinner("Image F:", paramPanel, boap.segp.f_image, 0.01, 10., 0.01,
-                    CustomStackWindow.DEFAULT_SPINNER_SIZE);
-            dsF_central = addDoubleSpinner("Central F:", paramPanel, boap.segp.f_central, 0.0005, 1,
-                    0.002, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-            dsF_contract = addDoubleSpinner("Contract F:", paramPanel, boap.segp.f_contract, 0.001,
-                    1, 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-            dsFinalShrink = addDoubleSpinner("Final Shrink:", paramPanel, boap.segp.finalShrink,
+            dsVel_crit = addDoubleSpinner("Crit velocity:", paramPanel, boap.segParam.vel_crit,
+                    0.0001, 2., 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+            dsF_image = addDoubleSpinner("Image F:", paramPanel, boap.segParam.f_image, 0.01, 10.,
+                    0.01, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+            dsF_central = addDoubleSpinner("Central F:", paramPanel, boap.segParam.f_central,
+                    0.0005, 1, 0.002, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+            dsF_contract = addDoubleSpinner("Contract F:", paramPanel, boap.segParam.f_contract,
+                    0.001, 1, 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+            dsFinalShrink = addDoubleSpinner("Final Shrink:", paramPanel, boap.segParam.finalShrink,
                     -100, 100, 0.5, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-            isSample_tan = addIntSpinner("Sample tan:", paramPanel, boap.segp.sample_tan, 1, 30, 1,
-                    CustomStackWindow.DEFAULT_SPINNER_SIZE);
-            isSample_norm = addIntSpinner("Sample norm:", paramPanel, boap.segp.sample_norm, 1, 60,
+            isSample_tan = addIntSpinner("Sample tan:", paramPanel, boap.segParam.sample_tan, 1, 30,
                     1, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+            isSample_norm = addIntSpinner("Sample norm:", paramPanel, boap.segParam.sample_norm, 1,
+                    60, 1, CustomStackWindow.DEFAULT_SPINNER_SIZE);
 
-            cPrevSnake =
-                    addCheckbox("Use Previouse Snake", paramPanel, boap.segp.use_previous_snake);
-            cExpSnake = addCheckbox("Expanding Snake", paramPanel, boap.segp.expandSnake);
+            cPrevSnake = addCheckbox("Use Previouse Snake", paramPanel,
+                    boap.segParam.use_previous_snake);
+            cExpSnake = addCheckbox("Expanding Snake", paramPanel, boap.segParam.expandSnake);
 
             Panel segEditPanel = new Panel();
             segEditPanel.setLayout(new GridLayout(1, 2));
@@ -898,7 +887,7 @@ public class BOA_ implements PlugIn {
             // ----------------------------------
 
             // -----build bottom panel---------
-            cPath = addCheckbox("Show paths", bottomPanel, boap.segp.showPaths);
+            cPath = addCheckbox("Show paths", bottomPanel, boap.segParam.showPaths);
             cZoom = addCheckbox("Zoom cell", bottomPanel, boap.zoom);
             // -------------------------------
             // build control panel
@@ -1019,7 +1008,7 @@ public class BOA_ implements PlugIn {
          * @see BOAp
          */
         private void setDefualts() {
-            boap.segp.setDefaults();
+            boap.segParam.setDefaults();
             updateSpinnerValues();
         }
 
@@ -1031,16 +1020,16 @@ public class BOA_ implements PlugIn {
          */
         private void updateSpinnerValues() {
             boap.supressStateChangeBOArun = true;
-            dsNodeRes.setValue(boap.segp.getNodeRes());
-            dsVel_crit.setValue(boap.segp.vel_crit);
-            dsF_image.setValue(boap.segp.f_image);
-            dsF_central.setValue(boap.segp.f_central);
-            dsF_contract.setValue(boap.segp.f_contract);
-            dsFinalShrink.setValue(boap.segp.finalShrink);
-            isMaxIterations.setValue(boap.segp.max_iterations);
-            isBlowup.setValue(boap.segp.blowup);
-            isSample_tan.setValue(boap.segp.sample_tan);
-            isSample_norm.setValue(boap.segp.sample_norm);
+            dsNodeRes.setValue(boap.segParam.getNodeRes());
+            dsVel_crit.setValue(boap.segParam.vel_crit);
+            dsF_image.setValue(boap.segParam.f_image);
+            dsF_central.setValue(boap.segParam.f_central);
+            dsF_contract.setValue(boap.segParam.f_contract);
+            dsFinalShrink.setValue(boap.segParam.finalShrink);
+            isMaxIterations.setValue(boap.segParam.max_iterations);
+            isBlowup.setValue(boap.segParam.blowup);
+            isSample_tan.setValue(boap.segParam.sample_tan);
+            isSample_norm.setValue(boap.segParam.sample_norm);
             boap.supressStateChangeBOArun = false;
         }
 
@@ -1313,8 +1302,8 @@ public class BOA_ implements PlugIn {
                                  // to re-run segmentation
             Object source = e.getItemSelectable();
             if (source == cPath) {
-                boap.segp.showPaths = cPath.getState();
-                if (boap.segp.showPaths) {
+                boap.segParam.showPaths = cPath.getState();
+                if (boap.segParam.showPaths) {
                     this.setImage(imageGroup.getPathsIpl());
                 } else {
                     this.setImage(imageGroup.getOrgIpl());
@@ -1323,9 +1312,9 @@ public class BOA_ implements PlugIn {
                     imageGroup.zoom(canvas, boaState.frame);
                 }
             } else if (source == cPrevSnake) {
-                boap.segp.use_previous_snake = cPrevSnake.getState();
+                boap.segParam.use_previous_snake = cPrevSnake.getState();
             } else if (source == cExpSnake) {
-                boap.segp.expandSnake = cExpSnake.getState();
+                boap.segParam.expandSnake = cExpSnake.getState();
                 run = true;
             } else if (source == cZoom) {
                 boap.zoom = cZoom.getState();
@@ -1411,43 +1400,43 @@ public class BOA_ implements PlugIn {
 
             if (source == dsNodeRes) {
                 JSpinner spinner = (JSpinner) source;
-                boap.segp.setNodeRes((Double) spinner.getValue());
+                boap.segParam.setNodeRes((Double) spinner.getValue());
                 run = true;
             } else if (source == dsVel_crit) {
                 JSpinner spinner = (JSpinner) source;
-                boap.segp.vel_crit = (Double) spinner.getValue();
+                boap.segParam.vel_crit = (Double) spinner.getValue();
                 run = true;
             } else if (source == dsF_image) {
                 JSpinner spinner = (JSpinner) source;
-                boap.segp.f_image = (Double) spinner.getValue();
+                boap.segParam.f_image = (Double) spinner.getValue();
                 run = true;
             } else if (source == dsF_central) {
                 JSpinner spinner = (JSpinner) source;
-                boap.segp.f_central = (Double) spinner.getValue();
+                boap.segParam.f_central = (Double) spinner.getValue();
                 run = true;
             } else if (source == dsF_contract) {
                 JSpinner spinner = (JSpinner) source;
-                boap.segp.f_contract = (Double) spinner.getValue();
+                boap.segParam.f_contract = (Double) spinner.getValue();
                 run = true;
             } else if (source == dsFinalShrink) {
                 JSpinner spinner = (JSpinner) source;
-                boap.segp.finalShrink = (Double) spinner.getValue();
+                boap.segParam.finalShrink = (Double) spinner.getValue();
                 run = true;
             } else if (source == isMaxIterations) {
                 JSpinner spinner = (JSpinner) source;
-                boap.segp.max_iterations = (Integer) spinner.getValue();
+                boap.segParam.max_iterations = (Integer) spinner.getValue();
                 run = true;
             } else if (source == isBlowup) {
                 JSpinner spinner = (JSpinner) source;
-                boap.segp.blowup = (Integer) spinner.getValue();
+                boap.segParam.blowup = (Integer) spinner.getValue();
                 run = true;
             } else if (source == isSample_tan) {
                 JSpinner spinner = (JSpinner) source;
-                boap.segp.sample_tan = (Integer) spinner.getValue();
+                boap.segParam.sample_tan = (Integer) spinner.getValue();
                 run = true;
             } else if (source == isSample_norm) {
                 JSpinner spinner = (JSpinner) source;
-                boap.segp.sample_norm = (Integer) spinner.getValue();
+                boap.segParam.sample_norm = (Integer) spinner.getValue();
                 run = true;
             }
 
@@ -1598,8 +1587,8 @@ public class BOA_ implements PlugIn {
             // if(boap.expandSnake) boap.NMAX = 9990; // percent hack
 
             nest.resetForFrame(startF);
-            if (!boap.segp.expandSnake) { // blowup snake ready for contraction (only those not
-                                          // starting
+            if (!boap.segParam.expandSnake) { // blowup snake ready for contraction (only those not
+                // starting
                 // at or after the startF)
                 constrictor.loosen(nest, startF);
             } else {
@@ -1618,10 +1607,10 @@ public class BOA_ implements PlugIn {
 
                 try {
                     if (boaState.frame != startF) {// expand snakes for next frame
-                        if (!boap.segp.use_previous_snake) {
+                        if (!boap.segParam.use_previous_snake) {
                             nest.resetForFrame(boaState.frame);
                         } else {
-                            if (!boap.segp.expandSnake) {
+                            if (!boap.segParam.expandSnake) {
                                 constrictor.loosen(nest, boaState.frame);
                             } else {
                                 constrictor.implode(nest, boaState.frame);
@@ -1676,7 +1665,7 @@ public class BOA_ implements PlugIn {
                     IJ.showProgress(boaState.frame, endF);
                 } catch (BoaException be) {
                     boap.SEGrunning = false;
-                    if (!boap.segp.use_previous_snake) {
+                    if (!boap.segParam.use_previous_snake) {
                         imageGroup.setIpSliceAll(boaState.frame);
                         imageGroup.updateOverlay(boaState.frame);
                     } else {
@@ -1737,7 +1726,7 @@ public class BOA_ implements PlugIn {
         // imageGroup.drawPath(snake, frame); //draw initial contour on path
         // image
 
-        for (i = 0; i < boap.segp.max_iterations; i++) { // iter constrict snake
+        for (i = 0; i < boap.segParam.max_iterations; i++) { // iter constrict snake
             if (i % boap.cut_every == 0) {
                 snake.cutLoops(); // cut out loops every p.cut_every timesteps
             }
@@ -1753,7 +1742,7 @@ public class BOA_ implements PlugIn {
 
             if ((snake.getNODES() / snake.startingNnodes) > boap.NMAX) {
                 // if max nodes reached (as % starting) prompt for reset
-                if (boap.segp.use_previous_snake) {
+                if (boap.segParam.use_previous_snake) {
                     // imageGroup.drawContour(snake, frame);
                     // imageGroup.updateAndDraw();
                     throw new BoaException(
@@ -1771,7 +1760,7 @@ public class BOA_ implements PlugIn {
         }
         snake.defreeze(); // set freeze tag back to false
 
-        if (!boap.segp.expandSnake) { // shrink a bit to get final outline
+        if (!boap.segParam.expandSnake) { // shrink a bit to get final outline
             snake.shrinkSnake();
         }
         // System.out.println("finished tighten- cut loops and intersects");
@@ -2379,21 +2368,21 @@ class Constrictor {
             if (!n.isFrozen()) {
 
                 // compute F_central
-                V_temp.setX(n.getNormal().getX() * BOA_.boap.segp.f_central);
-                V_temp.setY(n.getNormal().getY() * BOA_.boap.segp.f_central);
+                V_temp.setX(n.getNormal().getX() * BOA_.boap.segParam.f_central);
+                V_temp.setY(n.getNormal().getY() * BOA_.boap.segParam.f_central);
                 n.setF_total(V_temp);
 
                 // compute F_contract
                 F_temp = contractionForce(n);
-                V_temp.setX(F_temp.getX() * BOA_.boap.segp.f_contract);
-                V_temp.setY(F_temp.getY() * BOA_.boap.segp.f_contract);
+                V_temp.setX(F_temp.getX() * BOA_.boap.segParam.f_contract);
+                V_temp.setY(F_temp.getY() * BOA_.boap.segParam.f_contract);
                 n.addF_total(V_temp);
 
                 // compute F_image and F_friction
                 F_temp = imageForce(n, ip);
-                V_temp.setX(F_temp.getX() * BOA_.boap.segp.f_image);// - n.getVel().getX() *
+                V_temp.setX(F_temp.getX() * BOA_.boap.segParam.f_image);// - n.getVel().getX() *
                 // boap.f_friction);
-                V_temp.setY(F_temp.getY() * BOA_.boap.segp.f_image);// - n.getVel().getY() *
+                V_temp.setY(F_temp.getY() * BOA_.boap.segParam.f_image);// - n.getVel().getY() *
                 // boap.f_friction);
                 n.addF_total(V_temp);
 
@@ -2411,7 +2400,7 @@ class Constrictor {
                 n.getVel().multiply(BOA_.boap.f_friction);
 
                 // freeze node if vel is below vel_crit
-                if (n.getVel().length() < BOA_.boap.segp.vel_crit) {
+                if (n.getVel().length() < BOA_.boap.segParam.vel_crit) {
                     snake.freezeNode(n);
                 }
             }
@@ -2449,8 +2438,8 @@ class Constrictor {
                 // if (!n.isFrozen()) {
 
                 // compute F_central
-                V_temp.setX(n.getNormal().getX() * BOA_.boap.segp.f_central);
-                V_temp.setY(n.getNormal().getY() * BOA_.boap.segp.f_central);
+                V_temp.setX(n.getNormal().getX() * BOA_.boap.segParam.f_central);
+                V_temp.setY(n.getNormal().getY() * BOA_.boap.segParam.f_central);
                 pw.print("\n" + n.getTrackNum() + "," + V_temp.length() + ",");
                 n.setF_total(V_temp);
 
@@ -2461,16 +2450,16 @@ class Constrictor {
                 } else {
                     pw.print((F_temp.length() * -1) + ",");
                 }
-                V_temp.setX(F_temp.getX() * BOA_.boap.segp.f_contract);
-                V_temp.setY(F_temp.getY() * BOA_.boap.segp.f_contract);
+                V_temp.setX(F_temp.getX() * BOA_.boap.segParam.f_contract);
+                V_temp.setY(F_temp.getY() * BOA_.boap.segParam.f_contract);
                 n.addF_total(V_temp);
 
                 // compute F_image and F_friction
                 F_temp = imageForce(n, ip);
                 pw.print((F_temp.length() * -1) + ",");
-                V_temp.setX(F_temp.getX() * BOA_.boap.segp.f_image);// - n.getVel().getX()*
+                V_temp.setX(F_temp.getX() * BOA_.boap.segParam.f_image);// - n.getVel().getX()*
                 // boap.f_friction);
-                V_temp.setY(F_temp.getY() * BOA_.boap.segp.f_image);// - n.getVel().getY()*
+                V_temp.setY(F_temp.getY() * BOA_.boap.segParam.f_image);// - n.getVel().getY()*
                 // boap.f_friction);
                 n.addF_total(V_temp);
                 pw.print(n.getF_total().length() + "");
@@ -2489,7 +2478,7 @@ class Constrictor {
                 n.setPrelim(V_temp);
 
                 // freeze node if vel is below vel_crit
-                if (n.getVel().length() < BOA_.boap.segp.vel_crit) {
+                if (n.getVel().length() < BOA_.boap.segParam.vel_crit) {
                     snake.freezeNode(n);
                 }
                 // }
@@ -2556,12 +2545,12 @@ class Constrictor {
         // sample_norm
         // tangent to the chain
 
-        for (i = 0; i <= 1. / a * BOA_.boap.segp.sample_tan; ++i) {
+        for (i = 0; i <= 1. / a * BOA_.boap.segParam.sample_tan; ++i) {
             // determine points on the tangent
-            xt = n.getPoint().getX() + (a * i - BOA_.boap.segp.sample_tan / 2) * tan.getX();
-            yt = n.getPoint().getY() + (a * i - BOA_.boap.segp.sample_tan / 2) * tan.getY();
+            xt = n.getPoint().getX() + (a * i - BOA_.boap.segParam.sample_tan / 2) * tan.getX();
+            yt = n.getPoint().getY() + (a * i - BOA_.boap.segParam.sample_tan / 2) * tan.getY();
 
-            for (j = 0; j <= 1. / a * BOA_.boap.segp.sample_norm / 2; ++j) {
+            for (j = 0; j <= 1. / a * BOA_.boap.segParam.sample_norm / 2; ++j) {
                 x = xt + a * j * n.getNormal().getX();
                 y = yt + a * j * n.getNormal().getY();
 
@@ -2592,12 +2581,12 @@ class Constrictor {
         I_out = 0; // number of pixels in the local
 
         // rotate sample window and take the maximum contrast
-        for (i = 0; i <= 1. / a * BOA_.boap.segp.sample_norm; ++i) {
+        for (i = 0; i <= 1. / a * BOA_.boap.segParam.sample_norm; ++i) {
             // determine points on the tangent
-            xt = n.getPoint().getX() + (a * i - BOA_.boap.segp.sample_tan / 2) * tan.getX();
-            yt = n.getPoint().getY() + (a * i - BOA_.boap.segp.sample_tan / 2) * tan.getY();
+            xt = n.getPoint().getX() + (a * i - BOA_.boap.segParam.sample_tan / 2) * tan.getX();
+            yt = n.getPoint().getY() + (a * i - BOA_.boap.segParam.sample_tan / 2) * tan.getY();
 
-            for (j = 0; j <= 1. / a * BOA_.boap.segp.sample_tan / 2; ++j) {
+            for (j = 0; j <= 1. / a * BOA_.boap.segParam.sample_tan / 2; ++j) {
                 x = xt + a * j * n.getNormal().getX();
                 y = yt + a * j * n.getNormal().getY();
 
@@ -2617,7 +2606,8 @@ class Constrictor {
         double Delta_I_r = ((double) I_inside / I_in - (double) I_outside / I_out) / 255.;
         System.out.println("Delta_I=" + Delta_I + ", Delta_I_r =" + Delta_I_r);
 
-        if (I_out > BOA_.boap.segp.sample_norm / 2 * BOA_.boap.segp.sample_tan) // check that all
+        if (I_out > BOA_.boap.segParam.sample_norm / 2 * BOA_.boap.segParam.sample_tan) // check
+                                                                                        // that all
         // I_out pixels are
         // inside the frame
         {
@@ -2661,12 +2651,12 @@ class Constrictor {
 
         // determine num pixels and total intensity of
         // neighbourhood: a rectangle with sample_tan x sample_norm
-        for (i = 0; i <= 1. / a * BOA_.boap.segp.sample_tan; i++) {
+        for (i = 0; i <= 1. / a * BOA_.boap.segParam.sample_tan; i++) {
             // determine points on the tangent
-            xt = n.getPoint().getX() + (a * i - BOA_.boap.segp.sample_tan / 2) * tan.getX();
-            yt = n.getPoint().getY() + (a * i - BOA_.boap.segp.sample_tan / 2) * tan.getY();
+            xt = n.getPoint().getX() + (a * i - BOA_.boap.segParam.sample_tan / 2) * tan.getX();
+            yt = n.getPoint().getY() + (a * i - BOA_.boap.segParam.sample_tan / 2) * tan.getY();
 
-            for (j = 0; j <= 1. / a * BOA_.boap.segp.sample_norm / 2; ++j) {
+            for (j = 0; j <= 1. / a * BOA_.boap.segParam.sample_norm / 2; ++j) {
                 x = xt + a * j * n.getNormal().getX();
                 y = yt + a * j * n.getNormal().getY();
 
@@ -2732,7 +2722,7 @@ class Constrictor {
         }
 
         double stepSize = 0.1;
-        double steps = (double) BOA_.boap.segp.blowup / stepSize;
+        double steps = (double) BOA_.boap.segParam.blowup / stepSize;
 
         for (int i = 0; i < steps; i++) {
             // check for contacts, freeze nodes in contact.
@@ -3222,17 +3212,17 @@ class SnakeHandler {
 
         pw.print(IJ.d2s(BOA_.boap.NMAX, 6) + "\n");
         pw.print(IJ.d2s(BOA_.boap.delta_t, 6) + "\n");
-        pw.print(IJ.d2s(BOA_.boap.segp.max_iterations, 6) + "\n");
+        pw.print(IJ.d2s(BOA_.boap.segParam.max_iterations, 6) + "\n");
         pw.print(IJ.d2s(BOA_.boap.getMin_dist(), 6) + "\n");
         pw.print(IJ.d2s(BOA_.boap.getMax_dist(), 6) + "\n");
-        pw.print(IJ.d2s(BOA_.boap.segp.blowup, 6) + "\n");
-        pw.print(IJ.d2s(BOA_.boap.segp.sample_tan, 6) + "\n");
-        pw.print(IJ.d2s(BOA_.boap.segp.sample_norm, 6) + "\n");
-        pw.print(IJ.d2s(BOA_.boap.segp.vel_crit, 6) + "\n");
-        pw.print(IJ.d2s(BOA_.boap.segp.f_central, 6) + "\n");
-        pw.print(IJ.d2s(BOA_.boap.segp.f_contract, 6) + "\n");
+        pw.print(IJ.d2s(BOA_.boap.segParam.blowup, 6) + "\n");
+        pw.print(IJ.d2s(BOA_.boap.segParam.sample_tan, 6) + "\n");
+        pw.print(IJ.d2s(BOA_.boap.segParam.sample_norm, 6) + "\n");
+        pw.print(IJ.d2s(BOA_.boap.segParam.vel_crit, 6) + "\n");
+        pw.print(IJ.d2s(BOA_.boap.segParam.f_central, 6) + "\n");
+        pw.print(IJ.d2s(BOA_.boap.segParam.f_contract, 6) + "\n");
         pw.print(IJ.d2s(BOA_.boap.f_friction, 6) + "\n");
-        pw.print(IJ.d2s(BOA_.boap.segp.f_image, 6) + "\n");
+        pw.print(IJ.d2s(BOA_.boap.segParam.f_image, 6) + "\n");
         pw.print(IJ.d2s(1.0, 6) + "\n");
         pw.print(IJ.d2s(BOA_.boap.sensitivity, 6) + "\n");
         pw.print(IJ.d2s(BOA_.boap.cut_every, 6) + "\n");
@@ -3394,7 +3384,7 @@ class SnakeHandler {
      */
     void resetForFrame(int f) {
         try {
-            if (BOA_.boap.segp.use_previous_snake) {
+            if (BOA_.boap.segParam.use_previous_snake) {
                 // set to last segmentation ready for blowup
                 liveSnake = new Snake((PolygonRoi) this.getStoredSnake(f - 1).asFloatRoi(), ID);
             } else {
@@ -3555,7 +3545,7 @@ class Snake {
             int Rx = Rect.width / 2;
             int Ry = Rect.height / 2;
 
-            intializeOval(0, xc, yc, Rx, Ry, BOA_.boap.segp.getNodeRes() / 2);
+            intializeOval(0, xc, yc, Rx, Ry, BOA_.boap.segParam.getNodeRes() / 2);
         }
         startingNnodes = NODES / 100.; // as 1%. limit to X%
         alive = true;
@@ -3662,7 +3652,8 @@ class Snake {
                                                                  // define edge
             b = new ExtendedVector2d(p.xpoints[j], p.ypoints[j]);
 
-            nn = (int) Math.ceil(ExtendedVector2d.lengthP2P(a, b) / BOA_.boap.segp.getNodeRes());
+            nn = (int) Math
+                    .ceil(ExtendedVector2d.lengthP2P(a, b) / BOA_.boap.segParam.getNodeRes());
             spacing = ExtendedVector2d.lengthP2P(a, b) / (double) nn;
             u = ExtendedVector2d.unitVector(a, b);
             u.multiply(spacing); // required distance between points
@@ -3924,11 +3915,11 @@ class Snake {
     }
 
     public void blowup() throws Exception {
-        scale(BOA_.boap.segp.blowup, 4, true);
+        scale(BOA_.boap.segParam.blowup, 4, true);
     }
 
     public void shrinkSnake() throws BoaException {
-        scale(-BOA_.boap.segp.finalShrink, 0.5, false);
+        scale(-BOA_.boap.segParam.finalShrink, 0.5, false);
     }
 
     public void implode() throws Exception {
@@ -4038,9 +4029,9 @@ class Snake {
 
                     // set velocity
                     newN.setVel(nB.getVel());
-                    if (newN.getVel().length() < BOA_.boap.segp.vel_crit) {
+                    if (newN.getVel().length() < BOA_.boap.segParam.vel_crit) {
                         newN.getVel().makeUnit();
-                        newN.getVel().multiply(BOA_.boap.segp.vel_crit * 1.5);
+                        newN.getVel().multiply(BOA_.boap.segParam.vel_crit * 1.5);
                     }
 
                     if (cutHead) {
@@ -4233,7 +4224,7 @@ class Snake {
                 Node nIns = insertNode(n);
                 nIns.setVel(n.getVel());
                 nIns.getVel().makeUnit();
-                nIns.getVel().multiply(BOA_.boap.segp.vel_crit * 2);
+                nIns.getVel().multiply(BOA_.boap.segParam.vel_crit * 2);
 
                 // V2. random postion on average normale
                 InsNormX = 0.5 * (n.getNormal().getX() + n_neigh.getNormal().getX());
@@ -4342,9 +4333,9 @@ class Snake {
                 nIns.setVel(nL.getVel());
                 nIns.getVel().addVec(nC.getVel());
                 nIns.getVel().multiply(0.5);
-                if (nIns.getVel().length() < BOA_.boap.segp.vel_crit) {
+                if (nIns.getVel().length() < BOA_.boap.segParam.vel_crit) {
                     nIns.getVel().makeUnit();
-                    nIns.getVel().multiply(BOA_.boap.segp.vel_crit * 1.5);
+                    nIns.getVel().multiply(BOA_.boap.segParam.vel_crit * 1.5);
                 }
 
                 npos = new ExtendedVector2d(tanL.getX(), tanL.getY());
@@ -4871,7 +4862,7 @@ class Node {
          * normal.setY(-normal.getX()); }
          */
 
-        if (!BOA_.boap.segp.expandSnake) { // switch around if expanding snake
+        if (!BOA_.boap.segParam.expandSnake) { // switch around if expanding snake
             normal.setX(-tan.getY());
             normal.setY(tan.getX());
         } else {
@@ -4969,7 +4960,7 @@ class BOAp {
     File orgFile, outFile; /*!< paramFile; */
     String fileName; /*!< file name only, no extension */
     QParams readQp; /*!< read in parameter file */
-    public SEGp segp;
+    public SegParam segParam; /*!< Parameters of segmentation available for user (GUI)*/
     // internal parameters
     int NMAX; /*!< maximum number of nodes (% of starting nodes) */
     double delta_t;
@@ -5001,7 +4992,14 @@ class BOAp {
     int callCount; // use to test how many times a method is called
     boolean SEGrunning; /*!< is seg running */
 
-    class SEGp {
+    /**
+     * Hold user parameters of segmentation
+     * 
+     * @author p.baniukiewicz
+     * @date 30 Mar 2016
+     *
+     */
+    class SegParam {
         private double nodeRes; /*!< Number of nodes on ROI edge */
         int blowup; /*!< distance to blow up chain */
         double vel_crit;
@@ -5017,7 +5015,10 @@ class BOAp {
         boolean showPaths;
         boolean expandSnake; /*!< whether to act as an expanding snake */
 
-        public SEGp() {
+        /**
+         * Sets default values of parameters
+         */
+        public SegParam() {
             setDefaults();
         }
 
@@ -5049,8 +5050,7 @@ class BOAp {
         /**
          * Set default parameters for contour matching algorithm.
          * 
-         * Fill some fields in BOAp class related to CM algorithm. These parameters
-         * are external - available for user to set in GUI.
+         * These parameters are external - available for user to set in GUI.
          */
         public void setDefaults() {
             setNodeRes(6.0);
@@ -5063,16 +5063,14 @@ class BOAp {
             sample_norm = 12;
             f_contract = 0.04;
             finalShrink = 3d;
-
         }
-
-    }
+    } // end of SegParam
 
     /**
      * Default constructor
      */
     public BOAp() {
-        segp = new SEGp();
+        segParam = new SegParam(); // build segmentation parameters object wit default values
     }
 
     /**
@@ -5143,9 +5141,9 @@ class BOAp {
         }
 
         savedOne = false;
-        segp.showPaths = false;
-        segp.use_previous_snake = true; // next contraction begins with last chain
-        segp.expandSnake = false; // set true to act as an expanding snake
+        segParam.showPaths = false;
+        segParam.use_previous_snake = true; // next contraction begins with last chain
+        segParam.expandSnake = false; // set true to act as an expanding snake
         // nestSize = 0;
         WIDTH = ip.getWidth();
         HEIGHT = ip.getHeight();
@@ -5199,18 +5197,18 @@ class BOAp {
             qp.startFrame = startF;
             qp.endFrame = endF;
             qp.NMAX = NMAX;
-            qp.blowup = segp.blowup;
-            qp.max_iterations = segp.max_iterations;
-            qp.sample_tan = segp.sample_tan;
-            qp.sample_norm = segp.sample_norm;
+            qp.blowup = segParam.blowup;
+            qp.max_iterations = segParam.max_iterations;
+            qp.sample_tan = segParam.sample_tan;
+            qp.sample_norm = segParam.sample_norm;
             qp.delta_t = delta_t;
-            qp.nodeRes = segp.nodeRes;
-            qp.vel_crit = segp.vel_crit;
-            qp.f_central = segp.f_central;
-            qp.f_contract = segp.f_contract;
-            qp.f_image = segp.f_image;
+            qp.nodeRes = segParam.nodeRes;
+            qp.vel_crit = segParam.vel_crit;
+            qp.f_central = segParam.f_central;
+            qp.f_contract = segParam.f_contract;
+            qp.f_image = segParam.f_image;
             qp.f_friction = f_friction;
-            qp.finalShrink = segp.finalShrink;
+            qp.finalShrink = segParam.finalShrink;
             qp.sensitivity = sensitivity;
 
             qp.writeParams();
@@ -5241,19 +5239,19 @@ class BOAp {
             return false;
         }
         NMAX = readQp.NMAX;
-        segp.blowup = readQp.blowup;
-        segp.max_iterations = readQp.max_iterations;
-        segp.sample_tan = readQp.sample_tan;
-        segp.sample_norm = readQp.sample_norm;
+        segParam.blowup = readQp.blowup;
+        segParam.max_iterations = readQp.max_iterations;
+        segParam.sample_tan = readQp.sample_tan;
+        segParam.sample_norm = readQp.sample_norm;
         delta_t = readQp.delta_t;
-        segp.nodeRes = readQp.nodeRes;
-        segp.vel_crit = readQp.vel_crit;
-        segp.f_central = readQp.f_central;
-        segp.f_contract = readQp.f_contract;
-        segp.f_image = readQp.f_image;
+        segParam.nodeRes = readQp.nodeRes;
+        segParam.vel_crit = readQp.vel_crit;
+        segParam.f_central = readQp.f_central;
+        segParam.f_contract = readQp.f_contract;
+        segParam.f_image = readQp.f_image;
 
         if (readQp.newFormat) {
-            segp.finalShrink = readQp.finalShrink;
+            segParam.finalShrink = readQp.finalShrink;
         }
         BOA_.log("Successfully read parameters");
         return true;
