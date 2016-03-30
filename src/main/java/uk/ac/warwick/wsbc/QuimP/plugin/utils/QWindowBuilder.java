@@ -284,8 +284,7 @@ public abstract class QWindowBuilder {
     /**
      * Show or hide window
      * 
-     * @param state
-     * State of the window \c true to show, \c false to hide
+     * @param state State of the window \c true to show, \c false to hide
      */
     public void showWindow(boolean state) {
         pluginWnd.setVisible(state);

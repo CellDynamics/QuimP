@@ -21,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 import com.google.gson.Gson;
 
 import uk.ac.warwick.wsbc.QuimP.BOA_.BOAState;
-import uk.ac.warwick.wsbc.QuimP.BOAp.SEGp;
 
 /**
  * Builds history logger window and logs
@@ -39,7 +38,7 @@ import uk.ac.warwick.wsbc.QuimP.BOAp.SEGp;
 public class HistoryLogger implements WindowListener {
 
     private static final Logger LOGGER = LogManager.getLogger(HistoryLogger.class.getName());
-    private Frame historyWnd;
+    private Frame historyWnd; /*!< Window handler */
     private ArrayList<String> history; /*!< array with all entries */
     private TextArea info;
     private int id; /*!< message counter */
@@ -91,44 +90,18 @@ public class HistoryLogger implements WindowListener {
      * Particular entries can be null if they may not be logged
      *  
      * @param m General message to be included
-     * @param sp Active plugins
-     * @param segp Segmentation params
-     * @todo TODO This method should accept more detailed BOA state (e.g. all segm. params)
-     */
-    public void addEntry(String m, SnakePluginList sp, SEGp segp) {
-        if (historyWnd.isVisible()) {
-            if (sp != null)
-                sp.beforeSerialize();
-            Entry en = new Entry(id++, m, sp, segp);
-            String jsontmp = en.getJSon();
-            history.add(jsontmp);
-            info.append(jsontmp + '\n');
-            LOGGER.debug(jsontmp);
-            en = null;
-        }
-
-    }
-
-    /**
-     * Add entry to log.
-     * 
-     * Gather all BOA state and include in log. Uses \c Entry class to pack these information to
-     * JSon object. 
-     * Particular entries can be null if they may not be logged
-     *  
-     * @param m General message to be included
-     * @param sp Active plugins
-     * @param segp Segmentation params
+     * @param bs BOA state machine object 
      * @todo TODO This method should accept more detailed BOA state (e.g. all segm. params)
      */
     public void addEntry(String m, BOAState bs) {
         if (historyWnd.isVisible()) {
-            if (bs.snakePluginList != null)
-                bs.snakePluginList.beforeSerialize();
-            Entry1 en = new Entry1(id++, m, bs);
+            if (bs == null)
+                return;
+            bs.beforeSerialize();
+            LogEntry en = new LogEntry(id++, m, bs);
             String jsontmp = en.getJSon();
-            history.add(jsontmp);
-            info.append(jsontmp + '\n');
+            history.add(jsontmp); // store in array
+            info.append(jsontmp + '\n'); // add to log window
             LOGGER.debug(jsontmp);
             en = null;
         }
@@ -197,62 +170,21 @@ public class HistoryLogger implements WindowListener {
  * @date 29 Mar 2016
  *
  */
-class Entry {
+class LogEntry {
     public int id; /*!< Number of entry */
     public String action; /*!< Textual description of taken action */
-    public SnakePluginList snakePluginList; /*!< Active plugins */
-    public SEGp segp;
+    public BOAState BOA; /*!< BOA current state */
 
     /**
      * Main constructor
      * 
      * Object of this class is created temporarily only for logging purposes.
      * 
-     * @param counter
-     * @param action
-     * @param snakePluginList
+     * @param counter number of log entry
+     * @param action description of action
+     * @param bs BOA state machine
      */
-    public Entry(int counter, String action, SnakePluginList snakePluginList, SEGp segp) {
-        super();
-        this.id = counter;
-        this.action = action;
-        this.snakePluginList = snakePluginList;
-        this.segp = segp;
-    }
-
-    /**
-     * Produce string representation of this object in JSon format
-     * 
-     * @return JSon representation of this class
-     */
-    public String getJSon() {
-        Gson gs = new Gson();
-        return gs.toJson(this);
-    }
-}
-
-/**
- * Serialization class. Holds all data that should be included in log
- * 
- * @author p.baniukiewicz
- * @date 29 Mar 2016
- *
- */
-class Entry1 {
-    public int id; /*!< Number of entry */
-    public String action; /*!< Textual description of taken action */
-    public BOAState BOA;
-
-    /**
-     * Main constructor
-     * 
-     * Object of this class is created temporarily only for logging purposes.
-     * 
-     * @param counter
-     * @param action
-     * @param snakePluginList
-     */
-    public Entry1(int counter, String action, BOAState bs) {
+    public LogEntry(int counter, String action, BOAState bs) {
         super();
         this.id = counter;
         this.action = action;
