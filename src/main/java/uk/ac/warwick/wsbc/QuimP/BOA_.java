@@ -125,7 +125,7 @@ public class BOA_ implements PlugIn {
                                 // too often. These information are used for About dialog and they
                                 // re presented on window title bar
     private static int logCount = 1; // adds counter to logged messages
-    static final private int NUM_SPLINE_PLUGINS = 3; /*!< number of Spline plugins  */
+    static final private int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
     private HistoryLogger historyLogger; // logger
 
     static final public BOAp boap = new BOAp(); // configuration object, available from all modules
@@ -141,7 +141,7 @@ public class BOA_ implements PlugIn {
     class BOAState {
         public int frame; /*!< current frame, CustomStackWindow.updateSliceSelector() */
         public SegParam segParam; /*!< Reference to segmentation parameters */
-        public String fileName;
+        public String fileName; /*!< Current data file name */
         /**
          * List of plugins selected in plugin stack and information if the are active or not
          * This field is serializable.
@@ -153,16 +153,20 @@ public class BOA_ implements PlugIn {
 
         /**
          * Should be called before serialization. Fills extra fields from BOAp
+         * 
          * @warning This may be temporary method.
          */
         public void beforeSerialize() {
-            fileName = boap.fileName;
-            snakePluginList.beforeSerialize();
+            fileName = boap.fileName; // copy filename from system wide boap
+            snakePluginList.beforeSerialize(); // download plugins configurations
         }
     }
 
     /**
+     * Main method called from Fiji. Initializes internal BOA structures.
+     * 
      * @param arg Currently it can be string pointing to plugins directory
+     * @see uk.ac.warwick.wsbc.QuimP.BOA_.setup(final ImagePlus)
      */
     @Override
     public void run(final String arg) {
@@ -227,7 +231,7 @@ public class BOA_ implements PlugIn {
             pluginFactory = new PluginFactory(Paths.get(path));
             // initialize arrays for plugins instances and give them initial values
             boaState.snakePluginList =
-                    new SnakePluginList(NUM_SPLINE_PLUGINS, pluginFactory, null, viewUpdater);
+                    new SnakePluginList(NUM_SNAKE_PLUGINS, pluginFactory, null, viewUpdater);
 
         } catch (Exception e) {
             // temporary catching may in future be removed
@@ -729,7 +733,8 @@ public class BOA_ implements PlugIn {
 
             // build subpanel with plugins
             // get plugins names collected by PluginFactory
-            ArrayList<String> pluginList = pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
+            ArrayList<String> pluginList =
+                    boaState.snakePluginList.getPluginNames(IQuimpPlugin.DOES_SNAKES);
             // add NONE to list
             pluginList.add(0, NONE);
 
@@ -1244,8 +1249,8 @@ public class BOA_ implements PlugIn {
                                 new QPluginConfigSerializer(quimpInfo, boaState.snakePluginList);
                         // Register nondefault constructor
                         qConfig.getBuilder().registerTypeAdapter(SnakePluginList.class,
-                                new SnakePluginListInstanceCreator(NUM_SPLINE_PLUGINS,
-                                        pluginFactory, null, viewUpdater));
+                                new SnakePluginListInstanceCreator(NUM_SNAKE_PLUGINS, pluginFactory,
+                                        null, viewUpdater));
                         QPluginConfigSerializer local;
                         local = qConfig.load(od.getDirectory() + od.getFileName());
                         // restore loaded objects
@@ -4944,9 +4949,9 @@ class Node {
  * BOAp is static class contains internal as well as external parameters used to
  * define snake and to control contour matching algorithm. There are also
  * several basic get/set methods for accessing selected parameters, setting
- * default {@link BOAp#setDefaults() values} and writing/reading these
- * (external) parameters to/from disk. File format used for storing data in
- * files is defined at {@link QParams} class.
+ * default {@link uk.ac.warwick.wsbc.QuimP.BOAp.SegParam.setDefaults() values} 
+ * and writing/reading these (external) parameters to/from disk. File format used for
+ * storing data in files is defined at {@link QParams} class.
  * 
  * External parameters are those related to algorithm options whereas internal
  * are those related to internal settings of algorithm, GUI and whole plugin
@@ -5103,7 +5108,7 @@ class BOAp {
      * Most of these parameters are related to state machine of BOA. There are
      * also parameters related to internal state of Active Contour algorithm.
      * Defaults for parameters available for user are set in
-     * {@link uk.ac.warwick.wsbc.QuimP.boap.setDefaults()}
+     * {@link uk.ac.warwick.wsbc.QuimP.BOAp.SegParam.setDefaults()}
      * 
      * @param ip Reference to segmented image passed from IJ
      * @see setDefaults()

@@ -66,11 +66,114 @@ note "On load/write QuimP configuration" as N2
 N2 .. (Set plugin\nconfig)
 @enduml
 
+List of use cases:
+
++ [Create engine](@ref ce)
++ [Run plugin](@ref rp)
++ Select plugin
++ Show GUI
++ Load config
++ Write config
++ Get plugin config
++ Set plugin config
++ Update view
+ 
+
+## Description of Use Cases {#douc}
+
+### Create Engine {#ce}
+
+This use case is responsible for creating plugins engine. Three important operations are here. Firstly, the \ref uk.ac.warwick.wsbc.QuimP.PluginFactory(final Path) "PluginFactory" is created which is related to scanning for plugins and registering them, secondly the QuimP UI is build using discovered plugins (\ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.buildSetupPanel() "buildSetupPanel") and finally the list of plugins \ref uk.ac.warwick.wsbc.QuimP.SnakePluginList "SnakePluginList" is created. 
+
+The difference between PluginFactory and SnakePluginList is that PluginFactory is responsible for searching given directory for jars and collecting information about them in its internal database. 
+The SnakePluginList is strongly correlated with UI interface. It is a list of plugins that are currently active created in dependency on user actions and on the basis of PluginFactory. The main principle of this class is to provide mechanism of serialization that allows to save current plugin stack and then restore it. So this class holds whole configuration of the stack (where plugins are defined by their **names** obtained from PluginFactory) and allows to restore physical instances of plugins during deserialization.   
+
+
+Conditions:
+
+* QuimP is starting
+* Plugin dir is passed to QuimP
+
+@startuml
+start
+partition BOA_:run() {
+:create PluginFactory;
+note left 
+See ""PluginFactory"" for details
+end note
+:create SnakePluginList;
+}
+partition buildSetupPanel {
+:get plugin names from ""PluginFactory"";
+note left: names of all plugins\nof given type through\n**SnakePluginList** warper
+:add **NONE** to this list;
+note left: **NONE** has special meaning as name\nit stands for empty slot
+:create ComboBox filled with names;
+:get activity status from snakePluginList.isActive;
+}
+stop
+legend
+""PluginFactory"" is most important
+player here. All actions related
+to plugins have place there.
+It is related to jars on disk
+""SnakePluginList"" is related to plugin stack
+end legend
+@enduml
+
+### Run Plugin {#rp}
+
+Plugin is run on user action, when he selects plugin from selector or when he modifies parameters of plugin (only if plugin supports uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro interface). During this stage the new Snake is produced as result of applying the plugin stack on the original snake. The original Snake is those obtained from segmentation algorithm. See [Technical details](@ref td) for details about Snakes handling in QuimP.
+
+Conditions:
+
+* User [selected](@ref sp) one plugin on certain slot.
+* Plugins have been registered already by **Create Engine** use case. 
+* User started segmentation or added a cell.
+
+@startuml
+start
+:get ""liveSnake"";
+:backup ""liveSnake"";
+note left
+""liveSnake"" from current ""SnakeHandler""
+is stored in ""segSnakes"" for current frame
+end note
+partition iterateOverSnakePlugins {
+:c = snake;
+if (is any plugin selected) then (true)
+note left: There is any instance in BOAp.sPluginList\ncreated on **Select Plugin**
+while (for every Plugin)
+if (if is **not** null\nif is **active**) then (true)
+:attach data;
+:runPlugin(**c**);
+:assign result to **c**;
+endif
+endwhile
+endif
+}
+:return **c**;
+:storeThisSnake();
+note left
+Returned and processed snake is then 
+stored in finalSnakes[] array
+See **Update View**
+end note
+stop
+legend
+**iterateOverSnakePlugins(Snake)** is low level
+method that updates Snake passed as argument.
+There is other method **recalculatePlugins()**
+that apply **iterateOverSnakePlugins(Snake)**
+for all Snake objects on frame
+end legend
+@enduml
+
 ## General workflow for all cases {#gw}
 
 QuimP itself creates instances of plugins as well as stores the list of active
 plugins (currently 3, controlled by
-\ref uk.ac.warwick.wsbc.QuimP.BOA_.NUM_SPLINE_PLUGINS "NUM_SPLINE_PLUGINS").
+\ref uk.ac.warwick.wsbc.QuimP.BOA_.NUM_SNAKE_PLUGINS "NUM_SNAKE_PLUGINS").
 QuimP can also read and write options from/to plugin but it does not interfere
 with these data.  
  
@@ -306,57 +409,7 @@ end
 @enduml
 
 
-## Description of Use Cases {#douc}
 
-### Run Plugin {#rp}
-
-Related classes and methods:
-
-1. uk.ac.warwick.wsbc.QuimP.BOA_.addCell(final Roi, int)
-2. uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int)
-3. uk.ac.warwick.wsbc.QuimP.SnakePluginList
-4. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.attachData(final List<Point2d>)
-5. uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter.runPlugin()
-6. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(final Snake)
-
-Activity diagram for use case **Run Plugin**. 
-
-Conditions:
-
-* User selected one plugin on certain slot.
-* Plugins have been registered already by **Create Engine** use case. 
-* User started segmentation or added a cell.
-
-@startuml
-start
-:get ""liveSnake"";
-:backup ""liveSnake"";
-note left
-""liveSnake"" from current ""SnakeHandler""
-is stored in ""segSnakes"" for current frame
-end note
-partition iterateOverSnakePlugins {
-:c = snake;
-if (is any plugin selected) then (true)
-note left: There is any instance in BOAp.sPluginList\ncreated on **Select Plugin**
-while (for every Plugin)
-if (if is **not** null\nif is **active**) then (true)
-:attach data;
-:runPlugin(**c**);
-:assign result to **c**;
-endif
-endwhile
-endif
-}
-:return **c**;
-:storeThisSnake();
-note left
-Returned and processed snake is then 
-stored in finalSnakes[] array
-See **Update View**
-end note
-stop
-@enduml
 
 ### Select Plugin {#sp}
 
@@ -437,46 +490,7 @@ endif
 stop
 @enduml 
 
-### Create Engine {#ce}
 
-Related classes and methods:
-
-1. uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
-2. uk.ac.warwick.wsbc.QuimP.PluginFactory.PluginFactory(final Path)
-3. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.buildSetupPanel()
-    1. uk.ac.warwick.wsbc.QuimP.PluginFactory.getPluginNames(int)
-4. uk.ac.warwick.wsbc.QuimP.SnakePluginList    
-
-Conditions:
-
-* QuimP is starting
-* Plugin dir is passed to QuimP
-
-@startuml
-start
-partition BOA_:run() {
-:create PluginFactory;
-note left 
-See ""PluginFactory"" for details
-end note
-}
-partition buildSetupPanel {
-:get plugin names from ""PluginFactory"";
-note left: names of all plugins\nof given type
-:add **NONE** to this list;
-note left: **NONE** has special meaning as name\nit stands for empty slot
-:create ComboBox filled with names;
-:get activity status from snakePluginList.isActive;
-}
-stop
-legend
-""PluginFactory"" is most important
-player here. All actions related
-to plugins have place there.
-It is related to jars on disk
-""SnakePluginList"" is related to plugin stack
-end legend
-@enduml
 
 ### Update View {#upv}
 

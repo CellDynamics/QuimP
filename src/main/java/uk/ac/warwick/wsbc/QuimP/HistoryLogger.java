@@ -90,8 +90,7 @@ public class HistoryLogger implements WindowListener {
      * Particular entries can be null if they may not be logged
      *  
      * @param m General message to be included
-     * @param sp Active plugins
-     * @param segp Segmentation params
+     * @param bs BOA state machine object 
      * @todo TODO This method should accept more detailed BOA state (e.g. all segm. params)
      */
     public void addEntry(String m, BOAState bs) {
@@ -181,9 +180,9 @@ class LogEntry {
      * 
      * Object of this class is created temporarily only for logging purposes.
      * 
-     * @param counter
-     * @param action
-     * @param snakePluginList
+     * @param counter number of log entry
+     * @param action description of action
+     * @param bs BOA state machine
      */
     public LogEntry(int counter, String action, BOAState bs) {
         super();

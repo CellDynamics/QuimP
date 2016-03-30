@@ -365,13 +365,24 @@ class SnakePluginList {
             if (getInstance(i) != null)
                 getInstance(i).showUI(false);
     }
+
+    /**
+     * Return names of plugins of given type registered in PluginFactory associated with this object
+     * 
+     * @see uk.ac.warwick.wsbc.QuimP.PluginFactory.getPluginNames(int)
+     */
+    public ArrayList<String> getPluginNames(int type) {
+        return pluginFactory.getPluginNames(type);
+    }
 }
 
 /**
  * Object builder for GSon and SnakePluginList class
+ * 
+ * This class is used on load JSon representation of SnakePluginList class
  * @author p.baniukiewicz
  * @date 22 Mar 2016
- *
+ * @see GSon documentation
  */
 class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {
 
