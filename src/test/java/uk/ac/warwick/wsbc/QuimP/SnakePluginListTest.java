@@ -4,12 +4,13 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -71,6 +72,7 @@ public class SnakePluginListTest {
 
     private SnakePluginList snakePluginList;
     private ConfigContainer cc;
+    private String[] version;
 
     /**
      * Creates three fake plugins and fourth that will replace one of them
@@ -80,6 +82,10 @@ public class SnakePluginListTest {
     @Before
     public void setUp() throws Exception {
         cc = new ConfigContainer();
+        version = new String[3];
+        version[0] = "0.0.1";
+        version[1] = "baniuk";
+        version[2] = "QuimP";
         snakePluginList = new SnakePluginList(3, pluginFactory, null, null);
         cc.activePluginList = snakePluginList;
         /**
@@ -293,8 +299,7 @@ public class SnakePluginListTest {
 
     @Test
     public void testBeforeSerialize() throws Exception {
-        SnakePluginListTest.accessPrivate("beforeSerialize", SnakePluginList.class,
-                snakePluginList);
+        snakePluginList.beforeSerialize();
         for (int i = 0; i < 3; i++) {
             IQuimpPlugin inst = snakePluginList.getInstance(i);
             assertEquals(inst.getVersion(), snakePluginList.getVer(i));
@@ -307,12 +312,25 @@ public class SnakePluginListTest {
     public void testSaveConfig() throws IOException, NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        SnakePluginListTest.accessPrivate("beforeSerialize", SnakePluginList.class,
-                snakePluginList);
+        snakePluginList.beforeSerialize();
         LOGGER.trace(gson.toJson(cc));
         FileWriter f = new FileWriter(new File("/tmp/snakePluginList.json"));
         f.write(gson.toJson(cc));
         f.close();
+    }
+
+    @Test
+    public void testSaveConfig_serializer() throws FileNotFoundException {
+        Serializer<SnakePluginList> s = new Serializer<>(snakePluginList, version);
+        s.setPretty();
+        s.save("/tmp/snakePluginList_serializer.json");
+        LOGGER.trace(s.toString());
+    }
+
+    @Test
+    public void testSaveConfig_serializer1() throws FileNotFoundException {
+        Serializer<SnakePluginList> s = new Serializer<>(snakePluginList, version);
+        LOGGER.trace(s.toString());
     }
 
     /**
@@ -337,8 +355,7 @@ public class SnakePluginListTest {
         localsnakePluginList.setInstance(2, "toDelete", true); // slot 2
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        SnakePluginListTest.accessPrivate("beforeSerialize", SnakePluginList.class,
-                snakePluginList);
+        snakePluginList.beforeSerialize();
         LOGGER.trace(gson.toJson(localcc));
         // FileWriter f = new FileWriter(new File("/tmp/snakePluginList.json"));
         // f.write(gson.toJson(cc));
@@ -368,11 +385,44 @@ public class SnakePluginListTest {
         assertEquals("1.2.3", local.getVer(0));
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        local.afterSerialize();
         assertEquals(snakePluginList.getInstance(1).getPluginConfig(),
                 local.getInstance(1).getPluginConfig());
         assertEquals(snakePluginList.getInstance(2).getPluginConfig(),
                 local.getInstance(2).getPluginConfig());
+    }
+
+    @Test
+    public void testloadConfig_serializer() throws Exception {
+        //!<
+        String json =
+                "{\"className\":\"SnakePluginList\","
+                + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"obj\":{\"sPluginList\":"
+                + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
+                + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
+                +       "{\"window\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"2.3.4\"},"
+                + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
+        // */
+
+        Serializer<SnakePluginList> out;
+        Serializer<SnakePluginList> s = new Serializer<>();
+        s.registerInstanceCreator(SnakePluginList.class,
+                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+        out = s.fromString(new SnakePluginList(), json);
+
+        assertArrayEquals(out.version, version);
+
+        assertEquals(3, out.obj.getList().size());
+        assertFalse(out.obj.isActive(0));
+        assertEquals("Test1", out.obj.getName(0));
+
+        assertEquals(snakePluginList.getInstance(1).getPluginConfig(),
+                out.obj.getInstance(1).getPluginConfig());
+        assertEquals(snakePluginList.getInstance(0).getVersion(),
+                out.obj.getInstance(0).getVersion());
+        assertEquals(snakePluginList.getInstance(2).getPluginConfig(),
+                out.obj.getInstance(2).getPluginConfig());
     }
 
     /**
@@ -426,7 +476,7 @@ public class SnakePluginListTest {
         assertEquals("1.2.3", local.getVer(0));
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        local.afterSerialize();
         assertEquals(snakePluginList.getInstance(1).getPluginConfig(),
                 local.getInstance(1).getPluginConfig());
         assertEquals(snakePluginList.getInstance(2).getPluginConfig(),
@@ -482,10 +532,45 @@ public class SnakePluginListTest {
         assertEquals("", local.getVer(0));
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        local.afterSerialize();
         assertEquals(snakePluginList.getInstance(1).getPluginConfig(),
                 local.getInstance(1).getPluginConfig());
 
+    }
+
+    /**
+     * Only one plugin in middle
+     * @throws QuimpPluginException 
+     */
+    @Test
+    public void testloadConfig_serializer_2() throws Exception {
+        //!<
+        String json =
+                "{\"className\":\"SnakePluginList\","
+                + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"obj\":{\"sPluginList\":"
+                + "[{\"isActive\":false,\"name\":\"\",\"ver\":\"\"},"
+                + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
+                +       "{\"window\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"2.3.4\"},"
+                + "{\"isActive\":true,\"name\":\"\",\"ver\":\"\"}]}}";
+        // */
+
+        Serializer<SnakePluginList> out;
+        Serializer<SnakePluginList> s = new Serializer<>();
+        s.registerInstanceCreator(SnakePluginList.class,
+                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+        out = s.fromString(new SnakePluginList(), json);
+
+        assertArrayEquals(out.version, version);
+
+        assertEquals(3, out.obj.getList().size());
+        assertTrue(out.obj.isActive(0));
+        assertEquals("", out.obj.getName(0));
+
+        assertEquals(snakePluginList.getInstance(1).getPluginConfig(),
+                out.obj.getInstance(1).getPluginConfig());
+        assertEquals(null, out.obj.getInstance(0));
+        assertEquals(null, out.obj.getInstance(2));
     }
 
     /**
@@ -496,7 +581,7 @@ public class SnakePluginListTest {
      * @throws QuimpPluginException 
      */
     @Test
-    public void testloadConfig_bad() throws IOException {
+    public void testloadConfig_bad() throws IOException, QuimpPluginException {
         //!<
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
@@ -537,13 +622,44 @@ public class SnakePluginListTest {
         assertEquals(3, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        try {
-            local.afterdeSerialize();
-            fail("Not thrown");
-        } catch (Exception e) {
-            assertTrue((e instanceof QuimpPluginException));
-        }
+
+        local.afterSerialize();
+
         assertEquals(null, local.getInstance(0));
+        assertEquals(snakePluginList.getInstance(1), local.getInstance(1));
+        assertEquals(snakePluginList.getInstance(2), local.getInstance(2));
+    }
+
+    /**
+     * @pre Wrong name of plugin in config
+     * @post This slot is null
+     * 
+     * @throws IOException
+     * @throws QuimpPluginException 
+     */
+    @Test
+    public void testloadConfig_serializer_bad() throws Exception {
+        //!<
+        String json =
+                "{\"className\":\"SnakePluginList\","
+                + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"obj\":{\"sPluginList\":"
+                + "[{\"isActive\":false,\"name\":\"Test10\",\"ver\":\"1.2.3\"},"
+                + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
+                +       "{\"window\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"2.3.4\"},"
+                + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
+        // */
+
+        Serializer<SnakePluginList> out;
+        Serializer<SnakePluginList> s = new Serializer<>();
+        s.registerInstanceCreator(SnakePluginList.class,
+                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+
+        out = s.fromString(new SnakePluginList(), json);
+        assertEquals(null, out.obj.getInstance(0));
+        assertEquals(snakePluginList.getInstance(1), out.obj.getInstance(1));
+        assertEquals(snakePluginList.getInstance(2), out.obj.getInstance(2));
+
     }
 
     /**
@@ -595,8 +711,40 @@ public class SnakePluginListTest {
         assertEquals(3, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        local.afterSerialize();
         assertEquals("2.3.4", local.getInstance(1).getVersion());
+    }
+
+    /**
+     * @pre Incorrect version
+     * @post Plugin loaded with message
+     * 
+     * @throws IOException
+     * @throws QuimpPluginException 
+     */
+    @Test
+    public void testloadConfig_serializer_bad1() throws Exception {
+        //!<
+        String json =
+                "{\"className\":\"SnakePluginList\","
+                + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"obj\":{\"sPluginList\":"
+                + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
+                + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
+                +       "{\"window\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"20.3.4\"},"
+                + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
+        // */
+
+        Serializer<SnakePluginList> out;
+        Serializer<SnakePluginList> s = new Serializer<>();
+        s.registerInstanceCreator(SnakePluginList.class,
+                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+
+        out = s.fromString(new SnakePluginList(), json);
+        assertEquals("2.3.4", out.obj.getInstance(1).getVersion());
+        assertEquals(snakePluginList.getInstance(0), out.obj.getInstance(0));
+        assertEquals(snakePluginList.getInstance(1), out.obj.getInstance(1));
+        assertEquals(snakePluginList.getInstance(2), out.obj.getInstance(2));
     }
 
     /**
@@ -608,7 +756,7 @@ public class SnakePluginListTest {
      * @throws QuimpPluginException 
      */
     @Test
-    public void testloadConfig_bad2() throws IOException {
+    public void testloadConfig_bad2() throws IOException, QuimpPluginException {
         //!<
         String json = "{ \"version\": \"3.0.0\","
                 + "\"softwareName\": \"QuimP::BOA\","
@@ -649,14 +797,45 @@ public class SnakePluginListTest {
         assertEquals(3, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        try {
-            local.afterdeSerialize();
-            fail("Not thrown");
-        } catch (Exception e) {
-            assertTrue((e instanceof QuimpPluginException));
-        }
-        assertEquals("2.3.4", local.getInstance(1).getVersion());
-        assertEquals("10", local.getInstance(1).getPluginConfig().get("window"));
+
+        local.afterSerialize();
+
+        assertEquals(null, local.getInstance(1));
+        assertEquals(snakePluginList.getInstance(0), local.getInstance(0));
+    }
+
+    /**
+     * @pre Incompatibile config
+     * @post Plugin loaded but config not restored
+     * @warning This depends on plugin configuration. Wrong config is detected by exception thrown from
+     * setPluginConfig() from IQuimpPlugin
+     * @throws IOException
+     * @throws QuimpPluginException 
+     */
+    @Test
+    public void testloadConfig_serializer_bad2() throws Exception {
+        //!<
+        String json =
+                "{\"className\":\"SnakePluginList\","
+                + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"obj\":{\"sPluginList\":"
+                + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
+                + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
+                +       "{\"window10\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"2.3.4\"},"
+                + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
+        // */
+
+        Serializer<SnakePluginList> out;
+        Serializer<SnakePluginList> s = new Serializer<>();
+        s.registerInstanceCreator(SnakePluginList.class,
+                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+
+        out = s.fromString(new SnakePluginList(), json);
+
+        assertEquals(snakePluginList.getInstance(0), out.obj.getInstance(0));
+        assertEquals(snakePluginList.getInstance(2), out.obj.getInstance(2));
+        assertEquals(null, out.obj.getInstance(1));
+
     }
 
     /**
@@ -699,7 +878,7 @@ public class SnakePluginListTest {
         assertEquals(2, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        local.afterSerialize();
         assertEquals("1.2.3", local.getInstance(0).getVersion());
         assertEquals("2.3.4", local.getInstance(1).getVersion());
     }
@@ -747,7 +926,7 @@ public class SnakePluginListTest {
         assertEquals(3, local.getList().size());
 
         // after plugin initialization - restore transient fields
-        local.afterdeSerialize();
+        local.afterSerialize();
         assertEquals("1.2.3", local.getInstance(0).getVersion());
         assertEquals(null, local.getInstance(1));
         assertEquals("2.3.4", local.getInstance(2).getVersion());

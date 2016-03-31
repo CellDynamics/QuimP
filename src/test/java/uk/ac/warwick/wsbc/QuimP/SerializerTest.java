@@ -52,7 +52,7 @@ public class SerializerTest {
      */
     @Test
     public void testSave() throws Exception {
-        Serializer<TestClass> s = new Serializer<>();
+        Serializer<TestClass> s = new Serializer<>(testClass, version);
         s.save("/tmp/serializertest.josn");
     }
 

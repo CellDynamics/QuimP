@@ -38,7 +38,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  * @author p.baniukiewicz
  * @date 22 Mar 2016
  */
-class SnakePluginList {
+class SnakePluginList implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(SnakePluginList.class.getName());
     // all other data that are necessary for plugins
     private transient PluginFactory pluginFactory;
@@ -330,6 +330,7 @@ class SnakePluginList {
      * 
      * @remarks This method should be called directly before saving to have most recent options.  
      */
+    @Override
     public void beforeSerialize() {
         for (Plugin i : sPluginList)
             i.downloadPluginConfig();
@@ -343,12 +344,19 @@ class SnakePluginList {
      * 
      * @throws QuimpPluginException 
      */
-    public void afterdeSerialize() throws QuimpPluginException {
+    @Override
+    public void afterSerialize() throws QuimpPluginException {
         // go through list and create new Plugin using old values that were restored after loading
         for (int i = 0; i < sPluginList.size(); i++) {
             String ver = sPluginList.get(i).ver;
             // sets new instance of plugin using old configuration loaded
-            setInstance(i, getName(i), isActive(i), sPluginList.get(i).config);
+            // skip plugin that cannot be loaded or with wrong configuration
+            try {
+                setInstance(i, getName(i), isActive(i), sPluginList.get(i).config);
+            } catch (QuimpPluginException e) {
+                deletePlugin(i); // delete plugin on any error
+                LOGGER.warn(e.getMessage());
+            }
             if (getInstance(i) != null) {
                 if (!ver.equals(sPluginList.get(i).ref.getVersion()))
                     LOGGER.warn("Loaded plugin (" + sPluginList.get(i).name

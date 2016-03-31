@@ -61,7 +61,7 @@ public class QPluginConfigSerializer {
      * @throws QuimpPluginException 
      */
     private void afterLoad() throws QuimpPluginException {
-        activePluginList.afterdeSerialize();
+        activePluginList.afterSerialize();
     }
 
     /**
