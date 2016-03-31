@@ -26,7 +26,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * 
  * @author p.baniukiewicz
  * @date 22 Mar 2016
+ * @deprecated This class is out of use and it has been replaced by Serializer class
  */
+@Deprecated
 public class QPluginConfigSerializer {
     private static final Logger LOGGER =
             LogManager.getLogger(QPluginConfigSerializer.class.getName());

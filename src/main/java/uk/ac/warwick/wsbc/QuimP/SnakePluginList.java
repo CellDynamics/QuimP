@@ -313,11 +313,13 @@ class SnakePluginList implements IQuimpSerialize {
     }
 
     /**
-     * Deletes all plugins from list
+     * Deletes all plugins from list and closes theirs windows
      */
     public void clear() {
-        for (int i = 0; i < sPluginList.size(); i++)
+        closeAllWindows();
+        for (int i = 0; i < sPluginList.size(); i++) {
             sPluginList.set(i, new Plugin());
+        }
     }
 
     /**

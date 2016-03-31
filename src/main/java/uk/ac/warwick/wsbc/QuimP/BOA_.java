@@ -1276,9 +1276,7 @@ public class BOA_ implements PlugIn {
                         loaded = s.load(new SnakePluginList(),
                                 od.getDirectory() + od.getFileName());
                         // restore loaded objects
-                        boaState.snakePluginList.closeAllWindows(); // close all opened windows from
-                                                                    // old inst
-                        boaState.snakePluginList.clear(); // not necessary actually
+                        boaState.snakePluginList.clear(); // closes windows, etc
                         boaState.snakePluginList = loaded.obj; // replace with fres instance
                         updateCheckBoxes(); // update checkboxes
                         updateChoices(); // and choices
@@ -2043,10 +2041,12 @@ public class BOA_ implements PlugIn {
                 if (nest.writeSnakes()) {
                     nest.analyse(imageGroup.getOrgIpl());
                     // auto save plugin config
-                    QPluginConfigSerializer qConfig =
-                            new QPluginConfigSerializer(quimpInfo, boaState.snakePluginList);
-                    qConfig.save(
-                            boap.outFile.getParent() + File.separator + boap.fileName + ".pgQP");
+                    // Create Serialization object wit extra info layer
+                    Serializer<SnakePluginList> s;
+                    s = new Serializer<>(boaState.snakePluginList, quimpInfo);
+                    s.setPretty(); // set pretty format
+                    s.save(boap.outFile.getParent() + File.separator + boap.fileName + ".pgQP");
+                    s = null; // remove
                 } else {
                     ync = new YesNoCancelDialog(window, "Save Segmentation",
                             "Quit without saving?");
@@ -2160,7 +2160,6 @@ class ImageGroup {
      * 
      * @param frame Current frame
      */
-    @SuppressWarnings("unused")
     public void updateOverlay(int frame) {
         SnakeHandler sH;
         Snake snake, back;
@@ -3459,6 +3458,7 @@ class SnakeHandler {
  *
  */
 class Snake {
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Snake.class.getName());
     public boolean alive; // snake is alive
     public int snakeID;
