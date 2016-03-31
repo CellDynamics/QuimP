@@ -57,6 +57,8 @@ import javax.vecmath.Point2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.gson.JsonSyntaxException;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -1226,47 +1228,67 @@ public class BOA_ implements PlugIn {
             if (b == menuVersion) {
                 about();
             }
+            // if (b == menuSaveConfig) {
+            // String saveIn = boap.orgFile.getParent();
+            // SaveDialog sd = new SaveDialog("Save plugin config data...", saveIn, boap.fileName,
+            // ".pgQP");
+            // if (sd.getFileName() != null) {
+            // try {
+            // // Create Serialization object
+            // QPluginConfigSerializer qConfig =
+            // new QPluginConfigSerializer(quimpInfo, boaState.snakePluginList);
+            // qConfig.save(sd.getDirectory() + sd.getFileName());
+            // qConfig = null;
+            // } catch (FileNotFoundException e1) {
+            // LOGGER.error("Problem with saving plugin config");
+            // }
+            // }
+            // }
             if (b == menuSaveConfig) {
                 String saveIn = boap.orgFile.getParent();
                 SaveDialog sd = new SaveDialog("Save plugin config data...", saveIn, boap.fileName,
                         ".pgQP");
                 if (sd.getFileName() != null) {
                     try {
-                        // Create Serialization object
-                        QPluginConfigSerializer qConfig =
-                                new QPluginConfigSerializer(quimpInfo, boaState.snakePluginList);
-                        qConfig.save(sd.getDirectory() + sd.getFileName());
-                        qConfig = null;
+                        // Create Serialization object wit extra info layer
+                        Serializer<SnakePluginList> s;
+                        s = new Serializer<>(boaState.snakePluginList, quimpInfo);
+                        s.setPretty(); // set pretty format
+                        s.save(sd.getDirectory() + sd.getFileName()); // save it
+                        s = null; // remove
                     } catch (FileNotFoundException e1) {
                         LOGGER.error("Problem with saving plugin config");
                     }
                 }
-
             }
+            // TODO Add checking loaded version using quimpInfo data sealed in Serializer.save
             if (b == menuLoadConfig) {
                 OpenDialog od = new OpenDialog("Load plugin config data...", "");
                 if (od.getFileName() != null) {
                     try {
-                        // Create Serialization object
-                        QPluginConfigSerializer qConfig =
-                                new QPluginConfigSerializer(quimpInfo, boaState.snakePluginList);
-                        // Register nondefault constructor
-                        qConfig.getBuilder().registerTypeAdapter(SnakePluginList.class,
-                                new SnakePluginListInstanceCreator(NUM_SNAKE_PLUGINS, pluginFactory,
-                                        null, viewUpdater));
-                        QPluginConfigSerializer local;
-                        local = qConfig.load(od.getDirectory() + od.getFileName());
+                        Serializer<SnakePluginList> loaded; // loaded instance
+                        Serializer<SnakePluginList> s = new Serializer<>(); // create serializer
+                        s.registerInstanceCreator(SnakePluginList.class,
+                                new SnakePluginListInstanceCreator(3, pluginFactory, null,
+                                        viewUpdater)); // pass data to constructor of serialized
+                                                       // object. Those data are not serialized
+                                                       // and must be passed externally
+                        loaded = s.load(new SnakePluginList(),
+                                od.getDirectory() + od.getFileName());
                         // restore loaded objects
                         boaState.snakePluginList.closeAllWindows(); // close all opened windows from
                                                                     // old inst
-                        boaState.snakePluginList = local.getSnakePluginList();
+                        boaState.snakePluginList.clear(); // not necessary actually
+                        boaState.snakePluginList = loaded.obj; // replace with fres instance
                         updateCheckBoxes(); // update checkboxes
                         updateChoices(); // and choices
                         recalculatePlugins(); // and screen
                     } catch (IOException e1) {
                         LOGGER.error("Problem with loading plugin config");
-                    } catch (QuimpPluginException e1) {
-                        LOGGER.warn("One of plugins can not be instanced: " + e1.getMessage());
+                    } catch (JsonSyntaxException e1) {
+                        LOGGER.error("Problem with configuration file: " + e1.getMessage());
+                    } catch (Exception e1) {
+                        LOGGER.error(e1); // something serious
                     }
                 }
             }

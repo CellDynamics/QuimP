@@ -253,7 +253,7 @@ class SnakePluginList implements IQuimpSerialize {
      * @param i Slot to be set
      * @param name Name of plugin - must be registered in PluginFactory or ref will be \c null
      * @param act \c true for active plugin, \c false for inactive
-     * @throws QuimpPluginException 
+     * @throws QuimpPluginException When instance can not be created
      */
     public void setInstance(int i, final String name, boolean act) throws QuimpPluginException {
 
@@ -284,7 +284,7 @@ class SnakePluginList implements IQuimpSerialize {
      * @param name Name of plugin - must be registered in PluginFactory or ref will be \c null
      * @param act \c true for active plugin, \c false for inactive
      * @param config Configuration to connect to plugin
-     * @throws QuimpPluginException When \c config is not compatible
+     * @throws QuimpPluginException When \c config is not compatible or instance can not be created
      */
     private void setInstance(int i, final String name, boolean act, final ParamList config)
             throws QuimpPluginException {
@@ -310,6 +310,14 @@ class SnakePluginList implements IQuimpSerialize {
      */
     public void deletePlugin(int i) {
         sPluginList.set(i, new Plugin());
+    }
+
+    /**
+     * Deletes all plugins from list
+     */
+    public void clear() {
+        for (int i = 0; i < sPluginList.size(); i++)
+            sPluginList.set(i, new Plugin());
     }
 
     /**
@@ -342,10 +350,11 @@ class SnakePluginList implements IQuimpSerialize {
      * On load all fields of Plugin object are restored from JSON file except plugin instance. In
      * this step this instance is created using those fields loaded from disk.
      * 
-     * @throws QuimpPluginException 
+     * This method masks all QuimpPluginException exceptions that allows to skim defective plugin
+     * and load all next plugins
      */
     @Override
-    public void afterSerialize() throws QuimpPluginException {
+    public void afterSerialize() {
         // go through list and create new Plugin using old values that were restored after loading
         for (int i = 0; i < sPluginList.size(); i++) {
             String ver = sPluginList.get(i).ver;

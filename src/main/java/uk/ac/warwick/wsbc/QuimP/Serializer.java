@@ -27,9 +27,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     private static final Logger LOGGER = LogManager.getLogger(Serializer.class.getName());
     private transient GsonBuilder gsonBuilder;
 
-    @SuppressWarnings("unused")
-    private String className;
-    @SuppressWarnings("unused")
+    public String className;
     public String[] version;
     public T obj;
 
@@ -50,19 +48,19 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     public void save(String filename) throws FileNotFoundException {
-        Gson gson = gsonBuilder.create();
-        if (obj != null)
-            obj.beforeSerialize();
+        String str;
+        str = toString(); // produce json
         LOGGER.debug("Saving at: " + filename);
-        LOGGER.debug(gson.toJson(this));
+        LOGGER.debug(str);
         PrintWriter f;
         f = new PrintWriter(new File(filename));
-        gson.toJson(this, f);
+        f.print(str);
         f.close();
     }
 
     public Serializer<T> load(T t, String filename) throws IOException, Exception {
         Gson gson = gsonBuilder.create();
+        LOGGER.debug("Loading from: " + filename);
         FileReader f = new FileReader(new File(filename));
         Serializer<T> localref;
         localref = gson.fromJson(f, new Serializer<T>(t, new String[0]));

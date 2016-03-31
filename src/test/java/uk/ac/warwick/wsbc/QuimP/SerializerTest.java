@@ -89,6 +89,18 @@ public class SerializerTest {
         assertArrayEquals(out.version, version);
     }
 
+    @Test
+    public void testLoad() throws Exception {
+        Serializer<TestClass> out;
+        TestClass obj;
+        Serializer<TestClass> s = new Serializer<>();
+        out = s.load(new TestClass(), "/tmp/serializertest.josn");
+        obj = out.obj;
+        assertEquals(testClass.al, obj.al);
+        assertEquals(testClass.a, obj.a);
+        assertArrayEquals(out.version, version);
+    }
+
 }
 
 class TestClass implements IQuimpSerialize {

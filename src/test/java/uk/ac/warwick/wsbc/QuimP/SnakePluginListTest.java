@@ -133,6 +133,7 @@ public class SnakePluginListTest {
             @Override
             public void setPluginConfig(ParamList par) throws QuimpPluginException {
                 try {
+                    @SuppressWarnings("unused")
                     int window = par.getIntValue("window");
                 } catch (Exception e) {
                     throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
