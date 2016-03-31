@@ -34,7 +34,7 @@ public class QPluginConfigSerializer {
     // Definition of top layer data saved
     @SuppressWarnings("unused")
     private String[] version; /*!< Version of QuimP added to top layer */
-    public final String softwareName = "QuimP"; /*!< NAme of the software */
+    public final String softwareName = "QuimP"; /*!< Name of the software */
     public SnakePluginList activePluginList; /*!< Plugin configurations */
 
     /**
@@ -66,7 +66,7 @@ public class QPluginConfigSerializer {
 
     /**
      * Saves configuration packed with QPluginConfig class
-     * @param filename Name of the file to save configuraiton
+     * @param filename Name of the file to save configuration
      * @throws FileNotFoundException
      */
     public void save(String filename) throws FileNotFoundException {

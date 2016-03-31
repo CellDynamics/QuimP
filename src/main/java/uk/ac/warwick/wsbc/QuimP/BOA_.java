@@ -373,13 +373,15 @@ public class BOA_ implements PlugIn {
      * @return Formatted strings with build info and version:
      * -# [0] - contains only version string read from \a MANIFEST.MF
      * -# [1] - contains formatted string with build time and name of builder read from \a MANIFEST.MF
+     * -# [2] - contains software name
      * @warning This method is jar-name dependent - looks for manifest with \a Implementation-Title
      * that contains \c QuimP string.
      */
     public String[] getQuimPBuildInfo() {
-        String[] ret = new String[2];
+        String[] ret = new String[3];
         ret[0] = "version not found in jar";
         ret[1] = "build info not found in jar";
+        ret[2] = "name not found in jar";
         try {
             Enumeration<URL> resources =
                     getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
@@ -395,6 +397,7 @@ public class BOA_ implements PlugIn {
                         ret[1] = "Build by: " + attributes.getValue("Built-By") + " on: "
                                 + attributes.getValue("Implementation-Build");
                         ret[0] = attributes.getValue("Implementation-Version");
+                        ret[2] = attributes.getValue("Implementation-Title");
                         LOGGER.debug(ret);
                     }
                 } catch (Exception e) {

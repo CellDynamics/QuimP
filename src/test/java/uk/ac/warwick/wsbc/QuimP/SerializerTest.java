@@ -1,0 +1,117 @@
+/**
+ * @file SerializerTest.java
+ * @date 31 Mar 2016
+ */
+package uk.ac.warwick.wsbc.QuimP;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * @author p.baniukiewicz
+ * @date 31 Mar 2016
+ *
+ */
+public class SerializerTest {
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2_test.xml");
+    }
+    private static final Logger LOGGER = LogManager.getLogger(SerializerTest.class.getName());
+    private TestClass testClass;
+    private String[] version;
+
+    /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        testClass = new TestClass();
+        version = new String[3];
+        version[0] = "0.0.1";
+        version[1] = "baniuk";
+        version[2] = "QuimP";
+    }
+
+    /**
+     * @throws java.lang.Exception
+     */
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Serializer#save(java.lang.String)}.
+     */
+    @Test
+    public void testSave() throws Exception {
+        Serializer<TestClass> s = new Serializer<>();
+        s.save("/tmp/serializertest.josn");
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Serializer#toString()}.
+     */
+    @Test
+    public void testToString() throws Exception {
+        Serializer<TestClass> s = new Serializer<>(testClass, version);
+        s.setPretty();
+        LOGGER.debug(s.toString());
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Serializer#toString()}.
+     */
+    @Test
+    public void testToString_1() throws Exception {
+        Serializer<TestClass> s = new Serializer<>(testClass, version);
+        LOGGER.debug(s.toString());
+    }
+
+    @Test
+    public void testFromString() throws Exception {
+        String json =
+                "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
+        Serializer<TestClass> out;
+        TestClass obj;
+        Serializer<TestClass> s = new Serializer<>();
+        out = s.fromString(new TestClass(), json);
+        obj = out.obj;
+        assertEquals(testClass.al, obj.al);
+        assertEquals(testClass.a, obj.a);
+        assertArrayEquals(out.version, version);
+    }
+
+}
+
+class TestClass implements IQuimpSerialize {
+    int a;
+    ArrayList<Integer> al;
+
+    @Override
+    public void beforeSerialize() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public TestClass() {
+        a = 15;
+        al = new ArrayList<>();
+        al.add(4);
+        al.add(56);
+    }
+
+    @Override
+    public void afterSerialize() throws Exception {
+        // TODO Auto-generated method stub
+
+    }
+
+}

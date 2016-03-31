@@ -166,7 +166,7 @@ class SnakePluginList {
     }
 
     /**
-     * Main constructor
+     * Main constructor. Collect all external data necessary to use plugins
      * 
      * @param s Number of supported plugins
      * @param pf Deliverer of plugins
@@ -175,10 +175,11 @@ class SnakePluginList {
      */
     public SnakePluginList(int s, final PluginFactory pf, final List<Point2d> dataToProcess,
             final ViewUpdater vu) {
-        this();
+        this(); // initialize structures
         for (int i = 0; i < s; i++)
-            sPluginList.add(new Plugin());
-        this.pluginFactory = pf;
+            sPluginList.add(new Plugin()); // fill list with empty Plugins
+        this.pluginFactory = pf; // store plugin deliverer
+        // store external data that may be important for plugins
         this.dataToProcess = dataToProcess;
         this.viewUpdater = vu;
     }
