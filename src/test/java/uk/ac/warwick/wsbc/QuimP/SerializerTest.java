@@ -101,10 +101,14 @@ public class SerializerTest {
      */
     @Test
     public void testLoad() throws Exception {
+        Serializer<TestClass> save = new Serializer<>(testClass, version);
+        save.save("/tmp/local.josn");
+        save = null;
+
         Serializer<TestClass> out;
         TestClass obj;
         Serializer<TestClass> s = new Serializer<>(TestClass.class);
-        out = s.load("/tmp/serializertest.josn");
+        out = s.load("/tmp/local.josn");
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
