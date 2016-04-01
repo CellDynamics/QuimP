@@ -36,6 +36,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
+ * Tests of SnakePluginList class and serialization
+ * 
  * @author p.baniukiewicz
  * @date 22 Mar 2016
  *
@@ -407,10 +409,10 @@ public class SnakePluginListTest {
         // */
 
         Serializer<SnakePluginList> out;
-        Serializer<SnakePluginList> s = new Serializer<>();
+        Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
         s.registerInstanceCreator(SnakePluginList.class,
                 new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
-        out = s.fromString(new SnakePluginList(), json);
+        out = s.fromString(json);
 
         assertArrayEquals(out.version, version);
 
@@ -557,10 +559,10 @@ public class SnakePluginListTest {
         // */
 
         Serializer<SnakePluginList> out;
-        Serializer<SnakePluginList> s = new Serializer<>();
+        Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
         s.registerInstanceCreator(SnakePluginList.class,
                 new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
-        out = s.fromString(new SnakePluginList(), json);
+        out = s.fromString(json);
 
         assertArrayEquals(out.version, version);
 
@@ -652,11 +654,11 @@ public class SnakePluginListTest {
         // */
 
         Serializer<SnakePluginList> out;
-        Serializer<SnakePluginList> s = new Serializer<>();
+        Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
         s.registerInstanceCreator(SnakePluginList.class,
                 new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
 
-        out = s.fromString(new SnakePluginList(), json);
+        out = s.fromString(json);
         assertEquals(null, out.obj.getInstance(0));
         assertEquals(snakePluginList.getInstance(1), out.obj.getInstance(1));
         assertEquals(snakePluginList.getInstance(2), out.obj.getInstance(2));
@@ -737,11 +739,11 @@ public class SnakePluginListTest {
         // */
 
         Serializer<SnakePluginList> out;
-        Serializer<SnakePluginList> s = new Serializer<>();
+        Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
         s.registerInstanceCreator(SnakePluginList.class,
                 new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
 
-        out = s.fromString(new SnakePluginList(), json);
+        out = s.fromString(json);
         assertEquals("2.3.4", out.obj.getInstance(1).getVersion());
         assertEquals(snakePluginList.getInstance(0), out.obj.getInstance(0));
         assertEquals(snakePluginList.getInstance(1), out.obj.getInstance(1));
@@ -827,11 +829,11 @@ public class SnakePluginListTest {
         // */
 
         Serializer<SnakePluginList> out;
-        Serializer<SnakePluginList> s = new Serializer<>();
+        Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
         s.registerInstanceCreator(SnakePluginList.class,
                 new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
 
-        out = s.fromString(new SnakePluginList(), json);
+        out = s.fromString(json);
 
         assertEquals(snakePluginList.getInstance(0), out.obj.getInstance(0));
         assertEquals(snakePluginList.getInstance(2), out.obj.getInstance(2));

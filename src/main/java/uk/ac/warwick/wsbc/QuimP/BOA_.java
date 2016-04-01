@@ -123,9 +123,8 @@ public class BOA_ implements PlugIn {
                                      // method from plugin. Reference to this field is passed to
                                      // plugins and give them possibility to call selected methods
                                      // from BOA class
-    private String[] quimpInfo; // keeps data from getQuimPBuildInfo() to prevent using this method
-                                // too often. These information are used for About dialog and they
-                                // re presented on window title bar
+    public static String[] quimpInfo; // keeps data from getQuimPBuildInfo() These information are
+                                      // used for About dialog, window title bar, logging
     private static int logCount = 1; // adds counter to logged messages
     static final private int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
     private HistoryLogger historyLogger; // logger
@@ -138,9 +137,9 @@ public class BOA_ implements PlugIn {
      * 
      * @author p.baniukiewicz
      * @date 30 Mar 2016
-     *
+     * @see Serializer
      */
-    class BOAState {
+    class BOAState implements IQuimpSerialize {
         public int frame; /*!< current frame, CustomStackWindow.updateSliceSelector() */
         public SegParam segParam; /*!< Reference to segmentation parameters */
         public String fileName; /*!< Current data file name */
@@ -155,12 +154,15 @@ public class BOA_ implements PlugIn {
 
         /**
          * Should be called before serialization. Fills extra fields from BOAp
-         * 
-         * @warning This may be temporary method.
          */
+        @Override
         public void beforeSerialize() {
             fileName = boap.fileName; // copy filename from system wide boap
             snakePluginList.beforeSerialize(); // download plugins configurations
+        }
+
+        @Override
+        public void afterSerialize() throws Exception {
         }
     }
 
@@ -177,7 +179,7 @@ public class BOA_ implements PlugIn {
         }
         boaState = new BOAState(); // create BOA state machine
         boaState.segParam = boap.segParam; // assign reference of segmentation parameters to state
-        // machine
+                                           // machine
         if (IJ.getVersion().compareTo("1.46") < 0) {
             boap.useSubPixel = false;
         } else {
@@ -1228,22 +1230,6 @@ public class BOA_ implements PlugIn {
             if (b == menuVersion) {
                 about();
             }
-            // if (b == menuSaveConfig) {
-            // String saveIn = boap.orgFile.getParent();
-            // SaveDialog sd = new SaveDialog("Save plugin config data...", saveIn, boap.fileName,
-            // ".pgQP");
-            // if (sd.getFileName() != null) {
-            // try {
-            // // Create Serialization object
-            // QPluginConfigSerializer qConfig =
-            // new QPluginConfigSerializer(quimpInfo, boaState.snakePluginList);
-            // qConfig.save(sd.getDirectory() + sd.getFileName());
-            // qConfig = null;
-            // } catch (FileNotFoundException e1) {
-            // LOGGER.error("Problem with saving plugin config");
-            // }
-            // }
-            // }
             if (b == menuSaveConfig) {
                 String saveIn = boap.orgFile.getParent();
                 SaveDialog sd = new SaveDialog("Save plugin config data...", saveIn, boap.fileName,
@@ -1267,14 +1253,14 @@ public class BOA_ implements PlugIn {
                 if (od.getFileName() != null) {
                     try {
                         Serializer<SnakePluginList> loaded; // loaded instance
-                        Serializer<SnakePluginList> s = new Serializer<>(); // create serializer
+                        // create serializer
+                        Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
                         s.registerInstanceCreator(SnakePluginList.class,
                                 new SnakePluginListInstanceCreator(3, pluginFactory, null,
                                         viewUpdater)); // pass data to constructor of serialized
                                                        // object. Those data are not serialized
                                                        // and must be passed externally
-                        loaded = s.load(new SnakePluginList(),
-                                od.getDirectory() + od.getFileName());
+                        loaded = s.load(od.getDirectory() + od.getFileName());
                         // restore loaded objects
                         boaState.snakePluginList.clear(); // closes windows, etc
                         boaState.snakePluginList = loaded.obj; // replace with fres instance

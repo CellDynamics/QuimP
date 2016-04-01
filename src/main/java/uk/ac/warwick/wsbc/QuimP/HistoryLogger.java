@@ -18,8 +18,6 @@ import javax.swing.JScrollPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.gson.Gson;
-
 import uk.ac.warwick.wsbc.QuimP.BOA_.BOAState;
 
 /**
@@ -89,7 +87,7 @@ public class HistoryLogger implements WindowListener {
      * JSon object. 
      * Particular entries can be null if they may not be logged
      *  
-     * @param m General message to be included
+     * @param m General message to be included in log
      * @param bs BOA state machine object 
      * @todo TODO This method should accept more detailed BOA state (e.g. all segm. params)
      */
@@ -97,9 +95,10 @@ public class HistoryLogger implements WindowListener {
         if (historyWnd.isVisible()) {
             if (bs == null)
                 return;
-            bs.beforeSerialize();
             LogEntry en = new LogEntry(id++, m, bs);
-            String jsontmp = en.getJSon();
+            Serializer<LogEntry> s = new Serializer<>(en, BOA_.quimpInfo);
+
+            String jsontmp = s.toString();
             history.add(jsontmp); // store in array
             info.append(jsontmp + '\n'); // add to log window
             LOGGER.debug(jsontmp);
@@ -119,13 +118,13 @@ public class HistoryLogger implements WindowListener {
 
     @Override
     public void windowOpened(WindowEvent e) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void windowClosing(WindowEvent e) {
+        LOGGER.debug("History windowClosing");
         historyWnd.setVisible(false);
+        info.setText("");
         id = 1;
         history.clear();
         historyWnd.dispose();
@@ -134,7 +133,9 @@ public class HistoryLogger implements WindowListener {
 
     @Override
     public void windowClosed(WindowEvent e) {
+        LOGGER.debug("History windowClosed");
         historyWnd.setVisible(false);
+        info.setText("");
         id = 1;
         history.clear();
         historyWnd.dispose();
@@ -153,12 +154,10 @@ public class HistoryLogger implements WindowListener {
 
     @Override
     public void windowActivated(WindowEvent e) {
-
     }
 
     @Override
     public void windowDeactivated(WindowEvent e) {
-
     }
 
 }
@@ -170,7 +169,7 @@ public class HistoryLogger implements WindowListener {
  * @date 29 Mar 2016
  *
  */
-class LogEntry {
+class LogEntry implements IQuimpSerialize {
     public int id; /*!< Number of entry */
     public String action; /*!< Textual description of taken action */
     public BOAState BOA; /*!< BOA current state */
@@ -191,13 +190,12 @@ class LogEntry {
         this.BOA = bs;
     }
 
-    /**
-     * Produce string representation of this object in JSon format
-     * 
-     * @return JSon representation of this class
-     */
-    public String getJSon() {
-        Gson gs = new Gson();
-        return gs.toJson(this);
+    @Override
+    public void beforeSerialize() {
+        BOA.beforeSerialize();
+    }
+
+    @Override
+    public void afterSerialize() throws Exception {
     }
 }

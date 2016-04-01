@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
+ * Test of Serializer class 
+ * 
  * @author p.baniukiewicz
  * @date 31 Mar 2016
  *
@@ -48,7 +50,7 @@ public class SerializerTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Serializer#save(java.lang.String)}.
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.save(String).
      */
     @Test
     public void testSave() throws Exception {
@@ -57,7 +59,7 @@ public class SerializerTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Serializer#toString()}.
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.toString().
      */
     @Test
     public void testToString() throws Exception {
@@ -67,7 +69,7 @@ public class SerializerTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Serializer#toString()}.
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.toString().
      */
     @Test
     public void testToString_1() throws Exception {
@@ -75,26 +77,34 @@ public class SerializerTest {
         LOGGER.debug(s.toString());
     }
 
+    /**
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * @throws Exception
+     */
     @Test
     public void testFromString() throws Exception {
         String json =
                 "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
-        Serializer<TestClass> s = new Serializer<>();
-        out = s.fromString(new TestClass(), json);
+        Serializer<TestClass> s = new Serializer<>(TestClass.class);
+        out = s.fromString(json);
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
         assertArrayEquals(out.version, version);
     }
 
+    /**
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.load(final String)
+     * @throws Exception
+     */
     @Test
     public void testLoad() throws Exception {
         Serializer<TestClass> out;
         TestClass obj;
-        Serializer<TestClass> s = new Serializer<>();
-        out = s.load(new TestClass(), "/tmp/serializertest.josn");
+        Serializer<TestClass> s = new Serializer<>(TestClass.class);
+        out = s.load("/tmp/serializertest.josn");
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
@@ -103,6 +113,13 @@ public class SerializerTest {
 
 }
 
+/**
+ * Dummy test class
+ * 
+ * @author p.baniukiewicz
+ * @date 1 Apr 2016
+ *
+ */
 class TestClass implements IQuimpSerialize {
     int a;
     ArrayList<Integer> al;

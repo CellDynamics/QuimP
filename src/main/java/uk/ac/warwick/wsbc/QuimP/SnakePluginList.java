@@ -360,14 +360,16 @@ class SnakePluginList implements IQuimpSerialize {
         // go through list and create new Plugin using old values that were restored after loading
         for (int i = 0; i < sPluginList.size(); i++) {
             String ver = sPluginList.get(i).ver;
+            String name = getName(i); // only for exception handling to know name before setInstance
             // sets new instance of plugin using old configuration loaded
             // skip plugin that cannot be loaded or with wrong configuration
             try {
                 setInstance(i, getName(i), isActive(i), sPluginList.get(i).config);
             } catch (QuimpPluginException e) {
                 deletePlugin(i); // delete plugin on any error
-                LOGGER.warn(e.getMessage());
+                LOGGER.warn("Plugin name: " + name + " " + e.getMessage());
             }
+            // check version compatibility - only inform user
             if (getInstance(i) != null) {
                 if (!ver.equals(sPluginList.get(i).ref.getVersion()))
                     LOGGER.warn("Loaded plugin (" + sPluginList.get(i).name
