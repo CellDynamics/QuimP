@@ -84,6 +84,7 @@ import ij.process.FloatPolygon;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
+import uk.ac.warwick.wsbc.QuimP.BOA_.BOAState;
 import uk.ac.warwick.wsbc.QuimP.BOAp.SegParam;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
@@ -138,13 +139,16 @@ public class BOA_ implements PlugIn {
      * @author p.baniukiewicz
      * @date 30 Mar 2016
      * @see Serializer
+     * @remarks Currently the SegParam object is connected to this class only and it is created in
+     * BOAp class constructor. In future SegParam will be part of this class
+     * This class in supposed to be main configuration holder for BOA_
      */
     class BOAState implements IQuimpSerialize {
         public int frame; /*!< current frame, CustomStackWindow.updateSliceSelector() */
         public SegParam segParam; /*!< Reference to segmentation parameters */
         public String fileName; /*!< Current data file name */
         /**
-         * List of plugins selected in plugin stack and information if the are active or not
+         * List of plugins selected in plugin stack and information if they are active or not
          * This field is serializable.
          * 
          * @see SnakePluginList
@@ -231,12 +235,11 @@ public class BOA_ implements PlugIn {
                 LOGGER.warn("BOA: Plugin directory not found, use provided with arg: " + arg);
                 path = arg;
             }
-
+            // initialize plugin factory (jar scanning and registering)
             pluginFactory = new PluginFactory(Paths.get(path));
-            // initialize arrays for plugins instances and give them initial values
+            // initialize arrays for plugins instances and give them initial values (GUI)
             boaState.snakePluginList =
                     new SnakePluginList(NUM_SNAKE_PLUGINS, pluginFactory, null, viewUpdater);
-
         } catch (Exception e) {
             // temporary catching may in future be removed
             LOGGER.error("run " + e);
@@ -377,7 +380,7 @@ public class BOA_ implements PlugIn {
      * @return Formatted strings with build info and version:
      * -# [0] - contains only version string read from \a MANIFEST.MF
      * -# [1] - contains formatted string with build time and name of builder read from \a MANIFEST.MF
-     * -# [2] - contains software name
+     * -# [2] - contains software name read from \a MANIFEST.MF
      * @warning This method is jar-name dependent - looks for manifest with \a Implementation-Title
      * that contains \c QuimP string.
      */
@@ -405,11 +408,11 @@ public class BOA_ implements PlugIn {
                         LOGGER.debug(ret);
                     }
                 } catch (Exception e) {
-                    ;
+                    ; // do not care about problems - just use defaults defined on beginning
                 }
             }
         } catch (IOException e) {
-            ;
+            ; // do not care about problems - just use defaults defined on beginning
         }
         return ret;
     }
@@ -710,9 +713,7 @@ public class BOA_ implements PlugIn {
             Panel northPanel = new Panel(); // Contains static info and four buttons (Scale,
                                             // Truncate, Add, Delete)
             Panel southPanel = new Panel(); // Quit and Finish
-
             Panel centerPanel = new Panel();
-
             Panel pluginPanel = new Panel();
 
             setupPanel.setLayout(new BorderLayout());
@@ -4964,6 +4965,7 @@ class Node {
  * @author rtyson
  * @see QParams
  * @see Tool
+ * @warning This class will be redesigned in future 
  */
 class BOAp {
 
@@ -5007,7 +5009,7 @@ class BOAp {
      * 
      * @author p.baniukiewicz
      * @date 30 Mar 2016
-     *
+     * @see BOAState
      */
     class SegParam {
         private double nodeRes; /*!< Number of nodes on ROI edge */

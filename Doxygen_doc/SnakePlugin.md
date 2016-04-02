@@ -33,6 +33,22 @@ uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter class for converting th
 
 See uk.ac.warwick.wsbc.QuimP.PluginFactory class documentation for details.
 
+Note:
+
+> Plugins inside QuimP are defined by their **names** that are simply names of classes. **Name** of plugin uniquely identifies its jar. All communication between all components is based on their **names**
+
+There are three important classes here:
+
+1. uk.ac.warwick.wsbc.QuimP.SnakePluginList - this class is related to plugin stack - three slots 
+available in UI together with activity boxes. Keeps list of active plugins as Plugin objects.
+Plugin objects hold reference to jar and information extracted from this jar that are serialized
+SnakePluginList is responsible for creating and accessing plugins as high-level interface
+2. uk.ac.warwick.wsbc.QuimP.PluginFactory - this is deliverer of plugins. It is responsible for
+changing plugin names to their binary reference.
+3. uk.ac.warwick.wsbc.QuimP.Serializer - this class is used during storing plugin 
+stack configuration. Include \ref uk.ac.warwick.wsbc.QuimP.SnakePluginList SnakePluginList and add
+extra fields related to QuimP version 
+
 ## Use case diagram {#ucd}
 
 The use case of snake plugin is as follows:
@@ -44,10 +60,10 @@ left to right direction
 rectangle "Plugin Service" {
     :QuimP: as quimp
     quimp--(Create Engine)
-    user--(Run plugin)
-    user--(Select plugin)
-    user--(Show GUI)
-    user--(Load\nconfig)
+    user-(Run plugin)
+    user-(Select plugin)
+    user-(Show GUI)
+    user-(Load\nconfig)
     user--(Write\nconfig)
     quimp--(Get plugin\nconfig)
     quimp--(Set plugin\nconfig)
@@ -55,8 +71,8 @@ rectangle "Plugin Service" {
     user--(Update View)
     (Get plugin\nconfig)<|-(Write\nconfig):<<include>>
     (Set plugin\nconfig)<|-(Load\nconfig):<<include>>
-    (Write\nconfig)-|>(Handle\nconfiguration):<<extend>>
-    (Load\nconfig)-|>(Handle\nconfiguration):<<extend>>
+    (Write\nconfig)<|-(Handle\nconfiguration):<<extend>>
+    (Load\nconfig)<|-(Handle\nconfiguration):<<extend>>
 }
 note bottom of user : Related to GUI actions
 note top of quimp : Plugin engine
@@ -75,8 +91,8 @@ List of use cases:
 + [Show GUI](@ref sg)
 + Load config
 + Write config
-+ Get plugin config
-+ Set plugin config
++ [Get plugin config](@ref sgpc)
++ [Set plugin config](@ref sgpc)
 + [Update view](@ref upv)
  
 
@@ -115,6 +131,9 @@ note left
 See ""PluginFactory"" for details
 end note
 :create SnakePluginList;
+note left 
+See ""SnakePluginList"" for details
+end note
 }
 partition buildSetupPanel {
 :get plugin names from ""PluginFactory"";
@@ -132,6 +151,136 @@ to plugins have place there.
 It is related to jars on disk
 ""SnakePluginList"" is related to plugin stack
 end legend
+@enduml
+
+@startuml
+actor User
+participant BOA_ as QuimP
+participant CustomStackWindow as GUIBuilder
+participant SnakePluginList as slist
+participant PluginFactory
+
+
+note over GUIBuilder : Window builder
+note over User : Cooperate with\nGUI by\nactionPerformed() and\n itemStateChanged()
+note over QuimP : Main class instance
+
+activate PluginFactory
+activate slist
+
+
+== Build GUI ==
+
+QuimP -> GUIBuilder : buildSetupPanel()
+activate GUIBuilder
+GUIBuilder -> slist : getPluginNames(""type"")
+slist->PluginFactory : getPluginNames(""type"")
+PluginFactory -> PluginFactory : ""availPlugins"".get(""type"")
+slist <-- PluginFactory : //names[]//
+GUIBuilder <-- slist : //names[]//
+note left
+Use List to create
+UI controls. Names
+are related to plugin
+class name
+end note
+GUIBuilder -> GUIBuilder : add choice
+GUIBuilder -> slist : isActive(i)
+GUIBuilder<-- slist : true/false
+GUIBuilder -> GUIBuilder : add combo
+GUIBuilder --> QuimP
+deactivate GUIBuilder
+
+@enduml
+
+### Select Plugin {#sp}
+
+This action is taken on plugin selection in QuimP UI. The story starts in uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent)
+  
+Conditions:
+
+* User selected one plugin on certain slot.
+* Plugins have been registered already by **Create Engine** use case.
+
+@startuml
+start
+if (is any snake?) then (yes)
+    :""dataToProcess""=**activesnake**;
+else (no)
+    :""dataToProcess""=**null**;
+endif
+partition instanceSnakePlugin {
+if (selectedPlugin!=NONE) then (yes)
+partition SnakePluginList::setInstance {
+    :build instance;
+    if (IQuimpPluginSynchro) then (yes)
+    :attachContext;
+    note left :Attaches ViewUpdater
+    endif
+    :attachData;
+    }
+else (no)
+note right
+Plugins are identified by names
+which are populated to JComboBoxes as well.
+**NONE** is special keyword that
+means deselected plugin
+end note
+:close plugin UI;
+:delete instance;
+note right: SnakePluginList
+endif
+}
+:recalculatePlugins;
+note left: Update View
+stop
+@enduml
+
+@startuml
+participant BOA_ as QuimP
+participant Serializer as ser
+participant SnakePluginList as slist
+participant Plugin as plugin
+participant PluginFactory as pfact
+participant IQuimpPlugin as iPlugin
+
+note over QuimP : Main class instance
+note over ser : Responsible for\nsaving and loading\nsupported classes
+note over plugin : Internal representation\nof plugin instance
+note over iPlugin : external instance\nof plugin
+
+
+QuimP->pfact : <<create>>
+activate pfact
+pfact->pfact : Scan for plugins
+
+QuimP->slist : <<create>>(""NUM_SPLINE_PLUGINS""\n""pluginFactory""\n""viewUpdater"")
+activate slist
+slist->plugin : <<create>> list
+
+== Select Plugin ==
+QuimP --> slist : select plugin **name**
+slist->slist : setInstance
+activate slist
+slist->plugin : <<create>> at slot //i//
+activate plugin
+plugin->pfact : getInstance(**name**)
+pfact->iPlugin : <<create>>
+activate iPlugin
+pfact-->plugin : ref
+slist->iPlugin : ref.attachContext
+slist->iPlugin : ref.attachData
+deactivate slist
+loop over plugins in SnakePluginList
+    QuimP->plugin : isExecutable
+    plugin-->QuimP : yes/no
+    plugin-->QuimP : ref
+    QuimP->iPlugin : ref.attachData
+    QuimP->iPlugin : ref.run()
+    note left
+    Update view
+    endnote
+end
 @enduml
 
 ### Run Plugin {#rp}
@@ -184,49 +333,6 @@ There is other method **recalculatePlugins()**
 that apply **iterateOverSnakePlugins(Snake)**
 for all Snake objects on frame
 end legend
-@enduml
-
-### Select Plugin {#sp}
-
-This action is taken on plugin selection in QuimP UI. The story starts in uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent)
-  
-Conditions:
-
-* User selected one plugin on certain slot.
-* Plugins have been registered already by **Create Engine** use case.
-
-@startuml
-start
-if (is any snake?) then (yes)
-    :""dataToProcess""=**activesnake**;
-else (no)
-    :""dataToProcess""=**null**;
-endif
-partition instanceSnakePlugin {
-if (selectedPlugin!=NONE) then (yes)
-partition SnakePluginList::setInstance {
-    :build instance;
-    if (IQuimpPluginSynchro) then (yes)
-    :attachContext;
-    note left :Attaches ViewUpdater
-    endif
-    :attachData;
-    }
-else (no)
-note right
-Plugins are identified by names
-which are populated to JComboBoxes as well.
-**NONE** is special keyword that
-means deselected plugin
-end note
-:close plugin UI;
-:delete instance;
-note right: SnakePluginList
-endif
-}
-:recalculatePlugins;
-note left: Update View
-stop
 @enduml
 
 ### Show GUI {#sg}
@@ -299,268 +405,87 @@ On plugin exception, ""liveSnake"" is stored as **final**
 end legend
 @enduml
 
+#### General workflow for operating plugin {#ogw}
 
-
-
-
-
-## General workflow for all cases {#gw}
-
-QuimP itself creates instances of plugins as well as stores the list of active
-plugins (currently 3, controlled by
-\ref uk.ac.warwick.wsbc.QuimP.BOA_.NUM_SNAKE_PLUGINS "NUM_SNAKE_PLUGINS").
-QuimP can also read and write options from/to plugin but it does not interfere
-with these data.  
- 
 @startuml
 actor User
 participant BOA_ as QuimP
-participant CustomStackWindow as GUIBuilder
-participant PluginFactory
-participant IQuimpPlugin as Plugin
+participant Serializer as ser
+participant SnakePluginList as slist
+participant Plugin as plugin
+participant PluginFactory as pfact
+participant IQuimpPlugin as iPlugin
 
-note over GUIBuilder : Window builder
 note over User : Cooperate with\nGUI by\nactionPerformed() and\n itemStateChanged()
-note over Plugin : Any plugin referenced\nby instance
 note over QuimP : Main class instance
+note over ser : Responsible for\nsaving and loading\nsupported classes
+note over plugin : Internal representation\nof plugin instance
+note over iPlugin : external instance\nof plugin
 
-== Plugin read ==
-QuimP -> PluginFactory : <<create>>
-note left #GreenYellow : See ""PluginFactory""
-activate PluginFactory
-PluginFactory -> PluginFactory : scanDirectory()
-loop For every jar
-    activate Plugin
-    PluginFactory -> Plugin : getType()
-    Plugin --> PluginFactory : //type//
-    PluginFactory -> Plugin : getVersion()
-    Plugin --> PluginFactory : //version//
-    PluginFactory -> PluginFactory : add to ""availPlugins""
-    destroy Plugin
-end
-PluginFactory --> QuimP
+activate pfact
+activate slist
 
-== Build GUI ==
-
-QuimP -> GUIBuilder : buildSetupPanel()
-activate GUIBuilder
-GUIBuilder -> PluginFactory : getPluginNames(""type"")
-PluginFactory -> PluginFactory : ""availPlugins"".get(""type"")
-GUIBuilder <-- PluginFactory : //names[]//
-note left
-Use List to create
-UI controls. Names
-are related to plugin
-class name
-end note
-
-GUIBuilder --> QuimP
-deactivate GUIBuilder
 
 == Use ==
 
 User -\ QuimP : Select plugin
 note left #GreenYellow : See Activity diagram 1
-QuimP -> PluginFactory : getInstance(name)
-PluginFactory -> PluginFactory : ""availPlugins"".get(""plugin"")
-PluginFactory -> Plugin : <<create>>
-activate Plugin
-PluginFactory <-- Plugin
-PluginFactory --> QuimP : ""instance""
-
-QuimP -> Plugin :attachData(""data"")
+QuimP -> slist : setInstance(name)
+slist -> slist : <<create>>\nname\nactive\npluginfactory
+activate slist
+slist -> pfact : getInstance(name)
+pfact -> iPlugin : <<create>>
+activate iPlugin
+iPlugin --> pfact : ""instance""
+pfact -->slist : ""instance""
+slist --> iPlugin : attachData(""data"")
 note left #OrangeRed
 ""data"" may be ""null""
 plugin must deal with it
 This may happen when plugin is
 selected when no snakes is yet.
 end note
-Plugin --> QuimP
-QuimP -> Plugin :attachContext(""ViewUpdater"")
+slist --> iPlugin : attachContext(""ViewUpdater"")
 note left #aqua
 Only if plugin supports
 ""IQuimpPluginSynchro"" interface
 end note
-Plugin --> QuimP
-QuimP -> QuimP : recalculatePlugins()
-note left : GUI update
 
 User -\ QuimP : Show GUI
-QuimP -> Plugin : showUI(true)
-Plugin --> QuimP
+QuimP -> slist : getInstance(i)
+slist --> QuimP : ""instance""
+QuimP -> iPlugin : showUI(true)
 
 User -\ QuimP : Run Plugin
-note left: Any action like\nAdd Cell or\nRun segmentation or\nUpdate view
-loop over all plugins
-    QuimP -> Plugin : attachData(""data"")
-    Plugin --> QuimP
-    QuimP -> Plugin : runPlugin()
-    Plugin --> QuimP : ""data""
-end    
-
+note left
+Any action like
+Add Cell or
+Run segmentation or
+Update view
+see **Select Plugin**
+end note
 == Action on Plugin ==
-User -\ Plugin : Click in UI
-Plugin -\ QuimP : updateView
+User -\ iPlugin : Click in UI
+iPlugin -\ QuimP : updateView
 QuimP -> QuimP : recalculatePlugins()
+note left: see Technical details and\n **Select Plugin**
 
-Plugin --> PluginFactory : <<Exit>>
-destroy Plugin
-QuimP <-- PluginFactory : <<Exit>>
-destroy PluginFactory
+
 @enduml
-
-
-
-## Important players {#ipl}
-
-There are three important classes here:
-
-1. uk.ac.warwick.wsbc.QuimP.SnakePluginList - this class is related to plugin stack - three slots 
-available in UI together with activity boxes. Keeps list of active plugins as Plugin objects.
-Plugin objects hold reference to jar and information extracted from this jar that are serialized
-SnakePluginList is responsible for creating and accessing plugins as high-level interface
-2. uk.ac.warwick.wsbc.QuimP.PluginFactory - this is deliverer of plugins. It is responsible for
-changing plugin names to their binary reference.
-3. uk.ac.warwick.wsbc.QuimP.Serializer - this class is used during storing plugin 
-stack configuration. Include \ref uk.ac.warwick.wsbc.QuimP.SnakePluginList SnakePluginList and add
-extra fields related to QuimP version 
-
-Note:
-
-> Plugins inside QuimP are defined by their **names** that are simply names of classes. **Name** of plugin uniquely identifies its jar. All communication between all components is based on their **names**
-   
-The cooperation between first two modules is as follows:
-
-@startuml
-participant BOA_ as QuimP
-participant Serializer as ser
-participant SnakePluginList as plist
-participant Plugin as plugin
-participant PluginFactory as pfact
-participant IQuimpPlugin as iplugin
-
-
-QuimP->pfact : <<create>>
-activate pfact
-pfact->pfact : Scan for plugins
-
-QuimP->plist : <<create>>()
-activate plist
-note left
-Pass:
-""NUM_SPLINE_PLUGINS""
-""pluginFactory""
-""viewUpdater""
-endnote  
-plist->plugin : <<create>> list
-
-== Select Plugin ==
-QuimP --> plist : select plugin **name**
-plist->plist : setInstance
-activate plist
-plist->plugin : <<create>> at slot //i//
-activate plugin
-plugin->pfact : getInstance(**name**)
-pfact->iplugin : <<create>>
-activate iplugin
-pfact-->plugin : ref
-plist->iplugin : ref.attachContext
-plist->iplugin : ref.attachData
-deactivate plist
-loop over plugins in SnakePluginList
-    QuimP->plugin : isExecutable
-    plugin-->QuimP : yes/no
-    plugin-->QuimP : ref
-    QuimP->iplugin : ref.attachData
-    QuimP->iplugin : ref.run()
-    note left
-    Update view
-    endnote
-end
-
-== Save config ==
-QuimP->ser : <<create>>
-activate ser
-note left
-Pass:
-""quimpInfo""
-""snakePluginList""
-endnote  
-ser->ser : save()
-activate ser
-ser->plist : beforeSerialize()
-loop over plugins in SnakePluginList
-    plist->plugin : downloadPluginConfig()
-    plugin->iplugin : ref.getVersion()
-    iplugin-->plugin : //version//
-    plugin->iplugin : ref.getPluginConfig()
-    iplugin-->plugin : //config//
-end
-plist-->ser
-ser->ser : write
-
-deactivate ser
-destroy ser
-deactivate plugin
-
-== Load config ==
-QuimP->ser : <<create>>
-activate ser
-QuimP->plist : closeAllWindows
-loop over plugins in SnakePluginList
-    plist->plist : getInstance(i)
-    activate plist
-    plist->iplugin : ref.showUI(false)
-    deactivate plist
-end
-ser->ser : load()
-activate ser
-ser->plist : afterSerialize()
-loop over plugins in SnakePluginList
-    plist->plugin : get old config
-    note right
-    Here is instance
-    loaded and created
-    by GSon
-    endnote
-    plist->plist : setInstance(**name**,..)
-    activate plist
-    plist->plugin : <<create>> at slot //i//
-    activate plugin
-    plugin->pfact : getInstance(**name**)
-    destroy iplugin
-    pfact->iplugin : <<create>>
-    activate iplugin
-    pfact-->plugin : ref
-    plist->iplugin : ref.attachContext
-    plist->iplugin : ref.attachData
-    deactivate plist
-    plist->plugin : uploadPluginConfig()
-    plugin->iplugin : ref.setPluginConfig()
-end
-plist-->ser
-ser-->QuimP : <<new instance>>
-destroy ser
-@enduml
-
-
-
-
-
-
-
-
-
-
-
 
 ### set/get Plugin Config {#sgpc}
 
-These use cases are important for storing and restoring plugin configuration inside QuimP configuration files. 
+These use cases are activated during uploading and downloading internal plugin configuration. QuimP
+itself does not touch these data but only store them on disk (see @ref ConfigurationHandling) 
 
-__This feature is not developed yet.__
+Related classes and methods:
 
-@todo Add description here
+1. uk.ac.warwick.wsbc.QuimP.SnakePluginList
+1. uk.ac.warwick.wsbc.QuimP.IQuimpSerialize
+
+Conditions:
+* User selected one plugin on certain slot.
+* Plugins have been already registered by **Create Engine** use case.
 
 # Technical details {#td}
 

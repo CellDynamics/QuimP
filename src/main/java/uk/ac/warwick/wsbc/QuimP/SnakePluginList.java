@@ -31,8 +31,182 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  * The \c sPluginList is serialized (saved as JSON object). Because serialization does not touch
  * plugins (understood as jars) directly, their configuration and state must be copied locally to
  * \c Plugin objects. This is done during preparation to serialization and then after 
- * deserialization.
+ * deserialization. 
+ * The most important use cases are:
  * 
+ * @startuml
+ * left to right direction
+ * 
+ * :User: as user
+ * user--(//Initialize//)
+ * user--(setInstance)
+ * user--(Serialize)
+ * user--(delete plugin)
+ * user--(set active)
+ * (Serialize)<|--(Handle\nconfiguration):<<extend>>
+ * @enduml
+ * 
+ * During \a initialization basic structures are created. Note that plugins are kept in intermediate 
+ * class Plugin that holds current state of plugin :
+ * -# reference to jar (obtained from PluginFactory)
+ * -# name of plugin (\a name uniquely defines the plugin)  
+ * -# version of plugin (read from jar)
+ * -# status of plugin (active or inactive, related to QuimP UI)
+ * -# configuration (for saving on disk)
+ * 
+ * @startuml
+ * actor User
+ * participant SnakePluginList as slist
+ * participant Plugin as plugin
+ * participant PluginFactory as pfact
+ * participant IQuimpPlugin as iPlugin
+
+ * note over plugin : Internal representation\nof plugin instance
+ * note over iPlugin : external instance\nof plugin
+ * 
+ * User->slist : <<create>>\nPluginFactory\nData\nViewUpdater
+ * activate slist
+ * loop all slots
+ *  slist->plugin : <<create>>
+ *  activate plugin
+ *  note left
+ *  Create empty instances
+ *  of plugins
+ *  end note
+ * end
+ * @enduml
+ * 
+ * During \a setInstance the instance of plugin is created and assign to Plugin object
+ * @startuml
+ * actor User
+ * participant SnakePluginList as slist
+ * participant Plugin as plugin
+ * participant PluginFactory as pfact
+ * participant IQuimpPlugin as iPlugin
+
+ * note over plugin : Internal representation\nof plugin instance
+ * note over iPlugin : external instance\nof plugin
+ * activate slist
+ * activate plugin
+ * activate pfact
+ * User->slist : ""setInstance""\ni\nName\nActivity
+ * slist-->plugin : <<destroy>>
+ * destroy plugin
+ * slist -> plugin : <<create>>\nName\nActivity\nPluginFactory
+ * activate plugin
+ * plugin -> pfact : ""getInstance(Name)""
+ * pfact -> iPlugin : <<create>>
+ * activate iPlugin
+ * pfact --> plugin : instance
+ * note left: instance is stored in\nPlugin
+ * plugin --> slist
+ * slist->plugin : ""getInstance(i)""
+ * plugin-->slist : instance
+ * slist -> iPlugin : ""attachContext(ViewUpdater)""
+ * slist -> iPlugin : ""attachData(Data)""
+ * @enduml
+ * 
+ * During \a Serialize plugins are prepared for serialization what means saving current state of 
+ * plugins like:
+ * -# Loaded plugins (those kept in SnakePluginList only, selected by user in UI)
+ * -# Their configuration
+ * 
+ * @startuml
+ * actor User
+ * participant SnakePluginList as slist
+ * participant Plugin as plugin
+ * participant PluginFactory as pfact
+ * participant IQuimpPlugin as iPlugin
+
+ * note over plugin : Internal representation\nof plugin instance
+ * note over iPlugin : external instance\nof plugin
+ * activate slist
+ * activate plugin
+ * activate pfact
+ * activate iPlugin
+ * 
+ * == before Serialization ==
+ * User --/ slist : save
+ * loop all slots
+ *  slist->plugin : ""downloadPluginConfig()""
+ *  plugin -> iPlugin : ""getPluginConfig()""
+ *  iPlugin --> plugin : config
+ *  plugin -> iPlugin : ""getVersion()""
+ *  iPlugin --> plugin : version
+ * end
+ * 
+ * == after serialization ==
+ * User --/ slist : load
+ * note left
+ * On load fields of SnakePluginList
+ * and Plugin are restored except 
+ * plugin instances
+ * end note
+ * loop all slots
+ * slist->plugin : get version
+ * plugin --> slist: version
+ * slist->plugin : get Config
+ * plugin --> slist: config
+ * slist->plugin : get Name
+ * plugin --> slist: name
+ * note left: Those restored from load
+ * slist->slist : ""setInstance(i,Name,Activity,Config)""
+ * activate slist
+ * destroy plugin
+ * destroy iPlugin
+ * slist->slist : ""setInstance(i,Name,Activity)""
+ * activate slist
+ * activate plugin
+ * activate iPlugin
+ * activate slist
+ * ... See setInstance Use Case ...
+ * slist->plugin : ""uploadPluginConfig(config)""
+ * plugin -> iPlugin : ""setPluginConfig(config)""
+ * end
+ * @enduml
+ * 
+ * During \a Deletion of plugin the new empty plugin is created in place of old one
+ * 
+ * @startuml
+ * actor User
+ * participant SnakePluginList as slist
+ * participant Plugin as plugin
+ * participant PluginFactory as pfact
+ * participant IQuimpPlugin as iPlugin
+ *
+ * note over plugin : Internal representation\nof plugin instance
+ * note over iPlugin : external instance\nof plugin
+ * activate slist
+ * activate plugin
+ * activate pfact
+ * activate iPlugin
+ * User --/ slist : Delete plugin
+ * destroy plugin
+ * destroy iPlugin
+ * slist->plugin : <<create>>
+ * activate plugin
+ * @enduml
+ * 
+ * During \a Set \a Active state, the internal state of plugin is set to active. This is important
+ * for method uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin.isExecutable().
+ * 
+ * @startuml
+ * actor User
+ * participant SnakePluginList as slist
+ * participant Plugin as plugin
+ * participant PluginFactory as pfact
+ * participant IQuimpPlugin as iPlugin
+ * 
+ * note over plugin : Internal representation\nof plugin instance
+ * note over iPlugin : external instance\nof plugin
+ * activate slist
+ * activate plugin
+ * activate pfact
+ * activate iPlugin
+ * User --/ slist : setActive(i,Activity)
+ * slist->plugin : set isActive
+ * @enduml
+ *  
  * @remarks This class is serializable and it is part of QuimP config.  
  * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
  * @author p.baniukiewicz
@@ -157,6 +331,8 @@ class SnakePluginList implements IQuimpSerialize {
 
     /**
      * Default constructor
+     * 
+     * Creates empty Plugin object that refers to nothing
      */
     public SnakePluginList() {
         sPluginList = new ArrayList<Plugin>();
