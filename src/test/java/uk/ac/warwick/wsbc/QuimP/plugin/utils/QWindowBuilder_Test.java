@@ -52,6 +52,7 @@ public class QWindowBuilder_Test {
         def1.put("Name", "test");
         def1.put("wIndow", "spinner, -0.5, 0.5, 0.1, 0");
         def1.put("smootH", "spinner, -1, 10, 1, -1");
+        def1.put("Selector", "choice, option_1, option_2, option_3");
         def1.put("help",
                 "FlowLayout is the default layout manager for every JPanel."
                         + " It simply lays out components in a single row, starting a"
@@ -80,6 +81,7 @@ public class QWindowBuilder_Test {
         ret = inst.getValues();
         assertEquals(0, ret.getDoubleValue("window"), 1e-4);
         assertEquals(-1, ret.getDoubleValue("smooth"), 1e-4);
+        assertEquals("option_1", ret.getStringValue("selector"));
     }
 
     /**
@@ -93,11 +95,13 @@ public class QWindowBuilder_Test {
         ParamList set = new ParamList();
         set.put("windOw", String.valueOf(0.32));
         set.put("sMooth", String.valueOf(7.0));
+        set.put("selector", "option_3"); // must exist in list
         inst.buildWindow(def1);
         inst.setValues(set);
         ret = inst.getValues();
         assertEquals(0.32, ret.getDoubleValue("window"), 1e-4);
         assertEquals(7, ret.getDoubleValue("smooth"), 1e-4);
+        assertEquals("option_3", ret.getStringValue("selector"));
     }
 
 }

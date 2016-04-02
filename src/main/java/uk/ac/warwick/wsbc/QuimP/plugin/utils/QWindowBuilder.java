@@ -5,6 +5,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
 import java.awt.BorderLayout;
+import java.awt.Choice;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Label;
@@ -156,8 +157,19 @@ public abstract class QWindowBuilder {
      * <li>step
      * <li>default value
      * </ol>
+     * <li>choice - creates Choice control. It requires 0 or more parameters - entries in list
+     * <ol>
+     * <li> first entry
+     * <li> second entry
+     * <li> ...
+     * </ol>
      * </ul>
-     *
+     * For \a choice calling uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder.setValues(ParamList)
+     * has sense only if passed parameters will be present in list already (so it has been used
+     * during creation of window, passed in constructor) In this case it causes selection of
+     * this entry in list. Otherwise passed value will be ignored. \a setVales for \a Choice does
+     * not add new entry to list. 
+     * 
      * The type of required UI element associated with given parameter name (\a
      * Key) is coded in value of given Key in accordance with list above. The
      * correct order of sub-parameters must be preserved. Exemplary
@@ -232,6 +244,17 @@ public abstract class QWindowBuilder {
                                     Double.parseDouble(uiparams[S_MAX]), // max
                                     Double.parseDouble(uiparams[S_STEP])); // step
                     ui.put(key, new JSpinner(model));
+                    ui.put(key + "label", new Label(key)); // add description
+                    break;
+                case "choice":
+                    if (uiparams.length < 2) // 4+uitype
+                        throw new IllegalArgumentException(
+                                "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
+                    Choice c = new Choice();
+                    for (int i = UITYPE + 1; i < uiparams.length; i++)
+                        c.add(uiparams[i]);
+                    c.select(0);
+                    ui.put(key, c);
                     ui.put(key + "label", new Label(key)); // add description
                     break;
                 default:
@@ -343,7 +366,7 @@ public abstract class QWindowBuilder {
             // find key in def and get type of control and its instance
             switch (def.getParsed(key)[UITYPE]) { // first string in vals is type of
                 // control, see BuildWindow
-                case "spinner":
+                case "spinner": {
                     JSpinner comp = (JSpinner) ui.get(key); // get UI component of name key (keys
                                                             // in vals must match to keys in
                                                             // BuildWindow(def))
@@ -354,6 +377,12 @@ public abstract class QWindowBuilder {
                     else if (sm.getPreviousValue() == null)
                         sm.setMinimum(Double.parseDouble(val));
                     break;
+                }
+                case "choice": {
+                    Choice comp = (Choice) ui.get(key);
+                    comp.select(val);
+                    break;
+                }
                 default:
                     throw new IllegalArgumentException("Unknown UI type in setValues");
             }
@@ -385,11 +414,17 @@ public abstract class QWindowBuilder {
             String key = m.getKey();
             // check type of component
             switch (def.getParsed(key)[UITYPE]) {
-                case "spinner":
+                case "spinner": {
                     JSpinner val = (JSpinner) m.getValue(); // get value
                     ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
                     // the same key
                     break;
+                }
+                case "choice": {
+                    Choice val = (Choice) m.getValue();
+                    ret.put(key, val.getSelectedItem());
+                    break;
+                }
                 default:
                     throw new IllegalArgumentException("Unknown UI type in getValues");
             }

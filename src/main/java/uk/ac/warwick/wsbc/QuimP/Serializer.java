@@ -169,7 +169,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * Register constructor for wrapped class.
      * 
      * It may be necessary during loading JSON file if wrapped class needs some parameters to
-     * restore its state on uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.afterSerialize() call
+     * restore its state on uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.afterSerialize() call and
+     * those parameters are passed in constructor.
      * 
      * @param type Type of class
      * @param typeAdapter Wrapped object builder that implements InstanceCreator interface. Example
