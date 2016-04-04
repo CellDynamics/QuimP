@@ -53,6 +53,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.vecmath.Point2d;
+import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,7 +67,6 @@ import ij.WindowManager;
 import ij.gui.GenericDialog;
 import ij.gui.ImageCanvas;
 import ij.gui.NewImage;
-import ij.gui.OvalRoi;
 import ij.gui.Overlay;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
@@ -2184,38 +2184,39 @@ class ImageGroup {
 
                 // draw head node
                 if (BOA_.boap.isHeadPlotted == true) {
-                    // Point2d p1 = new Point2d(snake.getHead().getX(), snake.getHead().getY());
-                    // Point2d p2 = new Point2d(snake.getHead().getNext().getX(),
-                    // snake.getHead().getNext().getY());
-                    // Vector2d v1 = new Vector2d(p2.getX() - p1.getX(), p2.getY() - p1.getY());
-                    // v1.normalize();
-                    // v1.scale(20);
-                    // Vector2d v2 = new Vector2d(-v1.getY(), v1.getX());
-                    // Vector2d v3 = new Vector2d(v1.getY(), v1.getX());
-                    // v2.scale(0.5);
-                    // v3.scale(0.5);
-                    //
-                    // Point2d pa = new Point2d(p1);
-                    // pa.add(v1);
-                    // Point2d pb = new Point2d(p1);
-                    // pb.add(v2);
-                    // Point2d pc = new Point2d(p1);
-                    // pc.add(v3);
-                    //
-                    // int[] xp = new int[3];
-                    // int[] yp = new int[3];
-                    //
-                    // xp[0] = (int) Math.round(pa.getX());
-                    // xp[1] = (int) Math.round(pb.getX());
-                    // xp[2] = (int) Math.round(pc.getX());
-                    //
-                    // yp[0] = (int) Math.round(pa.getY());
-                    // yp[1] = (int) Math.round(pb.getY());
-                    // yp[2] = (int) Math.round(pc.getY());
-                    //
-                    // PolygonRoi pRh = new PolygonRoi(xp, yp, 3, Roi.POLYGON);
-                    OvalRoi oR = new OvalRoi(snake.getHead().getX() - 5, snake.getHead().getY() - 5,
-                            10, 10);
+                    Point2d p1 = new Point2d(snake.getHead().getX(), snake.getHead().getY());
+                    Point2d p2 = new Point2d(snake.getHead().getNext().getNext().getNext().getX(),
+                            snake.getHead().getNext().getNext().getNext().getY());
+                    Vector2d v1 = new Vector2d(p2.getX() - p1.getX(), p2.getY() - p1.getY());
+                    v1.normalize();
+                    v1.scale(20);
+                    Vector2d v2 = new Vector2d(-v1.getY(), v1.getX());
+                    Vector2d v3 = new Vector2d(-v2.getX(), -v2.getY());
+                    v2.scale(0.3);
+                    v3.scale(0.3);
+
+                    Point2d pa = new Point2d(p1);
+                    pa.add(v1);
+                    Point2d pb = new Point2d(p1);
+                    pb.add(v2);
+                    Point2d pc = new Point2d(p1);
+                    pc.add(v3);
+
+                    int[] xp = new int[3];
+                    int[] yp = new int[3];
+
+                    xp[0] = (int) Math.round(pa.getX());
+                    xp[1] = (int) Math.round(pb.getX());
+                    xp[2] = (int) Math.round(pc.getX());
+
+                    yp[0] = (int) Math.round(pa.getY());
+                    yp[1] = (int) Math.round(pb.getY());
+                    yp[2] = (int) Math.round(pc.getY());
+
+                    PolygonRoi oR = new PolygonRoi(xp, yp, 3, Roi.POLYGON);
+                    // OvalRoi oR = new OvalRoi(snake.getHead().getX() - 5, snake.getHead().getY() -
+                    // 5,
+                    // 10, 10);
                     oR.setStrokeColor(Color.GREEN);
                     oR.setFillColor(Color.GREEN);
                     overlay.add(oR);
