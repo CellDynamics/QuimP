@@ -1,21 +1,22 @@
+/**
+ * @file IQuimpSnakeFilter.java
+ * @date 4 Apr 2016
+ */
 package uk.ac.warwick.wsbc.QuimP.plugin.snakes;
 
-import java.util.List;
-
-import javax.vecmath.Point2d;
-
+import uk.ac.warwick.wsbc.QuimP.Snake;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
- * General interface that defines filter run on points in euclidean space
+ * General interface that defines filter run on Snakes directly
  * 
  * @author p.baniukiewicz
+ * @date 4 Apr 2016
  * @see @ref SnakePlugin
  * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
- * @todo TODO Replace in future by IQuimpSnakeFilter
  */
-public interface IQuimpPoint2dFilter extends IQuimpPlugin {
+public interface IQuimpSnakeFilter extends IQuimpPlugin {
 
     /**
      * Runs filter and return filtered points in the same order as input points
@@ -27,7 +28,7 @@ public interface IQuimpPoint2dFilter extends IQuimpPlugin {
      * @warning Plugin may be run without attached data. Plugin must deal with
      * this
      */
-    List<Point2d> runPlugin() throws QuimpPluginException;
+    Snake runPlugin() throws QuimpPluginException;
 
     /**
      * Attach processed data to plugin
@@ -39,5 +40,5 @@ public interface IQuimpPoint2dFilter extends IQuimpPlugin {
      * @warning \c data may be passed as \c null from QuimP. Plugin must deal with
      * this
      */
-    void attachData(final List<Point2d> data);
+    void attachData(final Snake data);
 }
