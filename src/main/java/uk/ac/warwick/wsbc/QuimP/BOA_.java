@@ -5032,6 +5032,11 @@ class BOAp {
          */
         public SegParam() {
             setDefaults();
+            // defaults for GUI settings
+            showPaths = false;
+            use_previous_snake = true; // next contraction begins with last chain
+            expandSnake = false; // set true to act as an expanding snake
+
         }
 
         /**
@@ -5082,7 +5087,7 @@ class BOAp {
      * Default constructor
      */
     public BOAp() {
-        segParam = new SegParam(); // build segmentation parameters object wit default values
+        segParam = new SegParam(); // build segmentation parameters object with default values
     }
 
     /**
@@ -5153,9 +5158,6 @@ class BOAp {
         }
 
         savedOne = false;
-        segParam.showPaths = false;
-        segParam.use_previous_snake = true; // next contraction begins with last chain
-        segParam.expandSnake = false; // set true to act as an expanding snake
         // nestSize = 0;
         WIDTH = ip.getWidth();
         HEIGHT = ip.getHeight();

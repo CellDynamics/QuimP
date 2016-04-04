@@ -31,7 +31,6 @@ public class ParamList extends LinkedStringMap<String> {
                 put(e.getKey(), e.getValue());
             }
         }
-
     }
 
     /**

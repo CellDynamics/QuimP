@@ -92,6 +92,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  *  "5.0" to integer value will cause NumberFormatException. To avoid this problem use 
  *  QuimP.plugin.ParamList.getIntValue(String) from ParamList of treat all strings in ParamList as
  *  Double.
+ * @remarks All parameters passed to and from QWindowBuilder as ParamList are encoded as \b String 
  * 
  * @author p.baniukiewicz
  * @date 29 Jan 2016
@@ -164,7 +165,7 @@ public abstract class QWindowBuilder {
      * <li> ...
      * </ol>
      * </ul>
-     * For \a choice calling uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder.setValues(ParamList)
+     * For \a choice calling uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder.setValues(final ParamList)
      * has sense only if passed parameters will be present in list already (so it has been used
      * during creation of window, passed in constructor) In this case it causes selection of
      * this entry in list. Otherwise passed value will be ignored. \a setVales for \a Choice does
@@ -186,7 +187,8 @@ public abstract class QWindowBuilder {
      * By default window is not visible yet. User must call ShowWindow
      * or ToggleWindow. The \b Apply button does nothing. It is only to
      * refocus after change of values in spinners. They are not updated
-     * until unfocused.
+     * until unfocused. User can overwrite this behavior in his own class derived from
+     * QWindowBuilder
      * 
      * @param def Configuration as described
      * @throw IllegalArgumentException or other unchecked exceptions on wrong

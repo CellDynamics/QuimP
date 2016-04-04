@@ -11,8 +11,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin;
  * 
  * @author p.baniukiewicz
  * @date 2 Feb 2016
- * @todo TODO finish documentation and add UML graphs
- * @see uk.ac.warwick.wsbc.QuimP.PluginFactory.getPluginType(File, String)
+ * @see @ref SnakePlugin
+ * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
  */
 public interface IQuimpPlugin {
 
