@@ -66,6 +66,7 @@ import ij.WindowManager;
 import ij.gui.GenericDialog;
 import ij.gui.ImageCanvas;
 import ij.gui.NewImage;
+import ij.gui.OvalRoi;
 import ij.gui.Overlay;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
@@ -605,7 +606,7 @@ public class BOA_ implements PlugIn {
 
         private MenuBar quimpMenuBar;
         private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory; // items
-        private CheckboxMenuItem cbMenuPlotOriginalSnakes;
+        private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
 
         /**
          * Default constructor
@@ -664,9 +665,6 @@ public class BOA_ implements PlugIn {
             Menu menuAbout; // menu About in menubar
             Menu menuConfig; // menu Config in menubar
 
-            // if (getMenuBar() != null)
-            // menuBar = getMenuBar();
-            // else
             menuBar = new MenuBar();
 
             menuConfig = new Menu("Preferences");
@@ -686,6 +684,10 @@ public class BOA_ implements PlugIn {
             cbMenuPlotOriginalSnakes.setState(boap.isProcessedSnakePlotted);
             cbMenuPlotOriginalSnakes.addItemListener(this);
             menuConfig.add(cbMenuPlotOriginalSnakes);
+            cbMenuPlotHead = new CheckboxMenuItem("Plot head");
+            cbMenuPlotHead.setState(boap.isHeadPlotted);
+            cbMenuPlotHead.addItemListener(this);
+            menuConfig.add(cbMenuPlotHead);
 
             menuSaveConfig = new MenuItem("Save preferences");
             menuSaveConfig.addActionListener(this);
@@ -1349,12 +1351,17 @@ public class BOA_ implements PlugIn {
                 recalculatePlugins();
             }
 
+            // action on manus
             if (source == cbMenuPlotOriginalSnakes) {
-                LOGGER.debug("got cbMenuPlotProcessedSnakes");
                 boap.isProcessedSnakePlotted = cbMenuPlotOriginalSnakes.getState();
                 recalculatePlugins();
             }
+            if (source == cbMenuPlotHead) {
+                boap.isHeadPlotted = cbMenuPlotHead.getState();
+                imageGroup.updateOverlay(boaState.frame);
+            }
 
+            // actions on Choice
             if (source == firstPluginName) {
                 LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
                 instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0,
@@ -2159,15 +2166,14 @@ class ImageGroup {
                     r.setStrokeColor(Color.RED);
                     overlay.add(r);
                 }
-
                 // plot segmented and filtered snake
                 snake = sH.getStoredSnake(frame);
                 // Roi r = snake.asRoi();
                 r = snake.asFloatRoi();
                 r.setStrokeColor(Color.YELLOW);
                 overlay.add(r);
-                x = (int) Math.round(snake.getHead().getX()) - 15;
-                y = (int) Math.round(snake.getHead().getY()) - 15;
+                x = (int) Math.round(snake.getCentroid().getX()) - 15;
+                y = (int) Math.round(snake.getCentroid().getY()) - 15;
                 text = new TextRoi(x, y, "   " + snake.snakeID);
                 overlay.add(text);
 
@@ -2175,6 +2181,46 @@ class ImageGroup {
                 PointRoi pR = new PointRoi((int) snake.getCentroid().getX(),
                         (int) snake.getCentroid().getY());
                 overlay.add(pR);
+
+                // draw head node
+                if (BOA_.boap.isHeadPlotted == true) {
+                    // Point2d p1 = new Point2d(snake.getHead().getX(), snake.getHead().getY());
+                    // Point2d p2 = new Point2d(snake.getHead().getNext().getX(),
+                    // snake.getHead().getNext().getY());
+                    // Vector2d v1 = new Vector2d(p2.getX() - p1.getX(), p2.getY() - p1.getY());
+                    // v1.normalize();
+                    // v1.scale(20);
+                    // Vector2d v2 = new Vector2d(-v1.getY(), v1.getX());
+                    // Vector2d v3 = new Vector2d(v1.getY(), v1.getX());
+                    // v2.scale(0.5);
+                    // v3.scale(0.5);
+                    //
+                    // Point2d pa = new Point2d(p1);
+                    // pa.add(v1);
+                    // Point2d pb = new Point2d(p1);
+                    // pb.add(v2);
+                    // Point2d pc = new Point2d(p1);
+                    // pc.add(v3);
+                    //
+                    // int[] xp = new int[3];
+                    // int[] yp = new int[3];
+                    //
+                    // xp[0] = (int) Math.round(pa.getX());
+                    // xp[1] = (int) Math.round(pb.getX());
+                    // xp[2] = (int) Math.round(pc.getX());
+                    //
+                    // yp[0] = (int) Math.round(pa.getY());
+                    // yp[1] = (int) Math.round(pb.getY());
+                    // yp[2] = (int) Math.round(pc.getY());
+                    //
+                    // PolygonRoi pRh = new PolygonRoi(xp, yp, 3, Roi.POLYGON);
+                    OvalRoi oR = new OvalRoi(snake.getHead().getX() - 5, snake.getHead().getY() - 5,
+                            10, 10);
+                    oR.setStrokeColor(Color.GREEN);
+                    oR.setFillColor(Color.GREEN);
+                    overlay.add(oR);
+
+                }
 
             }
         }
@@ -5095,6 +5141,11 @@ class BOAp {
      * segmentation and after filtering are plotted.
      */
     boolean isProcessedSnakePlotted = true;
+
+    /**
+     * Define if first node of Snake (head) is plotted or not
+     */
+    boolean isHeadPlotted = true;
 
     /**
      * When any plugin fails this field defines how QuimP should behave. When
