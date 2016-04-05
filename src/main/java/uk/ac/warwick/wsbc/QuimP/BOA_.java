@@ -80,6 +80,7 @@ import ij.io.SaveDialog;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 import ij.process.Blitter;
+import ij.process.FloatPolygon;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.StackConverter;
@@ -90,6 +91,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpSnakeFilter;
 
 /**
  * Main class implementing BOA plugin.
@@ -1552,8 +1554,6 @@ public class BOA_ implements PlugIn {
      * 
      * Decides if plugin will be created or destroyed basing on plugin \b name from Choice list
      * 
-     * @warning The same contexts should be restored after plugin load
-     * 
      * @param selectedPlugin Name of plugin returned from UI elements
      * @param slot Slot of plugin
      * @param act Indicates if plugins is activated in GUI
@@ -1712,6 +1712,7 @@ public class BOA_ implements PlugIn {
      * @return Processed snake or original input one when there is no plugin selected
      * @throws QuimpPluginException on plugin error
      * @throws Exception
+     * @todo FIXME Use nonoptimal two interfaces. Switch to one
      */
     private Snake iterateOverSnakePlugins(final Snake snake)
             throws QuimpPluginException, Exception {
@@ -1724,9 +1725,20 @@ public class BOA_ implements PlugIn {
                     continue; // no plugin on this slot or not active
                 // because it is guaranteed by pluginFactory.getPluginNames(DOES_SNAKES) used
                 // when populating GUI names and boap.sPluginList in actionPerformed(ActionEvent e).
-                IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP.getRef();
-                qPcast.attachData(dataToProcess);
-                dataToProcess = qPcast.runPlugin();
+                if (qP.getRef() instanceof IQuimpPoint2dFilter) {
+                    IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP.getRef();
+                    qPcast.attachData(dataToProcess);
+                    dataToProcess = qPcast.runPlugin();
+                }
+                // temporary conversion to Snake for ne interface
+                if (qP.getRef() instanceof IQuimpSnakeFilter) {
+                    LOGGER.warn("Use new interface");
+                    Snake tmp = new Snake(dataToProcess, snake.snakeID);
+                    IQuimpSnakeFilter qPcast = (IQuimpSnakeFilter) qP.getRef();
+                    qPcast.attachData(tmp);
+                    Snake retTmp = qPcast.runPlugin();
+                    dataToProcess = retTmp.asList();
+                }
             }
             outsnake = new Snake(dataToProcess, snake.snakeID);
         } else
