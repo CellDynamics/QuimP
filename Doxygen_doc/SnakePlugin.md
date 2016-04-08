@@ -37,7 +37,7 @@ Note:
 
 > Plugins inside QuimP are defined by their **names** that are simply names of classes. **Name** of plugin uniquely identifies its jar. All communication between all components is based on their **names**
 
-There are three important classes here:
+There are important classes here:
 
 1. uk.ac.warwick.wsbc.QuimP.SnakePluginList - this class is related to plugin stack - three slots 
 available in UI together with activity boxes. Keeps list of active plugins as Plugin objects.
@@ -48,6 +48,10 @@ changing plugin names to their binary reference.
 3. uk.ac.warwick.wsbc.QuimP.Serializer - this class is used during storing plugin 
 stack configuration. Include \ref uk.ac.warwick.wsbc.QuimP.SnakePluginList SnakePluginList and add
 extra fields related to QuimP version 
+4. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(final Snake) - Main runner of plugin stack
+5. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent) - creator of 
+plugins - call other methods related to \ref uk.ac.warwick.wsbc.QuimP.SnakePluginList SnakePluginList
+class
 
 ## Use case diagram {#ucd}
 
