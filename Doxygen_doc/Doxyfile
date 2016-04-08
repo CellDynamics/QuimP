@@ -103,7 +103,8 @@ INPUT                  = ../src \
                          ../Readme.md \
                          ../../HatSnakeFilter_quimp/src \
                          ../../HedgehogSnakeFilter_quimp/src \
-                         ../../MeanSnakeFilter_quimp/src
+                         ../../MeanSnakeFilter_quimp/src \
+                         ../../SetHeadSnakeFilter_quimp
                         
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
