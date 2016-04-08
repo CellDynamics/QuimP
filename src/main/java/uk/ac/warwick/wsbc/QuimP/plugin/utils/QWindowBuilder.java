@@ -466,6 +466,17 @@ public abstract class QWindowBuilder {
     }
 
     /**
+     * Return value related to given key. Added for convenience
+     * 
+     * @copydoc getIntegerFromUI(final String)
+     */
+    public String getStringFromUI(final String key) {
+        // get list of all params from ui as <key,val> list
+        ParamList uiParam = getValues();
+        return uiParam.getStringValue(key);
+    }
+
+    /**
      * Stores components under \c Keys that are not case insensitive
      * 
      * @author p.baniukiewicz

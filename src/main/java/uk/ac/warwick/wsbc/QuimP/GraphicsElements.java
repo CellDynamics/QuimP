@@ -7,6 +7,7 @@ package uk.ac.warwick.wsbc.QuimP;
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
+import ij.gui.OvalRoi;
 import ij.process.FloatPolygon;
 
 /**
@@ -45,6 +46,12 @@ public class GraphicsElements {
         fp.addPoint(base.getX() + v3.getX(), base.getY() + v3.getY());
 
         return fp;
+    }
+
+    public static FloatPolygon plotCircle(Point2d base, float radius) {
+        OvalRoi or = new OvalRoi(base.getX() - radius / 4, base.getY() - radius / 4, radius / 2,
+                radius / 2);
+        return or.getFloatPolygon();
 
     }
 

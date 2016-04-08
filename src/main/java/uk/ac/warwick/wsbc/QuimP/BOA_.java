@@ -2200,7 +2200,9 @@ class ImageGroup {
                     Vector2d dir = new Vector2d(
                             snake.getHead().getNext().getNext().getNext().getX() - bp.getX(),
                             snake.getHead().getNext().getNext().getNext().getY() - bp.getY());
-                    FloatPolygon fp = GraphicsElements.plotArrow(dir, bp, 15.0f, 0.4f);
+                    // FloatPolygon fp = GraphicsElements.plotArrow(dir, bp, 15.0f, 0.4f);
+
+                    FloatPolygon fp = GraphicsElements.plotCircle(bp, 10);
                     PolygonRoi oR = new PolygonRoi(fp, Roi.POLYGON);
                     oR.setStrokeColor(Color.GREEN);
                     oR.setFillColor(Color.GREEN);

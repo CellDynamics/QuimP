@@ -175,7 +175,12 @@ The following structures are used to hold and process segmented data:
 	Node : +Node(nr)
 @enduml
 
-### Create Snakes {#createsnakes}
+Every Snake has its head which is considered as first Node in list. Many Snake methods use this 
+fact to iterate over the whole list. Information about head is stored in **TWO** locations. First, the
+head Node has set flag **head**, second this Node is assigned to *head* in Snake object. Synchronization
+must be maintained by programmer.  
+
+### Creating Snakes {#createsnakes}
 
 Snakes objects are created for every frame separately and collected in object `SnakeHandler`. Every segmented cell is stored in top class `Nest` at `sHs` array. The array `snakes` at `SnakeHandler` is size of remaining frames from current one (that which the cell was added at) to the end of stack.
 

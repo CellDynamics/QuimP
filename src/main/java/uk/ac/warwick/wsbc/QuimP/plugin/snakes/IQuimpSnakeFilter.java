@@ -11,10 +11,13 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 /**
  * General interface that defines filter run on Snakes directly
  * 
+ * Modification of Node object that form Snake should be done with carefulness. Read documentation 
+ * for Snake 
  * @author p.baniukiewicz
  * @date 4 Apr 2016
  * @see @ref SnakePlugin
  * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
+ * @see uk.ac.warwick.wsbc.QuimP.Snake
  */
 public interface IQuimpSnakeFilter extends IQuimpPlugin {
 

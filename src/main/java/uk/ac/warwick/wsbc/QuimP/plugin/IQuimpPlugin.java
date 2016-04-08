@@ -21,6 +21,7 @@ public interface IQuimpPlugin {
     int GENERAL = 0; //!< Type of plugin not defined
     int DOES_SNAKES = 1; //!< Plugin process snakes only
     int CHANGE_SIZE = 32; //!< Plugin change size of input data
+    int MODIFY_INPUT = 64; //!< Plugin modify input data in place
 
     /**
      * Provide basic information to QuimP about plugin
