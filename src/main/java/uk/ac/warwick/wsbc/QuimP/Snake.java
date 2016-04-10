@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1098,6 +1099,20 @@ public class Snake {
      * @return Bounding box of current Snake object
      */
     public Rectangle getBounds() {
+
+        Rectangle2D.Double rect = getDoubleBounds();
+
+        bounds.setBounds((int) rect.getMinX(), (int) rect.getMinY(), (int) rect.getWidth(),
+                (int) rect.getHeight());
+        return bounds;
+    }
+
+    /**
+     * Gets bounds of snake
+     * 
+     * @return Bounding box of current Snake object as Double
+     */
+    public Rectangle2D.Double getDoubleBounds() {
         // change tp asPolygon, and get bounds
         Node n = head;
         minX = n.getX();
@@ -1120,9 +1135,7 @@ public class Snake {
             }
             n = n.getNext();
         } while (!n.isHead());
-
-        bounds.setBounds((int) minX, (int) minY, (int) (maxX - minX), (int) (maxY - minY));
-        return bounds;
+        return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
     }
 
     /**
