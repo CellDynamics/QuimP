@@ -67,6 +67,30 @@ public class QuimpDataConverter {
     /**
      * Data accessor
      * 
+     * @return Array with ordered \a X coordinates of input list as float
+     */
+    public float[] getFloatX() {
+        float Xf[] = new float[points.size()];
+        for (int i = 0; i < points.size(); i++)
+            Xf[i] = (float) X[i];
+        return Xf;
+    }
+
+    /**
+     * Data accessor
+     * 
+     * @return Array with ordered \a Y coordinates of input list as float
+     */
+    public float[] getFloatY() {
+        float Yf[] = new float[points.size()];
+        for (int i = 0; i < points.size(); i++)
+            Yf[i] = (float) Y[i];
+        return Yf;
+    }
+
+    /**
+     * Data accessor
+     * 
      * @return Length of input list
      */
     public int size() {
