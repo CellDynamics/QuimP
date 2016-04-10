@@ -24,7 +24,7 @@ import org.junit.Test;
  */
 public class SerializerTest {
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2_test.xml");
+        System.setProperty("log4j.configurationFile", "qlog4j2_nofile.xml");
     }
     private static final Logger LOGGER = LogManager.getLogger(SerializerTest.class.getName());
     private TestClass testClass;
