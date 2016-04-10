@@ -378,26 +378,23 @@ public class Snake {
     }
 
     /**
-     * Traverse through Node list to find node marked as \b head and 
-     * assigns this node to head
+     * Assign head to node \c nodeIndex.
      * 
-     * This method should be used when Node list is modified externally behind the Snake object,
-     * e.g. by getting \a head Node from getHead(). 
+     * Do not change head if \c nodeIndex is not found
      * 
-     * @warning This method assumes that number of nodes does not change.
+     * @param nodeIndex Index of node of new head
      */
-    public void findHead() {
-        Node n = head; // this is old head stored in this object that is not current for Node list
-        for (int i = 0; i < NODES; i++) { // do not iterate using while(isHead)
-            if (n.isHead()) {
-                head = n;
-                LOGGER.debug(
-                        "Found head at position " + i + " related to node: " + head.toString());
-                break;
-            }
+    public void setNewHead(int nodeIndex) {
+        Node n = head;
+        Node oldhead = n;
+        do {
             n = n.getNext();
-        }
-
+        } while (n.getTrackNum() != nodeIndex && !n.isHead());
+        n.setHead(true);
+        if (oldhead != n)
+            oldhead.setHead(false);
+        head = n;
+        LOGGER.debug("New head is: " + getHead().toString());
     }
 
     /**
@@ -1095,6 +1092,11 @@ public class Snake {
         return al;
     }
 
+    /**
+     * Gets bounds of snake
+     * 
+     * @return Bounding box of current Snake object
+     */
     public Rectangle getBounds() {
         // change tp asPolygon, and get bounds
         Node n = head;
