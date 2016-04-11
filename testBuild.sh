@@ -1,6 +1,7 @@
 #!/bin/bash
 # builds everything without tests and populate package into test fiji
 
+exit 1 # deprecated
 
 mvn -T 1C clean package -P uber -Dmaven.test.skip=true
 

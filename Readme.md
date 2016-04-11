@@ -18,7 +18,7 @@ officially supported by the main QuimP development team (contact Leonard Bosgraa
 QuimP3 is currently under have development. It will support user plugins, other segmentation 
 algorithms, image pre-processing and many other features.
 
-# Project structure
+# Project structure (Deprecated)
 
 The project is maintained by Maven build system and consists of several sub-projects:
 

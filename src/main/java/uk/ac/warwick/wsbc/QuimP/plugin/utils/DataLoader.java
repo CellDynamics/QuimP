@@ -13,6 +13,8 @@ import javax.vecmath.Point2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ij.process.FloatPolygon;
+
 /**
  * Simple data loader for test
  * 
@@ -94,5 +96,24 @@ public class DataLoader {
      */
     public List<Point2d> getData() {
         return Vert;
+    }
+
+    /**
+     * Return loaded data as FloatPolygon
+     * 
+     * @return Loaded polygon as FloatPolygon
+     */
+    public FloatPolygon getFloatPolygon() {
+        QuimpDataConverter qd = new QuimpDataConverter(getData());
+        return new FloatPolygon(qd.getFloatX(), qd.getFloatY());
+    }
+
+    /**
+     * Convert loaded data to string
+     * 
+     * @return String representation of loaded data
+     */
+    public String toString() {
+        return Vert.toString();
     }
 }

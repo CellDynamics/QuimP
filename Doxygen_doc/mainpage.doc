@@ -10,4 +10,5 @@
 - \subpage BOA "BOA Plugin" - How QuimP works - free notes about.
 - \subpage SnakePlugin "Snake Plugin Interface" - Description of plugin interface
 - \subpage ConfigurationHandling "Handling configuration" - Saving and loading various configurations
+- \subpage UsefulTools "Useful Tools" - Exemplary scripts that may be useful during development
 */
