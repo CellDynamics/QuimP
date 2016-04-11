@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.vecmath.Point2d;
@@ -11,15 +12,18 @@ import uk.ac.warwick.wsbc.QuimP.Snake;
 /**
  * Perform conversions among Snake, List and X, Y arrays
  * 
+ * As this object returns references to arrays and list, any modification done "in place" on 
+ * returned data will affect future conversions done by calling accessor methods (except getList())
+ * 
  * @author p.baniukiewicz
  * @date 11 Apr 2016
  *
  */
 public class QuimpDataConverter {
 
-    private List<? extends Tuple2d> points; //!< reference to input coordinates
-    private double[] X; //!< extracted x coords from Vec2d
-    private double[] Y; //!< extracted y coords from Vec2d
+    private List<? extends Tuple2d> points; /*!< reference to input coordinates */
+    private double[] X; /*!< extracted x coords from Vec2d */
+    private double[] Y; /*!< extracted y coords from Vec2d */
 
     /**
      * Default constructor if Node list is in form of List
@@ -90,13 +94,14 @@ public class QuimpDataConverter {
      * Data accessor
      * 
      * @return List of Point2d from stored objects
+     * @warning If user modifies this list this object loses its consistency 
      */
     public List<Point2d> getList() {
         ArrayList<Point2d> list = new ArrayList<>();
         for (int i = 0; i < X.length; i++)
             list.add(new Point2d(X[i], Y[i]));
         points = list;
-        return list;
+        return Collections.unmodifiableList(list);
     }
 
     /**
