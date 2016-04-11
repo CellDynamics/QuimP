@@ -1,20 +1,18 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.vecmath.Point2d;
 import javax.vecmath.Tuple2d;
 
 import uk.ac.warwick.wsbc.QuimP.Snake;
 
 /**
- * Convert Vector2d ordered list into separate X, Y arrays.
- * 
- * Usually each vector coordinate is filtered separately. QuimP by defaults
- * store coordinates in linked list that is converted to ordered ArrayList and
- * passed to plugins. This class may help in accessing X and Y coordinates
- * separately as regular arrays.
+ * Perform conversions among Snake, List and X, Y arrays
  * 
  * @author p.baniukiewicz
+ * @date 11 Apr 2016
  *
  */
 public class QuimpDataConverter {
@@ -24,7 +22,7 @@ public class QuimpDataConverter {
     private double[] Y; //!< extracted y coords from Vec2d
 
     /**
-     * Default constructor
+     * Default constructor if Node list is in form of List
      * 
      * @param input list of vertices
      */
@@ -34,7 +32,7 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Default constructor
+     * Default if Node list is in form of two arrays with coordinates
      * 
      * @param X input list of vertices
      * @param Y input list of vertices
@@ -42,10 +40,11 @@ public class QuimpDataConverter {
     public QuimpDataConverter(final double X[], final double Y[]) {
         this.X = X;
         this.Y = Y;
+        points = null;
     }
 
     /**
-     * Default constructor
+     * Default constructor if Node list is in form of Snake object
      * 
      * @param s Snake to be converted
      */
@@ -90,6 +89,19 @@ public class QuimpDataConverter {
     /**
      * Data accessor
      * 
+     * @return List of Point2d from stored objects
+     */
+    public List<Point2d> getList() {
+        ArrayList<Point2d> list = new ArrayList<>();
+        for (int i = 0; i < X.length; i++)
+            list.add(new Point2d(X[i], Y[i]));
+        points = list;
+        return list;
+    }
+
+    /**
+     * Data accessor
+     * 
      * @return Array with ordered \a X coordinates of input list as float
      */
     public float[] getFloatX() {
@@ -128,7 +140,7 @@ public class QuimpDataConverter {
      * @throws Exception
      */
     public Snake getSnake(int id) throws Exception {
-        return new Snake(points, id);
+        return new Snake(X, Y, id);
     }
 
 }
