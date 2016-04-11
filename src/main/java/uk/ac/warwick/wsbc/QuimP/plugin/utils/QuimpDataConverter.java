@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.vecmath.Tuple2d;
 
+import uk.ac.warwick.wsbc.QuimP.Snake;
+
 /**
  * Convert Vector2d ordered list into separate X, Y arrays.
  * 
@@ -28,6 +30,27 @@ public class QuimpDataConverter {
      */
     public QuimpDataConverter(final List<? extends Tuple2d> input) {
         this.points = input;
+        toArrays();
+    }
+
+    /**
+     * Default constructor
+     * 
+     * @param X input list of vertices
+     * @param Y input list of vertices
+     */
+    public QuimpDataConverter(final double X[], final double Y[]) {
+        this.X = X;
+        this.Y = Y;
+    }
+
+    /**
+     * Default constructor
+     * 
+     * @param s Snake to be converted
+     */
+    public QuimpDataConverter(final Snake s) {
+        points = s.asList();
         toArrays();
     }
 
@@ -95,6 +118,17 @@ public class QuimpDataConverter {
      */
     public int size() {
         return points.size();
+    }
+
+    /**
+     * Return Snake created from stored data
+     * 
+     * @param id Id of snake
+     * @return Snake object with Nodes in order of data given on input
+     * @throws Exception
+     */
+    public Snake getSnake(int id) throws Exception {
+        return new Snake(points, id);
     }
 
 }

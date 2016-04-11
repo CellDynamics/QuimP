@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Point2d;
+import javax.vecmath.Tuple2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -177,9 +178,25 @@ public class Snake {
      * @param id id of Snake
      * @throws Exception
      */
-    public Snake(final List<Point2d> list, int id) throws Exception {
+    public Snake(final List<? extends Tuple2d> list, int id) throws Exception {
         snakeID = id;
         initializeArrayList(list);
+        startingNnodes = NODES / 100;
+        alive = true;
+        this.calcCentroid();
+    }
+
+    /**
+     * Construct Snake object from X and Y arrays
+     * 
+     * @param X x coordinates of nodes
+     * @param Y y coordinates of nodes
+     * @param id id of Snake
+     * @throws Exception
+     */
+    public Snake(final double X[], final double Y[], int id) throws Exception {
+        snakeID = id;
+        initializeArray(X, Y);
         startingNnodes = NODES / 100;
         alive = true;
         this.calcCentroid();
@@ -330,10 +347,10 @@ public class Snake {
     /**
      * Initialize snake from List of Vector2d objects
      * 
-     * @param p
+     * @param p List as initializer of Snake
      * @throws Exception
      */
-    private void initializeArrayList(final List<Point2d> p) throws Exception {
+    private void initializeArrayList(final List<? extends Tuple2d> p) throws Exception {
         head = new Node(0);
         NODES = 1;
         FROZEN = 0;
@@ -342,8 +359,37 @@ public class Snake {
         head.setHead(true);
 
         Node node;
-        for (Point2d el : p) {
+        for (Tuple2d el : p) {
             node = new Node(el.getX(), el.getY(), nextTrackNumber++);
+            addNode(node);
+        }
+
+        removeNode(head);
+        this.makeAntiClockwise();
+        updateNormales();
+    }
+
+    /**
+     * Initialize snake from X, Y arrays
+     * 
+     * @param X x coordinates of nodes
+     * @param Y y coordinates of nodes
+     * @throws Exception
+     */
+    private void initializeArray(final double X[], final double Y[]) throws Exception {
+        head = new Node(0);
+        NODES = 1;
+        FROZEN = 0;
+        head.setPrev(head);
+        head.setNext(head);
+        head.setHead(true);
+
+        if (X.length != Y.length)
+            throw new Exception("Lengths of X and Y arrays are not equal");
+
+        Node node;
+        for (int i = 0; i < X.length; i++) {
+            node = new Node(X[i], Y[i], nextTrackNumber++);
             addNode(node);
         }
 

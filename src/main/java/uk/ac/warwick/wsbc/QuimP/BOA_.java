@@ -1730,7 +1730,7 @@ public class BOA_ implements PlugIn {
                     qPcast.attachData(dataToProcess);
                     dataToProcess = qPcast.runPlugin();
                 }
-                // temporary conversion to Snake for ne interface
+                // temporary conversion to Snake for new interface
                 if (qP.getRef() instanceof IQuimpSnakeFilter) {
                     LOGGER.warn("Use new interface");
                     Snake tmp = new Snake(dataToProcess, snake.snakeID);

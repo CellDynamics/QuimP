@@ -41,7 +41,7 @@ is the same package on server already.
 # To make local copies of project repos they must be cloned from master repository
 # Currently it is assumed that master repo is on local computer
 #
-# git clone -b develop --single-branch /home/baniuk/Documents/Repos/HatSnakeFilter_quimp
+# git clone /home/baniuk/Documents/Repos/HatSnakeFilter_quimp
 # .....
 # .....
 
@@ -52,6 +52,9 @@ is the same package on server already.
 
 # On serverside must exist file hashlist and this file must be related to diectory content
 # (file may be empty on beginig) It can not be edited outside
+
+# assumes one parameter - name of branch to build snapshot from
+# If there is no parameter by default the develop branch is taken
 
 WORKING_DIR='/home/baniuk/tmp'
 TMP_DIR='/tmp/bin'
@@ -67,12 +70,20 @@ mabort()
     echo "An error occurred. Exiting..." >&2
     exit 1
 }
+
+if [ "$#" -ne 1 ]; then
+    BRANCH="develop"
+else
+    BRANCH="$1"
+fi
+
 cd "$WORKING_DIR"
 # Assume that there are only repos
 # Go through and pull changes
 for d in */ ; do
     cd "$d" # go to repo
-    git checkout develop &>/dev/null
+    git fetch --all
+    git checkout $BRANCH &>/dev/null
     git pull # update repo
     cd ../
 done
@@ -159,7 +170,6 @@ echo >&2 '
 *** DONE *** 
 ************
 '
-
 ```  
 
 # Generate documentation {#gendoc}
