@@ -1667,7 +1667,8 @@ public class BOA_ implements PlugIn {
                             sH.backupLiveSnake(boaState.frame);
                             nest.kill(sH);
                             snake.defreeze();
-                            BOA_.log("Snake " + snake.snakeID + " died, frame " + boaState.frame);
+                            BOA_.log("Snake " + snake.getSnakeID() + " died, frame "
+                                    + boaState.frame);
                             boap.SEGrunning = false;
                             if (nest.allDead()) {
                                 throw new BoaException("All snakes dead: " + be.getMessage(),
@@ -1755,7 +1756,7 @@ public class BOA_ implements PlugIn {
                     if (previousConversion == ipoint) { // previous was IQuimpPoint2dFilter
                         // and data must be converted to snake from dataToProcess
                         snakeToProcess =
-                                new QuimpDataConverter(dataToProcess).getSnake(snake.snakeID);
+                                new QuimpDataConverter(dataToProcess).getSnake(snake.getSnakeID());
                     }
                     IQuimpSnakeFilter qPcast = (IQuimpSnakeFilter) qP.getRef();
                     qPcast.attachData(snakeToProcess);
@@ -1767,10 +1768,11 @@ public class BOA_ implements PlugIn {
             // must be converted to snake
             switch (previousConversion) {
                 case ipoint: // last plugin was IQuimpPoint2dFilter - convert to Snake
-                    outsnake = new QuimpDataConverter(dataToProcess).getSnake(snake.snakeID);
+                    outsnake = new QuimpDataConverter(dataToProcess).getSnake(snake.getSnakeID());
                     break;
                 case isnake: // last plugin was IQuimpSnakeFilter - do not convert
                     outsnake = snakeToProcess;
+                    outsnake.setSnakeID(snake.getSnakeID()); // copy old id in case if user forgot
                     break;
             }
         } else
@@ -2217,7 +2219,7 @@ class ImageGroup {
                 overlay.add(r);
                 x = (int) Math.round(snake.getCentroid().getX()) - 15;
                 y = (int) Math.round(snake.getCentroid().getY()) - 15;
-                text = new TextRoi(x, y, "   " + snake.snakeID);
+                text = new TextRoi(x, y, "   " + snake.getSnakeID());
                 overlay.add(text);
 
                 // draw centre point
@@ -2423,7 +2425,7 @@ class ImageGroup {
                     x = (int) Math.round(snake.getHead().getX()) - 15;
                     y = (int) Math.round(snake.getHead().getY()) - 15;
                     ip.moveTo(x, y);
-                    ip.drawString("   " + snake.snakeID);
+                    ip.drawString("   " + snake.getSnakeID());
                 }
             }
         }

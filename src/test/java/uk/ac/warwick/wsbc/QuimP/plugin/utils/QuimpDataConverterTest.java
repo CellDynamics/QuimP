@@ -71,7 +71,7 @@ public class QuimpDataConverterTest {
         assertArrayEquals(X, dc.getX(), 1e-5);
         assertArrayEquals(Y, dc.getY(), 1e-5);
         assertEquals(list, dc.getList());
-        Snake s = dc.getSnake(snake.snakeID);
+        Snake s = dc.getSnake(snake.getSnakeID());
         Node n = s.getHead();
         int i = 0;
         do {
@@ -94,7 +94,7 @@ public class QuimpDataConverterTest {
         assertArrayEquals(X, dc.getX(), 1e-5);
         assertArrayEquals(Y, dc.getY(), 1e-5);
         assertEquals(list, dc.getList());
-        Snake s = dc.getSnake(snake.snakeID);
+        Snake s = dc.getSnake(snake.getSnakeID());
         Node n = s.getHead();
         int i = 0;
         do {
@@ -117,7 +117,7 @@ public class QuimpDataConverterTest {
         assertArrayEquals(X, dc.getX(), 1e-5);
         assertArrayEquals(Y, dc.getY(), 1e-5);
         assertEquals(list, dc.getList());
-        Snake s = dc.getSnake(snake.snakeID);
+        Snake s = dc.getSnake(snake.getSnakeID());
         Node n = s.getHead();
         int i = 0;
         do {
@@ -141,7 +141,7 @@ public class QuimpDataConverterTest {
         assertEquals(0, dc.getX().length);
         assertEquals(0, dc.getY().length);
         assertEquals(true, dc.getList().isEmpty());
-        Snake s = dc.getSnake(snake.snakeID);
+        Snake s = dc.getSnake(snake.getSnakeID());
         assertEquals(null, s);
     }
 
@@ -157,7 +157,7 @@ public class QuimpDataConverterTest {
         assertEquals(0, dc.getX().length);
         assertEquals(0, dc.getY().length);
         assertEquals(true, dc.getList().isEmpty());
-        Snake s = dc.getSnake(snake.snakeID);
+        Snake s = dc.getSnake(snake.getSnakeID());
         assertEquals(null, s);
     }
 
@@ -173,7 +173,7 @@ public class QuimpDataConverterTest {
         assertEquals(0, dc.getX().length);
         assertEquals(0, dc.getY().length);
         assertEquals(true, dc.getList().isEmpty());
-        Snake s = dc.getSnake(snake.snakeID);
+        Snake s = dc.getSnake(snake.getSnakeID());
         assertEquals(null, s);
     }
 

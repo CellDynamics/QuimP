@@ -32,7 +32,7 @@ public class Snake {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Snake.class.getName());
     public boolean alive; // snake is alive
-    public int snakeID;
+    private int snakeID;
     private int nextTrackNumber = 1; // node ID's
     private Node head; // first node in bidirectional linked list, always
                        // maintained
@@ -200,6 +200,21 @@ public class Snake {
         startingNnodes = NODES / 100;
         alive = true;
         this.calcCentroid();
+    }
+
+    /**
+     * @return the snakeID
+     */
+    public int getSnakeID() {
+        return snakeID;
+    }
+
+    /**
+     * @param snakeID the snakeID to set
+     * @warning Should be used carefully
+     */
+    protected void setSnakeID(int snakeID) {
+        this.snakeID = snakeID;
     }
 
     /**
