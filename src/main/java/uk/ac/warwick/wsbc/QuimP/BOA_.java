@@ -92,6 +92,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpSnakeFilter;
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 
 /**
  * Main class implementing BOA plugin.
@@ -1708,42 +1709,74 @@ public class BOA_ implements PlugIn {
      * Process \c Snake by all active plugins. Processed \c Snake is returned as new Snake with
      * the same ID. Input snake is not modified. For empty plugin list it just return input snake
      *
+     * This method supports two interfaces:
+     * -# IQuimpPoint2dFilter
+     * -# IQuimpSnakeFilter
+     * 
+     * It uses smart method to detect which interface is used for every slot to avoid unnecessary
+     * conversion between data. \c previousConversion keeps what interface was used on previous
+     * slot in plugin stack. Then for every plugin data are converted if current plugin differs
+     * from previous one. Converted data are kept in \c snakeToProcess and \c dataToProcess
+     * but only one of these variables is valid in given time. Finally after last plugin 
+     * data are converted to Snake.
+     * 
      * @param snake snake to be processed
      * @return Processed snake or original input one when there is no plugin selected
      * @throws QuimpPluginException on plugin error
      * @throws Exception
-     * @todo FIXME Use nonoptimal two interfaces. Switch to one
      */
     private Snake iterateOverSnakePlugins(final Snake snake)
             throws QuimpPluginException, Exception {
-        Snake outsnake = snake;
+        final int ipoint = 0;
+        final int isnake = 1;
+        // type of previous plugin. Define if data should be converted for current plugin
+        int previousConversion = isnake; // IQuimpSnakeFilter is default interface
+        Snake outsnake = snake; // if there is no plugin just return input snake
+        Snake snakeToProcess = snake; // data to be processed, input snake on beginning
+        // data to process in format of list
+        List<Point2d> dataToProcess = null; // null but it will be overwritten in loop because first
+                                            // "if" fires always (previousConversion is set to
+                                            // isnake) on begining, if first plugin is ipoint type
         if (!boaState.snakePluginList.isRefListEmpty()) {
             LOGGER.debug("sPluginList not empty");
-            List<Point2d> dataToProcess = snake.asList();
-            for (Plugin qP : boaState.snakePluginList.getList()) {
+            for (Plugin qP : boaState.snakePluginList.getList()) { // iterate over list
                 if (!qP.isExecutable())
                     continue; // no plugin on this slot or not active
-                // because it is guaranteed by pluginFactory.getPluginNames(DOES_SNAKES) used
-                // when populating GUI names and boap.sPluginList in actionPerformed(ActionEvent e).
-                if (qP.getRef() instanceof IQuimpPoint2dFilter) {
+                if (qP.getRef() instanceof IQuimpPoint2dFilter) { // check interface type
+                    if (previousConversion == isnake) { // previous was IQuimpSnakeFilter
+                        dataToProcess = snakeToProcess.asList(); // and data needs to be converted
+                    }
                     IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP.getRef();
                     qPcast.attachData(dataToProcess);
-                    dataToProcess = qPcast.runPlugin();
+                    dataToProcess = qPcast.runPlugin(); // store result in input variable
+                    previousConversion = ipoint;
                 }
-                // temporary conversion to Snake for new interface
-                if (qP.getRef() instanceof IQuimpSnakeFilter) {
-                    LOGGER.warn("Use new interface");
-                    Snake tmp = new Snake(dataToProcess, snake.snakeID);
+                if (qP.getRef() instanceof IQuimpSnakeFilter) { // check interface type
+                    if (previousConversion == ipoint) { // previous was IQuimpPoint2dFilter
+                        // and data must be converted to snake from dataToProcess
+                        snakeToProcess =
+                                new QuimpDataConverter(dataToProcess).getSnake(snake.snakeID);
+                    }
                     IQuimpSnakeFilter qPcast = (IQuimpSnakeFilter) qP.getRef();
-                    qPcast.attachData(tmp);
-                    Snake retTmp = qPcast.runPlugin();
-                    dataToProcess = retTmp.asList();
+                    qPcast.attachData(snakeToProcess);
+                    snakeToProcess = qPcast.runPlugin(); // store result as snake for next plugin
+                    previousConversion = isnake;
                 }
             }
-            outsnake = new Snake(dataToProcess, snake.snakeID);
+            // after loop previousConversion point what plugin was last and actual data
+            // must be converted to snake
+            switch (previousConversion) {
+                case ipoint: // last plugin was IQuimpPoint2dFilter - convert to Snake
+                    outsnake = new QuimpDataConverter(dataToProcess).getSnake(snake.snakeID);
+                    break;
+                case isnake: // last plugin was IQuimpSnakeFilter - do not convert
+                    outsnake = snakeToProcess;
+                    break;
+            }
         } else
             LOGGER.debug("sPluginList empty");
         return outsnake;
+
     }
 
     private void tightenSnake(final Snake snake) throws BoaException {

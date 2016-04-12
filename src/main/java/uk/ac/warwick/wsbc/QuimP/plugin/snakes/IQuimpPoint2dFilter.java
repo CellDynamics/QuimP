@@ -14,9 +14,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * @see @ref SnakePlugin
  * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
  * @todo TODO Replace in future by IQuimpSnakeFilter
- * @deprecated This interface is replaced by {@link IQuimpSnakeFilter}
  */
-@Deprecated
 public interface IQuimpPoint2dFilter extends IQuimpPlugin {
 
     /**

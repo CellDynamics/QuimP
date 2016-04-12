@@ -1,7 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.vecmath.Point2d;
@@ -25,14 +24,23 @@ public class QuimpDataConverter {
     private double[] X; /*!< extracted x coords from Vec2d */
     private double[] Y; /*!< extracted y coords from Vec2d */
 
+    public QuimpDataConverter() {
+        points = new ArrayList<Point2d>();
+        X = new double[0];
+        Y = new double[0];
+    }
+
     /**
      * Default constructor if Node list is in form of List
      * 
      * @param input list of vertices
      */
     public QuimpDataConverter(final List<? extends Tuple2d> input) {
-        this.points = input;
-        toArrays();
+        this();
+        if (input != null) {
+            this.points = input;
+            toArrays();
+        }
     }
 
     /**
@@ -53,8 +61,11 @@ public class QuimpDataConverter {
      * @param s Snake to be converted
      */
     public QuimpDataConverter(final Snake s) {
-        points = s.asList();
-        toArrays();
+        this();
+        if (s != null) {
+            points = s.asList();
+            toArrays();
+        }
     }
 
     /**
@@ -63,12 +74,17 @@ public class QuimpDataConverter {
      */
     private void toArrays() {
         int i = 0;
-        X = new double[points.size()];
-        Y = new double[points.size()];
-        for (Tuple2d el : points) {
-            X[i] = el.getX();
-            Y[i] = el.getY();
-            i++;
+        if (points != null) {
+            X = new double[points.size()];
+            Y = new double[points.size()];
+            for (Tuple2d el : points) {
+                X[i] = el.getX();
+                Y[i] = el.getY();
+                i++;
+            }
+        } else {
+            X = new double[0];
+            Y = new double[0];
         }
     }
 
@@ -101,7 +117,7 @@ public class QuimpDataConverter {
         for (int i = 0; i < X.length; i++)
             list.add(new Point2d(X[i], Y[i]));
         points = list;
-        return Collections.unmodifiableList(list);
+        return list;
     }
 
     /**
@@ -145,7 +161,10 @@ public class QuimpDataConverter {
      * @throws Exception
      */
     public Snake getSnake(int id) throws Exception {
-        return new Snake(X, Y, id);
+        if (X.length == 0 || Y.length == 0)
+            return null;
+        else
+            return new Snake(X, Y, id);
     }
 
 }

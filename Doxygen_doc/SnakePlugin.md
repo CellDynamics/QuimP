@@ -48,8 +48,11 @@ changing plugin names to their binary reference.
 3. uk.ac.warwick.wsbc.QuimP.Serializer - this class is used during storing plugin 
 stack configuration. Include \ref uk.ac.warwick.wsbc.QuimP.SnakePluginList SnakePluginList and add
 extra fields related to QuimP version 
-4. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(final Snake) - Main runner of plugin stack
-5. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent) - creator of 
+4. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(final Snake) - Run plugin stack on input Snake
+Takes care about converting data between supported interfaces
+5. uk.ac.warwick.wsbc.QuimP.BOA_.recalculatePlugins() - Run plugin stack (iterateOverSnakePlugins(final Snake))
+but also updates screen and takes care about storing processed snakes in storage (see @ref td) 
+6. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent) - creator of 
 plugins - call other methods related to \ref uk.ac.warwick.wsbc.QuimP.SnakePluginList SnakePluginList
 class
 
@@ -312,7 +315,7 @@ end note
 partition iterateOverSnakePlugins {
 :c = snake;
 if (is any plugin selected) then (true)
-note left: There is any instance in BOAp.sPluginList\ncreated on **Select Plugin**
+note left: There is any instance in BOAp.sPluginList\ncreated on **Select Plugin**\nThis branch supports various interfaces
 while (for every Plugin)
 if (if is **not** null\nif is **active**) then (true)
 :attach data;

@@ -129,4 +129,52 @@ public class QuimpDataConverterTest {
 
     }
 
+    /**
+     * @test testConversion_4
+     * @pre snake null on input
+     * @throws Exception
+     */
+    @Test
+    public void testConversion_4() throws Exception {
+        Snake input = null;
+        QuimpDataConverter dc = new QuimpDataConverter(input);
+        assertEquals(0, dc.getX().length);
+        assertEquals(0, dc.getY().length);
+        assertEquals(true, dc.getList().isEmpty());
+        Snake s = dc.getSnake(snake.snakeID);
+        assertEquals(null, s);
+    }
+
+    /**
+     * @test testConversion_5
+     * @pre list null on input
+     * @throws Exception
+     */
+    @Test
+    public void testConversion_5() throws Exception {
+        ArrayList<Point2d> input = null;
+        QuimpDataConverter dc = new QuimpDataConverter(input);
+        assertEquals(0, dc.getX().length);
+        assertEquals(0, dc.getY().length);
+        assertEquals(true, dc.getList().isEmpty());
+        Snake s = dc.getSnake(snake.snakeID);
+        assertEquals(null, s);
+    }
+
+    /**
+     * @test testConversion_6
+     * @pre list o len on input
+     * @throws Exception
+     */
+    @Test
+    public void testConversion_6() throws Exception {
+        ArrayList<Point2d> input = new ArrayList<>();
+        QuimpDataConverter dc = new QuimpDataConverter(input);
+        assertEquals(0, dc.getX().length);
+        assertEquals(0, dc.getY().length);
+        assertEquals(true, dc.getList().isEmpty());
+        Snake s = dc.getSnake(snake.snakeID);
+        assertEquals(null, s);
+    }
+
 }
