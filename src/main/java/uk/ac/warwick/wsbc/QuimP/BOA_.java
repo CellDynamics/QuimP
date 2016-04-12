@@ -2203,14 +2203,14 @@ class ImageGroup {
             if (sH.isStoredAt(frame)) { // is there a snake a;t f?
                 // plot segmented snake
                 if (BOA_.boap.isProcessedSnakePlotted == true) {
-                    back = sH.getBackupSnake(frame);
+                    back = sH.getBackupSnake(frame); // original unmodified snake
                     // Roi r = snake.asRoi();
                     r = back.asFloatRoi();
                     r.setStrokeColor(Color.RED);
                     overlay.add(r);
                 }
                 // plot segmented and filtered snake
-                snake = sH.getStoredSnake(frame);
+                snake = sH.getStoredSnake(frame); // processed by plugins
                 // Roi r = snake.asRoi();
                 r = snake.asFloatRoi();
                 r.setStrokeColor(Color.YELLOW);
@@ -2229,17 +2229,23 @@ class ImageGroup {
                 if (BOA_.boap.isHeadPlotted == true) {
                     // base point = 0 node
                     Point2d bp = new Point2d(snake.getHead().getX(), snake.getHead().getY());
-                    // create direction vector - use third point after 0 node
+
+                    // Plot Arrow mounted in 0 node and pointing direction of Snake
                     Vector2d dir = new Vector2d(
                             snake.getHead().getNext().getNext().getNext().getX() - bp.getX(),
                             snake.getHead().getNext().getNext().getNext().getY() - bp.getY());
-                    // FloatPolygon fp = GraphicsElements.plotArrow(dir, bp, 15.0f, 0.4f);
-
-                    FloatPolygon fp = GraphicsElements.plotCircle(bp, 10);
+                    FloatPolygon fp = GraphicsElements.plotArrow(dir, bp, 12.0f, 0.3f);
                     PolygonRoi oR = new PolygonRoi(fp, Roi.POLYGON);
-                    oR.setStrokeColor(Color.GREEN);
-                    oR.setFillColor(Color.GREEN);
+                    oR.setStrokeColor(Color.MAGENTA);
+                    oR.setFillColor(Color.MAGENTA);
                     overlay.add(oR);
+
+                    // plot circle on head
+                    FloatPolygon fp1 = GraphicsElements.plotCircle(bp, 10);
+                    PolygonRoi oR1 = new PolygonRoi(fp1, Roi.POLYGON);
+                    oR1.setStrokeColor(Color.GREEN);
+                    oR1.setFillColor(Color.GREEN);
+                    overlay.add(oR1);
                 }
 
             }
@@ -2883,7 +2889,7 @@ class Constrictor {
 }
 
 /**
- * Represent collection of Snakes
+ * Represents collection of Snakes
  * 
  * @author rtyson
  *
