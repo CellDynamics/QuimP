@@ -15,12 +15,9 @@ public class Vert {
     private ExtendedVector2d normal; // normals
     private ExtendedVector2d tan;
     public double charge; // charge on the vertex
-    public double distance; // distance vert migrated (actually converted to
-                            // speed by Tool.speedToScale
-
-    final FluoMeasurement[] fluores; // fluorescence channels 1-3. Intensity and
-                                     // location
-
+    public double distance; // distance vert migrated (actually converted to speed by
+                            // Tool.speedToScale
+    final FluoMeasurement[] fluores; // fluorescence channels 1-3. Intensity and location
     // public double curvatureOLD;
     // public double convexityOLD; // curvature, but may be a smoothed value
     public double curvatureLocal; // curvature local to a node
@@ -96,8 +93,8 @@ public class Vert {
     }
 
     public void print(String s) {
-        System.out.print(s + "vert: " + tracknumber + ", x:" + getX() + ", y:" + getY() + ", coord: " + coord
-                + ", fCoord: " + fCoord + ", gCoord: " + gCoord);
+        System.out.print(s + "vert: " + tracknumber + ", x:" + getX() + ", y:" + getY()
+                + ", coord: " + coord + ", fCoord: " + fCoord + ", gCoord: " + gCoord);
         if (intPoint)
             System.out.print(", isIntPoint (" + intsectID + ")");
         if (head)
@@ -274,8 +271,8 @@ public class Vert {
         fLandCoord = calcLanding(edge.coord, edge2.coord, prop);
 
         if (gLandCoord >= 1 || gLandCoord < 0 || fLandCoord >= 1 || fLandCoord < 0) {
-            System.out.println("Vert253:setLandingCoord-Error in landing coord\n\t" + "gLandCoord= " + gLandCoord
-                    + ", fLandCoord = " + fLandCoord);
+            System.out.println("Vert253:setLandingCoord-Error in landing coord\n\t" + "gLandCoord= "
+                    + gLandCoord + ", fLandCoord = " + fLandCoord);
 
         }
 
@@ -314,16 +311,19 @@ public class Vert {
         }
 
         if (landing < 0 || landing >= 1 || Double.isNaN(landing)) {
-            System.out.println("Vert295:calcLanding ERROR in landing coord:\n\t" + "landing:" + IJ.d2s(landing)
-                    + ", coordA=" + coordA + ", coorB=" + coordB + ", proportion=" + prop);
+            System.out.println(
+                    "Vert295:calcLanding ERROR in landing coord:\n\t" + "landing:" + IJ.d2s(landing)
+                            + ", coordA=" + coordA + ", coorB=" + coordB + ", proportion=" + prop);
         }
         return landing;
     }
 
     public void calcCurvatureLocal() {
 
-        ExtendedVector2d edge1 = ExtendedVector2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
-        ExtendedVector2d edge2 = ExtendedVector2d.vecP2P(this.getPoint(), this.getNext().getPoint());
+        ExtendedVector2d edge1 =
+                ExtendedVector2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
+        ExtendedVector2d edge2 =
+                ExtendedVector2d.vecP2P(this.getPoint(), this.getNext().getPoint());
 
         double angle = ExtendedVector2d.angle(edge1, edge2) * (180 / Math.PI); // convert
                                                                                // to

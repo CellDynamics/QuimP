@@ -34,7 +34,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     JButton button = null;
 
     public void run(String s) {
-        title = "QuimP11 bar";
+        title = "QuimP 16.03.17 bar";
         name = "quimpBar";
 
         frame.setTitle(title);

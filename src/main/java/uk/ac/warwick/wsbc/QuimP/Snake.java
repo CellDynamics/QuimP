@@ -34,8 +34,7 @@ public class Snake {
     public boolean alive; // snake is alive
     private int snakeID;
     private int nextTrackNumber = 1; // node ID's
-    private Node head; // first node in bidirectional linked list, always
-                       // maintained
+    private Node head; // first node in bidirectional linked list, always maintained
     private int NODES; // number of nodes
     public double startingNnodes; // how many nodes at start of segmentation
     // used as a reference for node limit

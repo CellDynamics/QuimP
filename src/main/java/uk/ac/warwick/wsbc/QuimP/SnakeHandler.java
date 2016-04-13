@@ -102,7 +102,6 @@ public class SnakeHandler {
     }
 
     public boolean writeSnakes() throws Exception {
-
         String saveIn = BOA_.boap.orgFile.getParent();
         // System.out.println(boap.orgFile.getParent());
         // if (!boap.orgFile.exists()) {
@@ -379,7 +378,8 @@ public class SnakeHandler {
     /**
      * Prepare current frame \c for segmentation
      * 
-     * Create \c liveSnake using final snake stored in previous frame
+     * Create \c liveSnake using final snake stored in previous frame or use original ROI for
+     * creating new Snake
      * 
      * @param f Current segmented frame
      */

@@ -23,8 +23,7 @@ public class Node {
     private ExtendedVector2d F_total; // total force at node
     private ExtendedVector2d prelimPoint; // point to move node to after all new
                                           // node positions have been calc
-    private boolean frozen; // flag which is set when the velocity is below the
-                            // critical velocity
+    private boolean frozen; // flag which is set when the velocity is below the critical velocity
     private int tracknumber;
     double position = -1; // position value.
     private Node prev; // predecessor to current node
@@ -60,13 +59,19 @@ public class Node {
         // colour = QColor.lightColor();
     }
 
+    /**
+     * \c point getter
+     * @return X space co-ordinate
+     */
     public double getX() {
-        // get X space co-ordinate
         return point.getX();
     }
 
+    /**
+     * \c point getter
+     * @return Y space co-ordinate
+     */
     public double getY() {
-        // get X space co-ordinate
         return point.getY();
     }
 
@@ -241,6 +246,14 @@ public class Node {
         return head;
     }
 
+    /**
+     * Set head marker to current node
+     * 
+     * @param t \c true if current node is head, \c false otherwise
+     * @warning Only one Node in Snake can be head
+     * @see uk.ac.warwick.wsbc.QuimP.Snake.setNewHead(int)
+     * @see uk.ac.warwick.wsbc.QuimP.Snake
+     */
     public void setHead(boolean t) {
         head = t;
     }
@@ -341,6 +354,11 @@ public class Node {
         return curvatureLocal;
     }
 
+    /**
+     * Current Node as String
+     * 
+     * @return String representation of Node
+     */
     public String toString() {
         String str;
         // str = "[" + this.getX() + "," + this.getY() + "] " + "head is " + head + " next:"

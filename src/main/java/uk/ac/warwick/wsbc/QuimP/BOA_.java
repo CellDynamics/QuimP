@@ -1145,8 +1145,7 @@ public class BOA_ implements PlugIn {
                     IJ.setTool(Toolbar.LINE);
                     if (nest.size() == 1)
                         editSeg(0, 0, boaState.frame); // if only 1 snake go straight to edit, if
-                                                       // more user
-                    // must pick one
+                                                       // more user must pick one
                 } else {
                     boap.editMode = false;
                     if (boap.editingID != -1) {
@@ -1238,7 +1237,7 @@ public class BOA_ implements PlugIn {
                         ".pgQP");
                 if (sd.getFileName() != null) {
                     try {
-                        // Create Serialization object wit extra info layer
+                        // Create Serialization object with extra info layer
                         Serializer<SnakePluginList> s;
                         s = new Serializer<>(boaState.snakePluginList, quimpInfo);
                         s.setPretty(); // set pretty format
@@ -1265,7 +1264,7 @@ public class BOA_ implements PlugIn {
                         loaded = s.load(od.getDirectory() + od.getFileName());
                         // restore loaded objects
                         boaState.snakePluginList.clear(); // closes windows, etc
-                        boaState.snakePluginList = loaded.obj; // replace with fres instance
+                        boaState.snakePluginList = loaded.obj; // replace with fresh instance
                         updateCheckBoxes(); // update checkboxes
                         updateChoices(); // and choices
                         recalculatePlugins(); // and screen
@@ -3151,7 +3150,7 @@ class BOAp {
     boolean SEGrunning; /*!< is seg running */
 
     /**
-     * Hold user parameters of segmentation
+     * Hold user parameters for segmentation algorithm
      * 
      * @author p.baniukiewicz
      * @date 30 Mar 2016
