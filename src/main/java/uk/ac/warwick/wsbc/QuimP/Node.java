@@ -15,13 +15,11 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @author rtyson
  *
  */
-public class Node extends BidirectionalList<Node> {
+public class Node extends BiListofPoints<Node> {
     private ExtendedVector2d vel; // velocity of the nodes
     private ExtendedVector2d F_total; // total force at node
     private ExtendedVector2d prelimPoint; // point to move node to after all new
                                           // node positions have been calc
-    private boolean frozen = false; // flag which is set when the velocity is below the critical
-                                    // velocity
     double position = -1; // position value.
 
     public Node(int t) {
@@ -113,14 +111,6 @@ public class Node extends BidirectionalList<Node> {
 
     public void unfreeze() {
         frozen = false;
-    }
-
-    public static void randDirection() {
-        if (Math.random() < 0.5) {
-            clockwise = true;
-        } else {
-            clockwise = false;
-        }
     }
 
     public double getCurvatureLocal() {

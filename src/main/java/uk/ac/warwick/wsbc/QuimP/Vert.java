@@ -10,23 +10,15 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * 
  * @author rtyson
  */
-public class Vert {
-    private ExtendedVector2d point; // x,y co-ordinates of the node
-    private ExtendedVector2d normal; // normals
-    private ExtendedVector2d tan;
+public class Vert extends BiListofPoints<Vert> {
     public double charge; // charge on the vertex
     public double distance; // distance vert migrated (actually converted to speed by
                             // Tool.speedToScale
     final FluoMeasurement[] fluores; // fluorescence channels 1-3. Intensity and location
-    // public double curvatureOLD;
-    // public double convexityOLD; // curvature, but may be a smoothed value
     public double curvatureLocal; // curvature local to a node
     public double curvatureSmoothed; // smoothed curvature
     public double curvatureSum; // summed curvature over x microns
                                 // this is the value recorded into maps
-
-    private int tracknumber;
-    public boolean frozen;
 
     public double coord; // co-ord relative to head node on current frame
     public double fCoord; // coor relative to coord on previous frame
@@ -38,9 +30,6 @@ public class Vert {
 
     public QColor color;
 
-    private Vert prev;
-    private Vert next;
-    private boolean head;
     private boolean intPoint; // vert represents an intersect point and is
                               // temporary. Mark start end of sectors
     public boolean snapped; // the vert has been snapped to an edge
@@ -50,18 +39,10 @@ public class Vert {
                           // 2-LOOSE sector; 3-forms inverted sector; 4-inverted
                           // and loose
 
-    private static boolean clockwise = true; // access clockwise if true
-
     public Vert(int t) {
-        // t = tracking number
-        point = new ExtendedVector2d();
-        normal = new ExtendedVector2d();
-        tan = new ExtendedVector2d();
-        head = false;
+        super(t);
         intPoint = false;
         intState = 0;
-        tracknumber = t;
-        frozen = false;
         fCoord = -1;
         gCoord = -1;
 
@@ -74,11 +55,7 @@ public class Vert {
     }
 
     public Vert(double xx, double yy, int t) {
-        point = new ExtendedVector2d(xx, yy);
-        tracknumber = t;
-        normal = new ExtendedVector2d();
-        tan = new ExtendedVector2d();
-        head = false;
+        super(xx, yy, t);
         intPoint = false;
         intState = 0;
         gCoord = -1;
@@ -102,154 +79,14 @@ public class Vert {
         System.out.println("");
     }
 
-    public double getX() {
-        // get X space co-ordinate
-        return point.getX();
-    }
-
-    public double getY() {
-        // get X space co-ordinate
-        return point.getY();
-    }
-
-    public void setX(double x) {
-        // set X space co-ordinate
-        point.setX(x);
-    }
-
-    public void setY(double y) {
-        // set X space co-ordinate
-        point.setY(y);
-    }
-
-    public Vert getPrev() {
-        // get next node in chain (prev if not clockwise)
-        if (clockwise) {
-            return prev;
-        } else {
-            return next;
-        }
-    }
-
-    public Vert getNext() {
-        // get prev node in chain (next if not clockwise)
-        if (clockwise) {
-            return next;
-        } else {
-            return prev;
-        }
-    }
-
-    public void setPrev(Vert n) {
-        if (clockwise) {
-            prev = n;
-        } else {
-            next = n;
-        }
-    }
-
-    public void setNext(Vert n) {
-        if (clockwise) {
-            next = n;
-        } else {
-            prev = n;
-        }
-    }
-
-    public static void setClockwise(boolean b) {
-        Vert.clockwise = b;
-    }
-
-    public ExtendedVector2d getPoint() {
-        return point;
-    }
-
-    public ExtendedVector2d getNormal() {
-        return normal;
-    }
-
-    public void setNormal(double x, double y) {
-        normal.setX(x);
-        normal.setY(y);
-    }
-    //
-
-    public ExtendedVector2d getTangent() {
-        return tan;
-    }
-
-    public int getTrackNum() {
-        return tracknumber;
-    }
-
-    public void setTrackNum(int b) {
-        tracknumber = b;
-    }
-
-    public boolean isHead() {
-        return head;
-    }
-
     public boolean isIntPoint() {
         return intPoint;
-    }
-
-    public void setHead(boolean t) {
-        head = t;
     }
 
     public void setIntPoint(boolean t, int i) {
         intPoint = t;
         intsectID = i;
         tracknumber = -1;
-    }
-
-    public void updateNormale(boolean inner) {
-        // updates the normal (must point inwards)
-        clockwise = true; // just in case
-        tan = calcTan(); // tangent
-
-        // inner norma X = -ve Y, Y = +ve X
-        // inner norma X = +ve Y, Y = -ve X //
-
-        if (!inner) { // switch around if expanding snake
-            normal.setX(-tan.getY());
-            normal.setY(tan.getX());
-        } else {
-            normal.setX(tan.getY());
-            normal.setY(-tan.getX());
-        }
-    }
-
-    private ExtendedVector2d calcTan() {
-        // calulate tangent at Vert n (i.e. unit vector between neighbours)
-        // calc a unit vector towards neighbouring nodes and then a unit vec
-        // between their ends
-        // direction important for normale calculation. Always calc tan as if
-        // clockwise
-
-        ExtendedVector2d unitVecLeft = ExtendedVector2d.unitVector(point, prev.getPoint());
-        ExtendedVector2d unitVecRight = ExtendedVector2d.unitVector(point, next.getPoint());
-
-        ExtendedVector2d pointLeft = new ExtendedVector2d();
-        pointLeft.setX(getX());
-        pointLeft.setY(getY());
-        pointLeft.addVec(unitVecLeft);
-
-        ExtendedVector2d pointRight = new ExtendedVector2d();
-        pointRight.setX(getX());
-        pointRight.setY(getY());
-        pointRight.addVec(unitVecRight);
-
-        return ExtendedVector2d.unitVector(pointLeft, pointRight);
-    }
-
-    public static void randDirection() {
-        if (Math.random() < 0.5) {
-            clockwise = true;
-        } else {
-            clockwise = false;
-        }
     }
 
     public void setLandingCoord(ExtendedVector2d p, Vert edge) {

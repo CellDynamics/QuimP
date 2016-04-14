@@ -2,7 +2,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
-public abstract class BidirectionalList<T extends BidirectionalList<?>> {
+public abstract class BiListofPoints<T extends BiListofPoints<?>> {
     protected T prev;
     protected T next;
     protected ExtendedVector2d point; // x,y co-ordinates of the node
@@ -11,16 +11,18 @@ public abstract class BidirectionalList<T extends BidirectionalList<?>> {
     protected boolean head = false;
     protected static boolean clockwise = true; // access clockwise if true
     protected int tracknumber;
+    protected boolean frozen = false; // flag which is set when the velocity is below the critical
+                                      // velocity
 
-    public BidirectionalList(int t) {
+    public BiListofPoints(int t) {
         // t = tracking number
         point = new ExtendedVector2d();
         normal = new ExtendedVector2d();
         tan = new ExtendedVector2d();
-        tracknumber = t;
+        setTrackNum(t);
     }
 
-    public BidirectionalList(double xx, double yy, int t) {
+    public BiListofPoints(double xx, double yy, int t) {
         this(t);
         point = new ExtendedVector2d(xx, yy);
     }
@@ -60,7 +62,7 @@ public abstract class BidirectionalList<T extends BidirectionalList<?>> {
     }
 
     public static void setClockwise(boolean b) {
-        BidirectionalList.clockwise = b;
+        BiListofPoints.clockwise = b;
     }
 
     public ExtendedVector2d getPoint() {
@@ -81,6 +83,15 @@ public abstract class BidirectionalList<T extends BidirectionalList<?>> {
 
     public boolean isHead() {
         return head;
+    }
+
+    public void setNormal(double x, double y) {
+        normal.setX(x);
+        normal.setY(y);
+    }
+
+    public void setTrackNum(int b) {
+        tracknumber = b;
     }
 
     /**
@@ -149,13 +160,13 @@ public abstract class BidirectionalList<T extends BidirectionalList<?>> {
 
     /**
      * Updates the normal (must point inwards)
-         */
-    public void updateNormale() {
+     */
+    public void updateNormale(boolean inner) {
         boolean c = clockwise;
         clockwise = true; // just in case
         tan = calcTan(); // tangent
 
-        if (!BOA_.boap.segParam.expandSnake) { // switch around if expanding snake
+        if (!inner) { // switch around if expanding snake
             normal.setX(-tan.getY());
             normal.setY(tan.getX());
         } else {
@@ -174,7 +185,7 @@ public abstract class BidirectionalList<T extends BidirectionalList<?>> {
      * calculate tan as if clockwise
      *
      * @return Tangent at node
-         */
+     */
     private ExtendedVector2d calcTan() {
 
         ExtendedVector2d unitVecLeft = ExtendedVector2d.unitVector(point, prev.getPoint());
@@ -191,6 +202,14 @@ public abstract class BidirectionalList<T extends BidirectionalList<?>> {
         pointRight.addVec(unitVecRight);
 
         return ExtendedVector2d.unitVector(pointLeft, pointRight);
+    }
+
+    public static void randDirection() {
+        if (Math.random() < 0.5) {
+            clockwise = true;
+        } else {
+            clockwise = false;
+        }
     }
 
 }

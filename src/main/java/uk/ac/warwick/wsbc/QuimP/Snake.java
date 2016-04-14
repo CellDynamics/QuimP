@@ -578,8 +578,8 @@ public class Snake {
 
         NODES--;
 
-        n.getPrev().updateNormale();
-        n.getNext().updateNormale();
+        n.getPrev().updateNormale(BOA_.boap.segParam.expandSnake);
+        n.getNext().updateNormale(BOA_.boap.segParam.expandSnake);
         n = null; // FIXME Does it have meaning here?
     }
 
@@ -589,7 +589,7 @@ public class Snake {
     public void updateNormales() {
         Node n = head;
         do {
-            n.updateNormale();
+            n.updateNormale(BOA_.boap.segParam.expandSnake);
             n = n.getNext();
         } while (!n.isHead());
     }
@@ -704,8 +704,8 @@ public class Snake {
                     newN.setNext(nB.getNext());
                     nB.getNext().setPrev(newN);
 
-                    newN.updateNormale();
-                    nB.getNext().updateNormale();
+                    newN.updateNormale(BOA_.boap.segParam.expandSnake);
+                    nB.getNext().updateNormale(BOA_.boap.segParam.expandSnake);
 
                     // set velocity
                     newN.setVel(nB.getVel());
@@ -778,8 +778,8 @@ public class Snake {
                     newN.setNext(nB.getNext());
                     nB.getNext().setPrev(newN);
 
-                    newN.updateNormale();
-                    nB.getNext().updateNormale();
+                    newN.updateNormale(BOA_.boap.segParam.expandSnake);
+                    nB.getNext().updateNormale(BOA_.boap.segParam.expandSnake);
 
                     if (cutHead) {
                         newN.setHead(true); // put a new head in
@@ -851,8 +851,8 @@ public class Snake {
                     // right2 " + right2index + " interval " + i);
                     node1.setNext(right2);
                     right2.setPrev(node1);
-                    node1.updateNormale();
-                    right2.updateNormale();
+                    node1.updateNormale(BOA_.boap.segParam.expandSnake);
+                    right2.updateNormale(BOA_.boap.segParam.expandSnake);
                     NODES -= i + 1; // set number of nodes
 
                     if (ishead) {
@@ -918,10 +918,10 @@ public class Snake {
                 nIns.getPoint().setY(InsY);
 
                 // update normals of those nodes effected
-                nIns.updateNormale();
-                n.updateNormale();
-                n.getNext().updateNormale();
-                n.getNext().getNext().updateNormale();
+                nIns.updateNormale(BOA_.boap.segParam.expandSnake);
+                n.updateNormale(BOA_.boap.segParam.expandSnake);
+                n.getNext().updateNormale(BOA_.boap.segParam.expandSnake);
+                n.getNext().getNext().updateNormale(BOA_.boap.segParam.expandSnake);
                 n = nIns;
 
             } else if (Di < BOA_.boap.getMin_dist() && NODES >= 4) { // Minimum Nodes
@@ -989,17 +989,17 @@ public class Snake {
                     nC.getNormal().multiply(-tmp);
                     nC.getPoint().addVec(nC.getNormal());
 
-                    nC.updateNormale();
-                    nL.updateNormale();
-                    nR.updateNormale();
+                    nC.updateNormale(BOA_.boap.segParam.expandSnake);
+                    nL.updateNormale(BOA_.boap.segParam.expandSnake);
+                    nR.updateNormale(BOA_.boap.segParam.expandSnake);
                     this.unfreezeNode(nC);
 
                 } else {
                     // delete nC
                     // System.out.println("delete node");
                     removeNode(nC);
-                    nL.updateNormale();
-                    nR.updateNormale();
+                    nL.updateNormale(BOA_.boap.segParam.expandSnake);
+                    nR.updateNormale(BOA_.boap.segParam.expandSnake);
                     if (nR.isHead())
                         break;
                     nC = nR.getNext();
@@ -1024,15 +1024,15 @@ public class Snake {
 
                 nIns.setX(npos.getX());
                 nIns.setY(npos.getY());
-                nIns.updateNormale();
+                nIns.updateNormale(BOA_.boap.segParam.expandSnake);
                 if (shiftNewNode) {
                     nIns.getNormal().multiply(-2); // move out a bit
                     nIns.getPoint().addVec(nIns.getNormal());
-                    nIns.updateNormale();
+                    nIns.updateNormale(BOA_.boap.segParam.expandSnake);
                 }
-                nL.updateNormale();
-                nR.updateNormale();
-                nC.updateNormale();
+                nL.updateNormale(BOA_.boap.segParam.expandSnake);
+                nR.updateNormale(BOA_.boap.segParam.expandSnake);
+                nC.updateNormale(BOA_.boap.segParam.expandSnake);
 
             }
 

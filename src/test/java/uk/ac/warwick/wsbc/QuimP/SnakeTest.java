@@ -89,9 +89,7 @@ public class SnakeTest {
 
         PolygonRoi pr = new PolygonRoi(new FloatPolygon(x, y), Roi.POLYGON);
         Snake s = new Snake(pr, 1);
-        Node head = s.getHead();
         s.setNewHead(2);
-        // assertThat(head, not(s.getHead()));
         assertEquals(2, s.getHead().getTrackNum());
     }
 
