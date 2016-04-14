@@ -28,14 +28,11 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @author rtyson
  *
  */
-public class Snake {
+public class Snake extends Shape<Node> {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Snake.class.getName());
     public boolean alive; // snake is alive
     private int snakeID;
-    private int nextTrackNumber = 1; // node ID's
-    private Node head; // first node in bidirectional linked list, always maintained
-    private int NODES; // number of nodes
     public double startingNnodes; // how many nodes at start of segmentation
     // used as a reference for node limit
     private int FROZEN; // number of nodes frozen
@@ -52,12 +49,9 @@ public class Snake {
      * @throws Exception
      */
     public Snake(final Node h, int N, int id) throws BoaException {
-        //
+        super(h, N);
         snakeID = id;
-        head = h;
-        NODES = N;
         FROZEN = N;
-        nextTrackNumber = N + 1;
         // colour = QColor.lightColor();
         centroid = new ExtendedVector2d(0d, 0d);
         this.calcCentroid();
@@ -66,7 +60,7 @@ public class Snake {
         this.makeAntiClockwise();
         this.updateNormales();
         alive = true;
-        startingNnodes = NODES / 100.; // as 1%. limit to X%
+        startingNnodes = super.getNumPoints() / 100.; // as 1%. limit to X%
         // calcOrientation();
     }
 
@@ -100,9 +94,9 @@ public class Snake {
         head.setPrev(nn);
 
         snakeID = id;
-        NODES = snake.getNODES() + 1;
-        FROZEN = NODES;
-        nextTrackNumber = NODES + 1;
+        POINTS = snake.getNODES() + 1;
+        FROZEN = super.getNumPoints();
+        nextTrackNumber = super.getNumPoints() + 1;
         centroid = new ExtendedVector2d(0d, 0d);
         removeNode(head);
         this.makeAntiClockwise();
@@ -147,7 +141,7 @@ public class Snake {
 
             intializeOval(0, xc, yc, Rx, Ry, BOA_.boap.segParam.getNodeRes() / 2);
         }
-        startingNnodes = NODES / 100.; // as 1%. limit to X%
+        startingNnodes = super.getNumPoints() / 100.; // as 1%. limit to X%
         alive = true;
         // colour = QColor.lightColor();
         // calcOrientation();
@@ -163,7 +157,7 @@ public class Snake {
     public Snake(final PolygonRoi R, int id) throws Exception {
         snakeID = id;
         intializeFloat(R.getFloatPolygon());
-        startingNnodes = NODES / 100.; // as 1%. limit to X%
+        startingNnodes = super.getNumPoints() / 100.; // as 1%. limit to X%
         alive = true;
         // colour = QColor.lightColor();
         // calcOrientation();
@@ -180,7 +174,7 @@ public class Snake {
     public Snake(final List<? extends Tuple2d> list, int id) throws Exception {
         snakeID = id;
         initializeArrayList(list);
-        startingNnodes = NODES / 100;
+        startingNnodes = super.getNumPoints() / 100;
         alive = true;
         this.calcCentroid();
     }
@@ -196,7 +190,7 @@ public class Snake {
     public Snake(final double X[], final double Y[], int id) throws Exception {
         snakeID = id;
         initializeArray(X, Y);
-        startingNnodes = NODES / 100;
+        startingNnodes = super.getNumPoints() / 100;
         alive = true;
         this.calcCentroid();
     }
@@ -234,7 +228,7 @@ public class Snake {
      */
     private void intializeOval(int t, int xc, int yc, int Rx, int Ry, double s) throws Exception {
         head = new Node(t); // make a dummy head node for list initialization
-        NODES = 1;
+        POINTS = 1;
         FROZEN = 0;
         head.setPrev(head); // link head to itself
         head.setNext(head);
@@ -266,7 +260,7 @@ public class Snake {
     private void intializePolygon(final FloatPolygon p) throws Exception {
         // System.out.println("poly with node distance");
         head = new Node(0); // make a dummy head node for list initialization
-        NODES = 1;
+        POINTS = 1;
         FROZEN = 0;
         head.setPrev(head); // link head to itself
         head.setNext(head);
@@ -315,7 +309,7 @@ public class Snake {
     private void intializePolygonDirect(final FloatPolygon p) throws Exception {
         // System.out.println("poly direct");
         head = new Node(0); // make a dummy head node for list initialization
-        NODES = 1;
+        POINTS = 1;
         FROZEN = 0;
         head.setPrev(head); // link head to itself
         head.setNext(head);
@@ -341,7 +335,7 @@ public class Snake {
     private void intializeFloat(final FloatPolygon p) throws Exception {
         // System.out.println("poly direct");
         head = new Node(0); // make a dummy head node
-        NODES = 1;
+        POINTS = 1;
         FROZEN = 0;
         head.setPrev(head); // link head to itself
         head.setNext(head);
@@ -366,7 +360,7 @@ public class Snake {
      */
     private void initializeArrayList(final List<? extends Tuple2d> p) throws Exception {
         head = new Node(0);
-        NODES = 1;
+        POINTS = 1;
         FROZEN = 0;
         head.setPrev(head);
         head.setNext(head);
@@ -392,7 +386,7 @@ public class Snake {
      */
     private void initializeArray(final double X[], final double Y[]) throws Exception {
         head = new Node(0);
-        NODES = 1;
+        POINTS = 1;
         FROZEN = 0;
         head.setPrev(head);
         head.setNext(head);
@@ -413,7 +407,7 @@ public class Snake {
     }
 
     public void printSnake() {
-        System.out.println("Print Nodes (" + NODES + ")");
+        System.out.println("Print Nodes (" + super.getNumPoints() + ")");
         int i = 0;
         Node n = head;
         do {
@@ -424,18 +418,9 @@ public class Snake {
             n = n.getNext();
             i++;
         } while (!n.isHead());
-        if (i != NODES) {
+        if (i != super.getNumPoints()) {
             System.out.println("NODES and linked list dont tally!!");
         }
-    }
-
-    /**
-     * Get head of current Snake
-     * 
-     * @return Node representing head of Snake
-     */
-    public Node getHead() {
-        return head;
     }
 
     /**
@@ -464,7 +449,7 @@ public class Snake {
      * @return number of nodes in current Snake
      */
     public int getNODES() {
-        return NODES;
+        return super.getNumPoints();
     }
 
     /**
@@ -509,7 +494,7 @@ public class Snake {
      * @return \c true if all nodes are frozen
      */
     public boolean isFrozen() {
-        if (FROZEN == NODES) {
+        if (FROZEN == super.getNumPoints()) {
             return true;
         } else {
             return false;
@@ -542,7 +527,7 @@ public class Snake {
 
         head.setPrev(newNode);
         prevNode.setNext(newNode);
-        NODES++;
+        POINTS++;
     }
 
     /**
@@ -554,33 +539,14 @@ public class Snake {
      * @throws Exception
      */
     final public void removeNode(Node n) throws BoaException {
-        if (NODES <= 3) {
-            throw new BoaException(
-                    "removeNode: Did not remove node. " + NODES + " nodes remaining.", 0, 2);
+        if (super.getNumPoints() <= 3) {
+            throw new BoaException("removeNode: Did not remove node. " + super.getNumPoints()
+                    + " nodes remaining.", 0, 2);
         }
-
         if (n.isFrozen()) {
             FROZEN--;
         }
-        // removes node n and links neighbours together
-        n.getPrev().setNext(n.getNext());
-        n.getNext().setPrev(n.getPrev());
-
-        // if removing head randomly assign a neighbour as new head
-        if (n.isHead()) {
-            if (Math.random() <= 1.0) {
-                head = n.getNext();
-            } else {
-                head = n.getPrev();
-            }
-            head.setHead(true);
-        }
-
-        NODES--;
-
-        n.getPrev().updateNormale(BOA_.boap.segParam.expandSnake);
-        n.getNext().updateNormale(BOA_.boap.segParam.expandSnake);
-        n = null; // FIXME Does it have meaning here?
+        super.removePoint(n, BOA_.boap.segParam.expandSnake);
     }
 
     /**
@@ -614,8 +580,8 @@ public class Snake {
             cy += n.getY();
             n = n.getNext();
         } while (!n.isHead());
-        cx = cx / NODES;
-        cy = cy / NODES;
+        cx = cx / super.getNumPoints();
+        cy = cy / super.getNumPoints();
 
         intializeOval(nextTrackNumber, (int) cx, (int) cy, 4, 4, 1);
     }
@@ -686,7 +652,8 @@ public class Snake {
                                          // cross, but do touch
 
             // always leave 3 nodes, at least
-            interval = (NODES > MAXINTERVAL + 3) ? MAXINTERVAL : (NODES - 3);
+            interval = (super.getNumPoints() > MAXINTERVAL + 3) ? MAXINTERVAL
+                    : (super.getNumPoints() - 3);
 
             for (int i = 0; i < interval; i++) {
                 if (nB.isHead()) {
@@ -719,7 +686,7 @@ public class Snake {
                         head = newN;
                     }
 
-                    NODES -= (i + 2); // the one skipped and the current one
+                    POINTS -= (i + 2); // the one skipped and the current one
                     break;
                 }
                 nB = nB.getNext();
@@ -753,8 +720,9 @@ public class Snake {
             cutHead = (nA.getNext().isHead()) ? true : false;
             nB = nA.getNext().getNext();// don't check next edge as they can't
                                         // cross, but do touch
-            interval = (NODES > 6) ? NODES / 2 : 2; // always leave 3 nodes, at
-                                                    // least
+            interval = (super.getNumPoints() > 6) ? super.getNumPoints() / 2 : 2; // always leave 3
+                                                                                  // nodes, at
+            // least
 
             for (int i = 2; i < interval; i++) {
                 if (nB.isHead()) {
@@ -786,7 +754,7 @@ public class Snake {
                         head = newN;
                     }
 
-                    NODES -= (i);
+                    POINTS -= (i);
                     break;
                 }
                 nB = nB.getNext();
@@ -827,7 +795,7 @@ public class Snake {
                 diffXp = right2.getPoint().getX() - node2.getPoint().getX();
                 diffYp = right2.getPoint().getY() - node2.getPoint().getY();
 
-                if ((NODES - (i + 1)) < 4) {
+                if ((super.getNumPoints() - (i + 1)) < 4) {
                     break;
                 }
                 if (node1.getTrackNum() == right2.getTrackNum()) { // dont go
@@ -853,7 +821,7 @@ public class Snake {
                     right2.setPrev(node1);
                     node1.updateNormale(BOA_.boap.segParam.expandSnake);
                     right2.updateNormale(BOA_.boap.segParam.expandSnake);
-                    NODES -= i + 1; // set number of nodes
+                    POINTS -= i + 1; // set number of nodes
 
                     if (ishead) {
                         head = right2;
@@ -924,7 +892,7 @@ public class Snake {
                 n.getNext().getNext().updateNormale(BOA_.boap.segParam.expandSnake);
                 n = nIns;
 
-            } else if (Di < BOA_.boap.getMin_dist() && NODES >= 4) { // Minimum Nodes
+            } else if (Di < BOA_.boap.getMin_dist() && super.getNumPoints() >= 4) { // Minimum Nodes
                 // is 3
                 removeNode(n_neigh); // removes Node n_neigh
                 n_neigh = n.getNext();
@@ -1047,15 +1015,7 @@ public class Snake {
      * Insert node after node \c n
      */
     public Node insertNode(final Node n) {
-        Node newNode = new Node(nextTrackNumber);
-        nextTrackNumber++;
-        newNode.setNext(n.getNext());
-        newNode.setPrev(n);
-        n.getNext().setPrev(newNode);
-        n.setNext(newNode);
-        NODES++;
-
-        return newNode;
+        return insertPoint(n, new Node());
     }
 
     /**
@@ -1108,8 +1068,8 @@ public class Snake {
 
     Roi asFloatRoi() {
 
-        float[] x = new float[NODES];
-        float[] y = new float[NODES];
+        float[] x = new float[super.getNumPoints()];
+        float[] y = new float[super.getNumPoints()];
 
         Node n = head;
         int i = 0;
@@ -1119,12 +1079,12 @@ public class Snake {
             i++;
             n = n.getNext();
         } while (!n.isHead());
-        return new PolygonRoi(x, y, NODES, Roi.POLYGON);
+        return new PolygonRoi(x, y, super.getNumPoints(), Roi.POLYGON);
     }
 
     Roi asPolyLine() {
-        float[] x = new float[NODES];
-        float[] y = new float[NODES];
+        float[] x = new float[super.getNumPoints()];
+        float[] y = new float[super.getNumPoints()];
 
         Node n = head;
         int i = 0;
@@ -1134,7 +1094,7 @@ public class Snake {
             i++;
             n = n.getNext();
         } while (!n.isHead());
-        return new PolygonRoi(x, y, NODES, Roi.POLYLINE);
+        return new PolygonRoi(x, y, super.getNumPoints(), Roi.POLYLINE);
     }
 
     /**
@@ -1143,7 +1103,7 @@ public class Snake {
      * @return List of Vector2d objects representing coordinates of Snake Nodes
      */
     public List<Point2d> asList() {
-        List<Point2d> al = new ArrayList<Point2d>(NODES);
+        List<Point2d> al = new ArrayList<Point2d>(super.getNumPoints());
         // iterate over nodes at Snake
         Node n = head;
         do {
@@ -1211,8 +1171,9 @@ public class Snake {
             n = n.getNext();
         } while (!n.isHead());
 
-        if (count != NODES) {
-            System.out.println("Node number wrong. NODES:" + NODES + " .actual: " + count);
+        if (count != super.getNumPoints()) {
+            System.out.println(
+                    "Node number wrong. NODES:" + super.getNumPoints() + " .actual: " + count);
             return false;
         } else {
             return true;

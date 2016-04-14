@@ -14,11 +14,14 @@ public abstract class BiListofPoints<T extends BiListofPoints<?>> {
     protected boolean frozen = false; // flag which is set when the velocity is below the critical
                                       // velocity
 
-    public BiListofPoints(int t) {
-        // t = tracking number
+    public BiListofPoints() {
         point = new ExtendedVector2d();
         normal = new ExtendedVector2d();
         tan = new ExtendedVector2d();
+    }
+
+    public BiListofPoints(int t) {
+        this();
         setTrackNum(t);
     }
 
@@ -210,6 +213,19 @@ public abstract class BiListofPoints<T extends BiListofPoints<?>> {
         } else {
             clockwise = false;
         }
+    }
+
+    /**
+     * Current Point as String
+     * 
+     * @return String representation of Node
+     */
+    public String toString() {
+        String str;
+        // str = "[" + this.getX() + "," + this.getY() + "] " + "head is " + head + " next:"
+        // + getNext() + " prev: " + getPrev();
+        str = "[" + this.getX() + "," + this.getY() + "] " + "track " + tracknumber;
+        return str;
     }
 
 }

@@ -4,29 +4,23 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.Polygon;
+
 import ij.IJ;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
-import java.awt.Polygon;
-
 /**
  *
  * @author tyson
  */
-public final class Outline implements Cloneable {
+public final class Outline extends Shape<Vert> implements Cloneable {
 
-    private int nextTrackNumber = 1; // node ID's
-    private Vert head; // first node in doubley linked list, always maintained
-    private int VERTS; // number of nodes
     QColor color;
 
     public Outline(Vert h, int N) {
-        // create a snake from existing linked list
-        head = h;
-        VERTS = N;
-        nextTrackNumber = N + 1;
+        super(h, N);
         removeVert(head);
         this.updateCurvature();
 
@@ -35,12 +29,7 @@ public final class Outline implements Cloneable {
 
     public Outline(Vert h) {
         // blank outline
-        head = h;
-        head.setHead(true);
-        head.setNext(head);
-        head.setPrev(head);
-        nextTrackNumber = head.getTrackNum() + 1;
-        VERTS = 1;
+        super(h);
         this.updateCurvature();
 
         color = new QColor(0.5, 0, 1);
@@ -53,8 +42,7 @@ public final class Outline implements Cloneable {
         Polygon p = roi.getPolygon();
 
         head = new Vert(0); // make a dummy head node
-        VERTS = 1;
-
+        POINTS = 1;
         head.setPrev(head); // link head to itself
         head.setNext(head);
         head.setHead(true);
@@ -76,7 +64,7 @@ public final class Outline implements Cloneable {
     }
 
     public void print() {
-        IJ.log("Print verts (" + VERTS + ")");
+        IJ.log("Print verts (" + super.getNumPoints() + ")");
         int i = 0;
         Vert v = head;
         do {
@@ -101,19 +89,20 @@ public final class Outline implements Cloneable {
                 sI = "\t isIntPoint(" + v.intsectID + ")";
             }
 
-            IJ.log("Vert " + v.getTrackNum() + " (" + cc + ")(" + ff + "), x:" + xx + ", y:" + yy + sI + sH);
+            IJ.log("Vert " + v.getTrackNum() + " (" + cc + ")(" + ff + "), x:" + xx + ", y:" + yy
+                    + sI + sH);
             v = v.getNext();
             i++;
         } while (!v.isHead());
-        if (i != VERTS) {
+        if (i != super.getNumPoints()) {
             IJ.log("VERTS and linked list dont tally!!");
         }
     }
 
     public void plotOutline(String title, boolean per) {
-        double[] xArr = new double[VERTS]; // arrays to hold x and y co-ords
-                                           // (duplicate last to join)
-        double[] yArr = new double[VERTS];
+        double[] xArr = new double[super.getNumPoints()]; // arrays to hold x and y co-ords
+        // (duplicate last to join)
+        double[] yArr = new double[super.getNumPoints()];
 
         Vert v = head;
         int i = 0;
@@ -153,12 +142,8 @@ public final class Outline implements Cloneable {
         // Tool.plotXY(xArr, yArr, title);
     }
 
-    public Vert getHead() {
-        return head;
-    }
-
     public int getVerts() {
-        return VERTS;
+        return super.getNumPoints();
     }
 
     public int countVERTS() {
@@ -175,36 +160,15 @@ public final class Outline implements Cloneable {
 
     public void removeVert(Vert v) {
         // removes node n and links neighbours together
-        if (VERTS <= 3) {
+        if (super.getNumPoints() <= 3) {
             System.out.println("Outline. 175. Can't remove node. less than 3 would remain");
             return;
         }
 
-        v.getPrev().setNext(v.getNext());
-        v.getNext().setPrev(v.getPrev());
-
-        // if removing head assign neighbour as new head (but not an intpoint)
-        if (v.isHead()) {
-            if (Math.random() > 0.5) { // pick random direction to move head
-                do {
-                    head = v.getPrev();
-                    v = v.getPrev();
-                } while (head.isIntPoint()); // don't pick an intersect point
-            } else {
-                do {
-                    head = v.getNext();
-                    v = v.getNext();
-                } while (head.isIntPoint());
-            }
-            head.setHead(true);
-        }
-
-        VERTS--;
-        if (VERTS < 3) {
+        super.removePoint(v, true);
+        if (super.getNumPoints() < 3) {
             IJ.error("Outline.199. WARNING! Nodes less then 3");
         }
-        v.getPrev().updateNormale(true);
-        v.getNext().updateNormale(true);
 
     }
 
@@ -226,16 +190,7 @@ public final class Outline implements Cloneable {
     }
 
     public Vert insertVert(Vert v) {
-        // insert a new vert after vert v
-        Vert newNode = new Vert(nextTrackNumber);
-        nextTrackNumber++;
-        newNode.setNext(v.getNext());
-        newNode.setPrev(v);
-        v.getNext().setPrev(newNode);
-        v.setNext(newNode);
-        VERTS++;
-
-        return newNode;
+        return insertPoint(v, new Vert());
     }
 
     public Vert insertInterpolatedVert(Vert v) {
@@ -278,7 +233,7 @@ public final class Outline implements Cloneable {
     }
 
     public double[] XasArr() {
-        double[] arry = new double[VERTS];
+        double[] arry = new double[super.getNumPoints()];
 
         Vert v = head;
         int i = 0;
@@ -292,7 +247,7 @@ public final class Outline implements Cloneable {
     }
 
     public double[] YasArr() {
-        double[] arry = new double[VERTS];
+        double[] arry = new double[super.getNumPoints()];
 
         Vert v = head;
         int i = 0;
@@ -330,7 +285,7 @@ public final class Outline implements Cloneable {
         head.coord = 0.;
 
         nextTrackNumber = oldHead.getTrackNum() + 1;
-        VERTS = 1;
+        POINTS = 1;
 
         double CoorSpaceing = 1.0 / numVerts;
         // System.out.println("coord: " + CoorSpaceing);
@@ -428,7 +383,7 @@ public final class Outline implements Cloneable {
         head.coord = 0.;
 
         nextTrackNumber = oldHead.getTrackNum() + 1;
-        VERTS = 1;
+        POINTS = 1;
 
         double CoorSpaceing = 1.0 / numVerts;
         // System.out.println("coord: " + CoorSpaceing);
@@ -642,16 +597,17 @@ public final class Outline implements Cloneable {
         do {
             nB = nA.getNext().getNext(); // don't check the next one along! they
                                          // touch, not overlap
-            interval = (VERTS > 6) ? VERTS / 2 : 3; // always leave 3 nodes, at
-                                                    // least. Check half way
-                                                    // around
+            interval = (super.getNumPoints() > 6) ? super.getNumPoints() / 2 : 3; // always leave 3
+                                                                                  // nodes, at
+            // least. Check half way
+            // around
 
             for (int i = 0; i < interval; i++) {
                 if (nB.isHead()) {
                     cutHead = true;
                 }
-                intersect = ExtendedVector2d.lineIntersectionOLD(nA.getPoint(), nA.getNext().getPoint(), nB.getPoint(),
-                        nB.getNext().getPoint());
+                intersect = ExtendedVector2d.lineIntersectionOLD(nA.getPoint(),
+                        nA.getNext().getPoint(), nB.getPoint(), nB.getNext().getPoint());
                 if (intersect != null) {
 
                     iCut = true;
@@ -673,7 +629,7 @@ public final class Outline implements Cloneable {
 
                     newN.print("inserted node: ");
 
-                    VERTS -= (i + 1);
+                    POINTS -= (i + 1);
                     break;
                 }
                 nB = nB.getNext();
@@ -706,9 +662,10 @@ public final class Outline implements Cloneable {
             cutHead = (nA.getNext().isHead()) ? true : false;
             nB = nA.getNext().getNext(); // don't check the next one along! they
                                          // touch, not overlap
-            interval = (VERTS > 6) ? VERTS / 2 : 2; // always leave 3 nodes, at
-                                                    // least. Check half way
-                                                    // around
+            interval = (super.getNumPoints() > 6) ? super.getNumPoints() / 2 : 2; // always leave 3
+                                                                                  // nodes, at
+            // least. Check half way
+            // around
 
             for (int i = 2; i < interval; i++) {
 
@@ -716,10 +673,10 @@ public final class Outline implements Cloneable {
                     cutHead = true;
                 }
                 intersect = new double[2];
-                state = ExtendedVector2d.segmentIntersection(nA.getPoint().getX(), nA.getPoint().getY(),
-                        nA.getNext().getPoint().getX(), nA.getNext().getPoint().getY(), nB.getPoint().getX(),
-                        nB.getPoint().getY(), nB.getNext().getPoint().getX(), nB.getNext().getPoint().getY(),
-                        intersect);
+                state = ExtendedVector2d.segmentIntersection(nA.getPoint().getX(),
+                        nA.getPoint().getY(), nA.getNext().getPoint().getX(),
+                        nA.getNext().getPoint().getY(), nB.getPoint().getX(), nB.getPoint().getY(),
+                        nB.getNext().getPoint().getX(), nB.getNext().getPoint().getY(), intersect);
                 /*
                  * if (state == -1) { System.out.println("\nLines parallel");
                  * System.out.println("close all;plot([" + nA.getX() + "," +
@@ -770,11 +727,12 @@ public final class Outline implements Cloneable {
 
                     // newN.print("inserted node: ");
                     // System.out.println("C - VERTS : " + VERTS);
-                    if (VERTS - (i) < 3) {
-                        System.out.println("OUTLINE 594_VERTS WILL BE than 3. i = " + i + ", VERT=" + VERTS);
+                    if (super.getNumPoints() - (i) < 3) {
+                        System.out.println("OUTLINE 594_VERTS WILL BE than 3. i = " + i + ", VERT="
+                                + super.getNumPoints());
                     }
 
-                    VERTS -= (i);
+                    POINTS -= (i);
                     // if(VERTS<3) System.out.println("OUTLINE 596_VERTS LESS
                     // than 3");
 
@@ -919,9 +877,10 @@ public final class Outline implements Cloneable {
 
         do {
             // check for errors in gCoord and fCoord
-            if (v.gCoord >= 1 || v.gCoord < 0 || v.fCoord >= 1 || v.fCoord < 0 || v.coord >= 1 || v.coord < 0) {
-                System.out.println("Outline587: Errors in tracking Coordinates\n\t" + "coord=" + v.coord + ", gCoord= "
-                        + v.gCoord + ", fCoord = " + v.fCoord);
+            if (v.gCoord >= 1 || v.gCoord < 0 || v.fCoord >= 1 || v.fCoord < 0 || v.coord >= 1
+                    || v.coord < 0) {
+                System.out.println("Outline587: Errors in tracking Coordinates\n\t" + "coord="
+                        + v.coord + ", gCoord= " + v.gCoord + ", fCoord = " + v.fCoord);
                 return true;
             }
 
@@ -984,8 +943,8 @@ public final class Outline implements Cloneable {
 
     Roi asFloatRoi() {
 
-        float[] x = new float[VERTS];
-        float[] y = new float[VERTS];
+        float[] x = new float[super.getNumPoints()];
+        float[] y = new float[super.getNumPoints()];
 
         Vert n = head;
         int i = 0;
@@ -995,7 +954,7 @@ public final class Outline implements Cloneable {
             i++;
             n = n.getNext();
         } while (!n.isHead());
-        return new PolygonRoi(x, y, VERTS, Roi.POLYGON);
+        return new PolygonRoi(x, y, super.getNumPoints(), Roi.POLYGON);
     }
 
     void clearFluores() {
@@ -1073,11 +1032,13 @@ public final class Outline implements Cloneable {
                 return v;
             }
 
-            if (v.coord > a && v.getPrev().coord > a && v.getNext().coord > a && v.getNext().getNext().coord > a) {
+            if (v.coord > a && v.getPrev().coord > a && v.getNext().coord > a
+                    && v.getNext().getNext().coord > a) {
                 return v;
             }
 
-            if (v.coord < a && v.getPrev().coord < a && v.getNext().coord < a && v.getNext().getNext().coord < a) {
+            if (v.coord < a && v.getPrev().coord < a && v.getNext().coord < a
+                    && v.getNext().getNext().coord < a) {
                 return v;
             }
 

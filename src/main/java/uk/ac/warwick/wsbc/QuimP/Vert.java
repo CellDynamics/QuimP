@@ -39,6 +39,21 @@ public class Vert extends BiListofPoints<Vert> {
                           // 2-LOOSE sector; 3-forms inverted sector; 4-inverted
                           // and loose
 
+    public Vert() {
+        super();
+        intPoint = false;
+        intState = 0;
+        fCoord = -1;
+        gCoord = -1;
+
+        color = new QColor(1, 0, 0);
+
+        fluores = new FluoMeasurement[3];
+        for (int i = 0; i < 3; i++) {
+            fluores[i] = new FluoMeasurement(-2, -2, -2);
+        }
+    }
+
     public Vert(int t) {
         super(t);
         intPoint = false;

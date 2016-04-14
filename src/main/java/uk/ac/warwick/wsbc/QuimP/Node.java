@@ -22,6 +22,13 @@ public class Node extends BiListofPoints<Node> {
                                           // node positions have been calc
     double position = -1; // position value.
 
+    public Node() {
+        super();
+        F_total = new ExtendedVector2d();
+        vel = new ExtendedVector2d();
+        prelimPoint = new ExtendedVector2d();
+    }
+
     public Node(int t) {
         super(t);
         F_total = new ExtendedVector2d();
@@ -138,20 +145,6 @@ public class Node extends BiListofPoints<Node> {
             curvatureLocal = (angle - 180) / 180;
         }
         return curvatureLocal;
-    }
-
-    /**
-     * Current Node as String
-     * 
-     * @return String representation of Node
-     */
-    public String toString() {
-        String str;
-        // str = "[" + this.getX() + "," + this.getY() + "] " + "head is " + head + " next:"
-        // + getNext() + " prev: " + getPrev();
-        str = "[" + this.getX() + "," + this.getY() + "] " + "track " + tracknumber;
-        return str;
-
     }
 
 }
