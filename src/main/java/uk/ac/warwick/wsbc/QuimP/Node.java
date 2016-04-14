@@ -15,7 +15,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @author rtyson
  *
  */
-public class Node extends Vertex {
+public class Node extends BidirectionalList<Node> {
     private ExtendedVector2d vel; // velocity of the nodes
     private ExtendedVector2d F_total; // total force at node
     private ExtendedVector2d prelimPoint; // point to move node to after all new
