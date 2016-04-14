@@ -2,8 +2,8 @@ package uk.ac.warwick.wsbc.QuimP;
 
 public abstract class Shape<T extends BiListofPoints<T>> {
     protected int nextTrackNumber = 1; // node ID's
-    protected T head; // first node in doubley linked list, always maintained
-    protected int POINTS; // number of points TODO use directly wihout setter ang getter maybe
+    protected T head; // first node in double linked list, always maintained
+    protected int POINTS; // number of points TODO use directly without setter and getter maybe
 
     public Shape() {
         POINTS = 0;
