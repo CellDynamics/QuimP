@@ -44,10 +44,9 @@ public class BOA__run {
         // img = IJ.openImage("src/test/resources/movie03_8bit.tif");
         img = IJ.openImage("src/test/resources/Composite-after-macro_cut.tif");
 
-        img.show(); // this is necessary for plugin as it uses getcurrentimage
-                    // to work
-        Toolbar t = new Toolbar(); // fake toolbar to allow calls to static
-                                   // fields of this class inside boa
+        img.show(); // this is necessary for plugin as it uses getcurrentimage to work
+        Toolbar t = new Toolbar(); // fake toolbar to allow calls to static fields of this class
+                                   // inside boa
         BOA_ ob = new BOA_();
 
         ob.run("../Fiji.app.test/plugins/"); // run BOA, control is immediately returned

@@ -2,7 +2,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
-public abstract class BiListofPoints<T extends BiListofPoints<?>> {
+public abstract class BiListofPoints<T extends BiListofPoints<T>> {
     protected T prev;
     protected T next;
     protected ExtendedVector2d point; // x,y co-ordinates of the node
@@ -10,9 +10,9 @@ public abstract class BiListofPoints<T extends BiListofPoints<?>> {
     protected ExtendedVector2d tan;
     protected boolean head = false;
     protected static boolean clockwise = true; // access clockwise if true
-    protected int tracknumber;
+    protected int tracknumber = 1;
     protected boolean frozen = false; // flag which is set when the velocity is below the critical
-                                      // velocity
+    // velocity
 
     public BiListofPoints() {
         point = new ExtendedVector2d();
