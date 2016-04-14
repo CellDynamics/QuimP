@@ -2,36 +2,70 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
-public abstract class BiListofPoints<T extends BiListofPoints<T>> {
-    protected T prev;
-    protected T next;
-    protected ExtendedVector2d point; // x,y co-ordinates of the node
-    protected ExtendedVector2d normal; // normals
-    protected ExtendedVector2d tan;
-    protected boolean head = false;
-    protected static boolean clockwise = true; // access clockwise if true
-    protected int tracknumber = 1;
-    protected boolean frozen = false; // flag which is set when the velocity is below the critical
-    // velocity
+/**
+ * Represents node of bidirectional list of points in Cartesian coordinates.
+ * 
+ * This abstract class contains basic properties of points and provides method for moving across 
+ * the list. Points in list are numbered from \b 1 and list can be looped. There is one special
+ * node called \b head that indicates beginning of the list (and its end if the list is looped) 
+ * 
+ * @author p.baniukiewicz
+ * @date 14 Apr 2016
+ *
+ * @param <T> Type of point, currently can be Node or Vert
+ */
+public abstract class PointListNode<T extends PointListNode<T>> {
+    protected T prev; /*!< previous point in list, \c null if no other point */
+    protected T next; /*!< next point in list, \c null if no other point */
+    protected ExtendedVector2d point; /*!< x,y co-ordinates of the point */
+    protected ExtendedVector2d normal; /*!< normal vector */
+    protected ExtendedVector2d tan; /*!< tangent vector */
+    protected boolean head = false; /*!< Indicate if this point is \b head */
+    protected static boolean clockwise = true; /*!< access clockwise if true */
+    protected int tracknumber = 1; /*!< ID number of point, unique across list */
+    /**
+     * flag which is set when the velocity is below the critical velocity
+     */
+    protected boolean frozen = false;
 
-    public BiListofPoints() {
+    /**
+     * Default constructor, assumes that first point is created on list with ID = 1
+     */
+    public PointListNode() {
         point = new ExtendedVector2d();
         normal = new ExtendedVector2d();
         tan = new ExtendedVector2d();
     }
 
-    public BiListofPoints(int t) {
+    /**
+     * Creates point with given ID. New point is not linked to any other yet.
+     * 
+     * Caller should care about correct numbering of points
+     * 
+     * @param t ID of point
+     */
+    public PointListNode(int t) {
         this();
         setTrackNum(t);
     }
 
-    public BiListofPoints(double xx, double yy, int t) {
+    /**
+     * Creates point with given ID and coordinates. New point is not linked to any other yet.
+     * 
+     * Caller should care about correct numbering of points
+     * 
+     * @param xx x coordinate of point
+     * @param yy y coordinate of point
+     * @param t ID of point
+     */
+    public PointListNode(double xx, double yy, int t) {
         this(t);
         point = new ExtendedVector2d(xx, yy);
     }
 
     /**
      * \c point getter
+     * 
      * @return X space co-ordinate
      */
     public double getX() {
@@ -40,6 +74,7 @@ public abstract class BiListofPoints<T extends BiListofPoints<T>> {
 
     /**
      * \c point getter
+     * 
      * @return Y space co-ordinate
      */
     public double getY() {
@@ -65,7 +100,7 @@ public abstract class BiListofPoints<T extends BiListofPoints<T>> {
     }
 
     public static void setClockwise(boolean b) {
-        BiListofPoints.clockwise = b;
+        PointListNode.clockwise = b;
     }
 
     public ExtendedVector2d getPoint() {

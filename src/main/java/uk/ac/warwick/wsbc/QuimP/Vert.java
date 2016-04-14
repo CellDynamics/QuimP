@@ -10,11 +10,12 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * 
  * @author rtyson
  */
-public class Vert extends BiListofPoints<Vert> {
+public class Vert extends PointListNode<Vert> {
     public double charge; // charge on the vertex
     public double distance; // distance vert migrated (actually converted to speed by
                             // Tool.speedToScale
-    final FluoMeasurement[] fluores; // fluorescence channels 1-3. Intensity and location
+    final FluoMeasurement[] fluores = new FluoMeasurement[3]; // fluorescence channels 1-3.
+                                                              // Intensity and location
     public double curvatureLocal; // curvature local to a node
     public double curvatureSmoothed; // smoothed curvature
     public double curvatureSum; // summed curvature over x microns
@@ -39,49 +40,40 @@ public class Vert extends BiListofPoints<Vert> {
                           // 2-LOOSE sector; 3-forms inverted sector; 4-inverted
                           // and loose
 
+    /**
+     * Default constructor, creates Vert element with ID=1
+     */
     public Vert() {
         super();
-        intPoint = false;
-        intState = 0;
-        fCoord = -1;
-        gCoord = -1;
-
-        color = new QColor(1, 0, 0);
-
-        fluores = new FluoMeasurement[3];
-        for (int i = 0; i < 3; i++) {
-            fluores[i] = new FluoMeasurement(-2, -2, -2);
-        }
+        vertInitializer();
     }
 
+    /**
+     * Create Vert element with given ID
+     * 
+     * @param t ID of Vert
+     */
     public Vert(int t) {
         super(t);
-        intPoint = false;
-        intState = 0;
-        fCoord = -1;
-        gCoord = -1;
-
-        color = new QColor(1, 0, 0);
-
-        fluores = new FluoMeasurement[3];
-        for (int i = 0; i < 3; i++) {
-            fluores[i] = new FluoMeasurement(-2, -2, -2);
-        }
+        vertInitializer();
     }
 
     public Vert(double xx, double yy, int t) {
         super(xx, yy, t);
+        vertInitializer();
+    }
+
+    /**
+     * Initializers for Vert object
+     */
+    private void vertInitializer() {
         intPoint = false;
         intState = 0;
-        gCoord = -1;
         fCoord = -1;
-
+        gCoord = -1;
         color = new QColor(1, 0, 0);
-
-        fluores = new FluoMeasurement[3];
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++)
             fluores[i] = new FluoMeasurement(-2, -2, -2);
-        }
     }
 
     public void print(String s) {
