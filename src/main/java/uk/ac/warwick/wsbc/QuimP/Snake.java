@@ -1293,8 +1293,18 @@ public class Snake {
         } while (!v.isHead());
     }
 
+    /**
+     * Print Snake nodes
+     * @return String representation of Snake
+     */
     public String toString() {
-        throw new UnsupportedOperationException("Not imnplemented");
+        Node v = this.head;
+        String out = "id=" + this.getSnakeID();
+        do {
+            out = out.concat(" {" + v.getX() + "," + v.getY() + "}");
+            v = v.getNext();
+        } while (!v.isHead());
+        return out;
     }
 
 }

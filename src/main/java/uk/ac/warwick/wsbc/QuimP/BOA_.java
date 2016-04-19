@@ -2142,6 +2142,8 @@ class ImageGroup {
     private final Nest nest;
     int w, h, f;
 
+    private static final Logger LOGGER = LogManager.getLogger(ImageGroup.class.getName());
+
     public ImageGroup(ImagePlus oIpl, Nest n) {
         nest = n;
         // create two new stacks for drawing
@@ -2246,10 +2248,12 @@ class ImageGroup {
                     oR1.setFillColor(Color.GREEN);
                     overlay.add(oR1);
                 }
-
+                // dump String to log
+                LOGGER.trace(snake.toString());
             }
         }
         orgIpl.setOverlay(overlay);
+
     }
 
     public void clearOverlay() {
@@ -2405,6 +2409,13 @@ class ImageGroup {
         // ic.repaint();
     }
 
+    /**
+     * Produces final image with Snake outlines after finishing BOA.
+     * 
+     * This is ImageJ image with flatten Snake contours.
+     * 
+     * @param stack Stack to plot in
+     */
     void drawCellRois(final ImageStack stack) {
         Snake snake;
         SnakeHandler sH;
@@ -2423,6 +2434,7 @@ class ImageGroup {
                     y = (int) Math.round(snake.getHead().getY()) - 15;
                     ip.moveTo(x, y);
                     ip.drawString("   " + snake.getSnakeID());
+                    LOGGER.trace("Snake head is at: " + snake.getHead().toString());
                 }
             }
         }
