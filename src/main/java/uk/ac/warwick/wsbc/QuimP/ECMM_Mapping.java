@@ -1,21 +1,27 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.io.File;
+import java.util.ArrayList;
+// import java.util.Vector;
+import java.util.Random;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Richard Tyson. 23/09/2009. ECM Mapping Systems Biology DTC, Warwick
  * University.
  */
-import ij.*;
-//import java.awt.*;
-import ij.gui.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+// import java.awt.*;
+import ij.gui.NewImage;
+import ij.gui.YesNoCancelDialog;
 import ij.io.OpenDialog;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-
-import java.io.*;
-import java.util.ArrayList;
-//import java.util.Vector;
-import java.util.Random;
 
 /**
  * Main ECMM implementation class.
@@ -24,6 +30,11 @@ import java.util.Random;
  *
  */
 public class ECMM_Mapping {
+
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
+    private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 
     OutlineHandler oH, outputH;
     static ECMplot plot;
@@ -67,8 +78,8 @@ public class ECMM_Mapping {
         try {
             do {
 
-                OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", OpenDialog.getLastDirectory(),
-                        ".paQP");
+                OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
+                        OpenDialog.getLastDirectory(), ".paQP");
                 if (od.getFileName() == null) {
                     return;
                 }
@@ -82,9 +93,11 @@ public class ECMM_Mapping {
                 File[] otherPaFiles = qp.findParamFiles();
 
                 if (otherPaFiles.length > 0) {
-                    YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                            "\tBatch Process?\n\n" + "Process other paQP files in the same folder with ECMM?\n"
-                                    + "[Files already run through ECMM will be skipped!]");
+                    YesNoCancelDialog yncd =
+                            new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
+                                    "\tBatch Process?\n\n"
+                                            + "Process other paQP files in the same folder with ECMM?\n"
+                                            + "[Files already run through ECMM will be skipped!]");
                     if (yncd.yesPressed()) {
                         ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
                         ArrayList<String> skipped = new ArrayList<String>(otherPaFiles.length);
@@ -96,7 +109,8 @@ public class ECMM_Mapping {
                             qp = new QParams(paramFile);
                             qp.readParams();
                             if (!qp.ecmmHasRun) {
-                                System.out.println("Running on " + otherPaFiles[j].getAbsolutePath());
+                                System.out
+                                        .println("Running on " + otherPaFiles[j].getAbsolutePath());
                                 runFromFile();
                                 runOn.add(otherPaFiles[j].getName());
                             } else {
@@ -132,7 +146,8 @@ public class ECMM_Mapping {
     private void about() {
         IJ.log("##############################################\n \n" + Tool.getQuimPversion()
                 + " - ECMM Mapping plugin,\nby Richard Tyson (R.A.Tyson@warwick.ac.uk),\n\n"
-                + "David Epstein & T. Bretschneider, Version 3.0\n" + "T.Bretschneider@warwick.ac.uk\n\n"
+                + "David Epstein & T. Bretschneider, Version 3.0\n"
+                + "T.Bretschneider@warwick.ac.uk\n\n"
                 + "##############################################\n \n");
     }
 
@@ -237,7 +252,8 @@ public class ECMM_Mapping {
                 ECMp.plot = true;
             }
             if (o1.checkCoordErrors()) {
-                IJ.error("There was an error in tracking due to a bug (frame " + (f) + ")" + "\nPlease try again");
+                IJ.error("There was an error in tracking due to a bug (frame " + (f) + ")"
+                        + "\nPlease try again");
                 break;
             }
 
@@ -370,8 +386,9 @@ public class ECMM_Mapping {
                 }
 
                 // check if lines are parallel
-                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(),
-                        nA.getNext().getY(), nB.getX(), nB.getY(), nB.getNext().getX(), nB.getNext().getY(), intersect);
+                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(),
+                        nA.getNext().getX(), nA.getNext().getY(), nB.getX(), nB.getY(),
+                        nB.getNext().getX(), nB.getNext().getY(), intersect);
                 if (state == -1 || state == -2) {
                     // IJ.log(" outline parrallel -fixed");
                     nA.setX(nA.getX() + (rg.nextDouble() * 0.5) + 0.01);
@@ -456,8 +473,9 @@ class Mapping {
                                // adjacent edges being flagged as crossing
             // edgeBcount = 1;
             do {
-                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(),
-                        nA.getNext().getY(), nB.getX(), nB.getY(), nB.getNext().getX(), nB.getNext().getY(), intersect);
+                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(),
+                        nA.getNext().getX(), nA.getNext().getY(), nB.getX(), nB.getY(),
+                        nB.getNext().getX(), nB.getNext().getY(), intersect);
 
                 if (state == 1) {
                     // result.print("intersect at : ");
@@ -504,7 +522,8 @@ class Mapping {
     private void insertFake() {
         // insert one fake intersect point just after the heads
         // done when no intersections exist
-        ExtendedVector2d pos = ExtendedVector2d.vecP2P(o1.getHead().getPoint(), o1.getHead().getNext().getPoint());
+        ExtendedVector2d pos =
+                ExtendedVector2d.vecP2P(o1.getHead().getPoint(), o1.getHead().getNext().getPoint());
         pos.multiply(0.5);
         pos.addVec(o1.getHead().getPoint()); // half way between head and next
                                              // vert
@@ -748,7 +767,8 @@ class Mapping {
             } while (!v1.isHead());
         }
         if (!found) {
-            System.out.println("    ISSUE! ECMM.01 - NO valid sectors exist! (guessing correct sectors)");
+            System.out.println(
+                    "    ISSUE! ECMM.01 - NO valid sectors exist! (guessing correct sectors)");
             v1 = Outline.findIntersect(v1, 4);
         }
 
@@ -1167,10 +1187,12 @@ class Sector {
     public void construct() {
         // calc lengths, determin expansion, set charges
         calcLengths();
-        double sectorTriArea = ExtendedVector2d.triangleArea(startO1.getPoint(), startO1.getNext().getPoint(),
-                startO2.getNext().getPoint()); // left or right? Use the "left"
-                                               // algorithm (sign of triangle
-                                               // area)
+        double sectorTriArea = ExtendedVector2d.triangleArea(startO1.getPoint(),
+                startO1.getNext().getPoint(), startO2.getNext().getPoint()); // left or right? Use
+                                                                             // the "left"
+                                                                             // algorithm (sign of
+                                                                             // triangle
+                                                                             // area)
 
         if ((lengthO1 > lengthO2) || ECMp.forceForwardMapping) {
             forwardMap = true;
@@ -1267,7 +1289,8 @@ class Sector {
 
         calcLengths();
 
-        if (((lengthO1 > lengthO2) || ECMp.forceForwardMapping || ECMp.ANA) && !ECMp.forceBackwardMapping) {
+        if (((lengthO1 > lengthO2) || ECMp.forceForwardMapping || ECMp.ANA)
+                && !ECMp.forceBackwardMapping) {
             forwardMap = true;
             migCharges = formCharges(startO1);
             tarCharges = formCharges(startO2);
@@ -1398,7 +1421,8 @@ class Sector {
         double cDis;
         Vert closest = v;
         do {
-            cDis = ExtendedVector2d.distPointToSegment(tv.getPoint(), v.getPoint(), v.getNext().getPoint());
+            cDis = ExtendedVector2d.distPointToSegment(tv.getPoint(), v.getPoint(),
+                    v.getNext().getPoint());
             if (cDis < dis) {
                 closest = v;
                 dis = cDis;
@@ -1410,7 +1434,8 @@ class Sector {
         newVert.setTrackNum(-35);
         newVert.setX(tv.getX());
         newVert.setY(tv.getY());
-        ExtendedVector2d normal = new ExtendedVector2d(tv.getNormal().getX(), tv.getNormal().getY());
+        ExtendedVector2d normal =
+                new ExtendedVector2d(tv.getNormal().getX(), tv.getNormal().getY());
         normal.multiply(outerNormal * ECMp.w);
         newVert.getPoint().addVec(normal);
         newVert.updateNormale(true);
@@ -1777,8 +1802,8 @@ class ODEsolver {
         return totalF;
     }
 
-    private static void forceP(ExtendedVector2d force, ExtendedVector2d p, ExtendedVector2d pQ, double q,
-            double power) {
+    private static void forceP(ExtendedVector2d force, ExtendedVector2d p, ExtendedVector2d pQ,
+            double q, double power) {
         double r = ExtendedVector2d.lengthP2P(pQ, p);
         // System.out.println("\t r = " + r);
         if (r == 0) {
@@ -1824,7 +1849,8 @@ class ODEsolver {
              *
              */
 
-            forceLpolar(field, p, v.getPoint(), v.getNext().getPoint(), ECMp.migQ, ECMp.migPower, polarDir);
+            forceLpolar(field, p, v.getPoint(), v.getNext().getPoint(), ECMp.migQ, ECMp.migPower,
+                    polarDir);
 
             totalF.addVec(field);
             v = v.getNext();
@@ -1842,7 +1868,8 @@ class ODEsolver {
              *
              */
 
-            forceLpolar(field, p, v.getPoint(), v.getNext().getPoint(), ECMp.tarQ, ECMp.tarPower, polarDir);
+            forceLpolar(field, p, v.getPoint(), v.getNext().getPoint(), ECMp.tarQ, ECMp.tarPower,
+                    polarDir);
 
             totalF.addVec(field);
             v = v.getNext();
@@ -2148,8 +2175,10 @@ class ECMplot {
     public void drawCross(ExtendedVector2d a, int s) {
         ExtendedVector2d p = new ExtendedVector2d(a.getX(), a.getY());
         relocate(p);
-        imProc.drawLine((int) p.getX() - s, (int) p.getY() - s, (int) p.getX() + s, (int) p.getY() + s);
-        imProc.drawLine((int) p.getX() + s, (int) p.getY() - s, (int) p.getX() - s, (int) p.getY() + s);
+        imProc.drawLine((int) p.getX() - s, (int) p.getY() - s, (int) p.getX() + s,
+                (int) p.getY() + s);
+        imProc.drawLine((int) p.getX() + s, (int) p.getY() - s, (int) p.getX() - s,
+                (int) p.getY() + s);
     }
 
     public void repaint() {
