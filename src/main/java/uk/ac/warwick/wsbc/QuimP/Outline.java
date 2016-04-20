@@ -4,19 +4,22 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.Polygon;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ij.IJ;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-
-import java.awt.Polygon;
 
 /**
  *
  * @author tyson
  */
 public final class Outline implements Cloneable {
-
+    private static final Logger LOGGER = LogManager.getLogger(Outline.class.getName());
     private int nextTrackNumber = 1; // node ID's
     private Vert head; // first node in doubley linked list, always maintained
     private int VERTS; // number of nodes
@@ -101,7 +104,8 @@ public final class Outline implements Cloneable {
                 sI = "\t isIntPoint(" + v.intsectID + ")";
             }
 
-            IJ.log("Vert " + v.getTrackNum() + " (" + cc + ")(" + ff + "), x:" + xx + ", y:" + yy + sI + sH);
+            IJ.log("Vert " + v.getTrackNum() + " (" + cc + ")(" + ff + "), x:" + xx + ", y:" + yy
+                    + sI + sH);
             v = v.getNext();
             i++;
         } while (!v.isHead());
@@ -619,6 +623,7 @@ public final class Outline implements Cloneable {
                 v = v.getNext();
             }
         } while (!v.isHead());
+        LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }
 
     @Deprecated
@@ -650,8 +655,8 @@ public final class Outline implements Cloneable {
                 if (nB.isHead()) {
                     cutHead = true;
                 }
-                intersect = ExtendedVector2d.lineIntersectionOLD(nA.getPoint(), nA.getNext().getPoint(), nB.getPoint(),
-                        nB.getNext().getPoint());
+                intersect = ExtendedVector2d.lineIntersectionOLD(nA.getPoint(),
+                        nA.getNext().getPoint(), nB.getPoint(), nB.getNext().getPoint());
                 if (intersect != null) {
 
                     iCut = true;
@@ -716,10 +721,10 @@ public final class Outline implements Cloneable {
                     cutHead = true;
                 }
                 intersect = new double[2];
-                state = ExtendedVector2d.segmentIntersection(nA.getPoint().getX(), nA.getPoint().getY(),
-                        nA.getNext().getPoint().getX(), nA.getNext().getPoint().getY(), nB.getPoint().getX(),
-                        nB.getPoint().getY(), nB.getNext().getPoint().getX(), nB.getNext().getPoint().getY(),
-                        intersect);
+                state = ExtendedVector2d.segmentIntersection(nA.getPoint().getX(),
+                        nA.getPoint().getY(), nA.getNext().getPoint().getX(),
+                        nA.getNext().getPoint().getY(), nB.getPoint().getX(), nB.getPoint().getY(),
+                        nB.getNext().getPoint().getX(), nB.getNext().getPoint().getY(), intersect);
                 /*
                  * if (state == -1) { System.out.println("\nLines parallel");
                  * System.out.println("close all;plot([" + nA.getX() + "," +
@@ -771,7 +776,8 @@ public final class Outline implements Cloneable {
                     // newN.print("inserted node: ");
                     // System.out.println("C - VERTS : " + VERTS);
                     if (VERTS - (i) < 3) {
-                        System.out.println("OUTLINE 594_VERTS WILL BE than 3. i = " + i + ", VERT=" + VERTS);
+                        System.out.println(
+                                "OUTLINE 594_VERTS WILL BE than 3. i = " + i + ", VERT=" + VERTS);
                     }
 
                     VERTS -= (i);
@@ -869,6 +875,7 @@ public final class Outline implements Cloneable {
             d = d + ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
             v = v.getNext();
         } while (!v.isHead());
+        LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }
 
     public Object clone() {
@@ -919,9 +926,10 @@ public final class Outline implements Cloneable {
 
         do {
             // check for errors in gCoord and fCoord
-            if (v.gCoord >= 1 || v.gCoord < 0 || v.fCoord >= 1 || v.fCoord < 0 || v.coord >= 1 || v.coord < 0) {
-                System.out.println("Outline587: Errors in tracking Coordinates\n\t" + "coord=" + v.coord + ", gCoord= "
-                        + v.gCoord + ", fCoord = " + v.fCoord);
+            if (v.gCoord >= 1 || v.gCoord < 0 || v.fCoord >= 1 || v.fCoord < 0 || v.coord >= 1
+                    || v.coord < 0) {
+                System.out.println("Outline587: Errors in tracking Coordinates\n\t" + "coord="
+                        + v.coord + ", gCoord= " + v.gCoord + ", fCoord = " + v.fCoord);
                 return true;
             }
 
@@ -1073,11 +1081,13 @@ public final class Outline implements Cloneable {
                 return v;
             }
 
-            if (v.coord > a && v.getPrev().coord > a && v.getNext().coord > a && v.getNext().getNext().coord > a) {
+            if (v.coord > a && v.getPrev().coord > a && v.getNext().coord > a
+                    && v.getNext().getNext().coord > a) {
                 return v;
             }
 
-            if (v.coord < a && v.getPrev().coord < a && v.getNext().coord < a && v.getNext().getNext().coord < a) {
+            if (v.coord < a && v.getPrev().coord < a && v.getNext().coord < a
+                    && v.getNext().getNext().coord < a) {
                 return v;
             }
 
