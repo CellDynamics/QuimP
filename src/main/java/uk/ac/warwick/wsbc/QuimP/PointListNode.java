@@ -38,7 +38,7 @@ public abstract class PointListNode<T extends PointListNode<T>> {
     }
 
     /**
-     * Creates point with given ID. New point is not linked to any other yet.
+     * Create point with given ID. New point is not linked to any other yet.
      * 
      * Caller should care about correct numbering of points
      * 
@@ -47,6 +47,21 @@ public abstract class PointListNode<T extends PointListNode<T>> {
     public PointListNode(int t) {
         this();
         setTrackNum(t);
+    }
+
+    /**
+     * Copy constructor. Make copy of properties of passed point. 
+     * 
+     * Previous or next points are not copied
+     *  
+     * @param src Source Point
+     */
+    public PointListNode(PointListNode<?> src) {
+        this.point = new ExtendedVector2d(src.point);
+        this.normal = new ExtendedVector2d(src.normal);
+        this.tan = new ExtendedVector2d(src.tan);
+        this.head = src.head;
+        this.tracknumber = src.tracknumber;
     }
 
     /**
@@ -242,6 +257,9 @@ public abstract class PointListNode<T extends PointListNode<T>> {
         return ExtendedVector2d.unitVector(pointLeft, pointRight);
     }
 
+    /**
+     * Set direction of \b this list
+     */
     public static void randDirection() {
         if (Math.random() < 0.5) {
             clockwise = true;
@@ -259,7 +277,7 @@ public abstract class PointListNode<T extends PointListNode<T>> {
         String str;
         // str = "[" + this.getX() + "," + this.getY() + "] " + "head is " + head + " next:"
         // + getNext() + " prev: " + getPrev();
-        str = "[" + this.getX() + "," + this.getY() + "] " + "track " + tracknumber;
+        str = "[" + this.getX() + "," + this.getY() + "] " + "tracknumber " + tracknumber;
         return str;
     }
 

@@ -86,7 +86,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
     }
 
     public void print() {
-        IJ.log("Print verts (" + super.getNumPoints() + ")");
+        IJ.log("Print verts (" + POINTS + ")");
         int i = 0;
         Vert v = head;
         do {
@@ -116,15 +116,15 @@ public final class Outline extends Shape<Vert> implements Cloneable {
             v = v.getNext();
             i++;
         } while (!v.isHead());
-        if (i != super.getNumPoints()) {
+        if (i != POINTS) {
             IJ.log("VERTS and linked list dont tally!!");
         }
     }
 
     public void plotOutline(String title, boolean per) {
-        double[] xArr = new double[super.getNumPoints()]; // arrays to hold x and y co-ords
+        double[] xArr = new double[POINTS]; // arrays to hold x and y co-ords
         // (duplicate last to join)
-        double[] yArr = new double[super.getNumPoints()];
+        double[] yArr = new double[POINTS];
 
         Vert v = head;
         int i = 0;
@@ -165,7 +165,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
     }
 
     public int getVerts() {
-        return super.getNumPoints();
+        return POINTS;
     }
 
     public int countVERTS() {
@@ -182,13 +182,13 @@ public final class Outline extends Shape<Vert> implements Cloneable {
 
     public void removeVert(Vert v) {
         // removes node n and links neighbours together
-        if (super.getNumPoints() <= 3) {
+        if (POINTS <= 3) {
             System.out.println("Outline. 175. Can't remove node. less than 3 would remain");
             return;
         }
 
         super.removePoint(v, true);
-        if (super.getNumPoints() < 3) {
+        if (POINTS < 3) {
             IJ.error("Outline.199. WARNING! Nodes less then 3");
         }
 
@@ -262,7 +262,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
     }
 
     public double[] XasArr() {
-        double[] arry = new double[super.getNumPoints()];
+        double[] arry = new double[POINTS];
 
         Vert v = head;
         int i = 0;
@@ -276,7 +276,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
     }
 
     public double[] YasArr() {
-        double[] arry = new double[super.getNumPoints()];
+        double[] arry = new double[POINTS];
 
         Vert v = head;
         int i = 0;
@@ -626,8 +626,8 @@ public final class Outline extends Shape<Vert> implements Cloneable {
             cutHead = (nA.getNext().isHead()) ? true : false;
             nB = nA.getNext().getNext(); // don't check the next one along! they
                                          // touch, not overlap
-            interval = (super.getNumPoints() > 6) ? super.getNumPoints() / 2 : 2; // always leave 3
-                                                                                  // nodes, at
+            interval = (POINTS > 6) ? POINTS / 2 : 2; // always leave 3
+                                                      // nodes, at
             // least. Check half way
             // around
 
@@ -691,9 +691,9 @@ public final class Outline extends Shape<Vert> implements Cloneable {
 
                     // newN.print("inserted node: ");
                     // System.out.println("C - VERTS : " + VERTS);
-                    if (super.getNumPoints() - (i) < 3) {
-                        System.out.println("OUTLINE 594_VERTS WILL BE than 3. i = " + i + ", VERT="
-                                + super.getNumPoints());
+                    if (POINTS - (i) < 3) {
+                        System.out.println(
+                                "OUTLINE 594_VERTS WILL BE than 3. i = " + i + ", VERT=" + POINTS);
                     }
 
                     POINTS -= (i);
@@ -908,8 +908,8 @@ public final class Outline extends Shape<Vert> implements Cloneable {
 
     Roi asFloatRoi() {
 
-        float[] x = new float[super.getNumPoints()];
-        float[] y = new float[super.getNumPoints()];
+        float[] x = new float[POINTS];
+        float[] y = new float[POINTS];
 
         Vert n = head;
         int i = 0;
@@ -919,7 +919,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
             i++;
             n = n.getNext();
         } while (!n.isHead());
-        return new PolygonRoi(x, y, super.getNumPoints(), Roi.POLYGON);
+        return new PolygonRoi(x, y, POINTS, Roi.POLYGON);
     }
 
     void clearFluores() {

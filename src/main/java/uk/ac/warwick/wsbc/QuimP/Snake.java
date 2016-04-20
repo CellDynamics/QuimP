@@ -60,7 +60,7 @@ public class Snake extends Shape<Node> {
         this.makeAntiClockwise();
         this.updateNormales();
         alive = true;
-        startingNnodes = super.getNumPoints() / 100.; // as 1%. limit to X%
+        startingNnodes = POINTS / 100.; // as 1%. limit to X%
         // calcOrientation();
     }
 
@@ -95,8 +95,8 @@ public class Snake extends Shape<Node> {
 
         snakeID = id;
         POINTS = snake.getNODES() + 1;
-        FROZEN = super.getNumPoints();
-        nextTrackNumber = super.getNumPoints() + 1;
+        FROZEN = POINTS;
+        nextTrackNumber = POINTS + 1;
         centroid = new ExtendedVector2d(0d, 0d);
         removeNode(head);
         this.makeAntiClockwise();
@@ -141,7 +141,7 @@ public class Snake extends Shape<Node> {
 
             intializeOval(0, xc, yc, Rx, Ry, BOA_.boap.segParam.getNodeRes() / 2);
         }
-        startingNnodes = super.getNumPoints() / 100.; // as 1%. limit to X%
+        startingNnodes = POINTS / 100.; // as 1%. limit to X%
         alive = true;
         // colour = QColor.lightColor();
         // calcOrientation();
@@ -157,7 +157,7 @@ public class Snake extends Shape<Node> {
     public Snake(final PolygonRoi R, int id) throws Exception {
         snakeID = id;
         intializeFloat(R.getFloatPolygon());
-        startingNnodes = super.getNumPoints() / 100.; // as 1%. limit to X%
+        startingNnodes = POINTS / 100.; // as 1%. limit to X%
         alive = true;
         // colour = QColor.lightColor();
         // calcOrientation();
@@ -174,7 +174,7 @@ public class Snake extends Shape<Node> {
     public Snake(final List<? extends Tuple2d> list, int id) throws Exception {
         snakeID = id;
         initializeArrayList(list);
-        startingNnodes = super.getNumPoints() / 100;
+        startingNnodes = POINTS / 100;
         alive = true;
         this.calcCentroid();
     }
@@ -190,7 +190,7 @@ public class Snake extends Shape<Node> {
     public Snake(final double X[], final double Y[], int id) throws Exception {
         snakeID = id;
         initializeArray(X, Y);
-        startingNnodes = super.getNumPoints() / 100;
+        startingNnodes = POINTS / 100;
         alive = true;
         this.calcCentroid();
     }
@@ -407,7 +407,7 @@ public class Snake extends Shape<Node> {
     }
 
     public void printSnake() {
-        System.out.println("Print Nodes (" + super.getNumPoints() + ")");
+        System.out.println("Print Nodes (" + POINTS + ")");
         int i = 0;
         Node n = head;
         do {
@@ -418,7 +418,7 @@ public class Snake extends Shape<Node> {
             n = n.getNext();
             i++;
         } while (!n.isHead());
-        if (i != super.getNumPoints()) {
+        if (i != POINTS) {
             System.out.println("NODES and linked list dont tally!!");
         }
     }
@@ -449,7 +449,7 @@ public class Snake extends Shape<Node> {
      * @return number of nodes in current Snake
      */
     public int getNODES() {
-        return super.getNumPoints();
+        return POINTS;
     }
 
     /**
@@ -494,7 +494,7 @@ public class Snake extends Shape<Node> {
      * @return \c true if all nodes are frozen
      */
     public boolean isFrozen() {
-        if (FROZEN == super.getNumPoints()) {
+        if (FROZEN == POINTS) {
             return true;
         } else {
             return false;
@@ -539,9 +539,9 @@ public class Snake extends Shape<Node> {
      * @throws Exception
      */
     final public void removeNode(Node n) throws BoaException {
-        if (super.getNumPoints() <= 3) {
-            throw new BoaException("removeNode: Did not remove node. " + super.getNumPoints()
-                    + " nodes remaining.", 0, 2);
+        if (POINTS <= 3) {
+            throw new BoaException(
+                    "removeNode: Did not remove node. " + POINTS + " nodes remaining.", 0, 2);
         }
         if (n.isFrozen()) {
             FROZEN--;
@@ -580,8 +580,8 @@ public class Snake extends Shape<Node> {
             cy += n.getY();
             n = n.getNext();
         } while (!n.isHead());
-        cx = cx / super.getNumPoints();
-        cy = cy / super.getNumPoints();
+        cx = cx / POINTS;
+        cy = cy / POINTS;
 
         intializeOval(nextTrackNumber, (int) cx, (int) cy, 4, 4, 1);
     }
@@ -652,8 +652,7 @@ public class Snake extends Shape<Node> {
                                          // cross, but do touch
 
             // always leave 3 nodes, at least
-            interval = (super.getNumPoints() > MAXINTERVAL + 3) ? MAXINTERVAL
-                    : (super.getNumPoints() - 3);
+            interval = (POINTS > MAXINTERVAL + 3) ? MAXINTERVAL : (POINTS - 3);
 
             for (int i = 0; i < interval; i++) {
                 if (nB.isHead()) {
@@ -720,8 +719,8 @@ public class Snake extends Shape<Node> {
             cutHead = (nA.getNext().isHead()) ? true : false;
             nB = nA.getNext().getNext();// don't check next edge as they can't
                                         // cross, but do touch
-            interval = (super.getNumPoints() > 6) ? super.getNumPoints() / 2 : 2; // always leave 3
-                                                                                  // nodes, at
+            interval = (POINTS > 6) ? POINTS / 2 : 2; // always leave 3
+                                                      // nodes, at
             // least
 
             for (int i = 2; i < interval; i++) {
@@ -795,7 +794,7 @@ public class Snake extends Shape<Node> {
                 diffXp = right2.getPoint().getX() - node2.getPoint().getX();
                 diffYp = right2.getPoint().getY() - node2.getPoint().getY();
 
-                if ((super.getNumPoints() - (i + 1)) < 4) {
+                if ((POINTS - (i + 1)) < 4) {
                     break;
                 }
                 if (node1.getTrackNum() == right2.getTrackNum()) { // dont go
@@ -1002,8 +1001,8 @@ public class Snake extends Shape<Node> {
 
     Roi asFloatRoi() {
 
-        float[] x = new float[super.getNumPoints()];
-        float[] y = new float[super.getNumPoints()];
+        float[] x = new float[POINTS];
+        float[] y = new float[POINTS];
 
         Node n = head;
         int i = 0;
@@ -1013,12 +1012,12 @@ public class Snake extends Shape<Node> {
             i++;
             n = n.getNext();
         } while (!n.isHead());
-        return new PolygonRoi(x, y, super.getNumPoints(), Roi.POLYGON);
+        return new PolygonRoi(x, y, POINTS, Roi.POLYGON);
     }
 
     Roi asPolyLine() {
-        float[] x = new float[super.getNumPoints()];
-        float[] y = new float[super.getNumPoints()];
+        float[] x = new float[POINTS];
+        float[] y = new float[POINTS];
 
         Node n = head;
         int i = 0;
@@ -1028,7 +1027,7 @@ public class Snake extends Shape<Node> {
             i++;
             n = n.getNext();
         } while (!n.isHead());
-        return new PolygonRoi(x, y, super.getNumPoints(), Roi.POLYLINE);
+        return new PolygonRoi(x, y, POINTS, Roi.POLYLINE);
     }
 
     /**
@@ -1037,7 +1036,7 @@ public class Snake extends Shape<Node> {
      * @return List of Vector2d objects representing coordinates of Snake Nodes
      */
     public List<Point2d> asList() {
-        List<Point2d> al = new ArrayList<Point2d>(super.getNumPoints());
+        List<Point2d> al = new ArrayList<Point2d>(POINTS);
         // iterate over nodes at Snake
         Node n = head;
         do {
@@ -1105,9 +1104,8 @@ public class Snake extends Shape<Node> {
             n = n.getNext();
         } while (!n.isHead());
 
-        if (count != super.getNumPoints()) {
-            System.out.println(
-                    "Node number wrong. NODES:" + super.getNumPoints() + " .actual: " + count);
+        if (count != POINTS) {
+            System.out.println("Node number wrong. NODES:" + POINTS + " .actual: " + count);
             return false;
         } else {
             return true;

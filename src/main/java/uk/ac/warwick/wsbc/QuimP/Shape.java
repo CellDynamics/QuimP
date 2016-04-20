@@ -14,10 +14,10 @@ package uk.ac.warwick.wsbc.QuimP;
 public abstract class Shape<T extends PointListNode<T>> {
     protected int nextTrackNumber = 1; /*!< next node ID's */
     protected T head; /*!< first node in double linked list, always maintained */
-    protected int POINTS; /*!< number of points TODO use directly without setter and getter maybe */
+    protected int POINTS; /*!< number of points */
 
     /**
-     * Default constructor, creates empty Shape
+     * Default constructor, create empty Shape
      */
     public Shape() {
         POINTS = 0;
@@ -25,7 +25,7 @@ public abstract class Shape<T extends PointListNode<T>> {
     }
 
     /**
-     * Creates Shape from existing list of points (can be one point as well)
+     * Create Shape from existing list of points (can be one point as well)
      * 
      * @param h head point of the list
      * @param N number of points in the list 
@@ -37,7 +37,7 @@ public abstract class Shape<T extends PointListNode<T>> {
     }
 
     /**
-     * Creates Shape from one point, created Shape is looped
+     * Create Shape from one point, created Shape is looped
      * 
      * @param h head point of the list
      */
