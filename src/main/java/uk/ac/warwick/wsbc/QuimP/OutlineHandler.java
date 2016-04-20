@@ -1,16 +1,24 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-import ij.*;
-import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-import java.io.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ij.IJ;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
  *
  * @author tyson
  */
 public class OutlineHandler {
-
+    private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
     private Outline[] outlines;
     private int size;
     private int startFrame;
@@ -89,7 +97,7 @@ public class OutlineHandler {
 
     }
 
-    private boolean readOutlines(File f) {
+    private boolean readOutlines(final File f) {
         if (!f.exists()) {
             IJ.error("Cannot locate snake file (snQP)\n'" + f.getAbsolutePath() + "'");
             return false;
@@ -184,8 +192,7 @@ public class OutlineHandler {
                 prevn.setNext(head);
                 head.setPrev(prevn);
 
-                outlines[s] = new Outline(head, N + 1); // dont forget the head
-                                                        // node
+                outlines[s] = new Outline(head, N + 1); // dont forget the head node
                 outlines[s].updateNormales(true);
                 outlines[s].makeAntiClockwise();
                 length = outlines[s].getLength();
@@ -200,6 +207,8 @@ public class OutlineHandler {
                 // }
 
                 s++;
+                LOGGER.trace("Outline: " + s + " head =[" + outlines[s - 1].getHead().getX() + ","
+                        + outlines[s - 1].getHead().getY() + "]");
             } // end while
             br.close();
 
@@ -334,7 +343,8 @@ public class OutlineHandler {
                 pw.print("-ECMM");
             }
             pw.write("\n#Node Position\tX-coord\tY-coord\tOrigin\tG-Origin\tSpeed");
-            pw.write("\tFluor_Ch1\tCh1_x\tCh1_y\tFluor_Ch2\tCh2_x\tCh2_y\tFluor_CH3\tCH3_x\tCh3_y\n#");
+            pw.write(
+                    "\tFluor_Ch1\tCh1_x\tCh1_y\tFluor_Ch2\tCh2_x\tCh2_y\tFluor_CH3\tCH3_x\tCh3_y\n#");
 
             Outline o;
             for (int i = startFrame; i <= endFrame; i++) {
@@ -383,13 +393,13 @@ public class OutlineHandler {
         pw.print("\n" + VERTS);
 
         do {
-            pw.print("\n" + IJ.d2s(v.coord, 6) + "\t" + IJ.d2s(v.getX(), 2) + "\t" + IJ.d2s(v.getY(), 2) + "\t"
-                    + IJ.d2s(v.fCoord, 6) + "\t" + IJ.d2s(v.gCoord, 6) + "\t" + IJ.d2s(v.distance, 6) + "\t"
-                    + IJ.d2s(v.fluores[0].intensity, 6) + "\t" + IJ.d2s(v.fluores[0].x, 0) + "\t"
-                    + IJ.d2s(v.fluores[0].y, 0) + "\t" + IJ.d2s(v.fluores[1].intensity, 6) + "\t"
-                    + IJ.d2s(v.fluores[1].x, 0) + "\t" + IJ.d2s(v.fluores[1].y, 0) + "\t"
-                    + IJ.d2s(v.fluores[2].intensity, 6) + "\t" + IJ.d2s(v.fluores[2].x, 0) + "\t"
-                    + IJ.d2s(v.fluores[2].y, 0));
+            pw.print("\n" + IJ.d2s(v.coord, 6) + "\t" + IJ.d2s(v.getX(), 2) + "\t"
+                    + IJ.d2s(v.getY(), 2) + "\t" + IJ.d2s(v.fCoord, 6) + "\t" + IJ.d2s(v.gCoord, 6)
+                    + "\t" + IJ.d2s(v.distance, 6) + "\t" + IJ.d2s(v.fluores[0].intensity, 6) + "\t"
+                    + IJ.d2s(v.fluores[0].x, 0) + "\t" + IJ.d2s(v.fluores[0].y, 0) + "\t"
+                    + IJ.d2s(v.fluores[1].intensity, 6) + "\t" + IJ.d2s(v.fluores[1].x, 0) + "\t"
+                    + IJ.d2s(v.fluores[1].y, 0) + "\t" + IJ.d2s(v.fluores[2].intensity, 6) + "\t"
+                    + IJ.d2s(v.fluores[2].x, 0) + "\t" + IJ.d2s(v.fluores[2].y, 0));
             v = v.getNext();
         } while (!v.isHead());
     }
