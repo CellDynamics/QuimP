@@ -605,8 +605,6 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         // LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }
 
-    }
-
     public boolean cutSelfIntersects() {
         // done once at the end of each frame to cut out any parts of the
         // contour
