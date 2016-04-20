@@ -97,7 +97,7 @@ public class OutlineHandler {
 
     }
 
-    private boolean readOutlines(File f) {
+    private boolean readOutlines(final File f) {
         if (!f.exists()) {
             IJ.error("Cannot locate snake file (snQP)\n'" + f.getAbsolutePath() + "'");
             return false;
@@ -192,8 +192,7 @@ public class OutlineHandler {
                 prevn.setNext(head);
                 head.setPrev(prevn);
 
-                outlines[s] = new Outline(head, N + 1); // dont forget the head
-                                                        // node
+                outlines[s] = new Outline(head, N + 1); // dont forget the head node
                 outlines[s].updateNormales(true);
                 outlines[s].makeAntiClockwise();
                 length = outlines[s].getLength();
@@ -208,7 +207,8 @@ public class OutlineHandler {
                 // }
 
                 s++;
-                LOGGER.trace("Outline: " + s + " head =[" + head.getX() + "," + head.getY() + "]");
+                LOGGER.trace("Outline: " + s + " head =[" + outlines[s - 1].getHead().getX() + ","
+                        + outlines[s - 1].getHead().getY() + "]");
             } // end while
             br.close();
 

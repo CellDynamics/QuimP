@@ -239,7 +239,8 @@ public class ECMM_Mapping {
                 o1.setResolution(Math.abs(ECMp.markerRes));
             }
         }
-        LOGGER.trace("Outline o1:head =[" + o1.getHead().getX() + "," + o1.getHead().getY() + "]");
+        // LOGGER.trace("Outline o1:head =[" + o1.getHead().getX() + "," + o1.getHead().getY() +
+        // "]");
         o1.resetAllCoords();
         o1.clearFluores();
 

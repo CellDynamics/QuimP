@@ -21,12 +21,28 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 public final class Outline implements Cloneable {
     private static final Logger LOGGER = LogManager.getLogger(Outline.class.getName());
     private int nextTrackNumber = 1; // node ID's
-    private Vert head; // first node in doubley linked list, always maintained
+    private Vert head; // first node in double linked list, always maintained
     private int VERTS; // number of nodes
     QColor color;
 
+    /**
+     * Create a snake from existing linked list
+     * 
+     * @param h head node of linked list
+     * @param N number of nodes in list
+     * @warning head node \c h is deleted from list. List \c h should have dummy head node
+     * @code{.java}
+     *  index = 0;
+     *  head = new Vert(index); // dummy head node
+     *  head.setHead(true);
+     *  prevn = head;
+     *  index++;
+     *  // insert next nodes here
+     * @endcode 
+     * @see uk.ac.warwick.wsbc.QuimP.OutlineHandler.readOutlines(final File) for example of use
+     */
     public Outline(Vert h, int N) {
-        // create a snake from existing linked list
+        //
         head = h;
         VERTS = N;
         nextTrackNumber = N + 1;
@@ -189,6 +205,7 @@ public final class Outline implements Cloneable {
 
         // if removing head assign neighbour as new head (but not an intpoint)
         if (v.isHead()) {
+            LOGGER.trace("Removing head");
             if (Math.random() > 0.5) { // pick random direction to move head
                 do {
                     head = v.getPrev();
@@ -202,7 +219,7 @@ public final class Outline implements Cloneable {
             }
             head.setHead(true);
         }
-
+        // LOGGER.trace("head is: [" + head.getX() + "," + head.getY() + "]");
         VERTS--;
         if (VERTS < 3) {
             IJ.error("Outline.199. WARNING! Nodes less then 3");
@@ -242,8 +259,15 @@ public final class Outline implements Cloneable {
         return newNode;
     }
 
+    /**
+     * Insert a vertex in-between \c v and \c v.next with interpolated values
+     * 
+     * Modify current Outline
+     * 
+     * @param v 
+     * @return Vertex created between \c v and \c v.next
+     */
     public Vert insertInterpolatedVert(Vert v) {
-        // insert a vert in-between v and v.next with interpolated values
         Vert newVert = insertVert(v);
         newVert.setX((newVert.getPrev().getX() + newVert.getNext().getX()) / 2);
         newVert.setY((newVert.getPrev().getY() + newVert.getNext().getY()) / 2);
@@ -405,6 +429,7 @@ public final class Outline implements Cloneable {
             v1 = v1.getNext();
         } while (!v1.isHead());
         oldHead = null;
+        // LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }
 
     public void setResolutionN(double numVerts) {
@@ -615,15 +640,13 @@ public final class Outline implements Cloneable {
 
             if (dist < min) {
                 removeVert(v.getNext());
-                // IJ.write("removed Vert, dist: " + dist);
             } else if (dist > max) {
                 this.insertInterpolatedVert(v);
-                // v = v.getNext();
             } else {
                 v = v.getNext();
             }
         } while (!v.isHead());
-        LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
+        // LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }
 
     @Deprecated
@@ -875,7 +898,7 @@ public final class Outline implements Cloneable {
             d = d + ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
             v = v.getNext();
         } while (!v.isHead());
-        LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
+        // LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }
 
     public Object clone() {
