@@ -9,6 +9,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * vertexes and vectors.
  * 
  * @author rtyson
+ * @author p.baniukiewicz
  */
 public class Vert extends PointsList<Vert> {
     public double charge; /*!< charge on the vertex */
@@ -57,9 +58,29 @@ public class Vert extends PointsList<Vert> {
         vertInitializer();
     }
 
+    /**
+     * Create Vert from {x,y} coordinates
+     * 
+     * @param xx x-axis coordinate
+     * @param yy y-axis coordinate
+     * @param t id of Vert
+     * @see uk.ac.warwick.wsbc.QuimP.PointListNode.PointListNode(double, double, int)
+     */
     public Vert(double xx, double yy, int t) {
         super(xx, yy, t);
         vertInitializer();
+    }
+
+    /**
+     * Copy constructor. Copy properties of Vert
+     * 
+     * Previous or next points are not copied
+     * 
+     * @param src Source Vert
+     * @todo TODO To implement
+     */
+    public Vert(final Vert src) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**

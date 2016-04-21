@@ -67,6 +67,7 @@ public class Snake extends Shape<Node> {
      * @param snake Snake to be duplicated
      * @param id New id
      * @throws BoaException 
+     * @todo WARN May not be exact copy, investigate this
      */
     public Snake(final Snake snake, int id) throws BoaException {
 
@@ -91,7 +92,7 @@ public class Snake extends Shape<Node> {
         head.setPrev(nn);
 
         snakeID = id;
-        POINTS = snake.getNODES() + 1;
+        POINTS = snake.getNumNodes() + 1;
         FROZEN = POINTS;
         nextTrackNumber = POINTS + 1;
         centroid = new ExtendedVector2d(0d, 0d);
@@ -431,7 +432,6 @@ public class Snake extends Shape<Node> {
             oldhead.setHead(false);
         head = n;
         LOGGER.debug("New head is: " + getHead().toString());
-
     }
 
     /**
@@ -439,7 +439,7 @@ public class Snake extends Shape<Node> {
      * 
      * @return number of nodes in current Snake
      */
-    public int getNODES() {
+    public int getNumNodes() {
         return POINTS;
     }
 

@@ -59,6 +59,18 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         color = new QColor(0.5, 0, 1);
     }
 
+    /**
+     * Copy constructor. Copy properties of Outline
+     * 
+     * Previous or next points are not copied
+     * 
+     * @param src Source Outline
+     * @todo TODO To implement and replace clone()
+     */
+    public Outline(final Outline src) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
     public Outline(Roi roi) {
         // Create an outline from an Roi
         // int[] xCoords = ((PolygonRoi)roi).getXCoordinates();
@@ -172,7 +184,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
      * 
      * @return number of Vert in current Outline
      */
-    public int getVerts() {
+    public int getNumVerts() {
         return POINTS;
     }
 
@@ -648,7 +660,6 @@ public final class Outline extends Shape<Vert> implements Cloneable {
                     POINTS -= (i);
                     break;
                 }
-
                 nB = nB.getNext();
             }
             nA = nA.getNext();
@@ -657,10 +668,14 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         return iCut;
     }
 
+    /**
+     * Remove really small edges that cause numerical inaccuracy when checking for self intersects.
+     * 
+     * Tends to happen when migrating edges get pushed together
+     * 
+     * @return \c true if deleted something
+     */
     public boolean removeNanoEdges() {
-        // remove really small edges that cause numerical inaccuracy when
-        // checking for self intersects.
-        // tends to happen when migrating edges get pushed together
         double nano = 0.1;
         double length;
         boolean deleted = false;
@@ -684,24 +699,13 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         return deleted;
     }
 
-    public double getLength() {
-        // add up lengths between all verts
-        Vert v = head;
-        double length = 0.0;
-        do {
-            length += ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
-            v = v.getNext();
-        } while (!v.isHead());
-        return length;
-    }
-
+    /**
+     * Set head node coord to zero. Make closest landing to zero the head node
+     * 
+     * Prevents circulating of the zero coord
+     */
     public void coordReset() {
-        // set head node coord to zero. Make closest landing to zero the head
-        // node
-        // prevents circulating of the zero coord
-
-        Vert vFirst = findFirstNode('g'); // get first node in terms of fcoord
-                                          // (origin)
+        Vert vFirst = findFirstNode('g'); // get first node in terms of fcoord (origin)
         head.setHead(false);
         head = vFirst;
         head.setHead(true);
@@ -749,7 +753,6 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         oV = oV.getNext();
         do {
             nV = n.insertVert(nV);
-
             nV.setX(oV.getX());
             nV.setY(oV.getY());
             nV.coord = oV.coord;

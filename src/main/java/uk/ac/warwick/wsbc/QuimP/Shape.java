@@ -115,7 +115,7 @@ public abstract class Shape<T extends PointsList<T>> {
     /**
      * Add up lengths between all verts
      * 
-     * @return length of snake
+     * @return length of Shape
      */
     public double getLength() {
         T v = head;
