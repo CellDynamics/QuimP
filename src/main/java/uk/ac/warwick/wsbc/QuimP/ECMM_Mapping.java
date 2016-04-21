@@ -34,6 +34,7 @@ public class ECMM_Mapping {
     static {
         System.setProperty("log4j.configurationFile", "qlog4j2.xml");
     }
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 
     OutlineHandler oH, outputH;

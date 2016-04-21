@@ -11,34 +11,33 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @author rtyson
  */
 public class Vert extends PointsList<Vert> {
-    public double charge; // charge on the vertex
-    public double distance; // distance vert migrated (actually converted to speed by
-                            // Tool.speedToScale
-    final FluoMeasurement[] fluores = new FluoMeasurement[3]; // fluorescence channels 1-3.
-                                                              // Intensity and location
-    public double curvatureLocal; // curvature local to a node
-    public double curvatureSmoothed; // smoothed curvature
-    public double curvatureSum; // summed curvature over x microns
-                                // this is the value recorded into maps
-
-    public double coord; // co-ord relative to head node on current frame
-    public double fCoord; // coor relative to coord on previous frame
-    public double fLandCoord; // landing relative to previous frame
-    public double gCoord; // global co-ord relative to head node on frame 1;
-    public double gLandCoord; // landing co-cord relative to head node on frame
-                              // 1;
+    public double charge; /*!< charge on the vertex */
+    public double distance; /*!< distance vert migrated (actually converted to speed by Tool.speedToScale */
+    final FluoMeasurement[] fluores = new FluoMeasurement[3]; /*!< fluorescence channels 1-3 */
+    public double curvatureLocal; /*!< curvature local to a node */
+    public double curvatureSmoothed; /*!< smoothed curvature */
+    public double curvatureSum; /*!< summed curvature over x microns this is the value recorded into maps */
+    public double coord; /*!< co-ord relative to head node on current frame */
+    public double fCoord; /*!< coor relative to coord on previous frame */
+    public double fLandCoord; /*!< landing relative to previous frame */
+    public double gCoord; /*!< global co-ord relative to head node on frame 1; */
+    public double gLandCoord; /*!< landing co-cord relative to head node on frame 1; */
     public double tarLandingCoord;
-
-    public QColor color;
-
-    private boolean intPoint; // vert represents an intersect point and is
-                              // temporary. Mark start end of sectors
-    public boolean snapped; // the vert has been snapped to an edge
+    public QColor color; /*!< color of Vert */
+    private boolean intPoint; /*!< vert represents an intersect point and is temporary. Mark start end of sectors */
+    public boolean snapped; /*!< the vert has been snapped to an edge */
 
     public int intsectID;
-    public int intState;; // 0 - undetermined; 1-forms valid sector;
-                          // 2-LOOSE sector; 3-forms inverted sector; 4-inverted
-                          // and loose
+
+    /**
+     * Internal state
+     * -# 0 - undetermined
+     * -# 1 - forms valid sector
+     * -# 2 - LOOSE sector
+     * -# 3 - forms inverted sector
+     * -# 4 inverted and loose
+     */
+    public int intState;
 
     /**
      * Default constructor, creates Vert element with ID=1

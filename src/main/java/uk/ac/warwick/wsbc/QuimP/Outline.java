@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ij.IJ;
-import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
@@ -20,7 +19,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  */
 public final class Outline extends Shape<Vert> implements Cloneable {
     private static final Logger LOGGER = LogManager.getLogger(Outline.class.getName());
-    QColor color;
+    QColor color; /*!< Color of the Outline */
 
     /**
      * Create a Outline from existing linked list
@@ -168,29 +167,22 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         // Tool.plotXY(xArr, yArr, title);
     }
 
+    /**
+     * Get number of Vert objects forming current Outline
+     * 
+     * @return number of Vert in current Outline
+     */
     public int getVerts() {
         return POINTS;
     }
 
-    public int countVERTS() {
-        Vert v = head;
-        int c = 0;
-        do {
-            c++;
-            v = v.getNext();
-        } while (!v.isHead());
-
-        return c;
-
-    }
-
     /**
-     * Remove selected node from list.
+     * Remove selected Vert from list.
      * 
-     * Perform check if removed node was head and if it was, the new head is randomly selected.
+     * Perform check if removed Vert was head and if it was, the new head is randomly selected.
      * Neighbors are linked together
      * 
-     * @param n Node to remove
+     * @param v Vert to remove
      */
     public void removeVert(Vert v) {
         if (POINTS <= 3) {
@@ -201,7 +193,6 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         if (POINTS < 3) {
             IJ.error("Outline.199. WARNING! Nodes less then 3");
         }
-
     }
 
     /**
@@ -257,18 +248,6 @@ public final class Outline extends Shape<Vert> implements Cloneable {
             dis += -1; // passed zero
         }
         return dis;
-    }
-
-    public Polygon asPolygon() {
-        Polygon pol = new Polygon();
-        Vert v = head;
-
-        do {
-            pol.addPoint((int) v.getX(), (int) v.getY());
-            v = v.getNext();
-        } while (!v.isHead());
-
-        return pol;
     }
 
     /**
@@ -616,6 +595,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
      * 
      * @return \c true if cut something
      * @see uk.ac.warwick.wsbc.QuimP.Snake.cutLoops()
+     * @see uk.ac.warwick.wsbc.QuimP.Snake.cutIntersects()
      */
     public boolean cutSelfIntersects() {
         boolean iCut = false;
@@ -633,17 +613,14 @@ public final class Outline extends Shape<Vert> implements Cloneable {
             nB = nA.getNext().getNext(); // don't check the next one along! they touch, not overlap
             interval = (POINTS > 6) ? POINTS / 2 : 2; // always leave 3 nodes, at least.
                                                       // Check half way around
-
             for (int i = 2; i < interval; i++) {
-
                 if (nB.isHead()) {
                     cutHead = true;
                 }
                 intersect = new double[2];
-                state = ExtendedVector2d.segmentIntersection(nA.getPoint().getX(),
-                        nA.getPoint().getY(), nA.getNext().getPoint().getX(),
-                        nA.getNext().getPoint().getY(), nB.getPoint().getX(), nB.getPoint().getY(),
-                        nB.getNext().getPoint().getX(), nB.getNext().getPoint().getY(), intersect);
+                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(),
+                        nA.getNext().getX(), nA.getNext().getY(), nB.getX(), nB.getY(),
+                        nB.getNext().getX(), nB.getNext().getY(), intersect);
 
                 if (state == 1) {
                     iCut = true;
@@ -665,11 +642,9 @@ public final class Outline extends Shape<Vert> implements Cloneable {
 
                     // newN.print("inserted node: ");
                     // System.out.println("C - VERTS : " + VERTS);
-                    if (POINTS - (i) < 3) {
-                        System.out.println(
+                    if (POINTS - (i) < 3)
+                        LOGGER.warn(
                                 "OUTLINE 594_VERTS WILL BE than 3. i = " + i + ", VERT=" + POINTS);
-                    }
-
                     POINTS -= (i);
                     break;
                 }
@@ -855,62 +830,12 @@ public final class Outline extends Shape<Vert> implements Cloneable {
 
     }
 
-    Roi asRoi() {
-        Polygon p = asPolygon();
-        Roi r = new PolygonRoi(p, PolygonRoi.POLYGON);
-        return r;
-    }
-
-    Roi asFloatRoi() {
-
-        float[] x = new float[POINTS];
-        float[] y = new float[POINTS];
-
-        Vert n = head;
-        int i = 0;
-        do {
-            x[i] = (float) n.getX();
-            y[i] = (float) n.getY();
-            i++;
-            n = n.getNext();
-        } while (!n.isHead());
-        return new PolygonRoi(x, y, POINTS, Roi.POLYGON);
-    }
-
     void clearFluores() {
         Vert v = head;
         do {
             v.setFluoresChannel(-2, -2, -2, 0);
             v.setFluoresChannel(-2, -2, -2, 1);
             v.setFluoresChannel(-2, -2, -2, 2);
-            v = v.getNext();
-        } while (!v.isHead());
-    }
-
-    public void makeAntiClockwise() {
-
-        double sum = 0;
-        Vert v = head;
-        do {
-            sum += (v.getNext().getX() - v.getX()) * (v.getNext().getY() + v.getY());
-            v = v.getNext();
-        } while (!v.isHead());
-        if (sum > 0) {
-            // System.out.println("Warning. Was clockwise, reversed");
-            this.reverseSnake();
-            this.updateNormales(true);
-        } else {
-        }
-    }
-
-    public void reverseSnake() {
-        // turn it back anti clockwise
-        Vert tmp;
-        Vert v = head;
-        do {
-            tmp = v.getNext();
-            v.setNext(v.getPrev());
-            v.setPrev(tmp);
             v = v.getNext();
         } while (!v.isHead());
     }
@@ -965,31 +890,5 @@ public final class Outline extends Shape<Vert> implements Cloneable {
             v = v.getNext();
         } while (!v.isHead());
         return head;
-    }
-
-    public void scale(double amount, double stepSize) {
-        // make sure snake access is clockwise
-        Node.setClockwise(true);
-        // scale the snake by 'amount', in increments of 'stepsize'
-        if (amount > 0) {
-            stepSize *= -1; // scale down if amount negative
-        }
-        double steps = Math.abs(amount / stepSize);
-        // IJ.log(""+steps);
-        Vert n;
-        int j;
-        for (j = 0; j < steps; j++) {
-            n = head;
-            do {
-
-                n.setX(n.getX() + stepSize * n.getNormal().getX());
-                n.setY(n.getY() + stepSize * n.getNormal().getY());
-
-                n = n.getNext();
-            } while (!n.isHead());
-
-            // cutSelfIntersects();
-            updateNormales(false);
-        }
     }
 }

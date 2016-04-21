@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -232,7 +231,7 @@ public class Snake extends Shape<Node> {
             nextTrackNumber++;
             node.getPoint().setX((int) (xc + Rx * Math.cos(a)));
             node.getPoint().setY((int) (yc + Ry * Math.sin(a)));
-            addNode(node);
+            addPoint(node);
         }
         removeNode(head); // remove dummy head node
         this.makeAntiClockwise();
@@ -279,7 +278,7 @@ public class Snake extends Shape<Node> {
                 y = a.getY() + (double) s * u.getY();
                 node.setX(x);
                 node.setY(y);
-                addNode(node);
+                addPoint(node);
             }
         }
         removeNode(head); // remove dummy head node new head will be set
@@ -307,7 +306,7 @@ public class Snake extends Shape<Node> {
         Node node;
         for (int i = 0; i < p.npoints; i++) {
             node = new Node((double) p.xpoints[i], (double) p.ypoints[i], nextTrackNumber++);
-            addNode(node);
+            addPoint(node);
         }
 
         removeNode(head); // remove dummy head node
@@ -333,7 +332,7 @@ public class Snake extends Shape<Node> {
         Node node;
         for (int i = 0; i < p.npoints; i++) {
             node = new Node((double) p.xpoints[i], (double) p.ypoints[i], nextTrackNumber++);
-            addNode(node);
+            addPoint(node);
         }
 
         removeNode(head); // remove dummy head node
@@ -358,7 +357,7 @@ public class Snake extends Shape<Node> {
         Node node;
         for (Tuple2d el : p) {
             node = new Node(el.getX(), el.getY(), nextTrackNumber++);
-            addNode(node);
+            addPoint(node);
         }
 
         removeNode(head);
@@ -387,7 +386,7 @@ public class Snake extends Shape<Node> {
         Node node;
         for (int i = 0; i < X.length; i++) {
             node = new Node(X[i], Y[i], nextTrackNumber++);
-            addNode(node);
+            addPoint(node);
         }
 
         removeNode(head);
@@ -415,11 +414,13 @@ public class Snake extends Shape<Node> {
     /**
      * Assign head to node \c nodeIndex.
      * 
-     * Do not change head if \c nodeIndex is not found
+     * Do not change \b head if \c nodeIndex is not found or there is no \b head in list
      * 
      * @param nodeIndex Index of node of new head
      */
     public void setNewHead(int nodeIndex) {
+        if (!checkIsHead())
+            return;
         Node n = head;
         Node oldhead = n;
         do {
@@ -430,6 +431,7 @@ public class Snake extends Shape<Node> {
             oldhead.setHead(false);
         head = n;
         LOGGER.debug("New head is: " + getHead().toString());
+
     }
 
     /**
@@ -487,35 +489,6 @@ public class Snake extends Shape<Node> {
     }
 
     /**
-     * Add node before head node assuring that list has closed loop. If initial
-     * list condition is defined in such way:
-     * 
-     * @code
-     * head = new Node(0); //make a dummy head node NODES = 1; FROZEN = 0;
-     * head.setPrev(head); // link head to itself head.setNext(head);
-     * head.setHead(true);
-     * @endcode
-     * 
-     * The \c addNode will produce closed bidirectional linked list.
-     * From first Node it is possible to reach last one by calling
-     * Node::getNext() and from the last one, first should be accessible
-     * by calling Node::getPrev()
-     * 
-     * @param newNode Node to be added to list
-     * 
-     * @remarks For initialization only
-     */
-    private void addNode(final Node newNode) {
-        Node prevNode = head.getPrev();
-        newNode.setPrev(prevNode);
-        newNode.setNext(head);
-
-        head.setPrev(newNode);
-        prevNode.setNext(newNode);
-        POINTS++;
-    }
-
-    /**
      * Remove selected node from list.
      * 
      * Perform check if removed node was head and if it was, the new head is randomly selected.
@@ -562,6 +535,15 @@ public class Snake extends Shape<Node> {
         intializeOval(nextTrackNumber, (int) cx, (int) cy, 4, 4, 1);
     }
 
+    /**
+     * Scale current Snake by \c amount in increments of \c stepSize
+     * 
+     * @param amount scale
+     * @param stepSize increment
+     * @param correct
+     * @throws BoaException
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.scale(double, double)
+     */
     public void scale(double amount, double stepSize, boolean correct) throws BoaException {
         if (amount == 0)
             return;
@@ -660,6 +642,7 @@ public class Snake extends Shape<Node> {
      * all edges (NODES / 2) and cuts out the smallest section
      * 
      * @see cutLoops()
+     * @see uk.ac.warwick.wsbc.QuimP.Outline.cutSelfIntersects()
      */
     public void cutIntersects() {
 
@@ -674,27 +657,19 @@ public class Snake extends Shape<Node> {
         nA = head;
         do {
             cutHead = (nA.getNext().isHead()) ? true : false;
-            nB = nA.getNext().getNext();// don't check next edge as they can't
-                                        // cross, but do touch
-            interval = (POINTS > 6) ? POINTS / 2 : 2; // always leave 3
-                                                      // nodes, at
-            // least
+            nB = nA.getNext().getNext();// don't check next edge as they can't cross, but do touch
+            interval = (POINTS > 6) ? POINTS / 2 : 2; // always leave 3 nodes, at least
 
             for (int i = 2; i < interval; i++) {
                 if (nB.isHead()) {
                     cutHead = true;
                 }
+
                 state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(),
                         nA.getNext().getX(), nA.getNext().getY(), nB.getX(), nB.getY(),
                         nB.getNext().getX(), nB.getNext().getY(), intersect);
-                if (state == 1) {
-                    // System.out.println("CutIntersect: cut out an intersect:
-                    // x0: " +
-                    // nA.getX() + ", y0:" + nA.getY()+ ", x1 :"
-                    // +nA.getNext().getX()+ ", y1: " +nA.getNext().getY() +
-                    // ", x2: "+nB.getX()+ ", y2: " + nB.getY()+ ", x3: "
-                    // +nB.getNext().getX()+ ", y3: " + nB.getNext().getY());
 
+                if (state == 1) {
                     newN = this.insertNode(nA);
                     newN.setX(intersect[0]);
                     newN.setY(intersect[1]);
@@ -912,41 +887,10 @@ public class Snake extends Shape<Node> {
     }
 
     /**
-     * Return current \c snake as polygon
+     * Return current Snake as \b POLYLINE
+     * 
+     * @return ij.gui.PolygonRoi.PolygonRoi as \b POLYLINE type
      */
-    public Polygon asPolygon() {
-        Polygon pol = new Polygon();
-        Node n = head;
-
-        do {
-            pol.addPoint((int) Math.floor(n.getX() + 0.5), (int) Math.floor(n.getY() + 0.5));
-            n = n.getNext();
-        } while (!n.isHead());
-
-        return pol;
-    }
-
-    Roi asIntRoi() {
-        Polygon p = asPolygon();
-        Roi r = new PolygonRoi(p, PolygonRoi.POLYGON);
-        return r;
-    }
-
-    Roi asFloatRoi() {
-        float[] x = new float[POINTS];
-        float[] y = new float[POINTS];
-
-        Node n = head;
-        int i = 0;
-        do {
-            x[i] = (float) n.getX();
-            y[i] = (float) n.getY();
-            i++;
-            n = n.getNext();
-        } while (!n.isHead());
-        return new PolygonRoi(x, y, POINTS, Roi.POLYGON);
-    }
-
     Roi asPolyLine() {
         float[] x = new float[POINTS];
         float[] y = new float[POINTS];
@@ -1024,38 +968,18 @@ public class Snake extends Shape<Node> {
     }
 
     /**
-     * Count the nodes and check that NODES matches
-     * 
-     * @return \c true if counted nodes matches \c NODES
-     */
-    public boolean checkNodeNumber() {
-        Node n = head;
-        int count = 0;
-        do {
-            count++;
-            n = n.getNext();
-        } while (!n.isHead());
-
-        if (count != POINTS) {
-            LOGGER.error("Node number wrong. NODES:" + POINTS + " .actual: " + count);
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * Check if there is a head node
+     * 
+     * Traverse along first 10000 Node elements and check if any of them is \b head
      * 
      * @return \c true if there is head of snake
      */
     public boolean checkIsHead() {
-        // make sure there is a head node
         Node n = head;
         int count = 0;
         do {
             if (count++ > 10000) {
-                System.out.println("Head lost!!!!");
+                LOGGER.error("Head lost!!!!");
                 return false;
             }
             n = n.getNext();
@@ -1065,34 +989,6 @@ public class Snake extends Shape<Node> {
 
     public void editSnake() {
         System.out.println("Editing a snake");
-    }
-
-    public void makeAntiClockwise() {
-        // BOA_.log("Checking if clockwise...");
-        double sum = 0;
-        Node v = head;
-        do {
-            sum += (v.getNext().getX() - v.getX()) * (v.getNext().getY() + v.getY());
-            v = v.getNext();
-        } while (!v.isHead());
-        if (sum > 0) {
-            // BOA_.log("\tclockwise, reversed");
-            this.reverseSnake();
-        }
-    }
-
-    /**
-     * Turn Snake back anti clockwise
-     */
-    public void reverseSnake() {
-        Node tmp;
-        Node v = head;
-        do {
-            tmp = v.getNext();
-            v.setNext(v.getPrev());
-            v.setPrev(tmp);
-            v = v.getNext();
-        } while (!v.isHead());
     }
 
     /**

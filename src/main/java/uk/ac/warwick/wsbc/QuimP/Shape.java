@@ -1,5 +1,12 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.Polygon;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
@@ -14,6 +21,8 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @param <T> Type of point, currently can be Node or Vert
  */
 public abstract class Shape<T extends PointsList<T>> {
+    @SuppressWarnings("unused")
+    private static final Logger LOGGER = LogManager.getLogger(Shape.class.getName());
     protected int nextTrackNumber = 1; /*!< next node ID's */
     protected T head; /*!< first node in double linked list, always maintained */
     protected int POINTS; /*!< number of points */
@@ -155,6 +164,36 @@ public abstract class Shape<T extends PointsList<T>> {
     }
 
     /**
+     * Add node before head node assuring that list has closed loop. 
+     * 
+     * If initial list condition is defined in such way:
+     * 
+     * @code
+     * head = new Node(0); //make a dummy head node NODES = 1; FROZEN = 0;
+     * head.setPrev(head); // link head to itself head.setNext(head);
+     * head.setHead(true);
+     * @endcode
+     * 
+     * The \c addNode will produce closed bidirectional linked list.
+     * From first Node it is possible to reach last one by calling
+     * Node::getNext() and from the last one, first should be accessible
+     * by calling Node::getPrev()
+     * 
+     * @param n Node to be added to list
+     * 
+     * @remarks For initialization only
+     */
+    public void addPoint(final T n) {
+        T prevNode = head.getPrev();
+        n.setPrev(prevNode);
+        n.setNext(head);
+
+        head.setPrev(n);
+        prevNode.setNext(n);
+        POINTS++;
+    }
+
+    /**
      * Insert point \c ne after point \c n
      */
     public T insertPoint(final T n, final T ne) {
@@ -176,6 +215,7 @@ public abstract class Shape<T extends PointsList<T>> {
      * 
      * @param n point to remove
      * @param inner direction of normal vectors of Shape
+     * @warning There is no protection here against removing last node at all
      */
     public void removePoint(final T n, boolean inner) {
         n.getPrev().setNext(n.getNext());
@@ -209,6 +249,104 @@ public abstract class Shape<T extends PointsList<T>> {
     }
 
     /**
+     * Make Shape anti-clockwise
+     */
+    public void makeAntiClockwise() {
+        double sum = 0;
+        T v = head;
+        do {
+            sum += (v.getNext().getX() - v.getX()) * (v.getNext().getY() + v.getY());
+            v = v.getNext();
+        } while (!v.isHead());
+        if (sum > 0) {
+            LOGGER.trace("Warning. Was clockwise, reversed");
+            this.reverseSnake();
+            this.updateNormales(true); // WARN This was in Outline but not in Snake
+        } else {
+        }
+    }
+
+    /**
+     * Turn Shape back anti clockwise
+     */
+    public void reverseSnake() {
+        T tmp;
+        T v = head;
+        do {
+            tmp = v.getNext();
+            v.setNext(v.getPrev());
+            v.setPrev(tmp);
+            v = v.getNext();
+        } while (!v.isHead());
+    }
+
+    /**
+     * Return current Shape as Java polygon
+     * 
+     * @return current Shape as java.awt.Polygon
+     */
+    public Polygon asPolygon() {
+        Polygon pol = new Polygon();
+        T n = head;
+        do {
+            pol.addPoint((int) Math.floor(n.getX() + 0.5), (int) Math.floor(n.getY() + 0.5));
+            n = n.getNext();
+        } while (!n.isHead());
+
+        return pol;
+    }
+
+    /**
+     * Return current Shape as ImageJ float number polygon
+     * 
+     * @return current Shape as PolygonRoi
+     */
+    Roi asFloatRoi() {
+        float[] x = new float[POINTS];
+        float[] y = new float[POINTS];
+
+        T n = head;
+        int i = 0;
+        do {
+            x[i] = (float) n.getX();
+            y[i] = (float) n.getY();
+            i++;
+            n = n.getNext();
+        } while (!n.isHead());
+        return new PolygonRoi(x, y, POINTS, Roi.POLYGON);
+    }
+
+    /**
+     * Return current Shape as ImageJ ROI object
+     * 
+     * @return current Shape as ROI
+     */
+    Roi asIntRoi() {
+        Polygon p = asPolygon();
+        Roi r = new PolygonRoi(p, PolygonRoi.POLYGON);
+        return r;
+    }
+
+    /**
+     * Count number of Points in Shape
+     * 
+     * Number of Points is stored in local POINTS field as well. This method can verify if that
+     * field contains correct value
+     * 
+     * @return number of Points in Shape
+     */
+    public int countPoints() {
+        T v = head;
+        int c = 0;
+        do {
+            c++;
+            v = v.getNext();
+        } while (!v.isHead());
+
+        return c;
+    }
+
+    /**
      * Unfreeze all nodes in Shape
      */
     public void unfreezeAll() {
@@ -228,6 +366,36 @@ public abstract class Shape<T extends PointsList<T>> {
             v.freeze();
             v = v.getNext();
         } while (!v.isHead());
+    }
+
+    /**
+     * Scale current Shape by \c amount in increments of \c stepSize
+     * 
+     * @param amount scale
+     * @param stepSize increment
+     */
+    public void scale(double amount, double stepSize) {
+        // make sure snake access is clockwise
+        PointsList.setClockwise(true);
+        if (amount > 0) {
+            stepSize *= -1; // scale down if amount negative
+        }
+        double steps = Math.abs(amount / stepSize);
+        // IJ.log(""+steps);
+        T n;
+        int j;
+        for (j = 0; j < steps; j++) {
+            n = head;
+            do {
+
+                n.setX(n.getX() + stepSize * n.getNormal().getX());
+                n.setY(n.getY() + stepSize * n.getNormal().getY());
+                n = n.getNext();
+            } while (!n.isHead());
+            // cutSelfIntersects();
+            updateNormales(false);
+            calcCentroid();
+        }
     }
 
 }
