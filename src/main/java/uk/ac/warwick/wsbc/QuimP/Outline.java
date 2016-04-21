@@ -20,13 +20,10 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  */
 public final class Outline extends Shape<Vert> implements Cloneable {
     private static final Logger LOGGER = LogManager.getLogger(Outline.class.getName());
-    private int nextTrackNumber = 1; // node ID's
-    private Vert head; // first node in double linked list, always maintained
-    private int VERTS; // number of nodes
     QColor color;
 
     /**
-     * Create a snake from existing linked list
+     * Create a Outline from existing linked list
      * 
      * @param h head node of linked list
      * @param N number of nodes in list
@@ -45,14 +42,20 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         super(h, N);
         removeVert(head);
         this.updateCurvature();
+        calcCentroid();
 
         color = new QColor(0.5, 0, 1);
     }
 
+    /**
+     * Blank outline
+     * 
+     * @param h Initial Vert
+     */
     public Outline(Vert h) {
-        // blank outline
         super(h);
         this.updateCurvature();
+        calcCentroid();
 
         color = new QColor(0.5, 0, 1);
     }
@@ -83,6 +86,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         removeVert(head); // remove dummy head node
         updateNormales(false);
         this.updateCurvature();
+        calcCentroid();
     }
 
     public void print() {
@@ -180,13 +184,19 @@ public final class Outline extends Shape<Vert> implements Cloneable {
 
     }
 
+    /**
+     * Remove selected node from list.
+     * 
+     * Perform check if removed node was head and if it was, the new head is randomly selected.
+     * Neighbors are linked together
+     * 
+     * @param n Node to remove
+     */
     public void removeVert(Vert v) {
-        // removes node n and links neighbours together
         if (POINTS <= 3) {
-            System.out.println("Outline. 175. Can't remove node. less than 3 would remain");
+            LOGGER.error("Outline. 175. Can't remove node. less than 3 would remain");
             return;
         }
-
         super.removePoint(v, true);
         if (POINTS < 3) {
             IJ.error("Outline.199. WARNING! Nodes less then 3");
@@ -194,15 +204,9 @@ public final class Outline extends Shape<Vert> implements Cloneable {
 
     }
 
-    public void updateNormales(boolean inner) {
-        // update all node normales
-        Vert v = head;
-        do {
-            v.updateNormale(inner);
-            v = v.getNext();
-        } while (!v.isHead());
-    }
-
+    /**
+     * Update curvature for all Vert in Outline
+     */
     public void updateCurvature() {
         Vert v = head;
         do {
@@ -211,6 +215,12 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         } while (!v.isHead());
     }
 
+    /**
+     * Insert default Vert after Vert \c v
+     *  
+     * @param v Vert to insert new Vert after
+     * @return Inserted Vert
+     */
     public Vert insertVert(Vert v) {
         return insertPoint(v, new Vert());
     }
@@ -261,6 +271,11 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         return pol;
     }
 
+    /**
+     * Convert coordinate of Outline to array
+     * 
+     * @return x-coordinates of Outline as array
+     */
     public double[] XasArr() {
         double[] arry = new double[POINTS];
 
@@ -268,20 +283,23 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         int i = 0;
         do {
             arry[i] = v.getX();
-
             i++;
             v = v.getNext();
         } while (!v.isHead());
         return arry;
     }
 
+    /**
+     * Convert coordinate of Outline to array
+     * 
+     * @return y-coordinates of Outline as array
+     */
     public double[] YasArr() {
         double[] arry = new double[POINTS];
 
         Vert v = head;
         int i = 0;
         do {
-
             arry[i] = v.getY();
             i++;
             v = v.getNext();
@@ -289,12 +307,14 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         return arry;
     }
 
+    /**
+     * Evenly spaces a new vertices around the ouline by following vectors between verts
+     * 
+     * @param density
+     */
     public void setResolution(double density) {
-        // evenly spaces a new vertices around the ouline by following vectors
-        // between verts
         double length = getLength();
-        int numVerts = (int) Math.round((length / density)); // must be round
-                                                             // number of verts
+        int numVerts = (int) Math.round((length / density)); // must be round number of verts
         density = length / numVerts; // re-cal the density
 
         double remaining = 0.;
@@ -500,23 +520,6 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         return 0.5 * sum;
     }
 
-    public ExtendedVector2d getCentroid() {
-        ExtendedVector2d centroid = new ExtendedVector2d(0, 0);
-        Vert v = head;
-        double x, y, g;
-        do {
-            g = (v.getX() * v.getNext().getY()) - (v.getNext().getX() * v.getY());
-            x = (v.getX() + v.getNext().getX()) * g;
-            y = (v.getY() + v.getNext().getY()) * g;
-            centroid.setX(centroid.getX() + x);
-            centroid.setY(centroid.getY() + y);
-            v = v.getNext();
-        } while (!v.isHead());
-
-        centroid.multiply(1d / (6 * this.calcArea()));
-        return centroid;
-    }
-
     public double calcArea() {
         double area, sum;
         sum = 0.0;
@@ -605,13 +608,16 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         // LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }
 
+    /**
+     * Done once at the end of each frame to cut out any parts of the contour that self intersect.
+     * 
+     * Similar to cutLoops, but check all edges (interval up to NODES/2) and cuts out the smallest
+     * section
+     * 
+     * @return \c true if cut something
+     * @see uk.ac.warwick.wsbc.QuimP.Snake.cutLoops()
+     */
     public boolean cutSelfIntersects() {
-        // done once at the end of each frame to cut out any parts of the
-        // contour
-        // that self intersect.
-        // Simular to cutLoops, but cheack all edges (interval up to NODES/2)
-        // and cuts out the smallest section
-
         boolean iCut = false;
         int interval, state;// , c;
 
@@ -624,12 +630,9 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         nA = head;
         do {
             cutHead = (nA.getNext().isHead()) ? true : false;
-            nB = nA.getNext().getNext(); // don't check the next one along! they
-                                         // touch, not overlap
-            interval = (POINTS > 6) ? POINTS / 2 : 2; // always leave 3
-                                                      // nodes, at
-            // least. Check half way
-            // around
+            nB = nA.getNext().getNext(); // don't check the next one along! they touch, not overlap
+            interval = (POINTS > 6) ? POINTS / 2 : 2; // always leave 3 nodes, at least.
+                                                      // Check half way around
 
             for (int i = 2; i < interval; i++) {
 
@@ -641,37 +644,8 @@ public final class Outline extends Shape<Vert> implements Cloneable {
                         nA.getPoint().getY(), nA.getNext().getPoint().getX(),
                         nA.getNext().getPoint().getY(), nB.getPoint().getX(), nB.getPoint().getY(),
                         nB.getNext().getPoint().getX(), nB.getNext().getPoint().getY(), intersect);
-                /*
-                 * if (state == -1) { System.out.println("\nLines parallel");
-                 * System.out.println("close all;plot([" + nA.getX() + "," +
-                 * nA.getNext().getX() + "],[" + nA.getY() + "," +
-                 * nA.getNext().getY() + "],'-ob');"); // matlab output
-                 * System.out.println("hold on; plot([" + nB.getX() + "," +
-                 * nB.getNext().getX() + "],[" + nB.getY() + "," +
-                 * nB.getNext().getY() + "],'-or');");
-                 * 
-                 * } else if (state == -2) { System.out.println(
-                 * "\nLines parallel and overlap"); System.out.println(
-                 * "close all;plot([" + nA.getX() + "," + nA.getNext().getX() +
-                 * "],[" + nA.getY() + "," + nA.getNext().getY() + "],'-ob');");
-                 * // matlab output System.out.println("hold on; plot([" +
-                 * nB.getX() + "," + nB.getNext().getX() + "],[" + nB.getY() +
-                 * "," + nB.getNext().getY() + "],'-or');");
-                 * System.out.println("plot(" + intersect[0] + "," +
-                 * intersect[1] + ", 'og');");
-                 *
-                 */
+
                 if (state == 1) {
-                    // c= countVERTS();
-                    // if(c !=VERTS){
-                    // System.out.println("A -VERTS NOT CORREECT. VERTS:
-                    // "+VERTS+", Count: " + c);
-                    // }else{
-                    // System.out.println("A -verts correct. VERTS: "+VERTS+",
-                    // Count: " + c);
-                    // }
-                    // System.out.println("\nLines intersect at " + intersect[0]
-                    // + ", " + intersect[1]);
                     iCut = true;
                     newN = this.insertInterpolatedVert(nA);
                     newN.setX(intersect[0]);
@@ -697,17 +671,6 @@ public final class Outline extends Shape<Vert> implements Cloneable {
                     }
 
                     POINTS -= (i);
-                    // if(VERTS<3) System.out.println("OUTLINE 596_VERTS LESS
-                    // than 3");
-
-                    // c = countVERTS();
-                    // if(c !=VERTS){
-                    // System.out.println("B - VERTS NOT CORREECT. VERTS:
-                    // "+VERTS+", Count: " + c+ ", i: "+i);
-                    // VERTS = c;
-                    // }else{
-                    // System.out.println("B- verts correct");
-                    // }
                     break;
                 }
 
@@ -827,14 +790,6 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         n.updateNormales(true);
 
         return n;
-    }
-
-    public void unfreeze() {
-        Vert v = head;
-        do {
-            v.frozen = false;
-            v = v.getNext();
-        } while (!v.isHead());
     }
 
     public boolean checkCoordErrors() {

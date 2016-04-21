@@ -330,6 +330,7 @@ public class OutlineHandler {
 
             oV = oV.getNext();
         } while (!oV.isHead());
+        n.calcCentroid();
         outlines[frame - startFrame] = n;
     }
 

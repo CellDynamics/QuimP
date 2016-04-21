@@ -20,7 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @date 20 Apr 2016
  *
  */
-public class Node extends PointListNode<Node> {
+public class Node extends PointsList<Node> {
     private static final Logger LOGGER = LogManager.getLogger(Node.class.getName());
     private ExtendedVector2d vel; /*!< velocity of the nodes */
     private ExtendedVector2d F_total; /*!< total force at node */
@@ -28,7 +28,6 @@ public class Node extends PointListNode<Node> {
      * Point to move node to after all new node positions have been calc
      */
     private ExtendedVector2d prelimPoint;
-    double position = -1; // position value. TODO move to Snake as it is referenced only there
 
     /**
      * Default constructor. Create empty Node with default parameters, not linked to other Nodes
@@ -60,7 +59,7 @@ public class Node extends PointListNode<Node> {
      * 
      * @param src Source Node
      */
-    public Node(Node src) {
+    public Node(final Node src) {
         super(src);
         this.vel = new ExtendedVector2d(src.vel);
         this.F_total = new ExtendedVector2d(src.F_total);
@@ -166,20 +165,6 @@ public class Node extends PointListNode<Node> {
     public void setPrelim(ExtendedVector2d v) {
         prelimPoint.setX(v.getX());
         prelimPoint.setY(v.getY());
-    }
-
-    /**
-     * Freeze Node
-     */
-    public void freeze() {
-        frozen = true;
-    }
-
-    /**
-     * Unfreeze node
-     */
-    public void unfreeze() {
-        frozen = false;
     }
 
     /**

@@ -432,7 +432,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
         this.markFrozenNodesNormal(frameOneClone);
         orgIpl.draw();
-        o.unfreeze();
+        o.unfreezeAll();
     }
 
     private void removeProx(Outline o) {

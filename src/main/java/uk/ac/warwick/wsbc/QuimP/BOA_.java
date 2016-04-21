@@ -1663,7 +1663,7 @@ public class BOA_ implements PlugIn {
                             sH.storeLiveSnake(boaState.frame);
                             sH.backupLiveSnake(boaState.frame);
                             nest.kill(sH);
-                            snake.defreeze();
+                            snake.unfreezeAll();
                             BOA_.log("Snake " + snake.getSnakeID() + " died, frame "
                                     + boaState.frame);
                             boap.SEGrunning = false;
@@ -1816,7 +1816,7 @@ public class BOA_ implements PlugIn {
             // }
             // break;
         }
-        snake.defreeze(); // set freeze tag back to false
+        snake.unfreezeAll(); // set freeze tag back to false
 
         if (!boap.segParam.expandSnake) { // shrink a bit to get final outline
             snake.shrinkSnake();
@@ -2507,7 +2507,7 @@ class Constrictor {
             n = n.getNext();
         } while (!n.isHead());
 
-        snake.updateNormales();
+        snake.updateNormales(BOA_.boap.segParam.expandSnake);
 
         return snake.isFrozen(); // true if all nodes frozen
     }
@@ -2585,7 +2585,7 @@ class Constrictor {
                 n = n.getNext();
             } while (!n.isHead());
 
-            snake.updateNormales();
+            snake.updateNormales(BOA_.boap.segParam.expandSnake);
 
             pw.close();
             return snake.isFrozen(); // true if all nodes frozen

@@ -14,7 +14,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  * @param <T> Type of point, currently can be Node or Vert
  */
-public abstract class PointListNode<T extends PointListNode<T>> {
+public abstract class PointsList<T extends PointsList<T>> {
     protected T prev; /*!< previous point in list, \c null if no other point */
     protected T next; /*!< next point in list, \c null if no other point */
     protected ExtendedVector2d point; /*!< x,y co-ordinates of the point */
@@ -23,6 +23,7 @@ public abstract class PointListNode<T extends PointListNode<T>> {
     protected boolean head = false; /*!< Indicate if this point is \b head */
     protected static boolean clockwise = true; /*!< access clockwise if true */
     protected int tracknumber = 1; /*!< ID number of point, unique across list */
+    double position = -1; /*!< normalized position on list, 0 - beginning , 1 - end of the list */
     /**
      * flag which is set when the velocity is below the critical velocity
      */
@@ -31,7 +32,7 @@ public abstract class PointListNode<T extends PointListNode<T>> {
     /**
      * Default constructor, assumes that first point is created on list with ID = 1
      */
-    public PointListNode() {
+    public PointsList() {
         point = new ExtendedVector2d();
         normal = new ExtendedVector2d();
         tan = new ExtendedVector2d();
@@ -44,7 +45,7 @@ public abstract class PointListNode<T extends PointListNode<T>> {
      * 
      * @param t ID of point
      */
-    public PointListNode(int t) {
+    public PointsList(int t) {
         this();
         setTrackNum(t);
     }
@@ -56,7 +57,7 @@ public abstract class PointListNode<T extends PointListNode<T>> {
      *  
      * @param src Source Point
      */
-    public PointListNode(PointListNode<?> src) {
+    public PointsList(final PointsList<?> src) {
         this.point = new ExtendedVector2d(src.point);
         this.normal = new ExtendedVector2d(src.normal);
         this.tan = new ExtendedVector2d(src.tan);
@@ -73,7 +74,7 @@ public abstract class PointListNode<T extends PointListNode<T>> {
      * @param yy y coordinate of point
      * @param t ID of point
      */
-    public PointListNode(double xx, double yy, int t) {
+    public PointsList(double xx, double yy, int t) {
         this(t);
         point = new ExtendedVector2d(xx, yy);
     }
@@ -115,7 +116,7 @@ public abstract class PointListNode<T extends PointListNode<T>> {
     }
 
     public static void setClockwise(boolean b) {
-        PointListNode.clockwise = b;
+        PointsList.clockwise = b;
     }
 
     public ExtendedVector2d getPoint() {
@@ -231,13 +232,13 @@ public abstract class PointListNode<T extends PointListNode<T>> {
     }
 
     /**
-     * Calculate tangent at Node n (i.e. unit vector between neighbors)
-     * extends BidirectionalList<Vertex>
+     * Calculate tangent at current point (i.e. unit vector between neighbors)
+     *
      * Calculate a unit vector towards neighboring nodes and then a unit vector
      * between their ends. direction important for normale calculation. Always
      * calculate tan as if clockwise
      *
-     * @return Tangent at node
+     * @return Tangent at point
      */
     private ExtendedVector2d calcTan() {
 
@@ -279,6 +280,20 @@ public abstract class PointListNode<T extends PointListNode<T>> {
         // + getNext() + " prev: " + getPrev();
         str = "[" + this.getX() + "," + this.getY() + "] " + "tracknumber " + tracknumber;
         return str;
+    }
+
+    /**
+     * Freeze Point
+     */
+    public void freeze() {
+        frozen = true;
+    }
+
+    /**
+     * Unfreeze Point
+     */
+    public void unfreeze() {
+        frozen = false;
     }
 
 }

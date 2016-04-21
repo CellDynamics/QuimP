@@ -10,7 +10,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * 
  * @author rtyson
  */
-public class Vert extends PointListNode<Vert> {
+public class Vert extends PointsList<Vert> {
     public double charge; // charge on the vertex
     public double distance; // distance vert migrated (actually converted to speed by
                             // Tool.speedToScale

@@ -243,6 +243,7 @@ public class ECMM_Mapping {
         // "]");
         o1.resetAllCoords();
         o1.clearFluores();
+        o1.calcCentroid(); // TODO this should be called as in case of Snakes
 
         outputH.save(o1, f);
         Outline o2;

@@ -36,9 +36,7 @@ public class Snake extends Shape<Node> {
     public double startingNnodes; // how many nodes at start of segmentation
     // used as a reference for node limit
     private int FROZEN; // number of nodes frozen
-    private double minX, minY, maxX, maxY;
     private Rectangle bounds = new Rectangle(); // snake bounds
-    private ExtendedVector2d centroid;
 
     /**
      * Create a snake from existing linked list (at least one head node)
@@ -54,11 +52,11 @@ public class Snake extends Shape<Node> {
         FROZEN = N;
         // colour = QColor.lightColor();
         centroid = new ExtendedVector2d(0d, 0d);
-        this.calcCentroid();
+        calcCentroid();
 
         removeNode(head);
         this.makeAntiClockwise();
-        this.updateNormales();
+        this.updateNormales(BOA_.boap.segParam.expandSnake);
         alive = true;
         startingNnodes = POINTS / 100.; // as 1%. limit to X%
         // calcOrientation();
@@ -100,19 +98,10 @@ public class Snake extends Shape<Node> {
         centroid = new ExtendedVector2d(0d, 0d);
         removeNode(head);
         this.makeAntiClockwise();
-        this.updateNormales();
+        this.updateNormales(BOA_.boap.segParam.expandSnake);
         alive = snake.alive;
         startingNnodes = snake.startingNnodes;
-        this.calcCentroid();
-        /*
-         * from initializearraylist head = new Node(0); NODES = 1; FROZEN = 0; head.setPrev(head);
-         * head.setNext(head); head.setHead(true);
-         * 
-         * Node node; for (Point2d el : p) { node = new Node(el.getX(), el.getY(),
-         * nextTrackNumber++); addNode(node); }
-         * 
-         * removeNode(head); this.makeAntiClockwise(); updateNormales();
-         */
+        calcCentroid();
     }
 
     /**
@@ -145,7 +134,7 @@ public class Snake extends Shape<Node> {
         alive = true;
         // colour = QColor.lightColor();
         // calcOrientation();
-        this.calcCentroid();
+        calcCentroid();
     }
 
     /**
@@ -161,7 +150,7 @@ public class Snake extends Shape<Node> {
         alive = true;
         // colour = QColor.lightColor();
         // calcOrientation();
-        this.calcCentroid();
+        calcCentroid();
     }
 
     /**
@@ -176,7 +165,7 @@ public class Snake extends Shape<Node> {
         initializeArrayList(list);
         startingNnodes = POINTS / 100;
         alive = true;
-        this.calcCentroid();
+        calcCentroid();
     }
 
     /**
@@ -192,7 +181,7 @@ public class Snake extends Shape<Node> {
         initializeArray(X, Y);
         startingNnodes = POINTS / 100;
         alive = true;
-        this.calcCentroid();
+        calcCentroid();
     }
 
     /**
@@ -247,7 +236,7 @@ public class Snake extends Shape<Node> {
         }
         removeNode(head); // remove dummy head node
         this.makeAntiClockwise();
-        updateNormales();
+        updateNormales(BOA_.boap.segParam.expandSnake);
     }
 
     /**
@@ -295,7 +284,7 @@ public class Snake extends Shape<Node> {
         }
         removeNode(head); // remove dummy head node new head will be set
         this.makeAntiClockwise();
-        updateNormales();
+        updateNormales(BOA_.boap.segParam.expandSnake);
     }
 
     /**
@@ -323,7 +312,7 @@ public class Snake extends Shape<Node> {
 
         removeNode(head); // remove dummy head node
         this.makeAntiClockwise();
-        updateNormales();
+        updateNormales(BOA_.boap.segParam.expandSnake);
     }
 
     /**
@@ -349,7 +338,7 @@ public class Snake extends Shape<Node> {
 
         removeNode(head); // remove dummy head node
         this.makeAntiClockwise();
-        updateNormales();
+        updateNormales(BOA_.boap.segParam.expandSnake);
     }
 
     /**
@@ -374,7 +363,7 @@ public class Snake extends Shape<Node> {
 
         removeNode(head);
         this.makeAntiClockwise();
-        updateNormales();
+        updateNormales(BOA_.boap.segParam.expandSnake);
     }
 
     /**
@@ -403,7 +392,7 @@ public class Snake extends Shape<Node> {
 
         removeNode(head);
         this.makeAntiClockwise();
-        updateNormales();
+        updateNormales(BOA_.boap.segParam.expandSnake);
     }
 
     public void printSnake() {
@@ -455,12 +444,8 @@ public class Snake extends Shape<Node> {
     /**
      * Unfreeze all nodes
      */
-    public void defreeze() {
-        Node n = head;
-        do {
-            n.unfreeze();
-            n = n.getNext();
-        } while (!n.isHead());
+    public void unfreezeAll() {
+        super.unfreezeAll();
         FROZEN = 0;
     }
 
@@ -531,12 +516,14 @@ public class Snake extends Shape<Node> {
     }
 
     /**
-     * Remove selected node from list Check if removed node was head and if it
-     * was, the new head is randomly selected
+     * Remove selected node from list.
+     * 
+     * Perform check if removed node was head and if it was, the new head is randomly selected.
+     * Neighbors are linked together
      * 
      * @param n Node to remove
      * 
-     * @throws Exception
+     * @throws BoaException on insufficient number of nodes 
      */
     final public void removeNode(Node n) throws BoaException {
         if (POINTS <= 3) {
@@ -547,17 +534,6 @@ public class Snake extends Shape<Node> {
             FROZEN--;
         }
         super.removePoint(n, BOA_.boap.segParam.expandSnake);
-    }
-
-    /**
-     * Update all node normals Called after modification of Snake nodes
-     */
-    public void updateNormales() {
-        Node n = head;
-        do {
-            n.updateNormale(BOA_.boap.segParam.expandSnake);
-            n = n.getNext();
-        } while (!n.isHead());
     }
 
     public void blowup() throws Exception {
@@ -586,21 +562,6 @@ public class Snake extends Shape<Node> {
         intializeOval(nextTrackNumber, (int) cx, (int) cy, 4, 4, 1);
     }
 
-    private double calcArea() {
-        double area, sum;
-        sum = 0.0;
-        Node n = head;
-        Node np1 = n.getNext();
-        do {
-            sum += (n.getX() * np1.getY()) - (np1.getX() * n.getY());
-            n = n.getNext();
-            np1 = n.getNext(); // note: n is reset on prev line
-
-        } while (!n.isHead());
-        area = 0.5 * sum;
-        return area;
-    }
-
     public void scale(double amount, double stepSize, boolean correct) throws BoaException {
         if (amount == 0)
             return;
@@ -627,7 +588,7 @@ public class Snake extends Shape<Node> {
                 correctDistance(false);
             }
             cutLoops();
-            updateNormales();
+            updateNormales(BOA_.boap.segParam.expandSnake);
         }
     }
 
@@ -635,7 +596,6 @@ public class Snake extends Shape<Node> {
      * Cut out a loop Insert a new node at cut point
      */
     public void cutLoops() {
-        // System.out.println("cutting loops");
         int MAXINTERVAL = 12; // how far ahead do you check for a loop
         int interval, state;
 
@@ -692,9 +652,6 @@ public class Snake extends Shape<Node> {
             }
             nA = nA.getNext();
         } while (!nA.isHead());
-
-        // this.checkNodeNumber();
-        // System.out.println("done cutting loops");
     }
 
     /**
@@ -945,7 +902,10 @@ public class Snake extends Shape<Node> {
     }
 
     /**
-     * Insert node after node \c n
+     * Insert default Node after Node \c v
+     *  
+     * @param n Node to insert new Node after
+     * @return Inserted Node
      */
     public Node insertNode(final Node n) {
         return insertPoint(n, new Node());
@@ -966,33 +926,6 @@ public class Snake extends Shape<Node> {
         return pol;
     }
 
-    public void setPositions() {
-        double length = getLength();
-        double d = 0.;
-
-        Node v = head;
-        do {
-            v.position = d / length;
-            d = d + ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
-            v = v.getNext();
-        } while (!v.isHead());
-    }
-
-    /**
-     * Add up lengths between all verts
-     * 
-     * @return length of snake
-     */
-    public double getLength() {
-        Node v = head;
-        double length = 0.0;
-        do {
-            length += ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
-            v = v.getNext();
-        } while (!v.isHead());
-        return length;
-    }
-
     Roi asIntRoi() {
         Polygon p = asPolygon();
         Roi r = new PolygonRoi(p, PolygonRoi.POLYGON);
@@ -1000,7 +933,6 @@ public class Snake extends Shape<Node> {
     }
 
     Roi asFloatRoi() {
-
         float[] x = new float[POINTS];
         float[] y = new float[POINTS];
 
@@ -1061,12 +993,12 @@ public class Snake extends Shape<Node> {
     }
 
     /**
-     * Gets bounds of snake
+     * Get bounds of snake
      * 
      * @return Bounding box of current Snake object as Double
      */
     public Rectangle2D.Double getDoubleBounds() {
-        // change tp asPolygon, and get bounds
+        double minX, minY, maxX, maxY;
         Node n = head;
         minX = n.getX();
         maxX = n.getX();
@@ -1105,7 +1037,7 @@ public class Snake extends Shape<Node> {
         } while (!n.isHead());
 
         if (count != POINTS) {
-            System.out.println("Node number wrong. NODES:" + POINTS + " .actual: " + count);
+            LOGGER.error("Node number wrong. NODES:" + POINTS + " .actual: " + count);
             return false;
         } else {
             return true;
@@ -1133,29 +1065,6 @@ public class Snake extends Shape<Node> {
 
     public void editSnake() {
         System.out.println("Editing a snake");
-    }
-
-    public ExtendedVector2d getCentroid() {
-        return centroid;
-    }
-
-    /**
-     * Calculate centroid of Snake
-     */
-    public void calcCentroid() {
-        centroid = new ExtendedVector2d(0, 0);
-        Node v = this.head;
-        double x, y, g;
-        do {
-            g = (v.getX() * v.getNext().getY()) - (v.getNext().getX() * v.getY());
-            x = (v.getX() + v.getNext().getX()) * g;
-            y = (v.getY() + v.getNext().getY()) * g;
-            centroid.setX(centroid.getX() + x);
-            centroid.setY(centroid.getY() + y);
-            v = v.getNext();
-        } while (!v.isHead());
-
-        centroid.multiply(1d / (6 * this.calcArea()));
     }
 
     public void makeAntiClockwise() {
@@ -1188,6 +1097,7 @@ public class Snake extends Shape<Node> {
 
     /**
      * Print Snake nodes
+     * 
      * @return String representation of Snake
      */
     public String toString() {
