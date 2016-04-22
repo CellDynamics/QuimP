@@ -117,6 +117,11 @@ public class SnakePluginListTest {
             public ParamList getPluginConfig() {
                 return null;
             }
+
+            @Override
+            public String about() {
+                return "Test_1";
+            }
         });
         /**
          * This has config
@@ -154,6 +159,12 @@ public class SnakePluginListTest {
                 pl.put("alpha", "-0.45");
                 return pl;
             }
+
+            @Override
+            public String about() {
+                // TODO Auto-generated method stub
+                return null;
+            }
         });
         /**
          * This is for testing deletions
@@ -182,6 +193,12 @@ public class SnakePluginListTest {
             public ParamList getPluginConfig() {
                 return null;
             }
+
+            @Override
+            public String about() {
+                // TODO Auto-generated method stub
+                return null;
+            }
         });
         /**
          * This will replace plugin 0
@@ -208,6 +225,12 @@ public class SnakePluginListTest {
 
             @Override
             public ParamList getPluginConfig() {
+                return null;
+            }
+
+            @Override
+            public String about() {
+                // TODO Auto-generated method stub
                 return null;
             }
         });
@@ -239,6 +262,7 @@ public class SnakePluginListTest {
     public void testGetInstance() throws Exception {
         IQuimpPlugin inst = snakePluginList.getInstance(0);
         assertEquals("1.2.3", inst.getVersion());
+        assertEquals("Test_1", inst.about());
         inst = snakePluginList.getInstance(1);
         assertEquals("2.3.4", inst.getVersion());
     }

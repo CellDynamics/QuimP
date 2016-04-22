@@ -88,6 +88,12 @@ public class ConfigStreamerTest {
                 // TODO Auto-generated method stub
                 return null;
             }
+
+            @Override
+            public String about() {
+                // TODO Auto-generated method stub
+                return null;
+            }
         };
 
         p.snakePluginList.get(1).name = "Plugin2_quimp";
@@ -122,6 +128,12 @@ public class ConfigStreamerTest {
 
             @Override
             public ParamList getPluginConfig() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String about() {
                 // TODO Auto-generated method stub
                 return null;
             }

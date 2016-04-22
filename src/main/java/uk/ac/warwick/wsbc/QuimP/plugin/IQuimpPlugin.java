@@ -85,4 +85,11 @@ public interface IQuimpPlugin {
      * @return String with version (any format) or \c null if not supported
      */
     String getVersion();
+
+    /**
+     * Get short info about plugin
+     * 
+     * @return String \a about (any format) or \c null if not supported
+     */
+    String about();
 }
