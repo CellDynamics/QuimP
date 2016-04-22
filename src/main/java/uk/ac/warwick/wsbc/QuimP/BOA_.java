@@ -7,7 +7,6 @@ import java.awt.CheckboxMenuItem;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -351,47 +350,26 @@ public class BOA_ implements PlugIn {
         String authors = "###################################\n" + "BOA plugin, by\n"
                 + "Richard Tyson (richard.tyson@warwick.ac.uk)\n"
                 + "Till Bretschneider (Till.Bretschneider@warwick.ac.uk)\n"
+                + "Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)\n"
                 + "###################################\n";
 
-        // build modal dialog
-        Dialog aboutWnd = new Dialog(window, "Info", Dialog.ModalityType.DOCUMENT_MODAL);
-        aboutWnd.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent we) {
-                aboutWnd.dispose();
-            }
-        });
-        // located in middle of quimp qindow
-        Rectangle orgBounds = window.getBounds();
-        aboutWnd.setBounds(orgBounds.x + orgBounds.width / 2, orgBounds.y + orgBounds.height / 2,
-                500, 300);
-        Panel p = new Panel();
-        p.setLayout(new GridLayout(1, 1)); // main window panel
-        Panel tp = new Panel(); // panel with text area
-        tp.setLayout(new GridLayout(1, 1));
-        TextArea info = new TextArea(10, 60); // area to write
+        AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
         // fill with information
-        info.append(authors + '\n');
-        info.append("QuimP version: " + quimpInfo[0] + '\n');
-        info.append(quimpInfo[1] + '\n');
+        ad.append(authors + '\n');
+        ad.append("QuimP version: " + quimpInfo[0] + '\n');
+        ad.append(quimpInfo[1] + '\n');
         // get list of found plugins
-        info.append("List of found plugins:\n");
+        ad.append("List of found plugins:\n");
         Map<String, PluginProperties> mp = pluginFactory.getRegisterdPlugins();
         // iterate over set
         for (Map.Entry<String, PluginProperties> entry : mp.entrySet()) {
-            info.append("\n");
-            info.append("Plugin name: " + entry.getKey() + "\n");
-            info.append("   Plugin type: " + entry.getValue().getType() + "\n");
-            info.append("   Plugin path: " + entry.getValue().getFile().toString() + "\n");
-            info.append("   Plugin vers: " + entry.getValue().getVersion() + "\n");
+            ad.append("\n");
+            ad.append("Plugin name: " + entry.getKey() + "\n");
+            ad.append("   Plugin type: " + entry.getValue().getType() + "\n");
+            ad.append("   Plugin path: " + entry.getValue().getFile().toString() + "\n");
+            ad.append("   Plugin vers: " + entry.getValue().getVersion() + "\n");
         }
-        info.setEditable(false);
-        tp.add(info); // add to panel
-        JScrollPane infoPanel = new JScrollPane(tp);
-        p.add(infoPanel);
-
-        aboutWnd.add(p);
-        aboutWnd.pack();
-        aboutWnd.setVisible(true);
+        ad.setVisible(true); // must be after adding content
     }
 
     /**

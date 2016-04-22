@@ -42,6 +42,8 @@ public class AboutDialog implements ActionListener {
     private JTextArea info; //!< text area field
     private JPopupMenu popup; //!< popup menu
     private JMenuBar mbar; //!< the same but in menu bar
+    private final int ROWS = 30; //!< Number of rows in window
+    private final int COLS = 60; //!< Number of columns in window
     
     /**
      * Main constructor
@@ -61,7 +63,7 @@ public class AboutDialog implements ActionListener {
         p.setLayout(new GridLayout(1, 1)); // main window panel
         JPanel tp = new JPanel(); // panel with text area
         tp.setLayout(new GridLayout(1, 1));
-        info = new JTextArea(10, 60); // area to write
+        info = new JTextArea(ROWS, COLS); // area to write
         info.setBackground(Color.WHITE);
         info.setEditable(false);
         tp.add(info); // add to panel
@@ -91,13 +93,34 @@ public class AboutDialog implements ActionListener {
                                                            // actionPerformed
         JMenuItem copy = new JMenuItem("Copy"); // changing the name must follow with
                                                 // actionPerformed
-        mbar.add(medit);
-        medit.add(selectall);
-        medit.add(copy);
-        popup.add(selectall);
-        popup.add(copy);
         selectall.addActionListener(this);
         copy.addActionListener(this);
+        mbar.add(medit);
+        popup.add(selectall);
+        popup.add(copy);
+        medit.add(copyMenuItem(selectall)); // add copy of MenuItems to MenuBar
+        medit.add(copyMenuItem(copy));
+
+        selectall.addActionListener(this);
+        copy.addActionListener(this);
+    }
+
+    /**
+     * Make copy of MenuItem
+     * 
+     * @remarks Components can not be shared among containers. This method copies basic properties
+     * of component to its new instance (shallow copy of selected properties)
+     * @param src source MenuItem
+     * @return Copy of \c src MenuItem
+     */
+    private JMenuItem copyMenuItem(JMenuItem src) {
+        JMenuItem dst = new JMenuItem();
+        dst.setText(src.getText());
+        dst.setToolTipText(src.getToolTipText());
+        dst.setMnemonic(src.getMnemonic());
+        for (ActionListener a : src.getActionListeners())
+            dst.addActionListener(a);
+        return dst;
     }
 
     /**
@@ -117,6 +140,7 @@ public class AboutDialog implements ActionListener {
      * @warning When window is visible append(final String) does not work
      */
     public void setVisible(boolean state) {
+        info.setCaretPosition(0); // causes that initially view is scrolled to up
         aboutWnd.setVisible(state);
     }
 
