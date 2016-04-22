@@ -20,11 +20,11 @@ cd ..
 # iterate over plugins dirs
 for d in *_quimp/ ; do
     cd "$d"
-    mvn -q -T 1C clean package -Dmaven.test.skip=true &
-#    if [[ $? -ne 0 ]] ; then
-#   		echo Error!!!
-#   		exit 1
-#   	fi
+    mvn -q -T 1C clean package -Dmaven.test.skip=true 
+    if [[ $? -ne 0 ]] ; then
+   		echo Error!!!
+   		exit 1
+   	fi
    	# copy artefact to Fiji
    	cp -v target/*_quimp*.jar ../Fiji.app.test/plugins
    	cd ..
