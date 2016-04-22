@@ -44,6 +44,7 @@ public class AboutDialog implements ActionListener {
     private JMenuBar mbar; //!< the same but in menu bar
     private final int ROWS = 30; //!< Number of rows in window
     private final int COLS = 60; //!< Number of columns in window
+    private final String c = "-"; //!< Limiter char
     
     /**
      * Main constructor
@@ -124,13 +125,21 @@ public class AboutDialog implements ActionListener {
     }
 
     /**
-     * Add text to window TextArea
+     * Add line of text to window TextArea
      * 
      * @param t Text to add in subsequent lines
      */
-    public void append(final String t) {
-        info.append(t);
-        info.setCaretPosition(info.getDocument().getLength());
+    public void appendLine(final String t) {
+        info.append(t + "\n");
+    }
+
+    /**
+     * Add line of length of window
+     */
+    public void appendDistance() {
+        String line;
+        line = new String(new char[COLS]).replace("\0", c);
+        appendLine(line);
     }
 
     /**

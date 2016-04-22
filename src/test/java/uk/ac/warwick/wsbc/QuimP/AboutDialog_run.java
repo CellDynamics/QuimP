@@ -35,8 +35,9 @@ public class AboutDialog_run {
             }
         });
         AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
-        ad.append("Hello\n");
-        ad.append("ff");
+        ad.appendLine("Hello");
+        ad.appendLine("ff");
+        ad.appendDistance();
         ad.aboutWnd.setVisible(true);
 
     }
