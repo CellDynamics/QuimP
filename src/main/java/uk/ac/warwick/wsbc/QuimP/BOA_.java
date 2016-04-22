@@ -355,19 +355,30 @@ public class BOA_ implements PlugIn {
 
         AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
         // fill with information
-        ad.append(authors + '\n');
-        ad.append("QuimP version: " + quimpInfo[0] + '\n');
-        ad.append(quimpInfo[1] + '\n');
+        ad.appendLine(authors);
+        ad.appendLine("QuimP version: " + quimpInfo[0]);
+        ad.appendLine(quimpInfo[1]);
         // get list of found plugins
-        ad.append("List of found plugins:\n");
+        ad.appendLine("List of found plugins:");
         Map<String, PluginProperties> mp = pluginFactory.getRegisterdPlugins();
         // iterate over set
         for (Map.Entry<String, PluginProperties> entry : mp.entrySet()) {
-            ad.append("\n");
-            ad.append("Plugin name: " + entry.getKey() + "\n");
-            ad.append("   Plugin type: " + entry.getValue().getType() + "\n");
-            ad.append("   Plugin path: " + entry.getValue().getFile().toString() + "\n");
-            ad.append("   Plugin vers: " + entry.getValue().getVersion() + "\n");
+            ad.appendLine("Plugin name: " + entry.getKey());
+            ad.appendLine("   Plugin type: " + entry.getValue().getType());
+            ad.appendLine("   Plugin path: " + entry.getValue().getFile().toString());
+            ad.appendLine("   Plugin vers: " + entry.getValue().getVersion());
+            // about is not stored in PluginProperties class due to optimization of memory
+            ad.appendLine("   About (returned by plugin):");
+            IQuimpPlugin tmpinst = pluginFactory.getInstance(entry.getKey());
+            if (tmpinst != null) // can be null on problem with instance
+            {
+                String about = tmpinst.about(); // may return null
+                if (about != null)
+                    ad.appendLine(about);
+                else
+                    ad.appendLine("Plugin does not provide about note");
+            }
+            ad.appendDistance();
         }
         ad.setVisible(true); // must be after adding content
     }
