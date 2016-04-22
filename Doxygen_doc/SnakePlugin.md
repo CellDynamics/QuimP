@@ -26,8 +26,8 @@ they are stored in QuimP.
 
 Plugins are separate jar files that must be available on path passed to uk.ac.warwick.wsbc.QuimP.PluginFactory(final Path)
 which is the main engine for loading jars and creating their instances. Snake plugins must be
-derived from uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter interface and they must
-keep correct naming conventions. QuimP provides
+derived from uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter interface or uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpSnakeFilter
+and they must keep correct naming conventions. QuimP provides
 uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter class for converting this type to separate 
 `x` and `y` arrays of coordinates.
 
@@ -315,7 +315,14 @@ end note
 partition iterateOverSnakePlugins {
 :c = snake;
 if (is any plugin selected) then (true)
-note left: There is any instance in BOAp.sPluginList\ncreated on **Select Plugin**\nThis branch supports various interfaces
+note left
+There is any instance in BOAp.sPluginList
+created on **Select Plugin**
+====
+This branch supports various **interfaces**. 
+Here is decided what interface plugin supports
+and data in correct format are assigned
+end note
 while (for every Plugin)
 if (if is **not** null\nif is **active**) then (true)
 :attach data;
