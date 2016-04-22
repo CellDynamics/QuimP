@@ -51,7 +51,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     private final Color barColor = new Color(0xFB, 0xFF, 0x94); //!< Color of title bar
 
     public void run(String s) {
-        title = "QuimP 16.03.17 bar";
+        title = "QuimP 16.03.18-SNAPSHOT bar";
         name = "quimpBar";
 
         frame.setTitle(title);
