@@ -130,11 +130,14 @@ public class BOA_ implements PlugIn {
      * bar, logging, etc.
      */
     public static String[] quimpInfo;
-    private static int logCount = 1; // adds counter to logged messages
+    private static int logCount; // add counter to logged messages
     static final private int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
     private HistoryLogger historyLogger; // logger
-
-    static final public BOAp boap = new BOAp(); // configuration object, available from all modules
+    /**
+     * Configuration object, available from all modules. Must be initialized here \b AND in 
+     * constructor (to reset settings on next BOA call without quitting Fiij)
+     */
+    static public BOAp boap = new BOAp();
     private BOAState boaState; // current state of BOA module
 
     /**
@@ -143,9 +146,10 @@ public class BOA_ implements PlugIn {
      * @author p.baniukiewicz
      * @date 30 Mar 2016
      * @see Serializer
-     * @remarks Currently the SegParam object is connected to this class only and it is created in
-     * BOAp class constructor. In future SegParam will be part of this class
-     * This class in supposed to be main configuration holder for BOA_
+     * @remarks Currently the SegParam object is connected to this class only (in
+     * run(final String)) and it is created in BOAp class constructor. In future SegParam will
+     * be part of this class. This class in supposed to be main configuration holder for BOA_
+     * @todo TODO Move SegParam to be part of this class
      */
     class BOAState implements IQuimpSerialize {
         public int frame; /*!< current frame, CustomStackWindow.updateSliceSelector() */
@@ -172,6 +176,18 @@ public class BOA_ implements PlugIn {
         @Override
         public void afterSerialize() throws Exception {
         }
+    }
+
+    /**
+     * Main constructor.
+     * 
+     * All static resources should be re-initialized here, otherwise they persist in memory between 
+     * subsequent BOA calls from Fiji.
+     */
+    public BOA_() {
+        LOGGER.trace("Constructor called");
+        boap = new BOAp(); // set default parameters for static boap
+        logCount = 1; // reset log count (it is also static)
     }
 
     /**
@@ -500,6 +516,7 @@ public class BOA_ implements PlugIn {
             canvas = null;
             imageGroup = null;
             window = null;
+
         }
 
         @Override
