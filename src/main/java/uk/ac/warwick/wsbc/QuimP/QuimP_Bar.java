@@ -1,7 +1,9 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.Color;
 import java.awt.Frame;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +14,11 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JTextPane;
 import javax.swing.JToolBar;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import ij.IJ;
 import ij.Prefs;
@@ -20,6 +26,13 @@ import ij.WindowManager;
 import ij.macro.MacroRunner;
 import ij.plugin.PlugIn;
 
+/**
+ * Create QuimP bar with icons to QuimP plugins
+ * 
+ * @author r.tyson
+ * @author p.baniukiewicz
+ * @date 22 Apr 2016
+ */
 public class QuimP_Bar implements PlugIn, ActionListener {
     String name, title;
     String path;
@@ -30,8 +43,12 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     int yfw = 0;
     int wfw = 0;
     int hfw = 0;
-    JToolBar toolBar = null;
+    JToolBar toolBarUpper = null;
+    JToolBar toolBarBottom = null;
     JButton button = null;
+    JTextPane toolBarTitle1 = null;
+    JTextPane toolBarTitle2 = null;
+    private final Color barColor = new Color(0xFB, 0xFF, 0x94); //!< Color of title bar
 
     public void run(String s) {
         title = "QuimP 16.03.17 bar";
@@ -62,7 +79,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             hfw = frontframe.getHeight();
         }
 
-        frame.getContentPane().setLayout(new GridLayout(0, 1));
+        frame.getContentPane().setLayout(new GridBagLayout());
         buildPanel(); // build the QuimP bar
 
         // captures the ImageJ KeyListener
@@ -83,47 +100,82 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     }
 
     /**
-     * Build QuimP panel and run macros. MAcros are defined in plugins.conf file, where
+     * Build QuimP panel and run macros. Macros are defined in plugins.conf file, where
      * the name of the macro is related to class name to run.
      */
     private void buildPanel() {
-        toolBar = new JToolBar();
+        toolBarTitle1 = new JTextPane(); // first title bar
+        toolBarUpper = new JToolBar(); // icons below it
+        toolBarTitle2 = new JTextPane(); // second title bar
+        toolBarBottom = new JToolBar(); // icons below it
 
+        GridBagConstraints c = new GridBagConstraints();
+
+        // define atributes for title bars
+        SimpleAttributeSet titlebaratr = new SimpleAttributeSet();
+        StyleConstants.setAlignment(titlebaratr, StyleConstants.ALIGN_CENTER);
+        titlebaratr.addAttribute(StyleConstants.CharacterConstants.Bold, true);
+
+        // first row title - centered text
+        StyledDocument doc = toolBarTitle1.getStyledDocument();
+        doc.setParagraphAttributes(0, doc.getLength(), titlebaratr, false);
+        toolBarTitle1.setText("QuimP workflow");
+        toolBarTitle1.setBackground(barColor);
+
+        // second row - buttons and quimp icons
         button = makeNavigationButton("x.jpg", "open()", "Open a file", "OPEN IMAGE");
-        toolBar.add(button);
+        toolBarUpper.add(button, c);
 
         button = makeNavigationButton("x.jpg", "run(\"ROI Manager...\");", "Open the ROI manager",
                 "ROI");
-        toolBar.add(button);
+        toolBarUpper.add(button);
 
-        toolBar.addSeparator();
+        toolBarUpper.addSeparator();
 
         button = makeNavigationButton("boa.jpg", "run(\"BOA\")", "Cell segmentation", "BOA");
-        toolBar.add(button);
-
-        // button = makeNavigationButton("binary.jpg", "run(\"Binary Seg\")",
-        // "Binary Segmentation", "Binary Seg");
-        // toolBar.add(button);
+        toolBarUpper.add(button);
 
         button = makeNavigationButton("ecmm.jpg", "run(\"ECMM Mapping\")", "Cell membrane tracking",
                 "ECMM");
-        toolBar.add(button);
+        toolBarUpper.add(button);
 
         button = makeNavigationButton("ana.jpg", "run(\"ANA\")", "Measure fluorescence", "ANA");
-        toolBar.add(button);
+        toolBarUpper.add(button);
 
-        toolBar.addSeparator();
+        toolBarUpper.addSeparator();
 
         button = makeNavigationButton("qanalysis.jpg", "run(\"QuimP Analysis\")",
                 "Q Analysis of data", "Q Analysis");
-        toolBar.add(button);
+        toolBarUpper.add(button);
 
+        // third row title
+        StyledDocument doc1 = toolBarTitle2.getStyledDocument();
+        doc1.setParagraphAttributes(0, doc1.getLength(), titlebaratr, false);
+        toolBarTitle2.setText("Preprocessing methods");
+        toolBarTitle2.setBackground(barColor);
+
+        // fourth - preprocessing tools
         button = makeNavigationButton("diclid.jpg", "run(\"DIC\")",
                 "Reconstruction of DIC images by Line Integral Method", "DIC LID");
-        toolBar.add(button);
+        toolBarBottom.add(button);
 
-        toolBar.setFloatable(false);
-        frame.getContentPane().add(toolBar);
+        toolBarUpper.setFloatable(false);
+        toolBarBottom.setFloatable(false);
+        // build window
+        c.gridx = 0;
+        c.gridy = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        frame.getContentPane().add(toolBarTitle1, c);
+        c.gridx = 0;
+        c.gridy = 1;
+        frame.getContentPane().add(toolBarUpper, c);
+        c.gridx = 0;
+        c.gridy = 2;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        frame.getContentPane().add(toolBarTitle2, c);
+        c.gridx = 0;
+        c.gridy = 3;
+        frame.getContentPane().add(toolBarBottom, c);
     }
 
     protected JButton makeNavigationButton(String imageName, String actionCommand,
