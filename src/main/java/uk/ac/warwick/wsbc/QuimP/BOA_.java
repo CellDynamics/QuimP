@@ -512,11 +512,13 @@ public class BOA_ implements PlugIn {
         // It is too late for asking user
         public void windowClosed(final WindowEvent arg0) {
             LOGGER.trace("CLOSED");
-            BOA_.running = false;
-            canvas = null;
+            BOA_.running = false; // set marker
+            boaState.snakePluginList.clear(); // close all opened plugin windows
+            canvas = null; // clear window data
             imageGroup = null;
             window = null;
-
+            // clear static
+            boap = null;
         }
 
         @Override
@@ -528,7 +530,7 @@ public class BOA_ implements PlugIn {
         public void windowActivated(final WindowEvent e) {
             LOGGER.trace("ACTIVATED");
             // rebuild manu for this local window
-            // workaround for Mac and theirs menus om top screen bar
+            // workaround for Mac and theirs menus on top screen bar
             // IJ is doing the same for activation of its window so every time one has correct menu
             // on top
             window.setMenuBar(window.quimpMenuBar);
