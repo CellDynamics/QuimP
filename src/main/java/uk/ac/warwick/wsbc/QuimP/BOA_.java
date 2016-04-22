@@ -1737,8 +1737,8 @@ public class BOA_ implements PlugIn {
      */
     private Snake iterateOverSnakePlugins(final Snake snake)
             throws QuimpPluginException, Exception {
-        final int ipoint = 0;
-        final int isnake = 1;
+        final int ipoint = 0; // define IQuimpPoint2dFilter interface
+        final int isnake = 1; // define IQuimpPoint2dFilter interface
         // type of previous plugin. Define if data should be converted for current plugin
         int previousConversion = isnake; // IQuimpSnakeFilter is default interface
         Snake outsnake = snake; // if there is no plugin just return input snake
@@ -1746,7 +1746,7 @@ public class BOA_ implements PlugIn {
         // data to process in format of list
         List<Point2d> dataToProcess = null; // null but it will be overwritten in loop because first
                                             // "if" fires always (previousConversion is set to
-                                            // isnake) on begining, if first plugin is ipoint type
+                                            // isnake) on beginning, if first plugin is ipoint type
         if (!boaState.snakePluginList.isRefListEmpty()) {
             LOGGER.debug("sPluginList not empty");
             for (Plugin qP : boaState.snakePluginList.getList()) { // iterate over list
@@ -1773,7 +1773,7 @@ public class BOA_ implements PlugIn {
                     previousConversion = isnake;
                 }
             }
-            // after loop previousConversion point what plugin was last and actual data
+            // after loop previousConversion points what plugin was last and actual data
             // must be converted to snake
             switch (previousConversion) {
                 case ipoint: // last plugin was IQuimpPoint2dFilter - convert to Snake
