@@ -120,12 +120,16 @@ public class BOA_ implements PlugIn {
                              // it after truncating or deleting operation
     private final static String NONE = "NONE"; // reserved word that stands for plugin that is not
                                                // selected
-    private ViewUpdater viewUpdater; // hold current BOA object and provide access to only one
-                                     // method from plugin. Reference to this field is passed to
-                                     // plugins and give them possibility to call selected methods
-                                     // from BOA class
-    public static String[] quimpInfo; // keeps data from getQuimPBuildInfo() These information are
-                                      // used for About dialog, window title bar, logging
+    /**
+     * Hold current BOA object and provide access to only one method from plugin. Reference to this
+     * field is passed to plugins and give them possibility to call selected methods from BOA class
+     */
+    private ViewUpdater viewUpdater;
+    /**
+     * Keep data from getQuimPBuildInfo() These information are used for About dialog, window title
+     * bar, logging, etc.
+     */
+    public static String[] quimpInfo;
     private static int logCount = 1; // adds counter to logged messages
     static final private int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
     private HistoryLogger historyLogger; // logger
@@ -812,7 +816,7 @@ public class BOA_ implements PlugIn {
             southPanel.add(new Label("")); // blankes
             southPanel.add(new Label("")); // blankes
             bQuit = addButton("Quit", southPanel);
-            bFinish = addButton("FINISH", southPanel);
+            bFinish = addButton("Save & Quit", southPanel);
             // ------------------------------
 
             centerPanel.add(new Label("Snake Plugins:"));
