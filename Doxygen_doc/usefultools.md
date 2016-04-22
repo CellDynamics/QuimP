@@ -31,7 +31,7 @@ find ./ -type f -name *4j2.xml -path '*/src/*' | xargs sed -i -e "s/Root level=\
 # Build snapshots {#bsnap}
 
 This script builds snapshots and upload them to server packed into *zip* package. It checks also if there
-is the same package on server already.
+is the same package on server already and set certain log level for every package.
 
 ```bash
 #!/bin/bash
