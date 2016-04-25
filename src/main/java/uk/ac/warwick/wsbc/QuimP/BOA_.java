@@ -611,9 +611,9 @@ public class BOA_ implements PlugIn {
         Label fpsLabel, pixelLabel, frameLabel;
         JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
         JSpinner isMaxIterations, isBlowup, isSample_tan, isSample_norm;
-        private Choice firstPluginName, secondPluginName, thirdPluginName;
+        private Choice sFirstPluginName, sSecondPluginName, sThirdPluginName;
         private Button bFirstPluginGUI, bSecondPluginGUI, bThirdPluginGUI;
-        private Checkbox cFirstPlugin, cSecondPlugin, cThirdPlugin;
+        private Checkbox cFirstPluginActiv, cSecondPluginActiv, cThirdPluginActiv;
 
         private MenuBar quimpMenuBar;
         private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory; // items
@@ -636,6 +636,8 @@ public class BOA_ implements PlugIn {
          * This method is called as first. The interface is built in three steps:
          * Left side of window (configuration zone) and right side of main
          * window (logs and other info and buttons) and finally upper menubar
+         * 
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
          */
         private void buildWindow() {
 
@@ -659,6 +661,7 @@ public class BOA_ implements PlugIn {
             quimpMenuBar = buildMenu(); // store menu in var to reuse on window activation
             setMenuBar(quimpMenuBar);
             pack();
+            updateWindowState(); // window logic on start
 
         }
 
@@ -765,50 +768,51 @@ public class BOA_ implements PlugIn {
             // not found getInstance return null which is stored in SnakePluginList and checked
             // during run
             // default values for plugin activity are stored in SnakePluginList
-            firstPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+            sFirstPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
             c.gridx = 0;
             c.gridy = 0;
-            pluginPanel.add(firstPluginName, c);
+            pluginPanel.add(sFirstPluginName, c);
 
             bFirstPluginGUI = addButton("GUI", pluginPanel);
             c.gridx = 1;
             c.gridy = 0;
             pluginPanel.add(bFirstPluginGUI, c);
 
-            cFirstPlugin = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(0));
+            cFirstPluginActiv = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(0));
             c.gridx = 2;
             c.gridy = 0;
-            pluginPanel.add(cFirstPlugin, c);
+            pluginPanel.add(cFirstPluginActiv, c);
 
-            secondPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+            sSecondPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
             c.gridx = 0;
             c.gridy = 1;
-            pluginPanel.add(secondPluginName, c);
+            pluginPanel.add(sSecondPluginName, c);
 
             bSecondPluginGUI = addButton("GUI", pluginPanel);
             c.gridx = 1;
             c.gridy = 1;
             pluginPanel.add(bSecondPluginGUI, c);
 
-            cSecondPlugin = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(1));
+            cSecondPluginActiv =
+                    addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(1));
             c.gridx = 2;
             c.gridy = 1;
-            pluginPanel.add(cSecondPlugin, c);
+            pluginPanel.add(cSecondPluginActiv, c);
 
-            thirdPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+            sThirdPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
             c.gridx = 0;
             c.gridy = 2;
-            pluginPanel.add(thirdPluginName, c);
+            pluginPanel.add(sThirdPluginName, c);
 
             bThirdPluginGUI = addButton("GUI", pluginPanel);
             c.gridx = 1;
             c.gridy = 2;
             pluginPanel.add(bThirdPluginGUI, c);
 
-            cThirdPlugin = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(2));
+            cThirdPluginActiv = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(2));
             c.gridx = 2;
             c.gridy = 2;
-            pluginPanel.add(cThirdPlugin, c);
+            pluginPanel.add(cThirdPluginActiv, c);
 
             // --------build log---------
             Panel tp = new Panel(); // panel with text area
@@ -1067,11 +1071,11 @@ public class BOA_ implements PlugIn {
          */
         private void updateCheckBoxes() {
             // first plugin activity
-            cFirstPlugin.setState(boaState.snakePluginList.isActive(0));
+            cFirstPluginActiv.setState(boaState.snakePluginList.isActive(0));
             // second plugin activity
-            cSecondPlugin.setState(boaState.snakePluginList.isActive(1));
+            cSecondPluginActiv.setState(boaState.snakePluginList.isActive(1));
             // third plugin activity
-            cThirdPlugin.setState(boaState.snakePluginList.isActive(2));
+            cThirdPluginActiv.setState(boaState.snakePluginList.isActive(2));
         }
 
         /**
@@ -1083,19 +1087,48 @@ public class BOA_ implements PlugIn {
         private void updateChoices() {
             // first slot snake plugin
             if (boaState.snakePluginList.getInstance(0) == null)
-                firstPluginName.select(NONE);
+                sFirstPluginName.select(NONE);
             else
-                firstPluginName.select(boaState.snakePluginList.getName(0));
+                sFirstPluginName.select(boaState.snakePluginList.getName(0));
             // second slot snake plugin
             if (boaState.snakePluginList.getInstance(1) == null)
-                secondPluginName.select(NONE);
+                sSecondPluginName.select(NONE);
             else
-                secondPluginName.select(boaState.snakePluginList.getName(1));
+                sSecondPluginName.select(boaState.snakePluginList.getName(1));
             // third slot snake plugin
             if (boaState.snakePluginList.getInstance(2) == null)
-                thirdPluginName.select(NONE);
+                sThirdPluginName.select(NONE);
             else
-                thirdPluginName.select(boaState.snakePluginList.getName(2));
+                sThirdPluginName.select(boaState.snakePluginList.getName(2));
+
+        }
+
+        /**
+         * Implement user interface logic Do not refresh values, rather disable/enable controls.
+         */
+        private void updateWindowState() {
+            // Rule 1 - NONE on any slot in filters disable GUI button and Active checkbox
+            if (sFirstPluginName.getSelectedItem() == NONE) {
+                cFirstPluginActiv.setEnabled(false);
+                bFirstPluginGUI.setEnabled(false);
+            } else {
+                cFirstPluginActiv.setEnabled(true);
+                bFirstPluginGUI.setEnabled(true);
+            }
+            if (sSecondPluginName.getSelectedItem() == NONE) {
+                cSecondPluginActiv.setEnabled(false);
+                bSecondPluginGUI.setEnabled(false);
+            } else {
+                cSecondPluginActiv.setEnabled(true);
+                bSecondPluginGUI.setEnabled(true);
+            }
+            if (sThirdPluginName.getSelectedItem() == NONE) {
+                cThirdPluginActiv.setEnabled(false);
+                bThirdPluginGUI.setEnabled(false);
+            } else {
+                cThirdPluginActiv.setEnabled(true);
+                bThirdPluginGUI.setEnabled(true);
+            }
 
         }
 
@@ -1108,6 +1141,7 @@ public class BOA_ implements PlugIn {
          * 
          * @param e Type of event
          * @see BOAp
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
          */
         @Override
         public void actionPerformed(final ActionEvent e) {
@@ -1299,6 +1333,8 @@ public class BOA_ implements PlugIn {
                     historyLogger.openHistory();
             }
 
+            updateWindowState(); // window logic on any change
+
             // run segmentation for selected cases
             if (run) {
                 System.out.println("running from in stackwindow");
@@ -1318,6 +1354,7 @@ public class BOA_ implements PlugIn {
          * {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
          * 
          * @param e Type of event
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
          */
         @Override
         public void itemStateChanged(final ItemEvent e) {
@@ -1350,18 +1387,18 @@ public class BOA_ implements PlugIn {
                 } else {
                     imageGroup.unzoom(canvas);
                 }
-            } else if (source == cFirstPlugin) {
-                boaState.snakePluginList.setActive(0, cFirstPlugin.getState());
+            } else if (source == cFirstPluginActiv) {
+                boaState.snakePluginList.setActive(0, cFirstPluginActiv.getState());
                 recalculatePlugins();
-            } else if (source == cSecondPlugin) {
-                boaState.snakePluginList.setActive(1, cSecondPlugin.getState());
+            } else if (source == cSecondPluginActiv) {
+                boaState.snakePluginList.setActive(1, cSecondPluginActiv.getState());
                 recalculatePlugins();
-            } else if (source == cThirdPlugin) {
-                boaState.snakePluginList.setActive(2, cThirdPlugin.getState());
+            } else if (source == cThirdPluginActiv) {
+                boaState.snakePluginList.setActive(2, cThirdPluginActiv.getState());
                 recalculatePlugins();
             }
 
-            // action on manus
+            // action on menus
             if (source == cbMenuPlotOriginalSnakes) {
                 boap.isProcessedSnakePlotted = cbMenuPlotOriginalSnakes.getState();
                 recalculatePlugins();
@@ -1372,24 +1409,26 @@ public class BOA_ implements PlugIn {
             }
 
             // actions on Choice
-            if (source == firstPluginName) {
-                LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
-                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0,
-                        cFirstPlugin.getState());
+            if (source == sFirstPluginName) {
+                LOGGER.debug("Used firstPluginName, val: " + sFirstPluginName.getSelectedItem());
+                instanceSnakePlugin((String) sFirstPluginName.getSelectedItem(), 0,
+                        cFirstPluginActiv.getState());
                 recalculatePlugins();
             }
-            if (source == secondPluginName) {
-                LOGGER.debug("Used secondPluginName, val: " + secondPluginName.getSelectedItem());
-                instanceSnakePlugin((String) secondPluginName.getSelectedItem(), 1,
-                        cSecondPlugin.getState());
+            if (source == sSecondPluginName) {
+                LOGGER.debug("Used secondPluginName, val: " + sSecondPluginName.getSelectedItem());
+                instanceSnakePlugin((String) sSecondPluginName.getSelectedItem(), 1,
+                        cSecondPluginActiv.getState());
                 recalculatePlugins();
             }
-            if (source == thirdPluginName) {
-                LOGGER.debug("Used thirdPluginName, val: " + thirdPluginName.getSelectedItem());
-                instanceSnakePlugin((String) thirdPluginName.getSelectedItem(), 2,
-                        cThirdPlugin.getState());
+            if (source == sThirdPluginName) {
+                LOGGER.debug("Used thirdPluginName, val: " + sThirdPluginName.getSelectedItem());
+                instanceSnakePlugin((String) sThirdPluginName.getSelectedItem(), 2,
+                        cThirdPluginActiv.getState());
                 recalculatePlugins();
             }
+
+            updateWindowState(); // window logic on any change
 
             if (run) {
                 if (boap.supressStateChangeBOArun) {
@@ -1414,6 +1453,7 @@ public class BOA_ implements PlugIn {
          * {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
          * 
          * @param ce Type of event
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
          */
         @Override
         public void stateChanged(final ChangeEvent ce) {
@@ -1465,6 +1505,8 @@ public class BOA_ implements PlugIn {
                 boap.segParam.sample_norm = (Integer) spinner.getValue();
                 run = true;
             }
+
+            updateWindowState(); // window logic on any change
 
             if (run) {
                 if (boap.supressStateChangeBOArun) {
