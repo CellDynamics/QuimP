@@ -120,10 +120,11 @@ public class BOA_ implements PlugIn {
     private final static String NONE = "NONE"; // reserved word that stands for plugin that is not
                                                // selected
     /**
-     * Hold current BOA object and provide access to only one method from plugin. Reference to this
-     * field is passed to plugins and give them possibility to call selected methods from BOA class
+     * Hold current BOA object and provide access to only selected methods from plugin. Reference to
+     * this field is passed to plugins and give them possibility to call selected methods from BOA
+     * class
      */
-    private ViewUpdater viewUpdater;
+    public static ViewUpdater viewUpdater;
     /**
      * Keep data from getQuimPBuildInfo() These information are used for About dialog, window title
      * bar, logging, etc.
@@ -508,6 +509,7 @@ public class BOA_ implements PlugIn {
             window = null;
             // clear static
             boap = null;
+            viewUpdater = null;
         }
 
         @Override
@@ -1789,6 +1791,7 @@ public class BOA_ implements PlugIn {
         List<Point2d> dataToProcess = null; // null but it will be overwritten in loop because first
                                             // "if" fires always (previousConversion is set to
                                             // isnake) on beginning, if first plugin is ipoint type
+        viewUpdater.connectSnakeObject(snake); // remember last processing snake (before processing)
         if (!boaState.snakePluginList.isRefListEmpty()) {
             LOGGER.debug("sPluginList not empty");
             for (Plugin qP : boaState.snakePluginList.getList()) { // iterate over list
@@ -2256,6 +2259,7 @@ class ImageGroup {
         for (int i = 0; i < nest.size(); i++) {
             sH = nest.getHandler(i);
             if (sH.isStoredAt(frame)) { // is there a snake a;t f?
+
                 // plot segmented snake
                 if (BOA_.boap.isProcessedSnakePlotted == true) {
                     back = sH.getBackupSnake(frame); // original unmodified snake
@@ -2264,6 +2268,7 @@ class ImageGroup {
                     r.setStrokeColor(Color.RED);
                     overlay.add(r);
                 }
+                BOA_.viewUpdater.connectSnakeObject(sH.getBackupSnake(frame));
                 // plot segmented and filtered snake
                 snake = sH.getStoredSnake(frame); // processed by plugins
                 // Roi r = snake.asRoi();

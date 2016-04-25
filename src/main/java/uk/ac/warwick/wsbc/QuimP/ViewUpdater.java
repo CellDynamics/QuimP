@@ -4,19 +4,31 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.util.List;
+
+import javax.vecmath.Point2d;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Accessor that masks all public methods from object it holds except those manually exposed.
  * 
  * This class is used for limiting access to public methods of QuimP from external plugins. It 
  * prevents calling those methods in unchecked way.
+ * 
+ * Support bi-directional communication. Plugin can call:
+ * -# updateView() for updating view (and recalculating all plugins)
+ * -# getSnakeasPoints() for current snake (only for previewing purposes).
  *  
  * @author p.baniukiewicz
  * @date 4 Mar 2016
  *
  */
 public class ViewUpdater {
-
+    private static final Logger LOGGER = LogManager.getLogger(ViewUpdater.class.getName());
     private Object o;
+    private Snake snake; //!< Hold one snake from main view that can be requested by plugin
 
     /**
      * Connect object to accessor.
@@ -27,6 +39,18 @@ public class ViewUpdater {
     }
 
     /**
+     * Connect current snake (on current frame) to this object. 
+     * 
+     * Connected snake can be requested by plugins (always as copy)
+     * 
+     * @param snake Snake to be connected.
+     */
+    protected void connectSnakeObject(final Snake snake) {
+        LOGGER.debug("Remembered snake: " + snake.getSnakeID());
+        this.snake = snake;
+    }
+
+    /**
      * Calls updateView method from object \c o
      */
     public void updateView() {
@@ -34,6 +58,15 @@ public class ViewUpdater {
             ((BOA_) o).recalculatePlugins();
         } else
             throw new RuntimeException("Class not supported");
+    }
+
+    /**
+     * Request copy of connected snake for previewing purposes
+     * 
+     * @return copy of connected snake as list of points
+     */
+    public List<Point2d> getSnakeasPoints() {
+        return snake.asList();
     }
 
 }
