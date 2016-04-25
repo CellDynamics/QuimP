@@ -4,6 +4,7 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Point2d;
@@ -19,7 +20,7 @@ import org.apache.logging.log4j.Logger;
  * 
  * Support bi-directional communication. Plugin can call:
  * -# updateView() for updating view (and recalculating all plugins)
- * -# getSnakeasPoints() for current snake (only for previewing purposes).
+ * -# getSnakeasXX() for current snake (only for previewing purposes).
  *  
  * @author p.baniukiewicz
  * @date 4 Mar 2016
@@ -46,7 +47,7 @@ public class ViewUpdater {
      * @param snake Snake to be connected.
      */
     protected void connectSnakeObject(final Snake snake) {
-        LOGGER.debug("Remembered snake: " + snake.getSnakeID());
+        LOGGER.trace("Remembered snake: " + snake.getSnakeID());
         this.snake = snake;
     }
 
@@ -63,10 +64,29 @@ public class ViewUpdater {
     /**
      * Request copy of connected snake for previewing purposes
      * 
-     * @return copy of connected snake as list of points
+     * @return copy of connected snake as list of points or empty list if snake is not connected
      */
     public List<Point2d> getSnakeasPoints() {
-        return snake.asList();
+        if (snake != null)
+            return snake.asList();
+        else
+            return new ArrayList<Point2d>();
+    }
+
+    /**
+     * Request copy of connected snake for previewing purposes
+     * 
+     * @return copy of connected snake as Snake or null on any error
+     */
+    public Snake getSnakeasSnake() {
+        Snake ret = null;
+        try {
+            if (snake != null)
+                ret = new Snake(snake, snake.getSnakeID());
+        } catch (BoaException e) {
+            ret = null;
+        }
+        return ret;
     }
 
 }

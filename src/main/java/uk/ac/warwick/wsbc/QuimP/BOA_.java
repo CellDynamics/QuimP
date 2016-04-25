@@ -1791,7 +1791,6 @@ public class BOA_ implements PlugIn {
         List<Point2d> dataToProcess = null; // null but it will be overwritten in loop because first
                                             // "if" fires always (previousConversion is set to
                                             // isnake) on beginning, if first plugin is ipoint type
-        viewUpdater.connectSnakeObject(snake); // remember last processing snake (before processing)
         if (!boaState.snakePluginList.isRefListEmpty()) {
             LOGGER.debug("sPluginList not empty");
             for (Plugin qP : boaState.snakePluginList.getList()) { // iterate over list
@@ -1958,7 +1957,6 @@ public class BOA_ implements PlugIn {
             tightenSnake(snake);
             imageGroup.drawPath(snake, f); // post tightned snake on path
             sH.backupLiveSnake(f);
-
             Snake out = iterateOverSnakePlugins(snake); // process segmented snake by plugins
             sH.storeThisSnake(out, f); // store processed snake as final
         } catch (QuimpPluginException qpe) {
@@ -2268,6 +2266,7 @@ class ImageGroup {
                     r.setStrokeColor(Color.RED);
                     overlay.add(r);
                 }
+                // remember instance of segmented snake for plugins
                 BOA_.viewUpdater.connectSnakeObject(sH.getBackupSnake(frame));
                 // plot segmented and filtered snake
                 snake = sH.getStoredSnake(frame); // processed by plugins
