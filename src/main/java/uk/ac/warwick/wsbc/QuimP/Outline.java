@@ -768,6 +768,8 @@ public final class Outline extends Shape<Vert> implements Cloneable {
             oV = oV.getNext();
         } while (!oV.isHead());
         n.updateNormales(true);
+        n.calcCentroid();
+        n.updateCurvature();
 
         return n;
     }
