@@ -37,7 +37,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
      * @endcode 
      * @see uk.ac.warwick.wsbc.QuimP.OutlineHandler.readOutlines(final File) for example of use
      */
-    public Outline(Vert h, int N) {
+    public Outline(final Vert h, int N) {
         super(h, N);
         removeVert(head);
         this.updateCurvature();
@@ -51,7 +51,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
      * 
      * @param h Initial Vert
      */
-    public Outline(Vert h) {
+    public Outline(final Vert h) {
         super(h);
         this.updateCurvature();
         calcCentroid();
@@ -71,10 +71,12 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public Outline(Roi roi) {
-        // Create an outline from an Roi
-        // int[] xCoords = ((PolygonRoi)roi).getXCoordinates();
-        // int[] yCoords = ((PolygonRoi)roi).getYCoordinates();
+    /**
+     * Create an outline from an Roi
+     * 
+     * @param roi Initial ROI
+     */
+    public Outline(final Roi roi) {
         Polygon p = roi.getPolygon();
 
         head = new Vert(0); // make a dummy head node
@@ -196,7 +198,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
      * 
      * @param v Vert to remove
      */
-    public void removeVert(Vert v) {
+    public void removeVert(final Vert v) {
         if (POINTS <= 3) {
             LOGGER.error("Outline. 175. Can't remove node. less than 3 would remain");
             return;
@@ -224,7 +226,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
      * @param v Vert to insert new Vert after
      * @return Inserted Vert
      */
-    public Vert insertVert(Vert v) {
+    public Vert insertVert(final Vert v) {
         return insertPoint(v, new Vert());
     }
 
@@ -236,7 +238,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
      * @param v 
      * @return Vertex created between \c v and \c v.next
      */
-    public Vert insertInterpolatedVert(Vert v) {
+    public Vert insertInterpolatedVert(final Vert v) {
         Vert newVert = insertVert(v);
         newVert.setX((newVert.getPrev().getX() + newVert.getNext().getX()) / 2);
         newVert.setY((newVert.getPrev().getY() + newVert.getNext().getY()) / 2);
