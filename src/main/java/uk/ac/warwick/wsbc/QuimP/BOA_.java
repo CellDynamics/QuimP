@@ -1719,7 +1719,7 @@ public class BOA_ implements PlugIn {
                             sH.storeLiveSnake(boaState.frame);
                             sH.backupLiveSnake(boaState.frame);
                             nest.kill(sH);
-                            snake.defreeze();
+                            snake.unfreezeAll();
                             BOA_.log("Snake " + snake.getSnakeID() + " died, frame "
                                     + boaState.frame);
                             boap.SEGrunning = false;
@@ -1854,13 +1854,13 @@ public class BOA_ implements PlugIn {
                 imageGroup.drawPath(snake, boaState.frame); // draw current snake
             }
 
-            if ((snake.getNODES() / snake.startingNnodes) > boap.NMAX) {
+            if ((snake.getNumNodes() / snake.startingNnodes) > boap.NMAX) {
                 // if max nodes reached (as % starting) prompt for reset
                 if (boap.segParam.use_previous_snake) {
                     // imageGroup.drawContour(snake, frame);
                     // imageGroup.updateAndDraw();
                     throw new BoaException(
-                            "Frame " + boaState.frame + "-max nodes reached " + snake.getNODES(),
+                            "Frame " + boaState.frame + "-max nodes reached " + snake.getNumNodes(),
                             boaState.frame, 1);
                 } else {
                     BOA_.log("Frame " + boaState.frame + "-max nodes reached..continue");
@@ -1872,7 +1872,7 @@ public class BOA_ implements PlugIn {
             // }
             // break;
         }
-        snake.defreeze(); // set freeze tag back to false
+        snake.unfreezeAll(); // set freeze tag back to false
 
         if (!boap.segParam.expandSnake) { // shrink a bit to get final outline
             snake.shrinkSnake();
@@ -2565,7 +2565,7 @@ class Constrictor {
             n = n.getNext();
         } while (!n.isHead());
 
-        snake.updateNormales();
+        snake.updateNormales(BOA_.boap.segParam.expandSnake);
 
         return snake.isFrozen(); // true if all nodes frozen
     }
@@ -2643,7 +2643,7 @@ class Constrictor {
                 n = n.getNext();
             } while (!n.isHead());
 
-            snake.updateNormales();
+            snake.updateNormales(BOA_.boap.segParam.expandSnake);
 
             pw.close();
             return snake.isFrozen(); // true if all nodes frozen

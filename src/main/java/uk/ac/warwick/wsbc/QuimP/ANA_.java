@@ -398,7 +398,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         int j;
         int max = 10000;
         for (j = 0; j < steps; j++) {
-            if (o.getVerts() <= 3) {
+            if (o.getNumVerts() <= 3) {
                 break;
             }
             n = o.getHead();
@@ -418,7 +418,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
             }
         }
 
-        if (o.getVerts() < 3) {
+        if (o.getNumVerts() < 3) {
             System.out.println("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
         }
 
@@ -426,17 +426,17 @@ public class ANA_ implements PlugInFilter, DialogListener {
             System.out.println("ANA_(382)...fixed ana intersects");
         }
 
-        if (o.getVerts() < 3) {
+        if (o.getNumVerts() < 3) {
             System.out.println("ANA 377_NODES LESS THAN 3");
         }
 
         this.markFrozenNodesNormal(frameOneClone);
         orgIpl.draw();
-        o.unfreeze();
+        o.unfreezeAll();
     }
 
     private void removeProx(Outline o) {
-        if (o.getVerts() <= 3) {
+        if (o.getNumVerts() <= 3) {
             return;
         }
         Vert v, vl, vr;

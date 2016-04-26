@@ -1,5 +1,8 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
@@ -13,84 +16,69 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * </ul>
  * 
  * @author rtyson
+ * @author p.baniukiewicz
+ * @date 20 Apr 2016
  *
  */
-public class Node {
-    private ExtendedVector2d point; // x,y co-ordinates of the node
-    private ExtendedVector2d normal; // normals
-    private ExtendedVector2d tan;
-    private ExtendedVector2d vel; // velocity of the nodes
-    private ExtendedVector2d F_total; // total force at node
-    private ExtendedVector2d prelimPoint; // point to move node to after all new
-                                          // node positions have been calc
-    private boolean frozen; // flag which is set when the velocity is below the critical velocity
-    private int tracknumber;
-    double position = -1; // position value.
-    private Node prev; // predecessor to current node
-    private Node next; // successor to current node
-    private boolean head;
-    private static boolean clockwise = true; // access clockwise if true
-    // public QColor colour;
+public class Node extends PointsList<Node> {
+    private static final Logger LOGGER = LogManager.getLogger(Node.class.getName());
+    private ExtendedVector2d vel; /*!< velocity of the nodes */
+    private ExtendedVector2d F_total; /*!< total force at node */
+    /**
+     * Point to move node to after all new node positions have been calc
+     */
+    private ExtendedVector2d prelimPoint;
 
+    /**
+     * Default constructor. Create empty Node with default parameters, not linked to other Nodes
+     */
+    public Node() {
+        super();
+        F_total = new ExtendedVector2d();
+        vel = new ExtendedVector2d();
+        prelimPoint = new ExtendedVector2d();
+    }
+
+    /**
+     * Create Node with given id
+     * 
+     * @param t id of Node
+     * @see uk.ac.warwick.wsbc.QuimP.PointListNode.PointListNode(int)
+     */
     public Node(int t) {
-        // t = tracking number
-        point = new ExtendedVector2d();
+        super(t);
         F_total = new ExtendedVector2d();
         vel = new ExtendedVector2d();
-        normal = new ExtendedVector2d();
-        tan = new ExtendedVector2d();
         prelimPoint = new ExtendedVector2d();
-        frozen = false;
-        head = false;
-        tracknumber = t;
-        // colour = QColor.lightColor();
     }
 
-    Node(double xx, double yy, int t) {
-        point = new ExtendedVector2d(xx, yy);
+    /**
+     * Copy constructor. Copy properties of Node
+     * 
+     * Previous or next points are not copied
+     * 
+     * @param src Source Node
+     */
+    public Node(final Node src) {
+        super(src);
+        this.vel = new ExtendedVector2d(src.vel);
+        this.F_total = new ExtendedVector2d(src.F_total);
+        this.prelimPoint = new ExtendedVector2d(src.prelimPoint);
+    }
+
+    /**
+     * Create Node from coordinates.
+     * 
+     * @param xx x-axis coordinate
+     * @param yy y-axis coordinate
+     * @param t id of Node
+     * @see uk.ac.warwick.wsbc.QuimP.PointListNode.PointListNode(double, double, int)
+     */
+    public Node(double xx, double yy, int t) {
+        super(xx, yy, t);
         F_total = new ExtendedVector2d();
         vel = new ExtendedVector2d();
-        normal = new ExtendedVector2d();
-        tan = new ExtendedVector2d();
         prelimPoint = new ExtendedVector2d();
-        frozen = false;
-        head = false;
-        tracknumber = t;
-        // colour = QColor.lightColor();
-    }
-
-    /**
-     * \c point getter
-     * @return X space co-ordinate
-     */
-    public double getX() {
-        return point.getX();
-    }
-
-    /**
-     * \c point getter
-     * @return Y space co-ordinate
-     */
-    public double getY() {
-        return point.getY();
-    }
-
-    /**
-     * Set \c X space co-ordinate
-     * 
-     * @param x coordinate
-     */
-    public void setX(double x) {
-        point.setX(x);
-    }
-
-    /**
-     * Set \c Y space co-ordinate
-     * 
-     * @param y coordinate
-     */
-    public void setY(double y) {
-        point.setY(y);
     }
 
     /**
@@ -104,91 +92,31 @@ public class Node {
     }
 
     /**
-     * Get previous node in chain (next if not clockwise)
-     * 
-     * @return next or previous Node from list
+     * Setter to \c frozen field
+     * @return frozen
      */
-    public Node getPrev() {
-        if (clockwise) {
-            return prev;
-        } else {
-            return next;
-        }
-    }
-
-    /**
-     * Get next node in chain (previous if not clockwise)
-     * 
-     * @return previous or next Node from list
-     */
-    public Node getNext() {
-        if (clockwise) {
-            return next;
-        } else {
-            return prev;
-        }
-    }
-
-    /**
-     * Adds previous (or next if not clockwise) Node to list
-     * 
-     * @param n Node to add
-     */
-    public void setPrev(Node n) {
-        if (clockwise) {
-            prev = n;
-        } else {
-            next = n;
-        }
-    }
-
-    /**
-     * Adds next (or previous if not clockwise) Node to list
-     * 
-     * @param n Node to add
-     */
-    public void setNext(Node n) {
-        if (clockwise) {
-            next = n;
-        } else {
-            prev = n;
-        }
-    }
-
-    public static void setClockwise(boolean b) {
-        Node.clockwise = b;
-    }
-
-    public ExtendedVector2d getPoint() {
-        return point;
-    }
-
     public boolean isFrozen() {
         return frozen;
     }
 
+    /**
+     * Setter to \c F_total field
+     * @return F_total
+     */
     public ExtendedVector2d getF_total() {
         return F_total;
     }
 
+    /**
+     * Setter to \c vel field
+     * @return vel
+     */
     public ExtendedVector2d getVel() {
         return vel;
     }
 
-    public ExtendedVector2d getNormal() {
-        return normal;
-    }
-
-    public ExtendedVector2d getTangent() {
-        return tan;
-    }
-
-    public int getTrackNum() {
-        return tracknumber;
-    }
-
     /**
-     * Sets total force for Node
+     * Set total force for Node
      * 
      * @param f vector of force to assign to Node force
      */
@@ -198,7 +126,7 @@ public class Node {
     }
 
     /**
-     * Sets velocity for Node
+     * Set velocity for Node
      * 
      * @param v vector of velocity to assign to Node force
      */
@@ -208,7 +136,7 @@ public class Node {
     }
 
     /**
-     * Updates total force for Node
+     * Update total force for Node
      * 
      * @param f vector of force to add to Node force
      */
@@ -219,7 +147,7 @@ public class Node {
     }
 
     /**
-     * Updates velocity for Node
+     * Update velocity for Node
      * 
      * @param v vector of velocity to add to Node force
      */
@@ -229,106 +157,23 @@ public class Node {
         vel.setY(vel.getY() + v.getY());
     }
 
+    /**
+     * Set preliminary point for Node
+     * 
+     * @param v vector of preliminary point to assign to Node force
+     */
     public void setPrelim(ExtendedVector2d v) {
         prelimPoint.setX(v.getX());
         prelimPoint.setY(v.getY());
     }
 
-    public void freeze() {
-        frozen = true;
-    }
-
-    public void unfreeze() {
-        frozen = false;
-    }
-
-    public boolean isHead() {
-        return head;
-    }
-
     /**
-     * Set head marker to current node
+     * Evaluate local curvature of Node related to previous, this and next Node
      * 
-     * @param t \c true if current node is head, \c false otherwise
-     * @warning Only one Node in Snake can be head
-     * @see uk.ac.warwick.wsbc.QuimP.Snake.setNewHead(int)
-     * @see uk.ac.warwick.wsbc.QuimP.Snake
+     * @return Local curvature for \b this node in \a degrees
+     * TODO Move it to Shape as static maybe and accepting Node as parameter
      */
-    public void setHead(boolean t) {
-        head = t;
-    }
-
-    /**
-     * Updates the normal (must point inwards)
-     */
-    public void updateNormale() {
-        boolean c = clockwise;
-        clockwise = true; // just in case
-        tan = calcTan(); // tangent
-
-        /*
-         * // calc local orientation matrix double xa, ya, xb, yb, xc, yc; xa = prev.getX(); ya =
-         * prev.getY(); xb = getX(); yb = getY(); xc = next.getX(); yc = next.getY();
-         * 
-         * double localO = (xb*yc + xa*yb + ya*xc) - (ya*xb + yb*xc + xa*yc); //determinant of
-         * orientation if(localO==0){ IJ.log( "orientation is flat!"); normal.setX(-tan.getY());
-         * normal.setY(tan.getX()); }else if(localO*detO > 0){ normal.setX(-tan.getY());
-         * normal.setY(tan.getX()); }else{ normal.setX(tan.getY()); normal.setY(-tan.getX()); }
-         * 
-         * if (p.expandSnake) { // switch around if expanding snake normal.setX(-normal.getY());
-         * normal.setY(-normal.getX()); }
-         */
-
-        if (!BOA_.boap.segParam.expandSnake) { // switch around if expanding snake
-            normal.setX(-tan.getY());
-            normal.setY(tan.getX());
-        } else {
-            normal.setX(tan.getY());
-            normal.setY(-tan.getX());
-        }
-        clockwise = c;
-
-    }
-
-    /**
-     * Calculate tangent at Node n (i.e. unit vector between neighbors)
-     * 
-     * Calculate a unit vector towards neighboring nodes and then a unit vector
-     * between their ends. direction important for normale calculation. Always
-     * calculate tan as if clockwise
-     * 
-     * @return Tangent at node
-     */
-    private ExtendedVector2d calcTan() {
-
-        ExtendedVector2d unitVecLeft = ExtendedVector2d.unitVector(point, prev.getPoint());
-        ExtendedVector2d unitVecRight = ExtendedVector2d.unitVector(point, next.getPoint());
-
-        ExtendedVector2d pointLeft = new ExtendedVector2d();
-        pointLeft.setX(getX());
-        pointLeft.setY(getY());
-        pointLeft.addVec(unitVecLeft);
-
-        ExtendedVector2d pointRight = new ExtendedVector2d();
-        pointRight.setX(getX());
-        pointRight.setY(getY());
-        pointRight.addVec(unitVecRight);
-
-        tan = ExtendedVector2d.unitVector(pointLeft, pointRight);
-
-        return tan;
-    }
-
-    public static void randDirection() {
-        if (Math.random() < 0.5) {
-            clockwise = true;
-        } else {
-            clockwise = false;
-        }
-    }
-
     public double getCurvatureLocal() {
-
         ExtendedVector2d edge1 =
                 ExtendedVector2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
         ExtendedVector2d edge2 =
@@ -336,9 +181,8 @@ public class Node {
 
         double angle = ExtendedVector2d.angle(edge1, edge2) * (180 / Math.PI);
 
-        if (angle > 360 || angle < -360) {
-            System.out.println("Warning-angle out of range (Vert l:320)");
-        }
+        if (angle > 360 || angle < -360)
+            LOGGER.warn("Warning-angle out of range (Vert l:320)");
 
         if (angle < 0)
             angle = 360 + angle;
@@ -353,19 +197,4 @@ public class Node {
         }
         return curvatureLocal;
     }
-
-    /**
-     * Current Node as String
-     * 
-     * @return String representation of Node
-     */
-    public String toString() {
-        String str;
-        // str = "[" + this.getX() + "," + this.getY() + "] " + "head is " + head + " next:"
-        // + getNext() + " prev: " + getPrev();
-        str = "[" + this.getX() + "," + this.getY() + "] " + "track " + tracknumber;
-        return str;
-
-    }
-
 }

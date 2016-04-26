@@ -17,12 +17,10 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  * @author tyson
  */
-public class OutlineHandler {
+public class OutlineHandler extends ShapeHandler<Outline> {
     private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
     private Outline[] outlines;
     private int size;
-    private int startFrame;
-    private int endFrame;
     private QParams qp;
     public ExtendedVector2d maxCoor;
     public ExtendedVector2d minCoor;
@@ -84,7 +82,7 @@ public class OutlineHandler {
         }
     }
 
-    Outline indexGetOutline(int i) {
+    public Outline indexGetOutline(int i) {
         return outlines[i];
     }
 
@@ -293,7 +291,6 @@ public class OutlineHandler {
 
         // Set limits to equal positive and negative
         migLimits = Tool.setLimitsEqual(migLimits);
-
     }
 
     public int getSize() {
@@ -330,14 +327,13 @@ public class OutlineHandler {
 
             oV = oV.getNext();
         } while (!oV.isHead());
+        n.calcCentroid();
         outlines[frame - startFrame] = n;
     }
 
     public void writeOutlines(File outFile, boolean ECMMrun) {
         try {
-            PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto
-                                                                             // flush
-
+            PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
             pw.write("#QuimP11 node data");
             if (ECMMrun) {
                 pw.print("-ECMM");
@@ -350,20 +346,8 @@ public class OutlineHandler {
             for (int i = startFrame; i <= endFrame; i++) {
                 o = getOutline(i);
                 pw.write("\n#Frame " + i);
-                write(pw, o.getVerts(), o.getHead());
+                write(pw, o.getNumVerts(), o.getHead());
             }
-
-            // for (int i = 0; i < outlines.length; i++) {
-            // pw.write("\n#Frame "+(i+1));
-            // if (outlines[i] == null) {
-            // System.out.println("DEBUG writeOutlines: frame " + i + " is NULL,
-            // not writting");
-            // continue;
-            // }
-
-            // OutlineHandler.write(pw, i + 1, outlines[i].getVerts(),
-            // outlines[i].getHead());
-            // }
             pw.close();
         } catch (Exception e) {
             IJ.log("could not open out file " + outFile.getAbsolutePath());
@@ -377,10 +361,9 @@ public class OutlineHandler {
             if (outFile.exists()) {
                 outFile.delete();
             }
-            PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto
-                                                                             // flush
+            PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
             pw.print("#");
-            OutlineHandler.write(pw, o.getVerts(), o.getHead());
+            OutlineHandler.write(pw, o.getNumVerts(), o.getHead());
             pw.close();
 
         } catch (Exception e) {

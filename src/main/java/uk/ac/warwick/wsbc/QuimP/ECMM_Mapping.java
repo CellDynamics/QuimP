@@ -34,6 +34,7 @@ public class ECMM_Mapping {
     static {
         System.setProperty("log4j.configurationFile", "qlog4j2.xml");
     }
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 
     OutlineHandler oH, outputH;
@@ -243,6 +244,7 @@ public class ECMM_Mapping {
         // "]");
         o1.resetAllCoords();
         o1.clearFluores();
+        o1.calcCentroid(); // TODO this should be called as in case of Snakes
 
         outputH.save(o1, f);
         Outline o2;
@@ -1539,8 +1541,8 @@ class Sector {
     // }
 
     private FloatPolygon ioPolygons(Outline charges) { // in and out polygons
-        float[] x = new float[charges.getVerts()];
-        float[] y = new float[charges.getVerts()];
+        float[] x = new float[charges.getNumVerts()];
+        float[] y = new float[charges.getNumVerts()];
 
         int i = 0;
         Vert v = charges.getHead();

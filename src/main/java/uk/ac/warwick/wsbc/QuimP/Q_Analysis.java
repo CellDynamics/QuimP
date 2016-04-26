@@ -4,18 +4,19 @@
 */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import ij.IJ;
 import ij.ImagePlus;
-
 import ij.gui.GenericDialog;
 import ij.gui.YesNoCancelDialog;
-import ij.io.*;
-//import ij.process.ColorProcessor;
-import ij.process.*;
+import ij.io.OpenDialog;
+// import ij.process.ColorProcessor;
+import ij.process.ColorProcessor;
+import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-
-import java.io.*;
-import java.util.ArrayList;
 
 /**
  *
@@ -38,7 +39,8 @@ public class Q_Analysis {
             do {
                 try {
 
-                    OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", OpenDialog.getLastDirectory(), "");
+                    OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
+                            OpenDialog.getLastDirectory(), "");
                     if (od.getFileName() == null) {
                         return;
                     }
@@ -53,9 +55,11 @@ public class Q_Analysis {
                     File[] otherPaFiles = qp.findParamFiles();
 
                     if (otherPaFiles.length > 0) {
-                        YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                                "\tBatch Process?\n\n" + "Process other paQP files in the same folder with QAnalysis?"
-                                        + "\n[The same parameters will be used]");
+                        YesNoCancelDialog yncd =
+                                new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
+                                        "\tBatch Process?\n\n"
+                                                + "Process other paQP files in the same folder with QAnalysis?"
+                                                + "\n[The same parameters will be used]");
                         if (yncd.yesPressed()) {
                             ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
                             this.closeAllImages();
@@ -140,7 +144,8 @@ public class Q_Analysis {
 
         gd.setOKLabel("RUN");
 
-        gd.addMessage("Pixel width: " + Qp.scale + " \u00B5m\nFrame Interval: " + Qp.frameInterval + " sec");
+        gd.addMessage("Pixel width: " + Qp.scale + " \u00B5m\nFrame Interval: " + Qp.frameInterval
+                + " sec");
         // gd.addNumericField("Pixel size (microns)", Qp.scale, 2);
         // gd.addNumericField("Time between frames (secs)", Qp.frameInterval,
         // 2);
@@ -319,8 +324,8 @@ class STmap {
                         IJ.log("ERROR: There are missing fluoresecne values! Run ANA");
                         return;
                     }
-                    intFlu = interpolate(zeroVert.fluores[i].intensity, zeroVert.getNext().fluores[i].intensity,
-                            fraction);
+                    intFlu = interpolate(zeroVert.fluores[i].intensity,
+                            zeroVert.getNext().fluores[i].intensity, fraction);
                     fluoMaps[i].fill(tt, 0, pN, intFlu, oH.fluLims[i][1]);
                 }
             }
@@ -374,7 +379,8 @@ class STmap {
 
                 for (int i = 0; i < 3; i++) {
                     if (fluoMaps[i].isEnabled()) {
-                        intFlu = interpolate(v.fluores[i].intensity, v.getNext().fluores[i].intensity, fraction);
+                        intFlu = interpolate(v.fluores[i].intensity,
+                                v.getNext().fluores[i].intensity, fraction);
                         fluoMaps[i].fill(tt, p, pN, intFlu, oH.fluLims[i][1]);
                     }
                 }
@@ -429,7 +435,8 @@ class STmap {
                 continue;
             }
 
-            fluImP = IJ.createImage(Qp.filename + "_fluoCH" + fluoMaps[i].channel, "8-bit black", res, T, 1);
+            fluImP = IJ.createImage(Qp.filename + "_fluoCH" + fluoMaps[i].channel, "8-bit black",
+                    res, T, 1);
             fluImP.getProcessor().setPixels(fluoMaps[i].getColours());
             resize(fluImP);
             setCalibration(fluImP);
@@ -443,14 +450,16 @@ class STmap {
 
             IJ.doCommand("Red"); // this don't always work. dun know why
 
-            IJ.saveAs(fluImP, "tiff",
-                    Qp.outFile.getParent() + File.separator + Qp.filename + "_fluoCh" + fluoMaps[i].channel + ".tiff");
+            IJ.saveAs(fluImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename
+                    + "_fluoCh" + fluoMaps[i].channel + ".tiff");
         }
 
         try {
             // save images
-            IJ.saveAs(migImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename + "_motility.tiff");
-            IJ.saveAs(convImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename + "_convexity.tiff");
+            IJ.saveAs(migImP, "tiff",
+                    Qp.outFile.getParent() + File.separator + Qp.filename + "_motility.tiff");
+            IJ.saveAs(convImP, "tiff",
+                    Qp.outFile.getParent() + File.separator + Qp.filename + "_convexity.tiff");
 
             Tool.arrayToFile(coordMap, ",", new File(Qp.outFile.getPath() + "_coordMap.maQP"));
             Tool.arrayToFile(originMap, ",", new File(Qp.outFile.getPath() + "_originMap.maQP"));
@@ -560,15 +569,17 @@ class STmap {
 
         if (Double.isNaN(frac) || Double.isNaN(frac)) {
             System.out.println("!WARNING, frac is nan:" + frac);
-            System.out.println("\tffraction: |v:" + v.fCoord + "|v2:" + v2coord + "|tar:" + target + "|frac:" + frac);
+            System.out.println("\tffraction: |v:" + v.fCoord + "|v2:" + v2coord + "|tar:" + target
+                    + "|frac:" + frac);
             frac = 0.5;
         }
         return frac;
     }
 
     private double interpCoord(Vert v, double frac, Vert head) {
-        double v2Coord = (v.getNext().getTrackNum() == head.getTrackNum()) ? v.getNext().coord + 1 : v.getNext().coord; // pass
-                                                                                                                        // zero
+        double v2Coord = (v.getNext().getTrackNum() == head.getTrackNum()) ? v.getNext().coord + 1
+                : v.getNext().coord; // pass
+                                     // zero
         double dis = v2Coord - v.coord;
         double targ = v.coord + (dis * frac);
 
@@ -700,7 +711,8 @@ class STmap {
                 tmpV = v.getPrev();
                 distance = 0;
                 do {
-                    distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+                    distance +=
+                            ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureLocal;
                     count++;
                     tmpV = tmpV.getPrev();
@@ -710,7 +722,8 @@ class STmap {
                 distance = 0;
                 tmpV = v.getNext();
                 do {
-                    distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+                    distance +=
+                            ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureLocal;
                     count++;
                     tmpV = tmpV.getNext();
@@ -740,7 +753,8 @@ class STmap {
                 tmpV = v.getPrev();
                 distance = 0;
                 do {
-                    distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+                    distance +=
+                            ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureSmoothed;
                     tmpV = tmpV.getPrev();
                 } while (distance < Qp.sumCov / 2);
@@ -749,7 +763,8 @@ class STmap {
                 distance = 0;
                 tmpV = v.getNext();
                 do {
-                    distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+                    distance +=
+                            ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureSmoothed;
                     tmpV = tmpV.getNext();
                 } while (distance < Qp.sumCov / 2);

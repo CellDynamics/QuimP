@@ -20,13 +20,12 @@ import ij.io.SaveDialog;
  * for writing them to file.
  * 
  * @author rtyson
+ * @author p.baniukiewicz
  *
  */
-public class SnakeHandler {
+public class SnakeHandler extends ShapeHandler<Snake> {
     private static final Logger LOGGER = LogManager.getLogger(SnakeHandler.class.getName());
     private Roi roi; // inital ROI
-    private int startFrame;
-    private int endFrame;
     private Snake liveSnake;
     private Snake[] finalSnakes; /*!< series of snakes, result of cell segm. and plugin processing*/
     private Snake[] segSnakes; /*!< series of snakes, result of cell segmentation only  */
@@ -60,9 +59,7 @@ public class SnakeHandler {
      * @throws BoaException
      */
     public void storeLiveSnake(int frame) throws BoaException {
-        // BOA_.log("Store snake " + ID + " at frame " + frame);
         finalSnakes[frame - startFrame] = null; // delete at current frame
-
         finalSnakes[frame - startFrame] = new Snake(liveSnake, ID);
     }
 
@@ -138,7 +135,7 @@ public class SnakeHandler {
             s = getStoredSnake(i);
             s.setPositions(); //
             pw.write("\n#Frame " + i);
-            write(pw, i + 1, s.getNODES(), s.getHead());
+            write(pw, i + 1, s.getNumNodes(), s.getHead());
         }
         pw.close();
         BOA_.boap.writeParams(ID, startFrame, endFrame);
@@ -174,7 +171,7 @@ public class SnakeHandler {
             if (i != 0) {
                 pw.print("\n");
             } // no new line at top
-            pw.print(finalSnakes[i].getNODES());
+            pw.print(finalSnakes[i].getNumNodes());
 
             Node n = finalSnakes[i].getHead();
             do {
@@ -195,7 +192,7 @@ public class SnakeHandler {
             if (i != 0) {
                 pw.print("\n");
             } // no new line at top
-            pw.print(finalSnakes[i].getNODES());
+            pw.print(finalSnakes[i].getNumNodes());
 
             Node n = finalSnakes[i].getHead();
             do {
