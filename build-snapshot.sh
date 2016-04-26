@@ -71,24 +71,24 @@ mvn clean install # must be installed for filters
 if [ $? -ne 0 ]; then
     exit 1
 fi
-mvn package -P uber -Dmaven.test.skip=true # produce artefact for IJ
+mvn install -P uber -Dmaven.test.skip=true # produce artefact for IJ
 cd ../HatSnakeFilter_quimp
-mvn package
+mvn clean package
 if [ $? -ne 0 ]; then
     exit 1
 fi
 cd ../HedgehogSnakeFilter_quimp
-mvn package
+mvn clean package
 if [ $? -ne 0 ]; then
     exit 1
 fi
 cd ../MeanSnakeFilter_quimp
-mvn package
+mvn clean package
 if [ $? -ne 0 ]; then
     exit 1
 fi
 cd ../SetHeadSnakeFilter_quimp
-mvn package
+mvn clean package
 if [ $? -ne 0 ]; then
     exit 1
 fi
@@ -129,7 +129,7 @@ if [ $? -eq 1 ]; then
     #create zip
     zip -j9 QuimP_$version-$cd.zip $TMP_DIR/*
     scp QuimP_$version-$cd.zip hashlist $UPLOAD_DIR/
-    rm -f hashlist QuimP_$version-$cd.zip
+    #rm -f hashlist QuimP_$version-$cd.zip
 else
     echo "File exists - do nothing"
     rm -f hashlist
