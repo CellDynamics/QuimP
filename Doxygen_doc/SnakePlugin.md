@@ -567,7 +567,7 @@ active plugins and copy results to `finalSnakes`. This method does not run segme
 is used for updating screen after any plugin action (inside plugin by interface `IQuimpPluginSynchro` or
 by `JSpinners` in QuimP UI related to plugins)
  1. uk.ac.warwick.wsbc.QuimP.SnakeHandler.getBackupSnake(int)
- 2. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(Snake)
+ 2. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(final Snake)
  3. uk.ac.warwick.wsbc.QuimP.SnakeHandler.storeThisSnake(Snake, int)
 4. uk.ac.warwick.wsbc.QuimP.SnakeHandler.backupLiveSnake(int) - this method makes copy of actual `liveSnake`
 for frame *f* (`liveSnake` is modified for every next segmented frame). It must be called for every frame 
