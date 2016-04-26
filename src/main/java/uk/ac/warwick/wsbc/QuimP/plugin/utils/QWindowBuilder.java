@@ -7,9 +7,12 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 import java.awt.BorderLayout;
 import java.awt.Choice;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
@@ -86,6 +89,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * \c RESERVED_KEYS is list of reserved keys that are not UI elements. They are
  * processed in different way.
  * 
+ * Other behavior:
+ * By default on close or when user clicked Cancel window is hided only, not destroyed. This is 
+ * due to preservation of all settings. Lifetime of window depends on QuimP
+ * 
  * @warning UI type as JSpinner keeps data in double format even in values passed through by
  * setValues(ParamList) are integer (ParamList keeps data as String). Therefore getValues can 
  * return this list with the same data but in double syntax (5 -> 5.0). Any try of convention of
@@ -117,7 +124,8 @@ public abstract class QWindowBuilder {
     final private int S_DEFAULT = 4; //!< spinner default value
 
     // definition of constant elements of UI
-    protected JButton applyB; //!< Apply button 
+    protected JButton applyB; //!< Apply button (do nothing but may be overwritten) 
+    protected JButton cancelB; //!< Cancel button (hides it)
 
     /**
      * Default constructor
@@ -287,17 +295,29 @@ public abstract class QWindowBuilder {
 
         // add Apply button on south
         Panel south = new Panel();
+        south.setLayout(new FlowLayout());
         applyB = new JButton("Apply");
         south.add(applyB);
+        cancelB = new JButton("Cancel");
+        south.add(cancelB);
+        // set action on Cancel - window is hided
+        cancelB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pluginWnd.setVisible(false);
+                windowState = false;
+            }
+        });
 
         // build window
         pluginPanel.add(north, BorderLayout.NORTH);
         pluginPanel.add(south, BorderLayout.SOUTH);
         pluginWnd.add(pluginPanel);
         pluginWnd.pack();
-        // add listener on close
+        // add listener on close - window is hided to preserve settings
         pluginWnd.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
+                LOGGER.trace("Window closing");
                 windowState = false;
                 pluginWnd.setVisible(false);
             }

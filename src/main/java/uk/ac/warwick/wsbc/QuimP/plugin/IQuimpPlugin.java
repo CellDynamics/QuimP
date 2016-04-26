@@ -85,4 +85,14 @@ public interface IQuimpPlugin {
      * @return String with version (any format) or \c null if not supported
      */
     String getVersion();
+
+    /**
+     * Get short info about plugin
+     * 
+     * One can use white characters in this string to limit line length because there is
+     * no guarantee that displayer will wrap lines. 
+     * 
+     * @return String \a about (any format) or \c null if not supported
+     */
+    String about();
 }

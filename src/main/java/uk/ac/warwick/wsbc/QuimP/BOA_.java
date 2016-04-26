@@ -7,7 +7,6 @@ import java.awt.CheckboxMenuItem;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -120,17 +119,25 @@ public class BOA_ implements PlugIn {
                              // it after truncating or deleting operation
     private final static String NONE = "NONE"; // reserved word that stands for plugin that is not
                                                // selected
-    private ViewUpdater viewUpdater; // hold current BOA object and provide access to only one
-                                     // method from plugin. Reference to this field is passed to
-                                     // plugins and give them possibility to call selected methods
-                                     // from BOA class
-    public static String[] quimpInfo; // keeps data from getQuimPBuildInfo() These information are
-                                      // used for About dialog, window title bar, logging
-    private static int logCount = 1; // adds counter to logged messages
+    /**
+     * Hold current BOA object and provide access to only selected methods from plugin. Reference to
+     * this field is passed to plugins and give them possibility to call selected methods from BOA
+     * class
+     */
+    public static ViewUpdater viewUpdater;
+    /**
+     * Keep data from getQuimPBuildInfo() These information are used for About dialog, window title
+     * bar, logging, etc.
+     */
+    public static String[] quimpInfo;
+    private static int logCount; // add counter to logged messages
     static final private int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
     private HistoryLogger historyLogger; // logger
-
-    static final public BOAp boap = new BOAp(); // configuration object, available from all modules
+    /**
+     * Configuration object, available from all modules. Must be initialized here \b AND in 
+     * constructor (to reset settings on next BOA call without quitting Fiij)
+     */
+    static public BOAp boap = new BOAp();
     private BOAState boaState; // current state of BOA module
 
     /**
@@ -139,9 +146,10 @@ public class BOA_ implements PlugIn {
      * @author p.baniukiewicz
      * @date 30 Mar 2016
      * @see Serializer
-     * @remarks Currently the SegParam object is connected to this class only and it is created in
-     * BOAp class constructor. In future SegParam will be part of this class
-     * This class in supposed to be main configuration holder for BOA_
+     * @remarks Currently the SegParam object is connected to this class only (in
+     * run(final String)) and it is created in BOAp class constructor. In future SegParam will
+     * be part of this class. This class in supposed to be main configuration holder for BOA_
+     * @todo TODO Move SegParam to be part of this class
      */
     class BOAState implements IQuimpSerialize {
         public int frame; /*!< current frame, CustomStackWindow.updateSliceSelector() */
@@ -168,6 +176,18 @@ public class BOA_ implements PlugIn {
         @Override
         public void afterSerialize() throws Exception {
         }
+    }
+
+    /**
+     * Main constructor.
+     * 
+     * All static resources should be re-initialized here, otherwise they persist in memory between 
+     * subsequent BOA calls from Fiji.
+     */
+    public BOA_() {
+        LOGGER.trace("Constructor called");
+        boap = new BOAp(); // set default parameters for static boap
+        logCount = 1; // reset log count (it is also static)
     }
 
     /**
@@ -331,47 +351,37 @@ public class BOA_ implements PlugIn {
         String authors = "###################################\n" + "BOA plugin, by\n"
                 + "Richard Tyson (richard.tyson@warwick.ac.uk)\n"
                 + "Till Bretschneider (Till.Bretschneider@warwick.ac.uk)\n"
+                + "Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)\n"
                 + "###################################\n";
 
-        // build modal dialog
-        Dialog aboutWnd = new Dialog(window, "Info", Dialog.ModalityType.DOCUMENT_MODAL);
-        aboutWnd.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent we) {
-                aboutWnd.dispose();
-            }
-        });
-        // located in middle of quimp qindow
-        Rectangle orgBounds = window.getBounds();
-        aboutWnd.setBounds(orgBounds.x + orgBounds.width / 2, orgBounds.y + orgBounds.height / 2,
-                500, 300);
-        Panel p = new Panel();
-        p.setLayout(new GridLayout(1, 1)); // main window panel
-        Panel tp = new Panel(); // panel with text area
-        tp.setLayout(new GridLayout(1, 1));
-        TextArea info = new TextArea(10, 60); // area to write
+        AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
         // fill with information
-        info.append(authors + '\n');
-        info.append("QuimP version: " + quimpInfo[0] + '\n');
-        info.append(quimpInfo[1] + '\n');
+        ad.appendLine(authors);
+        ad.appendLine("QuimP version: " + quimpInfo[0]);
+        ad.appendLine(quimpInfo[1]);
         // get list of found plugins
-        info.append("List of found plugins:\n");
+        ad.appendLine("List of found plugins:");
         Map<String, PluginProperties> mp = pluginFactory.getRegisterdPlugins();
         // iterate over set
         for (Map.Entry<String, PluginProperties> entry : mp.entrySet()) {
-            info.append("\n");
-            info.append("Plugin name: " + entry.getKey() + "\n");
-            info.append("   Plugin type: " + entry.getValue().getType() + "\n");
-            info.append("   Plugin path: " + entry.getValue().getFile().toString() + "\n");
-            info.append("   Plugin vers: " + entry.getValue().getVersion() + "\n");
+            ad.appendLine("Plugin name: " + entry.getKey());
+            ad.appendLine("   Plugin type: " + entry.getValue().getType());
+            ad.appendLine("   Plugin path: " + entry.getValue().getFile().toString());
+            ad.appendLine("   Plugin vers: " + entry.getValue().getVersion());
+            // about is not stored in PluginProperties class due to optimization of memory
+            ad.appendLine("   About (returned by plugin):");
+            IQuimpPlugin tmpinst = pluginFactory.getInstance(entry.getKey());
+            if (tmpinst != null) // can be null on problem with instance
+            {
+                String about = tmpinst.about(); // may return null
+                if (about != null)
+                    ad.appendLine(about);
+                else
+                    ad.appendLine("Plugin does not provide about note");
+            }
+            ad.appendDistance();
         }
-        info.setEditable(false);
-        tp.add(info); // add to panel
-        JScrollPane infoPanel = new JScrollPane(tp);
-        p.add(infoPanel);
-
-        aboutWnd.add(p);
-        aboutWnd.pack();
-        aboutWnd.setVisible(true);
+        ad.setVisible(true); // must be after adding content
     }
 
     /**
@@ -492,10 +502,14 @@ public class BOA_ implements PlugIn {
         // It is too late for asking user
         public void windowClosed(final WindowEvent arg0) {
             LOGGER.trace("CLOSED");
-            BOA_.running = false;
-            canvas = null;
+            BOA_.running = false; // set marker
+            boaState.snakePluginList.clear(); // close all opened plugin windows
+            canvas = null; // clear window data
             imageGroup = null;
             window = null;
+            // clear static
+            boap = null;
+            viewUpdater = null;
         }
 
         @Override
@@ -507,7 +521,7 @@ public class BOA_ implements PlugIn {
         public void windowActivated(final WindowEvent e) {
             LOGGER.trace("ACTIVATED");
             // rebuild manu for this local window
-            // workaround for Mac and theirs menus om top screen bar
+            // workaround for Mac and theirs menus on top screen bar
             // IJ is doing the same for activation of its window so every time one has correct menu
             // on top
             window.setMenuBar(window.quimpMenuBar);
@@ -599,9 +613,9 @@ public class BOA_ implements PlugIn {
         Label fpsLabel, pixelLabel, frameLabel;
         JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
         JSpinner isMaxIterations, isBlowup, isSample_tan, isSample_norm;
-        private Choice firstPluginName, secondPluginName, thirdPluginName;
+        private Choice sFirstPluginName, sSecondPluginName, sThirdPluginName;
         private Button bFirstPluginGUI, bSecondPluginGUI, bThirdPluginGUI;
-        private Checkbox cFirstPlugin, cSecondPlugin, cThirdPlugin;
+        private Checkbox cFirstPluginActiv, cSecondPluginActiv, cThirdPluginActiv;
 
         private MenuBar quimpMenuBar;
         private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory; // items
@@ -624,6 +638,8 @@ public class BOA_ implements PlugIn {
          * This method is called as first. The interface is built in three steps:
          * Left side of window (configuration zone) and right side of main
          * window (logs and other info and buttons) and finally upper menubar
+         * 
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
          */
         private void buildWindow() {
 
@@ -647,6 +663,7 @@ public class BOA_ implements PlugIn {
             quimpMenuBar = buildMenu(); // store menu in var to reuse on window activation
             setMenuBar(quimpMenuBar);
             pack();
+            updateWindowState(); // window logic on start
 
         }
 
@@ -753,50 +770,51 @@ public class BOA_ implements PlugIn {
             // not found getInstance return null which is stored in SnakePluginList and checked
             // during run
             // default values for plugin activity are stored in SnakePluginList
-            firstPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+            sFirstPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
             c.gridx = 0;
             c.gridy = 0;
-            pluginPanel.add(firstPluginName, c);
+            pluginPanel.add(sFirstPluginName, c);
 
             bFirstPluginGUI = addButton("GUI", pluginPanel);
             c.gridx = 1;
             c.gridy = 0;
             pluginPanel.add(bFirstPluginGUI, c);
 
-            cFirstPlugin = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(0));
+            cFirstPluginActiv = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(0));
             c.gridx = 2;
             c.gridy = 0;
-            pluginPanel.add(cFirstPlugin, c);
+            pluginPanel.add(cFirstPluginActiv, c);
 
-            secondPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+            sSecondPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
             c.gridx = 0;
             c.gridy = 1;
-            pluginPanel.add(secondPluginName, c);
+            pluginPanel.add(sSecondPluginName, c);
 
             bSecondPluginGUI = addButton("GUI", pluginPanel);
             c.gridx = 1;
             c.gridy = 1;
             pluginPanel.add(bSecondPluginGUI, c);
 
-            cSecondPlugin = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(1));
+            cSecondPluginActiv =
+                    addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(1));
             c.gridx = 2;
             c.gridy = 1;
-            pluginPanel.add(cSecondPlugin, c);
+            pluginPanel.add(cSecondPluginActiv, c);
 
-            thirdPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+            sThirdPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
             c.gridx = 0;
             c.gridy = 2;
-            pluginPanel.add(thirdPluginName, c);
+            pluginPanel.add(sThirdPluginName, c);
 
             bThirdPluginGUI = addButton("GUI", pluginPanel);
             c.gridx = 1;
             c.gridy = 2;
             pluginPanel.add(bThirdPluginGUI, c);
 
-            cThirdPlugin = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(2));
+            cThirdPluginActiv = addCheckbox("A", pluginPanel, boaState.snakePluginList.isActive(2));
             c.gridx = 2;
             c.gridy = 2;
-            pluginPanel.add(cThirdPlugin, c);
+            pluginPanel.add(cThirdPluginActiv, c);
 
             // --------build log---------
             Panel tp = new Panel(); // panel with text area
@@ -812,7 +830,7 @@ public class BOA_ implements PlugIn {
             southPanel.add(new Label("")); // blankes
             southPanel.add(new Label("")); // blankes
             bQuit = addButton("Quit", southPanel);
-            bFinish = addButton("FINISH", southPanel);
+            bFinish = addButton("Save & Quit", southPanel);
             // ------------------------------
 
             centerPanel.add(new Label("Snake Plugins:"));
@@ -1055,11 +1073,11 @@ public class BOA_ implements PlugIn {
          */
         private void updateCheckBoxes() {
             // first plugin activity
-            cFirstPlugin.setState(boaState.snakePluginList.isActive(0));
+            cFirstPluginActiv.setState(boaState.snakePluginList.isActive(0));
             // second plugin activity
-            cSecondPlugin.setState(boaState.snakePluginList.isActive(1));
+            cSecondPluginActiv.setState(boaState.snakePluginList.isActive(1));
             // third plugin activity
-            cThirdPlugin.setState(boaState.snakePluginList.isActive(2));
+            cThirdPluginActiv.setState(boaState.snakePluginList.isActive(2));
         }
 
         /**
@@ -1071,19 +1089,48 @@ public class BOA_ implements PlugIn {
         private void updateChoices() {
             // first slot snake plugin
             if (boaState.snakePluginList.getInstance(0) == null)
-                firstPluginName.select(NONE);
+                sFirstPluginName.select(NONE);
             else
-                firstPluginName.select(boaState.snakePluginList.getName(0));
+                sFirstPluginName.select(boaState.snakePluginList.getName(0));
             // second slot snake plugin
             if (boaState.snakePluginList.getInstance(1) == null)
-                secondPluginName.select(NONE);
+                sSecondPluginName.select(NONE);
             else
-                secondPluginName.select(boaState.snakePluginList.getName(1));
+                sSecondPluginName.select(boaState.snakePluginList.getName(1));
             // third slot snake plugin
             if (boaState.snakePluginList.getInstance(2) == null)
-                thirdPluginName.select(NONE);
+                sThirdPluginName.select(NONE);
             else
-                thirdPluginName.select(boaState.snakePluginList.getName(2));
+                sThirdPluginName.select(boaState.snakePluginList.getName(2));
+
+        }
+
+        /**
+         * Implement user interface logic Do not refresh values, rather disable/enable controls.
+         */
+        private void updateWindowState() {
+            // Rule 1 - NONE on any slot in filters disable GUI button and Active checkbox
+            if (sFirstPluginName.getSelectedItem() == NONE) {
+                cFirstPluginActiv.setEnabled(false);
+                bFirstPluginGUI.setEnabled(false);
+            } else {
+                cFirstPluginActiv.setEnabled(true);
+                bFirstPluginGUI.setEnabled(true);
+            }
+            if (sSecondPluginName.getSelectedItem() == NONE) {
+                cSecondPluginActiv.setEnabled(false);
+                bSecondPluginGUI.setEnabled(false);
+            } else {
+                cSecondPluginActiv.setEnabled(true);
+                bSecondPluginGUI.setEnabled(true);
+            }
+            if (sThirdPluginName.getSelectedItem() == NONE) {
+                cThirdPluginActiv.setEnabled(false);
+                bThirdPluginGUI.setEnabled(false);
+            } else {
+                cThirdPluginActiv.setEnabled(true);
+                bThirdPluginGUI.setEnabled(true);
+            }
 
         }
 
@@ -1096,6 +1143,7 @@ public class BOA_ implements PlugIn {
          * 
          * @param e Type of event
          * @see BOAp
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
          */
         @Override
         public void actionPerformed(final ActionEvent e) {
@@ -1287,6 +1335,8 @@ public class BOA_ implements PlugIn {
                     historyLogger.openHistory();
             }
 
+            updateWindowState(); // window logic on any change
+
             // run segmentation for selected cases
             if (run) {
                 System.out.println("running from in stackwindow");
@@ -1306,6 +1356,7 @@ public class BOA_ implements PlugIn {
          * {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
          * 
          * @param e Type of event
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
          */
         @Override
         public void itemStateChanged(final ItemEvent e) {
@@ -1338,18 +1389,18 @@ public class BOA_ implements PlugIn {
                 } else {
                     imageGroup.unzoom(canvas);
                 }
-            } else if (source == cFirstPlugin) {
-                boaState.snakePluginList.setActive(0, cFirstPlugin.getState());
+            } else if (source == cFirstPluginActiv) {
+                boaState.snakePluginList.setActive(0, cFirstPluginActiv.getState());
                 recalculatePlugins();
-            } else if (source == cSecondPlugin) {
-                boaState.snakePluginList.setActive(1, cSecondPlugin.getState());
+            } else if (source == cSecondPluginActiv) {
+                boaState.snakePluginList.setActive(1, cSecondPluginActiv.getState());
                 recalculatePlugins();
-            } else if (source == cThirdPlugin) {
-                boaState.snakePluginList.setActive(2, cThirdPlugin.getState());
+            } else if (source == cThirdPluginActiv) {
+                boaState.snakePluginList.setActive(2, cThirdPluginActiv.getState());
                 recalculatePlugins();
             }
 
-            // action on manus
+            // action on menus
             if (source == cbMenuPlotOriginalSnakes) {
                 boap.isProcessedSnakePlotted = cbMenuPlotOriginalSnakes.getState();
                 recalculatePlugins();
@@ -1360,24 +1411,26 @@ public class BOA_ implements PlugIn {
             }
 
             // actions on Choice
-            if (source == firstPluginName) {
-                LOGGER.debug("Used firstPluginName, val: " + firstPluginName.getSelectedItem());
-                instanceSnakePlugin((String) firstPluginName.getSelectedItem(), 0,
-                        cFirstPlugin.getState());
+            if (source == sFirstPluginName) {
+                LOGGER.debug("Used firstPluginName, val: " + sFirstPluginName.getSelectedItem());
+                instanceSnakePlugin((String) sFirstPluginName.getSelectedItem(), 0,
+                        cFirstPluginActiv.getState());
                 recalculatePlugins();
             }
-            if (source == secondPluginName) {
-                LOGGER.debug("Used secondPluginName, val: " + secondPluginName.getSelectedItem());
-                instanceSnakePlugin((String) secondPluginName.getSelectedItem(), 1,
-                        cSecondPlugin.getState());
+            if (source == sSecondPluginName) {
+                LOGGER.debug("Used secondPluginName, val: " + sSecondPluginName.getSelectedItem());
+                instanceSnakePlugin((String) sSecondPluginName.getSelectedItem(), 1,
+                        cSecondPluginActiv.getState());
                 recalculatePlugins();
             }
-            if (source == thirdPluginName) {
-                LOGGER.debug("Used thirdPluginName, val: " + thirdPluginName.getSelectedItem());
-                instanceSnakePlugin((String) thirdPluginName.getSelectedItem(), 2,
-                        cThirdPlugin.getState());
+            if (source == sThirdPluginName) {
+                LOGGER.debug("Used thirdPluginName, val: " + sThirdPluginName.getSelectedItem());
+                instanceSnakePlugin((String) sThirdPluginName.getSelectedItem(), 2,
+                        cThirdPluginActiv.getState());
                 recalculatePlugins();
             }
+
+            updateWindowState(); // window logic on any change
 
             if (run) {
                 if (boap.supressStateChangeBOArun) {
@@ -1402,6 +1455,7 @@ public class BOA_ implements PlugIn {
          * {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
          * 
          * @param ce Type of event
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
          */
         @Override
         public void stateChanged(final ChangeEvent ce) {
@@ -1453,6 +1507,8 @@ public class BOA_ implements PlugIn {
                 boap.segParam.sample_norm = (Integer) spinner.getValue();
                 run = true;
             }
+
+            updateWindowState(); // window logic on any change
 
             if (run) {
                 if (boap.supressStateChangeBOArun) {
@@ -1725,8 +1781,8 @@ public class BOA_ implements PlugIn {
      */
     private Snake iterateOverSnakePlugins(final Snake snake)
             throws QuimpPluginException, Exception {
-        final int ipoint = 0;
-        final int isnake = 1;
+        final int ipoint = 0; // define IQuimpPoint2dFilter interface
+        final int isnake = 1; // define IQuimpPoint2dFilter interface
         // type of previous plugin. Define if data should be converted for current plugin
         int previousConversion = isnake; // IQuimpSnakeFilter is default interface
         Snake outsnake = snake; // if there is no plugin just return input snake
@@ -1734,7 +1790,7 @@ public class BOA_ implements PlugIn {
         // data to process in format of list
         List<Point2d> dataToProcess = null; // null but it will be overwritten in loop because first
                                             // "if" fires always (previousConversion is set to
-                                            // isnake) on begining, if first plugin is ipoint type
+                                            // isnake) on beginning, if first plugin is ipoint type
         if (!boaState.snakePluginList.isRefListEmpty()) {
             LOGGER.debug("sPluginList not empty");
             for (Plugin qP : boaState.snakePluginList.getList()) { // iterate over list
@@ -1761,7 +1817,7 @@ public class BOA_ implements PlugIn {
                     previousConversion = isnake;
                 }
             }
-            // after loop previousConversion point what plugin was last and actual data
+            // after loop previousConversion points what plugin was last and actual data
             // must be converted to snake
             switch (previousConversion) {
                 case ipoint: // last plugin was IQuimpPoint2dFilter - convert to Snake
@@ -1901,7 +1957,6 @@ public class BOA_ implements PlugIn {
             tightenSnake(snake);
             imageGroup.drawPath(snake, f); // post tightned snake on path
             sH.backupLiveSnake(f);
-
             Snake out = iterateOverSnakePlugins(snake); // process segmented snake by plugins
             sH.storeThisSnake(out, f); // store processed snake as final
         } catch (QuimpPluginException qpe) {
@@ -2202,6 +2257,7 @@ class ImageGroup {
         for (int i = 0; i < nest.size(); i++) {
             sH = nest.getHandler(i);
             if (sH.isStoredAt(frame)) { // is there a snake a;t f?
+
                 // plot segmented snake
                 if (BOA_.boap.isProcessedSnakePlotted == true) {
                     back = sH.getBackupSnake(frame); // original unmodified snake
@@ -2210,6 +2266,8 @@ class ImageGroup {
                     r.setStrokeColor(Color.RED);
                     overlay.add(r);
                 }
+                // remember instance of segmented snake for plugins
+                BOA_.viewUpdater.connectSnakeObject(sH.getBackupSnake(frame));
                 // plot segmented and filtered snake
                 snake = sH.getStoredSnake(frame); // processed by plugins
                 // Roi r = snake.asRoi();

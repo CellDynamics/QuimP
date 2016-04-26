@@ -33,7 +33,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  */
 public class ConfigStreamerTest {
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2_nofile.xml");
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
     }
     private static final Logger LOGGER = LogManager.getLogger(ConfigStreamerTest.class.getName());
     private tSnakePluginList p;
@@ -88,6 +88,12 @@ public class ConfigStreamerTest {
                 // TODO Auto-generated method stub
                 return null;
             }
+
+            @Override
+            public String about() {
+                // TODO Auto-generated method stub
+                return null;
+            }
         };
 
         p.snakePluginList.get(1).name = "Plugin2_quimp";
@@ -122,6 +128,12 @@ public class ConfigStreamerTest {
 
             @Override
             public ParamList getPluginConfig() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String about() {
                 // TODO Auto-generated method stub
                 return null;
             }

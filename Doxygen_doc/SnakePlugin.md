@@ -26,8 +26,8 @@ they are stored in QuimP.
 
 Plugins are separate jar files that must be available on path passed to uk.ac.warwick.wsbc.QuimP.PluginFactory(final Path)
 which is the main engine for loading jars and creating their instances. Snake plugins must be
-derived from uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter interface and they must
-keep correct naming conventions. QuimP provides
+derived from uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter interface or uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpSnakeFilter
+and they must keep correct naming conventions. QuimP provides
 uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter class for converting this type to separate 
 `x` and `y` arrays of coordinates.
 
@@ -66,6 +66,7 @@ left to right direction
 :User: as user
 rectangle "Plugin Service" {
     :QuimP: as quimp
+    :Plugin: as plugin
     quimp--(Create Engine)
     user-(Run plugin)
     user-(Select plugin)
@@ -74,15 +75,17 @@ rectangle "Plugin Service" {
     user--(Write\nconfig)
     quimp--(Get plugin\nconfig)
     quimp--(Set plugin\nconfig)
-    quimp--(Update View)
-    user--(Update View)
+
     (Get plugin\nconfig)<|-(Write\nconfig):<<include>>
     (Set plugin\nconfig)<|-(Load\nconfig):<<include>>
     (Write\nconfig)<|-(Handle\nconfiguration):<<extend>>
     (Load\nconfig)<|-(Handle\nconfiguration):<<extend>>
 }
+    plugin--(Update View)
+    user--(Update View)
 note bottom of user : Related to GUI actions
 note top of quimp : Plugin engine
+note top of plugin : Any loaded plugin
 note right of (Create Engine) : Initialization state
 note "On load/write QuimP configuration" as N2
 (Get plugin\nconfig) .. N2
@@ -96,8 +99,8 @@ List of use cases:
 + [Run plugin](@ref rp)
 + [Select plugin](@ref sp)
 + [Show GUI](@ref sg)
-+ Load config
-+ Write config
++ [Load config] (@ref loadc)
++ [Write config] (@ref loadc)
 + [Get plugin config](@ref sgpc)
 + [Set plugin config](@ref sgpc)
 + [Update view](@ref upv)
@@ -315,7 +318,14 @@ end note
 partition iterateOverSnakePlugins {
 :c = snake;
 if (is any plugin selected) then (true)
-note left: There is any instance in BOAp.sPluginList\ncreated on **Select Plugin**\nThis branch supports various interfaces
+note left
+There is any instance in BOAp.sPluginList
+created on **Select Plugin**
+====
+This branch supports various **interfaces**. 
+Here is decided what interface plugin supports
+and data in correct format are assigned
+end note
 while (for every Plugin)
 if (if is **not** null\nif is **active**) then (true)
 :attach data;
@@ -381,6 +391,16 @@ This use case is activated when any changes in plugin configuration is made duri
 The configuration may be related to internal state of plugin as well as to plugin setup in QuimP. 
 All these actions may require redrawing of current screen and updating current outlines. 
 For this purpose the original segmented snakes are store as well. See [technical notes](@ref td)
+Updating works in two directions - plugins can also access last selected snake for current 
+frame and use it for example to build previews in their window. uk.ac.warwick.wsbc.QuimP.ViewUpdater is class used for communicating between BOA_ and Plugin. From the plugin view, calling uk.ac.warwick.wsbc.QuimP.ViewUpdater.updateView() will always:
+1. recalculate all plugins
+1. redraw BOA screen
+
+In other direction calling uk.ac.warwick.wsbc.QuimP.ViewUpdater.getSnakeasPoints() will give plugin copy of current snake (last segmented snake from current frame). 
+
+Current snake is remembered on every update of screen in BOA (uk.ac.warwick.wsbc.QuimP.ImageGroup.updateOverlay(int))
+
+See @ref commboa
 
 Conditions:
 
@@ -391,9 +411,11 @@ Conditions:
 Related classes and methods:
 
 * uk.ac.warwick.wsbc.QuimP.BOA_.recalculatePlugins()
+* uk.ac.warwick.wsbc.QuimP.ViewUpdater
 
 @startuml
 start
+partition recalculatePlugins {
 if (are any snakes) then (true)
 while (SnakeHandlers available?) is (yes)
     if (sH starts from current frame\nor earlier) then (yes)
@@ -406,13 +428,14 @@ while (SnakeHandlers available?) is (yes)
     endif
 end while
 endif
+}
 stop
 legend
 On plugin exception, ""liveSnake"" is stored as **final**
 end legend
 @enduml
 
-#### General workflow for operating plugin {#ogw}
+### General workflow for operating plugin {#ogw}
 
 @startuml
 actor User
@@ -483,16 +506,30 @@ note left: see Technical details and\n **Select Plugin**
 ### set/get Plugin Config {#sgpc}
 
 These use cases are activated during uploading and downloading internal plugin configuration. QuimP
-itself does not touch these data but only store them on disk (see @ref ConfigurationHandling) 
+itself does not touch these data but only store them on disk (see @ref ConfigurationHandling). 
+Parameters are passed as uk.ac.warwick.wsbc.QuimP.plugin.ParamList list.
+
+### load/write Plugin Config {#loadc}
+
+These use cases are responsible for saving and loading data to/from disk. Basically they are strictly 
+related to previous use cases (@ref sgpc). Data obtained from plugins are packed to json file with
+extra parameters. see @ref ConfigurationHandling for details.
 
 Related classes and methods:
 
 1. uk.ac.warwick.wsbc.QuimP.SnakePluginList
-1. uk.ac.warwick.wsbc.QuimP.IQuimpSerialize
+2. uk.ac.warwick.wsbc.QuimP.IQuimpSerialize
+3. uk.ac.warwick.wsbc.QuimP.Serializer.Serializer<SnakePluginList>(Type)
 
 Conditions:
 * User selected one plugin on certain slot.
 * Plugins have been already registered by **Create Engine** use case.
+
+All parameters related to plugins are kept in uk.ac.warwick.wsbc.QuimP.SnakePluginList class. This
+class supports IQuimpSerialize interface which is used by Serializer class. Serializer class
+simply pack SnakePluginList with additional informations (version, name) and save on disk using GSon 
+library. 
+ 
 
 # Technical details {#td}
 
@@ -530,7 +567,7 @@ active plugins and copy results to `finalSnakes`. This method does not run segme
 is used for updating screen after any plugin action (inside plugin by interface `IQuimpPluginSynchro` or
 by `JSpinners` in QuimP UI related to plugins)
  1. uk.ac.warwick.wsbc.QuimP.SnakeHandler.getBackupSnake(int)
- 2. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(Snake)
+ 2. uk.ac.warwick.wsbc.QuimP.BOA_.iterateOverSnakePlugins(final Snake)
  3. uk.ac.warwick.wsbc.QuimP.SnakeHandler.storeThisSnake(Snake, int)
 4. uk.ac.warwick.wsbc.QuimP.SnakeHandler.backupLiveSnake(int) - this method makes copy of actual `liveSnake`
 for frame *f* (`liveSnake` is modified for every next segmented frame). It must be called for every frame 
@@ -538,3 +575,45 @@ during segmentation before applying plugins.
 
 Plugins can call errors during execution. In this case the `liveSnake` is taken as final (last state 
 during segmentation) 
+
+# Communication between BOA and plugins {#commboa}
+
+BOA and plugins can communicate in limited way. Most of BOA structures are objects and there is danger of accidentional modification of these object if exposed to plugins. 
+Separate class uk.ac.warwick.wsbc.QuimP.ViewUpdater limits access to BOA by exposing only
+selected methods to plugins (if they support uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro interface). The life cycle of static object of ViewUpdater is as follows:
+@startuml
+participant BOA_ as BOA
+participant ViewUpdater as VU
+participant ImageGroup as IG
+participant IQuimpPlugin as plugin
+
+note over IG : Main screen
+
+activate BOA
+activate plugin
+activate IG
+BOA->VU : <<create>>(**this**)
+activate VU
+VU-->BOA
+== ==
+BOA --> plugin : attachContext(""ViewUpdater"")
+note left #aqua
+Only if plugin supports
+""IQuimpPluginSynchro"" interface
+Through ""SnakePluginList""
+end note
+== ==
+BOA->IG : updateOverlay()
+note left
+Update screen
+end note
+activate IG
+IG->VU : connectSnakeObject(current)
+VU-->IG
+== ==
+plugin ->VU: getSnakeasPoints()
+VU-->plugin : List<Point2d>
+note left
+Return current snake to plugin (copy)
+end note
+@enduml
