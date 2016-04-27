@@ -18,11 +18,11 @@ public class Vert extends PointsList<Vert> {
     public double curvatureLocal; /*!< curvature local to a node */
     public double curvatureSmoothed; /*!< smoothed curvature */
     public double curvatureSum; /*!< summed curvature over x microns this is the value recorded into maps */
-    public double coord; /*!< co-ord relative to head node on current frame */
-    public double fCoord; /*!< coor relative to coord on previous frame */
+    public double coord; /*!< coord relative to head node on current frame */
+    public double fCoord; /*!< coord relative to coord on previous frame */
     public double fLandCoord; /*!< landing relative to previous frame */
-    public double gCoord; /*!< global co-ord relative to head node on frame 1; */
-    public double gLandCoord; /*!< landing co-cord relative to head node on frame 1; */
+    public double gCoord; /*!< global coord relative to head node on frame 1; */
+    public double gLandCoord; /*!< landing coord relative to head node on frame 1; */
     public double tarLandingCoord;
     public QColor color; /*!< color of Vert */
     private boolean intPoint; /*!< vert represents an intersect point and is temporary. Mark start end of sectors */
@@ -36,7 +36,7 @@ public class Vert extends PointsList<Vert> {
      * -# 1 - forms valid sector
      * -# 2 - LOOSE sector
      * -# 3 - forms inverted sector
-     * -# 4 inverted and loose
+     * -# 4 - inverted and loose
      */
     public int intState;
 

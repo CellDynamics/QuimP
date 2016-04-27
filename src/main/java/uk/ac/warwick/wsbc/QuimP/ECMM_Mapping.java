@@ -153,7 +153,7 @@ public class ECMM_Mapping {
     }
 
     /**
-     * MAin executive for ECMM processing
+     * Main executive for ECMM processing
      */
     private void runFromFile() {
         oH = new OutlineHandler(qp);
@@ -1906,7 +1906,7 @@ class ODEsolver {
 /**
  * Container class holding parameters related to ECMM analysis.
  * 
- * @author tyson
+ * @author rtyson
  *
  */
 class ECMp {
@@ -1952,6 +1952,7 @@ class ECMp {
     static boolean drawFails;
     static boolean saveTemp;
     static boolean inspectSectors;
+    static boolean preserveHeads = false; //!< true if original head should be preserved
 
     public ECMp() {
     }
@@ -1959,8 +1960,7 @@ class ECMp {
     /**
      * Defines default values for ECMM algorithm
      * 
-     * @param maxCellLength
-     *            Maximal length of cell
+     * @param maxCellLength Maximal length of cell
      */
     public static void setParams(double maxCellLength) {
         maxCellSize = maxCellLength / Math.PI; // guess cell diameter
@@ -2003,8 +2003,7 @@ class ECMp {
     /**
      * Fills ECMp fields with values from previous analysis (master paQP file)
      * 
-     * @param qp
-     *            Master configuration file
+     * @param qp  Master configuration file
      */
     static void setup(QParams qp) {
         INFILE = qp.snakeQP;
@@ -2022,7 +2021,7 @@ class ECMp {
 /**
  * Class responsible for plotting ECMM outlines during computations
  * 
- * @author baniuk
+ * @author rtyson
  *
  */
 class ECMplot {
