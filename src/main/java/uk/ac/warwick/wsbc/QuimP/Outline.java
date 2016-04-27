@@ -41,7 +41,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         super(h, N);
         removeVert(head);
         this.updateCurvature();
-        calcCentroid();
+        // calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
 
         color = new QColor(0.5, 0, 1);
     }
@@ -54,7 +54,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
     public Outline(final Vert h) {
         super(h);
         this.updateCurvature();
-        calcCentroid();
+        // calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
 
         color = new QColor(0.5, 0, 1);
     }
@@ -99,7 +99,7 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         removeVert(head); // remove dummy head node
         updateNormales(false);
         this.updateCurvature();
-        calcCentroid();
+        // calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
     }
 
     public void print() {

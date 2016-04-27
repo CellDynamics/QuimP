@@ -327,7 +327,7 @@ public class OutlineHandler extends ShapeHandler<Outline> {
 
             oV = oV.getNext();
         } while (!oV.isHead());
-        n.calcCentroid();
+        // n.calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
         outlines[frame - startFrame] = n;
     }
 
