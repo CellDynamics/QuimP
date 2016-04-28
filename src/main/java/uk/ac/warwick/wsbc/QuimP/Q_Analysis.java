@@ -8,6 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
@@ -23,11 +26,14 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @author rtyson
  */
 public class Q_Analysis {
-
+    private static final Logger LOGGER = LogManager.getLogger(Q_Analysis.class.getName());
     GenericDialog gd;
     OutlineHandler oH;
     QParams qp;
 
+    /**
+     * Main constructor and runner - class entry point
+     */
     public Q_Analysis() {
         IJ.showStatus("QuimP Analysis");
         IJ.log("##############################################\n \n" + Tool.getQuimPversion()
@@ -44,17 +50,17 @@ public class Q_Analysis {
                     if (od.getFileName() == null) {
                         return;
                     }
-                    File paramFile = new File(od.getDirectory(), od.getFileName());
-                    qp = new QParams(paramFile);
-                    qp.readParams();
-                    Qp.setup(qp);
-                    // System.out.println(paramFile.getAbsolutePath());
+                    File paramFile = new File(od.getDirectory(), od.getFileName()); // paQP file
+                    qp = new QParams(paramFile); // initialize general param storage
+                    qp.readParams(); // create associated files included in paQP and read params
+                    Qp.setup(qp); // copy selected data from general QParams to local storage
 
-                    run();
+                    run(); // run everything
 
-                    File[] otherPaFiles = qp.findParamFiles();
+                    File[] otherPaFiles = qp.findParamFiles(); // check whether are other paQP files
 
-                    if (otherPaFiles.length > 0) {
+                    if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
+                                                   // user is skipped)
                         YesNoCancelDialog yncd =
                                 new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
                                         "\tBatch Process?\n\n"
@@ -64,6 +70,8 @@ public class Q_Analysis {
                             ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
                             this.closeAllImages();
 
+                            // if user agreed iterate over found files
+                            // (except that loaded explicitly by user)
                             for (int j = 0; j < otherPaFiles.length; j++) {
                                 IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
                                 paramFile = otherPaFiles[j];
@@ -79,25 +87,21 @@ public class Q_Analysis {
                             for (int i = 0; i < runOn.size(); i++) {
                                 IJ.log(runOn.get(i));
                             }
-
                         } else {
-                            return;
+                            return; // no batch processing
                         }
                     }
-
                     return;
                 } catch (IOException ioe) {
                     IJ.error(ioe.getMessage());
-                    ioe.printStackTrace();
+                    LOGGER.error(ioe);
                     return;// debug
                 }
-            } while (true);
+            } while (true); // FIXME What is this loop necessary for?
 
         } catch (Exception e) {
-            // IJ.error("Unknown exception");
-            e.printStackTrace();
+            LOGGER.fatal(e);
         }
-
         IJ.log("QuimP Analysis complete");
         IJ.showStatus("Finished");
     }
@@ -192,7 +196,7 @@ public class Q_Analysis {
 /**
  * Create spatial temporal maps from ECMM and ANA data
  *
- * @author tyson
+ * @author rtyson
  */
 class STmap {
 
@@ -285,8 +289,7 @@ class STmap {
             // cHead.print();
 
             if (tt == 0) {
-                // for the first time point the head coord node is our starting
-                // point
+                // for the first time point the head coord node is our starting point
                 zeroVert = cHead;
                 fraction = 0;
                 origin = 0;
@@ -296,10 +299,8 @@ class STmap {
                 zeroVert = closestFloor(oH.getOutline(frame), origin, 'f', fHead);
                 // System.out.println("zerovert: " + zeroVert.fCoord +", origin:
                 // " + origin + ", fHead: " + fHead.fCoord);
-                fraction = ffraction(zeroVert, origin, fHead); // position of
-                                                               // origin between
-                                                               // zeroVert and
-                                                               // zeroVert.getNext
+                fraction = ffraction(zeroVert, origin, fHead); // position of origin between
+                                                               // zeroVert and zeroVert.getNext
                 // System.out.println("resulting fraction: " + fraction);
 
                 // System.out.print("\nzeroVert.fCoord:"+zeroVert.coord+",
@@ -547,9 +548,7 @@ class STmap {
         if (v.getNext().getTrackNum() == head.getTrackNum()) { // passed zero
             // System.out.println("\tffraction: pass zero. wrap");
             v2coord = v.getNext().fCoord + 1;
-            target = (target > v.fCoord) ? target : target + 1; // not passed
-                                                                // zero as all
-                                                                // values are
+            target = (target > v.fCoord) ? target : target + 1; // not passed zero as all values are
                                                                 // passed zero!
         } else {
             v2coord = v.getNext().fCoord;
@@ -843,6 +842,12 @@ class STmap {
     }
 }
 
+/**
+ * Configuration class for Q_Analysis
+ * 
+ * @author rtyson
+ *
+ */
 class Qp {
 
     static public File snQPfile;
@@ -880,6 +885,11 @@ class Qp {
     public Qp() {
     }
 
+    /**
+     * Copies selected data from QParams to this object
+     * 
+     * @param qp General QuimP parameters object
+     */
     static void setup(QParams qp) {
         Qp.snQPfile = qp.snakeQP;
         Qp.scale = qp.imageScale;

@@ -14,8 +14,14 @@ import ij.gui.Roi;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
- *
- * @author tyson
+ * Represent Outline object used as Snake representation after ECMM mapping
+ * 
+ * Outline can have the same Shape as Snake but distribution of Vert may be different than 
+ * distribution of Node in Snake
+ * 
+ * @author rtyson
+ * @author p.baniukiewicz
+ * @date 25 Apr 2016
  */
 public final class Outline extends Shape<Vert> implements Cloneable {
     private static final Logger LOGGER = LogManager.getLogger(Outline.class.getName());
