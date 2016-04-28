@@ -1,4 +1,4 @@
-function [ path ] = trackForward( forwTrack, f, p, T),
+function [ path ] = trackForward( forwTrack, f, p, T)
 % QuimP11 function
 % TRACKFORWARD   Returns the path traveling forward in time within a map.
 %   

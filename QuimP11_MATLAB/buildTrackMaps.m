@@ -1,4 +1,4 @@
-function [ originIndexesF, originIndexesB ] = buildTrackMaps( originMap, coordMap ),
+function [ originIndexesF, originIndexesB ] = buildTrackMaps( originMap, coordMap )
 % QuimP11 function
 % BUILDTRACkMAPS   Builds matrices that allow tracking through maps.
 %
