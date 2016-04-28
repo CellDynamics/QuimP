@@ -20,7 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
  *
- * @author tyson
+ * @author rtyson
  */
 public class Q_Analysis {
 
@@ -135,8 +135,7 @@ public class Q_Analysis {
         // svgPlotter.plotTrackAnim();
         svgPlotter.plotTrackER(Qp.outlinePlot);
 
-        Qp.convexityToUnits(); // reset the covexity options to units (as they
-                               // are static)
+        Qp.convexityToUnits(); // reset the covexity options to units (as they are static)
     }
 
     private boolean showDialog() {

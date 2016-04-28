@@ -51,8 +51,7 @@ public class QParams {
     double frameInterval;
     int startFrame, endFrame;
     int NMAX, blowup, max_iterations, sample_tan, sample_norm;
-    double delta_t, nodeRes, vel_crit, f_central, f_contract, f_image,
-            f_friction;
+    double delta_t, nodeRes, vel_crit, f_central, f_contract, f_image, f_friction;
     double finalShrink, cortexWidth;
     long key;
     double sensitivity; // no longer used. blank holder
@@ -127,8 +126,7 @@ public class QParams {
 
             String sn = d.readLine();
             // fileName = sn;
-            if (!l.substring(0, 3).equals("#p2")) { // old format, fix file
-                                                    // names
+            if (!l.substring(0, 3).equals("#p2")) { // old format, fix file names
                 sn = sn.substring(1); // strip the dot off snQP file name
                 // fileName = fileName.substring(1); // strip the dot off file
                 // name
@@ -209,8 +207,8 @@ public class QParams {
 
             PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
 
-            pPW.print("#p2 - QuimP parameter file (QuimP11). Created "
-                    + Tool.dateAsString() + "\n");
+            pPW.print(
+                    "#p2 - QuimP parameter file (QuimP11). Created " + Tool.dateAsString() + "\n");
             pPW.print(IJ.d2s(key, 0) + "\n");
             pPW.print(segImageFile.getAbsolutePath() + "\n");
             pPW.print(File.separator + snakeQP.getName() + "\n");
@@ -235,9 +233,8 @@ public class QParams {
             pPW.print(IJ.d2s(f_image, 6) + "\n");
             pPW.print(IJ.d2s(sensitivity, 6) + "\n");
 
-            pPW.print(
-                    "# - new parameters (cortext width, start frame, end frame,"
-                            + " final shrink, statsQP, fluImage)\n");
+            pPW.print("# - new parameters (cortext width, start frame, end frame,"
+                    + " final shrink, statsQP, fluImage)\n");
             pPW.print(IJ.d2s(cortexWidth, 2) + "\n");
             pPW.print(IJ.d2s(startFrame, 0) + "\n");
             pPW.print(IJ.d2s(endFrame, 0) + "\n");
@@ -284,8 +281,8 @@ public class QParams {
         } else {
             otherPaFiles = new File[paFiles.size()];
             for (int j = 0; j < otherPaFiles.length; j++) {
-                otherPaFiles[j] = new File(directory.getAbsolutePath()
-                        + File.separator + (String) paFiles.get(j));
+                otherPaFiles[j] = new File(
+                        directory.getAbsolutePath() + File.separator + (String) paFiles.get(j));
             }
             return otherPaFiles;
         }
@@ -298,24 +295,18 @@ public class QParams {
     void guessOtherFileNames() {
         System.out.println("prefix: " + prefix);
 
-        convexFile = new File(
-                path + File.separator + prefix + "_convexityMap.maQP");
+        convexFile = new File(path + File.separator + prefix + "_convexityMap.maQP");
 
         coordFile = new File(path + File.separator + prefix + "_coordMap.maQP");
-        motilityFile = new File(
-                path + File.separator + prefix + "_motilityMap.maQP");
-        originFile = new File(
-                path + File.separator + prefix + "_originMap.maQP");
+        motilityFile = new File(path + File.separator + prefix + "_motilityMap.maQP");
+        originFile = new File(path + File.separator + prefix + "_originMap.maQP");
         xFile = new File(path + File.separator + prefix + "_xMap.maQP");
         yFile = new File(path + File.separator + prefix + "_yMap.maQP");
 
         fluFiles = new File[3];
-        fluFiles[0] = new File(
-                path + File.separator + prefix + "_fluoCH1.maQP");
-        fluFiles[1] = new File(
-                path + File.separator + prefix + "_fluoCH2.maQP");
-        fluFiles[2] = new File(
-                path + File.separator + prefix + "_fluoCH3.maQP");
+        fluFiles[0] = new File(path + File.separator + prefix + "_fluoCH1.maQP");
+        fluFiles[1] = new File(path + File.separator + prefix + "_fluoCH2.maQP");
+        fluFiles[2] = new File(path + File.separator + prefix + "_fluoCH3.maQP");
 
     }
 

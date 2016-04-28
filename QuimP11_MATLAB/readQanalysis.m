@@ -10,7 +10,7 @@ function qCells = readQanalysis( varargin )
 %   [C] = READQANALYSIS(P) will read data from the directory path specified 
 %   by P
 %
-%   [C] = READQANALYSIS(P, S) will read data from the directory path 
+% %   [C] = READQANALYSIS(P, S) will read data from the directory path 
 %   specified by P, where S is either 'true' or 'false'. If S evaluates 
 %   as 'false', sub directories will not be searched.
 %

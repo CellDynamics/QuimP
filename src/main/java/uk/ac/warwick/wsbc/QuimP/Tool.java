@@ -223,9 +223,7 @@ public class Tool {
     }
 
     public static void arrayToFile(double[][] a, String delim, File outFile) throws IOException {
-        PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto
-                                                                         // flush
-
+        PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
         for (int i = 0; i < a.length; i++) {
             if (i != 0)
                 pw.write("\n");

@@ -30,13 +30,13 @@ The order of building should be as follows:
 
 ```bash
 cd pom-quimp
-mvn install
+mvn clean install
 cd pom-quimp-plugin
-mvn install
+mvn clean install
 cd QuimP
-mvn install
+mvn clean install
 # build other plugins
-# ...
+# When QuimP changes plugins will not notify this change thus mvn clean is recommended
 ```
 
 Exemplary script tailored to developer system is `QuimP/testbuild.sh`. Every project exists in its own repository.
