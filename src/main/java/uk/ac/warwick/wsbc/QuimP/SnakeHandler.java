@@ -146,6 +146,14 @@ public class SnakeHandler extends ShapeHandler<Snake> {
         return true;
     }
 
+    /**
+     * Write one Node to disk (one line in \a snPQ file)
+     * 
+     * @param pw
+     * @param frame
+     * @param NODES
+     * @param n
+     */
     private void write(final PrintWriter pw, int frame, int NODES, Node n) {
         pw.print("\n" + NODES);
 

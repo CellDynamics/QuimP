@@ -11,12 +11,16 @@ package uk.ac.warwick.wsbc.QuimP;
  */
 public class ECMM_run {
 
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
+
     /**
      * @param args
      */
     public static void main(String[] args) {
 
-        ECMM_Mapping ob = new ECMM_Mapping();
+        new ECMM_Mapping();
 
     }
 

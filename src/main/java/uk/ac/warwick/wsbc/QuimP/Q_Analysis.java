@@ -142,6 +142,11 @@ public class Q_Analysis {
         Qp.convexityToUnits(); // reset the covexity options to units (as they are static)
     }
 
+    /**
+     * Build Q_Analysis window (dialog)
+     * 
+     * @return \c false if dialog canceled \c true otherwise
+     */
     private boolean showDialog() {
         gd = new GenericDialog("Q Analysis Options", IJ.getInstance());
 
