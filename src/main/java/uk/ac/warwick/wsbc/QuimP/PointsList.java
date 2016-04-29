@@ -15,8 +15,8 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @param <T> Type of point, currently can be Node or Vert
  */
 public abstract class PointsList<T extends PointsList<T>> {
-    protected T prev; /*!< previous point in list, \c null if no other point */
-    protected T next; /*!< next point in list, \c null if no other point */
+    protected transient T prev; /*!< previous point in list, \c null if no other point */
+    protected transient T next; /*!< next point in list, \c null if no other point */
     protected ExtendedVector2d point; /*!< x,y co-ordinates of the point */
     protected ExtendedVector2d normal; /*!< normal vector */
     protected ExtendedVector2d tan; /*!< tangent vector */
@@ -63,6 +63,7 @@ public abstract class PointsList<T extends PointsList<T>> {
         this.tan = new ExtendedVector2d(src.tan);
         this.head = src.head;
         this.tracknumber = src.tracknumber;
+        this.position = src.position;
     }
 
     /**

@@ -30,12 +30,12 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 public class Snake extends Shape<Node> {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Snake.class.getName());
-    public boolean alive; // snake is alive
-    private int snakeID;
-    public double startingNnodes; // how many nodes at start of segmentation
-    // used as a reference for node limit
-    private int FROZEN; // number of nodes frozen
-    private Rectangle bounds = new Rectangle(); // snake bounds
+    public boolean alive; //!< \c true if snake is alive
+    private int snakeID; //!< unique ID of snake
+    public double startingNnodes; //!< how many nodes at start of segmentation
+    private int FROZEN; //!< number of nodes frozen
+    private Rectangle bounds = new Rectangle(); //!< snake bounds
+    public static final int MAX_NODES=10000; //!< Max number of nodes allowed in Snake 
 
     /**
      * Create a snake from existing linked list (at least one head node)
@@ -44,6 +44,7 @@ public class Snake extends Shape<Node> {
      * @param N Number of nodes
      * @param id Unique snake ID related to object being segmented.
      * @throws Exception
+     * @warning HEad node from list \c h is removed then
      */
     public Snake(final Node h, int N, int id) throws BoaException {
         super(h, N);
@@ -978,7 +979,7 @@ public class Snake extends Shape<Node> {
         Node n = head;
         int count = 0;
         do {
-            if (count++ > 10000) {
+            if (count++ > MAX_NODES) {
                 LOGGER.error("Head lost!!!!");
                 return false;
             }
@@ -1004,6 +1005,89 @@ public class Snake extends Shape<Node> {
             v = v.getNext();
         } while (!v.isHead());
         return out;
+    }
+
+}
+
+/**
+ * Wrap original Snake and prepare it for saving.
+ * 
+ * This class used is for selecting features to save from Snake and all underlying classes. As
+ * original Snake is formed from linked list, it must be converted to form acceptable by GSon (
+ * ArryList in this case)
+ * 
+ * @remarks The use of this class is not fully justified. Snake can implement IQuimpSerialize and 
+ * it can be self-saving but in this case special attention for transient fields should be put. 
+ * Currently Snake is saved on level of its Node
+ *   
+ * @author p.baniukiewicz
+ * @date 29 Apr 2016
+ *
+ */
+class SnakeDumper implements IQuimpSerialize {
+    public transient Snake s;
+    ArrayList<Node> Nodes;
+
+    SnakeDumper() {
+        Nodes = new ArrayList<>();
+    }
+
+    /**
+     * Main constructor
+     * @param s Snake to be saved
+     */
+    SnakeDumper(Snake s) {
+        this();
+        this.s = s;
+    }
+
+    /**
+     * Converts list of Node to ArrayList
+     */
+    @Override
+    public void beforeSerialize() {
+        s.setPositions();
+        Nodes.clear(); // clear list to prevent adding elements on every call
+        Node n = s.getHead();
+        do {
+            Nodes.add(n);
+            n = n.getNext();
+        } while (!n.isHead());
+    }
+
+    /**
+     * Rebuild Snake from ArryList
+     * @warning Set ID to 1 
+     */
+    @Override
+    public void afterSerialize() throws Exception {
+        if (Nodes.size() > 0) {
+            Node n = new Node(); // dummy Node removed then in Snake constructor
+            n.setHead(true); // it is head node
+            Node head = n; // remember head
+            Node next = n;
+            int headnodeindex = 0; // temporary index of head node (will be overwritten in loop or
+                                   // exception will be thrown if no head there)
+            // iterate over rest of elements
+            for (int i = 0; i < Nodes.size(); i++) {
+                next = new Node(Nodes.get(i)); // will be next node
+                if (Nodes.get(i).isHead()) // check if head
+                    headnodeindex = Nodes.get(i).getTrackNum(); // and remember its index
+                n.setNext(next); // set next to current
+                next.setPrev(n); // link back
+                n = next; // make next current
+            }
+            // link round
+            next.setNext(head); // link to head
+            head.setPrev(n);
+            // restore Snake
+            s = new Snake(head, Nodes.size() + 1, 1); // do not forget about extra node deleted in
+                                                      // constructor
+            if (!s.checkIsHead()) // check if we have head
+                throw new RuntimeException("No head in loaded Snake");
+            s.setNewHead(headnodeindex); // restore head as saved in file (cope with removeNode)
+        } else
+            s = new Snake(new Node(), 1, 1); // return default snake if no nodes in snake
     }
 
 }
