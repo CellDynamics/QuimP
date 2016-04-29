@@ -6,6 +6,8 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -28,12 +30,26 @@ public class SnakeTest {
     private static final Logger LOGGER = LogManager.getLogger(SnakeTest.class.getName());
 
     private String[] info = { "QuimP", "verr", "ddd" };
+    private Snake snake1;
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
+        float x[] = new float[4];
+        float y[] = new float[4];
+        x[0] = 0;
+        y[0] = 0;
+        x[1] = 10;
+        y[1] = 0;
+        x[2] = 10;
+        y[2] = 10;
+        x[3] = 0;
+        y[3] = 10;
+
+        PolygonRoi pr = new PolygonRoi(new FloatPolygon(x, y), Roi.POLYGON);
+        snake1 = new Snake(pr, 1);
 
     }
 
@@ -42,6 +58,7 @@ public class SnakeTest {
      */
     @After
     public void tearDown() throws Exception {
+        snake1 = null;
     }
 
     /**
@@ -96,47 +113,23 @@ public class SnakeTest {
         assertEquals(2, s.getHead().getTrackNum());
     }
 
-    /**
-     * Test for saving/loading snakes. 
-     * @pre Valid snake, Set head to second node
-     * @post Loaded Snake the same as before save
-     * @throws Exception
-     */
     @Test
-    public void testSerialize1() throws Exception {
-        float x[] = new float[4];
-        float y[] = new float[4];
-        x[0] = 0;
-        y[0] = 0;
-        x[1] = 10;
-        y[1] = 0;
-        x[2] = 10;
-        y[2] = 10;
-        x[3] = 0;
-        y[3] = 10;
-
-        PolygonRoi pr = new PolygonRoi(new FloatPolygon(x, y), Roi.POLYGON);
-        Snake s = new Snake(pr, 1);
-        s.setNewHead(2);
-        LOGGER.debug(s.toString());
-
-        SnakeDumper sd = new SnakeDumper(s);
-        Serializer<SnakeDumper> serializer;
-        serializer = new Serializer<>(sd, info);
+    public void testSerializeSnake_1() throws IOException, Exception {
+        snake1.setNewHead(2);
+        Serializer<Snake> serializer;
+        serializer = new Serializer<>(snake1, info);
         serializer.setPretty();
-        LOGGER.debug(serializer.toString());
+        serializer.save("/tmp/snake1.tmp");
 
-        serializer.save("/tmp/snake.tmp");
-
-        Serializer<SnakeDumper> loaded;
-        Serializer<SnakeDumper> loader = new Serializer<>(SnakeDumper.class);
-        loaded = loader.load("/tmp/snake.tmp");
-
-        Snake snakeloaded = loaded.obj.s;
-        assertEquals(s.getNumNodes(), snakeloaded.getNumNodes());
-        for (int i = 0; i < s.getNumNodes(); i++) {
-            Node s1 = s.getHead();
-            Node s2 = snakeloaded.getHead();
+        // load it
+        Snake loaded;
+        Serializer<Snake> loader = new Serializer<>(Snake.class);
+        loaded = loader.load("/tmp/snake1.tmp").obj;
+        LOGGER.debug(loaded.toString());
+        assertEquals(snake1.getNumNodes(), loaded.getNumNodes());
+        for (int i = 0; i < snake1.getNumNodes(); i++) {
+            Node s1 = snake1.getHead();
+            Node s2 = loaded.getHead();
             assertEquals(s1.frozen, s2.frozen);
             assertEquals(s1.getF_total(), s2.getF_total());
             assertEquals(s1.getVel(), s2.getVel());
@@ -149,7 +142,8 @@ public class SnakeTest {
             s1 = s1.getNext();
             s2 = s2.getNext();
         }
-
+        assertEquals(snake1.alive, loaded.alive);
+        assertEquals(snake1.getSnakeID(), loaded.getSnakeID(), 1e-6);
+        assertEquals(snake1.isFrozen(), loaded.isFrozen());
     }
-
 }

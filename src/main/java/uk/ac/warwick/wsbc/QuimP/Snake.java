@@ -27,7 +27,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @author rtyson
  *
  */
-public class Snake extends Shape<Node> {
+public class Snake extends Shape<Node> implements IQuimpSerialize {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Snake.class.getName());
     public boolean alive; //!< \c true if snake is alive
@@ -36,6 +36,7 @@ public class Snake extends Shape<Node> {
     private int FROZEN; //!< number of nodes frozen
     private Rectangle bounds = new Rectangle(); //!< snake bounds
     public static final int MAX_NODES=10000; //!< Max number of nodes allowed in Snake 
+    private ArrayList<Node> Nodes = null; //!< Nodes of snake as List - initialized on Serialize
 
     /**
      * Create a snake from existing linked list (at least one head node)
@@ -1007,48 +1008,15 @@ public class Snake extends Shape<Node> {
         return out;
     }
 
-}
-
-/**
- * Wrap original Snake and prepare it for saving.
- * 
- * This class used is for selecting features to save from Snake and all underlying classes. As
- * original Snake is formed from linked list, it must be converted to form acceptable by GSon (
- * ArryList in this case)
- * 
- * @remarks The use of this class is not fully justified. Snake can implement IQuimpSerialize and 
- * it can be self-saving but in this case special attention for transient fields should be put. 
- * Currently Snake is saved on level of its Node
- *   
- * @author p.baniukiewicz
- * @date 29 Apr 2016
- *
- */
-class SnakeDumper implements IQuimpSerialize {
-    public transient Snake s;
-    ArrayList<Node> Nodes;
-
-    SnakeDumper() {
-        Nodes = new ArrayList<>();
-    }
-
     /**
-     * Main constructor
-     * @param s Snake to be saved
-     */
-    SnakeDumper(Snake s) {
-        this();
-        this.s = s;
-    }
-
-    /**
-     * Converts list of Node to ArrayList
+     * Converts list of Node to ArrayList. Fill \c Nodes field
+     * @see clearNodes()
      */
     @Override
     public void beforeSerialize() {
-        s.setPositions();
-        Nodes.clear(); // clear list to prevent adding elements on every call
-        Node n = s.getHead();
+        setPositions();
+        Nodes = new ArrayList<>();
+        Node n = getHead().getNext(); // do not store head as it is stored in head variable
         do {
             Nodes.add(n);
             n = n.getNext();
@@ -1057,37 +1025,38 @@ class SnakeDumper implements IQuimpSerialize {
 
     /**
      * Rebuild Snake from ArryList
-     * @warning Set ID to 1 
+     * 
+     * @see clearNodes()
      */
     @Override
     public void afterSerialize() throws Exception {
-        if (Nodes.size() > 0) {
-            Node n = new Node(); // dummy Node removed then in Snake constructor
-            n.setHead(true); // it is head node
-            Node head = n; // remember head
-            Node next = n;
-            int headnodeindex = 0; // temporary index of head node (will be overwritten in loop or
-                                   // exception will be thrown if no head there)
-            // iterate over rest of elements
-            for (int i = 0; i < Nodes.size(); i++) {
-                next = new Node(Nodes.get(i)); // will be next node
-                if (Nodes.get(i).isHead()) // check if head
-                    headnodeindex = Nodes.get(i).getTrackNum(); // and remember its index
-                n.setNext(next); // set next to current
-                next.setPrev(n); // link back
-                n = next; // make next current
+        if (Nodes != null && Nodes.size() > 0) {
+            // head is saved as non-transitive field, so it is recreated on load and this object
+            // exists already
+            Node first = head; // remember it
+            for (int i = 0; i < Nodes.size(); i++) { // iterate over list from second position
+                Node next = new Node(Nodes.get(i));
+                head.setNext(next);
+                next.setPrev(head);
+                head = next;
             }
-            // link round
-            next.setNext(head); // link to head
-            head.setPrev(n);
-            // restore Snake
-            s = new Snake(head, Nodes.size() + 1, 1); // do not forget about extra node deleted in
-                                                      // constructor
-            if (!s.checkIsHead()) // check if we have head
-                throw new RuntimeException("No head in loaded Snake");
-            s.setNewHead(headnodeindex); // restore head as saved in file (cope with removeNode)
-        } else
-            s = new Snake(new Node(), 1, 1); // return default snake if no nodes in snake
+            head.setNext(first);
+            first.setPrev(head);
+            head = first;
+        }
+        clearNodes();
+    }
+
+    /**
+     * Clear \c Nodes array that stores list of Node in ArrayList form. It is used and 
+     * initialized on Serialization. This method simply delete this array saving memory 
+     * 
+     * It should be called after every serialization.
+     */
+    public void clearNodes() {
+        if (Nodes != null)
+            Nodes.clear();
+        Nodes = null;
     }
 
 }
