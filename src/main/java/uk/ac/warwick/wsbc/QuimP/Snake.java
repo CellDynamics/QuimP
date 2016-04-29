@@ -50,7 +50,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     public Snake(final Node h, int N, int id) throws BoaException {
         super(h, N);
         snakeID = id;
-        FROZEN = N;
         // colour = QColor.lightColor();
         centroid = new ExtendedVector2d(0d, 0d);
         calcCentroid();
@@ -60,6 +59,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         this.updateNormales(BOA_.boap.segParam.expandSnake);
         alive = true;
         startingNnodes = POINTS / 100.; // as 1%. limit to X%
+        countFrozen(); // set FROZEN
         // calcOrientation();
     }
 
@@ -95,7 +95,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
 
         snakeID = id;
         POINTS = snake.getNumNodes() + 1;
-        FROZEN = POINTS;
         nextTrackNumber = POINTS + 1;
         centroid = new ExtendedVector2d(0d, 0d);
         removeNode(head);
@@ -103,6 +102,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         this.updateNormales(BOA_.boap.segParam.expandSnake);
         alive = snake.alive;
         startingNnodes = snake.startingNnodes;
+        countFrozen();
         calcCentroid();
     }
 
@@ -451,6 +451,21 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     public void unfreezeAll() {
         super.unfreezeAll();
         FROZEN = 0;
+    }
+
+    /**
+     * Go through whole list and count Nodes that are frozen.
+     * 
+     * Set \c FREEZE variable 
+     */
+    private void countFrozen() {
+        Node n = head;
+        FROZEN = 0;
+        do {
+            if (n.isFrozen())
+                FROZEN++;
+            n = n.getNext();
+        } while (!n.isHead());
     }
 
     /**
