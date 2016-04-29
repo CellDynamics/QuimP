@@ -153,7 +153,7 @@ public class ECMM_Mapping {
     }
 
     /**
-     * MAin executive for ECMM processing
+     * Main executive for ECMM processing
      */
     private void runFromFile() {
         oH = new OutlineHandler(qp);
@@ -185,8 +185,7 @@ public class ECMM_Mapping {
 
     }
 
-    public OutlineHandler runByANA(OutlineHandler m, ImageProcessor Ipr, double d) { // ana
-                                                                                     // uses
+    public OutlineHandler runByANA(OutlineHandler m, ImageProcessor Ipr, double d) { // ana uses
                                                                                      // this
         // IJ.log("ECM Mapping (Memory) - R Tyson");
         oH = m;
@@ -377,14 +376,8 @@ public class ECMM_Mapping {
                 // check if points on top of each other
                 if (nB.getX() == nA.getX() && nB.getY() == nA.getY()) {
                     // IJ.log(" outline points overlap-fixed");
-                    nA.setX(nA.getX() + (rg.nextDouble() * 0.5) + 0.01); // use
-                                                                         // a
-                                                                         // minimum
-                                                                         // nudge
-                                                                         // of
-                                                                         // 0.01
-                                                                         // (imageJ
-                                                                         // pixel
+                    nA.setX(nA.getX() + (rg.nextDouble() * 0.5) + 0.01); // use a minimum nudge of
+                                                                         // 0.01 (imageJ pixel
                                                                          // accurracy
                     nA.setY(nA.getY() + (rg.nextDouble() * 0.5) + 0.01);
                 }
@@ -418,8 +411,7 @@ class Mapping {
         o2 = oo2;
         ECMp.numINTS = 0;
 
-        if (ECMp.ANA || ECMp.forceNoSectors) { // for ANA force no intersection
-                                               // points
+        if (ECMp.ANA || ECMp.forceNoSectors) { // for ANA force no intersection points
             insertFake();
             o1.updateNormales(true);
             o2.updateNormales(true);
@@ -473,8 +465,8 @@ class Mapping {
 
         nA = o1.getHead();
         do {
-            nB = o2.getHead(); // a different outline so no problem with
-                               // adjacent edges being flagged as crossing
+            nB = o2.getHead(); // a different outline so no problem with adjacent edges being
+                               // flagged as crossing
             // edgeBcount = 1;
             do {
                 state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(),
@@ -524,8 +516,7 @@ class Mapping {
     // }
 
     private void insertFake() {
-        // insert one fake intersect point just after the heads
-        // done when no intersections exist
+        // insert one fake intersect point just after the heads done when no intersections exist
         ExtendedVector2d pos =
                 ExtendedVector2d.vecP2P(o1.getHead().getPoint(), o1.getHead().getNext().getPoint());
         pos.multiply(0.5);
@@ -539,8 +530,7 @@ class Mapping {
         //
         pos = ExtendedVector2d.vecP2P(o2.getHead().getPoint(), o2.getHead().getNext().getPoint());
         pos.multiply(0.5);
-        pos.addVec(o2.getHead().getPoint()); // half way between head and next
-                                             // vert
+        pos.addVec(o2.getHead().getPoint()); // half way between head and next vert
 
         temp = o2.insertVert(o2.getHead());
         temp.setX(pos.getX());
@@ -554,8 +544,7 @@ class Mapping {
         // make sure the intersect points form proper sectors
         // by removing intersectiosn that form inverted sectors
 
-        boolean valid = true; // made false if an inverse or loose sector is
-                              // found
+        boolean valid = true; // made false if an inverse or loose sector is found
 
         Vert v1 = o1.getHead();
         Vert v2, v1p, v2p, v2m;
@@ -742,9 +731,8 @@ class Mapping {
     // }
 
     private void rebuildInts() {
-        // attempts to remove the correct intersects to leave only valid
-        // intersections. Done by adding back in inverted ints found by
-        // findInvertedInts()
+        // attempts to remove the correct intersects to leave only valid intersections. Done by
+        // adding back in inverted ints found by findInvertedInts()
 
         System.out.println("Rebuilding intersects");
         // find a good sector to start with (intState==1)
@@ -780,8 +768,8 @@ class Mapping {
         Vert v2 = Outline.findIntersect(o2.getHead(), v1.intsectID);
         // System.out.println("done finding a start");
 
-        // from v1, retain intersect points that allow building of good sectors,
-        // and delete the others.
+        // from v1, retain intersect points that allow building of good sectors, and delete the
+        // others.
         int startingInt = v1.intsectID;
         Vert v1p, v2p, v1pp, v2pp;
         double ratio1, ratio2; // ratio of sector lenghs for 2 possible
@@ -952,8 +940,7 @@ class Mapping {
 
         if (ECMp.numINTS == 0) {
             // IJ.error("NO INTERSECTS");
-            System.out.println("No Intersects"); // should never happen. fake
-                                                 // ones insterted
+            System.out.println("No Intersects"); // should never happen. fake ones insterted
         }
         sectors = new Sector[ECMp.numINTS];
 
@@ -982,12 +969,8 @@ class Mapping {
                 if (i == 0) {
                     sectors[i] = new Sector(i);
                     sectors[i].setStarts(vo1, vo2);
-                    sectors[ECMp.numINTS - 1] = new Sector(ECMp.numINTS - 1); // set
-                                                                              // as
-                                                                              // ends
-                                                                              // for
-                                                                              // last
-                                                                              // sector
+                    sectors[ECMp.numINTS - 1] = new Sector(ECMp.numINTS - 1); // set as ends for
+                                                                              // last sector
                     // sectors[INTS - 1].setEnds(vo1, vo2);
                 } else if (i == ECMp.numINTS - 1) {
                     sectors[i].setStarts(vo1, vo2);
@@ -1004,8 +987,7 @@ class Mapping {
             sectors[0].constructWhole(o1.calcArea(), o2.calcArea());
         } else {
             for (int i = 0; i < ECMp.numINTS; i++) {
-                sectors[i].construct(); // calc lengths, determin exp or contr,
-                                        // make charges
+                sectors[i].construct(); // calc lengths, determin exp or contr, make charges
                 // sectors[i].showPlot();
             }
         }
@@ -1021,8 +1003,7 @@ class Mapping {
         Vert currentMapVert = mapHead;
         for (int i = 0; i < sectors.length; i++) {
             s = sectors[i];
-            Vert v = s.getMigStart().getNext(); // starting vert, don't migrate
-                                                // the intpoint
+            Vert v = s.getMigStart().getNext(); // starting vert, don't migrate the intpoint
 
             do {
                 // if (ECMp.chargeDensity != -1) { //nar. polar charges sort
@@ -1049,11 +1030,10 @@ class Mapping {
                 }
 
                 newVert = mappedOutline.insertVert(currentMapVert);
-                newVert.tarLandingCoord = v.fLandCoord; // so we always have a
-                                                        // reference to where we
+                newVert.tarLandingCoord = v.fLandCoord; // so we always have a reference to where we
                                                         // landed
-                if (s.expansion) { // expanding or retracting based on area
-                                   // change (not length of sector)
+                if (s.expansion) { // expanding or retracting based on area change (not length of
+                                   // sector)
                     newVert.distance = -v.distance; // ?????????????? why neg
                 } else {
                     newVert.distance = v.distance;
@@ -1193,9 +1173,8 @@ class Sector {
         calcLengths();
         double sectorTriArea = ExtendedVector2d.triangleArea(startO1.getPoint(),
                 startO1.getNext().getPoint(), startO2.getNext().getPoint()); // left or right? Use
-                                                                             // the "left"
-                                                                             // algorithm (sign of
-                                                                             // triangle
+                                                                             // the "left" algorithm
+                                                                             // (sign of triangle
                                                                              // area)
 
         if ((lengthO1 > lengthO2) || ECMp.forceForwardMapping) {
@@ -1286,8 +1265,7 @@ class Sector {
 
     }
 
-    public void constructWhole(double area1, double area2) { // no intersects
-                                                             // exist
+    public void constructWhole(double area1, double area2) { // no intersects exist
         //
         Outline innerCharges, outerCharges;
 
@@ -1453,8 +1431,7 @@ class Sector {
     private void chargesPolygon() {
         ArrayList<ExtendedVector2d> points = new ArrayList<ExtendedVector2d>();
 
-        Vert v = migCharges.getHead(); // get charges from head to int point,
-                                       // forward
+        Vert v = migCharges.getHead(); // get charges from head to int point, forward
         do {
 
             points.add(v.getPoint());
@@ -1699,8 +1676,7 @@ class ODEsolver {
             ECMp.its++;
         }
 
-        if (ECMp.plot && !v.snapped && ECMp.drawFails) { // mark the start point
-                                                         // of failed nodes
+        if (ECMp.plot && !v.snapped && ECMp.drawFails) { // mark the start point of failed nodes
             ECMM_Mapping.plot.setColor(1, 0, 0);
             // p.print(v.getTrackNum() + "p: ");
             // pp.print(v.getTrackNum() + "pp: ");
@@ -1930,7 +1906,7 @@ class ODEsolver {
 /**
  * Container class holding parameters related to ECMM analysis.
  * 
- * @author baniuk
+ * @author rtyson
  *
  */
 class ECMp {
@@ -1976,6 +1952,7 @@ class ECMp {
     static boolean drawFails;
     static boolean saveTemp;
     static boolean inspectSectors;
+    static boolean preserveHeads = false; //!< true if original head should be preserved
 
     public ECMp() {
     }
@@ -1983,8 +1960,7 @@ class ECMp {
     /**
      * Defines default values for ECMM algorithm
      * 
-     * @param maxCellLength
-     *            Maximal length of cell
+     * @param maxCellLength Maximal length of cell
      */
     public static void setParams(double maxCellLength) {
         maxCellSize = maxCellLength / Math.PI; // guess cell diameter
@@ -2027,13 +2003,11 @@ class ECMp {
     /**
      * Fills ECMp fields with values from previous analysis (master paQP file)
      * 
-     * @param qp
-     *            Master configuration file
+     * @param qp  Master configuration file
      */
     static void setup(QParams qp) {
         INFILE = qp.snakeQP;
-        OUTFILE = new File(ECMp.INFILE.getAbsolutePath()); // output file
-                                                           // (.snQP) file
+        OUTFILE = new File(ECMp.INFILE.getAbsolutePath()); // output file (.snQP) file
         scale = qp.imageScale;
         frameInterval = qp.frameInterval;
         // markerRes = qp.nodeRes;
@@ -2047,7 +2021,7 @@ class ECMp {
 /**
  * Class responsible for plotting ECMM outlines during computations
  * 
- * @author baniuk
+ * @author rtyson
  *
  */
 class ECMplot {

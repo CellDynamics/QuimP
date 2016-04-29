@@ -2124,7 +2124,7 @@ public class BOA_ implements PlugIn {
         if (boap.saveSnake) {
             try {
                 if (nest.writeSnakes()) {
-                    nest.analyse(imageGroup.getOrgIpl());
+                    nest.analyse(imageGroup.getOrgIpl()); // write stQP file
                     // auto save plugin config
                     // Create Serialization object wit extra info layer
                     Serializer<SnakePluginList> s;
@@ -3068,6 +3068,12 @@ class Nest {
         return false;
     }
 
+    /**
+     * Write \a stQP file using current Snakes
+     * 
+     * @param oi instance of current ImagePlus (required by CellStat that extends 
+     * ij.measure.Measurements
+     */
     public void analyse(final ImagePlus oi) {
         OutlineHandler outputH;
         SnakeHandler sH;

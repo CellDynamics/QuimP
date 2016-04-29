@@ -198,12 +198,6 @@ public class OutlineHandler extends ShapeHandler<Outline> {
                     maxLength = length;
                 }
 
-                // int c = outlines[s].countVERTS();
-                // if(c !=outlines[s].getVerts()){
-                // System.out.println("OH.234.VERTS NOT CORREECT. VERTS:
-                // "+outlines[s].getVerts()+", Count: " + c);
-                // }
-
                 s++;
                 LOGGER.trace("Outline: " + s + " head =[" + outlines[s - 1].getHead().getX() + ","
                         + outlines[s - 1].getHead().getY() + "]");
@@ -233,8 +227,7 @@ public class OutlineHandler extends ShapeHandler<Outline> {
         fluLims = new double[3][2];
         migLimits = new double[2];
         // convLimits = new double[2];
-        curvLimits = new double[2]; // not filled until Q_Analsis run. smoothed
-                                    // curvature
+        curvLimits = new double[2]; // not filled until Q_Analsis run. smoothed curvature
 
         // cycle through all frames and find the min and max for all data
         // store min and max coor\migration\flu for plotting
@@ -374,15 +367,25 @@ public class OutlineHandler extends ShapeHandler<Outline> {
 
     static private void write(PrintWriter pw, int VERTS, Vert v) {
         pw.print("\n" + VERTS);
-
+        // !< off formatting tag
         do {
-            pw.print("\n" + IJ.d2s(v.coord, 6) + "\t" + IJ.d2s(v.getX(), 2) + "\t"
-                    + IJ.d2s(v.getY(), 2) + "\t" + IJ.d2s(v.fCoord, 6) + "\t" + IJ.d2s(v.gCoord, 6)
-                    + "\t" + IJ.d2s(v.distance, 6) + "\t" + IJ.d2s(v.fluores[0].intensity, 6) + "\t"
-                    + IJ.d2s(v.fluores[0].x, 0) + "\t" + IJ.d2s(v.fluores[0].y, 0) + "\t"
-                    + IJ.d2s(v.fluores[1].intensity, 6) + "\t" + IJ.d2s(v.fluores[1].x, 0) + "\t"
-                    + IJ.d2s(v.fluores[1].y, 0) + "\t" + IJ.d2s(v.fluores[2].intensity, 6) + "\t"
-                    + IJ.d2s(v.fluores[2].x, 0) + "\t" + IJ.d2s(v.fluores[2].y, 0));
+            pw.print("\n" 
+                    + IJ.d2s(v.coord, 6) + "\t" // Perimeter coord
+                    + IJ.d2s(v.getX(), 2) + "\t" // X coord
+                    + IJ.d2s(v.getY(), 2) + "\t" // Y coord
+                    + IJ.d2s(v.fCoord, 6) + "\t" // Origin
+                    + IJ.d2s(v.gCoord, 6) + "\t" // G-Origin
+                    + IJ.d2s(v.distance, 6) + "\t" // Speed
+                    + IJ.d2s(v.fluores[0].intensity, 6) + "\t" // Fluor_Ch1
+                    + IJ.d2s(v.fluores[0].x, 0) + "\t"  // Ch1_x
+                    + IJ.d2s(v.fluores[0].y, 0) + "\t" // Ch1_y
+                    + IJ.d2s(v.fluores[1].intensity, 6) + "\t" // Fluor_Ch2
+                    + IJ.d2s(v.fluores[1].x, 0) + "\t" // Ch2_x
+                    + IJ.d2s(v.fluores[1].y, 0) + "\t" // Ch2_y
+                    + IJ.d2s(v.fluores[2].intensity, 6) + "\t" // Fluor_CH3
+                    + IJ.d2s(v.fluores[2].x, 0) + "\t" // CH3_x
+                    + IJ.d2s(v.fluores[2].y, 0)); // CH3_y
+            // on formatting */
             v = v.getNext();
         } while (!v.isHead());
     }
