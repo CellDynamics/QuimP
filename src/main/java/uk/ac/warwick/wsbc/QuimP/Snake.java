@@ -35,9 +35,30 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     public double startingNnodes; //!< how many nodes at start of segmentation
     private int FROZEN; //!< number of nodes frozen
     private Rectangle bounds = new Rectangle(); //!< snake bounds
-    public static final int MAX_NODES=10000; //!< Max number of nodes allowed in Snake 
+    public static final int MAX_NODES = 10000; //!< Max number of nodes allowed in Snake 
     private ArrayList<Node> Nodes = null; //!< Nodes of snake as List - initialized on Serialize
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (this.getClass() != obj.getClass())
+            return false;
+        Snake s = (Snake)obj;
+        boolean status = true;
+        
+        status &= (alive == s.alive);
+        status &= (snakeID == s.snakeID);
+        status &= (startingNnodes == s.startingNnodes);
+        status &= (FROZEN == s.FROZEN);
+        status &= super.equals( (Shape<Node>)s);
+        
+        return status;
+        
+    }
+    
     /**
      * Create a snake from existing linked list (at least one head node)
      * 

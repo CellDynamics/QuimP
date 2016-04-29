@@ -19,6 +19,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @date 14 Apr 2016
  *
  * @param <T> Type of point, currently can be Node or Vert
+ * @remarks Generally assumes that Shape is closed, so PointsList is looped
  */
 public abstract class Shape<T extends PointsList<T>> {
     @SuppressWarnings("unused")
@@ -28,6 +29,38 @@ public abstract class Shape<T extends PointsList<T>> {
     protected int POINTS; /*!< number of points */
     double position = -1; // position value. TODO move to Snake as it is referenced only there
     protected ExtendedVector2d centroid = null; /*!< centroid point of the Shape */
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (this.getClass() != obj.getClass())
+            return false;
+        Shape<T> s = (Shape<T>) obj;
+        boolean status = true;
+
+        if (POINTS != s.POINTS)
+            return false; // do not check if different number of nodes
+        status &= (position == s.position);
+        status &= (nextTrackNumber == s.nextTrackNumber);
+
+        if (centroid != null)
+            status &= centroid.equals(s.centroid);
+        else
+            status &= (centroid == s.centroid);
+        // iterate over list of nodes
+        T n = head;
+        T nobj = s.getHead();
+        do {
+            status &= n.equals(nobj);
+            n = n.getNext();
+            nobj = nobj.getNext();
+        } while (!n.isHead());
+
+        return status;
+    }
 
     /**
      * Default constructor, create empty Shape

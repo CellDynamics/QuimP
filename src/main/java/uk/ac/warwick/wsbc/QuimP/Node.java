@@ -82,6 +82,52 @@ public class Node extends PointsList<Node> {
     }
 
     /**
+     * Compare only current Node, no neighbors
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (this.getClass() != obj.getClass())
+            return false;
+        Node n = (Node) obj;
+        boolean status = true;
+        if (vel != null)
+            status &= vel.equals(n.vel);
+        else
+            status &= (vel == n.vel);
+        if (F_total != null)
+            status &= F_total.equals(n.F_total);
+        else
+            status &= (F_total == n.F_total);
+        if (prelimPoint != null)
+            status &= prelimPoint.equals(n.prelimPoint);
+        else
+            status &= (prelimPoint == n.prelimPoint);
+        if (point != null)
+            status &= point.equals(n.point);
+        else
+            status &= (point == n.point);
+        if (normal != null)
+            status &= normal.equals(n.normal);
+        else
+            status &= (normal == n.normal);
+        if (tan != null)
+            status &= tan.equals(n.tan);
+        else
+            status &= (tan == n.tan);
+
+        status &= (head == n.head);
+        status &= (tracknumber == n.tracknumber);
+        status &= (position == n.position);
+        status &= (frozen == n.frozen);
+
+        return status;
+    }
+
+    /**
      * Update point and force with preliminary values, and reset.
      */
     public void update() {
