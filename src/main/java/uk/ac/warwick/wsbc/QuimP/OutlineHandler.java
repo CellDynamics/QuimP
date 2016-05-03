@@ -134,8 +134,7 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             // read outlines into memory
             br = new BufferedReader(new FileReader(f));
 
-            while ((thisLine = br.readLine()) != null) { // while loop begins
-                                                         // here
+            while ((thisLine = br.readLine()) != null) { // while loop begins here
                 // System.out.println(thisLine);
                 if (thisLine.startsWith("#")) {
                     continue; // skip comments
@@ -190,14 +189,18 @@ public class OutlineHandler extends ShapeHandler<Outline> {
                 prevn.setNext(head);
                 head.setPrev(prevn);
 
-                outlines[s] = new Outline(head, N + 1); // dont forget the head node
+                Outline tmp = new Outline(head, N + 1); // dont forget the head node
+                tmp.removeVert(head); // WARN potential incompatibility with old code.
+                                      // old constructor made copy of this list and deleted
+                                      // first dummy node. Now it just covers this list
+                // make deep copy of this list
+                outlines[s] = new Outline(tmp);
                 outlines[s].updateNormales(true);
                 outlines[s].makeAntiClockwise();
                 length = outlines[s].getLength();
                 if (length > maxLength) {
                     maxLength = length;
                 }
-
                 s++;
                 LOGGER.trace("Outline: " + s + " head =[" + outlines[s - 1].getHead().getX() + ","
                         + outlines[s - 1].getHead().getY() + "]");

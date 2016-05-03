@@ -25,14 +25,14 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  */
 public final class Outline extends Shape<Vert> implements Cloneable {
     private static final Logger LOGGER = LogManager.getLogger(Outline.class.getName());
-    QColor color; /*!< Color of the Outline */
 
     /**
      * Create a Outline from existing linked list
      * 
      * @param h head node of linked list
      * @param N number of nodes in list
-     * @warning head node \c h is deleted from list. List \c h should have dummy head node
+     * @warning Behavior of this method was changed. Now it does not make copy of Vert. In old 
+     * approach there was dummy node deleted in this constructor.
      * @code{.java}
      *  index = 0;
      *  head = new Vert(index); // dummy head node
@@ -45,11 +45,9 @@ public final class Outline extends Shape<Vert> implements Cloneable {
      */
     public Outline(final Vert h, int N) {
         super(h, N);
-        removeVert(head);
+        // removeVert(head);
         this.updateCurvature();
         // calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
-
-        color = new QColor(0.5, 0, 1);
     }
 
     /**
@@ -61,8 +59,6 @@ public final class Outline extends Shape<Vert> implements Cloneable {
         super(h);
         this.updateCurvature();
         // calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
-
-        color = new QColor(0.5, 0, 1);
     }
 
     /**
@@ -71,10 +67,9 @@ public final class Outline extends Shape<Vert> implements Cloneable {
      * Previous or next points are not copied
      * 
      * @param src Source Outline
-     * @todo TODO To implement and replace clone()
      */
     public Outline(final Outline src) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        super(src);
     }
 
     /**

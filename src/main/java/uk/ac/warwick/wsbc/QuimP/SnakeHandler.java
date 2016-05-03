@@ -268,6 +268,16 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
     }
 
+    /**
+     * Read Snake from file
+     *
+     * @param inFile
+     * @return
+     * @throws Exception
+     * @warning May not be compatible wit old version due to changes in Snake constructor.
+     * @see uk.ac.warwick.wsbc.QuimP.OutlineHandler.readOutlines(File) for new approach
+     */
+    @Deprecated
     public int snakeReader(final File inFile) throws Exception {
         String thisLine;
         int N;
@@ -309,7 +319,12 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
                 head.setPrev(prevn);
 
                 finalSnakes[s] = new Snake(head, N + 1, ID); // dont forget the head
-                // node
+                finalSnakes[s].removeNode(head); // due to compatibility with code above.
+                                                 // old versions made copies of list
+                                                 // WARN potential uncompatibility with old code.
+                                                 // old constructor made copy of this list and
+                                                 // deleted first dummy node. Now it just covers
+                                                 // this list
                 s++;
             } // end while
         } catch (IOException e) {

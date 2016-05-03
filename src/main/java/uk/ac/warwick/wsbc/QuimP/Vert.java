@@ -1,6 +1,8 @@
 
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.util.Arrays;
+
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
@@ -27,9 +29,7 @@ public class Vert extends PointsList<Vert> {
     public QColor color; /*!< color of Vert */
     private boolean intPoint; /*!< vert represents an intersect point and is temporary. Mark start end of sectors */
     public boolean snapped; /*!< the vert has been snapped to an edge */
-
     public int intsectID;
-
     /**
      * Internal state
      * -# 0 - undetermined
@@ -77,10 +77,27 @@ public class Vert extends PointsList<Vert> {
      * Previous or next points are not copied
      * 
      * @param src Source Vert
-     * @todo TODO To implement
      */
     public Vert(final Vert src) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        super(src);
+        charge = src.charge;
+        distance = src.distance;
+        for (int i = 0; i < 3; i++)
+            fluores[i] = new FluoMeasurement(src.fluores[i]);
+        curvatureLocal = src.curvatureLocal;
+        curvatureSmoothed = src.curvatureSmoothed;
+        curvatureSum = src.curvatureSum;
+        coord = src.coord;
+        fCoord = src.fCoord;
+        fLandCoord = src.fLandCoord;
+        gCoord = src.gCoord;
+        gLandCoord = src.gLandCoord;
+        tarLandingCoord = src.tarLandingCoord;
+        color = new QColor(src.color);
+        intPoint = src.intPoint;
+        snapped = src.snapped;
+        intsectID = src.intsectID;
+        intState = src.intState;
     }
 
     /**
@@ -96,6 +113,102 @@ public class Vert extends PointsList<Vert> {
             fluores[i] = new FluoMeasurement(-2, -2, -2);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        long temp;
+        temp = Double.doubleToLongBits(charge);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((color == null) ? 0 : color.hashCode());
+        temp = Double.doubleToLongBits(coord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(curvatureLocal);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(curvatureSmoothed);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(curvatureSum);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(distance);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(fCoord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(fLandCoord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + Arrays.hashCode(fluores);
+        temp = Double.doubleToLongBits(gCoord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(gLandCoord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + (intPoint ? 1231 : 1237);
+        result = prime * result + intState;
+        result = prime * result + intsectID;
+        result = prime * result + (snapped ? 1231 : 1237);
+        temp = Double.doubleToLongBits(tarLandingCoord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (!(obj instanceof Vert))
+            return false;
+        Vert other = (Vert) obj;
+        if (Double.doubleToLongBits(charge) != Double.doubleToLongBits(other.charge))
+            return false;
+        if (color == null) {
+            if (other.color != null)
+                return false;
+        } else if (!color.equals(other.color))
+            return false;
+        if (Double.doubleToLongBits(coord) != Double.doubleToLongBits(other.coord))
+            return false;
+        if (Double.doubleToLongBits(curvatureLocal) != Double
+                .doubleToLongBits(other.curvatureLocal))
+            return false;
+        if (Double.doubleToLongBits(curvatureSmoothed) != Double
+                .doubleToLongBits(other.curvatureSmoothed))
+            return false;
+        if (Double.doubleToLongBits(curvatureSum) != Double.doubleToLongBits(other.curvatureSum))
+            return false;
+        if (Double.doubleToLongBits(distance) != Double.doubleToLongBits(other.distance))
+            return false;
+        if (Double.doubleToLongBits(fCoord) != Double.doubleToLongBits(other.fCoord))
+            return false;
+        if (Double.doubleToLongBits(fLandCoord) != Double.doubleToLongBits(other.fLandCoord))
+            return false;
+        if (!Arrays.equals(fluores, other.fluores))
+            return false;
+        if (Double.doubleToLongBits(gCoord) != Double.doubleToLongBits(other.gCoord))
+            return false;
+        if (Double.doubleToLongBits(gLandCoord) != Double.doubleToLongBits(other.gLandCoord))
+            return false;
+        if (intPoint != other.intPoint)
+            return false;
+        if (intState != other.intState)
+            return false;
+        if (intsectID != other.intsectID)
+            return false;
+        if (snapped != other.snapped)
+            return false;
+        if (Double.doubleToLongBits(tarLandingCoord) != Double
+                .doubleToLongBits(other.tarLandingCoord))
+            return false;
+        return true;
+    }
+
     public void print(String s) {
         System.out.print(s + "vert: " + tracknumber + ", x:" + getX() + ", y:" + getY()
                 + ", coord: " + coord + ", fCoord: " + fCoord + ", gCoord: " + gCoord);
@@ -104,6 +217,22 @@ public class Vert extends PointsList<Vert> {
         if (head)
             System.out.print(", Head");
         System.out.println("");
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Vert [charge=" + charge + ", distance=" + distance + ", fluores="
+                + Arrays.toString(fluores) + ", curvatureLocal=" + curvatureLocal
+                + ", curvatureSmoothed=" + curvatureSmoothed + ", curvatureSum=" + curvatureSum
+                + ", coord=" + coord + ", fCoord=" + fCoord + ", fLandCoord=" + fLandCoord
+                + ", gCoord=" + gCoord + ", gLandCoord=" + gLandCoord + ", tarLandingCoord="
+                + tarLandingCoord + ", color=" + color + ", intPoint=" + intPoint + ", snapped="
+                + snapped + ", intsectID=" + intsectID + ", intState=" + intState + ", point="
+                + point + ", tracknumber=" + tracknumber + ", position=" + position + "]";
     }
 
     public boolean isIntPoint() {
