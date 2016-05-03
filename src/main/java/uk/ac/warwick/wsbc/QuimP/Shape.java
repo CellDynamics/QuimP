@@ -24,7 +24,6 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @remarks Generally assumes that Shape is closed, so PointsList is looped
  */
 public abstract class Shape<T extends PointsList<T>> {
-    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Shape.class.getName());
     protected int nextTrackNumber = 1; /*!< next node ID's */
     protected T head; /*!< first node in double linked list, always maintained */
@@ -55,7 +54,8 @@ public abstract class Shape<T extends PointsList<T>> {
     }
 
     /**
-     * Create Shape from one point, created Shape is looped. If \c h is a list, only \c h will be maintained and list will be unlinked.
+     * Create Shape from one point, created Shape is looped. 
+     * If \c h is a list, only \c h will be maintained and list will be unlinked.
      * 
      * @param h head point of the list
      */
@@ -71,30 +71,34 @@ public abstract class Shape<T extends PointsList<T>> {
      * Copy constructor
      * 
      * @param src source Shape to copy from
-     * @throws RuntimeException 
+     * @throws RuntimeException when T does no have copy constructor
      */
     @SuppressWarnings("unchecked")
     public Shape(final Shape<T> src) {
-        T tmpHead = src.getHead();
-        Class<?> tClass = tmpHead.getClass();
-        try {
+        T tmpHead = src.getHead(); // get head as representative object
+        Class<?> tClass = tmpHead.getClass(); // get class name under Shape (T)
+        try { // Constructor of T as type can not be called directly, use reflection
+              // get Constructor of T with one parameter of Type T (copy constructor)
             Constructor<?> ctor = tmpHead.getClass().getDeclaredConstructor(tClass);
-
+            // create copy of head
             head = (T) ctor.newInstance(src.getHead());
             T srcn = src.getHead();
             T n = head;
+            // iterate over whole list making copies of T elements
             for (srcn = srcn.getNext(); !srcn.isHead(); srcn = srcn.getNext()) {
                 T next = (T) ctor.newInstance(srcn);
                 n.setNext(next);
                 next.setPrev(n);
                 n = next;
             }
+            // loop list
             n.setNext(head);
             head.setPrev(n);
         } catch (SecurityException | NoSuchMethodException | InstantiationException
                 | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // change fo unchecked exception
         }
+        // copy rest of params
         POINTS = src.POINTS;
         position = src.position;
         nextTrackNumber = src.nextTrackNumber;

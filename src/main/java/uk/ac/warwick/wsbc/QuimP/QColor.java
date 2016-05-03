@@ -16,12 +16,62 @@ import javax.vecmath.Color3f;
 public class QColor {
     public double red, green, blue;
 
+    /**
+     * Copy constructor 
+     * @param src object to copy
+     */
+    public QColor(final QColor src) {
+        red = src.red;
+        green = src.green;
+        blue = src.blue;
+    }
+
     public QColor(double r, double g, double b) {
         this.setRGB(r, g, b);
     }
 
     public void print() {
         System.out.println("R:" + red + " G: " + green + " B: " + blue);
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(blue);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(green);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(red);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof QColor))
+            return false;
+        QColor other = (QColor) obj;
+        if (Double.doubleToLongBits(blue) != Double.doubleToLongBits(other.blue))
+            return false;
+        if (Double.doubleToLongBits(green) != Double.doubleToLongBits(other.green))
+            return false;
+        if (Double.doubleToLongBits(red) != Double.doubleToLongBits(other.red))
+            return false;
+        return true;
     }
 
     public void setRGB(double r, double g, double b) {

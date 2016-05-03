@@ -28,7 +28,6 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  */
 public class Snake extends Shape<Node> implements IQuimpSerialize {
-    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Snake.class.getName());
     public boolean alive; //!< \c true if snake is alive
     private int snakeID; //!< unique ID of snake
