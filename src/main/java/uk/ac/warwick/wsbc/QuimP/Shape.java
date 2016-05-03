@@ -28,7 +28,6 @@ public abstract class Shape<T extends PointsList<T>> {
     protected int nextTrackNumber = 1; /*!< next node ID's */
     protected T head; /*!< first node in double linked list, always maintained */
     protected int POINTS; /*!< number of points */
-    double position = -1; // position value. TODO move to Snake as it is referenced only there
     protected ExtendedVector2d centroid = null; /*!< centroid point of the Shape */
     public static final int MAX_NODES = 10000; //!< Max number of nodes allowed in Shape 
 
@@ -100,7 +99,6 @@ public abstract class Shape<T extends PointsList<T>> {
         }
         // copy rest of params
         POINTS = src.POINTS;
-        position = src.position;
         nextTrackNumber = src.nextTrackNumber;
         calcCentroid();
     }
@@ -125,9 +123,6 @@ public abstract class Shape<T extends PointsList<T>> {
             } while (!n.isHead());
         }
         result = prime * result + nextTrackNumber;
-        long temp;
-        temp = Double.doubleToLongBits(position);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 
@@ -168,8 +163,6 @@ public abstract class Shape<T extends PointsList<T>> {
                 return false;
         }
         if (nextTrackNumber != other.nextTrackNumber)
-            return false;
-        if (Double.doubleToLongBits(position) != Double.doubleToLongBits(other.position))
             return false;
         return true;
     }
@@ -292,7 +285,7 @@ public abstract class Shape<T extends PointsList<T>> {
      * head.setHead(true);
      * @endcode
      * 
-     * The \c addNode will produce closed bidirectional linked list.
+     * The \c addPoint will produce closed bidirectional linked list.
      * From first Node it is possible to reach last one by calling
      * Node::getNext() and from the last one, first should be accessible
      * by calling Node::getPrev()
