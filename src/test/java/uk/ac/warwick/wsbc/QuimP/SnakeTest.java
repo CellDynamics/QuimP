@@ -179,6 +179,8 @@ public class SnakeTest {
         LOGGER.debug(copy.hashCode());
         assertEquals(copy.hashCode(), snake1.hashCode());
         assertThat(c, is(snake1));
+        LOGGER.debug(copy.toString());
+        LOGGER.debug(snake1.toString());
     }
 
     /**
