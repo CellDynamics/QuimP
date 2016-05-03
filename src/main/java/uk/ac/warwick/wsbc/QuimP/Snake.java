@@ -43,16 +43,25 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * @param N Number of nodes
      * @param id Unique snake ID related to object being segmented.
      * @throws Exception
-     * @warning Head node from list \c h is removed then. List must be looped
+     * @warning List is referenced only not copied
+     * Behavior of this method was changed. Now it does not make copy of Node. In old 
+     * approach there was dummy node deleted in this constructor.
+     * @code{.java}
+     *  index = 0;
+     *  head = new Vert(index); // dummy head node
+     *  head.setHead(true);
+     *  prevn = head;
+     *  index++;
+     *  // insert next nodes here
+     * @endcode 
      */
     public Snake(final Node h, int N, int id) throws BoaException {
         super(h, N);
         snakeID = id;
-        // colour = QColor.lightColor();
         centroid = new ExtendedVector2d(0d, 0d);
         calcCentroid();
 
-        removeNode(head);
+        // removeNode(head);
         this.makeAntiClockwise();
         this.updateNormales(BOA_.boap.segParam.expandSnake);
         alive = true;
