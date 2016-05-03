@@ -35,29 +35,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     public double startingNnodes; //!< how many nodes at start of segmentation
     private int FROZEN; //!< number of nodes frozen
     private Rectangle bounds = new Rectangle(); //!< snake bounds
-    public static final int MAX_NODES = 10000; //!< Max number of nodes allowed in Snake 
     private ArrayList<Node> Nodes = null; //!< Nodes of snake as List - initialized on Serialize
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (this.getClass() != obj.getClass())
-            return false;
-        Snake s = (Snake)obj;
-        boolean status = true;
-        
-        status &= (alive == s.alive);
-        status &= (snakeID == s.snakeID);
-        status &= (startingNnodes == s.startingNnodes);
-        status &= (FROZEN == s.FROZEN);
-        status &= super.equals( (Shape<Node>)s);
-        
-        return status;
-        
-    }
     
     /**
      * Create a snake from existing linked list (at least one head node)
@@ -66,7 +44,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * @param N Number of nodes
      * @param id Unique snake ID related to object being segmented.
      * @throws Exception
-     * @warning HEad node from list \c h is removed then
+     * @warning Head node from list \c h is removed then. List must be looped
      */
     public Snake(final Node h, int N, int id) throws BoaException {
         super(h, N);
@@ -87,43 +65,16 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     /**
      * Copy constructor
      * 
-     * @param snake Snake to be duplicated
+     * @param src Snake to be duplicated
      * @param id New id
-     * @throws BoaException 
-     * @todo WARN May not be exact copy, investigate this
      */
-    public Snake(final Snake snake, int id) throws BoaException {
-
-        head = new Node(0); // dummy head node
-        head.setHead(true);
-
-        Node prev = head;
-        Node nn;
-        Node sn = snake.getHead();
-        do {
-            nn = new Node(sn.getTrackNum());
-            nn.setX(sn.getX());
-            nn.setY(sn.getY());
-
-            nn.setPrev(prev);
-            prev.setNext(nn);
-
-            prev = nn;
-            sn = sn.getNext();
-        } while (!sn.isHead());
-        nn.setNext(head); // link round tail
-        head.setPrev(nn);
-
+    public Snake(final Snake src, int id) {
+        super(src);
+        alive = src.alive;
         snakeID = id;
-        POINTS = snake.getNumNodes() + 1;
-        nextTrackNumber = POINTS + 1;
-        centroid = new ExtendedVector2d(0d, 0d);
-        removeNode(head);
-        this.makeAntiClockwise();
-        this.updateNormales(BOA_.boap.segParam.expandSnake);
-        alive = snake.alive;
-        startingNnodes = snake.startingNnodes;
+        startingNnodes = src.startingNnodes;
         countFrozen();
+        bounds = new Rectangle(src.bounds);
         calcCentroid();
     }
 
@@ -205,6 +156,52 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         startingNnodes = POINTS / 100;
         alive = true;
         calcCentroid();
+    }
+
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + FROZEN;
+        result = prime * result + (alive ? 1231 : 1237);
+        result = prime * result + ((bounds == null) ? 0 : bounds.hashCode());
+        result = prime * result + snakeID;
+        long temp;
+        temp = Double.doubleToLongBits(startingNnodes);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    /* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (!(obj instanceof Snake))
+            return false;
+        Snake other = (Snake) obj;
+        if (FROZEN != other.FROZEN)
+            return false;
+        if (alive != other.alive)
+            return false;
+        if (bounds == null) {
+            if (other.bounds != null)
+                return false;
+        } else if (!bounds.equals(other.bounds))
+            return false;
+        if (snakeID != other.snakeID)
+            return false;
+        if (Double.doubleToLongBits(startingNnodes) != Double
+                .doubleToLongBits(other.startingNnodes))
+            return false;
+        return true;
     }
 
     /**

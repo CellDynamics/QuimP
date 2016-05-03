@@ -76,16 +76,12 @@ public class ViewUpdater {
     /**
      * Request copy of connected snake for previewing purposes
      * 
-     * @return copy of connected snake as Snake or null on any error
+     * @return copy of connected snake as Snake
      */
     public Snake getSnakeasSnake() {
         Snake ret = null;
-        try {
-            if (snake != null)
-                ret = new Snake(snake, snake.getSnakeID());
-        } catch (BoaException e) {
-            ret = null;
-        }
+        if (snake != null)
+            ret = new Snake(snake, snake.getSnakeID());
         return ret;
     }
 

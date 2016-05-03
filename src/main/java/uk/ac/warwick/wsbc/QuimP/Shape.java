@@ -1,6 +1,8 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.awt.Polygon;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,40 +31,9 @@ public abstract class Shape<T extends PointsList<T>> {
     protected int POINTS; /*!< number of points */
     double position = -1; // position value. TODO move to Snake as it is referenced only there
     protected ExtendedVector2d centroid = null; /*!< centroid point of the Shape */
+    public static final int MAX_NODES = 10000; //!< Max number of nodes allowed in Shape 
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (this.getClass() != obj.getClass())
-            return false;
-        Shape<T> s = (Shape<T>) obj;
-        boolean status = true;
-
-        if (POINTS != s.POINTS)
-            return false; // do not check if different number of nodes
-        status &= (position == s.position);
-        status &= (nextTrackNumber == s.nextTrackNumber);
-
-        if (centroid != null)
-            status &= centroid.equals(s.centroid);
-        else
-            status &= (centroid == s.centroid);
-        // iterate over list of nodes
-        T n = head;
-        T nobj = s.getHead();
-        do {
-            status &= n.equals(nobj);
-            n = n.getNext();
-            nobj = nobj.getNext();
-        } while (!n.isHead());
-
-        return status;
-    }
-
-    /**
+	/**
      * Default constructor, create empty Shape
      */
     public Shape() {
@@ -73,6 +44,7 @@ public abstract class Shape<T extends PointsList<T>> {
     /**
      * Create Shape from existing list of points (can be one point as well)
      * 
+     * @warning List of points must be looped
      * @param h head point of the list
      * @param N number of points in the list 
      */
@@ -83,7 +55,7 @@ public abstract class Shape<T extends PointsList<T>> {
     }
 
     /**
-     * Create Shape from one point, created Shape is looped
+     * Create Shape from one point, created Shape is looped. If \c h is a list, only \c h will be maintained and list will be unlinked.
      * 
      * @param h head point of the list
      */
@@ -93,6 +65,109 @@ public abstract class Shape<T extends PointsList<T>> {
         head.setNext(head);
         head.setPrev(head);
         nextTrackNumber = head.getTrackNum() + 1;
+    }
+
+    /**
+     * Copy constructor
+     * 
+     * @param src source Shape to copy from
+     * @throws RuntimeException 
+     */
+    @SuppressWarnings("unchecked")
+    public Shape(final Shape<T> src) {
+        T tmpHead = src.getHead();
+        Class<?> tClass = tmpHead.getClass();
+        try {
+            Constructor<?> ctor = tmpHead.getClass().getDeclaredConstructor(tClass);
+
+            head = (T) ctor.newInstance(src.getHead());
+            T srcn = src.getHead();
+            T n = head;
+            for (srcn = srcn.getNext(); !srcn.isHead(); srcn = srcn.getNext()) {
+                T next = (T) ctor.newInstance(srcn);
+                n.setNext(next);
+                next.setPrev(n);
+                n = next;
+            }
+            n.setNext(head);
+            head.setPrev(n);
+        } catch (SecurityException | NoSuchMethodException | InstantiationException
+                | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        POINTS = src.POINTS;
+        position = src.position;
+        nextTrackNumber = src.nextTrackNumber;
+        calcCentroid();
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + POINTS;
+        result = prime * result + ((centroid == null) ? 0 : centroid.hashCode());
+        if (head == null)
+            result = prime * result + 0;
+        else { // go through the whole list
+            T n = head;
+            do {
+                result = prime * result + n.hashCode();
+                n = n.getNext();
+            } while (!n.isHead());
+        }
+        result = prime * result + nextTrackNumber;
+        long temp;
+        temp = Double.doubleToLongBits(position);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof Shape))
+            return false;
+        @SuppressWarnings("unchecked")
+        Shape<T> other = (Shape<T>) obj;
+        if (POINTS != other.POINTS)
+            return false;
+        if (centroid == null) {
+            if (other.centroid != null)
+                return false;
+        } else if (!centroid.equals(other.centroid))
+            return false;
+        if (head == null) {
+            if (other.head != null)
+                return false;
+        } else {// iterate over list of nodes compare all
+            T n = head;
+            T nobj = other.getHead();
+            boolean status = true;
+            do {
+                status &= n.equals(nobj);
+                n = n.getNext();
+                nobj = nobj.getNext();
+            } while (!n.isHead());
+            if (!status)
+                return false;
+        }
+        if (nextTrackNumber != other.nextTrackNumber)
+            return false;
+        if (Double.doubleToLongBits(position) != Double.doubleToLongBits(other.position))
+            return false;
+        return true;
     }
 
     /**

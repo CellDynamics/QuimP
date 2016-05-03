@@ -81,53 +81,51 @@ public class Node extends PointsList<Node> {
         prelimPoint = new ExtendedVector2d();
     }
 
-    /**
+    /** (non-Javadoc)
      * Compare only current Node, no neighbors
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (this.getClass() != obj.getClass())
-            return false;
-        Node n = (Node) obj;
-        boolean status = true;
-        if (vel != null)
-            status &= vel.equals(n.vel);
-        else
-            status &= (vel == n.vel);
-        if (F_total != null)
-            status &= F_total.equals(n.F_total);
-        else
-            status &= (F_total == n.F_total);
-        if (prelimPoint != null)
-            status &= prelimPoint.equals(n.prelimPoint);
-        else
-            status &= (prelimPoint == n.prelimPoint);
-        if (point != null)
-            status &= point.equals(n.point);
-        else
-            status &= (point == n.point);
-        if (normal != null)
-            status &= normal.equals(n.normal);
-        else
-            status &= (normal == n.normal);
-        if (tan != null)
-            status &= tan.equals(n.tan);
-        else
-            status &= (tan == n.tan);
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((F_total == null) ? 0 : F_total.hashCode());
+		result = prime * result + ((prelimPoint == null) ? 0 : prelimPoint.hashCode());
+		result = prime * result + ((vel == null) ? 0 : vel.hashCode());
+		return result;
+	}
 
-        status &= (head == n.head);
-        status &= (tracknumber == n.tracknumber);
-        status &= (position == n.position);
-        status &= (frozen == n.frozen);
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (!(obj instanceof Node))
+			return false;
+		Node other = (Node) obj;
+		if (F_total == null) {
+			if (other.F_total != null)
+				return false;
+		} else if (!F_total.equals(other.F_total))
+			return false;
+		if (prelimPoint == null) {
+			if (other.prelimPoint != null)
+				return false;
+		} else if (!prelimPoint.equals(other.prelimPoint))
+			return false;
+		if (vel == null) {
+			if (other.vel != null)
+				return false;
+		} else if (!vel.equals(other.vel))
+			return false;
+		return true;
+	}
 
-        return status;
-    }
-
-    /**
+	/**
      * Update point and force with preliminary values, and reset.
      */
     public void update() {

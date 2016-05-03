@@ -80,7 +80,64 @@ public abstract class PointsList<T extends PointsList<T>> {
         point = new ExtendedVector2d(xx, yy);
     }
 
-    /**
+    /** (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (frozen ? 1231 : 1237);
+		result = prime * result + (head ? 1231 : 1237);
+		result = prime * result + ((normal == null) ? 0 : normal.hashCode());
+		result = prime * result + ((point == null) ? 0 : point.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(position);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((tan == null) ? 0 : tan.hashCode());
+		result = prime * result + tracknumber;
+		return result;
+	}
+
+	/** (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof PointsList))
+			return false;
+		PointsList<?> other = (PointsList<?>) obj;
+		if (frozen != other.frozen)
+			return false;
+		if (head != other.head)
+			return false;
+		if (normal == null) {
+			if (other.normal != null)
+				return false;
+		} else if (!normal.equals(other.normal))
+			return false;
+		if (point == null) {
+			if (other.point != null)
+				return false;
+		} else if (!point.equals(other.point))
+			return false;
+		if (Double.doubleToLongBits(position) != Double.doubleToLongBits(other.position))
+			return false;
+		if (tan == null) {
+			if (other.tan != null)
+				return false;
+		} else if (!tan.equals(other.tan))
+			return false;
+		if (tracknumber != other.tracknumber)
+			return false;
+		return true;
+	}
+
+	/**
      * \c point getter
      * 
      * @return X space co-ordinate

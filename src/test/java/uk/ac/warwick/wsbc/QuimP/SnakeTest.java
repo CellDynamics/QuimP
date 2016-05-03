@@ -4,7 +4,10 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
@@ -17,6 +20,7 @@ import org.junit.Test;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
  * @author p.baniukiewicz
@@ -50,6 +54,8 @@ public class SnakeTest {
 
         PolygonRoi pr = new PolygonRoi(new FloatPolygon(x, y), Roi.POLYGON);
         snake1 = new Snake(pr, 1);
+        snake1.getHead().addF_total(new ExtendedVector2d(2, 1));
+        snake1.getHead().setNormal(15, 10);
 
     }
 
@@ -113,6 +119,14 @@ public class SnakeTest {
         assertEquals(2, s.getHead().getTrackNum());
     }
 
+    /**
+     * @test Test of Snake Serializer
+     * @pre Snake is saved to disk
+     * @post Snake is loaded and restored
+     * 
+     * @throws IOException
+     * @throws Exception
+     */
     @Test
     public void testSerializeSnake_1() throws IOException, Exception {
         snake1.setNewHead(2);
@@ -145,5 +159,41 @@ public class SnakeTest {
         assertEquals(snake1.alive, loaded.alive);
         assertEquals(snake1.getSnakeID(), loaded.getSnakeID(), 1e-6);
         assertEquals(snake1.isFrozen(), loaded.isFrozen());
+
+        // copmapre using equals
+        assertThat(loaded, is(snake1));
     }
+
+    /**
+     * @test Test of copy constructor
+     * @throws Exception
+     */
+    @Test
+    public void testSnakeSnakeInt() throws Exception {
+        Snake copy = new Snake(snake1, snake1.getSnakeID());
+        Snake c = snake1;
+        LOGGER.debug(snake1.toString());
+        LOGGER.debug(copy.toString());
+        assertEquals(copy, snake1);
+        LOGGER.debug(snake1.hashCode());
+        LOGGER.debug(copy.hashCode());
+        assertEquals(copy.hashCode(), snake1.hashCode());
+        assertThat(c, is(snake1));
+    }
+
+    /**
+     * @test Test of copy constructor
+     * @pre One node differs
+     */
+    @Test
+    public void testSnakeSnakeInt_2() throws Exception {
+        Snake copy = new Snake(snake1, snake1.getSnakeID());
+        Node n = copy.getHead().getNext();
+        n.addVel(new ExtendedVector2d(3, 3));
+        assertThat(copy, is(not(snake1)));
+        LOGGER.debug(snake1.hashCode());
+        LOGGER.debug(copy.hashCode());
+        assertThat(copy.hashCode(), is(not(snake1.hashCode())));
+    }
+
 }
