@@ -34,7 +34,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     public double startingNnodes; //!< how many nodes at start of segmentation
     private int FROZEN; //!< number of nodes frozen
     private Rectangle bounds = new Rectangle(); //!< snake bounds
-    private ArrayList<Node> Nodes = null; //!< Nodes of snake as List - initialized on Serialize
     
     /**
      * Create a snake from existing linked list (at least one head node)
@@ -1047,57 +1046,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
             v = v.getNext();
         } while (!v.isHead());
         return out;
-    }
-
-    /**
-     * Converts list of Node to ArrayList. Fill \c Nodes field
-     * @see clearNodes()
-     */
-    @Override
-    public void beforeSerialize() {
-        setPositions();
-        Nodes = new ArrayList<>();
-        Node n = getHead().getNext(); // do not store head as it is stored in head variable
-        do {
-            Nodes.add(n);
-            n = n.getNext();
-        } while (!n.isHead());
-    }
-
-    /**
-     * Rebuild Snake from ArryList
-     * 
-     * @see clearNodes()
-     */
-    @Override
-    public void afterSerialize() throws Exception {
-        if (Nodes != null && Nodes.size() > 0) {
-            // head is saved as non-transitive field, so it is recreated on load and this object
-            // exists already
-            Node first = head; // remember it
-            for (int i = 0; i < Nodes.size(); i++) { // iterate over list from second position
-                Node next = new Node(Nodes.get(i));
-                head.setNext(next);
-                next.setPrev(head);
-                head = next;
-            }
-            head.setNext(first);
-            first.setPrev(head);
-            head = first;
-        }
-        clearNodes();
-    }
-
-    /**
-     * Clear \c Nodes array that stores list of Node in ArrayList form. It is used and 
-     * initialized on Serialization. This method simply delete this array saving memory 
-     * 
-     * It should be called after every serialization.
-     */
-    public void clearNodes() {
-        if (Nodes != null)
-            Nodes.clear();
-        Nodes = null;
     }
 
 }

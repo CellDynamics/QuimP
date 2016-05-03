@@ -3,6 +3,7 @@ package uk.ac.warwick.wsbc.QuimP;
 import java.awt.Polygon;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +24,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @param <T> Type of point, currently can be Node or Vert
  * @remarks Generally assumes that Shape is closed, so PointsList is looped
  */
-public abstract class Shape<T extends PointsList<T>> {
+public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(Shape.class.getName());
     protected int nextTrackNumber = 1; /*!< next node ID's */
     protected T head; /*!< first node in double linked list, always maintained */
@@ -31,7 +32,8 @@ public abstract class Shape<T extends PointsList<T>> {
     double position = -1; // position value. TODO move to Snake as it is referenced only there
     protected ExtendedVector2d centroid = null; /*!< centroid point of the Shape */
     public static final int MAX_NODES = 10000; //!< Max number of nodes allowed in Shape 
-
+    private ArrayList<T> Elements = null; //!< Elements of Shape as List - initialized on Serialize
+    
 	/**
      * Default constructor, create empty Shape
      */
@@ -245,6 +247,12 @@ public abstract class Shape<T extends PointsList<T>> {
         return length;
     }
 
+    /**
+     * Calculate position of Shape element expressed as distance of element on Shape perimeter
+     * from \b head.
+     * 
+     * First element has position 0, last 1. Element at position 0.5 is in half length of perimeter  
+     */
     public void setPositions() {
         double length = getLength();
         double d = 0.;
@@ -514,6 +522,68 @@ public abstract class Shape<T extends PointsList<T>> {
             updateNormales(false);
             calcCentroid();
         }
+    }
+
+    /**
+     * Converts list of Elements (Node, Snake) to ArrayList. Fill \c Elements field
+     * @see clearNodes()
+     */
+    @Override
+    public void beforeSerialize() {
+        setPositions();
+        Elements = new ArrayList<>();
+        T n = getHead().getNext(); // do not store head as it is stored in head variable
+        do {
+            Elements.add(n);
+            n = n.getNext();
+        } while (!n.isHead());
+    }
+
+    /**
+     * Rebuild Shape from ArryList
+     * 
+     * @see clearNodes()
+     */
+    @Override
+    public void afterSerialize() throws Exception {
+        if (Elements != null && Elements.size() > 0) {
+            // head is saved as non-transitive field, so it is recreated on load and this object
+            // exists already
+            T first = head; // remember it
+            Class<?> tClass = head.getClass(); // get class name under Shape (T)
+            try {
+                Constructor<?> ctor = head.getClass().getDeclaredConstructor(tClass);
+
+                for (int i = 0; i < Elements.size(); i++) { // iterate over list from second
+                                                            // position
+                    @SuppressWarnings("unchecked")
+                    T next = (T) ctor.newInstance(Elements.get(i));
+                    head.setNext(next);
+                    next.setPrev(head);
+                    head = next;
+                }
+                head.setNext(first);
+                first.setPrev(head);
+                head = first;
+            } catch (SecurityException | NoSuchMethodException | InstantiationException
+                    | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException e) {
+                throw new RuntimeException(e); // change fo unchecked exception
+            }
+        }
+        clearElements();
+    }
+
+    /**
+     * Clear \c Elements array that stores list of {Node, Snake} in ArrayList form. It is used and 
+     * initialized on Serialization. This method simply delete this array saving memory 
+     * 
+     * It should be called after every serialization.
+     */
+    public void clearElements() {
+        if (Elements != null)
+            Elements.clear();
+        Elements = null;
     }
 
 }
