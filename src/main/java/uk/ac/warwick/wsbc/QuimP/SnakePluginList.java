@@ -230,18 +230,18 @@ class SnakePluginList implements IQuimpSerialize {
      *
      */
     class Plugin {
-        private transient IQuimpPlugin ref; /*!< Reference to plugin instance */
-        private boolean isActive;/*!< Is activate in GUI?*/
-        private String name; /*!< Name of plugin delivered from PluginFactory */
-        private ParamList config; /*!< Configuration read from plugin on save operation */
-        private String ver; /*!< Version read from plugin on save operation */
+        private transient IQuimpPlugin ref; //!< Reference to plugin instance 
+        private boolean isActive;//!< Is activate in GUI?
+        private String name; //!< Name of plugin delivered from PluginFactory 
+        private ParamList config; //!< Configuration read from plugin on save operation 
+        private String ver; //!< Version read from plugin on save operation 
 
         /**
          * Initializes empty default plugin
          */
         public Plugin() {
             ref = null;
-            isActive = true; /*!< Default value */
+            isActive = true; //!< Default value
             name = "";
             config = null; // no config or not supported by plugin
             ver = ""; // no version or not supported
@@ -268,10 +268,30 @@ class SnakePluginList implements IQuimpSerialize {
             this.name = name;
         }
 
+        @Deprecated
         public Plugin(final String name, boolean isActive, final PluginFactory pf,
                 final ParamList config) throws QuimpPluginException {
             this(name, isActive, pf);
             ref.setPluginConfig(config);
+        }
+
+        /**
+         * Copy method
+         * 
+         * Returns copy of current object with some limitations
+         * 
+         * @return Copy of current object
+         * @warning It does not copy loaded plugin (ref)
+         * @remarks Should be called after SnakePluginList.Plugin.downloadPluginConfig() to make
+         * sure that \c config, \c ver are filled correctly
+         */
+        private Plugin getLimitedCopy() {
+            Plugin ret = new Plugin();
+            ret.isActive = this.isActive;
+            ret.name = this.name;
+            ret.config = new ParamList(this.config); // copy config
+            ret.ver = this.ver;
+            return ret;
         }
 
         /**
@@ -332,7 +352,7 @@ class SnakePluginList implements IQuimpSerialize {
     /**
      * Default constructor
      * 
-     * Creates empty Plugin object that refers to nothing
+     * Create empty Plugin object that refers to nothing
      */
     public SnakePluginList() {
         sPluginList = new ArrayList<Plugin>();
@@ -361,8 +381,28 @@ class SnakePluginList implements IQuimpSerialize {
     }
 
     /**
+     * Copy method
+     * 
+     * Returns copy of current object with some limitations
+     * 
+     * @return Copy of current object
+     * @warning It does not copy loaded plugin (ref)
+     * @remarks Should be called after SnakePluginList.Plugin.downloadPluginConfig() to make
+     * sure that \c config, \c ver are filled correctly
+     */
+    public SnakePluginList getLimitedCopy() {
+        beforeSerialize(); // get plugin config from Plugins (jars->Plugin) to fill Plugin subclass
+        SnakePluginList ret = new SnakePluginList();
+        // make deep copy of the list
+        for (Plugin p : this.sPluginList)
+            ret.sPluginList.add(p.getLimitedCopy());
+        return ret;
+    }
+
+    /**
      * Returns unmodifiable list of plugins
      * @return unmodifiable list of plugins
+     * @warning Particular fields in Plugin may not be valid unless beforeSerialize() is called.
      */
     public List<Plugin> getList() {
         return Collections.unmodifiableList(sPluginList);
