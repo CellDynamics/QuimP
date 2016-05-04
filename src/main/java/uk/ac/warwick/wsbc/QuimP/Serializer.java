@@ -39,19 +39,31 @@ import com.google.gson.GsonBuilder;
  * }
  * @endcode
  * 
+ * Exemplary use case:
+ * @code
+ * {
+ *   Serializer<SnakePluginList> s;
+ *   s = new Serializer<>(boaState.snakePluginList, quimpInfo);
+ *   s.setPretty(); // set pretty format
+ *   s.save(sd.getDirectory() + sd.getFileName()); // save it
+ *   s = null; // remove
+ * }
+ * @endcode
+ * 
  * @author p.baniukiewicz
  * @date 31 Mar 2016
  * @see http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson
  * @see SerializerTest for examples of use
+ * @see uk.ac.warwick.wsbc.QuimP.Serializer.registerInstanceCreator(Class<T>, Object)
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
     private static final Logger LOGGER = LogManager.getLogger(Serializer.class.getName());
     private transient GsonBuilder gsonBuilder;
     private transient Type t;
 
-    public String className; /*!< Name of wrapped class, decoded from object */
-    public String[] version; /*!< Version and other information passed to serializer */
-    public T obj; /*!< Wrapped object being serialized */
+    public String className; //!< Name of wrapped class, decoded from object
+    public String[] version; //!< Version and other information passed to serializer
+    public T obj; //!< Wrapped object being serialized
 
     /**
      * Default constructor used for restoring object
@@ -173,8 +185,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * those parameters are passed in constructor.
      * 
      * @param type Type of class
-     * @param typeAdapter Wrapped object builder that implements InstanceCreator interface. Example
-     * of use:
+     * @param typeAdapter Wrapped object builder that implements InstanceCreator interface. 
+     * Example of use:
      * @code{.java}
      * class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {
      *      private int size;

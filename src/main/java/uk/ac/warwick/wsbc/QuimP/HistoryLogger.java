@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.QuimP.BOA_.BOAState;
+import uk.ac.warwick.wsbc.QuimP.BOAp.SegParam;
 
 /**
  * Builds history logger window and logs
@@ -170,9 +171,13 @@ public class HistoryLogger implements WindowListener {
  *
  */
 class LogEntry implements IQuimpSerialize {
-    public int id; /*!< Number of entry */
-    public String action; /*!< Textual description of taken action */
-    public BOAState BOA; /*!< BOA current state */
+    public int id; //!< Number of entry
+    public String action; //!< Textual description of taken action
+    // selected fields to be logged (from BOAState)
+    public int frame; //!< current frame, CustomStackWindow.updateSliceSelector()
+    public SegParam segParam; //!< Reference to segmentation parameters
+    public String fileName; //!< Current data file name
+    public SnakePluginList snakePluginList; //!< Plugin config
 
     /**
      * Main constructor
@@ -187,12 +192,16 @@ class LogEntry implements IQuimpSerialize {
         super();
         this.id = counter;
         this.action = action;
-        this.BOA = bs;
+        this.frame = bs.frame;
+        this.segParam = bs.segParam;
+        this.fileName = bs.fileName;
+        this.snakePluginList = bs.snakePluginList;
+
     }
 
     @Override
     public void beforeSerialize() {
-        BOA.beforeSerialize();
+        snakePluginList.beforeSerialize();
     }
 
     @Override
