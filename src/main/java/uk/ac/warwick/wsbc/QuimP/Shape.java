@@ -78,7 +78,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     @SuppressWarnings("unchecked")
     public Shape(final Shape<T> src) {
         T tmpHead = src.getHead(); // get head as representative object
-        Class<?> tClass = tmpHead.getClass(); // get class name under Shape (T)
+        Class<?> tClass = tmpHead.getClass(); // get class under Shape (T)
         try { // Constructor of T as type can not be called directly, use reflection
               // get Constructor of T with one parameter of Type T (copy constructor)
             Constructor<?> ctor = tmpHead.getClass().getDeclaredConstructor(tClass);
@@ -98,7 +98,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
             head.setPrev(n);
         } catch (SecurityException | NoSuchMethodException | InstantiationException
                 | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            throw new RuntimeException(e); // change fo unchecked exception
+            throw new RuntimeException(e); // change to unchecked exception
         }
         // copy rest of params
         POINTS = src.POINTS;

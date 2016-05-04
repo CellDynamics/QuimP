@@ -2139,9 +2139,9 @@ public class BOA_ implements PlugIn {
                         return;
                     }
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 IJ.error("Exception while saving");
-                e.printStackTrace();
+                LOGGER.error(e);
                 return;
             }
 
@@ -2961,10 +2961,10 @@ class Constrictor {
  * Represents collection of Snakes
  * 
  * @author rtyson
- *
+ * @author p.baniukiewicz
+ * @date 4 May 2016
  */
-class Nest {
-
+class Nest implements IQuimpSerialize {
     private ArrayList<SnakeHandler> sHs;
     private int NSNAKES; /*!< Number of stored snakes in nest  */
     private int ALIVE;
@@ -3022,12 +3022,21 @@ class Nest {
         return sHs.get(s);
     }
 
-    public boolean writeSnakes() throws Exception {
+    /**
+     * Write all Snakes to file.
+     * 
+     * File names are deducted in called functions.
+     * 
+     * @return \c true if write operation has been successful
+     * @throws IOException when the file exists but is a directory rather than a regular file, 
+     * does not exist but cannot be created, or cannot be opened for any other reason
+     */
+    public boolean writeSnakes() throws IOException {
         Iterator<SnakeHandler> sHitr = sHs.iterator();
         SnakeHandler sH;
         while (sHitr.hasNext()) {
-            sH = (SnakeHandler) sHitr.next();
-            sH.setEndFrame();
+            sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
+            sH.setEndFrame(); // find its last frame (frame with valid contour)
             if (sH.getStartframe() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
                 removeHandler(sH);
@@ -3168,6 +3177,18 @@ class Nest {
             o = oH.getOutline(i);
             sH.storeRoi((PolygonRoi) o.asFloatRoi(), i);
         }
+    }
+
+    @Override
+    public void beforeSerialize() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void afterSerialize() throws Exception {
+        // TODO Auto-generated method stub
+
     }
 }
 

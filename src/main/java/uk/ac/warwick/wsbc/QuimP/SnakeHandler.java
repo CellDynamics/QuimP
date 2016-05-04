@@ -98,7 +98,16 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
 
     }
 
-    public boolean writeSnakes() throws Exception {
+    /**
+     * Write Snakes from this handler to \a *.snPQ file 
+     * 
+     * Display also user interface
+     * 
+     * @return \c true if save has been successful or \c false if user canceled it
+     * @throws IOException when the file exists but is a directory rather than a regular file, 
+     * does not exist but cannot be created, or cannot be opened for any other reason
+     */
+    public boolean writeSnakes() throws IOException {
         String saveIn = BOA_.boap.orgFile.getParent();
         // System.out.println(boap.orgFile.getParent());
         // if (!boap.orgFile.exists()) {
@@ -123,9 +132,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
                     BOA_.boap.fileName + "_" + ID + ".snQP");
         }
 
-        PrintWriter pw = new PrintWriter(new FileWriter(BOA_.boap.outFile), true); // auto
-        // flush
-
+        PrintWriter pw = new PrintWriter(new FileWriter(BOA_.boap.outFile), true); // auto flush
         pw.write("#QuimP11 Node data");
         pw.write("\n#Node Position\tX-coord\tY-coord\tOrigin\tG-Origin\tSpeed");
         pw.write("\tFluor_Ch1\tCh1_x\tCh1_y\tFluor_Ch2\tCh2_x\tCh2_y\tFluor_CH3\tCH3_x\tCh3_y\n#");
@@ -133,7 +140,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         Snake s;
         for (int i = startFrame; i <= endFrame; i++) {
             s = getStoredSnake(i);
-            s.setPositions(); //
+            s.setPositions(); // calculate position field
             pw.write("\n#Frame " + i);
             write(pw, i + 1, s.getNumNodes(), s.getHead());
         }
@@ -166,7 +173,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
 
     }
 
-    private void writeOldFormats() throws Exception {
+    private void writeOldFormats() throws IOException {
         // create file to outpurt old format
         File OLD = new File(BOA_.boap.outFile.getParent(), BOA_.boap.fileName + ".dat");
         PrintWriter pw = new PrintWriter(new FileWriter(OLD), true); // auto
@@ -249,15 +256,26 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         return segSnakes[f - startFrame];
     }
 
+    /**
+     * Return final Snake (after plugins) stored for frame \c f
+     * 
+     * @param f frame
+     * @return Snake at frame \c f or \c null
+     */
     public Snake getStoredSnake(int f) {
         if (f - startFrame < 0) {
             BOA_.log("Tried to access negative frame store\n\tframe:" + f + "\n\tsnakeID:" + ID);
             return null;
         }
-        // BOA_.log("Fetch stored snake " + ID + " frame " + f);
         return finalSnakes[f - startFrame];
     }
 
+    /**
+     * Validate whether there is any Snake at frame \c f
+     *  
+     * @param f frame to validate
+     * @return \c true if \c finalSnakes array contains valid Snake at frame \c f
+     */
     boolean isStoredAt(int f) {
         if (f - startFrame < 0) {
             return false;
@@ -429,9 +447,10 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
     }
 
+    /**
+     * Find the first missing contour at series of frames and set end frame to the previous one
+     */
     void setEndFrame() {
-        // find the first missing contour and set end frame to the previous one
-
         for (int i = startFrame; i <= BOA_.boap.FRAMES; i++) {
             if (!isStoredAt(i)) {
                 endFrame = i - 1;
