@@ -2123,15 +2123,21 @@ public class BOA_ implements PlugIn {
 
         if (boap.saveSnake) {
             try {
-                if (nest.writeSnakes()) {
+                if (nest.writeSnakes()) { // write snPQ file
                     nest.analyse(imageGroup.getOrgIpl()); // write stQP file
                     // auto save plugin config
-                    // Create Serialization object wit extra info layer
+                    // Create Serialization object with extra info layer
                     Serializer<SnakePluginList> s;
                     s = new Serializer<>(boaState.snakePluginList, quimpInfo);
                     s.setPretty(); // set pretty format
                     s.save(boap.outFile.getParent() + File.separator + boap.fileName + ".pgQP");
                     s = null; // remove
+                    // Dump Nest object s new format
+                    Serializer<Nest> n;
+                    n = new Serializer<>(nest, quimpInfo);
+                    n.setPretty();
+                    n.save(boap.outFile.getParent() + File.separator + boap.fileName + ".newsnQP");
+                    n = null;
                 } else {
                     ync = new YesNoCancelDialog(window, "Save Segmentation",
                             "Quit without saving?");
@@ -3158,8 +3164,13 @@ class Nest implements IQuimpSerialize {
         }
     }
 
+    /**
+     * Count the snakes that exist at, or after, frame
+     * 
+     * @param frame
+     * @return
+     */
     int nbSnakesAt(int frame) {
-        // count the snakes that exist at, or after, frame
         int n = 0;
         for (int i = 0; i < NSNAKES; i++) {
             if (sHs.get(i).getStartframe() >= frame) {
@@ -3181,13 +3192,28 @@ class Nest implements IQuimpSerialize {
 
     @Override
     public void beforeSerialize() {
-        // TODO Auto-generated method stub
-
+        Iterator<SnakeHandler> sHitr = sHs.iterator();
+        SnakeHandler sH;
+        while (sHitr.hasNext()) {
+            sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
+            sH.setEndFrame(); // find its last frame (frame with valid contour)
+            if (sH.getStartframe() > sH.getEndFrame()) {
+                IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
+                removeHandler(sH);
+                continue;
+            }
+            sH.beforeSerialize();
+        }
     }
 
     @Override
     public void afterSerialize() throws Exception {
-        // TODO Auto-generated method stub
+        Iterator<SnakeHandler> sHitr = sHs.iterator();
+        SnakeHandler sH;
+        while (sHitr.hasNext()) {
+            sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
+            sH.afterSerialize();
+        }
 
     }
 }
@@ -3211,26 +3237,27 @@ class Nest implements IQuimpSerialize {
  */
 class BOAp {
 
-    File orgFile, outFile; /*!< paramFile; */
-    String fileName; /*!< file name only, no extension */
-    QParams readQp; /*!< read in parameter file */
-    public SegParam segParam; /*!< Parameters of segmentation available for user (GUI)*/
+    File orgFile; //!< handle to original file obtained from IJ (usually image opened) 
+    File outFile; //!< handle to \a snPQ filled in QuimP.SnakeHandler.writeSnakes() 
+    String fileName; //!< loaded image file name only, no extension (\c orgFile)
+    QParams readQp; //!< read in parameter file 
+    public SegParam segParam; //!< Parameters of segmentation available for user (GUI)
     // internal parameters
-    int NMAX; /*!< maximum number of nodes (% of starting nodes) */
+    int NMAX; //!< maximum number of nodes (% of starting nodes) 
     double delta_t;
     double sensitivity;
     double f_friction;
-    int FRAMES; /*!< Number of frames in stack */
+    int FRAMES; //!< Number of frames in stack 
     int WIDTH, HEIGHT;
-    int cut_every; /*!< cut loops in chain every X frames */
-    boolean oldFormat; /*!< output old QuimP format? */
-    boolean saveSnake; /*!< save snake data */
-    private double min_dist; /*!< min distance between nodes */
-    private double max_dist; /*!< max distance between nodes */
-    double proximity; /*!< distance between centroids at which contact is tested for */
-    double proxFreeze; /*!< proximity of nodes to freeze when blowing up */
+    int cut_every; //!< cut loops in chain every X frames 
+    boolean oldFormat; //!< output old QuimP format? 
+    boolean saveSnake; //!< save snake data 
+    private double min_dist; //!< min distance between nodes 
+    private double max_dist; //!< max distance between nodes 
+    double proximity; //!< distance between centroids at which contact is tested for 
+    double proxFreeze; //!< proximity of nodes to freeze when blowing up 
     boolean savedOne;
-    double imageScale; /*!< scale of image in */
+    double imageScale; //!< scale of image in 
     double imageFrameInterval;
     boolean scaleAdjusted;
     boolean fIAdjusted;
@@ -3239,12 +3266,12 @@ class BOAp {
     boolean zoom;
     boolean doDelete;
     boolean doDeleteSeg;
-    boolean editMode; /*!< is select a cell for editing active? */
-    int editingID; // currently editing cell iD. -1 if not editing
+    boolean editMode; //!< is select a cell for editing active? 
+    int editingID; //!< currently editing cell iD. -1 if not editing
     boolean useSubPixel = true;
     boolean supressStateChangeBOArun = false;
-    int callCount; // use to test how many times a method is called
-    boolean SEGrunning; /*!< is seg running */
+    int callCount; //<! use to test how many times a method is called
+    boolean SEGrunning; //!< is segmentation running 
 
     /**
      * Hold user parameters for segmentation algorithm
@@ -3254,20 +3281,20 @@ class BOAp {
      * @see BOAState
      */
     class SegParam {
-        private double nodeRes; /*!< Number of nodes on ROI edge */
-        int blowup; /*!< distance to blow up chain */
+        private double nodeRes; //!< Number of nodes on ROI edge 
+        int blowup; //!< distance to blow up chain 
         double vel_crit;
         double f_central;
-        double f_image; /*!< image force */
-        int max_iterations; /*!< max iterations per contraction */
+        double f_image; //!< image force 
+        int max_iterations; //!< max iterations per contraction 
         int sample_tan;
         int sample_norm;
         double f_contract;
         double finalShrink;
         // Switch Params
-        boolean use_previous_snake;/*!< next contraction begins with prev chain */
+        boolean use_previous_snake;//!< next contraction begins with prev chain 
         boolean showPaths;
-        boolean expandSnake; /*!< whether to act as an expanding snake */
+        boolean expandSnake; //!< whether to act as an expanding snake 
 
         /**
          * Sets default values of parameters

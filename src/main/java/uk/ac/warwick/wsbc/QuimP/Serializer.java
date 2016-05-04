@@ -97,7 +97,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         String str;
         str = toString(); // produce json
         LOGGER.debug("Saving at: " + filename);
-        LOGGER.debug(str);
+        LOGGER.trace(str);
         PrintWriter f;
         f = new PrintWriter(new File(filename));
         f.print(str);
