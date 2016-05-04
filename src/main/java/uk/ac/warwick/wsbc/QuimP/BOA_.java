@@ -3298,6 +3298,28 @@ class BOAp {
         boolean expandSnake; //!< whether to act as an expanding snake 
 
         /**
+         * Copy constructor
+         * 
+         * @param src object to copy
+         */
+        public SegParam(final SegParam src) {
+            super();
+            this.nodeRes = src.nodeRes;
+            this.blowup = src.blowup;
+            this.vel_crit = src.vel_crit;
+            this.f_central = src.f_central;
+            this.f_image = src.f_image;
+            this.max_iterations = src.max_iterations;
+            this.sample_tan = src.sample_tan;
+            this.sample_norm = src.sample_norm;
+            this.f_contract = src.f_contract;
+            this.finalShrink = src.finalShrink;
+            this.use_previous_snake = src.use_previous_snake;
+            this.showPaths = src.showPaths;
+            this.expandSnake = src.expandSnake;
+        }
+
+        /**
          * Sets default values of parameters
          */
         public SegParam() {
@@ -3307,6 +3329,79 @@ class BOAp {
             use_previous_snake = true; // next contraction begins with last chain
             expandSnake = false; // set true to act as an expanding snake
 
+        }
+
+        /**
+         * (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + blowup;
+            result = prime * result + (expandSnake ? 1231 : 1237);
+            long temp;
+            temp = Double.doubleToLongBits(f_central);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            temp = Double.doubleToLongBits(f_contract);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            temp = Double.doubleToLongBits(f_image);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            temp = Double.doubleToLongBits(finalShrink);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            result = prime * result + max_iterations;
+            temp = Double.doubleToLongBits(nodeRes);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            result = prime * result + sample_norm;
+            result = prime * result + sample_tan;
+            result = prime * result + (showPaths ? 1231 : 1237);
+            result = prime * result + (use_previous_snake ? 1231 : 1237);
+            temp = Double.doubleToLongBits(vel_crit);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            return result;
+        }
+
+        /**
+         * (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (!(obj instanceof SegParam))
+                return false;
+            SegParam other = (SegParam) obj;
+            if (blowup != other.blowup)
+                return false;
+            if (expandSnake != other.expandSnake)
+                return false;
+            if (Double.doubleToLongBits(f_central) != Double.doubleToLongBits(other.f_central))
+                return false;
+            if (Double.doubleToLongBits(f_contract) != Double.doubleToLongBits(other.f_contract))
+                return false;
+            if (Double.doubleToLongBits(f_image) != Double.doubleToLongBits(other.f_image))
+                return false;
+            if (Double.doubleToLongBits(finalShrink) != Double.doubleToLongBits(other.finalShrink))
+                return false;
+            if (max_iterations != other.max_iterations)
+                return false;
+            if (Double.doubleToLongBits(nodeRes) != Double.doubleToLongBits(other.nodeRes))
+                return false;
+            if (sample_norm != other.sample_norm)
+                return false;
+            if (sample_tan != other.sample_tan)
+                return false;
+            if (showPaths != other.showPaths)
+                return false;
+            if (use_previous_snake != other.use_previous_snake)
+                return false;
+            if (Double.doubleToLongBits(vel_crit) != Double.doubleToLongBits(other.vel_crit))
+                return false;
+            return true;
         }
 
         /**
