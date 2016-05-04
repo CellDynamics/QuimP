@@ -156,6 +156,8 @@ The following structures are used to hold and process segmented data:
 3. \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" this class holds snake for one frame and it is responsible for preparing segmentation process basing on passed ROI. **It does not do segmentation itself** but provides functions for scaling, changing orientation, cutting loops, etc.
 4. \ref uk.ac.warwick.wsbc.QuimP.Node "Node" represents vertex on snake and allows to add extra properties (forces, normals) to them. It has form of linked list, every Node knows its predecessor and successor. Simplified diagram below shows basic class relations and most important methods and fields. This class has `prelimPoint` field that keeps preliminary vector values which can be later promoted to regular vale of current object by using \ref uk.ac.warwick.wsbc.QuimP.Node.update() "update()" method. **List is looped - last element points to first and first to last** 
 
+** This diagram is outdated due to massive changes in Snak structure **
+
 @startuml "Simplified class structure for Snakes" 
 	Nest*-->SnakeHandler : sHs[cells]
 	SnakeHandler*-->Snake : snakes[frames], liveSnake
@@ -231,7 +233,7 @@ digraph CreateSnake1 {
 
 The \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygon(final FloatPolygon) "intializePolygon" creates first estimation of snake using ROI shape and doing node refinement to get number of nodes for every edge as defined in uk.ac.warwick.wsbc.QuimP.BOAp.nodeRes. \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygonDirect(final FloatPolygon) "intializePolygonDirect" does not refine points and uses those from polygon. If input ROI is other type than `RECTANGLE` or `POLYGON` as the firs estimation of segmented shape the ellipse is used calculated by \ref uk.ac.warwick.wsbc.QuimP.Snake.intializeOval(int, int, int, int, int, double) "intializeOval" according to initial parameters based on ROI bounding box.  
 
-The \ref uk.ac.warwick.wsbc.QuimP.Snake.addNode(final Node) "addNode(Node)" method constructs Snake as it is called for every node calculated in above methods. It is important that \ref uk.ac.warwick.wsbc.QuimP.Snake.addNode(final Node) "addNode(Node)" is used only for Snake initialization and together with correct initial conditions:
+The \ref uk.ac.warwick.wsbc.QuimP.Shape.addPoint(final T) "addPoint(Node)" method constructs Snake as it is called for every node calculated in above methods. It is important that \ref uk.ac.warwick.wsbc.QuimP.Shape.addPoint(final T) "addPoint(Node)" is used only for Snake initialization and together with correct initial conditions:
 
 @code{.java}
 head = new Node(0); //make a dummy head node for list initialization

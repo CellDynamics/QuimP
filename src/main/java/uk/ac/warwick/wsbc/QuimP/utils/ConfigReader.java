@@ -39,7 +39,7 @@ import org.json.simple.parser.JSONParser;
  * 
  * @author p.baniukiewicz
  * @date 29 Jan 2016
- *
+ * @deprecated Currently not used because it is based on JSONParser whereas GSon is used in project
  */
 public class ConfigReader {
 
@@ -74,8 +74,7 @@ public class ConfigReader {
      * @throws ConfigReaderException
      * On any error (usually bad names)
      */
-    public String getRawParam(String pluginName, String paramName)
-            throws ConfigReaderException {
+    public String getRawParam(String pluginName, String paramName) throws ConfigReaderException {
 
         Object val = null;
         try {
@@ -103,8 +102,7 @@ public class ConfigReader {
      * @throws ConfigReaderException
      * On any error (usually bad names or bad conversion)
      */
-    public int getIntParam(String pluginName, String paramName)
-            throws ConfigReaderException {
+    public int getIntParam(String pluginName, String paramName) throws ConfigReaderException {
         int w;
         try {
             w = Integer.parseInt(getRawParam(pluginName, paramName));
@@ -127,8 +125,7 @@ public class ConfigReader {
      * @throws ConfigReaderException
      * On any error (usually bad names or bad conversion)
      */
-    public double getDoubleParam(String pluginName, String paramName)
-            throws ConfigReaderException {
+    public double getDoubleParam(String pluginName, String paramName) throws ConfigReaderException {
         return Double.parseDouble(getRawParam(pluginName, paramName));
     }
 }

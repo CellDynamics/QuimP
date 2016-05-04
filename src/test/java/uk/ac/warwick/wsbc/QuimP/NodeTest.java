@@ -46,7 +46,7 @@ public class NodeTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.Node#Node(uk.ac.warwick.wsbc.QuimP.Node)}.
+     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node).
      * Test copy constructor and equals methods
      */
     @Test
@@ -63,7 +63,7 @@ public class NodeTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.Node#Node(uk.ac.warwick.wsbc.QuimP.Node)}.
+     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node).
      * Test copy constructor and equals methods
      * @pre Copied method is modified
      */
@@ -80,7 +80,7 @@ public class NodeTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.Node#Node(uk.ac.warwick.wsbc.QuimP.Node)}.
+     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node).
      * Test copy constructor and equals methods
      * @pre Copied method is modified - underlying class method
      */
