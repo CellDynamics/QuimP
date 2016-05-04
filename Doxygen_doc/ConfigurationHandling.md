@@ -13,7 +13,7 @@ BOA produces several files:
 2. *snQP* - contains Snake objects for every frame, separate file for every Snake
 3. *stQP* - statistic file
 4. **pgQP** - new configuration file, holds plugin parameters (see @ref genfile)
-5. **newsnQP** - new configuration file, contains all Snakes for all frames (dump of \ref uk.ac.warwick.wsbc.QuimP.Nest "Nest")
+5. **newsnQP** - new configuration file, contains all Snakes for all frames (dump of \ref uk.ac.warwick.wsbc.QuimP.BOA_.BOAState "BOAState") and all configuration related to segmentation
 
 Files **paQP** and **snQP** and **stQP** are saved for every tracked Snake separately with suffixes indicating Snake ID number.
 
@@ -66,7 +66,7 @@ note left #aqua : Write //stQP// file
 "BOA::Finish()" -> Serializer : <SnakePluginList>
 Serializer -> Serializer : save()
 note left #aqua : Write //pgQP// file
-"BOA::Finish()" -> Serializer : <Nest>
+"BOA::Finish()" -> Serializer : <BOAState>
 Serializer -> Serializer : save()
 note left #orange : Write //newsnQP// file
 @enduml

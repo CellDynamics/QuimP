@@ -111,7 +111,6 @@ public class BOA_ implements PlugIn {
     static TextArea logArea;
     static boolean running = false;
     ImageGroup imageGroup;
-    private Nest nest;
     // private int frame; // current frame, CustomStackWindow.updateSliceSelector()
     private Constrictor constrictor;
     private PluginFactory pluginFactory; // load and maintain plugins
@@ -152,9 +151,9 @@ public class BOA_ implements PlugIn {
      * @todo TODO Move SegParam to be part of this class
      */
     class BOAState implements IQuimpSerialize {
-        public int frame; /*!< current frame, CustomStackWindow.updateSliceSelector() */
-        public SegParam segParam; /*!< Reference to segmentation parameters */
-        public String fileName; /*!< Current data file name */
+        public int frame; //!< current frame, CustomStackWindow.updateSliceSelector()
+        public SegParam segParam; //!< Reference to segmentation parameters
+        public String fileName; //!< Current data file name
         /**
          * List of plugins selected in plugin stack and information if they are active or not
          * This field is serializable.
@@ -163,6 +162,7 @@ public class BOA_ implements PlugIn {
          * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
          */
         public SnakePluginList snakePluginList;
+        public Nest nest; //!< Reference to Nest, which is serializable as well
 
         /**
          * Should be called before serialization. Fills extra fields from BOAp
@@ -171,6 +171,7 @@ public class BOA_ implements PlugIn {
         public void beforeSerialize() {
             fileName = boap.fileName; // copy filename from system wide boap
             snakePluginList.beforeSerialize(); // download plugins configurations
+            nest.beforeSerialize(); // prepare snakes
         }
 
         @Override
@@ -276,7 +277,7 @@ public class BOA_ implements PlugIn {
         }
 
         try {
-            if (!nest.isVacant()) {
+            if (!boaState.nest.isVacant()) {
                 runBoa(1, 1);
             }
         } catch (BoaException be) {
@@ -300,8 +301,8 @@ public class BOA_ implements PlugIn {
         }
         boap.setup(ip);
 
-        nest = new Nest();
-        imageGroup = new ImageGroup(ip, nest);
+        boaState.nest = new Nest();
+        imageGroup = new ImageGroup(ip, boaState.nest);
         boaState.frame = 1;
         // build window and set its title
         canvas = new CustomCanvas(imageGroup.getOrgIpl());
@@ -327,11 +328,11 @@ public class BOA_ implements PlugIn {
         new RoiManager(); // get open ROI manager, or create a new one
         RoiManager rm = RoiManager.getInstance();
         if (rm.getRoisAsArray().length != 0) {
-            nest.addHandlers(rm.getRoisAsArray(), 1);
+            boaState.nest.addHandlers(rm.getRoisAsArray(), 1);
         } else {
             BOA_.log("No cells from ROI manager");
             if (ip.getRoi() != null) {
-                nest.addHandler(ip.getRoi(), 1);
+                boaState.nest.addHandler(ip.getRoi(), 1);
             } else {
                 BOA_.log("No cells from selection");
             }
@@ -443,14 +444,14 @@ public class BOA_ implements PlugIn {
     public void recalculatePlugins() {
         LOGGER.trace("BOA: recalculatePlugins called");
         SnakeHandler sH;
-        if (nest.isVacant())
+        if (boaState.nest.isVacant())
             return;
         imageGroup.clearPaths(boaState.frame);
         imageGroup.setProcessor(boaState.frame);
         imageGroup.setIpSliceAll(boaState.frame);
         try {
-            for (int s = 0; s < nest.size(); s++) { // for each snake
-                sH = nest.getHandler(s);
+            for (int s = 0; s < boaState.nest.size(); s++) { // for each snake
+                sH = boaState.nest.getHandler(s);
                 if (boaState.frame < sH.getStartframe()) // if snake does not exist on current frame
                     continue;
                 // but if one is on frame f+n and strtFrame is e.g. 1 it may happen that there is
@@ -1191,7 +1192,7 @@ public class BOA_ implements PlugIn {
                     boap.editMode = true;
                     lastTool = IJ.getToolName();
                     IJ.setTool(Toolbar.LINE);
-                    if (nest.size() == 1)
+                    if (boaState.nest.size() == 1)
                         editSeg(0, 0, boaState.frame); // if only 1 snake go straight to edit, if
                                                        // more user must pick one
                 } else {
@@ -1374,7 +1375,7 @@ public class BOA_ implements PlugIn {
                 } else {
                     this.setImage(imageGroup.getOrgIpl());
                 }
-                if (boap.zoom && !nest.isVacant()) { // set zoom
+                if (boap.zoom && !boaState.nest.isVacant()) { // set zoom
                     imageGroup.zoom(canvas, boaState.frame);
                 }
             } else if (source == cPrevSnake) {
@@ -1384,7 +1385,7 @@ public class BOA_ implements PlugIn {
                 run = true;
             } else if (source == cZoom) {
                 boap.zoom = cZoom.getState();
-                if (boap.zoom && !nest.isVacant()) {
+                if (boap.zoom && !boaState.nest.isVacant()) {
                     imageGroup.zoom(canvas, boaState.frame);
                 } else {
                     imageGroup.unzoom(canvas);
@@ -1552,8 +1553,8 @@ public class BOA_ implements PlugIn {
             imageGroup.setIpSliceAll(boaState.frame);
 
             // zoom to snake zero
-            if (boap.zoom && !nest.isVacant()) {
-                SnakeHandler sH = nest.getHandler(0);
+            if (boap.zoom && !boaState.nest.isVacant()) {
+                SnakeHandler sH = boaState.nest.getHandler(0);
                 if (sH.isStoredAt(boaState.frame)) {
                     imageGroup.zoom(canvas, boaState.frame);
                 }
@@ -1644,7 +1645,7 @@ public class BOA_ implements PlugIn {
     public void runBoa(int startF, int endF) throws BoaException {
         System.out.println("run BOA");
         boap.SEGrunning = true;
-        if (nest.isVacant()) {
+        if (boaState.nest.isVacant()) {
             BOA_.log("Nothing to segment!");
             boap.SEGrunning = false;
             return;
@@ -1654,13 +1655,13 @@ public class BOA_ implements PlugIn {
 
             // if(boap.expandSnake) boap.NMAX = 9990; // percent hack
 
-            nest.resetForFrame(startF);
+            boaState.nest.resetForFrame(startF);
             if (!boap.segParam.expandSnake) { // blowup snake ready for contraction (only those not
                 // starting
                 // at or after the startF)
-                constrictor.loosen(nest, startF);
+                constrictor.loosen(boaState.nest, startF);
             } else {
-                constrictor.implode(nest, startF);
+                constrictor.implode(boaState.nest, startF);
             }
             SnakeHandler sH;
 
@@ -1676,12 +1677,12 @@ public class BOA_ implements PlugIn {
                 try {
                     if (boaState.frame != startF) {// expand snakes for next frame
                         if (!boap.segParam.use_previous_snake) {
-                            nest.resetForFrame(boaState.frame);
+                            boaState.nest.resetForFrame(boaState.frame);
                         } else {
                             if (!boap.segParam.expandSnake) {
-                                constrictor.loosen(nest, boaState.frame);
+                                constrictor.loosen(boaState.nest, boaState.frame);
                             } else {
-                                constrictor.implode(nest, boaState.frame);
+                                constrictor.implode(boaState.nest, boaState.frame);
                             }
                         }
                     }
@@ -1689,8 +1690,8 @@ public class BOA_ implements PlugIn {
                     // starting snake
                     // if(frame==2) break;
 
-                    for (s = 0; s < nest.size(); s++) { // for each snake
-                        sH = nest.getHandler(s);
+                    for (s = 0; s < boaState.nest.size(); s++) { // for each snake
+                        sH = boaState.nest.getHandler(s);
                         snake = sH.getLiveSnake();
                         try {
                             if (!snake.alive || boaState.frame < sH.getStartframe()) {
@@ -1718,12 +1719,12 @@ public class BOA_ implements PlugIn {
                             // sH.deleteStoreAt(frame);
                             sH.storeLiveSnake(boaState.frame);
                             sH.backupLiveSnake(boaState.frame);
-                            nest.kill(sH);
+                            boaState.nest.kill(sH);
                             snake.unfreezeAll();
                             BOA_.log("Snake " + snake.getSnakeID() + " died, frame "
                                     + boaState.frame);
                             boap.SEGrunning = false;
-                            if (nest.allDead()) {
+                            if (boaState.nest.allDead()) {
                                 throw new BoaException("All snakes dead: " + be.getMessage(),
                                         boaState.frame, 1);
                             }
@@ -1928,7 +1929,7 @@ public class BOA_ implements PlugIn {
         }
         // convert to BOA snakes
 
-        nest.addOutlinehandler(oH);
+        boaState.nest.addOutlinehandler(oH);
         imageGroup.setProcessor(oH.getStartFrame());
         imageGroup.updateOverlay(oH.getStartFrame());
         BOA_.log("Successfully read snakes");
@@ -1949,7 +1950,7 @@ public class BOA_ implements PlugIn {
     // @SuppressWarnings("unchecked")
     void addCell(final Roi r, int f) {
         boolean isPluginError = false; // any error from plugin?
-        SnakeHandler sH = nest.addHandler(r, f);
+        SnakeHandler sH = boaState.nest.addHandler(r, f);
         Snake snake = sH.getLiveSnake();
         imageGroup.setProcessor(f);
         try {
@@ -1986,7 +1987,7 @@ public class BOA_ implements PlugIn {
     }
 
     boolean deleteCell(int x, int y, int frame) {
-        if (nest.isVacant()) {
+        if (boaState.nest.isVacant()) {
             return false;
         }
 
@@ -1994,10 +1995,10 @@ public class BOA_ implements PlugIn {
         Snake snake;
         ExtendedVector2d sV;
         ExtendedVector2d mV = new ExtendedVector2d(x, y);
-        double[] distance = new double[nest.size()];
+        double[] distance = new double[boaState.nest.size()];
 
-        for (int i = 0; i < nest.size(); i++) { // calc all distances
-            sH = nest.getHandler(i);
+        for (int i = 0; i < boaState.nest.size(); i++) { // calc all distances
+            sH = boaState.nest.getHandler(i);
             if (sH.isStoredAt(frame)) {
                 snake = sH.getStoredSnake(frame);
                 sV = snake.getCentroid();
@@ -2006,8 +2007,8 @@ public class BOA_ implements PlugIn {
         }
         int minIndex = Tool.minArrayIndex(distance);
         if (distance[minIndex] < 10) { // if closest < 10, delete it
-            BOA_.log("Deleted cell " + nest.getHandler(minIndex).getID());
-            nest.removeHandler(nest.getHandler(minIndex));
+            BOA_.log("Deleted cell " + boaState.nest.getHandler(minIndex).getID());
+            boaState.nest.removeHandler(boaState.nest.getHandler(minIndex));
             imageGroup.updateOverlay(frame);
             window.switchOffDelete();
             return true;
@@ -2022,10 +2023,10 @@ public class BOA_ implements PlugIn {
         Snake snake;
         ExtendedVector2d sV;
         ExtendedVector2d mV = new ExtendedVector2d(x, y);
-        double[] distance = new double[nest.size()];
+        double[] distance = new double[boaState.nest.size()];
 
-        for (int i = 0; i < nest.size(); i++) { // calc all distances
-            sH = nest.getHandler(i);
+        for (int i = 0; i < boaState.nest.size(); i++) { // calc all distances
+            sH = boaState.nest.getHandler(i);
 
             if (sH.isStoredAt(frame)) {
                 snake = sH.getStoredSnake(frame);
@@ -2040,9 +2041,9 @@ public class BOA_ implements PlugIn {
         // BOA_.log("Debug: closest index " + minIndex + ", id " +
         // nest.getHandler(minIndex).getID());
         if (distance[minIndex] < 10) { // if closest < 10, delete it
-            BOA_.log("Deleted snake " + nest.getHandler(minIndex).getID() + " from " + frame
-                    + " onwards");
-            sH = nest.getHandler(minIndex);
+            BOA_.log("Deleted snake " + boaState.nest.getHandler(minIndex).getID() + " from "
+                    + frame + " onwards");
+            sH = boaState.nest.getHandler(minIndex);
             sH.deleteStoreFrom(frame);
             imageGroup.updateOverlay(frame);
             window.switchOfftruncate();
@@ -2065,10 +2066,10 @@ public class BOA_ implements PlugIn {
         Snake snake;
         ExtendedVector2d sV;
         ExtendedVector2d mV = new ExtendedVector2d(x, y);
-        double[] distance = new double[nest.size()];
+        double[] distance = new double[boaState.nest.size()];
 
-        for (int i = 0; i < nest.size(); i++) { // calc all distances
-            sH = nest.getHandler(i);
+        for (int i = 0; i < boaState.nest.size(); i++) { // calc all distances
+            sH = boaState.nest.getHandler(i);
             if (sH.isStoredAt(frame)) {
                 snake = sH.getStoredSnake(frame);
                 sV = snake.getCentroid();
@@ -2076,8 +2077,8 @@ public class BOA_ implements PlugIn {
             }
         }
         int minIndex = Tool.minArrayIndex(distance);
-        if (distance[minIndex] < 10 || nest.size() == 1) { // if closest < 10, edit it
-            sH = nest.getHandler(minIndex);
+        if (distance[minIndex] < 10 || boaState.nest.size() == 1) { // if closest < 10, edit it
+            sH = boaState.nest.getHandler(minIndex);
             boap.editingID = minIndex; // sH.getID();
             BOA_.log("Editing cell " + sH.getID());
             imageGroup.clearOverlay();
@@ -2104,7 +2105,7 @@ public class BOA_ implements PlugIn {
     void stopEdit() {
         Roi r = canvas.getImage().getRoi();
         Roi.setColor(Color.yellow);
-        SnakeHandler sH = nest.getHandler(boap.editingID);
+        SnakeHandler sH = boaState.nest.getHandler(boap.editingID);
         sH.storeRoi((PolygonRoi) r, boaState.frame);
         canvas.getImage().killRoi();
         imageGroup.updateOverlay(boaState.frame);
@@ -2123,8 +2124,8 @@ public class BOA_ implements PlugIn {
 
         if (boap.saveSnake) {
             try {
-                if (nest.writeSnakes()) { // write snPQ file
-                    nest.analyse(imageGroup.getOrgIpl()); // write stQP file
+                if (boaState.nest.writeSnakes()) { // write snPQ file
+                    boaState.nest.analyse(imageGroup.getOrgIpl()); // write stQP file
                     // auto save plugin config
                     // Create Serialization object with extra info layer
                     Serializer<SnakePluginList> s;
@@ -2132,9 +2133,9 @@ public class BOA_ implements PlugIn {
                     s.setPretty(); // set pretty format
                     s.save(boap.outFile.getParent() + File.separator + boap.fileName + ".pgQP");
                     s = null; // remove
-                    // Dump Nest object s new format
-                    Serializer<Nest> n;
-                    n = new Serializer<>(nest, quimpInfo);
+                    // Dump BOAState object s new format
+                    Serializer<BOAState> n;
+                    n = new Serializer<>(boaState, quimpInfo);
                     n.setPretty();
                     n.save(boap.outFile.getParent() + File.separator + boap.fileName + ".newsnQP");
                     n = null;
@@ -2154,7 +2155,7 @@ public class BOA_ implements PlugIn {
         }
         BOA_.running = false;
         imageGroup.makeContourImage();
-        nest = null; // remove from memory
+        boaState.nest = null; // remove from memory
         imageGroup.getOrgIpl().setOverlay(new Overlay());
         new StackWindow(imageGroup.getOrgIpl()); // clear overlay
         window.setImage(new ImagePlus());
@@ -2176,7 +2177,7 @@ public class BOA_ implements PlugIn {
         }
 
         BOA_.running = false;
-        nest = null; // remove from memory
+        boaState.nest = null; // remove from memory
         imageGroup.getOrgIpl().setOverlay(new Overlay()); // clear overlay
         new StackWindow(imageGroup.getOrgIpl());
 

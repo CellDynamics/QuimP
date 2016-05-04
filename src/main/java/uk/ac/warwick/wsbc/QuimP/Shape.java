@@ -26,16 +26,17 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  */
 public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(Shape.class.getName());
-    protected int nextTrackNumber = 1; /*!< next node ID's */
-    protected T head; /*!< first node in double linked list, always maintained */
-    protected int POINTS; /*!< number of points */
-    protected ExtendedVector2d centroid = null; /*!< centroid point of the Shape */
+    protected int nextTrackNumber = 1; //!< next node ID's
+    protected T head; //!< first node in double linked list, always maintained
+    protected int POINTS; //!< number of points
+    protected ExtendedVector2d centroid = null; //!< centroid point of the Shape
     public static final int MAX_NODES = 10000; //!< Max number of nodes allowed in Shape 
     private ArrayList<T> Elements = null; //!< Elements of Shape as List - initialized on Serialize
     
 	/**
      * Default constructor, create empty Shape
      */
+
     public Shape() {
         POINTS = 0;
         head = null;
