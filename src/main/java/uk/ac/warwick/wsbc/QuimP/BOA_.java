@@ -35,6 +35,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -148,12 +149,15 @@ public class BOA_ implements PlugIn {
      * @remarks Currently the SegParam object is connected to this class only (in
      * run(final String)) and it is created in BOAp class constructor. In future SegParam will
      * be part of this class. This class in supposed to be main configuration holder for BOA_
-     * @todo TODO Move SegParam to be part of this class
      */
     class BOAState implements IQuimpSerialize {
-        public int frame; //!< current frame, CustomStackWindow.updateSliceSelector()
-        public SegParam segParam; //!< Reference to segmentation parameters
-        public String fileName; //!< Current data file name
+        public int frame; //!< current frame, CustomStackWindow.updateSliceSelector() */
+        public SegParam segParam; //!< Reference to segmentation parameters */
+        public String fileName; //!< Current data file name */
+
+        private ArrayList<SegParam> segParams;
+        private ArrayList<SnakePluginList> snakePluginLists;
+
         /**
          * List of plugins selected in plugin stack and information if they are active or not
          * This field is serializable.
@@ -162,7 +166,29 @@ public class BOA_ implements PlugIn {
          * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
          */
         public SnakePluginList snakePluginList;
-        public Nest nest; //!< Reference to Nest, which is serializable as well
+        public Nest nest; //!< Reference to Nest, which is serializable as well */
+
+        public BOAState(int numofframes) {
+            segParams = new ArrayList<SegParam>(Collections.nCopies(numofframes, null));
+            snakePluginLists =
+                    new ArrayList<SnakePluginList>(Collections.nCopies(numofframes, null));
+            LOGGER.debug("Initialize storage of size: " + numofframes + " size of segParams: "
+                    + segParams.size());
+        }
+
+        /**
+         * Make copy of current objects state
+         * 
+         * @param seg reference to actual SegParam
+         * @param sn reference to actual SnakePluginList
+         * @param at actual frame
+         */
+        public void store(SegParam seg, SnakePluginList sn, int at) {
+            LOGGER.debug(
+                    "Data stored at frame:" + at + " size of segParams is " + segParams.size());
+            segParams.set(at, boap.new SegParam(seg));
+            snakePluginLists.set(at, sn.getShallowCopy()); // update Plugin config as well
+        }
 
         /**
          * Should be called before serialization. Fills extra fields from BOAp
@@ -172,10 +198,12 @@ public class BOA_ implements PlugIn {
             fileName = boap.fileName; // copy filename from system wide boap
             snakePluginList.beforeSerialize(); // download plugins configurations
             nest.beforeSerialize(); // prepare snakes
+            // segParams and snakePluginLists do not need beforeSerialize()
         }
 
         @Override
         public void afterSerialize() throws Exception {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -202,9 +230,7 @@ public class BOA_ implements PlugIn {
         if (IJ.versionLessThan("1.45")) {
             return;
         }
-        boaState = new BOAState(); // create BOA state machine
-        boaState.segParam = boap.segParam; // assign reference of segmentation parameters to state
-                                           // machine
+
         if (IJ.getVersion().compareTo("1.46") < 0) {
             boap.useSubPixel = false;
         } else {
@@ -248,6 +274,9 @@ public class BOA_ implements PlugIn {
             }
         }
 
+        boaState = new BOAState(ip.getStackSize()); // create BOA state machine
+        boaState.segParam = boap.segParam; // assign reference of segmentation parameters to state
+                                           // machine
         // Build plugin engine
         try {
             String path = IJ.getDirectory("plugins");
@@ -341,6 +370,14 @@ public class BOA_ implements PlugIn {
         ip.killRoi();
 
         constrictor = new Constrictor(); // does computations on snakes
+    }
+
+    /**
+     * Called on every change of GUI that requires action 
+     */
+    private void updateBOA(int frame) {
+        imageGroup.updateOverlay(frame);
+        boaState.store(boap.segParam, boaState.snakePluginList, frame - 1);
     }
 
     /**
@@ -478,7 +515,7 @@ public class BOA_ implements PlugIn {
         } finally {
             historyLogger.addEntry("Plugin settings", boaState);
         }
-        imageGroup.updateOverlay(boaState.frame);
+        updateBOA(boaState.frame);
     }
 
     /**
@@ -1107,7 +1144,7 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Implement user interface logic Do not refresh values, rather disable/enable controls.
+         * Implement user interface logic. Do not refresh values, rather disable/enable controls.
          */
         private void updateWindowState() {
             // Rule 1 - NONE on any slot in filters disable GUI button and Active checkbox
@@ -1408,7 +1445,7 @@ public class BOA_ implements PlugIn {
             }
             if (source == cbMenuPlotHead) {
                 boap.isHeadPlotted = cbMenuPlotHead.getState();
-                imageGroup.updateOverlay(boaState.frame);
+                updateBOA(boaState.frame);
             }
 
             // actions on Choice
@@ -1549,7 +1586,7 @@ public class BOA_ implements PlugIn {
 
             boaState.frame = imp.getCurrentSlice();
             frameLabel.setText("" + boaState.frame);
-            imageGroup.updateOverlay(boaState.frame); // draw overlay
+            updateBOA(boaState.frame); // draw overlay
             imageGroup.setIpSliceAll(boaState.frame);
 
             // zoom to snake zero
@@ -1686,9 +1723,6 @@ public class BOA_ implements PlugIn {
                             }
                         }
                     }
-                    // imageGroup.drawContour(nest.getSNAKES(), frame);//draw
-                    // starting snake
-                    // if(frame==2) break;
 
                     for (s = 0; s < boaState.nest.size(); s++) { // for each snake
                         sH = boaState.nest.getHandler(s);
@@ -1731,13 +1765,13 @@ public class BOA_ implements PlugIn {
                         }
 
                     }
-                    imageGroup.updateOverlay(boaState.frame);
+                    updateBOA(boaState.frame); // update view and store state
                     IJ.showProgress(boaState.frame, endF);
                 } catch (BoaException be) {
                     boap.SEGrunning = false;
                     if (!boap.segParam.use_previous_snake) {
                         imageGroup.setIpSliceAll(boaState.frame);
-                        imageGroup.updateOverlay(boaState.frame);
+                        updateBOA(boaState.frame); // update view and store state
                     } else {
                         System.out.println("\nL811. Exception");
                         throw be;
@@ -1747,7 +1781,6 @@ public class BOA_ implements PlugIn {
                 }
             }
             boaState.frame = endF;
-
         } catch (Exception e) {
             // e.printStackTrace();
             /// imageGroup.drawContour(nest.getSNAKES(), frame);
@@ -1931,7 +1964,7 @@ public class BOA_ implements PlugIn {
 
         boaState.nest.addOutlinehandler(oH);
         imageGroup.setProcessor(oH.getStartFrame());
-        imageGroup.updateOverlay(oH.getStartFrame());
+        updateBOA(oH.getStartFrame());
         BOA_.log("Successfully read snakes");
         return true;
     }
@@ -1980,7 +2013,7 @@ public class BOA_ implements PlugIn {
             BOA_.log("Could not store new snake");
             LOGGER.error(be);
         } finally {
-            imageGroup.updateOverlay(f);
+            updateBOA(f);
             historyLogger.addEntry("Added cell", boaState);
         }
 
@@ -2009,7 +2042,7 @@ public class BOA_ implements PlugIn {
         if (distance[minIndex] < 10) { // if closest < 10, delete it
             BOA_.log("Deleted cell " + boaState.nest.getHandler(minIndex).getID());
             boaState.nest.removeHandler(boaState.nest.getHandler(minIndex));
-            imageGroup.updateOverlay(frame);
+            updateBOA(frame);
             window.switchOffDelete();
             return true;
         } else {
@@ -2045,7 +2078,7 @@ public class BOA_ implements PlugIn {
                     + frame + " onwards");
             sH = boaState.nest.getHandler(minIndex);
             sH.deleteStoreFrom(frame);
-            imageGroup.updateOverlay(frame);
+            updateBOA(frame);
             window.switchOfftruncate();
         } else {
             BOA_.log("Click the cell centre to delete");
@@ -2108,7 +2141,7 @@ public class BOA_ implements PlugIn {
         SnakeHandler sH = boaState.nest.getHandler(boap.editingID);
         sH.storeRoi((PolygonRoi) r, boaState.frame);
         canvas.getImage().killRoi();
-        imageGroup.updateOverlay(boaState.frame);
+        updateBOA(boaState.frame);
         boap.editingID = -1;
     }
 
@@ -2125,7 +2158,7 @@ public class BOA_ implements PlugIn {
         if (boap.saveSnake) {
             try {
                 if (boaState.nest.writeSnakes()) { // write snPQ file
-                    boaState.nest.analyse(imageGroup.getOrgIpl()); // write stQP file
+                    boaState.nest.analyse(imageGroup.getOrgIpl().duplicate()); // write stQP file
                     // auto save plugin config
                     // Create Serialization object with extra info layer
                     Serializer<SnakePluginList> s;
@@ -2206,6 +2239,13 @@ class ImageGroup {
 
     private static final Logger LOGGER = LogManager.getLogger(ImageGroup.class.getName());
 
+    /**
+     * Constructor
+     * 
+     * @param oIpl current image opened in IJ
+     * @param n Nest object associated with BOA
+     * @param boaState State of the BOA
+     */
     public ImageGroup(ImagePlus oIpl, Nest n) {
         nest = n;
         // create two new stacks for drawing
@@ -2317,6 +2357,9 @@ class ImageGroup {
                 LOGGER.trace(snake.toString());
             }
         }
+        // remember current state - image is updated on every change of state (action on plugins,
+        // segmentation ui, sliding on frames)
+
         orgIpl.setOverlay(overlay);
 
     }
@@ -3303,7 +3346,6 @@ class BOAp {
          * @param src object to copy
          */
         public SegParam(final SegParam src) {
-            super();
             this.nodeRes = src.nodeRes;
             this.blowup = src.blowup;
             this.vel_crit = src.vel_crit;
