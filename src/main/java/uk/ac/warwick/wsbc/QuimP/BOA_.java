@@ -150,7 +150,11 @@ public class BOA_ implements PlugIn {
      * be part of this class. This class in supposed to be main configuration holder for BOA_
      */
     class BOAState implements IQuimpSerialize {
-        public int frame; //!< current frame, CustomStackWindow.updateSliceSelector()
+        /**
+         * current frame, CustomStackWindow.updateSliceSelector()
+         * Not stored due to archiving all parameters for every frame separately
+         */
+        public transient int frame;
         /**
          * Reference to segmentation parameters. Holds current parameters (as reference to
          * boap.segParam)
@@ -191,6 +195,12 @@ public class BOA_ implements PlugIn {
          * This is main object not referenced in other parts of QuimP
          */
         public Nest nest;
+        /**
+         * Store information whether for current frame button \b Edit was used. 
+         * 
+         * Do not indicate that any of Snakes was edited.
+         */
+        public ArrayList<Boolean> isFrameEdited;
 
         /**
          * Construct BOAState object for given stack size
@@ -201,6 +211,7 @@ public class BOA_ implements PlugIn {
             segParamSnapshots = new ArrayList<SegParam>(Collections.nCopies(numofframes, null));
             snakePluginListSnapshots =
                     new ArrayList<SnakePluginList>(Collections.nCopies(numofframes, null));
+            isFrameEdited = new ArrayList<Boolean>(Collections.nCopies(numofframes, false));
             LOGGER.debug("Initialize storage of size: " + numofframes + " size of segParams: "
                     + segParamSnapshots.size());
         }
@@ -209,14 +220,28 @@ public class BOA_ implements PlugIn {
          * Make snapshot of current objects state
          * 
          * @param sn reference to actual SnakePluginList
-         * @param at actual frame
+         * @param at actual frame numbered from 1
          */
-        public void store(int at) {
-            LOGGER.debug("Data stored at frame:" + at + " size of segParams is "
+        public void store(int frame) {
+            LOGGER.debug("Data stored at frame:" + frame + " size of segParams is "
                     + segParamSnapshots.size());
-            segParamSnapshots.set(at, boap.new SegParam(segParam));
-            snakePluginListSnapshots.set(at, snakePluginList.getShallowCopy()); // download Plugin
-                                                                                // config as well
+            segParamSnapshots.set(frame - 1, boap.new SegParam(segParam));
+            snakePluginListSnapshots.set(frame - 1, snakePluginList.getShallowCopy()); // download
+                                                                                       // Plugin
+                                                                                       // config
+                                                                                       // as well
+        }
+
+        /**
+         * Store information whether frame was edited only
+         * 
+         * Can be called when global state does not change, e.g. user clicked \b Edit button so
+         * parameters and plugins have not been modified
+         * 
+         * @param frame current frame numbered from 1
+         */
+        public void storeOnlyEdited(int frame) {
+            isFrameEdited.set(frame - 1, true);
         }
 
         /**
@@ -406,7 +431,7 @@ public class BOA_ implements PlugIn {
      */
     private void updateBOA(int frame) {
         imageGroup.updateOverlay(frame);
-        boaState.store(frame - 1);
+        boaState.store(frame);
     }
 
     /**
@@ -1261,6 +1286,8 @@ public class BOA_ implements PlugIn {
                     if (boaState.nest.size() == 1)
                         editSeg(0, 0, boaState.frame); // if only 1 snake go straight to edit, if
                                                        // more user must pick one
+                    // remember that this frame is edited
+                    boaState.storeOnlyEdited(boaState.frame);
                 } else {
                     boap.editMode = false;
                     if (boap.editingID != -1) {
