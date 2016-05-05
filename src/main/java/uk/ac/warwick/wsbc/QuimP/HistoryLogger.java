@@ -187,6 +187,7 @@ class LogEntry implements IQuimpSerialize {
      * @param counter number of log entry
      * @param action description of action
      * @param bs BOA state machine
+     * @todo TODO replace with snakePluginLists (beforeSerialize will not be called then)
      */
     public LogEntry(int counter, String action, BOAState bs) {
         super();

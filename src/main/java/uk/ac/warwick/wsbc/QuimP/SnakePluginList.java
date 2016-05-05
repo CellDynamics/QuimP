@@ -285,7 +285,7 @@ class SnakePluginList implements IQuimpSerialize {
          * @remarks Should be called after SnakePluginList.Plugin.downloadPluginConfig() to make
          * sure that \c config, \c ver are filled correctly
          */
-        private Plugin getLimitedCopy() {
+        private Plugin getShallowCopy() {
             Plugin ret = new Plugin();
             ret.isActive = this.isActive;
             ret.name = this.name;
@@ -390,12 +390,12 @@ class SnakePluginList implements IQuimpSerialize {
      * @remarks Should be called after SnakePluginList.Plugin.downloadPluginConfig() to make
      * sure that \c config, \c ver are filled correctly
      */
-    public SnakePluginList getLimitedCopy() {
+    public SnakePluginList getShallowCopy() {
         beforeSerialize(); // get plugin config from Plugins (jars->Plugin) to fill Plugin subclass
         SnakePluginList ret = new SnakePluginList();
         // make deep copy of the list
         for (Plugin p : this.sPluginList)
-            ret.sPluginList.add(p.getLimitedCopy());
+            ret.sPluginList.add(p.getShallowCopy());
         return ret;
     }
 
