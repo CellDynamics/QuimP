@@ -37,10 +37,10 @@ import uk.ac.warwick.wsbc.QuimP.BOAp.SegParam;
 public class HistoryLogger implements WindowListener {
 
     private static final Logger LOGGER = LogManager.getLogger(HistoryLogger.class.getName());
-    private Frame historyWnd; /*!< Window handler */
-    private ArrayList<String> history; /*!< array with all entries */
+    private Frame historyWnd; //!< Window handler
+    private ArrayList<String> history; //!< array with all entries
     private TextArea info;
-    private int id; /*!< message counter */
+    private int id; //!< message counter
 
     /**
      * Construct main window

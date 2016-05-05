@@ -536,7 +536,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     /**
      * Rebuild Shape from ArryList
      * 
-     * @see clearNodes()
+     * @see clearElements()
      */
     @Override
     public void afterSerialize() throws Exception {
@@ -562,7 +562,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
             } catch (SecurityException | NoSuchMethodException | InstantiationException
                     | IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException e) {
-                throw new RuntimeException(e); // change fo unchecked exception
+                throw new RuntimeException(e); // change to unchecked exception
             }
         }
         clearElements();

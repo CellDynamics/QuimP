@@ -1,5 +1,12 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+// import ij.process.PolygonFiller;
+import java.awt.Polygon;
+// import java.awt.Rectangle;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
@@ -8,13 +15,6 @@ import ij.measure.Measurements;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-
-//import ij.process.PolygonFiller;
-import java.awt.Polygon;
-//import java.awt.Rectangle;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 
 /**
  *
@@ -81,10 +81,8 @@ public class CellStat implements Measurements {
             roi = new PolygonRoi(oPoly, Roi.POLYGON);
 
             iPlus.setRoi(roi);
-            is = iPlus.getStatistics(AREA + CENTROID + ELLIPSE + SHAPE_DESCRIPTORS); // this
-                                                                                     // does
-                                                                                     // scale
-                                                                                     // to
+            is = iPlus.getStatistics(AREA + CENTROID + ELLIPSE + SHAPE_DESCRIPTORS); // this does
+                                                                                     // scale to
                                                                                      // image
 
             // all theses already to scale
@@ -97,11 +95,14 @@ public class CellStat implements Measurements {
             stats[store].perimiter = roi.getLength(); // o.getLength();
             stats[store].circularity = 4 * Math.PI
                     * (stats[store].area / (stats[store].perimiter * stats[store].perimiter));
-            stats[store].displacement = ExtendedVector2d.lengthP2P(stats[0].centroid, stats[store].centroid);
+            stats[store].displacement =
+                    ExtendedVector2d.lengthP2P(stats[0].centroid, stats[store].centroid);
 
             if (store != 0) {
-                stats[store].speed = ExtendedVector2d.lengthP2P(stats[store - 1].centroid, stats[store].centroid);
-                distance += ExtendedVector2d.lengthP2P(stats[store - 1].centroid, stats[store].centroid);
+                stats[store].speed = ExtendedVector2d.lengthP2P(stats[store - 1].centroid,
+                        stats[store].centroid);
+                distance += ExtendedVector2d.lengthP2P(stats[store - 1].centroid,
+                        stats[store].centroid);
                 stats[store].dist = distance;
             } else {
                 stats[store].dist = 0;
@@ -133,15 +134,18 @@ public class CellStat implements Measurements {
             pw.print("#p2\n#QuimP output - " + OUTFILE.getAbsolutePath() + "\n");
             pw.print(
                     "# Centroids are given in pixels.  Distance & speed & area measurements are scaled to micro meters\n");
-            pw.print("# Scale: " + scale + " micro meter per pixel | Frame interval: " + frameInterval + " sec\n");
+            pw.print("# Scale: " + scale + " micro meter per pixel | Frame interval: "
+                    + frameInterval + " sec\n");
             pw.print("# Frame,X-Centroid,Y-Centroid,Displacement,Dist. Traveled,"
                     + "Directionality,Speed,Perimeter,Elongation,Circularity,Area");
 
             for (int i = 0; i < s.length; i++) {
                 pw.print("\n" + (i + startFrame) + "," + IJ.d2s(s[i].centroid.getX(), 2) + ","
-                        + IJ.d2s(s[i].centroid.getY(), 2) + "," + IJ.d2s(s[i].displacement) + "," + IJ.d2s(s[i].dist)
-                        + "," + IJ.d2s(s[i].persistance) + "," + IJ.d2s(s[i].speed) + "," + IJ.d2s(s[i].perimiter) + ","
-                        + IJ.d2s(s[i].elongation) + "," + IJ.d2s(s[i].circularity, 3) + "," + IJ.d2s(s[i].area));
+                        + IJ.d2s(s[i].centroid.getY(), 2) + "," + IJ.d2s(s[i].displacement) + ","
+                        + IJ.d2s(s[i].dist) + "," + IJ.d2s(s[i].persistance) + ","
+                        + IJ.d2s(s[i].speed) + "," + IJ.d2s(s[i].perimiter) + ","
+                        + IJ.d2s(s[i].elongation) + "," + IJ.d2s(s[i].circularity, 3) + ","
+                        + IJ.d2s(s[i].area));
 
             }
 
@@ -157,7 +161,8 @@ public class CellStat implements Measurements {
         }
     }
 
-    private void writeDummyFluo(PrintWriter pw, int channel, int startFrame, int size) throws Exception {
+    private void writeDummyFluo(PrintWriter pw, int channel, int startFrame, int size)
+            throws Exception {
         pw.print("\n#\n# Channel " + channel
                 + ";Frame, Total Fluo.,Mean Fluo.,Cortex Width, Cyto. Area,Total Cyto. Fluo., Mean Cyto. Fluo.,"
                 + "Cortex Area,Total Cortex Fluo., Mean Cortex Fluo., %age Cortex Fluo.");

@@ -154,9 +154,15 @@ public class BOA_ implements PlugIn {
         /**
          * Reference to segmentation parameters. Holds current parameters (as reference to
          * boap.segParam)
+         * 
+         * On every change of BOA state it is stored as copy in segParamSnapshots for current
+         * frame. This is why that field is \c transient
+         * 
          * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
+         * @todo TODO This should exist in BOA or BOAState space not in BOAp
+         * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
          */
-        public SegParam segParam;
+        public transient SegParam segParam;
         public String fileName; //!< Current data file name
         /**
          * Keep snapshots of SegParam objects for every frame separately
@@ -172,12 +178,19 @@ public class BOA_ implements PlugIn {
          * This field is serializable.
          * 
          * Holds current parameters as the main object not referenced in BOAp
+         * On every change of BOA state it is stored as copy in snakePluginListSnapshots for current
+         * frame. This is why that field is \c transient
          * 
          * @see SnakePluginList
          * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
          */
-        public SnakePluginList snakePluginList;
-        public Nest nest; //!< Reference to Nest, which is serializable as well
+        public transient SnakePluginList snakePluginList;
+        /**
+         * Reference to Nest, which is serializable as well
+         * 
+         * This is main object not referenced in other parts of QuimP
+         */
+        public Nest nest;
 
         /**
          * Construct BOAState object for given stack size
