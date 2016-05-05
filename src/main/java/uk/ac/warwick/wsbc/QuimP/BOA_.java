@@ -156,7 +156,7 @@ public class BOA_ implements PlugIn {
          * boap.segParam)
          * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
          */
-        public SegParam segParam; //!< Reference to segmentation parameters
+        public SegParam segParam;
         public String fileName; //!< Current data file name
         /**
          * Keep snapshots of SegParam objects for every frame separately
@@ -214,7 +214,7 @@ public class BOA_ implements PlugIn {
             fileName = boap.fileName; // copy filename from system wide boap
             snakePluginList.beforeSerialize(); // download plugins configurations
             nest.beforeSerialize(); // prepare snakes
-            // segParams and snakePluginLists do not need beforeSerialize()
+            // snakePluginListSnapshots and segParamSnapshots do not need beforeSerialize()
         }
 
         @Override
@@ -291,9 +291,8 @@ public class BOA_ implements PlugIn {
         }
 
         boaState = new BOAState(ip.getStackSize()); // create BOA state machine
-        boaState.segParam = boap.segParam; // assign reference of segmentation parameters to
-                                           // state
-        // machine
+        boaState.segParam = boap.segParam; // assign reference of segmentation parameters to state
+                                           // machine
         // Build plugin engine
         try {
             String path = IJ.getDirectory("plugins");
@@ -313,7 +312,7 @@ public class BOA_ implements PlugIn {
         }
 
         BOA_.running = true;
-        setup(ip);
+        setup(ip); // create main objects in BOA and BOAState, build window
 
         if (boap.useSubPixel == false) {
             BOA_.log("Upgrade to ImageJ 1.46, or higher," + "\nto get sub-pixel editing.");
@@ -2174,21 +2173,26 @@ public class BOA_ implements PlugIn {
 
         if (boap.saveSnake) {
             try {
-                if (boaState.nest.writeSnakes()) { // write snPQ file
+                if (boaState.nest.writeSnakes()) { // write snPQ file (if any snake)
                     boaState.nest.analyse(imageGroup.getOrgIpl().duplicate()); // write stQP file
-                    // auto save plugin config
-                    // Create Serialization object with extra info layer
-                    Serializer<SnakePluginList> s;
-                    s = new Serializer<>(boaState.snakePluginList, quimpInfo);
-                    s.setPretty(); // set pretty format
-                    s.save(boap.outFile.getParent() + File.separator + boap.fileName + ".pgQP");
-                    s = null; // remove
-                    // Dump BOAState object s new format
-                    Serializer<BOAState> n;
-                    n = new Serializer<>(boaState, quimpInfo);
-                    n.setPretty();
-                    n.save(boap.outFile.getParent() + File.separator + boap.fileName + ".newsnQP");
-                    n = null;
+                                                                               // and fill outFile
+                                                                               // used later
+                    // auto save plugin config (but only if there is at least one snake)
+                    if (!boaState.nest.isVacant()) {
+                        // Create Serialization object with extra info layer
+                        Serializer<SnakePluginList> s;
+                        s = new Serializer<>(boaState.snakePluginList, quimpInfo);
+                        s.setPretty(); // set pretty format
+                        s.save(boap.outFile.getParent() + File.separator + boap.fileName + ".pgQP");
+                        s = null; // remove
+                        // Dump BOAState object s new format
+                        Serializer<BOAState> n;
+                        n = new Serializer<>(boaState, quimpInfo);
+                        n.setPretty();
+                        n.save(boap.outFile.getParent() + File.separator + boap.fileName
+                                + ".newsnQP");
+                        n = null;
+                    }
                 } else {
                     ync = new YesNoCancelDialog(window, "Save Segmentation",
                             "Quit without saving?");
@@ -2201,7 +2205,6 @@ public class BOA_ implements PlugIn {
                 LOGGER.error(e);
                 return;
             }
-
         }
         BOA_.running = false;
         imageGroup.makeContourImage();
@@ -3033,7 +3036,7 @@ class Constrictor {
  */
 class Nest implements IQuimpSerialize {
     private ArrayList<SnakeHandler> sHs;
-    private int NSNAKES; /*!< Number of stored snakes in nest  */
+    private int NSNAKES; //!< Number of stored snakes in nest
     private int ALIVE;
     private int nextID; // handler ID's
 
