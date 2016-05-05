@@ -112,7 +112,6 @@ public class BOA_ implements PlugIn {
     static TextArea logArea;
     static boolean running = false;
     ImageGroup imageGroup;
-    // private int frame; // current frame, CustomStackWindow.updateSliceSelector()
     private Constrictor constrictor;
     private PluginFactory pluginFactory; // load and maintain plugins
     private String lastTool; // last selection tool selected in IJ remember last tool to reselect
@@ -151,43 +150,60 @@ public class BOA_ implements PlugIn {
      * be part of this class. This class in supposed to be main configuration holder for BOA_
      */
     class BOAState implements IQuimpSerialize {
-        public int frame; //!< current frame, CustomStackWindow.updateSliceSelector() */
-        public SegParam segParam; //!< Reference to segmentation parameters */
-        public String fileName; //!< Current data file name */
-
-        private ArrayList<SegParam> segParams;
-        private ArrayList<SnakePluginList> snakePluginLists;
-
+        public int frame; //!< current frame, CustomStackWindow.updateSliceSelector()
+        /**
+         * Reference to segmentation parameters. Holds current parameters (as reference to
+         * boap.segParam)
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
+         */
+        public SegParam segParam; //!< Reference to segmentation parameters
+        public String fileName; //!< Current data file name
+        /**
+         * Keep snapshots of SegParam objects for every frame separately
+         */
+        private ArrayList<SegParam> segParamSnapshots;
+        /**
+         * Keep snapshots of SnakePluginList objects for every frame separately. Plugin
+         * configurations are stored as well (but without plugin references)
+         */
+        private ArrayList<SnakePluginList> snakePluginListSnapshots;
         /**
          * List of plugins selected in plugin stack and information if they are active or not
          * This field is serializable.
+         * 
+         * Holds current parameters as the main object not referenced in BOAp
          * 
          * @see SnakePluginList
          * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
          */
         public SnakePluginList snakePluginList;
-        public Nest nest; //!< Reference to Nest, which is serializable as well */
+        public Nest nest; //!< Reference to Nest, which is serializable as well
 
+        /**
+         * Construct BOAState object for given stack size
+         * 
+         * @param numofframes number of frames in loaded stack
+         */
         public BOAState(int numofframes) {
-            segParams = new ArrayList<SegParam>(Collections.nCopies(numofframes, null));
-            snakePluginLists =
+            segParamSnapshots = new ArrayList<SegParam>(Collections.nCopies(numofframes, null));
+            snakePluginListSnapshots =
                     new ArrayList<SnakePluginList>(Collections.nCopies(numofframes, null));
             LOGGER.debug("Initialize storage of size: " + numofframes + " size of segParams: "
-                    + segParams.size());
+                    + segParamSnapshots.size());
         }
 
         /**
-         * Make copy of current objects state
+         * Make snapshot of current objects state
          * 
-         * @param seg reference to actual SegParam
          * @param sn reference to actual SnakePluginList
          * @param at actual frame
          */
-        public void store(SegParam seg, SnakePluginList sn, int at) {
-            LOGGER.debug(
-                    "Data stored at frame:" + at + " size of segParams is " + segParams.size());
-            segParams.set(at, boap.new SegParam(seg));
-            snakePluginLists.set(at, sn.getShallowCopy()); // update Plugin config as well
+        public void store(int at) {
+            LOGGER.debug("Data stored at frame:" + at + " size of segParams is "
+                    + segParamSnapshots.size());
+            segParamSnapshots.set(at, boap.new SegParam(segParam));
+            snakePluginListSnapshots.set(at, snakePluginList.getShallowCopy()); // download Plugin
+                                                                                // config as well
         }
 
         /**
@@ -275,8 +291,9 @@ public class BOA_ implements PlugIn {
         }
 
         boaState = new BOAState(ip.getStackSize()); // create BOA state machine
-        boaState.segParam = boap.segParam; // assign reference of segmentation parameters to state
-                                           // machine
+        boaState.segParam = boap.segParam; // assign reference of segmentation parameters to
+                                           // state
+        // machine
         // Build plugin engine
         try {
             String path = IJ.getDirectory("plugins");
@@ -377,7 +394,7 @@ public class BOA_ implements PlugIn {
      */
     private void updateBOA(int frame) {
         imageGroup.updateOverlay(frame);
-        boaState.store(boap.segParam, boaState.snakePluginList, frame - 1);
+        boaState.store(frame - 1);
     }
 
     /**
@@ -3273,6 +3290,8 @@ class Nest implements IQuimpSerialize {
  * 
  * External parameters are those related to algorithm options whereas internal
  * are those related to internal settings of algorithm, GUI and whole plugin
+ * 
+ * This class is shared among different QuimP components
  * 
  * @author rtyson
  * @see QParams
