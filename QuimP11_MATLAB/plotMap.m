@@ -95,8 +95,7 @@ function plotMap( map, type, FI, varargin)
     set(IM,'CDataMapping', 'scaled');
     caxis(cLim);
     cb=colorbar();
-    % axis(cb,[0,1,Llim,Ulim]);  % disabled as causing problems with new
-    % matlab
+    % axis(cb,[0,1,Llim,Ulim]);  % disabled as causing problems with new matlab
 
     
     %color bar width
