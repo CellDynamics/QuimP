@@ -3,14 +3,17 @@
 \usepackage{graphicx}
 \usepackage{epsfig}
 \usepackage{subfigure}
+\usepackage{titlesec}
+\usepackage{marginnote}
 % \usepackage[round]{natbib}
- \usepackage{url}
-  \usepackage{hyperref}
+\usepackage{url}
+\usepackage{hyperref}
  
 \geometry{tmargin=2.5cm,bmargin=3cm,lmargin=1.5cm,rmargin=1.5cm}
+\newcommand{\sectionbreak}{\clearpage}
 
 \begin{document}
-\title{QuimP11b Guide}
+\title{QuimP Guide}
 \author{Richard Tyson, Till Bretschneider and Piotr Baniukiewicz\\ \small Systems Biology DTC, Warwick University\\ \small Correspondence to Till Bretschneider. Email: Till.Bretschneider@warwick.ac.uk\\}
 \maketitle
 
@@ -18,12 +21,15 @@ Web site: \url{http://go.warwick.ac.uk/quimp}
 
 \tableofcontents
 
- \setlength{\parskip}{10pt}
+\setlength{\parskip}{10pt}
 \setlength{\parindent}{0pt}
 
-\section{QuimP 16.05.06 - what is new}
+\section{About new QuimP}
+\marginnote{{\small General information about new QuimP, its philisophy and goal}}
 
-\subsection{About new QuimP}
+\section{QuimP 16.05.06 - what is new}
+\marginnote{{\small About current version. On every next version this chapter moves to end of document}}
+\subsection{Summary}
 
 \subsection{Change log}
 \begin{enumerate}
@@ -36,12 +42,27 @@ In case of bugs, contact with QuimP developer: p.baniukiewicz@warwick.ac.uk
 
 \section{Installation}
 
-QuimP11 can be downloaded from \url{http://go.warwick.ac.uk/quimp} and is written as a set of ImageJ plugins.
-ImageJ can be downloaded here: \url{http://imagej.nih.gov/ij/download.html}.  
-Install the latest version of ImageJ (QuimP11 requires 1.43 or later).  Unzip \textit{QuimP11b\_WSB.zip} and 
-copy the file \textit{QuimP11b.jar} into the \textit{plugins} folder located in the installation directory of ImageJ.
+\subsection{System requirements}
 
-QuimP11 will also function with Fiji, an extended version of ImageJ (\url{http://pacific.mpi-cbg.de/wiki/index.php/Fiji}).
+QuimP is written in Java as a set of ImageJ plugins, thus it can be run on any platform that is supported by Java (Windows, MacOS, Linux). A fast processor and at least 4 GB of RAM is recommended (more in case of large datasets). The following components are required:
+\begin{itemize}
+	\item Java 8 or newer runtime - installed on the system
+	\item ImageJ installation in version 1.43 or later.  
+	\item QuimP package - it can be downloaded from \url{http://go.warwick.ac.uk/quimp}
+\end{itemize}
+
+QuimP will also function with Fiji, an extended version of ImageJ (\url{http://pacific.mpi-cbg.de/wiki/index.php/Fiji}).
+
+Note that ImageJ as well as Fiji are shipped with embedded Java in version 6. To make QuimP working on these (default) installations, one must reconfigure them according to this FAQ: \url{http://imagej.net/Frequently_Asked_Questions} to promote Java 8 over default 6.  
+
+\subsection{Installation procedure}
+\begin{enumerate}
+	\item Download and install Java 8. For MacOS or Linux extra configuration steps may be necessary. Consult documentation for your system.
+	\item Download and install ImageJ or Fiji (recommended). Consult Fiji FAQ (\url{http://imagej.net/Frequently_Asked_Questions})how to run ImageJ or Fiji with Java 8.
+	\item Download QuimP in latest available version \url{http://go.warwick.ac.uk/quimp}
+	\item Unpack the content of \texttt{QuimP-xxxx.zip} archive (\texttt{xxxx} string stands for QuimP version) into \textit{plugins} folder located in the installation directory of ImageJ.
+	\item Run ImageJ/Fiji and head to \textit{Plugnis}. The \textit{QuimP-xxxx} entry should be available there.
+\end{enumerate}
 
 \section{QuimP Workflow}
 
