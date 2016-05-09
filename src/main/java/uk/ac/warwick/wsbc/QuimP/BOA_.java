@@ -3570,7 +3570,7 @@ class BOAp {
     /**
      * Define if first node of Snake (head) is plotted or not
      */
-    boolean isHeadPlotted = true;
+    boolean isHeadPlotted = false;
 
     /**
      * When any plugin fails this field defines how QuimP should behave. When
