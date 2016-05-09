@@ -219,8 +219,7 @@ public class BOA_ implements PlugIn {
         /**
          * Make snapshot of current objects state
          * 
-         * @param sn reference to actual SnakePluginList
-         * @param at actual frame numbered from 1
+         * @param frame actual frame numbered from 1
          */
         public void store(int frame) {
             LOGGER.debug("Data stored at frame:" + frame + " size of segParams is "
@@ -2308,7 +2307,6 @@ class ImageGroup {
      * 
      * @param oIpl current image opened in IJ
      * @param n Nest object associated with BOA
-     * @param boaState State of the BOA
      */
     public ImageGroup(ImagePlus oIpl, Nest n) {
         nest = n;
@@ -3572,7 +3570,7 @@ class BOAp {
     /**
      * Define if first node of Snake (head) is plotted or not
      */
-    boolean isHeadPlotted = true;
+    boolean isHeadPlotted = false;
 
     /**
      * When any plugin fails this field defines how QuimP should behave. When
