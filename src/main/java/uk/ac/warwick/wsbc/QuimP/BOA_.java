@@ -660,7 +660,7 @@ public class BOA_ implements PlugIn {
         final static int SNAKE_PLUGIN_NUM = 3; /*!< number of currently supported plugins  */
         private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
         private Button bAdd, bDel, bDelSeg, bQuit;
-        private Checkbox cPrevSnake, cExpSnake, cPath, cZoom;
+        private Checkbox cPrevSnake, cExpSnake, cPath;
         private Choice sZoom;
         JScrollPane logPanel;
         Label fpsLabel, pixelLabel, frameLabel;
@@ -1448,13 +1448,6 @@ public class BOA_ implements PlugIn {
             } else if (source == cExpSnake) {
                 boap.segParam.expandSnake = cExpSnake.getState();
                 run = true;
-            } else if (source == cZoom) {
-                boap.zoom = cZoom.getState();
-                if (boap.zoom && !boaState.nest.isVacant()) {
-                    imageGroup.zoom(canvas, boaState.frame, boaState.snakeToZoom);
-                } else {
-                    imageGroup.unzoom(canvas);
-                }
             } else if (source == cFirstPluginActiv) {
                 boaState.snakePluginList.setActive(0, cFirstPluginActiv.getState());
                 recalculatePlugins();
@@ -1476,7 +1469,7 @@ public class BOA_ implements PlugIn {
                 updateBOA(boaState.frame);
             }
 
-            // actions on Choice
+            // actions on Plugin selections
             if (source == sFirstPluginName) {
                 LOGGER.debug("Used firstPluginName, val: " + sFirstPluginName.getSelectedItem());
                 instanceSnakePlugin((String) sFirstPluginName.getSelectedItem(), 0,
@@ -1496,18 +1489,17 @@ public class BOA_ implements PlugIn {
                 recalculatePlugins();
             }
 
-            // react on zoom
+            // Action on zoom selector
             if (source == sZoom) {
                 if (sZoom.getSelectedItem().equals(fullZoom)) { // user selected default position
-                                                                // (no
-                                                                // zoom)
+                                                                // (no zoom)
                     boaState.snakeToZoom = -1; // set negative value to indicate no zoom
                     boap.zoom = false; // important for other parts (legacy)
-                    imageGroup.unzoom(canvas);
+                    imageGroup.unzoom(canvas); // unzoom view
                 } else // zoom here
-                if (!boaState.nest.isVacant()) {
-                    boaState.snakeToZoom = Integer.parseInt(sZoom.getSelectedItem());
-                    boap.zoom = true;
+                if (!boaState.nest.isVacant()) { // any snakes present
+                    boaState.snakeToZoom = Integer.parseInt(sZoom.getSelectedItem()); // get int
+                    boap.zoom = true; // legacy compatibility
                     imageGroup.zoom(canvas, boaState.frame, boaState.snakeToZoom);
                 }
             }
@@ -2508,15 +2500,18 @@ class ImageGroup {
     }
 
     /**
+     * Zoom current view to snake with \c snakeID
      * 
-     * @param ic
-     * @param frame
-     * @param snakeID
+     * If snake is not found nothing happens
+     * 
+     * @param ic Current view
+     * @param frame Frame the Snake is looked in
+     * @param snakeID ID of Snake one looks for
      */
     void zoom(final ImageCanvas ic, int frame, int snakeID) {
         LOGGER.trace("Zoom to frame: " + frame + " ID " + snakeID);
-        if (nest.isVacant()) {
-            return;
+        if (nest.isVacant() || snakeID < 0) {
+            return; // negative id or empty nest
         }
         SnakeHandler sH;
         Snake snake;
