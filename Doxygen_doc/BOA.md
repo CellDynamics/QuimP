@@ -153,10 +153,15 @@ The following structures are used to hold and process segmented data:
 
 1. \ref uk.ac.warwick.wsbc.QuimP.Nest "Nest" - this class holds segmented objects. Every selected cell on image is kept inside this class at `sHs` list.
 2. \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandler" - this class stores snakes in `snakes` array. It operates with two forms of snakes. The first one is `Snake liveSnake` which is snake object being processed, the second one is array `Snake[] snakes` where already processed snakes are stored. This array has size of `FRAMES-f`, where `f` is the frame which object has been added for segmentation in. `SnakeHandler` holds all snake objects for one cell for all successive frames after frame where cell has been added. This class also performs writing/reading operations. Once initialized this object contains only `live` snakes which are modified by segmentation methods from `BOA`. After modification they are **copied** to `snakes[]` array. The `snakes[]` array is the array displayed on screen. There are two ways fo snakes to get there. First one is by method `storeLiveSnake` and second one is by method `storeThisSnake`. The difference is that the first one just copies internal `liveSnake` to array `snakes[]` whereas the second one copies external `Snake` to this array. `storeThisSnake` is used in plugin processing.
+     
 3. \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" this class holds snake for one frame and it is responsible for preparing segmentation process basing on passed ROI. **It does not do segmentation itself** but provides functions for scaling, changing orientation, cutting loops, etc.
 4. \ref uk.ac.warwick.wsbc.QuimP.Node "Node" represents vertex on snake and allows to add extra properties (forces, normals) to them. It has form of linked list, every Node knows its predecessor and successor. Simplified diagram below shows basic class relations and most important methods and fields. This class has `prelimPoint` field that keeps preliminary vector values which can be later promoted to regular vale of current object by using \ref uk.ac.warwick.wsbc.QuimP.Node.update() "update()" method. **List is looped - last element points to first and first to last** 
 
-** This diagram is outdated due to massive changes in Snak structure **
+Start and End frame fields are filled on Snake creation in SnakeHandler. If segmentation is Successful the Snake is created from current frame to last one in stack. Therefore Snake exist between `startFrame` and `endFrame`.
+     
+But if the Snake is deleted (uk.ac.warwick.wsbc.QuimP.SnakeHandler.deleteStoreAt(int)) the fields `startFrame` and `endFrame` are not updated (user can delete middle Snake breaking continuity). This is why uk.ac.warwick.wsbc.QuimP.SnakeHandler.isStoredAt(int) should be used to verify if there is valid Snake object on frame. 
+
+** This diagram is outdated due to massive changes in Snake structure **
 
 @startuml "Simplified class structure for Snakes" 
 	Nest*-->SnakeHandler : sHs[cells]

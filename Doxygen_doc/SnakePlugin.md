@@ -551,6 +551,12 @@ arrays are filled in the same manner. The `finalSnakes` contains *snakes* after 
 whereas the `segSnakes` contains pure *snakes* after segmentation. The `segSnakes` are snapshots of
 `liveSnake` taken during segmentation process for all frames. This array is necessary for restoring 
 initial state when all plugins are deselected. 
+Start and End frame fields are filled on Snake creation in handler. If segmentation is
+Successful the Snake is created from current frame to last one in stack. Therefore Snake
+exist between \c startFrame and \c endFrame.
+ 
+ But if the Snake is deleted (uk.ac.warwick.wsbc.QuimP.SnakeHandler.deleteStoreAt(int)) the fields \c startFrame and \c endFrame are not updated (user can delete middle Snake  breaking continuity). This is why uk.ac.warwick.wsbc.QuimP.SnakeHandler.isStoredAt(int)
+ should be used to verify if there is valid Snake object on frame. 
 
 > The `liveSnake` is **not modified** by plugins  
 

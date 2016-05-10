@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -112,8 +113,15 @@ public class BOA_ implements PlugIn {
     private PluginFactory pluginFactory; // load and maintain plugins
     private String lastTool; // last selection tool selected in IJ remember last tool to reselect
                              // it after truncating or deleting operation
-    private final static String NONE = "NONE"; // reserved word that stands for plugin that is not
-                                               // selected
+    /**
+     * Reserved word that stands for plugin that is not selected
+     */
+    private final static String NONE = "NONE";
+    /**
+     * Reserved word that states full view zoom in zoom choice. Also default text that
+     * appears there
+     */
+    private final static String fullZoom = "Frame zoom";
     /**
      * Hold current BOA object and provide access to only selected methods from plugin. Reference to
      * this field is passed to plugins and give them possibility to call selected methods from BOA
@@ -147,10 +155,14 @@ public class BOA_ implements PlugIn {
      */
     class BOAState implements IQuimpSerialize {
         /**
-         * current frame, CustomStackWindow.updateSliceSelector()
+         * Current frame, CustomStackWindow.updateSliceSelector()
          * Not stored due to archiving all parameters for every frame separately
          */
         public transient int frame;
+        /**
+         * Snake selected in zoom selector, negative value if 100% view
+         */
+        public transient int snakeToZoom = -1;
         /**
          * Reference to segmentation parameters. Holds current parameters (as reference to
          * boap.segParam)
@@ -649,6 +661,7 @@ public class BOA_ implements PlugIn {
         private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
         private Button bAdd, bDel, bDelSeg, bQuit;
         private Checkbox cPrevSnake, cExpSnake, cPath, cZoom;
+        private Choice sZoom;
         JScrollPane logPanel;
         Label fpsLabel, pixelLabel, frameLabel;
         JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
@@ -960,7 +973,18 @@ public class BOA_ implements PlugIn {
 
             // -----build bottom panel---------
             cPath = addCheckbox("Show paths", bottomPanel, boap.segParam.showPaths);
-            cZoom = addCheckbox("Zoom cell", bottomPanel, boap.zoom);
+            sZoom = addComboBox(new String[] { fullZoom }, bottomPanel);
+            // add mouse listener to create menu dynamically on click
+            sZoom.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    sZoom.removeAll();
+                    sZoom.add(fullZoom); // default word for full zoom (100% of view)
+                    List<Integer> frames = boaState.nest.getSnakesforFrame(boaState.frame);
+                    for (Integer i : frames)
+                        sZoom.add(i.toString());
+                }
+            });
             // -------------------------------
             // build control panel
 
@@ -1417,7 +1441,7 @@ public class BOA_ implements PlugIn {
                     this.setImage(imageGroup.getOrgIpl());
                 }
                 if (boap.zoom && !boaState.nest.isVacant()) { // set zoom
-                    imageGroup.zoom(canvas, boaState.frame, -1);
+                    imageGroup.zoom(canvas, boaState.frame, boaState.snakeToZoom);
                 }
             } else if (source == cPrevSnake) {
                 boap.segParam.use_previous_snake = cPrevSnake.getState();
@@ -1427,7 +1451,7 @@ public class BOA_ implements PlugIn {
             } else if (source == cZoom) {
                 boap.zoom = cZoom.getState();
                 if (boap.zoom && !boaState.nest.isVacant()) {
-                    imageGroup.zoom(canvas, boaState.frame, -1);
+                    imageGroup.zoom(canvas, boaState.frame, boaState.snakeToZoom);
                 } else {
                     imageGroup.unzoom(canvas);
                 }
@@ -1470,6 +1494,22 @@ public class BOA_ implements PlugIn {
                 instanceSnakePlugin((String) sThirdPluginName.getSelectedItem(), 2,
                         cThirdPluginActiv.getState());
                 recalculatePlugins();
+            }
+
+            // react on zoom
+            if (source == sZoom) {
+                if (sZoom.getSelectedItem().equals(fullZoom)) { // user selected default position
+                                                                // (no
+                                                                // zoom)
+                    boaState.snakeToZoom = -1; // set negative value to indicate no zoom
+                    boap.zoom = false; // important for other parts (legacy)
+                    imageGroup.unzoom(canvas);
+                } else // zoom here
+                if (!boaState.nest.isVacant()) {
+                    boaState.snakeToZoom = Integer.parseInt(sZoom.getSelectedItem());
+                    boap.zoom = true;
+                    imageGroup.zoom(canvas, boaState.frame, boaState.snakeToZoom);
+                }
             }
 
             updateWindowState(); // window logic on any change
@@ -1597,7 +1637,7 @@ public class BOA_ implements PlugIn {
             if (boap.zoom && !boaState.nest.isVacant()) {
                 SnakeHandler sH = boaState.nest.getHandler(0);
                 if (sH.isStoredAt(boaState.frame)) {
-                    imageGroup.zoom(canvas, boaState.frame, -1);
+                    imageGroup.zoom(canvas, boaState.frame, boaState.snakeToZoom);
                 }
             }
 
@@ -2474,7 +2514,7 @@ class ImageGroup {
      * @param snakeID
      */
     void zoom(final ImageCanvas ic, int frame, int snakeID) {
-        // zoom to cell 1
+        LOGGER.trace("Zoom to frame: " + frame + " ID " + snakeID);
         if (nest.isVacant()) {
             return;
         }
