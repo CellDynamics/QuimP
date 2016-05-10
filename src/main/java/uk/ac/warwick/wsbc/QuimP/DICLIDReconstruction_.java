@@ -22,7 +22,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.dic.LidReconstructor;
  * @see LidReconstructor for algorithm details *
  */
 public class DICLIDReconstruction_ implements PlugInFilter {
-
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
     private static final Logger LOGGER =
             LogManager.getLogger(DICLIDReconstruction_.class.getName());
     private LidReconstructor dic;
