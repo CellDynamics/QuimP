@@ -1417,7 +1417,7 @@ public class BOA_ implements PlugIn {
                     this.setImage(imageGroup.getOrgIpl());
                 }
                 if (boap.zoom && !boaState.nest.isVacant()) { // set zoom
-                    imageGroup.zoom(canvas, boaState.frame);
+                    imageGroup.zoom(canvas, boaState.frame, -1);
                 }
             } else if (source == cPrevSnake) {
                 boap.segParam.use_previous_snake = cPrevSnake.getState();
@@ -1427,7 +1427,7 @@ public class BOA_ implements PlugIn {
             } else if (source == cZoom) {
                 boap.zoom = cZoom.getState();
                 if (boap.zoom && !boaState.nest.isVacant()) {
-                    imageGroup.zoom(canvas, boaState.frame);
+                    imageGroup.zoom(canvas, boaState.frame, -1);
                 } else {
                     imageGroup.unzoom(canvas);
                 }
@@ -1597,7 +1597,7 @@ public class BOA_ implements PlugIn {
             if (boap.zoom && !boaState.nest.isVacant()) {
                 SnakeHandler sH = boaState.nest.getHandler(0);
                 if (sH.isStoredAt(boaState.frame)) {
-                    imageGroup.zoom(canvas, boaState.frame);
+                    imageGroup.zoom(canvas, boaState.frame, -1);
                 }
             }
 
@@ -1610,6 +1610,8 @@ public class BOA_ implements PlugIn {
                 editSeg(0, 0, boaState.frame);
                 IJ.setTool(lastTool);
             }
+            LOGGER.trace(
+                    "Snakes at this frame: " + boaState.nest.getSnakesforFrame(boaState.frame));
         }
 
         /**
@@ -2465,14 +2467,26 @@ class ImageGroup {
 
     }
 
-    void zoom(final ImageCanvas ic, int frame) {
+    /**
+     * 
+     * @param ic
+     * @param frame
+     * @param snakeID
+     */
+    void zoom(final ImageCanvas ic, int frame, int snakeID) {
         // zoom to cell 1
         if (nest.isVacant()) {
             return;
         }
-        SnakeHandler sH = nest.getHandler(0);
+        SnakeHandler sH;
         Snake snake;
-        if (sH.isStoredAt(frame)) {
+
+        if (snakeID < 0)
+            sH = nest.getHandler(0);
+        else
+            sH = nest.getHandler(snakeID);
+
+        if (sH != null && sH.isStoredAt(frame)) {
             snake = sH.getStoredSnake(frame);
         } else {
             return;
@@ -3213,6 +3227,27 @@ class Nest implements IQuimpSerialize {
                 removeHandler(sH);
             }
         }
+    }
+
+    /**
+     * Get list of snakes that are on frame  \c frame
+     * 
+     * @param frame Frame find snakes in
+     * @return List of Snake id on \c frame
+     */
+    List<Integer> getSnakesforFrame(int frame) {
+        ArrayList<Integer> ret = new ArrayList<Integer>();
+        Iterator<SnakeHandler> sHiter = sHs.iterator();
+        while (sHiter.hasNext()) { // over whole nest
+            SnakeHandler sH = sHiter.next(); // for every SnakeHandler
+            if (sH.getStartframe() > frame || sH.getEndFrame() < frame) // check its limits
+                continue; // no snake in frame
+            if (sH.isStoredAt(frame)) { // if limits are ok check if this particular snake exist
+                Snake s = sH.getStoredSnake(frame);
+                ret.add(s.getSnakeID()); // if yes get its id
+            }
+        }
+        return ret;
     }
 
     /**

@@ -296,3 +296,7 @@ Class uk.ac.warwick.wsbc.QuimP.BOA_.CustomCanvas is responsible for handling mou
 - uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.stateChanged(final ChangeEvent) - related to spinners
 
 All these method can run segmentation of current frame or whole stack by calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBoa(int, int)".
+
+### Zooming cells {#zoomingcells}
+
+

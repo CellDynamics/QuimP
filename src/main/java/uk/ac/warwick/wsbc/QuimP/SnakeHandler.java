@@ -27,9 +27,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     private static final Logger LOGGER = LogManager.getLogger(SnakeHandler.class.getName());
     private transient Roi roi; // inital ROI
     private Snake liveSnake;
-    private Snake[] finalSnakes; /*!< series of snakes, result of cell segm. and plugin processing*/
-    private transient Snake[] segSnakes; /*!< series of snakes, result of cell segmentation only  */
-    private int ID;
+    private Snake[] finalSnakes; //!< series of snakes, result of cell segm. and plugin processing*/
+    private transient Snake[] segSnakes; //!< series of snakes, result of cell segmentation only  */
+    private int ID; //!< ID of Snake stored in this SnakeHandler
 
     /**
      * Constructor of SnakeHandler. Stores ROI with object for segmentation
