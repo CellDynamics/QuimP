@@ -32,16 +32,12 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
@@ -125,7 +121,7 @@ public class BOA_ implements PlugIn {
      */
     public static ViewUpdater viewUpdater;
     /**
-     * Keep data from getQuimPBuildInfo() These information are used for About dialog, window title
+     * Keep data from getQuimPBuildInfo() These information are used in About dialog, window title
      * bar, logging, etc.
      */
     public static String[] quimpInfo;
@@ -297,7 +293,7 @@ public class BOA_ implements PlugIn {
         // assign current object to ViewUpdater
         viewUpdater = new ViewUpdater(this);
         // collect information about quimp version read from jar
-        quimpInfo = getQuimPBuildInfo();
+        quimpInfo = new Tool().getQuimPBuildInfo();
         // create history logger
         historyLogger = new HistoryLogger();
 
@@ -443,20 +439,11 @@ public class BOA_ implements PlugIn {
      * Called from menu bar. Reads also information from all found plugins.
      */
     void about() {
-        String authors = "###################################\n" + "BOA plugin, by\n"
-                + "Richard Tyson (richard.tyson@warwick.ac.uk)\n"
-                + "Till Bretschneider (Till.Bretschneider@warwick.ac.uk)\n"
-                + "Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)\n"
-                + "###################################\n";
-
         AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
-        // fill with information
-        ad.appendLine(authors);
-        ad.appendLine("QuimP version: " + quimpInfo[0]);
-        ad.appendLine(quimpInfo[1]);
+        ad.appendLine(Tool.getQuimPversion(quimpInfo)); // dispaly template filled by quimpInfo
         // get list of found plugins
         ad.appendLine("List of found plugins:");
-        ad.appendDistance();
+        ad.appendDistance(); // type ----
         Map<String, PluginProperties> mp = pluginFactory.getRegisterdPlugins();
         // iterate over set
         for (Map.Entry<String, PluginProperties> entry : mp.entrySet()) {
@@ -478,49 +465,6 @@ public class BOA_ implements PlugIn {
             ad.appendDistance();
         }
         ad.setVisible(true); // must be after adding content
-    }
-
-    /**
-     * Get build info read from jar file
-     * 
-     * @return Formatted strings with build info and version:
-     * -# [0] - contains only version string read from \a MANIFEST.MF
-     * -# [1] - contains formatted string with build time and name of builder read from \a MANIFEST.MF
-     * -# [2] - contains software name read from \a MANIFEST.MF
-     * @warning This method is jar-name dependent - looks for manifest with \a Implementation-Title
-     * that contains \c QuimP string.
-     */
-    public String[] getQuimPBuildInfo() {
-        String[] ret = new String[3];
-        ret[0] = "version not found in jar";
-        ret[1] = "build info not found in jar";
-        ret[2] = "name not found in jar";
-        try {
-            Enumeration<URL> resources =
-                    getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
-            while (resources.hasMoreElements()) {
-                Manifest manifest = new Manifest(resources.nextElement().openStream());
-                Attributes attributes = manifest.getMainAttributes();
-                try {
-                    String val = attributes.getValue("Implementation-Title");
-                    if (val == null)
-                        continue;
-                    // name dependent part
-                    if (attributes.getValue("Implementation-Title").contains("QuimP")) {
-                        ret[1] = "Build by: " + attributes.getValue("Built-By") + " on: "
-                                + attributes.getValue("Implementation-Build");
-                        ret[0] = attributes.getValue("Implementation-Version");
-                        ret[2] = attributes.getValue("Implementation-Title");
-                        LOGGER.debug(ret);
-                    }
-                } catch (Exception e) {
-                    ; // do not care about problems - just use defaults defined on beginning
-                }
-            }
-        } catch (IOException e) {
-            ; // do not care about problems - just use defaults defined on beginning
-        }
-        return ret;
     }
 
     /**

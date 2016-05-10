@@ -1,42 +1,111 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.ac.warwick.wsbc.QuimP;
-
-// import jahuwaldt.plot.*;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DateFormat;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
-// import jahuwaldt.tools.math.*;
-// import javax.swing.*;
-// import java.awt.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- *
+ * Collection of tools used across QuimP
+ * 
  * @author Richard
+ * @author p.baniukiewicz
  */
 public class Tool {
 
+    private static final Logger LOGGER = LogManager.getLogger(Tool.class.getName());
+
     /**
-     * Get QuimP version
+     * Prepare info plate for QuimP. It contains version, names, etc
      * 
-     * @return Formatted string with QuimP version
-     * @deprecated This method should not be used due to changes in QuimP versioning scheme
-     * @todo TODO As it is used in whole QuimP, move BOA procedures here
+     * @return Formatted string with QuimP version and authors
+     * @remarks By general Tool() class is static. These methods can not be so they must be called:
+     * @code{java}
+     *  LOGGER.debug(new Tool().getQuimPversion());
+     * @endcode
      */
-    @Deprecated
-    public static String getQuimPversion() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
-        Date date = new Date();
-        System.out.println(dateFormat.format(date));
-        return "QuimP11b-(25/05/14)";
+    public String getQuimPversion() {
+        String[] quimpBuildInfo = getQuimPBuildInfo();
+        return getQuimPversion(quimpBuildInfo);
+    }
+
+    /**
+     * Prepare info plate for QuimP. It contains version, names, etc
+     * 
+     * @param quimpBuildInfo info read from jar
+     * @return Formatted string with QuimP version and authors
+     * @remarks By general Tool() class is static. These methods can not be so they must be called:
+     * @code{java}
+     *  LOGGER.debug(new Tool().getQuimPversion());
+     * @endcode
+     * @see getQuimPBuildInfo()
+     */
+    public static String getQuimPversion(String[] quimpBuildInfo) {
+        String infoPlate = "###################################\n" + "QuimP, by\n"
+                + "Richard Tyson (richard.tyson@warwick.ac.uk)\n"
+                + "Till Bretschneider (Till.Bretschneider@warwick.ac.uk)\n"
+                + "Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)\n"
+                + "###################################\n";
+        infoPlate = infoPlate.concat("\n");
+        infoPlate = infoPlate.concat("QuimP version: " + quimpBuildInfo[0]);
+        infoPlate = infoPlate.concat("\n");
+        infoPlate = infoPlate.concat(quimpBuildInfo[1]);
+        infoPlate = infoPlate.concat("\n");
+        infoPlate = infoPlate.concat(quimpBuildInfo[2]);
+        infoPlate = infoPlate.concat("\n");
+        return infoPlate;
+    }
+
+    /**
+     * Get build info read from jar file
+     * 
+     * @return Formatted strings with build info and version:
+     * -# [0] - contains only version string read from \a MANIFEST.MF
+     * -# [1] - contains formatted string with build time and name of builder read from \a MANIFEST.MF
+     * -# [2] - contains software name read from \a MANIFEST.MF
+     * @warning This method is jar-name dependent - looks for manifest with \a Implementation-Title
+     * that contains \c QuimP string.
+     */
+    public String[] getQuimPBuildInfo() {
+        String[] ret = new String[3];
+        ret[0] = "version not found in jar";
+        ret[1] = "build info not found in jar";
+        ret[2] = "name not found in jar";
+        try {
+            Enumeration<URL> resources =
+                    getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+            while (resources.hasMoreElements()) {
+                Manifest manifest = new Manifest(resources.nextElement().openStream());
+                Attributes attributes = manifest.getMainAttributes();
+                try {
+                    String val = attributes.getValue("Implementation-Title");
+                    if (val == null)
+                        continue;
+                    // name dependent part
+                    if (attributes.getValue("Implementation-Title").contains("QuimP")) {
+                        ret[1] = "Build by: " + attributes.getValue("Built-By") + " on: "
+                                + attributes.getValue("Implementation-Build");
+                        ret[0] = attributes.getValue("Implementation-Version");
+                        ret[2] = attributes.getValue("Implementation-Title");
+                        LOGGER.debug(ret);
+                    }
+                } catch (Exception e) {
+                    ; // do not care about problems - just use defaults defined on beginning
+                }
+            }
+        } catch (IOException e) {
+            ; // do not care about problems - just use defaults defined on beginning
+        }
+        return ret;
     }
 
     public static void print(double[][] a) {

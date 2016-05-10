@@ -32,10 +32,7 @@ public class Q_Analysis {
      */
     public Q_Analysis() {
         IJ.showStatus("QuimP Analysis");
-        IJ.log("##############################################\n \n" + Tool.getQuimPversion()
-                + " - QumiP Analysis plugin,\nby Richard Tyson (R.A.Tyson@warwick.ac.uk)\n\n"
-                + " & T. Bretschneider (T.Bretschneider@warwick.ac.uk)\n\n"
-                + "##############################################\n \n");
+        IJ.log(new Tool().getQuimPversion());
 
         OpenDialog od =
                 new OpenDialog("Open paramater file (.paQP)...", OpenDialog.getLastDirectory(), "");

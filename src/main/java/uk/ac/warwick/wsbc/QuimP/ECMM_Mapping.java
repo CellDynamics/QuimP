@@ -145,11 +145,7 @@ public class ECMM_Mapping {
     }
 
     private void about() {
-        IJ.log("##############################################\n \n" + Tool.getQuimPversion()
-                + " - ECMM Mapping plugin,\nby Richard Tyson (R.A.Tyson@warwick.ac.uk),\n\n"
-                + "David Epstein & T. Bretschneider, Version 3.0\n"
-                + "T.Bretschneider@warwick.ac.uk\n\n"
-                + "##############################################\n \n");
+        IJ.log(new Tool().getQuimPversion());
     }
 
     /**

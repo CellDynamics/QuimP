@@ -4,19 +4,33 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.AWTEvent;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.Polygon;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.gui.*;
+import ij.gui.DialogListener;
+import ij.gui.GenericDialog;
+import ij.gui.Overlay;
+import ij.gui.PointRoi;
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
 import ij.io.OpenDialog;
 import ij.measure.Measurements;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-
-import java.awt.*;
-import java.io.*;
 
 /**
  * Main ANA class implementing IJ PlugInFilter
@@ -35,15 +49,13 @@ public class ANA_ implements PlugInFilter, DialogListener {
     Roi outerROI, innerROI;
     FluoStats[] fluoStats;
     QParams qp;
-    private static final int m = Measurements.AREA + Measurements.INTEGRATED_DENSITY + Measurements.MEAN;
+    private static final int m =
+            Measurements.AREA + Measurements.INTEGRATED_DENSITY + Measurements.MEAN;
 
     @Override
     public int setup(String arg, ImagePlus imp) {
 
-        IJ.log("##############################################\n \n" + Tool.getQuimPversion()
-                + " - ANA plugin,\nby Richard Tyson (R.A.Tyson@warwick.ac.uk)\n\n"
-                + " & T. Bretschneider (T.Bretschneider@warwick.ac.uk)\n\n"
-                + "##############################################\n \n");
+        IJ.log(new Tool().getQuimPversion());
 
         if (imp == null) {
             IJ.error("Image required to take fluoresence measurments.");
@@ -94,8 +106,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
         try {
             do {
-                OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", OpenDialog.getLastDirectory(),
-                        ".paQP");
+                OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
+                        OpenDialog.getLastDirectory(), ".paQP");
                 if (od.getFileName() == null) {
                     return;
                 }
@@ -349,13 +361,14 @@ public class ANA_ implements PlugInFilter, DialogListener {
                     // find next vert in o1 that matches v2
                     do {
                         v = v.getNext();
-                        v.setFluoresChannel((int) Math.round(v.getX()), (int) Math.round(v.getY()), -1, ANAp.channel); // map
-                                                                                                                       // fail
-                                                                                                                       // if
-                                                                                                                       // -1.
-                                                                                                                       // fix
-                                                                                                                       // by
-                                                                                                                       // interpolation
+                        v.setFluoresChannel((int) Math.round(v.getX()), (int) Math.round(v.getY()),
+                                -1, ANAp.channel); // map
+                                                   // fail
+                                                   // if
+                                                   // -1.
+                                                   // fix
+                                                   // by
+                                                   // interpolation
                         if (vStart == v.getTrackNum()) {
                             System.out.println("ANA fail");
                             return;
@@ -471,11 +484,13 @@ public class ANA_ implements PlugInFilter, DialogListener {
             // if (!v.frozen) {
             vT = o.getHead();
             do {
-                if (vT.getTrackNum() == v.getTrackNum() || vT.getNext().getTrackNum() == v.getTrackNum()) {
+                if (vT.getTrackNum() == v.getTrackNum()
+                        || vT.getNext().getTrackNum() == v.getTrackNum()) {
                     vT = vT.getNext();
                     continue;
                 }
-                closest = ExtendedVector2d.PointToSegment(v.getPoint(), vT.getPoint(), vT.getNext().getPoint());
+                closest = ExtendedVector2d.PointToSegment(v.getPoint(), vT.getPoint(),
+                        vT.getNext().getPoint());
                 dis = ExtendedVector2d.lengthP2P(v.getPoint(), closest);
                 // System.out.println("dis: " + dis);
                 // dis=1;
@@ -653,15 +668,18 @@ public class ANA_ implements PlugInFilter, DialogListener {
                                                                           // /
                                                                           // fluoStats[store].channels[ANAp.channel].innerArea;
 
-        fluoStats[store].channels[ANAp.channel].cortexArea = fluoStats[store].area
-                - fluoStats[store].channels[ANAp.channel].innerArea; // scaled
-        fluoStats[store].channels[ANAp.channel].totalCorFluo = fluoStats[store].channels[ANAp.channel].totalFluor
-                - fluoStats[store].channels[ANAp.channel].totalInnerFluor;
-        fluoStats[store].channels[ANAp.channel].meanCorFluo = fluoStats[store].channels[ANAp.channel].totalCorFluo
-                / (outerAreaRaw - is.area); // not scaled
+        fluoStats[store].channels[ANAp.channel].cortexArea =
+                fluoStats[store].area - fluoStats[store].channels[ANAp.channel].innerArea; // scaled
+        fluoStats[store].channels[ANAp.channel].totalCorFluo =
+                fluoStats[store].channels[ANAp.channel].totalFluor
+                        - fluoStats[store].channels[ANAp.channel].totalInnerFluor;
+        fluoStats[store].channels[ANAp.channel].meanCorFluo =
+                fluoStats[store].channels[ANAp.channel].totalCorFluo / (outerAreaRaw - is.area); // not
+                                                                                                 // scaled
 
-        fluoStats[store].channels[ANAp.channel].percCortexFluo = (fluoStats[store].channels[ANAp.channel].totalCorFluo
-                / fluoStats[store].channels[ANAp.channel].totalFluor) * 100;
+        fluoStats[store].channels[ANAp.channel].percCortexFluo =
+                (fluoStats[store].channels[ANAp.channel].totalCorFluo
+                        / fluoStats[store].channels[ANAp.channel].totalFluor) * 100;
         fluoStats[store].channels[ANAp.channel].cortexWidth = ANAp.getCortexWidthScale();
     }
 
@@ -783,9 +801,13 @@ public class ANA_ implements PlugInFilter, DialogListener {
                 if (ratio < 0) {
                     ratio = 0;
                 }
-                intensityDiff = (nex.fluores[ANAp.channel].intensity - last.fluores[ANAp.channel].intensity) * ratio;
-                v.fluores[ANAp.channel].intensity = last.fluores[ANAp.channel].intensity + intensityDiff;
-                if (v.fluores[ANAp.channel].intensity < 0 || v.fluores[ANAp.channel].intensity > 255) {
+                intensityDiff =
+                        (nex.fluores[ANAp.channel].intensity - last.fluores[ANAp.channel].intensity)
+                                * ratio;
+                v.fluores[ANAp.channel].intensity =
+                        last.fluores[ANAp.channel].intensity + intensityDiff;
+                if (v.fluores[ANAp.channel].intensity < 0
+                        || v.fluores[ANAp.channel].intensity > 255) {
                     IJ.log("Error. Interpolated intensity out of range. Set to zero.");
                     v.fluores[ANAp.channel].intensity = 0;
                 }
@@ -836,8 +858,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
     }
 
     private double sampleFluo(int x, int y) {
-        double tempFlu = orgIpr.getPixelValue(x, y) + orgIpr.getPixelValue(x - 1, y) + orgIpr.getPixelValue(x + 1, y)
-                + orgIpr.getPixelValue(x, y - 1) + orgIpr.getPixelValue(x, y + 1) + orgIpr.getPixelValue(x - 1, y - 1)
+        double tempFlu = orgIpr.getPixelValue(x, y) + orgIpr.getPixelValue(x - 1, y)
+                + orgIpr.getPixelValue(x + 1, y) + orgIpr.getPixelValue(x, y - 1)
+                + orgIpr.getPixelValue(x, y + 1) + orgIpr.getPixelValue(x - 1, y - 1)
                 + orgIpr.getPixelValue(x + 1, y + 1) + orgIpr.getPixelValue(x + 1, y - 1)
                 + orgIpr.getPixelValue(x - 1, y + 1);
         tempFlu = tempFlu / 9d;
@@ -878,16 +901,18 @@ class FluoStats {
             pw.print("#p2\n#QuimP ouput - " + OUTFILE.getAbsolutePath() + "\n");
             pw.print(
                     "# Centroids are given in pixels.  Distance & speed & area measurements are scaled to micro meters\n");
-            pw.print("# Scale: " + ANAp.scale + " micro meter per pixel | Frame interval: " + ANAp.frameInterval
-                    + " sec\n");
+            pw.print("# Scale: " + ANAp.scale + " micro meter per pixel | Frame interval: "
+                    + ANAp.frameInterval + " sec\n");
             pw.print("# Frame,X-Centroid,Y-Centroid,Displacement,Dist. Traveled,"
                     + "Directionality,Speed,Perimeter,Elongation,Circularity,Area");
 
             for (int i = 0; i < s.length; i++) {
                 pw.print("\n" + s[i].frame + "," + IJ.d2s(s[i].centroid.getX(), 2) + ","
-                        + IJ.d2s(s[i].centroid.getY(), 2) + "," + IJ.d2s(s[i].displacement) + "," + IJ.d2s(s[i].dist)
-                        + "," + IJ.d2s(s[i].persistance) + "," + IJ.d2s(s[i].speed) + "," + IJ.d2s(s[i].perimiter) + ","
-                        + IJ.d2s(s[i].elongation) + "," + IJ.d2s(s[i].circularity, 3) + "," + IJ.d2s(s[i].area));
+                        + IJ.d2s(s[i].centroid.getY(), 2) + "," + IJ.d2s(s[i].displacement) + ","
+                        + IJ.d2s(s[i].dist) + "," + IJ.d2s(s[i].persistance) + ","
+                        + IJ.d2s(s[i].speed) + "," + IJ.d2s(s[i].perimiter) + ","
+                        + IJ.d2s(s[i].elongation) + "," + IJ.d2s(s[i].circularity, 3) + ","
+                        + IJ.d2s(s[i].area));
             }
             pw.print("\n#\n# Fluorescence measurements");
             writeFluo(s, pw, 0);
@@ -906,11 +931,15 @@ class FluoStats {
                 + "Cortex Area,Total Cortex Fluo., Mean Cortex Fluo., %age Cortex Fluo.");
         for (int i = 0; i < s.length; i++) {
             pw.print("\n" + s[i].frame + "," + IJ.d2s(s[i].channels[c].totalFluor) + ","
-                    + IJ.d2s(s[i].channels[c].meanFluor) + "," + IJ.d2s(s[i].channels[c].cortexWidth));
-            pw.print("," + IJ.d2s(s[i].channels[c].innerArea) + "," + IJ.d2s(s[i].channels[c].totalInnerFluor) + ","
+                    + IJ.d2s(s[i].channels[c].meanFluor) + ","
+                    + IJ.d2s(s[i].channels[c].cortexWidth));
+            pw.print("," + IJ.d2s(s[i].channels[c].innerArea) + ","
+                    + IJ.d2s(s[i].channels[c].totalInnerFluor) + ","
                     + IJ.d2s(s[i].channels[c].meanInnerFluor));
-            pw.print("," + IJ.d2s(s[i].channels[c].cortexArea) + "," + IJ.d2s(s[i].channels[c].totalCorFluo) + ","
-                    + IJ.d2s(s[i].channels[c].meanCorFluo) + "," + IJ.d2s(s[i].channels[c].percCortexFluo));
+            pw.print("," + IJ.d2s(s[i].channels[c].cortexArea) + ","
+                    + IJ.d2s(s[i].channels[c].totalCorFluo) + ","
+                    + IJ.d2s(s[i].channels[c].meanCorFluo) + ","
+                    + IJ.d2s(s[i].channels[c].percCortexFluo));
         }
     }
 
@@ -979,7 +1008,8 @@ class FluoStats {
 
     }
 
-    private static void readChannel(int c, FluoStats[] stats, BufferedReader br) throws IOException {
+    private static void readChannel(int c, FluoStats[] stats, BufferedReader br)
+            throws IOException {
         String thisLine;
         String[] split;
         int i = 0;
