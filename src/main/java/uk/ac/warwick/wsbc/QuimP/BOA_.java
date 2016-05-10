@@ -456,6 +456,7 @@ public class BOA_ implements PlugIn {
         ad.appendLine(quimpInfo[1]);
         // get list of found plugins
         ad.appendLine("List of found plugins:");
+        ad.appendDistance();
         Map<String, PluginProperties> mp = pluginFactory.getRegisterdPlugins();
         // iterate over set
         for (Map.Entry<String, PluginProperties> entry : mp.entrySet()) {
