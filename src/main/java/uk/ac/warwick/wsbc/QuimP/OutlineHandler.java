@@ -1,20 +1,26 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-import ij.*;
-import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-import java.io.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ij.IJ;
+import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
  *
  * @author tyson
  */
-public class OutlineHandler {
-
+public class OutlineHandler extends ShapeHandler<Outline> {
+    private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
     private Outline[] outlines;
     private int size;
-    private int startFrame;
-    private int endFrame;
     private QParams qp;
     public ExtendedVector2d maxCoor;
     public ExtendedVector2d minCoor;
@@ -76,7 +82,7 @@ public class OutlineHandler {
         }
     }
 
-    Outline indexGetOutline(int i) {
+    public Outline indexGetOutline(int i) {
         return outlines[i];
     }
 
@@ -89,7 +95,7 @@ public class OutlineHandler {
 
     }
 
-    private boolean readOutlines(File f) {
+    private boolean readOutlines(final File f) {
         if (!f.exists()) {
             IJ.error("Cannot locate snake file (snQP)\n'" + f.getAbsolutePath() + "'");
             return false;
@@ -128,8 +134,7 @@ public class OutlineHandler {
             // read outlines into memory
             br = new BufferedReader(new FileReader(f));
 
-            while ((thisLine = br.readLine()) != null) { // while loop begins
-                                                         // here
+            while ((thisLine = br.readLine()) != null) { // while loop begins here
                 // System.out.println(thisLine);
                 if (thisLine.startsWith("#")) {
                     continue; // skip comments
@@ -184,22 +189,21 @@ public class OutlineHandler {
                 prevn.setNext(head);
                 head.setPrev(prevn);
 
-                outlines[s] = new Outline(head, N + 1); // dont forget the head
-                                                        // node
+                Outline tmp = new Outline(head, N + 1); // dont forget the head node
+                tmp.removeVert(head); // WARN potential incompatibility with old code.
+                                      // old constructor made copy of this list and deleted
+                                      // first dummy node. Now it just covers this list
+                // make deep copy of this list
+                outlines[s] = new Outline(tmp);
                 outlines[s].updateNormales(true);
                 outlines[s].makeAntiClockwise();
                 length = outlines[s].getLength();
                 if (length > maxLength) {
                     maxLength = length;
                 }
-
-                // int c = outlines[s].countVERTS();
-                // if(c !=outlines[s].getVerts()){
-                // System.out.println("OH.234.VERTS NOT CORREECT. VERTS:
-                // "+outlines[s].getVerts()+", Count: " + c);
-                // }
-
                 s++;
+                LOGGER.trace("Outline: " + s + " head =[" + outlines[s - 1].getHead().getX() + ","
+                        + outlines[s - 1].getHead().getY() + "]");
             } // end while
             br.close();
 
@@ -226,8 +230,7 @@ public class OutlineHandler {
         fluLims = new double[3][2];
         migLimits = new double[2];
         // convLimits = new double[2];
-        curvLimits = new double[2]; // not filled until Q_Analsis run. smoothed
-                                    // curvature
+        curvLimits = new double[2]; // not filled until Q_Analsis run. smoothed curvature
 
         // cycle through all frames and find the min and max for all data
         // store min and max coor\migration\flu for plotting
@@ -284,7 +287,6 @@ public class OutlineHandler {
 
         // Set limits to equal positive and negative
         migLimits = Tool.setLimitsEqual(migLimits);
-
     }
 
     public int getSize() {
@@ -321,39 +323,27 @@ public class OutlineHandler {
 
             oV = oV.getNext();
         } while (!oV.isHead());
+        // n.calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
         outlines[frame - startFrame] = n;
     }
 
     public void writeOutlines(File outFile, boolean ECMMrun) {
         try {
-            PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto
-                                                                             // flush
-
+            PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
             pw.write("#QuimP11 node data");
             if (ECMMrun) {
                 pw.print("-ECMM");
             }
             pw.write("\n#Node Position\tX-coord\tY-coord\tOrigin\tG-Origin\tSpeed");
-            pw.write("\tFluor_Ch1\tCh1_x\tCh1_y\tFluor_Ch2\tCh2_x\tCh2_y\tFluor_CH3\tCH3_x\tCh3_y\n#");
+            pw.write(
+                    "\tFluor_Ch1\tCh1_x\tCh1_y\tFluor_Ch2\tCh2_x\tCh2_y\tFluor_CH3\tCH3_x\tCh3_y\n#");
 
             Outline o;
             for (int i = startFrame; i <= endFrame; i++) {
                 o = getOutline(i);
                 pw.write("\n#Frame " + i);
-                write(pw, o.getVerts(), o.getHead());
+                write(pw, o.getNumVerts(), o.getHead());
             }
-
-            // for (int i = 0; i < outlines.length; i++) {
-            // pw.write("\n#Frame "+(i+1));
-            // if (outlines[i] == null) {
-            // System.out.println("DEBUG writeOutlines: frame " + i + " is NULL,
-            // not writting");
-            // continue;
-            // }
-
-            // OutlineHandler.write(pw, i + 1, outlines[i].getVerts(),
-            // outlines[i].getHead());
-            // }
             pw.close();
         } catch (Exception e) {
             IJ.log("could not open out file " + outFile.getAbsolutePath());
@@ -367,10 +357,9 @@ public class OutlineHandler {
             if (outFile.exists()) {
                 outFile.delete();
             }
-            PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto
-                                                                             // flush
+            PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
             pw.print("#");
-            OutlineHandler.write(pw, o.getVerts(), o.getHead());
+            OutlineHandler.write(pw, o.getNumVerts(), o.getHead());
             pw.close();
 
         } catch (Exception e) {
@@ -381,15 +370,25 @@ public class OutlineHandler {
 
     static private void write(PrintWriter pw, int VERTS, Vert v) {
         pw.print("\n" + VERTS);
-
+        // !< off formatting tag
         do {
-            pw.print("\n" + IJ.d2s(v.coord, 6) + "\t" + IJ.d2s(v.getX(), 2) + "\t" + IJ.d2s(v.getY(), 2) + "\t"
-                    + IJ.d2s(v.fCoord, 6) + "\t" + IJ.d2s(v.gCoord, 6) + "\t" + IJ.d2s(v.distance, 6) + "\t"
-                    + IJ.d2s(v.fluores[0].intensity, 6) + "\t" + IJ.d2s(v.fluores[0].x, 0) + "\t"
-                    + IJ.d2s(v.fluores[0].y, 0) + "\t" + IJ.d2s(v.fluores[1].intensity, 6) + "\t"
-                    + IJ.d2s(v.fluores[1].x, 0) + "\t" + IJ.d2s(v.fluores[1].y, 0) + "\t"
-                    + IJ.d2s(v.fluores[2].intensity, 6) + "\t" + IJ.d2s(v.fluores[2].x, 0) + "\t"
-                    + IJ.d2s(v.fluores[2].y, 0));
+            pw.print("\n" 
+                    + IJ.d2s(v.coord, 6) + "\t" // Perimeter coord
+                    + IJ.d2s(v.getX(), 2) + "\t" // X coord
+                    + IJ.d2s(v.getY(), 2) + "\t" // Y coord
+                    + IJ.d2s(v.fCoord, 6) + "\t" // Origin
+                    + IJ.d2s(v.gCoord, 6) + "\t" // G-Origin
+                    + IJ.d2s(v.distance, 6) + "\t" // Speed
+                    + IJ.d2s(v.fluores[0].intensity, 6) + "\t" // Fluor_Ch1
+                    + IJ.d2s(v.fluores[0].x, 0) + "\t"  // Ch1_x
+                    + IJ.d2s(v.fluores[0].y, 0) + "\t" // Ch1_y
+                    + IJ.d2s(v.fluores[1].intensity, 6) + "\t" // Fluor_Ch2
+                    + IJ.d2s(v.fluores[1].x, 0) + "\t" // Ch2_x
+                    + IJ.d2s(v.fluores[1].y, 0) + "\t" // Ch2_y
+                    + IJ.d2s(v.fluores[2].intensity, 6) + "\t" // Fluor_CH3
+                    + IJ.d2s(v.fluores[2].x, 0) + "\t" // CH3_x
+                    + IJ.d2s(v.fluores[2].y, 0)); // CH3_y
+            // on formatting */
             v = v.getNext();
         } while (!v.isHead());
     }

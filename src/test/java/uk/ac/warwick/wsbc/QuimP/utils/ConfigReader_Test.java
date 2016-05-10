@@ -22,8 +22,11 @@ public class ConfigReader_Test {
     static {
         System.setProperty("log4j.configurationFile", "qlog4j2.xml");
     }
+
+    @SuppressWarnings("deprecation")
     private ConfigReader cR;
 
+    @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
         cR = new ConfigReader("src/test/resources/test.config");
@@ -33,6 +36,7 @@ public class ConfigReader_Test {
      * @test Test of reading of \c String
      * @throws ConfigReaderException
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void test_ConfigReader_case1() throws ConfigReaderException {
         String w;
@@ -46,6 +50,7 @@ public class ConfigReader_Test {
      * @post expected ConfigReaderException
      * @throws ConfigReaderException
      */
+    @SuppressWarnings("deprecation")
     @Test(expected = ConfigReaderException.class)
     public void test_ConfigReader_case2() throws ConfigReaderException {
         cR.getRawParam("meanFilter", "window");
@@ -57,6 +62,7 @@ public class ConfigReader_Test {
      * @post expected ConfigReaderException
      * @throws ConfigReaderException
      */
+    @SuppressWarnings("deprecation")
     @Test(expected = ConfigReaderException.class)
     public void test_ConfigReader_case3() throws ConfigReaderException {
         cR.getRawParam("MeanFilter", "windoW");
@@ -66,6 +72,7 @@ public class ConfigReader_Test {
      * @test Test of reading of \c String
      * @throws ConfigReaderException
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void test_ConfigReader_case4() throws ConfigReaderException {
         String w;
@@ -77,6 +84,7 @@ public class ConfigReader_Test {
      * @test Test of reading of \c int
      * @throws ConfigReaderException
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void test_getIntParam_case1() throws ConfigReaderException {
         int w;
@@ -90,6 +98,7 @@ public class ConfigReader_Test {
      * @post expected ConfigReaderException
      * @throws ConfigReaderException
      */
+    @SuppressWarnings("deprecation")
     @Test(expected = ConfigReaderException.class)
     public void test_getIntParam_case2() throws ConfigReaderException {
         int w;
@@ -101,6 +110,7 @@ public class ConfigReader_Test {
      * @test Test of reading of \c double
      * @throws ConfigReaderException
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void test_getDoubleParam_case1() throws ConfigReaderException {
         double w;
@@ -114,6 +124,7 @@ public class ConfigReader_Test {
      * @post expected nothing
      * @throws ConfigReaderException
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void test_getDoubleParam_case2() throws ConfigReaderException {
         double w;

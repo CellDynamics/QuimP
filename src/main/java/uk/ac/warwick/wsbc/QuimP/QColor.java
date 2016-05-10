@@ -16,12 +16,62 @@ import javax.vecmath.Color3f;
 public class QColor {
     public double red, green, blue;
 
+    /**
+     * Copy constructor 
+     * @param src object to copy
+     */
+    public QColor(final QColor src) {
+        red = src.red;
+        green = src.green;
+        blue = src.blue;
+    }
+
     public QColor(double r, double g, double b) {
         this.setRGB(r, g, b);
     }
 
     public void print() {
         System.out.println("R:" + red + " G: " + green + " B: " + blue);
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(blue);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(green);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(red);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof QColor))
+            return false;
+        QColor other = (QColor) obj;
+        if (Double.doubleToLongBits(blue) != Double.doubleToLongBits(other.blue))
+            return false;
+        if (Double.doubleToLongBits(green) != Double.doubleToLongBits(other.green))
+            return false;
+        if (Double.doubleToLongBits(red) != Double.doubleToLongBits(other.red))
+            return false;
+        return true;
     }
 
     public void setRGB(double r, double g, double b) {
@@ -153,7 +203,8 @@ public class QColor {
         double b = 0;
 
         if (d > max || d < min) {
-            System.out.println("Qcolor 141: d(" + d + ") not in min(" + min + ") or max(" + max + ")");
+            System.out.println(
+                    "Qcolor 141: d(" + d + ") not in min(" + min + ") or max(" + max + ")");
             System.out.flush();
             Exception e = new Exception();
             e.printStackTrace();
@@ -190,12 +241,12 @@ public class QColor {
     }
 
     static int RBBlut(byte[] reds, byte[] greens, byte[] blues) {
-        int[] r = { 0, 0, 1, 25, 49, 73, 98, 122, 146, 162, 173, 184, 195, 207, 217, 229, 240, 252, 255, 255, 255, 255,
-                255, 255, 255, 255, 255, 255, 255, 255, 255, 255 };
-        int[] g = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 35, 57, 79, 101, 117, 133, 147, 161, 175, 190, 205, 219,
-                234, 248, 255, 255, 255, 255 };
-        int[] b = { 0, 61, 96, 130, 165, 192, 220, 227, 210, 181, 151, 122, 93, 64, 35, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 35, 98, 160, 223, 255 };
+        int[] r = { 0, 0, 1, 25, 49, 73, 98, 122, 146, 162, 173, 184, 195, 207, 217, 229, 240, 252,
+                255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 };
+        int[] g = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 35, 57, 79, 101, 117, 133, 147, 161,
+                175, 190, 205, 219, 234, 248, 255, 255, 255, 255 };
+        int[] b = { 0, 61, 96, 130, 165, 192, 220, 227, 210, 181, 151, 122, 93, 64, 35, 5, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 35, 98, 160, 223, 255 };
         for (int i = 0; i < r.length; i++) {
             reds[i] = (byte) r[i];
             greens[i] = (byte) g[i];
@@ -223,10 +274,8 @@ public class QColor {
     /**
      * Create a color map
      * 
-     * @param c
-     *            choice of color map: "Summer"
-     * @param size
-     *            size of the color map
+     * @param c choice of color map: "Summer"
+     * @param size size of the color map
      * @return QColor array of length 'size'
      */
     public static QColor[] colourMap(String c, int size) {

@@ -34,6 +34,7 @@ public class QWindowBuilder_run {
         def1.put("NAME", "test");
         def1.put("window", "spinner, -0.5, 0.5, 0.1, 0");
         def1.put("SMOOTH", "spinner, -1, 10, 1, -1");
+        def1.put("Selector", "choice, option_1, option_2, option_3");
         def1.put("help",
                 "FlowLayout is the default layout manager for"
                         + " every JPanel. It simply lays out components in a"
@@ -47,6 +48,7 @@ public class QWindowBuilder_run {
         ParamList ret;
         set.setDoubleValue("Window", 0.32);
         set.setDoubleValue("SMOOTH", 8.0);
+        set.setStringValue("Selector", "option_2");
         CountDownLatch startSignal = new CountDownLatch(1);
         inst.buildWindow(def1); // main window builder
         inst.setValues(set);
@@ -64,7 +66,8 @@ public class QWindowBuilder_run {
         startSignal.await();
         ret = inst.getValues();
         LOGGER.trace("Finishing ");
-        LOGGER.debug("window=" + ret.get("window") + " smooth=" + ret.get("smooth"));
+        LOGGER.debug("window=" + ret.get("window") + " smooth=" + ret.get("smooth") + " selector="
+                + ret.get("selector"));
         inst = null;
     }
 

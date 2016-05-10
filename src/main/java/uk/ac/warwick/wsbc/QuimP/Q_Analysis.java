@@ -1,32 +1,35 @@
-/*
-* To change this template, choose Tools | Templates
-* and open the template in the editor.
-*/
 package uk.ac.warwick.wsbc.QuimP;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ij.IJ;
 import ij.ImagePlus;
-
 import ij.gui.GenericDialog;
 import ij.gui.YesNoCancelDialog;
-import ij.io.*;
-//import ij.process.ColorProcessor;
-import ij.process.*;
+import ij.io.OpenDialog;
+// import ij.process.ColorProcessor;
+import ij.process.ColorProcessor;
+import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-
-import java.io.*;
-import java.util.ArrayList;
 
 /**
  *
- * @author tyson
+ * @author rtyson
  */
 public class Q_Analysis {
-
+    private static final Logger LOGGER = LogManager.getLogger(Q_Analysis.class.getName());
     GenericDialog gd;
     OutlineHandler oH;
     QParams qp;
 
+    /**
+     * Main constructor and runner - class entry point
+     */
     public Q_Analysis() {
         IJ.showStatus("QuimP Analysis");
         IJ.log("##############################################\n \n" + Tool.getQuimPversion()
@@ -34,75 +37,74 @@ public class Q_Analysis {
                 + " & T. Bretschneider (T.Bretschneider@warwick.ac.uk)\n\n"
                 + "##############################################\n \n");
 
-        try {
-            do {
-                try {
+        OpenDialog od =
+                new OpenDialog("Open paramater file (.paQP)...", OpenDialog.getLastDirectory(), "");
+        if (od.getFileName() == null) {
+            IJ.log("Cancelled - exiting...");
+            return;
+        }
+        File paramFile = new File(od.getDirectory(), od.getFileName()); // paQP file
+        qp = new QParams(paramFile); // initialize general param storage
+        qp.readParams(); // create associated files included in paQP and read params
+        Qp.setup(qp); // copy selected data from general QParams to local storage
 
-                    OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", OpenDialog.getLastDirectory(), "");
-                    if (od.getFileName() == null) {
-                        return;
-                    }
-                    File paramFile = new File(od.getDirectory(), od.getFileName());
+        if (!run()) // run everything
+        {
+            LOGGER.warn("Q_Analysis stopped on error or it has been cancelled");
+            return; // end on run fail
+        }
+
+        File[] otherPaFiles = qp.findParamFiles(); // check whether are other paQP files
+
+        if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
+                                       // user is skipped)
+            YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
+                    "\tBatch Process?\n\n"
+                            + "Process other paQP files in the same folder with QAnalysis?"
+                            + "\n[The same parameters will be used]");
+            if (yncd.yesPressed()) {
+                ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
+                this.closeAllImages();
+
+                // if user agreed iterate over found files
+                // (except that loaded explicitly by user)
+                for (int j = 0; j < otherPaFiles.length; j++) {
+                    IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
+                    paramFile = otherPaFiles[j];
                     qp = new QParams(paramFile);
                     qp.readParams();
                     Qp.setup(qp);
-                    // System.out.println(paramFile.getAbsolutePath());
-
-                    run();
-
-                    File[] otherPaFiles = qp.findParamFiles();
-
-                    if (otherPaFiles.length > 0) {
-                        YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                                "\tBatch Process?\n\n" + "Process other paQP files in the same folder with QAnalysis?"
-                                        + "\n[The same parameters will be used]");
-                        if (yncd.yesPressed()) {
-                            ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
-                            this.closeAllImages();
-
-                            for (int j = 0; j < otherPaFiles.length; j++) {
-                                IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
-                                paramFile = otherPaFiles[j];
-                                qp = new QParams(paramFile);
-                                qp.readParams();
-                                Qp.setup(qp);
-                                Qp.useDialog = false;
-                                run();
-                                runOn.add(otherPaFiles[j].getName());
-                                this.closeAllImages();
-                            }
-                            IJ.log("\n\nBatch - Successfully ran QAnalysis on:");
-                            for (int i = 0; i < runOn.size(); i++) {
-                                IJ.log(runOn.get(i));
-                            }
-
-                        } else {
-                            return;
-                        }
+                    Qp.useDialog = false;
+                    if (!run()) {
+                        LOGGER.warn("Q_Analysis stopped on error or it has been cancelled");
+                        return;
                     }
-
-                    return;
-                } catch (IOException ioe) {
-                    IJ.error(ioe.getMessage());
-                    ioe.printStackTrace();
-                    return;// debug
+                    runOn.add(otherPaFiles[j].getName());
+                    this.closeAllImages();
                 }
-            } while (true);
-
-        } catch (Exception e) {
-            // IJ.error("Unknown exception");
-            e.printStackTrace();
+                IJ.log("\n\nBatch - Successfully ran QAnalysis on:");
+                for (int i = 0; i < runOn.size(); i++) {
+                    IJ.log(runOn.get(i));
+                }
+            } else {
+                return; // no batch processing
+            }
         }
 
         IJ.log("QuimP Analysis complete");
         IJ.showStatus("Finished");
     }
 
-    private void run() throws Exception {
+    /**
+     * Main runner - do all calculations
+     * 
+     * @return \c true when run or \c false when stopped by user (canceled) or on error
+     */
+    private boolean run() {
 
         oH = new OutlineHandler(qp);
         if (!oH.readSuccess) {
-            return;
+            return false;
         }
 
         if (oH.getSize() == 1) {
@@ -114,8 +116,8 @@ public class Q_Analysis {
         // ".tempSNQP"));
 
         if (Qp.useDialog) {
-            if (!showDialog()) {
-                throw new Exception("Dialog canceled");
+            if (!showDialog()) { // if user cancelled dialog
+                return false; // do nothing
             }
         }
 
@@ -131,8 +133,8 @@ public class Q_Analysis {
         // svgPlotter.plotTrackAnim();
         svgPlotter.plotTrackER(Qp.outlinePlot);
 
-        Qp.convexityToUnits(); // reset the covexity options to units (as they
-                               // are static)
+        Qp.convexityToUnits(); // reset the covexity options to units (as they are static)
+        return true;
     }
 
     private boolean showDialog() {
@@ -140,7 +142,8 @@ public class Q_Analysis {
 
         gd.setOKLabel("RUN");
 
-        gd.addMessage("Pixel width: " + Qp.scale + " \u00B5m\nFrame Interval: " + Qp.frameInterval + " sec");
+        gd.addMessage("Pixel width: " + Qp.scale + " \u00B5m\nFrame Interval: " + Qp.frameInterval
+                + " sec");
         // gd.addNumericField("Pixel size (microns)", Qp.scale, 2);
         // gd.addNumericField("Time between frames (secs)", Qp.frameInterval,
         // 2);
@@ -188,7 +191,7 @@ public class Q_Analysis {
 /**
  * Create spatial temporal maps from ECMM and ANA data
  *
- * @author tyson
+ * @author rtyson
  */
 class STmap {
 
@@ -281,8 +284,7 @@ class STmap {
             // cHead.print();
 
             if (tt == 0) {
-                // for the first time point the head coord node is our starting
-                // point
+                // for the first time point the head coord node is our starting point
                 zeroVert = cHead;
                 fraction = 0;
                 origin = 0;
@@ -292,10 +294,8 @@ class STmap {
                 zeroVert = closestFloor(oH.getOutline(frame), origin, 'f', fHead);
                 // System.out.println("zerovert: " + zeroVert.fCoord +", origin:
                 // " + origin + ", fHead: " + fHead.fCoord);
-                fraction = ffraction(zeroVert, origin, fHead); // position of
-                                                               // origin between
-                                                               // zeroVert and
-                                                               // zeroVert.getNext
+                fraction = ffraction(zeroVert, origin, fHead); // position of origin between
+                                                               // zeroVert and zeroVert.getNext
                 // System.out.println("resulting fraction: " + fraction);
 
                 // System.out.print("\nzeroVert.fCoord:"+zeroVert.coord+",
@@ -319,8 +319,8 @@ class STmap {
                         IJ.log("ERROR: There are missing fluoresecne values! Run ANA");
                         return;
                     }
-                    intFlu = interpolate(zeroVert.fluores[i].intensity, zeroVert.getNext().fluores[i].intensity,
-                            fraction);
+                    intFlu = interpolate(zeroVert.fluores[i].intensity,
+                            zeroVert.getNext().fluores[i].intensity, fraction);
                     fluoMaps[i].fill(tt, 0, pN, intFlu, oH.fluLims[i][1]);
                 }
             }
@@ -374,7 +374,8 @@ class STmap {
 
                 for (int i = 0; i < 3; i++) {
                     if (fluoMaps[i].isEnabled()) {
-                        intFlu = interpolate(v.fluores[i].intensity, v.getNext().fluores[i].intensity, fraction);
+                        intFlu = interpolate(v.fluores[i].intensity,
+                                v.getNext().fluores[i].intensity, fraction);
                         fluoMaps[i].fill(tt, p, pN, intFlu, oH.fluLims[i][1]);
                     }
                 }
@@ -429,7 +430,8 @@ class STmap {
                 continue;
             }
 
-            fluImP = IJ.createImage(Qp.filename + "_fluoCH" + fluoMaps[i].channel, "8-bit black", res, T, 1);
+            fluImP = IJ.createImage(Qp.filename + "_fluoCH" + fluoMaps[i].channel, "8-bit black",
+                    res, T, 1);
             fluImP.getProcessor().setPixels(fluoMaps[i].getColours());
             resize(fluImP);
             setCalibration(fluImP);
@@ -443,14 +445,16 @@ class STmap {
 
             IJ.doCommand("Red"); // this don't always work. dun know why
 
-            IJ.saveAs(fluImP, "tiff",
-                    Qp.outFile.getParent() + File.separator + Qp.filename + "_fluoCh" + fluoMaps[i].channel + ".tiff");
+            IJ.saveAs(fluImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename
+                    + "_fluoCh" + fluoMaps[i].channel + ".tiff");
         }
 
         try {
             // save images
-            IJ.saveAs(migImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename + "_motility.tiff");
-            IJ.saveAs(convImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename + "_convexity.tiff");
+            IJ.saveAs(migImP, "tiff",
+                    Qp.outFile.getParent() + File.separator + Qp.filename + "_motility.tiff");
+            IJ.saveAs(convImP, "tiff",
+                    Qp.outFile.getParent() + File.separator + Qp.filename + "_convexity.tiff");
 
             Tool.arrayToFile(coordMap, ",", new File(Qp.outFile.getPath() + "_coordMap.maQP"));
             Tool.arrayToFile(originMap, ",", new File(Qp.outFile.getPath() + "_originMap.maQP"));
@@ -539,9 +543,7 @@ class STmap {
         if (v.getNext().getTrackNum() == head.getTrackNum()) { // passed zero
             // System.out.println("\tffraction: pass zero. wrap");
             v2coord = v.getNext().fCoord + 1;
-            target = (target > v.fCoord) ? target : target + 1; // not passed
-                                                                // zero as all
-                                                                // values are
+            target = (target > v.fCoord) ? target : target + 1; // not passed zero as all values are
                                                                 // passed zero!
         } else {
             v2coord = v.getNext().fCoord;
@@ -560,15 +562,17 @@ class STmap {
 
         if (Double.isNaN(frac) || Double.isNaN(frac)) {
             System.out.println("!WARNING, frac is nan:" + frac);
-            System.out.println("\tffraction: |v:" + v.fCoord + "|v2:" + v2coord + "|tar:" + target + "|frac:" + frac);
+            System.out.println("\tffraction: |v:" + v.fCoord + "|v2:" + v2coord + "|tar:" + target
+                    + "|frac:" + frac);
             frac = 0.5;
         }
         return frac;
     }
 
     private double interpCoord(Vert v, double frac, Vert head) {
-        double v2Coord = (v.getNext().getTrackNum() == head.getTrackNum()) ? v.getNext().coord + 1 : v.getNext().coord; // pass
-                                                                                                                        // zero
+        double v2Coord = (v.getNext().getTrackNum() == head.getTrackNum()) ? v.getNext().coord + 1
+                : v.getNext().coord; // pass
+                                     // zero
         double dis = v2Coord - v.coord;
         double targ = v.coord + (dis * frac);
 
@@ -700,7 +704,8 @@ class STmap {
                 tmpV = v.getPrev();
                 distance = 0;
                 do {
-                    distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+                    distance +=
+                            ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureLocal;
                     count++;
                     tmpV = tmpV.getPrev();
@@ -710,7 +715,8 @@ class STmap {
                 distance = 0;
                 tmpV = v.getNext();
                 do {
-                    distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+                    distance +=
+                            ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureLocal;
                     count++;
                     tmpV = tmpV.getNext();
@@ -740,7 +746,8 @@ class STmap {
                 tmpV = v.getPrev();
                 distance = 0;
                 do {
-                    distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+                    distance +=
+                            ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureSmoothed;
                     tmpV = tmpV.getPrev();
                 } while (distance < Qp.sumCov / 2);
@@ -749,7 +756,8 @@ class STmap {
                 distance = 0;
                 tmpV = v.getNext();
                 do {
-                    distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+                    distance +=
+                            ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
                     totalCur += tmpV.curvatureSmoothed;
                     tmpV = tmpV.getNext();
                 } while (distance < Qp.sumCov / 2);
@@ -829,6 +837,12 @@ class STmap {
     }
 }
 
+/**
+ * Configuration class for Q_Analysis
+ * 
+ * @author rtyson
+ *
+ */
 class Qp {
 
     static public File snQPfile;
@@ -866,6 +880,11 @@ class Qp {
     public Qp() {
     }
 
+    /**
+     * Copies selected data from QParams to this object
+     * 
+     * @param qp General QuimP parameters object
+     */
     static void setup(QParams qp) {
         Qp.snQPfile = qp.snakeQP;
         Qp.scale = qp.imageScale;

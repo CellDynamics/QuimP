@@ -11,8 +11,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin;
  * 
  * @author p.baniukiewicz
  * @date 2 Feb 2016
- * @todo TODO finish documentation and add UML graphs
- * @see uk.ac.warwick.wsbc.QuimP.PluginFactory.getPluginType(File, String)
+ * @see @ref SnakePlugin
+ * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
  */
 public interface IQuimpPlugin {
 
@@ -21,6 +21,7 @@ public interface IQuimpPlugin {
     int GENERAL = 0; //!< Type of plugin not defined
     int DOES_SNAKES = 1; //!< Plugin process snakes only
     int CHANGE_SIZE = 32; //!< Plugin change size of input data
+    int MODIFY_INPUT = 64; //!< Plugin modify input data in place
 
     /**
      * Provide basic information to QuimP about plugin
@@ -84,4 +85,14 @@ public interface IQuimpPlugin {
      * @return String with version (any format) or \c null if not supported
      */
     String getVersion();
+
+    /**
+     * Get short info about plugin
+     * 
+     * One can use white characters in this string to limit line length because there is
+     * no guarantee that displayer will wrap lines. 
+     * 
+     * @return String \a about (any format) or \c null if not supported
+     */
+    String about();
 }

@@ -5,12 +5,15 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Scanner;
 
 import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import ij.process.FloatPolygon;
 
 /**
  * Simple data loader for test
@@ -62,6 +65,7 @@ public class DataLoader {
         data = new ArrayList<Double>();
         Vert = new ArrayList<Point2d>();
         Scanner scanner = new Scanner(new File(fileName));
+        scanner.useLocale(Locale.US);
         while (scanner.hasNextDouble())
             data.add(scanner.nextDouble());
         scanner.close();
@@ -92,5 +96,24 @@ public class DataLoader {
      */
     public List<Point2d> getData() {
         return Vert;
+    }
+
+    /**
+     * Return loaded data as FloatPolygon
+     * 
+     * @return Loaded polygon as FloatPolygon
+     */
+    public FloatPolygon getFloatPolygon() {
+        QuimpDataConverter qd = new QuimpDataConverter(getData());
+        return new FloatPolygon(qd.getFloatX(), qd.getFloatY());
+    }
+
+    /**
+     * Convert loaded data to string
+     * 
+     * @return String representation of loaded data
+     */
+    public String toString() {
+        return Vert.toString();
     }
 }

@@ -4,6 +4,8 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
+import java.util.Map;
+
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.LinkedStringMap;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
 
@@ -18,6 +20,25 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
 public class ParamList extends LinkedStringMap<String> {
 
     private static final long serialVersionUID = -8762132735734951785L;
+
+    /**
+     * Copy constructor
+     * @param src Source to copy
+     */
+    public ParamList(ParamList src) {
+        if (src != null) {
+            for (Map.Entry<String, String> e : src.entrySet()) {
+                put(e.getKey(), e.getValue());
+            }
+        }
+    }
+
+    /**
+     * Default constructor
+     */
+    public ParamList() {
+        super();
+    }
 
     /**
      * Store Integer value in List. Key is not case sensitive

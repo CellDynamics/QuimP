@@ -2,10 +2,13 @@
 \mainpage QuimP
 \author p.baniukiewicz
 \date 30 Nov 2015
+\date 01 Apr 2016
 \tableofcontents
 \section generalinfo General information
 \section MainDesc Description of QuimP structure
 - \subpage About "Readme" - Readme file
 - \subpage BOA "BOA Plugin" - How QuimP works - free notes about.
 - \subpage SnakePlugin "Snake Plugin Interface" - Description of plugin interface
+- \subpage ConfigurationHandling "Handling configuration" - Saving and loading various configurations
+- \subpage UsefulTools "Useful Tools" - Exemplary scripts that may be useful during development
 */

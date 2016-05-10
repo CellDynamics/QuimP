@@ -1,6 +1,8 @@
 
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.util.Arrays;
+
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
@@ -9,95 +11,207 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * vertexes and vectors.
  * 
  * @author rtyson
+ * @author p.baniukiewicz
  */
-public class Vert {
-    private ExtendedVector2d point; // x,y co-ordinates of the node
-    private ExtendedVector2d normal; // normals
-    private ExtendedVector2d tan;
-    public double charge; // charge on the vertex
-    public double distance; // distance vert migrated (actually converted to
-                            // speed by Tool.speedToScale
-
-    final FluoMeasurement[] fluores; // fluorescence channels 1-3. Intensity and
-                                     // location
-
-    // public double curvatureOLD;
-    // public double convexityOLD; // curvature, but may be a smoothed value
-    public double curvatureLocal; // curvature local to a node
-    public double curvatureSmoothed; // smoothed curvature
-    public double curvatureSum; // summed curvature over x microns
-                                // this is the value recorded into maps
-
-    private int tracknumber;
-    public boolean frozen;
-
-    public double coord; // co-ord relative to head node on current frame
-    public double fCoord; // coor relative to coord on previous frame
-    public double fLandCoord; // landing relative to previous frame
-    public double gCoord; // global co-ord relative to head node on frame 1;
-    public double gLandCoord; // landing co-cord relative to head node on frame
-                              // 1;
+public class Vert extends PointsList<Vert> {
+    public double charge; /*!< charge on the vertex */
+    public double distance; /*!< distance vert migrated (actually converted to speed by Tool.speedToScale */
+    final FluoMeasurement[] fluores = new FluoMeasurement[3]; /*!< fluorescence channels 1-3 */
+    public double curvatureLocal; /*!< curvature local to a node */
+    public double curvatureSmoothed; /*!< smoothed curvature */
+    public double curvatureSum; /*!< summed curvature over x microns this is the value recorded into maps */
+    public double coord; /*!< coord relative to head node on current frame */
+    public double fCoord; /*!< coord relative to coord on previous frame */
+    public double fLandCoord; /*!< landing relative to previous frame */
+    public double gCoord; /*!< global coord relative to head node on frame 1; */
+    public double gLandCoord; /*!< landing coord relative to head node on frame 1; */
     public double tarLandingCoord;
-
-    public QColor color;
-
-    private Vert prev;
-    private Vert next;
-    private boolean head;
-    private boolean intPoint; // vert represents an intersect point and is
-                              // temporary. Mark start end of sectors
-    public boolean snapped; // the vert has been snapped to an edge
-
+    public QColor color; /*!< color of Vert */
+    private boolean intPoint; /*!< vert represents an intersect point and is temporary. Mark start end of sectors */
+    public boolean snapped; /*!< the vert has been snapped to an edge */
     public int intsectID;
-    public int intState;; // 0 - undetermined; 1-forms valid sector;
-                          // 2-LOOSE sector; 3-forms inverted sector; 4-inverted
-                          // and loose
+    /**
+     * Internal state
+     * -# 0 - undetermined
+     * -# 1 - forms valid sector
+     * -# 2 - LOOSE sector
+     * -# 3 - forms inverted sector
+     * -# 4 - inverted and loose
+     */
+    public int intState;
 
-    private static boolean clockwise = true; // access clockwise if true
-
-    public Vert(int t) {
-        // t = tracking number
-        point = new ExtendedVector2d();
-        normal = new ExtendedVector2d();
-        tan = new ExtendedVector2d();
-        head = false;
-        intPoint = false;
-        intState = 0;
-        tracknumber = t;
-        frozen = false;
-        fCoord = -1;
-        gCoord = -1;
-
-        color = new QColor(1, 0, 0);
-
-        fluores = new FluoMeasurement[3];
-        for (int i = 0; i < 3; i++) {
-            fluores[i] = new FluoMeasurement(-2, -2, -2);
-        }
+    /**
+     * Default constructor, creates Vert element with ID=1
+     */
+    public Vert() {
+        super();
+        vertInitializer();
     }
 
+    /**
+     * Create Vert element with given ID
+     * 
+     * @param t ID of Vert
+     */
+    public Vert(int t) {
+        super(t);
+        vertInitializer();
+    }
+
+    /**
+     * Create Vert from {x,y} coordinates
+     * 
+     * @param xx x-axis coordinate
+     * @param yy y-axis coordinate
+     * @param t id of Vert
+     * @see uk.ac.warwick.wsbc.QuimP.PointListNode.PointListNode(double, double, int)
+     */
     public Vert(double xx, double yy, int t) {
-        point = new ExtendedVector2d(xx, yy);
-        tracknumber = t;
-        normal = new ExtendedVector2d();
-        tan = new ExtendedVector2d();
-        head = false;
+        super(xx, yy, t);
+        vertInitializer();
+    }
+
+    /**
+     * Copy constructor. Copy properties of Vert
+     * 
+     * Previous or next points are not copied
+     * 
+     * @param src Source Vert
+     */
+    public Vert(final Vert src) {
+        super(src);
+        charge = src.charge;
+        distance = src.distance;
+        for (int i = 0; i < 3; i++)
+            fluores[i] = new FluoMeasurement(src.fluores[i]);
+        curvatureLocal = src.curvatureLocal;
+        curvatureSmoothed = src.curvatureSmoothed;
+        curvatureSum = src.curvatureSum;
+        coord = src.coord;
+        fCoord = src.fCoord;
+        fLandCoord = src.fLandCoord;
+        gCoord = src.gCoord;
+        gLandCoord = src.gLandCoord;
+        tarLandingCoord = src.tarLandingCoord;
+        color = new QColor(src.color);
+        intPoint = src.intPoint;
+        snapped = src.snapped;
+        intsectID = src.intsectID;
+        intState = src.intState;
+    }
+
+    /**
+     * Initializers for Vert object
+     */
+    private void vertInitializer() {
         intPoint = false;
         intState = 0;
-        gCoord = -1;
         fCoord = -1;
-
+        gCoord = -1;
         color = new QColor(1, 0, 0);
-
-        fluores = new FluoMeasurement[3];
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++)
             fluores[i] = new FluoMeasurement(-2, -2, -2);
-        }
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        long temp;
+        temp = Double.doubleToLongBits(charge);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((color == null) ? 0 : color.hashCode());
+        temp = Double.doubleToLongBits(coord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(curvatureLocal);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(curvatureSmoothed);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(curvatureSum);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(distance);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(fCoord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(fLandCoord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + Arrays.hashCode(fluores);
+        temp = Double.doubleToLongBits(gCoord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(gLandCoord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + (intPoint ? 1231 : 1237);
+        result = prime * result + intState;
+        result = prime * result + intsectID;
+        result = prime * result + (snapped ? 1231 : 1237);
+        temp = Double.doubleToLongBits(tarLandingCoord);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (!(obj instanceof Vert))
+            return false;
+        Vert other = (Vert) obj;
+        if (Double.doubleToLongBits(charge) != Double.doubleToLongBits(other.charge))
+            return false;
+        if (color == null) {
+            if (other.color != null)
+                return false;
+        } else if (!color.equals(other.color))
+            return false;
+        if (Double.doubleToLongBits(coord) != Double.doubleToLongBits(other.coord))
+            return false;
+        if (Double.doubleToLongBits(curvatureLocal) != Double
+                .doubleToLongBits(other.curvatureLocal))
+            return false;
+        if (Double.doubleToLongBits(curvatureSmoothed) != Double
+                .doubleToLongBits(other.curvatureSmoothed))
+            return false;
+        if (Double.doubleToLongBits(curvatureSum) != Double.doubleToLongBits(other.curvatureSum))
+            return false;
+        if (Double.doubleToLongBits(distance) != Double.doubleToLongBits(other.distance))
+            return false;
+        if (Double.doubleToLongBits(fCoord) != Double.doubleToLongBits(other.fCoord))
+            return false;
+        if (Double.doubleToLongBits(fLandCoord) != Double.doubleToLongBits(other.fLandCoord))
+            return false;
+        if (!Arrays.equals(fluores, other.fluores))
+            return false;
+        if (Double.doubleToLongBits(gCoord) != Double.doubleToLongBits(other.gCoord))
+            return false;
+        if (Double.doubleToLongBits(gLandCoord) != Double.doubleToLongBits(other.gLandCoord))
+            return false;
+        if (intPoint != other.intPoint)
+            return false;
+        if (intState != other.intState)
+            return false;
+        if (intsectID != other.intsectID)
+            return false;
+        if (snapped != other.snapped)
+            return false;
+        if (Double.doubleToLongBits(tarLandingCoord) != Double
+                .doubleToLongBits(other.tarLandingCoord))
+            return false;
+        return true;
     }
 
     public void print(String s) {
-        System.out.print(s + "vert: " + tracknumber + ", x:" + getX() + ", y:" + getY() + ", coord: " + coord
-                + ", fCoord: " + fCoord + ", gCoord: " + gCoord);
+        System.out.print(s + "vert: " + tracknumber + ", x:" + getX() + ", y:" + getY()
+                + ", coord: " + coord + ", fCoord: " + fCoord + ", gCoord: " + gCoord);
         if (intPoint)
             System.out.print(", isIntPoint (" + intsectID + ")");
         if (head)
@@ -105,154 +219,30 @@ public class Vert {
         System.out.println("");
     }
 
-    public double getX() {
-        // get X space co-ordinate
-        return point.getX();
-    }
-
-    public double getY() {
-        // get X space co-ordinate
-        return point.getY();
-    }
-
-    public void setX(double x) {
-        // set X space co-ordinate
-        point.setX(x);
-    }
-
-    public void setY(double y) {
-        // set X space co-ordinate
-        point.setY(y);
-    }
-
-    public Vert getPrev() {
-        // get next node in chain (prev if not clockwise)
-        if (clockwise) {
-            return prev;
-        } else {
-            return next;
-        }
-    }
-
-    public Vert getNext() {
-        // get prev node in chain (next if not clockwise)
-        if (clockwise) {
-            return next;
-        } else {
-            return prev;
-        }
-    }
-
-    public void setPrev(Vert n) {
-        if (clockwise) {
-            prev = n;
-        } else {
-            next = n;
-        }
-    }
-
-    public void setNext(Vert n) {
-        if (clockwise) {
-            next = n;
-        } else {
-            prev = n;
-        }
-    }
-
-    public static void setClockwise(boolean b) {
-        Vert.clockwise = b;
-    }
-
-    public ExtendedVector2d getPoint() {
-        return point;
-    }
-
-    public ExtendedVector2d getNormal() {
-        return normal;
-    }
-
-    public void setNormal(double x, double y) {
-        normal.setX(x);
-        normal.setY(y);
-    }
-    //
-
-    public ExtendedVector2d getTangent() {
-        return tan;
-    }
-
-    public int getTrackNum() {
-        return tracknumber;
-    }
-
-    public void setTrackNum(int b) {
-        tracknumber = b;
-    }
-
-    public boolean isHead() {
-        return head;
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Vert [charge=" + charge + ", distance=" + distance + ", fluores="
+                + Arrays.toString(fluores) + ", curvatureLocal=" + curvatureLocal
+                + ", curvatureSmoothed=" + curvatureSmoothed + ", curvatureSum=" + curvatureSum
+                + ", coord=" + coord + ", fCoord=" + fCoord + ", fLandCoord=" + fLandCoord
+                + ", gCoord=" + gCoord + ", gLandCoord=" + gLandCoord + ", tarLandingCoord="
+                + tarLandingCoord + ", color=" + color + ", intPoint=" + intPoint + ", snapped="
+                + snapped + ", intsectID=" + intsectID + ", intState=" + intState + ", point="
+                + point + ", tracknumber=" + tracknumber + ", position=" + position + "]";
     }
 
     public boolean isIntPoint() {
         return intPoint;
     }
 
-    public void setHead(boolean t) {
-        head = t;
-    }
-
     public void setIntPoint(boolean t, int i) {
         intPoint = t;
         intsectID = i;
         tracknumber = -1;
-    }
-
-    public void updateNormale(boolean inner) {
-        // updates the normal (must point inwards)
-        clockwise = true; // just in case
-        tan = calcTan(); // tangent
-
-        // inner norma X = -ve Y, Y = +ve X
-        // inner norma X = +ve Y, Y = -ve X //
-
-        if (!inner) { // switch around if expanding snake
-            normal.setX(-tan.getY());
-            normal.setY(tan.getX());
-        } else {
-            normal.setX(tan.getY());
-            normal.setY(-tan.getX());
-        }
-    }
-
-    private ExtendedVector2d calcTan() {
-        // calulate tangent at Vert n (i.e. unit vector between neighbours)
-        // calc a unit vector towards neighbouring nodes and then a unit vec
-        // between their ends
-        // direction important for normale calculation. Always calc tan as if
-        // clockwise
-
-        ExtendedVector2d unitVecLeft = ExtendedVector2d.unitVector(point, prev.getPoint());
-        ExtendedVector2d unitVecRight = ExtendedVector2d.unitVector(point, next.getPoint());
-
-        ExtendedVector2d pointLeft = new ExtendedVector2d();
-        pointLeft.setX(getX());
-        pointLeft.setY(getY());
-        pointLeft.addVec(unitVecLeft);
-
-        ExtendedVector2d pointRight = new ExtendedVector2d();
-        pointRight.setX(getX());
-        pointRight.setY(getY());
-        pointRight.addVec(unitVecRight);
-
-        return ExtendedVector2d.unitVector(pointLeft, pointRight);
-    }
-
-    public static void randDirection() {
-        if (Math.random() < 0.5) {
-            clockwise = true;
-        } else {
-            clockwise = false;
-        }
     }
 
     public void setLandingCoord(ExtendedVector2d p, Vert edge) {
@@ -274,8 +264,8 @@ public class Vert {
         fLandCoord = calcLanding(edge.coord, edge2.coord, prop);
 
         if (gLandCoord >= 1 || gLandCoord < 0 || fLandCoord >= 1 || fLandCoord < 0) {
-            System.out.println("Vert253:setLandingCoord-Error in landing coord\n\t" + "gLandCoord= " + gLandCoord
-                    + ", fLandCoord = " + fLandCoord);
+            System.out.println("Vert253:setLandingCoord-Error in landing coord\n\t" + "gLandCoord= "
+                    + gLandCoord + ", fLandCoord = " + fLandCoord);
 
         }
 
@@ -314,16 +304,19 @@ public class Vert {
         }
 
         if (landing < 0 || landing >= 1 || Double.isNaN(landing)) {
-            System.out.println("Vert295:calcLanding ERROR in landing coord:\n\t" + "landing:" + IJ.d2s(landing)
-                    + ", coordA=" + coordA + ", coorB=" + coordB + ", proportion=" + prop);
+            System.out.println(
+                    "Vert295:calcLanding ERROR in landing coord:\n\t" + "landing:" + IJ.d2s(landing)
+                            + ", coordA=" + coordA + ", coorB=" + coordB + ", proportion=" + prop);
         }
         return landing;
     }
 
     public void calcCurvatureLocal() {
 
-        ExtendedVector2d edge1 = ExtendedVector2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
-        ExtendedVector2d edge2 = ExtendedVector2d.vecP2P(this.getPoint(), this.getNext().getPoint());
+        ExtendedVector2d edge1 =
+                ExtendedVector2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
+        ExtendedVector2d edge2 =
+                ExtendedVector2d.vecP2P(this.getPoint(), this.getNext().getPoint());
 
         double angle = ExtendedVector2d.angle(edge1, edge2) * (180 / Math.PI); // convert
                                                                                // to

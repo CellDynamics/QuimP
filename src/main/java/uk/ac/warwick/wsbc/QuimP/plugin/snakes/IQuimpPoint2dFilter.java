@@ -11,8 +11,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * General interface that defines filter run on points in euclidean space
  * 
  * @author p.baniukiewicz
- * @todo TODO Finish documentation
- * @todo TODO General specification E may not be useful here as QuimP always
+ * @see @ref SnakePlugin
+ * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
+ * @todo TODO Replace in future by IQuimpSnakeFilter
  */
 public interface IQuimpPoint2dFilter extends IQuimpPlugin {
 

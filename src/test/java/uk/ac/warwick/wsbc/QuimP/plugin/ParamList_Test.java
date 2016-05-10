@@ -95,4 +95,19 @@ public class ParamList_Test {
         l.remove("REM", "2");
         assertFalse(l.containsKey("rem"));
     }
+
+    @Test
+    public void testShallowCopy() {
+        HashMap<String, String> s = new HashMap<>();
+        s.put("key1", "df");
+        s.put("key2", "BH");
+        l.putAll(s);
+        assertTrue(l.containsKey("KEY1") && l.containsKey("KEY2"));
+
+        ParamList copy = new ParamList(l); // make shallow copy
+        assertTrue(copy.containsKey("KEY1") && copy.containsKey("KEY2"));
+        assertEquals("df", copy.get("KEY1"));
+        assertEquals("BH", copy.get("KEY2"));
+
+    }
 }

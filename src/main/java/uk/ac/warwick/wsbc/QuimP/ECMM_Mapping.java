@@ -1,21 +1,27 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.io.File;
+import java.util.ArrayList;
+// import java.util.Vector;
+import java.util.Random;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Richard Tyson. 23/09/2009. ECM Mapping Systems Biology DTC, Warwick
  * University.
  */
-import ij.*;
-//import java.awt.*;
-import ij.gui.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+// import java.awt.*;
+import ij.gui.NewImage;
+import ij.gui.YesNoCancelDialog;
 import ij.io.OpenDialog;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-
-import java.io.*;
-import java.util.ArrayList;
-//import java.util.Vector;
-import java.util.Random;
 
 /**
  * Main ECMM implementation class.
@@ -24,6 +30,12 @@ import java.util.Random;
  *
  */
 public class ECMM_Mapping {
+
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
+    @SuppressWarnings("unused")
+    private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 
     OutlineHandler oH, outputH;
     static ECMplot plot;
@@ -67,8 +79,8 @@ public class ECMM_Mapping {
         try {
             do {
 
-                OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", OpenDialog.getLastDirectory(),
-                        ".paQP");
+                OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
+                        OpenDialog.getLastDirectory(), ".paQP");
                 if (od.getFileName() == null) {
                     return;
                 }
@@ -82,9 +94,11 @@ public class ECMM_Mapping {
                 File[] otherPaFiles = qp.findParamFiles();
 
                 if (otherPaFiles.length > 0) {
-                    YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                            "\tBatch Process?\n\n" + "Process other paQP files in the same folder with ECMM?\n"
-                                    + "[Files already run through ECMM will be skipped!]");
+                    YesNoCancelDialog yncd =
+                            new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
+                                    "\tBatch Process?\n\n"
+                                            + "Process other paQP files in the same folder with ECMM?\n"
+                                            + "[Files already run through ECMM will be skipped!]");
                     if (yncd.yesPressed()) {
                         ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
                         ArrayList<String> skipped = new ArrayList<String>(otherPaFiles.length);
@@ -96,7 +110,8 @@ public class ECMM_Mapping {
                             qp = new QParams(paramFile);
                             qp.readParams();
                             if (!qp.ecmmHasRun) {
-                                System.out.println("Running on " + otherPaFiles[j].getAbsolutePath());
+                                System.out
+                                        .println("Running on " + otherPaFiles[j].getAbsolutePath());
                                 runFromFile();
                                 runOn.add(otherPaFiles[j].getName());
                             } else {
@@ -132,12 +147,13 @@ public class ECMM_Mapping {
     private void about() {
         IJ.log("##############################################\n \n" + Tool.getQuimPversion()
                 + " - ECMM Mapping plugin,\nby Richard Tyson (R.A.Tyson@warwick.ac.uk),\n\n"
-                + "David Epstein & T. Bretschneider, Version 3.0\n" + "T.Bretschneider@warwick.ac.uk\n\n"
+                + "David Epstein & T. Bretschneider, Version 3.0\n"
+                + "T.Bretschneider@warwick.ac.uk\n\n"
                 + "##############################################\n \n");
     }
 
     /**
-     * MAin executive for ECMM processing
+     * Main executive for ECMM processing
      */
     private void runFromFile() {
         oH = new OutlineHandler(qp);
@@ -169,8 +185,7 @@ public class ECMM_Mapping {
 
     }
 
-    public OutlineHandler runByANA(OutlineHandler m, ImageProcessor Ipr, double d) { // ana
-                                                                                     // uses
+    public OutlineHandler runByANA(OutlineHandler m, ImageProcessor Ipr, double d) { // ana uses
                                                                                      // this
         // IJ.log("ECM Mapping (Memory) - R Tyson");
         oH = m;
@@ -224,8 +239,11 @@ public class ECMM_Mapping {
                 o1.setResolution(Math.abs(ECMp.markerRes));
             }
         }
+        // LOGGER.trace("Outline o1:head =[" + o1.getHead().getX() + "," + o1.getHead().getY() +
+        // "]");
         o1.resetAllCoords();
         o1.clearFluores();
+        o1.calcCentroid(); // TODO this should be called as in case of Snakes
 
         outputH.save(o1, f);
         Outline o2;
@@ -237,7 +255,8 @@ public class ECMM_Mapping {
                 ECMp.plot = true;
             }
             if (o1.checkCoordErrors()) {
-                IJ.error("There was an error in tracking due to a bug (frame " + (f) + ")" + "\nPlease try again");
+                IJ.error("There was an error in tracking due to a bug (frame " + (f) + ")"
+                        + "\nPlease try again");
                 break;
             }
 
@@ -357,21 +376,16 @@ public class ECMM_Mapping {
                 // check if points on top of each other
                 if (nB.getX() == nA.getX() && nB.getY() == nA.getY()) {
                     // IJ.log(" outline points overlap-fixed");
-                    nA.setX(nA.getX() + (rg.nextDouble() * 0.5) + 0.01); // use
-                                                                         // a
-                                                                         // minimum
-                                                                         // nudge
-                                                                         // of
-                                                                         // 0.01
-                                                                         // (imageJ
-                                                                         // pixel
+                    nA.setX(nA.getX() + (rg.nextDouble() * 0.5) + 0.01); // use a minimum nudge of
+                                                                         // 0.01 (imageJ pixel
                                                                          // accurracy
                     nA.setY(nA.getY() + (rg.nextDouble() * 0.5) + 0.01);
                 }
 
                 // check if lines are parallel
-                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(),
-                        nA.getNext().getY(), nB.getX(), nB.getY(), nB.getNext().getX(), nB.getNext().getY(), intersect);
+                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(),
+                        nA.getNext().getX(), nA.getNext().getY(), nB.getX(), nB.getY(),
+                        nB.getNext().getX(), nB.getNext().getY(), intersect);
                 if (state == -1 || state == -2) {
                     // IJ.log(" outline parrallel -fixed");
                     nA.setX(nA.getX() + (rg.nextDouble() * 0.5) + 0.01);
@@ -397,8 +411,7 @@ class Mapping {
         o2 = oo2;
         ECMp.numINTS = 0;
 
-        if (ECMp.ANA || ECMp.forceNoSectors) { // for ANA force no intersection
-                                               // points
+        if (ECMp.ANA || ECMp.forceNoSectors) { // for ANA force no intersection points
             insertFake();
             o1.updateNormales(true);
             o2.updateNormales(true);
@@ -452,12 +465,13 @@ class Mapping {
 
         nA = o1.getHead();
         do {
-            nB = o2.getHead(); // a different outline so no problem with
-                               // adjacent edges being flagged as crossing
+            nB = o2.getHead(); // a different outline so no problem with adjacent edges being
+                               // flagged as crossing
             // edgeBcount = 1;
             do {
-                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(),
-                        nA.getNext().getY(), nB.getX(), nB.getY(), nB.getNext().getX(), nB.getNext().getY(), intersect);
+                state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(),
+                        nA.getNext().getX(), nA.getNext().getY(), nB.getX(), nB.getY(),
+                        nB.getNext().getX(), nB.getNext().getY(), intersect);
 
                 if (state == 1) {
                     // result.print("intersect at : ");
@@ -502,9 +516,9 @@ class Mapping {
     // }
 
     private void insertFake() {
-        // insert one fake intersect point just after the heads
-        // done when no intersections exist
-        ExtendedVector2d pos = ExtendedVector2d.vecP2P(o1.getHead().getPoint(), o1.getHead().getNext().getPoint());
+        // insert one fake intersect point just after the heads done when no intersections exist
+        ExtendedVector2d pos =
+                ExtendedVector2d.vecP2P(o1.getHead().getPoint(), o1.getHead().getNext().getPoint());
         pos.multiply(0.5);
         pos.addVec(o1.getHead().getPoint()); // half way between head and next
                                              // vert
@@ -516,8 +530,7 @@ class Mapping {
         //
         pos = ExtendedVector2d.vecP2P(o2.getHead().getPoint(), o2.getHead().getNext().getPoint());
         pos.multiply(0.5);
-        pos.addVec(o2.getHead().getPoint()); // half way between head and next
-                                             // vert
+        pos.addVec(o2.getHead().getPoint()); // half way between head and next vert
 
         temp = o2.insertVert(o2.getHead());
         temp.setX(pos.getX());
@@ -531,8 +544,7 @@ class Mapping {
         // make sure the intersect points form proper sectors
         // by removing intersectiosn that form inverted sectors
 
-        boolean valid = true; // made false if an inverse or loose sector is
-                              // found
+        boolean valid = true; // made false if an inverse or loose sector is found
 
         Vert v1 = o1.getHead();
         Vert v2, v1p, v2p, v2m;
@@ -719,9 +731,8 @@ class Mapping {
     // }
 
     private void rebuildInts() {
-        // attempts to remove the correct intersects to leave only valid
-        // intersections. Done by adding back in inverted ints found by
-        // findInvertedInts()
+        // attempts to remove the correct intersects to leave only valid intersections. Done by
+        // adding back in inverted ints found by findInvertedInts()
 
         System.out.println("Rebuilding intersects");
         // find a good sector to start with (intState==1)
@@ -748,7 +759,8 @@ class Mapping {
             } while (!v1.isHead());
         }
         if (!found) {
-            System.out.println("    ISSUE! ECMM.01 - NO valid sectors exist! (guessing correct sectors)");
+            System.out.println(
+                    "    ISSUE! ECMM.01 - NO valid sectors exist! (guessing correct sectors)");
             v1 = Outline.findIntersect(v1, 4);
         }
 
@@ -756,8 +768,8 @@ class Mapping {
         Vert v2 = Outline.findIntersect(o2.getHead(), v1.intsectID);
         // System.out.println("done finding a start");
 
-        // from v1, retain intersect points that allow building of good sectors,
-        // and delete the others.
+        // from v1, retain intersect points that allow building of good sectors, and delete the
+        // others.
         int startingInt = v1.intsectID;
         Vert v1p, v2p, v1pp, v2pp;
         double ratio1, ratio2; // ratio of sector lenghs for 2 possible
@@ -928,8 +940,7 @@ class Mapping {
 
         if (ECMp.numINTS == 0) {
             // IJ.error("NO INTERSECTS");
-            System.out.println("No Intersects"); // should never happen. fake
-                                                 // ones insterted
+            System.out.println("No Intersects"); // should never happen. fake ones insterted
         }
         sectors = new Sector[ECMp.numINTS];
 
@@ -958,12 +969,8 @@ class Mapping {
                 if (i == 0) {
                     sectors[i] = new Sector(i);
                     sectors[i].setStarts(vo1, vo2);
-                    sectors[ECMp.numINTS - 1] = new Sector(ECMp.numINTS - 1); // set
-                                                                              // as
-                                                                              // ends
-                                                                              // for
-                                                                              // last
-                                                                              // sector
+                    sectors[ECMp.numINTS - 1] = new Sector(ECMp.numINTS - 1); // set as ends for
+                                                                              // last sector
                     // sectors[INTS - 1].setEnds(vo1, vo2);
                 } else if (i == ECMp.numINTS - 1) {
                     sectors[i].setStarts(vo1, vo2);
@@ -980,8 +987,7 @@ class Mapping {
             sectors[0].constructWhole(o1.calcArea(), o2.calcArea());
         } else {
             for (int i = 0; i < ECMp.numINTS; i++) {
-                sectors[i].construct(); // calc lengths, determin exp or contr,
-                                        // make charges
+                sectors[i].construct(); // calc lengths, determin exp or contr, make charges
                 // sectors[i].showPlot();
             }
         }
@@ -997,8 +1003,7 @@ class Mapping {
         Vert currentMapVert = mapHead;
         for (int i = 0; i < sectors.length; i++) {
             s = sectors[i];
-            Vert v = s.getMigStart().getNext(); // starting vert, don't migrate
-                                                // the intpoint
+            Vert v = s.getMigStart().getNext(); // starting vert, don't migrate the intpoint
 
             do {
                 // if (ECMp.chargeDensity != -1) { //nar. polar charges sort
@@ -1025,11 +1030,10 @@ class Mapping {
                 }
 
                 newVert = mappedOutline.insertVert(currentMapVert);
-                newVert.tarLandingCoord = v.fLandCoord; // so we always have a
-                                                        // reference to where we
+                newVert.tarLandingCoord = v.fLandCoord; // so we always have a reference to where we
                                                         // landed
-                if (s.expansion) { // expanding or retracting based on area
-                                   // change (not length of sector)
+                if (s.expansion) { // expanding or retracting based on area change (not length of
+                                   // sector)
                     newVert.distance = -v.distance; // ?????????????? why neg
                 } else {
                     newVert.distance = v.distance;
@@ -1167,10 +1171,11 @@ class Sector {
     public void construct() {
         // calc lengths, determin expansion, set charges
         calcLengths();
-        double sectorTriArea = ExtendedVector2d.triangleArea(startO1.getPoint(), startO1.getNext().getPoint(),
-                startO2.getNext().getPoint()); // left or right? Use the "left"
-                                               // algorithm (sign of triangle
-                                               // area)
+        double sectorTriArea = ExtendedVector2d.triangleArea(startO1.getPoint(),
+                startO1.getNext().getPoint(), startO2.getNext().getPoint()); // left or right? Use
+                                                                             // the "left" algorithm
+                                                                             // (sign of triangle
+                                                                             // area)
 
         if ((lengthO1 > lengthO2) || ECMp.forceForwardMapping) {
             forwardMap = true;
@@ -1260,14 +1265,14 @@ class Sector {
 
     }
 
-    public void constructWhole(double area1, double area2) { // no intersects
-                                                             // exist
+    public void constructWhole(double area1, double area2) { // no intersects exist
         //
         Outline innerCharges, outerCharges;
 
         calcLengths();
 
-        if (((lengthO1 > lengthO2) || ECMp.forceForwardMapping || ECMp.ANA) && !ECMp.forceBackwardMapping) {
+        if (((lengthO1 > lengthO2) || ECMp.forceForwardMapping || ECMp.ANA)
+                && !ECMp.forceBackwardMapping) {
             forwardMap = true;
             migCharges = formCharges(startO1);
             tarCharges = formCharges(startO2);
@@ -1398,7 +1403,8 @@ class Sector {
         double cDis;
         Vert closest = v;
         do {
-            cDis = ExtendedVector2d.distPointToSegment(tv.getPoint(), v.getPoint(), v.getNext().getPoint());
+            cDis = ExtendedVector2d.distPointToSegment(tv.getPoint(), v.getPoint(),
+                    v.getNext().getPoint());
             if (cDis < dis) {
                 closest = v;
                 dis = cDis;
@@ -1410,7 +1416,8 @@ class Sector {
         newVert.setTrackNum(-35);
         newVert.setX(tv.getX());
         newVert.setY(tv.getY());
-        ExtendedVector2d normal = new ExtendedVector2d(tv.getNormal().getX(), tv.getNormal().getY());
+        ExtendedVector2d normal =
+                new ExtendedVector2d(tv.getNormal().getX(), tv.getNormal().getY());
         normal.multiply(outerNormal * ECMp.w);
         newVert.getPoint().addVec(normal);
         newVert.updateNormale(true);
@@ -1424,8 +1431,7 @@ class Sector {
     private void chargesPolygon() {
         ArrayList<ExtendedVector2d> points = new ArrayList<ExtendedVector2d>();
 
-        Vert v = migCharges.getHead(); // get charges from head to int point,
-                                       // forward
+        Vert v = migCharges.getHead(); // get charges from head to int point, forward
         do {
 
             points.add(v.getPoint());
@@ -1512,8 +1518,8 @@ class Sector {
     // }
 
     private FloatPolygon ioPolygons(Outline charges) { // in and out polygons
-        float[] x = new float[charges.getVerts()];
-        float[] y = new float[charges.getVerts()];
+        float[] x = new float[charges.getNumVerts()];
+        float[] y = new float[charges.getNumVerts()];
 
         int i = 0;
         Vert v = charges.getHead();
@@ -1670,8 +1676,7 @@ class ODEsolver {
             ECMp.its++;
         }
 
-        if (ECMp.plot && !v.snapped && ECMp.drawFails) { // mark the start point
-                                                         // of failed nodes
+        if (ECMp.plot && !v.snapped && ECMp.drawFails) { // mark the start point of failed nodes
             ECMM_Mapping.plot.setColor(1, 0, 0);
             // p.print(v.getTrackNum() + "p: ");
             // pp.print(v.getTrackNum() + "pp: ");
@@ -1777,8 +1782,8 @@ class ODEsolver {
         return totalF;
     }
 
-    private static void forceP(ExtendedVector2d force, ExtendedVector2d p, ExtendedVector2d pQ, double q,
-            double power) {
+    private static void forceP(ExtendedVector2d force, ExtendedVector2d p, ExtendedVector2d pQ,
+            double q, double power) {
         double r = ExtendedVector2d.lengthP2P(pQ, p);
         // System.out.println("\t r = " + r);
         if (r == 0) {
@@ -1824,7 +1829,8 @@ class ODEsolver {
              *
              */
 
-            forceLpolar(field, p, v.getPoint(), v.getNext().getPoint(), ECMp.migQ, ECMp.migPower, polarDir);
+            forceLpolar(field, p, v.getPoint(), v.getNext().getPoint(), ECMp.migQ, ECMp.migPower,
+                    polarDir);
 
             totalF.addVec(field);
             v = v.getNext();
@@ -1842,7 +1848,8 @@ class ODEsolver {
              *
              */
 
-            forceLpolar(field, p, v.getPoint(), v.getNext().getPoint(), ECMp.tarQ, ECMp.tarPower, polarDir);
+            forceLpolar(field, p, v.getPoint(), v.getNext().getPoint(), ECMp.tarQ, ECMp.tarPower,
+                    polarDir);
 
             totalF.addVec(field);
             v = v.getNext();
@@ -1899,7 +1906,7 @@ class ODEsolver {
 /**
  * Container class holding parameters related to ECMM analysis.
  * 
- * @author baniuk
+ * @author rtyson
  *
  */
 class ECMp {
@@ -1945,6 +1952,7 @@ class ECMp {
     static boolean drawFails;
     static boolean saveTemp;
     static boolean inspectSectors;
+    static boolean preserveHeads = false; //!< true if original head should be preserved
 
     public ECMp() {
     }
@@ -1952,8 +1960,7 @@ class ECMp {
     /**
      * Defines default values for ECMM algorithm
      * 
-     * @param maxCellLength
-     *            Maximal length of cell
+     * @param maxCellLength Maximal length of cell
      */
     public static void setParams(double maxCellLength) {
         maxCellSize = maxCellLength / Math.PI; // guess cell diameter
@@ -1996,13 +2003,11 @@ class ECMp {
     /**
      * Fills ECMp fields with values from previous analysis (master paQP file)
      * 
-     * @param qp
-     *            Master configuration file
+     * @param qp  Master configuration file
      */
     static void setup(QParams qp) {
         INFILE = qp.snakeQP;
-        OUTFILE = new File(ECMp.INFILE.getAbsolutePath()); // output file
-                                                           // (.snQP) file
+        OUTFILE = new File(ECMp.INFILE.getAbsolutePath()); // output file (.snQP) file
         scale = qp.imageScale;
         frameInterval = qp.frameInterval;
         // markerRes = qp.nodeRes;
@@ -2016,7 +2021,7 @@ class ECMp {
 /**
  * Class responsible for plotting ECMM outlines during computations
  * 
- * @author baniuk
+ * @author rtyson
  *
  */
 class ECMplot {
@@ -2148,8 +2153,10 @@ class ECMplot {
     public void drawCross(ExtendedVector2d a, int s) {
         ExtendedVector2d p = new ExtendedVector2d(a.getX(), a.getY());
         relocate(p);
-        imProc.drawLine((int) p.getX() - s, (int) p.getY() - s, (int) p.getX() + s, (int) p.getY() + s);
-        imProc.drawLine((int) p.getX() + s, (int) p.getY() - s, (int) p.getX() - s, (int) p.getY() + s);
+        imProc.drawLine((int) p.getX() - s, (int) p.getY() - s, (int) p.getX() + s,
+                (int) p.getY() + s);
+        imProc.drawLine((int) p.getX() + s, (int) p.getY() - s, (int) p.getX() - s,
+                (int) p.getY() + s);
     }
 
     public void repaint() {

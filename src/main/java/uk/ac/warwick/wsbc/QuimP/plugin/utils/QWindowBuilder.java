@@ -5,10 +5,14 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
 import java.awt.BorderLayout;
+import java.awt.Choice;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
@@ -85,12 +89,17 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * \c RESERVED_KEYS is list of reserved keys that are not UI elements. They are
  * processed in different way.
  * 
+ * Other behavior:
+ * By default on close or when user clicked Cancel window is hided only, not destroyed. This is 
+ * due to preservation of all settings. Lifetime of window depends on QuimP
+ * 
  * @warning UI type as JSpinner keeps data in double format even in values passed through by
  * setValues(ParamList) are integer (ParamList keeps data as String). Therefore getValues can 
  * return this list with the same data but in double syntax (5 -> 5.0). Any try of convention of
  *  "5.0" to integer value will cause NumberFormatException. To avoid this problem use 
  *  QuimP.plugin.ParamList.getIntValue(String) from ParamList of treat all strings in ParamList as
  *  Double.
+ * @remarks All parameters passed to and from QWindowBuilder as ParamList are encoded as \b String 
  * 
  * @author p.baniukiewicz
  * @date 29 Jan 2016
@@ -115,7 +124,8 @@ public abstract class QWindowBuilder {
     final private int S_DEFAULT = 4; //!< spinner default value
 
     // definition of constant elements of UI
-    protected JButton applyB; //!< Apply button 
+    protected JButton applyB; //!< Apply button (do nothing but may be overwritten) 
+    protected JButton cancelB; //!< Cancel button (hides it)
 
     /**
      * Default constructor
@@ -156,8 +166,19 @@ public abstract class QWindowBuilder {
      * <li>step
      * <li>default value
      * </ol>
+     * <li>choice - creates Choice control. It requires 0 or more parameters - entries in list
+     * <ol>
+     * <li> first entry
+     * <li> second entry
+     * <li> ...
+     * </ol>
      * </ul>
-     *
+     * For \a choice calling uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder.setValues(final ParamList)
+     * has sense only if passed parameters will be present in list already (so it has been used
+     * during creation of window, passed in constructor) In this case it causes selection of
+     * this entry in list. Otherwise passed value will be ignored. \a setVales for \a Choice does
+     * not add new entry to list. 
+     * 
      * The type of required UI element associated with given parameter name (\a
      * Key) is coded in value of given Key in accordance with list above. The
      * correct order of sub-parameters must be preserved. Exemplary
@@ -174,7 +195,8 @@ public abstract class QWindowBuilder {
      * By default window is not visible yet. User must call ShowWindow
      * or ToggleWindow. The \b Apply button does nothing. It is only to
      * refocus after change of values in spinners. They are not updated
-     * until unfocused.
+     * until unfocused. User can overwrite this behavior in his own class derived from
+     * QWindowBuilder
      * 
      * @param def Configuration as described
      * @throw IllegalArgumentException or other unchecked exceptions on wrong
@@ -234,6 +256,17 @@ public abstract class QWindowBuilder {
                     ui.put(key, new JSpinner(model));
                     ui.put(key + "label", new Label(key)); // add description
                     break;
+                case "choice":
+                    if (uiparams.length < 2) // 4+uitype
+                        throw new IllegalArgumentException(
+                                "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
+                    Choice c = new Choice();
+                    for (int i = UITYPE + 1; i < uiparams.length; i++)
+                        c.add(uiparams[i]);
+                    c.select(0);
+                    ui.put(key, c);
+                    ui.put(key + "label", new Label(key)); // add description
+                    break;
                 default:
                     // wrong param syntax
                     throw new IllegalArgumentException("Unknown ui type" + " provided: " + key);
@@ -262,17 +295,29 @@ public abstract class QWindowBuilder {
 
         // add Apply button on south
         Panel south = new Panel();
+        south.setLayout(new FlowLayout());
         applyB = new JButton("Apply");
         south.add(applyB);
+        cancelB = new JButton("Cancel");
+        south.add(cancelB);
+        // set action on Cancel - window is hided
+        cancelB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pluginWnd.setVisible(false);
+                windowState = false;
+            }
+        });
 
         // build window
         pluginPanel.add(north, BorderLayout.NORTH);
         pluginPanel.add(south, BorderLayout.SOUTH);
         pluginWnd.add(pluginPanel);
         pluginWnd.pack();
-        // add listener on close
+        // add listener on close - window is hided to preserve settings
         pluginWnd.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
+                LOGGER.trace("Window closing");
                 windowState = false;
                 pluginWnd.setVisible(false);
             }
@@ -284,8 +329,7 @@ public abstract class QWindowBuilder {
     /**
      * Show or hide window
      * 
-     * @param state
-     * State of the window \c true to show, \c false to hide
+     * @param state State of the window \c true to show, \c false to hide
      */
     public void showWindow(boolean state) {
         pluginWnd.setVisible(state);
@@ -344,7 +388,7 @@ public abstract class QWindowBuilder {
             // find key in def and get type of control and its instance
             switch (def.getParsed(key)[UITYPE]) { // first string in vals is type of
                 // control, see BuildWindow
-                case "spinner":
+                case "spinner": {
                     JSpinner comp = (JSpinner) ui.get(key); // get UI component of name key (keys
                                                             // in vals must match to keys in
                                                             // BuildWindow(def))
@@ -355,6 +399,12 @@ public abstract class QWindowBuilder {
                     else if (sm.getPreviousValue() == null)
                         sm.setMinimum(Double.parseDouble(val));
                     break;
+                }
+                case "choice": {
+                    Choice comp = (Choice) ui.get(key);
+                    comp.select(val);
+                    break;
+                }
                 default:
                     throw new IllegalArgumentException("Unknown UI type in setValues");
             }
@@ -386,11 +436,17 @@ public abstract class QWindowBuilder {
             String key = m.getKey();
             // check type of component
             switch (def.getParsed(key)[UITYPE]) {
-                case "spinner":
+                case "spinner": {
                     JSpinner val = (JSpinner) m.getValue(); // get value
                     ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
                     // the same key
                     break;
+                }
+                case "choice": {
+                    Choice val = (Choice) m.getValue();
+                    ret.put(key, val.getSelectedItem());
+                    break;
+                }
                 default:
                     throw new IllegalArgumentException("Unknown UI type in getValues");
             }
@@ -427,6 +483,17 @@ public abstract class QWindowBuilder {
         // get list of all params from ui as <key,val> list
         ParamList uiParam = getValues();
         return uiParam.getDoubleValue(key);
+    }
+
+    /**
+     * Return value related to given key. Added for convenience
+     * 
+     * @copydoc getIntegerFromUI(final String)
+     */
+    public String getStringFromUI(final String key) {
+        // get list of all params from ui as <key,val> list
+        ParamList uiParam = getValues();
+        return uiParam.getStringValue(key);
     }
 
     /**

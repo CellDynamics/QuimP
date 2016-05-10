@@ -101,9 +101,10 @@ WARN_LOGFILE           =
 INPUT                  = ../src \
      	               ../Doxygen_doc \
                          ../Readme.md \
-                         ../HatSnakeFilter_quimp/src \
-                         ../HedgehogSnakeFilter_quimp/src \
-                         ../MeanSnakeFilter_quimp/src
+                         ../../HatSnakeFilter_quimp/src \
+                         ../../HedgehogSnakeFilter_quimp/src \
+                         ../../MeanSnakeFilter_quimp/src \
+                         ../../SetHeadSnakeFilter_quimp
                         
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
@@ -206,7 +207,7 @@ EXTRA_SEARCH_MAPPINGS  =
 #---------------------------------------------------------------------------
 # Configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
-GENERATE_LATEX         = YES
+GENERATE_LATEX         = NO
 LATEX_OUTPUT           = 
 LATEX_CMD_NAME         = latex
 MAKEINDEX_CMD_NAME     = makeindex

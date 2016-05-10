@@ -25,10 +25,11 @@ import java.util.Date;
 public class Tool {
 
     /**
-     * Gets QuimP version
+     * Get QuimP version
      * 
      * @return Formatted string with QuimP version
      * @deprecated This method should not be used due to changes in QuimP versioning scheme
+     * @todo TODO As it is used in whole QuimP, move BOA procedures here
      */
     @Deprecated
     public static String getQuimPversion() {
@@ -223,9 +224,7 @@ public class Tool {
     }
 
     public static void arrayToFile(double[][] a, String delim, File outFile) throws IOException {
-        PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto
-                                                                         // flush
-
+        PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
         for (int i = 0; i < a.length; i++) {
             if (i != 0)
                 pw.write("\n");
