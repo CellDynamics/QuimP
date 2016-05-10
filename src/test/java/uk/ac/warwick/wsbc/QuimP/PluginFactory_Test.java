@@ -176,8 +176,8 @@ public class PluginFactory_Test {
         HashSet<String> r = new HashSet<String>();
         for (File f : ret)
             r.add(f.getName());
-        assertTrue(r.contains("plugin2_quimp.jar"));
-        assertTrue(r.contains("plugin1_quimp.jar"));
+        assertTrue(r.contains("plugin2-quimp.jar"));
+        assertTrue(r.contains("plugin1-quimp.jar"));
     }
 
     /**
@@ -203,7 +203,7 @@ public class PluginFactory_Test {
         args[0] = File.class;
         Method m = pluginFactory.getClass().getDeclaredMethod("getClassName", args);
         m.setAccessible(true);
-        File file = new File("src/test/resources/plugin2_quimp.jar");
+        File file = new File("src/test/resources/plugin2-quimp.jar");
         String ret = (String) m.invoke(pluginFactory, file);
         assertEquals("uk.ac.warwick.wsbc.Plugin2_", ret);
 
