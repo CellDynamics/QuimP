@@ -5,7 +5,7 @@ cd .. # assume location in QuimP
 
 # delete old stuff
 find Fiji.app.test/plugins -name QuimP*.jar | xargs rm -fv
-find Fiji.app.test/plugins -name *_quimp*.jar | xargs rm -fv
+find Fiji.app.test/plugins -name *-quimp*.jar | xargs rm -fv
 
 cd QuimP
 mvn -q -T 1C clean install -P uber -Dmaven.test.skip=true
@@ -26,6 +26,6 @@ for d in *_quimp/ ; do
    		exit 1
    	fi
    	# copy artefact to Fiji
-   	cp -v target/*_quimp*.jar ../Fiji.app.test/plugins
+   	cp -v target/*-quimp*.jar ../Fiji.app.test/plugins
    	cd ..
 done
