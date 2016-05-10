@@ -50,10 +50,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * underscore _ in its name. If more classes underscored is found in jar, only
  * the first discovered is loaded. Thus the following conventions are required:
  * <ol>
- * <li>Plugin name must contain \a _quimp to be considered as plugin (see
+ * <li>Plugin name must contain \a -quimp to be considered as plugin (see
  * PATTERN field)
  * @code
- * plugin_quimp-other-info.jar
+ * plugin-quimp-other-info.jar
  * @endcode
  * <li>Class name in plugin must end with underscore to be considered as plugin
  * main class
@@ -140,7 +140,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 public class PluginFactory {
 
     private static final Logger LOGGER = LogManager.getLogger(PluginFactory.class.getName());
-    private static final String PATTERN = "_quimp"; /// < name pattern of plugins
+    private static final String PATTERN = "-quimp"; //!< name pattern of plugins
 
     /**
      * List of plugins found in initial directory \c path passed to constructor
@@ -209,7 +209,7 @@ public class PluginFactory {
      * 
      * partition scanDirectory() {
      * (*) --> Get file \nfrom ""root""
-     * if "file contains\n**_quimp.jar**" then
+     * if "file contains\n**-quimp.jar**" then
      * -->[true] Discover qualified name
      * --> getPluginType()
      * --> if Type valid\njar valid\nreadable
@@ -258,7 +258,7 @@ public class PluginFactory {
             // build plugin name from file name
             String filename = f.getName().toLowerCase();
             int lastindex = filename.lastIndexOf(PATTERN);
-            // cut from beginning to _quimp
+            // cut from beginning to -quimp
             String pluginName = filename.substring(0, lastindex);
             // change first letter to upper to match class-naming convention
             pluginName = pluginName.substring(0, 1).toUpperCase() + pluginName.substring(1);
