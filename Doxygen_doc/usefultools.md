@@ -36,6 +36,8 @@ is the same package on server already and set certain log level for every packag
 ```bash
 #!/bin/bash
 
+#!/bin/bash
+
 # This script builds snapshot project from develop branches across all repositories
 # It needs local copy of project repos with one tracking branch 'develop'
 # To make local copies of project repos they must be cloned from master repository
@@ -107,24 +109,30 @@ mvn clean install # must be installed for filters
 if [ $? -ne 0 ]; then
     exit 1
 fi
-mvn package -P uber -Dmaven.test.skip=true # produce artefact for IJ
+mvn install -P uber -Dmaven.test.skip=true # produce artefact for IJ
+git submodule init
+git submodule update
+cd QuimP_Doc/Docs
+pdflatex QuimP_Guide.tex &>/dev/null && bibtex QuimP_Guide.aux &>/dev/null && pdflatex QuimP_Guide.tex &>/dev/null && pdflatex QuimP_Guide.tex &>/dev/null
+cd ../../
+
 cd ../HatSnakeFilter_quimp
-mvn package
+mvn clean package
 if [ $? -ne 0 ]; then
     exit 1
 fi
 cd ../HedgehogSnakeFilter_quimp
-mvn package
+mvn clean package
 if [ $? -ne 0 ]; then
     exit 1
 fi
 cd ../MeanSnakeFilter_quimp
-mvn package
+mvn clean package
 if [ $? -ne 0 ]; then
     exit 1
 fi
 cd ../SetHeadSnakeFilter_quimp
-mvn package
+mvn clean package
 if [ $? -ne 0 ]; then
     exit 1
 fi
@@ -137,6 +145,7 @@ cp HedgehogSnakeFilter_quimp/target/*.jar $TMP_DIR
 cp MeanSnakeFilter_quimp/target/*.jar $TMP_DIR
 cp SetHeadSnakeFilter_quimp/target/*.jar $TMP_DIR
 cp QuimP/target/*-jar*.jar $TMP_DIR
+cp QuimP/QuimP_Doc/Docs/QuimP_Guide.pdf $TMP_DIR
 # create file with repo information
 touch $TMP_DIR/versions.txt
 # go through repos and read last comit from develop
@@ -165,7 +174,7 @@ if [ $? -eq 1 ]; then
     #create zip
     zip -j9 QuimP_$version-$cd.zip $TMP_DIR/*
     scp QuimP_$version-$cd.zip hashlist $UPLOAD_DIR/
-    rm -f hashlist QuimP_$version-$cd.zip
+    #rm -f hashlist QuimP_$version-$cd.zip
 else
     echo "File exists - do nothing"
     rm -f hashlist

@@ -72,6 +72,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 mvn install -P uber -Dmaven.test.skip=true # produce artefact for IJ
+git submodule init
+git submodule update
+cd QuimP_Doc/Docs
+pdflatex QuimP_Guide.tex &>/dev/null && bibtex QuimP_Guide.aux &>/dev/null && pdflatex QuimP_Guide.tex &>/dev/null && pdflatex QuimP_Guide.tex &>/dev/null
+cd ../../
+
 cd ../HatSnakeFilter_quimp
 mvn clean package
 if [ $? -ne 0 ]; then
@@ -101,6 +107,7 @@ cp HedgehogSnakeFilter_quimp/target/*.jar $TMP_DIR
 cp MeanSnakeFilter_quimp/target/*.jar $TMP_DIR
 cp SetHeadSnakeFilter_quimp/target/*.jar $TMP_DIR
 cp QuimP/target/*-jar*.jar $TMP_DIR
+cp QuimP/QuimP_Doc/Docs/QuimP_Guide.pdf $TMP_DIR
 # create file with repo information
 touch $TMP_DIR/versions.txt
 # go through repos and read last comit from develop
