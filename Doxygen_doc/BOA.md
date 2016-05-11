@@ -304,4 +304,38 @@ All these method can run segmentation of current frame or whole stack by calling
 
 ### Zooming cells {#zoomingcells}
 
+There are two methods responsible for zooming the view: uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(final ImageCanvas, int, int) and
+uk.ac.warwick.wsbc.QuimP.ImageGroup.unzoom(final ImageCanvas). Both exist in uk.ac.warwick.wsbc.QuimP.ImageGroup and
+use Nest reference to operate. `Zoom` method is called in three cases:
+@startuml
+User -> (Update current frame)
+User -> (Click on //zoom// UI)
+User -> (Click on //patch// UI)
+@enduml
 
+1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent)
+1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateSliceSelector()
+
+Additionally the \ref uk.ac.warwick.wsbc.QuimP.BOA_.BOAState "BOAState" holds information what snake is selected by user to zoom (`snakeToZoom`). Negative value stands for none (the whole frame is visible). `snakeToZoom` holds Snake ID. There is also `zoom` field in BOAp class that indicates current state of zoom (true/false)
+
+The \ref uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(final ImageCanvas, int, int) "zoom" method accepts Snake **ID** and then gets this \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" from \ref uk.ac.warwick.wsbc.QuimP.Nest "Nest" and zoom it. The Snake **ID** is the same as **ID** of \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandler" that holds this Snake. The method uk.ac.warwick.wsbc.QuimP.Nest.getHandler(int) returns handler of given ID but there is no protection here against returning `null` (it is ArrayList) but it is guaranteed that \ref uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(final ImageCanvas, int, int) "zoom" gets only valid (existing) IDs of Snakes.
+
+IDs of Snakes are passed from \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.sZoom "sZoom" Choice that contains only visible snakes for current frame. This is happening in uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent).
+
+The Choice UI \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.sZoom "sZoom" is build in uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.buildControlPanel()  and important is additional Listener created there: 
+```java
+sZoom.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    sZoom.removeAll();
+                    sZoom.add(fullZoom); // default word for full zoom (100% of view)
+                    List<Integer> frames = boaState.nest.getSnakesforFrame(boaState.frame);
+                    for (Integer i : frames)
+                        sZoom.add(i.toString());
+                }
+            });
+```      
+This Listener is called on click on Choice and cause its dynamic filling just before displaying. The content of Choice UI is filled with Snakes visible on current frame. 
+uk.ac.warwick.wsbc.QuimP.Nest.getSnakesforFrame(int) method search among all \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandlers" in Nest the Snake of given ID that exist on current frame.    
+
+ 

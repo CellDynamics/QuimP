@@ -2516,10 +2516,7 @@ class ImageGroup {
         SnakeHandler sH;
         Snake snake;
 
-        if (snakeID < 0)
-            sH = nest.getHandler(0);
-        else
-            sH = nest.getHandler(snakeID);
+        sH = nest.getHandler(snakeID);
 
         if (sH != null && sH.isStoredAt(frame)) {
             snake = sH.getStoredSnake(frame);
@@ -3278,6 +3275,8 @@ class Nest implements IQuimpSerialize {
             if (sH.getStartframe() > frame || sH.getEndFrame() < frame) // check its limits
                 continue; // no snake in frame
             if (sH.isStoredAt(frame)) { // if limits are ok check if this particular snake exist
+                // it is not deleted by user on this particular frame after successful creating as
+                // series of Snakes
                 Snake s = sH.getStoredSnake(frame);
                 ret.add(s.getSnakeID()); // if yes get its id
             }
