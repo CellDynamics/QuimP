@@ -72,8 +72,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 mvn install -P uber -Dmaven.test.skip=true # produce artefact for IJ
+rm -rf QuimP_Doc/
 git submodule init
-git submodule update
+git submodule update --init
 cd QuimP_Doc/Docs
 pdflatex QuimP_Guide.tex &>/dev/null && bibtex QuimP_Guide.aux &>/dev/null && pdflatex QuimP_Guide.tex &>/dev/null && pdflatex QuimP_Guide.tex &>/dev/null
 cd ../../
