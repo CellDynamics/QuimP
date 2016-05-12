@@ -5,6 +5,7 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -43,7 +44,7 @@ public class AboutDialog implements ActionListener {
     private JPopupMenu popup; //!< popup menu
     private JMenuBar mbar; //!< the same but in menu bar
     private final int ROWS = 30; //!< Number of rows in window
-    private final int COLS = 60; //!< Number of columns in window
+    private final int COLS = 80; //!< Number of columns in window
     private final String c = "-"; //!< Limiter char
     
     /**
@@ -59,7 +60,7 @@ public class AboutDialog implements ActionListener {
         // located in middle of quimp qindow
         Rectangle orgBounds = owner.getBounds();
         aboutWnd.setBounds(orgBounds.x + orgBounds.width / 2, orgBounds.y + orgBounds.height / 2,
-                500, 300);
+                600, 400);
         JPanel p = new JPanel();
         p.setLayout(new GridLayout(1, 1)); // main window panel
         JPanel tp = new JPanel(); // panel with text area
@@ -67,6 +68,8 @@ public class AboutDialog implements ActionListener {
         info = new JTextArea(ROWS, COLS); // area to write
         info.setBackground(Color.WHITE);
         info.setEditable(false);
+        Font font = new Font(Font.MONOSPACED, Font.PLAIN, 11);
+        info.setFont(font);
         tp.add(info); // add to panel
         JScrollPane infoPanel = new JScrollPane(tp);
         p.add(infoPanel);

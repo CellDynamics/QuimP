@@ -50,11 +50,15 @@ public class Tool {
      * @see getQuimPBuildInfo()
      */
     public static String getQuimPversion(String[] quimpBuildInfo) {
-        String infoPlate = "###################################\n" + "QuimP, by\n"
-                + "Richard Tyson (richard.tyson@warwick.ac.uk)\n"
-                + "Till Bretschneider (Till.Bretschneider@warwick.ac.uk)\n"
-                + "Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)\n"
-                + "###################################\n";
+        //!<
+        String infoPlate = 
+                  "---------------------------------------------------------\n" 
+                + "| QuimP, by                                             |\n"
+                + "| Richard Tyson (richard.tyson@warwick.ac.uk)           |\n"
+                + "| Till Bretschneider (Till.Bretschneider@warwick.ac.uk) |\n"
+                + "| Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)     |\n"
+                + "---------------------------------------------------------\n";
+        /**/
         infoPlate = infoPlate.concat("\n");
         infoPlate = infoPlate.concat("QuimP version: " + quimpBuildInfo[0]);
         infoPlate = infoPlate.concat("\n");
