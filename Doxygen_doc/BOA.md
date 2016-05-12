@@ -306,7 +306,7 @@ All these method can run segmentation of current frame or whole stack by calling
 
 There are two methods responsible for zooming the view: uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(final ImageCanvas, int, int) and
 uk.ac.warwick.wsbc.QuimP.ImageGroup.unzoom(final ImageCanvas). Both exist in uk.ac.warwick.wsbc.QuimP.ImageGroup and
-use Nest reference to operate. `Zoom` method is called in three cases:
+use Nest reference to work. `Zoom` method is called in three cases:
 @startuml
 User -> (Update current frame)
 User -> (Click on //zoom// UI)
@@ -314,7 +314,7 @@ User -> (Click on //patch// UI)
 @enduml
 
 1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent)
-1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateSliceSelector()
+2. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateSliceSelector()
 
 Additionally the \ref uk.ac.warwick.wsbc.QuimP.BOA_.BOAState "BOAState" holds information what snake is selected by user to zoom (`snakeToZoom`). Negative value stands for none (the whole frame is visible). `snakeToZoom` holds Snake ID. There is also `zoom` field in BOAp class that indicates current state of zoom (true/false)
 
@@ -336,6 +336,6 @@ sZoom.addMouseListener(new MouseAdapter() {
             });
 ```      
 This Listener is called on click on Choice and cause its dynamic filling just before displaying. The content of Choice UI is filled with Snakes visible on current frame. 
-uk.ac.warwick.wsbc.QuimP.Nest.getSnakesforFrame(int) method search among all \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandlers" in Nest the Snake of given ID that exist on current frame.    
+uk.ac.warwick.wsbc.QuimP.Nest.getSnakesforFrame(int) method search among all \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandlers" in Nest the Snake of given **ID** that exist on current frame.    
 
  
