@@ -392,11 +392,15 @@ The configuration may be related to internal state of plugin as well as to plugi
 All these actions may require redrawing of current screen and updating current outlines. 
 For this purpose the original segmented snakes are store as well. See [technical notes](@ref td)
 Updating works in two directions - plugins can also access last selected snake for current 
-frame and use it for example to build previews in their window. uk.ac.warwick.wsbc.QuimP.ViewUpdater is class used for communicating between BOA_ and Plugin. From the plugin view, calling uk.ac.warwick.wsbc.QuimP.ViewUpdater.updateView() will always:
+frame and use it for example to build previews in their window. uk.ac.warwick.wsbc.QuimP.ViewUpdater is used for communicating between BOA_ and Plugin. From the plugin point of view, calling uk.ac.warwick.wsbc.QuimP.ViewUpdater.updateView() will always:
 1. recalculate all plugins
-1. redraw BOA screen
+2. redraw BOA screen
 
-In other direction calling uk.ac.warwick.wsbc.QuimP.ViewUpdater.getSnakeasPoints() will give plugin copy of current snake (last segmented snake from current frame). 
+In other direction calling uk.ac.warwick.wsbc.QuimP.ViewUpdater.getSnakeasPoints() will give plugin copy of current snake (last segmented snake from current frame). Plugin may get `null` calling this method when there is no Snake on screen due
+to deletion. Particularly this method can return to plugin:
+1. Lastly drawn Snake
+2. Previously drawn Snake if last has been deleted
+3. `null` if after deletion there is no Snakes left on frame.
 
 Current snake is remembered on every update of screen in BOA (uk.ac.warwick.wsbc.QuimP.ImageGroup.updateOverlay(int))
 
@@ -586,7 +590,9 @@ during segmentation)
 
 BOA and plugins can communicate in limited way. Most of BOA structures are objects and there is danger of accidentional modification of these object if exposed to plugins. 
 Separate class uk.ac.warwick.wsbc.QuimP.ViewUpdater limits access to BOA by exposing only
-selected methods to plugins (if they support uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro interface). The life cycle of static object of ViewUpdater is as follows:
+selected methods to plugins (if they support uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro interface). See @ref upv for details as well.
+The life cycle of static object of ViewUpdater is as follows:
+
 @startuml
 participant BOA_ as BOA
 participant ViewUpdater as VU
@@ -615,6 +621,9 @@ Update screen
 end note
 activate IG
 IG->VU : connectSnakeObject(current)
+note left #orange
+Can be ""null""
+end note
 VU-->IG
 == ==
 plugin ->VU: getSnakeasPoints()

@@ -486,7 +486,10 @@ class SnakePluginList implements IQuimpSerialize {
             if (ref instanceof IQuimpPluginSynchro) // if it support backward synchronization
                 ((IQuimpPluginSynchro) ref).attachContext(viewUpdater); // attach BOA context
             if (ref instanceof IQuimpPoint2dFilter)
-                ((IQuimpPoint2dFilter) ref).attachData(dataToProcess);
+                ((IQuimpPoint2dFilter) ref).attachData(dataToProcess); // TODO may not be neccessary
+                                                                       // as filters get data after
+                                                                       // initialize (gui is not
+                                                                       // visible i this time)
         }
     }
 

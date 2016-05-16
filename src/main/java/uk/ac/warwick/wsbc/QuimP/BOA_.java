@@ -2333,6 +2333,9 @@ class ImageGroup {
      * -# Snake after segmentation, without processing by plugins
      * -# Snake after segmentation and after processing by all active plugins
      * 
+     * It assign also last created Snake to ViewUpdater. This Snake can be accessed by plugin for
+     * previewing purposes. If last Snake has been deleted, \c null is assigned or before last Snake
+     *   
      * @param frame Current frame
      */
     public void updateOverlay(int frame) {
@@ -2342,6 +2345,7 @@ class ImageGroup {
         TextRoi text;
         Roi r;
         overlay = new Overlay();
+        BOA_.viewUpdater.connectSnakeObject(null); //
         for (int i = 0; i < nest.size(); i++) {
             sH = nest.getHandler(i);
             if (sH.isStoredAt(frame)) { // is there a snake a;t f?
@@ -2354,7 +2358,7 @@ class ImageGroup {
                     r.setStrokeColor(Color.RED);
                     overlay.add(r);
                 }
-                // remember instance of segmented snake for plugins
+                // remember instance of segmented snake for plugins (last created)
                 BOA_.viewUpdater.connectSnakeObject(sH.getBackupSnake(frame));
                 // plot segmented and filtered snake
                 snake = sH.getStoredSnake(frame); // processed by plugins
@@ -2396,7 +2400,8 @@ class ImageGroup {
                 }
                 // dump String to log
                 LOGGER.trace(snake.toString());
-            }
+            } else
+                BOA_.viewUpdater.connectSnakeObject(null);
         }
         // remember current state - image is updated on every change of state (action on plugins,
         // segmentation ui, sliding on frames)

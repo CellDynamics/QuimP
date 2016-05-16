@@ -173,6 +173,7 @@ public class Q_Analysis {
         Qp.sumCov = gd.getNextNumber();
         Qp.avgCov = gd.getNextNumber();
         Qp.mapRes = (int) gd.getNextNumber();
+        Qp.headProcessing = gd.getNextChoice();
 
         return true;
     }
@@ -862,6 +863,7 @@ class Qp {
     static double mapPixelHeight = 1;
     static double mapPixelWidth = 1;
     static boolean useDialog = true;
+    static public String headProcessing; //!< Head processing algorithm. Define how to treat head position */
     final static boolean Build3D = false;
 
     static void convexityToPixels() {
