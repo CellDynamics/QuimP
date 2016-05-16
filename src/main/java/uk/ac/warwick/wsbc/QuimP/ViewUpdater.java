@@ -4,7 +4,6 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Point2d;
@@ -44,10 +43,13 @@ public class ViewUpdater {
      * 
      * Connected snake can be requested by plugins (always as copy)
      * 
-     * @param snake Snake to be connected.
+     * @param snake Snake to be connected. I can be \c null when user e.g. deleted last object
      */
     protected void connectSnakeObject(final Snake snake) {
-        LOGGER.trace("Remembered snake: " + snake.getSnakeID());
+        if (snake != null)
+            LOGGER.trace("Remembered snake: " + snake.getSnakeID());
+        else
+            LOGGER.trace("Remembered snake: " + "null");
         this.snake = snake;
     }
 
@@ -70,7 +72,7 @@ public class ViewUpdater {
         if (snake != null)
             return snake.asList();
         else
-            return new ArrayList<Point2d>();
+            return null;
     }
 
     /**
