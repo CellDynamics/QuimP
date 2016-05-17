@@ -187,11 +187,11 @@
                 </goals>
                 <configuration>
                   <sources>
-                    <source>src/eclipse</source>
-                    <source>../HatSnakeFilter_quimp/src/main/java</source>
-                    <source>../HedgehogSnakeFilter_quimp/src/main/java</source>
-                    <source>../MeanSnakeFilter_quimp/src/main/java</source>
-                    <source>../SetHeadSnakeFilter_quimp/src/main/java</source>
+                    <source>${basedir}/src/eclipse</source>
+                    <source>${basedir}/../HatSnakeFilter_quimp/src/main/java</source>
+                    <source>${basedir}/../HedgehogSnakeFilter_quimp/src/main/java</source>
+                    <source>${basedir}/../MeanSnakeFilter_quimp/src/main/java</source>
+                    <source>${basedir}/../SetHeadSnakeFilter_quimp/src/main/java</source>
                   </sources>
                 </configuration>
               </execution>

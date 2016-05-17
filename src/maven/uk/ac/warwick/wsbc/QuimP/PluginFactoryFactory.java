@@ -27,7 +27,7 @@ public class PluginFactoryFactory {
     }
 
     /**
-     * Provide mocked PluginFactory object that uses sources of plugins avaiable on path
+     * Provide mocked PluginFactory object that uses sources of plugins available on path
      * @param path
      * @return mocked PluginFactory object
      * @throws QuimpPluginException 
