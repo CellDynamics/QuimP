@@ -34,10 +34,12 @@ mvn clean install
 cd pom-quimp-plugin
 mvn clean install
 cd QuimP
-mvn clean install
+mvn clean package -P uber
 # build other plugins
 # When QuimP changes plugins will not notify this change thus mvn clean is recommended
 ```
+
+There is additional profile for Maven `development` which uses **mocked** version of PluginFactory. It means that plugins are referenced by their sources rather than by compiled jars. To use this profile all plugins must be in certain directory structure. See *pom.xml* for reference. 
 
 Exemplary script tailored to developer system is `QuimP/testbuild.sh`. Every project exists in its own repository.
 

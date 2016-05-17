@@ -33,7 +33,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -347,7 +346,7 @@ public class BOA_ implements PlugIn {
                 path = arg;
             }
             // initialize plugin factory (jar scanning and registering)
-            pluginFactory = new PluginFactory(Paths.get(path));
+            pluginFactory = PluginFactoryFactory.getPluginFactory(path);
             // initialize arrays for plugins instances and give them initial values (GUI)
             boaState.snakePluginList =
                     new SnakePluginList(NUM_SNAKE_PLUGINS, pluginFactory, viewUpdater);
