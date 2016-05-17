@@ -26,6 +26,7 @@ public class Q_Analysis {
     GenericDialog gd;
     OutlineHandler oH;
     QParams qp;
+    private final String[] headActions = { "Remain", "Use from BOA" }; //!< Define possible action strings 
 
     /**
      * Main constructor and runner - class entry point
@@ -141,9 +142,6 @@ public class Q_Analysis {
 
         gd.addMessage("Pixel width: " + Qp.scale + " \u00B5m\nFrame Interval: " + Qp.frameInterval
                 + " sec");
-        // gd.addNumericField("Pixel size (microns)", Qp.scale, 2);
-        // gd.addNumericField("Time between frames (secs)", Qp.frameInterval,
-        // 2);
 
         gd.addMessage("******* Cell track options (svg) *******");
         gd.addNumericField("Frame increment", Qp.increment, 0);
@@ -159,6 +157,10 @@ public class Q_Analysis {
         gd.addMessage("************* Map options *************");
         gd.addNumericField("Map resolution", Qp.mapRes, 0);
 
+        gd.addMessage("************* Head nodes **************");
+        gd.addChoice("Heads", headActions, headActions[0]);
+
+        gd.setResizable(false);
         gd.showDialog();
 
         if (gd.wasCanceled()) {

@@ -88,7 +88,7 @@ public class SnakePluginListTest {
         version[0] = "0.0.1";
         version[1] = "baniuk";
         version[2] = "QuimP";
-        snakePluginList = new SnakePluginList(3, pluginFactory, null, null);
+        snakePluginList = new SnakePluginList(3, pluginFactory, null);
         cc.activePluginList = snakePluginList;
         /**
          * This plugin does not have config
@@ -376,7 +376,7 @@ public class SnakePluginListTest {
             throws IOException, NoSuchMethodException, SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException, QuimpPluginException {
         ConfigContainer localcc = new ConfigContainer();
-        SnakePluginList localsnakePluginList = new SnakePluginList(3, pluginFactory, null, null);
+        SnakePluginList localsnakePluginList = new SnakePluginList(3, pluginFactory, null);
         localcc.activePluginList = localsnakePluginList;
         localsnakePluginList.setInstance(0, "Test1", false); // slot 0
         localsnakePluginList.setInstance(2, "toDelete", true); // slot 2
@@ -397,7 +397,7 @@ public class SnakePluginListTest {
         // http: //
         // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
         gsonbuilder.registerTypeAdapter(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
         Gson gson = gsonbuilder.create();
         FileReader f = new FileReader(new File("/tmp/snakePluginList.json"));
         ConfigContainer localcc;
@@ -435,7 +435,7 @@ public class SnakePluginListTest {
         Serializer<SnakePluginList> out;
         Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
         s.registerInstanceCreator(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
         out = s.fromString(json);
 
         assertArrayEquals(out.version, version);
@@ -490,7 +490,7 @@ public class SnakePluginListTest {
         // http: //
         // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
         gsonbuilder.registerTypeAdapter(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
         Gson gson = gsonbuilder.create();
         ConfigContainer localcc;
         localcc = gson.fromJson(json, ConfigContainer.class);
@@ -546,7 +546,7 @@ public class SnakePluginListTest {
         // http: //
         // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
         gsonbuilder.registerTypeAdapter(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
         Gson gson = gsonbuilder.create();
         ConfigContainer localcc;
         localcc = gson.fromJson(json, ConfigContainer.class);
@@ -585,7 +585,7 @@ public class SnakePluginListTest {
         Serializer<SnakePluginList> out;
         Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
         s.registerInstanceCreator(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
         out = s.fromString(json);
 
         assertArrayEquals(out.version, version);
@@ -639,7 +639,7 @@ public class SnakePluginListTest {
         // http: //
         // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
         gsonbuilder.registerTypeAdapter(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
         Gson gson = gsonbuilder.create();
         ConfigContainer localcc;
         localcc = gson.fromJson(json, ConfigContainer.class);
@@ -680,7 +680,7 @@ public class SnakePluginListTest {
         Serializer<SnakePluginList> out;
         Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
         s.registerInstanceCreator(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
 
         out = s.fromString(json);
         assertEquals(null, out.obj.getInstance(0));
@@ -728,7 +728,7 @@ public class SnakePluginListTest {
         // http: //
         // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
         gsonbuilder.registerTypeAdapter(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
         Gson gson = gsonbuilder.create();
         ConfigContainer localcc;
         localcc = gson.fromJson(json, ConfigContainer.class);
@@ -765,7 +765,7 @@ public class SnakePluginListTest {
         Serializer<SnakePluginList> out;
         Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
         s.registerInstanceCreator(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
 
         out = s.fromString(json);
         assertEquals("2.3.4", out.obj.getInstance(1).getVersion());
@@ -814,7 +814,7 @@ public class SnakePluginListTest {
         // http: //
         // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
         gsonbuilder.registerTypeAdapter(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
         Gson gson = gsonbuilder.create();
         ConfigContainer localcc;
         localcc = gson.fromJson(json, ConfigContainer.class);
@@ -855,7 +855,7 @@ public class SnakePluginListTest {
         Serializer<SnakePluginList> out;
         Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
         s.registerInstanceCreator(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
 
         out = s.fromString(json);
 
@@ -895,7 +895,7 @@ public class SnakePluginListTest {
         // http: //
         // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
         gsonbuilder.registerTypeAdapter(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
         Gson gson = gsonbuilder.create();
         ConfigContainer localcc;
         localcc = gson.fromJson(json, ConfigContainer.class);
@@ -943,7 +943,7 @@ public class SnakePluginListTest {
         // http: //
         // stackoverflow.com/questions/18567719/gson-deserializing-nested-objects-with-instancecreator
         gsonbuilder.registerTypeAdapter(SnakePluginList.class,
-                new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
+                new SnakePluginListInstanceCreator(3, pluginFactory, null));
         Gson gson = gsonbuilder.create();
         ConfigContainer localcc;
         localcc = gson.fromJson(json, ConfigContainer.class);

@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.vecmath.Point2d;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +18,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 
 /**
  * Ordered list of plugins related to snake processing. 
@@ -83,7 +80,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  * participant Plugin as plugin
  * participant PluginFactory as pfact
  * participant IQuimpPlugin as iPlugin
-
  * note over plugin : Internal representation\nof plugin instance
  * note over iPlugin : external instance\nof plugin
  * activate slist
@@ -103,7 +99,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  * slist->plugin : ""getInstance(i)""
  * plugin-->slist : instance
  * slist -> iPlugin : ""attachContext(ViewUpdater)""
- * slist -> iPlugin : ""attachData(Data)""
  * @enduml
  * 
  * During \a Serialize plugins are prepared for serialization what means saving current state of 
@@ -117,7 +112,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  * participant Plugin as plugin
  * participant PluginFactory as pfact
  * participant IQuimpPlugin as iPlugin
-
  * note over plugin : Internal representation\nof plugin instance
  * note over iPlugin : external instance\nof plugin
  * activate slist
@@ -173,7 +167,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
  * participant Plugin as plugin
  * participant PluginFactory as pfact
  * participant IQuimpPlugin as iPlugin
- *
  * note over plugin : Internal representation\nof plugin instance
  * note over iPlugin : external instance\nof plugin
  * activate slist
@@ -216,7 +209,6 @@ class SnakePluginList implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(SnakePluginList.class.getName());
     // all other data that are necessary for plugins
     private transient PluginFactory pluginFactory;
-    private transient List<Point2d> dataToProcess;
     private transient ViewUpdater viewUpdater;
 
     /**
@@ -357,7 +349,6 @@ class SnakePluginList implements IQuimpSerialize {
     public SnakePluginList() {
         sPluginList = new ArrayList<Plugin>();
         pluginFactory = null;
-        dataToProcess = null;
         viewUpdater = null;
     }
 
@@ -366,17 +357,14 @@ class SnakePluginList implements IQuimpSerialize {
      * 
      * @param s Number of supported plugins
      * @param pf Deliverer of plugins
-     * @param dataToProcess data to be connected to plugin (not obligatory)
      * @param vu ViewUpdater to be connected to plugin
      */
-    public SnakePluginList(int s, final PluginFactory pf, final List<Point2d> dataToProcess,
-            final ViewUpdater vu) {
+    public SnakePluginList(int s, final PluginFactory pf, final ViewUpdater vu) {
         this(); // initialize structures
         for (int i = 0; i < s; i++)
             sPluginList.add(new Plugin()); // fill list with empty Plugins
         this.pluginFactory = pf; // store plugin deliverer
         // store external data that may be important for plugins
-        this.dataToProcess = dataToProcess;
         this.viewUpdater = vu;
     }
 
@@ -485,11 +473,6 @@ class SnakePluginList implements IQuimpSerialize {
         if (ref != null) {
             if (ref instanceof IQuimpPluginSynchro) // if it support backward synchronization
                 ((IQuimpPluginSynchro) ref).attachContext(viewUpdater); // attach BOA context
-            if (ref instanceof IQuimpPoint2dFilter)
-                ((IQuimpPoint2dFilter) ref).attachData(dataToProcess); // TODO may not be neccessary
-                                                                       // as filters get data after
-                                                                       // initialize (gui is not
-                                                                       // visible i this time)
         }
     }
 
@@ -629,20 +612,17 @@ class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList>
 
     private int size;
     private PluginFactory pf;
-    private List<Point2d> dt;
     private ViewUpdater vu;
 
-    public SnakePluginListInstanceCreator(int size, final PluginFactory pf,
-            final List<Point2d> dataToProcess, final ViewUpdater vu) {
+    public SnakePluginListInstanceCreator(int size, final PluginFactory pf, final ViewUpdater vu) {
         this.size = size;
         this.pf = pf;
-        this.dt = dataToProcess;
         this.vu = vu;
     }
 
     @Override
     public SnakePluginList createInstance(Type arg0) {
-        return new SnakePluginList(size, pf, dt, vu);
+        return new SnakePluginList(size, pf, vu);
     }
 
 }
