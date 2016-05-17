@@ -24,9 +24,11 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 /**
  * This class mock PluginFactory class making possible to call plugins from local Eclipse workspace.
  * 
- * All plugins must be added to quimp build path as source reference. getMockedPluginFactory(String)
+ * All plugins must be added to quimp build path as source reference. getPluginFactory(String)
  * should be also filled.
- * 
+ *
+ * @warning This class is related to pom.xml as well. Notice that compilation will use current 
+ * Working Directory state for every plugin 
  * @author p.baniukiewicz
  * @date 17 May 2016
  *
@@ -47,22 +49,11 @@ public class PluginFactoryFactory {
     }
 
     /**
-     * Provide real PluginFactory object
-     * 
-     * @param path
-     * @return real PluginFactory object
-     * @throws QuimpPluginException
-     */
-    public static PluginFactory getPluginFactory(String path) throws QuimpPluginException {
-        return new PluginFactory(Paths.get(path));
-    }
-
-    /**
      * Provide mocked PluginFactory object that uses sources of plugins avaiable on path
      * @param path
      * @return mocked PluginFactory object
      */
-    public static PluginFactory getMockedPluginFactory(String path) {
+    public static PluginFactory getPluginFactory(String path) {
         LOGGER.warn("Using mocked filters!!!!");
         //!<
         PluginFactory pluginFactory;

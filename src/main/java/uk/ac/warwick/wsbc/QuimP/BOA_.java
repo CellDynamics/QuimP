@@ -346,7 +346,7 @@ public class BOA_ implements PlugIn {
                 path = arg;
             }
             // initialize plugin factory (jar scanning and registering)
-            pluginFactory = PluginFactoryFactory.getMockedPluginFactory(path);
+            pluginFactory = PluginFactoryFactory.getPluginFactory(path);
             // initialize arrays for plugins instances and give them initial values (GUI)
             boaState.snakePluginList =
                     new SnakePluginList(NUM_SNAKE_PLUGINS, pluginFactory, viewUpdater);
