@@ -350,7 +350,7 @@ public class BOA_ implements PlugIn {
             pluginFactory = new PluginFactory(Paths.get(path));
             // initialize arrays for plugins instances and give them initial values (GUI)
             boaState.snakePluginList =
-                    new SnakePluginList(NUM_SNAKE_PLUGINS, pluginFactory, null, viewUpdater);
+                    new SnakePluginList(NUM_SNAKE_PLUGINS, pluginFactory, viewUpdater);
         } catch (Exception e) {
             // temporary catching may in future be removed
             LOGGER.error("run " + e);
@@ -1370,11 +1370,10 @@ public class BOA_ implements PlugIn {
                         Serializer<SnakePluginList> loaded; // loaded instance
                         // create serializer
                         Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
+                        // pass data to constructor of serialized object. Those data are not
+                        // serialized and must be passed externally
                         s.registerInstanceCreator(SnakePluginList.class,
-                                new SnakePluginListInstanceCreator(3, pluginFactory, null,
-                                        viewUpdater)); // pass data to constructor of serialized
-                                                       // object. Those data are not serialized
-                                                       // and must be passed externally
+                                new SnakePluginListInstanceCreator(3, pluginFactory, viewUpdater));
                         loaded = s.load(od.getDirectory() + od.getFileName());
                         // restore loaded objects
                         boaState.snakePluginList.clear(); // closes windows, etc
