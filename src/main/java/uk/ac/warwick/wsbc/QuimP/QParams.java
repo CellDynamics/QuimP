@@ -35,7 +35,7 @@ import ij.IJ;
  */
 public class QParams {
 
-    private File paramFile;
+    private File paramFile; //!< paQP file full name
     private File[] otherPaFiles;
     boolean newFormat;
 

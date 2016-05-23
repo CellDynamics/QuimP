@@ -4,7 +4,11 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.nio.file.Paths;
+
 /**
+ * Test runner for Q_Analysis
+ * 
  * @author p.baniukiewicz
  * @date 28 Apr 2016
  *
@@ -19,7 +23,8 @@ public class Q_Analysis_run {
      * @param args
      */
     public static void main(String[] args) {
-        new Q_Analysis();
+        // if default constructor is used Q_Analysis will ask for paQP file
+        new Q_Analysis(Paths.get("/home/baniuk/Downloads/Composite-after-macro_cut_4.paQP"));
 
     }
 

@@ -121,7 +121,7 @@ frame to //snQP// file
 end note
 end
 SnakeHandler -> BOAp : writeParams()
-note left #aqua : Write //paQP// file
+note left #red : Write //paQP// file\nseparate for every\nwritten snake
 BOAp -> QParams : <<create>>
 activate QParams
 BOAp-->QParams : //set all fields//

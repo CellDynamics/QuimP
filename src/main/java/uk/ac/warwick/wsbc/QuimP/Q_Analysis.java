@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
@@ -30,18 +31,41 @@ public class Q_Analysis {
 
     /**
      * Main constructor and runner - class entry point
+     * 
+     * Left in this form for backward compatibility
      */
     public Q_Analysis() {
+        this(null);
+    }
+
+    /**
+     * Parametrized constructor for tests
+     * 
+     * @param path Path to *.paQP file. If \c null user is asked for this file
+     */
+    public Q_Analysis(Path path) {
         IJ.showStatus("QuimP Analysis");
         IJ.log(new Tool().getQuimPversion());
+        String directory; // directory with paQP
+        String filename; // file name of paQP
 
-        OpenDialog od =
-                new OpenDialog("Open paramater file (.paQP)...", OpenDialog.getLastDirectory(), "");
-        if (od.getFileName() == null) {
-            IJ.log("Cancelled - exiting...");
-            return;
+        if (path == null) { // no file provided, ask user
+            OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
+                    OpenDialog.getLastDirectory(), "");
+            if (od.getFileName() == null) {
+                IJ.log("Cancelled - exiting...");
+                return;
+            }
+            directory = od.getDirectory();
+            filename = od.getFileName();
+        } else // use name provided
+        {
+            // getParent can return null
+            directory = path.getParent() == null ? "" : path.getParent().toString();
+            filename = path.getFileName() == null ? "" : path.getFileName().toString();
+            LOGGER.debug("Use provided file:" + directory + " " + filename);
         }
-        File paramFile = new File(od.getDirectory(), od.getFileName()); // paQP file
+        File paramFile = new File(directory, filename); // paQP file
         qp = new QParams(paramFile); // initialize general param storage
         qp.readParams(); // create associated files included in paQP and read params
         Qp.setup(qp); // copy selected data from general QParams to local storage

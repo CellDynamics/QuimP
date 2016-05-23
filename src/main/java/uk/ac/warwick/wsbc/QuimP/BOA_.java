@@ -3188,6 +3188,7 @@ class Nest implements IQuimpSerialize {
      * 
      * @param oi instance of current ImagePlus (required by CellStat that extends 
      * ij.measure.Measurements
+     * @remarks It can set current slice in ImagePlus (modifies the object state)
      */
     public void analyse(final ImagePlus oi) {
         OutlineHandler outputH;
@@ -3233,6 +3234,9 @@ class Nest implements IQuimpSerialize {
         NSNAKES--;
     }
 
+    /**
+     * @return Get number of SnakeHandlers (snakes) in nest
+     */
     int size() {
         return NSNAKES;
     }
