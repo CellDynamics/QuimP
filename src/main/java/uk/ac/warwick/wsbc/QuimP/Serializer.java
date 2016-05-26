@@ -50,6 +50,9 @@ import com.google.gson.GsonBuilder;
  * }
  * @endcode
  * 
+ * There is opstion to no call afterSerialzie() method on class restoring. To do so set 
+ * \a doAfterSerialize to \a false - derive new class and override this field.
+ *  
  * @author p.baniukiewicz
  * @date 31 Mar 2016
  * @see http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson
@@ -60,6 +63,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     private static final Logger LOGGER = LogManager.getLogger(Serializer.class.getName());
     private transient GsonBuilder gsonBuilder;
     private transient Type t;
+    protected transient boolean doAfterSerialize; //!< Indicates if afterSerialze should be called
 
     public String className; //!< Name of wrapped class, decoded from object
     public String[] version; //!< Version and other information passed to serializer
@@ -75,6 +79,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @see SerializerTest for examples of use
      */
     public Serializer(Type t) {
+        doAfterSerialize = true; // by default use afterSerialize methods to restore object state
         gsonBuilder = new GsonBuilder();
         obj = null;
         version = new String[0];
@@ -117,23 +122,32 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
+     * @copydoc uk.ac.warwick.wsbc.QuimP.Serializer.load(final File)
+     */
+    public Serializer<T> load(final String filename) throws IOException, Exception {
+        File file = new File(filename);
+        return load(file);
+    }
+
+    /**
      * Load wrapped object from JSON file
      * 
      * Calls uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.afterSerialize() after load
      * 
-     * @param filename Name of file
+     * @param filename File object
      * @throws IOException if problem with loading
      * @throws Exception if wrong JSON or from afterSerialize() method (specific to wrapped object) 
      * @return New instance of loaded object packed in Serializer class
      */
-    public Serializer<T> load(final String filename) throws IOException, Exception {
+    public Serializer<T> load(final File filename) throws IOException, Exception {
         Gson gson = gsonBuilder.create();
-        LOGGER.debug("Loading from: " + filename);
-        FileReader f = new FileReader(new File(filename));
+        LOGGER.debug("Loading from: " + filename.getPath());
+        FileReader f = new FileReader(filename);
         Serializer<T> localref;
         localref = gson.fromJson(f, this);
         f.close();
-        localref.obj.afterSerialize();
+        if (doAfterSerialize)
+            localref.obj.afterSerialize();
         return localref;
     }
 
@@ -148,7 +162,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         Gson gson = gsonBuilder.create();
         Serializer<T> localref;
         localref = gson.fromJson(json, this);
-        localref.obj.afterSerialize();
+        if (doAfterSerialize)
+            localref.obj.afterSerialize();
         return localref;
     }
 
