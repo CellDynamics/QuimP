@@ -115,6 +115,46 @@ public class SerializerTest {
         assertArrayEquals(out.version, version);
     }
 
+    /**
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * @pre Extra data in json
+     * @post It is ignored
+     * @throws Exception
+     */
+    @Test
+    public void testFromString1() throws Exception {
+        String json =
+                "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"a\":15,\"b\":15,\"al\":[4,56]}}";
+        Serializer<TestClass> out;
+        TestClass obj;
+        Serializer<TestClass> s = new Serializer<>(TestClass.class);
+        out = s.fromString(json);
+        obj = out.obj;
+        assertEquals(testClass.al, obj.al);
+        assertEquals(testClass.a, obj.a);
+        assertArrayEquals(out.version, version);
+    }
+
+    /**
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * @pre Lack of data
+     * @post it is not initialized ot has value from constructor
+     * @throws Exception
+     */
+    @Test
+    public void testFromString2() throws Exception {
+        String json =
+                "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"al\":[4,66]}}";
+        Serializer<TestClass> out;
+        TestClass obj;
+        Serializer<TestClass> s = new Serializer<>(TestClass.class);
+        out = s.fromString(json);
+        obj = out.obj;
+        assertEquals(testClass.al, obj.al);
+        assertEquals(testClass.a, obj.a);
+        assertArrayEquals(out.version, version);
+    }
+
 }
 
 /**
@@ -126,6 +166,7 @@ public class SerializerTest {
  */
 class TestClass implements IQuimpSerialize {
     int a;
+    int z;
     ArrayList<Integer> al;
 
     @Override

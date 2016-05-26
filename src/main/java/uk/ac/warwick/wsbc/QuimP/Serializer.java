@@ -52,12 +52,16 @@ import com.google.gson.GsonBuilder;
  * 
  * There is opstion to no call afterSerialzie() method on class restoring. To do so set 
  * \a doAfterSerialize to \a false - derive new class and override this field.
+ * 
  *  
  * @author p.baniukiewicz
  * @date 31 Mar 2016
  * @see http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson
  * @see SerializerTest for examples of use
  * @see uk.ac.warwick.wsbc.QuimP.Serializer.registerInstanceCreator(Class<T>, Object)
+ * @remarks Restored object is constructed using its constructor. so if there is no variable value
+ * in json it will have the value from constructor. GSon overrides variables after they have been 
+ * created in normal process of object building.
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
     private static final Logger LOGGER = LogManager.getLogger(Serializer.class.getName());
