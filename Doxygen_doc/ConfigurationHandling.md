@@ -81,7 +81,7 @@ BOA produces several files:
 2. *snQP* - contains Snake objects for every frame, separate file for every Snake
 3. *stQP* - statistic file
 4. **pgQP** - new configuration file, holds plugin parameters (see @ref genfile)
-5. **newsnQP** - new configuration file, contains all Snakes for all frames (dump of \ref uk.ac.warwick.wsbc.QuimP.BOA_.BOAState "BOAState") and all configuration related to segmentation
+5. **QCONF** - new configuration file, contains all Snakes for all frames (dump of \ref uk.ac.warwick.wsbc.QuimP.BOA_.BOAState "BOAState") and all configuration related to segmentation
 
 Files **paQP** and **snQP** and **stQP** are saved for every tracked Snake separately with suffixes indicating Snake ID number.
 
@@ -136,7 +136,7 @@ Serializer -> Serializer : save()
 note left #aqua : Write //pgQP// file
 "BOA::Finish()" -> Serializer : <BOAState>
 Serializer -> Serializer : save()
-note left #orange : Write //newsnQP// file
+note left #orange : Write //QCONF// file
 @enduml
 
 Method \ref uk.ac.warwick.wsbc.QuimP.Nest.analyse(final ImagePlus) is more complicated. It uses original ImagePlus object to perform some statistical calculations based on selected Outlines. Moreover it shares parameters and Snakes through **file** (Outline and QParam classes). From `8d20cee` this method gets **copy** of original image because it set slice in stack (\ref uk.ac.warwick.wsbc.QuimP.CellStat.record()) and that causes calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.updateBOA(int) through any of events overwritten in \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow

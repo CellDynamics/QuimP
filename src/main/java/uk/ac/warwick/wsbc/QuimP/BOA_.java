@@ -2210,7 +2210,7 @@ public class BOA_ implements PlugIn {
                         n = new Serializer<>(boaState, quimpInfo);
                         n.setPretty();
                         n.save(boap.outFile.getParent() + File.separator + boap.fileName
-                                + ".newsnQP");
+                                + ".QCONF");
                         n = null;
                     }
                 } else {

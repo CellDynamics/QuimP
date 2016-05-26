@@ -79,7 +79,7 @@ public class ECMM_Mapping {
         try {
             do {
 
-                OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
+                OpenDialog od = new OpenDialog("Open paramater file (.paQP|.QCONF)...",
                         OpenDialog.getLastDirectory(), ".paQP");
                 if (od.getFileName() == null) {
                     return;
