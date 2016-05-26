@@ -35,9 +35,13 @@ import ij.IJ;
  */
 public class QParams {
 
-    private File paramFile; //!< paQP file full name
+    public static final int OLD_QUIMP = 1;
+    public static final int QUIMP_11 = 2;
+    public static final int NEW_QUIMP = QUIMP_11; //!< Temporary block new indicator
+
+    protected File paramFile; //!< paQP file full name
     private File[] otherPaFiles;
-    boolean newFormat;
+    int paramFormat; //!< Indicates format of data file
 
     String prefix;
     String path;
@@ -70,7 +74,7 @@ public class QParams {
         path = paramFile.getParent();
         prefix = Tool.removeExtension(paramFile.getName());
 
-        newFormat = true;
+        paramFormat = QParams.QUIMP_11;
 
         segImageFile = new File("/");
         snakeQP = new File("/");
@@ -117,7 +121,7 @@ public class QParams {
      * @return \c true if successful
      */
     boolean readParams() {
-        newFormat = false;
+        paramFormat = QParams.OLD_QUIMP;
         try {
             BufferedReader d = new BufferedReader(new FileReader(paramFile));
 
@@ -179,7 +183,7 @@ public class QParams {
             sensitivity = Tool.s2d(d.readLine());
 
             if (l.substring(0, 3).equals("#p2")) { // new format
-                newFormat = true;
+                paramFormat = QParams.QUIMP_11;
                 // new params
                 d.readLine(); // # - new parameters (cortext width, start frame,
                               // end frame, final shrink, statsQP, fluImage)
@@ -206,7 +210,7 @@ public class QParams {
     }
 
     void writeParams() {
-        newFormat = true;
+        paramFormat = QParams.NEW_QUIMP;
 
         try {
             if (paramFile.exists()) {

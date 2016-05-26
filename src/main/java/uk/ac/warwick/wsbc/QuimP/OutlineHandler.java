@@ -164,7 +164,7 @@ public class OutlineHandler extends ShapeHandler<Outline> {
                     // store flu measurements
                     n.fluores[0].intensity = Tool.s2d(split[6]);
 
-                    if (qp.newFormat) {
+                    if (qp.paramFormat == QParams.QUIMP_11) {
                         // has other channels and x and y
                         n.fluores[0].x = Tool.s2d(split[7]);
                         n.fluores[0].y = Tool.s2d(split[8]);
@@ -207,7 +207,7 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             } // end while
             br.close();
 
-            if (!qp.newFormat) {
+            if (qp.paramFormat == QParams.OLD_QUIMP) {
                 qp.startFrame = 1;
                 qp.endFrame = size;
                 this.endFrame = size;

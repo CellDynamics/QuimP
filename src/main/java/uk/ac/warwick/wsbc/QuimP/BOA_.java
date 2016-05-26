@@ -3761,7 +3761,7 @@ class BOAp {
         segParam.f_contract = readQp.f_contract;
         segParam.f_image = readQp.f_image;
 
-        if (readQp.newFormat) {
+        if (readQp.paramFormat == QParams.QUIMP_11) {
             segParam.finalShrink = readQp.finalShrink;
         }
         BOA_.log("Successfully read parameters");
