@@ -87,7 +87,7 @@ public class ECMM_Mapping {
                 // load config file but check if it is new format or old
                 File paramFile = new File(od.getDirectory(), od.getFileName());
                 // check extension
-                if (paramFile.getName().endsWith(".QCONF")) {// new file format see #152
+                if (paramFile.getName().endsWith(".QCONF")) {// new file format see TODO #152
                     qp = new QParamsExchanger(paramFile);
                     qp.readParams();
                     runFromNest();
@@ -157,6 +157,22 @@ public class ECMM_Mapping {
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
      */
     private void runFromNest() {
+        LOGGER.debug("Processing from new file format");
+        Nest nest = qp.getNest();
+        for (int i = 0; i < nest.size(); i++) { // go over all snakes
+            SnakeHandler sH = nest.getHandler(i);
+            if (sH == null)
+                continue;
+            OutlineHandler oH = new OutlineHandler(sH); // convert to outline, oH is global var
+            ECMp.setup(qp);
+            ECMp.setParams(oH.maxLength); // base params on outline in middle of
+            // sequence
+            if (ECMp.plot) {
+                plot = new ECMplot(oH.getSize() - 1);
+            }
+            run(); // fills outputH
+            // save - must be new container for data, like global exchange something
+        }
 
     }
 
@@ -2020,8 +2036,8 @@ class ECMp {
     static void setup(QParams qp) {
         INFILE = qp.snakeQP;
         OUTFILE = new File(ECMp.INFILE.getAbsolutePath()); // output file (.snQP) file
-        scale = qp.imageScale;
-        frameInterval = qp.frameInterval;
+        scale = qp.getImageScale();
+        frameInterval = qp.getFrameInterval();
         // markerRes = qp.nodeRes;
         startFrame = qp.getStartFrame();
         endFrame = qp.getEndFrame();

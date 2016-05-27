@@ -140,7 +140,7 @@ public class BOA_ implements PlugIn {
      * constructor (to reset settings on next BOA call without quitting Fiij)
      */
     static public BOAp boap = new BOAp();
-    private BOAState boaState; // current state of BOA module
+    static public BOAState boaState; // current state of BOA module
 
     /**
      * Hold current BOA state that can be serialized
@@ -209,18 +209,27 @@ public class BOA_ implements PlugIn {
          */
         public ArrayList<Boolean> isFrameEdited;
 
+        double imageScale; //!< scale of image in 
+        transient boolean scaleAdjusted = false;
+        
         /**
          * Construct BOAState object for given stack size
          * 
          * @param numofframes number of frames in loaded stack
          */
-        public BOAState(int numofframes) {
+        public BOAState(final ImagePlus ip) {
+            int numofframes = ip.getStackSize();
             segParamSnapshots = new ArrayList<SegParam>(Collections.nCopies(numofframes, null));
             snakePluginListSnapshots =
                     new ArrayList<SnakePluginList>(Collections.nCopies(numofframes, null));
             isFrameEdited = new ArrayList<Boolean>(Collections.nCopies(numofframes, false));
             LOGGER.debug("Initialize storage of size: " + numofframes + " size of segParams: "
                     + segParamSnapshots.size());
+            imageScale = ip.getCalibration().pixelWidth;
+            if (imageScale == 0) {
+                imageScale = 1;
+                scaleAdjusted = true;
+            }
         }
 
         /**
@@ -334,7 +343,7 @@ public class BOA_ implements PlugIn {
             }
         }
 
-        boaState = new BOAState(ip.getStackSize()); // create BOA state machine
+        boaState = new BOAState(ip); // create BOA state machine
         boaState.segParam = boap.segParam; // assign reference of segmentation parameters to state
                                            // machine
         // Build plugin engine
@@ -399,7 +408,7 @@ public class BOA_ implements PlugIn {
         window.buildWindow();
         window.setTitle(window.getTitle() + " :QuimP: " + quimpInfo[0]);
         // warn about scale
-        if (boap.scaleAdjusted) {
+        if (boaState.scaleAdjusted) {
             BOA_.log("WARNING Scale was zero - set to 1");
         }
         if (boap.fIAdjusted) {
@@ -801,7 +810,7 @@ public class BOA_ implements PlugIn {
 
             fpsLabel = new Label("F Interval: " + IJ.d2s(boap.imageFrameInterval, 3) + " s");
             northPanel.add(fpsLabel);
-            pixelLabel = new Label("Scale: " + IJ.d2s(boap.imageScale, 6) + " \u00B5m");
+            pixelLabel = new Label("Scale: " + IJ.d2s(boaState.imageScale, 6) + " \u00B5m");
             northPanel.add(pixelLabel);
 
             bScale = addButton("Set Scale", northPanel);
@@ -1308,7 +1317,7 @@ public class BOA_ implements PlugIn {
 
             } else if (b == bScale) {
                 setScales();
-                pixelLabel.setText("Scale: " + IJ.d2s(boap.imageScale, 6) + " \u00B5m");
+                pixelLabel.setText("Scale: " + IJ.d2s(boaState.imageScale, 6) + " \u00B5m");
                 fpsLabel.setText("F Interval: " + IJ.d2s(boap.imageFrameInterval, 3) + " s");
             } else if (b == bAdd) {
                 addCell(canvas.getImage().getRoi(), boaState.frame);
@@ -1672,7 +1681,7 @@ public class BOA_ implements PlugIn {
         }
 
         void setScalesText() {
-            pixelLabel.setText("Scale: " + IJ.d2s(boap.imageScale, 6) + " \u00B5m");
+            pixelLabel.setText("Scale: " + IJ.d2s(boaState.imageScale, 6) + " \u00B5m");
             fpsLabel.setText("F Interval: " + IJ.d2s(boap.imageFrameInterval, 3) + " s");
         }
     } // end of CustomStackWindow
@@ -1959,7 +1968,7 @@ public class BOA_ implements PlugIn {
     void setScales() {
         GenericDialog gd = new GenericDialog("Set image scale", window);
         gd.addNumericField("Frame interval (seconds)", boap.imageFrameInterval, 3);
-        gd.addNumericField("Pixel width (\u00B5m)", boap.imageScale, 6);
+        gd.addNumericField("Pixel width (\u00B5m)", boaState.imageScale, 6);
         gd.showDialog();
 
         double tempFI = gd.getNextNumber(); // force to check for errors
@@ -1970,7 +1979,7 @@ public class BOA_ implements PlugIn {
             BOA_.log("Scale was not updated:\n\tinvalid input");
         } else if (gd.wasOKed()) {
             boap.imageFrameInterval = tempFI;
-            boap.imageScale = tempP;
+            boaState.imageScale = tempP;
             updateImageScale();
             BOA_.log("Scale successfully updated");
         }
@@ -1979,8 +1988,8 @@ public class BOA_ implements PlugIn {
 
     void updateImageScale() {
         imageGroup.getOrgIpl().getCalibration().frameInterval = boap.imageFrameInterval;
-        imageGroup.getOrgIpl().getCalibration().pixelHeight = boap.imageScale;
-        imageGroup.getOrgIpl().getCalibration().pixelWidth = boap.imageScale;
+        imageGroup.getOrgIpl().getCalibration().pixelHeight = boaState.imageScale;
+        imageGroup.getOrgIpl().getCalibration().pixelWidth = boaState.imageScale;
     }
 
     boolean loadSnakes() {
@@ -2206,8 +2215,8 @@ public class BOA_ implements PlugIn {
                         s.save(boap.outFile.getParent() + File.separator + boap.fileName + ".pgQP");
                         s = null; // remove
                         // Dump BOAState object s new format
-                        Serializer<BOAState> n;
-                        n = new Serializer<>(boaState, quimpInfo);
+                        Serializer<DataContainer> n;
+                        n = new Serializer<>(new DataContainer(boaState), quimpInfo);
                         n.setPretty();
                         n.save(boap.outFile.getParent() + File.separator + boap.fileName
                                 + ".QCONF");
@@ -3205,7 +3214,7 @@ class Nest implements IQuimpSerialize {
 
             File statsFile = new File(BOA_.boap.outFile.getParent() + File.separator
                     + BOA_.boap.fileName + "_" + sH.getID() + ".stQP.csv");
-            new CellStat(outputH, oi, statsFile, BOA_.boap.imageScale,
+            new CellStat(outputH, oi, statsFile, BOA_.boaState.imageScale,
                     BOA_.boap.imageFrameInterval);
         }
     }
@@ -3307,6 +3316,7 @@ class Nest implements IQuimpSerialize {
         return n;
     }
 
+    // TODO use new feature of conversion between snakes and outlines
     void addOutlinehandler(final OutlineHandler oH) {
         SnakeHandler sH = addHandler(oH.indexGetOutline(0).asFloatRoi(), oH.getStartFrame());
 
@@ -3386,9 +3396,8 @@ class BOAp {
     double proximity; //!< distance between centroids at which contact is tested for 
     double proxFreeze; //!< proximity of nodes to freeze when blowing up 
     boolean savedOne;
-    double imageScale; //!< scale of image in 
+
     double imageFrameInterval;
-    boolean scaleAdjusted;
     boolean fIAdjusted;
     boolean singleImage;
     String paramsExist; // on startup check if defaults are needed to set
@@ -3637,21 +3646,12 @@ class BOAp {
 
         FRAMES = ip.getStackSize(); // get number of frames
         imageFrameInterval = ip.getCalibration().frameInterval;
-        imageScale = ip.getCalibration().pixelWidth;
-        scaleAdjusted = false;
         fIAdjusted = false;
         if (imageFrameInterval == 0) {
             imageFrameInterval = 1;
             fIAdjusted = true;
             // BOA_.log("Warning. Frame interval was 0 sec. Using 1 sec instead"
             // + "\n\t[set in 'image->Properties...']");
-        }
-        if (imageScale == 0) {
-            imageScale = 1;
-            scaleAdjusted = true;
-            // BOA_.log("Warning. Scale was 1 pixel == 0 \u00B5m. Using 1
-            // \u00B5m instead"
-            // + "\n\t(set in 'Analyze->Set Scale...')");
         }
 
         savedOne = false;
@@ -3703,8 +3703,8 @@ class BOAp {
             qp.segImageFile = orgFile;
             qp.snakeQP = outFile;
             qp.statsQP = statsFile;
-            qp.imageScale = imageScale;
-            qp.frameInterval = imageFrameInterval;
+            qp.setImageScale(BOA_.boaState.imageScale);
+            qp.setFrameInterval(imageFrameInterval);
             qp.setStartFrame(startF);
             qp.setEndFrame(endF);
             qp.NMAX = NMAX;

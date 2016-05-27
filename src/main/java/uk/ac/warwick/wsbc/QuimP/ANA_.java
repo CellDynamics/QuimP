@@ -1106,8 +1106,8 @@ class ANAp {
                                                       // file
         STATSFILE = new File(qp.statsQP.getAbsolutePath()); // output file
                                                             // (.stQP.csv) file
-        scale = qp.imageScale;
-        frameInterval = qp.frameInterval;
+        scale = qp.getImageScale();
+        frameInterval = qp.getFrameInterval();
         ANAp.setCortextWidthScale(qp.cortexWidth);
         startFrame = qp.getStartFrame();
         endFrame = qp.getEndFrame();

@@ -309,8 +309,11 @@ public class OutlineHandler extends ShapeHandler<Outline> {
         return size;
     }
 
+    /**
+     * basically clone snake into memory
+     * @todo TODO USe clone feature from class 
+     */
     public void save(Outline o, int frame) {
-        // basically clone snake into memory
         Vert oV = o.getHead();
 
         Vert nV = new Vert(oV.getX(), oV.getY(), oV.getTrackNum()); // head node

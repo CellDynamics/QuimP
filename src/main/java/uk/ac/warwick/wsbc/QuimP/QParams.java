@@ -37,7 +37,7 @@ public class QParams {
 
     public static final int OLD_QUIMP = 1;
     public static final int QUIMP_11 = 2;
-    public static final int NEW_QUIMP = QUIMP_11; //!< Temporary block new indicator
+    public static final int NEW_QUIMP = 3;
 
     protected File paramFile; //!< paQP file full name
     private File[] otherPaFiles;
@@ -51,37 +51,10 @@ public class QParams {
     File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
     File[] fluFiles;
 
-    double imageScale;
-    double frameInterval;
+    private double imageScale;
+    private double frameInterval;
     private int startFrame, endFrame;
-    /**
-     * @return the startFrame
-     */
-    public int getStartFrame() {
-        return startFrame;
-    }
-
-    /**
-     * @param startFrame the startFrame to set
-     */
-    public void setStartFrame(int startFrame) {
-        this.startFrame = startFrame;
-    }
-
-    /**
-     * @return the endFrame
-     */
-    public int getEndFrame() {
-        return endFrame;
-    }
-
-    /**
-     * @param endFrame the endFrame to set
-     */
-    public void setEndFrame(int endFrame) {
-        this.endFrame = endFrame;
-    }
-
+    
     int NMAX, blowup, max_iterations, sample_tan, sample_norm;
     double delta_t, nodeRes, vel_crit, f_central, f_contract, f_image, f_friction;
     double finalShrink, cortexWidth;
@@ -135,10 +108,70 @@ public class QParams {
         sensitivity = -1;
     }
 
+    /**
+     * @return the imageScale
+     */
+    public double getImageScale() {
+        return imageScale;
+    }
+
+    /**
+     * @param imageScale the imageScale to set
+     */
+    public void setImageScale(double imageScale) {
+        this.imageScale = imageScale;
+    }
+
+    /**
+     * @return the frameInterval
+     */
+    public double getFrameInterval() {
+        return frameInterval;
+    }
+
+    /**
+     * @param frameInterval the frameInterval to set
+     */
+    public void setFrameInterval(double frameInterval) {
+        this.frameInterval = frameInterval;
+    }
+
     void setParamFile(File p) {
         paramFile = p;
         path = paramFile.getParent();
         prefix = Tool.removeExtension(paramFile.getName());
+    }
+
+    /**
+     * @return the startFrame
+     */
+    public int getStartFrame() {
+        return startFrame;
+    }
+
+    /**
+     * @param startFrame the startFrame to set
+     */
+    public void setStartFrame(int startFrame) {
+        this.startFrame = startFrame;
+    }
+
+    /**
+     * @return the endFrame
+     */
+    public int getEndFrame() {
+        return endFrame;
+    }
+
+    /**
+     * @param endFrame the endFrame to set
+     */
+    public void setEndFrame(int endFrame) {
+        this.endFrame = endFrame;
+    }
+
+    public Nest getNest() {
+        return null;
     }
 
     /**
@@ -238,65 +271,70 @@ public class QParams {
     }
 
     void writeParams() {
-        paramFormat = QParams.NEW_QUIMP;
+        switch (paramFormat) {
+            case QParams.QUIMP_11:
+                try {
+                    if (paramFile.exists()) {
+                        paramFile.delete();
+                    }
 
-        try {
-            if (paramFile.exists()) {
-                paramFile.delete();
-            }
+                    Random generator = new Random();
+                    double d = generator.nextDouble() * 1000000; // 6 digit key to ID
+                                                                 // job
+                    key = Math.round(d);
 
-            Random generator = new Random();
-            double d = generator.nextDouble() * 1000000; // 6 digit key to ID
-                                                         // job
-            key = Math.round(d);
+                    PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
 
-            PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
+                    pPW.print("#p2 - QuimP parameter file (QuimP11). Created " + Tool.dateAsString()
+                            + "\n");
+                    pPW.print(IJ.d2s(key, 0) + "\n");
+                    pPW.print(segImageFile.getAbsolutePath() + "\n");
+                    pPW.print(File.separator + snakeQP.getName() + "\n");
+                    // pPW.print(outFile.getAbsolutePath() + "\n");
 
-            pPW.print(
-                    "#p2 - QuimP parameter file (QuimP11). Created " + Tool.dateAsString() + "\n");
-            pPW.print(IJ.d2s(key, 0) + "\n");
-            pPW.print(segImageFile.getAbsolutePath() + "\n");
-            pPW.print(File.separator + snakeQP.getName() + "\n");
-            // pPW.print(outFile.getAbsolutePath() + "\n");
+                    pPW.print("#Image calibration (scale, frame interval)\n");
+                    pPW.print(IJ.d2s(imageScale, 6) + "\n");
+                    pPW.print(IJ.d2s(frameInterval, 3) + "\n");
 
-            pPW.print("#Image calibration (scale, frame interval)\n");
-            pPW.print(IJ.d2s(imageScale, 6) + "\n");
-            pPW.print(IJ.d2s(frameInterval, 3) + "\n");
+                    pPW.print("#segmentation parameters\n");
+                    pPW.print(IJ.d2s(NMAX, 0) + "\n");
+                    pPW.print(IJ.d2s(delta_t, 6) + "\n");
+                    pPW.print(IJ.d2s(max_iterations, 6) + "\n");
+                    pPW.print(IJ.d2s(nodeRes, 6) + "\n");
+                    pPW.print(IJ.d2s(blowup, 6) + "\n");
+                    pPW.print(IJ.d2s(sample_tan, 0) + "\n");
+                    pPW.print(IJ.d2s(sample_norm, 0) + "\n");
+                    pPW.print(IJ.d2s(vel_crit, 6) + "\n");
+                    pPW.print(IJ.d2s(f_central, 6) + "\n");
+                    pPW.print(IJ.d2s(f_contract, 6) + "\n");
+                    pPW.print(IJ.d2s(f_friction, 6) + "\n");
+                    pPW.print(IJ.d2s(f_image, 6) + "\n");
+                    pPW.print(IJ.d2s(sensitivity, 6) + "\n");
 
-            pPW.print("#segmentation parameters\n");
-            pPW.print(IJ.d2s(NMAX, 0) + "\n");
-            pPW.print(IJ.d2s(delta_t, 6) + "\n");
-            pPW.print(IJ.d2s(max_iterations, 6) + "\n");
-            pPW.print(IJ.d2s(nodeRes, 6) + "\n");
-            pPW.print(IJ.d2s(blowup, 6) + "\n");
-            pPW.print(IJ.d2s(sample_tan, 0) + "\n");
-            pPW.print(IJ.d2s(sample_norm, 0) + "\n");
-            pPW.print(IJ.d2s(vel_crit, 6) + "\n");
-            pPW.print(IJ.d2s(f_central, 6) + "\n");
-            pPW.print(IJ.d2s(f_contract, 6) + "\n");
-            pPW.print(IJ.d2s(f_friction, 6) + "\n");
-            pPW.print(IJ.d2s(f_image, 6) + "\n");
-            pPW.print(IJ.d2s(sensitivity, 6) + "\n");
+                    pPW.print("# - new parameters (cortext width, start frame, end frame,"
+                            + " final shrink, statsQP, fluImage)\n");
+                    pPW.print(IJ.d2s(cortexWidth, 2) + "\n");
+                    pPW.print(IJ.d2s(startFrame, 0) + "\n");
+                    pPW.print(IJ.d2s(endFrame, 0) + "\n");
+                    pPW.print(IJ.d2s(finalShrink, 2) + "\n");
+                    pPW.print(File.separator + statsQP.getName() + "\n");
 
-            pPW.print("# - new parameters (cortext width, start frame, end frame,"
-                    + " final shrink, statsQP, fluImage)\n");
-            pPW.print(IJ.d2s(cortexWidth, 2) + "\n");
-            pPW.print(IJ.d2s(startFrame, 0) + "\n");
-            pPW.print(IJ.d2s(endFrame, 0) + "\n");
-            pPW.print(IJ.d2s(finalShrink, 2) + "\n");
-            pPW.print(File.separator + statsQP.getName() + "\n");
+                    pPW.print("# - Fluorescence channel tiff's\n");
+                    pPW.print(fluTiffs[0].getAbsolutePath() + "\n");
+                    pPW.print(fluTiffs[1].getAbsolutePath() + "\n");
+                    pPW.print(fluTiffs[2].getAbsolutePath() + "\n");
 
-            pPW.print("# - Fluorescence channel tiff's\n");
-            pPW.print(fluTiffs[0].getAbsolutePath() + "\n");
-            pPW.print(fluTiffs[1].getAbsolutePath() + "\n");
-            pPW.print(fluTiffs[2].getAbsolutePath() + "\n");
+                    pPW.print("#END");
 
-            pPW.print("#END");
-
-            pPW.close();
-        } catch (Exception e) {
-            IJ.error("Could not write parameter file! " + e.getMessage());
-            e.printStackTrace();
+                    pPW.close();
+                } catch (Exception e) {
+                    IJ.error("Could not write parameter file! " + e.getMessage());
+                    e.printStackTrace();
+                }
+                break;
+            case QParams.NEW_QUIMP:
+                throw new UnsupportedOperationException(
+                        "writeParams() not supported for new file format");
         }
     }
 

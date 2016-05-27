@@ -912,8 +912,8 @@ class Qp {
      */
     static void setup(QParams qp) {
         Qp.snQPfile = qp.snakeQP;
-        Qp.scale = qp.imageScale;
-        Qp.frameInterval = qp.frameInterval;
+        Qp.scale = qp.getImageScale();
+        Qp.frameInterval = qp.getFrameInterval();
         Qp.filename = Tool.removeExtension(Qp.snQPfile.getName());
         Qp.outFile = new File(Qp.snQPfile.getParent() + File.separator + Qp.filename);
         Qp.startFrame = qp.getStartFrame();

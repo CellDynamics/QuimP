@@ -13,6 +13,10 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.warwick.wsbc.QuimP.BOA_.BOAState;
 
 /**
+ * Compatibility layer.
+ * 
+ * @remarks In future this class and super should be only deliverer of binary object from data file.
+ * 
  * @author p.baniukiewicz
  * @date 26 May 2016
  *
@@ -36,8 +40,9 @@ public class QParamsExchanger extends QParams {
      */
     @Override
     boolean readParams() {
-        Serializer<BOAState> loaded; // instance of loaded data
-        SerializerNoPluginSupport<BOAState> s = new SerializerNoPluginSupport<>(BOAState.class);
+        Serializer<DataContainer> loaded; // instance of loaded data
+        SerializerNoPluginSupport<DataContainer> s =
+                new SerializerNoPluginSupport<>(DataContainer.class);
         try {
             loaded = s.load(paramFile); // try to load (skip afterSerialzie)
         } catch (Exception e) { // stop on fail (file or json error)
@@ -56,7 +61,7 @@ public class QParamsExchanger extends QParams {
             LOGGER.warn("Loaded config file is in diferent version than current QuimP (" + ver[0]
                     + " vs " + loaded.version[0]);
         }
-        loadedBOAState = loaded.obj;
+        loadedBOAState = loaded.obj.BOAState;
         return true;
     }
 
@@ -92,6 +97,53 @@ public class QParamsExchanger extends QParams {
     public void setEndFrame(int endFrame) {
         // TODO Auto-generated method stub
         super.setEndFrame(endFrame);
+    }
+
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#getImageScale()
+     */
+    @Override
+    public double getImageScale() {
+        // TODO Auto-generated method stub
+        return super.getImageScale();
+    }
+
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#setImageScale(double)
+     */
+    @Override
+    public void setImageScale(double imageScale) {
+        // TODO Auto-generated method stub
+        super.setImageScale(imageScale);
+    }
+
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#getFrameInterval()
+     */
+    @Override
+    public double getFrameInterval() {
+        // TODO Auto-generated method stub
+        return super.getFrameInterval();
+    }
+
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#setFrameInterval(double)
+     */
+    @Override
+    public void setFrameInterval(double frameInterval) {
+        // TODO Auto-generated method stub
+        super.setFrameInterval(frameInterval);
+    }
+
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#getNest()
+     */
+    @Override
+    public Nest getNest() {
+        if (loadedBOAState != null)
+            return loadedBOAState.nest;
+        else
+            return super.getNest();
     }
 
 }
