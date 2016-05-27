@@ -3705,8 +3705,8 @@ class BOAp {
             qp.statsQP = statsFile;
             qp.imageScale = imageScale;
             qp.frameInterval = imageFrameInterval;
-            qp.startFrame = startF;
-            qp.endFrame = endF;
+            qp.setStartFrame(startF);
+            qp.setEndFrame(endF);
             qp.NMAX = NMAX;
             qp.blowup = segParam.blowup;
             qp.max_iterations = segParam.max_iterations;

@@ -84,8 +84,17 @@ public class ECMM_Mapping {
                 if (od.getFileName() == null) {
                     return;
                 }
+                // load config file but check if it is new format or old
                 File paramFile = new File(od.getDirectory(), od.getFileName());
-                qp = new QParams(paramFile);
+                // check extension
+                if (paramFile.getName().endsWith(".QCONF")) {// new file format see #152
+                    qp = new QParamsExchanger(paramFile);
+                    qp.readParams();
+                    runFromNest();
+                    return; // break strange while loop
+                } else
+                    qp = new QParams(paramFile);
+                // old flow with paQP files
                 qp.readParams();
 
                 // ECMp.setup(qp);
@@ -142,6 +151,13 @@ public class ECMM_Mapping {
             // IJ.error("Unknown exception");
             e.printStackTrace();
         }
+    }
+
+    /**
+     * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
+     */
+    private void runFromNest() {
+
     }
 
     private void about() {
@@ -2007,8 +2023,8 @@ class ECMp {
         scale = qp.imageScale;
         frameInterval = qp.frameInterval;
         // markerRes = qp.nodeRes;
-        startFrame = qp.startFrame;
-        endFrame = qp.endFrame;
+        startFrame = qp.getStartFrame();
+        endFrame = qp.getEndFrame();
         ECMp.ANA = false;
         ECMp.plot = true;
     }

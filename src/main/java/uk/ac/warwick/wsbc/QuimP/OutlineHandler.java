@@ -34,8 +34,8 @@ public class OutlineHandler extends ShapeHandler<Outline> {
 
     public OutlineHandler(QParams params) {
         qp = params;
-        startFrame = qp.startFrame;
-        endFrame = qp.endFrame;
+        startFrame = qp.getStartFrame();
+        endFrame = qp.getEndFrame();
 
         // System.out.println("start frame: " + startFrame + ", endframe: " +
         // endFrame);
@@ -48,6 +48,18 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             size = outlines.length;
             readSuccess = true;
         }
+    }
+
+    /**
+     * Conversion constructor
+     * 
+     * Converts SnakeHandler to OutlineHandler
+     * @param snake source SnakeHandler 
+     */
+    public OutlineHandler(final SnakeHandler snake) {
+        startFrame = snake.startFrame;
+        endFrame = snake.endFrame;
+
     }
 
     public OutlineHandler(int s, int e) {
@@ -208,8 +220,8 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             br.close();
 
             if (qp.paramFormat == QParams.OLD_QUIMP) {
-                qp.startFrame = 1;
-                qp.endFrame = size;
+                qp.setStartFrame(1);
+                qp.setEndFrame(size);
                 this.endFrame = size;
                 this.startFrame = 1;
                 qp.writeParams(); // replace the old format parameter file

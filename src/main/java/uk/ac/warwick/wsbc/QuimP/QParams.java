@@ -41,7 +41,7 @@ public class QParams {
 
     protected File paramFile; //!< paQP file full name
     private File[] otherPaFiles;
-    int paramFormat; //!< Indicates format of data file
+    public int paramFormat; //!< Indicates format of data file
 
     String prefix;
     String path;
@@ -53,7 +53,35 @@ public class QParams {
 
     double imageScale;
     double frameInterval;
-    int startFrame, endFrame;
+    private int startFrame, endFrame;
+    /**
+     * @return the startFrame
+     */
+    public int getStartFrame() {
+        return startFrame;
+    }
+
+    /**
+     * @param startFrame the startFrame to set
+     */
+    public void setStartFrame(int startFrame) {
+        this.startFrame = startFrame;
+    }
+
+    /**
+     * @return the endFrame
+     */
+    public int getEndFrame() {
+        return endFrame;
+    }
+
+    /**
+     * @param endFrame the endFrame to set
+     */
+    public void setEndFrame(int endFrame) {
+        this.endFrame = endFrame;
+    }
+
     int NMAX, blowup, max_iterations, sample_tan, sample_norm;
     double delta_t, nodeRes, vel_crit, f_central, f_contract, f_image, f_friction;
     double finalShrink, cortexWidth;

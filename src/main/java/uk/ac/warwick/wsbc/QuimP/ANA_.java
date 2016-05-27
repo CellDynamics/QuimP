@@ -132,7 +132,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
                 }
 
                 setImageScale();
-                orgIpl.setSlice(qp.startFrame);
+                orgIpl.setSlice(qp.getStartFrame());
                 if (!oH.readSuccess) {
                     return;
                 }
@@ -1109,8 +1109,8 @@ class ANAp {
         scale = qp.imageScale;
         frameInterval = qp.frameInterval;
         ANAp.setCortextWidthScale(qp.cortexWidth);
-        startFrame = qp.startFrame;
-        endFrame = qp.endFrame;
+        startFrame = qp.getStartFrame();
+        endFrame = qp.getEndFrame();
         channel = 0;
         cleared = false;
         noData = true;

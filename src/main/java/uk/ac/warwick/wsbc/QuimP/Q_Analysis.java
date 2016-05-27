@@ -916,8 +916,8 @@ class Qp {
         Qp.frameInterval = qp.frameInterval;
         Qp.filename = Tool.removeExtension(Qp.snQPfile.getName());
         Qp.outFile = new File(Qp.snQPfile.getParent() + File.separator + Qp.filename);
-        Qp.startFrame = qp.startFrame;
-        Qp.endFrame = qp.endFrame;
+        Qp.startFrame = qp.getStartFrame();
+        Qp.endFrame = qp.getEndFrame();
         fps = 1d / frameInterval;
         singleImage = false;
         useDialog = true;
