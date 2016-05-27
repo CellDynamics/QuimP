@@ -107,6 +107,21 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
+     * Print Shape nodes
+     * 
+     * @return String representation of Shape
+     */
+    public String toString() {
+        T v = this.head;
+        String out = "Coords: ";
+        do {
+            out = out.concat(" {" + v.getX() + "," + v.getY() + "}");
+            v = v.getNext();
+        } while (!v.isHead());
+        return out;
+    }
+
+    /**
      * (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */

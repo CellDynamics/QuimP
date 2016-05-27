@@ -7,7 +7,7 @@ import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
- * Represents a vertex in the outline Contains several methods that operate on
+ * Represents a vertex in the outline. Contains several methods that operate on
  * vertexes and vectors.
  * 
  * @author rtyson
@@ -98,6 +98,15 @@ public class Vert extends PointsList<Vert> {
         snapped = src.snapped;
         intsectID = src.intsectID;
         intState = src.intState;
+    }
+
+    /**
+     * Conversion constructor
+     * @param src Node to convert to Vert
+     */
+    public Vert(final Node src) {
+        super(src);
+        vertInitializer(); // default params that are not passed from Vert
     }
 
     /**

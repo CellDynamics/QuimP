@@ -198,4 +198,11 @@ public class SnakeTest {
         assertThat(copy.hashCode(), is(not(snake1.hashCode())));
     }
 
+    @Test
+    public void testSnakeToOutline() {
+        Outline o = new Outline(snake1);
+        LOGGER.debug(snake1.toString());
+        LOGGER.debug(o.toString());
+    }
+
 }

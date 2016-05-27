@@ -96,4 +96,14 @@ public class NodeTest {
         assertThat(copy.hashCode(), is(not(n.hashCode())));
     }
 
+    @Test
+    public void testNode2Vert() {
+        Vert v = new Vert(n);
+        Vert cmp = new Vert(5, 10, 15); // the same props as in Node
+        cmp.setNormal(25, 17);
+        LOGGER.debug(v.toString());
+        LOGGER.debug(cmp.toString());
+        assertThat(v.equals(cmp), is(true));
+    }
+
 }

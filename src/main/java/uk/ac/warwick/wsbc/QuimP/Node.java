@@ -85,47 +85,47 @@ public class Node extends PointsList<Node> {
      * Compare only current Node, no neighbors
 	 * @see java.lang.Object#hashCode()
 	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((F_total == null) ? 0 : F_total.hashCode());
-		result = prime * result + ((prelimPoint == null) ? 0 : prelimPoint.hashCode());
-		result = prime * result + ((vel == null) ? 0 : vel.hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((F_total == null) ? 0 : F_total.hashCode());
+        result = prime * result + ((prelimPoint == null) ? 0 : prelimPoint.hashCode());
+        result = prime * result + ((vel == null) ? 0 : vel.hashCode());
+        return result;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (!(obj instanceof Node))
-			return false;
-		Node other = (Node) obj;
-		if (F_total == null) {
-			if (other.F_total != null)
-				return false;
-		} else if (!F_total.equals(other.F_total))
-			return false;
-		if (prelimPoint == null) {
-			if (other.prelimPoint != null)
-				return false;
-		} else if (!prelimPoint.equals(other.prelimPoint))
-			return false;
-		if (vel == null) {
-			if (other.vel != null)
-				return false;
-		} else if (!vel.equals(other.vel))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (!(obj instanceof Node))
+            return false;
+        Node other = (Node) obj;
+        if (F_total == null) {
+            if (other.F_total != null)
+                return false;
+        } else if (!F_total.equals(other.F_total))
+            return false;
+        if (prelimPoint == null) {
+            if (other.prelimPoint != null)
+                return false;
+        } else if (!prelimPoint.equals(other.prelimPoint))
+            return false;
+        if (vel == null) {
+            if (other.vel != null)
+                return false;
+        } else if (!vel.equals(other.vel))
+            return false;
+        return true;
+    }
 
-	/**
+    /**
      * Update point and force with preliminary values, and reset.
      */
     public void update() {
@@ -133,6 +133,17 @@ public class Node extends PointsList<Node> {
         setY(getY() + prelimPoint.getY());
         prelimPoint.setX(0);
         prelimPoint.setY(0);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Node [vel=" + vel + ", F_total=" + F_total + ", prelimPoint=" + prelimPoint
+                + ", point=" + point + ", normal=" + normal + ", tan=" + tan + ", head=" + head
+                + ", tracknumber=" + tracknumber + ", position=" + position + ", frozen=" + frozen
+                + "]";
     }
 
     /**

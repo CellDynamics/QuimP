@@ -73,6 +73,16 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     }
 
     /**
+     * Conversion constructor
+     * 
+     * @param src Sanke to be converted to Outline
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Outline(final Snake src) {
+        super((Shape) src);
+    }
+
+    /**
      * Create an outline from an Roi
      * 
      * @param roi Initial ROI
@@ -101,6 +111,15 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         updateNormales(false);
         this.updateCurvature();
         // calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Outline [POINTS=" + POINTS + ", centroid=" + centroid + ", toString()="
+                + super.toString() + "]";
     }
 
     public void print() {

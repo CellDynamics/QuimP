@@ -1033,19 +1033,14 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         System.out.println("Editing a snake");
     }
 
-    /**
-     * Print Snake nodes
-     * 
-     * @return String representation of Snake
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
-        Node v = this.head;
-        String out = "id=" + this.getSnakeID();
-        do {
-            out = out.concat(" {" + v.getX() + "," + v.getY() + "}");
-            v = v.getNext();
-        } while (!v.isHead());
-        return out;
+        return "Snake [alive=" + alive + ", snakeID=" + snakeID + ", startingNnodes="
+                + startingNnodes + ", FROZEN=" + FROZEN + ", bounds=" + bounds + ", POINTS="
+                + POINTS + ", centroid=" + centroid + ", toString()=" + super.toString() + "]";
     }
 
 }
