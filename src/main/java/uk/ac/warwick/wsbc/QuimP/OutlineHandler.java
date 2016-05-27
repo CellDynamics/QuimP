@@ -53,12 +53,16 @@ public class OutlineHandler extends ShapeHandler<Outline> {
     /**
      * Conversion constructor
      * 
-     * Converts SnakeHandler to OutlineHandler
+     * Converts SnakeHandler to OutlineHandler. Converted are only Snakes and their range
      * @param snake source SnakeHandler 
      */
     public OutlineHandler(final SnakeHandler snake) {
-        startFrame = snake.startFrame;
-        endFrame = snake.endFrame;
+        this(snake.startFrame, snake.endFrame); // create array and set ranges
+        for (int f = startFrame; f <= endFrame; f++) { // copy all snakes
+            Snake s = snake.getStoredSnake(f); // get original
+            if (s != null)
+                setOutline(f, new Outline(s)); // convert to Outline
+        }
 
     }
 

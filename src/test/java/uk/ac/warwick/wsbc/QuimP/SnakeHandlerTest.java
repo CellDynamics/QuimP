@@ -4,6 +4,11 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +23,11 @@ import ij.process.FloatPolygon;
  *
  */
 public class SnakeHandlerTest {
+
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
+    private static final Logger LOGGER = LogManager.getLogger(SnakeHandlerTest.class.getName());
 
     private SnakeHandler sH;
     private String[] info = { "QuimP", "verr", "ddd" };
@@ -71,6 +81,14 @@ public class SnakeHandlerTest {
         serializer = new Serializer<>(sH, info);
         serializer.setPretty();
         serializer.save("/tmp/snakehandler1.tmp");
+    }
+
+    @Test
+    public void testSnakeHandlerToOutline() {
+        OutlineHandler oH = new OutlineHandler(sH);
+        assertThat(oH.getSize(), is(sH.endFrame - sH.getStartframe() + 1));
+        LOGGER.debug(sH.getStoredSnake(3).toString());
+        LOGGER.debug(oH.getOutline(3).toString());
     }
 
 }
