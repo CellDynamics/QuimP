@@ -139,7 +139,7 @@ public class BOA_ implements PlugIn {
      * Configuration object, available from all modules. Must be initialized here \b AND in 
      * constructor (to reset settings on next BOA call without quitting Fiij)
      */
-    static public BOAp boap = new BOAp();
+    static public BOAp boap = new BOAp(); // old configuration class
     static public BOAState boaState; // current state of BOA module
 
     /**
@@ -209,13 +209,16 @@ public class BOA_ implements PlugIn {
          */
         public ArrayList<Boolean> isFrameEdited;
 
-        double imageScale; //!< scale of image in 
-        transient boolean scaleAdjusted = false;
+        double imageScale; //!< scale of image read from ip
+        transient boolean scaleAdjusted = false; //!< \c true when adjusted in constructor
+        double imageFrameInterval;
+        transient boolean fIAdjusted = false;
         
         /**
          * Construct BOAState object for given stack size
+         * Initializes other internal fields
          * 
-         * @param numofframes number of frames in loaded stack
+         * @param ip current image object
          */
         public BOAState(final ImagePlus ip) {
             int numofframes = ip.getStackSize();
@@ -229,6 +232,11 @@ public class BOA_ implements PlugIn {
             if (imageScale == 0) {
                 imageScale = 1;
                 scaleAdjusted = true;
+            }
+            imageFrameInterval = ip.getCalibration().frameInterval;
+            if (imageFrameInterval == 0) {
+                imageFrameInterval = 1;
+                fIAdjusted = true;
             }
         }
 
@@ -411,7 +419,7 @@ public class BOA_ implements PlugIn {
         if (boaState.scaleAdjusted) {
             BOA_.log("WARNING Scale was zero - set to 1");
         }
-        if (boap.fIAdjusted) {
+        if (boaState.fIAdjusted) {
             BOA_.log("WARNING Frame interval was zero - set to 1");
         }
 
@@ -808,7 +816,7 @@ public class BOA_ implements PlugIn {
             c.anchor = GridBagConstraints.LINE_START;
             pluginPanel.setLayout(gridbag);
 
-            fpsLabel = new Label("F Interval: " + IJ.d2s(boap.imageFrameInterval, 3) + " s");
+            fpsLabel = new Label("F Interval: " + IJ.d2s(boaState.imageFrameInterval, 3) + " s");
             northPanel.add(fpsLabel);
             pixelLabel = new Label("Scale: " + IJ.d2s(boaState.imageScale, 6) + " \u00B5m");
             northPanel.add(pixelLabel);
@@ -1318,7 +1326,7 @@ public class BOA_ implements PlugIn {
             } else if (b == bScale) {
                 setScales();
                 pixelLabel.setText("Scale: " + IJ.d2s(boaState.imageScale, 6) + " \u00B5m");
-                fpsLabel.setText("F Interval: " + IJ.d2s(boap.imageFrameInterval, 3) + " s");
+                fpsLabel.setText("F Interval: " + IJ.d2s(boaState.imageFrameInterval, 3) + " s");
             } else if (b == bAdd) {
                 addCell(canvas.getImage().getRoi(), boaState.frame);
                 canvas.getImage().killRoi();
@@ -1682,7 +1690,7 @@ public class BOA_ implements PlugIn {
 
         void setScalesText() {
             pixelLabel.setText("Scale: " + IJ.d2s(boaState.imageScale, 6) + " \u00B5m");
-            fpsLabel.setText("F Interval: " + IJ.d2s(boap.imageFrameInterval, 3) + " s");
+            fpsLabel.setText("F Interval: " + IJ.d2s(boaState.imageFrameInterval, 3) + " s");
         }
     } // end of CustomStackWindow
 
@@ -1967,7 +1975,7 @@ public class BOA_ implements PlugIn {
 
     void setScales() {
         GenericDialog gd = new GenericDialog("Set image scale", window);
-        gd.addNumericField("Frame interval (seconds)", boap.imageFrameInterval, 3);
+        gd.addNumericField("Frame interval (seconds)", boaState.imageFrameInterval, 3);
         gd.addNumericField("Pixel width (\u00B5m)", boaState.imageScale, 6);
         gd.showDialog();
 
@@ -1978,7 +1986,7 @@ public class BOA_ implements PlugIn {
             IJ.error("Values invalid");
             BOA_.log("Scale was not updated:\n\tinvalid input");
         } else if (gd.wasOKed()) {
-            boap.imageFrameInterval = tempFI;
+            boaState.imageFrameInterval = tempFI;
             boaState.imageScale = tempP;
             updateImageScale();
             BOA_.log("Scale successfully updated");
@@ -1987,7 +1995,7 @@ public class BOA_ implements PlugIn {
     }
 
     void updateImageScale() {
-        imageGroup.getOrgIpl().getCalibration().frameInterval = boap.imageFrameInterval;
+        imageGroup.getOrgIpl().getCalibration().frameInterval = boaState.imageFrameInterval;
         imageGroup.getOrgIpl().getCalibration().pixelHeight = boaState.imageScale;
         imageGroup.getOrgIpl().getCalibration().pixelWidth = boaState.imageScale;
     }
@@ -3215,7 +3223,7 @@ class Nest implements IQuimpSerialize {
             File statsFile = new File(BOA_.boap.outFile.getParent() + File.separator
                     + BOA_.boap.fileName + "_" + sH.getID() + ".stQP.csv");
             new CellStat(outputH, oi, statsFile, BOA_.boaState.imageScale,
-                    BOA_.boap.imageFrameInterval);
+                    BOA_.boaState.imageFrameInterval);
         }
     }
 
@@ -3397,8 +3405,8 @@ class BOAp {
     double proxFreeze; //!< proximity of nodes to freeze when blowing up 
     boolean savedOne;
 
-    double imageFrameInterval;
-    boolean fIAdjusted;
+    
+    
     boolean singleImage;
     String paramsExist; // on startup check if defaults are needed to set
     boolean zoom;
@@ -3645,14 +3653,6 @@ class BOAp {
         fileName = Tool.removeExtension(orgFile.getName());
 
         FRAMES = ip.getStackSize(); // get number of frames
-        imageFrameInterval = ip.getCalibration().frameInterval;
-        fIAdjusted = false;
-        if (imageFrameInterval == 0) {
-            imageFrameInterval = 1;
-            fIAdjusted = true;
-            // BOA_.log("Warning. Frame interval was 0 sec. Using 1 sec instead"
-            // + "\n\t[set in 'image->Properties...']");
-        }
 
         savedOne = false;
         // nestSize = 0;
@@ -3704,7 +3704,7 @@ class BOAp {
             qp.snakeQP = outFile;
             qp.statsQP = statsFile;
             qp.setImageScale(BOA_.boaState.imageScale);
-            qp.setFrameInterval(imageFrameInterval);
+            qp.setFrameInterval(BOA_.boaState.imageFrameInterval);
             qp.setStartFrame(startF);
             qp.setEndFrame(endF);
             qp.NMAX = NMAX;
