@@ -4,10 +4,8 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
-import uk.ac.warwick.wsbc.QuimP.BOA_.BOAState;
-
 /**
- * Contain parameter for the whole QuimP.
+ * Contains parameter for the whole QuimP.
  * 
  * All modules can add here their configuration files. This structure is used for exchanging data
  * between modules. It can be dynamically modified

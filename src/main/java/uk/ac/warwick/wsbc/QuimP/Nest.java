@@ -145,16 +145,16 @@ class Nest implements IQuimpSerialize {
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next();
 
-            File pFile = new File(BOA_.boap.outFile.getParent(),
-                    BOA_.boap.fileName + "_" + sH.getID() + ".paQP");
+            File pFile = new File(BOA_.qState.boap.outFile.getParent(),
+                    BOA_.qState.boap.fileName + "_" + sH.getID() + ".paQP");
             QParams newQp = new QParams(pFile);
             newQp.readParams();
             outputH = new OutlineHandler(newQp);
 
-            File statsFile = new File(BOA_.boap.outFile.getParent() + File.separator
-                    + BOA_.boap.fileName + "_" + sH.getID() + ".stQP.csv");
-            new CellStat(outputH, oi, statsFile, BOA_.boaState.imageScale,
-                    BOA_.boaState.imageFrameInterval);
+            File statsFile = new File(BOA_.qState.boap.outFile.getParent() + File.separator
+                    + BOA_.qState.boap.fileName + "_" + sH.getID() + ".stQP.csv");
+            new CellStat(outputH, oi, statsFile, BOA_.qState.boap.getImageScale(),
+                    BOA_.qState.boap.getImageFrameInterval());
         }
     }
 

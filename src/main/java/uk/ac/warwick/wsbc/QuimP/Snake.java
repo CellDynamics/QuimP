@@ -62,7 +62,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
 
         // removeNode(head);
         this.makeAntiClockwise();
-        this.updateNormales(BOA_.boap.segParam.expandSnake);
+        this.updateNormales(BOA_.qState.segParam.expandSnake);
         alive = true;
         startingNnodes = POINTS / 100.; // as 1%. limit to X%
         countFrozen(); // set FROZEN
@@ -109,7 +109,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
             int Rx = Rect.width / 2;
             int Ry = Rect.height / 2;
 
-            intializeOval(0, xc, yc, Rx, Ry, BOA_.boap.segParam.getNodeRes() / 2);
+            intializeOval(0, xc, yc, Rx, Ry, BOA_.qState.segParam.getNodeRes() / 2);
         }
         startingNnodes = POINTS / 100.; // as 1%. limit to X%
         alive = true;
@@ -263,7 +263,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         }
         removeNode(head); // remove dummy head node
         this.makeAntiClockwise();
-        updateNormales(BOA_.boap.segParam.expandSnake);
+        updateNormales(BOA_.qState.segParam.expandSnake);
     }
 
     /**
@@ -294,7 +294,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
             b = new ExtendedVector2d(p.xpoints[j], p.ypoints[j]);
 
             nn = (int) Math
-                    .ceil(ExtendedVector2d.lengthP2P(a, b) / BOA_.boap.segParam.getNodeRes());
+                    .ceil(ExtendedVector2d.lengthP2P(a, b) / BOA_.qState.segParam.getNodeRes());
             spacing = ExtendedVector2d.lengthP2P(a, b) / (double) nn;
             u = ExtendedVector2d.unitVector(a, b);
             u.multiply(spacing); // required distance between points
@@ -311,7 +311,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         }
         removeNode(head); // remove dummy head node new head will be set
         this.makeAntiClockwise();
-        updateNormales(BOA_.boap.segParam.expandSnake);
+        updateNormales(BOA_.qState.segParam.expandSnake);
     }
 
     /**
@@ -339,7 +339,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
 
         removeNode(head); // remove dummy head node
         this.makeAntiClockwise();
-        updateNormales(BOA_.boap.segParam.expandSnake);
+        updateNormales(BOA_.qState.segParam.expandSnake);
     }
 
     /**
@@ -365,7 +365,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
 
         removeNode(head); // remove dummy head node
         this.makeAntiClockwise();
-        updateNormales(BOA_.boap.segParam.expandSnake);
+        updateNormales(BOA_.qState.segParam.expandSnake);
     }
 
     /**
@@ -390,7 +390,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
 
         removeNode(head);
         this.makeAntiClockwise();
-        updateNormales(BOA_.boap.segParam.expandSnake);
+        updateNormales(BOA_.qState.segParam.expandSnake);
     }
 
     /**
@@ -419,7 +419,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
 
         removeNode(head);
         this.makeAntiClockwise();
-        updateNormales(BOA_.boap.segParam.expandSnake);
+        updateNormales(BOA_.qState.segParam.expandSnake);
     }
 
     public void printSnake() {
@@ -548,15 +548,15 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         if (n.isFrozen()) {
             FROZEN--;
         }
-        super.removePoint(n, BOA_.boap.segParam.expandSnake);
+        super.removePoint(n, BOA_.qState.segParam.expandSnake);
     }
 
     public void blowup() throws Exception {
-        scale(BOA_.boap.segParam.blowup, 4, true);
+        scale(BOA_.qState.segParam.blowup, 4, true);
     }
 
     public void shrinkSnake() throws BoaException {
-        scale(-BOA_.boap.segParam.finalShrink, 0.5, false);
+        scale(-BOA_.qState.segParam.finalShrink, 0.5, false);
     }
 
     public void implode() throws Exception {
@@ -612,7 +612,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
                 correctDistance(false);
             }
             cutLoops();
-            updateNormales(BOA_.boap.segParam.expandSnake);
+            updateNormales(BOA_.qState.segParam.expandSnake);
         }
     }
 
@@ -654,14 +654,14 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
                     newN.setNext(nB.getNext());
                     nB.getNext().setPrev(newN);
 
-                    newN.updateNormale(BOA_.boap.segParam.expandSnake);
-                    nB.getNext().updateNormale(BOA_.boap.segParam.expandSnake);
+                    newN.updateNormale(BOA_.qState.segParam.expandSnake);
+                    nB.getNext().updateNormale(BOA_.qState.segParam.expandSnake);
 
                     // set velocity
                     newN.setVel(nB.getVel());
-                    if (newN.getVel().length() < BOA_.boap.segParam.vel_crit) {
+                    if (newN.getVel().length() < BOA_.qState.segParam.vel_crit) {
                         newN.getVel().makeUnit();
-                        newN.getVel().multiply(BOA_.boap.segParam.vel_crit * 1.5);
+                        newN.getVel().multiply(BOA_.qState.segParam.vel_crit * 1.5);
                     }
 
                     if (cutHead) {
@@ -719,8 +719,8 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
                     newN.setNext(nB.getNext());
                     nB.getNext().setPrev(newN);
 
-                    newN.updateNormale(BOA_.boap.segParam.expandSnake);
-                    nB.getNext().updateNormale(BOA_.boap.segParam.expandSnake);
+                    newN.updateNormale(BOA_.qState.segParam.expandSnake);
+                    nB.getNext().updateNormale(BOA_.qState.segParam.expandSnake);
 
                     if (cutHead) {
                         newN.setHead(true); // put a new head in
@@ -792,8 +792,8 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
                     // right2 " + right2index + " interval " + i);
                     node1.setNext(right2);
                     right2.setPrev(node1);
-                    node1.updateNormale(BOA_.boap.segParam.expandSnake);
-                    right2.updateNormale(BOA_.boap.segParam.expandSnake);
+                    node1.updateNormale(BOA_.qState.segParam.expandSnake);
+                    right2.updateNormale(BOA_.qState.segParam.expandSnake);
                     POINTS -= i + 1; // set number of nodes
 
                     if (ishead) {
@@ -842,9 +842,10 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
             dR = tanR.length();
             dLR = tanLR.length();
 
-            if (dL < BOA_.boap.getMin_dist() || dR < BOA_.boap.getMin_dist()) {
+            if (dL < BOA_.qState.segParam.getMin_dist()
+                    || dR < BOA_.qState.segParam.getMin_dist()) {
                 // nC is to close to a neigbour
-                if (dLR > 2 * BOA_.boap.getMin_dist()) {
+                if (dLR > 2 * BOA_.qState.segParam.getMin_dist()) {
 
                     // move nC to middle
                     npos = new ExtendedVector2d(tanLR.getX(), tanLR.getY());
@@ -864,33 +865,33 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
                     nC.getNormal().multiply(-tmp);
                     nC.getPoint().addVec(nC.getNormal());
 
-                    nC.updateNormale(BOA_.boap.segParam.expandSnake);
-                    nL.updateNormale(BOA_.boap.segParam.expandSnake);
-                    nR.updateNormale(BOA_.boap.segParam.expandSnake);
+                    nC.updateNormale(BOA_.qState.segParam.expandSnake);
+                    nL.updateNormale(BOA_.qState.segParam.expandSnake);
+                    nR.updateNormale(BOA_.qState.segParam.expandSnake);
                     this.unfreezeNode(nC);
 
                 } else {
                     // delete nC
                     // System.out.println("delete node");
                     removeNode(nC);
-                    nL.updateNormale(BOA_.boap.segParam.expandSnake);
-                    nR.updateNormale(BOA_.boap.segParam.expandSnake);
+                    nL.updateNormale(BOA_.qState.segParam.expandSnake);
+                    nR.updateNormale(BOA_.qState.segParam.expandSnake);
                     if (nR.isHead())
                         break;
                     nC = nR.getNext();
                     continue;
                 }
             }
-            if (dL > BOA_.boap.getMax_dist()) {
+            if (dL > BOA_.qState.segParam.getMax_dist()) {
 
                 // System.out.println("1357-insert node");
                 Node nIns = insertNode(nL);
                 nIns.setVel(nL.getVel());
                 nIns.getVel().addVec(nC.getVel());
                 nIns.getVel().multiply(0.5);
-                if (nIns.getVel().length() < BOA_.boap.segParam.vel_crit) {
+                if (nIns.getVel().length() < BOA_.qState.segParam.vel_crit) {
                     nIns.getVel().makeUnit();
-                    nIns.getVel().multiply(BOA_.boap.segParam.vel_crit * 1.5);
+                    nIns.getVel().multiply(BOA_.qState.segParam.vel_crit * 1.5);
                 }
 
                 npos = new ExtendedVector2d(tanL.getX(), tanL.getY());
@@ -899,15 +900,15 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
 
                 nIns.setX(npos.getX());
                 nIns.setY(npos.getY());
-                nIns.updateNormale(BOA_.boap.segParam.expandSnake);
+                nIns.updateNormale(BOA_.qState.segParam.expandSnake);
                 if (shiftNewNode) {
                     nIns.getNormal().multiply(-2); // move out a bit
                     nIns.getPoint().addVec(nIns.getNormal());
-                    nIns.updateNormale(BOA_.boap.segParam.expandSnake);
+                    nIns.updateNormale(BOA_.qState.segParam.expandSnake);
                 }
-                nL.updateNormale(BOA_.boap.segParam.expandSnake);
-                nR.updateNormale(BOA_.boap.segParam.expandSnake);
-                nC.updateNormale(BOA_.boap.segParam.expandSnake);
+                nL.updateNormale(BOA_.qState.segParam.expandSnake);
+                nR.updateNormale(BOA_.qState.segParam.expandSnake);
+                nC.updateNormale(BOA_.qState.segParam.expandSnake);
 
             }
 

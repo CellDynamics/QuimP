@@ -10,8 +10,6 @@ import java.lang.reflect.Type;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.ac.warwick.wsbc.QuimP.BOA_.BOAState;
-
 /**
  * Compatibility layer.
  * 

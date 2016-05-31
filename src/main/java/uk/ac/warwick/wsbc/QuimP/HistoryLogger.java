@@ -18,9 +18,6 @@ import javax.swing.JScrollPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.ac.warwick.wsbc.QuimP.BOA_.BOAState;
-import uk.ac.warwick.wsbc.QuimP.BOAp.SegParam;
-
 /**
  * Builds history logger window and logs
  * 
@@ -175,7 +172,7 @@ class LogEntry implements IQuimpSerialize {
     public String action; //!< Textual description of taken action
     // selected fields to be logged (from BOAState)
     public int frame; //!< current frame, CustomStackWindow.updateSliceSelector()
-    public SegParam segParam; //!< Reference to segmentation parameters
+    public BOAState.SegParam segParam; //!< Reference to segmentation parameters
     public String fileName; //!< Current data file name
     public SnakePluginList snakePluginList; //!< Plugin config
 
@@ -193,7 +190,7 @@ class LogEntry implements IQuimpSerialize {
         super();
         this.id = counter;
         this.action = action;
-        this.frame = bs.frame;
+        this.frame = bs.boap.frame;
         this.segParam = bs.segParam;
         this.fileName = bs.fileName;
         this.snakePluginList = bs.snakePluginList;

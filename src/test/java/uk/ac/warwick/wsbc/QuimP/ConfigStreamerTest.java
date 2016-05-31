@@ -187,12 +187,13 @@ public class ConfigStreamerTest {
     }
 
     @Test
+    @Ignore
     public void test_create_pretty_static() throws IOException {
         GsonBuilder gb = new GsonBuilder();
         gb.setPrettyPrinting();
         gb.excludeFieldsWithModifiers(java.lang.reflect.Modifier.TRANSIENT);
         Gson gson = gb.create();
-        cc.bp = BOA_.boap;
+        cc.bp = BOA_.qState;
         LOGGER.trace(gson.toJson(cc));
 
     }
@@ -203,7 +204,7 @@ class ConfigContainer1 {
     public String version = "3.0.0";
     public String softwareName = "QuimP::BOA";
     public tSnakePluginList activePluginList;
-    public BOAp bp;
+    public BOAState bp;
 
 }
 

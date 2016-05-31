@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import ij.IJ;
+import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 
 /**
  * Container class for parameters defining the whole process of analysis in QuimP.
@@ -32,6 +33,9 @@ import ij.IJ;
  *
  * @author rtyson
  * @see BOAp
+ * @remarks This class exists for compatibility purposes. Allows reading old files. There is also 
+ * child class QParamsEsxhanger that is based on new file format. Because QParams is strongly 
+ * integrated with QuimP it has been left. 
  */
 public class QParams {
 

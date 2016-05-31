@@ -37,7 +37,7 @@ public class SnakeHandlerTest {
      */
     @Before
     public void setUp() throws Exception {
-        BOA_.boap.FRAMES = 20;
+        BOA_.qState.boap.FRAMES = 20;
         float x[] = new float[4];
         float y[] = new float[4];
         x[0] = 0;
