@@ -51,6 +51,15 @@ public class OutlineHandler extends ShapeHandler<Outline> {
     }
 
     /**
+     * Copy constructor
+     * 
+     * @param src to copy from
+     */
+    public OutlineHandler(final OutlineHandler src) {
+        throw new UnsupportedOperationException("Not implemented, yet");
+    }
+
+    /**
      * Conversion constructor
      * 
      * Converts SnakeHandler to OutlineHandler. Converted are only Snakes and their range

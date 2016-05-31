@@ -38,6 +38,8 @@ public class ECMM_Mapping {
     private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 
     OutlineHandler oH, outputH;
+    Outlines outputO; // output for new data file
+
     static ECMplot plot;
     QParams qp;
 
@@ -159,6 +161,7 @@ public class ECMM_Mapping {
     private void runFromNest() {
         LOGGER.debug("Processing from new file format");
         Nest nest = qp.getNest();
+        outputO = new Outlines(nest.size());
         for (int i = 0; i < nest.size(); i++) { // go over all snakes
             SnakeHandler sH = nest.getHandler(i);
             if (sH == null)
@@ -171,8 +174,10 @@ public class ECMM_Mapping {
                 plot = new ECMplot(oH.getSize() - 1);
             }
             run(); // fills outputH
-            // save - must be new container for data, like global exchange something
+            outputO.oHs.set(i, new OutlineHandler(outputH));
         }
+
+        // TODO save all
 
     }
 

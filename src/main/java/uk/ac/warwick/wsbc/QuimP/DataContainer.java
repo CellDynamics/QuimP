@@ -19,19 +19,27 @@ import uk.ac.warwick.wsbc.QuimP.BOA_.BOAState;
 public class DataContainer implements IQuimpSerialize {
 
     public BOAState BOAState;
+    public Outlines ECMMState;
 
     public DataContainer(BOAState bs) {
+        this(bs, new Outlines());
+    }
+
+    public DataContainer(BOAState bs, Outlines os) {
         this.BOAState = bs;
+        this.ECMMState = os;
     }
 
     @Override
     public void beforeSerialize() {
         BOAState.beforeSerialize();
+        ECMMState.beforeSerialize();
 
     }
 
     @Override
     public void afterSerialize() throws Exception {
         BOAState.afterSerialize();
+        ECMMState.afterSerialize();
     }
 }

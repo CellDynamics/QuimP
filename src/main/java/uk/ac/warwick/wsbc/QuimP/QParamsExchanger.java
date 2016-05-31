@@ -146,6 +146,38 @@ public class QParamsExchanger extends QParams {
             return super.getNest();
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#getBlowup()
+     */
+    @Override
+    public int getBlowup() {
+        return loadedBOAState.segParam.blowup;
+    }
+
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#setBlowup(int)
+     */
+    @Override
+    public void setBlowup(int blowup) {
+        loadedBOAState.segParam.blowup = blowup;
+    }
+
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#getNodeRes()
+     */
+    @Override
+    public double getNodeRes() {
+        return loadedBOAState.segParam.getNodeRes();
+    }
+
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#setNodeRes(int)
+     */
+    @Override
+    public void setNodeRes(double nodeRes) {
+        loadedBOAState.segParam.setNodeRes(nodeRes);
+    }
+
 }
 
 /**

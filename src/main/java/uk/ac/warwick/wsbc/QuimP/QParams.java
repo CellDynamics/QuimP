@@ -55,8 +55,11 @@ public class QParams {
     private double frameInterval;
     private int startFrame, endFrame;
     
-    int NMAX, blowup, max_iterations, sample_tan, sample_norm;
-    double delta_t, nodeRes, vel_crit, f_central, f_contract, f_image, f_friction;
+    private int blowup;
+    private double nodeRes;
+    
+    int NMAX, max_iterations, sample_tan, sample_norm;
+    double delta_t, vel_crit, f_central, f_contract, f_image, f_friction;
     double finalShrink, cortexWidth;
     long key;
     double sensitivity; // no longer used. blank holder
@@ -106,6 +109,34 @@ public class QParams {
         cortexWidth = 0.7;
         key = -1;
         sensitivity = -1;
+    }
+
+    /**
+     * @return the nodeRes
+     */
+    public double getNodeRes() {
+        return nodeRes;
+    }
+
+    /**
+     * @param nodeRes the nodeRes to set
+     */
+    public void setNodeRes(double nodeRes) {
+        this.nodeRes = nodeRes;
+    }
+
+    /**
+     * @return the blowup
+     */
+    public int getBlowup() {
+        return blowup;
+    }
+
+    /**
+     * @param blowup the blowup to set
+     */
+    public void setBlowup(int blowup) {
+        this.blowup = blowup;
     }
 
     /**
@@ -231,7 +262,7 @@ public class QParams {
             NMAX = (int) Tool.s2d(d.readLine());
             delta_t = Tool.s2d(d.readLine());
             max_iterations = (int) Tool.s2d(d.readLine());
-            nodeRes = Tool.s2d(d.readLine());
+            nodeRes = (int) Tool.s2d(d.readLine());
             blowup = (int) Tool.s2d(d.readLine());
             sample_tan = (int) Tool.s2d(d.readLine());
             sample_norm = (int) Tool.s2d(d.readLine());
