@@ -14,6 +14,46 @@ import ij.io.OpenDialog;
 /**
  * Hold current BOA state that can be serialized
  * 
+ * This class is composed from two inner classes:
+ * -# BOAp - holds internal state of BOA plugin, maintained mainly for compatibility reasons
+ * -# SegParam - holds segmentation parameters, exposed to UI
+ * 
+ * Moreover there are several fields related to new features of QuimP like storing internal
+ * state for every frame separately or SnakePlugins.
+ * 
+ * @startuml
+ * BOAState *-- "1" BOAp
+ * BOAState *-- "1" SegParam
+ * BOAState <|.. IQuimpSerialize
+ * 
+ * BOAState : +boap
+ * BOAState : +SegParam
+ * BOAState : -segParamSnapshots
+ * BOAState : +SnakePluginList
+ * BOAState : +Nest
+ * BOAState : ...
+ * BOAState : +beforeSerialize()
+ * BOAState : +afterSerialize()
+ * BOAState : +store()
+ * BOAState : +storeOnlyEdited()
+ * SegParam : +nodeList
+ * SegParam : +f_image
+ * SegParam : +equals()
+ * SegParam : +hashCode()
+ * SegParam : +setDefaults()
+ * SegParam : ...()
+ * SegParam : ...
+ * IQuimpSerialize : +beforeSerialize()
+ * IQuimpSerialize : +afterSerialize()
+ * BOAp : -imageScale
+ * BOAp : -scaleAdjusted
+ * BOAp : +frame
+ * BOAp : ~zoom
+ * BOAp : ...
+ * BOAp : ...()
+ * 
+ * @enduml
+ * 
  * @author p.baniukiewicz
  * @date 30 Mar 2016
  * @see Serializer
@@ -24,18 +64,16 @@ class BOAState implements IQuimpSerialize {
     }
     static final Logger LOGGER = LogManager.getLogger(BOAState.class.getName());
     /**
-     * Reference to segmentation parameters. Holds current parameters (as reference to
-     * boap.segParam)
+     * Reference to segmentation parameters. Holds current parameters
      * 
      * On every change of BOA state it is stored as copy in segParamSnapshots for current
      * frame. This is why that field is \c transient
      * 
      * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
-     * @todo TODO This should exist in BOA or BOAState space not in BOAp
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
      */
     public transient SegParam segParam;
-    public BOAp boap;
+    public BOAp boap; //!< Reference to old BOAp class, keeps internal state of BOA
 
     public String fileName; //!< Current data file name
     /**
@@ -74,6 +112,8 @@ class BOAState implements IQuimpSerialize {
 
     /**
      * Hold user parameters for segmentation algorithm
+     * 
+     * This class supports cloning and comparing.
      * 
      * @author p.baniukiewicz
      * @date 30 Mar 2016
@@ -282,14 +322,13 @@ class BOAState implements IQuimpSerialize {
      * @author rtyson
      * @see QParams
      * @see Tool
-     * @warning This class will be redesigned in future 
      */
     class BOAp {
 
         File orgFile; //!< handle to original file obtained from IJ (usually image opened) 
         File outFile; //!< handle to \a snPQ filled in QuimP.SnakeHandler.writeSnakes() 
         String fileName; //!< loaded image file name only, no extension (\c orgFile)
-        QParams readQp; //!< read in parameter file 
+        transient QParams readQp; //!< read in parameter file 
         // internal parameters
         int NMAX; //!< maximum number of nodes (% of starting nodes) 
         double delta_t;
@@ -305,6 +344,16 @@ class BOAState implements IQuimpSerialize {
         double proxFreeze; //!< proximity of nodes to freeze when blowing up 
         boolean savedOne;
         
+        /**
+         * Current frame, CustomStackWindow.updateSliceSelector()
+         * Not stored due to archiving all parameters for every frame separately
+         */
+        public transient int frame;
+        /**
+         * Snake selected in zoom selector, negative value if 100% view
+         */
+        public transient int snakeToZoom = -1;
+
         boolean singleImage;
         String paramsExist; // on startup check if defaults are needed to set
         boolean zoom;
@@ -370,19 +419,29 @@ class BOAState implements IQuimpSerialize {
         }
 
         /**
-         * Current frame, CustomStackWindow.updateSliceSelector()
-         * Not stored due to archiving all parameters for every frame separately
-         */
-        public transient int frame;
-        /**
-         * Snake selected in zoom selector, negative value if 100% view
-         */
-        public transient int snakeToZoom = -1;
-
-        /**
          * Default constructor
          */
         public BOAp() {
+            savedOne = false;
+            // nestSize = 0;
+            // internal parameters
+            NMAX = 250; // maximum number of nodes (% of starting nodes)
+            delta_t = 1.;
+            sensitivity = 0.5;
+            cut_every = 8; // cut loops in chain every X interations
+            oldFormat = false; // output old QuimP format?
+            saveSnake = true; // save snake data
+            proximity = 150; // distance between centroids at
+                             // which contact is tested for
+            proxFreeze = 1; // proximity of nodes to freeze when blowing up
+            f_friction = 0.6;
+            doDelete = false;
+            doDeleteSeg = false;
+            zoom = false;
+            editMode = false;
+            editingID = -1;
+            callCount = 0;
+            SEGrunning = false;
         }
 
         /**
@@ -407,7 +466,7 @@ class BOAState implements IQuimpSerialize {
         boolean stopOnPluginError = true;
 
         /**
-         * Initialize internal parameters of BOA plugin
+         * Initialize internal parameters of BOA plugin from ImagePlus
          * 
          * Most of these parameters are related to state machine of BOA. There are
          * also parameters related to internal state of Active Contour algorithm.
@@ -415,47 +474,21 @@ class BOAState implements IQuimpSerialize {
          * {@link uk.ac.warwick.wsbc.QuimP.BOAp.SegParam.setDefaults()}
          * 
          * @param ip Reference to segmented image passed from IJ
-         * @see setDefaults()
          */
         public void setup(final ImagePlus ip) {
             FileInfo fileinfo = ip.getOriginalFileInfo();
             if (fileinfo == null) {
-                // System.out.println("1671-No file Info, use " +
-                // orgIpl.getTitle());
                 orgFile = new File(File.separator, ip.getTitle());
             } else {
-                // System.out.println("1671-file Info, filename: " +
-                // fileinfo.fileName);
                 orgFile = new File(fileinfo.directory, fileinfo.fileName);
             }
             fileName = Tool.removeExtension(orgFile.getName());
 
             FRAMES = ip.getStackSize(); // get number of frames
 
-            savedOne = false;
-            // nestSize = 0;
             WIDTH = ip.getWidth();
             HEIGHT = ip.getHeight();
             paramsExist = "YES";
-
-            // internal parameters
-            NMAX = 250; // maximum number of nodes (% of starting nodes)
-            delta_t = 1.;
-            sensitivity = 0.5;
-            cut_every = 8; // cut loops in chain every X interations
-            oldFormat = false; // output old QuimP format?
-            saveSnake = true; // save snake data
-            proximity = 150; // distance between centroids at
-                             // which contact is tested for
-            proxFreeze = 1; // proximity of nodes to freeze when blowing up
-            f_friction = 0.6;
-            doDelete = false;
-            doDeleteSeg = false;
-            zoom = false;
-            editMode = false;
-            editingID = -1;
-            callCount = 0;
-            SEGrunning = false;
 
         }
 
