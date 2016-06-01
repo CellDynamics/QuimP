@@ -7,6 +7,7 @@ package uk.ac.warwick.wsbc.QuimP;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
@@ -138,13 +139,13 @@ public class SerializerTest {
     /**
      * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
      * @pre Lack of data
-     * @post it is not initialized ot has value from constructor
+     * @post it is not initialized and has value from constructor
      * @throws Exception
      */
     @Test
     public void testFromString2() throws Exception {
         String json =
-                "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"al\":[4,66]}}";
+                "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
         Serializer<TestClass> s = new Serializer<>(TestClass.class);
@@ -153,6 +154,12 @@ public class SerializerTest {
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
         assertArrayEquals(out.version, version);
+    }
+
+    @Test
+    public void testDumpStatic() throws FileNotFoundException {
+        TestClass tc = new TestClass();
+        Serializer.Dump(tc, "/tmp/dump.json");
     }
 
 }

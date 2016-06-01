@@ -187,6 +187,35 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
+     * @copydoc uk.ac.warwick.wsbc.QuimP.Serializer.Dump(final Object, final File)
+     */
+    static void Dump(final Object obj, final String filename) throws FileNotFoundException {
+        File file = new File(filename);
+        Serializer.Dump(obj, file);
+    }
+
+    /**
+     * Performs pure dump of provided object without packing it into super class
+     * 
+     * @param obj to dump
+     * @param filename to be saved under
+     * @throws FileNotFoundException when file can not be created
+     * @remarks Can be used for saving already packed objects
+     */
+    static void Dump(final Object obj, final File filename) throws FileNotFoundException {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
+        Gson gson = gsonBuilder.create();
+        if (obj != null) {
+            String str = gson.toJson(obj);
+            PrintWriter f;
+            f = new PrintWriter(filename);
+            f.print(str);
+            f.close();
+        }
+    }
+
+    /**
      * Sets pretty JSON formatting on save operation
      * 
      * @see uk.ac.warwick.wsbc.QuimP.Serializer.toString()

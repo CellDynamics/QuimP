@@ -1,6 +1,11 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-import ij.*;
+import java.awt.Polygon;
+import java.io.File;
+
+import ij.IJ;
+import ij.ImagePlus;
+import ij.WindowManager;
 import ij.gui.Overlay;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
@@ -10,15 +15,13 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
-import java.awt.Polygon;
-import java.io.File;
-
 /**
  * Inserts an image or stack into a stack.
  */
 public class Test_QuimP implements PlugIn {
 
-    private static final int m = Measurements.AREA + Measurements.INTEGRATED_DENSITY + Measurements.MEAN;
+    private static final int m =
+            Measurements.AREA + Measurements.INTEGRATED_DENSITY + Measurements.MEAN;
 
     @Override
     public void run(String arg) {
@@ -89,12 +92,10 @@ public class Test_QuimP implements PlugIn {
         System.out.println("curv = " + curvature);
     }
 
-    void testQparams() {
-        QParams p = new QParams(new File("/Users/rtyson/Documents/phd/tmp/smallStack/SmallStack_0.paQP"));
-        boolean success = p.readParams();
-        if (success) {
-            System.out.println("Yeah, read baby");
-        }
+    void testQparams() throws QuimpException {
+        QParams p = new QParams(
+                new File("/Users/rtyson/Documents/phd/tmp/smallStack/SmallStack_0.paQP"));
+        p.readParams();
         System.out.println("" + p.NMAX);
         System.out.println("" + p.path);
         System.out.println("" + p.prefix);
@@ -150,32 +151,32 @@ public class Test_QuimP implements PlugIn {
 
         double[] intersect = new double[2];
 
-        int state = ExtendedVector2d.segmentIntersection(a.getX(), a.getY(), b.getX(), b.getY(), c.getX(), c.getY(),
-                d.getX(), d.getY(), intersect);
+        int state = ExtendedVector2d.segmentIntersection(a.getX(), a.getY(), b.getX(), b.getY(),
+                c.getX(), c.getY(), d.getX(), d.getY(), intersect);
         System.out.println("Sate: " + state);
         if (state == -1) {
             System.out.println("\nLines parallel");
-            System.out.println(
-                    "close all;plot([" + a.getX() + "," + b.getX() + "],[" + a.getY() + "," + b.getY() + "],'-ob');"); // matlab
-                                                                                                                       // output
-            System.out.println(
-                    "hold on; plot([" + c.getX() + "," + d.getX() + "],[" + c.getY() + "," + d.getY() + "],'-or');");
+            System.out.println("close all;plot([" + a.getX() + "," + b.getX() + "],[" + a.getY()
+                    + "," + b.getY() + "],'-ob');"); // matlab
+                                                     // output
+            System.out.println("hold on; plot([" + c.getX() + "," + d.getX() + "],[" + c.getY()
+                    + "," + d.getY() + "],'-or');");
 
         } else if (state == -2) {
             System.out.println("\nLines parallel and overlap");
-            System.out.println(
-                    "close all;plot([" + a.getX() + "," + b.getX() + "],[" + a.getY() + "," + b.getY() + "],'-ob');"); // matlab
-                                                                                                                       // output
-            System.out.println(
-                    "hold on; plot([" + c.getX() + "," + d.getX() + "],[" + c.getY() + "," + d.getY() + "],'-or');");
+            System.out.println("close all;plot([" + a.getX() + "," + b.getX() + "],[" + a.getY()
+                    + "," + b.getY() + "],'-ob');"); // matlab
+                                                     // output
+            System.out.println("hold on; plot([" + c.getX() + "," + d.getX() + "],[" + c.getY()
+                    + "," + d.getY() + "],'-or');");
             System.out.println("plot(" + intersect[0] + "," + intersect[1] + ", 'og');");
         } else if (state == 1) {
             System.out.println("\nLines intersect at " + intersect[0] + ", " + intersect[1]);
-            System.out.println(
-                    "close all;plot([" + a.getX() + "," + b.getX() + "],[" + a.getY() + "," + b.getY() + "],'-ob');"); // matlab
-                                                                                                                       // output
-            System.out.println(
-                    "hold on; plot([" + c.getX() + "," + d.getX() + "],[" + c.getY() + "," + d.getY() + "],'-or');");
+            System.out.println("close all;plot([" + a.getX() + "," + b.getX() + "],[" + a.getY()
+                    + "," + b.getY() + "],'-ob');"); // matlab
+                                                     // output
+            System.out.println("hold on; plot([" + c.getX() + "," + d.getX() + "],[" + c.getY()
+                    + "," + d.getY() + "],'-or');");
             System.out.println("plot(" + intersect[0] + "," + intersect[1] + ", 'og');");
         }
 

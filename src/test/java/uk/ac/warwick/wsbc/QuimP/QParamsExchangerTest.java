@@ -82,7 +82,7 @@ public class QParamsExchangerTest {
     @Test
     public void testReadParams() throws Exception {
         QParamsExchanger qp = new QParamsExchanger(test1);
-        assertThat(qp.readParams(), is(true));
+        qp.readParams();
     }
 
 }

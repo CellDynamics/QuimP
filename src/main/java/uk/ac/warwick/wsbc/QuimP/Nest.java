@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
@@ -19,6 +22,8 @@ import ij.gui.Roi;
  * @date 4 May 2016
  */
 class Nest implements IQuimpSerialize {
+    private static final Logger LOGGER = LogManager.getLogger(Nest.class.getName());
+
     private ArrayList<SnakeHandler> sHs;
     private int NSNAKES; //!< Number of stored snakes in nest
     private int ALIVE;
@@ -142,19 +147,23 @@ class Nest implements IQuimpSerialize {
         OutlineHandler outputH;
         SnakeHandler sH;
         Iterator<SnakeHandler> sHitr = sHs.iterator();
-        while (sHitr.hasNext()) {
-            sH = (SnakeHandler) sHitr.next();
+        try {
+            while (sHitr.hasNext()) {
+                sH = (SnakeHandler) sHitr.next();
 
-            File pFile = new File(BOA_.qState.boap.outFile.getParent(),
-                    BOA_.qState.boap.fileName + "_" + sH.getID() + ".paQP");
-            QParams newQp = new QParams(pFile);
-            newQp.readParams();
-            outputH = new OutlineHandler(newQp);
+                File pFile = new File(BOA_.qState.boap.outFile.getParent(),
+                        BOA_.qState.boap.fileName + "_" + sH.getID() + ".paQP");
+                QParams newQp = new QParams(pFile);
+                newQp.readParams();
+                outputH = new OutlineHandler(newQp);
 
-            File statsFile = new File(BOA_.qState.boap.outFile.getParent() + File.separator
-                    + BOA_.qState.boap.fileName + "_" + sH.getID() + ".stQP.csv");
-            new CellStat(outputH, oi, statsFile, BOA_.qState.boap.getImageScale(),
-                    BOA_.qState.boap.getImageFrameInterval());
+                File statsFile = new File(BOA_.qState.boap.outFile.getParent() + File.separator
+                        + BOA_.qState.boap.fileName + "_" + sH.getID() + ".stQP.csv");
+                new CellStat(outputH, oi, statsFile, BOA_.qState.boap.getImageScale(),
+                        BOA_.qState.boap.getImageFrameInterval());
+            }
+        } catch (QuimpException e) {
+            LOGGER.error(e);
         }
     }
 

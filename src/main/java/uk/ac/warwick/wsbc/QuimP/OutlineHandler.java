@@ -242,9 +242,8 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             this.findStatLimits();
 
             return true;
-        } catch (IOException e) {
-            System.err.println("Could not read file: " + e);
-            IJ.error("Could not read file: " + e);
+        } catch (IOException | QuimpException e) {
+            LOGGER.error("Could not read outlines", e);
             return false;
         }
     }

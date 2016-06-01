@@ -13,6 +13,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 
@@ -38,6 +41,8 @@ import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
  * integrated with QuimP it has been left. 
  */
 public class QParams {
+
+    private static final Logger LOGGER = LogManager.getLogger(QParams.class.getName());
 
     public static final int OLD_QUIMP = 1;
     public static final int QUIMP_11 = 2;
@@ -71,6 +76,18 @@ public class QParams {
      * Indicate if \a snQP has been processed by ECMM (\c true). Set by checkECMMrun
      */
     boolean ecmmHasRun = false;
+
+    /**
+     * Currently processed handler.
+     * 
+     * This is compatibility parameter. Old QuimP uses separated files for every snake thus QParams
+     * contained always correct values as given snake has been loaded. New QuimP uses composed
+     * file and this field points to currently processed Handler and it must be controlled from
+     * outside. For compatibility reasons all setters and getters assumes that there is only
+     * one Handler (as in old QuimP). This field allow to set current Handler if QParamsEschange
+     * instance is used.
+     */
+    public int currentHandler = 0;
 
     /**
      * Read basic information from \a paQP file such as its name and path. Initialize structures
@@ -205,7 +222,25 @@ public class QParams {
         this.endFrame = endFrame;
     }
 
+    /**
+     * Compatibility with child class. For this level it return \c null
+     * 
+     * @return null
+     * @warning Should not be called from super class level
+     */
     public Nest getNest() {
+        LOGGER.error("Calling getNest() from super class");
+        return null;
+    }
+
+    /**
+     * Compatibility with child class. For this level it return \c null
+     * 
+     * @return null
+     * @warning Should not be called from super class level
+     */
+    public DataContainer getLoadedDataContainer() {
+        LOGGER.error("Calling getLoadedDataContainer() from super class");
         return null;
     }
 
@@ -215,8 +250,9 @@ public class QParams {
      * Create handles to files stored as names in \a paQP. Read segmentation parameters
      * 
      * @return \c true if successful
+     * @throws QuimpException 
      */
-    boolean readParams() {
+    void readParams() throws QuimpException {
         paramFormat = QParams.OLD_QUIMP;
         try {
             BufferedReader d = new BufferedReader(new FileReader(paramFile));
@@ -227,12 +263,12 @@ public class QParams {
                 if (!fileID.equals("#p")) {
                     IJ.error("Not a compatible paramater file");
                     d.close();
-                    return false;
+                    throw new QuimpException("QParams::Not a compatible paramater file");
                 }
             } else {
                 IJ.error("Not a compatible paramater file");
                 d.close();
-                return false;
+                throw new QuimpException("QParams::Not a compatible paramater file");
             }
             key = (long) Tool.s2d(d.readLine()); // key
             segImageFile = new File(d.readLine()); // image file name
@@ -297,15 +333,12 @@ public class QParams {
             d.close();
             this.guessOtherFileNames(); // generate handles of other files that will be created here
             checkECMMrun(); // check if snQP file is already processed by ECMM. Set ecmmHasRun
-            return true;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        } catch (IOException e) {
+            throw new QuimpException(e);
         }
     }
 
-    void writeParams() {
+    void writeParams() throws QuimpException {
         switch (paramFormat) {
             case QParams.QUIMP_11:
                 try {
@@ -362,12 +395,13 @@ public class QParams {
                     pPW.print("#END");
 
                     pPW.close();
-                } catch (Exception e) {
-                    IJ.error("Could not write parameter file! " + e.getMessage());
-                    e.printStackTrace();
+                } catch (IOException e) {
+                    LOGGER.error("Could not write parameter file! " + e.getMessage());
+                    throw new QuimpException("Could not write parameter file!", e);
                 }
                 break;
             case QParams.NEW_QUIMP:
+                // should not hit this point as new format use QParamsExchange
                 throw new UnsupportedOperationException(
                         "writeParams() not supported for new file format");
         }

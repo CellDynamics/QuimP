@@ -379,8 +379,8 @@ class BOAState implements IQuimpSerialize {
          */
         public void setImageScale(double imageScale) {
             if (imageScale == 0) {
-                imageScale = 1;
-                scaleAdjusted = true;
+                this.imageScale = 1;
+                this.scaleAdjusted = true;
             }
         }
 
@@ -406,8 +406,8 @@ class BOAState implements IQuimpSerialize {
          */
         public void setImageFrameInterval(double imageFrameInterval) {
             if (imageFrameInterval == 0) {
-                imageFrameInterval = 1;
-                fIAdjusted = true;
+                this.imageFrameInterval = 1;
+                this.fIAdjusted = true;
             }
         }
 
@@ -505,35 +505,39 @@ class BOAState implements IQuimpSerialize {
          * @see QParams
          */
         public void writeParams(int sID, int startF, int endF) {
-            if (saveSnake) {
-                File paramFile = new File(outFile.getParent(), fileName + "_" + sID + ".paQP");
-                File statsFile = new File(
-                        outFile.getParent() + File.separator + fileName + "_" + sID + ".stQP.csv");
+            try {
+                if (saveSnake) {
+                    File paramFile = new File(outFile.getParent(), fileName + "_" + sID + ".paQP");
+                    File statsFile = new File(outFile.getParent() + File.separator + fileName + "_"
+                            + sID + ".stQP.csv");
 
-                QParams qp = new QParams(paramFile);
-                qp.segImageFile = orgFile;
-                qp.snakeQP = outFile;
-                qp.statsQP = statsFile;
-                qp.setImageScale(BOA_.qState.boap.imageScale);
-                qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
-                qp.setStartFrame(startF);
-                qp.setEndFrame(endF);
-                qp.NMAX = NMAX;
-                qp.setBlowup(segParam.blowup);
-                qp.max_iterations = segParam.max_iterations;
-                qp.sample_tan = segParam.sample_tan;
-                qp.sample_norm = segParam.sample_norm;
-                qp.delta_t = delta_t;
-                qp.setNodeRes(segParam.nodeRes);
-                qp.vel_crit = segParam.vel_crit;
-                qp.f_central = segParam.f_central;
-                qp.f_contract = segParam.f_contract;
-                qp.f_image = segParam.f_image;
-                qp.f_friction = f_friction;
-                qp.finalShrink = segParam.finalShrink;
-                qp.sensitivity = sensitivity;
+                    QParams qp = new QParams(paramFile);
+                    qp.segImageFile = orgFile;
+                    qp.snakeQP = outFile;
+                    qp.statsQP = statsFile;
+                    qp.setImageScale(BOA_.qState.boap.imageScale);
+                    qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
+                    qp.setStartFrame(startF);
+                    qp.setEndFrame(endF);
+                    qp.NMAX = NMAX;
+                    qp.setBlowup(segParam.blowup);
+                    qp.max_iterations = segParam.max_iterations;
+                    qp.sample_tan = segParam.sample_tan;
+                    qp.sample_norm = segParam.sample_norm;
+                    qp.delta_t = delta_t;
+                    qp.setNodeRes(segParam.nodeRes);
+                    qp.vel_crit = segParam.vel_crit;
+                    qp.f_central = segParam.f_central;
+                    qp.f_contract = segParam.f_contract;
+                    qp.f_image = segParam.f_image;
+                    qp.f_friction = f_friction;
+                    qp.finalShrink = segParam.finalShrink;
+                    qp.sensitivity = sensitivity;
 
-                qp.writeParams();
+                    qp.writeParams();
+                }
+            } catch (QuimpException e) {
+                LOGGER.error("Could not write parameters to file", e);
             }
         }
 
@@ -556,8 +560,10 @@ class BOAState implements IQuimpSerialize {
             }
             readQp = new QParams(new File(od.getDirectory(), od.getFileName()));
 
-            if (!readQp.readParams()) {
-                BOA_.log("Failed to read parameter file");
+            try {
+                readQp.readParams();
+            } catch (QuimpException e) {
+                BOA_.log("Failed to read parameter file " + e.getMessage());
                 return false;
             }
             NMAX = readQp.NMAX;

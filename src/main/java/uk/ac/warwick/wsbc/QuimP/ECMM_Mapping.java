@@ -61,12 +61,18 @@ public class ECMM_Mapping {
         }
     }
 
-    public ECMM_Mapping(File f) {
+    public ECMM_Mapping(File paramFile) {
         IJ.log("ECCM with param file name as file");
         try {
-            qp = new QParams(f);
+            if (paramFile.getName().endsWith(".QCONF")) {// new file format see TODO #152
+                qp = new QParamsExchanger(paramFile);
+                qp.readParams();
+                runFromNest();
+                return;
+            } else
+                qp = new QParams(paramFile);
+            // old flow with paQP files
             qp.readParams();
-            // ECMp.setup(qp);
             runFromFile();
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,8 +104,6 @@ public class ECMM_Mapping {
                     qp = new QParams(paramFile);
                 // old flow with paQP files
                 qp.readParams();
-
-                // ECMp.setup(qp);
                 runFromFile();
 
                 File[] otherPaFiles = qp.findParamFiles();
@@ -149,20 +153,22 @@ public class ECMM_Mapping {
 
             } while (true);
 
-        } catch (Exception e) {
-            // IJ.error("Unknown exception");
-            e.printStackTrace();
+        } catch (QuimpException e) {
+            LOGGER.error(e);
         }
     }
 
     /**
+     * @throws QuimpException 
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
      */
-    private void runFromNest() {
+    private void runFromNest() throws QuimpException {
         LOGGER.debug("Processing from new file format");
         Nest nest = qp.getNest();
         outputO = new Outlines(nest.size());
         for (int i = 0; i < nest.size(); i++) { // go over all snakes
+            qp.currentHandler = i; // set current handler number. For compatibility, all methods
+            // have the same syntax (assumes that there is only one handler)
             SnakeHandler sH = nest.getHandler(i);
             if (sH == null)
                 continue;
@@ -177,8 +183,9 @@ public class ECMM_Mapping {
             outputO.oHs.set(i, new OutlineHandler(outputH));
         }
 
-        // TODO save all
-
+        DataContainer dc = qp.getLoadedDataContainer();
+        dc.ECMMState = outputO; // assign ECMM output
+        qp.writeParams();
     }
 
     private void about() {

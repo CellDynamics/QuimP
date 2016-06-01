@@ -44,77 +44,81 @@ public class Q_Analysis {
      * @param path Path to *.paQP file. If \c null user is asked for this file
      */
     public Q_Analysis(Path path) {
-        IJ.showStatus("QuimP Analysis");
-        IJ.log(new Tool().getQuimPversion());
-        String directory; // directory with paQP
-        String filename; // file name of paQP
+        try {
+            IJ.showStatus("QuimP Analysis");
+            IJ.log(new Tool().getQuimPversion());
+            String directory; // directory with paQP
+            String filename; // file name of paQP
 
-        if (path == null) { // no file provided, ask user
-            OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
-                    OpenDialog.getLastDirectory(), "");
-            if (od.getFileName() == null) {
-                IJ.log("Cancelled - exiting...");
-                return;
+            if (path == null) { // no file provided, ask user
+                OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
+                        OpenDialog.getLastDirectory(), "");
+                if (od.getFileName() == null) {
+                    IJ.log("Cancelled - exiting...");
+                    return;
+                }
+                directory = od.getDirectory();
+                filename = od.getFileName();
+            } else // use name provided
+            {
+                // getParent can return null
+                directory = path.getParent() == null ? "" : path.getParent().toString();
+                filename = path.getFileName() == null ? "" : path.getFileName().toString();
+                LOGGER.debug("Use provided file:" + directory + " " + filename);
             }
-            directory = od.getDirectory();
-            filename = od.getFileName();
-        } else // use name provided
-        {
-            // getParent can return null
-            directory = path.getParent() == null ? "" : path.getParent().toString();
-            filename = path.getFileName() == null ? "" : path.getFileName().toString();
-            LOGGER.debug("Use provided file:" + directory + " " + filename);
-        }
-        File paramFile = new File(directory, filename); // paQP file
-        qp = new QParams(paramFile); // initialize general param storage
-        qp.readParams(); // create associated files included in paQP and read params
-        Qp.setup(qp); // copy selected data from general QParams to local storage
+            File paramFile = new File(directory, filename); // paQP file
+            qp = new QParams(paramFile); // initialize general param storage
+            qp.readParams(); // create associated files included in paQP and read params
+            Qp.setup(qp); // copy selected data from general QParams to local storage
 
-        if (!run()) // run everything
-        {
-            LOGGER.warn("Q_Analysis stopped on error or it has been cancelled");
-            return; // end on run fail
-        }
+            if (!run()) // run everything
+            {
+                LOGGER.warn("Q_Analysis stopped on error or it has been cancelled");
+                return; // end on run fail
+            }
 
-        File[] otherPaFiles = qp.findParamFiles(); // check whether are other paQP files
+            File[] otherPaFiles = qp.findParamFiles(); // check whether are other paQP files
 
-        if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
-                                       // user is skipped)
-            YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                    "\tBatch Process?\n\n"
-                            + "Process other paQP files in the same folder with QAnalysis?"
-                            + "\n[The same parameters will be used]");
-            if (yncd.yesPressed()) {
-                ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
-                this.closeAllImages();
-
-                // if user agreed iterate over found files
-                // (except that loaded explicitly by user)
-                for (int j = 0; j < otherPaFiles.length; j++) {
-                    IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
-                    paramFile = otherPaFiles[j];
-                    qp = new QParams(paramFile);
-                    qp.readParams();
-                    Qp.setup(qp);
-                    Qp.useDialog = false;
-                    if (!run()) {
-                        LOGGER.warn("Q_Analysis stopped on error or it has been cancelled");
-                        return;
-                    }
-                    runOn.add(otherPaFiles[j].getName());
+            if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
+                                           // user is skipped)
+                YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
+                        "\tBatch Process?\n\n"
+                                + "Process other paQP files in the same folder with QAnalysis?"
+                                + "\n[The same parameters will be used]");
+                if (yncd.yesPressed()) {
+                    ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
                     this.closeAllImages();
-                }
-                IJ.log("\n\nBatch - Successfully ran QAnalysis on:");
-                for (int i = 0; i < runOn.size(); i++) {
-                    IJ.log(runOn.get(i));
-                }
-            } else {
-                return; // no batch processing
-            }
-        }
 
-        IJ.log("QuimP Analysis complete");
-        IJ.showStatus("Finished");
+                    // if user agreed iterate over found files
+                    // (except that loaded explicitly by user)
+                    for (int j = 0; j < otherPaFiles.length; j++) {
+                        IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
+                        paramFile = otherPaFiles[j];
+                        qp = new QParams(paramFile);
+                        qp.readParams();
+                        Qp.setup(qp);
+                        Qp.useDialog = false;
+                        if (!run()) {
+                            LOGGER.warn("Q_Analysis stopped on error or it has been cancelled");
+                            return;
+                        }
+                        runOn.add(otherPaFiles[j].getName());
+                        this.closeAllImages();
+                    }
+                    IJ.log("\n\nBatch - Successfully ran QAnalysis on:");
+                    for (int i = 0; i < runOn.size(); i++) {
+                        IJ.log(runOn.get(i));
+                    }
+                } else {
+                    return; // no batch processing
+                }
+            }
+
+            IJ.log("QuimP Analysis complete");
+            IJ.showStatus("Finished");
+        } catch (QuimpException e) {
+            LOGGER.error(e);
+        }
     }
 
     /**
