@@ -75,7 +75,6 @@ class BOAState implements IQuimpSerialize {
     public transient SegParam segParam;
     public BOAp boap; //!< Reference to old BOAp class, keeps internal state of BOA
 
-    public String fileName; //!< Current data file name
     /**
      * Keep snapshots of SegParam objects for every frame separately
      */
@@ -87,7 +86,8 @@ class BOAState implements IQuimpSerialize {
     private ArrayList<SnakePluginList> snakePluginListSnapshots;
     /**
      * List of plugins selected in plugin stack and information if they are active or not
-     * This field is serializable.
+     * This field is not serializable because \a snakePluginListSnapshots keeps configurations
+     * for every frame.
      * 
      * Holds current parameters as the main object not referenced in BOAp
      * On every change of BOA state it is stored as copy in snakePluginListSnapshots for current
@@ -95,6 +95,8 @@ class BOAState implements IQuimpSerialize {
      * 
      * @see SnakePluginList
      * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
+     * @see snakePluginListSnapshots
+     * @see uk.ac.warwick.wsbc.QuimP.BOAState.store(int)
      */
     public transient SnakePluginList snakePluginList;
     /**
@@ -637,18 +639,17 @@ class BOAState implements IQuimpSerialize {
     }
 
     /**
-     * Should be called before serialization. Fills extra fields from BOAp
+     * Should be called before serialization. Creates ArrayLists from Shape<T extends PointsList<T>>
      */
     @Override
     public void beforeSerialize() {
-        fileName = boap.fileName; // copy filename from system wide boap
-        snakePluginList.beforeSerialize(); // download plugins configurations
         nest.beforeSerialize(); // prepare snakes
         // snakePluginListSnapshots and segParamSnapshots do not need beforeSerialize()
     }
 
     @Override
     public void afterSerialize() throws Exception {
-        throw new UnsupportedOperationException();
+        nest.afterSerialize(); // rebuild Shape<T extends PointsList<T>> from ArrayList used for
+                               // storing
     }
 }

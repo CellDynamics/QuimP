@@ -22,6 +22,15 @@ import ij.gui.Roi;
  * @date 4 May 2016
  */
 class Nest implements IQuimpSerialize {
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Nest [sHs=" + sHs + ", NSNAKES=" + NSNAKES + ", ALIVE=" + ALIVE + ", nextID="
+                + nextID + "]";
+    }
+
     private static final Logger LOGGER = LogManager.getLogger(Nest.class.getName());
 
     private ArrayList<SnakeHandler> sHs;
@@ -96,7 +105,7 @@ class Nest implements IQuimpSerialize {
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
             sH.setEndFrame(); // find its last frame (frame with valid contour)
-            if (sH.getStartframe() > sH.getEndFrame()) {
+            if (sH.getStartFrame() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
                 removeHandler(sH);
                 continue;
@@ -210,7 +219,7 @@ class Nest implements IQuimpSerialize {
         while (sHitr.hasNext()) {
             SnakeHandler sH = (SnakeHandler) sHitr.next();
             try {
-                if (f <= sH.getStartframe()) {
+                if (f <= sH.getStartFrame()) {
                     // BOA_.log("Reset snake " + sH.getID() + " as Roi");
                     sH.reset();
                 } else {
@@ -236,7 +245,7 @@ class Nest implements IQuimpSerialize {
         Iterator<SnakeHandler> sHiter = sHs.iterator();
         while (sHiter.hasNext()) { // over whole nest
             SnakeHandler sH = sHiter.next(); // for every SnakeHandler
-            if (sH.getStartframe() > frame || sH.getEndFrame() < frame) // check its limits
+            if (sH.getStartFrame() > frame || sH.getEndFrame() < frame) // check its limits
                 continue; // no snake in frame
             if (sH.isStoredAt(frame)) { // if limits are ok check if this particular snake exist
                 // it is not deleted by user on this particular frame after successful creating as
@@ -257,7 +266,7 @@ class Nest implements IQuimpSerialize {
     int nbSnakesAt(int frame) {
         int n = 0;
         for (int i = 0; i < NSNAKES; i++) {
-            if (sHs.get(i).getStartframe() >= frame) {
+            if (sHs.get(i).getStartFrame() >= frame) {
                 n++;
             }
         }
@@ -282,7 +291,7 @@ class Nest implements IQuimpSerialize {
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
             sH.setEndFrame(); // find its last frame (frame with valid contour)
-            if (sH.getStartframe() > sH.getEndFrame()) {
+            if (sH.getStartFrame() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
                 removeHandler(sH);
                 continue;

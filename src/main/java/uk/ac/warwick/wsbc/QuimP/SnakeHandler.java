@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -134,7 +135,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
 
         PrintWriter pw = new PrintWriter(new FileWriter(BOA_.qState.boap.outFile), true); // auto
-                                                                                            // flush
+                                                                                          // flush
         pw.write("#QuimP11 Node data");
         pw.write("\n#Node Position\tX-coord\tY-coord\tOrigin\tG-Origin\tSpeed");
         pw.write("\tFluor_Ch1\tCh1_x\tCh1_y\tFluor_Ch2\tCh2_x\tCh2_y\tFluor_CH3\tCH3_x\tCh3_y\n#");
@@ -177,8 +178,8 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
 
     private void writeOldFormats() throws IOException {
         // create file to outpurt old format
-        File OLD = new File(BOA_.qState.boap.outFile.getParent(),
-                BOA_.qState.boap.fileName + ".dat");
+        File OLD =
+                new File(BOA_.qState.boap.outFile.getParent(), BOA_.qState.boap.fileName + ".dat");
         PrintWriter pw = new PrintWriter(new FileWriter(OLD), true); // auto
                                                                      // flush
 
@@ -200,8 +201,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
         pw.close();
 
-        OLD = new File(BOA_.qState.boap.outFile.getParent(),
-                BOA_.qState.boap.fileName + ".dat_tn");
+        OLD = new File(BOA_.qState.boap.outFile.getParent(), BOA_.qState.boap.fileName + ".dat_tn");
         pw = new PrintWriter(new FileWriter(OLD), true); // auto flush
 
         for (int i = 0; i < finalSnakes.length; i++) {
@@ -223,8 +223,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
         pw.close();
 
-        OLD = new File(BOA_.qState.boap.outFile.getParent(),
-                BOA_.qState.boap.fileName + ".dat1");
+        OLD = new File(BOA_.qState.boap.outFile.getParent(), BOA_.qState.boap.fileName + ".dat1");
         pw = new PrintWriter(new FileWriter(OLD), true); // auto flush
 
         pw.print(IJ.d2s(BOA_.qState.boap.NMAX, 6) + "\n");
@@ -410,7 +409,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
     }
 
-    int getStartframe() {
+    int getStartFrame() {
         return startFrame;
     }
 
@@ -463,6 +462,16 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
             }
         }
         endFrame = BOA_.qState.boap.FRAMES;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "SnakeHandler [liveSnake=" + liveSnake + ", finalSnakes="
+                + Arrays.toString(finalSnakes) + ", ID=" + ID + ", startFrame=" + startFrame
+                + ", endFrame=" + endFrame + "]";
     }
 
     /**

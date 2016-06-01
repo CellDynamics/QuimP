@@ -242,7 +242,7 @@ class SerializerNoPluginSupport<T extends IQuimpSerialize> extends Serializer<T>
      */
     public SerializerNoPluginSupport(T obj, String[] version) {
         super(obj, version);
-        doAfterSerialize = false; // block afterSerialzie()
+        doAfterSerialize = true; // block afterSerialzie()
     }
 
     /**
@@ -250,7 +250,7 @@ class SerializerNoPluginSupport<T extends IQuimpSerialize> extends Serializer<T>
      */
     public SerializerNoPluginSupport(Type t) {
         super(t);
-        doAfterSerialize = false; // block afterSerialzie()
+        doAfterSerialize = true; // block afterSerialzie()
     }
 
 }

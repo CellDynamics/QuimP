@@ -86,7 +86,7 @@ public class SnakeHandlerTest {
     @Test
     public void testSnakeHandlerToOutline() {
         OutlineHandler oH = new OutlineHandler(sH);
-        assertThat(oH.getSize(), is(sH.endFrame - sH.getStartframe() + 1));
+        assertThat(oH.getSize(), is(sH.endFrame - sH.getStartFrame() + 1));
         LOGGER.debug(sH.getStoredSnake(3).toString());
         LOGGER.debug(oH.getOutline(3).toString());
     }

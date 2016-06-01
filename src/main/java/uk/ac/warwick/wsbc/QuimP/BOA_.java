@@ -371,7 +371,7 @@ public class BOA_ implements PlugIn {
         try {
             for (int s = 0; s < qState.nest.size(); s++) { // for each snake
                 sH = qState.nest.getHandler(s);
-                if (qState.boap.frame < sH.getStartframe()) // if snake does not exist on current
+                if (qState.boap.frame < sH.getStartFrame()) // if snake does not exist on current
                                                             // frame
                     continue;
                 // but if one is on frame f+n and strtFrame is e.g. 1 it may happen that there is
@@ -1638,7 +1638,7 @@ public class BOA_ implements PlugIn {
                         sH = qState.nest.getHandler(s);
                         snake = sH.getLiveSnake();
                         try {
-                            if (!snake.alive || qState.boap.frame < sH.getStartframe()) {
+                            if (!snake.alive || qState.boap.frame < sH.getStartFrame()) {
                                 continue;
                             }
                             imageGroup.drawPath(snake, qState.boap.frame); // pre tightned snake on
@@ -2860,12 +2860,12 @@ class Constrictor {
             // Ignore snakes that begin after 'frame'
             for (int si = 0; si < N; si++) {
                 snakeA = nest.getHandler(si).getLiveSnake();
-                if (!snakeA.alive || frame < nest.getHandler(si).getStartframe()) {
+                if (!snakeA.alive || frame < nest.getHandler(si).getStartFrame()) {
                     continue;
                 }
                 for (int sj = si + 1; sj < N; sj++) {
                     snakeB = nest.getHandler(sj).getLiveSnake();
-                    if (!snakeB.alive || frame < nest.getHandler(si).getStartframe()) {
+                    if (!snakeB.alive || frame < nest.getHandler(si).getStartFrame()) {
                         continue;
                     }
                     if (prox[si][sj] > BOA_.qState.boap.proximity) {
@@ -2880,7 +2880,7 @@ class Constrictor {
             // unless they start at this frame or after
             for (int s = 0; s < N; s++) {
                 snakeA = nest.getHandler(s).getLiveSnake();
-                if (snakeA.alive && frame > nest.getHandler(s).getStartframe()) {
+                if (snakeA.alive && frame > nest.getHandler(s).getStartFrame()) {
                     snakeA.scale(stepSize, stepSize, true);
                 }
             }
@@ -2930,7 +2930,7 @@ class Constrictor {
         for (int s = 0; s < nest.size(); s++) {
             sH = nest.getHandler(s);
             snake = sH.getLiveSnake();
-            if (snake.alive && f > sH.getStartframe()) {
+            if (snake.alive && f > sH.getStartFrame()) {
                 snake.implode();
             }
         }

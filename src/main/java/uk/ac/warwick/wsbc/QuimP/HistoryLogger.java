@@ -192,7 +192,7 @@ class LogEntry implements IQuimpSerialize {
         this.action = action;
         this.frame = bs.boap.frame;
         this.segParam = bs.segParam;
-        this.fileName = bs.fileName;
+        this.fileName = bs.boap.fileName;
         this.snakePluginList = bs.snakePluginList;
 
     }

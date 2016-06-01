@@ -62,7 +62,7 @@ public class QParamsExchangerTest {
      */
     @Before
     public void setUp() throws Exception {
-        test1 = new File("src/test/resources/Stack_cut_test.newsnQP");
+        test1 = new File("src/test/resources/test1/Stack_cut.QCONF");
     }
 
     /**
@@ -75,14 +75,44 @@ public class QParamsExchangerTest {
     @Test
     public void testQParamsExchanger() throws Exception {
         QParamsExchanger qp = new QParamsExchanger(test1);
-        assertThat(qp.prefix, is("Stack_cut_test"));
-        assertThat(qp.path, is("src/test/resources"));
+        assertThat(qp.prefix, is("Stack_cut"));
+        assertThat(qp.path, is("src/test/resources/test1"));
     }
 
+    /**
+     * @test Compare read parameters from Stack_cut.QCONF
+     * @pre Two snakes from  1 to 30 frame, on 10th frame changed segmentation parameters, on
+     * 20th selected filter 
+     * @throws Exception
+     */
     @Test
     public void testReadParams() throws Exception {
         QParamsExchanger qp = new QParamsExchanger(test1);
         qp.readParams();
+
+        Nest n = qp.getNest();
+        assertThat(n.size(), is(2));
+
+        SnakeHandler sH = n.getHandler(0);
+        assertThat(sH.getStartFrame(), is(1));
+        assertThat(sH.getEndFrame(), is(30));
+        Snake s = sH.getStoredSnake(10);
+        assertThat(s.POINTS, is(21));
+        assertThat(s.countPoints(), is(s.POINTS));
+
+    }
+
+    /**
+     * @test no file
+     * @pre there is no file
+     * @post QuimpException
+     * @throws Exception
+     */
+    @Test(expected = QuimpException.class)
+    public void testReadParams_1() throws Exception {
+        QParamsExchanger qp = new QParamsExchanger(new File("dff/ss.s"));
+        qp.readParams();
+
     }
 
 }
