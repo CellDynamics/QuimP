@@ -65,7 +65,7 @@ import com.google.gson.GsonBuilder;
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
     private static final Logger LOGGER = LogManager.getLogger(Serializer.class.getName());
-    private transient GsonBuilder gsonBuilder;
+    public transient GsonBuilder gsonBuilder;
     private transient Type t;
     protected transient boolean doAfterSerialize; //!< Indicates if afterSerialze should be called
 

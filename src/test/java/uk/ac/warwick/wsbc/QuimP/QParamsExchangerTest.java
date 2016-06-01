@@ -17,6 +17,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
+
 /**
  * @author p.baniukiewicz
  * @date 26 May 2016
@@ -99,6 +101,9 @@ public class QParamsExchangerTest {
         Snake s = sH.getStoredSnake(10);
         assertThat(s.POINTS, is(21));
         assertThat(s.countPoints(), is(s.POINTS));
+
+        BOAp bp = qp.getLoadedDataContainer().BOAState.boap;
+        assertThat(bp.WIDTH, is(512));
 
     }
 

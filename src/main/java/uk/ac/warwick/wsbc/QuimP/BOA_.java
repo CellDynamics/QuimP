@@ -309,6 +309,7 @@ public class BOA_ implements PlugIn {
      * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateSliceSelector()
      */
     private void updateBOA(int frame) {
+        imageGroup.updateNest(qState.nest);
         imageGroup.updateOverlay(frame);
         qState.store(frame);
     }
@@ -1276,10 +1277,44 @@ public class BOA_ implements PlugIn {
                     historyLogger.openHistory();
             }
 
+            // load global config
+            if (b == menuLoad) {
+                OpenDialog od = new OpenDialog("Load global config data...(*.QCONF)", "");
+                if (od.getFileName() != null) {
+                    try {
+                        Serializer<DataContainer> loaded; // loaded instance
+                        // create serializer
+                        Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
+                        s.registerInstanceCreator(DataContainer.class,
+                                new DataContainerInstanceCreator(3, pluginFactory, viewUpdater));
+                        s.gsonBuilder.registerTypeAdapter(BOAState.BOAp.class,
+                                new InstanceCreatorForB(new BOAState()));
+                        loaded = s.load(od.getDirectory() + od.getFileName());
+                        qState.snakePluginList.clear(); // closes windows, etc
+                        int current_frame = qState.boap.frame; // remember before override!!
+                        qState = loaded.obj.BOAState;
+
+                        qState.restore(current_frame);
+
+                        updateCheckBoxes(); // update checkboxes
+                        updateChoices(); // and choices
+                        recalculatePlugins(); // and screen
+                    } catch (IOException e1) {
+                        LOGGER.error("Problem with loading plugin config", e1);
+                    } catch (JsonSyntaxException e1) {
+                        LOGGER.error("Problem with configuration file: " + e1.getMessage(), e1);
+                    } catch (Exception e1) {
+                        LOGGER.error(e1, e1); // something serious
+                    }
+                }
+            }
+
             updateWindowState(); // window logic on any change
 
             // run segmentation for selected cases
-            if (run) {
+            if (run)
+
+            {
                 System.out.println("running from in stackwindow");
                 // run on current frame
                 try {
@@ -1553,6 +1588,7 @@ public class BOA_ implements PlugIn {
             fpsLabel.setText(
                     "F Interval: " + IJ.d2s(qState.boap.getImageFrameInterval(), 3) + " s");
         }
+
     } // end of CustomStackWindow
 
     /**
@@ -2153,7 +2189,7 @@ class ImageGroup {
     private ImageStack orgStack, pathsStack; // , contourStack;
     private ImageProcessor orgIp, pathsIp; // , contourIp;
     private Overlay overlay;
-    private final Nest nest;
+    private Nest nest;
     int w, h, f;
 
     private static final Logger LOGGER = LogManager.getLogger(ImageGroup.class.getName());
@@ -2189,6 +2225,17 @@ class ImageGroup {
 
         setIpSliceAll(1);
         setProcessor(1);
+    }
+
+    /**
+     * Sets new Nest object associated with displayed image
+     * 
+     * Used after loading new BOAState
+     * 
+     * @param newNest new Nest 
+     */
+    public void updateNest(Nest newNest) {
+        nest = newNest;
     }
 
     public ImagePlus getOrgIpl() {

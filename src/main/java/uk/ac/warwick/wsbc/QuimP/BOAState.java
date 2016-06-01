@@ -349,6 +349,7 @@ class BOAState implements IQuimpSerialize {
         /**
          * Current frame, CustomStackWindow.updateSliceSelector()
          * Not stored due to archiving all parameters for every frame separately
+         * @todo TODO Should be stored
          */
         public transient int frame;
         /**
@@ -444,6 +445,7 @@ class BOAState implements IQuimpSerialize {
             editingID = -1;
             callCount = 0;
             SEGrunning = false;
+            frame = 1;
         }
 
         /**
@@ -596,8 +598,7 @@ class BOAState implements IQuimpSerialize {
      * initialized 
      */
     public BOAState(final ImagePlus ip) {
-        boap = new BOAp(); // build BOAp
-        segParam = new SegParam(); // and SegParam
+        this();
         if (ip == null)
             return;
         int numofframes = ip.getStackSize();
@@ -611,19 +612,30 @@ class BOAState implements IQuimpSerialize {
         boap.setImageFrameInterval(ip.getCalibration().frameInterval);
     }
 
+    public BOAState() {
+        boap = new BOAp(); // build BOAp
+        segParam = new SegParam(); // and SegParam
+        snakePluginList = new SnakePluginList();
+    }
+
     /**
      * Make snapshot of current objects state
      * 
      * @param frame actual frame numbered from 1
      */
     public void store(int frame) {
-        BOA_.LOGGER.debug("Data stored at frame:" + frame + " size of segParams is "
+        LOGGER.debug("Data stored at frame:" + frame + " size of segParams is "
                 + segParamSnapshots.size());
         segParamSnapshots.set(frame - 1, new SegParam(segParam));
         snakePluginListSnapshots.set(frame - 1, snakePluginList.getShallowCopy()); // download
                                                                                    // Plugin
                                                                                    // config
                                                                                    // as well
+    }
+
+    public void restore(int frame) {
+        LOGGER.debug("Data restored from frame:" + frame);
+        snakePluginList = snakePluginListSnapshots.get(frame - 1);
     }
 
     /**
