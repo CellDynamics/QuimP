@@ -540,7 +540,7 @@ public class BOA_ implements PlugIn {
         private Checkbox cFirstPluginActiv, cSecondPluginActiv, cThirdPluginActiv;
 
         private MenuBar quimpMenuBar;
-        private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory; // items
+        private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory, menuLoad; // items
         private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
 
         /**
@@ -602,18 +602,31 @@ public class BOA_ implements PlugIn {
             MenuBar menuBar; // main menu bar
             Menu menuAbout; // menu About in menubar
             Menu menuConfig; // menu Config in menubar
+            Menu menuFile; // menu File in menubar
 
             menuBar = new MenuBar();
 
             menuConfig = new Menu("Preferences");
-
             menuAbout = new Menu("About");
+            menuFile = new Menu("File");
 
             // build main line
+            menuBar.add(menuFile);
             menuBar.add(menuConfig);
             menuBar.add(menuAbout);
 
             // add entries
+            menuLoad = new MenuItem("Load global config");
+            menuLoad.addActionListener(this);
+            menuFile.add(menuLoad);
+            menuFile.addSeparator();
+            menuLoadConfig = new MenuItem("Load plugin preferences");
+            menuLoadConfig.addActionListener(this);
+            menuFile.add(menuLoadConfig);
+            menuSaveConfig = new MenuItem("Save plugin preferences");
+            menuSaveConfig.addActionListener(this);
+            menuFile.add(menuSaveConfig);
+
             menuVersion = new MenuItem("Version");
             menuVersion.addActionListener(this);
             menuAbout.add(menuVersion);
@@ -626,14 +639,6 @@ public class BOA_ implements PlugIn {
             cbMenuPlotHead.setState(qState.boap.isHeadPlotted);
             cbMenuPlotHead.addItemListener(this);
             menuConfig.add(cbMenuPlotHead);
-
-            menuSaveConfig = new MenuItem("Save preferences");
-            menuSaveConfig.addActionListener(this);
-            menuConfig.add(menuSaveConfig);
-
-            menuLoadConfig = new MenuItem("Load preferences");
-            menuLoadConfig.addActionListener(this);
-            menuConfig.add(menuLoadConfig);
 
             menuShowHistory = new MenuItem("Show history");
             menuShowHistory.addActionListener(this);
