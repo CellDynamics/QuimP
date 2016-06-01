@@ -348,14 +348,12 @@ class BOAState implements IQuimpSerialize {
         
         /**
          * Current frame, CustomStackWindow.updateSliceSelector()
-         * Not stored due to archiving all parameters for every frame separately
-         * @todo TODO Should be stored
          */
-        public transient int frame;
+        public int frame;
         /**
          * Snake selected in zoom selector, negative value if 100% view
          */
-        public transient int snakeToZoom = -1;
+        public int snakeToZoom = -1;
 
         boolean singleImage;
         String paramsExist; // on startup check if defaults are needed to set

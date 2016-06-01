@@ -99,7 +99,7 @@ public class QParamsExchangerTest {
         assertThat(sH.getStartFrame(), is(1));
         assertThat(sH.getEndFrame(), is(30));
         Snake s = sH.getStoredSnake(10);
-        assertThat(s.POINTS, is(21));
+        assertThat(s.POINTS, is(22));
         assertThat(s.countPoints(), is(s.POINTS));
 
         BOAp bp = qp.getLoadedDataContainer().BOAState.boap;

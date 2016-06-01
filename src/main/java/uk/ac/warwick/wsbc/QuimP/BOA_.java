@@ -1287,8 +1287,8 @@ public class BOA_ implements PlugIn {
                         Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
                         s.registerInstanceCreator(DataContainer.class,
                                 new DataContainerInstanceCreator(3, pluginFactory, viewUpdater));
-                        s.gsonBuilder.registerTypeAdapter(BOAState.BOAp.class,
-                                new InstanceCreatorForB(new BOAState()));
+                        // s.gsonBuilder.registerTypeAdapter(BOAState.BOAp.class,
+                        // new InstanceCreatorForB(new BOAState()));
                         loaded = s.load(od.getDirectory() + od.getFileName());
                         qState.snakePluginList.clear(); // closes windows, etc
                         int current_frame = qState.boap.frame; // remember before override!!
