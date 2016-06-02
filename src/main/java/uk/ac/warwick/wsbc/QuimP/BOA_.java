@@ -133,7 +133,7 @@ public class BOA_ implements PlugIn {
     private HistoryLogger historyLogger; // logger
     /**
      * Configuration object, available from all modules. Must be initialized here \b AND in 
-     * constructor (to reset settings on next BOA call without quitting Fiij)
+     * constructor (to reset settings on next BOA call without quitting Fiji)
      */
     static public BOAState qState; // current state of BOA module
 
@@ -308,10 +308,11 @@ public class BOA_ implements PlugIn {
      * @see uk.ac.warwick.wsbc.QuimP.BOA_.stopEdit()
      * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateSliceSelector()
      */
+    @Deprecated
     private void updateBOA(int frame) {
-        imageGroup.updateNest(qState.nest);
-        imageGroup.updateOverlay(frame);
-        qState.store(frame);
+        imageGroup.updateNest(qState.nest); // connect new nest to display
+        imageGroup.updateOverlay(frame); // redraw display
+        qState.store(frame); // remember state machine for current frame
     }
 
     /**
@@ -398,8 +399,9 @@ public class BOA_ implements PlugIn {
             LOGGER.error(e);
         } finally {
             historyLogger.addEntry("Plugin settings", qState);
+            qState.store(qState.boap.frame); // always remember state of the BOA that is
         }
-        updateBOA(qState.boap.frame);
+        imageGroup.updateOverlay(qState.boap.frame);
     }
 
     /**
@@ -1291,11 +1293,10 @@ public class BOA_ implements PlugIn {
                         // new InstanceCreatorForB(new BOAState()));
                         loaded = s.load(od.getDirectory() + od.getFileName());
                         qState.snakePluginList.clear(); // closes windows, etc
-                        int current_frame = qState.boap.frame; // remember before override!!
+                        // int current_frame = qState.boap.frame; // remember before override!!
                         qState = loaded.obj.BOAState;
-
-                        qState.restore(current_frame);
-
+                        qState.restore(qState.boap.frame);
+                        imageGroup.updateNest(qState.nest); // reconnect nest
                         updateCheckBoxes(); // update checkboxes
                         updateChoices(); // and choices
                         recalculatePlugins(); // and screen
@@ -1376,7 +1377,7 @@ public class BOA_ implements PlugIn {
             }
             if (source == cbMenuPlotHead) {
                 qState.boap.isHeadPlotted = cbMenuPlotHead.getState();
-                updateBOA(qState.boap.frame);
+                imageGroup.updateOverlay(qState.boap.frame);
             }
 
             // actions on Plugin selections
@@ -1416,20 +1417,20 @@ public class BOA_ implements PlugIn {
 
             updateWindowState(); // window logic on any change
 
-            if (run) {
-                if (qState.boap.supressStateChangeBOArun) {
-                    // boap.supressStateChangeBOArun = false;
-                    System.out.println("supressStateItem");
-                    System.out.println(source.toString());
-                    return;
-                }
-                // run on current frame
-                try {
+            try {
+                if (run) {
+                    if (qState.boap.supressStateChangeBOArun) {// when spinners are changed
+                        // programmatically they raise the
+                        // event. this is to block running
+                        // segmentation
+                        LOGGER.debug("supressState");
+                        return;
+                    }
+                    // run on current frame
                     runBoa(qState.boap.frame, qState.boap.frame);
-                } catch (BoaException be) {
-                    BOA_.log(be.getMessage());
                 }
-                // imageGroup.setSlice(1);
+            } catch (BoaException be) {
+                BOA_.log(be.getMessage());
             }
         }
 
@@ -1494,23 +1495,21 @@ public class BOA_ implements PlugIn {
 
             updateWindowState(); // window logic on any change
 
-            if (run) {
-                if (qState.boap.supressStateChangeBOArun) {
-                    // boap.supressStateChangeBOArun = false;
-                    System.out.println("supressState");
-                    System.out.println(source.toString());
-                    return;
-                }
-                // System.out.println("run from state change");
-                // run on current frame
-                try {
+            try {
+                if (run) {
+                    if (qState.boap.supressStateChangeBOArun) { // when spinners are changed
+                                                                // programmatically they raise the
+                                                                // event. this is to block running
+                                                                // segmentation
+                        LOGGER.debug("supressState");
+                        return;
+                    }
+                    // run on current frame
                     runBoa(qState.boap.frame, qState.boap.frame);
-                } catch (BoaException be) {
-                    BOA_.log(be.getMessage());
                 }
-                // imageGroup.setSlice(1);
+            } catch (BoaException be) {
+                BOA_.log(be.getMessage());
             }
-
         }
 
         /**
@@ -1554,6 +1553,10 @@ public class BOA_ implements PlugIn {
             }
             LOGGER.trace(
                     "Snakes at this frame: " + qState.nest.getSnakesforFrame(qState.boap.frame));
+            qState.restore(qState.boap.frame);
+            updateCheckBoxes();
+            updateSpinnerValues();
+            updateWindowState();
         }
 
         /**
@@ -1716,19 +1719,21 @@ public class BOA_ implements PlugIn {
                         }
 
                     }
-                    updateBOA(qState.boap.frame); // update view and store state
+                    imageGroup.updateOverlay(qState.boap.frame); // redraw display
                     IJ.showProgress(qState.boap.frame, endF);
                 } catch (BoaException be) {
                     qState.boap.SEGrunning = false;
                     if (!qState.segParam.use_previous_snake) {
                         imageGroup.setIpSliceAll(qState.boap.frame);
-                        updateBOA(qState.boap.frame); // update view and store state
+                        imageGroup.updateOverlay(qState.boap.frame);
                     } else {
                         System.out.println("\nL811. Exception");
                         throw be;
                     }
                 } finally {
                     historyLogger.addEntry("Processing", qState);
+                    qState.store(qState.boap.frame); // always remember state of the BOA that is
+                    // used for segmentation
                 }
             }
             qState.boap.frame = endF;
@@ -1914,7 +1919,7 @@ public class BOA_ implements PlugIn {
 
         qState.nest.addOutlinehandler(oH);
         imageGroup.setProcessor(oH.getStartFrame());
-        updateBOA(oH.getStartFrame());
+        imageGroup.updateOverlay(oH.getStartFrame());
         BOA_.log("Successfully read snakes");
         return true;
     }
@@ -1963,8 +1968,9 @@ public class BOA_ implements PlugIn {
             BOA_.log("Could not store new snake");
             LOGGER.error(be);
         } finally {
-            updateBOA(f);
+            imageGroup.updateOverlay(f);
             historyLogger.addEntry("Added cell", qState);
+            qState.store(f); // always remember state of the BOA after modification of UI
         }
 
     }
@@ -1992,7 +1998,7 @@ public class BOA_ implements PlugIn {
         if (distance[minIndex] < 10) { // if closest < 10, delete it
             BOA_.log("Deleted cell " + qState.nest.getHandler(minIndex).getID());
             qState.nest.removeHandler(qState.nest.getHandler(minIndex));
-            updateBOA(frame);
+            imageGroup.updateOverlay(frame);
             window.switchOffDelete();
             return true;
         } else {
@@ -2028,7 +2034,7 @@ public class BOA_ implements PlugIn {
                     + " onwards");
             sH = qState.nest.getHandler(minIndex);
             sH.deleteStoreFrom(frame);
-            updateBOA(frame);
+            imageGroup.updateOverlay(frame);
             window.switchOfftruncate();
         } else {
             BOA_.log("Click the cell centre to delete");

@@ -58,7 +58,7 @@ import ij.io.OpenDialog;
  * @date 30 Mar 2016
  * @see Serializer
  */
-class BOAState implements IQuimpSerialize {
+public class BOAState implements IQuimpSerialize {
     static {
         System.setProperty("log4j.configurationFile", "qlog4j2.xml");
     }
@@ -633,7 +633,13 @@ class BOAState implements IQuimpSerialize {
 
     public void restore(int frame) {
         LOGGER.debug("Data restored from frame:" + frame);
-        snakePluginList = snakePluginListSnapshots.get(frame - 1);
+        SegParam tmp = segParamSnapshots.get(frame - 1);
+        if (tmp != null)
+            segParam = tmp;
+        // else
+        // segParamSnapshots.set(frame - 1, new SegParam(segParam));
+        // if (snakePluginListSnapshots.get(frame - 1) != null)
+        // snakePluginList = snakePluginListSnapshots.get(frame - 1);
     }
 
     /**

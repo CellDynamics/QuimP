@@ -17,6 +17,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.warwick.wsbc.QuimP.BOAState;
+import uk.ac.warwick.wsbc.QuimP.BOA_;
 import uk.ac.warwick.wsbc.QuimP.Node;
 import uk.ac.warwick.wsbc.QuimP.Snake;
 
@@ -42,6 +44,7 @@ public class QuimpDataConverterTest {
      */
     @Before
     public void setUp() throws Exception {
+        BOA_.qState = new BOAState(null);
         X = new double[] { 3.0, 6.0, 6.0, 3.0 };
         Y = new double[] { 2.0, 2.0, 6.0, 6.0 };
         list = new ArrayList<Point2d>(4);

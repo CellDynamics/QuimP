@@ -41,6 +41,7 @@ public class SnakeTest {
      */
     @Before
     public void setUp() throws Exception {
+        BOA_.qState = new BOAState(null);
         float x[] = new float[4];
         float y[] = new float[4];
         x[0] = 0;
