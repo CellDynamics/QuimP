@@ -379,6 +379,7 @@ class SnakePluginList implements IQuimpSerialize {
     public SnakePluginList getShallowCopy() {
         beforeSerialize(); // get plugin config from Plugins (jars->Plugin) to fill Plugin subclass
         SnakePluginList ret = new SnakePluginList();
+        ret.updateRefs(pluginFactory, viewUpdater); // assign current external data
         // make deep copy of the list
         for (Plugin p : this.sPluginList)
             ret.sPluginList.add(p.getShallowCopy());

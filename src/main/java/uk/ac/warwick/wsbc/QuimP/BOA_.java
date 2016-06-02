@@ -543,6 +543,7 @@ public class BOA_ implements PlugIn {
         private MenuBar quimpMenuBar;
         private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory, menuLoad; // items
         private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
+        private Color defaultColor;
 
         /**
          * Default constructor
@@ -587,6 +588,7 @@ public class BOA_ implements PlugIn {
             setMenuBar(quimpMenuBar);
             pack();
             updateWindowState(); // window logic on start
+            defaultColor = sp.getBackground();
 
         }
 
@@ -1025,23 +1027,45 @@ public class BOA_ implements PlugIn {
          * 
          * @see SnakePluginList
          * @see itemStateChanged(ItemEvent)
+         * @warning This method is called from CustomStackWindow.itemStateChanged(ItemEvent)
+         * to update colors of Choices
          */
         private void updateChoices() {
+            Color ok = new Color(178, 255, 102);
+            Color bad = new Color(255, 153, 153);
             // first slot snake plugin
-            if (qState.snakePluginList.getInstance(0) == null)
+            if (qState.snakePluginList.getName(0).isEmpty()) {
                 sFirstPluginName.select(NONE);
-            else
+                sFirstPluginName.setBackground(defaultColor);
+            } else {
                 sFirstPluginName.select(qState.snakePluginList.getName(0));
+                if (qState.snakePluginList.getInstance(0) == null)
+                    sFirstPluginName.setBackground(bad);
+                else
+                    sFirstPluginName.setBackground(ok);
+            }
             // second slot snake plugin
-            if (qState.snakePluginList.getInstance(1) == null)
+            if (qState.snakePluginList.getName(1).isEmpty()) {
                 sSecondPluginName.select(NONE);
-            else
+                sSecondPluginName.setBackground(defaultColor);
+            } else {
                 sSecondPluginName.select(qState.snakePluginList.getName(1));
+                if (qState.snakePluginList.getInstance(1) == null)
+                    sSecondPluginName.setBackground(bad);
+                else
+                    sSecondPluginName.setBackground(ok);
+            }
             // third slot snake plugin
-            if (qState.snakePluginList.getInstance(2) == null)
+            if (qState.snakePluginList.getName(2).isEmpty()) {
                 sThirdPluginName.select(NONE);
-            else
+                sThirdPluginName.setBackground(defaultColor);
+            } else {
                 sThirdPluginName.select(qState.snakePluginList.getName(2));
+                if (qState.snakePluginList.getInstance(2) == null)
+                    sThirdPluginName.setBackground(bad);
+                else
+                    sThirdPluginName.setBackground(ok);
+            }
 
         }
 
@@ -1412,6 +1436,7 @@ public class BOA_ implements PlugIn {
             }
 
             updateWindowState(); // window logic on any change
+            updateChoices(); // only for updating colors after calling
 
             try {
                 if (run) {
@@ -1551,6 +1576,7 @@ public class BOA_ implements PlugIn {
                     "Snakes at this frame: " + qState.nest.getSnakesforFrame(qState.boap.frame));
             qState.restore(qState.boap.frame);
             updateCheckBoxes();
+            updateChoices();
             updateSpinnerValues();
             updateWindowState();
         }
