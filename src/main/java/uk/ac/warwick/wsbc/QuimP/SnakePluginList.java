@@ -348,8 +348,7 @@ class SnakePluginList implements IQuimpSerialize {
      */
     public SnakePluginList() {
         sPluginList = new ArrayList<Plugin>();
-        pluginFactory = null;
-        viewUpdater = null;
+        updateRefs(null, null);
     }
 
     /**
@@ -363,9 +362,8 @@ class SnakePluginList implements IQuimpSerialize {
         this(); // initialize structures
         for (int i = 0; i < s; i++)
             sPluginList.add(new Plugin()); // fill list with empty Plugins
-        this.pluginFactory = pf; // store plugin deliverer
-        // store external data that may be important for plugins
-        this.viewUpdater = vu;
+        // store plugin deliverer and external data that may be important for plugins
+        updateRefs(pf, vu);
     }
 
     /**
@@ -385,6 +383,20 @@ class SnakePluginList implements IQuimpSerialize {
         for (Plugin p : this.sPluginList)
             ret.sPluginList.add(p.getShallowCopy());
         return ret;
+    }
+
+    /**
+     * Updates references of external object connected in constructor. 
+     * 
+     * External references are not copied by getShallowCopy() thus they should be reinitialized
+     * after that operation
+     * 
+     * @param pf new PluginFactory
+     * @param vu new ViewUpdater
+     */
+    public void updateRefs(PluginFactory pf, ViewUpdater vu) {
+        this.pluginFactory = pf;
+        this.viewUpdater = vu;
     }
 
     /**

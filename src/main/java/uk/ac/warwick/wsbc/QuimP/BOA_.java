@@ -129,7 +129,7 @@ public class BOA_ implements PlugIn {
      */
     public static String[] quimpInfo;
     private static int logCount; // add counter to logged messages
-    static final private int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
+    static final int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
     private HistoryLogger historyLogger; // logger
     /**
      * Configuration object, available from all modules. Must be initialized here \b AND in 
@@ -173,8 +173,24 @@ public class BOA_ implements PlugIn {
         // create history logger
         historyLogger = new HistoryLogger();
 
+        // Build plugin engine
+        try {
+            String path = IJ.getDirectory("plugins");
+            if (path == null) {
+                IJ.log("BOA: Plugin directory not found");
+                LOGGER.warn("BOA: Plugin directory not found, use provided with arg: " + arg);
+                path = arg;
+            }
+            // initialize plugin factory (jar scanning and registering)
+            pluginFactory = PluginFactoryFactory.getPluginFactory(path);
+        } catch (Exception e) {
+            // temporary catching may in future be removed
+            LOGGER.error("run " + e);
+        }
+
         ImagePlus ip = WindowManager.getCurrentImage();
-        qState = new BOAState(ip); // create BOA state machine
+        // initialize arrays for plugins instances and give them initial values (GUI)
+        qState = new BOAState(ip, pluginFactory, viewUpdater); // create BOA state machine
         if (IJ.getVersion().compareTo("1.46") < 0) {
             qState.boap.useSubPixel = false;
         } else {
@@ -204,24 +220,6 @@ public class BOA_ implements PlugIn {
             } else {
                 return;
             }
-        }
-
-        // Build plugin engine
-        try {
-            String path = IJ.getDirectory("plugins");
-            if (path == null) {
-                IJ.log("BOA: Plugin directory not found");
-                LOGGER.warn("BOA: Plugin directory not found, use provided with arg: " + arg);
-                path = arg;
-            }
-            // initialize plugin factory (jar scanning and registering)
-            pluginFactory = PluginFactoryFactory.getPluginFactory(path);
-            // initialize arrays for plugins instances and give them initial values (GUI)
-            qState.snakePluginList =
-                    new SnakePluginList(NUM_SNAKE_PLUGINS, pluginFactory, viewUpdater);
-        } catch (Exception e) {
-            // temporary catching may in future be removed
-            LOGGER.error("run " + e);
         }
 
         BOA_.running = true;
@@ -1289,8 +1287,6 @@ public class BOA_ implements PlugIn {
                         Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
                         s.registerInstanceCreator(DataContainer.class,
                                 new DataContainerInstanceCreator(3, pluginFactory, viewUpdater));
-                        // s.gsonBuilder.registerTypeAdapter(BOAState.BOAp.class,
-                        // new InstanceCreatorForB(new BOAState()));
                         loaded = s.load(od.getDirectory() + od.getFileName());
                         qState.snakePluginList.clear(); // closes windows, etc
                         // int current_frame = qState.boap.frame; // remember before override!!

@@ -22,6 +22,8 @@ public class DataContainer implements IQuimpSerialize {
 
     public BOAState BOAState;
     public Outlines ECMMState;
+    private transient PluginFactory pf;
+    private transient ViewUpdater vu;
 
     public DataContainer() {
         this(new BOAState(null));
@@ -36,6 +38,12 @@ public class DataContainer implements IQuimpSerialize {
         this.ECMMState = os;
     }
 
+    public DataContainer(int size, final PluginFactory pf, final ViewUpdater vu) {
+        this();
+        this.pf = pf;
+        this.vu = vu;
+    }
+
     @Override
     public void beforeSerialize() {
         BOAState.beforeSerialize();
@@ -45,8 +53,12 @@ public class DataContainer implements IQuimpSerialize {
 
     @Override
     public void afterSerialize() throws Exception {
+        BOAState.snakePluginList = new SnakePluginList(BOA_.NUM_SNAKE_PLUGINS, pf, vu);
         BOAState.afterSerialize();
         ECMMState.afterSerialize();
+        for (SnakePluginList sL : BOAState.snakePluginListSnapshots) {
+            sL.updateRefs(pf, vu);
+        }
     }
 }
 
@@ -74,11 +86,12 @@ class DataContainerInstanceCreator implements InstanceCreator<DataContainer> {
 
     @Override
     public DataContainer createInstance(Type arg0) {
-        DataContainer dt = new DataContainer();
+        DataContainer dt = new DataContainer(size, pf, vu);
         return dt;
     }
 }
 
+@Deprecated
 class InstanceCreatorForB implements InstanceCreator<BOAState.BOAp> {
     private final BOAState a;
 

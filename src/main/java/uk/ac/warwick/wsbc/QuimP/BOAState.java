@@ -83,7 +83,7 @@ public class BOAState implements IQuimpSerialize {
      * Keep snapshots of SnakePluginList objects for every frame separately. Plugin
      * configurations are stored as well (but without plugin references)
      */
-    private ArrayList<SnakePluginList> snakePluginListSnapshots;
+    ArrayList<SnakePluginList> snakePluginListSnapshots;
     /**
      * List of plugins selected in plugin stack and information if they are active or not
      * This field is not serializable because \a snakePluginListSnapshots keeps configurations
@@ -589,20 +589,36 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
-     * Construct QState object for given stack size
+     * Construct BOAState object for given stack size
      * Initializes other internal fields
      * 
      * @param ip current image object, can be \c null. In latter case only subclasses are 
      * initialized 
      */
     public BOAState(final ImagePlus ip) {
+        this(ip, null, null);
+
+    }
+
+    /**
+     * Construct full base object filling snapshots with default but valid objects
+     * 
+     * @param ip current image object, can be \c null. In latter case only subclasses are 
+     * initialized
+     * @param pf PluginFactory used for creating plugins
+     * @param vu ViewUpdater reference
+     */
+    public BOAState(final ImagePlus ip, PluginFactory pf, ViewUpdater vu) {
         this();
+        snakePluginList = new SnakePluginList(BOA_.NUM_SNAKE_PLUGINS, pf, vu);
         if (ip == null)
             return;
         int numofframes = ip.getStackSize();
-        segParamSnapshots = new ArrayList<SegParam>(Collections.nCopies(numofframes, null));
-        snakePluginListSnapshots =
-                new ArrayList<SnakePluginList>(Collections.nCopies(numofframes, null));
+        // fill snaphots with default values
+        segParamSnapshots =
+                new ArrayList<SegParam>(Collections.nCopies(numofframes, new SegParam()));
+        snakePluginListSnapshots = new ArrayList<SnakePluginList>(Collections.nCopies(numofframes,
+                new SnakePluginList(BOA_.NUM_SNAKE_PLUGINS, pf, vu)));
         isFrameEdited = new ArrayList<Boolean>(Collections.nCopies(numofframes, false));
         BOA_.LOGGER.debug("Initialize storage of size: " + numofframes + " size of segParams: "
                 + segParamSnapshots.size());
@@ -639,7 +655,7 @@ public class BOAState implements IQuimpSerialize {
         // else
         // segParamSnapshots.set(frame - 1, new SegParam(segParam));
         // if (snakePluginListSnapshots.get(frame - 1) != null)
-        // snakePluginList = snakePluginListSnapshots.get(frame - 1);
+        snakePluginList = snakePluginListSnapshots.get(frame - 1);
     }
 
     /**
@@ -667,5 +683,8 @@ public class BOAState implements IQuimpSerialize {
     public void afterSerialize() throws Exception {
         nest.afterSerialize(); // rebuild Shape<T extends PointsList<T>> from ArrayList used for
                                // storing
+        snakePluginList.afterSerialize(); // assumes that snakePluginList contains valid refs to
+                                          // pluginFactory
+
     }
 }
