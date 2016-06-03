@@ -126,7 +126,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * @copydoc uk.ac.warwick.wsbc.QuimP.Serializer.load(final File)
+     * @copydoc load(final File)
      */
     public Serializer<T> load(final String filename) throws IOException, Exception {
         File file = new File(filename);
@@ -187,7 +187,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * @copydoc uk.ac.warwick.wsbc.QuimP.Serializer.Dump(final Object, final File)
+     * @copydoc Dump(final Object, final File)
      */
     static void Dump(final Object obj, final String filename) throws FileNotFoundException {
         File file = new File(filename);

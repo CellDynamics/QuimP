@@ -1,5 +1,5 @@
 /**
- * @file PluginFactoryFactory.java
+ * @file QuimP/src/maven/uk/ac/warwick/wsbc/QuimP/PluginFactoryFactory.java
  * @date 17 May 2016
  */
 package uk.ac.warwick.wsbc.QuimP;

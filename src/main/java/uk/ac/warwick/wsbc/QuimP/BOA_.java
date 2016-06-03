@@ -126,6 +126,7 @@ public class BOA_ implements PlugIn {
     /**
      * Keep data from getQuimPBuildInfo() These information are used in About dialog, window title
      * bar, logging, etc.
+     * Static because window related staff is in another classes
      */
     public static String[] quimpInfo;
     private static int logCount; // add counter to logged messages
@@ -517,7 +518,7 @@ public class BOA_ implements PlugIn {
      * Extends standard ImageJ StackWindow adding own GUI elements.
      * 
      * This class stands for definition of main BOA plugin GUI window. Current
-     * state of BOA plugin is stored at {@link BOAp} class.
+     * state of BOA plugin is stored at {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp} class.
      * 
      * @author rtyson
      * @see BOAp
@@ -977,7 +978,7 @@ public class BOA_ implements PlugIn {
 
         /**
          * Set default values defined in model class
-         * {@link uk.ac.warwick.wsbc.QuimP.BOAp} and update UI
+         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp} and update UI
          * 
          * @see BOAp
          */
@@ -988,7 +989,7 @@ public class BOA_ implements PlugIn {
 
         /**
          * Update spinners in BOA UI Update spinners according to values stored
-         * in machine state {@link uk.ac.warwick.wsbc.QuimP.BOAp}
+         * in machine state {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}
          * 
          * @see BOAp
          */
@@ -1351,7 +1352,7 @@ public class BOA_ implements PlugIn {
         /**
          * Detect changes in checkboxes and run segmentation for current frame
          * if necessary. Transfer parameters from changed GUI element to
-         * {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
+         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp} class
          * 
          * @param e Type of event
          * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
@@ -1459,7 +1460,7 @@ public class BOA_ implements PlugIn {
         /**
          * Detect changes in spinners and run segmentation for current frame if
          * necessary. Transfer parameters from changed GUI element to
-         * {@link uk.ac.warwick.wsbc.QuimP.BOAp} class
+         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp} class
          * 
          * @param ce Type of event
          * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
@@ -1590,7 +1591,7 @@ public class BOA_ implements PlugIn {
 
         /**
          * Turn delete mode off by setting proper value in
-         * {@link uk.ac.warwick.wsbc.QuimP.BOAp}
+         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}
          */
         void switchOffDelete() {
             qState.boap.doDelete = false;
@@ -1608,7 +1609,7 @@ public class BOA_ implements PlugIn {
 
         /**
          * Turn truncate mode off by setting proper value in
-         * {@link uk.ac.warwick.wsbc.QuimP.BOAp}
+         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}
          */
         void switchOfftruncate() {
             qState.boap.doDeleteSeg = false;

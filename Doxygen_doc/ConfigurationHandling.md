@@ -5,10 +5,10 @@
 \tableofcontents
 
 # General file operations {#genfile}
-File names are defined in configuration class \ref uk.ac.warwick.wsbc.QuimP.BOAp "BOAp" (see comments in Doxygen doc). The very general workflow for saving and loading configurations for particular parts of QuimP is presented below.
+File names are defined in configuration class \ref uk.ac.warwick.wsbc.QuimP.BOAState.BOAp "BOAp" (see comments in Doxygen doc). The very general workflow for saving and loading configurations for particular parts of QuimP is presented below.
 
 ## Data structures {#datastructures}
-Currently data structures in BOA and the whole QuimP are not unified. The main class is uk.ac.warwick.wsbc.QuimP.BOAp that keeps internal parameters as well as external (exposed to user). The latter are hold in sub-class uk.ac.warwick.wsbc.QuimP.BOAp.SegParam. The object of \ref uk.ac.warwick.wsbc.QuimP.BOAp "BOAp" is made `static` and accessed directly from various QuimP classes (e.g. Snake). Additionally there is helper class uk.ac.warwick.wsbc.QuimP.BOA_.BOAState that keeps all parameters related to BOA state. Due to complicated relations \ref uk.ac.warwick.wsbc.QuimP.BOAp.SegParam "SegParam" object is referenced in this class but it is created outside it. This class is also serialized what supports saving the whole state of BOA.  
+Currently data structures in BOA and the whole QuimP are not unified. The main class is uk.ac.warwick.wsbc.QuimP.BOAState.BOAp that keeps internal parameters as well as external (exposed to user). The latter are hold in sub-class uk.ac.warwick.wsbc.QuimP.BOAState.SegParam. The object of \ref uk.ac.warwick.wsbc.QuimP.BOAState.BOAp "BOAp" is made `static` and accessed directly from various QuimP classes (e.g. Snake). Additionally there is helper class \ref uk.ac.warwick.wsbc.QuimP.BOAState that keeps all parameters related to BOA state. Due to complicated relations \ref uk.ac.warwick.wsbc.QuimP.BOAState.SegParam "SegParam" object is referenced in this class but it is created outside it. This class is also serialized what supports saving the whole state of BOA.  
 
 @startuml
 BOAp *-- SegParam
@@ -81,7 +81,7 @@ BOA produces several files:
 2. *snQP* - contains Snake objects for every frame, separate file for every Snake
 3. *stQP* - statistic file
 4. **pgQP** - new configuration file, holds plugin parameters (see @ref genfile)
-5. **QCONF** - new configuration file, contains all Snakes for all frames (dump of \ref uk.ac.warwick.wsbc.QuimP.BOA_.BOAState "BOAState") and all configuration related to segmentation
+5. **QCONF** - new configuration file, contains all Snakes for all frames (dump of \ref uk.ac.warwick.wsbc.QuimP.BOAState "BOAState") and all configuration related to segmentation
 
 Files **paQP** and **snQP** and **stQP** are saved for every tracked Snake separately with suffixes indicating Snake ID number.
 

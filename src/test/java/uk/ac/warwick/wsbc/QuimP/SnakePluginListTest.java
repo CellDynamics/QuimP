@@ -248,7 +248,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList.SnakePluginList(int, final PluginFactory, final List<Point2d>, final ViewUpdater)}
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList.SnakePluginList(int, final PluginFactory, final ViewUpdater)}
      */
     @Test
     public void testSnakePluginListIntPluginFactory() throws Exception {
@@ -256,7 +256,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#getInstance(int)}.
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#getInstance(int)}.
      */
     @Test
     public void testGetInstance() throws Exception {
@@ -268,7 +268,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#isActive(int)}.
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#isActive(int)}.
      */
     @Test
     public void testIsActive() throws Exception {
@@ -276,7 +276,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setInstance(int, final String, boolean)}.
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setInstance(int, final String, boolean)}.
      */
     @Test
     public void testSetInstance() throws Exception {
@@ -289,7 +289,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setActive(int, boolean)}.
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setActive(int, boolean)}.
      */
     @Test
     public void testSetActive() throws Exception {
@@ -300,7 +300,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#deletePlugin(int)}.
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#deletePlugin(int)}.
      */
     @Test
     public void testDeletePlugin() throws Exception {
@@ -310,7 +310,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#isRefListEmpty()}.
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#isRefListEmpty()}.
      */
     @Test
     public void testIsRefListEmpty() throws Exception {
@@ -324,6 +324,10 @@ public class SnakePluginListTest {
 
     }
 
+    /**
+     * @test Test of serialization
+     * @throws Exception
+     */
     @Test
     public void testBeforeSerialize() throws Exception {
         snakePluginList.beforeSerialize();
@@ -335,6 +339,10 @@ public class SnakePluginListTest {
         }
     }
 
+    /**
+     * @test Test of saving
+     * @throws Exception
+     */
     @Test
     public void testSaveConfig() throws IOException, NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -346,6 +354,10 @@ public class SnakePluginListTest {
         f.close();
     }
 
+    /**
+     * @test Test of serialization
+     * @throws Exception
+     */
     @Test
     public void testSaveConfig_serializer() throws FileNotFoundException {
         Serializer<SnakePluginList> s = new Serializer<>(snakePluginList, version);
@@ -354,6 +366,10 @@ public class SnakePluginListTest {
         LOGGER.trace(s.toString());
     }
 
+    /**
+     * @test Test of serialization
+     * @throws Exception
+     */
     @Test
     public void testSaveConfig_serializer1() throws FileNotFoundException {
         Serializer<SnakePluginList> s = new Serializer<>(snakePluginList, version);
@@ -361,6 +377,7 @@ public class SnakePluginListTest {
     }
 
     /**
+     * @test Test of saving
      * @pre There is gap in plugin list
      * @post Empty slot is saved with empty name
      * @throws IOException
@@ -389,6 +406,10 @@ public class SnakePluginListTest {
         // f.close();
     }
 
+    /**
+     * @test Test of loading
+     * @throws Exception
+     */
     @Test
     public void testloadConfig()
             throws IOException, NoSuchMethodException, SecurityException, IllegalAccessException,
@@ -419,6 +440,10 @@ public class SnakePluginListTest {
                 local.getInstance(2).getPluginConfig());
     }
 
+    /**
+     * @test Test of serialization
+     * @throws Exception
+     */
     @Test
     public void testloadConfig_serializer() throws Exception {
         //!<
@@ -453,7 +478,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Try to load config where is more than one json structure
+     * @test Try to load config where is more than one json structure
      * @throws QuimpPluginException 
      */
     @Test
@@ -511,7 +536,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Only one plugin in middle
+     * @test Only one plugin in middle
      * @throws QuimpPluginException 
      */
     @Test
@@ -566,7 +591,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * Only one plugin in middle
+     * @test Only one plugin in middle
      * @throws QuimpPluginException 
      */
     @Test
@@ -601,6 +626,7 @@ public class SnakePluginListTest {
     }
 
     /**
+     * @test Test of loading not complete file
      * @pre Wrong name of plugin in config
      * @post This slot is null
      * 
@@ -658,6 +684,7 @@ public class SnakePluginListTest {
     }
 
     /**
+     * @test Test of loading not bad field in file
      * @pre Wrong name of plugin in config
      * @post This slot is null
      * 
@@ -690,6 +717,7 @@ public class SnakePluginListTest {
     }
 
     /**
+     * @test Test of loading plugin config with wrong version
      * @pre Incorrect version
      * @post Plugin loaded with message
      * 
@@ -743,6 +771,7 @@ public class SnakePluginListTest {
     }
 
     /**
+     * @test Test of loading plugin config with wrong version
      * @pre Incorrect version
      * @post Plugin loaded with message
      * 
@@ -775,6 +804,7 @@ public class SnakePluginListTest {
     }
 
     /**
+     * @test Test of loading incompatibile config
      * @pre Incompatibile config
      * @post Plugin loaded but config not restored
      * @warning This depends on plugin configuration. Wrong config is detected by exception thrown from
@@ -832,6 +862,7 @@ public class SnakePluginListTest {
     }
 
     /**
+     * @test Test of loading incompatibile config
      * @pre Incompatibile config
      * @post Plugin loaded but config not restored
      * @warning This depends on plugin configuration. Wrong config is detected by exception thrown from
@@ -866,6 +897,7 @@ public class SnakePluginListTest {
     }
 
     /**
+     * @test Test of loading incompatibile config for plugin numbers
      * @pre Less plugins
      * @post List is adjusted
      * @warning This situation must be detected on load and reported
@@ -911,6 +943,7 @@ public class SnakePluginListTest {
     }
 
     /**
+     * @test Test of loading incompatibile config - empty slot
      * @pre Empty slot
      * @post Correct order of plugins
      * @throws IOException

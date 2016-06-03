@@ -88,7 +88,7 @@ Start->InitParam->Init->BuildWnd->IJconfig->CreateSnake->Stop;
 }
 @enddot
 
-First, the method initializes internal and external default parameters hold at uk.ac.warwick.wsbc.QuimP.BOAp (see \ref setupBOABOAp) \b static class by calling \ref uk.ac.warwick.wsbc.QuimP.BOAp.SegParam.setDefaults() "setDefaults()" and \ref uk.ac.warwick.wsbc.QuimP.BOAp.setup(final ImagePlus) "setup(ImagePlus)" from BOAp class. By internal parameters I understand those that can not be changed by user during using the program. External parameters are those that are reflected in user menu.
+First, the method initializes internal and external default parameters hold at uk.ac.warwick.wsbc.QuimP.BOAp (see \ref setupBOABOAp) \b static class by calling \ref uk.ac.warwick.wsbc.QuimP.BOAState.SegParam.setDefaults() "setDefaults()" and \ref uk.ac.warwick.wsbc.QuimP.BOAp.setup(final ImagePlus) "setup(ImagePlus)" from BOAp class. By internal parameters I understand those that can not be changed by user during using the program. External parameters are those that are reflected in user menu.
 
 Secondly, it creates all important structures such as:
 
@@ -105,7 +105,7 @@ Finally \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(final ImagePlus) "setup(ImagePl
 
 #### BOA state machine {#setupBOABOAp}
 
-Most of configuration parameters are initialized ad stored in static class uk.ac.warwick.wsbc.QuimP.BOAp. They are initialized in \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(final ImagePlus) "setup(ImagePlus)" stage as mentioned in \ref setupBOA. Currently uk.ac.warwick.wsbc.QuimP.BOAp.setup(ImagePlus) method initializes BOAp fields with current image data and some constants related to active contour algorithm and boolean semaphores. Very similar method uk.ac.warwick.wsbc.QuimP.BOAp.setDefaults() initializes default values of active contour algorithm exposed to user (it is called from uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.setDefualts() as well).
+Most of configuration parameters are initialized ad stored in static class uk.ac.warwick.wsbc.QuimP.BOAp. They are initialized in \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(final ImagePlus) "setup(ImagePlus)" stage as mentioned in \ref setupBOA. Currently uk.ac.warwick.wsbc.QuimP.BOAState.BOAp.setup(final ImagePlus) method initializes BOAp fields with current image data and some constants related to active contour algorithm and boolean semaphores. Very similar method uk.ac.warwick.wsbc.QuimP.BOAState.SegParam.setDefaults() initializes default values of active contour algorithm exposed to user (it is called from uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.setDefualts() as well).
 
 This class stands also as wrapper for reading and writing configuration from/to disk. Low level disk operations are supported by container class uk.ac.warwick.wsbc.QuimP.QParams
 
@@ -316,7 +316,7 @@ User -> (Click on //patch// UI)
 1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent)
 2. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateSliceSelector()
 
-Additionally the \ref uk.ac.warwick.wsbc.QuimP.BOA_.BOAState "BOAState" holds information what snake is selected by user to zoom (`snakeToZoom`). Negative value stands for none (the whole frame is visible). `snakeToZoom` holds Snake ID. There is also `zoom` field in BOAp class that indicates current state of zoom (true/false)
+Additionally the \ref uk.ac.warwick.wsbc.QuimP.BOAState "BOAState" holds information what snake is selected by user to zoom (`snakeToZoom`). Negative value stands for none (the whole frame is visible). `snakeToZoom` holds Snake ID. There is also `zoom` field in BOAp class that indicates current state of zoom (true/false)
 
 The \ref uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(final ImageCanvas, int, int) "zoom" method accepts Snake **ID** and then gets this \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" from \ref uk.ac.warwick.wsbc.QuimP.Nest "Nest" and zoom it. The Snake **ID** is the same as **ID** of \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandler" that holds this Snake. The method uk.ac.warwick.wsbc.QuimP.Nest.getHandler(int) returns handler of given ID but there is no protection here against returning `null` (it is ArrayList) but it is guaranteed that \ref uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(final ImageCanvas, int, int) "zoom" gets only valid (existing) IDs of Snakes.
 
