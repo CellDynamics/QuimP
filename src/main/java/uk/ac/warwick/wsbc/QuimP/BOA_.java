@@ -993,7 +993,8 @@ public class BOA_ implements PlugIn {
          * @see BOAp
          */
         private void updateSpinnerValues() {
-            qState.boap.supressStateChangeBOArun = true;
+            qState.boap.supressStateChangeBOArun = true; // block rerun of runBoa() that is called
+                                                         // on Spinner event
             dsNodeRes.setValue(qState.segParam.getNodeRes());
             dsVel_crit.setValue(qState.segParam.vel_crit);
             dsF_image.setValue(qState.segParam.f_image);
@@ -1111,8 +1112,8 @@ public class BOA_ implements PlugIn {
          */
         @Override
         public void actionPerformed(final ActionEvent e) {
-            boolean run = false; // some actions require to re-run segmentation.
-                                 // They set run to true
+            LOGGER.debug("EVENT:actionPerformed");
+            boolean run = false; // some actions require to re-run segmentation. They set it to true
             Object b = e.getSource();
             if (b == bDel && !qState.boap.editMode && !qState.boap.doDeleteSeg) {
                 if (qState.boap.doDelete == false) {
@@ -1357,7 +1358,7 @@ public class BOA_ implements PlugIn {
          */
         @Override
         public void itemStateChanged(final ItemEvent e) {
-            // detect check boxes
+            LOGGER.debug("EVENT:itemStateChanged");
             if (qState.boap.doDelete) {
                 BOA_.log("**WARNING:DELETE IS ON**");
             }
@@ -1465,6 +1466,7 @@ public class BOA_ implements PlugIn {
          */
         @Override
         public void stateChanged(final ChangeEvent ce) {
+            LOGGER.debug("EVENT:stateChanged");
             if (qState.boap.doDelete) {
                 BOA_.log("**WARNING:DELETE IS ON**");
             }
@@ -1540,6 +1542,7 @@ public class BOA_ implements PlugIn {
         @Override
         public void updateSliceSelector() {
             super.updateSliceSelector();
+            LOGGER.debug("EVENT:updateSliceSelector");
             zSelector.setValue(imp.getCurrentSlice()); // this is delayed in
                                                        // super.updateSliceSelector force it now
 
@@ -1574,11 +1577,15 @@ public class BOA_ implements PlugIn {
             }
             LOGGER.trace(
                     "Snakes at this frame: " + qState.nest.getSnakesforFrame(qState.boap.frame));
-            qState.restore(qState.boap.frame);
-            updateCheckBoxes();
-            updateChoices();
-            updateSpinnerValues();
-            updateWindowState();
+            if (!qState.boap.SEGrunning) { // do not update or restore state when we hit this
+                                           // event from runBoa() method
+                                           // (through setIpSliceAll(int))
+                qState.restore(qState.boap.frame);
+                updateCheckBoxes();
+                updateChoices();
+                updateSpinnerValues();
+                updateWindowState();
+            }
         }
 
         /**
