@@ -649,10 +649,9 @@ public class BOAState implements IQuimpSerialize {
         LOGGER.debug("Data stored at frame:" + frame + " size of segParams is "
                 + segParamSnapshots.size());
         segParamSnapshots.set(frame - 1, new SegParam(segParam));
-        snakePluginListSnapshots.set(frame - 1, snakePluginList.getShallowCopy()); // download
-                                                                                   // Plugin
-                                                                                   // config
-                                                                                   // as well
+        snakePluginListSnapshots.set(frame - 1, snakePluginList.getDeepCopy()); // download
+                                                                                // Plugin config
+                                                                                // as well
     }
 
     public void restore(int frame) {
