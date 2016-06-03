@@ -1,7 +1,7 @@
 #!/bin/sh
 # This script generates Doxygen doc based on java source files
-# Outputs doxygen documentation using doxyfile avaiable at Doxygen_doc
-
+# Outputs doxygen documentation using doxyfile available at Doxygen_doc
+echo "Use latest Doxygen compiled from sources to have links evaluated correctly"
 dot -Tpng Doxygen_doc/maven-structure.dot -o /tmp/maven-structure.png
 # copy only if changed to prevent pushing repo
 rsync -c /tmp/maven-structure.png Doxygen_doc/maven-structure.png

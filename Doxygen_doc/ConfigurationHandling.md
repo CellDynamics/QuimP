@@ -139,7 +139,7 @@ Serializer -> Serializer : save()
 note left #orange : Write //QCONF// file
 @enduml
 
-Method \ref uk.ac.warwick.wsbc.QuimP.Nest.analyse(final ImagePlus) is more complicated. It uses original ImagePlus object to perform some statistical calculations based on selected Outlines. Moreover it shares parameters and Snakes through **file** (Outline and QParam classes). From `8d20cee` this method gets **copy** of original image because it set slice in stack (\ref uk.ac.warwick.wsbc.QuimP.CellStat.record()) and that causes calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.updateBOA(int) through any of events overwritten in \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow
+Method \ref uk.ac.warwick.wsbc.QuimP.Nest.analyse(ImagePlus) is more complicated. It uses original ImagePlus object to perform some statistical calculations based on selected Outlines. Moreover it shares parameters and Snakes through **file** (Outline and QParam classes). From `8d20cee` this method gets **copy** of original image because it set slice in stack (\ref uk.ac.warwick.wsbc.QuimP.CellStat.record()) and that causes calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.updateBOA(int) through any of events overwritten in \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow
 
 ## Description of use for SnakePluginList {#douconfig}
 

@@ -468,7 +468,7 @@ public abstract class QWindowBuilder {
      * 
      * @param key Key to be read from configuration list, case insensitive
      * @return integer representation of value under \c key
-     * @see buildWindow(final ParamList)
+     * @see buildWindow(ParamList)
      */
     public int getIntegerFromUI(final String key) {
         return (int) getDoubleFromUI(key);
@@ -477,7 +477,7 @@ public abstract class QWindowBuilder {
     /**
      * Return value related to given key.
      * 
-     * @copydoc getIntegerFromUI(final String)
+     * @copydoc getIntegerFromUI(String)
      */
     public double getDoubleFromUI(final String key) {
         // get list of all params from ui as <key,val> list
@@ -488,7 +488,7 @@ public abstract class QWindowBuilder {
     /**
      * Return value related to given key. Added for convenience
      * 
-     * @copydoc getIntegerFromUI(final String)
+     * @copydoc getIntegerFromUI(String)
      */
     public String getStringFromUI(final String key) {
         // get list of all params from ui as <key,val> list

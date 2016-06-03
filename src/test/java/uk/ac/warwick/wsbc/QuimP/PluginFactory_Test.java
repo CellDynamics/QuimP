@@ -104,7 +104,7 @@ public class PluginFactory_Test {
 
     /**
      * @test Test method for 
-     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(final String)}
+     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)}
      * This test creates instances of plugins and calls methods from them
      * storing and reading data from created object for plugin2
      * 
@@ -131,7 +131,7 @@ public class PluginFactory_Test {
 
     /**
      * @test Test method for 
-     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(final String)}
+     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)}
      * This test try to call plugin that does not exist
      * 
      * @pre Empty directory but existing

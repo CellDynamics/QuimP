@@ -39,7 +39,7 @@ There are several classes and structures referenced in \ref uk.ac.warwick.wsbc.Q
 
 ## Starting BOA plugin {#startBOA}
 
-This section describes basic activities that occur during starting the BOA plugin. The entry function of BOA is overrode from ij.plugin.PlugIn the \ref uk.ac.warwick.wsbc.QuimP.BOA_.run(final String) "run()" method.
+This section describes basic activities that occur during starting the BOA plugin. The entry function of BOA is overrode from ij.plugin.PlugIn the \ref uk.ac.warwick.wsbc.QuimP.BOA_.run(String) "run()" method.
 
 Some important structures are initialized in \a BOA_ class as its private or public members. Those are:
 
@@ -54,7 +54,7 @@ Some important structures are initialized in \a BOA_ class as its private or pub
    private Constrictor constrictor;
 @endcode   
 
-The \ref uk.ac.warwick.wsbc.QuimP.BOA_.run(final String) "run()" method checks general prerequirements for plugin such as IJ version, input image type. Then the static field \c BOA_.running is set to \c true to prevent from running more instances of plugin. Then the following methods are started to configure GUI and start segmentation.
+The \ref uk.ac.warwick.wsbc.QuimP.BOA_.run(String) "run()" method checks general prerequirements for plugin such as IJ version, input image type. Then the static field \c BOA_.running is set to \c true to prevent from running more instances of plugin. Then the following methods are started to configure GUI and start segmentation.
 
 @msc
 	hscale="0.5";
@@ -64,14 +64,14 @@ The \ref uk.ac.warwick.wsbc.QuimP.BOA_.run(final String) "run()" method checks g
     BOA_=>BOA_ [label="runBoa(int,int)"];
 @endmsc
 
-In general the \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(final ImagePlus) "setup(ImagePlus)" method build user interface and sets default parameters for segmentation (see \ref setupBOA, \ref guiBOA, \ref setupBOAGUI  ), \ref uk.ac.warwick.wsbc.QuimP.BOA_.about() "about()" just shows info in log window and \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA(int,int)" is responsible for segmentation. 
+In general the \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(ImagePlus) "setup(ImagePlus)" method build user interface and sets default parameters for segmentation (see \ref setupBOA, \ref guiBOA, \ref setupBOAGUI  ), \ref uk.ac.warwick.wsbc.QuimP.BOA_.about() "about()" just shows info in log window and \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA(int,int)" is responsible for segmentation. 
 `runBOA` is called on startup to run segmentation in case of filled ROI manager.  
 
 ## Setup BOA plugin {#setupBOA}
 
 ### General workflow {#setupBOAGeneral}
 
-The initial setup of BOA environment is mostly done in \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(final ImagePlus) "setup(ImagePlus)" method (see call graph). The following operations occur during this stage:
+The initial setup of BOA environment is mostly done in \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(ImagePlus) "setup(ImagePlus)" method (see call graph). The following operations occur during this stage:
 
 @dot
 digraph SetupRelations {
@@ -88,7 +88,7 @@ Start->InitParam->Init->BuildWnd->IJconfig->CreateSnake->Stop;
 }
 @enddot
 
-First, the method initializes internal and external default parameters hold at uk.ac.warwick.wsbc.QuimP.BOAp (see \ref setupBOABOAp) \b static class by calling \ref uk.ac.warwick.wsbc.QuimP.BOAState.SegParam.setDefaults() "setDefaults()" and \ref uk.ac.warwick.wsbc.QuimP.BOAp.setup(final ImagePlus) "setup(ImagePlus)" from BOAp class. By internal parameters I understand those that can not be changed by user during using the program. External parameters are those that are reflected in user menu.
+First, the method initializes internal and external default parameters hold at uk.ac.warwick.wsbc.QuimP.BOAp (see \ref setupBOABOAp) \b static class by calling \ref uk.ac.warwick.wsbc.QuimP.BOAState.SegParam.setDefaults() "setDefaults()" and \ref uk.ac.warwick.wsbc.QuimP.BOAp.setup(ImagePlus) "setup(ImagePlus)" from BOAp class. By internal parameters I understand those that can not be changed by user during using the program. External parameters are those that are reflected in user menu.
 
 Secondly, it creates all important structures such as:
 
@@ -101,11 +101,11 @@ Then the main window is constructed (referenced by uk.ac.warwick.wsbc.QuimP.BOA_
 
 Next the image is calibrated using real units by calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.setScales() "BOA_.setScales()", \ref uk.ac.warwick.wsbc.QuimP.BOA_.updateImageScale() "BOA_.updateImageScale()" and \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.setScalesText() "BOA_.CustomStackWindow.setScalesText()".
 
-Finally \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(final ImagePlus) "setup(ImagePlus)" method gets ROI from ROI manager and passes it to \ref uk.ac.warwick.wsbc.QuimP.Nest "Nest" class by \ref uk.ac.warwick.wsbc.QuimP.Nest.addHandler(final Roi, int) "Nest.addHandler(Roi, int)" method. This ROI should contain object for segmentation. This step is not obligatory and depends on content of ROI manager at BOA plugin start.
+Finally \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(ImagePlus) "setup(ImagePlus)" method gets ROI from ROI manager and passes it to \ref uk.ac.warwick.wsbc.QuimP.Nest "Nest" class by \ref uk.ac.warwick.wsbc.QuimP.Nest.addHandler(Roi, int) "Nest.addHandler(Roi, int)" method. This ROI should contain object for segmentation. This step is not obligatory and depends on content of ROI manager at BOA plugin start.
 
 #### BOA state machine {#setupBOABOAp}
 
-Most of configuration parameters are initialized ad stored in static class uk.ac.warwick.wsbc.QuimP.BOAp. They are initialized in \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(final ImagePlus) "setup(ImagePlus)" stage as mentioned in \ref setupBOA. Currently uk.ac.warwick.wsbc.QuimP.BOAState.BOAp.setup(final ImagePlus) method initializes BOAp fields with current image data and some constants related to active contour algorithm and boolean semaphores. Very similar method uk.ac.warwick.wsbc.QuimP.BOAState.SegParam.setDefaults() initializes default values of active contour algorithm exposed to user (it is called from uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.setDefualts() as well).
+Most of configuration parameters are initialized ad stored in static class uk.ac.warwick.wsbc.QuimP.BOAp. They are initialized in \ref uk.ac.warwick.wsbc.QuimP.BOA_.setup(ImagePlus) "setup(ImagePlus)" stage as mentioned in \ref setupBOA. Currently uk.ac.warwick.wsbc.QuimP.BOAState.BOAp.setup(ImagePlus) method initializes BOAp fields with current image data and some constants related to active contour algorithm and boolean semaphores. Very similar method uk.ac.warwick.wsbc.QuimP.BOAState.SegParam.setDefaults() initializes default values of active contour algorithm exposed to user (it is called from uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.setDefualts() as well).
 
 This class stands also as wrapper for reading and writing configuration from/to disk. Low level disk operations are supported by container class uk.ac.warwick.wsbc.QuimP.QParams
 
@@ -145,7 +145,7 @@ When user click \b Edit \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.act
 
 The BOA segmentation can be run in following ways:
 
-The main method that runs segmentation is uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) called by uk.ac.warwick.wsbc.QuimP.BOA_.run(final String) on plugin start if there is snake in Nest or by clicking GUI elements (\ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(final ActionEvent) "actionPerformed", \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent) "itemStateChanged", \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.stateChanged(final ChangeEvent) "stateChanged").
+The main method that runs segmentation is uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) called by uk.ac.warwick.wsbc.QuimP.BOA_.run(String) on plugin start if there is snake in Nest or by clicking GUI elements (\ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(ActionEvent) "actionPerformed", \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(ItemEvent) "itemStateChanged", \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.stateChanged(ChangeEvent) "stateChanged").
 
 ### BOA structures {#runBOAStructures}
 
@@ -214,7 +214,7 @@ digraph CreateSnake {
 }
 @enddot
 
-The \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" object store only head of snake as \ref uk.ac.warwick.wsbc.QuimP.Node "Node" object that is two directional linked list. This list is initialized in appropriate methods of `Snake` that convert passed *ROI* to form of `Node` list (see e.g. \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygon(final FloatPolygon) "intializePolygon"). Snake is created in \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" class constructor and there are three possibilities here:
+The \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" object store only head of snake as \ref uk.ac.warwick.wsbc.QuimP.Node "Node" object that is two directional linked list. This list is initialized in appropriate methods of `Snake` that convert passed *ROI* to form of `Node` list (see e.g. \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygon(FloatPolygon) "intializePolygon"). Snake is created in \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" class constructor and there are three possibilities here:
 
 @dot
 digraph CreateSnake1 {
@@ -236,9 +236,9 @@ digraph CreateSnake1 {
 }
 @enddot
 
-The \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygon(final FloatPolygon) "intializePolygon" creates first estimation of snake using ROI shape and doing node refinement to get number of nodes for every edge as defined in uk.ac.warwick.wsbc.QuimP.BOAp.nodeRes. \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygonDirect(final FloatPolygon) "intializePolygonDirect" does not refine points and uses those from polygon. If input ROI is other type than `RECTANGLE` or `POLYGON` as the firs estimation of segmented shape the ellipse is used calculated by \ref uk.ac.warwick.wsbc.QuimP.Snake.intializeOval(int, int, int, int, int, double) "intializeOval" according to initial parameters based on ROI bounding box.  
+The \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygon(FloatPolygon) "intializePolygon" creates first estimation of snake using ROI shape and doing node refinement to get number of nodes for every edge as defined in uk.ac.warwick.wsbc.QuimP.BOAp.nodeRes. \ref uk.ac.warwick.wsbc.QuimP.Snake.intializePolygonDirect(FloatPolygon) "intializePolygonDirect" does not refine points and uses those from polygon. If input ROI is other type than `RECTANGLE` or `POLYGON` as the firs estimation of segmented shape the ellipse is used calculated by \ref uk.ac.warwick.wsbc.QuimP.Snake.intializeOval(int, int, int, int, int, double) "intializeOval" according to initial parameters based on ROI bounding box.  
 
-The \ref uk.ac.warwick.wsbc.QuimP.Shape.addPoint(final T) "addPoint(Node)" method constructs Snake as it is called for every node calculated in above methods. It is important that \ref uk.ac.warwick.wsbc.QuimP.Shape.addPoint(final T) "addPoint(Node)" is used only for Snake initialization and together with correct initial conditions:
+The \ref uk.ac.warwick.wsbc.QuimP.Shape.addPoint(T) "addPoint(Node)" method constructs Snake as it is called for every node calculated in above methods. It is important that \ref uk.ac.warwick.wsbc.QuimP.Shape.addPoint(T) "addPoint(Node)" is used only for Snake initialization and together with correct initial conditions:
 
 @code{.java}
 head = new Node(0); //make a dummy head node for list initialization
@@ -258,11 +258,11 @@ it guarantees the created list is looped. Last Node points to first by \ref uk.a
 
 The segmentation is started after initialization described at \ref createsnakes, \ref runBOAStructures and \ref setupBOAGeneral. Process of segmentation of whole stack is started by clicking:
 
-- \ref uk.ac.warwick.wsbc.QuimP.BOA_.addCell(final Roi, int) "addCell" - refers to \ref uk.ac.warwick.wsbc.QuimP.BOA_.tightenSnake(final Snake) "tightenSnake" that performs `Snake` modification and fits it to cell shape. `addCell` performs basic segmentation.`tightenSnake` is segmentation procedure that modifies `liveSnake` obtained from `SnakeHandler`. After modification this Snake is stored back to SnakeHandler to `snakes[f]` array deleting snake at index `f`. The method \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler.storeLiveSnake(int) "storeLiveSnake(int)" copies whole linked list given by `head` to mentioned table closing the Snake.  
+- \ref uk.ac.warwick.wsbc.QuimP.BOA_.addCell(Roi, int) "addCell" - refers to \ref uk.ac.warwick.wsbc.QuimP.BOA_.tightenSnake(Snake) "tightenSnake" that performs `Snake` modification and fits it to cell shape. `addCell` performs basic segmentation.`tightenSnake` is segmentation procedure that modifies `liveSnake` obtained from `SnakeHandler`. After modification this Snake is stored back to SnakeHandler to `snakes[f]` array deleting snake at index `f`. The method \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler.storeLiveSnake(int) "storeLiveSnake(int)" copies whole linked list given by `head` to mentioned table closing the Snake.  
 - **Segmentation** calls \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA" method.
 - Modifying other parameters of GUI that result in calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBOA" method
 
-Those methods are called from \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(final ActionEvent) "actionPerformed" method.
+Those methods are called from \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(ActionEvent) "actionPerformed" method.
 
 
 ### Segmentation
@@ -296,16 +296,16 @@ digraph segment {
 
 Class uk.ac.warwick.wsbc.QuimP.BOA_.CustomCanvas is responsible for handling mouse events whereas class uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow holds definition of user controls. Mouse events serviced by \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomCanvas "CustomCanvas" class are related to main paint window where cells are drawn. Three main methods that respond to action on GUI are:
 
-- uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(final ActionEvent) - related to buttons and general GUI logic
-- uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent) - related to changes of checkboxes
-- uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.stateChanged(final ChangeEvent) - related to spinners
+- uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.actionPerformed(ActionEvent) - related to buttons and general GUI logic
+- uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(ItemEvent) - related to changes of checkboxes
+- uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.stateChanged(ChangeEvent) - related to spinners
 
 All these method can run segmentation of current frame or whole stack by calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.runBoa(int, int) "runBoa(int, int)".
 
 ### Zooming cells {#zoomingcells}
 
-There are two methods responsible for zooming the view: uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(final ImageCanvas, int, int) and
-uk.ac.warwick.wsbc.QuimP.ImageGroup.unzoom(final ImageCanvas). Both exist in uk.ac.warwick.wsbc.QuimP.ImageGroup and
+There are two methods responsible for zooming the view: uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(ImageCanvas, int, int) and
+uk.ac.warwick.wsbc.QuimP.ImageGroup.unzoom(ImageCanvas). Both exist in uk.ac.warwick.wsbc.QuimP.ImageGroup and
 use Nest reference to work. `Zoom` method is called in three cases:
 @startuml
 User -> (Update current frame)
@@ -313,14 +313,14 @@ User -> (Click on //zoom// UI)
 User -> (Click on //patch// UI)
 @enduml
 
-1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent)
+1. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(ItemEvent)
 2. uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateSliceSelector()
 
 Additionally the \ref uk.ac.warwick.wsbc.QuimP.BOAState "BOAState" holds information what snake is selected by user to zoom (`snakeToZoom`). Negative value stands for none (the whole frame is visible). `snakeToZoom` holds Snake ID. There is also `zoom` field in BOAp class that indicates current state of zoom (true/false)
 
-The \ref uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(final ImageCanvas, int, int) "zoom" method accepts Snake **ID** and then gets this \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" from \ref uk.ac.warwick.wsbc.QuimP.Nest "Nest" and zoom it. The Snake **ID** is the same as **ID** of \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandler" that holds this Snake. The method uk.ac.warwick.wsbc.QuimP.Nest.getHandler(int) returns handler of given ID but there is no protection here against returning `null` (it is ArrayList) but it is guaranteed that \ref uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(final ImageCanvas, int, int) "zoom" gets only valid (existing) IDs of Snakes.
+The \ref uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(ImageCanvas, int, int) "zoom" method accepts Snake **ID** and then gets this \ref uk.ac.warwick.wsbc.QuimP.Snake "Snake" from \ref uk.ac.warwick.wsbc.QuimP.Nest "Nest" and zoom it. The Snake **ID** is the same as **ID** of \ref uk.ac.warwick.wsbc.QuimP.SnakeHandler "SnakeHandler" that holds this Snake. The method uk.ac.warwick.wsbc.QuimP.Nest.getHandler(int) returns handler of given ID but there is no protection here against returning `null` (it is ArrayList) but it is guaranteed that \ref uk.ac.warwick.wsbc.QuimP.ImageGroup.zoom(ImageCanvas, int, int) "zoom" gets only valid (existing) IDs of Snakes.
 
-IDs of Snakes are passed from \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.sZoom "sZoom" Choice that contains only visible snakes for current frame. This is happening in uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(final ItemEvent).
+IDs of Snakes are passed from \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.sZoom "sZoom" Choice that contains only visible snakes for current frame. This is happening in uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.itemStateChanged(ItemEvent).
 
 The Choice UI \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.sZoom "sZoom" is build in uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.buildControlPanel()  and important is additional Listener created there: 
 ```java

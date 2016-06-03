@@ -117,7 +117,7 @@ public class BasicPolygons {
 
     /**
      * Test if \b all points \c Ptest are inside polygon
-     * @copydetails isPointInside(final List<? extends Tuple2d>, final Tuple2d)
+     * @copydetails isPointInside(List<? extends Tuple2d>, Tuple2d)
      */
     public boolean arePointsInside(final List<? extends Tuple2d> P,
             final List<? extends Tuple2d> Ptest) {
@@ -132,7 +132,7 @@ public class BasicPolygons {
     /**
      * Test if \b any point from \c Ptest is inside of \c P
      * 
-     * @copydetails isPointInside(final List<? extends Tuple2d>, final Tuple2d)
+     * @copydetails isPointInside(List<? extends Tuple2d>, Tuple2d)
      */
     public boolean isanyPointInside(final List<? extends Tuple2d> P,
             final List<? extends Tuple2d> Ptest) {

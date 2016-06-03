@@ -248,7 +248,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList.SnakePluginList(int, final PluginFactory, final ViewUpdater)}
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList.SnakePluginList(int, PluginFactory, ViewUpdater)}
      */
     @Test
     public void testSnakePluginListIntPluginFactory() throws Exception {
@@ -276,7 +276,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setInstance(int, final String, boolean)}.
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setInstance(int, String, boolean)}.
      */
     @Test
     public void testSetInstance() throws Exception {
