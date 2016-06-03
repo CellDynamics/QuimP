@@ -287,6 +287,22 @@ class SnakePluginList implements IQuimpSerialize {
         }
 
         /**
+         * Copy method
+         * 
+         * Returns copy of current object
+         * 
+         * @return Copy of current object
+         * @warning It does copy loaded plugin (ref)
+         * @remarks Should be called after SnakePluginList.Plugin.downloadPluginConfig() to make
+         * sure that \c config, \c ver are filled correctly
+         */
+        private Plugin getDeepCopy() {
+            Plugin ret = getShallowCopy();
+            ret.ref = this.ref;
+            return ret;
+        }
+
+        /**
          * Check if all execution conditions are met
          * 
          * These conditions are:
@@ -383,6 +399,26 @@ class SnakePluginList implements IQuimpSerialize {
         // make deep copy of the list
         for (Plugin p : this.sPluginList)
             ret.sPluginList.add(p.getShallowCopy());
+        return ret;
+    }
+
+    /**
+     * Copy method
+     * 
+     * Returns copy of current object
+     * 
+     * @return Copy of current object
+     * @warning It does copy loaded plugin (ref)
+     * @remarks Should be called after SnakePluginList.Plugin.downloadPluginConfig() to make
+     * sure that \c config, \c ver are filled correctly
+     */
+    public SnakePluginList getDeepCopy() {
+        beforeSerialize(); // get plugin config from Plugins (jars->Plugin) to fill Plugin subclass
+        SnakePluginList ret = new SnakePluginList();
+        ret.updateRefs(pluginFactory, viewUpdater); // assign current external data
+        // make deep copy of the list
+        for (Plugin p : this.sPluginList)
+            ret.sPluginList.add(p.getDeepCopy());
         return ret;
     }
 
