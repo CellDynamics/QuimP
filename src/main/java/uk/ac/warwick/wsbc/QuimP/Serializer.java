@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,7 +52,7 @@ import com.google.gson.GsonBuilder;
  * }
  * @endcode
  * 
- * There is opstion to no call afterSerialzie() method on class restoring. To do so set 
+ * There is option to no call afterSerialzie() method on class restoring. To do so set 
  * \a doAfterSerialize to \a false - derive new class and override this field.
  * 
  *  
@@ -71,6 +73,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
 
     public String className; //!< Name of wrapped class, decoded from object
     public String[] version; //!< Version and other information passed to serializer
+    public String createdOn; //!< Date when file has been created
     public T obj; //!< Wrapped object being serialized
 
     /**
@@ -181,6 +184,10 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      */
     public String toString() {
         Gson gson = gsonBuilder.create();
+        // fill date of creation
+        Date dNow = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("E yyyy.MM.dd 'at' HH:mm:ss a zzz");
+        createdOn = df.format(dNow);
         if (obj != null)
             obj.beforeSerialize();
         return gson.toJson(this);
