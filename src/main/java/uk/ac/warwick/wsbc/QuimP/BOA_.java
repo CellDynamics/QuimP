@@ -301,20 +301,6 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Called on every change of GUI that requires action 
-     * @warning If screen must be updated but this is not related to updating data (like finishing
-     * editing or using zselector) imageGroup.updateOverlay(frame) should be called directly
-     * @see uk.ac.warwick.wsbc.QuimP.BOA_.stopEdit()
-     * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateSliceSelector()
-     */
-    @Deprecated
-    private void updateBOA(int frame) {
-        imageGroup.updateNest(qState.nest); // connect new nest to display
-        imageGroup.updateOverlay(frame); // redraw display
-        qState.store(frame); // remember state machine for current frame
-    }
-
-    /**
      * Display about information in BOA window. 
      * 
      * Called from menu bar. Reads also information from all found plugins.
