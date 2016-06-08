@@ -9,6 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -19,6 +21,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Save wrapped class together with itself to JSON file. 
@@ -63,7 +67,8 @@ import com.google.gson.GsonBuilder;
  * @see uk.ac.warwick.wsbc.QuimP.Serializer.registerInstanceCreator(Class<T>, Object)
  * @remarks Restored object is constructed using its constructor. so if there is no variable value
  * in json it will have the value from constructor. GSon overrides variables after they have been 
- * created in normal process of object building.
+ * created in normal process of object building. 
+ * Check uk.ac.warwick.wsbc.QuimP.Serializer.fromReader(Reader) for details
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
     private static final Logger LOGGER = LogManager.getLogger(Serializer.class.getName());
@@ -131,7 +136,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     /**
      * @copydoc load(File)
      */
-    public Serializer<T> load(final String filename) throws IOException, Exception {
+    public Serializer<T> load(final String filename)
+            throws IOException, JsonSyntaxException, JsonIOException, Exception {
         File file = new File(filename);
         return load(file);
     }
@@ -141,37 +147,71 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * 
      * Calls uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.afterSerialize() after load
      * 
-     * @param filename File object
-     * @throws IOException if problem with loading
-     * @throws Exception if wrong JSON or from afterSerialize() method (specific to wrapped object) 
-     * @return New instance of loaded object packed in Serializer class
+     * @copydetails fromReader(Reader)
      */
-    public Serializer<T> load(final File filename) throws IOException, Exception {
-        Gson gson = gsonBuilder.create();
+    public Serializer<T> load(final File filename)
+            throws IOException, JsonSyntaxException, JsonIOException, Exception {
         LOGGER.debug("Loading from: " + filename.getPath());
         FileReader f = new FileReader(filename);
+        return fromReader(f);
+    }
+
+    /**
+     * Restore wrapped object from JSON string
+     * 
+     * @copydetails fromReader(Reader)
+     */
+    public Serializer<T> fromString(final String json)
+            throws JsonSyntaxException, JsonIOException, Exception {
+        LOGGER.debug("Reading from string");
+        return fromReader(new StringReader(json));
+    }
+
+    /**
+     * Restore wrapped object from JSON string
+     * 
+     * @param reader JSON reader
+     * @return New instance of loaded object packed in Serializer class
+     * @throws IOException when file can not be read
+     * @throws JsonSyntaxException on bad file or when class has not been restored correctly
+     * @throws JsonIOException This exception is raised when Gson was unable to read an input stream
+     * or write to on
+     * @throws Exception from afterSerialize() method (specific to wrapped object) 
+     * @return New instance of loaded object packed in Serializer class. returned instance has 
+     * proper (no nulls or empty strings) fields: \a className, \a createdOn, \a version (and its
+     * subfields, \a obj 
+     */
+    public Serializer<T> fromReader(final Reader reader)
+            throws JsonSyntaxException, JsonIOException, Exception {
+        Gson gson = gsonBuilder.create();
         Serializer<T> localref;
-        localref = gson.fromJson(f, this);
-        f.close();
+        localref = gson.fromJson(reader, this);
+        verify(localref); // verification of correctness
         if (doAfterSerialize)
             localref.obj.afterSerialize();
         return localref;
     }
 
     /**
-     * Restore wrapped object from JSON string
+     * Perform basic verification of loaded file.
+     * Test existence of several fields in created class related to Serializer container
      * 
-     * @param json JSON string
-     * @return New instance of loaded object packed in Serializer class
-     * @throws Exception if wrong JSON or from afterSerialize() method (specific to wrapped object)
+     * @param localref object to verify
+     * @throws JsonSyntaxException on bad file or when class has not been restored correctly
      */
-    public Serializer<T> fromString(final String json) throws Exception {
-        Gson gson = gsonBuilder.create();
-        Serializer<T> localref;
-        localref = gson.fromJson(json, this);
-        if (doAfterSerialize)
-            localref.obj.afterSerialize();
-        return localref;
+    private void verify(Serializer<T> localref) throws JsonSyntaxException {
+        // basic verification of loaded file, check whether some fields have reasonable values
+        try {
+            if (localref.className.isEmpty() || localref.createdOn.isEmpty()
+                    || localref.version.length != 3 || localref.obj == null)
+                throw new JsonSyntaxException("Can not map loaded gson to class");
+        } catch (NullPointerException np) {
+            throw new JsonSyntaxException("Can not map loaded gson to class", np);
+        }
+        for (String obj : localref.version) {
+            if (obj == null || obj.isEmpty())
+                throw new JsonSyntaxException("Can not map loaded gson to class");
+        }
     }
 
     /**

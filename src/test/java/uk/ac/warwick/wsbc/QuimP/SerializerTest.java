@@ -16,6 +16,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * Test of Serializer class 
  * 
@@ -79,13 +81,53 @@ public class SerializerTest {
     }
 
     /**
-     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * @test Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * @pre missing important field
+     * @post exception thrown
      * @throws Exception
      */
-    @Test
+    @Test(expected = JsonSyntaxException.class)
     public void testFromString() throws Exception {
         String json =
                 "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
+        Serializer<TestClass> out;
+        TestClass obj;
+        Serializer<TestClass> s = new Serializer<>(TestClass.class);
+        out = s.fromString(json);
+        obj = out.obj;
+        assertEquals(testClass.al, obj.al);
+        assertEquals(testClass.a, obj.a);
+        assertArrayEquals(out.version, version);
+    }
+
+    /**
+     * @test Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * @throws Exception
+     */
+    @Test
+    public void testFromString_1() throws Exception {
+        String json =
+                "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
+        Serializer<TestClass> out;
+        TestClass obj;
+        Serializer<TestClass> s = new Serializer<>(TestClass.class);
+        out = s.fromString(json);
+        obj = out.obj;
+        assertEquals(testClass.al, obj.al);
+        assertEquals(testClass.a, obj.a);
+        assertArrayEquals(out.version, version);
+    }
+
+    /**
+     * @test Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * @pre empty fields in version
+     * @post exception
+     * @throws Exception
+     */
+    @Test(expected = JsonSyntaxException.class)
+    public void testFromString_2() throws Exception {
+        String json =
+                "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
         Serializer<TestClass> s = new Serializer<>(TestClass.class);
@@ -125,7 +167,7 @@ public class SerializerTest {
     @Test
     public void testFromString1() throws Exception {
         String json =
-                "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"a\":15,\"b\":15,\"al\":[4,56]}}";
+                "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"a\":15,\"b\":15,\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
         Serializer<TestClass> s = new Serializer<>(TestClass.class);
@@ -145,7 +187,7 @@ public class SerializerTest {
     @Test
     public void testFromString2() throws Exception {
         String json =
-                "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"al\":[4,56]}}";
+                "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
         Serializer<TestClass> s = new Serializer<>(TestClass.class);
