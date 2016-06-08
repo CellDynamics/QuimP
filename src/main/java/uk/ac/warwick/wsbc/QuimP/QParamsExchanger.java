@@ -55,22 +55,19 @@ public class QParamsExchanger extends QParams {
         SerializerNoPluginSupport<DataContainer> s =
                 new SerializerNoPluginSupport<>(DataContainer.class);
         try {
+            // load file and make first check of correctness
             loaded = s.load(paramFile); // try to load (skip afterSerialzie)
         } catch (Exception e) { // stop on fail (file or json error)
             LOGGER.error(e.getMessage());
-            throw new QuimpException(e);
+            throw new QuimpException("Loading of " + paramFile.getAbsolutePath(), e);
         }
-        // check if there is no null on main parts
-        if (loaded.obj.BOAState == null || loaded.version[2] == null || loaded.className == null
-                || !loaded.className.equals("DataContainer")) {
+        // second check of basic logic
+        if (loaded.obj.BOAState == null || !loaded.className.equals("DataContainer")
+                || !loaded.version[2].equals("QuimP")
+                        && !loaded.version[2].equals("name not found in jar")) {
             LOGGER.error("Not QuimP file?");
-            throw new QuimpException("Not QuimP file?");
-        }
-        // check if this is quimp config - compare string in version header (see #151)
-        if (!loaded.version[2].equals("QuimP")
-                && !loaded.version[2].equals("name not found in jar")) {
-            LOGGER.error("Not QuimP file?");
-            throw new QuimpException("Not QuimP file?");
+            throw new QuimpException(
+                    "Loaded file " + paramFile.getAbsolutePath() + " is not QuimP file");
         }
         // TODO Check config version here - more precisely (see #151)
         String[] ver = new Tool().getQuimPBuildInfo();
