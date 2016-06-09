@@ -4,6 +4,7 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -204,6 +205,10 @@ public class SnakeTest {
         Outline o = new Outline(snake1);
         LOGGER.debug(snake1.toString());
         LOGGER.debug(o.toString());
+        assertThat(o.head, instanceOf(Vert.class));
+        assertThat(o.POINTS, is(snake1.POINTS));
+        assertThat(o.getCentroid(), is(snake1.getCentroid()));
+        assertThat(o.nextTrackNumber, is(snake1.nextTrackNumber));
     }
 
 }

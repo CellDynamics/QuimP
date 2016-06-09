@@ -75,11 +75,12 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     /**
      * Conversion constructor
      * 
-     * @param src Sanke to be converted to Outline
+     * @param src Snake to be converted to Outline
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Outline(final Snake src) {
-        super((Shape) src);
+        super((Shape) src, new Vert());
+        this.updateCurvature();
     }
 
     /**

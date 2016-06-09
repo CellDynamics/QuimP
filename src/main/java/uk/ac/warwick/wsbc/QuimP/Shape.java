@@ -34,9 +34,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     private ArrayList<T> Elements = null; //!< Elements of Shape as List - initialized on Serialize
     
 	/**
-     * Default constructor, create empty Shape
+     * Default constructor, creates empty Shape
      */
-
     public Shape() {
         POINTS = 0;
         head = null;
@@ -82,6 +81,56 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
         try { // Constructor of T as type can not be called directly, use reflection
               // get Constructor of T with one parameter of Type T (copy constructor)
             Constructor<?> ctor = tmpHead.getClass().getDeclaredConstructor(tClass);
+            // create copy of head
+            head = (T) ctor.newInstance(src.getHead());
+            T srcn = src.getHead();
+            T n = head;
+            // iterate over whole list making copies of T elements
+            for (srcn = srcn.getNext(); !srcn.isHead(); srcn = srcn.getNext()) {
+                T next = (T) ctor.newInstance(srcn);
+                n.setNext(next);
+                next.setPrev(n);
+                n = next;
+            }
+            // loop list
+            n.setNext(head);
+            head.setPrev(n);
+        } catch (SecurityException | NoSuchMethodException | InstantiationException
+                | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            throw new RuntimeException(e); // change to unchecked exception
+        }
+        // copy rest of params
+        POINTS = src.POINTS;
+        nextTrackNumber = src.nextTrackNumber;
+        calcCentroid();
+    }
+
+    /**
+     * Conversion constructor
+     * 
+     * Converts between different types of PointsList. \a src is source Shape of type T to convert 
+     * to other Shape based on \a PointsList other type (but in general extended from PointsList)
+     * Typical approach is to convert Snake to Outline (PointsList<Node> to PointsList<Vert>)
+     * 
+     * @param src
+     * @param destType object of base node that PointsList is composed from
+     * @throws RuntimeException when T does no have copy constructor
+     * @remarks Exemplary conversion from Snake to Outline can look as follows:
+     * @code{java}
+     *  public Outline(final Snake src) {
+     *      super((Shape) src, new Vert());
+     *  }
+     * @endcode
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.Shape(Shape<T>)
+     */
+    @SuppressWarnings("unchecked")
+    public Shape(final Shape<T> src, T destType) {
+        T tmpHead = src.getHead(); // get head as representative object
+        Class<?> tClass = tmpHead.getClass(); // get class under Shape (T)
+        LOGGER.debug("Src class: " + tClass.getName());
+        try { // Constructor of T as type can not be called directly, use reflection
+              // get Constructor of T with one parameter of Type src (conversion constructor)
+            Constructor<?> ctor = destType.getClass().getDeclaredConstructor(tClass);
             // create copy of head
             head = (T) ctor.newInstance(src.getHead());
             T srcn = src.getHead();

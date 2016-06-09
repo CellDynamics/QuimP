@@ -172,7 +172,7 @@ public class ECMM_Mapping {
             SnakeHandler sH = nest.getHandler(i);
             if (sH == null)
                 continue;
-            OutlineHandler oH = new OutlineHandler(sH); // convert to outline, oH is global var
+            oH = new OutlineHandler(sH); // convert to outline, oH is global var
             ECMp.setup(qp);
             ECMp.setParams(oH.maxLength); // base params on outline in middle of
             // sequence
