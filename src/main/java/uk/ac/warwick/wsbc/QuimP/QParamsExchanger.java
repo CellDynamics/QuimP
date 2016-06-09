@@ -63,8 +63,7 @@ public class QParamsExchanger extends QParams {
         }
         // second check of basic logic
         if (loaded.obj.BOAState == null || !loaded.className.equals("DataContainer")
-                || !loaded.version[2].equals("QuimP")
-                        && !loaded.version[2].equals("name not found in jar")) {
+                || !loaded.version[2].equals("QuimP") && !loaded.version[2].equals(Tool.defNote)) {
             LOGGER.error("Not QuimP file?");
             throw new QuimpException(
                     "Loaded file " + paramFile.getAbsolutePath() + " is not QuimP file");

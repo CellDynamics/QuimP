@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 public class Tool {
 
     private static final Logger LOGGER = LogManager.getLogger(Tool.class.getName());
+    public static final String defNote = "Not found"; //!< Default message if content not found in jar
 
     /**
      * Prepare info plate for QuimP. It contains version, names, etc
@@ -62,9 +63,9 @@ public class Tool {
         infoPlate = infoPlate.concat("\n");
         infoPlate = infoPlate.concat("QuimP version: " + quimpBuildInfo[0]);
         infoPlate = infoPlate.concat("\n");
-        infoPlate = infoPlate.concat(quimpBuildInfo[1]);
+        infoPlate = infoPlate.concat("Build by: " + quimpBuildInfo[1]);
         infoPlate = infoPlate.concat("\n");
-        infoPlate = infoPlate.concat(quimpBuildInfo[2]);
+        infoPlate = infoPlate.concat("Internal name: " + quimpBuildInfo[2]);
         infoPlate = infoPlate.concat("\n");
         return infoPlate;
     }
@@ -76,14 +77,12 @@ public class Tool {
      * -# [0] - contains only version string read from \a MANIFEST.MF
      * -# [1] - contains formatted string with build time and name of builder read from \a MANIFEST.MF
      * -# [2] - contains software name read from \a MANIFEST.MF
+     * If those information are not available in jar, the \a defNote string is returned
      * @warning This method is jar-name dependent - looks for manifest with \a Implementation-Title
      * that contains \c QuimP string.
      */
     public String[] getQuimPBuildInfo() {
         String[] ret = new String[3];
-        ret[0] = "version not found in jar";
-        ret[1] = "build info not found in jar";
-        ret[2] = "name not found in jar";
         try {
             Enumeration<URL> resources =
                     getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
@@ -96,7 +95,7 @@ public class Tool {
                         continue;
                     // name dependent part
                     if (attributes.getValue("Implementation-Title").contains("QuimP")) {
-                        ret[1] = "Build by: " + attributes.getValue("Built-By") + " on: "
+                        ret[1] = attributes.getValue("Built-By") + " on: "
                                 + attributes.getValue("Implementation-Build");
                         ret[0] = attributes.getValue("Implementation-Version");
                         ret[2] = attributes.getValue("Implementation-Title");
@@ -109,6 +108,10 @@ public class Tool {
         } catch (IOException e) {
             ; // do not care about problems - just use defaults defined on beginning
         }
+        // replace possible nulls with default text
+        ret[0] = ret[0] == null ? defNote : ret[0];
+        ret[1] = ret[1] == null ? defNote : ret[1];
+        ret[2] = ret[2] == null ? defNote : ret[2];
         return ret;
     }
 
