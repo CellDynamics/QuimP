@@ -1312,7 +1312,7 @@ public class BOA_ implements PlugIn {
                             if (!yncd.yesPressed())
                                 return;
                         }
-                        qState.snakePluginList.clear(); // closes windows, etc
+                        qState.reset(); // closes windows, etc
                         // int current_frame = qState.boap.frame; // remember before override!!
                         qState = loaded.obj.BOAState;
                         qState.restore(qState.boap.frame);
