@@ -678,6 +678,23 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Reset BOAState class
+     * 
+     * This method does:
+     * -# Closes all windows from plugins
+     */
+    public void reset() {
+        if (snakePluginList != null)
+            snakePluginList.clear();
+        if (snakePluginListSnapshots != null)
+            for (SnakePluginList sp : snakePluginListSnapshots)
+                if (sp != null)
+                    sp.clear();
+        boap = new BOAp(); // rebuild BOAp
+        segParam = new SegParam(); // and SegParam
+    }
+
+    /**
      * Should be called before serialization. Creates ArrayLists from Shape<T extends PointsList<T>>
      */
     @Override
