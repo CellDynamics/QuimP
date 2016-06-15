@@ -171,7 +171,6 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * Restore wrapped object from JSON string
      * 
      * @param reader JSON reader
-     * @return New instance of loaded object packed in Serializer class
      * @throws IOException when file can not be read
      * @throws JsonSyntaxException on bad file or when class has not been restored correctly
      * @throws JsonIOException This exception is raised when Gson was unable to read an input stream

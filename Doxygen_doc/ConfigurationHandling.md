@@ -72,8 +72,7 @@ The full state of BOA contains:
 3. Current snakes
 
 All these data are stored in BOAState object for every frame separately (every class has its own
-copy constructor) as copies. The snapshot is performed by uk.ac.warwick.wsbc.QuimP.BOA_.updateBOA(int) method
-that refreshes screen as well. 
+copy constructor) as copies.
 
 ## BOA {#fileboa}
 BOA produces several files:
@@ -139,7 +138,7 @@ Serializer -> Serializer : save()
 note left #orange : Write //QCONF// file
 @enduml
 
-Method \ref uk.ac.warwick.wsbc.QuimP.Nest.analyse(ImagePlus) is more complicated. It uses original ImagePlus object to perform some statistical calculations based on selected Outlines. Moreover it shares parameters and Snakes through **file** (Outline and QParam classes). From `8d20cee` this method gets **copy** of original image because it set slice in stack (\ref uk.ac.warwick.wsbc.QuimP.CellStat.record()) and that causes calling \ref uk.ac.warwick.wsbc.QuimP.BOA_.updateBOA(int) through any of events overwritten in \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow
+Method \ref uk.ac.warwick.wsbc.QuimP.Nest.analyse(ImagePlus) is more complicated. It uses original ImagePlus object to perform some statistical calculations based on selected Outlines. Moreover it shares parameters and Snakes through **file** (Outline and QParam classes). From `8d20cee` this method gets **copy** of original image because it set slice in stack (\ref uk.ac.warwick.wsbc.QuimP.CellStat.record()).
 
 ## Description of use for SnakePluginList {#douconfig}
 
