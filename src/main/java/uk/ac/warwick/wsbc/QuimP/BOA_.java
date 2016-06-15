@@ -1267,7 +1267,8 @@ public class BOA_ implements PlugIn {
             }
 
             /**
-             * Loads configuration of current filter stack. Concerns only current frame.
+             * Loads configuration of current filter stack. 
+             * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/155
              */
             if (b == menuLoadConfig) {
                 OpenDialog od = new OpenDialog("Load plugin config data...", "");
@@ -1284,7 +1285,21 @@ public class BOA_ implements PlugIn {
                         // restore loaded objects
                         qState.snakePluginList.clear(); // closes windows, etc
                         qState.snakePluginList = loaded.obj; // replace with fresh instance
-                        recalculatePlugins(); // and screen
+                        qState.store(qState.boap.frame); // copy loaded snakePluginList to snapshots
+                        // commented after #155
+                        /*
+                        YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Warning",
+                                "Would you like to load this configuration for all frames?");
+                        if (yncd.yesPressed()) { // propagate over all frames
+                            for (int i = 0; i < qState.snakePluginListSnapshots.size(); i++) {
+                                if (i == qState.boap.frame - 1)
+                                    continue; // do not copy itself
+                                qState.snakePluginListSnapshots.set(i,
+                                        qState.snakePluginList.getDeepCopy());
+                            }
+                        }
+                        */
+                        recalculatePlugins(); // update screen
                     } catch (IOException e1) {
                         LOGGER.error("Problem with loading plugin config");
                     } catch (JsonSyntaxException e1) {
@@ -1309,7 +1324,6 @@ public class BOA_ implements PlugIn {
 
             /**
              * Load global config - QCONF file
-             * 
              * Checks also whether the name of the image sealed in config file is the same as those 
              * opened currently. If not user has an option to break the procedure or continue
              * loading.
@@ -1374,7 +1388,7 @@ public class BOA_ implements PlugIn {
             }
 
             /**
-             * Reload and reapply all plugins stored in snakePluginListSnapshot
+             * Reload and re-apply all plugins stored in snakePluginListSnapshot
              */
             if (b == menuApplyPlugin) {
                 qState.snakePluginList.clear();
