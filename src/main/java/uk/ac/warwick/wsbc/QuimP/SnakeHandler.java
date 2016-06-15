@@ -29,7 +29,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     private transient Roi roi; // inital ROI
     private Snake liveSnake;
     private Snake[] finalSnakes; //!< series of snakes, result of cell segm. and plugin processing*/
-    private transient Snake[] segSnakes; //!< series of snakes, result of cell segmentation only  */
+    private Snake[] segSnakes; //!< series of snakes, result of cell segmentation only  */
     private int ID; //!< ID of Snake stored in this SnakeHandler
 
     /**
@@ -476,22 +476,21 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
 
     /**
      * Prepare all Snake stored in this SnakeHandler for saving.
-     * @warning Currently \c segSnakes is not saved. It is assumed that after loading they will
-     * be copies of finalSnakes
      */
     @Override
     public void beforeSerialize() {
         if (liveSnake != null)
-            liveSnake.beforeSerialize();
+            liveSnake.beforeSerialize(); // convert liveSnake to array
         for (Snake s : finalSnakes)
             if (s != null)
-                s.beforeSerialize();
+                s.beforeSerialize(); // convert finalSnakes to array
+        for (Snake s : segSnakes)
+            if (s != null)
+                s.beforeSerialize(); // convert segSnakes to array
     }
 
     /**
      * Prepare all Snake stored in this SnakeHandler for loading.
-     * @warning Currently \c segSnakes is not loaded. It is assumed that they will
-     * be copies of finalSnakes
      */
     @Override
     public void afterSerialize() throws Exception {
@@ -501,10 +500,14 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
             if (s != null)
                 s.afterSerialize();
         }
-        segSnakes = new Snake[finalSnakes.length];
+        for (Snake s : segSnakes) {
+            if (s != null)
+                s.afterSerialize();
+        }
+        /* segSnakes = new Snake[finalSnakes.length];
         for (int i = 0; i < segSnakes.length; i++)
             if (finalSnakes[i] != null)
                 segSnakes[i] = new Snake(finalSnakes[i], finalSnakes[i].getSnakeID());
-
+         */
     }
 }
