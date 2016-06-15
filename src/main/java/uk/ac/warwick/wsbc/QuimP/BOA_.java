@@ -1251,7 +1251,7 @@ public class BOA_ implements PlugIn {
                     }
                 }
             }
-            // TODO Add checking loaded version using quimpInfo data sealed in Serializer.save
+
             if (b == menuLoadConfig) {
                 OpenDialog od = new OpenDialog("Load plugin config data...", "");
                 if (od.getFileName() != null) {
@@ -1290,6 +1290,7 @@ public class BOA_ implements PlugIn {
             }
 
             // load global config
+            // TODO Add checking loaded version using quimpInfo data sealed in Serializer.save
             if (b == menuLoad) {
                 OpenDialog od = new OpenDialog("Load global config data...(*.QCONF)", "");
                 if (od.getFileName() != null) {
@@ -1300,6 +1301,17 @@ public class BOA_ implements PlugIn {
                         s.registerInstanceCreator(DataContainer.class,
                                 new DataContainerInstanceCreator(3, pluginFactory, viewUpdater));
                         loaded = s.load(od.getDirectory() + od.getFileName());
+                        // check against image names
+                        if (!loaded.obj.BOAState.boap.fileName.equals(qState.boap.fileName)) {
+                            LOGGER.warn(
+                                    "The image opened currently in BOA is different from those pointed in configuration file");
+                            log("Trying to apply configuration saved for other image");
+                            YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(),
+                                    "Warning",
+                                    "Trying to load configuration that does not\nmath to opened image.\nAre you sure?");
+                            if (!yncd.yesPressed())
+                                return;
+                        }
                         qState.snakePluginList.clear(); // closes windows, etc
                         // int current_frame = qState.boap.frame; // remember before override!!
                         qState = loaded.obj.BOAState;
