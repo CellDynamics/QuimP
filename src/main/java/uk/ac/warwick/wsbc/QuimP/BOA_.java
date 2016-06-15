@@ -528,7 +528,8 @@ public class BOA_ implements PlugIn {
         private Checkbox cFirstPluginActiv, cSecondPluginActiv, cThirdPluginActiv;
 
         private MenuBar quimpMenuBar;
-        private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory, menuLoad; // items
+        private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory, menuLoad,
+                menuDeletePlugin, menuApplyPlugin; // items
         private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
         private Color defaultColor;
 
@@ -593,16 +594,19 @@ public class BOA_ implements PlugIn {
             Menu menuAbout; // menu About in menubar
             Menu menuConfig; // menu Config in menubar
             Menu menuFile; // menu File in menubar
+            Menu menuPlugin; // menu Plugin in menubar
 
             menuBar = new MenuBar();
 
             menuConfig = new Menu("Preferences");
             menuAbout = new Menu("About");
             menuFile = new Menu("File");
+            menuPlugin = new Menu("Plugin");
 
             // build main line
             menuBar.add(menuFile);
             menuBar.add(menuConfig);
+            menuBar.add(menuPlugin);
             menuBar.add(menuAbout);
 
             // add entries
@@ -633,6 +637,13 @@ public class BOA_ implements PlugIn {
             menuShowHistory = new MenuItem("Show history");
             menuShowHistory.addActionListener(this);
             menuConfig.add(menuShowHistory);
+
+            menuDeletePlugin = new MenuItem("Discard all");
+            menuDeletePlugin.addActionListener(this);
+            menuPlugin.add(menuDeletePlugin);
+            menuApplyPlugin = new MenuItem("Re-apply all");
+            menuApplyPlugin.addActionListener(this);
+            menuPlugin.add(menuApplyPlugin);
 
             return menuBar;
         }
@@ -1061,6 +1072,9 @@ public class BOA_ implements PlugIn {
          * Implement user interface logic. Do not refresh values, rather disable/enable controls.
          */
         private void updateWindowState() {
+            updateCheckBoxes(); // update checkboxes
+            updateChoices(); // and choices
+
             // Rule 1 - NONE on any slot in filters disable GUI button and Active checkbox
             if (sFirstPluginName.getSelectedItem() == NONE) {
                 cFirstPluginActiv.setEnabled(false);
@@ -1252,6 +1266,9 @@ public class BOA_ implements PlugIn {
                 }
             }
 
+            /**
+             * Loads configuration of current filter stack. Concerns only current frame.
+             */
             if (b == menuLoadConfig) {
                 OpenDialog od = new OpenDialog("Load plugin config data...", "");
                 if (od.getFileName() != null) {
@@ -1267,8 +1284,6 @@ public class BOA_ implements PlugIn {
                         // restore loaded objects
                         qState.snakePluginList.clear(); // closes windows, etc
                         qState.snakePluginList = loaded.obj; // replace with fresh instance
-                        updateCheckBoxes(); // update checkboxes
-                        updateChoices(); // and choices
                         recalculatePlugins(); // and screen
                     } catch (IOException e1) {
                         LOGGER.error("Problem with loading plugin config");
@@ -1280,7 +1295,10 @@ public class BOA_ implements PlugIn {
                 }
             }
 
-            // history
+            /**
+             * Shows history window. When showed all actions are notified there. This may slow down 
+             * the program
+             */
             if (b == menuShowHistory) {
                 LOGGER.debug("got ShowHistory");
                 if (historyLogger.isOpened())
@@ -1289,8 +1307,15 @@ public class BOA_ implements PlugIn {
                     historyLogger.openHistory();
             }
 
-            // load global config
-            // TODO Add checking loaded version using quimpInfo data sealed in Serializer.save
+            /**
+             * Load global config - QCONF file
+             * 
+             * Checks also whether the name of the image sealed in config file is the same as those 
+             * opened currently. If not user has an option to break the procedure or continue
+             * loading.
+             * 
+             * @todo TODO Add checking loaded version using quimpInfo data sealed in Serializer.save
+             */
             if (b == menuLoad) {
                 OpenDialog od = new OpenDialog("Load global config data...(*.QCONF)", "");
                 if (od.getFileName() != null) {
@@ -1313,13 +1338,11 @@ public class BOA_ implements PlugIn {
                                 return;
                         }
                         qState.reset(); // closes windows, etc
-                        // int current_frame = qState.boap.frame; // remember before override!!
                         qState = loaded.obj.BOAState;
-                        qState.restore(qState.boap.frame);
-                        imageGroup.updateNest(qState.nest); // reconnect nest
-                        updateCheckBoxes(); // update checkboxes
-                        updateChoices(); // and choices
-                        recalculatePlugins(); // and screen
+                        qState.restore(qState.boap.frame); // copy from snapshots to current object
+                        imageGroup.updateNest(qState.nest); // reconnect nest to external class
+                        updateSpinnerValues(); // update segmentation gui
+                        recalculatePlugins(); // update screen
                     } catch (IOException e1) {
                         LOGGER.error("Problem with loading plugin config", e1);
                     } catch (JsonSyntaxException e1) {
@@ -1330,7 +1353,41 @@ public class BOA_ implements PlugIn {
                 }
             }
 
-            updateWindowState(); // window logic on any change
+            /** 
+            * Discard all plugins. In general it does:
+            * -# reset current snakePluginList and snakePluginListSnapshots
+            * -# Copies segSnakes to finalSnakes
+            */
+            if (b == menuDeletePlugin) {
+                // clear all plugins
+                qState.snakePluginList.clear();
+                for (SnakePluginList sp : qState.snakePluginListSnapshots)
+                    if (sp != null)
+                        sp.clear();
+                // copy snakes to finals
+                for (int i = 0; i < qState.nest.size(); i++) {
+                    SnakeHandler sH = qState.nest.getHandler(i);
+                    sH.copyFromSegToFinal();
+                }
+                // update window
+                recalculatePlugins(); // update screen
+            }
+
+            /**
+             * Reload and reapply all plugins stored in snakePluginListSnapshot
+             */
+            if (b == menuApplyPlugin) {
+                qState.snakePluginList.clear();
+                // iterate over snaphots and try to restore plugins in snapshots
+                for (SnakePluginList sp : qState.snakePluginListSnapshots) {
+                    sp.afterSerialize();
+                }
+                qState.restore(qState.boap.frame); // copy snaphots for frame to current
+                                                   // snakePluginList (and segParams)
+                recalculatePlugins(); // update screen
+            }
+
+            updateWindowState(); // window logic on any change and selectors
 
             // run segmentation for selected cases
             if (run)
@@ -1580,8 +1637,6 @@ public class BOA_ implements PlugIn {
                                            // event from runBoa() method
                                            // (through setIpSliceAll(int))
                 qState.restore(qState.boap.frame);
-                updateCheckBoxes();
-                updateChoices();
                 updateSpinnerValues();
                 updateWindowState();
             }
