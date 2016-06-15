@@ -352,9 +352,7 @@ public class BOA_ implements PlugIn {
         SnakeHandler sH;
         if (qState.nest.isVacant())
             return;
-        imageGroup.clearPaths(qState.boap.frame);
-        imageGroup.setProcessor(qState.boap.frame);
-        imageGroup.setIpSliceAll(qState.boap.frame);
+        imageGroup.updateToFrame(qState.boap.frame);
         try {
             for (int s = 0; s < qState.nest.size(); s++) { // for each snake
                 sH = qState.nest.getHandler(s);
@@ -1343,20 +1341,25 @@ public class BOA_ implements PlugIn {
                         // check against image names
                         if (!loaded.obj.BOAState.boap.fileName.equals(qState.boap.fileName)) {
                             LOGGER.warn(
-                                    "The image opened currently in BOA is different from those pointed in configuration file");
+                                    "The image opened currently in BOA is different from those +"
+                                            + " pointed in configuration file");
                             log("Trying to apply configuration saved for other image");
-                            YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(),
-                                    "Warning",
-                                    "Trying to load configuration that does not\nmath to opened image.\nAre you sure?");
+                            YesNoCancelDialog yncd =
+                                    new YesNoCancelDialog(IJ.getInstance(), "Warning",
+                                            "Trying to load configuration that does not\nmath to +"
+                                                    + " opened image.\nAre you sure?");
                             if (!yncd.yesPressed())
                                 return;
                         }
                         qState.reset(); // closes windows, etc
                         qState = loaded.obj.BOAState;
-                        qState.restore(qState.boap.frame); // copy from snapshots to current object
                         imageGroup.updateNest(qState.nest); // reconnect nest to external class
+                        qState.restore(qState.boap.frame); // copy from snapshots to current object
                         updateSpinnerValues(); // update segmentation gui
-                        recalculatePlugins(); // update screen
+                        // do not recalculatePlugins here because pluginList is empty and this
+                        // method will update finalSnake overriding it by segSnake (because on
+                        // empty list they are just copied)
+                        imageGroup.updateToFrame(qState.boap.frame); // calls update Sliceselector
                     } catch (IOException e1) {
                         LOGGER.error("Problem with loading plugin config", e1);
                     } catch (JsonSyntaxException e1) {
@@ -1384,15 +1387,19 @@ public class BOA_ implements PlugIn {
                     sH.copyFromSegToFinal();
                 }
                 // update window
-                recalculatePlugins(); // update screen
+                imageGroup.updateOverlay(qState.boap.frame);
             }
 
             /**
              * Reload and re-apply all plugins stored in snakePluginListSnapshot
+             * 
+             * @remarks qState.snakePluginList.clear(); can not be called here because
+             * uk.ac.warwick.wsbc.QuimP.BOAState.restore(int) makes reference to 
+             * snakePluginListSnapshot in snakePluginList. Thus, cleaning snakePluginList deletes
+             * one entry in snakePluginListSnapshot
              */
             if (b == menuApplyPlugin) {
-                qState.snakePluginList.clear();
-                // iterate over snaphots and try to restore plugins in snapshots
+                // iterate over snapshots and try to restore plugins in snapshots
                 for (SnakePluginList sp : qState.snakePluginListSnapshots) {
                     sp.afterSerialize();
                 }
@@ -2362,7 +2369,8 @@ class ImageGroup {
      * 
      * It assign also last created Snake to ViewUpdater. This Snake can be accessed by plugin for
      * previewing purposes. If last Snake has been deleted, \c null is assigned or before last Snake
-     *   
+     * 
+     * @remarks Used when there is a need of redrawing screen because of new data  
      * @param frame Current frame
      */
     public void updateOverlay(int frame) {
@@ -2434,7 +2442,18 @@ class ImageGroup {
         // segmentation ui, sliding on frames)
 
         orgIpl.setOverlay(overlay);
+    }
 
+    /**
+     * Updates IJ to current frame. Causes that updateSliceSelector() is called
+     * 
+     * @param frame current frame
+     * @remarks USed when there is a need to move to other frame programmatically
+     */
+    public void updateToFrame(int frame) {
+        clearPaths(frame);
+        setProcessor(frame);
+        setIpSliceAll(frame);
     }
 
     public void clearOverlay() {
@@ -2448,6 +2467,10 @@ class ImageGroup {
         // System.out.println("\n1217 Proc set to : " + i);
     }
 
+    /**
+     * Calls updateSliceSelector callback
+     * @param i
+     */
     final public void setIpSliceAll(int i) {
         // set slice on all images
         pathsIpl.setSlice(i);
