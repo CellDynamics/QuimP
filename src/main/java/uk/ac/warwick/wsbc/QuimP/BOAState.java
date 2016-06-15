@@ -644,6 +644,8 @@ public class BOAState implements IQuimpSerialize {
      * Make snapshot of current objects state
      * 
      * @param frame actual frame numbered from 1
+     * @see snakePluginList
+     * @see snakePluginListSnapshots 
      */
     public void store(int frame) {
         LOGGER.debug("Data stored at frame:" + frame + " size of segParams is "
@@ -654,14 +656,18 @@ public class BOAState implements IQuimpSerialize {
                                                                                 // as well
     }
 
+    /**
+     * Copy from snapshots data to current one.
+     * 
+     * @param frame current frame
+     * @see snakePluginList
+     * @see snakePluginListSnapshots 
+     */
     public void restore(int frame) {
         LOGGER.debug("Data restored from frame:" + frame);
         SegParam tmp = segParamSnapshots.get(frame - 1);
         if (tmp != null)
             segParam = tmp;
-        // else
-        // segParamSnapshots.set(frame - 1, new SegParam(segParam));
-        // if (snakePluginListSnapshots.get(frame - 1) != null)
         snakePluginList = snakePluginListSnapshots.get(frame - 1);
     }
 

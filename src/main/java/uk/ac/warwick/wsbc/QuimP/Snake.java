@@ -70,7 +70,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * Copy constructor
+     * Copy constructor wit new ID
      * 
      * @param src Snake to be duplicated
      * @param id New id
@@ -83,6 +83,15 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         countFrozen();
         bounds = new Rectangle(src.bounds);
         calcCentroid();
+    }
+
+    /**
+     * Copy constructor
+     * 
+     * @param src to be duplicated
+     */
+    public Snake(final Snake src) {
+        this(src, src.getSnakeID());
     }
 
     /**
