@@ -96,7 +96,18 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         finalSnakes[frame - startFrame] = null; // delete at current frame
 
         finalSnakes[frame - startFrame] = new Snake(snake, ID);
+    }
 
+    /**
+     * Copy all segSnakes to finalSnakes
+     */
+    public void copyFromSegToFinal() {
+        for (int i = 0; i < segSnakes.length; i++) {
+            if (segSnakes[i] == null)
+                finalSnakes[i] = null;
+            else
+                finalSnakes[i] = new Snake(segSnakes[i]);
+        }
     }
 
     /**
