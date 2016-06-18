@@ -450,6 +450,7 @@ public class SnakePluginListTest {
         String json =
                 "{\"className\":\"SnakePluginList\","
                 + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
                 + "\"obj\":{\"sPluginList\":"
                 + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
                 + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
@@ -600,6 +601,7 @@ public class SnakePluginListTest {
         String json =
                 "{\"className\":\"SnakePluginList\","
                 + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
                 + "\"obj\":{\"sPluginList\":"
                 + "[{\"isActive\":false,\"name\":\"\",\"ver\":\"\"},"
                 + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
@@ -697,6 +699,7 @@ public class SnakePluginListTest {
         String json =
                 "{\"className\":\"SnakePluginList\","
                 + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
                 + "\"obj\":{\"sPluginList\":"
                 + "[{\"isActive\":false,\"name\":\"Test10\",\"ver\":\"1.2.3\"},"
                 + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
@@ -784,6 +787,7 @@ public class SnakePluginListTest {
         String json =
                 "{\"className\":\"SnakePluginList\","
                 + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","        
                 + "\"obj\":{\"sPluginList\":"
                 + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
                 + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
@@ -876,6 +880,7 @@ public class SnakePluginListTest {
         String json =
                 "{\"className\":\"SnakePluginList\","
                 + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
                 + "\"obj\":{\"sPluginList\":"
                 + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
                 + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"

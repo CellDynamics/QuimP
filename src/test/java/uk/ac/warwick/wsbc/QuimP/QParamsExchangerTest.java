@@ -64,7 +64,7 @@ public class QParamsExchangerTest {
      */
     @Before
     public void setUp() throws Exception {
-        test1 = new File("src/test/resources/test1/Stack_cut.QCONF");
+        test1 = new File("src/test/resources/test2/Stack_cut.QCONF");
     }
 
     /**
@@ -78,7 +78,7 @@ public class QParamsExchangerTest {
     public void testQParamsExchanger() throws Exception {
         QParamsExchanger qp = new QParamsExchanger(test1);
         assertThat(qp.prefix, is("Stack_cut"));
-        assertThat(qp.path, is("src/test/resources/test1"));
+        assertThat(qp.path, is("src/test/resources/test2"));
     }
 
     /**
