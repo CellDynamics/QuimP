@@ -1359,7 +1359,13 @@ public class BOA_ implements PlugIn {
                         // do not recalculatePlugins here because pluginList is empty and this
                         // method will update finalSnake overriding it by segSnake (because on
                         // empty list they are just copied)
-                        imageGroup.updateToFrame(qState.boap.frame); // calls update Sliceselector
+                        // updateToFrame calls updateSliceSelector only if there is action of
+                        // changing frame. If loaded frame is the same as current one this event is
+                        // not called.
+                        if (qState.boap.frame != imageGroup.getOrgIpl().getSlice())
+                            imageGroup.updateToFrame(qState.boap.frame); // move to frame
+                        else
+                            updateSliceSelector(); // repaint window explicitly
                     } catch (IOException e1) {
                         LOGGER.error("Problem with loading plugin config", e1);
                     } catch (JsonSyntaxException e1) {
@@ -2438,9 +2444,6 @@ class ImageGroup {
             } else
                 BOA_.viewUpdater.connectSnakeObject(null);
         }
-        // remember current state - image is updated on every change of state (action on plugins,
-        // segmentation ui, sliding on frames)
-
         orgIpl.setOverlay(overlay);
     }
 
@@ -2468,7 +2471,7 @@ class ImageGroup {
     }
 
     /**
-     * Calls updateSliceSelector callback
+     * Calls updateSliceSelector callback only if \a i != current frame
      * @param i
      */
     final public void setIpSliceAll(int i) {
