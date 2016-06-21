@@ -186,7 +186,7 @@ class Nest implements IQuimpSerialize {
                 sH.reset();
             } catch (Exception e) {
                 BOA_.log("Could not reset snake " + sH.getID());
-                BOA_.log("Removeing snake " + sH.getID());
+                BOA_.log("Removing snake " + sH.getID());
                 removeHandler(sH);
             }
         }
@@ -228,7 +228,7 @@ class Nest implements IQuimpSerialize {
                 }
             } catch (Exception e) {
                 BOA_.log("Could not reset snake " + sH.getID());
-                BOA_.log("Removeing snake " + sH.getID());
+                BOA_.log("Removing snake " + sH.getID());
                 removeHandler(sH);
             }
         }
