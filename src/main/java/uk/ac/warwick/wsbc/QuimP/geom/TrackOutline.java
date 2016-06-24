@@ -23,6 +23,15 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 /**
  * Convert BW masks into list of vertices in correct order
  * 
+ * The algorithm uses IJ tools for tracking and filling (deleting) objects
+ * It goes through all points of the image and for every visited point
+ * it checks whether the value is different than defined background.
+ * If it is, the Wand tool is used to select object given by
+ * the pixel value. The ROI 9outline) is then converted to Polygon and list of pixels
+ * that are in correct order. The ROI is then used to delete selected
+ * object from image (using background value). Next, the algorithm moves
+ * to next pixel (of the same image the object has been deleted from)
+ *  
  * @author p.baniukiewicz
  * @date 24 Jun 2016
  *
@@ -31,24 +40,29 @@ public class TrackOutline {
 
     private static final Logger LOGGER = LogManager.getLogger(TrackOutline.class.getName());
 
-    protected ImagePlus im; //!< Original image. It is no modified
-    private ImagePlus prepared; //!< Image under process. It is modified by Outline methods
+   // protected ImagePlus im; //!< Original image. It is no modified
+    protected ImageProcessor imp; //!< Original image. It is no modified
+    private ImageProcessor prepared; //!< Image under process. It is modified by Outline methods
     protected int background; //!< Background color
     private int MAX = -1; //!< Maximal number of searched objects,  all objects if negative
     private double step = 1.0; //!< spaced 'interval' pixels apart
     private boolean smooth = false; //!< Smooth during interpolation
 
+    public TrackOutline(ImageProcessor imp, int background) {
+    	if (imp.getBitDepth() != 8 && imp.getBitDepth() != 16)
+            throw new IllegalArgumentException("Only 8-bit or 16-bit images are supported");
+        this.imp = imp;
+        this.background = background;
+        this.prepared = prepare();
+        
+    }
     /**
      * Default constructor
      * @param im Image to process (not modified), 8-bit
      * @param background Background color
      */
     public TrackOutline(ImagePlus im, int background) {
-        if (im.getBitDepth() != 8 && im.getBitDepth() != 16)
-            throw new IllegalArgumentException("Only 8-bit or 16-bit images are supported");
-        this.im = im;
-        this.background = background;
-        this.prepared = prepare();
+        this(im.getProcessor(), background);
     }
 
     /**
@@ -71,16 +85,16 @@ public class TrackOutline {
      * 
      * Implement closing followed by opening
      * 
-     * @return Filtered image
+     * @return Filtered processor
      */
-    ImagePlus prepare() {
-        ImagePlus filtered = im.duplicate();
+    ImageProcessor prepare() {
+        ImageProcessor filtered = imp.duplicate();
         // closing
-        filtered.getProcessor().dilate();
-        filtered.getProcessor().erode();
+        filtered.dilate();
+        filtered.erode();
         // opening
-        filtered.getProcessor().erode();
-        filtered.getProcessor().dilate();
+        filtered.erode();
+        filtered.dilate();
 
         return filtered;
     }
@@ -95,14 +109,14 @@ public class TrackOutline {
      */
     List<Point2d> getOutline(int row, int col, int color) {
         FloatPolygon fp;
-        Wand wand = new Wand(prepared.getProcessor());
+        Wand wand = new Wand(prepared);
         wand.autoOutline(col, row, color, color, Wand.EIGHT_CONNECTED);
         if (wand.npoints == 0) {
             throw new IllegalArgumentException("Wand: Points not found");
         }
         Roi roi = new PolygonRoi(wand.xpoints, wand.ypoints, wand.npoints, Roi.FREEROI);
         fp = roi.getInterpolatedPolygon(step, smooth);
-        clearRoi(prepared, roi, background);
+        clearRoi(roi, background);
         return new QuimpDataConverter(fp.xpoints, fp.ypoints).getList();
     }
 
@@ -117,13 +131,12 @@ public class TrackOutline {
      * @return List of Lists of points
      */
     public List<List<Point2d>> getOutlines() {
-        ImageProcessor ip = prepared.getProcessor();
         ArrayList<List<Point2d>> outlines = new ArrayList<>();
         // go through the image and look for non 0 pixels
         outer: for (int r = 0; r < prepared.getHeight(); r++)
             for (int c = 0; c < prepared.getWidth(); c++) {
-                if (ip.getPixel(c, r) != background) { // non background pixel
-                    outlines.add(getOutline(r, c, ip.getPixel(c, r))); // remember outline and
+                if (prepared.getPixel(c, r) != background) { // non background pixel
+                    outlines.add(getOutline(r, c, prepared.getPixel(c, r))); // remember outline and
                                                                        // delete it from input
                                                                        // image
                     if (MAX > -1) // not all
@@ -143,8 +156,8 @@ public class TrackOutline {
      * @param roi roi on this image
      * @param bckColor color for erasing
      */
-    private void clearRoi(ImagePlus im, Roi roi, int bckColor) {
-        im.getProcessor().setColor(bckColor);
-        im.getProcessor().fill(roi);
+    private void clearRoi(Roi roi, int bckColor) {
+    	prepared.setColor(bckColor);
+    	prepared.fill(roi);
     }
 }

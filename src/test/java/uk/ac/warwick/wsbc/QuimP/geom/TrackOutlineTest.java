@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
@@ -98,8 +99,10 @@ public class TrackOutlineTest {
      */
     @Test
     public void testPrepare() throws Exception {
-        ImagePlus ret = obj.prepare();
-        IJ.saveAsTiff(ret, "/tmp/testPrepare.tif");
+        ImageProcessor ret = obj.prepare();
+        ImagePlus r = image.duplicate();
+        r.setProcessor(ret);
+        IJ.saveAsTiff(r, "/tmp/testPrepare.tif");
     }
 
     /**
@@ -111,7 +114,9 @@ public class TrackOutlineTest {
     public void testGetOutline() throws Exception {
         List<Point2d> ret = obj.getOutline(270, 227, 255);
         LOGGER.debug(ret);
-        IJ.saveAsTiff((ImagePlus) accessPrivateField("prepared", obj), "/tmp/testGetOutline.tif");
+        ImagePlus r = image.duplicate();
+        r.setProcessor((ImageProcessor)accessPrivateField("prepared", obj));
+        IJ.saveAsTiff(r , "/tmp/testGetOutline.tif");
     }
 
     /**
@@ -123,7 +128,9 @@ public class TrackOutlineTest {
     public void testGetOutlines() throws Exception {
         List<List<Point2d>> ret = obj.getOutlines();
         LOGGER.debug("Found " + ret.size());
-        IJ.saveAsTiff((ImagePlus) accessPrivateField("prepared", obj), "/tmp/testGetOutlines.tif");
+        ImagePlus r = image.duplicate();
+        r.setProcessor((ImageProcessor)accessPrivateField("prepared", obj));
+        IJ.saveAsTiff(r, "/tmp/testGetOutlines.tif");
         RoiSaver.saveROI("/tmp/testGetOutlines_roi.tif", ret.get(0));
     }
 
