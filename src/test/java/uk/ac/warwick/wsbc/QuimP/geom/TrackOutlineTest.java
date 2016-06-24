@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import ij.IJ;
 import ij.ImagePlus;
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
  * @author p.baniukiewicz
@@ -123,6 +124,33 @@ public class TrackOutlineTest {
         List<List<Point2d>> ret = obj.getOutlines();
         LOGGER.debug("Found " + ret.size());
         IJ.saveAsTiff((ImagePlus) accessPrivateField("prepared", obj), "/tmp/testGetOutlines.tif");
+        RoiSaver.saveROI("/tmp/testGetOutlines_roi.tif", ret.get(0));
+    }
+
+    /**
+     * @test testGetOutlines_1
+     * @post Finds all outlines in image with smoothing
+     * @throws Exception
+     */
+    @Test
+    public void testGetOutlines_1() throws Exception {
+        obj.setConfig(-1, 1, true);
+        List<List<Point2d>> ret = obj.getOutlines();
+        LOGGER.debug("Found " + ret.size());
+        RoiSaver.saveROI("/tmp/testGetOutlines_roi_s.tif", ret.get(0));
+    }
+
+    /**
+     * @test testGetOutlines_2
+     * @post Finds all outlines in image with smoothing and step 6
+     * @throws Exception
+     */
+    @Test
+    public void testGetOutlines_6() throws Exception {
+        obj.setConfig(-1, 6, true);
+        List<List<Point2d>> ret = obj.getOutlines();
+        LOGGER.debug("Found " + ret.size());
+        RoiSaver.saveROI("/tmp/testGetOutlines_roi_s6.tif", ret.get(0));
     }
 
 }

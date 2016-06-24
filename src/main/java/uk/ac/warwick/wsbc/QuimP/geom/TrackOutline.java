@@ -35,6 +35,8 @@ public class TrackOutline {
     private ImagePlus prepared; //!< Image under process. It is modified by Outline methods
     protected int background; //!< Background color
     private int MAX = -1; //!< Maximal number of searched objects,  all objects if negative
+    private double step = 1.0; //!< spaced 'interval' pixels apart
+    private boolean smooth = false; //!< Smooth during interpolation
 
     /**
      * Default constructor
@@ -53,9 +55,15 @@ public class TrackOutline {
      * Set maximal number of searched objects
      * 
      * @param maxNum Any positive or negative if all objects
+     * @param step - step during conversion outline to points. For 1 every point from outline
+     * is included in output list
+     * @param smooth - \a true for using smoothing during interpolation 
+     * @see https://imagej.nih.gov/ij/developer/api/
      */
-    public void setMaxNumObj(int maxNum) {
+    public void setConfig(int maxNum, double step, boolean smooth) {
         this.MAX = maxNum;
+        this.step = step;
+        this.smooth = smooth;
     }
 
     /**
@@ -86,13 +94,14 @@ public class TrackOutline {
      * @return List of points
      */
     List<Point2d> getOutline(int row, int col, int color) {
+        FloatPolygon fp;
         Wand wand = new Wand(prepared.getProcessor());
         wand.autoOutline(col, row, color, color, Wand.EIGHT_CONNECTED);
         if (wand.npoints == 0) {
             throw new IllegalArgumentException("Wand: Points not found");
         }
         Roi roi = new PolygonRoi(wand.xpoints, wand.ypoints, wand.npoints, Roi.FREEROI);
-        FloatPolygon fp = roi.getInterpolatedPolygon();
+        fp = roi.getInterpolatedPolygon(step, smooth);
         clearRoi(prepared, roi, background);
         return new QuimpDataConverter(fp.xpoints, fp.ypoints).getList();
     }

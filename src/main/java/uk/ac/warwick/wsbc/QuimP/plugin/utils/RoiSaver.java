@@ -26,7 +26,7 @@ public class RoiSaver {
     /**
      * Dummy constructor
      */
-    RoiSaver() {
+    public RoiSaver() {
     }
 
     /**
