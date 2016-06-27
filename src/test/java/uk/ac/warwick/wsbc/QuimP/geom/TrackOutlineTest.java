@@ -19,6 +19,10 @@ import org.junit.Test;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
+import ij.gui.ShapeRoi;
+import ij.plugin.RoiRotator;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
@@ -106,32 +110,20 @@ public class TrackOutlineTest {
     }
 
     /**
-     * @test testGetOutline
-     * @post Find one outline for given coords
-     * @throws Exception
-     */
-    @Test
-    public void testGetOutline() throws Exception {
-        List<Point2d> ret = obj.getOutline(270, 227, 255);
-        LOGGER.debug(ret);
-        ImagePlus r = image.duplicate();
-        r.setProcessor((ImageProcessor)accessPrivateField("prepared", obj));
-        IJ.saveAsTiff(r , "/tmp/testGetOutline.tif");
-    }
-
-    /**
      * @test testGetOutlines
-     * @post Finds all outlines in image
+     * @post Finds all outlines in image and saves them to separate files
      * @throws Exception
      */
     @Test
     public void testGetOutlines() throws Exception {
-        List<List<Point2d>> ret = obj.getOutlines();
+        List<List<Point2d>> ret = obj.getOutlinesasPoints(1, false);
         LOGGER.debug("Found " + ret.size());
         ImagePlus r = image.duplicate();
-        r.setProcessor((ImageProcessor)accessPrivateField("prepared", obj));
+        r.setProcessor((ImageProcessor) accessPrivateField("prepared", obj));
         IJ.saveAsTiff(r, "/tmp/testGetOutlines.tif");
-        RoiSaver.saveROI("/tmp/testGetOutlines_roi.tif", ret.get(0));
+        RoiSaver.saveROI("/tmp/testGetOutlines_roi0.tif", ret.get(0));
+        RoiSaver.saveROI("/tmp/testGetOutlines_roi1.tif", ret.get(1));
+        RoiSaver.saveROI("/tmp/testGetOutlines_roi2.tif", ret.get(2));
     }
 
     /**
@@ -141,8 +133,7 @@ public class TrackOutlineTest {
      */
     @Test
     public void testGetOutlines_1() throws Exception {
-        obj.setConfig(-1, 1, true);
-        List<List<Point2d>> ret = obj.getOutlines();
+        List<List<Point2d>> ret = obj.getOutlinesasPoints(1, true);
         LOGGER.debug("Found " + ret.size());
         RoiSaver.saveROI("/tmp/testGetOutlines_roi_s.tif", ret.get(0));
     }
@@ -154,10 +145,28 @@ public class TrackOutlineTest {
      */
     @Test
     public void testGetOutlines_6() throws Exception {
-        obj.setConfig(-1, 6, true);
-        List<List<Point2d>> ret = obj.getOutlines();
+        List<List<Point2d>> ret = obj.getOutlinesasPoints(6, true);
         LOGGER.debug("Found " + ret.size());
         RoiSaver.saveROI("/tmp/testGetOutlines_roi_s6.tif", ret.get(0));
+    }
+
+    /**
+     * @test Validates what is returned from ShapeRoi.and
+     * @post operation  ret.get(1).and(new ShapeRoi(pr)); modifies ret.get(1)
+     * @post If there is no intersection it return shape wit 0 width/height
+     */
+    @Test
+    public void testIntersection() {
+        List<SegmentedShapeRoi> ret = obj.outlines;
+
+        // simulate other ROI
+        PolygonRoi pr = new PolygonRoi(ret.get(1).getPolygon(), Roi.FREEROI);
+        pr = (PolygonRoi) RoiRotator.rotate(pr, 45); // roate
+        LOGGER.debug("ret.get(1) " + ret.get(1));
+        ShapeRoi sa1 = ret.get(1).and(new ShapeRoi(pr)); // make common part
+        LOGGER.debug("Shape1 " + sa1);
+        LOGGER.debug("ret.get(1) after " + ret.get(1));
+        RoiSaver.saveROI("/tmp/testIntersection_and.tif", sa1);
     }
 
 }

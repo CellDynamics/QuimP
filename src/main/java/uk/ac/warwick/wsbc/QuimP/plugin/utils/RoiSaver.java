@@ -12,6 +12,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 
 /**
@@ -74,6 +75,21 @@ public class RoiSaver {
             LOGGER.error(e);
         }
 
+    }
+
+    /**
+     * Save ROI as image
+     * 
+     * @param fileName
+     * @param roi
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver.saveROI(String, List<Point2d>) 
+     */
+    public static void saveROI(String fileName, Roi roi) {
+        if (roi == null)
+            saveROI(fileName, (List<Point2d>) null);
+        FloatPolygon fp;
+        fp = roi.getFloatPolygon(); // save common part
+        saveROI(fileName, new QuimpDataConverter(fp.xpoints, fp.ypoints).getList());
     }
 
     /**

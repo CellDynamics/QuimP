@@ -41,21 +41,28 @@ public class TrackOutline {
     private static final Logger LOGGER = LogManager.getLogger(TrackOutline.class.getName());
 
    // protected ImagePlus im; //!< Original image. It is no modified
-    protected ImageProcessor imp; //!< Original image. It is no modified
+    protected ImageProcessor imp; //!< Original image. It is not modified
     private ImageProcessor prepared; //!< Image under process. It is modified by Outline methods
+    public ArrayList<SegmentedShapeRoi> outlines; //!< List of found outlines as ROIs
     protected int background; //!< Background color
     private int MAX = -1; //!< Maximal number of searched objects,  all objects if negative
-    private double step = 1.0; //!< spaced 'interval' pixels apart
-    private boolean smooth = false; //!< Smooth during interpolation
 
+    /**
+     * Constructor from ImageProcessor
+     * 
+     * @param imp Image to process (not modified)
+     * @param background Color value for background
+     */
     public TrackOutline(ImageProcessor imp, int background) {
-    	if (imp.getBitDepth() != 8 && imp.getBitDepth() != 16)
+        if (imp.getBitDepth() != 8 && imp.getBitDepth() != 16)
             throw new IllegalArgumentException("Only 8-bit or 16-bit images are supported");
+        outlines = new ArrayList<>();
         this.imp = imp;
         this.background = background;
         this.prepared = prepare();
-        
+        getOutlines();
     }
+
     /**
      * Default constructor
      * @param im Image to process (not modified), 8-bit
@@ -63,21 +70,6 @@ public class TrackOutline {
      */
     public TrackOutline(ImagePlus im, int background) {
         this(im.getProcessor(), background);
-    }
-
-    /**
-     * Set maximal number of searched objects
-     * 
-     * @param maxNum Any positive or negative if all objects
-     * @param step - step during conversion outline to points. For 1 every point from outline
-     * is included in output list
-     * @param smooth - \a true for using smoothing during interpolation 
-     * @see https://imagej.nih.gov/ij/developer/api/
-     */
-    public void setConfig(int maxNum, double step, boolean smooth) {
-        this.MAX = maxNum;
-        this.step = step;
-        this.smooth = smooth;
     }
 
     /**
@@ -102,22 +94,20 @@ public class TrackOutline {
     /**
      * Get outline using Wand tool
      * 
-     * @param row Any point inside region
      * @param col Any point inside region
+     * @param row Any point inside region
      * @param color Color of object
      * @return List of points
      */
-    List<Point2d> getOutline(int row, int col, int color) {
-        FloatPolygon fp;
+    SegmentedShapeRoi getOutline(int col, int row, int color) {
         Wand wand = new Wand(prepared);
         wand.autoOutline(col, row, color, color, Wand.EIGHT_CONNECTED);
         if (wand.npoints == 0) {
             throw new IllegalArgumentException("Wand: Points not found");
         }
         Roi roi = new PolygonRoi(wand.xpoints, wand.ypoints, wand.npoints, Roi.FREEROI);
-        fp = roi.getInterpolatedPolygon(step, smooth);
         clearRoi(roi, background);
-        return new QuimpDataConverter(fp.xpoints, fp.ypoints).getList();
+        return new SegmentedShapeRoi(roi);
     }
 
     /**
@@ -127,18 +117,18 @@ public class TrackOutline {
      * The algorithm goes through every pixel on image and if this pixel is different than 
      * background (defined in constructor) it uses it as source of Wand. Wand should outline found
      * object, which is then erased from image. then next pixel is analysed.
+     * @return 
      *  
      * @return List of Lists of points
      */
-    public List<List<Point2d>> getOutlines() {
-        ArrayList<List<Point2d>> outlines = new ArrayList<>();
+    private void getOutlines() {
         // go through the image and look for non 0 pixels
         outer: for (int r = 0; r < prepared.getHeight(); r++)
             for (int c = 0; c < prepared.getWidth(); c++) {
                 if (prepared.getPixel(c, r) != background) { // non background pixel
-                    outlines.add(getOutline(r, c, prepared.getPixel(c, r))); // remember outline and
-                                                                       // delete it from input
-                                                                       // image
+                    outlines.add(getOutline(c, r, prepared.getPixel(c, r))); // remember outline and
+                                                                             // delete it from input
+                                                                             // image
                     if (MAX > -1) // not all
                         if (outlines.size() >= MAX) {
                             LOGGER.warn("Reached maximal number of outlines");
@@ -146,7 +136,6 @@ public class TrackOutline {
                         }
                 }
             }
-        return outlines;
     }
 
     /**
@@ -157,7 +146,44 @@ public class TrackOutline {
      * @param bckColor color for erasing
      */
     private void clearRoi(Roi roi, int bckColor) {
-    	prepared.setColor(bckColor);
-    	prepared.fill(roi);
+        prepared.setColor(bckColor);
+        prepared.fill(roi);
     }
+
+    /**
+     * Convert found outlines to List
+     * @param step step - step during conversion outline to points. For 1 every point from outline
+     * is included in output list
+     * @param smooth \a true for using smoothing during interpolation 
+     * @return List of List of ROIs
+     */
+    public List<List<Point2d>> getOutlinesasPoints(double step, boolean smooth) {
+        List<List<Point2d>> ret = new ArrayList<>();
+        FloatPolygon fp;
+        for (SegmentedShapeRoi sR : outlines) {
+            fp = sR.getInterpolatedPolygon(step, smooth);
+            ret.add(new QuimpDataConverter(fp.xpoints, fp.ypoints).getList());
+        }
+        return ret;
+    }
+
+    /**
+     * Return deep copy of Rois
+     * @return
+     */
+    public List<SegmentedShapeRoi> getCopyofShapes() {
+        ArrayList<SegmentedShapeRoi> clon = new ArrayList<>();
+        for (SegmentedShapeRoi sR : outlines)
+            clon.add((SegmentedShapeRoi) sR.clone());
+        return clon;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "\nTrackOutline [outlines=" + outlines + "]";
+    }
+
 }
