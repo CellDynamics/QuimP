@@ -32,6 +32,15 @@ public class SegmentedShapeRoi extends ShapeRoi {
     protected int id = NOT_COUNTED; //!< positive if has any id assigned (thus it has been counted already)
     protected int frame = 0; //!< frame number where this outline was found
     /**
+     * step during conversion outline to points. For 1 every point from outline
+     * is included in output list
+     */
+    protected double step = 1;
+    /**
+     * \a true for using smoothing during interpolation
+     */
+    protected boolean smooth = false;
+    /**
      * 
      */
     private static final long serialVersionUID = 1L;
@@ -101,17 +110,30 @@ public class SegmentedShapeRoi extends ShapeRoi {
     /**
      * Convert this ROI to list of points using smoothing and step
      * 
-     * @param step step - step during conversion outline to points. For 1 every point from outline
-     * is included in output list
-     * @param smooth \a true for using smoothing during interpolation 
+     * Use object parameters \a step, \a smooth that should be set before call this method
+     *  
      * @return List of List of ROIs
      */
-    public List<Point2d> getOutlineasPoints(double step, boolean smooth) {
+    public List<Point2d> getOutlineasPoints() {
         List<Point2d> ret;
         FloatPolygon fp;
         fp = getInterpolatedPolygon(step, smooth);
         ret = new QuimpDataConverter(fp.xpoints, fp.ypoints).getList();
         return ret;
+    }
+
+    /**
+     * Allow to set non-standard parameters used during conversion from outline (ROI) to list of
+     * points
+     * 
+     * @param step
+     * @param smooth
+     * 
+     * @see getOutlineasPoints()
+     */
+    public void setInterpolationParameters(double step, boolean smooth) {
+        this.step = step;
+        this.smooth = smooth;
     }
 
 }

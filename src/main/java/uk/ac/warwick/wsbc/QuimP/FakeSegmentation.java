@@ -35,10 +35,10 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  * of the new chain. 
  * 
  * @startuml
- * User-->(Create object)
+ * User-->(Create FakeSegmentation)
  * User->(run tracking)
  * User->(get chains)
- * (Create object).->(create TrackOutline) : <<include>>
+ * (Create FakeSegmentation).->(create TrackOutline) : <<extend>>
  * @enduml
  * 
  * After creation of object user has to call trackObjects()
@@ -55,6 +55,9 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  * FakeSegmentation->FakeSegmentation : store //obj// in ""trackers""
  * note left
  * See TrackOutline
+ * trackers are ROIs for
+ * one slice kept in TrackOutline
+ * object
  * end note
  * end
  * User->trackObjects

@@ -527,7 +527,7 @@ public class BOA_ implements PlugIn {
 
         private MenuBar quimpMenuBar;
         private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory, menuLoad,
-                menuDeletePlugin, menuApplyPlugin; // items
+                menuDeletePlugin, menuApplyPlugin, menuSegmentationRun; // items
         private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
         private Color defaultColor;
 
@@ -593,6 +593,7 @@ public class BOA_ implements PlugIn {
             Menu menuConfig; // menu Config in menubar
             Menu menuFile; // menu File in menubar
             Menu menuPlugin; // menu Plugin in menubar
+            Menu menuSegmentation; // menu Segmentation in menubar
 
             menuBar = new MenuBar();
 
@@ -600,11 +601,13 @@ public class BOA_ implements PlugIn {
             menuAbout = new Menu("About");
             menuFile = new Menu("File");
             menuPlugin = new Menu("Plugin");
+            menuSegmentation = new Menu("Segmentation");
 
             // build main line
             menuBar.add(menuFile);
             menuBar.add(menuConfig);
             menuBar.add(menuPlugin);
+            menuBar.add(menuSegmentation);
             menuBar.add(menuAbout);
 
             // add entries
@@ -642,6 +645,10 @@ public class BOA_ implements PlugIn {
             menuApplyPlugin = new MenuItem("Re-apply all");
             menuApplyPlugin.addActionListener(this);
             menuPlugin.add(menuApplyPlugin);
+
+            menuSegmentationRun = new MenuItem("Segment mask");
+            menuSegmentationRun.addActionListener(this);
+            menuSegmentation.add(menuSegmentationRun);
 
             return menuBar;
         }
@@ -1412,6 +1419,15 @@ public class BOA_ implements PlugIn {
                 qState.restore(qState.boap.frame); // copy snaphots for frame to current
                                                    // snakePluginList (and segParams)
                 recalculatePlugins(); // update screen
+            }
+
+            /**
+             * Run segmentation from mask file
+             */
+            if (b == menuSegmentationRun) {
+                FakeSegmentationUI fS = new FakeSegmentationUI(qState.nest);
+                recalculatePlugins(); // update screen
+
             }
 
             updateWindowState(); // window logic on any change and selectors

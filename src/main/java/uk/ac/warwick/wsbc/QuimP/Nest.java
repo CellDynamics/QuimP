@@ -13,6 +13,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
 /**
  * Represents collection of Snakes
@@ -43,6 +44,19 @@ class Nest implements IQuimpSerialize {
         ALIVE = 0;
         nextID = 0;
         sHs = new ArrayList<SnakeHandler>();
+    }
+    
+    public void addHandlers(ArrayList<ArrayList<SegmentedShapeRoi>> roiArray) {
+        for(List<SegmentedShapeRoi> lsS : roiArray) {
+            try {
+                sHs.add(new SnakeHandler(lsS,nextID));
+                nextID++;
+                NSNAKES++;
+                ALIVE++;
+            } catch (Exception e) {
+                LOGGER.error("A snake failed to initilise");
+            }
+        }
     }
 
     public void addHandlers(Roi[] roiArray, int startFrame) {
@@ -198,6 +212,16 @@ class Nest implements IQuimpSerialize {
         }
         sHs.remove(sH);
         NSNAKES--;
+    }
+
+    /**
+     * Remove all handlers from Nest. Make Nest empty
+     */
+    public void cleanNest() {
+        sHs.clear();
+        NSNAKES = 0;
+        ALIVE = 0;
+        nextID = 0;
     }
 
     /**
