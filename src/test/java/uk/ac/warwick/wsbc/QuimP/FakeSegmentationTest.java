@@ -7,7 +7,6 @@ package uk.ac.warwick.wsbc.QuimP;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,10 +25,9 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import ij.process.ImageConverter;
-import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
  * @author p.baniukiewicz
@@ -69,6 +67,9 @@ public class FakeSegmentationTest {
     private static final Logger LOGGER = LogManager.getLogger(FakeSegmentationTest.class.getName());
 
     private ImagePlus test1;
+    private ImagePlus test2;
+    private ImagePlus test3;
+    private ImagePlus test4;
 
     /**
      * @throws java.lang.Exception
@@ -90,6 +91,9 @@ public class FakeSegmentationTest {
     @Before
     public void setUp() throws Exception {
         test1 = IJ.openImage("src/test/resources/BW_seg_5_slices.tif");
+        test2 = IJ.openImage("src/test/resources/BW_seg_5_slices_no_last.tif");
+        test3 = IJ.openImage("src/test/resources/BW_seg_5_slices_no_middle_last.tif");
+        test4 = IJ.openImage("src/test/resources/BW_seg_5_slices_no_first.tif");
     }
 
     /**
@@ -98,6 +102,9 @@ public class FakeSegmentationTest {
     @After
     public void tearDown() throws Exception {
         test1.close();
+        test2.close();
+        test3.close();
+        test4.close();
     }
 
     /**
@@ -163,9 +170,10 @@ public class FakeSegmentationTest {
         accessPrivate("testIntersect", obj, new Object[] { r1, test },
                 new Class<?>[] { r1.getClass(), test.getClass() });
 
-        assertThat(r1.id, is(0)); // first outline
-        assertThat(r3.id, is(0)); // second outline has ID of first if they overlap
-        assertThat(r2.id, is(SegmentedShapeRoi.NOT_COUNTED)); // this not overlap and has not id yet
+        assertThat(r1.getId(), is(0)); // first outline
+        assertThat(r3.getId(), is(0)); // second outline has ID of first if they overlap
+        assertThat(r2.getId(), is(SegmentedShapeRoi.NOT_COUNTED)); // this not overlap and has not
+                                                                   // id yet
 
     }
 
@@ -189,11 +197,11 @@ public class FakeSegmentationTest {
         accessPrivate("testIntersect", obj, new Object[] { r4, test },
                 new Class<?>[] { r1.getClass(), test.getClass() });
 
-        assertThat(r1.id, is(SegmentedShapeRoi.NOT_COUNTED));
-        assertThat(r2.id, is(SegmentedShapeRoi.NOT_COUNTED));
-        assertThat(r3.id, is(SegmentedShapeRoi.NOT_COUNTED));
+        assertThat(r1.getId(), is(SegmentedShapeRoi.NOT_COUNTED));
+        assertThat(r2.getId(), is(SegmentedShapeRoi.NOT_COUNTED));
+        assertThat(r3.getId(), is(SegmentedShapeRoi.NOT_COUNTED));
 
-        assertThat(r4.id, is(0)); // first outline always has id assigned
+        assertThat(r4.getId(), is(0)); // first outline always has id assigned
     }
 
     /**
@@ -203,27 +211,135 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testGetChains() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test1);
-        obj.trackObjects();
-        ArrayList<ArrayList<ShapeRoi>> ret = obj.getChains();
-        assertThat(ret.size(), is(3));
-        for (ArrayList<ShapeRoi> aL : ret)
-            assertThat(aL.size(), is(5));
-
-        ImagePlus cp = test1.duplicate();
-        new ImageConverter(cp).convertToRGB();
-        for (ArrayList<ShapeRoi> aL : ret) {
-            QColor qcolor = QColor.lightColor();
-            Color color = new Color(qcolor.getColorInt());
-            for (int i = 0; i < aL.size(); i++) {
-                ImageProcessor currentP = cp.getImageStack().getProcessor(i + 1);
-                currentP.setColor(color);
-                currentP.setLineWidth(2);
-                aL.get(i).drawPixels(currentP);
+        FakeSegmentation obj = new FakeSegmentation(test1); // create object with stack
+        obj.trackObjects(); // run tracking
+        ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
+        assertThat(ret.size(), is(3)); // check number of objects
+        for (ArrayList<SegmentedShapeRoi> aL : ret) { // iterate over objects and get subsequent
+            // segmentations
+            assertThat(aL.size(), is(5)); // all objects are on all frames
+            for (int i = 0; i < 5; i++) {
+                SegmentedShapeRoi oF = (SegmentedShapeRoi) aL.get(i); // cast to SegmentedShapeRoi
+                assertThat(oF.getFrame(), is(i + 1)); // and check if every next outline for given
+                                                      // cell has increasing frame number
             }
         }
-        IJ.saveAsTiff(cp, "/tmp/testGetChains.tif"); // save image
 
+        RoiSaver.saveROIs(test1, "/tmp/testGetChains.tif", ret);
+    }
+
+    /**
+     * @test Check generated chains
+     * @pre Three objects on 1-4 frames, 2 objects on 5th 
+     * @post Three objects detected but one has shorter chain (frames 1-4)
+     * @throws Exception
+     */
+    @Test
+    public void testGetChains_no_last() throws Exception {
+        FakeSegmentation obj = new FakeSegmentation(test2); // create object with stack
+        obj.trackObjects(); // run tracking
+        ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
+        assertThat(ret.size(), is(3)); // check number of objects
+
+        assertThat(ret.get(0).size(), is(4)); // missing on 5th frame
+        assertThat(ret.get(1).size(), is(5));
+        assertThat(ret.get(2).size(), is(5));
+
+        for (int i = 0; i < 4; i++) {
+            SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(0).get(i);
+            assertThat(oF.getFrame(), is(i + 1));
+        }
+
+        for (int i = 0; i < 5; i++) {
+            SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(1).get(i);
+            assertThat(oF.getFrame(), is(i + 1));
+        }
+
+        for (int i = 0; i < 5; i++) {
+            SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(2).get(i);
+            assertThat(oF.getFrame(), is(i + 1));
+        }
+
+        RoiSaver.saveROIs(test2, "/tmp/testGetChains_no_last.tif", ret);
+    }
+
+    /**
+     * @test Check generated chains
+     * @pre Three objects on 2-5 frames, 2 objects on 1st 
+     * @post Three objects detected but one has shorter chain (frames 2-5)
+     * @throws Exception
+     */
+    @Test
+    public void testGetChains_no_first() throws Exception {
+        FakeSegmentation obj = new FakeSegmentation(test4); // create object with stack
+        obj.trackObjects(); // run tracking
+        ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
+        assertThat(ret.size(), is(3)); // check number of objects
+
+        assertThat(ret.get(0).size(), is(5));
+        assertThat(ret.get(1).size(), is(5));
+        assertThat(ret.get(2).size(), is(4)); // missing on 1st frame
+
+        for (int i = 0; i < 4; i++) {
+            SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(0).get(i);
+            assertThat(oF.getFrame(), is(i + 1));
+        }
+
+        for (int i = 0; i < 5; i++) {
+            SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(1).get(i);
+            assertThat(oF.getFrame(), is(i + 1));
+        }
+
+        for (int i = 0; i < 4; i++) {
+            SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(2).get(i);
+            assertThat(oF.getFrame(), is(i + 2)); // starts from 2nd frame
+        }
+
+        RoiSaver.saveROIs(test4, "/tmp/testGetChains_no_first.tif", ret); // wrong image because of
+                                                                          // saveROIs
+    }
+
+    /**
+     * @test Check generated chains
+     * @pre Three objects on frames 1,2,4 and 2 objects on 3,5 
+     * @post 4 chains detected. Missing object breaks the chain
+     * @throws Exception
+     */
+    @Test
+    public void testGetChains_no_middle_last() throws Exception {
+        FakeSegmentation obj = new FakeSegmentation(test3); // create object with stack
+        obj.trackObjects(); // run tracking
+        ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
+        assertThat(ret.size(), is(4)); // check number of objects
+
+        assertThat(ret.get(0).size(), is(4)); // missing on 5th frame
+        assertThat(ret.get(1).size(), is(2));
+        assertThat(ret.get(2).size(), is(5));
+        assertThat(ret.get(3).size(), is(2)); // new chain after break
+
+        for (int i = 0; i < 4; i++) {
+            SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(0).get(i);
+            assertThat(oF.getFrame(), is(i + 1));
+        }
+
+        for (int i = 0; i < 2; i++) {
+            SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(1).get(i);
+            assertThat(oF.getFrame(), is(i + 1));
+        }
+
+        for (int i = 0; i < 5; i++) {
+            SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(2).get(i);
+            assertThat(oF.getFrame(), is(i + 1));
+        }
+
+        for (int i = 0; i < 2; i++) {
+            SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(3).get(i);
+            assertThat(oF.getFrame(), is(i + 4)); // new chain from 4th frame
+        }
+
+        RoiSaver.saveROIs(test3, "/tmp/testGetChains_no_middle_last.tif", ret); // wrong image
+                                                                                // because of
+                                                                                // saveROIs
     }
 
 }
