@@ -27,7 +27,9 @@ public class FakeSegmentationUI_run {
      */
     public static void main(String[] args) {
 
-        new FakeSegmentationUI(null).show();
+        FakeSegmentationPlugin fp = new FakeSegmentationPlugin();
+        fp.attachData(null);
+        fp.showUI(true);
 
     }
 

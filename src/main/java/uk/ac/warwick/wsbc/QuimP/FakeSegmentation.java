@@ -106,7 +106,9 @@ public class FakeSegmentation {
      * 
      * @param iP stack of images to segment
      */
-    public FakeSegmentation(ImagePlus iP) {
+    public FakeSegmentation(final ImagePlus iP) {
+        if (iP == null) // can not create from null image
+            throw new IllegalArgumentException("The image was: null");
         this.iP = iP.duplicate();
         LOGGER.debug("Got " + iP.getImageStackSize() + " slices");
         trackers = new TrackOutline[this.iP.getImageStackSize()];
@@ -124,7 +126,7 @@ public class FakeSegmentation {
      * @return \a true if \a r1 and \a r2 overlap
      * @warning Modify \a r1 parameter
      */
-    private boolean testIntersect(ShapeRoi r1, ShapeRoi r2) {
+    private boolean testIntersect(final ShapeRoi r1, final ShapeRoi r2) {
         if (r1 == null || r2 == null)
             return false;
         ShapeRoi intersect = r1.and(r2);
@@ -147,7 +149,7 @@ public class FakeSegmentation {
      * @param sRa Array of ROIs to test
      * 
      */
-    private void testIntersect(SegmentedShapeRoi sR, ArrayList<SegmentedShapeRoi> sRa) {
+    private void testIntersect(final SegmentedShapeRoi sR, final ArrayList<SegmentedShapeRoi> sRa) {
         if (sR.getId() == SegmentedShapeRoi.NOT_COUNTED) { // root - first outline
             sR.setId(nextID++); // if not counted start new chain assigning new id
         }

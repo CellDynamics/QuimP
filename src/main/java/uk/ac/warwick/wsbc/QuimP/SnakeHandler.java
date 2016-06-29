@@ -61,6 +61,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     /**
      * Copy constructor. Create SnakeHandler from list of already prepared outlines
      * 
+     * For every frame it copies provided snake to all three arrays: \a finalSnakes, \a segSnakes,
+     * \a liveSnake and sets first and last frame using data from \a SegmentedShapeRoi object 
+     * 
      * @param snakes List of outlines that will be propagated from first frame. First frame is 
      * wrote down in first element of this list
      * @param id Unique Snake ID controlled by Nest object
@@ -74,14 +77,16 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         segSnakes = new Snake[BOA_.qState.boap.FRAMES - startFrame + 1]; // stored snakes
         ID = id;
         for (SegmentedShapeRoi sS : snakes) {
-            liveSnake = new Snake(sS.getOutlineasPoints(), ID);
-            backupLiveSnake(sS.getFrame());
-            storeLiveSnake(sS.getFrame());
+            liveSnake = new Snake(sS.getOutlineasPoints(), ID); // tmp for next two methods
+            backupLiveSnake(sS.getFrame()); // fill segSnakes for frame
+            storeLiveSnake(sS.getFrame()); // fill finalSnakes for frame
         }
-        liveSnake = new Snake(snakes.get(0).getOutlineasPoints(), ID);
+        liveSnake = new Snake(snakes.get(0).getOutlineasPoints(), ID); // set live again for current
+                                                                       // frame
         endFrame = snakes.get(snakes.size() - 1).getFrame(); // SegmentedShapeRoi contains number of
-                                                             // frame that it came from. Last will
-                                                             // last frame
+                                                             // frame that it came from. The are
+                                                             // sorted as frames so last originates
+                                                             // from last frame
     }
 
     /**

@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.io.OpenDialog;
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 
 /**
  * Hold current BOA state that can be serialized
@@ -74,7 +75,15 @@ public class BOAState implements IQuimpSerialize {
      */
     public transient SegParam segParam;
     public BOAp boap; //!< Reference to old BOAp class, keeps internal state of BOA
-
+    /**
+     * Instance of fake segmentation plugin that converts BW masks into snakes. This is regular
+     * plugin but handled separately from SnakePlugins and it is not provided as external jar 
+     */
+    public transient FakeSegmentationPlugin fakeSegmentationPlugin;
+    /**
+     * Configuration of FakeSegmentation plugin if it was used. Used during saving boa state
+     */
+    private ParamList fakeSegmentationParam;
     /**
      * Keep snapshots of SegParam objects for every frame separately
      */
@@ -638,6 +647,7 @@ public class BOAState implements IQuimpSerialize {
         boap = new BOAp(); // build BOAp
         segParam = new SegParam(); // and SegParam
         snakePluginList = new SnakePluginList();
+        fakeSegmentationParam = new ParamList(); // save empty list even if plugin not used
     }
 
     /**
@@ -706,6 +716,8 @@ public class BOAState implements IQuimpSerialize {
     @Override
     public void beforeSerialize() {
         nest.beforeSerialize(); // prepare snakes
+        if (fakeSegmentationPlugin != null) // was used, store config
+            fakeSegmentationParam = fakeSegmentationPlugin.getPluginConfig();
         // snakePluginListSnapshots and segParamSnapshots do not need beforeSerialize()
     }
 
