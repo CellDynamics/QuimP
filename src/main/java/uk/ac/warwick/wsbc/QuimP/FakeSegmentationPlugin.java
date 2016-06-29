@@ -70,9 +70,9 @@ public class FakeSegmentationPlugin extends QWindowBuilder
         uiDefinition.put("help", 
                 "Load mask related to stack loaded already in BOA. It should be "
                 + "8-bit image of size of original stack with black background and white objects"
-                + "\nThe step option stands for discretisation step, 1 means that every pixel of"
-                + "shape outline will be mapped to Snake node."
-                + "\nSmoothing adds extr Spline interpolation to the shape");
+                + "\nThe step option stands for discretisation step, 1.0 means that every pixel of"
+                + " the outline will be mapped to Snake node."
+                + "\nSmoothing adds extra Spline interpolation to the shape");
         /**/
         buildWindow(uiDefinition);
         params = new ParamList();
