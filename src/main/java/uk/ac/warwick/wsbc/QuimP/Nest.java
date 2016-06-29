@@ -22,7 +22,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
  * @author p.baniukiewicz
  * @date 4 May 2016
  */
-class Nest implements IQuimpSerialize {
+public class Nest implements IQuimpSerialize {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
