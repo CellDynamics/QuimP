@@ -174,6 +174,17 @@ public abstract class QWindowBuilder {
      * <li> second entry
      * <li> ...
      * </ol>
+     * <li>button - creates JButton control. It requires 1 parameter:
+     * <ol>
+     * <li>Name on the button
+     * </ol>
+     * <li>checkbox - creates JCheckBox control. It requires 3 parameters (in
+     * order)
+     * <ol>
+     * <li>checkbox name
+     * <li>checkbox state (boolean value, \a true or \a false)
+     * <li>initial value (\a true or \a false)
+     * </ol>
      * </ul>
      * For \a choice calling uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder.setValues(final ParamList)
      * has sense only if passed parameters will be present in list already (so it has been used
@@ -270,7 +281,7 @@ public abstract class QWindowBuilder {
                     ui.put(key + "label", new Label(key)); // add description
                     break;
                 case "button":
-                    if (uiparams.length < 2) // 2+uitype
+                    if (uiparams.length != 2) // 1+uitype
                         throw new IllegalArgumentException(
                                 "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
                     JButton b = new JButton(uiparams[1]);
@@ -278,11 +289,11 @@ public abstract class QWindowBuilder {
                     ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
                     break;
                 case "checkbox":
-                    if (uiparams.length < 3) // 2+uitype
+                    if (uiparams.length != 3) // 2+uitype
                         throw new IllegalArgumentException(
                                 "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
-                    JCheckBox cb = new JCheckBox(WordUtils.capitalize(uiparams[2]),
-                            Boolean.parseBoolean(uiparams[1]));
+                    JCheckBox cb = new JCheckBox(WordUtils.capitalize(uiparams[1]),
+                            Boolean.parseBoolean(uiparams[2]));
                     ui.put(key, cb);
                     ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
                     break;
@@ -333,7 +344,7 @@ public abstract class QWindowBuilder {
         pluginPanel.add(south, BorderLayout.SOUTH);
         pluginWnd.add(pluginPanel);
         pluginWnd.pack();
-        // add listener on close - window is hided to preserve settings
+        // add listener on close - window is hidden to preserve settings
         pluginWnd.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
                 LOGGER.trace("Window closing");
@@ -519,6 +530,17 @@ public abstract class QWindowBuilder {
         // get list of all params from ui as <key,val> list
         ParamList uiParam = getValues();
         return uiParam.getDoubleValue(key);
+    }
+
+    /**
+     * Return value related to given key.
+     * 
+     * @copydoc getIntegerFromUI(String)
+     */
+    public boolean getBooleanFromUI(final String key) {
+        // get list of all params from ui as <key,val> list
+        ParamList uiParam = getValues();
+        return uiParam.getBooleanValue(key);
     }
 
     /**
