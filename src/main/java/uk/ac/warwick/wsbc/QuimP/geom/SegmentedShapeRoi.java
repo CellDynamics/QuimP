@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
+import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.process.FloatPolygon;
@@ -117,8 +118,17 @@ public class SegmentedShapeRoi extends ShapeRoi {
     public List<Point2d> getOutlineasPoints() {
         List<Point2d> ret;
         FloatPolygon fp;
-        fp = getInterpolatedPolygon(step, smooth);
-        ret = new QuimpDataConverter(fp.xpoints, fp.ypoints).getList();
+        PolygonRoi pR;
+        // convert to PolygonRoi as it supports spline fitting
+        pR = new PolygonRoi(getInterpolatedPolygon(step, false), Roi.FREEROI);
+        if (smooth == true) { // fit spline
+            pR.fitSpline();
+            fp = pR.getFloatPolygon(); // get FloatPolygon to have access to x[],y[]
+            ret = new QuimpDataConverter(fp.xpoints, fp.ypoints).getList(); // x[],y[] are fitted
+        } else {
+            fp = pR.getFloatPolygon();
+            ret = new QuimpDataConverter(fp.xpoints, fp.ypoints).getList(); // x[],y[] not fitted
+        }
         return ret;
     }
 
