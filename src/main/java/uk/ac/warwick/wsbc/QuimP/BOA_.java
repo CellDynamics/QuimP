@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BoxLayout;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -1320,11 +1321,13 @@ public class BOA_ implements PlugIn {
              * the program
              */
             if (b == menuShowHistory) {
-                LOGGER.debug("got ShowHistory");
-                if (historyLogger.isOpened())
+                JOptionPane.showMessageDialog(window,
+                        "The full history of changes is avaiable after saving your work in the"
+                                + " file *.QCONF");
+                /*if (historyLogger.isOpened())
                     historyLogger.closeHistory();
                 else
-                    historyLogger.openHistory();
+                    historyLogger.openHistory();*/
             }
 
             /**
@@ -1426,16 +1429,15 @@ public class BOA_ implements PlugIn {
              */
             if (b == menuSegmentationRun) {
                 FakeSegmentationUI fS = new FakeSegmentationUI(qState.nest);
-                recalculatePlugins(); // update screen
-
+                fS.attachContext(BOA_.viewUpdater); // allow plugin to update screen
+                // update screen is always on Apply button of plugin
+                BOA_.log("Run segmentation from mask file");
             }
 
             updateWindowState(); // window logic on any change and selectors
 
             // run segmentation for selected cases
-            if (run)
-
-            {
+            if (run) {
                 System.out.println("running from in stackwindow");
                 // run on current frame
                 try {
