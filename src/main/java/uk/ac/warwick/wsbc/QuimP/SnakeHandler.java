@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +16,7 @@ import ij.IJ;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.io.SaveDialog;
+import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
 /**
  * Store all the snakes computed for one cell across frames and it is responsible
@@ -32,6 +34,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     private Snake[] segSnakes; //!< series of snakes, result of cell segmentation only  */
     private int ID; //!< ID of Snake stored in this SnakeHandler
 
+    public SnakeHandler() {
+        endFrame = BOA_.qState.boap.FRAMES;
+    }
     /**
      * Constructor of SnakeHandler. Stores ROI with object for segmentation
      * 
@@ -41,8 +46,8 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      * @throws Exception
      */
     public SnakeHandler(final Roi r, int frame, int id) throws Exception {
+        this();
         startFrame = frame;
-        endFrame = BOA_.qState.boap.FRAMES;
         roi = r;
         // snakes array keeps snakes across frames from current to end. Current
         // is that one for which cell has been added
@@ -51,6 +56,37 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         ID = id;
         liveSnake = new Snake(r, ID, false);
         backupLiveSnake(frame);
+    }
+
+    /**
+     * Copy constructor. Create SnakeHandler from list of already prepared outlines
+     * 
+     * For every frame it copies provided snake to all three arrays: \a finalSnakes, \a segSnakes,
+     * \a liveSnake and sets first and last frame using data from \a SegmentedShapeRoi object 
+     * 
+     * @param snakes List of outlines that will be propagated from first frame. First frame is 
+     * wrote down in first element of this list
+     * @param id Unique Snake ID controlled by Nest object
+     * @throws Exception
+     * @see uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi
+     */
+    public SnakeHandler(List<SegmentedShapeRoi> snakes, int id) throws Exception {
+        this();
+        startFrame = snakes.get(0).getFrame(); // get first frame from outline
+        finalSnakes = new Snake[BOA_.qState.boap.FRAMES - startFrame + 1]; // stored snakes
+        segSnakes = new Snake[BOA_.qState.boap.FRAMES - startFrame + 1]; // stored snakes
+        ID = id;
+        for (SegmentedShapeRoi sS : snakes) {
+            liveSnake = new Snake(sS.getOutlineasPoints(), ID); // tmp for next two methods
+            backupLiveSnake(sS.getFrame()); // fill segSnakes for frame
+            storeLiveSnake(sS.getFrame()); // fill finalSnakes for frame
+        }
+        liveSnake = new Snake(snakes.get(0).getOutlineasPoints(), ID); // set live again for current
+                                                                       // frame
+        endFrame = snakes.get(snakes.size() - 1).getFrame(); // SegmentedShapeRoi contains number of
+                                                             // frame that it came from. The are
+                                                             // sorted as frames so last originates
+                                                             // from last frame
     }
 
     /**

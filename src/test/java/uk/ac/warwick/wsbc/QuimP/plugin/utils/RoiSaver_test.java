@@ -5,6 +5,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.vecmath.Point2d;
 
@@ -60,7 +61,7 @@ public class RoiSaver_test {
      */
     @Test
     public void test_SaveROI_case3() {
-        RoiSaver.saveROI("/tmp/test_SaveROI_case3.tif", null);
+        RoiSaver.saveROI("/tmp/test_SaveROI_case3.tif", (List<Point2d>) null);
     }
 
 }

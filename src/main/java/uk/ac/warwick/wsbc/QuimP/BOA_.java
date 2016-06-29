@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BoxLayout;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -121,6 +122,7 @@ public class BOA_ implements PlugIn {
      * Hold current BOA object and provide access to only selected methods from plugin. Reference to
      * this field is passed to plugins and give them possibility to call selected methods from BOA
      * class
+     * @todo TODO Should not be static rather
      */
     public static ViewUpdater viewUpdater;
     /**
@@ -411,6 +413,8 @@ public class BOA_ implements PlugIn {
             LOGGER.trace("CLOSED");
             BOA_.running = false; // set marker
             qState.snakePluginList.clear(); // close all opened plugin windows
+            if (qState.fakeSegmentationPlugin != null)
+                qState.fakeSegmentationPlugin.showUI(false);
             canvas = null; // clear window data
             imageGroup = null;
             window = null;
@@ -427,7 +431,7 @@ public class BOA_ implements PlugIn {
         @Override
         public void windowActivated(final WindowEvent e) {
             LOGGER.trace("ACTIVATED");
-            // rebuild manu for this local window
+            // rebuild menu for this local window
             // workaround for Mac and theirs menus on top screen bar
             // IJ is doing the same for activation of its window so every time one has correct menu
             // on top
@@ -527,7 +531,7 @@ public class BOA_ implements PlugIn {
 
         private MenuBar quimpMenuBar;
         private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory, menuLoad,
-                menuDeletePlugin, menuApplyPlugin; // items
+                menuDeletePlugin, menuApplyPlugin, menuSegmentationRun; // items
         private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
         private Color defaultColor;
 
@@ -593,6 +597,7 @@ public class BOA_ implements PlugIn {
             Menu menuConfig; // menu Config in menubar
             Menu menuFile; // menu File in menubar
             Menu menuPlugin; // menu Plugin in menubar
+            Menu menuSegmentation; // menu Segmentation in menubar
 
             menuBar = new MenuBar();
 
@@ -600,11 +605,13 @@ public class BOA_ implements PlugIn {
             menuAbout = new Menu("About");
             menuFile = new Menu("File");
             menuPlugin = new Menu("Plugin");
+            menuSegmentation = new Menu("Segmentation");
 
             // build main line
             menuBar.add(menuFile);
             menuBar.add(menuConfig);
             menuBar.add(menuPlugin);
+            menuBar.add(menuSegmentation);
             menuBar.add(menuAbout);
 
             // add entries
@@ -642,6 +649,10 @@ public class BOA_ implements PlugIn {
             menuApplyPlugin = new MenuItem("Re-apply all");
             menuApplyPlugin.addActionListener(this);
             menuPlugin.add(menuApplyPlugin);
+
+            menuSegmentationRun = new MenuItem("Segment mask");
+            menuSegmentationRun.addActionListener(this);
+            menuSegmentation.add(menuSegmentationRun);
 
             return menuBar;
         }
@@ -1313,11 +1324,13 @@ public class BOA_ implements PlugIn {
              * the program
              */
             if (b == menuShowHistory) {
-                LOGGER.debug("got ShowHistory");
-                if (historyLogger.isOpened())
+                JOptionPane.showMessageDialog(window,
+                        "The full history of changes is avaiable after saving your work in the"
+                                + " file *.QCONF");
+                /*if (historyLogger.isOpened())
                     historyLogger.closeHistory();
                 else
-                    historyLogger.openHistory();
+                    historyLogger.openHistory();*/
             }
 
             /**
@@ -1414,12 +1427,23 @@ public class BOA_ implements PlugIn {
                 recalculatePlugins(); // update screen
             }
 
+            /**
+             * Run segmentation from mask file
+             */
+            if (b == menuSegmentationRun) {
+                qState.fakeSegmentationPlugin = new FakeSegmentationPlugin(); // create instance
+                qState.fakeSegmentationPlugin.attachData(qState.nest); // attach data
+                qState.fakeSegmentationPlugin.attachContext(viewUpdater); // allow plugin to update
+                                                                          // screen
+                qState.fakeSegmentationPlugin.showUI(true); // plugin is run internally after Apply
+                // update screen is always on Apply button of plugin
+                BOA_.log("Run segmentation from mask file");
+            }
+
             updateWindowState(); // window logic on any change and selectors
 
             // run segmentation for selected cases
-            if (run)
-
-            {
+            if (run) {
                 System.out.println("running from in stackwindow");
                 // run on current frame
                 try {
