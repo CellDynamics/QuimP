@@ -28,11 +28,11 @@ import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
  */
 public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(SnakeHandler.class.getName());
-    private transient Roi roi; // inital ROI
+    private transient Roi roi; // initial ROI
     private Snake liveSnake;
     private Snake[] finalSnakes; //!< series of snakes, result of cell segm. and plugin processing*/
     private Snake[] segSnakes; //!< series of snakes, result of cell segmentation only  */
-    private int ID; //!< ID of Snake stored in this SnakeHandler
+    private int ID; //!< ID of Snakes stored in this SnakeHandler
 
     public SnakeHandler() {
         endFrame = BOA_.qState.boap.FRAMES;

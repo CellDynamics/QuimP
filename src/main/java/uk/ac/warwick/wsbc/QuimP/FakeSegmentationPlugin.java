@@ -61,12 +61,11 @@ public class FakeSegmentationPlugin extends QWindowBuilder
         maskFilename = "";
         // define window controls
         uiDefinition = new ParamList(); // will hold ui definitions
-        uiDefinition.put("name", "FakeSegmentationUI"); // name of window
+        uiDefinition.put("name", "FakeSegmentation"); // name of window
         uiDefinition.put("Load Mask", "button, Load_mask");
         uiDefinition.put("step", "spinner, 1, 10001, 1," + Integer.toString(step)); // start, end,
                                                                                     // step, default
         uiDefinition.put("smoothing", "checkbox, interpolation," + Boolean.toString(smoothing)); // name,
-        // default
         //!<
         uiDefinition.put("help", 
                 "Load mask related to stack loaded already in BOA. It should be "

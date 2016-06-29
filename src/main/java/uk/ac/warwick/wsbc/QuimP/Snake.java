@@ -33,7 +33,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     private int snakeID; //!< unique ID of snake
     public double startingNnodes; //!< how many nodes at start of segmentation
     private int FROZEN; //!< number of nodes frozen
-    private Rectangle bounds = new Rectangle(); //!< snake bounds
+    private Rectangle bounds = new Rectangle(); //!< snake bounds, updated only on use getBounds()
     
     /**
      * Create a snake from existing linked list (at least one head node)

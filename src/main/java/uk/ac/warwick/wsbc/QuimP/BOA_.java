@@ -137,6 +137,7 @@ public class BOA_ implements PlugIn {
     /**
      * Configuration object, available from all modules. Must be initialized here \b AND in 
      * constructor (to reset settings on next BOA call without quitting Fiji)
+     * Keep data that will be serialized
      */
     static public BOAState qState; // current state of BOA module
 
