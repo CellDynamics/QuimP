@@ -21,6 +21,8 @@ import org.apache.commons.math3.stat.StatUtils;
 
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
@@ -151,6 +153,111 @@ class MatrixDotProduct implements RealMatrixChangingVisitor {
 }
 
 /**
+ * Divide in-place this matrix by another
+ * @author p.baniukiewicz
+ * @date 23 Jun 2016
+ *
+ */
+class MatrixDotDiv implements RealMatrixChangingVisitor {
+
+    RealMatrix m;
+
+    public MatrixDotDiv(RealMatrix m) {
+        this.m = m;
+    }
+
+    @Override
+    public double end() {
+        return 0;
+    }
+
+    @Override
+    public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
+        if (m.getColumnDimension() != arg1 || m.getRowDimension() != arg0)
+            throw new MatrixDimensionMismatchException(m.getRowDimension(), m.getColumnDimension(),
+                    arg0, arg1);
+
+    }
+
+    @Override
+    public double visit(int arg0, int arg1, double arg2) {
+
+        return arg2 / m.getEntry(arg0, arg1);
+    }
+
+}
+
+/**
+ * Add in-place this matrix to another
+ * @author p.baniukiewicz
+ * @date 23 Jun 2016
+ *
+ */
+class MatrixDotAdd implements RealMatrixChangingVisitor {
+
+    RealMatrix m;
+
+    public MatrixDotAdd(RealMatrix m) {
+        this.m = m;
+    }
+
+    @Override
+    public double end() {
+        return 0;
+    }
+
+    @Override
+    public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
+        if (m.getColumnDimension() != arg1 || m.getRowDimension() != arg0)
+            throw new MatrixDimensionMismatchException(m.getRowDimension(), m.getColumnDimension(),
+                    arg0, arg1);
+
+    }
+
+    @Override
+    public double visit(int arg0, int arg1, double arg2) {
+
+        return arg2 + m.getEntry(arg0, arg1);
+    }
+
+}
+
+/**
+ * Sub in-place this matrix to another
+ * @author p.baniukiewicz
+ * @date 23 Jun 2016
+ *
+ */
+class MatrixDotSub implements RealMatrixChangingVisitor {
+
+    RealMatrix m;
+
+    public MatrixDotSub(RealMatrix m) {
+        this.m = m;
+    }
+
+    @Override
+    public double end() {
+        return 0;
+    }
+
+    @Override
+    public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
+        if (m.getColumnDimension() != arg1 || m.getRowDimension() != arg0)
+            throw new MatrixDimensionMismatchException(m.getRowDimension(), m.getColumnDimension(),
+                    arg0, arg1);
+
+    }
+
+    @Override
+    public double visit(int arg0, int arg1, double arg2) {
+
+        return arg2 - m.getEntry(arg0, arg1);
+    }
+
+}
+
+/**
  * Hold algorithm parameters
  * 
  * @author p.baniukiewicz
@@ -213,14 +320,20 @@ public class RandomWalkSegmentation {
     public static final int LEFT = 10; //!< Direction of circshift coded as in Matlab */
     public static final int TOP = -01; //!< Direction of circshift coded as in Matlab */
     public static final int BOTTOM = 01; //!< Direction of circshift coded as in Matlab */
-    public static final int FOREGROUND = 1; //!< Definition of foreground pixels */
-    public static final int BACKGROUND = 2; //!< Definition of background pixels */
+    public static final int FOREGROUND = 0; //!< Definition of foreground pixels */
+    public static final int BACKGROUND = 1; //!< Definition of background pixels */
 
     private RealMatrix image; //!< Image to process in 8bit greyscale
     private Params params;
 
     public RandomWalkSegmentation() {
         params = new Params();
+    }
+    
+    public RandomWalkSegmentation(ImageProcessor ip, Params params) {
+        if (ip.getBitDepth() != 8 && ip.getBitDepth() != 16)
+            throw new IllegalArgumentException("Only 8-bit or 16-bit images are supported");
+        image = RandomWalkSegmentation.ImageProcessor2RealMatrix(ip);
     }
 
     public RandomWalkSegmentation(RealMatrix image, Params params) {
@@ -262,13 +375,24 @@ public class RandomWalkSegmentation {
      * @param ip input image
      * @return 2D matrix converted to Double
      */
-    static public RealMatrix ImagePlus2RealMatrix(ImagePlus ip) {
+    static public RealMatrix ImageProcessor2RealMatrix(ImageProcessor ip) {
         if (ip == null)
             return null;
         RealMatrix out;
-        float[][] image = ip.getProcessor().getFloatArray();
-        out = MatrixUtils.createRealMatrix(QuimPArrayUtils.float2Ddouble(image));
+        float[][] image = ip.getFloatArray();
+        out = MatrixUtils.createRealMatrix(QuimPArrayUtils.float2ddouble(image));
         return out;
+    }
+
+    /**
+     * Create FloatProcessor 2D from RealMatrix. 
+     * 
+     * @param rm input matrix
+     * @return FloatProcessor
+     */
+    static public FloatProcessor RealMatrix2ImageProcessor(RealMatrix rm) {
+        double[][] rawData = rm.getData();
+        return new FloatProcessor(QuimPArrayUtils.double2float(rawData));
     }
 
     /**
@@ -413,8 +537,8 @@ public class RandomWalkSegmentation {
         return out;
     }
 
-    protected void solver(RealMatrix image, Map<Integer, List<Point>> seeds, RealMatrix[] gradients,
-            Params params) {
+    protected RealMatrix[] solver(RealMatrix image, Map<Integer, List<Point>> seeds,
+            RealMatrix[] gradients, Params params) {
         // compute mean intensity of foreground and background pixels
         double meanseed_fg = StatUtils.mean(getValues(image, seeds.get(FOREGROUND)).getDataRef());
         double meanseed_bg = StatUtils.mean(getValues(image, seeds.get(BACKGROUND)).getDataRef());
@@ -456,11 +580,18 @@ public class RandomWalkSegmentation {
         drl2 = tmp1 < tmp2 ? tmp1 : tmp2;
         tmp1 = getStabilityCriterion(wt_fg, avgwy_fg);
         tmp2 = getStabilityCriterion(wb_fg, avgwy_fg); // WARN See differences between matlab and
-                                                       // java in definitoin up,down,etx. In matlab
+                                                       // java in definition up,down,etx. In matlab
                                                        // it seems to be wrong according to names
         dtb2 = tmp1 < tmp2 ? tmp1 : tmp2;
         double D = drl2 < dtb2 ? drl2 : dtb2; // D=0.25*min(drl2,dtb2)
         D *= 0.25;
+
+        RealMatrix FG =
+                MatrixUtils.createRealMatrix(image.getRowDimension(), image.getColumnDimension());
+        RealMatrix FGlast =
+                MatrixUtils.createRealMatrix(image.getRowDimension(), image.getColumnDimension());
+        RealMatrix BG =
+                MatrixUtils.createRealMatrix(image.getRowDimension(), image.getColumnDimension());
 
         // precompute terms for loop
         wr_fg.walkInOptimizedOrder(new MatrixDotProduct(avgwx_fg));
@@ -475,8 +606,86 @@ public class RandomWalkSegmentation {
 
         // main loop
         for (int i = 0; i < params.Iter; i++) {
+            // TODO create separate version for values
+            setValues(FG, seeds.get(FOREGROUND), new ArrayRealVector(new double[] { 1 }));
+            setValues(FG, seeds.get(BACKGROUND), new ArrayRealVector(new double[] { 0 }));
+            setValues(BG, seeds.get(FOREGROUND), new ArrayRealVector(new double[] { 0 }));
+            setValues(BG, seeds.get(BACKGROUND), new ArrayRealVector(new double[] { 1 }));
+
+            // groups for long term for FG
+            RealMatrix fgcirc_right = circshift(FG, RIGHT);
+            RealMatrix fgcirc_left = circshift(FG, LEFT);
+            RealMatrix fgcirc_top = circshift(FG, TOP);
+            RealMatrix fgcirc_bottom = circshift(FG, BOTTOM);
+            RealMatrix FGc = FG.copy();
+            RealMatrix FGc1 = FG.copy();
+            RealMatrix G = FG.copy();
+
+            fgcirc_right.walkInOptimizedOrder(new MatrixDotSub(FG));
+            fgcirc_right.walkInOptimizedOrder(new MatrixDotDiv(wr_fg));
+            FGc.walkInOptimizedOrder(new MatrixDotSub(fgcirc_left));
+            FGc.walkInOptimizedOrder(new MatrixDotDiv(wl_fg));
+
+            fgcirc_top.walkInOptimizedOrder(new MatrixDotSub(FG));
+            fgcirc_top.walkInOptimizedOrder(new MatrixDotDiv(wt_fg));
+            FGc1.walkInOptimizedOrder(new MatrixDotSub(fgcirc_bottom));
+            FGc1.walkInOptimizedOrder(new MatrixDotDiv(wb_fg));
+
+            fgcirc_right.walkInOptimizedOrder(new MatrixDotSub(FGc));
+            fgcirc_top.walkInOptimizedOrder(new MatrixDotSub(FGc1));
+            fgcirc_right.walkInOptimizedOrder(new MatrixDotAdd(fgcirc_top));
+            fgcirc_right.walkInOptimizedOrder(new MatrixElementMultiply(D));
+
+            G.walkInOptimizedOrder(new MatrixDotProduct(BG)); // FG*BG
+            G.walkInOptimizedOrder(new MatrixElementMultiply(params.gamma[0]));
+
+            fgcirc_right.walkInOptimizedOrder(new MatrixDotSub(G));
+
+            fgcirc_right.walkInOptimizedOrder(new MatrixElementMultiply(params.dt));
+
+            FG.walkInOptimizedOrder(new MatrixDotAdd(fgcirc_right));
+
+            // groups for long term for BG
+            RealMatrix bgcirc_right = circshift(BG, RIGHT);
+            RealMatrix bgcirc_left = circshift(BG, LEFT);
+            RealMatrix bgcirc_top = circshift(BG, TOP);
+            RealMatrix bgcirc_bottom = circshift(BG, BOTTOM);
+            RealMatrix BGc = BG.copy();
+            RealMatrix BGc1 = BG.copy();
+            G = BG.copy();
+
+            bgcirc_right.walkInOptimizedOrder(new MatrixDotSub(BG));
+            bgcirc_right.walkInOptimizedOrder(new MatrixDotDiv(wr_bg));
+            BGc.walkInOptimizedOrder(new MatrixDotSub(bgcirc_left));
+            BGc.walkInOptimizedOrder(new MatrixDotDiv(wl_bg));
+
+            bgcirc_top.walkInOptimizedOrder(new MatrixDotSub(BG));
+            bgcirc_top.walkInOptimizedOrder(new MatrixDotDiv(wt_bg));
+            BGc1.walkInOptimizedOrder(new MatrixDotSub(bgcirc_bottom));
+            BGc1.walkInOptimizedOrder(new MatrixDotDiv(wb_bg));
+
+            bgcirc_right.walkInOptimizedOrder(new MatrixDotSub(BGc));
+            bgcirc_top.walkInOptimizedOrder(new MatrixDotSub(BGc1));
+            bgcirc_right.walkInOptimizedOrder(new MatrixDotAdd(bgcirc_top));
+            bgcirc_right.walkInOptimizedOrder(new MatrixElementMultiply(D));
+
+            G.walkInOptimizedOrder(new MatrixDotProduct(FGlast)); // FG*BG
+            G.walkInOptimizedOrder(new MatrixElementMultiply(params.gamma[0]));
+
+            bgcirc_right.walkInOptimizedOrder(new MatrixDotSub(G));
+
+            bgcirc_right.walkInOptimizedOrder(new MatrixElementMultiply(params.dt));
+
+            BG.walkInOptimizedOrder(new MatrixDotAdd(bgcirc_right));
+
+            FGlast = FG.copy();
 
         }
+        RealMatrix[] ret = new RealMatrix[2];
+        ret[FOREGROUND] = FG;
+        ret[BACKGROUND] = BG;
+
+        return ret;
     }
 
     /**
@@ -535,6 +744,7 @@ public class RandomWalkSegmentation {
      * @param in Input matrix. Will be modified
      * @param ind List of indexes
      * @param val List of values, length must be the same as \a ind or 1
+     * @warning modify \a in
      */
     protected void setValues(RealMatrix in, List<Point> ind, ArrayRealVector val) {
         if (ind.size() != val.getDimension() & val.getDimension() != 1)

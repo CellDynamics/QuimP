@@ -18,7 +18,7 @@ public class QuimPArrayUtils {
      * @param input Array to convert
      * @return converted one
      */
-    public static double[][] float2Ddouble(float[][] input) {
+    public static double[][] float2ddouble(float[][] input) {
         if (input == null)
             return null;
         int rows = input.length;
@@ -31,6 +31,30 @@ public class QuimPArrayUtils {
             // iterate over columns
             for (int c = 0; c < cols; c++) {
                 out[r][c] = input[r][c];
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Convert 2D double array to float
+     * 
+     * @param input Array to convert
+     * @return converted one
+     */
+    public static float[][] double2float(double[][] input) {
+        if (input == null)
+            return null;
+        int rows = input.length;
+        float[][] out = new float[rows][];
+        // iterate over rows with conversion
+        for (int r = 0; r < rows; r++) {
+            double[] row = input[r];
+            int cols = row.length;
+            out[r] = new float[cols];
+            // iterate over columns
+            for (int c = 0; c < cols; c++) {
+                out[r][c] = Double.valueOf((input[r][c])).floatValue();
             }
         }
         return out;

@@ -38,12 +38,24 @@ public class QuimPArrayUtilsTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#float2Ddouble(float[][])}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#float2ddouble(float[][])}.
      */
     @Test
     public void testFloat2Ddouble() throws Exception {
         float[][] in = { { 1.0f, 2.0f, 3.0f }, { 1.11f, 2.11f, 3.11f } };
-        double[][] out = QuimPArrayUtils.float2Ddouble(in);
+        double[][] out = QuimPArrayUtils.float2ddouble(in);
+        for (int r = 0; r < 2; r++)
+            for (int c = 0; c < 3; c++)
+                assertEquals(in[r][c], out[r][c], 1e-3);
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#double2float(double[][])}.
+     */
+    @Test
+    public void testDouble2Float() throws Exception {
+        double[][] in = { { 1.0, 2.0, 3.0 }, { 1.11, 2.11, 3.11 } };
+        float[][] out = QuimPArrayUtils.double2float(in);
         for (int r = 0; r < 2; r++)
             for (int c = 0; c < 3; c++)
                 assertEquals(in[r][c], out[r][c], 1e-3);

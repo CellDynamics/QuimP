@@ -8,6 +8,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.awt.Color;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -63,6 +64,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
         testImage1 = null;
         testImage1seed.close();
         testImage1seed = null;
+        testImage1rgb.close();
+        testImage1rgb = null;
     }
 
     /**
@@ -260,6 +263,7 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
 
     /**
      * @test of setValues(RealMatrix, List<Point>, ArrayRealVector)
+     * @pre number of values equals number of indexes
      * @throws Exception
      */
     @Test
@@ -268,6 +272,9 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
         double[][] test =     { { 1, 2, 3, 4 },
                                 { 2, 3, 40, 5 },
                                 { 6, 7, 8, 9 } };
+        double[][] expected = { { -1, 2,  3, 4 },
+                                {  2, 3, -3, 5 },
+                                { -2, 7,  8, 9 } };
         /**/
         RealMatrix in = MatrixUtils.createRealMatrix(test);
         List<Point> ind = new ArrayList<>();
@@ -275,7 +282,60 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
         ind.add(new Point(0, 2));
         ind.add(new Point(2, 1));
         double[] toSet = { -1, -2, -3 }; // values to set into indexes ind
-        // TODO finish
+        setValues(in, ind, new ArrayRealVector(toSet)); // input is modified
+        assertThat(in, is(MatrixUtils.createRealMatrix(expected)));
+    }
+
+    /**
+     * @test of setValues(RealMatrix, List<Point>, ArrayRealVector)
+     * @pre one value many indexes
+     * @post the same value in every provided index
+     * @throws Exception
+     */
+    @Test
+    public void testSetValues_1() throws Exception {
+        //!<
+        double[][] test =     { { 1, 2, 3, 4 },
+                                { 2, 3, 40, 5 },
+                                { 6, 7, 8, 9 } };
+        double[][] expected = { { -1, 2,  3, 4 },
+                                {  2, 3, -1, 5 },
+                                { -1, 7,  8, 9 } };
+        /**/
+        RealMatrix in = MatrixUtils.createRealMatrix(test);
+        List<Point> ind = new ArrayList<>();
+        ind.add(new Point(0, 0)); // col,row
+        ind.add(new Point(0, 2));
+        ind.add(new Point(2, 1));
+        double[] toSet = { -1 }; // values to set into indexes ind
+        setValues(in, ind, new ArrayRealVector(toSet)); // input is modified
+        assertThat(in, is(MatrixUtils.createRealMatrix(expected)));
+    }
+
+    /**
+     * @test of setValues(RealMatrix, List<Point>, ArrayRealVector)
+     * @pre number of values is not 1 and does not equal to the number of indexes
+     * @post exception
+     * @throws Exception
+     */
+    @Test(expected = InvalidParameterException.class)
+    public void testSetValues_2() throws Exception {
+        //!<
+        double[][] test =     { { 1, 2, 3, 4 },
+                                { 2, 3, 40, 5 },
+                                { 6, 7, 8, 9 } };
+        double[][] expected = { { -1, 2,  3, 4 },
+                                {  2, 3, -1, 5 },
+                                { -1, 7,  8, 9 } };
+        /**/
+        RealMatrix in = MatrixUtils.createRealMatrix(test);
+        List<Point> ind = new ArrayList<>();
+        ind.add(new Point(0, 0)); // col,row
+        ind.add(new Point(0, 2));
+        ind.add(new Point(2, 1));
+        double[] toSet = { -1, -2 }; // values to set into indexes ind
+        setValues(in, ind, new ArrayRealVector(toSet)); // input is modified
+        assertThat(in, is(MatrixUtils.createRealMatrix(expected)));
     }
 
 }
