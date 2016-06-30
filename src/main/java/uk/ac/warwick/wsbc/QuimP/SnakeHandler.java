@@ -70,7 +70,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      * @throws Exception
      * @see uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi
      */
-    public SnakeHandler(List<SegmentedShapeRoi> snakes, int id) throws Exception {
+    public SnakeHandler(List<SegmentedShapeRoi> snakes, int id) throws BoaException {
         this();
         startFrame = snakes.get(0).getFrame(); // get first frame from outline
         finalSnakes = new Snake[BOA_.qState.boap.FRAMES - startFrame + 1]; // stored snakes
@@ -87,6 +87,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
                                                              // frame that it came from. The are
                                                              // sorted as frames so last originates
                                                              // from last frame
+        // LOGGER.trace("Added SnakeHandler: ID=" + id + " startFrame=" + startFrame + " endFrame="
+        // + endFrame); // try toString
+        LOGGER.debug("Added" + this.toString()); // try toString
     }
 
     /**
@@ -114,7 +117,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      */
     public void backupLiveSnake(int frame) throws BoaException {
 
-        LOGGER.debug("Stored live snake in frame " + frame + " ID " + ID);
+        LOGGER.trace("Stored live snake in frame " + frame + " ID " + ID);
         segSnakes[frame - startFrame] = null; // delete at current frame
 
         segSnakes[frame - startFrame] = new Snake(liveSnake, ID);
@@ -299,7 +302,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     }
 
     public Snake getBackupSnake(int f) {
-        LOGGER.debug("Asked for backup snake at frame " + f + " ID " + ID);
+        LOGGER.trace("Asked for backup snake at frame " + f + " ID " + ID);
         if (f - startFrame < 0) {
             LOGGER.warn("Tried to access negative frame store");
             return null;

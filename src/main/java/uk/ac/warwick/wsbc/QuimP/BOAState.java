@@ -674,7 +674,7 @@ public class BOAState implements IQuimpSerialize {
      * @see snakePluginListSnapshots 
      */
     public void restore(int frame) {
-        LOGGER.debug("Data restored from frame:" + frame);
+        LOGGER.trace("Data restored from frame:" + frame);
         SegParam tmp = segParamSnapshots.get(frame - 1);
         if (tmp != null)
             segParam = tmp;

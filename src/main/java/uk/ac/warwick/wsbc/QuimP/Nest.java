@@ -46,15 +46,24 @@ public class Nest implements IQuimpSerialize {
         sHs = new ArrayList<SnakeHandler>();
     }
     
+    /**
+     * Convert array of SegmentedShapeRoi to SnakeHandlers
+     * 
+     * @param roiArray First level stands for objects (SnakeHandlers(, second for Snakes within one
+     * chain
+     * @remarks Conversion within one SnakeHandler is stopped when there is defective Snake.
+     */
     public void addHandlers(ArrayList<ArrayList<SegmentedShapeRoi>> roiArray) {
-        for(List<SegmentedShapeRoi> lsS : roiArray) {
+        LOGGER.trace("Adding " + roiArray.size() + "SnakeHandlers");
+        for (List<SegmentedShapeRoi> lsS : roiArray) {
             try {
-                sHs.add(new SnakeHandler(lsS,nextID));
+                sHs.add(new SnakeHandler(lsS, nextID));
                 nextID++;
                 NSNAKES++;
                 ALIVE++;
             } catch (Exception e) {
-                LOGGER.error("A snake failed to initilise");
+                LOGGER.error("A snake on frame " + lsS.get(0).getFrame() + " failed to initilise "
+                        + e.getMessage());
             }
         }
     }
@@ -68,7 +77,7 @@ public class Nest implements IQuimpSerialize {
                 NSNAKES++;
                 ALIVE++;
             } catch (Exception e) {
-                BOA_.log("A snake failed to initilise");
+                BOA_.log("A snake failed to initilise: " + e.getMessage());
             }
         }
         BOA_.log("Added " + roiArray.length + " cells at frame " + startFrame);
