@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -166,6 +168,12 @@ public class Tool {
         return min;
     }
 
+    /**
+     * Find index of minimal element
+     * 
+     * @param a array to search in
+     * @return index of min(a)
+     */
     public static int minArrayIndex(double[] a) {
         // find the index of the min
         double min = a[0];
@@ -181,6 +189,14 @@ public class Tool {
             }
         }
         return iMin;
+    }
+
+    /**
+     * @param <T>
+     * @copydoc uk.ac.warwick.wsbc.QuimP.Tool.minArrayIndex(double[])
+     */
+    public static <T extends Comparable<T>> int minListIndex(List<T> a) {
+        return a.indexOf(Collections.min(a));
     }
 
     public static double arrayMax(double[] a) {
