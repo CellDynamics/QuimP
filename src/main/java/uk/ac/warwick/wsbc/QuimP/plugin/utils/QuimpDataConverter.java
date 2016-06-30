@@ -6,6 +6,7 @@ import java.util.List;
 import javax.vecmath.Point2d;
 import javax.vecmath.Tuple2d;
 
+import ij.util.Tools;
 import uk.ac.warwick.wsbc.QuimP.Snake;
 
 /**
@@ -63,6 +64,20 @@ public class QuimpDataConverter {
             throw new IllegalArgumentException("Arrays have different lengths");
         this.X = X;
         this.Y = Y;
+    }
+
+    /**
+     * Default if Node list is in form of two arrays with coordinates
+     * 
+     * @param X input list of vertices
+     * @param Y input list of vertices
+     */
+    public QuimpDataConverter(final float X[], final float Y[]) {
+        this();
+        if (X.length != Y.length)
+            throw new IllegalArgumentException("Arrays have different lengths");
+        this.X = Tools.toDouble(X);
+        this.Y = Tools.toDouble(Y);
     }
 
     /**

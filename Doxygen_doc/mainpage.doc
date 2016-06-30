@@ -11,4 +11,5 @@
 - \subpage SnakePlugin "Snake Plugin Interface" - Description of plugin interface
 - \subpage ConfigurationHandling "Handling configuration" - Saving and loading various configurations
 - \subpage UsefulTools "Useful Tools" - Exemplary scripts that may be useful during development
+- \subpage FakeSeg "Mask segmentation" - About segmentation directly from black-white masks
 */

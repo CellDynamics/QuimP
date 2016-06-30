@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,6 +31,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -172,6 +174,17 @@ public abstract class QWindowBuilder {
      * <li> second entry
      * <li> ...
      * </ol>
+     * <li>button - creates JButton control. It requires 1 parameter:
+     * <ol>
+     * <li>Name on the button
+     * </ol>
+     * <li>checkbox - creates JCheckBox control. It requires 3 parameters (in
+     * order)
+     * <ol>
+     * <li>checkbox name
+     * <li>checkbox state (boolean value, \a true or \a false)
+     * <li>initial value (\a true or \a false)
+     * </ol>
      * </ul>
      * For \a choice calling uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder.setValues(final ParamList)
      * has sense only if passed parameters will be present in list already (so it has been used
@@ -254,10 +267,10 @@ public abstract class QWindowBuilder {
                                     Double.parseDouble(uiparams[S_MAX]), // max
                                     Double.parseDouble(uiparams[S_STEP])); // step
                     ui.put(key, new JSpinner(model));
-                    ui.put(key + "label", new Label(key)); // add description
+                    ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
                     break;
                 case "choice":
-                    if (uiparams.length < 2) // 4+uitype
+                    if (uiparams.length < 2) // 2+uitype
                         throw new IllegalArgumentException(
                                 "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
                     Choice c = new Choice();
@@ -266,6 +279,23 @@ public abstract class QWindowBuilder {
                     c.select(0);
                     ui.put(key, c);
                     ui.put(key + "label", new Label(key)); // add description
+                    break;
+                case "button":
+                    if (uiparams.length != 2) // 1+uitype
+                        throw new IllegalArgumentException(
+                                "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
+                    JButton b = new JButton(uiparams[1]);
+                    ui.put(key, b);
+                    ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+                    break;
+                case "checkbox":
+                    if (uiparams.length != 3) // 2+uitype
+                        throw new IllegalArgumentException(
+                                "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
+                    JCheckBox cb = new JCheckBox(WordUtils.capitalize(uiparams[1]),
+                            Boolean.parseBoolean(uiparams[2]));
+                    ui.put(key, cb);
+                    ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
                     break;
                 default:
                     // wrong param syntax
@@ -314,7 +344,7 @@ public abstract class QWindowBuilder {
         pluginPanel.add(south, BorderLayout.SOUTH);
         pluginWnd.add(pluginPanel);
         pluginWnd.pack();
-        // add listener on close - window is hided to preserve settings
+        // add listener on close - window is hidden to preserve settings
         pluginWnd.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
                 LOGGER.trace("Window closing");
@@ -405,6 +435,15 @@ public abstract class QWindowBuilder {
                     comp.select(val);
                     break;
                 }
+                case "button": {
+                    break;
+                }
+                case "checkbox": {
+                    JCheckBox c = (JCheckBox) ui.get(key);
+                    c.setSelected(Boolean.parseBoolean(val));
+
+                    break;
+                }
                 default:
                     throw new IllegalArgumentException("Unknown UI type in setValues");
             }
@@ -447,6 +486,14 @@ public abstract class QWindowBuilder {
                     ret.put(key, val.getSelectedItem());
                     break;
                 }
+                case "button": {
+                    break;
+                }
+                case "checkbox": {
+                    JCheckBox c = (JCheckBox) m.getValue();
+                    ret.put(key, String.valueOf(c.isSelected()));
+                    break;
+                }
                 default:
                     throw new IllegalArgumentException("Unknown UI type in getValues");
             }
@@ -483,6 +530,17 @@ public abstract class QWindowBuilder {
         // get list of all params from ui as <key,val> list
         ParamList uiParam = getValues();
         return uiParam.getDoubleValue(key);
+    }
+
+    /**
+     * Return value related to given key.
+     * 
+     * @copydoc getIntegerFromUI(String)
+     */
+    public boolean getBooleanFromUI(final String key) {
+        // get list of all params from ui as <key,val> list
+        ParamList uiParam = getValues();
+        return uiParam.getBooleanValue(key);
     }
 
     /**

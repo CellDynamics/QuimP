@@ -33,7 +33,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     private int snakeID; //!< unique ID of snake
     public double startingNnodes; //!< how many nodes at start of segmentation
     private int FROZEN; //!< number of nodes frozen
-    private Rectangle bounds = new Rectangle(); //!< snake bounds
+    private Rectangle bounds = new Rectangle(); //!< snake bounds, updated only on use getBounds()
     
     /**
      * Create a snake from existing linked list (at least one head node)
@@ -133,7 +133,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * @param id
      * @throws Exception
      */
-    public Snake(final PolygonRoi R, int id) throws Exception {
+    public Snake(final PolygonRoi R, int id) throws BoaException {
         snakeID = id;
         intializeFloat(R.getFloatPolygon());
         startingNnodes = POINTS / 100.; // as 1%. limit to X%
@@ -150,7 +150,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * @param id id of Snake
      * @throws Exception
      */
-    public Snake(final List<? extends Tuple2d> list, int id) throws Exception {
+    public Snake(final List<? extends Tuple2d> list, int id) throws BoaException {
         snakeID = id;
         initializeArrayList(list);
         startingNnodes = POINTS / 100;
@@ -166,7 +166,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * @param id id of Snake
      * @throws Exception
      */
-    public Snake(final double X[], final double Y[], int id) throws Exception {
+    public Snake(final double X[], final double Y[], int id) throws BoaException {
         snakeID = id;
         initializeArray(X, Y);
         startingNnodes = POINTS / 100;
@@ -357,7 +357,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * @throws Exception
      * @todo This method is the same as intializePolygonDirect(FloatPolygon)
      */
-    private void intializeFloat(final FloatPolygon p) throws Exception {
+    private void intializeFloat(final FloatPolygon p) throws BoaException {
         // System.out.println("poly direct");
         head = new Node(0); // make a dummy head node
         POINTS = 1;
@@ -381,9 +381,11 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * Initialize snake from List of Vector2d objects
      * 
      * @param p List as initializer of Snake
-     * @throws Exception
+     * @throws BoaException
      */
-    private void initializeArrayList(final List<? extends Tuple2d> p) throws Exception {
+    private void initializeArrayList(final List<? extends Tuple2d> p) throws BoaException {
+        if (p.size() <= 3)
+            throw new BoaException("Not enough points provided");
         head = new Node(0);
         POINTS = 1;
         FROZEN = 0;
@@ -407,9 +409,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * 
      * @param X x coordinates of nodes
      * @param Y y coordinates of nodes
-     * @throws Exception
+     * @throws BoaException
      */
-    private void initializeArray(final double X[], final double Y[]) throws Exception {
+    private void initializeArray(final double X[], final double Y[]) throws BoaException {
         head = new Node(0);
         POINTS = 1;
         FROZEN = 0;
@@ -418,7 +420,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         head.setHead(true);
 
         if (X.length != Y.length)
-            throw new Exception("Lengths of X and Y arrays are not equal");
+            throw new BoaException("Lengths of X and Y arrays are not equal");
 
         Node node;
         for (int i = 0; i < X.length; i++) {

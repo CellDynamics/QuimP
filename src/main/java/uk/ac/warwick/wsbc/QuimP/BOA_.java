@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BoxLayout;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -121,6 +122,7 @@ public class BOA_ implements PlugIn {
      * Hold current BOA object and provide access to only selected methods from plugin. Reference to
      * this field is passed to plugins and give them possibility to call selected methods from BOA
      * class
+     * @todo TODO Should not be static rather
      */
     public static ViewUpdater viewUpdater;
     /**
@@ -135,6 +137,7 @@ public class BOA_ implements PlugIn {
     /**
      * Configuration object, available from all modules. Must be initialized here \b AND in 
      * constructor (to reset settings on next BOA call without quitting Fiji)
+     * Keep data that will be serialized
      */
     static public BOAState qState; // current state of BOA module
 
@@ -411,6 +414,8 @@ public class BOA_ implements PlugIn {
             LOGGER.trace("CLOSED");
             BOA_.running = false; // set marker
             qState.snakePluginList.clear(); // close all opened plugin windows
+            if (qState.fakeSegmentationPlugin != null)
+                qState.fakeSegmentationPlugin.showUI(false);
             canvas = null; // clear window data
             imageGroup = null;
             window = null;
@@ -427,7 +432,7 @@ public class BOA_ implements PlugIn {
         @Override
         public void windowActivated(final WindowEvent e) {
             LOGGER.trace("ACTIVATED");
-            // rebuild manu for this local window
+            // rebuild menu for this local window
             // workaround for Mac and theirs menus on top screen bar
             // IJ is doing the same for activation of its window so every time one has correct menu
             // on top
@@ -527,7 +532,7 @@ public class BOA_ implements PlugIn {
 
         private MenuBar quimpMenuBar;
         private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory, menuLoad,
-                menuDeletePlugin, menuApplyPlugin; // items
+                menuDeletePlugin, menuApplyPlugin, menuSegmentationRun; // items
         private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
         private Color defaultColor;
 
@@ -593,6 +598,7 @@ public class BOA_ implements PlugIn {
             Menu menuConfig; // menu Config in menubar
             Menu menuFile; // menu File in menubar
             Menu menuPlugin; // menu Plugin in menubar
+            Menu menuSegmentation; // menu Segmentation in menubar
 
             menuBar = new MenuBar();
 
@@ -600,11 +606,13 @@ public class BOA_ implements PlugIn {
             menuAbout = new Menu("About");
             menuFile = new Menu("File");
             menuPlugin = new Menu("Plugin");
+            menuSegmentation = new Menu("Segmentation");
 
             // build main line
             menuBar.add(menuFile);
             menuBar.add(menuConfig);
             menuBar.add(menuPlugin);
+            menuBar.add(menuSegmentation);
             menuBar.add(menuAbout);
 
             // add entries
@@ -642,6 +650,10 @@ public class BOA_ implements PlugIn {
             menuApplyPlugin = new MenuItem("Re-apply all");
             menuApplyPlugin.addActionListener(this);
             menuPlugin.add(menuApplyPlugin);
+
+            menuSegmentationRun = new MenuItem("Segment mask");
+            menuSegmentationRun.addActionListener(this);
+            menuSegmentation.add(menuSegmentationRun);
 
             return menuBar;
         }
@@ -1313,11 +1325,13 @@ public class BOA_ implements PlugIn {
              * the program
              */
             if (b == menuShowHistory) {
-                LOGGER.debug("got ShowHistory");
-                if (historyLogger.isOpened())
+                JOptionPane.showMessageDialog(window,
+                        "The full history of changes is avaiable after saving your work in the"
+                                + " file *.QCONF");
+                /*if (historyLogger.isOpened())
                     historyLogger.closeHistory();
                 else
-                    historyLogger.openHistory();
+                    historyLogger.openHistory();*/
             }
 
             /**
@@ -1414,12 +1428,23 @@ public class BOA_ implements PlugIn {
                 recalculatePlugins(); // update screen
             }
 
+            /**
+             * Run segmentation from mask file
+             */
+            if (b == menuSegmentationRun) {
+                qState.fakeSegmentationPlugin = new FakeSegmentationPlugin(); // create instance
+                qState.fakeSegmentationPlugin.attachData(qState.nest); // attach data
+                qState.fakeSegmentationPlugin.attachContext(viewUpdater); // allow plugin to update
+                                                                          // screen
+                qState.fakeSegmentationPlugin.showUI(true); // plugin is run internally after Apply
+                // update screen is always on Apply button of plugin
+                BOA_.log("Run segmentation from mask file");
+            }
+
             updateWindowState(); // window logic on any change and selectors
 
             // run segmentation for selected cases
-            if (run)
-
-            {
+            if (run) {
                 System.out.println("running from in stackwindow");
                 // run on current frame
                 try {
@@ -2085,6 +2110,18 @@ public class BOA_ implements PlugIn {
 
     }
 
+    /**
+     * Delete SnakeHandler using the snake clicked by user
+     * 
+     * Method searches the snake in NEst that is on current frame and its centroid is close enough
+     * to clicked point. If found, the whole SnakeHandler (all Snakes of the same ID across 
+     * frames) is deleted.
+     * 
+     * @param x clicked coordinate
+     * @param y clicked coordinate  
+     * @param current frame
+     * @return
+     */
     boolean deleteCell(int x, int y, int frame) {
         if (qState.nest.isVacant()) {
             return false;
@@ -2094,18 +2131,18 @@ public class BOA_ implements PlugIn {
         Snake snake;
         ExtendedVector2d sV;
         ExtendedVector2d mV = new ExtendedVector2d(x, y);
-        double[] distance = new double[qState.nest.size()];
+        List<Double> distance = new ArrayList<Double>();
 
         for (int i = 0; i < qState.nest.size(); i++) { // calc all distances
             sH = qState.nest.getHandler(i);
             if (sH.isStoredAt(frame)) {
                 snake = sH.getStoredSnake(frame);
                 sV = snake.getCentroid();
-                distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
+                distance.add(ExtendedVector2d.lengthP2P(mV, sV));
             }
         }
-        int minIndex = Tool.minArrayIndex(distance);
-        if (distance[minIndex] < 10) { // if closest < 10, delete it
+        int minIndex = Tool.minListIndex(distance);
+        if (distance.get(minIndex) < 10) { // if closest < 10, delete it
             BOA_.log("Deleted cell " + qState.nest.getHandler(minIndex).getID());
             qState.nest.removeHandler(qState.nest.getHandler(minIndex));
             imageGroup.updateOverlay(frame);
@@ -2122,7 +2159,7 @@ public class BOA_ implements PlugIn {
         Snake snake;
         ExtendedVector2d sV;
         ExtendedVector2d mV = new ExtendedVector2d(x, y);
-        double[] distance = new double[qState.nest.size()];
+        List<Double> distance = new ArrayList<Double>();
 
         for (int i = 0; i < qState.nest.size(); i++) { // calc all distances
             sH = qState.nest.getHandler(i);
@@ -2130,16 +2167,16 @@ public class BOA_ implements PlugIn {
             if (sH.isStoredAt(frame)) {
                 snake = sH.getStoredSnake(frame);
                 sV = snake.getCentroid();
-                distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
+                distance.add(ExtendedVector2d.lengthP2P(mV, sV));
             } else {
-                distance[i] = 9999;
+                distance.add(9999.0);
             }
         }
 
-        int minIndex = Tool.minArrayIndex(distance);
+        int minIndex = Tool.minListIndex(distance);
         // BOA_.log("Debug: closest index " + minIndex + ", id " +
         // nest.getHandler(minIndex).getID());
-        if (distance[minIndex] < 10) { // if closest < 10, delete it
+        if (distance.get(minIndex) < 10) { // if closest < 10, delete it
             BOA_.log("Deleted snake " + qState.nest.getHandler(minIndex).getID() + " from " + frame
                     + " onwards");
             sH = qState.nest.getHandler(minIndex);
@@ -3138,6 +3175,10 @@ class BoaException extends Exception {
         type = t;
     }
 
+    public BoaException(String string) {
+        super(string);
+    }
+
     public int getFrame() {
         return frame;
     }
@@ -3145,4 +3186,42 @@ class BoaException extends Exception {
     public int getType() {
         return type;
     }
+
+    /**
+     * 
+     */
+    public BoaException() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param message
+     * @param cause
+     * @param enableSuppression
+     * @param writableStackTrace
+     */
+    public BoaException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    public BoaException(String message, Throwable cause) {
+        super(message, cause);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param cause
+     */
+    public BoaException(Throwable cause) {
+        super(cause);
+        // TODO Auto-generated constructor stub
+    }
+
 }

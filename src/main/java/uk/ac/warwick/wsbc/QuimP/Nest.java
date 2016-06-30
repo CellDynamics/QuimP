@@ -13,6 +13,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
 /**
  * Represents collection of Snakes
@@ -21,7 +22,7 @@ import ij.gui.Roi;
  * @author p.baniukiewicz
  * @date 4 May 2016
  */
-class Nest implements IQuimpSerialize {
+public class Nest implements IQuimpSerialize {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -44,6 +45,28 @@ class Nest implements IQuimpSerialize {
         nextID = 0;
         sHs = new ArrayList<SnakeHandler>();
     }
+    
+    /**
+     * Convert array of SegmentedShapeRoi to SnakeHandlers
+     * 
+     * @param roiArray First level stands for objects (SnakeHandlers(, second for Snakes within one
+     * chain
+     * @remarks Conversion within one SnakeHandler is stopped when there is defective Snake.
+     */
+    public void addHandlers(ArrayList<ArrayList<SegmentedShapeRoi>> roiArray) {
+        LOGGER.trace("Adding " + roiArray.size() + "SnakeHandlers");
+        for (List<SegmentedShapeRoi> lsS : roiArray) {
+            try {
+                sHs.add(new SnakeHandler(lsS, nextID));
+                nextID++;
+                NSNAKES++;
+                ALIVE++;
+            } catch (Exception e) {
+                LOGGER.error("A snake on frame " + lsS.get(0).getFrame() + " failed to initilise "
+                        + e.getMessage());
+            }
+        }
+    }
 
     public void addHandlers(Roi[] roiArray, int startFrame) {
         int i = 0;
@@ -54,7 +77,7 @@ class Nest implements IQuimpSerialize {
                 NSNAKES++;
                 ALIVE++;
             } catch (Exception e) {
-                BOA_.log("A snake failed to initilise");
+                BOA_.log("A snake failed to initilise: " + e.getMessage());
             }
         }
         BOA_.log("Added " + roiArray.length + " cells at frame " + startFrame);
@@ -198,6 +221,16 @@ class Nest implements IQuimpSerialize {
         }
         sHs.remove(sH);
         NSNAKES--;
+    }
+
+    /**
+     * Remove all handlers from Nest. Make Nest empty
+     */
+    public void cleanNest() {
+        sHs.clear();
+        NSNAKES = 0;
+        ALIVE = 0;
+        nextID = 0;
     }
 
     /**

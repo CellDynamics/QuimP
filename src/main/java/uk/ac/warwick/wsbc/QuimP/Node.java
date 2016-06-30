@@ -22,10 +22,20 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  */
 public class Node extends PointsList<Node> {
     private static final Logger LOGGER = LogManager.getLogger(Node.class.getName());
-    private ExtendedVector2d vel; /*!< velocity of the nodes */
-    private ExtendedVector2d F_total; /*!< total force at node */
+    /**
+     * Velocity of the nodes, initialized in
+     * uk.ac.warwick.wsbc.QuimP.Constrictor.constrict(Snake, ImageProcessor)
+     */
+    private ExtendedVector2d vel;
+    /**
+     * Total force at node, initialized in
+     * uk.ac.warwick.wsbc.QuimP.Constrictor.constrict(Snake, ImageProcessor)
+     */
+    private ExtendedVector2d F_total;
     /**
      * Point to move node to after all new node positions have been calc
+     * initialized in
+     * uk.ac.warwick.wsbc.QuimP.Constrictor.constrict(Snake, ImageProcessor)
      */
     private ExtendedVector2d prelimPoint;
 
