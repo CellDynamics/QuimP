@@ -4,6 +4,12 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+// https://objectpartners.com/2013/09/18/the-benefits-of-using-assertthat-over-other-assert-methods-in-unit-tests/
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.ArrayList;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -41,6 +47,16 @@ public class ToolTest {
     @Test
     public void testGetQuimPversion() throws Exception {
         LOGGER.debug(new Tool().getQuimPversion());
+    }
+
+    @Test
+    public void testMinListIndex() throws Exception {
+        ArrayList<Double> ar = new ArrayList<>();
+        ar.add(34.0);
+        ar.add(5.0);
+        ar.add(-5.0);
+
+        assertThat(Tool.minListIndex(ar), is(2));
     }
 
 }
