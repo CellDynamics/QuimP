@@ -22,7 +22,6 @@ import org.junit.Test;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentation.Point;
 
 /**
  * Run time tests of segmentation
@@ -49,8 +48,10 @@ public class RandomWalkSegmentationOtherTest {
     private ImagePlus testImage1; // original 8bit grayscale
     private ImagePlus testImage1seed; // contains rgb image with seed
     private ImagePlus testImage1rgb; // contains rgb image with test seed points
-    private ImagePlus testImage2seed;
-    private ImagePlus testImage2;
+    private ImagePlus testImage2_1seed;
+    private ImagePlus testImage2_1;
+    private ImagePlus testImage2_2;
+    private ImagePlus fluoreszenz_1, fluoreszenz_2;
     Params p;
 
     /**
@@ -74,8 +75,13 @@ public class RandomWalkSegmentationOtherTest {
     public void setUp() throws Exception {
         testImage1seed = IJ.openImage("src/test/resources/segtest_small_seed.tif");
         testImage1 = IJ.openImage("src/test/resources/segtest_small.tif");
-        testImage2seed = IJ.openImage("src/test/resources/segmented_color.tif");
-        testImage2 = IJ.openImage("src/test/resources/segmented_frame_1.tif");
+        testImage2_1seed = IJ.openImage("src/test/resources/segmented_color.tif");
+        testImage2_1 = IJ.openImage("src/test/resources/segmented_frame_1.tif");
+        testImage2_2 = IJ.openImage("src/test/resources/segmented_frame_2.tif");
+
+        fluoreszenz_1 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frame_1.tif");
+        fluoreszenz_2 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frame_2.tif");
+
         testImage1rgb = IJ.openImage("src/test/resources/segtest_small_rgb_test.tif");
         p = new Params(400, 50, 100, 300, 40, 0.1, 8e-3);
     }
@@ -91,6 +97,10 @@ public class RandomWalkSegmentationOtherTest {
         testImage1seed = null;
         testImage1rgb.close();
         testImage1rgb = null;
+        testImage2_1 = null;
+        testImage2_2 = null;
+        fluoreszenz_1.close();
+        fluoreszenz_2.close();
     }
 
     /**
@@ -126,8 +136,8 @@ public class RandomWalkSegmentationOtherTest {
      */
     @Test
     public void testRun_2() throws Exception {
-        RandomWalkSegmentation obj = new RandomWalkSegmentation(testImage2.getProcessor(), p);
-        Map<Integer, List<Point>> seeds = obj.decodeSeeds(testImage2seed, Color.RED, Color.GREEN);
+        RandomWalkSegmentation obj = new RandomWalkSegmentation(testImage2_1.getProcessor(), p);
+        Map<Integer, List<Point>> seeds = obj.decodeSeeds(testImage2_1seed, Color.RED, Color.GREEN);
         LOGGER.debug("FG seeds: " + seeds.get(RandomWalkSegmentation.FOREGROUND).size());
         LOGGER.debug("BG seeds: " + seeds.get(RandomWalkSegmentation.BACKGROUND).size());
         // number of seed correct with matlab file
@@ -143,6 +153,45 @@ public class RandomWalkSegmentationOtherTest {
          * @endcode
          */
         IJ.saveAsTiff(results, "/tmp/testRun_cmp2.tif");
+    }
+
+    /**
+     * @test Test of main runner
+     * @pre wrong colors used for seeding
+     * @post Exception
+     * @throws Exception
+     */
+    @Test(expected = RandomWalkException.class)
+    public void testRun_3() throws Exception {
+        RandomWalkSegmentation obj = new RandomWalkSegmentation(testImage2_1.getProcessor(), p);
+        Map<Integer, List<Point>> seeds =
+                obj.decodeSeeds(testImage2_1seed, Color.CYAN, Color.GREEN);
+        LOGGER.debug("FG seeds: " + seeds.get(RandomWalkSegmentation.FOREGROUND).size());
+        LOGGER.debug("BG seeds: " + seeds.get(RandomWalkSegmentation.BACKGROUND).size());
+        // number of seed correct with matlab file
+        ImageProcessor ret = obj.run(seeds);
+    }
+
+    /**
+     * @test Test of main runner use propagateseed
+     * @pre two frames
+     * @throws Exception
+     */
+    @Test
+    public void testRun_4() throws Exception {
+        RandomWalkSegmentation obj = new RandomWalkSegmentation(fluoreszenz_1.getProcessor(), p);
+        Map<Integer, List<Point>> seeds = obj.decodeSeeds(testImage2_1seed, Color.RED, Color.GREEN);
+        ImageProcessor ret_frame_1 = obj.run(seeds);
+
+        Map<Integer, List<Point>> nextseed = PropagateSeeds.propagateSeed(ret_frame_1, 20);
+        obj = new RandomWalkSegmentation(fluoreszenz_2.getProcessor(), p);
+        ImageProcessor ret_frame_2 = obj.run(nextseed);
+
+        ImagePlus results_frame_1 = new ImagePlus("cmp", ret_frame_1);
+        ImagePlus results_frame_2 = new ImagePlus("cmp", ret_frame_2);
+
+        IJ.saveAsTiff(results_frame_1, "/tmp/testRun_4_f1.tif");
+        IJ.saveAsTiff(results_frame_2, "/tmp/testRun_4_f2.tif");
     }
 
     /**

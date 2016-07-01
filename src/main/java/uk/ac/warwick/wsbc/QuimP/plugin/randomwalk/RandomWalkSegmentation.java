@@ -365,8 +365,12 @@ public class RandomWalkSegmentation {
      * Main runner, does segmentation
      * @param seeds Seed arrays from decodeSeeds(ImagePlus, Color, Color)
      * @return Segmented image
+     * @throws RandomWalkException On wrong seeds
      */
-    public ImageProcessor run(Map<Integer, List<Point>> seeds) {
+    public ImageProcessor run(Map<Integer, List<Point>> seeds) throws RandomWalkException {
+        if (seeds.get(FOREGROUND).isEmpty() || seeds.get(BACKGROUND).isEmpty())
+            throw new RandomWalkException(
+                    "Seed pixels are empty, check whether correct colors were used");
         RealMatrix[] precomputed = precompute(); // precompute gradients
         RealMatrix[] solved = solver(image, seeds, precomputed, params); // run solver
         RealMatrix result = compare(solved[FOREGROUND], solved[BACKGROUND]); // result as matrix
@@ -840,80 +844,72 @@ public class RandomWalkSegmentation {
             l += delta;
         }
     }
+}
+
+/**
+ * Basic class for storing point in Cartesian system
+ * 
+ * @author p.baniukiewicz
+ * @date 23 Jun 2016
+ *
+ */
+class Point {
+    int row, col;
 
     /**
-     * Basic class for storing point in Cartesian system
-     * 
-     * @author p.baniukiewicz
-     * @date 23 Jun 2016
-     *
+     * @param row
+     * @param col
      */
-    class Point {
-        int row, col;
+    public Point(int col, int row) {
+        this.row = row;
+        this.col = col;
+    }
 
-        /**
-         * @param row
-         * @param col
-         */
-        public Point(int col, int row) {
-            this.row = row;
-            this.col = col;
-        }
+    /**
+     * Default constructor
+     */
+    Point() {
+        row = 0;
+        col = 0;
+    }
 
-        /**
-         * Default constructor
-         */
-        Point() {
-            row = 0;
-            col = 0;
-        }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + col;
+        result = prime * result + row;
+        return result;
+    }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + getOuterType().hashCode();
-            result = prime * result + col;
-            result = prime * result + row;
-            return result;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            Point other = (Point) obj;
-            if (!getOuterType().equals(other.getOuterType()))
-                return false;
-            if (col != other.col)
-                return false;
-            if (row != other.row)
-                return false;
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
-        }
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Point other = (Point) obj;
+        if (col != other.col)
+            return false;
+        if (row != other.row)
+            return false;
+        return true;
+    }
 
-        private RandomWalkSegmentation getOuterType() {
-            return RandomWalkSegmentation.this;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        @Override
-        public String toString() {
-            return "Point [row=" + row + ", col=" + col + "]";
-        }
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Point [row=" + row + ", col=" + col + "]";
     }
 
 }
