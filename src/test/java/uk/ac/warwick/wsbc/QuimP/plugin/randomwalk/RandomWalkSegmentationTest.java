@@ -30,29 +30,34 @@ import ij.IJ;
 import ij.ImagePlus;
 
 /**
+ * Test protected methods
+ * 
  * @author p.baniukiewicz
  * @date 22 Jun 2016
  *
  */
 public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
+
+    public RandomWalkSegmentationTest() {
+        super(testImage1.getProcessor(), new Params());
+    }
+
     static {
         System.setProperty("log4j.configurationFile", "qlog4j2.xml");
     }
     private static final Logger LOGGER =
             LogManager.getLogger(RandomWalkSegmentationTest.class.getName());
 
-    static ImagePlus testImage1; // original 8bit grayscale
-    static ImagePlus testImage1seed; // contains rgb image with seed
     static ImagePlus testImage1rgb; // contains rgb image with test seed points
+    static ImagePlus testImage1;
 
     /**
      * @throws java.lang.Exception
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        testImage1seed = IJ.openImage("src/test/resources/segtest_small_seed.tif");
-        testImage1 = IJ.openImage("src/test/resources/segtest_small.tif");
         testImage1rgb = IJ.openImage("src/test/resources/segtest_small_rgb_test.tif");
+        testImage1 = IJ.openImage("src/test/resources/segtest_small.tif");
     }
 
     /**
@@ -60,12 +65,10 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
      */
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        testImage1.close();
-        testImage1 = null;
-        testImage1seed.close();
-        testImage1seed = null;
         testImage1rgb.close();
         testImage1rgb = null;
+        testImage1.close();
+        testImage1 = null;
     }
 
     /**
@@ -80,45 +83,41 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
      */
     @After
     public void tearDown() throws Exception {
-        if (testImage1.changes) { // check if source was modified
-            testImage1.changes = false; // set flag to false to prevent save dialog
-            throw new Exception("Image has been modified"); // throw exception if source image
-                                                            // was modified
-        }
+
     }
 
     /**
-     * @Test of circshift(RealMatrix, int)
+     * @test of circshift(RealMatrix, int)
      * @pre any 2D matrix
-     * @post this matrix shifted to RIGHT
+     * @post this matrix shifted to UP (matlab code issue)
      */
     @Test
     public void testCircshift_right() throws Exception {
         double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 4, 5 }, { 6, 7, 8, 9 } };
-        double[][] expected = { { 4, 1, 2, 3 }, { 5, 2, 3, 4 }, { 9, 6, 7, 8 } };
+        double[][] expected = { { 2, 3, 4, 1 }, { 3, 4, 5, 2 }, { 7, 8, 9, 6 } };
         RealMatrix testrm = MatrixUtils.createRealMatrix(test);
         RealMatrix shift = circshift(testrm, RandomWalkSegmentation.RIGHT);
         assertThat(shift, is(MatrixUtils.createRealMatrix(expected)));
     }
 
     /**
-     * @Test of circshift(RealMatrix, int)
+     * @test of circshift(RealMatrix, int)
      * @pre any 2D matrix
-     * @post this matrix shifted to LEFT
+     * @post this matrix shifted to BOTTOM
      */
     @Test
     public void testCircshift_left() throws Exception {
         double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 4, 5 }, { 6, 7, 8, 9 } };
-        double[][] expected = { { 2, 3, 4, 1 }, { 3, 4, 5, 2 }, { 7, 8, 9, 6 } };
+        double[][] expected = { { 4, 1, 2, 3 }, { 5, 2, 3, 4 }, { 9, 6, 7, 8 } };
         RealMatrix testrm = MatrixUtils.createRealMatrix(test);
         RealMatrix shift = circshift(testrm, RandomWalkSegmentation.LEFT);
         assertThat(shift, is(MatrixUtils.createRealMatrix(expected)));
     }
 
     /**
-     * @Test of circshift(RealMatrix, int)
+     * @test of circshift(RealMatrix, int)
      * @pre any 2D matrix
-     * @post this matrix shifted to TOP
+     * @post this matrix shifted to LEFT
      */
     @Test
     public void testCircshift_top() throws Exception {
@@ -221,9 +220,10 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     public void testDecodeSeeds() throws Exception {
         Set<Point> expectedForeground = new HashSet<Point>();
         expectedForeground.add(new Point(70, 70));
-        expectedForeground.add(new Point(71, 70));
-        expectedForeground.add(new Point(72, 70));
-        expectedForeground.add(new Point(100, 20));
+        expectedForeground.add(new Point(70, 71));
+        expectedForeground.add(new Point(70, 72));
+        expectedForeground.add(new Point(20, 100));
+        expectedForeground.add(new Point(97, 172));
 
         Set<Point> expectedBackground = new HashSet<Point>();
         expectedBackground.add(new Point(20, 20));
@@ -253,10 +253,12 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
         /**/
         double[] expected = { 1, 6, 40 };
         RealMatrix in = MatrixUtils.createRealMatrix(test);
+        LOGGER.debug(in.getEntry(1, 2)); // row,col
         List<Point> ind = new ArrayList<>();
         ind.add(new Point(0, 0));
         ind.add(new Point(0, 2));
         ind.add(new Point(2, 1));
+        LOGGER.debug(ind);
         ArrayRealVector ret = getValues(in, ind);
         assertThat(ret.getDataRef(), is(expected));
     }

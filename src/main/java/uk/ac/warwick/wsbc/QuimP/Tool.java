@@ -192,8 +192,10 @@ public class Tool {
     }
 
     /**
-     * @param <T>
-     * @copydoc uk.ac.warwick.wsbc.QuimP.Tool.minArrayIndex(double[])
+     * Find index of minimal element in Collection
+     * 
+     * @param a collection to search in
+     * @return index of minimal element
      */
     public static <T extends Comparable<T>> int minListIndex(List<T> a) {
         return a.indexOf(Collections.min(a));

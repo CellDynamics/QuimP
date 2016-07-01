@@ -18,6 +18,8 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealMatrixChangingVisitor;
 import org.apache.commons.math3.stat.StatUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
@@ -316,6 +318,12 @@ class Params {
  */
 public class RandomWalkSegmentation {
 
+    static {
+        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+    }
+    private static final Logger LOGGER =
+            LogManager.getLogger(RandomWalkSegmentation.class.getName());
+
     public static final int RIGHT = -10; //!< Direction of circshift coded as in Matlab */
     public static final int LEFT = 10; //!< Direction of circshift coded as in Matlab */
     public static final int TOP = -01; //!< Direction of circshift coded as in Matlab */
@@ -324,23 +332,44 @@ public class RandomWalkSegmentation {
     public static final int BACKGROUND = 1; //!< Definition of background pixels */
 
     private RealMatrix image; //!< Image to process in 8bit greyscale
-    private Params params;
+    private Params params; //!< User provided parameters
 
-    public RandomWalkSegmentation() {
-        params = new Params();
-    }
-    
+    /**
+     * Construct segmentation object from ImageProcessor
+     * 
+     * @param ip image to segment
+     * @param params parameters
+     */
     public RandomWalkSegmentation(ImageProcessor ip, Params params) {
         if (ip.getBitDepth() != 8 && ip.getBitDepth() != 16)
             throw new IllegalArgumentException("Only 8-bit or 16-bit images are supported");
         image = RandomWalkSegmentation.ImageProcessor2RealMatrix(ip);
+        this.params = params;
     }
 
+    /**
+     * Construct segmentation object from 2D RealMatrix representing image
+     * 
+     * @param image image to segment
+     * @param params parameters
+     */
     public RandomWalkSegmentation(RealMatrix image, Params params) {
         this.image = image;
         this.params = params;
     }
-    
+
+    /**
+     * Main runner, does segmentation
+     * @param seeds Seed arrays from decodeSeeds(ImagePlus, Color, Color)
+     * @return Segmented image
+     */
+    public ImageProcessor run(Map<Integer, List<Point>> seeds) {
+        RealMatrix[] precomputed = precompute(); // precompute gradients
+        RealMatrix[] solved = solver(image, seeds, precomputed, params); // run solver
+        RealMatrix result = compare(solved[FOREGROUND], solved[BACKGROUND]); // result as matrix
+        return RealMatrix2ImageProcessor(result);
+    }
+
     /**
      * Find maximum in 2D RealMatrix
      * 
@@ -348,7 +377,11 @@ public class RandomWalkSegmentation {
      * @return maximal value in \a input
      */
     static public double getMax(RealMatrix input) {
-        double[][] data = ((Array2DRowRealMatrix) input).getDataRef();
+        double[][] data;
+        if (input instanceof Array2DRowRealMatrix)
+            data = ((Array2DRowRealMatrix) input).getDataRef();
+        else
+            data = input.getData(); // TODO optimize using visitors because this is copy
         double[] maxs = new double[input.getRowDimension()];
         for (int r = 0; r < input.getRowDimension(); r++)
             maxs[r] = StatUtils.max(data[r]);
@@ -362,7 +395,12 @@ public class RandomWalkSegmentation {
      * @return minimal value in \a input
      */
     static public double getMin(RealMatrix input) {
-        double[][] data = ((Array2DRowRealMatrix) input).getDataRef();
+        double[][] data;
+        if (input instanceof Array2DRowRealMatrix)
+            data = ((Array2DRowRealMatrix) input).getDataRef(); // only avaiable for non
+                                                                // cache-friendly matrix
+        else
+            data = input.getData(); // TODO optimize using visitors because this is copy
         double[] maxs = new double[input.getRowDimension()];
         for (int r = 0; r < input.getRowDimension(); r++)
             maxs[r] = StatUtils.min(data[r]);
@@ -405,8 +443,8 @@ public class RandomWalkSegmentation {
      * addressed by two enums: \a FOREGROUND and \a BACKGROUND
      * @throws RandomWalkException When image other that RGB provided
      */
-    protected Map<Integer, List<Point>> decodeSeeds(final ImagePlus rgb, Color fseed, Color bseed)
-            throws RandomWalkException {
+    public Map<Integer, List<Point>> decodeSeeds(final ImagePlus rgb, final Color fseed,
+            final Color bseed) throws RandomWalkException {
         // output map integrating two lists of points
         HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
         // output lists of points. Can be null if points not found
@@ -418,19 +456,37 @@ public class RandomWalkSegmentation {
         // find marked pixels
         ColorProcessor cp = (ColorProcessor) rgb.getProcessor(); // can cast here because of type
                                                                  // checking
-        for (int x = 0; x < rgb.getWidth(); x++)
-            for (int y = 0; y < rgb.getHeight(); y++) {
+        for (int x = 0; x < cp.getWidth(); x++)
+            for (int y = 0; y < cp.getHeight(); y++) {
                 Color c = cp.getColor(x, y); // get color for pixel
-                if (c.equals(fseed))
-                    foreground.add(new Point(x, y)); // remember foreground coords
+                if (c.equals(fseed)) // WARN Why must be y,x??
+                    foreground.add(new Point(y, x)); // remember foreground coords
                 else if (c.equals(bseed))
-                    background.add(new Point(x, y)); // remember background coords
+                    background.add(new Point(y, x)); // remember background coords
             }
-
         // pack outputs into map
         out.put(FOREGROUND, foreground);
         out.put(BACKGROUND, background);
         return out;
+    }
+
+    /**
+     * Compare probabilities from two matrices and create third depending on winner
+     * @param fg Foreground probabilities for all points
+     * @param bg Background probabilities for all points
+     * @return OUT=FG>BG, 1 for every pixel that wins for FG, o otherwise
+     */
+    public RealMatrix compare(RealMatrix fg, RealMatrix bg) {
+        RealMatrix ret =
+                MatrixUtils.createRealMatrix(fg.getRowDimension(), fg.getColumnDimension());
+        for (int r = 0; r < fg.getRowDimension(); r++)
+            for (int c = 0; c < fg.getColumnDimension(); c++)
+                if (fg.getEntry(r, c) > bg.getEntry(r, c))
+                    ret.setEntry(r, c, 1);
+                else
+                    ret.setEntry(r, c, 0);
+        return ret;
+
     }
 
     /**
@@ -439,6 +495,8 @@ public class RandomWalkSegmentation {
      * @param input Image to be shifted
      * @param direction Shift direction
      * @return Copy of \a input shifted by one pixel in \a direction. 
+     * @warning This method is adjusted to work as MAtlab code and to keep Matlab naming (
+     * rw_laplace4.m) thus the shift direction names are not adequate to shift direction
      */
     protected RealMatrix circshift(RealMatrix input, int direction) {
         double[][] sub; // part of matrix that does no change put is shifted
@@ -446,7 +504,7 @@ public class RandomWalkSegmentation {
         int cols = input.getColumnDimension();
         RealMatrix out = MatrixUtils.createRealMatrix(rows, cols); // output matrix, shifted
         switch (direction) {
-            case RIGHT:
+            case LEFT: // b
                 // rotated right - last column become first
                 // cut submatrix from first column to before last
                 sub = new double[rows][cols - 1];
@@ -456,7 +514,7 @@ public class RandomWalkSegmentation {
                 // copy last column to first
                 out.setColumnVector(0, input.getColumnVector(cols - 1));
                 break;
-            case LEFT:
+            case RIGHT: // top
                 // rotated left - first column become last
                 // cut submatrix from second column to last
                 sub = new double[rows][cols - 1];
@@ -466,7 +524,7 @@ public class RandomWalkSegmentation {
                 // copy first column to last
                 out.setColumnVector(cols - 1, input.getColumnVector(0));
                 break;
-            case TOP:
+            case TOP: // right
                 // rotated top - first row become last
                 // cut submatrix from second row to last
                 sub = new double[rows - 1][cols];
@@ -476,7 +534,7 @@ public class RandomWalkSegmentation {
                 // copy first row to last
                 out.setRowVector(rows - 1, input.getRowVector(0));
                 break;
-            case BOTTOM:
+            case BOTTOM: // left
                 // rotated bottom - last row become first
                 // cut submatrix from first row to before last
                 sub = new double[rows - 1][cols];
@@ -521,8 +579,11 @@ public class RandomWalkSegmentation {
         RealMatrix gTop2 = getSqrdDiffIntensity(image, top);
         // compute maximum of horizontal and vertical intensity gradients
         double maxGright2 = RandomWalkSegmentation.getMax(gRight2);
+        LOGGER.debug("maxGright2 " + maxGright2);
         double maxGtop2 = RandomWalkSegmentation.getMax(gTop2);
+        LOGGER.debug("maxGtop2 " + maxGtop2);
         double maxGrad2 = maxGright2 > maxGtop2 ? maxGright2 : maxGtop2;
+        LOGGER.debug("maxGrad2max " + maxGrad2);
         // Normalize squared gradients to maxGrad
         gRight2.walkInOptimizedOrder(new MatrixElementMultiply(1 / maxGrad2));
         gTop2.walkInOptimizedOrder(new MatrixElementMultiply(1 / maxGrad2));
@@ -537,34 +598,47 @@ public class RandomWalkSegmentation {
         return out;
     }
 
+    /**
+     * Do main computations
+     * 
+     * @param image original image
+     * @param seeds seed array returned from decodeSeeds(ImagePlus, Color, Color)
+     * @param gradients precomputed gradients returned from precompute()
+     * @param params Parameters
+     * @return Computed probabilities for background and foreground
+     * @retval RealMatrix[2], RealMatrix[FOREGROUND] and  RealMatrix[BACKGROUND]
+     */
     protected RealMatrix[] solver(RealMatrix image, Map<Integer, List<Point>> seeds,
             RealMatrix[] gradients, Params params) {
         // compute mean intensity of foreground and background pixels
         double meanseed_fg = StatUtils.mean(getValues(image, seeds.get(FOREGROUND)).getDataRef());
         double meanseed_bg = StatUtils.mean(getValues(image, seeds.get(BACKGROUND)).getDataRef());
+        LOGGER.debug("meanseed_fg=" + meanseed_fg + " meanseed_bg=" + meanseed_bg); // correct
+        LOGGER.trace("fseeds: " + seeds.get(FOREGROUND)); // correct
+        LOGGER.trace("getValfseed: " + getValues(image, seeds.get(FOREGROUND))); // correct
         // compute normalised squared differences to mean seed intensities
         RealMatrix diffI_fg = image.scalarAdd(-meanseed_fg);
         diffI_fg.walkInOptimizedOrder(new MatrixElementPower());
-        diffI_fg.walkInOptimizedOrder(new MatrixElementMultiply(1 / 65025));
+        diffI_fg.walkInOptimizedOrder(new MatrixElementMultiply(1.0 / 65025)); // correct
         RealMatrix diffI_bg = image.scalarAdd(-meanseed_bg);
         diffI_bg.walkInOptimizedOrder(new MatrixElementPower());
-        diffI_bg.walkInOptimizedOrder(new MatrixElementMultiply(1 / 65025));
+        diffI_bg.walkInOptimizedOrder(new MatrixElementMultiply(1.0 / 65025)); // correct
         // compute weights for diffusion in all four directions, dependent on local gradients and
         // differences to mean intensities of seeds
         RealMatrix wr_fg = computeweights(diffI_fg, gradients[0]); // TODO optimize alpha*diffI_fg
-        RealMatrix wl_fg = computeweights(diffI_fg, gradients[2]);
-        RealMatrix wt_fg = computeweights(diffI_fg, gradients[1]);
-        RealMatrix wb_fg = computeweights(diffI_fg, gradients[3]);
+        RealMatrix wl_fg = computeweights(diffI_fg, gradients[2]); // correct
+        RealMatrix wt_fg = computeweights(diffI_fg, gradients[1]); // correct
+        RealMatrix wb_fg = computeweights(diffI_fg, gradients[3]); // correct
 
         RealMatrix wr_bg = computeweights(diffI_bg, gradients[0]); // TODO optimize alpha*diffI_fg
-        RealMatrix wl_bg = computeweights(diffI_bg, gradients[2]);
-        RealMatrix wt_bg = computeweights(diffI_bg, gradients[1]);
-        RealMatrix wb_bg = computeweights(diffI_bg, gradients[3]);
+        RealMatrix wl_bg = computeweights(diffI_bg, gradients[2]); // correct
+        RealMatrix wt_bg = computeweights(diffI_bg, gradients[1]); // correct
+        RealMatrix wb_bg = computeweights(diffI_bg, gradients[3]); // correct
 
         // compute averaged weights, left/right and top/bottom
         // used when computing second spatial derivate from first one
         RealMatrix avgwx_fg = wl_fg.add(wr_fg);
-        avgwx_fg.walkInOptimizedOrder(new MatrixElementMultiply(0.5));
+        avgwx_fg.walkInOptimizedOrder(new MatrixElementMultiply(0.5)); // correct
         RealMatrix avgwy_fg = wt_fg.add(wb_fg);
         avgwy_fg.walkInOptimizedOrder(new MatrixElementMultiply(0.5));
         RealMatrix avgwx_bg = wl_bg.add(wr_bg);
@@ -584,7 +658,9 @@ public class RandomWalkSegmentation {
                                                        // it seems to be wrong according to names
         dtb2 = tmp1 < tmp2 ? tmp1 : tmp2;
         double D = drl2 < dtb2 ? drl2 : dtb2; // D=0.25*min(drl2,dtb2)
-        D *= 0.25;
+        D *= 0.25; // correct
+        LOGGER.debug("drl2=" + drl2 + " dtb2=" + dtb2); // ok
+        LOGGER.debug("D=" + D); // ok
 
         RealMatrix FG =
                 MatrixUtils.createRealMatrix(image.getRowDimension(), image.getColumnDimension());
@@ -606,6 +682,7 @@ public class RandomWalkSegmentation {
 
         // main loop
         for (int i = 0; i < params.Iter; i++) {
+            LOGGER.trace("Iter: " + i);
             // TODO create separate version for values
             setValues(FG, seeds.get(FOREGROUND), new ArrayRealVector(new double[] { 1 }));
             setValues(FG, seeds.get(BACKGROUND), new ArrayRealVector(new double[] { 0 }));

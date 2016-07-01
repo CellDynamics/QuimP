@@ -2119,8 +2119,8 @@ public class BOA_ implements PlugIn {
      * 
      * @param x clicked coordinate
      * @param y clicked coordinate  
-     * @param current frame
-     * @return
+     * @param frame current frame
+     * @return \a true if handler deleted, \a false if not (because user does not click it)
      */
     boolean deleteCell(int x, int y, int frame) {
         if (qState.nest.isVacant()) {
