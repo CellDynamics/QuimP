@@ -34,7 +34,7 @@ import ij.ImagePlus;
  * 
  * @author p.baniukiewicz
  * @date 22 Jun 2016
- *
+ * @see src/test/resources/Matlab/RW_java_tests.m at <a href="./examples.html">Examples</a>
  */
 public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
 

@@ -25,9 +25,11 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentation.Point;
 
 /**
+ * Run time tests of segmentation
+ * 
  * @author p.baniukiewicz
  * @date 30 Jun 2016
- *
+ * @see src/test/resources/Matlab/RW_java_tests.m at <a href="./examples.html">Examples</a>
  */
 public class RandomWalkSegmentationOtherTest {
     static {
@@ -188,3 +190,11 @@ public class RandomWalkSegmentationOtherTest {
     }
 
 }
+
+/**
+ * @example src/test/resources/Matlab/RW_java_tests.m
+ * This is source of good cases for segmentation
+ * 
+ * Comparator for results from debug from uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationTest 
+ * @include src/test/resources/Matlab/java_output_ver.m
+ */

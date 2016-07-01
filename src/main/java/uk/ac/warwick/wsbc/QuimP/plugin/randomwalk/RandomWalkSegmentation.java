@@ -293,7 +293,8 @@ class Params {
      * 
      * @param alpha
      * @param beta
-     * @param gamma
+     * @param gamma1
+     * @param gamma2
      * @param iter
      * @param dt
      * @param relim
@@ -312,9 +313,11 @@ class Params {
 }
 
 /**
+ * This is implementation of Matlab version of Random Walk segmentation algorithm
+ * 
  * @author p.baniukiewicz
  * @date 22 Jun 2016
- *
+ * @see src/test/resources/Matlab/rw_laplace4_java_base.m at <a href="./examples.html">Examples</a>
  */
 public class RandomWalkSegmentation {
 
@@ -914,3 +917,9 @@ public class RandomWalkSegmentation {
     }
 
 }
+
+/**
+ * @example src/test/resources/Matlab/rw_laplace4_java_base.m
+ * This is source file of segmentation in Matlab that was a base for RandomWalkSegmentation
+ * Implementation
+ */
