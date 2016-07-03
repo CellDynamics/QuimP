@@ -52,14 +52,14 @@ public class PropagateSeeds {
         // apply big to old background making object bigger and prevent covering objects on frame
         // n+1
         // by previous background (make "empty" not seeded space around objects)
-        IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_bigbef.tif");
-        IJ.saveAsTiff(new ImagePlus("", cp), "/tmp/testIterateMorphological_cp.tif");
+        //IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_bigbef.tif");
+        //IJ.saveAsTiff(new ImagePlus("", cp), "/tmp/testIterateMorphological_cp.tif");
         for (int x = 0; x < cp.getWidth(); x++)
             for (int y = 0; y < cp.getHeight(); y++) {
                 big.putPixel(x, y, big.getPixel(x, y) | cp.getPixel(x, y));
             }
 
-        IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_big.tif");
+        //IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_big.tif");
 
         // output map integrating two lists of points
         HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
@@ -84,12 +84,12 @@ public class PropagateSeeds {
         switch (oper) {
             case ERODE:
                 for (int i = 0; i < iter; i++)
-                    ip.erode(4, 0); // first param influence precision, for large ,the shape is
+                    ip.erode(1, 0); // first param influence precision, for large ,the shape is
                                     // preserved and changes are very small?
                 break;
             case DILATE:
                 for (int i = 0; i < iter; i++)
-                    ip.dilate(2, 0);
+                    ip.dilate(1, 0);
                 break;
             default:
                 throw new IllegalArgumentException("Binary operation not supported");
