@@ -104,7 +104,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn {
             try {
                 seeds = obj.decodeSeeds(seedImage, Color.RED, Color.GREEN);
                 ret = obj.run(seeds);
-                ImagePlus segmented = new ImagePlus("Segmented_" + image.getTitle(), ret);
+                ImagePlus segmented =
+                        new ImagePlus("Segmented_" + image.getTitle(), ret.convertToByte(true));
                 segmented.show();
                 segmented.updateAndDraw();
             } catch (RandomWalkException e) {
