@@ -61,7 +61,7 @@ public class PropagateSeedsTest {
         ImagePlus ip = testImage2.duplicate();
         BinaryProcessor ret = new BinaryProcessor(ip.getProcessor().convertToByteProcessor());
         Map<Integer, List<Point>> seed = PropagateSeeds.propagateSeed(ret, 20);
-        //IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testPropagateSeed_20.tif");
+        // IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testPropagateSeed_20.tif");
     }
 
     /**
@@ -72,13 +72,15 @@ public class PropagateSeedsTest {
     @Test
     public void testIterateMorphological() throws Exception {
         ImagePlus ip = testImage2.duplicate();
-        BinaryProcessor rete = new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
-        BinaryProcessor retd = new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
-        PropagateSeeds.iterateMorphological(rete, PropagateSeeds.ERODE, 7);
-        IJ.saveAsTiff(new ImagePlus("", rete), "/tmp/testIterateMorphological_erode7.tif");
+        BinaryProcessor rete =
+                new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
+        BinaryProcessor retd =
+                new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
+        PropagateSeeds.iterateMorphological(rete, PropagateSeeds.ERODE, 3);
+        IJ.saveAsTiff(new ImagePlus("", rete), "/tmp/testIterateMorphological_erode3.tif");
 
-        PropagateSeeds.iterateMorphological(retd, PropagateSeeds.DILATE, 7);
-        IJ.saveAsTiff(new ImagePlus("", retd), "/tmp/testIterateMorphological_dilate7.tif");
+        PropagateSeeds.iterateMorphological(retd, PropagateSeeds.DILATE, 5);
+        IJ.saveAsTiff(new ImagePlus("", retd), "/tmp/testIterateMorphological_dilate5.tif");
 
     }
 

@@ -20,7 +20,7 @@ public class RandomWalkSegmentationPlugin_run {
         RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
         ImageJ ij = new ImageJ();
         IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
-                "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/fluoreszenz-test_eq_smooth_frame_1.tif\")");
+                "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/fluoreszenz-test_eq_smooth_frames_1-5.tif\")");
         IJ.runMacro(
                 "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
         obj.run("");

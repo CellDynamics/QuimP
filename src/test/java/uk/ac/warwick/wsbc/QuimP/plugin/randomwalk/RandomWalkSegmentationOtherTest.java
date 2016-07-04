@@ -184,7 +184,7 @@ public class RandomWalkSegmentationOtherTest {
         RandomWalkSegmentation obj = new RandomWalkSegmentation(fluoreszenz_1.getProcessor(), p);
         Map<Integer, List<Point>> seeds = obj.decodeSeeds(testImage2_1seed, Color.RED, Color.GREEN);
         ImageProcessor ret_frame_1 = obj.run(seeds);
-        Map<Integer, List<Point>> nextseed = PropagateSeeds.propagateSeed(ret_frame_1, 20);
+        Map<Integer, List<Point>> nextseed = PropagateSeeds.propagateSeed(ret_frame_1, 3);
         obj = new RandomWalkSegmentation(fluoreszenz_2.getProcessor(), p);
         ImageProcessor ret_frame_2 = obj.run(nextseed);
 

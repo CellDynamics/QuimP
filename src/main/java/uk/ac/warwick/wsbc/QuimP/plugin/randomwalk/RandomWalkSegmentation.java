@@ -311,7 +311,7 @@ public class RandomWalkSegmentation {
     /**
      * Main runner, does segmentation
      * @param seeds Seed arrays from decodeSeeds(ImagePlus, Color, Color)
-     * @return Segmented image
+     * @return Segmented image as ByteProcessor
      * @throws RandomWalkException On wrong seeds
      */
     public ImageProcessor run(Map<Integer, List<Point>> seeds) throws RandomWalkException {
@@ -321,7 +321,7 @@ public class RandomWalkSegmentation {
         RealMatrix[] precomputed = precompute(); // precompute gradients
         RealMatrix[] solved = solver(image, seeds, precomputed, params); // run solver
         RealMatrix result = compare(solved[FOREGROUND], solved[BACKGROUND]); // result as matrix
-        return RealMatrix2ImageProcessor(result);
+        return RealMatrix2ImageProcessor(result).convertToByteProcessor(true);
     }
 
     /**
@@ -399,17 +399,24 @@ public class RandomWalkSegmentation {
      */
     public Map<Integer, List<Point>> decodeSeeds(final ImagePlus rgb, final Color fseed,
             final Color bseed) throws RandomWalkException {
+        if (rgb.getType() != ImagePlus.COLOR_RGB)
+            throw new RandomWalkException("Unsupported image type");
+        return decodeSeeds(rgb.getProcessor(), fseed, bseed);
+    }
+
+    public Map<Integer, List<Point>> decodeSeeds(final ImageProcessor rgb, final Color fseed,
+            final Color bseed) throws RandomWalkException {
         // output map integrating two lists of points
         HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
         // output lists of points. Can be null if points not found
         List<Point> foreground = new ArrayList<>();
         List<Point> background = new ArrayList<>();
         // verify input condition
-        if (rgb.getType() != ImagePlus.COLOR_RGB)
+        if (rgb.getBitDepth() != 24)
             throw new RandomWalkException("Unsupported image type");
         // find marked pixels
-        ColorProcessor cp = (ColorProcessor) rgb.getProcessor(); // can cast here because of type
-                                                                 // checking
+        ColorProcessor cp = (ColorProcessor) rgb; // can cast here because of type
+                                                  // checking
         for (int x = 0; x < cp.getWidth(); x++)
             for (int y = 0; y < cp.getHeight(); y++) {
                 Color c = cp.getColor(x, y); // get color for pixel
