@@ -63,6 +63,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn {
         gd.addNumericField("alpha", 400, 0, 6, ""); // alpha
         gd.addNumericField("beta", 50, 2, 6, ""); // beta
         gd.addNumericField("gamma", 100, 2, 6, ""); // gamma
+        gd.addNumericField("Iterations", 80, 3);
         gd.addNumericField("erode iterations", 5, 0, 2, "");
 
         //!<
@@ -103,7 +104,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn {
                 gd.getNextNumber(), // beta
                 gd.getNextNumber(), // gamma1
                 0, // not used gamma 2
-                80, // iterations
+                (int) gd.getNextNumber(), // iterations
                 0.1, // dt
                 8e-3 // error
                 );
