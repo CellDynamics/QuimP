@@ -158,6 +158,9 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         button = makeNavigationButton("diclid.jpg", "run(\"DIC\")",
                 "Reconstruction of DIC images by Line Integral Method", "DIC LID");
         toolBarBottom.add(button);
+        button = makeNavigationButton("rw.jpg", "run(\"RandomWalk\")",
+                "Run random walk segmentation", "Random Walk");
+        toolBarBottom.add(button);
 
         toolBarUpper.setFloatable(false);
         toolBarBottom.setFloatable(false);

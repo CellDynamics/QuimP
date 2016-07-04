@@ -260,59 +260,6 @@ class MatrixDotSub implements RealMatrixChangingVisitor {
 }
 
 /**
- * Hold algorithm parameters
- * 
- * @author p.baniukiewicz
- * @date 22 Jun 2016
- *
- */
-class Params {
-    double alpha;
-    double beta;
-    double[] gamma;
-    int Iter;
-    double dt;
-    double relim;
-
-    /**
-     * Set default values
-     */
-    public Params() {
-        this.gamma = new double[2];
-        alpha = 4e2;
-        beta = 2 * 25;
-        gamma[0] = 100;
-        gamma[1] = 300;
-        Iter = 10000;
-        dt = 0.1;
-        relim = 8e-3;
-    }
-
-    /**
-     * Set user values
-     * 
-     * @param alpha
-     * @param beta
-     * @param gamma1
-     * @param gamma2
-     * @param iter
-     * @param dt
-     * @param relim
-     */
-    public Params(double alpha, double beta, double gamma1, double gamma2, int iter, double dt,
-            double relim) {
-        this();
-        this.alpha = alpha;
-        this.beta = beta;
-        this.gamma[0] = gamma1;
-        this.gamma[1] = gamma2;
-        Iter = iter;
-        this.dt = dt;
-        this.relim = relim;
-    }
-}
-
-/**
  * This is implementation of Matlab version of Random Walk segmentation algorithm
  * 
  * @author p.baniukiewicz
@@ -844,74 +791,6 @@ public class RandomWalkSegmentation {
             l += delta;
         }
     }
-}
-
-/**
- * Basic class for storing point in Cartesian system
- * 
- * @author p.baniukiewicz
- * @date 23 Jun 2016
- *
- */
-class Point {
-    int row, col;
-
-    /**
-     * @param row
-     * @param col
-     */
-    public Point(int col, int row) {
-        this.row = row;
-        this.col = col;
-    }
-
-    /**
-     * Default constructor
-     */
-    Point() {
-        row = 0;
-        col = 0;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + col;
-        result = prime * result + row;
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Point other = (Point) obj;
-        if (col != other.col)
-            return false;
-        if (row != other.row)
-            return false;
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "Point [row=" + row + ", col=" + col + "]";
-    }
-
 }
 
 /**
