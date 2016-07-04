@@ -173,31 +173,6 @@ public class RandomWalkSegmentationOtherTest {
     }
 
     /**
-     * @test Test of main runner use propagateseed
-     * @pre two frames
-     * @throws Exception
-     */
-    @Test
-    public void testRun_4() throws Exception {
-        long startTime = System.nanoTime();
-
-        RandomWalkSegmentation obj = new RandomWalkSegmentation(fluoreszenz_1.getProcessor(), p);
-        Map<Integer, List<Point>> seeds = obj.decodeSeeds(testImage2_1seed, Color.RED, Color.GREEN);
-        ImageProcessor ret_frame_1 = obj.run(seeds);
-        Map<Integer, List<Point>> nextseed = PropagateSeeds.propagateSeed(ret_frame_1, 3);
-        obj = new RandomWalkSegmentation(fluoreszenz_2.getProcessor(), p);
-        ImageProcessor ret_frame_2 = obj.run(nextseed);
-
-        long stopTime = System.nanoTime();
-        LOGGER.info("--Time used -- " + (double) (stopTime - startTime) / 1000000000.0 + " [s]");
-
-        ImagePlus results_frame_2 = new ImagePlus("cmp", ret_frame_2);
-        IJ.saveAsTiff(results_frame_2, "/tmp/testRun_4_f2.tif");
-        ImagePlus results_frame_1 = new ImagePlus("cmp", ret_frame_1);
-        IJ.saveAsTiff(results_frame_1, "/tmp/testRun_4_f1.tif");
-    }
-
-    /**
      * @test Test precomputed values
      * @pre outputs are saved as tiff
      * @post results are compared with matlab \a java_output_ver.m using breakstop on

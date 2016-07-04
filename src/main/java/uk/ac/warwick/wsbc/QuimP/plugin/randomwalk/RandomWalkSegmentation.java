@@ -260,6 +260,40 @@ class MatrixDotSub implements RealMatrixChangingVisitor {
 }
 
 /**
+ * Sub and then div in-place this matrix and another
+ * @author p.baniukiewicz
+ * @date 23 Jun 2016
+ *
+ */
+class MatrixDotSubDiv implements RealMatrixChangingVisitor {
+
+    RealMatrix sub;
+    RealMatrix div;
+
+    public MatrixDotSubDiv(RealMatrix sub, RealMatrix div) {
+        this.sub = sub;
+        this.div = div;
+    }
+
+    @Override
+    public double end() {
+        return 0;
+    }
+
+    @Override
+    public void start(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
+
+    }
+
+    @Override
+    public double visit(int arg0, int arg1, double arg2) {
+
+        return (arg2 - sub.getEntry(arg0, arg1)) / div.getEntry(arg0, arg1);
+    }
+
+}
+
+/**
  * This is implementation of Matlab version of Random Walk segmentation algorithm
  * 
  * @author p.baniukiewicz
@@ -404,6 +438,9 @@ public class RandomWalkSegmentation {
         return decodeSeeds(rgb.getProcessor(), fseed, bseed);
     }
 
+    /**
+     * @copydoc decodeSeeds(ImagePlus, Color, Color)
+     */
     public Map<Integer, List<Point>> decodeSeeds(final ImageProcessor rgb, final Color fseed,
             final Color bseed) throws RandomWalkException {
         // output map integrating two lists of points
@@ -659,15 +696,15 @@ public class RandomWalkSegmentation {
             RealMatrix FGc1 = FG.copy();
             RealMatrix G = FG.copy();
 
-            fgcirc_right.walkInOptimizedOrder(new MatrixDotSub(FG));
-            fgcirc_right.walkInOptimizedOrder(new MatrixDotDiv(wr_fg));
-            FGc.walkInOptimizedOrder(new MatrixDotSub(fgcirc_left));
-            FGc.walkInOptimizedOrder(new MatrixDotDiv(wl_fg));
+            fgcirc_right.walkInOptimizedOrder(new MatrixDotSubDiv(FG, wr_fg));
+            // fgcirc_right.walkInOptimizedOrder(new MatrixDotDiv(wr_fg));
+            FGc.walkInOptimizedOrder(new MatrixDotSubDiv(fgcirc_left, wl_fg));
+            // FGc.walkInOptimizedOrder(new MatrixDotDiv(wl_fg));
 
-            fgcirc_top.walkInOptimizedOrder(new MatrixDotSub(FG));
-            fgcirc_top.walkInOptimizedOrder(new MatrixDotDiv(wt_fg));
-            FGc1.walkInOptimizedOrder(new MatrixDotSub(fgcirc_bottom));
-            FGc1.walkInOptimizedOrder(new MatrixDotDiv(wb_fg));
+            fgcirc_top.walkInOptimizedOrder(new MatrixDotSubDiv(FG, wt_fg));
+            // fgcirc_top.walkInOptimizedOrder(new MatrixDotDiv(wt_fg));
+            FGc1.walkInOptimizedOrder(new MatrixDotSubDiv(fgcirc_bottom, wb_fg));
+            // FGc1.walkInOptimizedOrder(new MatrixDotDiv(wb_fg));
 
             fgcirc_right.walkInOptimizedOrder(new MatrixDotSub(FGc));
             fgcirc_top.walkInOptimizedOrder(new MatrixDotSub(FGc1));
@@ -692,18 +729,19 @@ public class RandomWalkSegmentation {
             RealMatrix BGc1 = BG.copy();
             G = BG.copy();
 
-            bgcirc_right.walkInOptimizedOrder(new MatrixDotSub(BG));
-            bgcirc_right.walkInOptimizedOrder(new MatrixDotDiv(wr_bg));
-            BGc.walkInOptimizedOrder(new MatrixDotSub(bgcirc_left));
-            BGc.walkInOptimizedOrder(new MatrixDotDiv(wl_bg));
+            BGc.walkInOptimizedOrder(new MatrixDotSubDiv(bgcirc_left, wl_bg));
+            // BGc.walkInOptimizedOrder(new MatrixDotDiv(wl_bg));
+            BGc1.walkInOptimizedOrder(new MatrixDotSubDiv(bgcirc_bottom, wb_bg));
+            // BGc1.walkInOptimizedOrder(new MatrixDotDiv(wb_bg));
 
-            bgcirc_top.walkInOptimizedOrder(new MatrixDotSub(BG));
-            bgcirc_top.walkInOptimizedOrder(new MatrixDotDiv(wt_bg));
-            BGc1.walkInOptimizedOrder(new MatrixDotSub(bgcirc_bottom));
-            BGc1.walkInOptimizedOrder(new MatrixDotDiv(wb_bg));
-
+            bgcirc_right.walkInOptimizedOrder(new MatrixDotSubDiv(BG, wr_bg));
+            // bgcirc_right.walkInOptimizedOrder(new MatrixDotDiv(wr_bg));
             bgcirc_right.walkInOptimizedOrder(new MatrixDotSub(BGc));
+
+            bgcirc_top.walkInOptimizedOrder(new MatrixDotSubDiv(BG, wt_bg));
+            // bgcirc_top.walkInOptimizedOrder(new MatrixDotDiv(wt_bg));
             bgcirc_top.walkInOptimizedOrder(new MatrixDotSub(BGc1));
+
             bgcirc_right.walkInOptimizedOrder(new MatrixDotAdd(bgcirc_top));
             bgcirc_right.walkInOptimizedOrder(new MatrixElementMultiply(D));
 

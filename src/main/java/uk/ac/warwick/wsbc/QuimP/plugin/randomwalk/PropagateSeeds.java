@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ij.IJ;
-import ij.ImagePlus;
 import ij.process.BinaryProcessor;
 import ij.process.ImageProcessor;
 
@@ -52,14 +50,14 @@ public class PropagateSeeds {
         // apply big to old background making object bigger and prevent covering objects on frame
         // n+1
         // by previous background (make "empty" not seeded space around objects)
-        //IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_bigbef.tif");
-        //IJ.saveAsTiff(new ImagePlus("", cp), "/tmp/testIterateMorphological_cp.tif");
+        // IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_bigbef.tif");
+        // IJ.saveAsTiff(new ImagePlus("", cp), "/tmp/testIterateMorphological_cp.tif");
         for (int x = 0; x < cp.getWidth(); x++)
             for (int y = 0; y < cp.getHeight(); y++) {
                 big.putPixel(x, y, big.getPixel(x, y) | cp.getPixel(x, y));
             }
 
-        //IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_big.tif");
+        // IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_big.tif");
 
         // output map integrating two lists of points
         HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
