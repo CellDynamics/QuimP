@@ -59,4 +59,16 @@ public class QuimPArrayUtils {
         }
         return out;
     }
+    
+    /**
+     * Make deep copy of 3D array
+     * 
+     * @param source source matrix
+     * @param dest destination matrix
+     * @warning destination matrix must be initialized and has correct size
+     */
+    public static void copy2darray(double[][] source, double[][] dest) {
+    	for(int r=0;r<source.length;r++)
+    		System.arraycopy(source[r], 0, dest[r], 0, source[r].length);
+    }
 }
