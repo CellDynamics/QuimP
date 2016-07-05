@@ -662,8 +662,7 @@ public class RandomWalkSegmentation {
 
         RealMatrix FG =
                 MatrixUtils.createRealMatrix(image.getRowDimension(), image.getColumnDimension());
-        RealMatrix FGlast =
-                MatrixUtils.createRealMatrix(image.getRowDimension(), image.getColumnDimension());
+        double[][] FGlast2d = new double[image.getRowDimension()][image.getColumnDimension()];
         RealMatrix BG =
                 MatrixUtils.createRealMatrix(image.getRowDimension(), image.getColumnDimension());
 
@@ -678,6 +677,16 @@ public class RandomWalkSegmentation {
         wt_bg.walkInOptimizedOrder(new MatrixDotProduct(avgwy_bg));
         wb_bg.walkInOptimizedOrder(new MatrixDotProduct(avgwy_bg));
 
+        double[][] wr_fg2d = wr_fg.getData();
+        double[][] wl_fg2d = wl_fg.getData();
+        double[][] wt_fg2d = wt_fg.getData();
+        double[][] wb_fg2d = wb_fg.getData();
+        
+        double[][] wr_bg2d = wr_bg.getData();
+        double[][] wl_bg2d = wl_bg.getData();
+        double[][] wt_bg2d = wt_bg.getData();
+        double[][] wb_bg2d = wb_bg.getData();
+        
         // main loop
         for (int i = 0; i < params.Iter; i++) {
             LOGGER.trace("Iter: " + i);
@@ -692,76 +701,60 @@ public class RandomWalkSegmentation {
             RealMatrix fgcirc_left = circshift(FG, LEFT);
             RealMatrix fgcirc_top = circshift(FG, TOP);
             RealMatrix fgcirc_bottom = circshift(FG, BOTTOM);
-            RealMatrix FGc = FG.copy();
-            RealMatrix FGc1 = FG.copy();
-            RealMatrix G = FG.copy();
 
-            fgcirc_right.walkInOptimizedOrder(new MatrixDotSubDiv(FG, wr_fg));
-            // fgcirc_right.walkInOptimizedOrder(new MatrixDotDiv(wr_fg));
-            FGc.walkInOptimizedOrder(new MatrixDotSubDiv(fgcirc_left, wl_fg));
-            // FGc.walkInOptimizedOrder(new MatrixDotDiv(wl_fg));
-
-            fgcirc_top.walkInOptimizedOrder(new MatrixDotSubDiv(FG, wt_fg));
-            // fgcirc_top.walkInOptimizedOrder(new MatrixDotDiv(wt_fg));
-            FGc1.walkInOptimizedOrder(new MatrixDotSubDiv(fgcirc_bottom, wb_fg));
-            // FGc1.walkInOptimizedOrder(new MatrixDotDiv(wb_fg));
-
-            fgcirc_right.walkInOptimizedOrder(new MatrixDotSub(FGc));
-            fgcirc_top.walkInOptimizedOrder(new MatrixDotSub(FGc1));
-            fgcirc_right.walkInOptimizedOrder(new MatrixDotAdd(fgcirc_top));
-            fgcirc_right.walkInOptimizedOrder(new MatrixElementMultiply(D));
-
-            G.walkInOptimizedOrder(new MatrixDotProduct(BG)); // FG*BG
-            G.walkInOptimizedOrder(new MatrixElementMultiply(params.gamma[0]));
-
-            fgcirc_right.walkInOptimizedOrder(new MatrixDotSub(G));
-
-            fgcirc_right.walkInOptimizedOrder(new MatrixElementMultiply(params.dt));
-
-            FG.walkInOptimizedOrder(new MatrixDotAdd(fgcirc_right));
-
+            double[][] fgcirc_right2d = fgcirc_right.getData();
+            double[][] FG2d = FG.getData();
+            double[][] BG2d = BG.getData();
+            double[][] fgcirc_left2d = fgcirc_left.getData();
+            double[][] fgcirc_top2d = fgcirc_top.getData();
+            double[][] fgcirc_bottom2d = fgcirc_bottom.getData();
+            
+            
+            for(int r=0;r<FG.getRowDimension();r++)
+            	for(int c=0;c<FG.getColumnDimension();c++) {
+            		FG2d[r][c]+=params.dt* (D * ( ( (fgcirc_right2d[r][c]-FG2d[r][c])/wr_fg2d[r][c]-(FG2d[r][c]-fgcirc_left2d[r][c])/wl_fg2d[r][c])
+            				+((fgcirc_top2d[r][c]-FG2d[r][c])/wt_fg2d[r][c]-(FG2d[r][c]-fgcirc_bottom2d[r][c])/wb_fg2d[r][c]))
+            				-params.gamma[0]*FG2d[r][c]*BG2d[r][c]);
+            	}
+            /*
+            FG = FG  + P.dt* (D * (    ( (fgcirc_right-FG) ./wr_fg - (FG - fgcirc_left)./wl_fg  )   ...
+                    +    ( (fgcirc_top  -FG) ./wt_fg - (FG - fgcirc_bottom)./wb_fg )   ...
+                    ) - P.gamma*FG.*BG   ...
+                    );*/
+                
+            
             // groups for long term for BG
             RealMatrix bgcirc_right = circshift(BG, RIGHT);
             RealMatrix bgcirc_left = circshift(BG, LEFT);
             RealMatrix bgcirc_top = circshift(BG, TOP);
             RealMatrix bgcirc_bottom = circshift(BG, BOTTOM);
-            RealMatrix BGc = BG.copy();
-            RealMatrix BGc1 = BG.copy();
-            G = BG.copy();
+            
+            double[][] bgcirc_right2d = bgcirc_right.getData();
+            double[][] bgcirc_left2d = bgcirc_left.getData();
+            double[][] bgcirc_top2d = bgcirc_top.getData();
+            double[][] bgcirc_bottom2d = bgcirc_bottom.getData();
+            
+            for(int r=0;r<BG.getRowDimension();r++)
+            	for(int c=0;c<BG.getColumnDimension();c++) {
+            		BG2d[r][c]+=params.dt* (D * ( ( (bgcirc_right2d[r][c]-BG2d[r][c])/wr_bg2d[r][c]-(BG2d[r][c]-bgcirc_left2d[r][c])/wl_bg2d[r][c])
+            				+((bgcirc_top2d[r][c]-BG2d[r][c])/wt_bg2d[r][c]-(BG2d[r][c]-bgcirc_bottom2d[r][c])/wb_bg2d[r][c]))
+            				-params.gamma[0]*FGlast2d[r][c]*BG2d[r][c]);
+            	}
 
-            BGc.walkInOptimizedOrder(new MatrixDotSubDiv(bgcirc_left, wl_bg));
-            // BGc.walkInOptimizedOrder(new MatrixDotDiv(wl_bg));
-            BGc1.walkInOptimizedOrder(new MatrixDotSubDiv(bgcirc_bottom, wb_bg));
-            // BGc1.walkInOptimizedOrder(new MatrixDotDiv(wb_bg));
-
-            bgcirc_right.walkInOptimizedOrder(new MatrixDotSubDiv(BG, wr_bg));
-            // bgcirc_right.walkInOptimizedOrder(new MatrixDotDiv(wr_bg));
-            bgcirc_right.walkInOptimizedOrder(new MatrixDotSub(BGc));
-
-            bgcirc_top.walkInOptimizedOrder(new MatrixDotSubDiv(BG, wt_bg));
-            // bgcirc_top.walkInOptimizedOrder(new MatrixDotDiv(wt_bg));
-            bgcirc_top.walkInOptimizedOrder(new MatrixDotSub(BGc1));
-
-            bgcirc_right.walkInOptimizedOrder(new MatrixDotAdd(bgcirc_top));
-            bgcirc_right.walkInOptimizedOrder(new MatrixElementMultiply(D));
-
-            G.walkInOptimizedOrder(new MatrixDotProduct(FGlast)); // FG*BG
-            G.walkInOptimizedOrder(new MatrixElementMultiply(params.gamma[0]));
-
-            bgcirc_right.walkInOptimizedOrder(new MatrixDotSub(G));
-
-            bgcirc_right.walkInOptimizedOrder(new MatrixElementMultiply(params.dt));
-
-            BG.walkInOptimizedOrder(new MatrixDotAdd(bgcirc_right));
-
-            FGlast = FG.copy();
-
+            copy2darray(FG2d, FGlast2d);
+            FG = new Array2DRowRealMatrix(FG2d,false);
+            BG = new Array2DRowRealMatrix(BG2d,false);
         }
         RealMatrix[] ret = new RealMatrix[2];
         ret[FOREGROUND] = FG;
         ret[BACKGROUND] = BG;
 
         return ret;
+    }
+    
+    private void copy2darray(double[][] source, double[][] dest) {
+    	for(int r=0;r<source.length;r++)
+    		System.arraycopy(source[r], 0, dest[r], 0, source[r].length);
     }
 
     /**
