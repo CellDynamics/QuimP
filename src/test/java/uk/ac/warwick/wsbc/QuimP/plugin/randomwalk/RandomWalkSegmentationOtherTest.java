@@ -31,9 +31,6 @@ import ij.process.ImageProcessor;
  * @see src/test/resources/Matlab/RW_java_tests.m at <a href="./examples.html">Examples</a>
  */
 public class RandomWalkSegmentationOtherTest {
-    static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
-    }
     private static final Logger LOGGER =
             LogManager.getLogger(RandomWalkSegmentationOtherTest.class.getName());
 

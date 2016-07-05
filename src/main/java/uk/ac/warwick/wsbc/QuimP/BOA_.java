@@ -95,10 +95,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * @date 4 Feb 2016
  */
 public class BOA_ implements PlugIn {
-    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
-    static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
-    }
     static final Logger LOGGER = LogManager.getLogger(BOA_.class.getName());
     CustomCanvas canvas;
     CustomStackWindow window;
@@ -189,8 +185,11 @@ public class BOA_ implements PlugIn {
             pluginFactory = PluginFactoryFactory.getPluginFactory(path);
         } catch (Exception e) {
             // temporary catching may in future be removed
-            LOGGER.error("run " + e);
+            LOGGER.error("run: " + e);
+            return;
         }
+        	
+        
 
         ImagePlus ip = WindowManager.getCurrentImage();
         // initialize arrays for plugins instances and give them initial values (GUI)
