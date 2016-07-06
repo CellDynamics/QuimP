@@ -1650,7 +1650,8 @@ public class BOA_ implements PlugIn {
         public void updateSliceSelector() {
             super.updateSliceSelector();
             LOGGER.debug("EVENT:updateSliceSelector");
-            zSelector.setValue(imp.getCurrentSlice()); // this is delayed in
+            if(!qState.boap.singleImage)
+            	zSelector.setValue(imp.getCurrentSlice()); // this is delayed in
                                                        // super.updateSliceSelector force it now
 
             // if in edit, save current edit and start edit of next frame if exists
@@ -1660,8 +1661,10 @@ public class BOA_ implements PlugIn {
                 stopEdit();
             }
 
-            qState.boap.frame = imp.getCurrentSlice();
-            frameLabel.setText("" + qState.boap.frame);
+            if(!qState.boap.singleImage) {
+            	qState.boap.frame = imp.getCurrentSlice();
+            	frameLabel.setText("" + qState.boap.frame);
+            }
             imageGroup.updateOverlay(qState.boap.frame); // draw overlay
             imageGroup.setIpSliceAll(qState.boap.frame);
 
