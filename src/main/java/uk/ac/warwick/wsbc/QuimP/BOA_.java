@@ -1037,6 +1037,7 @@ public class BOA_ implements PlugIn {
          * @see itemStateChanged(ItemEvent)
          * @warning This method is called from CustomStackWindow.itemStateChanged(ItemEvent)
          * to update colors of Choices
+         * @see ConfigurationHandling.md
          */
         private void updateChoices() {
             Color ok = new Color(178, 255, 102);
@@ -1046,33 +1047,47 @@ public class BOA_ implements PlugIn {
                 sFirstPluginName.select(NONE);
                 sFirstPluginName.setBackground(defaultColor);
             } else {
-                sFirstPluginName.select(qState.snakePluginList.getName(0));
-                if (qState.snakePluginList.getInstance(0) == null)
-                    sFirstPluginName.setBackground(bad);
-                else
-                    sFirstPluginName.setBackground(ok);
+                sFirstPluginName.select(qState.snakePluginList.getName(0)); // try to select name from pluginList in choice
+                if(sFirstPluginName.getSelectedItem().equals(NONE)) {// tried selecting but still on none - it means that plugin name from snkePluginList is not on choice list. Tis may happen when choice is propagated from directory but snakePluginList from external QCONF
+                	sFirstPluginName.add(qState.snakePluginList.getName(0)); // add to list
+                	sFirstPluginName.setBackground(bad); // set as bad
+                } else
+	                if (qState.snakePluginList.getInstance(0) == null) //WARN does not check if instance(0) is the instance of getName(0)
+	                    sFirstPluginName.setBackground(bad);
+	                else
+	                    sFirstPluginName.setBackground(ok);
             }
             // second slot snake plugin
             if (qState.snakePluginList.getName(1).isEmpty()) {
                 sSecondPluginName.select(NONE);
                 sSecondPluginName.setBackground(defaultColor);
             } else {
-                sSecondPluginName.select(qState.snakePluginList.getName(1));
-                if (qState.snakePluginList.getInstance(1) == null)
-                    sSecondPluginName.setBackground(bad);
+            	sSecondPluginName.select(qState.snakePluginList.getName(1)); 
+                if(sSecondPluginName.getSelectedItem().equals(NONE)) {// tried selecting but still on none - it means that plugin name from snkePluginList is not on choice list. Tis may happen when choice is propagated from directory but snakePluginList from external QCONF
+                	sSecondPluginName.add(qState.snakePluginList.getName(1)); // add to list
+                	sSecondPluginName.setBackground(bad); // set as bad
+                }
                 else
-                    sSecondPluginName.setBackground(ok);
+	                if (qState.snakePluginList.getInstance(1) == null)
+	                    sSecondPluginName.setBackground(bad);
+	                else
+	                    sSecondPluginName.setBackground(ok);
             }
             // third slot snake plugin
             if (qState.snakePluginList.getName(2).isEmpty()) {
                 sThirdPluginName.select(NONE);
                 sThirdPluginName.setBackground(defaultColor);
             } else {
-                sThirdPluginName.select(qState.snakePluginList.getName(2));
-                if (qState.snakePluginList.getInstance(2) == null)
-                    sThirdPluginName.setBackground(bad);
+            	sThirdPluginName.select(qState.snakePluginList.getName(2)); 
+                if(sThirdPluginName.getSelectedItem().equals(NONE)) {// tried selecting but still on none - it means that plugin name from snkePluginList is not on choice list. Tis may happen when choice is propagated from directory but snakePluginList from external QCONF
+                	sThirdPluginName.add(qState.snakePluginList.getName(2)); // add to list
+                	sThirdPluginName.setBackground(bad); // set as bad
+                }
                 else
-                    sThirdPluginName.setBackground(ok);
+	                if (qState.snakePluginList.getInstance(2) == null)
+	                    sThirdPluginName.setBackground(bad);
+	                else
+	                    sThirdPluginName.setBackground(ok);
             }
 
         }
@@ -1378,7 +1393,7 @@ public class BOA_ implements PlugIn {
                         if (qState.boap.frame != imageGroup.getOrgIpl().getSlice())
                             imageGroup.updateToFrame(qState.boap.frame); // move to frame
                         else
-                            updateSliceSelector(); // repaint window explicitly
+                        	updateSliceSelector(); // repaint window explicitly
                     } catch (IOException e1) {
                         LOGGER.error("Problem with loading plugin config", e1);
                     } catch (JsonSyntaxException e1) {
