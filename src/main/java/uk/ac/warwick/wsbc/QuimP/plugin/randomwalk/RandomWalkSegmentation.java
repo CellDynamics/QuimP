@@ -101,11 +101,12 @@ class MatrixElementExp implements RealMatrixChangingVisitor {
  */
 class MatrixElementPowerDiv implements RealMatrixChangingVisitor {
 
-	double val;
-	
-	public MatrixElementPowerDiv(double val) {
-		this.val = val;
-	}
+    double val;
+
+    public MatrixElementPowerDiv(double val) {
+        this.val = val;
+    }
+
     @Override
     public double end() {
         return 0;
@@ -120,7 +121,7 @@ class MatrixElementPowerDiv implements RealMatrixChangingVisitor {
      */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
-        return (arg2 * arg2)/val;
+        return (arg2 * arg2) / val;
     }
 }
 
@@ -438,7 +439,9 @@ public class RandomWalkSegmentation {
             return null;
         RealMatrix out;
         float[][] image = ip.getFloatArray();
-        out = new Array2DRowRealMatrix(QuimPArrayUtils.float2ddouble(image),false); // no copy (it is done in float2double)
+        out = new Array2DRowRealMatrix(QuimPArrayUtils.float2ddouble(image), false); // no copy (it
+                                                                                     // is done in
+                                                                                     // float2double)
         return out;
     }
 
@@ -653,15 +656,15 @@ public class RandomWalkSegmentation {
         diffI_bg.walkInOptimizedOrder(new MatrixElementPowerDiv(65025));
         // compute weights for diffusion in all four directions, dependent on local gradients and
         // differences to mean intensities of seeds
-        Array2DRowRealMatrix wr_fg = (Array2DRowRealMatrix)computeweights(diffI_fg, gradients[0]); // TODO optimize alpha*diffI_fg
-        Array2DRowRealMatrix wl_fg = (Array2DRowRealMatrix)computeweights(diffI_fg, gradients[2]); // correct
-        Array2DRowRealMatrix wt_fg = (Array2DRowRealMatrix)computeweights(diffI_fg, gradients[1]); // correct
-        Array2DRowRealMatrix wb_fg = (Array2DRowRealMatrix)computeweights(diffI_fg, gradients[3]); // correct
+        Array2DRowRealMatrix wr_fg = (Array2DRowRealMatrix) computeweights(diffI_fg, gradients[0]);
+        Array2DRowRealMatrix wl_fg = (Array2DRowRealMatrix) computeweights(diffI_fg, gradients[2]);
+        Array2DRowRealMatrix wt_fg = (Array2DRowRealMatrix) computeweights(diffI_fg, gradients[1]);
+        Array2DRowRealMatrix wb_fg = (Array2DRowRealMatrix) computeweights(diffI_fg, gradients[3]);
 
-        Array2DRowRealMatrix wr_bg = (Array2DRowRealMatrix)computeweights(diffI_bg, gradients[0]); // TODO optimize alpha*diffI_fg
-        Array2DRowRealMatrix wl_bg = (Array2DRowRealMatrix)computeweights(diffI_bg, gradients[2]); // correct
-        Array2DRowRealMatrix wt_bg = (Array2DRowRealMatrix)computeweights(diffI_bg, gradients[1]); // correct
-        Array2DRowRealMatrix wb_bg = (Array2DRowRealMatrix)computeweights(diffI_bg, gradients[3]); // correct
+        Array2DRowRealMatrix wr_bg = (Array2DRowRealMatrix) computeweights(diffI_bg, gradients[0]);
+        Array2DRowRealMatrix wl_bg = (Array2DRowRealMatrix) computeweights(diffI_bg, gradients[2]);
+        Array2DRowRealMatrix wt_bg = (Array2DRowRealMatrix) computeweights(diffI_bg, gradients[1]);
+        Array2DRowRealMatrix wb_bg = (Array2DRowRealMatrix) computeweights(diffI_bg, gradients[3]);
 
         // compute averaged weights, left/right and top/bottom
         // used when computing second spatial derivate from first one
@@ -673,7 +676,7 @@ public class RandomWalkSegmentation {
         avgwx_bg.walkInOptimizedOrder(new MatrixElementMultiply(0.5));
         RealMatrix avgwy_bg = wt_bg.add(wb_bg);
         avgwy_bg.walkInOptimizedOrder(new MatrixElementMultiply(0.5));
-        // d is the diffusion constant times the timestep of the Euler scheme obeye CFL stability
+        // d is the diffusion constant times the timestep of the Euler scheme obey CFL stability
         // criterion. D*dt/(dx^2) should be <<1/4
         double drl2, dtb2;
         double tmp1, tmp2;
@@ -690,9 +693,11 @@ public class RandomWalkSegmentation {
         LOGGER.debug("drl2=" + drl2 + " dtb2=" + dtb2); // ok
         LOGGER.debug("D=" + D); // ok
 
-        Array2DRowRealMatrix FG = new Array2DRowRealMatrix(image.getRowDimension(), image.getColumnDimension());
+        Array2DRowRealMatrix FG =
+                new Array2DRowRealMatrix(image.getRowDimension(), image.getColumnDimension());
         double[][] FGlast2d = new double[image.getRowDimension()][image.getColumnDimension()];
-        Array2DRowRealMatrix BG = new Array2DRowRealMatrix(image.getRowDimension(), image.getColumnDimension());
+        Array2DRowRealMatrix BG =
+                new Array2DRowRealMatrix(image.getRowDimension(), image.getColumnDimension());
 
         // precompute terms for loop
         wr_fg.walkInOptimizedOrder(new MatrixDotProduct(avgwx_fg));
@@ -709,12 +714,12 @@ public class RandomWalkSegmentation {
         double[][] wl_fg2d = wl_fg.getDataRef();
         double[][] wt_fg2d = wt_fg.getDataRef();
         double[][] wb_fg2d = wb_fg.getDataRef();
-        
+
         double[][] wr_bg2d = wr_bg.getDataRef();
         double[][] wl_bg2d = wl_bg.getDataRef();
         double[][] wt_bg2d = wt_bg.getDataRef();
         double[][] wb_bg2d = wb_bg.getDataRef();
-        
+
         // main loop
         for (int i = 0; i < params.Iter; i++) {
             LOGGER.trace("Iter: " + i);
@@ -725,10 +730,10 @@ public class RandomWalkSegmentation {
             setValues(BG, seeds.get(BACKGROUND), new ArrayRealVector(new double[] { 1 }));
 
             // groups for long term for FG
-            Array2DRowRealMatrix fgcirc_right = (Array2DRowRealMatrix)circshift(FG, RIGHT);
-            Array2DRowRealMatrix fgcirc_left = (Array2DRowRealMatrix)circshift(FG, LEFT);
-            Array2DRowRealMatrix fgcirc_top = (Array2DRowRealMatrix)circshift(FG, TOP);
-            Array2DRowRealMatrix fgcirc_bottom = (Array2DRowRealMatrix)circshift(FG, BOTTOM);
+            Array2DRowRealMatrix fgcirc_right = (Array2DRowRealMatrix) circshift(FG, RIGHT);
+            Array2DRowRealMatrix fgcirc_left = (Array2DRowRealMatrix) circshift(FG, LEFT);
+            Array2DRowRealMatrix fgcirc_top = (Array2DRowRealMatrix) circshift(FG, TOP);
+            Array2DRowRealMatrix fgcirc_bottom = (Array2DRowRealMatrix) circshift(FG, BOTTOM);
 
             double[][] fgcirc_right2d = fgcirc_right.getDataRef();
             double[][] FG2d = FG.getDataRef();
@@ -736,35 +741,41 @@ public class RandomWalkSegmentation {
             double[][] fgcirc_left2d = fgcirc_left.getDataRef();
             double[][] fgcirc_top2d = fgcirc_top.getDataRef();
             double[][] fgcirc_bottom2d = fgcirc_bottom.getDataRef();
-            
-            for(int r=0;r<FG.getRowDimension();r++)
-            	for(int c=0;c<FG.getColumnDimension();c++) {
-            		FG2d[r][c]+=params.dt* (D * ( ( (fgcirc_right2d[r][c]-FG2d[r][c])/wr_fg2d[r][c]-(FG2d[r][c]-fgcirc_left2d[r][c])/wl_fg2d[r][c])
-            				+((fgcirc_top2d[r][c]-FG2d[r][c])/wt_fg2d[r][c]-(FG2d[r][c]-fgcirc_bottom2d[r][c])/wb_fg2d[r][c]))
-            				-params.gamma[0]*FG2d[r][c]*BG2d[r][c]);
-            	}
-            
+
+            for (int r = 0; r < FG.getRowDimension(); r++)
+                for (int c = 0; c < FG.getColumnDimension(); c++) {
+                    FG2d[r][c] += params.dt * (D
+                            * (((fgcirc_right2d[r][c] - FG2d[r][c]) / wr_fg2d[r][c]
+                                    - (FG2d[r][c] - fgcirc_left2d[r][c]) / wl_fg2d[r][c])
+                                    + ((fgcirc_top2d[r][c] - FG2d[r][c]) / wt_fg2d[r][c]
+                                            - (FG2d[r][c] - fgcirc_bottom2d[r][c]) / wb_fg2d[r][c]))
+                            - params.gamma[0] * FG2d[r][c] * BG2d[r][c]);
+                }
+
             // groups for long term for BG
-            Array2DRowRealMatrix bgcirc_right = (Array2DRowRealMatrix)circshift(BG, RIGHT);
-            Array2DRowRealMatrix bgcirc_left = (Array2DRowRealMatrix)circshift(BG, LEFT);
-            Array2DRowRealMatrix bgcirc_top = (Array2DRowRealMatrix)circshift(BG, TOP);
-            Array2DRowRealMatrix bgcirc_bottom = (Array2DRowRealMatrix)circshift(BG, BOTTOM);
-            
+            Array2DRowRealMatrix bgcirc_right = (Array2DRowRealMatrix) circshift(BG, RIGHT);
+            Array2DRowRealMatrix bgcirc_left = (Array2DRowRealMatrix) circshift(BG, LEFT);
+            Array2DRowRealMatrix bgcirc_top = (Array2DRowRealMatrix) circshift(BG, TOP);
+            Array2DRowRealMatrix bgcirc_bottom = (Array2DRowRealMatrix) circshift(BG, BOTTOM);
+
             double[][] bgcirc_right2d = bgcirc_right.getDataRef();
             double[][] bgcirc_left2d = bgcirc_left.getDataRef();
             double[][] bgcirc_top2d = bgcirc_top.getDataRef();
             double[][] bgcirc_bottom2d = bgcirc_bottom.getDataRef();
-            
-            for(int r=0;r<BG.getRowDimension();r++)
-            	for(int c=0;c<BG.getColumnDimension();c++) {
-            		BG2d[r][c]+=params.dt* (D * ( ( (bgcirc_right2d[r][c]-BG2d[r][c])/wr_bg2d[r][c]-(BG2d[r][c]-bgcirc_left2d[r][c])/wl_bg2d[r][c])
-            				+((bgcirc_top2d[r][c]-BG2d[r][c])/wt_bg2d[r][c]-(BG2d[r][c]-bgcirc_bottom2d[r][c])/wb_bg2d[r][c]))
-            				-params.gamma[0]*FGlast2d[r][c]*BG2d[r][c]);
-            	}
+
+            for (int r = 0; r < BG.getRowDimension(); r++)
+                for (int c = 0; c < BG.getColumnDimension(); c++) {
+                    BG2d[r][c] += params.dt * (D
+                            * (((bgcirc_right2d[r][c] - BG2d[r][c]) / wr_bg2d[r][c]
+                                    - (BG2d[r][c] - bgcirc_left2d[r][c]) / wl_bg2d[r][c])
+                                    + ((bgcirc_top2d[r][c] - BG2d[r][c]) / wt_bg2d[r][c]
+                                            - (BG2d[r][c] - bgcirc_bottom2d[r][c]) / wb_bg2d[r][c]))
+                            - params.gamma[0] * FGlast2d[r][c] * BG2d[r][c]);
+                }
 
             QuimPArrayUtils.copy2darray(FG2d, FGlast2d);
-            FG = new Array2DRowRealMatrix(FG2d,false); // not copy of FG2d, just replace old FG
-            BG = new Array2DRowRealMatrix(BG2d,false);
+            FG = new Array2DRowRealMatrix(FG2d, false); // not copy of FG2d, just replace old FG
+            BG = new Array2DRowRealMatrix(BG2d, false);
         }
         RealMatrix[] ret = new RealMatrix[2];
         ret[FOREGROUND] = FG;
@@ -785,20 +796,21 @@ public class RandomWalkSegmentation {
         double beta = params.beta;
         double[][] diffI2d;
         double[][] grad22d;
-        if(diffI instanceof Array2DRowRealMatrix)
-        	diffI2d = ((Array2DRowRealMatrix)diffI).getDataRef();
+        if (diffI instanceof Array2DRowRealMatrix)
+            diffI2d = ((Array2DRowRealMatrix) diffI).getDataRef();
         else
-        	diffI2d = diffI.getData();
-        if(grad2 instanceof Array2DRowRealMatrix)
-        	grad22d = ((Array2DRowRealMatrix)grad2).getDataRef();
+            diffI2d = diffI.getData();
+        if (grad2 instanceof Array2DRowRealMatrix)
+            grad22d = ((Array2DRowRealMatrix) grad2).getDataRef();
         else
-        	grad22d = grad2.getData();
-        Array2DRowRealMatrix w = new Array2DRowRealMatrix(diffI.getRowDimension(),diffI.getColumnDimension());
+            grad22d = grad2.getData();
+        Array2DRowRealMatrix w =
+                new Array2DRowRealMatrix(diffI.getRowDimension(), diffI.getColumnDimension());
         double[][] w2d = w.getDataRef(); // reference of w
-        for(int r=0;r<diffI.getRowDimension();r++)
-        	for(int c=0;c<diffI.getColumnDimension();c++) {
-        		w2d[r][c] = Math.exp(diffI2d[r][c]*alpha + grad22d[r][c]*beta);
-        	}
+        for (int r = 0; r < diffI.getRowDimension(); r++)
+            for (int c = 0; c < diffI.getColumnDimension(); c++) {
+                w2d[r][c] = Math.exp(diffI2d[r][c] * alpha + grad22d[r][c] * beta);
+            }
         return w;
     }
 
