@@ -138,6 +138,20 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     }
 
     /**
+     * Makes copy of \c snake and store it as segmented snake.
+     * 
+     * @param snake Snake to store
+     * @param frame Frame for which \c liveSnake will be copied to
+     * @throws BoaException
+     */
+    public void backupThisSnake(final Snake snake, int frame) {
+        // BOA_.log("Store snake " + ID + " at frame " + frame);
+        segSnakes[frame - startFrame] = null; // delete at current frame
+
+        segSnakes[frame - startFrame] = new Snake(snake, ID);
+    }
+
+    /**
      * Copy all segSnakes to finalSnakes
      */
     public void copyFromSegToFinal() {
