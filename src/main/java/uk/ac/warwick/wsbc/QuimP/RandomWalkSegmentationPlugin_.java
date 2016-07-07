@@ -128,6 +128,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn {
         ImageStack ret; // all images treated as stacks
         Map<Integer, List<Point>> seeds;
         if (showDialog()) { // returned true - all fields ok and initialized correctly
+            if (image == null || seedImage == null) {
+                IJ.showMessage("Error", "Select both images first");
+            }
             try {
                 ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
                 ImageStack is = image.getStack(); // get current stack (size 1 for one image)
