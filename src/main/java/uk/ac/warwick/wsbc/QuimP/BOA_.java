@@ -2264,7 +2264,10 @@ public class BOA_ implements PlugIn {
         Roi r = canvas.getImage().getRoi();
         Roi.setColor(Color.yellow);
         SnakeHandler sH = qState.nest.getHandler(qState.boap.editingID);
-        sH.storeRoi((PolygonRoi) r, qState.boap.frame);
+        sH.storeRoi((PolygonRoi) r, qState.boap.frame); // store as final snake
+        // copy to segSnakes array
+        Snake stored = sH.getStoredSnake(qState.boap.frame);
+        sH.backupThisSnake(stored, qState.boap.frame);
         canvas.getImage().killRoi();
         imageGroup.updateOverlay(qState.boap.frame);
         qState.boap.editingID = -1;
