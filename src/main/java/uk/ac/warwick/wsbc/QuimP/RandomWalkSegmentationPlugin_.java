@@ -4,9 +4,27 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +55,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentation;
  * @date 4 Jul 2016
  *
  */
-public class RandomWalkSegmentationPlugin_ implements PlugIn {
+public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, ChangeListener {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -52,6 +70,127 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn {
     private Params params; // parameters
     private int erodeIter; //!< number of erosions for generating next seed from previous
     private boolean useSeedStack; //!< \a true if seed has the same size as image, slices are seeds 
+
+    private JComboBox cImage,cSeed;
+    private JButton bBack,bFore,bClone;
+    private JSpinner sAlpha,sBeta,sGamma,sIter,sErode;
+    private JButton bCancel,bApply,bHelp;
+    
+    JFrame wnd;
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean showNewDialog() {
+        wnd = new JFrame("Random Walker Segmentation");
+        wnd.setResizable(false);
+        JPanel panel = new JPanel(new BorderLayout());
+
+        // Choices zone (upper)
+        JPanel comboPanel = new JPanel();
+        comboPanel.setBorder(BorderFactory.createTitledBorder("Image selection"));
+        comboPanel.setLayout(new GridLayout(4, 1, 2, 2));
+        cImage = new JComboBox(WindowManager.getImageTitles());
+        cImage.addActionListener(this);
+        cSeed = new JComboBox(WindowManager.getImageTitles());
+        cSeed.addActionListener(this);
+        comboPanel.add(new JLabel("Original image"));
+        comboPanel.add(cImage);
+        comboPanel.add(new JLabel("Seed image"));
+        comboPanel.add(cSeed);
+
+        // Seed build zone (middle)
+        JPanel seedBuildPanel = new JPanel();
+        seedBuildPanel.setBorder(BorderFactory.createTitledBorder("Seed build"));
+        seedBuildPanel.setLayout(new GridLayout(1, 3, 2, 2));
+        bClone = new JButton("Clone");
+        bClone.setToolTipText("Clone selected original image and allow to seed it manually");
+        bClone.addActionListener(this);
+        bFore = new JButton("FG");
+        bFore.setToolTipText("Select Foreground pen");
+        bFore.setBackground(Color.ORANGE);
+        bFore.addActionListener(this);
+        bBack = new JButton("BG");
+        bBack.setToolTipText("Select Background pen");
+        bBack.setBackground(Color.GREEN);
+        bBack.addActionListener(this);
+        seedBuildPanel.add(bClone);
+        seedBuildPanel.add(bFore);
+        seedBuildPanel.add(bBack);
+
+        // Options zone (middle)
+        JPanel optionsPanel = new JPanel();
+        optionsPanel.setBorder(BorderFactory.createTitledBorder("Segmentation options"));
+        optionsPanel.setLayout(new GridLayout(5, 2, 2, 2));
+        sAlpha = new JSpinner(new SpinnerNumberModel(400, 1, 100000, 1));
+        sAlpha.addChangeListener(this);
+        optionsPanel.add(new JLabel("Alpha"));
+        optionsPanel.add(sAlpha);
+        sBeta = new JSpinner(new SpinnerNumberModel(50, 1, 500, 1));
+        sBeta.addChangeListener(this);
+        optionsPanel.add(new JLabel("Beta"));
+        optionsPanel.add(sBeta);
+        sGamma = new JSpinner(new SpinnerNumberModel(100, 1, 1000, 1));
+        sGamma.addChangeListener(this);
+        optionsPanel.add(new JLabel("Gamma"));
+        optionsPanel.add(sGamma);
+        sIter = new JSpinner(new SpinnerNumberModel(80, 1, 1000, 1));
+        sIter.addChangeListener(this);
+        optionsPanel.add(new JLabel("Iterations"));
+        optionsPanel.add(sIter);
+        sErode = new JSpinner(new SpinnerNumberModel(3, 1, 10, 1));
+        sErode.addChangeListener(this);
+        optionsPanel.add(new JLabel("Erode power"));
+        optionsPanel.add(sErode);
+
+        // integrate middle panels into one
+        JPanel seedoptionsPanel = new JPanel();
+        seedoptionsPanel.setLayout(new GridBagLayout()); // prevent equal sizes
+        GridBagConstraints c = new GridBagConstraints();
+        // c.gridheight = 1;
+        // c.gridwidth = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.ipadx = 50;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        seedoptionsPanel.add(seedBuildPanel, c);
+        // c.gridheight = 5;
+        // c.gridwidth = 1;
+        c.gridx = 0;
+        c.gridy = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        seedoptionsPanel.add(optionsPanel, c);
+
+        // cancel apply row
+        JPanel caButtons = new JPanel();
+        caButtons.setLayout(new FlowLayout(FlowLayout.CENTER));
+        bApply = new JButton("Apply");
+        bApply.addActionListener(this);
+        bCancel = new JButton("Cancel");
+        bCancel.addActionListener(this);
+        bHelp = new JButton("Help");
+        bHelp.addActionListener(this);
+        caButtons.add(bApply);
+        caButtons.add(bCancel);
+        caButtons.add(bHelp);
+
+        // build window
+        panel.add(comboPanel, BorderLayout.NORTH);
+        panel.add(seedoptionsPanel, BorderLayout.CENTER);
+        // panel.add(optionsPanel,BorderLayout.SOUTH);
+        panel.add(caButtons, BorderLayout.SOUTH);
+        wnd.add(panel);
+        wnd.pack();
+        wnd.setVisible(true);
+
+        // disable on start
+        bClone.setEnabled(false);
+        bFore.setEnabled(false);
+        bBack.setEnabled(false);
+
+        return true;
+    }
 
     /**
      * Shows user dialog and check conditions.
@@ -166,6 +305,18 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn {
             }
 
         }
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent arg0) {
+        // TODO Auto-generated method stub
 
     }
 
