@@ -17,6 +17,7 @@ import ij.io.OpenDialog;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  *
@@ -484,18 +485,18 @@ class STmap {
             IJ.saveAs(convImP, "tiff",
                     Qp.outFile.getParent() + File.separator + Qp.filename + "_convexity.tiff");
 
-            Tool.arrayToFile(coordMap, ",", new File(Qp.outFile.getPath() + "_coordMap.maQP"));
-            Tool.arrayToFile(originMap, ",", new File(Qp.outFile.getPath() + "_originMap.maQP"));
-            Tool.arrayToFile(migMap, ",", new File(Qp.outFile.getPath() + "_motilityMap.maQP"));
-            Tool.arrayToFile(convMap, ",", new File(Qp.outFile.getPath() + "_convexityMap.maQP"));
-            Tool.arrayToFile(xMap, ",", new File(Qp.outFile.getPath() + "_xMap.maQP"));
-            Tool.arrayToFile(yMap, ",", new File(Qp.outFile.getPath() + "_yMap.maQP"));
+            QuimPArrayUtils.arrayToFile(coordMap, ",", new File(Qp.outFile.getPath() + "_coordMap.maQP"));
+            QuimPArrayUtils.arrayToFile(originMap, ",", new File(Qp.outFile.getPath() + "_originMap.maQP"));
+            QuimPArrayUtils.arrayToFile(migMap, ",", new File(Qp.outFile.getPath() + "_motilityMap.maQP"));
+            QuimPArrayUtils.arrayToFile(convMap, ",", new File(Qp.outFile.getPath() + "_convexityMap.maQP"));
+            QuimPArrayUtils.arrayToFile(xMap, ",", new File(Qp.outFile.getPath() + "_xMap.maQP"));
+            QuimPArrayUtils.arrayToFile(yMap, ",", new File(Qp.outFile.getPath() + "_yMap.maQP"));
 
             for (int i = 0; i < 3; i++) {
                 if (!fluoMaps[i].isEnabled()) {
                     continue;
                 }
-                Tool.arrayToFile(fluoMaps[i].getMap(), ",",
+                QuimPArrayUtils.arrayToFile(fluoMaps[i].getMap(), ",",
                         new File(Qp.outFile.getPath() + "_fluoCh" + fluoMaps[i].channel + ".maQP"));
             }
 
@@ -503,7 +504,7 @@ class STmap {
             IJ.error("Could not write Map file:\n " + e.getMessage());
         }
 
-        if (Tool.sumArray(migColor) == 0) {
+        if (QuimPArrayUtils.sumArray(migColor) == 0) {
             IJ.showMessage(
                     "ECMM data is missing (or corrupt), and is needed for building accurate maps.\nPlease run ECMM (fluorescence data will be lost)");
         }

@@ -16,6 +16,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
+
 /**
  * @author p.baniukiewicz
  * @date 10 May 2016
@@ -47,16 +49,6 @@ public class ToolTest {
     @Test
     public void testGetQuimPversion() throws Exception {
         LOGGER.debug(new Tool().getQuimPversion());
-    }
-
-    @Test
-    public void testMinListIndex() throws Exception {
-        ArrayList<Double> ar = new ArrayList<>();
-        ar.add(34.0);
-        ar.add(5.0);
-        ar.add(-5.0);
-
-        assertThat(Tool.minListIndex(ar), is(2));
     }
 
 }

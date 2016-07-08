@@ -61,4 +61,14 @@ public class QuimPArrayUtilsTest {
                 assertEquals(in[r][c], out[r][c], 1e-3);
     }
 
+    @Test
+        public void testMinListIndex() throws Exception {
+            ArrayList<Double> ar = new ArrayList<>();
+            ar.add(34.0);
+            ar.add(5.0);
+            ar.add(-5.0);
+    
+            assertThat(QuimPArrayUtils.minListIndex(ar), is(2));
+        }
+
 }

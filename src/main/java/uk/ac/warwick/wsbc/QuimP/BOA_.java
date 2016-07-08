@@ -85,6 +85,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpSnakeFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * Main class implementing BOA plugin.
@@ -324,7 +325,7 @@ public class BOA_ implements PlugIn {
      */
     void about() {
         AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
-        ad.appendLine(Tool.getQuimPversion(quimpInfo)); // dispaly template filled by quimpInfo
+        ad.appendLine(Tool.getQuimPversion(quimpInfo)); // display template filled by quimpInfo
         // get list of found plugins
         ad.appendLine("List of found plugins:");
         ad.appendDistance(); // type ----
@@ -2189,7 +2190,7 @@ public class BOA_ implements PlugIn {
                 distance.add(ExtendedVector2d.lengthP2P(mV, sV));
             }
         }
-        int minIndex = Tool.minListIndex(distance);
+        int minIndex = QuimPArrayUtils.minListIndex(distance);
         if (distance.get(minIndex) < 10) { // if closest < 10, delete it
             BOA_.log("Deleted cell " + qState.nest.getHandler(minIndex).getID());
             qState.nest.removeHandler(qState.nest.getHandler(minIndex));
@@ -2221,7 +2222,7 @@ public class BOA_ implements PlugIn {
             }
         }
 
-        int minIndex = Tool.minListIndex(distance);
+        int minIndex = QuimPArrayUtils.minListIndex(distance);
         // BOA_.log("Debug: closest index " + minIndex + ", id " +
         // nest.getHandler(minIndex).getID());
         if (distance.get(minIndex) < 10) { // if closest < 10, delete it
@@ -2260,7 +2261,7 @@ public class BOA_ implements PlugIn {
                 distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
             }
         }
-        int minIndex = Tool.minArrayIndex(distance);
+        int minIndex = QuimPArrayUtils.minArrayIndex(distance);
         if (distance[minIndex] < 10 || qState.nest.size() == 1) { // if closest < 10, edit it
             sH = qState.nest.getHandler(minIndex);
             qState.boap.editingID = minIndex; // sH.getID();

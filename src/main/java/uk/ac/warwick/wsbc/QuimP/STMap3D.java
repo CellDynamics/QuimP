@@ -14,6 +14,7 @@ import javax.vecmath.Point3f;
 //import org.cybergarage.x3d.j3d.VRML97Saver;
 
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  *
@@ -85,7 +86,7 @@ public class STMap3D {
         }
 
         System.out.println("coord length" + coords.length);
-        System.out.println("max index = " + Tool.arrayMax(indices));
+        System.out.println("max index = " + QuimPArrayUtils.arrayMax(indices));
 
         cell3d = new VRMLobject(coords, colorsF, indices);
 
