@@ -1468,12 +1468,21 @@ public class BOA_ implements PlugIn {
              * Run segmentation from mask file
              */
             if (b == menuSegmentationRun) {
-                qState.fakeSegmentationPlugin = new FakeSegmentationPlugin(); // create instance
-                qState.fakeSegmentationPlugin.attachData(qState.nest); // attach data
-                qState.fakeSegmentationPlugin.attachContext(viewUpdater); // allow plugin to update
-                                                                          // screen
-                qState.fakeSegmentationPlugin.showUI(true); // plugin is run internally after Apply
-                // update screen is always on Apply button of plugin
+                if (qState.fakeSegmentationPlugin != null) {
+                    if (!qState.fakeSegmentationPlugin.isWindowVisible())
+                        qState.fakeSegmentationPlugin.showUI(true);
+                } else {
+                    qState.fakeSegmentationPlugin = new FakeSegmentationPlugin(); // create
+                                                                                  // instance
+                    qState.fakeSegmentationPlugin.attachData(qState.nest); // attach data
+                    qState.fakeSegmentationPlugin.attachContext(viewUpdater); // allow plugin to
+                                                                              // update
+                                                                              // screen
+                    qState.fakeSegmentationPlugin.showUI(true); // plugin is run internally
+                                                                // after
+                                                                // Apply
+                    // update screen is always on Apply button of plugin
+                }
                 BOA_.log("Run segmentation from mask file");
             }
 
