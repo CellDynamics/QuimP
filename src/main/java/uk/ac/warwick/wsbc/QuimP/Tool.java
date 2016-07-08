@@ -33,7 +33,7 @@ public class Tool {
      */
     public String getQuimPversion() {
         String[] quimpBuildInfo = getQuimPBuildInfo();
-        return getQuimPversion(quimpBuildInfo);
+        return getFormattedQuimPversion(quimpBuildInfo);
     }
 
     /**
@@ -47,7 +47,7 @@ public class Tool {
      * @endcode
      * @see getQuimPBuildInfo()
      */
-    public static String getQuimPversion(String[] quimpBuildInfo) {
+    public static String getFormattedQuimPversion(String[] quimpBuildInfo) {
         //!<
         String infoPlate = 
                   "---------------------------------------------------------\n" 

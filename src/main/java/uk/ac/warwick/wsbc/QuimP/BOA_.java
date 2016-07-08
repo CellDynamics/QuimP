@@ -325,7 +325,7 @@ public class BOA_ implements PlugIn {
      */
     void about() {
         AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
-        ad.appendLine(Tool.getQuimPversion(quimpInfo)); // display template filled by quimpInfo
+        ad.appendLine(Tool.getFormattedQuimPversion(quimpInfo)); // display template filled by quimpInfo
         // get list of found plugins
         ad.appendLine("List of found plugins:");
         ad.appendDistance(); // type ----

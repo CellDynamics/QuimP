@@ -44,11 +44,11 @@ public class ToolTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Tool#getQuimPversion()}.
-     */
-    @Test
-    public void testGetQuimPversion() throws Exception {
-        LOGGER.debug(new Tool().getQuimPversion());
-    }
+         * Test method for {@link uk.ac.warwick.wsbc.QuimP.Tool#getQuimPversion()}.
+         */
+        @Test
+        public void testGetFormattedQuimPversion() throws Exception {
+            LOGGER.debug(new Tool().getQuimPversion());
+        }
 
 }
