@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -37,9 +38,11 @@ import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentation;
  *
  */
 public class RandomWalkSegmentationPlugin_ implements PlugIn {
-
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     private static final Logger LOGGER =
             LogManager.getLogger(RandomWalkSegmentationPlugin_.class.getName());
