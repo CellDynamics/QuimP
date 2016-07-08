@@ -20,8 +20,10 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -71,8 +73,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     private int erodeIter; //!< number of erosions for generating next seed from previous
     private boolean useSeedStack; //!< \a true if seed has the same size as image, slices are seeds 
 
-    private JComboBox cImage,cSeed;
-    private JButton bBack,bFore,bClone;
+    private JComboBox<String> cImage,cSeed;
+    private JButton bClone;
+    private JToggleButton bBack,bFore;
     private JSpinner sAlpha,sBeta,sGamma,sIter,sErode;
     private JButton bCancel,bApply,bHelp;
     
@@ -91,9 +94,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         JPanel comboPanel = new JPanel();
         comboPanel.setBorder(BorderFactory.createTitledBorder("Image selection"));
         comboPanel.setLayout(new GridLayout(4, 1, 2, 2));
-        cImage = new JComboBox(WindowManager.getImageTitles());
+        cImage = new JComboBox<String>(WindowManager.getImageTitles());
         cImage.addActionListener(this);
-        cSeed = new JComboBox(WindowManager.getImageTitles());
+        cSeed = new JComboBox<String>(WindowManager.getImageTitles());
         cSeed.addActionListener(this);
         comboPanel.add(new JLabel("Original image"));
         comboPanel.add(cImage);
@@ -107,11 +110,11 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         bClone = new JButton("Clone");
         bClone.setToolTipText("Clone selected original image and allow to seed it manually");
         bClone.addActionListener(this);
-        bFore = new JButton("FG");
+        bFore = new JToggleButton("FG");
         bFore.setToolTipText("Select Foreground pen");
         bFore.setBackground(Color.ORANGE);
         bFore.addActionListener(this);
-        bBack = new JButton("BG");
+        bBack = new JToggleButton("BG");
         bBack.setToolTipText("Select Background pen");
         bBack.setBackground(Color.GREEN);
         bBack.addActionListener(this);
@@ -184,10 +187,18 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         wnd.pack();
         wnd.setVisible(true);
 
-        // disable on start
-        bClone.setEnabled(false);
-        bFore.setEnabled(false);
-        bBack.setEnabled(false);
+        // disable on start only if there is no image
+        if (cImage.getSelectedItem() == null) // if not null it must be string
+            bClone.setEnabled(false);
+        else
+            bClone.setEnabled(true);
+        if (cSeed.getSelectedItem() == null) {
+            bFore.setEnabled(false);
+            bBack.setEnabled(false);
+        } else {
+            bFore.setEnabled(true);
+            bBack.setEnabled(true);
+        }
 
         return true;
     }
@@ -308,15 +319,96 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
 
     }
 
+    /**
+     * Verify all entries in window and set them as final assigning to object variables.
+     * All operations are here
+     * 
+     * @param e Component
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
+        Object b = e.getSource();
+        // Start data verification, show message on problem and exit method setting FGBG unselected
+        // 0. check if we can paint on selected image if user try
+        if (b == bFore || b == bBack) {
+            ImagePlus tmpSeed = WindowManager.getImage((String) cSeed.getSelectedItem());
+            if (tmpSeed.getBitDepth() != 24) {
+                JOptionPane.showMessageDialog(wnd, "Seed image must be 24 bit RGB type", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                bFore.setSelected(false);
+                bBack.setSelected(false);
+                return; // we cant - return
+            }
+        }
+        if (b == bFore) {
+            if (((JToggleButton) b).isSelected()) {
+                IJ.run("brush");
+            } else {
+                // unselect
+            }
+        }
+        if (b == bApply) {
+            // verify data before - store data in object after verification
+            ImagePlus tmpSeed = WindowManager.getImage((String) cSeed.getSelectedItem()); // tmp var
+            ImagePlus tmpImage = WindowManager.getImage((String) cImage.getSelectedItem());
+            // 1. Verify sizes - must be the same
+            if (tmpSeed.getWidth() != tmpImage.getWidth()
+                    && tmpSeed.getHeight() != tmpImage.getHeight()) {
+                JOptionPane.showMessageDialog(wnd, "Images are incompatibile in size", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return; // when wrong sizes
+            }
+            // 2. Check seed bitDepth
+            if (tmpSeed.getBitDepth() != 24) {
+                JOptionPane.showMessageDialog(wnd, "Seed image must be 24 bit RGB type", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return; // when no 24 bit depth
+            }
+            // 3. Check stack size compatibility
+            if (tmpSeed.getStackSize() == 1)
+                useSeedStack = false; // use propagateSeed for generating next frame seed from prev
+            else if (tmpSeed.getStackSize() == tmpImage.getStackSize())
+                useSeedStack = true; // use slices as seeds
+            else {
+                JOptionPane.showMessageDialog(wnd,
+                        "Seed must be image or stack of the same size as image", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return; // wrong seed size
+            }
+            // 4. Read numeric data
+            //!<
+            params = new Params((Integer)sAlpha.getValue(), // alpha
+                    (Integer)sBeta.getValue(), // beta
+                    (Integer)sGamma.getValue(), // gamma1
+                    0, // not used gamma 2
+                    (Integer)sIter.getValue(), // iterations
+                    0.1, // dt
+                    8e-3 // error
+                    );
+            /**/
+            erodeIter = (Integer) sErode.getValue(); // erosions
+            // all ok - store images to later use
+            image = tmpImage;
+            seedImage = tmpSeed;
+            LOGGER.debug("Window params: " + params.toString());
+            // assign verified data to variables and run
+        } // end Apply
+        if (b == bClone) {
+            // clone seed image, convert it to RGB, add to list and select it on it
+            ImagePlus tmpSeed = WindowManager.getImage((String) cSeed.getSelectedItem()); // tmp var
+            ImagePlus duplicatedSeed = tmpSeed.duplicate();
+            duplicatedSeed.setProcessor(duplicatedSeed.getProcessor().convertToRGB()); // convert
+            duplicatedSeed.setTitle("SEED_" + tmpSeed.getTitle());
+            duplicatedSeed.show();
+            cSeed.addItem(new String(duplicatedSeed.getTitle()));
+            cSeed.setSelectedItem(duplicatedSeed.getTitle());
+        }
 
     }
 
     @Override
     public void stateChanged(ChangeEvent arg0) {
-        // TODO Auto-generated method stub
+        Object b = arg0.getSource();
 
     }
 
