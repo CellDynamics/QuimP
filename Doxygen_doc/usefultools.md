@@ -30,12 +30,10 @@ find ./ -type f -name *4j2.xml -path '*/src/*' | xargs sed -i -e "s/Root level=\
 
 # Build snapshots {#bsnap}
 
-This script builds snapshots and upload them to server packed into *zip* package. It checks also if there
+This script builds snapshots and ~~upload them to server~~ packed into *zip* package. It checks also if there
 is the same package on server already and set certain log level for every package.
 
 ```bash
-#!/bin/bash
-
 #!/bin/bash
 
 # This script builds snapshot project from develop branches across all repositories
@@ -110,9 +108,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 mvn install -P uber -Dmaven.test.skip=true # produce artefact for IJ
+rm -rf QuimP-Doc/
 git submodule init
-git submodule update
-cd QuimP_Doc/Docs
+git submodule update --init
+cd QuimP-Doc/Docs
 pdflatex QuimP_Guide.tex &>/dev/null && bibtex QuimP_Guide.aux &>/dev/null && pdflatex QuimP_Guide.tex &>/dev/null && pdflatex QuimP_Guide.tex &>/dev/null
 cd ../../
 
@@ -145,7 +144,7 @@ cp HedgehogSnakeFilter_quimp/target/*.jar $TMP_DIR
 cp MeanSnakeFilter_quimp/target/*.jar $TMP_DIR
 cp SetHeadSnakeFilter_quimp/target/*.jar $TMP_DIR
 cp QuimP/target/*-jar*.jar $TMP_DIR
-cp QuimP/QuimP_Doc/Docs/QuimP_Guide.pdf $TMP_DIR
+cp QuimP/QuimP-Doc/Docs/QuimP_Guide.pdf $TMP_DIR
 # create file with repo information
 touch $TMP_DIR/versions.txt
 # go through repos and read last comit from develop
@@ -194,8 +193,8 @@ This script builds docuementation
 ```sh
 #!/bin/sh
 # This script generates Doxygen doc based on java source files
-# Outputs doxygen documentation using doxyfile avaiable at Doxygen_doc
-
+# Outputs doxygen documentation using doxyfile available at Doxygen_doc
+echo "Use latest Doxygen compiled from sources to have links evaluated correctly"
 dot -Tpng Doxygen_doc/maven-structure.dot -o /tmp/maven-structure.png
 # copy only if changed to prevent pushing repo
 rsync -c /tmp/maven-structure.png Doxygen_doc/maven-structure.png
@@ -209,7 +208,7 @@ rsync -az -e 'ssh -p2222' --stats --delete Doxygen_doc html/ trac@trac-wsbc.link
 ```
 # Prepare test environment {#testenv}
 
-This scripts compiles everything without tests and copies artefacts to Fiji directory. It is 
+This scripts compiles everything without tests and copies artifacts to Fiji directory. It is 
 folder dependent.
 
 ```bash
@@ -220,13 +219,17 @@ cd .. # assume location in QuimP
 
 # delete old stuff
 find Fiji.app.test/plugins -name QuimP*.jar | xargs rm -fv
-find Fiji.app.test/plugins -name *_quimp*.jar | xargs rm -fv
+find Fiji.app.test/plugins -name *-quimp*.jar | xargs rm -fv
+
+cd pom-quimp-plugin
+mvn -q clean install
+cd ..
 
 cd QuimP
 mvn -q -T 1C clean install -P uber -Dmaven.test.skip=true
 if [[ $? -ne 0 ]] ; then
-    echo Error!!!
-    exit 1
+   	echo Error!!!
+   	exit 1
 fi
 # copy package
 cp -v target/QuimP_-*-jar-*.jar ../Fiji.app.test/plugins
@@ -235,13 +238,13 @@ cd ..
 # iterate over plugins dirs
 for d in *_quimp/ ; do
     cd "$d"
-    mvn -q -T 1C clean package -Dmaven.test.skip=true &
-#    if [[ $? -ne 0 ]] ; then
-#           echo Error!!!
-#           exit 1
-#       fi
-    # copy artefact to Fiji
-    cp -v target/*_quimp*.jar ../Fiji.app.test/plugins
-    cd ..
+    mvn -q -T 1C clean package -Dmaven.test.skip=true 
+    if [[ $? -ne 0 ]] ; then
+   		echo Error!!!
+   		exit 1
+   	fi
+   	# copy artefact to Fiji
+   	cp -v target/*-quimp*.jar ../Fiji.app.test/plugins
+   	cd ..
 done
 ```
