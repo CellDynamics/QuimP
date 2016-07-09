@@ -5,6 +5,9 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -49,6 +52,9 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     JTextPane toolBarTitle1 = null;
     JTextPane toolBarTitle2 = null;
     private final Color barColor = new Color(0xFB, 0xFF, 0x94); //!< Color of title bar
+    private MenuBar menuBar;
+    private Menu menuAbout;
+    private MenuItem menuVersion; 
 
     public void run(String s) {
         title = "QuimP 16.08.01-SNAPSHOT bar";
@@ -81,7 +87,15 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
         frame.getContentPane().setLayout(new GridBagLayout());
         buildPanel(); // build the QuimP bar
-
+        // add menu
+        menuBar = new MenuBar();
+        menuAbout = new Menu("About");
+        menuBar.add(menuAbout);
+        menuVersion = new MenuItem("Version");
+        menuAbout.add(menuVersion);
+        menuVersion.addActionListener(this);
+        frame.setMenuBar(menuBar);
+        
         // captures the ImageJ KeyListener
         frame.setFocusable(true);
         frame.addKeyListener(IJ.getInstance());
@@ -204,6 +218,16 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+        if(e.getSource()==menuVersion) { // menu version
+            String quimpInfo = new Tool().getQuimPversion(); // prepare info plate
+            AboutDialog ad = new AboutDialog(frame); // create about dialog with parent 'window'
+            ad.appendLine(quimpInfo); // display template filled by quimpInfo
+            ad.appendDistance();
+            ad.appendLine("All plugins for QuimP are reported in modules that use them natively.");
+            ad.appendLine("Web page:\nhttp://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp");
+            ad.setVisible(true);
+            return;
+        }
         try {
             new MacroRunner(e.getActionCommand() + "\n");
         } catch (Exception ex) {
