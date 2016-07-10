@@ -15,6 +15,10 @@
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/bretschneider/quimp/</url>
+  <!-- Root of URL for documentation. MUST have / at end -->
+  <properties>
+    <manual.rootlocation>http://homepages.warwick.ac.uk/~u1473350/</manual.rootlocation>
+  </properties>
   <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
   <scm>
     <connection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</connection>
@@ -89,6 +93,12 @@
     </dependency>
   </dependencies>
   <build>
+  	<resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -171,6 +181,9 @@
       <!-- Most of this settings is dependend from folder structure -->
       <!-- Use of this profile will cause that current state of Working Directory will be utilized -->
       <id>development</id>
+      <properties>
+        <manual.location>${manual.rootlocation}snapshot/</manual.location>
+  	  </properties>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
@@ -216,6 +229,9 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+      <properties>
+        <manual.location>${manual.rootlocation}release/</manual.location>
+  	  </properties>
     </profile>
     <profile>
       <id>uber</id>
@@ -223,6 +239,9 @@
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
+      <properties>
+        <manual.location>${manual.rootlocation}release/</manual.location>
+  	  </properties>
       <build>
         <plugins>
           <plugin>
