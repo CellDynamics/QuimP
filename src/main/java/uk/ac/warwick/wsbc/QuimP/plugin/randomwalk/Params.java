@@ -1,5 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
+import java.util.Arrays;
+
 /**
  * Hold algorithm parameters
  * 
@@ -51,4 +53,14 @@ public class Params {
         this.dt = dt;
         this.relim = relim;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Params [alpha=" + alpha + ", beta=" + beta + ", gamma=" + Arrays.toString(gamma)
+                + ", Iter=" + Iter + ", dt=" + dt + ", relim=" + relim + "]";
+    }
+
 }
