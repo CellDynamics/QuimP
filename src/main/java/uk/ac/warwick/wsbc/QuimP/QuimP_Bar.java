@@ -67,9 +67,9 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     JTextPane toolBarTitle2 = null;
     private final Color barColor = new Color(0xFB, 0xFF, 0x94); //!< Color of title bar
     private MenuBar menuBar;
-    private Menu menuAbout;
+    private Menu menuHelp;
     private MenuItem menuVersion; 
-    private MenuItem menuHelp;
+    private MenuItem menuOpenHelp;
 
     public void run(String s) {
         String title;
@@ -105,14 +105,14 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         buildPanel(); // build the QuimP bar
         // add menu
         menuBar = new MenuBar();
-        menuAbout = new Menu("Help");
-        menuBar.add(menuAbout);
+        menuHelp = new Menu("Help");
+        menuBar.add(menuHelp);
         menuVersion = new MenuItem("About");
-        menuHelp = new MenuItem("Help Contents");
-        menuAbout.add(menuHelp);
-        menuAbout.add(menuVersion);
+        menuOpenHelp = new MenuItem("Help Contents");
+        menuHelp.add(menuOpenHelp);
+        menuHelp.add(menuVersion);
         menuVersion.addActionListener(this);
-        menuHelp.addActionListener(this);
+        menuOpenHelp.addActionListener(this);
         frame.setMenuBar(menuBar);
         
         // captures the ImageJ KeyListener
@@ -247,7 +247,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             ad.setVisible(true);
             return;
         }
-        if(e.getSource()==menuHelp) { //open help
+        if(e.getSource()==menuOpenHelp) { //open help
             String url = new PropertyReader().readProperty("quimpconfig.properties", "manualURL");
             try {
                 java.awt.Desktop.getDesktop().browse(new URI(url));

@@ -29,12 +29,12 @@ as extension to `manual.rootlocation` property:
 
 ```
 <properties>
-        <manual.location>${manual.rootlocation}release/</manual.location>
+        <manual.location>${manual.rootlocation}release/QuimP_Guide.html</manual.location>
 </properties>
 
 
 <properties>
-        <manual.location>${manual.rootlocation}snapshot/</manual.location>
+        <manual.location>${manual.rootlocation}snapshot/QuimP_Guide.html</manual.location>
 </properties>
 ```
 
