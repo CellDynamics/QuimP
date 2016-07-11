@@ -23,14 +23,14 @@ public class RandomWalkSegmentationPlugin_run {
      */
     public static void main(String[] args) throws InterruptedException {
         CountDownLatch startSignal = new CountDownLatch(1);
-        RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
         ImageJ ij = new ImageJ();
+        RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
         IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
                 "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/fluoreszenz-test_eq_smooth_frames_1-5.tif\")");
         IJ.runMacro(
                 "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
         // obj.run("");
-        obj.showNewDialog();
+        obj.showDialog();
 
         obj.wnd.addWindowListener(new WindowAdapter() {
 

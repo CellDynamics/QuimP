@@ -12,6 +12,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +39,9 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.WindowManager;
-import ij.gui.GenericDialog;
+import ij.plugin.Converter;
 import ij.plugin.PlugIn;
+import ij.plugin.tool.BrushTool;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.Params;
 import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.Point;
@@ -78,14 +82,84 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     private JToggleButton bBack,bFore;
     private JSpinner sAlpha,sBeta,sGamma,sIter,sErode;
     private JButton bCancel,bApply,bHelp;
+    private BrushTool br = new BrushTool();
+    private String lastTool; // tool selected in IJ
     
     JFrame wnd;
     
     /**
-     * 
-     * @return
+     * Default constructor
      */
-    public boolean showNewDialog() {
+    public RandomWalkSegmentationPlugin_() {
+        lastTool = IJ.getToolName(); // remember selected tool
+    }
+
+    /**
+     * Build main dialog
+     * 
+     * @startuml
+     * salt
+     *   {+
+     *   Random Walk segmentation
+     *   ~~
+     *   {+
+     *   Define images
+     *   Open image:  |  ^Original image ^
+     *   Open seed:   |  ^Seed image     ^
+     *   }
+     *   {+
+     *   or create it:
+     *   [  Clone  ] | [   FG   ] | [   BG   ]
+     *   }
+     *   ==
+     *   {+
+     *   Segmentation parameters
+     *   alpha: | "400.0  "
+     *   beta: | "50.0   "
+     *   gamma: | "100.0  "
+     *   iterations: | "80     "
+     *   erode power: | "5      "
+     *   }
+     *   ~~
+     *   {
+     *   [     OK     ] | [   Cancel   ]
+     *   }
+     *   }
+     *   @enduml
+     *   
+     * State diagram
+     *
+     *   @startuml
+     *   [*] --> Default
+     *   Default : selectors empty
+     *   Default : **Clone**, **BG** and **FG** //inactive//
+     *   Default --> ImageSelected : when **Image** selector not empty
+     *   ImageSelected : **Clone** //active//
+     *   Default --> SeedSelected : when **Seed** selector not empty and image tthere is valid
+     *   SeedSelected : **Clone**, **BG** and **FG** //active//
+     *   SeedSelected --> SeedCreation
+     *   ImageSelected --> SeedCreation : Clicked **Clone**
+     *   SeedCreation : Original image cloned and converted to RGB
+     *   SeedCreation : **BG** and **FG** //active//
+     *   SeedCreation : **SeedImage** selector filled with name of cloned image
+     *   SeedCreation --> Sketch : **BG** or **FG** clicked
+     *   Sketch : Draw tool selected in IJ
+     *   Sketch : **BG** or **FG** changed to notify
+     *   Default -> Run
+     *   Run : Verify all fields
+     *   Run : Run algorithm
+     *   Sketch --> Run
+     *   Sketch --> [*]
+     *   SeedCreation --> Run
+     *   SeedCreation --> [*]
+     *   ImageSelected --> Run
+     *   ImageSelected --> [*]
+     *   Run --> [*]
+     *   Default --> [*]
+     *   @enduml
+     * 
+     */
+    public void showDialog() {
         wnd = new JFrame("Random Walker Segmentation");
         wnd.setResizable(false);
         JPanel panel = new JPanel(new BorderLayout());
@@ -184,7 +258,33 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         // panel.add(optionsPanel,BorderLayout.SOUTH);
         panel.add(caButtons, BorderLayout.SOUTH);
         wnd.add(panel);
+
+        // reaction on focus = all choices are rebuilt
+        wnd.addWindowFocusListener(new WindowFocusListener() {
+
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+            }
+
+            /**
+             * Updates selector if user deleted the window
+             */
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                Object sel = cSeed.getSelectedItem();
+                cSeed.removeAllItems();
+                for (String s : WindowManager.getImageTitles())
+                    cSeed.addItem(s);
+                cSeed.setSelectedItem(sel);
+                sel = cImage.getSelectedItem();
+                cImage.removeAllItems();
+                for (String s : WindowManager.getImageTitles())
+                    cImage.addItem(s);
+                cImage.setSelectedItem(sel);
+            }
+        });
         wnd.pack();
+        wnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         wnd.setVisible(true);
 
         // disable on start only if there is no image
@@ -199,76 +299,6 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             bFore.setEnabled(true);
             bBack.setEnabled(true);
         }
-
-        return true;
-    }
-
-    /**
-     * Shows user dialog and check conditions.
-     * 
-     * @return \c true if user clicked \b OK and input data are correct or 
-     * return \c false otherwise
-     */
-    public boolean showDialog() {
-        GenericDialog gd = new GenericDialog("Random Walk segmentation");
-        gd.addChoice("Image", WindowManager.getImageTitles(), ""); // image to be segmented
-        gd.addChoice("Seed", WindowManager.getImageTitles(), ""); // seed image
-        gd.addNumericField("alpha", 400, 0, 6, ""); // alpha
-        gd.addNumericField("beta", 50, 2, 6, ""); // beta
-        gd.addNumericField("gamma", 100, 2, 6, ""); // gamma
-        gd.addNumericField("Iterations", 80, 3);
-        gd.addNumericField("erode iterations", 5, 0, 2, "");
-
-        //!<
-        gd.addMessage(
-                "The erode iterations depend\n"
-              + "on how fast cells move or how\n"
-              + "big are differences betweenn\n"
-              + "succeeding frames.");
-        /**/
-        gd.setResizable(false);
-        gd.showDialog();
-        // user response, return false on any error
-        if (gd.wasCanceled()) // check if user clicked OK or CANCEL
-            return false;
-        image = WindowManager.getImage(gd.getNextChoice());
-        seedImage = WindowManager.getImage(gd.getNextChoice());
-        if (image.getBitDepth() != 8 && image.getBitDepth() != 16) {
-            IJ.showMessage("Error", "Image must be 8 or 16 bit");
-            return false; // wrong image type
-        }
-        if (seedImage.getBitDepth() != 24) {
-            IJ.showMessage("Error", "Seed image must be 24 bit");
-            return false; // wrong seed
-        }
-        if (seedImage.getStackSize() == 1)
-            useSeedStack = false; // use propagateSeed for generating next frame seed from previous
-        else if (seedImage.getStackSize() == image.getStackSize())
-            useSeedStack = true; // use slices as seeds
-        else {
-            IJ.showMessage("Error", "Seed must be image or stack of the same size as image");
-            return false; // wrong seed size
-        }
-
-        // read GUI elements and store results in private fields order as these
-        // methods are called should match to GUI build order
-        //!<
-        params = new Params(gd.getNextNumber(), // alpha
-                gd.getNextNumber(), // beta
-                gd.getNextNumber(), // gamma1
-                0, // not used gamma 2
-                (int) gd.getNextNumber(), // iterations
-                0.1, // dt
-                8e-3 // error
-                );
-        /**/
-        erodeIter = (int) Math.round(gd.getNextNumber()); // erosions
-        if (gd.invalidNumber()) { // check if numbers in fields were correct
-            IJ.error("Not valid number");
-            LOGGER.error("One of the numbers in dialog box is not valid");
-            return false;
-        }
-        return true; // all correct
     }
 
     /**
@@ -280,48 +310,43 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     public void run(String arg) {
         ImageStack ret; // all images treated as stacks
         Map<Integer, List<Point>> seeds;
-        if (showDialog()) { // returned true - all fields ok and initialized correctly
-            if (image == null || seedImage == null) {
-                IJ.showMessage("Error", "Select both images first");
-            }
-            try {
-                ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
-                ImageStack is = image.getStack(); // get current stack (size 1 for one image)
-                // segment first slice (or image if it is not stack)
-                RandomWalkSegmentation obj = new RandomWalkSegmentation(is.getProcessor(1), params);
-                seeds = obj.decodeSeeds(seedImage.getStack().getProcessor(1), Color.RED,
-                        Color.GREEN); // generate seeds
-                ImageProcessor retIp = obj.run(seeds); // segmentation
-                ret.addSlice(retIp.convertToByte(true)); // store output in new stack
-                // iterate over all slices after first (may not run for one image)
-                for (int s = 2; s <= is.getSize(); s++) {
-                    Map<Integer, List<Point>> nextseed;
-                    obj = new RandomWalkSegmentation(is.getProcessor(s), params);
-                    // get seeds from previous result
-                    if (useSeedStack) { // true - use slices
-                        nextseed = obj.decodeSeeds(seedImage.getStack().getProcessor(s), Color.RED,
-                                Color.GREEN);
-                    } else // false - use previous frame
-                        nextseed = PropagateSeeds.propagateSeed(retIp, erodeIter);
-                    retIp = obj.run(nextseed); // segmentation and results stored for next seeding
-                    ret.addSlice(retIp); // add next slice
-                    IJ.showProgress(s - 1, is.getSize());
-                }
-                // convert to ImagePlus and show
-                ImagePlus segmented = new ImagePlus("Segmented_" + image.getTitle(), ret);
-                segmented.show();
-                segmented.updateAndDraw();
-            } catch (RandomWalkException e) {
-                LOGGER.error("Segmentation failed because: " + e.getMessage());
-            }
 
+        try {
+            ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
+            ImageStack is = image.getStack(); // get current stack (size 1 for one image)
+            // segment first slice (or image if it is not stack)
+            RandomWalkSegmentation obj = new RandomWalkSegmentation(is.getProcessor(1), params);
+            seeds = obj.decodeSeeds(seedImage.getStack().getProcessor(1), Color.RED, Color.GREEN); // generate
+                                                                                                   // seeds
+            ImageProcessor retIp = obj.run(seeds); // segmentation
+            ret.addSlice(retIp.convertToByte(true)); // store output in new stack
+            // iterate over all slices after first (may not run for one image)
+            for (int s = 2; s <= is.getSize(); s++) {
+                Map<Integer, List<Point>> nextseed;
+                obj = new RandomWalkSegmentation(is.getProcessor(s), params);
+                // get seeds from previous result
+                if (useSeedStack) { // true - use slices
+                    nextseed = obj.decodeSeeds(seedImage.getStack().getProcessor(s), Color.RED,
+                            Color.GREEN);
+                } else // false - use previous frame
+                    nextseed = PropagateSeeds.propagateSeed(retIp, erodeIter);
+                retIp = obj.run(nextseed); // segmentation and results stored for next seeding
+                ret.addSlice(retIp); // add next slice
+                IJ.showProgress(s - 1, is.getSize());
+            }
+            // convert to ImagePlus and show
+            ImagePlus segmented = new ImagePlus("Segmented_" + image.getTitle(), ret);
+            segmented.show();
+            segmented.updateAndDraw();
+        } catch (RandomWalkException e) {
+            LOGGER.error("Segmentation failed because: " + e.getMessage());
         }
 
     }
 
     /**
      * Verify all entries in window and set them as final assigning to object variables.
-     * All operations are here
+     * All operations are here. Performs also some window logic
      * 
      * @param e Component
      */
@@ -332,6 +357,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         // 0. check if we can paint on selected image if user try
         if (b == bFore || b == bBack) {
             ImagePlus tmpSeed = WindowManager.getImage((String) cSeed.getSelectedItem());
+            if (tmpSeed == null)
+                return;
             if (tmpSeed.getBitDepth() != 24) {
                 JOptionPane.showMessageDialog(wnd, "Seed image must be 24 bit RGB type", "Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -340,11 +367,27 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                 return; // we cant - return
             }
         }
-        if (b == bFore) {
-            if (((JToggleButton) b).isSelected()) {
-                IJ.run("brush");
+        if (b == bFore) { // foreground pressed
+            if (((JToggleButton) b).isSelected()) { // if selected
+                bBack.setSelected(false); // unselect background
+                IJ.setForegroundColor(Color.RED.getRed(), Color.RED.getGreen(),
+                        Color.RED.getBlue()); // set pen color
+                BrushTool.setBrushWidth(10); // set brush width
+                br.run(""); // tun macro
             } else {
-                // unselect
+                IJ.setTool(lastTool); // if unselected just switch off BrushTool selecting other
+                                      // tool
+            }
+        }
+        if (b == bBack) { // see bFore comments
+            if (((JToggleButton) b).isSelected()) {
+                bFore.setSelected(false);
+                IJ.setForegroundColor(Color.GREEN.getRed(), Color.GREEN.getGreen(),
+                        Color.GREEN.getBlue());
+                BrushTool.setBrushWidth(10);
+                br.run("");
+            } else {
+                IJ.setTool(lastTool);
             }
         }
         if (b == bApply) {
@@ -390,25 +433,38 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             // all ok - store images to later use
             image = tmpImage;
             seedImage = tmpSeed;
-            LOGGER.debug("Window params: " + params.toString());
-            // assign verified data to variables and run
+            run(""); // run process - it gives new image
+            // decelect seeds buttons
+            bBack.setSelected(false);
+            bFore.setSelected(false);
         } // end Apply
         if (b == bClone) {
             // clone seed image, convert it to RGB, add to list and select it on it
             ImagePlus tmpSeed = WindowManager.getImage((String) cSeed.getSelectedItem()); // tmp var
             ImagePlus duplicatedSeed = tmpSeed.duplicate();
-            duplicatedSeed.setProcessor(duplicatedSeed.getProcessor().convertToRGB()); // convert
-            duplicatedSeed.setTitle("SEED_" + tmpSeed.getTitle());
             duplicatedSeed.show();
+            new Converter().run("RGB Color");
+            duplicatedSeed.setTitle("SEED_" + tmpSeed.getTitle());
+
             cSeed.addItem(new String(duplicatedSeed.getTitle()));
             cSeed.setSelectedItem(duplicatedSeed.getTitle());
+        }
+        if (b == bHelp) {
+            String url = new PropertyReader().readProperty("quimpconfig.properties", "manualURL");
+            try {
+                java.awt.Desktop.getDesktop().browse(new URI(url));
+            } catch (Exception e1) {
+                LOGGER.error("Could not open help: " + e1.getMessage(), e1);
+            }
+        }
+        if (b == bCancel) {
+            wnd.dispose();
         }
 
     }
 
     @Override
-    public void stateChanged(ChangeEvent arg0) {
-        Object b = arg0.getSource();
+    public void stateChanged(ChangeEvent e) {
 
     }
 
