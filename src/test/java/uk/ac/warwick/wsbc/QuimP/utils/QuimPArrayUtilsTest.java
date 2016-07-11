@@ -4,10 +4,15 @@
  */
 package uk.ac.warwick.wsbc.QuimP.utils;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +24,10 @@ import org.junit.Test;
  */
 public class QuimPArrayUtilsTest {
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     private static final Logger LOGGER = LogManager.getLogger(QuimPArrayUtilsTest.class.getName());
 
@@ -60,5 +68,15 @@ public class QuimPArrayUtilsTest {
             for (int c = 0; c < 3; c++)
                 assertEquals(in[r][c], out[r][c], 1e-3);
     }
+
+    @Test
+        public void testMinListIndex() throws Exception {
+            ArrayList<Double> ar = new ArrayList<>();
+            ar.add(34.0);
+            ar.add(5.0);
+            ar.add(-5.0);
+    
+            assertThat(QuimPArrayUtils.minListIndex(ar), equalTo(2));
+        }
 
 }

@@ -31,6 +31,7 @@ import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * Main ANA class implementing IJ PlugInFilter
@@ -737,7 +738,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
             }
         }
 
-        if (Tool.sumArray(ANAp.presentData) == 3)
+        if (QuimPArrayUtils.sumArray(ANAp.presentData) == 3)
             firstEmptyCh = 0;
 
         if (ANAp.noData) {

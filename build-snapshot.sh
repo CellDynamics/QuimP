@@ -53,8 +53,8 @@ for d in */ ; do
     git fetch --all
     git checkout $BRANCH &>/dev/null
     git pull # update repo
-    # set loglevel in current dir
-    $CWD/setloglevel.sh $LOGLEVEL
+    # set loglevel in current dir (deprecated as QuimP, see logging.md)
+    # $CWD/setloglevel.sh $LOGLEVEL
     cd ../
 done
 

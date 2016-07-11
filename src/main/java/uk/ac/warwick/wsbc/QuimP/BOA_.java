@@ -33,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpSnakeFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * Main class implementing BOA plugin.
@@ -324,7 +326,8 @@ public class BOA_ implements PlugIn {
      */
     void about() {
         AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
-        ad.appendLine(Tool.getQuimPversion(quimpInfo)); // dispaly template filled by quimpInfo
+        ad.appendLine(Tool.getFormattedQuimPversion(quimpInfo)); // display template filled by
+                                                                 // quimpInfo
         // get list of found plugins
         ad.appendLine("List of found plugins:");
         ad.appendDistance(); // type ----
@@ -545,8 +548,8 @@ public class BOA_ implements PlugIn {
         private Checkbox cFirstPluginActiv, cSecondPluginActiv, cThirdPluginActiv;
 
         private MenuBar quimpMenuBar;
-        private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory, menuLoad,
-                menuDeletePlugin, menuApplyPlugin, menuSegmentationRun; // items
+        private MenuItem menuAbout, menuOpenHelp, menuSaveConfig, menuLoadConfig, menuShowHistory,
+                menuLoad, menuDeletePlugin, menuApplyPlugin, menuSegmentationRun; // items
         private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
         private Color defaultColor;
 
@@ -608,7 +611,7 @@ public class BOA_ implements PlugIn {
          */
         final MenuBar buildMenu() {
             MenuBar menuBar; // main menu bar
-            Menu menuAbout; // menu About in menubar
+            Menu menuHelp; // menu About in menubar
             Menu menuConfig; // menu Config in menubar
             Menu menuFile; // menu File in menubar
             Menu menuPlugin; // menu Plugin in menubar
@@ -617,7 +620,7 @@ public class BOA_ implements PlugIn {
             menuBar = new MenuBar();
 
             menuConfig = new Menu("Preferences");
-            menuAbout = new Menu("About");
+            menuHelp = new Menu("Help");
             menuFile = new Menu("File");
             menuPlugin = new Menu("Plugin");
             menuSegmentation = new Menu("Segmentation");
@@ -627,7 +630,7 @@ public class BOA_ implements PlugIn {
             menuBar.add(menuConfig);
             menuBar.add(menuPlugin);
             menuBar.add(menuSegmentation);
-            menuBar.add(menuAbout);
+            menuBar.add(menuHelp);
 
             // add entries
             menuLoad = new MenuItem("Load global config");
@@ -641,9 +644,12 @@ public class BOA_ implements PlugIn {
             menuSaveConfig.addActionListener(this);
             menuFile.add(menuSaveConfig);
 
-            menuVersion = new MenuItem("Version");
-            menuVersion.addActionListener(this);
-            menuAbout.add(menuVersion);
+            menuOpenHelp = new MenuItem("Help Contents");
+            menuOpenHelp.addActionListener(this);
+            menuHelp.add(menuOpenHelp);
+            menuAbout = new MenuItem("About");
+            menuAbout.addActionListener(this);
+            menuHelp.add(menuAbout);
 
             cbMenuPlotOriginalSnakes = new CheckboxMenuItem("Plot original");
             cbMenuPlotOriginalSnakes.setState(qState.boap.isProcessedSnakePlotted);
@@ -1291,8 +1297,18 @@ public class BOA_ implements PlugIn {
             }
 
             // menu listeners
-            if (b == menuVersion) {
+            if (b == menuAbout) {
                 about();
+            }
+            if (b == menuOpenHelp) {
+                String url =
+                        new PropertyReader().readProperty("quimpconfig.properties", "manualURL");
+                try {
+                    java.awt.Desktop.getDesktop().browse(new URI(url));
+                } catch (Exception e1) {
+                    LOGGER.error("Could not open help: " + e1.getMessage(), e1);
+                }
+                return;
             }
             if (b == menuSaveConfig) {
                 String saveIn = qState.boap.orgFile.getParent();
@@ -2189,7 +2205,7 @@ public class BOA_ implements PlugIn {
                 distance.add(ExtendedVector2d.lengthP2P(mV, sV));
             }
         }
-        int minIndex = Tool.minListIndex(distance);
+        int minIndex = QuimPArrayUtils.minListIndex(distance);
         if (distance.get(minIndex) < 10) { // if closest < 10, delete it
             BOA_.log("Deleted cell " + qState.nest.getHandler(minIndex).getID());
             qState.nest.removeHandler(qState.nest.getHandler(minIndex));
@@ -2221,7 +2237,7 @@ public class BOA_ implements PlugIn {
             }
         }
 
-        int minIndex = Tool.minListIndex(distance);
+        int minIndex = QuimPArrayUtils.minListIndex(distance);
         // BOA_.log("Debug: closest index " + minIndex + ", id " +
         // nest.getHandler(minIndex).getID());
         if (distance.get(minIndex) < 10) { // if closest < 10, delete it
@@ -2260,7 +2276,7 @@ public class BOA_ implements PlugIn {
                 distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
             }
         }
-        int minIndex = Tool.minArrayIndex(distance);
+        int minIndex = QuimPArrayUtils.minArrayIndex(distance);
         if (distance[minIndex] < 10 || qState.nest.size() == 1) { // if closest < 10, edit it
             sH = qState.nest.getHandler(minIndex);
             qState.boap.editingID = minIndex; // sH.getID();

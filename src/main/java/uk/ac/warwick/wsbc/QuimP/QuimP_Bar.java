@@ -5,10 +5,16 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -19,6 +25,10 @@ import javax.swing.JToolBar;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import ij.IJ;
 import ij.Prefs;
@@ -34,7 +44,14 @@ import ij.plugin.PlugIn;
  * @date 22 Apr 2016
  */
 public class QuimP_Bar implements PlugIn, ActionListener {
-    String name, title;
+    static {
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
+    }
+    static final Logger LOGGER = LogManager.getLogger(QuimP_Bar.class.getName());
+    String prefsfName = "quimp_bar"; //!< name used for storing bar location in IJ prefs
     String path;
     String separator = System.getProperty("file.separator");
     JFrame frame = new JFrame();
@@ -49,12 +66,17 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     JTextPane toolBarTitle1 = null;
     JTextPane toolBarTitle2 = null;
     private final Color barColor = new Color(0xFB, 0xFF, 0x94); //!< Color of title bar
+    private MenuBar menuBar;
+    private Menu menuHelp;
+    private MenuItem menuVersion; 
+    private MenuItem menuOpenHelp;
 
     public void run(String s) {
-        title = "QuimP 16.08.01-SNAPSHOT bar";
-        name = "quimpBar";
+        String title;
+        String quimpInfo[] = new Tool().getQuimPBuildInfo(); // get jar title
+        title = quimpInfo[2]+" "+quimpInfo[0];
 
-        frame.setTitle(title);
+        frame.setTitle(title); // and set to window title
 
         // if already open, bring to front
         if (WindowManager.getFrame(title) != null) {
@@ -81,7 +103,18 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
         frame.getContentPane().setLayout(new GridBagLayout());
         buildPanel(); // build the QuimP bar
-
+        // add menu
+        menuBar = new MenuBar();
+        menuHelp = new Menu("Help");
+        menuBar.add(menuHelp);
+        menuVersion = new MenuItem("About");
+        menuOpenHelp = new MenuItem("Help Contents");
+        menuHelp.add(menuOpenHelp);
+        menuHelp.add(menuVersion);
+        menuVersion.addActionListener(this);
+        menuOpenHelp.addActionListener(this);
+        frame.setMenuBar(menuBar);
+        
         // captures the ImageJ KeyListener
         frame.setFocusable(true);
         frame.addKeyListener(IJ.getInstance());
@@ -204,6 +237,25 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+        if(e.getSource()==menuVersion) { // menu version
+            String quimpInfo = new Tool().getQuimPversion(); // prepare info plate
+            AboutDialog ad = new AboutDialog(frame); // create about dialog with parent 'window'
+            ad.appendLine(quimpInfo); // display template filled by quimpInfo
+            ad.appendDistance();
+            ad.appendLine("All plugins for QuimP are reported in modules that use them natively.");
+            ad.appendLine("Web page:\nhttp://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp");
+            ad.setVisible(true);
+            return;
+        }
+        if(e.getSource()==menuOpenHelp) { //open help
+            String url = new PropertyReader().readProperty("quimpconfig.properties", "manualURL");
+            try {
+                java.awt.Desktop.getDesktop().browse(new URI(url));
+            } catch (Exception e1) {
+                LOGGER.error("Could not open help: "+e1.getMessage(),e1);
+            }
+            return;
+        }
         try {
             new MacroRunner(e.getActionCommand() + "\n");
         } catch (Exception ex) {
@@ -213,8 +265,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     }
 
     protected void storeLocation() {
-        Prefs.set("actionbar" + title + ".xloc", frame.getLocation().x);
-        Prefs.set("actionbar" + title + ".yloc", frame.getLocation().y);
+        Prefs.set("actionbar" + prefsfName + ".xloc", frame.getLocation().x);
+        Prefs.set("actionbar" + prefsfName + ".yloc", frame.getLocation().y);
     }
 
 }
