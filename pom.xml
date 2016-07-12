@@ -93,7 +93,7 @@
     </dependency>
   </dependencies>
   <build>
-  	<resources>
+    <resources>
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
@@ -183,7 +183,7 @@
       <id>development</id>
       <properties>
         <manual.location>${manual.rootlocation}snapshot/QuimP_Guide.html</manual.location>
-  	  </properties>
+      </properties>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
@@ -231,17 +231,61 @@
       </activation>
       <properties>
         <manual.location>${manual.rootlocation}release/QuimP_Guide.html</manual.location>
-  	  </properties>
+      </properties>
     </profile>
     <profile>
-      <id>uber</id>
-      <!--Profile for building FAT jar-->
+      <id>uber-snapshot</id>
+      <!--Profile for building FAT jar with snapshot documentation-->
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <manual.location>${manual.rootlocation}snapshot/QuimP_Guide.html</manual.location>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
+            <version>2.6</version>
+            <configuration>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <archive>
+                <manifest>
+                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                </manifest>
+                <manifestEntries>
+                  <Implementation-Build>${buildNumber}</Implementation-Build>
+                </manifestEntries>
+              </archive>
+            </configuration>
+            <executions>
+              <execution>
+                <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
+                <!-- https://maven.apache.org/guides/mini/guide-default-execution-ids.html -->
+                <id>simple-command</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>uber-release</id>
+      <!--Profile for building FAT jar with release documentation-->
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
         <manual.location>${manual.rootlocation}release/QuimP_Guide.html</manual.location>
-  	  </properties>
+      </properties>
       <build>
         <plugins>
           <plugin>

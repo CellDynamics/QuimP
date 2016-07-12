@@ -17,7 +17,7 @@
 # On serverside must exist file hashlist and this file must be related to diectory content
 # (file may be empty on beginig) It can not be edited outside
 
-# assumes two parameters - name of branch to build snapshot from and loglevel
+# assumes two parameters - name of branch to build snapshot from and maven profile name
 
 WORKING_DIR='/home/baniuk/tmp'
 TMP_DIR='/tmp/bin'
@@ -42,7 +42,7 @@ if [ "$#" -ne 2 ]; then
 fi
 
 BRANCH=$1
-LOGLEVEL=$2
+PROFILE=$2
 
 cd "$WORKING_DIR"
 # Assume that there are only repos
@@ -71,7 +71,7 @@ mvn clean install # must be installed for filters
 if [ $? -ne 0 ]; then
     exit 1
 fi
-mvn install -P uber -Dmaven.test.skip=true # produce artefact for IJ
+mvn install -P $PROFILE -Dmaven.test.skip=true # produce artefact for IJ
 rm -rf QuimP-Doc/
 git submodule init
 git submodule update --init
