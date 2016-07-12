@@ -18,18 +18,18 @@ File: setloglevel.sh
 This script builds snapshots and ~~upload them to server~~ packed into *zip* package. It checks also if there
 is the same package on server already and set certain log level for every package.
 
-File: \ref ../build-snapshot.sh "build-snapshot.sh"
+File: build-snapshot.sh \i branch \i profile
 
 # Generate documentation {#gendoc}
 
 This script builds documentation
 
-File: \ref ../generateDoc.sh "generateDoc.sh"
+File: generateDoc.sh
 
 # Prepare test environment {#testenv}
 
 This scripts compiles everything (QuimP and plugins) without tests and copies artifacts to Fiji directory. It is 
 folder dependent. Can be used for tests from Eclipse. 
 
-File: \ref ../testBuild.sh "testBuild.sh" 
+File: testBuild.sh
 

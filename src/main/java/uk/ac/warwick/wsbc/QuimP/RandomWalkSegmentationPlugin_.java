@@ -1,5 +1,5 @@
 /**
- * @file RandomWalkSegmentationPlugin.java
+ * @file RandomWalkSegmentationPlugin_.java
  * @date 4 Jul 2016
  */
 package uk.ac.warwick.wsbc.QuimP;

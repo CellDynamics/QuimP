@@ -27,7 +27,8 @@ public class PropagateSeeds {
      * Generate new seeds using segmented image
      * 
      * @param previous segmented image, background on \b zero
-     * 
+     * @param iter number of erode/dilate iterations
+     *  
      * @return Map containing list of coordinates that belong to foreground and background. Map is
      * addressed by two enums: \a FOREGROUND and \a BACKGROUND
      * @see RandomWalkSegmentation.decodeSeeds(ImagePlus, Color, Color)

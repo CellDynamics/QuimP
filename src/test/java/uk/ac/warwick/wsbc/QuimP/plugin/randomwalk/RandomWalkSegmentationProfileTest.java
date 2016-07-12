@@ -1,5 +1,5 @@
 /**
- * @file RandomWalkSegmentationProfile.java
+ * @file RandomWalkSegmentationProfileTest.java
  * @date 4 Jul 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
@@ -58,7 +58,7 @@ public class RandomWalkSegmentationProfileTest {
         fluoreszenz_2 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frame_2.tif");
 
         p = new Params(400, 50, 100, 300, 80, 0.1, 8e-3);
-        //Thread.sleep(10000);
+        // Thread.sleep(10000);
     }
 
     /**

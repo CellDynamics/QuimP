@@ -13,5 +13,5 @@
 - \subpage UsefulTools "Useful Tools" - Exemplary scripts that may be useful during development
 - \subpage FakeSeg "Mask segmentation" - About segmentation directly from black-white masks
 - \subpage Logging "Logging" - Some about logging
-- \subpage Manual "Use manual" - Description of relations between QuimP project an user manual
+- \subpage Manual "User manual" - Description of relations between QuimP project an user manual
 */
