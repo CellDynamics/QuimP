@@ -95,6 +95,7 @@ public class TrackOutline {
      * @param imp Image to process (not modified)
      * @param background Color value for background
      * @param frame Frame of stack that \a imp belongs to
+     * @throws IllegalArgumentException when wrong image format is provided
      */
     public TrackOutline(ImageProcessor imp, int background, int frame) {
         if (imp.getBitDepth() != 8 && imp.getBitDepth() != 16)
@@ -142,6 +143,7 @@ public class TrackOutline {
      * @param row Any point inside region
      * @param color Color of object
      * @return ShapeRoi that contains ROI for given object with assigned frame to it
+     * @throws IllegalArgumentException when wand was not able to find point
      */
     SegmentedShapeRoi getOutline(int col, int row, int color) {
         Wand wand = new Wand(prepared);
@@ -169,7 +171,7 @@ public class TrackOutline {
      *  
      */
     private void getOutlines() {
-        // go through the image and look for non 0 pixels
+        // go through the image and look for non \a background pixels
         outer: for (int r = 0; r < prepared.getHeight(); r++)
             for (int c = 0; c < prepared.getWidth(); c++) {
                 if (prepared.getPixel(c, r) != background) { // non background pixel

@@ -31,8 +31,8 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  * skipped now but it will be found in next iteration and because it does not have ID,
  * the new will be assigned to it.
  * 
- * If there is break in chain (missing object), the object on next frame will be counted as beginning
- * of the new chain. 
+ * If there is break in chain (missing object), the object on the next frame will begin the new
+ * chain. 
  * 
  * @startuml
  * User-->(Create FakeSegmentation)
@@ -105,6 +105,7 @@ public class FakeSegmentation {
      * Constructor for segmentation of stack
      * 
      * @param iP stack of images to segment
+     * @throws IllegalArgumentException when wrong image is provided
      */
     public FakeSegmentation(final ImagePlus iP) {
         if (iP == null) // can not create from null image
@@ -131,10 +132,10 @@ public class FakeSegmentation {
             return false;
         ShapeRoi intersect = r1.and(r2);
         if (intersect.getFloatWidth() == 0 || intersect.getFloatHeight() == 0) {
-            LOGGER.debug(r1 + " and " + r2 + " does not intersect");
+            LOGGER.debug(r1 + " and " + r2 + " do not intersect");
             return false;
         } else {
-            LOGGER.debug(r1 + " and " + r2 + " does intersect");
+            LOGGER.debug(r1 + " and " + r2 + " do intersect");
             return true;
         }
     }
@@ -167,6 +168,13 @@ public class FakeSegmentation {
      * IDs of their parent. 
      */
     public void trackObjects() {
+        if (trackers.length == 1) { // only one slice, use the same reference for testIntersect
+            ArrayList<SegmentedShapeRoi> o1 = trackers[0].outlines; // get frame current
+            ArrayList<SegmentedShapeRoi> o2 = trackers[0].outlines; // and next
+            for (SegmentedShapeRoi sR : o1) { // iterate over all objects in current frame
+                testIntersect(sR, o2); // and find its child if any on next frame
+            }
+        } // loop below does not fire for one slice
         for (int f = 0; f < trackers.length - 1; f++) { // iterate over frames
             ArrayList<SegmentedShapeRoi> o1 = trackers[f].outlines; // get frame current
             ArrayList<SegmentedShapeRoi> o2 = trackers[f + 1].outlines; // and next
