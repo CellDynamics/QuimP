@@ -126,7 +126,7 @@ public class BOA_ implements PlugIn {
     /**
      * Reserved word that stands for plugin that is not selected
      */
-    private final static String NONE = "NONE";
+    final static String NONE = "NONE";
     /**
      * Reserved word that states full view zoom in zoom choice. Also default text that
      * appears there

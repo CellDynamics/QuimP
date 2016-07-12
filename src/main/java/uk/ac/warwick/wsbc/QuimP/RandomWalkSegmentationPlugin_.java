@@ -281,12 +281,18 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                 for (String s : WindowManager.getImageTitles())
                     cImage.addItem(s);
                 cImage.setSelectedItem(sel);
+                selectorLogic();
             }
         });
         wnd.pack();
-        wnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         wnd.setVisible(true);
+    }
 
+    /**
+     * Control status of FG, BG and Clone buttons
+     */
+    private void selectorLogic() {
         // disable on start only if there is no image
         if (cImage.getSelectedItem() == null) // if not null it must be string
             bClone.setEnabled(false);
@@ -308,9 +314,15 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      */
     @Override
     public void run(String arg) {
+        showDialog();
+    }
+
+    /**
+     * Run segmentation - fired from UI
+     */
+    private void runPlugin() {
         ImageStack ret; // all images treated as stacks
         Map<Integer, List<Point>> seeds;
-
         try {
             ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
             ImageStack is = image.getStack(); // get current stack (size 1 for one image)
@@ -341,7 +353,6 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         } catch (RandomWalkException e) {
             LOGGER.error("Segmentation failed because: " + e.getMessage());
         }
-
     }
 
     /**
@@ -353,6 +364,10 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     @Override
     public void actionPerformed(ActionEvent e) {
         Object b = e.getSource();
+        // enable disable controls depending on selectors (see diagram)
+        if (b == cImage || b == cSeed) {
+            selectorLogic();
+        }
         // Start data verification, show message on problem and exit method setting FGBG unselected
         // 0. check if we can paint on selected image if user try
         if (b == bFore || b == bBack) {
@@ -433,21 +448,22 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             // all ok - store images to later use
             image = tmpImage;
             seedImage = tmpSeed;
-            run(""); // run process - it gives new image
+            runPlugin(); // run process - it gives new image
             // decelect seeds buttons
             bBack.setSelected(false);
             bFore.setSelected(false);
         } // end Apply
         if (b == bClone) {
             // clone seed image, convert it to RGB, add to list and select it on it
-            ImagePlus tmpSeed = WindowManager.getImage((String) cSeed.getSelectedItem()); // tmp var
-            ImagePlus duplicatedSeed = tmpSeed.duplicate();
-            duplicatedSeed.show();
+            ImagePlus tmpImage = WindowManager.getImage((String) cImage.getSelectedItem()); // tmp
+                                                                                            // var
+            ImagePlus duplicatedImage = tmpImage.duplicate();
+            duplicatedImage.show();
             new Converter().run("RGB Color");
-            duplicatedSeed.setTitle("SEED_" + tmpSeed.getTitle());
+            duplicatedImage.setTitle("SEED_" + tmpImage.getTitle());
 
-            cSeed.addItem(new String(duplicatedSeed.getTitle()));
-            cSeed.setSelectedItem(duplicatedSeed.getTitle());
+            cSeed.addItem(new String(duplicatedImage.getTitle()));
+            cSeed.setSelectedItem(duplicatedImage.getTitle());
         }
         if (b == bHelp) {
             String url = new PropertyReader().readProperty("quimpconfig.properties", "manualURL");
@@ -465,7 +481,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
 
     @Override
     public void stateChanged(ChangeEvent e) {
-
+        LOGGER.debug("State changed");
     }
 
 }
