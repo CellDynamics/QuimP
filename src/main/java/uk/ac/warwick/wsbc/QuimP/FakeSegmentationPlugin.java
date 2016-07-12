@@ -8,6 +8,8 @@ import java.awt.Choice;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder
  */
 public class FakeSegmentationPlugin extends QWindowBuilder
-        implements ActionListener, IQuimpPluginSynchro, IQuimpCorePlugin {
+        implements ActionListener, IQuimpPluginSynchro, IQuimpCorePlugin, ItemListener {
     private static final Logger LOGGER =
             LogManager.getLogger(FakeSegmentationPlugin.class.getName());
 
@@ -69,8 +71,8 @@ public class FakeSegmentationPlugin extends QWindowBuilder
             list = list + ',' + s; // form list of params for QWindowBuilder:Choice
         uiDefinition = new ParamList(); // will hold ui definitions
         uiDefinition.put("name", "FakeSegmentation"); // name of window
-        uiDefinition.put("Load Mask", "button, Load_mask");
-        uiDefinition.put("Get Opened", "choice," + list);
+        uiDefinition.put("load mask", "button, Load_mask");
+        uiDefinition.put("get opened", "choice," + list);
         uiDefinition.put("step", "spinner, 1, 10001, 1," + Integer.toString(step)); // start, end,
                                                                                     // step, default
         uiDefinition.put("smoothing", "checkbox, interpolation," + Boolean.toString(smoothing)); // name,
@@ -108,7 +110,8 @@ public class FakeSegmentationPlugin extends QWindowBuilder
         pluginWnd.pack();
         pluginWnd.setVisible(true);
         pluginWnd.addWindowListener(new myWindowAdapter()); // close not hide
-        ((JButton) ui.get("Load Mask")).addActionListener(this);
+        ((JButton) ui.get("load mask")).addActionListener(this);
+        ((Choice) ui.get("get opened")).addItemListener(this);
         applyB.addActionListener(this);
     }
 
@@ -121,14 +124,7 @@ public class FakeSegmentationPlugin extends QWindowBuilder
     public void actionPerformed(ActionEvent e) {
         Object b = e.getSource();
         String selectedMask = "";
-        if (b == ui.get("Get Opened")) { // import opened image
-            selectedMask = ((Choice) ui.get("Get Opened")).getSelectedItem(); // selected item
-            if (!selectedMask.equals(BOA_.NONE)) { // process only if NOT NONE
-                maskFile = WindowManager.getImage(selectedMask);
-            }
-
-        }
-        if (b == ui.get("Load Mask")) { // read file with mask
+        if (b == ui.get("load mask")) { // read file with mask
             OpenDialog od = new OpenDialog("Load mask file", "");
             if (od.getPath() != null) {// not canceled
                 maskFile = IJ.openImage(od.getPath()); // try open image
@@ -230,6 +226,7 @@ public class FakeSegmentationPlugin extends QWindowBuilder
             return;
         }
         try {
+            LOGGER.info("Segmentation: " + maskFile.toString() + " params: " + params.toString());
             FakeSegmentation obj = new FakeSegmentation(maskFile); // create segmentation object
             obj.trackObjects(); // run tracking
             ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
@@ -252,6 +249,20 @@ public class FakeSegmentationPlugin extends QWindowBuilder
     @Override
     public void attachData(Nest data) {
         this.nest = data;
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        String selectedMask;
+        if (e.getItemSelectable() == ui.get("get opened")) { // import opened image
+            selectedMask = ((Choice) ui.get("get opened")).getSelectedItem(); // selected item
+            if (!selectedMask.equals(BOA_.NONE)) // process only if NOT NONE
+                maskFile = WindowManager.getImage(selectedMask);
+            else
+                maskFile = null;
+            LOGGER.debug(
+                    "Choice action - mask: " + maskFile != null ? maskFile.toString() : "null");
+        }
     }
 
 }
