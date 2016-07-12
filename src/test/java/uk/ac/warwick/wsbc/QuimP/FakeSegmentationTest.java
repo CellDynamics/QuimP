@@ -70,6 +70,7 @@ public class FakeSegmentationTest {
     private ImagePlus test2;
     private ImagePlus test3;
     private ImagePlus test4;
+    private ImagePlus test5;
 
     /**
      * @throws java.lang.Exception
@@ -94,6 +95,7 @@ public class FakeSegmentationTest {
         test2 = IJ.openImage("src/test/resources/BW_seg_5_slices_no_last.tif");
         test3 = IJ.openImage("src/test/resources/BW_seg_5_slices_no_middle_last.tif");
         test4 = IJ.openImage("src/test/resources/BW_seg_5_slices_no_first.tif");
+        test5 = IJ.openImage("src/test/resources/BW_seg_1_slice.tif");
     }
 
     /**
@@ -105,6 +107,7 @@ public class FakeSegmentationTest {
         test2.close();
         test3.close();
         test4.close();
+        test5.close();
     }
 
     /**
@@ -175,6 +178,25 @@ public class FakeSegmentationTest {
         assertThat(r2.getId(), is(SegmentedShapeRoi.NOT_COUNTED)); // this not overlap and has not
                                                                    // id yet
 
+    }
+
+    /**
+     * @test Check intersection for one Roi and Array of ROIs
+     * @pre The same slice as on input (referenced)
+     * @post this slice correctly labeled
+     * @throws Exception
+     */
+    @Test
+    public void testTestIntersect_Same() throws Exception {
+        FakeSegmentation obj = new FakeSegmentation(test1);
+        SegmentedShapeRoi r1 = new SegmentedShapeRoi(new Roi(0, 0, 100, 100));
+        ArrayList<SegmentedShapeRoi> test = new ArrayList<>();
+        test.add(r1);
+
+        accessPrivate("testIntersect", obj, new Object[] { r1, test },
+                new Class<?>[] { r1.getClass(), test.getClass() });
+
+        assertThat(r1.getId(), is(0)); // first outline
     }
 
     /**
@@ -340,6 +362,23 @@ public class FakeSegmentationTest {
         RoiSaver.saveROIs(test3, "/tmp/testGetChains_no_middle_last.tif", ret); // wrong image
                                                                                 // because of
                                                                                 // saveROIs
+    }
+
+    /**
+     * @test Check generated chains
+     * @pre only one slice on input
+     * @post Correct segmentation
+     * @throws Exception
+     */
+    @Test
+    public void testGetChains_oneSlice() throws Exception {
+        FakeSegmentation obj = new FakeSegmentation(test5); // create object with stack
+        obj.trackObjects(); // run tracking
+        ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
+
+        RoiSaver.saveROIs(test5, "/tmp/testGetChains_oneSlice.tif", ret); // wrong image
+                                                                          // because of
+                                                                          // saveROIs
     }
 
 }
