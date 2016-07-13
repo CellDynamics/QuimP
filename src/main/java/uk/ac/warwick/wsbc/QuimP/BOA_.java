@@ -370,8 +370,10 @@ public class BOA_ implements PlugIn {
     public void recalculatePlugins() {
         LOGGER.trace("BOA: recalculatePlugins called");
         SnakeHandler sH;
-        if (qState.nest.isVacant())
+        if (qState.nest.isVacant()) { // only update screen
+            imageGroup.updateOverlay(qState.boap.frame);
             return;
+        }
         imageGroup.updateToFrame(qState.boap.frame);
         try {
             for (int s = 0; s < qState.nest.size(); s++) { // for each snake
@@ -2484,6 +2486,7 @@ class ImageGroup {
      * @param frame Current frame
      */
     public void updateOverlay(int frame) {
+        LOGGER.trace("Update overlay for frame " + frame);
         SnakeHandler sH;
         Snake snake, back;
         int x, y;
