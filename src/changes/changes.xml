@@ -1,0 +1,36 @@
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+  <properties>
+    <title>QuimP Changes</title>
+    <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
+  </properties>
+  <body>
+    <release version="16.08.01-SNAPHOT" date="2016-07-13" description="Snapshot release">
+      <action dev="baniuk" type="fix" issue="181">
+        Edited snakes are not processed by filters.
+      </action>
+      <action dev="baniuk" type="update" issue="179">
+        Add default log4j configuration file.
+      </action>
+      <action dev="baniuk" type="fix" issue="172">
+        Fake segmentation window can be duplicated.
+      </action>
+      <action dev="baniuk" type="add" issue="175">
+        Add about menu in QuimP bar.
+      </action>
+      <action dev="baniuk" type="add" issue="182">
+        Add link to doc from QuimP bar.
+      </action>
+      <action dev="baniuk" type="update" issue="183">
+        Random Walk GUI should offer option of creating of seed image.
+      </action>
+      <action dev="baniuk" type="fix" issue="184">
+        FakeSegmentation fails on single slice images.
+      </action>
+      <action dev="baniuk" type="update" issue="174">
+        Fake segmentation should use various sources of masks.
+      </action>
+    </release>
+  </body>
+</document>

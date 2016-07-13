@@ -37,7 +37,7 @@ mabort()
 
 if [ "$#" -ne 2 ]; then
     echo "Provide two parameters"
-    echo "build-snapshot.sh branch log_level"
+    echo "build-snapshot.sh branch profile"
     exit 0
 fi
 

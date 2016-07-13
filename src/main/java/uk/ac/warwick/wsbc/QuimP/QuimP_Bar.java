@@ -12,9 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -70,6 +68,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     private Menu menuHelp;
     private MenuItem menuVersion; 
     private MenuItem menuOpenHelp;
+    private MenuItem menuOpenSite;
 
     public void run(String s) {
         String title;
@@ -109,10 +108,13 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         menuBar.add(menuHelp);
         menuVersion = new MenuItem("About");
         menuOpenHelp = new MenuItem("Help Contents");
+        menuOpenSite = new MenuItem("History of changes");
         menuHelp.add(menuOpenHelp);
+        menuHelp.add(menuOpenSite);
         menuHelp.add(menuVersion);
         menuVersion.addActionListener(this);
         menuOpenHelp.addActionListener(this);
+        menuOpenSite.addActionListener(this);
         frame.setMenuBar(menuBar);
         
         // captures the ImageJ KeyListener
@@ -237,22 +239,32 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==menuVersion) { // menu version
+        if (e.getSource() == menuVersion) { // menu version
             String quimpInfo = new Tool().getQuimPversion(); // prepare info plate
             AboutDialog ad = new AboutDialog(frame); // create about dialog with parent 'window'
             ad.appendLine(quimpInfo); // display template filled by quimpInfo
             ad.appendDistance();
             ad.appendLine("All plugins for QuimP are reported in modules that use them natively.");
-            ad.appendLine("Web page:\nhttp://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp");
+            ad.appendLine(
+                    "Web page:\nhttp://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp");
             ad.setVisible(true);
             return;
         }
-        if(e.getSource()==menuOpenHelp) { //open help
+        if (e.getSource() == menuOpenHelp) { // open help
             String url = new PropertyReader().readProperty("quimpconfig.properties", "manualURL");
             try {
                 java.awt.Desktop.getDesktop().browse(new URI(url));
             } catch (Exception e1) {
-                LOGGER.error("Could not open help: "+e1.getMessage(),e1);
+                LOGGER.error("Could not open help: " + e1.getMessage(), e1);
+            }
+            return;
+        }
+        if (e.getSource() == menuOpenSite) { // open help
+            String url = new PropertyReader().readProperty("quimpconfig.properties", "siteURL");
+            try {
+                java.awt.Desktop.getDesktop().browse(new URI(url));
+            } catch (Exception e1) {
+                LOGGER.error("Could not open help: " + e1.getMessage());
             }
             return;
         }
