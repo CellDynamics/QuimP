@@ -18,7 +18,13 @@ File: setloglevel.sh
 This script builds snapshots and ~~upload them to server~~ packed into *zip* package. It checks also if there
 is the same package on server already and set certain log level for every package.
 
-File: build-snapshot.sh \i branch \i profile
+File: build-snapshot.sh *branch* *profile*
+
+**Currently it is deprecated due to switching to ather distribution model**
+
+# Build snapshots {#bsnap1}
+
+This script build snapshot or release and prepare relevant site with changelog, jar is copied to Fiji where it should be uploaded to plugin repo.
 
 # Generate documentation {#gendoc}
 

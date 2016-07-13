@@ -5,6 +5,14 @@
 \date 01 Apr 2016
 \tableofcontents
 \section generalinfo General information
+The process of building is controlled by \a pom.xml that performs the following actions:
+-# modifies property file \a quimpconfig.properties by setting there locations for user manual and changelog
+-# generate full site with statistics and changelog - this is related to local Trac instance and may not work when it is not available
+-# supports profiles:
+  -# development - set user manual to \a snapshot and use mocked filters
+  -# installation - produce clean jar without dependencies, user manual points to \a release
+  -# uber-release - produce jar with dependencies and manual points to \a release
+  -# uber-snapshot - produce jar with dependencies and manual points to \a snapshot
 \section MainDesc Description of QuimP structure
 - \subpage About "Readme" - Readme file
 - \subpage BOA "BOA Plugin" - How QuimP works - free notes about.

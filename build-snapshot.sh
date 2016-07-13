@@ -19,6 +19,10 @@
 
 # assumes two parameters - name of branch to build snapshot from and maven profile name
 
+echo Deprecated: use build-release instead
+exit 1
+
+
 WORKING_DIR='/home/baniuk/tmp'
 TMP_DIR='/tmp/bin'
 UPLOAD_DIR='trac@trac-wsbc.linkpc.net:/var/www/restricted/SNAPSHOTS'
