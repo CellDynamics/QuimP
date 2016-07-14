@@ -22,4 +22,5 @@ The process of building is controlled by \a pom.xml that performs the following 
 - \subpage FakeSeg "Mask segmentation" - About segmentation directly from black-white masks
 - \subpage Logging "Logging" - Some about logging
 - \subpage Manual "User manual" - Description of relations between QuimP project an user manual
+- \subpage Exceptions "Exceptions in code" - How to use them
 */
