@@ -1250,7 +1250,7 @@ public class BOA_ implements PlugIn {
                 bSeg.setLabel("SEGMENT");
             } else if (b == bLoad) {
                 try {
-                    if (qState.boap.readParams()) {
+                    if (qState.readParams()) {
                         updateSpinnerValues();
                         if (loadSnakes()) {
                             run = false;
@@ -2326,7 +2326,7 @@ public class BOA_ implements PlugIn {
     private void finish() {
         IJ.showStatus("BOA-FINISHING");
         YesNoCancelDialog ync;
-
+        LOGGER.debug(qState.segParam.toString());
         if (qState.boap.saveSnake) {
             try {
                 if (qState.nest.writeSnakes()) { // write snPQ file (if any snake)

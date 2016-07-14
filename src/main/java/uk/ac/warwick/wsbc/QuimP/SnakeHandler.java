@@ -17,6 +17,7 @@ import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.io.SaveDialog;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 
 /**
  * Store all the snakes computed for one cell across frames and it is responsible
@@ -28,7 +29,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
  */
 public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(SnakeHandler.class.getName());
-    private transient Roi roi; // initial ROI
+    private transient Roi roi; // <! initial ROI, not stored but rebuilt from snake on load
     private Snake liveSnake; //<! initial snake being currently processed */
     private Snake[] finalSnakes; //!< series of snakes, result of cell segm. and plugin processing*/
     private Snake[] segSnakes; //!< series of snakes, result of cell segmentation only  */
@@ -214,7 +215,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
             write(pw, i + 1, s.getNumNodes(), s.getHead());
         }
         pw.close();
-        BOA_.qState.boap.writeParams(ID, startFrame, endFrame);
+        BOA_.qState.writeParams(ID, startFrame, endFrame);
 
         if (BOA_.qState.boap.oldFormat) {
             writeOldFormats();
@@ -570,6 +571,16 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
             if (s != null)
                 s.afterSerialize();
         }
+        // restore roi as first snake from segmented snakes
+        if (segSnakes != null && segSnakes.length > 0) {
+            int i = 0;
+            while (i < segSnakes.length && segSnakes[i++] == null)
+                ; // find first not null snake
+            QuimpDataConverter dC = new QuimpDataConverter(segSnakes[--i]);
+            // rebuild roi from snake
+            roi = new PolygonRoi(dC.getFloatX(), dC.getFloatY(), Roi.FREEROI);
+        }
+
         /* segSnakes = new Snake[finalSnakes.length];
         for (int i = 0; i < segSnakes.length; i++)
             if (finalSnakes[i] != null)
