@@ -203,16 +203,23 @@ public class Nest implements IQuimpSerialize {
         // Rset live snakes to ROI's
         reviveNest();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         while (sHitr.hasNext()) {
             SnakeHandler sH = (SnakeHandler) sHitr.next();
             try {
                 sH.reset();
             } catch (Exception e) {
+                LOGGER.error("Could not reset snake " + e.getMessage(), e);
                 BOA_.log("Could not reset snake " + sH.getID());
                 BOA_.log("Removing snake " + sH.getID());
-                removeHandler(sH);
+                // collect handler to remove. It will be removed later to avoid list modification in
+                // iterator (#186)
+                toRemove.add(sH);
             }
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
     }
 
     public void removeHandler(final SnakeHandler sH) {
@@ -248,7 +255,7 @@ public class Nest implements IQuimpSerialize {
     void resetForFrame(int f) {
         reviveNest();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
-        // BOA_.log("Reseting for frame " + f);
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         while (sHitr.hasNext()) {
             SnakeHandler sH = (SnakeHandler) sHitr.next();
             try {
@@ -260,11 +267,17 @@ public class Nest implements IQuimpSerialize {
                     sH.resetForFrame(f);
                 }
             } catch (Exception e) {
+                LOGGER.error("Could not reset snake " + e.getMessage(), e);
                 BOA_.log("Could not reset snake " + sH.getID());
                 BOA_.log("Removing snake " + sH.getID());
-                removeHandler(sH);
+                // collect handler to remove. It will be removed later to avoid list modification in
+                // iterator (#186)
+                toRemove.add(sH);
             }
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
     }
 
     /**
