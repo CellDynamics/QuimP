@@ -124,19 +124,23 @@ public class Nest implements IQuimpSerialize {
      */
     public boolean writeSnakes() throws IOException {
         Iterator<SnakeHandler> sHitr = sHs.iterator();
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         SnakeHandler sH;
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
             sH.setEndFrame(); // find its last frame (frame with valid contour)
             if (sH.getStartFrame() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
-                removeHandler(sH);
+                toRemove.add(sH);
                 continue;
             }
             if (!sH.writeSnakes()) {
                 return false;
             }
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
         return true;
     }
 
@@ -333,17 +337,22 @@ public class Nest implements IQuimpSerialize {
     @Override
     public void beforeSerialize() {
         Iterator<SnakeHandler> sHitr = sHs.iterator();
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         SnakeHandler sH;
+        // sanity operation - delete defective snakes
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
             sH.setEndFrame(); // find its last frame (frame with valid contour)
             if (sH.getStartFrame() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
-                removeHandler(sH);
+                toRemove.add(sH);
                 continue;
             }
             sH.beforeSerialize();
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
     }
 
     @Override
