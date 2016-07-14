@@ -37,6 +37,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     public SnakeHandler() {
         endFrame = BOA_.qState.boap.FRAMES;
     }
+
     /**
      * Constructor of SnakeHandler. Stores ROI with object for segmentation
      * 
@@ -76,6 +77,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         finalSnakes = new Snake[BOA_.qState.boap.FRAMES - startFrame + 1]; // stored snakes
         segSnakes = new Snake[BOA_.qState.boap.FRAMES - startFrame + 1]; // stored snakes
         ID = id;
+        roi = snakes.get(0); // set initial roi to first snake
         for (SegmentedShapeRoi sS : snakes) {
             liveSnake = new Snake(sS.getOutlineasPoints(), ID); // tmp for next two methods
             backupLiveSnake(sS.getFrame()); // fill segSnakes for frame

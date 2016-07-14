@@ -124,19 +124,23 @@ public class Nest implements IQuimpSerialize {
      */
     public boolean writeSnakes() throws IOException {
         Iterator<SnakeHandler> sHitr = sHs.iterator();
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         SnakeHandler sH;
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
             sH.setEndFrame(); // find its last frame (frame with valid contour)
             if (sH.getStartFrame() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
-                removeHandler(sH);
+                toRemove.add(sH);
                 continue;
             }
             if (!sH.writeSnakes()) {
                 return false;
             }
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
         return true;
     }
 
@@ -203,16 +207,23 @@ public class Nest implements IQuimpSerialize {
         // Rset live snakes to ROI's
         reviveNest();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         while (sHitr.hasNext()) {
             SnakeHandler sH = (SnakeHandler) sHitr.next();
             try {
                 sH.reset();
             } catch (Exception e) {
+                LOGGER.error("Could not reset snake " + e.getMessage(), e);
                 BOA_.log("Could not reset snake " + sH.getID());
                 BOA_.log("Removing snake " + sH.getID());
-                removeHandler(sH);
+                // collect handler to remove. It will be removed later to avoid list modification in
+                // iterator (#186)
+                toRemove.add(sH);
             }
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
     }
 
     public void removeHandler(final SnakeHandler sH) {
@@ -248,7 +259,7 @@ public class Nest implements IQuimpSerialize {
     void resetForFrame(int f) {
         reviveNest();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
-        // BOA_.log("Reseting for frame " + f);
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         while (sHitr.hasNext()) {
             SnakeHandler sH = (SnakeHandler) sHitr.next();
             try {
@@ -260,11 +271,17 @@ public class Nest implements IQuimpSerialize {
                     sH.resetForFrame(f);
                 }
             } catch (Exception e) {
+                LOGGER.error("Could not reset snake " + e.getMessage(), e);
                 BOA_.log("Could not reset snake " + sH.getID());
                 BOA_.log("Removing snake " + sH.getID());
-                removeHandler(sH);
+                // collect handler to remove. It will be removed later to avoid list modification in
+                // iterator (#186)
+                toRemove.add(sH);
             }
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
     }
 
     /**
@@ -320,17 +337,22 @@ public class Nest implements IQuimpSerialize {
     @Override
     public void beforeSerialize() {
         Iterator<SnakeHandler> sHitr = sHs.iterator();
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         SnakeHandler sH;
+        // sanity operation - delete defective snakes
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
             sH.setEndFrame(); // find its last frame (frame with valid contour)
             if (sH.getStartFrame() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
-                removeHandler(sH);
+                toRemove.add(sH);
                 continue;
             }
             sH.beforeSerialize();
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
     }
 
     @Override
