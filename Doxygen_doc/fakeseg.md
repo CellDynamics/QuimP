@@ -65,7 +65,9 @@ BOA->FakeSegmentationPlugin : getPluginConfig
 FakeSegmentationPlugin-->BOA : ""ParamList""
 @enduml    
 
-## Configuration handling
+The #ref uk.ac.warwick.wsbc.QuimP.plugin.ParamList "ParamList" gathers all standard plugin options and some additional. It is used for exchanging data between BOA_ and plugin, mainly for archiving purposes (see \ref confhand "this chapter").
+
+## Configuration handling {#confhand}
 
 This plugin supports one directional configuration handling. It can be saved in *QCONF* file but it is not restored on load. As a part of serializable \ref uk.ac.warwick.wsbc.QuimP.BOAState "BOAState" class, the configuration is stored through `fakeSegmentationParam` which is filled in \ref uk.ac.warwick.wsbc.QuimP.BOAState.beforeSerialize() "beforeSerialize". The following states of this field are possible:
 
