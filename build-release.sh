@@ -20,8 +20,9 @@ BRANCH=$2 # branch of the project can be -- that stands for working tree
 PROFILE=$3 # maven profile
 FIJI="../Fiji.app.test/plugins" # fiji location (for uploading to repo)
 
-echo Before continuing changelog at src/changes
-echo must be modified in respect to fixed bugs
+echo 'Before continuing changelog at src/changes'
+echo 'must be modified in respect to fixed bugs'
+echo "Commit format: git tag -a \"SNAPSHOT-13-07-16\" -m \"Releasing snaphots to Fiji internal update site\"" 
 read -r -p "Are you sure to continue? [y/N] " response
 case $response in
     [yY][eE][sS]|[yY]) 
@@ -58,10 +59,12 @@ rsync -az -e 'ssh -p2222' --delete --stats \
 		target/site/ \
 		trac@trac-wsbc.linkpc.net:/var/www/restricted/QuimP_
 
+echo '------------------------------------------------------------------'
 echo Postprocessing:
 echo Start Fiji from $FIJI and push plugin to plugin repository
 if [ "$2" == "--" ]; then
-	echo Commit changes and tag them as SNAPSHOT-DD-MM-YY (current date)
+	echo "Commit changes and tag them."
+	echo "git tag -a \"SNAPSHOT-13-07-16\" -m \"Releasing snaphots to Fiji internal update site\""
 fi
 
 

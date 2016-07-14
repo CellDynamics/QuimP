@@ -16,6 +16,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.logging.log4j.core.config.Configurator;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -39,6 +41,13 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * @author tyson
  */
 public class ANA_ implements PlugInFilter, DialogListener {
+
+    static {
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
+    }
 
     OutlineHandler oH, outputH, ecmH;
     Outline frameOneClone;

@@ -5,6 +5,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
 
 /**
@@ -13,8 +14,14 @@ import org.junit.Test;
  *
  */
 public class PropertyReaderTest {
+    static {
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
+    }
     static final Logger LOGGER = LogManager.getLogger(PropertyReaderTest.class.getName());
-    
+
     /**
      * @test read property and display it
      * @post value of key displayed

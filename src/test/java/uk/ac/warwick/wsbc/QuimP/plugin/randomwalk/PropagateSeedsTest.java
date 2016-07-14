@@ -7,6 +7,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -24,6 +25,12 @@ import ij.process.BinaryProcessor;
  */
 public class PropagateSeedsTest {
 
+    static {
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
+    }
     static ImagePlus testImage2;
 
     /**

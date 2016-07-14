@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
 
 /**
@@ -22,7 +23,10 @@ public class RoiSaver_test {
 
     // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
 
     /**

@@ -4,19 +4,12 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
-// https://objectpartners.com/2013/09/18/the-benefits-of-using-assertthat-over-other-assert-methods-in-unit-tests/
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.util.ArrayList;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * @author p.baniukiewicz
@@ -25,7 +18,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  */
 public class ToolTest {
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     private static final Logger LOGGER = LogManager.getLogger(ToolTest.class.getName());
 
@@ -46,9 +42,9 @@ public class ToolTest {
     /**
          * Test method for {@link uk.ac.warwick.wsbc.QuimP.Tool#getQuimPversion()}.
          */
-        @Test
-        public void testGetFormattedQuimPversion() throws Exception {
-            LOGGER.debug(new Tool().getQuimPversion());
-        }
+    @Test
+    public void testGetFormattedQuimPversion() throws Exception {
+        LOGGER.debug(new Tool().getQuimPversion());
+    }
 
 }

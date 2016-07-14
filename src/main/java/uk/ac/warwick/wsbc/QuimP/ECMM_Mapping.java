@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 /**
  * Richard Tyson. 23/09/2009. ECM Mapping Systems Biology DTC, Warwick
@@ -30,6 +31,12 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  */
 public class ECMM_Mapping {
+    static {
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
+    }
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 

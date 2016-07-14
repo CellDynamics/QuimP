@@ -60,9 +60,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * @see Serializer
  */
 public class BOAState implements IQuimpSerialize {
-    static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
-    }
+
     static final Logger LOGGER = LogManager.getLogger(BOAState.class.getName());
     /**
      * Reference to segmentation parameters. Holds current parameters
@@ -83,6 +81,7 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Configuration of FakeSegmentation plugin if it was used. Used during saving boa state
      */
+    @SuppressWarnings("unused")
     private ParamList fakeSegmentationParam;
     /**
      * Keep snapshots of SegParam objects for every frame separately
@@ -718,6 +717,8 @@ public class BOAState implements IQuimpSerialize {
         nest.beforeSerialize(); // prepare snakes
         if (fakeSegmentationPlugin != null) // was used, store config
             fakeSegmentationParam = fakeSegmentationPlugin.getPluginConfig();
+        else
+            fakeSegmentationParam = null;
         // snakePluginListSnapshots and segParamSnapshots do not need beforeSerialize()
     }
 

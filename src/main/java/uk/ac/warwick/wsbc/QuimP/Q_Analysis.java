@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -24,6 +25,12 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * @author rtyson
  */
 public class Q_Analysis {
+    static {
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
+    }
     private static final Logger LOGGER = LogManager.getLogger(Q_Analysis.class.getName());
     GenericDialog gd;
     OutlineHandler oH;
@@ -485,10 +492,14 @@ class STmap {
             IJ.saveAs(convImP, "tiff",
                     Qp.outFile.getParent() + File.separator + Qp.filename + "_convexity.tiff");
 
-            QuimPArrayUtils.arrayToFile(coordMap, ",", new File(Qp.outFile.getPath() + "_coordMap.maQP"));
-            QuimPArrayUtils.arrayToFile(originMap, ",", new File(Qp.outFile.getPath() + "_originMap.maQP"));
-            QuimPArrayUtils.arrayToFile(migMap, ",", new File(Qp.outFile.getPath() + "_motilityMap.maQP"));
-            QuimPArrayUtils.arrayToFile(convMap, ",", new File(Qp.outFile.getPath() + "_convexityMap.maQP"));
+            QuimPArrayUtils.arrayToFile(coordMap, ",",
+                    new File(Qp.outFile.getPath() + "_coordMap.maQP"));
+            QuimPArrayUtils.arrayToFile(originMap, ",",
+                    new File(Qp.outFile.getPath() + "_originMap.maQP"));
+            QuimPArrayUtils.arrayToFile(migMap, ",",
+                    new File(Qp.outFile.getPath() + "_motilityMap.maQP"));
+            QuimPArrayUtils.arrayToFile(convMap, ",",
+                    new File(Qp.outFile.getPath() + "_convexityMap.maQP"));
             QuimPArrayUtils.arrayToFile(xMap, ",", new File(Qp.outFile.getPath() + "_xMap.maQP"));
             QuimPArrayUtils.arrayToFile(yMap, ",", new File(Qp.outFile.getPath() + "_yMap.maQP"));
 

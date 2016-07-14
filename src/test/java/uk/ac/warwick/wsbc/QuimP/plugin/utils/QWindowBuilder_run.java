@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 
@@ -22,7 +23,10 @@ public class QWindowBuilder_run {
 
     // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
 
     public static void main(String[] args) throws InterruptedException {
