@@ -114,6 +114,7 @@ public class BOA_ implements PlugIn {
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     static final Logger LOGGER = LogManager.getLogger(BOA_.class.getName());
+    public static final String QCONFFILEEXT = ".QCONF"; //!< Extension for QCONF file
     CustomCanvas canvas;
     CustomStackWindow window;
     static TextArea logArea;
@@ -2326,9 +2327,24 @@ public class BOA_ implements PlugIn {
     private void finish() {
         IJ.showStatus("BOA-FINISHING");
         YesNoCancelDialog ync;
+        File testF;
         LOGGER.debug(qState.segParam.toString());
         if (qState.boap.saveSnake) {
             try {
+                // check whether there is case saved and warn user
+                // there is no option to solve this problem here. User can only agree or cancel
+                if (qState.boap.outFile != null) {
+                    testF = new File(qState.boap.outFile.getParent() + File.separator
+                            + qState.boap.fileName + QCONFFILEEXT); // test for QCONF that is
+                                                                    // created always
+                    if (testF.exists() && !testF.isDirectory()) {
+                        ync = new YesNoCancelDialog(window, "Save Segmentation",
+                                "You are about to override previous results. Is it ok?\nIf not"
+                                        + " previous data must be moved to another directory");
+                        if (!ync.yesPressed())
+                            return;
+                    }
+                }
                 if (qState.nest.writeSnakes()) { // write snPQ file (if any snake)
                     qState.nest.analyse(imageGroup.getOrgIpl().duplicate()); // write stQP file
                                                                              // and fill outFile
@@ -2347,7 +2363,7 @@ public class BOA_ implements PlugIn {
                         n = new Serializer<>(new DataContainer(qState), quimpInfo);
                         n.setPretty();
                         n.save(qState.boap.outFile.getParent() + File.separator
-                                + qState.boap.fileName + ".QCONF");
+                                + qState.boap.fileName + QCONFFILEEXT);
                         n = null;
                     }
                 } else {
