@@ -39,3 +39,5 @@ as extension to `manual.rootlocation` property:
 ```
 
 The snapshot version of documentation is located under **snapshot** folder on root URL whereas release under **release** folder.
+
+Manual is built automatically by `updateDoc.sh` script run periodically.
