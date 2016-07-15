@@ -189,7 +189,7 @@
       <!-- Use of this profile will cause that current state of Working Directory will be utilized -->
       <id>development</id>
       <properties>
-        <manual.location>${manual.rootlocation}snapshot/QuimP_Guide.html</manual.location>
+        <manual.location>${manual.rootlocation}develop/QuimP_Guide.html</manual.location>
       </properties>
       <activation>
         <activeByDefault>false</activeByDefault>
@@ -237,7 +237,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <manual.location>${manual.rootlocation}release/QuimP_Guide.html</manual.location>
+        <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
       </properties>
     </profile>
     <profile>
@@ -247,7 +247,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <manual.location>${manual.rootlocation}snapshot/QuimP_Guide.html</manual.location>
+        <manual.location>${manual.rootlocation}develop/QuimP_Guide.html</manual.location>
       </properties>
       <build>
         <plugins>
@@ -291,7 +291,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <manual.location>${manual.rootlocation}release/QuimP_Guide.html</manual.location>
+        <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
       </properties>
       <build>
         <plugins>
