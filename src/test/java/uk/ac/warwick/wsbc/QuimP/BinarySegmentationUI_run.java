@@ -1,5 +1,5 @@
 /**
- * @file FakeSegmentationUI_run.java
+ * @file BinarySegmentationUI_run.java
  * @date 28 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
@@ -12,7 +12,7 @@ import ij.ImageJ;
  * @date 28 Jun 2016
  *
  */
-public class FakeSegmentationUI_run {
+public class BinarySegmentationUI_run {
 
     static {
         System.setProperty("log4j.configurationFile", "qlog4j2.xml");
@@ -21,8 +21,7 @@ public class FakeSegmentationUI_run {
     /**
      * 
      */
-    public FakeSegmentationUI_run() {
-        // TODO Auto-generated constructor stub
+    public BinarySegmentationUI_run() {
     }
 
     /**
@@ -36,7 +35,7 @@ public class FakeSegmentationUI_run {
                 "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/BW_seg_5_slices.tif\")");
         IJ.runMacro(
                 "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
-        FakeSegmentationPlugin fp = new FakeSegmentationPlugin();
+        BinarySegmentationPlugin fp = new BinarySegmentationPlugin();
         fp.attachData(null);
         fp.showUI(true);
 

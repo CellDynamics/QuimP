@@ -1,5 +1,5 @@
 /**
- * @file FakeSegmentation.java
+ * @file BinarySegmentation.java
  * @date 27 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
@@ -16,7 +16,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
 
 /**
- * Run fake segmentation converting black-white masks to ordered ROIs.
+ * Run Binary segmentation converting black-white masks to ordered ROIs.
  * 
  * This class mainly join subsequent outlines to chains that contain outlines related by origin (
  * when next outline originates from previous - it means that next object overlap previous one)
@@ -35,10 +35,10 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  * chain. 
  * 
  * @startuml
- * User-->(Create FakeSegmentation)
+ * User-->(Create BinarySegmentation)
  * User->(run tracking)
  * User->(get chains)
- * (Create FakeSegmentation).->(create TrackOutline) : <<extend>>
+ * (Create BinarySegmentation).->(create TrackOutline) : <<extend>>
  * @enduml
  * 
  * After creation of object user has to call trackObjects()
@@ -47,12 +47,12 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  * 
  * @startuml
  * actor User
- * User->FakeSegmentation : <<create>>\n""image""
+ * User->BinarySegmentation : <<create>>\n""image""
  * loop for every frame
- * FakeSegmentation->TrackOutline : <<create>>\n""slice"",""frame""
+ * BinarySegmentation->TrackOutline : <<create>>\n""slice"",""frame""
  * activate TrackOutline
- * TrackOutline-->FakeSegmentation : //obj//
- * FakeSegmentation->FakeSegmentation : store //obj// in ""trackers""
+ * TrackOutline-->BinarySegmentation : //obj//
+ * BinarySegmentation->BinarySegmentation : store //obj// in ""trackers""
  * note left
  * See TrackOutline
  * trackers are ROIs for
@@ -88,9 +88,9 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  * @see uk.ac.warwick.wsbc.QuimP.geom.TrackOutline
  *
  */
-public class FakeSegmentation {
+public class BinarySegmentation {
 
-    private static final Logger LOGGER = LogManager.getLogger(FakeSegmentation.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(BinarySegmentation.class.getName());
 
     private int nextID = 0; //!< next free ID
     private ImagePlus iP; //!< image to process (stack)
@@ -107,7 +107,7 @@ public class FakeSegmentation {
      * @param iP stack of images to segment
      * @throws IllegalArgumentException when wrong image is provided
      */
-    public FakeSegmentation(final ImagePlus iP) {
+    public BinarySegmentation(final ImagePlus iP) {
         if (iP == null) // can not create from null image
             throw new IllegalArgumentException("The image was: null");
         this.iP = iP.duplicate();

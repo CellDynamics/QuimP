@@ -433,8 +433,8 @@ public class BOA_ implements PlugIn {
             LOGGER.trace("CLOSED");
             BOA_.running = false; // set marker
             qState.snakePluginList.clear(); // close all opened plugin windows
-            if (qState.fakeSegmentationPlugin != null)
-                qState.fakeSegmentationPlugin.showUI(false);
+            if (qState.binarySegmentationPlugin != null)
+                qState.binarySegmentationPlugin.showUI(false);
             canvas = null; // clear window data
             imageGroup = null;
             window = null;
@@ -1486,17 +1486,17 @@ public class BOA_ implements PlugIn {
              * Run segmentation from mask file
              */
             if (b == menuSegmentationRun) {
-                if (qState.fakeSegmentationPlugin != null) {
-                    if (!qState.fakeSegmentationPlugin.isWindowVisible())
-                        qState.fakeSegmentationPlugin.showUI(true);
+                if (qState.binarySegmentationPlugin != null) {
+                    if (!qState.binarySegmentationPlugin.isWindowVisible())
+                        qState.binarySegmentationPlugin.showUI(true);
                 } else {
-                    qState.fakeSegmentationPlugin = new FakeSegmentationPlugin(); // create
+                    qState.binarySegmentationPlugin = new BinarySegmentationPlugin(); // create
                                                                                   // instance
-                    qState.fakeSegmentationPlugin.attachData(qState.nest); // attach data
-                    qState.fakeSegmentationPlugin.attachContext(viewUpdater); // allow plugin to
+                    qState.binarySegmentationPlugin.attachData(qState.nest); // attach data
+                    qState.binarySegmentationPlugin.attachContext(viewUpdater); // allow plugin to
                                                                               // update
                                                                               // screen
-                    qState.fakeSegmentationPlugin.showUI(true); // plugin is run internally
+                    qState.binarySegmentationPlugin.showUI(true); // plugin is run internally
                                                                 // after
                                                                 // Apply
                     // update screen is always on Apply button of plugin

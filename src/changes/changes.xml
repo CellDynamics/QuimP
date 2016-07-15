@@ -14,7 +14,7 @@
         Add default log4j configuration file.
       </action>
       <action dev="baniuk" type="fix" issue="172">
-        Fake segmentation window can be duplicated.
+        Binary segmentation window can be duplicated.
       </action>
       <action dev="baniuk" type="add" issue="175">
         Add about menu in QuimP bar.
@@ -26,10 +26,10 @@
         Random Walk GUI should offer option of creating of seed image.
       </action>
       <action dev="baniuk" type="fix" issue="184">
-        FakeSegmentation fails on single slice images.
+        BinarySegmentation fails on single slice images.
       </action>
       <action dev="baniuk" type="update" issue="174">
-        Fake segmentation should use various sources of masks.
+        Binary segmentation should use various sources of masks.
       </action>
     </release>
   </body>

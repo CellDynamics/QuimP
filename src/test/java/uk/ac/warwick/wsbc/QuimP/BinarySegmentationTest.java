@@ -1,5 +1,5 @@
 /**
- * @file FakeSegmentationTest.java
+ * @file BinarySegmentationTest.java
  * @date 27 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
@@ -35,7 +35,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
  * @date 27 Jun 2016
  *
  */
-public class FakeSegmentationTest {
+public class BinarySegmentationTest {
 
     /**
      * Accessor to private field
@@ -47,14 +47,15 @@ public class FakeSegmentationTest {
      * @throws IllegalArgumentException 
      * @throws IllegalAccessException         
      */
-    static Object accessPrivateField(String name, FakeSegmentation obj) throws NoSuchFieldException,
-            SecurityException, IllegalArgumentException, IllegalAccessException {
+    static Object accessPrivateField(String name, BinarySegmentation obj)
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException,
+            IllegalAccessException {
         Field prv = obj.getClass().getDeclaredField(name);
         prv.setAccessible(true);
         return prv.get(obj);
     }
 
-    static Object accessPrivate(String name, FakeSegmentation obj, Object[] param,
+    static Object accessPrivate(String name, BinarySegmentation obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Method prv = obj.getClass().getDeclaredMethod(name, paramtype);
@@ -68,7 +69,8 @@ public class FakeSegmentationTest {
         else
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
-    private static final Logger LOGGER = LogManager.getLogger(FakeSegmentationTest.class.getName());
+    private static final Logger LOGGER =
+            LogManager.getLogger(BinarySegmentationTest.class.getName());
 
     private ImagePlus test1;
     private ImagePlus test2;
@@ -119,8 +121,8 @@ public class FakeSegmentationTest {
      * @throws Exception
      */
     @Test
-    public void testFakeSegmentation() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test1);
+    public void testBinarySegmentation() throws Exception {
+        BinarySegmentation obj = new BinarySegmentation(test1);
         TrackOutline[] trackers = (TrackOutline[]) accessPrivateField("trackers", obj);
         LOGGER.debug(Arrays.asList(trackers));
     }
@@ -132,7 +134,7 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testTestIntersect_1() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test1);
+        BinarySegmentation obj = new BinarySegmentation(test1);
         ShapeRoi r1 = new ShapeRoi(new Roi(0, 0, 100, 100));
         ShapeRoi r2 = new ShapeRoi(new Roi(101, 101, 100, 100));
 
@@ -149,7 +151,7 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testTestIntersect_2() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test1);
+        BinarySegmentation obj = new BinarySegmentation(test1);
         ShapeRoi r1 = new ShapeRoi(new Roi(0, 0, 100, 100));
         ShapeRoi r3 = new ShapeRoi(new Roi(50, 50, 100, 100));
 
@@ -166,7 +168,7 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testTestIntersect_3() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test1);
+        BinarySegmentation obj = new BinarySegmentation(test1);
         SegmentedShapeRoi r1 = new SegmentedShapeRoi(new Roi(0, 0, 100, 100));
         SegmentedShapeRoi r2 = new SegmentedShapeRoi(new Roi(101, 101, 100, 100));
         SegmentedShapeRoi r3 = new SegmentedShapeRoi(new Roi(50, 50, 100, 100));
@@ -192,7 +194,7 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testTestIntersect_Same() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test1);
+        BinarySegmentation obj = new BinarySegmentation(test1);
         SegmentedShapeRoi r1 = new SegmentedShapeRoi(new Roi(0, 0, 100, 100));
         ArrayList<SegmentedShapeRoi> test = new ArrayList<>();
         test.add(r1);
@@ -210,7 +212,7 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testTestIntersect_4() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test1);
+        BinarySegmentation obj = new BinarySegmentation(test1);
         SegmentedShapeRoi r1 = new SegmentedShapeRoi(new Roi(0, 0, 100, 100));
         SegmentedShapeRoi r2 = new SegmentedShapeRoi(new Roi(101, 101, 100, 100));
         SegmentedShapeRoi r3 = new SegmentedShapeRoi(new Roi(50, 50, 100, 100));
@@ -237,7 +239,7 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testGetChains() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test1); // create object with stack
+        BinarySegmentation obj = new BinarySegmentation(test1); // create object with stack
         obj.trackObjects(); // run tracking
         ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
         assertThat(ret.size(), is(3)); // check number of objects
@@ -262,7 +264,7 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testGetChains_no_last() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test2); // create object with stack
+        BinarySegmentation obj = new BinarySegmentation(test2); // create object with stack
         obj.trackObjects(); // run tracking
         ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
         assertThat(ret.size(), is(3)); // check number of objects
@@ -297,7 +299,7 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testGetChains_no_first() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test4); // create object with stack
+        BinarySegmentation obj = new BinarySegmentation(test4); // create object with stack
         obj.trackObjects(); // run tracking
         ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
         assertThat(ret.size(), is(3)); // check number of objects
@@ -333,7 +335,7 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testGetChains_no_middle_last() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test3); // create object with stack
+        BinarySegmentation obj = new BinarySegmentation(test3); // create object with stack
         obj.trackObjects(); // run tracking
         ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
         assertThat(ret.size(), is(4)); // check number of objects
@@ -376,7 +378,7 @@ public class FakeSegmentationTest {
      */
     @Test
     public void testGetChains_oneSlice() throws Exception {
-        FakeSegmentation obj = new FakeSegmentation(test5); // create object with stack
+        BinarySegmentation obj = new BinarySegmentation(test5); // create object with stack
         obj.trackObjects(); // run tracking
         ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
 
