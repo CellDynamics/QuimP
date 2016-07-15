@@ -673,7 +673,7 @@ public class BOA_ implements PlugIn {
             menuApplyPlugin.addActionListener(this);
             menuPlugin.add(menuApplyPlugin);
 
-            menuSegmentationRun = new MenuItem("Segment mask");
+            menuSegmentationRun = new MenuItem("Binary segmentation");
             menuSegmentationRun.addActionListener(this);
             menuSegmentation.add(menuSegmentationRun);
 
@@ -1491,14 +1491,14 @@ public class BOA_ implements PlugIn {
                         qState.binarySegmentationPlugin.showUI(true);
                 } else {
                     qState.binarySegmentationPlugin = new BinarySegmentationPlugin(); // create
-                                                                                  // instance
+                    // instance
                     qState.binarySegmentationPlugin.attachData(qState.nest); // attach data
                     qState.binarySegmentationPlugin.attachContext(viewUpdater); // allow plugin to
-                                                                              // update
-                                                                              // screen
+                                                                                // update
+                                                                                // screen
                     qState.binarySegmentationPlugin.showUI(true); // plugin is run internally
-                                                                // after
-                                                                // Apply
+                                                                  // after
+                                                                  // Apply
                     // update screen is always on Apply button of plugin
                 }
                 BOA_.log("Run segmentation from mask file");
