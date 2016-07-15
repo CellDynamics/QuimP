@@ -24,7 +24,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * @author p.baniukiewicz
  * @date 27 Jun 2016
  * @see uk.ac.warwick.wsbc.QuimP.geom.TrackOutline
- * @see uk.ac.warwick.wsbc.QuimP.FakeSegmentation
+ * @see uk.ac.warwick.wsbc.QuimP.BinarySegmentation
  *
  */
 public class SegmentedShapeRoi extends ShapeRoi {

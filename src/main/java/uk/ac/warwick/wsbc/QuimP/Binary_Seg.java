@@ -4,23 +4,25 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
-/**
- *
- * @author rtyson
- */
-import ij.*;
-import ij.gui.Roi;
-import ij.io.FileInfo;
-import ij.io.OpenDialog;
-import ij.io.SaveDialog;
-import ij.plugin.filter.PlugInFilter;
-import ij.plugin.filter.ParticleAnalyzer;
-import ij.plugin.PlugIn;
-import ij.process.ImageStatistics;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.Random;
+
+/**
+ *
+ * @author rtyson
+ */
+import ij.IJ;
+import ij.ImagePlus;
+import ij.gui.Roi;
+import ij.io.FileInfo;
+import ij.io.OpenDialog;
+import ij.io.SaveDialog;
+import ij.plugin.PlugIn;
+import ij.plugin.filter.ParticleAnalyzer;
+import ij.plugin.filter.PlugInFilter;
+import ij.process.ImageStatistics;
 
 /*
 public class Binary_Seg implements PlugInFilter{
@@ -64,6 +66,7 @@ return DOES_8G + DOES_16 + STACK_REQUIRED + NO_CHANGES;
 }
 
  */
+@Deprecated
 public class Binary_Seg implements PlugIn {
 
     static boolean use_previous_snake = true; // next contraction begins with
@@ -136,8 +139,8 @@ public class Binary_Seg implements PlugIn {
         if (!setSaveLocations())
             return;
 
-        new CellStat(OH, orgIpl, new File(outFile.getParent(), fileName + "_0.stQP.csv"), imageScale,
-                imageFrameInterval);
+        new CellStat(OH, orgIpl, new File(outFile.getParent(), fileName + "_0.stQP.csv"),
+                imageScale, imageFrameInterval);
 
         try {
             OH.writeOutlines(outFile, false);
@@ -240,7 +243,8 @@ public class Binary_Seg implements PlugIn {
         imageScale = orgIpl.getCalibration().pixelWidth;
         if (imageFrameInterval == 0) {
             imageFrameInterval = 1;
-            IJ.log("Warning. Frame interval was 0 sec. Using 1 sec instead" + "\n\t[set in 'image->Properties...']");
+            IJ.log("Warning. Frame interval was 0 sec. Using 1 sec instead"
+                    + "\n\t[set in 'image->Properties...']");
         }
         if (imageScale == 0) {
             imageScale = 1;

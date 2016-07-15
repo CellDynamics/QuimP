@@ -1,5 +1,5 @@
 /**
- * @file FakeSegmentationPlugin.java
+ * @file BinarySegmentationPlugin.java
  * @date 28 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
@@ -40,10 +40,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * @date 28 Jun 2016
  * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder
  */
-public class FakeSegmentationPlugin extends QWindowBuilder
+public class BinarySegmentationPlugin extends QWindowBuilder
         implements ActionListener, IQuimpPluginSynchro, IQuimpCorePlugin, ItemListener {
     private static final Logger LOGGER =
-            LogManager.getLogger(FakeSegmentationPlugin.class.getName());
+            LogManager.getLogger(BinarySegmentationPlugin.class.getName());
 
     private Nest nest; //!< reference to Nest object
     private ParamList uiDefinition; //!< window definition
@@ -59,7 +59,7 @@ public class FakeSegmentationPlugin extends QWindowBuilder
      * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder
      */
-    public FakeSegmentationPlugin() {
+    public BinarySegmentationPlugin() {
         // defaults
         step = 1;
         smoothing = false;
@@ -70,7 +70,7 @@ public class FakeSegmentationPlugin extends QWindowBuilder
         for (String s : str)
             list = list + ',' + s; // form list of params for QWindowBuilder:Choice
         uiDefinition = new ParamList(); // will hold ui definitions
-        uiDefinition.put("name", "FakeSegmentation"); // name of window
+        uiDefinition.put("name", "BinarySegmentation"); // name of window
         uiDefinition.put("load mask", "button, Load_mask");
         uiDefinition.put("get opened", "choice," + list);
         uiDefinition.put("step", "spinner, 1, 10001, 1," + Integer.toString(step)); // start, end,
@@ -215,7 +215,7 @@ public class FakeSegmentationPlugin extends QWindowBuilder
      * Perform segmentation and modify Nest reference passed to this object
      * 
      * @see uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi
-     * @see uk.ac.warwick.wsbc.QuimP.FakeSegmentation.FakeSegmentation(ImagePlus)
+     * @see uk.ac.warwick.wsbc.QuimP.BinarySegmentation.BinarySegmentation(ImagePlus)
      */
     @Override
     public void runPlugin() throws QuimpPluginException {
@@ -227,7 +227,7 @@ public class FakeSegmentationPlugin extends QWindowBuilder
         }
         try {
             LOGGER.info("Segmentation: " + maskFile.toString() + " params: " + params.toString());
-            FakeSegmentation obj = new FakeSegmentation(maskFile); // create segmentation object
+            BinarySegmentation obj = new BinarySegmentation(maskFile); // create segmentation object
             obj.trackObjects(); // run tracking
             ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
             // set interpolation params for every tracker. They are used when converting from

@@ -74,15 +74,15 @@ public class BOAState implements IQuimpSerialize {
     public transient SegParam segParam;
     public BOAp boap; //!< Reference to old BOAp class, keeps internal state of BOA
     /**
-     * Instance of fake segmentation plugin that converts BW masks into snakes. This is regular
+     * Instance of binary segmentation plugin that converts BW masks into snakes. This is regular
      * plugin but handled separately from SnakePlugins and it is not provided as external jar 
      */
-    public transient FakeSegmentationPlugin fakeSegmentationPlugin;
+    public transient BinarySegmentationPlugin binarySegmentationPlugin;
     /**
-     * Configuration of FakeSegmentation plugin if it was used. Used during saving boa state
+     * Configuration of BinarySegmentation plugin if it was used. Used during saving boa state
      */
     @SuppressWarnings("unused")
-    private ParamList fakeSegmentationParam;
+    private ParamList binarySegmentationParam;
     /**
      * Keep snapshots of SegParam objects for every frame separately
      */
@@ -568,7 +568,7 @@ public class BOAState implements IQuimpSerialize {
         boap = new BOAp(); // build BOAp
         segParam = new SegParam(); // and SegParam
         snakePluginList = new SnakePluginList();
-        fakeSegmentationParam = new ParamList(); // save empty list even if plugin not used
+        binarySegmentationParam = new ParamList(); // save empty list even if plugin not used
     }
 
     /**
@@ -637,10 +637,11 @@ public class BOAState implements IQuimpSerialize {
     @Override
     public void beforeSerialize() {
         nest.beforeSerialize(); // prepare snakes
-        if (fakeSegmentationPlugin != null) // was used, store config
-            fakeSegmentationParam = fakeSegmentationPlugin.getPluginConfig();
+        if (binarySegmentationPlugin != null) // was used, store config
+            binarySegmentationParam = binarySegmentationPlugin.getPluginConfig();
         else
-            fakeSegmentationParam = new ParamList();
+            binarySegmentationParam = new ParamList();
+
         // snakePluginListSnapshots and segParamSnapshots do not need beforeSerialize()
     }
 
