@@ -18,7 +18,7 @@ fi
 PROJECT=$1 # relative path to project
 BRANCH=$2 # branch of the project can be -- that stands for working tree
 PROFILE=$3 # maven profile
-FIJI="../Fiji.app.test/plugins" # fiji location (for uploading to repo)
+FIJI="../Fiji.app.release/plugins" # fiji location (for uploading to repo)
 
 echo 'Before continuing changelog at src/changes'
 echo 'must be modified in respect to fixed bugs'
