@@ -546,11 +546,19 @@ public class BOAState implements IQuimpSerialize {
      * @param pf PluginFactory used for creating plugins
      * @param vu ViewUpdater reference
      */
-    public BOAState(final ImagePlus ip, PluginFactory pf, ViewUpdater vu) {
+    public BOAState(final ImagePlus ip, final PluginFactory pf, final ViewUpdater vu) {
         this();
         snakePluginList = new SnakePluginList(BOA_.NUM_SNAKE_PLUGINS, pf, vu);
         if (ip == null)
             return;
+
+        initializeSnapshots(ip, pf, vu);
+        boap.setImageScale(ip.getCalibration().pixelWidth);
+        boap.setImageFrameInterval(ip.getCalibration().frameInterval);
+    }
+
+    private void initializeSnapshots(final ImagePlus ip, final PluginFactory pf,
+            final ViewUpdater vu) {
         int numofframes = ip.getStackSize();
         // fill snaphots with default values
         segParamSnapshots =
@@ -560,8 +568,6 @@ public class BOAState implements IQuimpSerialize {
         isFrameEdited = new ArrayList<Boolean>(Collections.nCopies(numofframes, false));
         BOA_.LOGGER.debug("Initialize storage of size: " + numofframes + " size of segParams: "
                 + segParamSnapshots.size());
-        boap.setImageScale(ip.getCalibration().pixelWidth);
-        boap.setImageFrameInterval(ip.getCalibration().frameInterval);
     }
 
     public BOAState() {
@@ -591,7 +597,7 @@ public class BOAState implements IQuimpSerialize {
      * Copy from snapshots data to current one.
      * 
      * @param frame current frame
-     * @see snakePluginList
+     * @see snakePluginListsnakePluginList
      * @see snakePluginListSnapshots 
      */
     public void restore(int frame) {
@@ -619,16 +625,25 @@ public class BOAState implements IQuimpSerialize {
      * 
      * This method does:
      * -# Closes all windows from plugins
+     * -# Cleans all snapshots
+     * -# Set default parameters
+     * 
+     * @param ip current image object, can be \c null. In latter case only subclasses are 
+     * initialized
+     * @param pf PluginFactory used for creating plugins
+     * @param vu ViewUpdater reference
      */
-    public void reset() {
+    public void reset(final ImagePlus ip, final PluginFactory pf, final ViewUpdater vu) {
         if (snakePluginList != null)
             snakePluginList.clear();
         if (snakePluginListSnapshots != null)
             for (SnakePluginList sp : snakePluginListSnapshots)
                 if (sp != null)
                     sp.clear();
-        boap = new BOAp(); // rebuild BOAp
+        // boap = new BOAp(); // must be disabled becaue boap keeps some data related to loaded
+        // image that never changes
         segParam = new SegParam(); // and SegParam
+        initializeSnapshots(ip, pf, vu);
     }
 
     /**

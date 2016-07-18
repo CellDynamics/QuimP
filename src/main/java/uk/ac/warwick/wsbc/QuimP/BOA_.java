@@ -269,7 +269,7 @@ public class BOA_ implements PlugIn {
      * Build all BOA windows and setup initial parameters for segmentation
      * Define also windowListener for cleaning after closing the main window by
      * user.
-     * 
+     * git tag -a "SNAPSHOT-13-07-16" -m "Releasing snaphots to Fiji internal update site"
      * @param ip Reference to image to be processed by BOA
      * @see BOAp
      */
@@ -554,7 +554,8 @@ public class BOA_ implements PlugIn {
 
         private MenuBar quimpMenuBar;
         private MenuItem menuAbout, menuOpenHelp, menuSaveConfig, menuLoadConfig, menuShowHistory,
-                menuLoad, menuDeletePlugin, menuApplyPlugin, menuSegmentationRun; // items
+                menuLoad, menuDeletePlugin, menuApplyPlugin, menuSegmentationRun,
+                menuSegmentationReset; // items
         private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
         private Color defaultColor;
 
@@ -678,7 +679,10 @@ public class BOA_ implements PlugIn {
 
             menuSegmentationRun = new MenuItem("Binary segmentation");
             menuSegmentationRun.addActionListener(this);
+            menuSegmentationReset = new MenuItem("Clear all");
+            menuSegmentationReset.addActionListener(this);
             menuSegmentation.add(menuSegmentationRun);
+            menuSegmentation.add(menuSegmentationReset);
 
             return menuBar;
         }
@@ -1426,7 +1430,8 @@ public class BOA_ implements PlugIn {
                             if (!yncd.yesPressed())
                                 return;
                         }
-                        qState.reset(); // closes windows, etc
+                        // closes windows, etc
+                        qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
                         qState = loaded.obj.BOAState;
                         imageGroup.updateNest(qState.nest); // reconnect nest to external class
                         qState.restore(qState.boap.frame); // copy from snapshots to current object
@@ -1511,6 +1516,19 @@ public class BOA_ implements PlugIn {
                     // update screen is always on Apply button of plugin
                 }
                 BOA_.log("Run segmentation from mask file");
+            }
+
+            /**
+             * Clean all bOA state
+             */
+            if (b == menuSegmentationReset) {
+                qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
+                qState.nest.cleanNest();
+                updateSpinnerValues();
+                if (qState.boap.frame != imageGroup.getOrgIpl().getSlice())
+                    imageGroup.updateToFrame(qState.boap.frame); // move to frame
+                else
+                    updateSliceSelector(); // repaint window explicitly
             }
 
             updateWindowState(); // window logic on any change and selectors
