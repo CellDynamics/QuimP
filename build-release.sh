@@ -52,12 +52,12 @@ fi
 # build project - it should be full jar
 mvn clean package site -P $PROFILE
 # copy artefact to Fiij
-find $FIJI -name QuimP*.jar | xargs rm -fv # delete old one
+find $FIJI -name QuimP*.jar ! -name QuimP_11b.jar | xargs rm -fv # delete old one except old quimp
 cp -v target/QuimP_-*-jar-*.jar $FIJI # copy package
 # Copy site
 rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/ pi@quimp.linkpc.net:/var/www/restricted/site
 # Copy only changes for users
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/css target/site/images target/sites/changes-report.html   pi@quimp.linkpc.net:/var/www/html/site
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/css target/site/images target/site/changes-report.html pi@quimp.linkpc.net:/var/www/html/site
 
 echo '------------------------------------------------------------------'
 echo Postprocessing:

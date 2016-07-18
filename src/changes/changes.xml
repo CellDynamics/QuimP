@@ -6,6 +6,20 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+    <release version="16.08.01-SNAPHOT" date="2016-07-18" description="Snapshot release">
+      <action dev="baniuk" type="fix" issue="187">
+        Current frame sometimes does not update when action taken in Binary Segmentation plugin.
+      </action>
+      <action dev="baniuk" type="fix" issue="186">
+        Binary Segmentation causes errors when snake is modified.
+      </action>
+      <action dev="baniuk" type="fix" issue="188">
+        BOA does not ask about file to save on SaveQuit.
+      </action>
+      <action dev="baniuk" type="fix" issue="176">
+        Loading QCONF causes massive exceptions sometimes.
+      </action>
+    </release> 
     <release version="16.08.01-SNAPHOT" date="2016-07-13" description="Snapshot release">
       <action dev="baniuk" type="fix" issue="181">
         Edited snakes are not processed by filters.
