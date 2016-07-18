@@ -65,7 +65,7 @@ BOA->BinarySegmentationPlugin : getPluginConfig
 BinarySegmentationPlugin-->BOA : ""ParamList""
 @enduml    
 
-The #ref uk.ac.warwick.wsbc.QuimP.plugin.ParamList "ParamList" gathers all standard plugin options and some additional. It is used for exchanging data between BOA_ and plugin, mainly for archiving purposes (see \ref confhand "this chapter").
+The \ref uk.ac.warwick.wsbc.QuimP.plugin.ParamList "ParamList" gathers all standard plugin options and some additional. It is used for exchanging data between BOA_ and plugin, mainly for archiving purposes (see \ref confhand "this chapter").
 
 ## Configuration handling {#confhand}
 

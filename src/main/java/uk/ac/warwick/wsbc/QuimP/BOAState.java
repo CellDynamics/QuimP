@@ -313,6 +313,21 @@ public class BOAState implements IQuimpSerialize {
         public double getMin_dist() {
             return min_dist;
         }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return "SegParam [nodeRes=" + nodeRes + ", blowup=" + blowup + ", vel_crit=" + vel_crit
+                    + ", f_central=" + f_central + ", f_image=" + f_image + ", max_iterations="
+                    + max_iterations + ", sample_tan=" + sample_tan + ", sample_norm=" + sample_norm
+                    + ", f_contract=" + f_contract + ", finalShrink=" + finalShrink
+                    + ", use_previous_snake=" + use_previous_snake + ", showPaths=" + showPaths
+                    + ", expandSnake=" + expandSnake + ", min_dist=" + min_dist + ", max_dist="
+                    + max_dist + "]";
+        }
+
     } // end of SegParam
 
     /**
@@ -509,99 +524,6 @@ public class BOAState implements IQuimpSerialize {
             paramsExist = "YES";
 
         }
-
-        /**
-         * Write set of snake parameters to disk.
-         * 
-         * writeParams method creates \a paQP master file, referencing other
-         * associated files and \a csv file with statistics.
-         * 
-         * @param sID ID of cell. If many cells segmented in one time, QuimP
-         * produces separate parameter file for every of them
-         * @param startF Start frame (typically beginning of stack)
-         * @param endF End frame (typically end of stack)
-         * @see QParams
-         */
-        public void writeParams(int sID, int startF, int endF) {
-            try {
-                if (saveSnake) {
-                    File paramFile = new File(outFile.getParent(), fileName + "_" + sID + ".paQP");
-                    File statsFile = new File(outFile.getParent() + File.separator + fileName + "_"
-                            + sID + ".stQP.csv");
-
-                    QParams qp = new QParams(paramFile);
-                    qp.segImageFile = orgFile;
-                    qp.snakeQP = outFile;
-                    qp.statsQP = statsFile;
-                    qp.setImageScale(BOA_.qState.boap.imageScale);
-                    qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
-                    qp.setStartFrame(startF);
-                    qp.setEndFrame(endF);
-                    qp.NMAX = NMAX;
-                    qp.setBlowup(segParam.blowup);
-                    qp.max_iterations = segParam.max_iterations;
-                    qp.sample_tan = segParam.sample_tan;
-                    qp.sample_norm = segParam.sample_norm;
-                    qp.delta_t = delta_t;
-                    qp.setNodeRes(segParam.nodeRes);
-                    qp.vel_crit = segParam.vel_crit;
-                    qp.f_central = segParam.f_central;
-                    qp.f_contract = segParam.f_contract;
-                    qp.f_image = segParam.f_image;
-                    qp.f_friction = f_friction;
-                    qp.finalShrink = segParam.finalShrink;
-                    qp.sensitivity = sensitivity;
-
-                    qp.writeParams();
-                }
-            } catch (QuimpException e) {
-                LOGGER.error("Could not write parameters to file", e);
-            }
-        }
-
-        /**
-         * Read set of snake parameters from disk.
-         * 
-         * readParams method reads \a paQP master file, referencing other associated
-         * files.
-         * 
-         * @return Status of operation
-         * @retval true when file has been loaded successfully
-         * @retval false when file has not been opened correctly or
-         * QParams.readParams() returned \c false
-         * @see QParams
-         */
-        public boolean readParams() {
-            OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", "");
-            if (od.getFileName() == null) {
-                return false;
-            }
-            readQp = new QParams(new File(od.getDirectory(), od.getFileName()));
-
-            try {
-                readQp.readParams();
-            } catch (QuimpException e) {
-                BOA_.log("Failed to read parameter file " + e.getMessage());
-                return false;
-            }
-            NMAX = readQp.NMAX;
-            segParam.blowup = readQp.getBlowup();
-            segParam.max_iterations = readQp.max_iterations;
-            segParam.sample_tan = readQp.sample_tan;
-            segParam.sample_norm = readQp.sample_norm;
-            delta_t = readQp.delta_t;
-            segParam.nodeRes = readQp.getNodeRes();
-            segParam.vel_crit = readQp.vel_crit;
-            segParam.f_central = readQp.f_central;
-            segParam.f_contract = readQp.f_contract;
-            segParam.f_image = readQp.f_image;
-
-            if (readQp.paramFormat == QParams.QUIMP_11) {
-                segParam.finalShrink = readQp.finalShrink;
-            }
-            BOA_.log("Successfully read parameters");
-            return true;
-        }
     }
 
     /**
@@ -718,16 +640,114 @@ public class BOAState implements IQuimpSerialize {
         if (binarySegmentationPlugin != null) // was used, store config
             binarySegmentationParam = binarySegmentationPlugin.getPluginConfig();
         else
-            binarySegmentationParam = null;
+            binarySegmentationParam = new ParamList();
+
         // snakePluginListSnapshots and segParamSnapshots do not need beforeSerialize()
     }
 
     @Override
     public void afterSerialize() throws Exception {
+        LOGGER.trace("After serialize called");
         nest.afterSerialize(); // rebuild Shape<T extends PointsList<T>> from ArrayList used for
                                // storing
         snakePluginList.afterSerialize(); // assumes that snakePluginList contains valid refs to
                                           // pluginFactory
+    }
 
+    /**
+    * Write set of snake parameters to disk.
+    * 
+    * writeParams method creates \a paQP master file, referencing other
+    * associated files and \a csv file with statistics.
+    * 
+    * @param sID ID of cell. If many cells segmented in one time, QuimP
+    * produces separate parameter file for every of them
+    * @param startF Start frame (typically beginning of stack)
+    * @param endF End frame (typically end of stack)
+    * @see QParams
+    * @warning Compatibility layer with old QuimP
+    * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/176#comment:3
+    */
+    public void writeParams(int sID, int startF, int endF) {
+        try {
+            if (boap.saveSnake) {
+                File paramFile =
+                        new File(boap.outFile.getParent(), boap.fileName + "_" + sID + ".paQP");
+                File statsFile = new File(boap.outFile.getParent() + File.separator + boap.fileName
+                        + "_" + sID + ".stQP.csv");
+
+                QParams qp = new QParams(paramFile);
+                qp.segImageFile = boap.orgFile;
+                qp.snakeQP = boap.outFile;
+                qp.statsQP = statsFile;
+                qp.setImageScale(BOA_.qState.boap.imageScale);
+                qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
+                qp.setStartFrame(startF);
+                qp.setEndFrame(endF);
+                qp.NMAX = boap.NMAX;
+                qp.setBlowup(segParam.blowup);
+                qp.max_iterations = segParam.max_iterations;
+                qp.sample_tan = segParam.sample_tan;
+                qp.sample_norm = segParam.sample_norm;
+                qp.delta_t = boap.delta_t;
+                qp.setNodeRes(segParam.nodeRes);
+                qp.vel_crit = segParam.vel_crit;
+                qp.f_central = segParam.f_central;
+                qp.f_contract = segParam.f_contract;
+                qp.f_image = segParam.f_image;
+                qp.f_friction = boap.f_friction;
+                qp.finalShrink = segParam.finalShrink;
+                qp.sensitivity = boap.sensitivity;
+
+                qp.writeParams();
+            }
+        } catch (QuimpException e) {
+            LOGGER.error("Could not write parameters to file", e);
+        }
+    }
+
+    /**
+     * Read set of snake parameters from disk.
+     * 
+     * readParams method reads \a paQP master file, referencing other associated
+     * files.
+     * 
+     * @return Status of operation
+     * @retval true when file has been loaded successfully
+     * @retval false when file has not been opened correctly or
+     * QParams.readParams() returned \c false
+     * @see QParams
+     * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/176#comment:3
+     */
+    public boolean readParams() {
+        OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", "");
+        if (od.getFileName() == null) {
+            return false;
+        }
+        boap.readQp = new QParams(new File(od.getDirectory(), od.getFileName()));
+
+        try {
+            boap.readQp.readParams();
+        } catch (QuimpException e) {
+            BOA_.log("Failed to read parameter file " + e.getMessage());
+            return false;
+        }
+        boap.NMAX = boap.readQp.NMAX;
+        segParam.blowup = boap.readQp.getBlowup();
+        segParam.max_iterations = boap.readQp.max_iterations;
+        segParam.sample_tan = boap.readQp.sample_tan;
+        segParam.sample_norm = boap.readQp.sample_norm;
+        boap.delta_t = boap.readQp.delta_t;
+        segParam.nodeRes = boap.readQp.getNodeRes();
+        segParam.vel_crit = boap.readQp.vel_crit;
+        segParam.f_central = boap.readQp.f_central;
+        segParam.f_contract = boap.readQp.f_contract;
+        segParam.f_image = boap.readQp.f_image;
+
+        if (boap.readQp.paramFormat == QParams.QUIMP_11) {
+            segParam.finalShrink = boap.readQp.finalShrink;
+        }
+        BOA_.log("Successfully read parameters");
+        return true;
     }
 }

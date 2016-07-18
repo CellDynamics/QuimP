@@ -114,6 +114,7 @@ public class BOA_ implements PlugIn {
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     static final Logger LOGGER = LogManager.getLogger(BOA_.class.getName());
+    public static final String QCONFFILEEXT = ".QCONF"; //!< Extension for QCONF file
     CustomCanvas canvas;
     CustomStackWindow window;
     static TextArea logArea;
@@ -204,7 +205,8 @@ public class BOA_ implements PlugIn {
             pluginFactory = PluginFactoryFactory.getPluginFactory(path);
         } catch (Exception e) {
             // temporary catching may in future be removed
-            LOGGER.error("run: " + e);
+            LOGGER.error("run: " + e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
             return;
         }
 
@@ -395,13 +397,14 @@ public class BOA_ implements PlugIn {
                 } catch (QuimpPluginException qpe) {
                     // must be rewritten with whole runBOA #65 #67
                     BOA_.log("Error in filter module: " + qpe.getMessage());
-                    LOGGER.error(qpe);
+                    LOGGER.error("Error in filter module: " + qpe.getMessage());
+                    LOGGER.debug(qpe.getMessage(), qpe);
                     sH.storeLiveSnake(qState.boap.frame); // so store only segmented snake as final
                 }
             }
         } catch (Exception e) {
             LOGGER.error("Can not update view. Output snake may be defective: " + e.getMessage());
-            LOGGER.error(e);
+            LOGGER.debug(e.getMessage(), e);
         } finally {
             historyLogger.addEntry("Plugin settings", qState);
             qState.store(qState.boap.frame); // always remember state of the BOA that is
@@ -1250,7 +1253,7 @@ public class BOA_ implements PlugIn {
                 bSeg.setLabel("SEGMENT");
             } else if (b == bLoad) {
                 try {
-                    if (qState.boap.readParams()) {
+                    if (qState.readParams()) {
                         updateSpinnerValues();
                         if (loadSnakes()) {
                             run = false;
@@ -1308,7 +1311,8 @@ public class BOA_ implements PlugIn {
                 try {
                     java.awt.Desktop.getDesktop().browse(new URI(url));
                 } catch (Exception e1) {
-                    LOGGER.error("Could not open help: " + e1.getMessage(), e1);
+                    LOGGER.error("Could not open help: " + e1.getMessage());
+                    LOGGER.debug(e1.getMessage(), e1);
                 }
                 return;
             }
@@ -1325,7 +1329,8 @@ public class BOA_ implements PlugIn {
                         s.save(sd.getDirectory() + sd.getFileName()); // save it
                         s = null; // remove
                     } catch (FileNotFoundException e1) {
-                        LOGGER.error("Problem with saving plugin config");
+                        LOGGER.error("Problem with saving plugin config: " + e1.getMessage());
+                        LOGGER.debug(e1.getMessage(), e1);
                     }
                 }
             }
@@ -1365,11 +1370,13 @@ public class BOA_ implements PlugIn {
                         */
                         recalculatePlugins(); // update screen
                     } catch (IOException e1) {
-                        LOGGER.error("Problem with loading plugin config");
+                        LOGGER.error("Problem with loading plugin config: " + e1.getMessage());
+                        LOGGER.debug(e1.getMessage(), e1);
                     } catch (JsonSyntaxException e1) {
                         LOGGER.error("Problem with configuration file: " + e1.getMessage());
+                        LOGGER.debug(e1.getMessage(), e1);
                     } catch (Exception e1) {
-                        LOGGER.error(e1); // something serious
+                        LOGGER.fatal(e1.getMessage(), e1); // something serious
                     }
                 }
             }
@@ -1435,11 +1442,13 @@ public class BOA_ implements PlugIn {
                         else
                             updateSliceSelector(); // repaint window explicitly
                     } catch (IOException e1) {
-                        LOGGER.error("Problem with loading plugin config", e1);
+                        LOGGER.error("Problem with loading plugin config. " + e1.getMessage());
+                        LOGGER.debug(e1.getMessage(), e1); // if debug enabled - get more info
                     } catch (JsonSyntaxException e1) {
-                        LOGGER.error("Problem with configuration file: " + e1.getMessage(), e1);
+                        LOGGER.error("Problem with configuration file: " + e1.getMessage());
+                        LOGGER.debug(e1.getMessage(), e1);
                     } catch (Exception e1) {
-                        LOGGER.error(e1, e1); // something serious
+                        LOGGER.fatal(e1.getMessage(), e1); // something serious
                     }
                 }
             }
@@ -1817,7 +1826,9 @@ public class BOA_ implements PlugIn {
                 qState.snakePluginList.deletePlugin(slot);
             }
         } catch (QuimpPluginException e) {
-            LOGGER.warn("Plugin " + selectedPlugin + " cannot be loaded");
+            LOGGER.warn(
+                    "Plugin " + selectedPlugin + " cannot be loaded. Reason: " + e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
         }
     }
 
@@ -1899,7 +1910,8 @@ public class BOA_ implements PlugIn {
                         } catch (QuimpPluginException qpe) {
                             // must be rewritten with whole runBOA #65 #67
                             BOA_.log("Error in filter module: " + qpe.getMessage());
-                            LOGGER.error(qpe);
+                            LOGGER.error(qpe.getMessage());
+                            LOGGER.debug(qpe.getMessage(), qpe);
                             sH.storeLiveSnake(qState.boap.frame); // store segmented nonmodified
 
                         } catch (BoaException be) {
@@ -2152,13 +2164,15 @@ public class BOA_ implements PlugIn {
         } catch (QuimpPluginException qpe) {
             isPluginError = true; // we have error
             BOA_.log("Error in filter module: " + qpe.getMessage());
-            LOGGER.error(qpe);
+            LOGGER.error(qpe.getMessage());
+            LOGGER.debug(qpe.getMessage(), qpe);
         } catch (BoaException be) {
             BOA_.log("New snake failed to converge");
-            LOGGER.error(be);
+            LOGGER.error(be.getMessage());
+            LOGGER.debug(be.getMessage(), be);
         } catch (Exception e) {
             BOA_.log("Undefined error from plugin");
-            LOGGER.fatal(e);
+            LOGGER.fatal(e.getMessage(), e);
         }
         // if any problem with plugin or other, store snake without modification
         // because snake.asList() returns copy
@@ -2167,7 +2181,8 @@ public class BOA_ implements PlugIn {
                 sH.storeLiveSnake(f); // so store original livesnake after segmentation
         } catch (BoaException be) {
             BOA_.log("Could not store new snake");
-            LOGGER.error(be);
+            LOGGER.error(be.getMessage());
+            LOGGER.debug(be.getMessage(), be);
         } finally {
             imageGroup.updateOverlay(f);
             historyLogger.addEntry("Added cell", qState);
@@ -2326,9 +2341,25 @@ public class BOA_ implements PlugIn {
     private void finish() {
         IJ.showStatus("BOA-FINISHING");
         YesNoCancelDialog ync;
-
+        File testF;
+        LOGGER.debug(qState.segParam.toString());
         if (qState.boap.saveSnake) {
             try {
+                // check whether there is case saved and warn user
+                // there is no option to solve this problem here. User can only agree or cancel
+                if (qState.boap.outFile != null) {
+                    testF = new File(qState.boap.outFile.getParent() + File.separator
+                            + qState.boap.fileName + QCONFFILEEXT); // test for QCONF that is
+                                                                    // created always
+                    if (testF.exists() && !testF.isDirectory()) {
+                        ync = new YesNoCancelDialog(window, "Save Segmentation",
+                                "You are about to override previous results. Is it ok?\nIf not"
+                                        + " previous data must be moved to another directory");
+                        if (!ync.yesPressed())
+                            return;
+                    }
+                }
+                // write operations
                 if (qState.nest.writeSnakes()) { // write snPQ file (if any snake)
                     qState.nest.analyse(imageGroup.getOrgIpl().duplicate()); // write stQP file
                                                                              // and fill outFile
@@ -2342,12 +2373,12 @@ public class BOA_ implements PlugIn {
                         s.save(qState.boap.outFile.getParent() + File.separator
                                 + qState.boap.fileName + ".pgQP");
                         s = null; // remove
-                        // Dump BOAState object s new format
+                        // Dump BOAState object in new format
                         Serializer<DataContainer> n;
                         n = new Serializer<>(new DataContainer(qState), quimpInfo);
                         n.setPretty();
                         n.save(qState.boap.outFile.getParent() + File.separator
-                                + qState.boap.fileName + ".QCONF");
+                                + qState.boap.fileName + QCONFFILEEXT);
                         n = null;
                     }
                 } else {
@@ -2359,7 +2390,8 @@ public class BOA_ implements PlugIn {
                 }
             } catch (IOException e) {
                 IJ.error("Exception while saving");
-                LOGGER.error(e);
+                LOGGER.error("Exception while saving: " + e.getMessage());
+                LOGGER.debug(e.getMessage(), e);
                 return;
             }
         }
@@ -3262,7 +3294,6 @@ class BoaException extends Exception {
      */
     public BoaException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -3283,7 +3314,6 @@ class BoaException extends Exception {
      */
     public BoaException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -3291,7 +3321,6 @@ class BoaException extends Exception {
      */
     public BoaException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
 }

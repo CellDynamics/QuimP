@@ -51,7 +51,6 @@ public class SegmentedShapeRoi extends ShapeRoi {
      */
     public SegmentedShapeRoi(Roi r) {
         super(r);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -59,7 +58,6 @@ public class SegmentedShapeRoi extends ShapeRoi {
      */
     public SegmentedShapeRoi(Shape s) {
         super(s);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -67,7 +65,6 @@ public class SegmentedShapeRoi extends ShapeRoi {
      */
     public SegmentedShapeRoi(float[] shapeArray) {
         super(shapeArray);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -77,7 +74,6 @@ public class SegmentedShapeRoi extends ShapeRoi {
      */
     public SegmentedShapeRoi(int x, int y, Shape s) {
         super(x, y, s);
-        // TODO Auto-generated constructor stub
     }
 
     /**

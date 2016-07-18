@@ -4,6 +4,8 @@
 \date 28 Jun 2016
 \tableofcontents
 
+See also \ref Exceptions "Exceptions document"
+
 # About
 
 QuimP uses Log4J2 logging framework. Every entry point to the application (like those plugins available
@@ -26,7 +28,7 @@ wars to console. The `quimp.debugLevel` can be used for passing other configurat
 ./ImageJ-linux64 -Dquimp.debugLevel=qlog4j2.xml -- --java-home $JAVA_HOME
 ```      
 
-Developers should set this property in Eclipse run configurations: `-Dlog4j.configurationFile=file:src/main/resources/qlog4j2.xml` for every executable.
+Developers should set this property in Eclipse run configurations either as: `-Dlog4j.configurationFile=file:src/main/resources/qlog4j2.xml` or with `quimp.debugLevel` property for every executable.
 
 Test may not contain that `static` part of code. For them it is enough to set property read directly
 by log4j: `Dlog4j.configurationFile=file:src/main/resources/qlog4j2.xml`. Own property for
