@@ -1,6 +1,9 @@
 #!/bin/sh
 # This script generates Doxygen doc based on java source files
 # Outputs doxygen documentation using doxyfile available at Doxygen_doc
+# 
+# Uploads to local trac and public quimp.linkpc.net
+
 echo "Use latest Doxygen compiled from sources to have links evaluated correctly"
 dot -Tpng Doxygen_doc/maven-structure.dot -o /tmp/maven-structure.png
 # copy only if changed to prevent pushing repo
@@ -12,5 +15,6 @@ cd Doxygen_doc
 rm -rf html/*
 doxygen Doxyfile >/dev/null
 rsync -az -e 'ssh -p2222' --stats --delete Doxygen_doc html/ trac@trac-wsbc.linkpc.net:/var/www/restricted/Doxygen_doc/QuimP
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats Doxygen_doc html/ pi@quimp.linkpc.net:/var/www/restricted/Doxygen_doc
 
 

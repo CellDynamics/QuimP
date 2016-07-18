@@ -18,9 +18,9 @@
   <description>QuimP software, a set of plugins for ImageJ to quantify spatio-temporal patterns of fluorescently labeled proteins in the cortex of moving cells.</description>
   <!-- Root of URL for documentation. MUST have / at end -->
   <properties>
-    <manual.rootlocation>http://homepages.warwick.ac.uk/~u1473350/</manual.rootlocation>
-    <site.rootlocation>http://www.trac-wsbc.linkpc.net:8080/restricted/${project.artifactId}/</site.rootlocation>
-    <site.historylocation>${site.rootlocation}changes-report.html</site.historylocation>
+    <manual.rootlocation>http://quimp.linkpc.net/manual/</manual.rootlocation>
+    <site.rootlocation>http://quimp.linkpc.net/history/</site.rootlocation>
+    <site.historylocation>changes-report.html</site.historylocation>
   </properties>
   <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
   <scm>

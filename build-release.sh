@@ -5,7 +5,7 @@
 # - Checkout latest commit for project XX from branch YY (or build from working tree)
 # - Build it
 # - Build site
-# - Upload site
+# - Upload site to quimp.linkpc.net
 
 set -e
 
@@ -55,9 +55,9 @@ mvn clean package site -P $PROFILE
 find $FIJI -name QuimP*.jar | xargs rm -fv # delete old one
 cp -v target/QuimP_-*-jar-*.jar $FIJI # copy package
 # Copy site
-rsync -az -e 'ssh -p2222' --delete --stats \
-		target/site/ \
-		trac@trac-wsbc.linkpc.net:/var/www/restricted/QuimP_
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/ pi@quimp.linkpc.net:/var/www/restricted/site
+# Copy only changes for users
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/css target/site/images target/sites/changes-report.html   pi@quimp.linkpc.net:/var/www/html/site
 
 echo '------------------------------------------------------------------'
 echo Postprocessing:
