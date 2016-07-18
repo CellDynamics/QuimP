@@ -103,6 +103,7 @@ public class Nest implements IQuimpSerialize {
             BOA_.log("Added one cell, begining frame " + startFrame);
         } catch (Exception e) {
             BOA_.log("Added cell failed to initilise");
+            LOGGER.debug(e.getMessage(), e);
             return null;
         }
         BOA_.log("Cells being tracked: " + NSNAKES);
