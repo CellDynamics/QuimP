@@ -20,11 +20,13 @@ is the same package on server already and set certain log level for every packag
 
 File: build-snapshot.sh *branch* *profile*
 
-**Currently it is deprecated due to switching to ather distribution model**
+**Currently it is deprecated due to switching to other distribution model**
 
-# Build snapshots {#bsnap1}
+# Build release {#bsnap1}
 
 This script build snapshot or release and prepare relevant site with changelog, jar is copied to Fiji where it should be uploaded to plugin repo.
+
+File build-release.sh *project-path* *branch* *profile*
 
 # Generate documentation {#gendoc}
 

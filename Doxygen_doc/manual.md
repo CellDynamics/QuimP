@@ -4,7 +4,7 @@
 \date 10 Jul 2016
 \tableofcontents
 
-# Configuration
+# Configuration {#manConf}
 
 QuimP assumes two versions of user manual:
 
@@ -20,7 +20,7 @@ of manual configuration lies in `pom.xml`. The main location of documentation is
 
 ```
 <properties>
-    <manual.rootlocation>http://homepages.warwick.ac.uk/~u1473350/</manual.rootlocation>
+    <manual.rootlocation>http://quimp.linkpc.net/manual/</manual.rootlocation>
 </properties>
 ```
 
@@ -29,15 +29,35 @@ as extension to `manual.rootlocation` property:
 
 ```
 <properties>
-        <manual.location>${manual.rootlocation}release/QuimP_Guide.html</manual.location>
+        <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
 </properties>
 
-
+# profile 0
 <properties>
-        <manual.location>${manual.rootlocation}snapshot/QuimP_Guide.html</manual.location>
+        <manual.location>${manual.rootlocation}develop/QuimP_Guide.html</manual.location>
 </properties>
+
+# profile 1
+<properties>
+        <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
+</properties>
+      
 ```
 
-The snapshot version of documentation is located under **snapshot** folder on root URL whereas release under **release** folder.
+The snapshot version of documentation is located under **develop** folder on root URL whereas release under **master** folder.
 
-Manual is built automatically by `updateDoc.sh` script run periodically.
+Manual is built automatically by `updateDoc.sh` script run periodically on server.
+
+## Site {#manSite}
+
+Additionally, the changelog build by *maven-changes-plugin* plugin is also exposed to user. Its location is defined in *pom.xml*
+
+
+```
+<properties>
+    <site.rootlocation>http://quimp.linkpc.net/history/</site.rootlocation>
+    <site.historylocation>${site.rootlocation}changes-report.html</site.historylocation>
+</properties>
+```  
+
+The content of `http://quimp.linkpc.net/history` is populated by `build-release.sh` script.
