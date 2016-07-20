@@ -1,8 +1,7 @@
-# Binary segmentation {#BinarySeg}
+# Binary segmentation 
 
 \author p.baniukiewicz
 \date 28 Jun 2016
-\tableofcontents
 
 # About
 

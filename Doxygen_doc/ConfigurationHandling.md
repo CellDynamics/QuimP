@@ -1,8 +1,7 @@
-# ConfigurationHandling {#ConfigurationHandling}
+# Configuration Handling
 
 \author p.baniukiewicz
 \date 1 Apr 2016
-\tableofcontents
 
 # General file operations {#genfile}
 File names are defined in configuration class \ref uk.ac.warwick.wsbc.QuimP.BOAState.BOAp "BOAp" (see comments in Doxygen doc). The very general workflow for saving and loading configurations for particular parts of QuimP is presented below.

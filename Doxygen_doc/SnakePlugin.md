@@ -1,9 +1,8 @@
 
-# SnakePlugin {#SnakePlugin}
+# SnakePlugin
 
-\author p.baniukiewicz
-\date 19 Feb 2016
-\tableofcontents
+\author p.baniukiewicz \\
+\date 19 Feb 2016 \\
 
 # Description of use {#dou}
 
