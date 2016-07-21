@@ -15,7 +15,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * for Snake 
  * @author p.baniukiewicz
  * @date 4 Apr 2016
- * @see @ref SnakePlugin
  * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
  * @see uk.ac.warwick.wsbc.QuimP.Snake
  */

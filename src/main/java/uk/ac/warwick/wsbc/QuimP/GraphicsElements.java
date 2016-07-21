@@ -20,7 +20,7 @@ import ij.process.FloatPolygon;
 public class GraphicsElements {
 
     /**
-     * Create arrow 
+     * Create an arrow 
      * 
      * @param direction Directional vector
      * @param base base point 

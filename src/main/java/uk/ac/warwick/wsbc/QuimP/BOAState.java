@@ -16,8 +16,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * Hold current BOA state that can be serialized
  * 
  * This class is composed from two inner classes:
- * -# BOAp - holds internal state of BOA plugin, maintained mainly for compatibility reasons
- * -# SegParam - holds segmentation parameters, exposed to UI
+ * <ul>
+ * <li> BOAp - holds internal state of BOA plugin, maintained mainly for compatibility reasons
+ * <li> SegParam - holds segmentation parameters, exposed to UI
+ * </ul>
  * 
  * Moreover there are several fields related to new features of QuimP like storing internal
  * state for every frame separately or SnakePlugins.

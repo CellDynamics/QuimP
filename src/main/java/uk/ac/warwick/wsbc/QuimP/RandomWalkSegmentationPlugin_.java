@@ -125,11 +125,11 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      *   [     OK     ] | [   Cancel   ]
      *   }
      *   }
-     *   @enduml
+     * @enduml
      *   
      * State diagram
      *
-     *   @startuml
+     * @startuml
      *   [*] --> Default
      *   Default : selectors empty
      *   Default : **Clone**, **BG** and **FG** //inactive//
@@ -156,7 +156,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      *   ImageSelected --> [*]
      *   Run --> [*]
      *   Default --> [*]
-     *   @enduml
+     * @enduml
      * 
      */
     public void showDialog() {

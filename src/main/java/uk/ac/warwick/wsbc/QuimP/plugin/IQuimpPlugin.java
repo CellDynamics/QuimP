@@ -11,7 +11,6 @@ package uk.ac.warwick.wsbc.QuimP.plugin;
  * 
  * @author p.baniukiewicz
  * @date 2 Feb 2016
- * @see @ref SnakePlugin
  * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
  */
 public interface IQuimpPlugin {

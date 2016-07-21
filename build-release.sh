@@ -5,7 +5,10 @@
 # - Checkout latest commit for project XX from branch YY (or build from working tree)
 # - Build it
 # - Build site
-# - Upload site to quimp.linkpc.net
+# - Upload full site to quimp.linkpc.net (restricted to logged users)
+# - Upload only changes to public site
+# - Upload only javadoc to public site
+# - Build Doxygen documenatation for user - without source code and upload it
 
 set -e
 
@@ -51,6 +54,8 @@ fi
 
 # build project - it should be full jar
 mvn clean package site -P $PROFILE
+# build documentation without source code included
+./generateDoc.sh Doxyfile-no-source
 # copy artefact to Fiij
 find $FIJI -name QuimP*.jar ! -name QuimP_11b.jar | xargs rm -fv # delete old one except old quimp
 cp -v target/QuimP_-*-jar-*.jar $FIJI # copy package
@@ -58,6 +63,10 @@ cp -v target/QuimP_-*-jar-*.jar $FIJI # copy package
 rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/ pi@quimp.linkpc.net:/var/www/restricted/site
 # Copy only changes for users
 rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/css target/site/images target/site/changes-report.html pi@quimp.linkpc.net:/var/www/html/site
+# Copy only javadoc for users
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/apidocs/ pi@quimp.linkpc.net:/var/www/html/apidocs
+# copy doxygen for users
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats Doxygen_doc/html/ pi@quimp.linkpc.net:/var/www/html/doxygen
 
 echo '------------------------------------------------------------------'
 echo Postprocessing:
