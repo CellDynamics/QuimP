@@ -18,16 +18,16 @@ Since May 2016 Fiji officially supports Java 8. Every new installation comes wit
 ## Installation procedure for fresh installations
 
 1. Download and install ImageJ or [Fiji](http://fiji.sc/#download) (recommended).
-1. Download QuimP in latest available version from [here](http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp/quimp-download/)
-1. Unpack the content of `QuimP-xxxx.zip` archive (`xxxx` string stands for current QuimP version) into `plugins` folder located in the installation directory of ImageJ.
-1. **Remove any previous Quimp_ package from `plugins`**
-1. Run ImageJ/Fiji and head to the `Plugnis` menu. The `QuimP-xxxx` entry should be available there.
+2. Download QuimP in latest available version from [here](http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp/quimp-download/)
+3. Unpack the content of `QuimP-xxxx.zip` archive (`xxxx` string stands for current QuimP version) into `plugins` folder located in the installation directory of ImageJ.
+4. **Remove any previous Quimp_ package from `plugins`**
+5. Run ImageJ/Fiji and head to the `Plugnis` menu. The `QuimP-xxxx` entry should be available there.
 
 ## Installation procedure for existing installations
 
 1. Download and install **Java 8**. For MacOS or Linux extra configuration steps may be necessary. Consult documentation relevant to your system.
-1. Consult [Fiji FAQ](http://imagej.net/Frequently_Asked_Questions) how to run ImageJ or Fiji with **Java 8**.
-1. Download QuimP in latest available version from [here](http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp/quimp-download/)
-1. Unpack the content of `QuimP-xxxx.zip` archive (`xxxx` string stands for current QuimP version) into `plugins` folder located in the installation directory of ImageJ.
-1. **Remove any previous Quimp_ package from `plugins`**
-1. Run ImageJ/Fiji and head to the `Plugnis` menu. The `QuimP-xxxx` entry should be available there.
+2. Consult [Fiji FAQ](http://imagej.net/Frequently_Asked_Questions) how to run ImageJ or Fiji with **Java 8**.
+3. Download QuimP in latest available version from [here](http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp/quimp-download/)
+4. Unpack the content of `QuimP-xxxx.zip` archive (`xxxx` string stands for current QuimP version) into `plugins` folder located in the installation directory of ImageJ.
+5. **Remove any previous Quimp_ package from `plugins`**
+6. Run ImageJ/Fiji and head to the `Plugnis` menu. The `QuimP-xxxx` entry should be available there.
