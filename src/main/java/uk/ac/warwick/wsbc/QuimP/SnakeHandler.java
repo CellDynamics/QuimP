@@ -36,7 +36,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     private int ID; //!< ID of Snakes stored in this SnakeHandler */
 
     public SnakeHandler() {
-        endFrame = BOA_.qState.boap.FRAMES;
+        // endFrame = BOA_.qState.boap.FRAMES;
     }
 
     /**
@@ -50,6 +50,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     public SnakeHandler(final Roi r, int frame, int id) throws Exception {
         this();
         startFrame = frame;
+        endFrame = BOA_.qState.boap.FRAMES;
         roi = r;
         // snakes array keeps snakes across frames from current to end. Current
         // is that one for which cell has been added
@@ -75,6 +76,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     public SnakeHandler(List<SegmentedShapeRoi> snakes, int id) throws BoaException {
         this();
         startFrame = snakes.get(0).getFrame(); // get first frame from outline
+        endFrame = BOA_.qState.boap.FRAMES;
         finalSnakes = new Snake[BOA_.qState.boap.FRAMES - startFrame + 1]; // stored snakes
         segSnakes = new Snake[BOA_.qState.boap.FRAMES - startFrame + 1]; // stored snakes
         ID = id;

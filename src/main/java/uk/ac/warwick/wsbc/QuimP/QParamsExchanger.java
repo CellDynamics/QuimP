@@ -52,14 +52,16 @@ public class QParamsExchanger extends QParams {
      */
     @Override
     void readParams() throws QuimpException {
-        SerializerNoPluginSupport<DataContainer> s =
-                new SerializerNoPluginSupport<>(DataContainer.class);
+        Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
         try {
             // load file and make first check of correctness
             loaded = s.load(paramFile); // try to load (skip afterSerialzie)
+            BOA_.qState = loaded.obj.BOAState; // restore qstate because some methods still need it
         } catch (Exception e) { // stop on fail (file or json error)
             LOGGER.error(e.getMessage());
-            throw new QuimpException("Loading of " + paramFile.getAbsolutePath(), e);
+            LOGGER.debug(e.getMessage(), e);
+            throw new QuimpException(
+                    "Loading or processing of " + paramFile.getAbsolutePath() + " failed", e);
         }
         // second check of basic logic
         if (loaded.obj.BOAState == null || !loaded.className.equals("DataContainer")
@@ -88,9 +90,12 @@ public class QParamsExchanger extends QParams {
     void writeParams() throws QuimpException {
         LOGGER.debug("New file format: Updating data " + paramFile);
         try {
-            Serializer.Dump(loaded, paramFile); // "loaded" is already packed by Serializer
+            loaded.obj.beforeSerialize(); // call explicitly beforeSerialize because Dump doesn't do
+            Serializer.Dump(loaded, paramFile, BOA_.qState.boap.savePretty); // "loaded" is already
+                                                                             // packed by Serializer
         } catch (FileNotFoundException e) {
             LOGGER.error("File " + paramFile + " could not be saved. " + e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
             throw new QuimpException("File " + paramFile + " could not be saved. ", e);
         }
     }
@@ -223,13 +228,18 @@ public class QParamsExchanger extends QParams {
  * Blocks execution of afterSerialize() in Serializer. 
  * 
  * This method is not necessary now because one does not want to restore full plugin state.
- * Other data do not need any additional operations.
+ * Other data do not need any additional operations. (
+ * 
+ * @waring currently not used as loaded BOAState must be deserialized to restore Snakes from
+ * Elements arrays
  * 
  * @author p.baniukiewicz
  * @date 26 May 2016
  *
  * @param <T>
+ * @deprecated But left here as example how to tackle the problem
  */
+@Deprecated
 class SerializerNoPluginSupport<T extends IQuimpSerialize> extends Serializer<T> {
 
     /**
@@ -238,7 +248,7 @@ class SerializerNoPluginSupport<T extends IQuimpSerialize> extends Serializer<T>
      */
     public SerializerNoPluginSupport(T obj, String[] version) {
         super(obj, version);
-        doAfterSerialize = true; // block afterSerialzie()
+        doAfterSerialize = true; // false blocks afterSerialzie()
     }
 
     /**
@@ -246,7 +256,7 @@ class SerializerNoPluginSupport<T extends IQuimpSerialize> extends Serializer<T>
      */
     public SerializerNoPluginSupport(Type t) {
         super(t);
-        doAfterSerialize = true; // block afterSerialzie()
+        doAfterSerialize = true; // false blocks afterSerialzie()
     }
 
 }

@@ -127,7 +127,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     public Shape(final Shape<T> src, T destType) {
         T tmpHead = src.getHead(); // get head as representative object
         Class<?> tClass = tmpHead.getClass(); // get class under Shape (T)
-        LOGGER.debug("Src class: " + tClass.getName());
+        LOGGER.trace("Src class: " + tClass.getName());
         try { // Constructor of T as type can not be called directly, use reflection
               // get Constructor of T with one parameter of Type src (conversion constructor)
             Constructor<?> ctor = destType.getClass().getDeclaredConstructor(tClass);

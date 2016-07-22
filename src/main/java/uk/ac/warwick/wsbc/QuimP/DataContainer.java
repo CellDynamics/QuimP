@@ -20,20 +20,34 @@ import com.google.gson.InstanceCreator;
  */
 public class DataContainer implements IQuimpSerialize {
 
-    public BOAState BOAState;
-    public Outlines ECMMState;
+    public BOAState BOAState; //!< Object to store all BOA state
+    public OutlineHandlers ECMMState; //!< Object to store ECCM output
     private transient PluginFactory pf;
     private transient ViewUpdater vu;
 
+    /**
+     * Default constructor. Create empty data containers
+     */
     public DataContainer() {
         this(new BOAState(null));
     }
 
+    /**
+     * Create DataContainer for given BOA state and empty ECCM
+     * 
+     * @param bs Object of BOA to be serialized
+     */
     public DataContainer(BOAState bs) {
-        this(bs, new Outlines());
+        this(bs, new OutlineHandlers());
     }
 
-    public DataContainer(BOAState bs, Outlines os) {
+    /**
+     * Create DataContainer with BOA and ECCM states
+     * 
+     * @param bs Object of BOA to be serialized
+     * @param os Object of ECCM to be serialized
+     */
+    public DataContainer(BOAState bs, OutlineHandlers os) {
         this.BOAState = bs;
         this.ECMMState = os;
     }
@@ -44,13 +58,24 @@ public class DataContainer implements IQuimpSerialize {
         this.vu = vu;
     }
 
+    /**
+     * Called before serialization. 
+     * 
+     * Call similar method for all stored object allowing them for self-preparation for normal
+     * operations after loading
+     */
     @Override
     public void beforeSerialize() {
-        BOAState.beforeSerialize();
-        ECMMState.beforeSerialize();
+        BOAState.beforeSerialize(); // serialize first stored data
+        ECMMState.beforeSerialize(); // serialize second sored data
 
     }
 
+    /**
+     * Called after serialization. 
+     * 
+     * Call similar method for all stored object allowing them for self-preparation for saving
+     */
     @Override
     public void afterSerialize() throws Exception {
         BOAState.snakePluginList = new SnakePluginList(BOA_.NUM_SNAKE_PLUGINS, pf, vu);

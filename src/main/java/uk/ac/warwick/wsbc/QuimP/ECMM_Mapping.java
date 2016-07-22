@@ -41,7 +41,7 @@ public class ECMM_Mapping {
     private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 
     OutlineHandler oH, outputH;
-    Outlines outputO; // output for new data file
+    OutlineHandlers outputOutlineHandlers; // output for new data file
 
     static ECMplot plot;
     QParams qp;
@@ -62,6 +62,7 @@ public class ECMM_Mapping {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        IJ.log("Bye!");
     }
 
     public ECMM_Mapping(File paramFile) {
@@ -80,6 +81,7 @@ public class ECMM_Mapping {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        IJ.log("Bye!");
     }
 
     /**
@@ -159,6 +161,7 @@ public class ECMM_Mapping {
         } catch (QuimpException e) {
             LOGGER.error(e);
         }
+        IJ.log("Bye!");
     }
 
     /**
@@ -168,7 +171,7 @@ public class ECMM_Mapping {
     private void runFromNest() throws QuimpException {
         LOGGER.debug("Processing from new file format");
         Nest nest = qp.getNest();
-        outputO = new Outlines(nest.size());
+        outputOutlineHandlers = new OutlineHandlers(nest.size());
         for (int i = 0; i < nest.size(); i++) { // go over all snakes
             qp.currentHandler = i; // set current handler number. For compatibility, all methods
             // have the same syntax (assumes that there is only one handler)
@@ -183,12 +186,13 @@ public class ECMM_Mapping {
                 plot = new ECMplot(oH.getSize() - 1);
             }
             run(); // fills outputH
-            outputO.oHs.set(i, new OutlineHandler(outputH));
+            outputOutlineHandlers.oHs.add(i, new OutlineHandler(outputH)); // store actual result in
+                                                                           // container
         }
 
         DataContainer dc = qp.getLoadedDataContainer();
-        dc.ECMMState = outputO; // assign ECMM output
-        qp.writeParams();
+        dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
+        qp.writeParams(); // save global container
     }
 
     private void about() {

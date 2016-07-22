@@ -455,8 +455,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         } // end Apply
         if (b == bClone) {
             // clone seed image, convert it to RGB, add to list and select it on it
-            ImagePlus tmpImage = WindowManager.getImage((String) cImage.getSelectedItem()); // tmp
-                                                                                            // var
+            ImagePlus tmpImage = WindowManager.getImage((String) cImage.getSelectedItem());
             ImagePlus duplicatedImage = tmpImage.duplicate();
             duplicatedImage.show();
             new Converter().run("RGB Color");

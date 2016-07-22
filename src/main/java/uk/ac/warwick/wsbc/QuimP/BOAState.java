@@ -370,6 +370,7 @@ public class BOAState implements IQuimpSerialize {
         double proximity; //!< distance between centroids at which contact is tested for 
         double proxFreeze; //!< proximity of nodes to freeze when blowing up 
         boolean savedOne;
+        boolean savePretty=true; //!< use json pretty format
         
         /**
          * Current frame, CustomStackWindow.updateSliceSelector()
@@ -465,8 +466,7 @@ public class BOAState implements IQuimpSerialize {
             cut_every = 8; // cut loops in chain every X interations
             oldFormat = false; // output old QuimP format?
             saveSnake = true; // save snake data
-            proximity = 150; // distance between centroids at
-                             // which contact is tested for
+            proximity = 150; // distance between centroids at which contact is tested for
             proxFreeze = 1; // proximity of nodes to freeze when blowing up
             f_friction = 0.6;
             doDelete = false;
@@ -477,6 +477,7 @@ public class BOAState implements IQuimpSerialize {
             callCount = 0;
             SEGrunning = false;
             frame = 1;
+            savePretty = true;
         }
 
         /**

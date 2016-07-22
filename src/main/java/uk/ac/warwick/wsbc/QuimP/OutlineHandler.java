@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.InvalidParameterException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +18,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  * @author tyson
  */
-public class OutlineHandler extends ShapeHandler<Outline> {
+public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
     private Outline[] outlines;
     private int size;
@@ -56,7 +57,10 @@ public class OutlineHandler extends ShapeHandler<Outline> {
      * @param src to copy from
      */
     public OutlineHandler(final OutlineHandler src) {
-        throw new UnsupportedOperationException("Not implemented, yet");
+        this.outlines = new Outline[src.outlines.length];
+        for (int o = 0; o < this.outlines.length; o++)
+            this.outlines[o] = new Outline(src.outlines[o]);
+
     }
 
     /**
@@ -125,6 +129,9 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             IJ.error("Cannot locate snake file (snQP)\n'" + f.getAbsolutePath() + "'");
             return false;
         }
+        if (qp == null)
+            throw new InvalidParameterException(
+                    "QParams is null. This object has not been created (loaded) from QParams data");
 
         String thisLine;
 
@@ -232,7 +239,7 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             } // end while
             br.close();
 
-            if (qp.paramFormat == QParams.OLD_QUIMP) {
+            if (qp.paramFormat == QParams.OLD_QUIMP) { // TODO is this always true?
                 qp.setStartFrame(1);
                 qp.setEndFrame(size);
                 this.endFrame = size;
@@ -418,5 +425,22 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             // on formatting */
             v = v.getNext();
         } while (!v.isHead());
+    }
+
+    /**
+     * Prepare all Outline stored in this OutlineHandler for loading.
+     */
+    @Override
+    public void beforeSerialize() {
+        for (Outline o : outlines)
+            if (o != null)
+                o.beforeSerialize(); // convert outlines to array
+
+    }
+
+    @Override
+    public void afterSerialize() throws Exception {
+        throw new UnsupportedOperationException("Not implemented yet");
+
     }
 }

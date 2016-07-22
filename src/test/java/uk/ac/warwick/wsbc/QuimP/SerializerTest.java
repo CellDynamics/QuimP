@@ -205,7 +205,7 @@ public class SerializerTest {
     @Test
     public void testDumpStatic() throws FileNotFoundException {
         TestClass tc = new TestClass();
-        Serializer.Dump(tc, "/tmp/dump.json");
+        Serializer.Dump(tc, "/tmp/dump.json", true);
     }
 
 }

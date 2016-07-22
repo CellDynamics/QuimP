@@ -1404,8 +1404,6 @@ public class BOA_ implements PlugIn {
              * Checks also whether the name of the image sealed in config file is the same as those 
              * opened currently. If not user has an option to break the procedure or continue
              * loading.
-             * 
-             * @todo TODO Add checking loaded version using quimpInfo data sealed in Serializer.save
              */
             if (b == menuLoad) {
                 OpenDialog od = new OpenDialog("Load global config data...(*.QCONF)", "");
@@ -2394,7 +2392,8 @@ public class BOA_ implements PlugIn {
                         // Dump BOAState object in new format
                         Serializer<DataContainer> n;
                         n = new Serializer<>(new DataContainer(qState), quimpInfo);
-                        n.setPretty();
+                        if (qState.boap.savePretty) // set pretty format if configured
+                            n.setPretty();
                         n.save(qState.boap.outFile.getParent() + File.separator
                                 + qState.boap.fileName + QCONFFILEEXT);
                         n = null;
