@@ -55,7 +55,6 @@ doxygen Doxyfile >/dev/null
 
 *Most of these links should be accessed from [Doxygen documentation](http://quimp.linkpc.net/html/doxygen/index.html) because of specific features used for documenting the source code that are not supported by GitHub wiki*
 
-* [About](Readme.md) - Readme file
 * [BOA Plugin](BOA.md) - How QuimP works - free notes about
 * [Snake Plugin Interface](SnakePlugin.md) - Description of plugin interface
 * [Handling configuration](ConfigurationHandling.md) - Saving and loading various configurations

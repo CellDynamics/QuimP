@@ -1,3 +1,5 @@
+# Usefull scripts
+
 # Change logger configuration globally
 
 This script can go through all logger configuration files in all sub-directories and change logging
