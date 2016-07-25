@@ -230,7 +230,7 @@ public class QParamsExchanger extends QParams {
  * This method is not necessary now because one does not want to restore full plugin state.
  * Other data do not need any additional operations. (
  * 
- * @waring currently not used as loaded BOAState must be deserialized to restore Snakes from
+ * @warning currently not used as loaded BOAState must be deserialized to restore Snakes from
  * Elements arrays
  * 
  * @author p.baniukiewicz
