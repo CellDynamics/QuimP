@@ -58,6 +58,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
      * @param src to copy from
      */
     public OutlineHandler(final OutlineHandler src) {
+        super(src);
         this.outlines = new Outline[src.outlines.length];
         for (int o = 0; o < this.outlines.length; o++)
             this.outlines[o] = new Outline(src.outlines[o]);

@@ -28,8 +28,8 @@ public class Q_Analysis_run {
          * These data came from Repos/Prot_counting/fromMail directory and were used in Matlab
          * experiments
          */
-        // new Q_Analysis(
-        // Paths.get("/home/baniuk/Desktop/Tests/ticket61/fluoreszenz-test_BOA_0.paQP"));
+        // new Q_Analysis(Paths
+        // .get("/home/baniuk/Desktop/Tests/ticket150/fluoreszenz-test_eq_smooth_0.paQP"));
 
     }
 

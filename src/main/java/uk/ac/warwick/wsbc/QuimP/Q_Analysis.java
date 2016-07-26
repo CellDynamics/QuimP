@@ -839,7 +839,7 @@ class STmap implements IQuimpSerialize {
         double totalCur, distance;
         // avertage over curvatures
         if (Qp.sumCov > 0) {
-            System.out.println("summing curv");
+            System.out.println("sumCurvature():summing curv");
             v = o.getHead();
             do {
                 // System.out.println("\tnew vert");
