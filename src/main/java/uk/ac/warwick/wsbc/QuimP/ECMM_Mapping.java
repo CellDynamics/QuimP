@@ -99,19 +99,25 @@ public class ECMM_Mapping {
             // load config file but check if it is new format or old
             File paramFile = new File(od.getDirectory(), od.getFileName());
             // check extension
-            if (paramFile.getName().endsWith(".QCONF")) {// new file format see TODO #152
+            if (paramFile.getName().endsWith(".QCONF")) // new file format see TODO #152
                 qp = new QParamsExchanger(paramFile);
-                qp.readParams();
-                runFromNest();
-                return; // break strange while loop
-            } else
+            else
                 qp = new QParams(paramFile);
-            // old flow with paQP files
             qp.readParams();
-            runFromFile();
 
-            File[] otherPaFiles = qp.findParamFiles();
+            if (qp.paramFormat == QParams.QUIMP_11) { // if we have old format, read outlines from
+                                                      // OutlineHandler
+                runFromFile();
+            } else if (qp.paramFormat == QParams.NEW_QUIMP) { // new format
+                runFromNest();
+            } else {
+                throw new IllegalStateException("You can not be here in this time!");
+            }
+            // old flow with paQP files
 
+            File[] otherPaFiles = qp.findParamFiles(); // check whether are other paQP files. If
+                                                       // qp is QParamsExchanger it always return
+                                                       // empty array
             if (otherPaFiles.length > 0) {
                 YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
                         "\tBatch Process?\n\n"
@@ -159,6 +165,8 @@ public class ECMM_Mapping {
     }
 
     /**
+     * Main executive for ECMM processing for QParamsExchanger (new file version)
+     *  
      * @throws QuimpException 
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
      */
@@ -194,7 +202,7 @@ public class ECMM_Mapping {
     }
 
     /**
-     * Main executive for ECMM processing
+     * Main executive for ECMM processing for QParams (old file version)
      */
     private void runFromFile() {
         oH = new OutlineHandler(qp);
