@@ -159,7 +159,8 @@ public class ECMM_Mapping {
             } while (true);
 
         } catch (QuimpException e) {
-            LOGGER.error(e);
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
         }
         IJ.log("Bye!");
     }

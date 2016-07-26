@@ -370,7 +370,7 @@ public class BOAState implements IQuimpSerialize {
         double proximity; //!< distance between centroids at which contact is tested for 
         double proxFreeze; //!< proximity of nodes to freeze when blowing up 
         boolean savedOne;
-        boolean savePretty=true; //!< use json pretty format
+        boolean savePretty = false; //!< use json pretty format
         
         /**
          * Current frame, CustomStackWindow.updateSliceSelector()
@@ -477,7 +477,7 @@ public class BOAState implements IQuimpSerialize {
             callCount = 0;
             SEGrunning = false;
             frame = 1;
-            savePretty = true;
+            savePretty = false;
         }
 
         /**
