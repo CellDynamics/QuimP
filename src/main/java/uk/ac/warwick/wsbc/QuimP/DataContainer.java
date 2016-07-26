@@ -94,9 +94,10 @@ public class DataContainer implements IQuimpSerialize {
         for (SnakePluginList sL : BOAState.snakePluginListSnapshots) {
             sL.updateRefs(pf, vu);
         }
-        for (STmap stM : QState)
-            if (stM != null)
-                stM.afterSerialize();
+        if (QState != null)
+            for (STmap stM : QState)
+                if (stM != null)
+                    stM.afterSerialize();
     }
 }
 

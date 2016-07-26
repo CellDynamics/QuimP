@@ -40,8 +40,13 @@ public class OutlineHandlers implements IQuimpSerialize {
                 oH.beforeSerialize();
     }
 
+    /**
+     * Rebuild every Outline from temporary array
+     */
     @Override
     public void afterSerialize() throws Exception {
-        LOGGER.error("Not implemented");
+        if (oHs != null)
+            for (OutlineHandler oH : oHs)
+                oH.afterSerialize();
     }
 }

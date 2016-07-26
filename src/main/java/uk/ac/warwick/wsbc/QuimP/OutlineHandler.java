@@ -17,21 +17,22 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 /**
  *
  * @author tyson
+ * @warning \a QParams object is not serialized thus deserialzed OutlineHandler can not use it
  */
 public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
     private Outline[] outlines;
-    private int size;
-    private QParams qp;
-    public ExtendedVector2d maxCoor;
-    public ExtendedVector2d minCoor;
+    transient private int size;
+    transient private QParams qp;
+    transient public ExtendedVector2d maxCoor;
+    transient public ExtendedVector2d minCoor;
     // min and max limits
-    public double[] migLimits;
-    public double[][] fluLims;
+    transient public double[] migLimits;
+    transient public double[][] fluLims;
     // public double[] convLimits;
-    public double[] curvLimits;
-    public double maxLength = 0;
-    public boolean readSuccess;
+    transient public double[] curvLimits;
+    transient public double maxLength = 0; //!< longest outline in outlines
+    transient public boolean readSuccess;
 
     public OutlineHandler(QParams params) {
         qp = params;
@@ -41,7 +42,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         // System.out.println("start frame: " + startFrame + ", endframe: " +
         // endFrame);
 
-        if (!readOutlines(qp.snakeQP)) {
+        if (!readOutlines(qp.snakeQP)) { // initialize also arrays by findStatsLimits()
             IJ.error("Failed to read in snakQP (OutlineHandler:36)");
             readSuccess = false;
             size = 0;
@@ -60,7 +61,24 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         this.outlines = new Outline[src.outlines.length];
         for (int o = 0; o < this.outlines.length; o++)
             this.outlines[o] = new Outline(src.outlines[o]);
-
+        size = src.size;
+        /*// this is calculated by findStatLimits()
+        maxCoor = src.maxCoor;
+        minCoor = src.minCoor;
+        migLimits = new double[src.migLimits.length];
+        System.arraycopy(src.migLimits, 0, migLimits, 0, src.migLimits.length);
+        fluLims = new double[src.fluLims.length][];
+        for (int i = 0; i < src.fluLims.length; i++) {
+            fluLims[i] = new double[src.fluLims[i].length];
+            System.arraycopy(src.fluLims[i], 0, fluLims[i], 0, src.fluLims[i].length);
+        }
+        curvLimits = new double[src.curvLimits.length];
+        System.arraycopy(src.curvLimits, 0, curvLimits, 0, src.curvLimits.length);
+        */
+        for (Outline o : outlines)
+            if (o.getLength() > maxLength)
+                maxLength = o.getLength();
+        findStatLimits(); // fill maxCoor, minCoor, migLimits, fluLims, curvLimits
     }
 
     /**
@@ -76,7 +94,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
             if (s != null)
                 setOutline(f, new Outline(s)); // convert to Outline
         }
-
+        findStatLimits();
     }
 
     public OutlineHandler(int s, int e) {
@@ -255,6 +273,10 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         }
     }
 
+    /**
+     * Evaluate \a maxCoor, \a minCoor, \a migLimits, \a fluLims, \a curvLimits
+     * Initialize arrays as well
+     */
     private void findStatLimits() {
         maxCoor = new ExtendedVector2d();
         minCoor = new ExtendedVector2d();
@@ -438,9 +460,20 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
     }
 
+    /**
+     * Call afterSerialzie() for other objects and restoer transient fields where possible
+     */
     @Override
     public void afterSerialize() throws Exception {
-        throw new UnsupportedOperationException("Not implemented yet");
+        for (Outline o : outlines)
+            if (o != null)
+                o.afterSerialize(); // convert array to outlines
+        // restore other fields
+        size = outlines.length;
+        for (Outline o : outlines)
+            if (o.getLength() > maxLength)
+                maxLength = o.getLength();
+        findStatLimits(); // fill maxCoor, minCoor, migLimits, fluLims, curvLimits
 
     }
 }
