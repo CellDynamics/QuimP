@@ -1111,11 +1111,11 @@ class ANAp {
      *            reference to QParams container (master file and BOA params)
      */
     static void setup(QParams qp) {
-        INFILE = qp.snakeQP;
+        INFILE = qp.getSnakeQP();
         OUTFILE = new File(INFILE.getAbsolutePath()); // output file (.snQP)
                                                       // file
-        STATSFILE = new File(qp.statsQP.getAbsolutePath()); // output file
-                                                            // (.stQP.csv) file
+        STATSFILE = new File(qp.getStatsQP().getAbsolutePath()); // output file
+        // (.stQP.csv) file
         scale = qp.getImageScale();
         frameInterval = qp.getFrameInterval();
         ANAp.setCortextWidthScale(qp.cortexWidth);

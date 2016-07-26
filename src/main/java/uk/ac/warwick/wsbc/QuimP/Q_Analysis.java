@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,9 +34,8 @@ public class Q_Analysis {
     }
     private static final Logger LOGGER = LogManager.getLogger(Q_Analysis.class.getName());
     GenericDialog gd;
-    OutlineHandler oH;
-    QParams qp;
-    private final String[] headActions = { "Remain", "Use from BOA" }; //!< Define possible action strings 
+    private OutlineHandler oH; //!< keep loaded handler, can change during run
+    private QParams qp;
 
     /**
      * Main constructor and runner - class entry point
@@ -59,34 +59,48 @@ public class Q_Analysis {
             String filename; // file name of paQP
 
             if (path == null) { // no file provided, ask user
-                OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
-                        OpenDialog.getLastDirectory(), "");
+                OpenDialog od = new OpenDialog("Open paramater file (.paQP|.QCONF)...",
+                        OpenDialog.getLastDirectory(), ".paQP");
                 if (od.getFileName() == null) {
                     IJ.log("Cancelled - exiting...");
                     return;
                 }
                 directory = od.getDirectory();
                 filename = od.getFileName();
-            } else // use name provided
+            } else // use name provided in constructor
             {
                 // getParent can return null
                 directory = path.getParent() == null ? "" : path.getParent().toString();
                 filename = path.getFileName() == null ? "" : path.getFileName().toString();
                 LOGGER.debug("Use provided file:" + directory + " " + filename);
             }
-            File paramFile = new File(directory, filename); // paQP file
-            qp = new QParams(paramFile); // initialize general param storage
+            // detect old/new file format
+            File paramFile = new File(directory, filename); // config file
+            if (paramFile.getName().endsWith(".QCONF")) // new file format see TODO #152
+                qp = new QParamsExchanger(paramFile);
+            else
+                qp = new QParams(paramFile); // initialize general param storage
             qp.readParams(); // create associated files included in paQP and read params
-            Qp.setup(qp); // copy selected data from general QParams to local storage
 
-            if (!run()) // run everything
-            {
-                LOGGER.warn("Q_Analysis stopped on error or it has been cancelled");
-                return; // end on run fail
+            // show dialog
+            if (!showDialog()) { // if user cancelled dialog
+                return; // do nothing
             }
 
-            File[] otherPaFiles = qp.findParamFiles(); // check whether are other paQP files
+            // prepare current OutlineHandler to process (read it using loaded paQP file)
+            if (qp.paramFormat == QParams.QUIMP_11) { // if we have old format, read outlines from
+                                                      // OutlineHandler
+                runFromPAQP();
+            } else if (qp.paramFormat == QParams.NEW_QUIMP) { // new format, everything is read by
+                                                              // readParams, just extract it
+                runFromQCONF();
+            } else {
+                throw new IllegalStateException("You can not be here in this time!");
+            }
 
+            File[] otherPaFiles = qp.findParamFiles(); // check whether are other paQP files. If
+                                                       // qp is QParamsExchanger it always return
+                                                       // empty array
             if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
                                            // user is skipped)
                 YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
@@ -105,11 +119,12 @@ public class Q_Analysis {
                         qp = new QParams(paramFile);
                         qp.readParams();
                         Qp.setup(qp);
-                        Qp.useDialog = false;
-                        if (!run()) {
-                            LOGGER.warn("Q_Analysis stopped on error or it has been cancelled");
+                        oH = new OutlineHandler(qp); // prepare current OutlineHandler
+                        if (!oH.readSuccess) {
+                            LOGGER.error("OutlineHandlers could not be read!");
                             return;
                         }
+                        run(); // run on current OutlineHandler
                         runOn.add(otherPaFiles[j].getName());
                         this.closeAllImages();
                     }
@@ -125,34 +140,51 @@ public class Q_Analysis {
             IJ.log("QuimP Analysis complete");
             IJ.showStatus("Finished");
         } catch (QuimpException e) {
-            LOGGER.error(e);
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
         }
     }
 
     /**
-     * Main runner - do all calculations
-     * 
-     * @return \c true when run or \c false when stopped by user (canceled) or on error
+     * Run Q Analysis if input was QCONF
      */
-    private boolean run() {
-
-        oH = new OutlineHandler(qp);
-        if (!oH.readSuccess) {
-            return false;
+    private void runFromQCONF() {
+        int i = 0;
+        Iterator<OutlineHandler> oI = qp.getLoadedDataContainer().ECMMState.oHs.iterator();
+        while (oI.hasNext()) {
+            qp.currentHandler = i++; // set current handler number. For compatibility
+            Qp.setup(qp); // copy selected data from general QParams to local storage
+            oH = oI.next();
+            run();
         }
+    }
 
+    /**
+     * Run Q Analysis if input was paQP file
+     * 
+     * @throws QuimpException when OutlineHandler can not be read
+     */
+    private void runFromPAQP() throws QuimpException {
+        Qp.setup(qp); // copy selected data from general QParams to local storage
+        oH = new OutlineHandler(qp); // load data from file
+        if (!oH.readSuccess) {
+            LOGGER.error("OutlineHandlers could not be read!");
+            throw new QuimpException("Could not read OutlineHandler");
+        }
+        run();
+
+    }
+
+    /**
+     * Main runner - do all calculations on current OutlineHandler object
+     * 
+     * @warning Process \a OutlineHandler oH; object
+     */
+    private void run() {
         if (oH.getSize() == 1) {
             Qp.singleImage = true;
             // only one frame - re lable node indices
             oH.getOutline(1).resetAllCoords();
-        }
-        // oH.writeOutlines(new File( qp.getParamFile().getAbsolutePath() +
-        // ".tempSNQP"));
-
-        if (Qp.useDialog) {
-            if (!showDialog()) { // if user cancelled dialog
-                return false; // do nothing
-            }
         }
 
         Qp.convexityToPixels();
@@ -168,7 +200,6 @@ public class Q_Analysis {
         svgPlotter.plotTrackER(Qp.outlinePlot);
 
         Qp.convexityToUnits(); // reset the covexity options to units (as they are static)
-        return true;
     }
 
     private boolean showDialog() {
@@ -548,7 +579,8 @@ class STmap implements IQuimpSerialize {
 
         if (QuimPArrayUtils.sumArray(migColor) == 0) {
             IJ.showMessage(
-                    "ECMM data is missing (or corrupt), and is needed for building accurate maps.\nPlease run ECMM (fluorescence data will be lost)");
+                    "ECMM data is missing (or corrupt), and is needed for building accurate maps.+"
+                            + "\nPlease run ECMM (fluorescence data will be lost)");
         }
         // test making LUT images
         /*
@@ -970,7 +1002,7 @@ class Qp {
      * @param qp General QuimP parameters object
      */
     static void setup(QParams qp) {
-        Qp.snQPfile = qp.snakeQP;
+        Qp.snQPfile = qp.getSnakeQP();
         Qp.scale = qp.getImageScale();
         Qp.frameInterval = qp.getFrameInterval();
         Qp.filename = Tool.removeExtension(Qp.snQPfile.getName());

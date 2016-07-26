@@ -695,9 +695,9 @@ public class BOAState implements IQuimpSerialize {
                         + "_" + sID + ".stQP.csv");
 
                 QParams qp = new QParams(paramFile);
-                qp.segImageFile = boap.orgFile;
-                qp.snakeQP = boap.outFile;
-                qp.statsQP = statsFile;
+                qp.setSegImageFile(boap.orgFile);
+                qp.setSnakeQP(boap.outFile);
+                qp.setStatsQP(statsFile);
                 qp.setImageScale(BOA_.qState.boap.imageScale);
                 qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
                 qp.setStartFrame(startF);

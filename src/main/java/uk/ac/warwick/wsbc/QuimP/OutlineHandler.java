@@ -42,7 +42,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         // System.out.println("start frame: " + startFrame + ", endframe: " +
         // endFrame);
 
-        if (!readOutlines(qp.snakeQP)) { // initialize also arrays by findStatsLimits()
+        if (!readOutlines(qp.getSnakeQP())) { // initialize also arrays by findStatsLimits()
             IJ.error("Failed to read in snakQP (OutlineHandler:36)");
             readSuccess = false;
             size = 0;

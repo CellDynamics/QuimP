@@ -54,10 +54,10 @@ public class QParams {
 
     String prefix;
     String path;
-    File segImageFile, snakeQP, statsQP;
+    private File segImageFile, snakeQP, statsQP;
     File[] fluTiffs;
 
-    File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
+    private File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
     File[] fluFiles;
 
     private double imageScale;
@@ -87,7 +87,7 @@ public class QParams {
      * one Handler (as in old QuimP). This field allow to set current Handler if QParamsEschange
      * instance is used.
      */
-    public int currentHandler = 0;
+    public int currentHandler;
 
     /**
      * Read basic information from \a paQP file such as its name and path. Initialize structures
@@ -95,6 +95,7 @@ public class QParams {
      * @param p \a paQP file
      */
     QParams(File p) {
+        currentHandler = 0;
         paramFile = p;
         path = paramFile.getParent();
         prefix = Tool.removeExtension(paramFile.getName());
@@ -220,6 +221,132 @@ public class QParams {
      */
     public void setEndFrame(int endFrame) {
         this.endFrame = endFrame;
+    }
+
+    /**
+     * @return the snakeQP
+     */
+    public File getSnakeQP() {
+        return snakeQP;
+    }
+
+    /**
+     * @param snakeQP the snakeQP to set
+     */
+    public void setSnakeQP(File snakeQP) {
+        this.snakeQP = snakeQP;
+    }
+
+    /**
+     * @return the statsQP
+     */
+    public File getStatsQP() {
+        return statsQP;
+    }
+
+    /**
+     * @param statsQP the statsQP to set
+     */
+    public void setStatsQP(File statsQP) {
+        this.statsQP = statsQP;
+    }
+
+    /**
+     * @return the segImageFile
+     */
+    public File getSegImageFile() {
+        return segImageFile;
+    }
+
+    /**
+     * @param segImageFile the segImageFile to set
+     */
+    public void setSegImageFile(File segImageFile) {
+        this.segImageFile = segImageFile;
+    }
+
+    /**
+     * @return the convexFile
+     */
+    public File getConvexFile() {
+        return convexFile;
+    }
+
+    /**
+     * @param convexFile the convexFile to set
+     */
+    public void setConvexFile(File convexFile) {
+        this.convexFile = convexFile;
+    }
+
+    /**
+     * @return the coordFile
+     */
+    public File getCoordFile() {
+        return coordFile;
+    }
+
+    /**
+     * @param coordFile the coordFile to set
+     */
+    public void setCoordFile(File coordFile) {
+        this.coordFile = coordFile;
+    }
+
+    /**
+     * @return the motilityFile
+     */
+    public File getMotilityFile() {
+        return motilityFile;
+    }
+
+    /**
+     * @param motilityFile the motilityFile to set
+     */
+    public void setMotilityFile(File motilityFile) {
+        this.motilityFile = motilityFile;
+    }
+
+    /**
+     * @return the originFile
+     */
+    public File getOriginFile() {
+        return originFile;
+    }
+
+    /**
+     * @param originFile the originFile to set
+     */
+    public void setOriginFile(File originFile) {
+        this.originFile = originFile;
+    }
+
+    /**
+     * @return the xFile
+     */
+    public File getxFile() {
+        return xFile;
+    }
+
+    /**
+     * @param xFile the xFile to set
+     */
+    public void setxFile(File xFile) {
+        this.xFile = xFile;
+    }
+
+    /**
+     * @return the yFile
+     */
+    public File getyFile() {
+        return yFile;
+    }
+
+    /**
+     * @param yFile the yFile to set
+     */
+    public void setyFile(File yFile) {
+        this.yFile = yFile;
     }
 
     /**

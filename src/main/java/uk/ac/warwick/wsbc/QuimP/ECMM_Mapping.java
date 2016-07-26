@@ -58,7 +58,7 @@ public class ECMM_Mapping {
             qp = new QParams(new File(QPfile));
             qp.readParams();
             // ECMp.setup(qp);
-            runFromFile();
+            runFromPAQP();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,13 +71,13 @@ public class ECMM_Mapping {
             if (paramFile.getName().endsWith(".QCONF")) {// new file format see TODO #152
                 qp = new QParamsExchanger(paramFile);
                 qp.readParams();
-                runFromNest();
+                runFromQCONF();
                 return;
             } else
                 qp = new QParams(paramFile);
             // old flow with paQP files
             qp.readParams();
-            runFromFile();
+            runFromPAQP();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -107,9 +107,9 @@ public class ECMM_Mapping {
 
             if (qp.paramFormat == QParams.QUIMP_11) { // if we have old format, read outlines from
                                                       // OutlineHandler
-                runFromFile();
+                runFromPAQP();
             } else if (qp.paramFormat == QParams.NEW_QUIMP) { // new format
-                runFromNest();
+                runFromQCONF();
             } else {
                 throw new IllegalStateException("You can not be here in this time!");
             }
@@ -135,7 +135,7 @@ public class ECMM_Mapping {
                         qp.readParams();
                         if (!qp.ecmmHasRun) {
                             System.out.println("Running on " + otherPaFiles[j].getAbsolutePath());
-                            runFromFile();
+                            runFromPAQP();
                             runOn.add(otherPaFiles[j].getName());
                         } else {
                             System.out.println("Skipped " + otherPaFiles[j].getAbsolutePath());
@@ -170,7 +170,7 @@ public class ECMM_Mapping {
      * @throws QuimpException 
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
      */
-    private void runFromNest() throws QuimpException {
+    private void runFromQCONF() throws QuimpException {
         LOGGER.debug("Processing from new file format");
         Nest nest = qp.getNest();
         outputOutlineHandlers = new OutlineHandlers(nest.size());
@@ -203,11 +203,13 @@ public class ECMM_Mapping {
 
     /**
      * Main executive for ECMM processing for QParams (old file version)
+     * 
+     * @throws QuimpException when OutlineHandler can not be read
      */
-    private void runFromFile() {
+    private void runFromPAQP() throws QuimpException {
         oH = new OutlineHandler(qp);
         if (!oH.readSuccess) {
-            return;
+            throw new QuimpException("Could not read OutlineHandler");
         }
 
         ECMp.setup(qp);
@@ -2055,7 +2057,7 @@ class ECMp {
      * @param qp  Master configuration file
      */
     static void setup(QParams qp) {
-        INFILE = qp.snakeQP;
+        INFILE = qp.getSnakeQP();
         OUTFILE = new File(ECMp.INFILE.getAbsolutePath()); // output file (.snQP) file
         scale = qp.getImageScale();
         frameInterval = qp.getFrameInterval();
