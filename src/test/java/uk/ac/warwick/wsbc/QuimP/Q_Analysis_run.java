@@ -15,16 +15,16 @@ import java.nio.file.Paths;
  */
 public class Q_Analysis_run {
 
-    static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
-    }
-
     /**
      * @param args
      */
     public static void main(String[] args) {
         // if default constructor is used Q_Analysis will ask for paQP file
-        new Q_Analysis(Paths.get("/home/baniuk/Downloads/Composite-after-macro_cut_4.paQP"));
+        new Q_Analysis(
+                Paths.get("/home/baniuk/Desktop/Tests/ticket61/fluoreszenz-test_BOA_0.paQP"));
+        // source of data: http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ProtrusionTracking
+        // These data came from Repos/Prot_counting/fromMail directory and were used in Matlab
+        // experiments
 
     }
 

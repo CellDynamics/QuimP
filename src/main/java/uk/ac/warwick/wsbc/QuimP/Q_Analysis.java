@@ -47,7 +47,7 @@ public class Q_Analysis {
     }
 
     /**
-     * Parametrized constructor for tests
+     * Parameterized constructor for tests
      * 
      * @param path Path to *.paQP file. If \c null user is asked for this file
      */
@@ -227,25 +227,52 @@ public class Q_Analysis {
 /**
  * Create spatial temporal maps from ECMM and ANA data
  *
+ * @remarks This class can be serialized but only as container of maps. Data required for creation
+ * of those maps are not serialized, thus restored object is not fully functional. As this is 
+ * last step in QuimP workflow it may not be necessary to load this json anymore.
+ * 
  * @author rtyson
  */
-class STmap {
-
-    double[][] coordMap;
-    double[][] originMap, xMap, yMap;
-    double[][] migMap;
-    int[] migColor;
-    float[] migPixels;
+class STmap implements IQuimpSerialize {
+    private static final Logger LOGGER = LogManager.getLogger(STmap.class.getName());
+    public double[][] coordMap;
+    public double[][] originMap, xMap, yMap;
+    public double[][] migMap;
+    transient int[] migColor;
+    transient float[] migPixels;
     // double[][] fluMap;
     // byte[] fluColor;
-    FluoMap[] fluoMaps;
-    double[][] convMap; // convexity map
-    int[] convColor;
-    ImagePlus migImP, fluImP, convImP;
-    OutlineHandler oH;
-    int res;
-    int T;
+    public FluoMap[] fluoMaps;
+    public double[][] convMap; // convexity map
+    transient int[] convColor;
+    transient ImagePlus migImP, fluImP, convImP;
+    /**
+     * Contain OutlineHandler used for generating maps
+     * @warning It is not serialized
+     */
+    transient OutlineHandler oH;
+    /**
+     * This field together with \a T stands for the dimensions of 2D arrays for storing maps.
+     * For this reason they are serialized.
+     */
+    int res; //!< resolution of maps
+    int T; //!< number of outlines
 
+    /**
+     * Default constructor to satisfy GSon builder. Should not be used for proper object 
+     * initialization
+     */
+    public STmap() {
+
+    }
+
+    /**
+     * Build object for given:
+     * 
+     * @param o Outline from ECMM
+     * @param r Map resolution in pixels
+     * @see uk.ac.warwick.wsbc.QuimP.Qp
+     */
     public STmap(OutlineHandler o, int r) {
         res = r;
         oH = o;
@@ -282,6 +309,10 @@ class STmap {
         // testQColorBW();
     }
 
+    /**
+     * Generate all maps saved by Q Analysis
+     * Fill internal class fields
+     */
     private void generate() {
 
         this.calcCurvature();
@@ -874,6 +905,18 @@ class STmap {
         ImP.getCalibration().setUnit("frames");
         ImP.getCalibration().pixelHeight = Qp.mapPixelHeight;
         ImP.getCalibration().pixelWidth = Qp.mapPixelWidth;
+    }
+
+    @Override
+    public void beforeSerialize() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void afterSerialize() throws Exception {
+        LOGGER.debug("This class can not be deserialzied without assgning OutlineHndler");
+
     }
 }
 
