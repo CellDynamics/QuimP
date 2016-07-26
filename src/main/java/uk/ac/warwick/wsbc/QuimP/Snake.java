@@ -1055,4 +1055,24 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
                 + POINTS + ", centroid=" + centroid + ", toString()=" + super.toString() + "]";
     }
 
+    /**
+     * Call super and then oo Snake related actions
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.beforeSerialize()
+     */
+    @Override
+    public void beforeSerialize() {
+        super.beforeSerialize();
+        getBounds();
+    }
+
+    /**
+     * Call super and then oo Snake related actions
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.afterSerialize()
+     */
+    @Override
+    public void afterSerialize() throws Exception {
+        super.afterSerialize();
+        getBounds();
+    }
+
 }

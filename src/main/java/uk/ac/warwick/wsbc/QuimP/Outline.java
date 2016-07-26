@@ -891,12 +891,6 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         head = closestV;
     }
 
-    // Vert findCoordPoint(double addAt) {
-
-    // Vert v = findCoordEdge(addAt);
-
-    // }
-
     Vert findCoordEdge(double a) {
         Vert v = head;
         do {
@@ -918,6 +912,24 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
             v = v.getNext();
         } while (!v.isHead());
         return head;
+    }
+
+    /**
+     * Call super and then oo Outline related actions
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.beforeSerialize()
+     */
+    @Override
+    public void beforeSerialize() {
+        super.beforeSerialize();
+    }
+
+    /**
+     * Call super and then oo Outline related actions
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.afterSerialize()
+     */
+    @Override
+    public void afterSerialize() throws Exception {
+        super.afterSerialize();
     }
 
 }
