@@ -90,74 +90,67 @@ public class ECMM_Mapping {
     public ECMM_Mapping() {
         about();
         try {
-            do {
+            OpenDialog od = new OpenDialog("Open paramater file (.paQP|.QCONF)...",
+                    OpenDialog.getLastDirectory(), ".paQP");
+            if (od.getFileName() == null) {
+                IJ.log("Cancelled - exiting...");
+                return;
+            }
+            // load config file but check if it is new format or old
+            File paramFile = new File(od.getDirectory(), od.getFileName());
+            // check extension
+            if (paramFile.getName().endsWith(".QCONF")) {// new file format see TODO #152
+                qp = new QParamsExchanger(paramFile);
+                qp.readParams();
+                runFromNest();
+                return; // break strange while loop
+            } else
+                qp = new QParams(paramFile);
+            // old flow with paQP files
+            qp.readParams();
+            runFromFile();
 
-                OpenDialog od = new OpenDialog("Open paramater file (.paQP|.QCONF)...",
-                        OpenDialog.getLastDirectory(), ".paQP");
-                if (od.getFileName() == null) {
+            File[] otherPaFiles = qp.findParamFiles();
+
+            if (otherPaFiles.length > 0) {
+                YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
+                        "\tBatch Process?\n\n"
+                                + "Process other paQP files in the same folder with ECMM?\n"
+                                + "[Files already run through ECMM will be skipped!]");
+                if (yncd.yesPressed()) {
+                    ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
+                    ArrayList<String> skipped = new ArrayList<String>(otherPaFiles.length);
+
+                    for (int j = 0; j < otherPaFiles.length; j++) {
+                        plot.close();
+
+                        paramFile = otherPaFiles[j];
+                        qp = new QParams(paramFile);
+                        qp.readParams();
+                        if (!qp.ecmmHasRun) {
+                            System.out.println("Running on " + otherPaFiles[j].getAbsolutePath());
+                            runFromFile();
+                            runOn.add(otherPaFiles[j].getName());
+                        } else {
+                            System.out.println("Skipped " + otherPaFiles[j].getAbsolutePath());
+                            skipped.add(otherPaFiles[j].getName());
+                        }
+
+                    }
+                    IJ.log("\n\nBatch - Successfully ran ECMM on:");
+                    for (int i = 0; i < runOn.size(); i++) {
+                        IJ.log(runOn.get(i));
+                    }
+                    IJ.log("\nSkipped:");
+                    for (int i = 0; i < skipped.size(); i++) {
+                        IJ.log(skipped.get(i));
+                    }
+
+                } else {
                     return;
                 }
-                // load config file but check if it is new format or old
-                File paramFile = new File(od.getDirectory(), od.getFileName());
-                // check extension
-                if (paramFile.getName().endsWith(".QCONF")) {// new file format see TODO #152
-                    qp = new QParamsExchanger(paramFile);
-                    qp.readParams();
-                    runFromNest();
-                    return; // break strange while loop
-                } else
-                    qp = new QParams(paramFile);
-                // old flow with paQP files
-                qp.readParams();
-                runFromFile();
-
-                File[] otherPaFiles = qp.findParamFiles();
-
-                if (otherPaFiles.length > 0) {
-                    YesNoCancelDialog yncd =
-                            new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                                    "\tBatch Process?\n\n"
-                                            + "Process other paQP files in the same folder with ECMM?\n"
-                                            + "[Files already run through ECMM will be skipped!]");
-                    if (yncd.yesPressed()) {
-                        ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
-                        ArrayList<String> skipped = new ArrayList<String>(otherPaFiles.length);
-
-                        for (int j = 0; j < otherPaFiles.length; j++) {
-                            plot.close();
-
-                            paramFile = otherPaFiles[j];
-                            qp = new QParams(paramFile);
-                            qp.readParams();
-                            if (!qp.ecmmHasRun) {
-                                System.out
-                                        .println("Running on " + otherPaFiles[j].getAbsolutePath());
-                                runFromFile();
-                                runOn.add(otherPaFiles[j].getName());
-                            } else {
-                                System.out.println("Skipped " + otherPaFiles[j].getAbsolutePath());
-                                skipped.add(otherPaFiles[j].getName());
-                            }
-
-                        }
-                        IJ.log("\n\nBatch - Successfully ran ECMM on:");
-                        for (int i = 0; i < runOn.size(); i++) {
-                            IJ.log(runOn.get(i));
-                        }
-                        IJ.log("\nSkipped:");
-                        for (int i = 0; i < skipped.size(); i++) {
-                            IJ.log(skipped.get(i));
-                        }
-
-                    } else {
-                        return;
-                    }
-                }
-
-                return;
-
-            } while (true);
-
+            }
+            return;
         } catch (QuimpException e) {
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
