@@ -66,17 +66,26 @@ public class QuimPArrayUtils {
         }
         return out;
     }
-    
+
     /**
-     * Make deep copy of 3D array
+     * Make deep copy of 2D array
      * 
      * @param source source matrix
-     * @param dest destination matrix
+     * @param dest destination matrix, if \a dest is \a null the matrix is initialized here
+     * @return destination matrix
      * @warning destination matrix must be initialized and has correct size
      */
-    public static void copy2darray(double[][] source, double[][] dest) {
-    	for(int r=0;r<source.length;r++)
-    		System.arraycopy(source[r], 0, dest[r], 0, source[r].length);
+    public static double[][] copy2darray(double[][] source, double[][] dest) {
+        double[][] ret;
+        if (dest == null) {
+            ret = new double[source.length][];
+            for (int i = 0; i < source.length; i++)
+                ret[i] = new double[source[i].length];
+        } else
+            ret = dest;
+        for (int r = 0; r < source.length; r++)
+            System.arraycopy(source[r], 0, ret[r], 0, source[r].length);
+        return ret;
     }
 
     public static void arrayToFile(double[][] a, String delim, File outFile) throws IOException {
@@ -89,15 +98,15 @@ public class QuimPArrayUtils {
                 pw.write("," + a[i][j]);
             }
         }
-    
+
         pw.close();
     }
 
     public static int findNumPeaks(double[] data, int peakWidth) {
-    
+
         int[] peaks = new int[data.length];
         int flag;
-    
+
         // find local peak points
         for (int i = peakWidth; i < data.length - peakWidth; i++) {
             flag = 0;
@@ -113,7 +122,7 @@ public class QuimPArrayUtils {
                 // System.out.println("peak at " + i);
             }
         }
-    
+
         // remove consecutive points (i.e. in flat areas)
         int realPeaks = 0;
         for (int i = 0; i < peaks.length; i++) {
@@ -124,7 +133,7 @@ public class QuimPArrayUtils {
                 }
             }
         }
-    
+
         return realPeaks;
     }
 
@@ -133,7 +142,7 @@ public class QuimPArrayUtils {
         if (a.length == 1) {
             return max;
         }
-    
+
         for (int i = 1; i < a.length; i++) {
             if (max < a[i]) {
                 max = a[i];
@@ -147,7 +156,7 @@ public class QuimPArrayUtils {
         if (a.length == 1) {
             return max;
         }
-    
+
         for (int i = 1; i < a.length; i++) {
             if (max < a[i]) {
                 max = a[i];
@@ -169,7 +178,7 @@ public class QuimPArrayUtils {
         if (a.length == 1) {
             return iMin;
         }
-    
+
         for (int i = 1; i < a.length; i++) {
             if (min > a[i]) {
                 min = a[i];
@@ -184,7 +193,7 @@ public class QuimPArrayUtils {
         if (a.length == 1) {
             return min;
         }
-    
+
         for (int i = 1; i < a.length; i++) {
             if (min > a[i]) {
                 min = a[i];
@@ -197,12 +206,12 @@ public class QuimPArrayUtils {
         int sum = 0;
         for (int i = 0; i < a.length; i++)
             sum += a[i];
-    
+
         return sum;
     }
 
     public static void print(double[] a) {
-    
+
         for (int i = 0; i < a.length; i++) {
             System.out.print("" + a[i] + "\n");
         }
@@ -210,7 +219,7 @@ public class QuimPArrayUtils {
     }
 
     public static void print(double[][] a) {
-    
+
         for (int i = 0; i < a.length; i++) {
             System.out.print("" + a[i][0] + " " + a[i][1] + "\n");
         }

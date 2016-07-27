@@ -5,6 +5,8 @@
 
 package uk.ac.warwick.wsbc.QuimP;
 
+import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
+
 /**
  *
  * @author rtyson
@@ -19,6 +21,21 @@ public class FluoMap {
     byte[] fluColor;
 
     boolean enabled; // if no data switch false
+
+    /**
+     * Copy constructor
+     * 
+     * @param src source object
+     */
+    FluoMap(final FluoMap src) {
+        this.T = src.T;
+        this.res = src.res;
+        this.channel = src.channel;
+        this.map = QuimPArrayUtils.copy2darray(src.map, null);
+        this.fluColor = new byte[src.fluColor.length];
+        System.arraycopy(src.fluColor, 0, this.fluColor, 0, src.fluColor.length);
+        this.enabled = src.enabled;
+    }
 
     FluoMap(int t, int r, int i) {
         T = t;
