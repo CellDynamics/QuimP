@@ -21,6 +21,7 @@ public class RandomWalkSegmentationPlugin_run {
      * @param args
      * @throws InterruptedException 
      */
+    @SuppressWarnings("unused")
     public static void main(String[] args) throws InterruptedException {
         CountDownLatch startSignal = new CountDownLatch(1);
         ImageJ ij = new ImageJ();

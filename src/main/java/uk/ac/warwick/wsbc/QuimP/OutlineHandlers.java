@@ -13,11 +13,15 @@ import org.apache.logging.log4j.Logger;
 /**
  * Represent collection of OutlineHandlers
  * 
+ * This class is used as storage of OutlineHandlers (results of continuous segmentation) in
+ * uk.ac.warwick.wsbc.QuimP.DataContainer
+ * 
  * @author p.baniukiewicz
  * @date 27 May 2016
  *
  */
 public class OutlineHandlers implements IQuimpSerialize {
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(OutlineHandlers.class.getName());
     public ArrayList<OutlineHandler> oHs;
 

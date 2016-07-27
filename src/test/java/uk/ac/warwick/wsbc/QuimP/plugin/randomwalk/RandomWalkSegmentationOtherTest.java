@@ -31,6 +31,7 @@ import ij.process.ImageProcessor;
  * @date 30 Jun 2016
  * @see src/test/resources/Matlab/RW_java_tests.m at <a href="./examples.html">Examples</a>
  */
+@SuppressWarnings("unused")
 public class RandomWalkSegmentationOtherTest {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
@@ -54,7 +55,6 @@ public class RandomWalkSegmentationOtherTest {
     private ImagePlus testImage1rgb; // contains rgb image with test seed points
     private ImagePlus testImage2_1seed;
     private ImagePlus testImage2_1;
-    private ImagePlus testImage2_2;
     private ImagePlus fluoreszenz_1, fluoreszenz_2;
     Params p;
 
@@ -81,7 +81,7 @@ public class RandomWalkSegmentationOtherTest {
         testImage1 = IJ.openImage("src/test/resources/segtest_small.tif");
         testImage2_1seed = IJ.openImage("src/test/resources/segmented_color.tif");
         testImage2_1 = IJ.openImage("src/test/resources/segmented_frame_1.tif");
-        testImage2_2 = IJ.openImage("src/test/resources/segmented_frame_2.tif");
+        IJ.openImage("src/test/resources/segmented_frame_2.tif");
 
         fluoreszenz_1 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frame_1.tif");
         fluoreszenz_2 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frame_2.tif");
@@ -102,7 +102,6 @@ public class RandomWalkSegmentationOtherTest {
         testImage1rgb.close();
         testImage1rgb = null;
         testImage2_1 = null;
-        testImage2_2 = null;
         fluoreszenz_1.close();
         fluoreszenz_2.close();
     }

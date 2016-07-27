@@ -29,6 +29,7 @@ public class QuimPArrayUtilsTest {
         else
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(QuimPArrayUtilsTest.class.getName());
 
     /**
@@ -70,13 +71,13 @@ public class QuimPArrayUtilsTest {
     }
 
     @Test
-        public void testMinListIndex() throws Exception {
-            ArrayList<Double> ar = new ArrayList<>();
-            ar.add(34.0);
-            ar.add(5.0);
-            ar.add(-5.0);
-    
-            assertThat(QuimPArrayUtils.minListIndex(ar), equalTo(2));
-        }
+    public void testMinListIndex() throws Exception {
+        ArrayList<Double> ar = new ArrayList<>();
+        ar.add(34.0);
+        ar.add(5.0);
+        ar.add(-5.0);
+
+        assertThat(QuimPArrayUtils.minListIndex(ar), equalTo(2));
+    }
 
 }

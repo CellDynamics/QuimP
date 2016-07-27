@@ -27,6 +27,7 @@ public class BinarySegmentationUI_run {
     /**
      * @param args
      */
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
 
         ImageJ ij = new ImageJ();

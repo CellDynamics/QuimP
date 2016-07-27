@@ -29,6 +29,7 @@ import ij.gui.Toolbar;
  * ps -aux | grep BOA__run | awk '{print $2}' | xargs kill
  * @endcode
  */
+@SuppressWarnings("unused")
 public class BOA__run {
 
     /**

@@ -1,19 +1,15 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-import java.awt.Window;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 
 /**
  * Collection of tools used across QuimP

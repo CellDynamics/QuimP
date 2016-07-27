@@ -39,6 +39,7 @@ public class SnakeHandlerTest {
     /**
      * @throws java.lang.Exception
      */
+    @SuppressWarnings("unused")
     @Before
     public void setUp() throws Exception {
         BOA_.qState = new BOAState(null);

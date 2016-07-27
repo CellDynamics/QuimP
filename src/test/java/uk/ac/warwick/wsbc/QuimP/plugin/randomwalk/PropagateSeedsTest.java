@@ -23,6 +23,7 @@ import ij.process.BinaryProcessor;
  * @date 1 Jul 2016
  *
  */
+@SuppressWarnings("unused")
 public class PropagateSeedsTest {
 
     static {

@@ -61,6 +61,7 @@ public class QParamsExchangerTest {
         else
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(QParamsExchangerTest.class.getName());
     private File test1;
 
