@@ -370,7 +370,7 @@ public class BOAState implements IQuimpSerialize {
         double proximity; //!< distance between centroids at which contact is tested for 
         double proxFreeze; //!< proximity of nodes to freeze when blowing up 
         boolean savedOne;
-        boolean savePretty = false; //!< use json pretty format
+        boolean savePretty = true; //!< use json pretty format
         
         /**
          * Current frame, CustomStackWindow.updateSliceSelector()
@@ -477,7 +477,7 @@ public class BOAState implements IQuimpSerialize {
             callCount = 0;
             SEGrunning = false;
             frame = 1;
-            savePretty = false;
+            savePretty = true;
         }
 
         /**
@@ -695,9 +695,9 @@ public class BOAState implements IQuimpSerialize {
                         + "_" + sID + ".stQP.csv");
 
                 QParams qp = new QParams(paramFile);
-                qp.segImageFile = boap.orgFile;
-                qp.snakeQP = boap.outFile;
-                qp.statsQP = statsFile;
+                qp.setSegImageFile(boap.orgFile);
+                qp.setSnakeQP(boap.outFile);
+                qp.setStatsQP(statsFile);
                 qp.setImageScale(BOA_.qState.boap.imageScale);
                 qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
                 qp.setStartFrame(startF);

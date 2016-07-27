@@ -33,8 +33,12 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     private int snakeID; //!< unique ID of snake
     public double startingNnodes; //!< how many nodes at start of segmentation
     private int FROZEN; //!< number of nodes frozen
-    private Rectangle bounds = new Rectangle(); //!< snake bounds, updated only on use getBounds()
-    
+    /**
+     * Snake bounds, updated only on use getBounds(). Even though this field is serialized it is
+     * recalculated in afterSerialzie() and beforeSerialzie() 
+     */
+    private Rectangle bounds = new Rectangle();
+
     /**
      * Create a snake from existing linked list (at least one head node)
      * 
@@ -1053,6 +1057,26 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         return "Snake [alive=" + alive + ", snakeID=" + snakeID + ", startingNnodes="
                 + startingNnodes + ", FROZEN=" + FROZEN + ", bounds=" + bounds + ", POINTS="
                 + POINTS + ", centroid=" + centroid + ", toString()=" + super.toString() + "]";
+    }
+
+    /**
+     * Call super and then oo Snake related actions
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.beforeSerialize()
+     */
+    @Override
+    public void beforeSerialize() {
+        super.beforeSerialize();
+        getBounds();
+    }
+
+    /**
+     * Call super and then oo Snake related actions
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.afterSerialize()
+     */
+    @Override
+    public void afterSerialize() throws Exception {
+        super.afterSerialize();
+        getBounds();
     }
 
 }

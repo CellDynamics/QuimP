@@ -28,16 +28,16 @@ public class QParamsExchanger extends QParams {
 
     /**
      * Set default values for superclass, also prefix and path for files
-     * @param p
+     * 
+     * @param p \a QCONF file
      */
     QParamsExchanger(File p) {
         super(p);
-        currentHandler = 0;
         paramFormat = QParams.NEW_QUIMP;
     }
 
     /**
-     * Extract DataContainer from Serialzier super class
+     * Extract DataContainer from Serializer super class
      * 
      * @return the loadedDataContainer
      */
@@ -220,6 +220,33 @@ public class QParamsExchanger extends QParams {
     public void setNodeRes(double nodeRes) {
         getLoadedDataContainer().BOAState.segParam.setNodeRes(nodeRes);
         throw new UnsupportedOperationException("Not finished yet");
+    }
+
+    /** 
+     * For new config file there is no need to check for presence other files (for old method other 
+     * files were those with the same case name but for different cells than loaded NAME_0.paQP,
+     * NAME_1.paQP, etc)
+     * @return empty array to maintain compatibility with super class - it means that no files were
+     * found 
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#findParamFiles()
+     */
+    @Override
+    public File[] findParamFiles() {
+        return new File[0];
+    }
+
+    /** 
+     * Create fake snQP name, for compatibility reasons
+     * 
+     * @return theoretical name of snQP file which is used then to estimate names of map files by
+     * uk.ac.warwick.wsbc.QuimP.Qp class. This name contains \a suffix already  
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#getSnakeQP()
+     */
+    @Override
+    public File getSnakeQP() {
+        String path = getLoadedDataContainer().BOAState.boap.outFile.getParent();
+        String file = getLoadedDataContainer().BOAState.boap.fileName;
+        return new File(path + File.separator + file + "_" + currentHandler + ".snQP");
     }
 
 }

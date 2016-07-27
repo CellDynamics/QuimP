@@ -4,6 +4,15 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.io.File;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
@@ -15,14 +24,6 @@ import ij.plugin.PlugIn;
 import ij.plugin.TextReader;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -40,7 +41,8 @@ public class Q_Explorer implements PlugIn {
     public void run(String string) {
         try {
             // do {
-            OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", OpenDialog.getLastDirectory(), "");
+            OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
+                    OpenDialog.getLastDirectory(), "");
             if (od.getFileName() == null) {
                 return;
             }
@@ -86,7 +88,8 @@ public class Q_Explorer implements PlugIn {
     }
 
     @SuppressWarnings("serial")
-    class ExplorerStackWindow extends StackWindow implements ActionListener, ItemListener, ChangeListener {
+    class ExplorerStackWindow extends StackWindow
+            implements ActionListener, ItemListener, ChangeListener {
 
         ExplorerStackWindow(ImagePlus imp, ImageCanvas stackCanvas) {
             super(imp, stackCanvas);
@@ -112,7 +115,7 @@ public class Q_Explorer implements PlugIn {
     void setup() {
         oH = new OutlineHandler(EXp.qp);
         if (!oH.readSuccess) {
-            IJ.error("Failed to read " + EXp.qp.snakeQP.getName());
+            IJ.error("Failed to read " + EXp.qp.getSnakeQP().getName());
             return;
         }
         imageManager = new ImageManager(oH);
@@ -157,12 +160,12 @@ class ImageManager {
         nbMaps = 1;
         mapsIpl = new ImagePlus[1];
 
-        xMap = openMap(EXp.qp.xFile, "xMap");
-        yMap = openMap(EXp.qp.xFile, "yMap");
+        xMap = openMap(EXp.qp.getxFile(), "xMap");
+        yMap = openMap(EXp.qp.getxFile(), "yMap");
 
-        mapsIpl[0] = openMap(EXp.qp.motilityFile, "Motility Map");
+        mapsIpl[0] = openMap(EXp.qp.getMotilityFile(), "Motility Map");
 
-        movieIpl = IJ.openImage(EXp.qp.segImageFile.getAbsolutePath());
+        movieIpl = IJ.openImage(EXp.qp.getSegImageFile().getAbsolutePath());
         movOverlay = new Overlay[movieIpl.getStackSize()];
 
         // build overlays

@@ -20,4 +20,16 @@ public abstract class ShapeHandler<T extends Shape<?>> {
      */
     protected int startFrame;
     protected int endFrame;
+
+    ShapeHandler() {
+    }
+
+    /**
+     * Copy constructor for this class
+     * @param src source object
+     */
+    ShapeHandler(ShapeHandler<T> src) {
+        startFrame = src.startFrame;
+        endFrame = src.endFrame;
+    }
 }

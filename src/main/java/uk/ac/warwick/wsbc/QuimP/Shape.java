@@ -588,7 +588,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      */
     @Override
     public void beforeSerialize() {
+        calcCentroid();
         setPositions();
+        updateNormales(true);
+        makeAntiClockwise();
         Elements = new ArrayList<>();
         T n = getHead().getNext(); // do not store head as it is stored in head variable
         do {
@@ -630,6 +633,9 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
             }
         }
         clearElements();
+        calcCentroid();
+        updateNormales(true);
+        makeAntiClockwise();
     }
 
     /**

@@ -99,7 +99,7 @@ public class Test_QuimP implements PlugIn {
         System.out.println("" + p.NMAX);
         System.out.println("" + p.path);
         System.out.println("" + p.prefix);
-        System.out.println("" + p.convexFile);
+        System.out.println("" + p.getConvexFile());
 
         // p.setParamFile(new
         // File("/Users/rtyson/Documents/phd/tmp/smallStack/SmallStack_NEW.paQP"));
