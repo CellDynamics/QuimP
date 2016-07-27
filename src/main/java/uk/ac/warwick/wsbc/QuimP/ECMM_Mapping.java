@@ -37,7 +37,6 @@ public class ECMM_Mapping {
         else
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
-    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 
     OutlineHandler oH, outputH;

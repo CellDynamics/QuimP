@@ -588,6 +588,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      */
     @Override
     public void beforeSerialize() {
+        calcCentroid();
         setPositions();
         updateNormales(true);
         makeAntiClockwise();
@@ -632,6 +633,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
             }
         }
         clearElements();
+        calcCentroid();
         updateNormales(true);
         makeAntiClockwise();
     }

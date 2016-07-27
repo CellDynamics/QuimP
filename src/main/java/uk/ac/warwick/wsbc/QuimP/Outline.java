@@ -921,6 +921,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     @Override
     public void beforeSerialize() {
         super.beforeSerialize();
+        this.updateCurvature();
     }
 
     /**
@@ -930,6 +931,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     @Override
     public void afterSerialize() throws Exception {
         super.afterSerialize();
+        this.updateCurvature();
     }
 
 }

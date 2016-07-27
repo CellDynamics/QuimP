@@ -22,6 +22,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
     private Outline[] outlines;
+    // all transient fields are rebuild in afterSerialzie
     transient private int size;
     transient private QParams qp;
     transient public ExtendedVector2d maxCoor;
