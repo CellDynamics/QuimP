@@ -9,22 +9,62 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 /**
  * Represents a vertex in the outline. Contains several methods that operate on
  * vertexes and vectors.
+ * Properties defined for Vertex are updated by different QuimP modules (ECMM, QA)
  * 
  * @author rtyson
  * @author p.baniukiewicz
  */
 public class Vert extends PointsList<Vert> {
     public double charge; /*!< charge on the vertex */
-    public double distance; /*!< distance vert migrated (actually converted to speed by Tool.speedToScale */
+    /**
+     * distance vert migrated (actually converted to speed by Tool.speedToScale
+     */
+    public double distance;
     final FluoMeasurement[] fluores = new FluoMeasurement[3]; /*!< fluorescence channels 1-3 */
-    public double curvatureLocal; /*!< curvature local to a node */
-    public double curvatureSmoothed; /*!< smoothed curvature */
-    public double curvatureSum; /*!< summed curvature over x microns this is the value recorded into maps */
-    public double coord; /*!< coord relative to head node on current frame */
-    public double fCoord; /*!< coord relative to coord on previous frame */
-    public double fLandCoord; /*!< landing relative to previous frame */
-    public double gCoord; /*!< global coord relative to head node on frame 1; */
-    public double gLandCoord; /*!< landing coord relative to head node on frame 1; */
+    /**
+     * curvature local to a node
+     * Updated by uk.ac.warwick.wsbc.QuimP.Vert.calcCurvatureLocal() and implicitly by 
+     * uk.ac.warwick.wsbc.QuimP.Vert.calcCurvatureLocal() called during creation and serialization.
+     */
+    public double curvatureLocal;
+    /**
+     * smoothed curvature
+     * Updated during map generation (Q Analysis) by uk.ac.warwick.wsbc.QuimP.STmap.calcCurvature()
+     * or uk.ac.warwick.wsbc.QuimP.STmap.averageCurvature(Outline)
+     */
+    public double curvatureSmoothed;
+    /**
+     * summed curvature over x microns this is the value recorded into maps
+     * Updated during map generation (Q Analysis) by uk.ac.warwick.wsbc.QuimP.STmap.calcCurvature()
+     */
+    public double curvatureSum;
+    /**
+     * coord relative to head node on current frame
+     * Set during ECMM
+     */
+    public double coord;
+    /**
+     * coord relative to coord on previous frame
+     * Set by uk.ac.warwick.wsbc.QuimP.Mapping.migrate() and during changing resolution in ECMM
+     */
+    public double fCoord;
+    /**
+     * landing relative to previous frame
+     * Set by uk.ac.warwick.wsbc.QuimP.Vert.setLandingCoord(ExtendedVector2d, Vert) called on solving
+     * ECMM equations
+     */
+    public double fLandCoord;
+    /**
+     * global coord relative to head node on frame 1
+     * Set by uk.ac.warwick.wsbc.QuimP.Mapping.migrate() and during changing resolution  in ECMM
+     */
+    public double gCoord;
+    /**
+     * landing coord relative to head node on frame 1
+     * Set by uk.ac.warwick.wsbc.QuimP.Vert.setLandingCoord(ExtendedVector2d, Vert) called on solving
+     * ECMM equations
+     */
+    public double gLandCoord;
     public double tarLandingCoord;
     public QColor color; /*!< color of Vert */
     private boolean intPoint; /*!< vert represents an intersect point and is temporary. Mark start end of sectors */

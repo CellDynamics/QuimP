@@ -29,10 +29,26 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  */
 public class Snake extends Shape<Node> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(Snake.class.getName());
-    public boolean alive; //!< \c true if snake is alive
-    private int snakeID; //!< unique ID of snake
-    public double startingNnodes; //!< how many nodes at start of segmentation
-    private int FROZEN; //!< number of nodes frozen
+    /**
+     * \c true if snake is alive
+     * Changed during segmentation and user interaction
+     */
+    public boolean alive;
+    /**
+     * unique ID of snake
+     * Given during Snake creation by SnakeHandler. It is possible to set id explicitly by 
+     * uk.ac.warwick.wsbc.QuimP.Snake.setSnakeID(int)
+     */
+    private int snakeID;
+    /**
+     * how many nodes at start of segmentation
+     */
+    public double startingNnodes;
+    /**
+     * number of nodes frozen
+     * Changed during segmentation
+     */
+    private int FROZEN;
     /**
      * Snake bounds, updated only on use getBounds(). Even though this field is serialized it is
      * recalculated in afterSerialzie() and beforeSerialzie() 
