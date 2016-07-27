@@ -224,8 +224,8 @@ public class QParamsExchanger extends QParams {
 
     /** 
      * For new config file there is no need to check for presence other files (for old method other 
-     * files werethose with the same case name but for different cells than loaded NAME_0.paQP,
-     *  NAME_1.paQP, etc)
+     * files were those with the same case name but for different cells than loaded NAME_0.paQP,
+     * NAME_1.paQP, etc)
      * @return empty array to maintain compatibility with super class - it means that no files were
      * found 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#findParamFiles()
@@ -239,7 +239,7 @@ public class QParamsExchanger extends QParams {
      * Create fake snQP name, for compatibility reasons
      * 
      * @return theoretical name of snQP file which is used then to estimate names of map files by
-     * uk.ac.warwick.wsbc.QuimP.Qp class. This name contains \i suffix already  
+     * uk.ac.warwick.wsbc.QuimP.Qp class. This name contains \a suffix already  
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getSnakeQP()
      */
     @Override
