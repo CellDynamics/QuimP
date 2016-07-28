@@ -124,11 +124,14 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     }
 
     public boolean isOutlineAt(int f) {
-        if (f < startFrame || f > endFrame) {
+        if (f - startFrame < 0)
             return false;
-        } else {
+        else if (f - startFrame >= outlines.length)
+            return false;
+        else if (outlines[f - startFrame] == null)
+            return false;
+        else
             return true;
-        }
     }
 
     public Outline indexGetOutline(int i) {
@@ -293,6 +296,8 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         Vert n;
         for (int i = 0; i < outlines.length; i++) {
             outline = outlines[i];
+            if (outline == null)
+                continue;
             n = outline.getHead();
             if (i == 0) {
                 minCoor.setXY(n.getX(), n.getY());
