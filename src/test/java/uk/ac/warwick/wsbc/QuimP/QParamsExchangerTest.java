@@ -83,8 +83,8 @@ public class QParamsExchangerTest {
     @Test
     public void testQParamsExchanger() throws Exception {
         QParamsQconf qp = new QParamsQconf(test1);
-        assertThat(qp.prefix, is("Stack_cut"));
-        assertThat(qp.path, is("src/test/resources/test2"));
+        assertThat(qp.getFileName(), is("Stack_cut"));
+        assertThat(qp.getPath(), is("src/test/resources/test2"));
     }
 
     /**

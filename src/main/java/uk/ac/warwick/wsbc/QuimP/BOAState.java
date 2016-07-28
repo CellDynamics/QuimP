@@ -800,6 +800,13 @@ public class BOAState implements IQuimpSerialize {
                                // storing
         snakePluginList.afterSerialize(); // assumes that snakePluginList contains valid refs to
                                           // pluginFactory
+
+        // recreate file objects. without these lines the File objects after serialization are
+        // created
+        // but they do not keep information about root, e.g. getAbsolutePath() returns
+        // program_path/stored_in_json_path
+        boap.outputFileCore = new File(boap.outputFileCore.toString());
+        boap.orgFile = new File(boap.orgFile.toString());
     }
 
     /**

@@ -72,20 +72,20 @@ public class QParamsQconf extends QParams {
         Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
         try {
             // load file and make first check of correctness
-            loaded = s.load(paramFile); // try to load (skip afterSerialzie)
+            loaded = s.load(getParamFile()); // try to load (skip afterSerialzie)
             BOA_.qState = loaded.obj.BOAState; // restore qstate because some methods still need it
         } catch (Exception e) { // stop on fail (file or json error)
             LOGGER.error(e.getMessage());
             LOGGER.debug(e.getMessage(), e);
             throw new QuimpException(
-                    "Loading or processing of " + paramFile.getAbsolutePath() + " failed", e);
+                    "Loading or processing of " + getParamFile().getAbsolutePath() + " failed", e);
         }
         // second check of basic logic
         if (loaded.obj.BOAState == null || !loaded.className.equals("DataContainer")
                 || !loaded.version[2].equals("QuimP") && !loaded.version[2].equals(Tool.defNote)) {
             LOGGER.error("Not QuimP file?");
             throw new QuimpException(
-                    "Loaded file " + paramFile.getAbsolutePath() + " is not QuimP file");
+                    "Loaded file " + getParamFile().getAbsolutePath() + " is not QuimP file");
         }
         // TODO Check config version here - more precisely (see #151)
         String[] ver = new Tool().getQuimPBuildInfo();
@@ -105,15 +105,16 @@ public class QParamsQconf extends QParams {
      */
     @Override
     void writeParams() throws QuimpException {
-        LOGGER.debug("New file format: Updating data " + paramFile);
+        LOGGER.debug("New file format: Updating data " + getParamFile());
         try {
             loaded.obj.beforeSerialize(); // call explicitly beforeSerialize because Dump doesn't do
-            Serializer.Dump(loaded, paramFile, BOA_.qState.boap.savePretty); // "loaded" is already
-                                                                             // packed by Serializer
+            Serializer.Dump(loaded, getParamFile(), BOA_.qState.boap.savePretty); // "loaded" is
+                                                                                  // already
+            // packed by Serializer
         } catch (FileNotFoundException e) {
-            LOGGER.error("File " + paramFile + " could not be saved. " + e.getMessage());
+            LOGGER.error("File " + getParamFile() + " could not be saved. " + e.getMessage());
             LOGGER.debug(e.getMessage(), e);
-            throw new QuimpException("File " + paramFile + " could not be saved. ", e);
+            throw new QuimpException("File " + getParamFile() + " could not be saved. ", e);
         }
     }
 
@@ -261,8 +262,8 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public File getSnakeQP() {
-        String path = paramFile.getParent();
-        String file = Tool.removeExtension(paramFile.getName());
+        String path = getParamFile().getParent();
+        String file = Tool.removeExtension(getParamFile().getName());
         return new File(path + File.separator + file + "_" + currentHandler + ".snQP");
     }
 
