@@ -353,8 +353,16 @@ public class BOAState implements IQuimpSerialize {
      */
     class BOAp {
         private File orgFile; //!< handle to original file obtained from IJ (usually image opened) 
-        File outFile; //!< handle to \a snPQ filled in QuimP.SnakeHandler.writeSnakes() 
-        String fileName; //!< loaded image file name only, no extension (\c orgFile)
+        /**
+         * Corename for output, initially contains path and name without extension from orgFile. 
+         * Can be changed by user on save
+         * Change of this field causes change of the \c fileName
+         */
+        private File outputFileCore;
+        /**
+         * \c outputFileCore but without path and extension
+         */
+        private String fileName;
         transient QParams readQp; //!< read in parameter file 
         // internal parameters
         int NMAX; //!< maximum number of nodes (% of starting nodes) 
@@ -515,10 +523,11 @@ public class BOAState implements IQuimpSerialize {
             FileInfo fileinfo = ip.getOriginalFileInfo();
             if (fileinfo == null) {
                 orgFile = new File(File.separator, ip.getTitle());
+                setOutputFileCore(File.separator + ip.getTitle());
             } else {
                 orgFile = new File(fileinfo.directory, fileinfo.fileName);
+                setOutputFileCore(fileinfo.directory + Tool.removeExtension(orgFile.getName()));
             }
-            fileName = Tool.removeExtension(orgFile.getName());
 
             FRAMES = ip.getStackSize(); // get number of frames
 
@@ -554,6 +563,94 @@ public class BOAState implements IQuimpSerialize {
          */
         public File getOrgFile() {
             return orgFile;
+        }
+
+        /**
+         * @return the outputFileCore
+         */
+        public File getOutputFileCore() {
+            return outputFileCore;
+        }
+
+        /**
+         * @param outputFileCore the outputFileCore to set
+         */
+        public void setOutputFileCore(File outputFileCore) {
+            this.outputFileCore = outputFileCore;
+            fileName = Tool.removeExtension(outputFileCore.getName());
+        }
+
+        /**
+         * @param outputFileCore the outputFileCore to set
+         */
+        public void setOutputFileCore(String outputFileCore) {
+            setOutputFileCore(new File(outputFileCore));
+        }
+
+        /**
+         * @return the fileName
+         */
+        public String getFileName() {
+            return fileName;
+        }
+
+        /**
+         * Generate Snake file name basing on ID
+         * 
+         * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+         * 
+         * @param ID of Snake
+         * @return Full path to file with extension
+         */
+        public String deductSnakeFileName(int ID) {
+            LOGGER.trace(getOutputFileCore().getAbsoluteFile());
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID + ".snQP";
+        }
+
+        /**
+         * Generate stats file name basing on ID
+         * 
+         * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+         * 
+         * @param ID of Snake
+         * @return Full path to file with extension
+         */
+        public String deductStatsFileName(int ID) {
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID + ".stQP.csv";
+        }
+
+        /**
+         * Generate main param file (old) name basing on ID
+         * 
+         * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+         * 
+         * @param ID of Snake
+         * @return Full path to file with extension
+         */
+        public String deductParamFileName(int ID) {
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID + ".paQP";
+        }
+
+        /**
+         * Generate main filter config file name
+         * 
+         * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+         * 
+         * @return Full path to file with extension
+         */
+        public String deductFilterFileName() {
+            return getOutputFileCore().getAbsoluteFile() + ".pgQP";
+        }
+
+        /**
+         * Generate main param file (new) name
+         * 
+         * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+         * 
+         * @return Full path to file with extension
+         */
+        public String deductNewParamFileName() {
+            return getOutputFileCore().getAbsoluteFile() + BOAState.QCONFFILEEXT;
         }
 
     }
@@ -722,15 +819,11 @@ public class BOAState implements IQuimpSerialize {
     public void writeParams(int sID, int startF, int endF) {
         try {
             if (boap.saveSnake) {
-                File paramFile =
-                        new File(boap.outFile.getParent(), boap.fileName + "_" + sID + ".paQP");
-                File statsFile = new File(boap.outFile.getParent() + File.separator + boap.fileName
-                        + "_" + sID + ".stQP.csv");
-
+                File paramFile = new File(boap.deductParamFileName(sID));
                 QParams qp = new QParams(paramFile);
                 qp.setSegImageFile(boap.orgFile);
-                qp.setSnakeQP(boap.outFile);
-                qp.setStatsQP(statsFile);
+                qp.setSnakeQP(new File(boap.deductSnakeFileName(sID)));
+                qp.setStatsQP(new File(boap.deductStatsFileName(sID)));
                 qp.setImageScale(BOA_.qState.boap.imageScale);
                 qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
                 qp.setStartFrame(startF);

@@ -34,6 +34,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -1320,9 +1322,11 @@ public class BOA_ implements PlugIn {
                 return;
             }
             if (b == menuSaveConfig) {
-                String saveIn = qState.boap.getOrgFile().getParent();
+                String saveIn = qState.boap.getOutputFileCore().getParent();
+                // get extension from deduced output name
+                Path p = Paths.get(qState.boap.deductFilterFileName()).getFileName();
                 SaveDialog sd = new SaveDialog("Save plugin config data...", saveIn,
-                        qState.boap.fileName, ".pgQP");
+                        qState.boap.getFileName(), "." + Tool.getFileExtension(p.toString()));
                 if (sd.getFileName() != null) {
                     try {
                         // Create Serialization object with extra info layer
@@ -1416,7 +1420,8 @@ public class BOA_ implements PlugIn {
                                 new DataContainerInstanceCreator(3, pluginFactory, viewUpdater));
                         loaded = s.load(od.getDirectory() + od.getFileName());
                         // check against image names
-                        if (!loaded.obj.BOAState.boap.fileName.equals(qState.boap.fileName)) {
+                        if (!loaded.obj.BOAState.boap.getFileName()
+                                .equals(qState.boap.getFileName())) {
                             LOGGER.warn(
                                     "The image opened currently in BOA is different from those +"
                                             + " pointed in configuration file");
@@ -2361,23 +2366,30 @@ public class BOA_ implements PlugIn {
         LOGGER.debug(qState.segParam.toString());
         if (qState.boap.saveSnake) {
             try {
+                String saveIn = BOA_.qState.boap.getOutputFileCore().getParent();
+                SaveDialog sd = new SaveDialog("Save segmentation data...", saveIn,
+                        BOA_.qState.boap.getFileName(), "");
+                if (sd.getFileName() == null) {
+                    BOA_.log("Save canceled");
+                    return;
+                }
+                // This initialize various filenames that can be accessed bo other modules
+                BOA_.qState.boap.setOutputFileCore(sd.getDirectory() + sd.getFileName());
+
                 // check whether there is case saved and warn user
                 // there is no option to solve this problem here. User can only agree or cancel
-                if (qState.boap.outFile != null) {
-                    testF = new File(qState.boap.outFile.getParent() + File.separator
-                            + qState.boap.fileName + BOAState.QCONFFILEEXT); // test for QCONF
-                                                                             // that is created
-                                                                             // always
-                    if (testF.exists() && !testF.isDirectory()) {
-                        ync = new YesNoCancelDialog(window, "Save Segmentation",
-                                "You are about to override previous results. Is it ok?\nIf not"
-                                        + " previous data must be moved to another directory");
-                        if (!ync.yesPressed())
-                            return;
-                    }
+                // test for QCONF that is created always
+                testF = new File(qState.boap.deductNewParamFileName());
+                LOGGER.trace("Test for QCONF: " + testF.toString());
+                if (testF.exists() && !testF.isDirectory()) {
+                    ync = new YesNoCancelDialog(window, "Save Segmentation",
+                            "You are about to override previous results. Is it ok?\nIf not"
+                                    + " previous data must be moved to another directory");
+                    if (!ync.yesPressed())
+                        return;
                 }
                 // write operations
-                if (qState.nest.writeSnakes()) { // write snPQ file (if any snake)
+                if (qState.nest.writeSnakes()) { // write snPQ file (if any snake) and paQP
                     qState.nest.analyse(imageGroup.getOrgIpl().duplicate()); // write stQP file
                                                                              // and fill outFile
                                                                              // used later
@@ -2387,16 +2399,14 @@ public class BOA_ implements PlugIn {
                         Serializer<SnakePluginList> s;
                         s = new Serializer<>(qState.snakePluginList, quimpInfo);
                         s.setPretty(); // set pretty format
-                        s.save(qState.boap.outFile.getParent() + File.separator
-                                + qState.boap.fileName + ".pgQP");
+                        s.save(qState.boap.deductFilterFileName());
                         s = null; // remove
                         // Dump BOAState object in new format
                         Serializer<DataContainer> n;
                         n = new Serializer<>(new DataContainer(qState), quimpInfo);
                         if (qState.boap.savePretty) // set pretty format if configured
                             n.setPretty();
-                        n.save(qState.boap.outFile.getParent() + File.separator
-                                + qState.boap.fileName + BOAState.QCONFFILEEXT);
+                        n.save(qState.boap.deductNewParamFileName());
                         n = null;
                     }
                 } else {

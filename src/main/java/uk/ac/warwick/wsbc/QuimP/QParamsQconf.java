@@ -245,7 +245,7 @@ public class QParamsQconf extends QParams {
      * NAME_1.paQP, etc)
      * @return empty array to maintain compatibility with super class - it means that no files were
      * found 
-     * @see uk.ac.warwick.wsbc.QuimP.QParams#findParamFiles()
+     * @see uk.ac.warwick.wsbc.QuimP.QParams.findParamFiles()
      */
     @Override
     public File[] findParamFiles() {
@@ -257,12 +257,12 @@ public class QParamsQconf extends QParams {
      * 
      * @return theoretical name of snQP file which is used then to estimate names of map files by
      * uk.ac.warwick.wsbc.QuimP.Qp class. This name contains \a suffix already  
-     * @see uk.ac.warwick.wsbc.QuimP.QParams#getSnakeQP()
+     * @see uk.ac.warwick.wsbc.QuimP.QParams.getSnakeQP()
      */
     @Override
     public File getSnakeQP() {
-        String path = getLoadedDataContainer().BOAState.boap.outFile.getParent();
-        String file = getLoadedDataContainer().BOAState.boap.fileName;
+        String path = paramFile.getParent();
+        String file = Tool.removeExtension(paramFile.getName());
         return new File(path + File.separator + file + "_" + currentHandler + ".snQP");
     }
 

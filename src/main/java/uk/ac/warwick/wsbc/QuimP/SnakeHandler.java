@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import ij.IJ;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
-import ij.io.SaveDialog;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 
@@ -178,33 +177,32 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      * does not exist but cannot be created, or cannot be opened for any other reason
      */
     public boolean writeSnakes() throws IOException {
-        String saveIn = BOA_.qState.boap.getOrgFile().getParent();
+        // String saveIn = BOA_.qState.boap.getOrgFile().getParent();
         // System.out.println(boap.orgFile.getParent());
         // if (!boap.orgFile.exists()) {
         // BOA_.log("image is not saved to disk!");
         // saveIn = OpenDialog.getLastDirectory();
         // }
 
-        if (!BOA_.qState.boap.savedOne) {
-
-            SaveDialog sd = new SaveDialog("Save segmentation data...", saveIn,
-                    BOA_.qState.boap.fileName, "");
-
-            if (sd.getFileName() == null) {
-                BOA_.log("Save canceled");
-                return false;
-            }
-            BOA_.qState.boap.outFile =
-                    new File(sd.getDirectory(), sd.getFileName() + "_" + ID + ".snQP");
-            BOA_.qState.boap.fileName = sd.getFileName();
-            BOA_.qState.boap.savedOne = true;
-        } else {
-            BOA_.qState.boap.outFile = new File(BOA_.qState.boap.outFile.getParent(),
-                    BOA_.qState.boap.fileName + "_" + ID + ".snQP");
-        }
-
-        PrintWriter pw = new PrintWriter(new FileWriter(BOA_.qState.boap.outFile), true); // auto
-                                                                                          // flush
+        // if (!BOA_.qState.boap.savedOne) {
+        //
+        // SaveDialog sd = new SaveDialog("Save segmentation data...", saveIn,
+        // BOA_.qState.boap.fileName, "");
+        //
+        // if (sd.getFileName() == null) {
+        // BOA_.log("Save canceled");
+        // return false;
+        // }
+        // BOA_.qState.boap.outFile =
+        // new File(sd.getDirectory(), sd.getFileName() + "_" + ID + ".snQP");
+        // BOA_.qState.boap.fileName = sd.getFileName();
+        // BOA_.qState.boap.savedOne = true;
+        // } else {
+        // BOA_.qState.boap.outFile = new File(BOA_.qState.boap.outFile.getParent(),
+        // BOA_.qState.boap.fileName + "_" + ID + ".snQP");
+        // }
+        String snakeOutFile = BOA_.qState.boap.deductSnakeFileName(ID);
+        PrintWriter pw = new PrintWriter(new FileWriter(snakeOutFile), true); // auto flush
         pw.write("#QuimP11 Node data");
         pw.write("\n#Node Position\tX-coord\tY-coord\tOrigin\tG-Origin\tSpeed");
         pw.write("\tFluor_Ch1\tCh1_x\tCh1_y\tFluor_Ch2\tCh2_x\tCh2_y\tFluor_CH3\tCH3_x\tCh3_y\n#");
@@ -247,8 +245,8 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
 
     private void writeOldFormats() throws IOException {
         // create file to outpurt old format
-        File OLD =
-                new File(BOA_.qState.boap.outFile.getParent(), BOA_.qState.boap.fileName + ".dat");
+        File OLD = new File(BOA_.qState.boap.getOutputFileCore().getParent(),
+                BOA_.qState.boap.getFileName() + ".dat");
         PrintWriter pw = new PrintWriter(new FileWriter(OLD), true); // auto
                                                                      // flush
 
@@ -270,7 +268,8 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
         pw.close();
 
-        OLD = new File(BOA_.qState.boap.outFile.getParent(), BOA_.qState.boap.fileName + ".dat_tn");
+        OLD = new File(BOA_.qState.boap.getOutputFileCore().getParent(),
+                BOA_.qState.boap.getFileName() + ".dat_tn");
         pw = new PrintWriter(new FileWriter(OLD), true); // auto flush
 
         for (int i = 0; i < finalSnakes.length; i++) {
@@ -292,7 +291,8 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
         pw.close();
 
-        OLD = new File(BOA_.qState.boap.outFile.getParent(), BOA_.qState.boap.fileName + ".dat1");
+        OLD = new File(BOA_.qState.boap.getOutputFileCore().getParent(),
+                BOA_.qState.boap.getFileName() + ".dat1");
         pw = new PrintWriter(new FileWriter(OLD), true); // auto flush
 
         pw.print(IJ.d2s(BOA_.qState.boap.NMAX, 6) + "\n");

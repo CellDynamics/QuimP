@@ -126,6 +126,12 @@ public class Tool {
         }
     }
 
+    /**
+     * Get file name without extension
+     * 
+     * @param filename name of the file
+     * @return file (with path) without extension
+     */
     public static String removeExtension(String filename) {
         // extract fileName without extension
 
@@ -136,6 +142,12 @@ public class Tool {
         return filename;
     }
 
+    /**
+     * Get file extension 
+     * 
+     * @param filename Name of file
+     * @return extension without dot
+     */
     public static String getFileExtension(String filename) {
         // extract fileName without extension
 
