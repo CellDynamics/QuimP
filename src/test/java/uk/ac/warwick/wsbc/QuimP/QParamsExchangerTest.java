@@ -47,7 +47,7 @@ public class QParamsExchangerTest {
      * @throws IllegalArgumentException 
      * @throws IllegalAccessException         
      */
-    static Object accessPrivate(String name, QParamsExchanger obj, Object[] param,
+    static Object accessPrivate(String name, QParamsQconf obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Method prv = obj.getClass().getDeclaredMethod(name, paramtype);
@@ -82,7 +82,7 @@ public class QParamsExchangerTest {
 
     @Test
     public void testQParamsExchanger() throws Exception {
-        QParamsExchanger qp = new QParamsExchanger(test1);
+        QParamsQconf qp = new QParamsQconf(test1);
         assertThat(qp.prefix, is("Stack_cut"));
         assertThat(qp.path, is("src/test/resources/test2"));
     }
@@ -96,7 +96,7 @@ public class QParamsExchangerTest {
     @Test
     @Ignore("test1 must be saved in new DataContainer format")
     public void testReadParams() throws Exception {
-        QParamsExchanger qp = new QParamsExchanger(test1);
+        QParamsQconf qp = new QParamsQconf(test1);
         qp.readParams();
 
         Nest n = qp.getNest();
@@ -122,7 +122,7 @@ public class QParamsExchangerTest {
      */
     @Test(expected = QuimpException.class)
     public void testReadParams_1() throws Exception {
-        QParamsExchanger qp = new QParamsExchanger(new File("dff/ss.s"));
+        QParamsQconf qp = new QParamsQconf(new File("dff/ss.s"));
         qp.readParams();
 
     }

@@ -87,7 +87,7 @@ public class Q_Analysis {
             // detect old/new file format
             File paramFile = new File(directory, filename); // config file
             if (paramFile.getName().endsWith(".QCONF")) // new file format see TODO #152
-                qp = new QParamsExchanger(paramFile);
+                qp = new QParamsQconf(paramFile);
             else
                 qp = new QParams(paramFile); // initialize general param storage
             qp.readParams(); // create associated files included in paQP and read params
@@ -550,14 +550,14 @@ class STmap implements IQuimpSerialize {
             map3d.build();
             map3d.toOrigin(oH.indexGetOutline(0).getCentroid());
             map3d.scale(0.05f);
-            map3d.write(new File("/temp/cell_02.wrl"));
+            map3d.write(new File("/tmp/cell_02.wrl"));
 
             // create 3D of curvature
             STMap3D map3dCur = new STMap3D(xMap, yMap, convColor);
             map3dCur.build();
             map3dCur.toOrigin(oH.indexGetOutline(0).getCentroid());
             map3dCur.scale(0.05f);
-            map3dCur.write(new File("/temp/cell_02_cur.wrl"));
+            map3dCur.write(new File("/tmp/cell_02_cur.wrl"));
         }
 
         // create fluo images
@@ -671,10 +671,10 @@ class STmap implements IQuimpSerialize {
         // |v:"+v.coord+"|v2:"+v2coord+"|tar:"+target+"|frac:"+frac);
         if (frac >= 1) {
             frac = frac - 1;
-            System.out.println("WARNING- frac corrected: " + frac);
+            LOGGER.warn("WARNING- frac corrected: " + frac);
         }
         if (frac > 1 || frac < 0) {
-            System.out.println("!WARNING, frac out of range:" + frac);
+            LOGGER.warn("!WARNING, frac out of range:" + frac);
         }
         return frac;
     }
@@ -696,14 +696,14 @@ class STmap implements IQuimpSerialize {
 
         if (frac >= 1) {
             frac = frac - 1;
-            System.out.println("WARNING- frac corrected: " + frac);
+            LOGGER.warn("WARNING- frac corrected: " + frac);
         }
         if (frac > 1 || frac < 0) {
-            System.out.println("!WARNING, frac out of range:" + frac);
+            LOGGER.warn("WARNING, frac out of range:" + frac);
         }
 
         if (Double.isNaN(frac) || Double.isNaN(frac)) {
-            System.out.println("!WARNING, frac is nan:" + frac);
+            LOGGER.warn("WARNING, frac is nan:" + frac);
             System.out.println("\tffraction: |v:" + v.fCoord + "|v2:" + v2coord + "|tar:" + target
                     + "|frac:" + frac);
             frac = 0.5;
@@ -723,7 +723,7 @@ class STmap implements IQuimpSerialize {
         }
 
         if (targ < 0) {
-            System.out.println("ERROR: target less than zero (Q_Analysis:interpCoord)");
+            LOGGER.error("ERROR: target less than zero");
         }
 
         return targ;
@@ -740,7 +740,7 @@ class STmap implements IQuimpSerialize {
         }
 
         if (targ < 0) {
-            System.out.println("ERROR: target less than zero (Q_Analysis:interpFCoord)");
+            LOGGER.error("ERROR: target less than zero");
         }
 
         return targ;
@@ -866,7 +866,7 @@ class STmap implements IQuimpSerialize {
         double totalCur, distance;
         // avertage over curvatures
         if (Qp.sumCov > 0) {
-            System.out.println("sumCurvature():summing curv");
+            LOGGER.trace("summing curv");
             v = o.getHead();
             do {
                 // System.out.println("\tnew vert");
@@ -1036,6 +1036,7 @@ class Qp {
         Qp.outFile = new File(Qp.snQPfile.getParent() + File.separator + Qp.filename);
         Qp.startFrame = qp.getStartFrame();
         Qp.endFrame = qp.getEndFrame();
+        // File p = qp.paramFile;
         fps = 1d / frameInterval;
         singleImage = false;
         useDialog = true;

@@ -12,26 +12,40 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Compatibility layer.
+ * This class override most of methods from super class QParams. 
+ * The goal of this class is rather not to extend QParams but to use polymorphism to provide 
+ * requested data to callers keeping compatibility with old quimP architecture. 
+ * The QuimP uses QParams to keep parameters read from configuration files (\a paQP, \a snQP) and 
+ * then to provide some of parameters stored in these files  to local configuration classes such as 
+ * @ref uk.ac.warwick.wsbc.QuimP.ECMp "ECMp" or @ref uk.ac.warwick.wsbc.QuimP.Qp "Qp".
+ * QuimP supports two independent file formats:
+ * <ol>
+ * <li> based on separate files (old QuimP) such as \a case_cellno.paQP
+ * <li> compound \a case.QCONF that contains data for all cells
+ * </ol>
+ * Many of parameters in underlying class QParams are set to be private and they are accessible
+ * by setters and getters. Every setter/getter is overrode in this class and contains simple logic
+ * to provide requested and expected data even if the source file was \a QCONF. 
+ * Appropriate object either QParam or QParamsQconf is created upon configuration file type. 
+ * Owing to Java late binding, always correct method is called even if the object is casted to QParams 
  * 
- * @remarks In future this class and should only deliver data from dump file on request.
  * 
  * @author p.baniukiewicz
  * @date 26 May 2016
  *
  */
-public class QParamsExchanger extends QParams {
+public class QParamsQconf extends QParams {
 
-    private static final Logger LOGGER = LogManager.getLogger(QParamsExchanger.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(QParamsQconf.class.getName());
 
     private Serializer<DataContainer> loaded; // instance of loaded data
 
     /**
      * Set default values for superclass, also prefix and path for files
      * 
-     * @param p \a QCONF file
+     * @param p \c QCONF file
      */
-    QParamsExchanger(File p) {
+    QParamsQconf(File p) {
         super(p);
         paramFormat = QParams.NEW_QUIMP;
     }
@@ -47,8 +61,9 @@ public class QParamsExchanger extends QParams {
     }
 
     /**
-     * Read composite file
-     * @throws QuimpException 
+     * Read composite \a QCONF file
+     * 
+     * @throws QuimpException when problem with loading/parsing JSON
      */
     @Override
     void readParams() throws QuimpException {

@@ -21,9 +21,12 @@ import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 
 /**
  * Container class for parameters defining the whole process of analysis in QuimP.
- * Stores parameters from different modules and supports writing and reading
- * segmentation parameters from files (paQP). This class defines file format
- * used for storing parameters in file. Process only main paQP file. QuimP uses
+ * Stores parameters read from configuration files and provide them to different modules.
+ * Supports writing and reading segmentation parameters from files (paQP). 
+ * This class defines file format used for storing parameters in file. 
+ * Object of this class is used for creating local configuration objects for ECMM and QAnalysis
+ * modules.
+ * Process only main paQP file. QuimP uses
  * several files to store segmentation results and algorithm parameters:
  * <ul>
  * <li>.paQP - core file, contains reference to images and parameters of
@@ -48,7 +51,7 @@ public class QParams {
     public static final int QUIMP_11 = 2;
     public static final int NEW_QUIMP = 3;
 
-    protected File paramFile; //!< paQP file full name
+    File paramFile; //!< paQP file full name
     private File[] otherPaFiles;
     public int paramFormat; //!< Indicates format of data file
 
@@ -187,12 +190,6 @@ public class QParams {
      */
     public void setFrameInterval(double frameInterval) {
         this.frameInterval = frameInterval;
-    }
-
-    void setParamFile(File p) {
-        paramFile = p;
-        path = paramFile.getParent();
-        prefix = Tool.removeExtension(paramFile.getName());
     }
 
     /**
