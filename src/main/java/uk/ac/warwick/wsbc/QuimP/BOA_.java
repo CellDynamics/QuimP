@@ -114,7 +114,6 @@ public class BOA_ implements PlugIn {
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     static final Logger LOGGER = LogManager.getLogger(BOA_.class.getName());
-    public static final String QCONFFILEEXT = ".QCONF"; //!< Extension for QCONF file
     CustomCanvas canvas;
     CustomStackWindow window;
     static TextArea logArea;
@@ -1245,8 +1244,8 @@ public class BOA_ implements PlugIn {
                 bSeg.setLabel("computing");
                 int framesCompleted;
                 try {
-                    runBoa(qState.boap.frame, qState.boap.FRAMES);
-                    framesCompleted = qState.boap.FRAMES;
+                    runBoa(qState.boap.frame, qState.boap.getFRAMES());
+                    framesCompleted = qState.boap.getFRAMES();
                     IJ.showStatus("COMPLETE");
                 } catch (BoaException be) {
                     BOA_.log(be.getMessage());
@@ -1321,7 +1320,7 @@ public class BOA_ implements PlugIn {
                 return;
             }
             if (b == menuSaveConfig) {
-                String saveIn = qState.boap.orgFile.getParent();
+                String saveIn = qState.boap.getOrgFile().getParent();
                 SaveDialog sd = new SaveDialog("Save plugin config data...", saveIn,
                         qState.boap.fileName, ".pgQP");
                 if (sd.getFileName() != null) {
@@ -1392,7 +1391,7 @@ public class BOA_ implements PlugIn {
             if (b == menuShowHistory) {
                 JOptionPane.showMessageDialog(window,
                         "The full history of changes is avaiable after saving your work in the"
-                                + " file *.QCONF");
+                                + " file " + BOAState.QCONFFILEEXT);
                 /*if (historyLogger.isOpened())
                     historyLogger.closeHistory();
                 else
@@ -1406,7 +1405,8 @@ public class BOA_ implements PlugIn {
              * loading.
              */
             if (b == menuLoad) {
-                OpenDialog od = new OpenDialog("Load global config data...(*.QCONF)", "");
+                OpenDialog od = new OpenDialog(
+                        "Load global config data...(*" + BOAState.QCONFFILEEXT + ")", "");
                 if (od.getFileName() != null) {
                     try {
                         Serializer<DataContainer> loaded; // loaded instance
@@ -2365,8 +2365,9 @@ public class BOA_ implements PlugIn {
                 // there is no option to solve this problem here. User can only agree or cancel
                 if (qState.boap.outFile != null) {
                     testF = new File(qState.boap.outFile.getParent() + File.separator
-                            + qState.boap.fileName + QCONFFILEEXT); // test for QCONF that is
-                                                                    // created always
+                            + qState.boap.fileName + BOAState.QCONFFILEEXT); // test for QCONF
+                                                                             // that is created
+                                                                             // always
                     if (testF.exists() && !testF.isDirectory()) {
                         ync = new YesNoCancelDialog(window, "Save Segmentation",
                                 "You are about to override previous results. Is it ok?\nIf not"
@@ -2395,7 +2396,7 @@ public class BOA_ implements PlugIn {
                         if (qState.boap.savePretty) // set pretty format if configured
                             n.setPretty();
                         n.save(qState.boap.outFile.getParent() + File.separator
-                                + qState.boap.fileName + QCONFFILEEXT);
+                                + qState.boap.fileName + BOAState.QCONFFILEEXT);
                         n = null;
                     }
                 } else {
@@ -2637,7 +2638,7 @@ class ImageGroup {
     }
 
     public void clearPaths(int fromFrame) {
-        for (int i = fromFrame; i <= BOA_.qState.boap.FRAMES; i++) {
+        for (int i = fromFrame; i <= BOA_.qState.boap.getFRAMES(); i++) {
             pathsIp = pathsStack.getProcessor(i);
             pathsIp.setValue(0);
             pathsIp.fill();
@@ -2673,7 +2674,7 @@ class ImageGroup {
             // for colour:
             // if(boap.drawColor) intensity = n.colour.getColorInt();
 
-            if (BOA_.qState.boap.HEIGHT > 800) {
+            if (BOA_.qState.boap.getHEIGHT() > 800) {
                 drawPixel(x, y, intensity, true, ip);
             } else {
                 drawPixel(x, y, intensity, false, ip);
@@ -2702,7 +2703,7 @@ class ImageGroup {
         contourIpl.setSlice(1);
         ImageProcessor contourIp;
 
-        for (int i = 1; i <= BOA_.qState.boap.FRAMES; i++) { // copy original
+        for (int i = 1; i <= BOA_.qState.boap.getFRAMES(); i++) { // copy original
             orgIp = orgStack.getProcessor(i);
             contourIp = contourStack.getProcessor(i);
             contourIp.copyBits(orgIp, 0, 0, Blitter.COPY);
@@ -2799,7 +2800,7 @@ class ImageGroup {
         int x, y;
         for (int s = 0; s < nest.size(); s++) {
             sH = nest.getHandler(s);
-            for (int i = 1; i <= BOA_.qState.boap.FRAMES; i++) {
+            for (int i = 1; i <= BOA_.qState.boap.getFRAMES(); i++) {
                 if (sH.isStoredAt(i)) {
                     snake = sH.getStoredSnake(i);
                     ip = stack.getProcessor(i);
@@ -3029,7 +3030,8 @@ class Constrictor {
                 y = yt - a * j * n.getNormal().getY();
 
                 // check that pixel is inside frame
-                if (x > 0 && y > 0 && x <= BOA_.qState.boap.WIDTH && y <= BOA_.qState.boap.HEIGHT) {
+                if (x > 0 && y > 0 && x <= BOA_.qState.boap.getWIDTH()
+                        && y <= BOA_.qState.boap.getHEIGHT()) {
                     I_outside += ip.getPixel((int) x, (int) y);
                     ++I_out;
                 }
@@ -3064,7 +3066,8 @@ class Constrictor {
                 x = xt - a * j * n.getNormal().getX();
                 y = yt - a * j * n.getNormal().getY();
                 // check that pixel is inside frame
-                if (x > 0 && y > 0 && x <= BOA_.qState.boap.WIDTH && y <= BOA_.qState.boap.HEIGHT) {
+                if (x > 0 && y > 0 && x <= BOA_.qState.boap.getWIDTH()
+                        && y <= BOA_.qState.boap.getHEIGHT()) {
                     I_outside += ip.getPixel((int) x, (int) y);
                     ++I_out;
                 }

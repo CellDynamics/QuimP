@@ -69,7 +69,8 @@ public class Q_Analysis {
             String filename; // file name of paQP
 
             if (path == null) { // no file provided, ask user
-                OpenDialog od = new OpenDialog("Open paramater file (.paQP|.QCONF)...",
+                OpenDialog od = new OpenDialog(
+                        "Open paramater file (.paQP|" + BOAState.QCONFFILEEXT + ")...",
                         OpenDialog.getLastDirectory(), ".paQP");
                 if (od.getFileName() == null) {
                     IJ.log("Cancelled - exiting...");
@@ -86,7 +87,8 @@ public class Q_Analysis {
             }
             // detect old/new file format
             File paramFile = new File(directory, filename); // config file
-            if (paramFile.getName().endsWith(".QCONF")) // new file format see TODO #152
+            if (paramFile.getName().endsWith(BOAState.QCONFFILEEXT)) // new file format see TODO
+                                                                     // #152
                 qp = new QParamsQconf(paramFile);
             else
                 qp = new QParams(paramFile); // initialize general param storage

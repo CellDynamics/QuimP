@@ -67,7 +67,8 @@ public class ECMM_Mapping {
     public ECMM_Mapping(File paramFile) {
         IJ.log("ECCM with param file name as file");
         try {
-            if (paramFile.getName().endsWith(".QCONF")) {// new file format see TODO #152
+            if (paramFile.getName().endsWith(BOAState.QCONFFILEEXT)) {// new file format see TODO
+                                                                      // #152
                 qp = new QParamsQconf(paramFile);
                 qp.readParams();
                 runFromQCONF();
@@ -89,8 +90,9 @@ public class ECMM_Mapping {
     public ECMM_Mapping() {
         about();
         try {
-            OpenDialog od = new OpenDialog("Open paramater file (.paQP|.QCONF)...",
-                    OpenDialog.getLastDirectory(), ".paQP");
+            OpenDialog od =
+                    new OpenDialog("Open paramater file (.paQP|" + BOAState.QCONFFILEEXT + ")...",
+                            OpenDialog.getLastDirectory(), ".paQP");
             if (od.getFileName() == null) {
                 IJ.log("Cancelled - exiting...");
                 return;
@@ -98,7 +100,8 @@ public class ECMM_Mapping {
             // load config file but check if it is new format or old
             File paramFile = new File(od.getDirectory(), od.getFileName());
             // check extension
-            if (paramFile.getName().endsWith(".QCONF")) // new file format see TODO #152
+            if (paramFile.getName().endsWith(BOAState.QCONFFILEEXT)) // new file format see TODO
+                                                                     // #152
                 qp = new QParamsQconf(paramFile);
             else
                 qp = new QParams(paramFile);

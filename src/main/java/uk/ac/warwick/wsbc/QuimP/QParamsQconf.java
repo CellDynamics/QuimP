@@ -29,6 +29,8 @@ import org.apache.logging.log4j.Logger;
  * Appropriate object either QParam or QParamsQconf is created upon configuration file type. 
  * Owing to Java late binding, always correct method is called even if the object is casted to QParams 
  * 
+ * @todo TODO These two classes should be in separate package to have better control over fields by 
+ * setters and getters
  * 
  * @author p.baniukiewicz
  * @date 26 May 2016

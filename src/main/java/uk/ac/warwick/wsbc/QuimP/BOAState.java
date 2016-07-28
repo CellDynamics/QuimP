@@ -64,6 +64,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 public class BOAState implements IQuimpSerialize {
 
     static final Logger LOGGER = LogManager.getLogger(BOAState.class.getName());
+    public static final String QCONFFILEEXT = ".QCONF"; //!< Extension for QCONF file
     /**
      * Reference to segmentation parameters. Holds current parameters
      * 
@@ -133,19 +134,19 @@ public class BOAState implements IQuimpSerialize {
      */
     class SegParam {
         private double nodeRes; //!< Number of nodes on ROI edge 
-        int blowup; //!< distance to blow up chain 
-        double vel_crit;
-        double f_central;
-        double f_image; //!< image force 
-        int max_iterations; //!< max iterations per contraction 
-        int sample_tan;
-        int sample_norm;
-        double f_contract;
-        double finalShrink;
+        public int blowup; //!< distance to blow up chain 
+        public double vel_crit;
+        public double f_central;
+        public double f_image; //!< image force 
+        public int max_iterations; //!< max iterations per contraction 
+        public int sample_tan;
+        public int sample_norm;
+        public double f_contract;
+        public double finalShrink;
         // Switch Params
-        boolean use_previous_snake;//!< next contraction begins with prev chain 
-        boolean showPaths;
-        boolean expandSnake; //!< whether to act as an expanding snake
+        public boolean use_previous_snake;//!< next contraction begins with prev chain 
+        public boolean showPaths;
+        public boolean expandSnake; //!< whether to act as an expanding snake
         private double min_dist; //!< min distance between nodes 
         private double max_dist; //!< max distance between nodes 
 
@@ -351,8 +352,7 @@ public class BOAState implements IQuimpSerialize {
      * @see Tool
      */
     class BOAp {
-
-        File orgFile; //!< handle to original file obtained from IJ (usually image opened) 
+        private File orgFile; //!< handle to original file obtained from IJ (usually image opened) 
         File outFile; //!< handle to \a snPQ filled in QuimP.SnakeHandler.writeSnakes() 
         String fileName; //!< loaded image file name only, no extension (\c orgFile)
         transient QParams readQp; //!< read in parameter file 
@@ -361,8 +361,8 @@ public class BOAState implements IQuimpSerialize {
         double delta_t;
         double sensitivity;
         double f_friction;
-        int FRAMES; //!< Number of frames in stack 
-        int WIDTH, HEIGHT;
+        private int FRAMES; //!< Number of frames in stack 
+        private int WIDTH, HEIGHT;
         int cut_every; //!< cut loops in chain every X frames 
         boolean oldFormat; //!< output old QuimP format? 
         boolean saveSnake; //!< save snake data 
@@ -527,6 +527,45 @@ public class BOAState implements IQuimpSerialize {
             paramsExist = "YES";
 
         }
+
+        /**
+         * @return the fRAMES
+         */
+        public int getFRAMES() {
+            return FRAMES;
+        }
+
+        /**
+         * @return the wIDTH
+         */
+        public int getWIDTH() {
+            return WIDTH;
+        }
+
+        /**
+         * @return the hEIGHT
+         */
+        public int getHEIGHT() {
+            return HEIGHT;
+        }
+
+        /**
+         * @return the orgFile
+         */
+        public File getOrgFile() {
+            return orgFile;
+        }
+
+    }
+
+    /**
+     * Default constructor
+     */
+    public BOAState() {
+        boap = new BOAp(); // build BOAp
+        segParam = new SegParam(); // and SegParam
+        snakePluginList = new SnakePluginList();
+        binarySegmentationParam = new ParamList(); // save empty list even if plugin not used
     }
 
     /**
@@ -558,6 +597,7 @@ public class BOAState implements IQuimpSerialize {
         initializeSnapshots(ip, pf, vu);
         boap.setImageScale(ip.getCalibration().pixelWidth);
         boap.setImageFrameInterval(ip.getCalibration().frameInterval);
+        boap.setup(ip);
     }
 
     private void initializeSnapshots(final ImagePlus ip, final PluginFactory pf,
@@ -571,13 +611,6 @@ public class BOAState implements IQuimpSerialize {
         isFrameEdited = new ArrayList<Boolean>(Collections.nCopies(numofframes, false));
         BOA_.LOGGER.debug("Initialize storage of size: " + numofframes + " size of segParams: "
                 + segParamSnapshots.size());
-    }
-
-    public BOAState() {
-        boap = new BOAp(); // build BOAp
-        segParam = new SegParam(); // and SegParam
-        snakePluginList = new SnakePluginList();
-        binarySegmentationParam = new ParamList(); // save empty list even if plugin not used
     }
 
     /**

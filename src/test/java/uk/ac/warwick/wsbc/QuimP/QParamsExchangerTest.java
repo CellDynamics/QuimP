@@ -47,9 +47,9 @@ public class QParamsExchangerTest {
      * @throws IllegalArgumentException 
      * @throws IllegalAccessException         
      */
-    static Object accessPrivate(String name, QParamsQconf obj, Object[] param,
-            Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    static Object accessPrivate(String name, QParamsQconf obj, Object[] param, Class<?>[] paramtype)
+            throws NoSuchMethodException, SecurityException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException {
         Method prv = obj.getClass().getDeclaredMethod(name, paramtype);
         prv.setAccessible(true);
         return prv.invoke(obj, param);
@@ -110,7 +110,7 @@ public class QParamsExchangerTest {
         assertThat(s.countPoints(), is(s.POINTS));
 
         BOAp bp = qp.getLoadedDataContainer().BOAState.boap;
-        assertThat(bp.WIDTH, is(512));
+        assertThat(bp.getWIDTH(), is(512));
 
     }
 
