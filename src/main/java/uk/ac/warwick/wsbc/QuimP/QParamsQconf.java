@@ -1,5 +1,5 @@
 /**
- * @file QParamsExchanger.java
+ * @file QParamsQconf.java
  * @date 26 May 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
