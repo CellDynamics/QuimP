@@ -6,7 +6,21 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
-    <release version="16.08.01-SNAPHOT" date="2016-07-18" description="Snapshot release">
+      <release version="16.08.01-SNAPSHOT" date="2016-07-30" description="Release candidate">
+         <action dev="baniuk" type="fix" issue="176">
+            Loading QCONF causes massive exceptions
+         </action>
+        <action dev="baniuk" type="add" issue="189">
+            Add options to clear all snakes and other settings from BOA menu
+        </action>
+        <action dev="baniuk" type="add" issue="150">
+            Allow to load new format to ECMM
+        </action>
+        <action dev="baniuk" type="add" issue="194">
+            Add support of new format QCONF to Q Analysis plugin
+        </action>
+      </release> 
+     <release version="16.08.01-SNAPHOT" date="2016-07-18" description="Snapshot release">
       <action dev="baniuk" type="fix" issue="187">
         Current frame sometimes does not update when action taken in Binary Segmentation plugin.
       </action>
