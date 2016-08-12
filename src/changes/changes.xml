@@ -20,7 +20,7 @@
             Add support of new format QCONF to Q Analysis plugin
         </action>
       </release> 
-     <release version="16.08.01-SNAPHOT" date="2016-07-18" description="Snapshot release">
+     <release version="16.08.01-SNAPSHOT" date="2016-07-18" description="Snapshot release">
       <action dev="baniuk" type="fix" issue="187">
         Current frame sometimes does not update when action taken in Binary Segmentation plugin.
       </action>
@@ -34,7 +34,7 @@
         Loading QCONF causes massive exceptions sometimes.
       </action>
     </release> 
-    <release version="16.08.01-SNAPHOT" date="2016-07-13" description="Snapshot release">
+    <release version="16.08.01-SNAPSHOT" date="2016-07-13" description="Snapshot release">
       <action dev="baniuk" type="fix" issue="181">
         Edited snakes are not processed by filters.
       </action>
