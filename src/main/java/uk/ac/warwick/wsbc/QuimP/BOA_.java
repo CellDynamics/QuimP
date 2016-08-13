@@ -1417,7 +1417,7 @@ public class BOA_ implements PlugIn {
                         // create serializer
                         Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
                         s.registerInstanceCreator(DataContainer.class,
-                                new DataContainerInstanceCreator(3, pluginFactory, viewUpdater));
+                                new DataContainerInstanceCreator(pluginFactory, viewUpdater));
                         loaded = s.load(od.getDirectory() + od.getFileName());
                         // check against image names
                         if (!loaded.obj.BOAState.boap.getFileName()
@@ -2383,7 +2383,7 @@ public class BOA_ implements PlugIn {
                 LOGGER.trace("Test for QCONF: " + testF.toString());
                 if (testF.exists() && !testF.isDirectory()) {
                     ync = new YesNoCancelDialog(window, "Save Segmentation",
-                            "You are about to override previous results. Is it ok?\nIf not"
+                            "You are about to override previous results. Is it ok?\nIf not,"
                                     + " previous data must be moved to another directory");
                     if (!ync.yesPressed())
                         return;
@@ -2403,7 +2403,9 @@ public class BOA_ implements PlugIn {
                         s = null; // remove
                         // Dump BOAState object in new format
                         Serializer<DataContainer> n;
-                        n = new Serializer<>(new DataContainer(qState), quimpInfo);
+                        DataContainer dt = new DataContainer(); // create container
+                        dt.BOAState = qState; // assign boa state to correct field
+                        n = new Serializer<>(dt, quimpInfo);
                         if (qState.boap.savePretty) // set pretty format if configured
                             n.setPretty();
                         n.save(qState.boap.deductNewParamFileName());

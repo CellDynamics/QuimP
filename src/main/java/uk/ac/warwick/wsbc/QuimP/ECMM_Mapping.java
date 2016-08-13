@@ -106,7 +106,8 @@ public class ECMM_Mapping {
             else
                 qp = new QParams(paramFile);
             qp.readParams();
-
+            if (!validateQconf())
+                return;
             if (qp.paramFormat == QParams.QUIMP_11) { // if we have old format, read outlines from
                                                       // OutlineHandler
                 runFromPAQP();
@@ -164,6 +165,33 @@ public class ECMM_Mapping {
             LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
         }
         IJ.log("Bye!");
+    }
+
+    /**
+     * Validate whether loaded QCONF file contains correct data.
+     * <p>
+     * Check for presence BOA data (actually it is done in {@link QParamsQconf#readParams()}
+     * in loaded QCONF and for presence ECMM data. If ECMM has been done on this file user must 
+     * confirm overriding.  
+     * 
+     * @return <tt>true</tt> when data are correct or user agreed for overriding Q Analysis data
+     * @throws QuimpException When there is no BOA data in file
+     */
+    private boolean validateQconf() throws QuimpException {
+        if (qp == null) {
+            throw new QuimpException("QCONF file not loaded");
+        }
+        if (qp.getLoadedDataContainer().BOAState == null) {
+            throw new QuimpException("BOA data not found in QCONF file. Run BOA first.");
+        }
+        if (qp.getLoadedDataContainer().ECMMState != null) {
+            YesNoCancelDialog ync;
+            ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
+                    "You are about to override previous results. Is it ok?");
+            if (!ync.yesPressed())
+                return false;
+        }
+        return true;
     }
 
     /**

@@ -93,7 +93,8 @@ public class Q_Analysis {
             else
                 qp = new QParams(paramFile); // initialize general param storage
             qp.readParams(); // create associated files included in paQP and read params
-
+            if (!validateQconf())
+                return;
             // show dialog
             if (!showDialog()) { // if user cancelled dialog
                 return; // do nothing
@@ -153,16 +154,46 @@ public class Q_Analysis {
             IJ.showStatus("Finished");
         } catch (QuimpException e) {
             LOGGER.debug(e.getMessage(), e);
-            LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
+            LOGGER.error("Problem with running Q Analysis: " + e.getMessage());
         }
     }
 
     /**
-     * Run Q Analysis if input was QCONF
-     * Saves updated QCONF
-     * @throws QuimpException when saving failed
-     * @warning uk.ac.warwick.wsbc.QuimP.Q_Analysis.run() updates also ECMMstate by modifying
-     * fields in Outlines that are accessed by reference here. 
+     * Validate whether loaded QCONF file contains correct data.
+     * <p>
+     * Check for presence ECMM data in loaded QCONF and for presence Q Analysis data. If Q Analysis
+     * has been done on this file user must confirm overriding.  
+     * 
+     * @return <tt>true</tt> when data are correct or user agreed for overriding Q Analysis data
+     * @throws QuimpException When there is no ECMM data in file
+     */
+    private boolean validateQconf() throws QuimpException {
+        if (qp == null) {
+            throw new QuimpException("QCONF file not loaded");
+        }
+        if (qp.getLoadedDataContainer().ECMMState == null) {
+            throw new QuimpException("ECMM data not found in QCONF file. Run ECMM first.");
+        }
+        if (qp.getLoadedDataContainer().QState != null) {
+            YesNoCancelDialog ync;
+            ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
+                    "You are about to override previous results. Is it ok?");
+            if (!ync.yesPressed())
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Run Q Analysis if input was QCONF.
+     * <p>
+     * Saves updated QCONF.
+     * <p>
+     * <b>Warning</b><p>
+     * {@link #run()} updates also {@link DataContainer#ECMMState ECMMState} by modifying fields in
+     * Outlines that are accessed by reference here. 
+     * 
+     * @throws QuimpException when saving failed or there is no ECMM data in file.
      */
     private void runFromQCONF() throws QuimpException {
         int i = 0;
@@ -180,7 +211,7 @@ public class Q_Analysis {
     }
 
     /**
-     * Run Q Analysis if input was paQP file
+     * Run Q Analysis if input was paQP file.
      * 
      * @throws QuimpException when OutlineHandler can not be read
      */
@@ -188,7 +219,6 @@ public class Q_Analysis {
         Qp.setup(qp); // copy selected data from general QParams to local storage
         oH = new OutlineHandler(qp); // load data from file
         if (!oH.readSuccess) {
-            LOGGER.error("OutlineHandlers could not be read!");
             throw new QuimpException("Could not read OutlineHandler");
         }
         run();
