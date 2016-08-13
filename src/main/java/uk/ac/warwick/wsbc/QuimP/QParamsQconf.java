@@ -81,7 +81,10 @@ public class QParamsQconf extends QParams {
                     "Loading or processing of " + getParamFile().getAbsolutePath() + " failed", e);
         }
         // second check of basic logic
-        if (loaded.obj.BOAState == null || !loaded.className.equals("DataContainer")
+        if (loaded.obj.BOAState == null)
+            throw new QuimpException("Loaded file " + getParamFile().getAbsolutePath()
+                    + " does not contain BOA data");
+        if (!loaded.className.equals("DataContainer")
                 || !loaded.version[2].equals("QuimP") && !loaded.version[2].equals(Tool.defNote)) {
             LOGGER.error("Not QuimP file?");
             throw new QuimpException(
