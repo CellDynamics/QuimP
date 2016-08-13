@@ -47,7 +47,7 @@ public class QParamsQconf extends QParams {
      * 
      * @param p \c QCONF file
      */
-    QParamsQconf(File p) {
+    public QParamsQconf(File p) {
         super(p);
         paramFormat = QParams.NEW_QUIMP;
     }
@@ -68,7 +68,7 @@ public class QParamsQconf extends QParams {
      * @throws QuimpException when problem with loading/parsing JSON
      */
     @Override
-    void readParams() throws QuimpException {
+    public void readParams() throws QuimpException {
         Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
         try {
             // load file and make first check of correctness
@@ -107,7 +107,7 @@ public class QParamsQconf extends QParams {
      * @throws QuimpException When file can not be saved
      */
     @Override
-    void writeParams() throws QuimpException {
+    public void writeParams() throws QuimpException {
         LOGGER.debug("New file format: Updating data " + getParamFile());
         try {
             loaded.obj.beforeSerialize(); // call explicitly beforeSerialize because Dump doesn't do

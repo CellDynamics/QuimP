@@ -55,7 +55,7 @@ public class DataContainer implements IQuimpSerialize {
 
     /**
      * Called before serialization. 
-     * 
+     * <p>
      * Call similar method for all stored object allowing them for self-preparation for normal
      * operations after loading
      */
@@ -74,7 +74,7 @@ public class DataContainer implements IQuimpSerialize {
 
     /**
      * Called after serialization. 
-     * 
+     * <p>
      * Call similar method for all stored object allowing them for self-preparation for saving
      */
     @Override

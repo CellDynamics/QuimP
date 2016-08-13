@@ -107,7 +107,7 @@ public class QParams {
      * 
      * @param p \a paQP file
      */
-    QParams(File p) {
+    public QParams(File p) {
         currentHandler = 0;
         setParamFile(p);
 
@@ -414,7 +414,7 @@ public class QParams {
      * @return \c true if successful
      * @throws QuimpException 
      */
-    void readParams() throws QuimpException {
+    public void readParams() throws QuimpException {
         paramFormat = QParams.OLD_QUIMP;
         try {
             BufferedReader d = new BufferedReader(new FileReader(paramFile));
@@ -500,7 +500,7 @@ public class QParams {
         }
     }
 
-    void writeParams() throws QuimpException {
+    public void writeParams() throws QuimpException {
 
         try {
             if (paramFile.exists()) {

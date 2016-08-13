@@ -67,8 +67,7 @@ public class ECMM_Mapping {
     public ECMM_Mapping(File paramFile) {
         IJ.log("ECCM with param file name as file");
         try {
-            if (paramFile.getName().endsWith(BOAState.QCONFFILEEXT)) {// new file format see TODO
-                                                                      // #152
+            if (paramFile.getName().endsWith(BOAState.QCONFFILEEXT)) {// new file format TODO #152
                 qp = new QParamsQconf(paramFile);
                 qp.readParams();
                 runFromQCONF();

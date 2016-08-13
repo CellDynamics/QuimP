@@ -1,7 +1,3 @@
-/**
- * @file IQuimpPlugin.java
- * @date 2 Feb 2016
- */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
 /**
@@ -10,7 +6,6 @@ package uk.ac.warwick.wsbc.QuimP.plugin;
  * Contain also flags understood by plugins
  * 
  * @author p.baniukiewicz
- * @date 2 Feb 2016
  * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
  */
 public interface IQuimpPlugin {
@@ -23,7 +18,7 @@ public interface IQuimpPlugin {
     int MODIFY_INPUT = 64; //!< Plugin modify input data in place
 
     /**
-     * Provide basic information to QuimP about plugin
+     * Provide basic information to QuimP about plugin.
      * 
      * @warning It must return at least type of plugin
      * @return Combination of flags specifying:
@@ -33,7 +28,7 @@ public interface IQuimpPlugin {
     int setup();
 
     /**
-     * Pass to plugin its configuration data as pairs <key,value>
+     * Pass to plugin its configuration data as pairs <key,value>.
      * 
      * This method is used for restoring configuration from config files
      * maintained by caller. Caller do not modify these values and only stores
@@ -52,7 +47,7 @@ public interface IQuimpPlugin {
     void setPluginConfig(final ParamList par) throws QuimpPluginException;
 
     /**
-     * Retrieve plugin configuration data as pairs <key,value>
+     * Retrieve plugin configuration data as pairs <key,value>.
      * 
      * This configuration is not used by QuimP but it may be stored in QuimP
      * configuration
@@ -63,7 +58,7 @@ public interface IQuimpPlugin {
     ParamList getPluginConfig();
 
     /**
-     * Show or hide plugin UI
+     * Show or hide plugin UI.
      * 
      * UI is not obligatory. This function must be implemented but may do
      * nothing.
@@ -73,7 +68,7 @@ public interface IQuimpPlugin {
     void showUI(boolean val);
 
     /**
-     * Get version of plugin
+     * Get version of plugin.
      * 
      * Versioning may be used for detecting incompatibilities between
      * configurations. Plugin version is saved in QuimP config files, and then
@@ -86,7 +81,7 @@ public interface IQuimpPlugin {
     String getVersion();
 
     /**
-     * Get short info about plugin
+     * Get short info about plugin.
      * 
      * One can use white characters in this string to limit line length because there is
      * no guarantee that displayer will wrap lines. 
