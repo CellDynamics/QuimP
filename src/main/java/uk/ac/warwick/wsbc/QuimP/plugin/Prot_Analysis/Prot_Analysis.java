@@ -73,7 +73,6 @@ public class Prot_Analysis extends QuimpPluginCore {
         OutlineHandlers oHs = qp.getLoadedDataContainer().ECMMState;
         int h = 0;
         for (STmap mapCell : stMap) { // iterate through cells
-            int pN = 0;
             float[][] motMap = QuimPArrayUtils.double2float(mapCell.motMap);
             // rotate and flip to match orientation of ColorProcessor (QuimP default)
             ImageProcessor imp = new FloatProcessor(motMap).rotateRight();

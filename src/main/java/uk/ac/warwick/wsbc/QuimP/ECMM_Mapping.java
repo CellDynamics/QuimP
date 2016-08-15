@@ -194,7 +194,7 @@ public class ECMM_Mapping {
     }
 
     /**
-     * Main executive for ECMM processing for QParamsExchanger (new file version)
+     * Main executive for ECMM processing for QParamsExchanger (new file version).
      *  
      * @throws QuimpException 
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling

@@ -156,14 +156,24 @@ public abstract class QuimpPluginCore {
      * Executed when input file is <i>QCONF</i>.
      */
     public void runFromQCONF() {
-        throw new UnsupportedOperationException("Not implemented here");
+        LOGGER.warn("Not implemented here");
     }
 
     /**
      * Executed when input file is <i>paQP</i>.
      */
     public void runFromPAQP() {
-        throw new UnsupportedOperationException("Not implemented here");
+        LOGGER.warn("Not implemented here");
+    }
+
+    /**
+     * Getter for loaded configuration data.
+     * 
+     * Useful when this class is used only for loading configuration files. 
+     * @return the qp
+     */
+    public QParams getQp() {
+        return qp;
     }
 
 }

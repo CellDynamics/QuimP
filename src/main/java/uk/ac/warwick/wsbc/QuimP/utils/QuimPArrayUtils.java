@@ -69,6 +69,20 @@ public class QuimPArrayUtils {
     }
 
     /**
+     * Create 2D array of doubles.
+     * @param rows Number of rows
+     * @param cols Number of columns
+     * @return rows x cols array
+     */
+    public static double[][] initDoubleArray(int rows, int cols) {
+        double[][] ret;
+        ret = new double[rows][];
+        for (int r = 0; r < rows; r++)
+            ret[r] = new double[cols];
+        return ret;
+    }
+
+    /**
      * Make deep copy of 2D array
      * 
      * @param source source matrix
@@ -187,6 +201,34 @@ public class QuimPArrayUtils {
             }
         }
         return iMin;
+    }
+
+    /**
+     * Find index of minimal element and the element itself.
+     * 
+     * @param a array to search in
+     * @return [min,index]
+     */
+    public static double[] minArrayIndexElement(double[] a) {
+        // find the index of the min
+        double[] ret = new double[2];
+        double min = a[0];
+        int iMin = 0;
+        if (a.length == 1) {
+            ret[0] = min;
+            ret[1] = iMin;
+            return ret;
+        }
+
+        for (int i = 1; i < a.length; i++) {
+            if (min > a[i]) {
+                min = a[i];
+                iMin = i;
+            }
+        }
+        ret[0] = min;
+        ret[1] = iMin;
+        return ret;
     }
 
     public static double arrayMin(double[] a) {

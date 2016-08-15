@@ -5,6 +5,9 @@ function [ path ] = trackForward( forwTrack, f, p, T)
 %       [P] = TRACKFORWARD(FORWARDMAP, F, A, T) returns a T by 2 matrix, P,
 %       where P(:,1) are frames (time), and P(:,2) are membrane position
 %       indexes.
+%       f - start frame
+%       p - membrane points indexes
+%       T - how many frames track in
 %  
 %       FORWARDMAP is the map outputted by BUILDTRACKMAPS. F is the
 %       starting frame. A is the starting membrane position index and T is

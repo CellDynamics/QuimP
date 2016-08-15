@@ -17,11 +17,11 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
 
 /**
  * Run Binary segmentation converting black-white masks to ordered ROIs.
- * 
+ * <p>
  * This class mainly join subsequent outlines to chains that contain outlines related by origin (
  * when next outline originates from previous - it means that next object overlap previous one)
  * The segmentation itself - generation of outlines for one slice is done in TrackOutline class 
- * 
+ * <p>
  * The ROIs are grouped according to their origin and they have assigned frame number where they 
  * appeared. The algorithm is as follows:
  * The frames from input stack from first to before last are processed. For every i-th frame the
@@ -92,12 +92,15 @@ public class BinarySegmentation {
 
     private static final Logger LOGGER = LogManager.getLogger(BinarySegmentation.class.getName());
 
-    private int nextID = 0; //!< next free ID
-    private ImagePlus iP; //!< image to process (stack)
-    int backgroundColor = 0; //!< predefined background color
+    private int nextID = 0; // next free ID
+    private ImagePlus iP; // image to process (stack)
     /**
-     * array of segmented slices. One TrackOutline object can have some outlines, depending how 
-     * many objects were on this slice
+     * Predefined background color.
+     */
+    int backgroundColor = 0;
+    /**
+     * Array of segmented slices. 
+     * One TrackOutline object can have some outlines, depending how many objects were on this slice
      */
     private TrackOutline[] trackers;
 
