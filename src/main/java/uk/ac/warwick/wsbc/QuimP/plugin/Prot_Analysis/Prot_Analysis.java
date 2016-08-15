@@ -10,6 +10,8 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 import ij.IJ;
 import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore;
@@ -68,9 +70,20 @@ public class Prot_Analysis extends QuimpPluginCore {
     @Override
     public void runFromQCONF() {
         STmap[] stMap = qp.getLoadedDataContainer().QState;
+        OutlineHandlers oHs = qp.getLoadedDataContainer().ECMMState;
+        int h = 0;
         for (STmap mapCell : stMap) { // iterate through cells
+            int pN = 0;
             float[][] motMap = QuimPArrayUtils.double2float(mapCell.motMap);
-            mapCell.map2ImagePlus("motility_map", new FloatProcessor(motMap)).show();
+            // rotate and flip to match orientation of ColorProcessor (QuimP default)
+            ImageProcessor imp = new FloatProcessor(motMap).rotateRight();
+            imp.flipHorizontal();
+            mapCell.map2ImagePlus("motility_map", imp).show();
+
+            // Maps are correlated in order with Outlines in DataContainer.
+            mapCell.map2ColorImagePlus("motility_map", mapCell.motMap, oHs.oHs.get(h).migLimits[0],
+                    oHs.oHs.get(h).migLimits[1]).show();
+            h++;
         }
     }
 

@@ -388,11 +388,62 @@ public class STmap implements IQuimpSerialize {
          */
     }
 
+    /**
+     * Convert ImageProcessor created from Map to ImagePlus.
+     * <p>
+     * Usually maps are non-square and need to be rescaled for correct presentation, what this
+     * method does.
+     * 
+     * <p><b>Note</b><p>
+     * Take care about what <tt>ImageProcessor</tt> is used. The <tt>ColorProcessor</tt> is created 
+     * from 1D array, whereas e.g. <tt>FloatProcessor</tt> from 2D arrays. This causes that the 
+     * same map will be displayed with different orientation. QuimP natively uses maps presented 
+     * by <tt>ColorProcessor</tt>, if one uses <tt>FloatProcessor</tt> it must be rotated and 
+     * flip to maintain correct orientation. See the following example: 
+     * <pre>
+     * {@code
+     * float[][] motMap = QuimPArrayUtils.double2float(mapCell.motMap);
+     * ImageProcessor imp = new FloatProcessor(motMap).rotateRight();
+     * imp.flipHorizontal();
+     * mapCell.map2ImagePlus("motility_map", imp).show();
+     * }
+     * </pre>
+     * @param name Name of the ImagePlus window
+     * @param imp Image processor
+     * @return Created ImagePlus object
+     */
     public ImagePlus map2ImagePlus(String name, ImageProcessor imp) {
         ImagePlus ret = new ImagePlus(name, imp);
         resize(ret);
         setCalibration(ret);
         return ret;
+    }
+
+    /**
+     * Convert raw map to colorscale.
+     * 
+     * <p><b>warning</b><p>
+     * Assumes that input 2D array map is regular and not column.
+     * 
+     * @param name Name of the ImagePlus
+     * @param map Map to convert
+     * @param min Minimum value in Outline that was used for creation of this map
+     * @param max Maximum value in Outline that was used for creation of this map
+     * @return Created ImagePlus object 
+     * @see map2ImagePlus(String, ImageProcessor)
+     */
+    public ImagePlus map2ColorImagePlus(String name, double[][] map, double min, double max) {
+        int[] migColor = new int[map.length * map[0].length];
+        int pN = 0;
+        int T = map.length;
+        int res = map[0].length;
+        for (int r = 0; r < T; r++)
+            for (int c = 0; c < res; c++) {
+                // pN = (c * mapCell.getT()) + r;
+                QColor color = QColor.ERColorMap2("rwb", motMap[r][c], min, max);
+                migColor[pN++] = color.getColorInt();
+            }
+        return map2ImagePlus("motility_map", new ColorProcessor(res, T, migColor));
     }
 
     private Vert closestFloor(Outline o, double target, char c, Vert head) {
@@ -729,6 +780,28 @@ public class STmap implements IQuimpSerialize {
         ImP.getCalibration().setUnit("frames");
         ImP.getCalibration().pixelHeight = mapPixelHeight;
         ImP.getCalibration().pixelWidth = mapPixelWidth;
+    }
+
+    /**
+     * Return resolution of the map.
+     * <p>
+     * This is value set by user in Q Analysis UI.
+     * 
+     * @return the res
+     */
+    public int getRes() {
+        return res;
+    }
+
+    /**
+     * Return number of outline points.
+     * <p>
+     * This is value obtained after interpolation of Outlines.
+     * 
+     * @return the t
+     */
+    public int getT() {
+        return T;
     }
 
     @Override

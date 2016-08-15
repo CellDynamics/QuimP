@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.List;
 
@@ -223,6 +224,22 @@ public class QuimPArrayUtils {
         for (int i = 0; i < a.length; i++) {
             System.out.print("" + a[i][0] + " " + a[i][1] + "\n");
         }
+    }
+
+    /**
+     * 
+     * @param object Array
+     * @return Size of array <tt>a</tt>
+     */
+    public static int getArraySize(Object object) {
+        if (!object.getClass().isArray()) {
+            return 1;
+        }
+        int size = 0;
+        for (int i = 0; i < Array.getLength(object); i++) {
+            size += getArraySize(Array.get(object, i));
+        }
+        return size;
     }
 
     /**
