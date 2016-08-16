@@ -12,16 +12,23 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  */
 public class TrackMap {
 
-    double[][] forwardMap;
-    double[][] backwardMap;
+    int[][] forwardMap;
+    int[][] backwardMap;
+
+    int rowsFrames;
+    int colsIndexes;
 
     /**
-     * Construct object.
+     * Construct tracking maps.
      * 
-     * Prepare tracking maps that are not stored in 
+     * Prepare tracking maps that are not stored by default in 
      * {@link uk.ac.warwick.wsbc.QuimP.DataContainer DataContainer}. This code is based on 
-     * Matlab routine buildTrackMaps.m
+     * Matlab routine buildTrackMaps.m. 
      * 
+     * <p><b>Note</b><p>
+     * All frames are numbered from 0 as well as outline indexes.
+     * Nonexisting indexes are marked as -1.
+     *  
      * @param originMap originMap stored in {@link uk.ac.warwick.wsbc.QuimP.DataContainer.QState QState}
      * @param coordMap coordMap stored in {@link uk.ac.warwick.wsbc.QuimP.DataContainer.QState QState}
      * @see uk.ac.warwick.wsbc.QuimP.DataContainer
@@ -29,16 +36,19 @@ public class TrackMap {
      */
     public TrackMap(double[][] originMap, double[][] coordMap) {
 
-        forwardMap = QuimPArrayUtils.initDoubleArray(originMap.length, originMap[0].length);
-        backwardMap = QuimPArrayUtils.initDoubleArray(forwardMap.length, forwardMap[0].length);
+        forwardMap = QuimPArrayUtils.initIntegerArray(originMap.length, originMap[0].length);
+        backwardMap = QuimPArrayUtils.initIntegerArray(forwardMap.length, forwardMap[0].length);
 
-        int rows = forwardMap.length;
-        int cols = forwardMap[0].length;
+        QuimPArrayUtils.fill2Darray(forwardMap, -1);
+        QuimPArrayUtils.fill2Darray(backwardMap, -1);
+
+        rowsFrames = forwardMap.length;
+        colsIndexes = forwardMap[0].length;
         double[] minV = new double[3];
         double[] minI = new double[3];
         // backward map
-        for (int i = 1; i < rows; i++)
-            for (int j = 0; j < cols; j++) {
+        for (int i = 1; i < rowsFrames; i++)
+            for (int j = 0; j < colsIndexes; j++) {
                 double p = originMap[i][j];
                 double[] diffA = rowDiff(p, coordMap[i - 1]);
                 double[] diffB = rowDiff(p, rowAdd(-1, coordMap[i - 1]));
@@ -56,12 +66,13 @@ public class TrackMap {
                 minI[1] = minDiffB[1];
                 minI[2] = minDiffC[1];
                 double[] minMinV = QuimPArrayUtils.minArrayIndexElement(minV);
-                backwardMap[i][j] = minI[(int) minMinV[1]]; // copy index of smallest among A,B,C
+                backwardMap[i][j] = (int) minI[(int) minMinV[1]]; // copy index of smallest among
+                                                                  // A,B,C
             }
 
         // forward map
-        for (int i = 0; i < rows - 1; i++)
-            for (int j = 0; j < cols; j++) {
+        for (int i = 0; i < rowsFrames - 1; i++)
+            for (int j = 0; j < colsIndexes; j++) {
                 double p = coordMap[i][j];
                 double[] diffA = rowDiff(p, originMap[i + 1]);
                 double[] diffB = rowDiff(p, rowAdd(-1, originMap[i + 1]));
@@ -79,7 +90,8 @@ public class TrackMap {
                 minI[1] = minDiffB[1];
                 minI[2] = minDiffC[1];
                 double[] minMinV = QuimPArrayUtils.minArrayIndexElement(minV);
-                forwardMap[i][j] = minI[(int) minMinV[1]]; // copy index of smallest among A,B,C
+                forwardMap[i][j] = (int) minI[(int) minMinV[1]]; // copy index of smallest among
+                                                                 // A,B,C
             }
     }
 
@@ -115,6 +127,68 @@ public class TrackMap {
         for (int i = 0; i < cpy.length; i++)
             cpy[i] += val;
         return cpy;
+    }
+
+    /**
+     * Get position of <tt>membraneIndex</tt> on frame <tt>currentFrame+1</tt>.
+     * 
+     * @param currentFrame frame number, counted from 0
+     * @param membraneIndex index of point on membrane on frame <tt>currentFrame</tt>
+     * @return corresponding index on next frame. Returns -1 when there is neither next frame nor
+     * index.
+     */
+    public int getNext(int currentFrame, int membraneIndex) {
+        if (currentFrame + 1 >= rowsFrames || membraneIndex >= colsIndexes)
+            return -1;
+        return forwardMap[currentFrame][membraneIndex];
+    }
+
+    /**
+     * Get position of <tt>membraneIndex</tt> on frame <tt>currentFrame-1</tt>.
+     * 
+     * @param currentFrame frame number, counted from 0
+     * @param membraneIndex index of point on membrane on frame <tt>currentFrame</tt>
+     * @return corresponding index on previous frame. Returns -1 when there is neither next frame 
+     * nor index.
+     */
+    public int getPrev(int currentFrame, int membraneIndex) {
+        if (currentFrame - 1 < 0 || membraneIndex >= colsIndexes)
+            return -1;
+        return backwardMap[currentFrame][membraneIndex];
+    }
+
+    /**
+     * Track given point forward.
+     * 
+     * @param currentFrame Starting frame (not included in results)
+     * @param membraneIndex Tracked membrane index
+     * @param timeSpan Number of frames to track
+     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame+1</tt> to 
+     * <tt>currentFrame+timeSpan</tt>
+     */
+    public int[] trackForward(int currentFrame, int membraneIndex, int timeSpan) {
+        int[] ret = new int[timeSpan];
+        ret[0] = getNext(currentFrame, membraneIndex);
+        for (int t = 1; t < timeSpan; t++)
+            ret[t] = getNext(currentFrame + t, (int) ret[t - 1]);
+        return ret;
+    }
+
+    /**
+     * Track given point backward.
+     * 
+     * @param currentFrame Starting frame (not included in results)
+     * @param membraneIndex Tracked membrane index
+     * @param timeSpan Number of frames to track
+     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame-1</tt> to 
+     * <tt>currentFrame-timeSpan</tt>
+     */
+    public int[] trackBackward(int currentFrame, int membraneIndex, int timeSpan) {
+        int[] ret = new int[timeSpan];
+        ret[timeSpan - 1] = getPrev(currentFrame, membraneIndex);
+        for (int t = timeSpan - 2; t >= 0; t--)
+            ret[t] = getPrev(currentFrame - (timeSpan - t - 1), (int) ret[t + 1]);
+        return ret;
     }
 
 }

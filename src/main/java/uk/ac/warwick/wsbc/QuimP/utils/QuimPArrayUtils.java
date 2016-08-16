@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,6 +80,20 @@ public class QuimPArrayUtils {
         ret = new double[rows][];
         for (int r = 0; r < rows; r++)
             ret[r] = new double[cols];
+        return ret;
+    }
+
+    /**
+     * Create 2D array of integers.
+     * @param rows Number of rows
+     * @param cols Number of columns
+     * @return rows x cols array
+     */
+    public static int[][] initIntegerArray(int rows, int cols) {
+        int[][] ret;
+        ret = new int[rows][];
+        for (int r = 0; r < rows; r++)
+            ret[r] = new int[cols];
         return ret;
     }
 
@@ -282,6 +297,32 @@ public class QuimPArrayUtils {
             size += getArraySize(Array.get(object, i));
         }
         return size;
+    }
+
+    /**
+     * Fill 2D array with given value.
+     * <p>
+     * Assumes regular array.
+     * 
+     * @param forwardMap
+     * @param d
+     */
+    public static <T> void fill2Darray(double[][] array, double d) {
+        for (double[] row : array)
+            Arrays.fill(row, d);
+    }
+
+    /**
+     * Fill 2D array with given value.
+     * <p>
+     * Assumes regular array.
+     * 
+     * @param forwardMap
+     * @param d
+     */
+    public static <T> void fill2Darray(int[][] array, int d) {
+        for (int[] row : array)
+            Arrays.fill(row, d);
     }
 
     /**
