@@ -6,7 +6,6 @@ package uk.ac.warwick.wsbc.QuimP;
  * @author p.baniukiewicz
  *
  */
-@SuppressWarnings("unused")
 public class Q_Analysis_run {
 
     /**

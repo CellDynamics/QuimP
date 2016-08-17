@@ -411,6 +411,7 @@ public class STmap implements IQuimpSerialize {
      * @param name Name of the ImagePlus window
      * @param imp Image processor
      * @return Created ImagePlus object
+     * @see map2ColorImagePlus(String, double[][], double, double)
      */
     public ImagePlus map2ImagePlus(String name, ImageProcessor imp) {
         ImagePlus ret = new ImagePlus(name, imp);
@@ -423,7 +424,16 @@ public class STmap implements IQuimpSerialize {
      * Convert raw map to colorscale.
      * 
      * <p><b>warning</b><p>
-     * Assumes that input 2D array map is regular and not column.
+     * Assumes that input 2D array map is regular and not column. This method can be used with data
+     * restored from <i>QCONF</i> file in the following way:
+     * <p>
+     * <pre>
+     * {@code
+     * // Maps are correlated in order with Outlines in DataContainer.
+     * mapCell.map2ColorImagePlus("motility_map", mapCell.motMap, oHs.oHs.get(h).migLimits[0],
+     *               oHs.oHs.get(h).migLimits[1]).show();
+     * }
+     * </pre>
      * 
      * @param name Name of the ImagePlus
      * @param map Map to convert
@@ -780,6 +790,7 @@ public class STmap implements IQuimpSerialize {
         ImP.getCalibration().setUnit("frames");
         ImP.getCalibration().pixelHeight = mapPixelHeight;
         ImP.getCalibration().pixelWidth = mapPixelWidth;
+        LOGGER.debug("PixelWidth=" + mapPixelWidth + " PixelHeight=" + mapPixelHeight);
     }
 
     /**

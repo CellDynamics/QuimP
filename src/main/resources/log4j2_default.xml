@@ -11,7 +11,7 @@
         </Console><!--Two filters need to modified if threshold level is changed. This level concerns only what should be logged to which stream. Global loglevel is in Loggers group-->
     </Appenders>
     <Loggers>
-        <Root level="debug">
+        <Root level="warn">
             <AppenderRef ref="Console_err"></AppenderRef>
             <AppenderRef ref="Console_out"></AppenderRef><!--Here is global loglevel above which is logging-->
         </Root>

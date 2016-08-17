@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 
 import org.apache.logging.log4j.core.config.Configurator;
 
+import ij.ImageJ;
+
 /**
  * @author p.baniukiewicz
  *
@@ -25,6 +27,7 @@ public class Prot_Analysis_run {
      */
     public static void main(String[] args) {
 
+        ImageJ ij = new ImageJ();
         new Prot_Analysis(
                 Paths.get("/home/baniuk/Desktop/Tests/ticket150/fluoreszenz-test_eq_smooth.QCONF"));
 

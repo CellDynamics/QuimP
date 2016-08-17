@@ -33,6 +33,7 @@ public class TrackMapTest {
         else
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(TrackMapTest.class.getName());
     static QconfLoader qL1;
     double[][] originMap1;
@@ -147,6 +148,28 @@ public class TrackMapTest {
         /**/
         TrackMap tM = new TrackMap(originMap2, coordMap2);
         int[] ret = tM.trackForward(90 - 1, 272 - 1, 10);
+        assertThat(ret, is(expected));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap#getForwardFrames(int, int)}.
+     */
+    @Test
+    public void testGetForwardFrames() throws Exception {
+      //!<
+        int[] expected = {  91-1,
+                            92-1,
+                            93-1,
+                            94-1,
+                            95-1,
+                            96-1,
+                            97-1,
+                            98-1,
+                            99-1,
+                            100-1 };
+        /**/
+        TrackMap tM = new TrackMap(originMap2, coordMap2);
+        int[] ret = tM.getForwardFrames(90 - 1, 10);
         assertThat(ret, is(expected));
     }
 

@@ -7,15 +7,35 @@ package uk.ac.warwick.wsbc.QuimP.geom;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
+ * Compute forward and backward tracking maps from origin and coordinates maps. 
+ * 
+ * Origin and coordinates maps are stored in both <i>QCONF</i> and <i>paQP</i> data files.
+ * Allow to track given outline point forward in backward using these maps.
+ * 
  * @author p.baniukiewicz
+ * @see {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMapTest}
  *
  */
 public class TrackMap {
 
+    /**
+     * Decides whether include starting point in tracking. By default Matlab procedures do
+     * not include it. Therefore, trackXX(int, int, int) returns first tracked point AFTER initial
+     * one.
+     */
+    public boolean includeFirst = false;
+
     int[][] forwardMap;
     int[][] backwardMap;
 
+    /**
+     * Number of rows in <i>Map</i> - equals to number of frames.
+     */
     int rowsFrames;
+    /**
+     * Number of columns in <i>Map</i> - equals to number of outline points set by resolution in
+     * Q Analysis.
+     */
     int colsIndexes;
 
     /**
@@ -121,7 +141,6 @@ public class TrackMap {
      * @return <tt>row</tt>+<tt>val</tt> as a copy.
      */
     private double[] rowAdd(double val, double[] row) {
-
         double[] cpy = new double[row.length];
         System.arraycopy(row, 0, cpy, 0, row.length);
         for (int i = 0; i < cpy.length; i++)
@@ -160,15 +179,21 @@ public class TrackMap {
     /**
      * Track given point forward.
      * 
-     * @param currentFrame Starting frame (not included in results)
+     * @param currentFrame Starting frame (not included in results - depends on <tt>includeFirst</tt>
+     * flag)
      * @param membraneIndex Tracked membrane index
      * @param timeSpan Number of frames to track
      * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame+1</tt> to 
      * <tt>currentFrame+timeSpan</tt>
      */
     public int[] trackForward(int currentFrame, int membraneIndex, int timeSpan) {
+        if (includeFirst)
+            timeSpan++;
         int[] ret = new int[timeSpan];
-        ret[0] = getNext(currentFrame, membraneIndex);
+        if (includeFirst)
+            ret[0] = membraneIndex;
+        else
+            ret[0] = getNext(currentFrame, membraneIndex);
         for (int t = 1; t < timeSpan; t++)
             ret[t] = getNext(currentFrame + t, (int) ret[t - 1]);
         return ret;
@@ -177,17 +202,49 @@ public class TrackMap {
     /**
      * Track given point backward.
      * 
-     * @param currentFrame Starting frame (not included in results)
+     * @param currentFrame Starting frame (not included in results - depends on <tt>includeFirst</tt>
+     * flag)
      * @param membraneIndex Tracked membrane index
      * @param timeSpan Number of frames to track
      * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame-1</tt> to 
      * <tt>currentFrame-timeSpan</tt>
      */
     public int[] trackBackward(int currentFrame, int membraneIndex, int timeSpan) {
+        if (includeFirst)
+            timeSpan++;
         int[] ret = new int[timeSpan];
-        ret[timeSpan - 1] = getPrev(currentFrame, membraneIndex);
+        if (includeFirst)
+            ret[timeSpan - 1] = membraneIndex;
+        else
+            ret[timeSpan - 1] = getPrev(currentFrame, membraneIndex);
         for (int t = timeSpan - 2; t >= 0; t--)
             ret[t] = getPrev(currentFrame - (timeSpan - t - 1), (int) ret[t + 1]);
+        return ret;
+    }
+
+    /**
+     * Helper that generates range of frames for given input parameters.
+     * 
+     * These are frames that {@link trackForward(int, int, int)} returns indexes for.
+     * Input parameters must be the same as for {@link trackForward(int, int, int)}.
+     * 
+     * @param currentFrame Starting frame (not included in results)
+     * @param timeSpan timeSpan Number of frames to track
+     * @return Array of frame numbers
+     */
+    public int[] getForwardFrames(int currentFrame, int timeSpan) {
+        int f;
+        if (includeFirst)
+            timeSpan++;
+        int[] ret = new int[timeSpan];
+        if (includeFirst)
+            f = currentFrame;
+        else
+            f = currentFrame + 1;
+        int l = 0;
+        do {
+            ret[l++] = f++;
+        } while (l < timeSpan);
         return ret;
     }
 

@@ -99,11 +99,13 @@ public class QuimPArrayUtils {
 
     /**
      * Make deep copy of 2D array
+     * <p>
+     * If destination matrix i already initialized it must have correct size.
      * 
      * @param source source matrix
-     * @param dest destination matrix, if \a dest is \a null the matrix is initialized here
-     * @return destination matrix
-     * @warning destination matrix must be initialized and has correct size
+     * @param dest destination matrix, if <tt>dest</tt> is <tt>null</tt> the matrix is initialized 
+     * in place.
+     * @return copy of source matrix
      */
     public static double[][] copy2darray(double[][] source, double[][] dest) {
         double[][] ret;
@@ -128,7 +130,6 @@ public class QuimPArrayUtils {
                 pw.write("," + a[i][j]);
             }
         }
-
         pw.close();
     }
 
