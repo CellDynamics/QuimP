@@ -248,4 +248,30 @@ public class TrackMap {
         return ret;
     }
 
+    /**
+     * Helper that generates range of frames for given input parameters.
+     * 
+     * These are frames that {@link trackBackward(int, int, int)} returns indexes for.
+     * Input parameters must be the same as for {@link trackBackward(int, int, int)}.
+     * 
+     * @param currentFrame Starting frame (not included in results)
+     * @param timeSpan timeSpan Number of frames to track
+     * @return Array of frame numbers
+     */
+    public int[] getBackwardFrames(int currentFrame, int timeSpan) {
+        int f;
+        if (includeFirst)
+            timeSpan++;
+        int[] ret = new int[timeSpan];
+        if (includeFirst)
+            f = currentFrame;
+        else
+            f = currentFrame - 1;
+        int l = timeSpan - 1;
+        do {
+            ret[l--] = f--;
+        } while (l >= 0);
+        return ret;
+    }
+
 }

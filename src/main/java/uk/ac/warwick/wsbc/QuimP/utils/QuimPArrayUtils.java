@@ -46,6 +46,23 @@ public class QuimPArrayUtils {
     }
 
     /**
+     * reverse the given array in place.
+     * @param input
+     */
+    public static void reverseIntArray(int[] input) {
+        // handling null, empty and one element array
+        if (input == null || input.length <= 1) {
+            return;
+        }
+
+        for (int i = 0; i < input.length / 2; i++) {
+            int temp = input[i]; // swap numbers
+            input[i] = input[input.length - 1 - i];
+            input[input.length - 1 - i] = temp;
+        }
+    }
+
+    /**
      * Convert 2D double array to float
      * 
      * @param input Array to convert

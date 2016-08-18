@@ -215,6 +215,33 @@ public class TrackMapTest {
         assertThat(ret, is(expected));
     }
 
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap#getBackwardFrames(int, int)}.
+     */
+    @Test
+    public void testGetBackwardFrames() throws Exception {
+      //!<
+        int[] expected = {  85-1,
+                            86-1,
+                            87-1,
+                            88-1,
+                            89-1,
+                            90-1,
+                            91-1,
+                            92-1,
+                            93-1,
+                            94-1,
+                            95-1,
+                            96-1,
+                            97-1,
+                            98-1,
+                            99-1};
+        /**/
+        TrackMap tM = new TrackMap(originMap2, coordMap2);
+        int[] ret = tM.getBackwardFrames(100 - 1, 15);
+        assertThat(ret, is(expected));
+    }
+
 }
 
 /**
