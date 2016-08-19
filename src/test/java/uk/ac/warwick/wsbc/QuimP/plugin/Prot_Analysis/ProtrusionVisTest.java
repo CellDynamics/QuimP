@@ -23,8 +23,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import ij.IJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.QuimP.DataContainer;
-import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 
 /**
@@ -45,7 +43,7 @@ public class ProtrusionVisTest {
     @Mock
     private MaximaFinder mF;
     @Mock
-    private QParams qP;
+    private STmap mapCell;
     @InjectMocks
     private ProtrusionVis protrusionVis;
 
@@ -99,15 +97,10 @@ public class ProtrusionVisTest {
         int[] indexes = { 0, 0, 0, 0, 0, 0, 0 };
         double[][] xs = { { 10 }, { 50 }, { 100 }, { 150 }, { 200 }, { 300 }, { 400 } };
         double[][] ys = { { 50 }, { 60 }, { 160 }, { 210 }, { 360 }, { 460 }, { 510 } };
-        STmap stMap = Mockito.mock(STmap.class);
-        Mockito.when(stMap.getxMap()).thenReturn(xs);
-        Mockito.when(stMap.getyMap()).thenReturn(ys);
-
-        DataContainer dC = Mockito.mock(DataContainer.class);
-        Mockito.when(dC.getQState()).thenReturn(new STmap[] { stMap });
+        Mockito.when(mapCell.getxMap()).thenReturn(xs);
+        Mockito.when(mapCell.getyMap()).thenReturn(ys);
 
         Mockito.when(mF.getMaxima()).thenReturn(new Polygon(indexes, frames, 7));
-        Mockito.when(qP.getLoadedDataContainer()).thenReturn(dC);
 
         protrusionVis.addPointsToImage();
 

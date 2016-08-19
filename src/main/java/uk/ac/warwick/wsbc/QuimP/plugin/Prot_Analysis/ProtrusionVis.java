@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import ij.ImagePlus;
 import ij.gui.Overlay;
-import uk.ac.warwick.wsbc.QuimP.QParams;
+import uk.ac.warwick.wsbc.QuimP.STmap;
 
 /**
  * @author p.baniukiewicz
@@ -19,21 +19,22 @@ import uk.ac.warwick.wsbc.QuimP.QParams;
  */
 public class ProtrusionVis {
     private static final Logger LOGGER = LogManager.getLogger(ProtrusionVis.class.getName());
-    private QParams qP;
+    private STmap mapCell;
     private MaximaFinder mF;
     ImagePlus originalImage;
 
     public ProtrusionVis() {
-        qP = null;
+        mapCell = null;
         mF = null;
         originalImage = null;
     }
 
     /**
+     * @param qP 
      * 
      */
-    public ProtrusionVis(QParams qp, MaximaFinder mF) {
-        this.qP = qP;
+    public ProtrusionVis(MaximaFinder mF, STmap mapCell) {
+        this.mapCell = mapCell;
         this.mF = mF;
 
     }
@@ -41,9 +42,12 @@ public class ProtrusionVis {
     public void addPointsToImage() {
         LOGGER.trace(originalImage);
         LOGGER.trace(mF.getMaxima());
-        LOGGER.trace(qP.getLoadedDataContainer());
+        LOGGER.trace(mapCell);
         Overlay overaly = new Overlay();
-        LOGGER.trace(Arrays.toString(qP.getLoadedDataContainer().getQState()[0].getxMap()));
+        double x[][] = mapCell.getxMap();
+        double y[][] = mapCell.getyMap();
+
+        LOGGER.trace(Arrays.toString(mapCell.getxMap()));
 
     }
 
