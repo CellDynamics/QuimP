@@ -815,6 +815,20 @@ public class STmap implements IQuimpSerialize {
         return T;
     }
 
+    /**
+     * @return the xMap
+     */
+    public double[][] getxMap() {
+        return xMap;
+    }
+
+    /**
+     * @return the yMap
+     */
+    public double[][] getyMap() {
+        return yMap;
+    }
+
     @Override
     public void beforeSerialize() {
     }

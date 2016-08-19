@@ -58,6 +58,27 @@ public class DataContainer implements IQuimpSerialize {
     }
 
     /**
+     * @return the bOAState
+     */
+    public BOAState getBOAState() {
+        return BOAState;
+    }
+
+    /**
+     * @return the eCMMState
+     */
+    public OutlineHandlers getECMMState() {
+        return ECMMState;
+    }
+
+    /**
+     * @return the qState
+     */
+    public STmap[] getQState() {
+        return QState;
+    }
+
+    /**
      * Called before serialization. 
      * <p>
      * Call similar method for all stored object allowing them for self-preparation for normal
