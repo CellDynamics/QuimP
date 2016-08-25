@@ -90,6 +90,9 @@ public class Prot_Analysis extends QuimpPluginCore {
         STmap[] stMap = qp.getLoadedDataContainer().QState;
         OutlineHandlers oHs = qp.getLoadedDataContainer().ECMMState;
         int h = 0;
+        ImagePlus im1 =
+                IJ.openImage(qp.getLoadedDataContainer().BOAState.boap.getOrgFile().getPath());
+        ProtrusionVis pV = new ProtrusionVis(im1);
         for (STmap mapCell : stMap) { // iterate through cells
             // convert binary 2D array to ImageJ
             float[][] motMap = QuimPArrayUtils.double2float(mapCell.motMap);
@@ -98,8 +101,8 @@ public class Prot_Analysis extends QuimpPluginCore {
             imp.flipHorizontal();
             // compute maxima
             MaximaFinder mF = new MaximaFinder(imp);
-            mF.computeMaximaIJ(1.5);
-            List<PolygonRoi> pL = trackMaxima(mapCell, 1, mF); // track maxima across motility map
+            mF.computeMaximaIJ(2.5);
+            List<PolygonRoi> pL = trackMaxima(mapCell, 2, mF); // track maxima across motility map
 
             // plotting
             Polygon maxi = mF.getMaxima();
@@ -113,6 +116,9 @@ public class Prot_Analysis extends QuimpPluginCore {
                 overlay.add(p);
             }
             im.show();
+
+            pV.addMaximaToImage(mapCell, mF);
+            pV.addTrackingLinesToImage(mapCell, pL);
             /*
             // Maps are correlated in order with Outlines in DataContainer.
             mapCell.map2ColorImagePlus("motility_map", mapCell.motMap, oHs.oHs.get(h).migLimits[0],
@@ -120,6 +126,8 @@ public class Prot_Analysis extends QuimpPluginCore {
             */
             h++;
         }
+
+        pV.getOriginalImage().show();
     }
 
     /* (non-Javadoc)

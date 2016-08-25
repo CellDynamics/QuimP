@@ -351,7 +351,7 @@ public class BOAState implements IQuimpSerialize {
      * @see QParams
      * @see Tool
      */
-    class BOAp {
+    public class BOAp {
         private File orgFile; //!< handle to original file obtained from IJ (usually image opened) 
         /**
          * Corename for output, initially contains path and name without extension from orgFile. 

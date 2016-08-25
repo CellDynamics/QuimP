@@ -31,8 +31,8 @@ public class Prot_Analysis_run {
         ImageJ ij = new ImageJ();
         // new Prot_Analysis(
         // Paths.get("/home/baniuk/Desktop/Tests/ticket150/fluoreszenz-test_eq_smooth.QCONF"));
-        new Prot_Analysis(
-                Paths.get("/home/baniuk/Documents/Kay-copy/KZ4/KZ4-220214-cAR1-GFP-devel5.QCONF"));
+        new Prot_Analysis(Paths
+                .get("src/test/resources/ProtAnalysisTest/KZ4/KZ4-220214-cAR1-GFP-devel5.QCONF"));
 
     }
 

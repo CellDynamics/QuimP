@@ -68,7 +68,8 @@ public class ProtrusionVis {
         int[] indexes = max.xpoints;
         int[] frames = max.ypoints;
 
-        LOGGER.trace(Arrays.toString(frames));
+        LOGGER.trace("Frames:" + Arrays.toString(frames));
+        LOGGER.trace("Indexe:" + Arrays.toString(indexes));
         for (int n = 0; n < max.npoints; n++) {
 
             double xcoord = x[frames[n]][indexes[n]]; // screen coordinate of
@@ -94,14 +95,17 @@ public class ProtrusionVis {
             float xcoord[] = new float[plRsorted.get(0).getNCoordinates()];
             float ycoord[] = new float[plRsorted.get(0).getNCoordinates()];
             for (int f = 0; f < plRsorted.get(0).getNCoordinates(); f++) {
+                if (plRsorted.get(0).getPolygon().ypoints[f] < 0
+                        || plRsorted.get(0).getPolygon().xpoints[f] < 0)
+                    continue;
                 xcoord[f] = (float) x[plRsorted.get(0).getPolygon().ypoints[f]][plRsorted.get(0)
                         .getPolygon().xpoints[f]];
                 ycoord[f] = (float) y[plRsorted.get(0).getPolygon().ypoints[f]][plRsorted.get(0)
                         .getPolygon().xpoints[f]];
             }
             for (int f = 0; f < plRsorted.get(0).getNCoordinates(); f++) {
-                PolygonRoi pRoi = new PolygonRoi(xcoord, ycoord, f + 1, Roi.POLYLINE);
-                pRoi.setPosition((int) plRsorted.get(0).getYCoordinates()[f] + 1);
+                PolygonRoi pRoi = new PolygonRoi(xcoord, ycoord, f + 1, Roi.FREELINE);
+                pRoi.setPosition((int) plRsorted.get(0).getPolygon().ypoints[f] + 1);
                 pRoi.setStrokeColor(Color.GREEN);
                 pRoi.setFillColor(Color.GREEN);
                 overlay.add(pRoi);
@@ -210,7 +214,7 @@ public class ProtrusionVis {
 }
 
 /**
- * Compare along frames (y-coordinate)
+ * Compare Point2i objects along frames (y-coordinate).
  * 
  * @author p.baniukiewicz
  *
