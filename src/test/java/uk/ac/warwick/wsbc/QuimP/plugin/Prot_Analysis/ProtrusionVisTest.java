@@ -126,10 +126,10 @@ public class ProtrusionVisTest {
         protrusionVis.addMaximaToImage(mapCell, mF);
 
         protrusionVis.getOriginalImage().setTitle("testAddPointsToImage");
-        protrusionVis.getOriginalImage().show();
-        while (protrusionVis.getOriginalImage().isVisible()) {
-            Thread.sleep(1500);
-        }
+        // protrusionVis.getOriginalImage().show();
+        // while (protrusionVis.getOriginalImage().isVisible()) {
+        // Thread.sleep(1500);
+        // }
     }
 
     /**
@@ -177,10 +177,10 @@ public class ProtrusionVisTest {
         protrusionVis.addTrackingLinesToImage(mapCell, testRoi);
 
         protrusionVis.getOriginalImage().setTitle("testAddTrackingLinesToImage");
-        protrusionVis.getOriginalImage().show();
-        while (protrusionVis.getOriginalImage().isVisible()) {
-            Thread.sleep(1500);
-        }
+        // protrusionVis.getOriginalImage().show();
+        // while (protrusionVis.getOriginalImage().isVisible()) {
+        // Thread.sleep(1500);
+        // }
     }
 
     @Test

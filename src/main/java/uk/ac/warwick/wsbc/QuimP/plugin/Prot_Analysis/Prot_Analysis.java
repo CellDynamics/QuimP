@@ -93,6 +93,7 @@ public class Prot_Analysis extends QuimpPluginCore {
         ImagePlus im1 =
                 IJ.openImage(qp.getLoadedDataContainer().BOAState.boap.getOrgFile().getPath());
         ProtrusionVis pV = new ProtrusionVis(im1);
+        LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells
             // convert binary 2D array to ImageJ
             float[][] motMap = QuimPArrayUtils.double2float(mapCell.motMap);
@@ -101,8 +102,8 @@ public class Prot_Analysis extends QuimpPluginCore {
             imp.flipHorizontal();
             // compute maxima
             MaximaFinder mF = new MaximaFinder(imp);
-            mF.computeMaximaIJ(2.5);
-            List<PolygonRoi> pL = trackMaxima(mapCell, 2, mF); // track maxima across motility map
+            mF.computeMaximaIJ(1.5);
+            List<PolygonRoi> pL = trackMaxima(mapCell, 1, mF); // track maxima across motility map
 
             // plotting
             Polygon maxi = mF.getMaxima();
@@ -119,11 +120,11 @@ public class Prot_Analysis extends QuimpPluginCore {
 
             pV.addMaximaToImage(mapCell, mF);
             pV.addTrackingLinesToImage(mapCell, pL);
-            /*
+
             // Maps are correlated in order with Outlines in DataContainer.
             mapCell.map2ColorImagePlus("motility_map", mapCell.motMap, oHs.oHs.get(h).migLimits[0],
                     oHs.oHs.get(h).migLimits[1]).show();
-            */
+
             h++;
         }
 
@@ -144,13 +145,16 @@ public class Prot_Analysis extends QuimpPluginCore {
      * 
      * @param mapCell holds all maps generated and saved by QuimP
      * @param drop the value (in x/100) while velocity remains above of the peak speed. E.g for
-     * drop=1 all tracked points are considered, drop=0.5 stands for points that are above 
-     * 0.5*peakval, where peakval is the value of found maximum.  
+     * drop=1 all tracked points are considered (along positive motility), drop=0.5 stands for 
+     * points that are above 0.5*peakval, where peakval is the value of found maximum.  
      * @param maximaFinder properly initialized object that holds maxima of motility map. 
      * All maxima are tracked
      * @return List of points tracked from every maximum point as long as they meet criterion.
      * Maximum point can be included in this list depending on setting of 
-     * {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst} flag.
+     * {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst} flag. Points for one tracking 
+     * line are packed into PolygonRoi object. Those objects alternate -
+     * backwardM1,forwardM1,backwardM2,forwardM2,... where Mx is maximum point. The size of list 
+     * is 2*number of maxima.
      */
     private List<PolygonRoi> trackMaxima(STmap mapCell, double drop,
             final MaximaFinder maximaFinder) {
@@ -183,23 +187,10 @@ public class Prot_Analysis extends QuimpPluginCore {
             QuimPArrayUtils.reverseIntArray(tBackward);
             // check where is drop off - index that has velocity below drop
             double dropValue = maxValues[i] - maxValues[i] * drop;
-            for (N = 0; N < tForward.length; N++) {
-                // frames[N] = frame + N + 1; // store number of current frame for tracked point +1
-                // because max point is not included in tForward
-                // (tForward[0] is for frame+1)
-                if (tForward[N] >= 0) {
-                    double val = (mapCell.motMap[framesF[N]][tForward[N]]);
-                    if (val < dropValue)
-                        break;
-                }
-            }
-            N = (--N < 0) ? 0 : N; // now end is the last index that fulfill criterion
-            ret.add(new PolygonRoi(tForward, framesF, N, Roi.FREELINE));
 
             for (N = 0; N < tBackward.length; N++) {
                 // frames[N] = frame + N + 1; // store number of current frame for tracked point +1
-                // because max point is not included in tForward
-                // (tForward[0] is for frame+1)
+                // because max point is not included in tForward (tForward[0] is for frame+1)
                 if (tBackward[N] >= 0) {
                     double val = (mapCell.motMap[framesB[N]][tBackward[N]]);
                     if (val < dropValue)
@@ -207,8 +198,21 @@ public class Prot_Analysis extends QuimpPluginCore {
                 }
             }
             N = (--N < 0) ? 0 : N; // now end is the last index that fulfill criterion
-            LOGGER.trace(Arrays.toString(framesB));
+            LOGGER.trace("tBackward frames:" + Arrays.toString(framesB));
             ret.add(new PolygonRoi(tBackward, framesB, N, Roi.FREELINE));
+
+            for (N = 0; N < tForward.length; N++) {
+                // frames[N] = frame + N + 1; // store number of current frame for tracked point +1
+                // because max point is not included in tForward (tForward[0] is for frame+1)
+                if (tForward[N] >= 0) {
+                    double val = (mapCell.motMap[framesF[N]][tForward[N]]);
+                    if (val < dropValue)
+                        break;
+                }
+            }
+            N = (--N < 0) ? 0 : N; // now end is the last index that fulfill criterion
+            LOGGER.trace("tForward frames:" + Arrays.toString(framesF));
+            ret.add(new PolygonRoi(tForward, framesF, N, Roi.FREELINE));
         }
         return ret;
     }

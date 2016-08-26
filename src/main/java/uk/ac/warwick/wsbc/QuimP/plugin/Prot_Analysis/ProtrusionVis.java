@@ -27,24 +27,36 @@ import uk.ac.warwick.wsbc.QuimP.GraphicsElements;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 
 /**
+ * Support various methods of visualizing protrusion data.
+ * <p>
+ * In general all plots are added to image used to construct this object as overlay layer.
+ * 
  * @author p.baniukiewicz
  *
  */
 public class ProtrusionVis {
     private static final Logger LOGGER = LogManager.getLogger(ProtrusionVis.class.getName());
-    private ImagePlus originalImage;
+    /**
+     * Definition of colors used to plot:
+     * <ol>
+     * <li> index 0 - backtracked position of point
+     * <li> index 1 - forwardtracked position of point.
+     * </ol>
+     */
+    public Color[] color = { Color.YELLOW, Color.GREEN };
+    private ImagePlus originalImage; // reference of image to be plotted on
     private Overlay overlay;
 
-    public ProtrusionVis() {
-        originalImage = null;
-    }
-
     /**
-     * @param qP 
+     * Create correct object.
      * 
+     * If input image contains any overlay data, they will be extended by new plots.
+     * 
+     * @param qP Image to be plotted on. 
      */
     public ProtrusionVis(ImagePlus originalImage) {
         this.originalImage = originalImage;
+        LOGGER.trace("Num of slices: " + originalImage.getStackSize());
         overlay = originalImage.getOverlay(); // check for existing overlay
         if (overlay == null) // create new if no present
             overlay = new Overlay();
@@ -54,14 +66,10 @@ public class ProtrusionVis {
     /**
      * Plot maxima found by {@link MaximaFinder} on current image.
      * 
-     * @param mapCell 
+     * @param mapCell map related to given cell.
      * @param mF properly initialized {@link MaximaFinder} object.
      */
     public void addMaximaToImage(STmap mapCell, MaximaFinder mF) {
-
-        LOGGER.trace("Num of slices: " + originalImage.getStackSize());
-        LOGGER.trace(mF.getMaxima());
-        LOGGER.trace(mapCell);
         Polygon max = mF.getMaxima();
         double x[][] = mapCell.getxMap();
         double y[][] = mapCell.getyMap();
@@ -71,62 +79,94 @@ public class ProtrusionVis {
         LOGGER.trace("Frames:" + Arrays.toString(frames));
         LOGGER.trace("Indexe:" + Arrays.toString(indexes));
         for (int n = 0; n < max.npoints; n++) {
-
+            // decode frame,outline to screen coordinates
             double xcoord = x[frames[n]][indexes[n]]; // screen coordinate of
             double ycoord = y[frames[n]][indexes[n]]; // (frame,index) point
-            plotCircle(xcoord, ycoord, frames[n] + 1, Color.MAGENTA, 10);
+            plotCircle(xcoord, ycoord, frames[n] + 1, Color.MAGENTA, 7);
         }
         originalImage.setOverlay(overlay); // add to image
     }
 
     /**
-     * 
-     * @param mapCell
-     * @param pL
+     * Plot tracking lines before and after maxima points (in term of frames).
+     * <p>
+     * First backward tracking lines are plotted then forward in two different colors. For given 
+     * maximum first is plotted backward tracking frame by frame, then forward tracking. Backward
+     * tracking is visible as long as forward tracking is plotted. Then both disappear.
+     *  
+     * @param mapCell map related to given cell.
+     * @param pL List of polygons that keep coordinates of points of backward and forward tracks.
+     * The polygons in <tt>pL</tt> list must be in alternating order: BM1,FM1,BM2,FM2,..., where
+     * BMx is backward track for maximum point no.x and FMx is the forward track for maximum point 
+     * no.x. This order is respected by {@link Prot_Analysis.trackMaxima(STmap, double, MaximaFinder)} 
      */
     public void addTrackingLinesToImage(STmap mapCell, List<PolygonRoi> pL) {
-        double x[][] = mapCell.getxMap();
+        double x[][] = mapCell.getxMap(); // temporary x and y coordinates for given cell
         double y[][] = mapCell.getyMap();
+        // these are raw coordinates of tracking lines extracted from List<PolygonRoi> pL
+        ArrayList<float[]> xcoorda = new ArrayList<>();
+        ArrayList<float[]> ycoorda = new ArrayList<>();
+        int aL = 0;
+        // iterate over polygons. A polygon stores one tracking line
         for (PolygonRoi pR : pL) {
+            // we need to sort tracking line points according to frames where they appear in
+            // first convert poygon to list of Point2i object
             List<Point2i> plR = PolygonRoi2Point2i(new ArrayList<PolygonRoi>(Arrays.asList(pR)));
+            // then sort this list according y-coordinate (frame)
             Collections.sort(plR, new ListPoint2iComparator());
-            List<PolygonRoi> plRsorted = Point2i2PolygonRoi(plR); // again polygon but sorted along
-                                                                  // frames
-            float xcoord[] = new float[plRsorted.get(0).getNCoordinates()];
-            float ycoord[] = new float[plRsorted.get(0).getNCoordinates()];
-            for (int f = 0; f < plRsorted.get(0).getNCoordinates(); f++) {
-                if (plRsorted.get(0).getPolygon().ypoints[f] < 0
-                        || plRsorted.get(0).getPolygon().xpoints[f] < 0)
+            // convert to polygon again but now it is sorted along frames
+            PolygonRoi plRsorted = Point2i2PolygonRoi(plR).get(0);
+            // create store for tracking line coordinates
+            xcoorda.add(new float[plRsorted.getNCoordinates()]);
+            ycoorda.add(new float[plRsorted.getNCoordinates()]);
+            // counter of invalid vertexes. According to TrackMap#trackForward last points can be -1
+            // when user provided longer time span than available. (last in term of time)
+            int invalidVertex = 0;
+            // decode frame,outline to x,y
+            for (int f = 0; f < plRsorted.getNCoordinates(); f++) {
+                // -1 stands for points that are outside of range - assured by TrackMap.class
+                if (plRsorted.getPolygon().ypoints[f] < 0
+                        || plRsorted.getPolygon().xpoints[f] < 0) {
+                    invalidVertex++; // count bad points
                     continue;
-                xcoord[f] = (float) x[plRsorted.get(0).getPolygon().ypoints[f]][plRsorted.get(0)
+                }
+                xcoorda.get(aL)[f] = (float) x[plRsorted.getPolygon().ypoints[f]][plRsorted
                         .getPolygon().xpoints[f]];
-                ycoord[f] = (float) y[plRsorted.get(0).getPolygon().ypoints[f]][plRsorted.get(0)
+                ycoorda.get(aL)[f] = (float) y[plRsorted.getPolygon().ypoints[f]][plRsorted
                         .getPolygon().xpoints[f]];
             }
-            for (int f = 0; f < plRsorted.get(0).getNCoordinates(); f++) {
-                PolygonRoi pRoi = new PolygonRoi(xcoord, ycoord, f + 1, Roi.FREELINE);
-                pRoi.setPosition((int) plRsorted.get(0).getPolygon().ypoints[f] + 1);
-                pRoi.setStrokeColor(Color.GREEN);
-                pRoi.setFillColor(Color.GREEN);
+            // now xcoorda,yccora keep coordinates of aL track, it is time to plot
+            // iterate over points in sorted polygon (one track line)
+            // even indexes stand for backward tracking, odd for forward tracking lines
+            // Some last points can be skipped here (sorting does not influence this because
+            // last points means last in term of time)
+            for (int f = 0; f < plRsorted.getNCoordinates() - invalidVertex; f++) {
+                // x/ycoorda keep all points of tracking lines but PolygonRoi constructor allow
+                // to define how many first of them we take. This allows us to add points together
+                // with frames - in result the line grows as frames rise. After sorting, first
+                // points are those on lower frames
+                PolygonRoi pRoi =
+                        new PolygonRoi(xcoorda.get(aL), ycoorda.get(aL), f + 1, Roi.FREELINE);
+                // set where we want plot f+1 points from x/ycoorda
+                pRoi.setPosition((int) plRsorted.getPolygon().ypoints[f] + 1);
+                // set colors (remember about backward/forward order)
+                pRoi.setStrokeColor(color[aL % 2]);
+                pRoi.setFillColor(color[aL % 2]);
                 overlay.add(pRoi);
+                // If there is maximum on x frame and we plotted backward line from x-n to x, we
+                // wont to keep it during plotting forward tracking from x to x+z frames. So this
+                // whole line is plotted on every x-x+z frame
+                if (aL % 2 == 1) {
+                    PolygonRoi pRoi1 = new PolygonRoi(xcoorda.get(aL - 1), ycoorda.get(aL - 1),
+                            xcoorda.get(aL - 1).length, Roi.FREELINE);
+                    pRoi1.setPosition((int) plRsorted.getPolygon().ypoints[f] + 1);
+                    pRoi1.setStrokeColor(color[aL % 2 - 1]);
+                    pRoi1.setFillColor(color[aL % 2 - 1]);
+                    overlay.add(pRoi1);
+                }
             }
-
+            aL++;
         }
-        // List<Point2i> plL = PolygonRoi2Point2i(pL); // convert to flat list of points
-        // // go through all frames and check whether there is any point to draw
-        // for (int f = 1; f <= originalImage.getStackSize(); f++) {
-        // final int c = f;
-        // List<Point2i> result =
-        // plL.stream().filter(e -> e.getX() == c).collect(Collectors.toList());
-        // if (result.isEmpty())
-        // continue;
-        // for (Point2i p : result) {
-        // double xcoord = x[p.x][p.y]; // screen coordinate of
-        // double ycoord = y[p.x][p.y]; // (frame,index) point
-        // plotPoint(xcoord, ycoord, p.y, Color.GREEN);
-        // }
-        //
-        // }
         originalImage.setOverlay(overlay); // add to image
     }
 
