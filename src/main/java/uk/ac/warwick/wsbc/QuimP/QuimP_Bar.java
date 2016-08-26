@@ -183,6 +183,10 @@ public class QuimP_Bar implements PlugIn, ActionListener {
                 "Q Analysis of data", "Q Analysis");
         toolBarUpper.add(button);
 
+        button = makeNavigationButton("prot.jpg", "run(\"Protrusion Analysis\")",
+                "Run protrusion analysis", "Protrusion Analysis");
+        toolBarUpper.add(button);
+
         // third row title
         StyledDocument doc1 = toolBarTitle2.getStyledDocument();
         doc1.setParagraphAttributes(0, doc1.getLength(), titlebaratr, false);
