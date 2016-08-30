@@ -182,6 +182,8 @@ public class ECMM_Mapping {
         if (qp == null) {
             throw new QuimpException("QCONF file not loaded");
         }
+        if (qp.paramFormat != QParams.NEW_QUIMP) // do not check if old format
+            return true;
         if (qp.getLoadedDataContainer().BOAState == null) {
             throw new QuimpException("BOA data not found in QCONF file. Run BOA first.");
         }

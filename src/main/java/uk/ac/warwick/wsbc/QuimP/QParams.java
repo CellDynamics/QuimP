@@ -56,7 +56,10 @@ public class QParams {
      */
     private File paramFile;
     private File[] otherPaFiles;
-    public int paramFormat; //!< Indicates format of data file
+    /**
+     * Indicates format of data file.
+     */
+    public int paramFormat;
     /**
      * Name of the data file - without path and extension. Equals to name of the case
      * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
