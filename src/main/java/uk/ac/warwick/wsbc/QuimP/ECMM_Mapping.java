@@ -112,19 +112,21 @@ public class ECMM_Mapping {
                 runFromPAQP();
             } else if (qp.paramFormat == QParams.NEW_QUIMP) { // new format
                 runFromQCONF();
+                IJ.log("The new data file " + paramFile.getName()
+                        + " has been updated by results of ECMM analysis.");
             } else {
                 throw new IllegalStateException("You can not be here in this time!");
             }
             // old flow with paQP files
 
-            File[] otherPaFiles = qp.findParamFiles(); // check whether are other paQP files. If
-                                                       // qp is QParamsExchanger it always return
-                                                       // empty array
+            File[] otherPaFiles = qp.findParamFiles(); // see #196
             if (otherPaFiles.length > 0) {
                 YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
                         "\tBatch Process?\n\n"
                                 + "Process other paQP files in the same folder with ECMM?\n"
-                                + "[Files already run through ECMM will be skipped!]");
+                                + "[Files already run through ECMM will be skipped!]\n"
+                                + "If one has proceeded already with new file format (QCONF),"
+                                + " this operation will update old files as well.");
                 if (yncd.yesPressed()) {
                     ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
                     ArrayList<String> skipped = new ArrayList<String>(otherPaFiles.length);

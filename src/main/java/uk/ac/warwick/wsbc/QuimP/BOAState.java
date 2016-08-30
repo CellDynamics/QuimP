@@ -620,7 +620,7 @@ public class BOAState implements IQuimpSerialize {
         }
 
         /**
-         * Generate main param file (old) name basing on ID
+         * Generate main param file (old) name basing on ID.
          * 
          * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
          * 
@@ -632,7 +632,7 @@ public class BOAState implements IQuimpSerialize {
         }
 
         /**
-         * Generate main filter config file name
+         * Generate main filter config file name.
          * 
          * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
          * 
@@ -643,7 +643,7 @@ public class BOAState implements IQuimpSerialize {
         }
 
         /**
-         * Generate main param file (new) name
+         * Generate main param file (new) name.
          * 
          * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
          * 
@@ -678,7 +678,7 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
-     * Construct full base object filling snapshots with default but valid objects
+     * Construct full base object filling snapshots with default but valid objects.
      * 
      * @param ip current image object, can be \c null. In latter case only subclasses are 
      * initialized

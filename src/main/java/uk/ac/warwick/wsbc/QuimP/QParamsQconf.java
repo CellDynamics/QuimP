@@ -244,16 +244,16 @@ public class QParamsQconf extends QParams {
     }
 
     /** 
-     * For new config file there is no need to check for presence other files (for old method other 
-     * files were those with the same case name but for different cells than loaded NAME_0.paQP,
-     * NAME_1.paQP, etc)
-     * @return empty array to maintain compatibility with super class - it means that no files were
-     * found 
+     * For new file format it redirects call to super class searching for old files (paQP).
+     * 
+     * Finally old files can be processed together with new one.
+     * 
+     * @return
      * @see uk.ac.warwick.wsbc.QuimP.QParams.findParamFiles()
      */
     @Override
     public File[] findParamFiles() {
-        return new File[0];
+        return super.findParamFiles();
     }
 
     /** 

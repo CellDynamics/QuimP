@@ -100,19 +100,21 @@ public class Q_Analysis {
             } else if (qp.paramFormat == QParams.NEW_QUIMP) { // new format, everything is read by
                                                               // readParams, just extract it
                 runFromQCONF();
+                IJ.log("The new data file " + paramFile.getName()
+                        + " has been updated by results of ECMM analysis.");
             } else {
                 throw new IllegalStateException("You can not be here in this time!");
             }
 
-            File[] otherPaFiles = qp.findParamFiles(); // check whether are other paQP files. If
-                                                       // qp is QParamsExchanger it always return
-                                                       // empty array
+            File[] otherPaFiles = qp.findParamFiles(); // see #196
             if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
                                            // user is skipped)
                 YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
                         "\tBatch Process?\n\n"
                                 + "Process other paQP files in the same folder with QAnalysis?"
-                                + "\n[The same parameters will be used]");
+                                + "\n[The same parameters will be used]\n"
+                                + "If one has proceeded already with new file format (QCONF),"
+                                + " this operation will update old files as well.");
                 if (yncd.yesPressed()) {
                     ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
                     this.closeAllImages();
