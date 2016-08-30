@@ -70,7 +70,9 @@ public class QParams {
      * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
      */
     private String path;
-    private File segImageFile, snakeQP, statsQP;
+    private File segImageFile, snakeQP;
+
+    protected File statsQP;
     File[] fluTiffs;
 
     private File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
