@@ -142,6 +142,8 @@ public abstract class QuimpPluginCore {
         if (qp == null) {
             throw new QuimpException("QCONF file not loaded");
         }
+        if (qp.paramFormat != QParams.NEW_QUIMP) // do not check if old format
+            return true;
         if (qp.getLoadedDataContainer().ECMMState == null) {
             throw new QuimpException("ECMM data not found in QCONF file. Run ECMM first.");
         }

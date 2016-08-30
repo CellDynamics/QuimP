@@ -56,6 +56,7 @@ public class Q_Analysis {
      * @param path Path to *.paQP/QCONF file. If <tt>null</tt> user is asked for this file
      */
     public Q_Analysis(Path path) {
+        about();
         try {
             IJ.showStatus("QuimP Analysis");
             IJ.log(new Tool().getQuimPversion());
@@ -101,7 +102,7 @@ public class Q_Analysis {
                                                               // readParams, just extract it
                 runFromQCONF();
                 IJ.log("The new data file " + paramFile.getName()
-                        + " has been updated by results of ECMM analysis.");
+                        + " has been updated by results of Q Analysis.");
             } else {
                 throw new IllegalStateException("You can not be here in this time!");
             }
@@ -144,7 +145,6 @@ public class Q_Analysis {
                     return; // no batch processing
                 }
             }
-
             IJ.log("QuimP Analysis complete");
             IJ.showStatus("Finished");
         } catch (QuimpException e) {
@@ -166,6 +166,8 @@ public class Q_Analysis {
         if (qp == null) {
             throw new QuimpException("QCONF file not loaded");
         }
+        if (qp.paramFormat != QParams.NEW_QUIMP) // do not check if old format
+            return true;
         if (qp.getLoadedDataContainer().ECMMState == null) {
             throw new QuimpException("ECMM data not found in QCONF file. Run ECMM first.");
         }
@@ -217,6 +219,13 @@ public class Q_Analysis {
             throw new QuimpException("Could not read OutlineHandler");
         }
         run();
+    }
+
+    /**
+     * Display standard QuimP about message.
+     */
+    private void about() {
+        IJ.log(new Tool().getQuimPversion());
     }
 
     /**

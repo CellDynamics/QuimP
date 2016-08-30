@@ -88,6 +88,7 @@ public class ECMM_Mapping {
      */
     public ECMM_Mapping() {
         about();
+        IJ.showStatus("QuimP Analysis");
         try {
             OpenDialog od =
                     new OpenDialog("Open paramater file (.paQP|" + BOAState.QCONFFILEEXT + ")...",
@@ -160,12 +161,12 @@ public class ECMM_Mapping {
                     return;
                 }
             }
-            return;
+            IJ.log("ECMM Analysis complete");
+            IJ.showStatus("Finished");
         } catch (QuimpException e) {
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
         }
-        IJ.log("Bye!");
     }
 
     /**
@@ -175,13 +176,15 @@ public class ECMM_Mapping {
      * in loaded QCONF and for presence ECMM data. If ECMM has been done on this file user must 
      * confirm overriding.  
      * 
-     * @return <tt>true</tt> when data are correct or user agreed for overriding Q Analysis data
+     * @return <tt>true</tt> when data are correct or user agreed for overriding ECMM data
      * @throws QuimpException When there is no BOA data in file
      */
     private boolean validateQconf() throws QuimpException {
         if (qp == null) {
             throw new QuimpException("QCONF file not loaded");
         }
+        if (qp.paramFormat != QParams.NEW_QUIMP) // do not check if old format
+            return true;
         if (qp.getLoadedDataContainer().BOAState == null) {
             throw new QuimpException("BOA data not found in QCONF file. Run BOA first.");
         }
@@ -228,6 +231,9 @@ public class ECMM_Mapping {
         qp.writeParams(); // save global container
     }
 
+    /**
+     * Display standard QuimP about message.
+     */
     private void about() {
         IJ.log(new Tool().getQuimPversion());
     }
@@ -307,7 +313,7 @@ public class ECMM_Mapping {
             IJ.log("ECMM resolution: " + ECMp.markerRes + "(av. spacing)\n");
         }
 
-        outputH = new OutlineHandler(oH.getStartFrame(), oH.getEndFrame());
+        outputH = new OutlineHandler(oH);
         ECMp.unSnapped = 0;
         // int skippedFrames = 0; // if a frame is skipped need to divide next
         // time point migration by 2, etc...

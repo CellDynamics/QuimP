@@ -113,7 +113,8 @@ public class QParamsQconf extends QParams {
             loaded.obj.beforeSerialize(); // call explicitly beforeSerialize because Dump doesn't do
             Serializer.Dump(loaded, getParamFile(), BOA_.qState.boap.savePretty); // "loaded" is
                                                                                   // already
-            // packed by Serializer
+                                                                                  // packed by
+                                                                                  // Serializer
         } catch (FileNotFoundException e) {
             LOGGER.error("File " + getParamFile() + " could not be saved. " + e.getMessage());
             LOGGER.debug(e.getMessage(), e);
@@ -268,6 +269,17 @@ public class QParamsQconf extends QParams {
         String path = getParamFile().getParent();
         String file = Tool.removeExtension(getParamFile().getName());
         return new File(path + File.separator + file + "_" + currentHandler + ".snQP");
+    }
+
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#getStatsQP()
+     * @see uk.ac.warwick.wsbc.QuimP.QParamsQconf.getSnakeQP()
+     */
+    @Override
+    public File getStatsQP() {
+        String path = getParamFile().getParent();
+        String file = Tool.removeExtension(getParamFile().getName());
+        return new File(path + File.separator + file + "_" + currentHandler + ".stQP.csv");
     }
 
 }

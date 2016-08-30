@@ -934,7 +934,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     @Override
     public void afterSerialize() throws Exception {
         super.afterSerialize();
-        this.updateCurvature();
+        this.updateCurvature(); // WARN This may be not good idea to override loaded data
     }
 
 }

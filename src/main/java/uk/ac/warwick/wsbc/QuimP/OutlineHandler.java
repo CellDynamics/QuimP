@@ -279,7 +279,9 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     }
 
     /**
-     * Evaluate \a maxCoor, \a minCoor, \a migLimits, \a fluLims, \a curvLimits
+     * Evaluate <tt>maxCoor</tt>, <tt>minCoor</tt>, <tt>migLimits</tt>, <tt>fluLims</tt>,
+     * <tt>curvLimits</tt>.
+     * 
      * Initialize arrays as well
      */
     private void findStatLimits() {
@@ -354,42 +356,18 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     }
 
     /**
-     * basically clone snake into memory
-     * @todo TODO USe clone feature from class 
+     * Copy Outline into internal outlines array on correct position.
+     * 
+     * @param o Outline to copy.
+     * @param frame Frame where copy Outline to.
      */
     public void save(Outline o, int frame) {
-        Vert oV = o.getHead();
-
-        Vert nV = new Vert(oV.getX(), oV.getY(), oV.getTrackNum()); // head node
-        nV.coord = oV.coord;
-        nV.fCoord = oV.fCoord;
-        nV.gCoord = oV.gCoord;
-        nV.distance = oV.distance;
-        // nV.fluores = oV.fluores;
-        nV.setFluores(oV.fluores);
-
-        Outline n = new Outline(nV);
-
-        oV = oV.getNext();
-        do {
-            nV = n.insertVert(nV);
-
-            nV.setX(oV.getX());
-            nV.setY(oV.getY());
-            nV.coord = oV.coord;
-            nV.fCoord = oV.fCoord;
-            nV.gCoord = oV.gCoord;
-            nV.distance = oV.distance;
-            // nV.fluores = oV.cloneFluo();
-            nV.setFluores(oV.fluores);
-            nV.setTrackNum(oV.getTrackNum());
-
-            oV = oV.getNext();
-        } while (!oV.isHead());
-        // n.calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
-        outlines[frame - startFrame] = n;
+        outlines[frame - startFrame] = new Outline(o);
     }
 
+    /**
+     * Write <b>this</b> outline to disk.
+     */
     public void writeOutlines(File outFile, boolean ECMMrun) {
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
