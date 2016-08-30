@@ -358,36 +358,36 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
      * @todo TODO USe clone feature from class 
      */
     public void save(Outline o, int frame) {
-        Vert oV = o.getHead();
-
-        Vert nV = new Vert(oV.getX(), oV.getY(), oV.getTrackNum()); // head node
-        nV.coord = oV.coord;
-        nV.fCoord = oV.fCoord;
-        nV.gCoord = oV.gCoord;
-        nV.distance = oV.distance;
-        // nV.fluores = oV.fluores;
-        nV.setFluores(oV.fluores);
-
-        Outline n = new Outline(nV);
-
-        oV = oV.getNext();
-        do {
-            nV = n.insertVert(nV);
-
-            nV.setX(oV.getX());
-            nV.setY(oV.getY());
-            nV.coord = oV.coord;
-            nV.fCoord = oV.fCoord;
-            nV.gCoord = oV.gCoord;
-            nV.distance = oV.distance;
-            // nV.fluores = oV.cloneFluo();
-            nV.setFluores(oV.fluores);
-            nV.setTrackNum(oV.getTrackNum());
-
-            oV = oV.getNext();
-        } while (!oV.isHead());
+        // Vert oV = o.getHead();
+        //
+        // Vert nV = new Vert(oV.getX(), oV.getY(), oV.getTrackNum()); // head node
+        // nV.coord = oV.coord;
+        // nV.fCoord = oV.fCoord;
+        // nV.gCoord = oV.gCoord;
+        // nV.distance = oV.distance;
+        // // nV.fluores = oV.fluores;
+        // nV.setFluores(oV.fluores);
+        //
+        // Outline n = new Outline(nV);
+        //
+        // oV = oV.getNext();
+        // do {
+        // nV = n.insertVert(nV);
+        //
+        // nV.setX(oV.getX());
+        // nV.setY(oV.getY());
+        // nV.coord = oV.coord;
+        // nV.fCoord = oV.fCoord;
+        // nV.gCoord = oV.gCoord;
+        // nV.distance = oV.distance;
+        // // nV.fluores = oV.cloneFluo();
+        // nV.setFluores(oV.fluores);
+        // nV.setTrackNum(oV.getTrackNum());
+        //
+        // oV = oV.getNext();
+        // } while (!oV.isHead());
         // n.calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
-        outlines[frame - startFrame] = n;
+        outlines[frame - startFrame] = new Outline(o);
     }
 
     public void writeOutlines(File outFile, boolean ECMMrun) {
