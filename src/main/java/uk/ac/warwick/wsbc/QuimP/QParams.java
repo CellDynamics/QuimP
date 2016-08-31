@@ -73,6 +73,9 @@ public class QParams {
     private File segImageFile, snakeQP;
 
     protected File statsQP;
+    /**
+     * This field is set by direct call from ANA. Left here for compatibility reasons.
+     */
     File[] fluTiffs;
 
     private File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
@@ -610,7 +613,7 @@ public class QParams {
 
     /**
      * Generate names and handles of files associated with paQP that will be created in result of
-     * analysis  
+     * analysis.  
      */
     void guessOtherFileNames() {
         System.out.println("prefix: " + fileName);

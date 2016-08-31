@@ -173,12 +173,12 @@ public class ANA_ implements PlugInFilter, DialogListener {
                 orgIplclone.draw();
             }
 
-            IJ.log("ECMM Analysis complete");
+            IJ.log("ANA Analysis complete");
             IJ.showStatus("Finished");
             ecmMapping = null;
         } catch (QuimpException e) {
             LOGGER.debug(e.getMessage(), e);
-            LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
+            LOGGER.error("Problem with run of ANA processing: " + e.getMessage());
         }
     }
 
@@ -191,14 +191,19 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
     private void runFromQCONF() throws QuimpException {
         LOGGER.debug("Processing from new file format");
+        ANAStates anaStates;
         OutlineHandlers ecmmState = qp.getLoadedDataContainer().ECMMState;
         outputOutlineHandlers = new OutlineHandlers(ecmmState.oHs.size());
-        ANAStates anaStates = new ANAStates(); // store sna options for every cell
+        if (qp.getLoadedDataContainer().ANAState == null)
+            // create ANA slots for all outlines
+            anaStates = new ANAStates(ecmmState.oHs.size()); // store ANA options for every cell
+        else
+            anaStates = qp.getLoadedDataContainer().ANAState;
         for (int i = 0; i < ecmmState.oHs.size(); i++) { // go over all outlines
             qp.currentHandler = i; // set current handler number. For compatibility, all methods
             // have the same syntax (assumes that there is only one handler)
             oH = ecmmState.oHs.get(i); // restore handler from ecmm
-            anap = new ANAp(); // recreate object to be in clear state
+            anap = anaStates.aS.get(i); // get i-th ana parameters
             anap.setup(qp);
             fluoStats = FluoStats.read(anap.STATSFILE); // read stat file (it is outside QCONF!!)
             investigateChannels(oH.indexGetOutline(0));// find first empty channel
@@ -220,7 +225,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
             FluoStats.write(fluoStats, anap.STATSFILE, anap);
             outputOutlineHandlers.oHs.add(i, new OutlineHandler(outputH)); // store actual result in
                                                                            // container
-            anaStates.aS.add(anap); // remember last setup
+
         }
 
         DataContainer dc = qp.getLoadedDataContainer();
@@ -369,12 +374,12 @@ public class ANA_ implements PlugInFilter, DialogListener {
             return true;
         }
 
-        anap.setCortextWidthScale(gd.getNextNumber());
+        double scale = gd.getNextNumber();
         anap.channel = gd.getNextChoiceIndex();
         anap.normalise = gd.getNextBoolean();
         anap.sampleAtSame = gd.getNextBoolean();
         anap.plotOutlines = ((Checkbox) gd.getCheckboxes().elementAt(3)).getState();
-
+        anap.setCortextWidthScale(scale);
         if (anap.cleared) { // can't deselect
             cb.setState(true);
         }
@@ -751,7 +756,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
                 if (firstFullCh == -1) {
                     firstFullCh = i;
                 }
-                anap.setCortextWidthScale(fluoStats[0].channels[i].cortexWidth);
+                // anap.setCortextWidthScale(fluoStats[0].channels[i].cortexWidth);
             }
         }
 
@@ -767,6 +772,11 @@ public class ANA_ implements PlugInFilter, DialogListener {
             IJ.log("Sample points from channel " + (firstFullCh + 1) + " available.");
             anap.useLocFromCh = firstFullCh;
         }
+
+        v = o.getHead();
+        for (int i = 0; i < 3; i++)
+            if (v.fluores[i].intensity != -2)
+                anap.setCortextWidthScale(fluoStats[0].channels[i].cortexWidth);
     }
 
     private void interpolateFailures(Outline o) {
@@ -957,7 +967,7 @@ class FluoStats {
         }
     }
 
-    public static FluoStats[] read(File INFILE) {
+    public static FluoStats[] read(File INFILE) throws QuimpException {
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(INFILE));
@@ -1016,9 +1026,10 @@ class FluoStats {
         } catch (IOException e) {
             System.err.println("Could not read file: " + e);
             IJ.error("Could not read file: " + e);
+            throw new QuimpException(e);
         }
 
-        return new FluoStats[1];
+        // return new FluoStats[1];
 
     }
 
@@ -1095,7 +1106,7 @@ class ANAp {
     transient public double freezeTh = 1;
     transient public double angleTh = 0.1;
     transient public double oneFrameRes = 1;
-    transient public double scale;
+    transient public double scale = 1.0;
     transient public double frameInterval;
     transient public int startFrame, endFrame;
     transient boolean normalise = true;
@@ -1103,11 +1114,14 @@ class ANAp {
     transient int[] presentData;
     transient boolean cleared;
     transient boolean noData;
-    transient int channel;
+    transient int channel = 0;
     transient int useLocFromCh;
     transient boolean plotOutlines = false; // plot outlines on new image
 
     public ANAp() {
+        fluTiffs = new File[3];
+        presentData = new int[3];
+        setCortextWidthScale(0.7); // default value
     }
 
     /**
@@ -1152,6 +1166,7 @@ class ANAp {
      *            reference to QParams container (master file and BOA params)
      */
     void setup(QParams qp) {
+        channel = 0;
         INFILE = qp.getSnakeQP();
         OUTFILE = new File(INFILE.getAbsolutePath()); // output file (.snQP) file
         STATSFILE = new File(qp.getStatsQP().getAbsolutePath()); // output file
@@ -1161,7 +1176,6 @@ class ANAp {
         setCortextWidthScale(qp.cortexWidth);
         startFrame = qp.getStartFrame();
         endFrame = qp.getEndFrame();
-        channel = 0;
         cleared = false;
         noData = true;
     }

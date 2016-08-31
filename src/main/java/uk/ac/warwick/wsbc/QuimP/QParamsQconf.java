@@ -153,9 +153,8 @@ public class QParamsQconf extends QParams {
                 super.setEndFrame(loaded.obj.ECMMState.oHs.get(currentHandler).getEndFrame());
                 super.finalShrink = loaded.obj.BOAState.segParam.finalShrink;
             }
+            super.guessOtherFileNames();
         }
-
-        // super.cortexWidth = loaded.obj.BOAState.boap.cor
     }
 
     /**
