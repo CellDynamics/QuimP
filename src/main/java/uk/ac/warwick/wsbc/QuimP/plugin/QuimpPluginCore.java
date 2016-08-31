@@ -130,8 +130,11 @@ public abstract class QuimpPluginCore {
     /**
      * Validate whether loaded <i>QCONF</i> file contains correct data.
      * <p>
-     * Check for presence ECMM and Q Analysis data in loaded QCONF.
-     * 
+     * Check for presence ECMM, and Q Analysis data in loaded QCONF.
+     * <p>
+     * <b>warning</b><p>
+     * ANA is not obligatory and it is not checked here.
+     * <p>
      * @return <tt>true</tt> always for maintaining compatibility with
      * {@link uk.ac.warwick.wsbc.QuimP.Q_Analysis#validateQconf()}
      * and {@link uk.ac.warwick.wsbc.QuimP.ECMM_Mapping#validateQconf()}

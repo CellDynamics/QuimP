@@ -202,6 +202,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         // BOA_.qState.boap.fileName + "_" + ID + ".snQP");
         // }
         String snakeOutFile = BOA_.qState.boap.deductSnakeFileName(ID);
+        LOGGER.debug("Write snQP at: " + snakeOutFile);
         PrintWriter pw = new PrintWriter(new FileWriter(snakeOutFile), true); // auto flush
         pw.write("#QuimP11 Node data");
         pw.write("\n#Node Position\tX-coord\tY-coord\tOrigin\tG-Origin\tSpeed");

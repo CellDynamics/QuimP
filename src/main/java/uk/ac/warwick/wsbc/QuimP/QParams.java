@@ -506,7 +506,7 @@ public class QParams {
     }
 
     public void writeParams() throws QuimpException {
-
+        LOGGER.debug("Write paQP at: " + paramFile);
         try {
             if (paramFile.exists()) {
                 paramFile.delete();

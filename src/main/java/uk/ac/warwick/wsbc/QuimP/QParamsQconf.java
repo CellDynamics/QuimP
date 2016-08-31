@@ -96,6 +96,7 @@ public class QParamsQconf extends QParams {
             LOGGER.warn("Loaded config file is in diferent version than current QuimP (" + ver[0]
                     + " vs " + loaded.version[0]);
         }
+        compatibilityLayer();
     }
 
     /**
@@ -120,6 +121,51 @@ public class QParamsQconf extends QParams {
             LOGGER.debug(e.getMessage(), e);
             throw new QuimpException("File " + getParamFile() + " could not be saved. ", e);
         }
+    }
+
+    /**
+     * Fill some underlying fields to assure compatibility between new and old formats.
+     */
+    private void compatibilityLayer() {
+        // fill underlying parameters
+        super.setSegImageFile(loaded.obj.BOAState.boap.getOrgFile());
+        super.setSnakeQP(getSnakeQP());
+        super.setStatsQP(getStatsQP());
+        if (loaded.obj.BOAState != null) {
+            super.setImageScale(loaded.obj.BOAState.boap.getImageScale());
+            super.setFrameInterval(loaded.obj.BOAState.boap.getImageFrameInterval());
+            super.NMAX = loaded.obj.BOAState.boap.NMAX;
+            super.delta_t = loaded.obj.BOAState.boap.delta_t;
+            super.max_iterations = loaded.obj.BOAState.segParam.max_iterations;
+            super.setNodeRes(loaded.obj.BOAState.segParam.getNodeRes());
+            super.setBlowup(loaded.obj.BOAState.segParam.blowup);
+            super.sample_tan = loaded.obj.BOAState.segParam.sample_tan;
+            super.sample_norm = loaded.obj.BOAState.segParam.sample_norm;
+            super.vel_crit = loaded.obj.BOAState.segParam.vel_crit;
+            super.f_central = loaded.obj.BOAState.segParam.f_central;
+            super.f_contract = loaded.obj.BOAState.segParam.f_contract;
+            super.f_friction = loaded.obj.BOAState.boap.f_friction;
+            super.f_image = loaded.obj.BOAState.segParam.f_image;
+            super.sensitivity = loaded.obj.BOAState.boap.sensitivity;
+            // fill only if ANA has been run
+            if (loaded.obj.ANAState != null) {
+                super.setStartFrame(loaded.obj.ECMMState.oHs.get(currentHandler).getStartFrame());
+                super.setEndFrame(loaded.obj.ECMMState.oHs.get(currentHandler).getEndFrame());
+                super.finalShrink = loaded.obj.BOAState.segParam.finalShrink;
+            }
+        }
+
+        // super.cortexWidth = loaded.obj.BOAState.boap.cor
+    }
+
+    /**
+     * Write parameter file paQP in old format (QuimP11).
+     * 
+     * @throws QuimpException 
+     * 
+     */
+    public void writeOldParams() throws QuimpException {
+        super.writeParams();
     }
 
     /** (non-Javadoc)

@@ -59,7 +59,6 @@ public class Q_Analysis {
         about();
         try {
             IJ.showStatus("QuimP Analysis");
-            IJ.log(new Tool().getQuimPversion());
             String directory; // directory with paQP
             String filename; // file name of paQP
 
