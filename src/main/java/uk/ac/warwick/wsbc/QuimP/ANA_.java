@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.awt.AWTEvent;
@@ -232,6 +228,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
      * @throws QuimpException when OutlineHandler can not be read
      */
     private void runFromPAQP() throws QuimpException {
+        outputOutlineHandlers = new OutlineHandlers(1);
         oH = new OutlineHandler(qp);
 
         ANAp.setup(qp);
@@ -281,6 +278,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
         qp.cortexWidth = ANAp.getCortexWidthScale();
         qp.writeParams();
+        outputOutlineHandlers.oHs.add(0, new OutlineHandler(outputH)); // for plotting purposes
 
     }
 
