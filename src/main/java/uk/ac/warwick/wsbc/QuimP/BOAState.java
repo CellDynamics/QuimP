@@ -64,7 +64,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 public class BOAState implements IQuimpSerialize {
 
     static final Logger LOGGER = LogManager.getLogger(BOAState.class.getName());
-    public static final String QCONFFILEEXT = ".QCONF"; //!< Extension for QCONF file
     /**
      * Reference to segmentation parameters. Holds current parameters
      * 
@@ -628,7 +627,7 @@ public class BOAState implements IQuimpSerialize {
          * @return Full path to file with extension
          */
         public String deductParamFileName(int ID) {
-            return getOutputFileCore().getAbsoluteFile() + "_" + ID + ".paQP";
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID + QParams.PAQP_EXT;
         }
 
         /**
@@ -650,7 +649,7 @@ public class BOAState implements IQuimpSerialize {
          * @return Full path to file with extension
          */
         public String deductNewParamFileName() {
-            return getOutputFileCore().getAbsoluteFile() + BOAState.QCONFFILEEXT;
+            return getOutputFileCore().getAbsoluteFile() + QParamsQconf.QCONF_EXT;
         }
 
     }
@@ -871,7 +870,7 @@ public class BOAState implements IQuimpSerialize {
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/176#comment:3
      */
     public boolean readParams() {
-        OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", "");
+        OpenDialog od = new OpenDialog("Open paramater file (" + QParams.PAQP_EXT + ")...", "");
         if (od.getFileName() == null) {
             return false;
         }

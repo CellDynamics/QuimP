@@ -41,7 +41,7 @@ public class Q_Explorer implements PlugIn {
     public void run(String string) {
         try {
             // do {
-            OpenDialog od = new OpenDialog("Open paramater file (.paQP)...",
+            OpenDialog od = new OpenDialog("Open paramater file (" + QParams.PAQP_EXT + ")...",
                     OpenDialog.getLastDirectory(), "");
             if (od.getFileName() == null) {
                 return;

@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import ij.IJ;
 import ij.io.OpenDialog;
-import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
@@ -67,8 +66,8 @@ public abstract class QuimpPluginCore {
 
             if (path == null) { // no file provided, ask user
                 OpenDialog od =
-                        new OpenDialog("Open paramater file " + BOAState.QCONFFILEEXT + ")...",
-                                OpenDialog.getLastDirectory(), BOAState.QCONFFILEEXT);
+                        new OpenDialog("Open paramater file " + QParamsQconf.QCONF_EXT + ")...",
+                                OpenDialog.getLastDirectory(), QParamsQconf.QCONF_EXT);
                 if (od.getFileName() == null) {
                     IJ.log("Cancelled - exiting...");
                     return;
@@ -84,7 +83,7 @@ public abstract class QuimpPluginCore {
             }
             // detect old/new file format
             File paramFile = new File(directory, filename); // config file
-            if (paramFile.getName().endsWith(BOAState.QCONFFILEEXT)) // new file format TODO #152
+            if (paramFile.getName().endsWith(QParamsQconf.QCONF_EXT)) // new file format TODO #152
                 qp = new QParamsQconf(paramFile);
             else
                 qp = new QParams(paramFile); // initialize general param storage
@@ -130,8 +129,11 @@ public abstract class QuimpPluginCore {
     /**
      * Validate whether loaded <i>QCONF</i> file contains correct data.
      * <p>
-     * Check for presence ECMM and Q Analysis data in loaded QCONF.
-     * 
+     * Check for presence ECMM, and Q Analysis data in loaded QCONF.
+     * <p>
+     * <b>warning</b><p>
+     * ANA is not obligatory and it is not checked here.
+     * <p>
      * @return <tt>true</tt> always for maintaining compatibility with
      * {@link uk.ac.warwick.wsbc.QuimP.Q_Analysis#validateQconf()}
      * and {@link uk.ac.warwick.wsbc.QuimP.ECMM_Mapping#validateQconf()}

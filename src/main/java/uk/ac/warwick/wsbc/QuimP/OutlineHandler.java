@@ -369,6 +369,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
      * Write <b>this</b> outline to disk.
      */
     public void writeOutlines(File outFile, boolean ECMMrun) {
+        LOGGER.debug("Write outline at: " + outFile);
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
             pw.write("#QuimP11 node data");

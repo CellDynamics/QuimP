@@ -129,7 +129,7 @@ public class Nest implements IQuimpSerialize {
         SnakeHandler sH;
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
-            sH.setEndFrame(); // find its last frame (frame with valid contour)
+            sH.findLastFrame(); // find its last frame (frame with valid contour)
             if (sH.getStartFrame() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
                 toRemove.add(sH);
@@ -341,7 +341,7 @@ public class Nest implements IQuimpSerialize {
         // sanity operation - delete defective snakes
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
-            sH.setEndFrame(); // find its last frame (frame with valid contour)
+            sH.findLastFrame(); // find its last frame (frame with valid contour)
             if (sH.getStartFrame() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
                 toRemove.add(sH);
