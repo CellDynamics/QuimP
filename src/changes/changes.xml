@@ -6,6 +6,20 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="16.08.01-SNAPSHOT" date="2016-09-01" description="Release candidate 1">
+         <action dev="baniuk" type="add" issue="195">
+            Detect whether loaded QCONF file contains any previous data and notify user if it does.
+         </action>
+        <action dev="baniuk" type="update" issue="199">
+            Option for saving outlines as separte image in ANA module.
+        </action>
+        <action dev="baniuk" type="update" issue="198">
+            Allow to load new format to ANA.
+        </action>
+        <action dev="baniuk" type="add" issue="196">
+            Data files in old format (Q111) are always generated when saving in new format (QCONF).
+        </action>
+      </release> 
       <release version="16.08.01-SNAPSHOT" date="2016-07-30" description="Release candidate">
          <action dev="baniuk" type="fix" issue="176">
             Loading QCONF causes massive exceptions
