@@ -99,6 +99,43 @@ public class Q_Analysis {
             if (qp.paramFormat == QParams.QUIMP_11) { // if we have old format, read outlines from
                                                       // OutlineHandler
                 runFromPAQP();
+                File[] otherPaFiles = qp.findParamFiles();
+                if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
+                                               // user is skipped)
+                    YesNoCancelDialog yncd =
+                            new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
+                                    "\tBatch Process?\n\n" + "Process other " + QParams.PAQP_EXT
+                                            + " files in the same folder with QAnalysis?"
+                                            + "\n[The same parameters will be used]");
+                    if (yncd.yesPressed()) {
+                        ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
+                        this.closeAllImages();
+
+                        // if user agreed iterate over found files
+                        // (except that loaded explicitly by user)
+                        for (int j = 0; j < otherPaFiles.length; j++) {
+                            IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
+                            paramFile = otherPaFiles[j];
+                            qp = new QParams(paramFile);
+                            qp.readParams();
+                            Qp.setup(qp);
+                            oH = new OutlineHandler(qp); // prepare current OutlineHandler
+                            if (!oH.readSuccess) {
+                                LOGGER.error("OutlineHandlers could not be read!");
+                                return;
+                            }
+                            run(); // run on current OutlineHandler
+                            runOn.add(otherPaFiles[j].getName());
+                            this.closeAllImages();
+                        }
+                        IJ.log("\n\nBatch - Successfully ran QAnalysis on:");
+                        for (int i = 0; i < runOn.size(); i++) {
+                            IJ.log(runOn.get(i));
+                        }
+                    } else {
+                        return; // no batch processing
+                    }
+                }
             } else if (qp.paramFormat == QParams.NEW_QUIMP) { // new format, everything is read by
                                                               // readParams, just extract it
                 runFromQCONF();
@@ -108,44 +145,6 @@ public class Q_Analysis {
                 throw new IllegalStateException("You can not be here in this time!");
             }
 
-            File[] otherPaFiles = qp.findParamFiles(); // see #196
-            if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
-                                           // user is skipped)
-                YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                        "\tBatch Process?\n\n" + "Process other " + QParams.PAQP_EXT
-                                + " files in the same folder with QAnalysis?"
-                                + "\n[The same parameters will be used]\n"
-                                + "If one has proceeded already with new file format (QCONF),"
-                                + " this operation will update old files as well.");
-                if (yncd.yesPressed()) {
-                    ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
-                    this.closeAllImages();
-
-                    // if user agreed iterate over found files
-                    // (except that loaded explicitly by user)
-                    for (int j = 0; j < otherPaFiles.length; j++) {
-                        IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
-                        paramFile = otherPaFiles[j];
-                        qp = new QParams(paramFile);
-                        qp.readParams();
-                        Qp.setup(qp);
-                        oH = new OutlineHandler(qp); // prepare current OutlineHandler
-                        if (!oH.readSuccess) {
-                            LOGGER.error("OutlineHandlers could not be read!");
-                            return;
-                        }
-                        run(); // run on current OutlineHandler
-                        runOn.add(otherPaFiles[j].getName());
-                        this.closeAllImages();
-                    }
-                    IJ.log("\n\nBatch - Successfully ran QAnalysis on:");
-                    for (int i = 0; i < runOn.size(); i++) {
-                        IJ.log(runOn.get(i));
-                    }
-                } else {
-                    return; // no batch processing
-                }
-            }
             IJ.log("QuimP Analysis complete");
             IJ.showStatus("Finished");
         } catch (QuimpException e) {
@@ -206,6 +205,10 @@ public class Q_Analysis {
         }
         qp.getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
         qp.writeParams(); // save global container
+        // generate additional OLD files
+        FormatConverter fC =
+                new FormatConverter((QParamsQconf) qp, ((QParamsQconf) qp).getParamFile().toPath());
+        fC.generateOldDataFiles();
     }
 
     /**

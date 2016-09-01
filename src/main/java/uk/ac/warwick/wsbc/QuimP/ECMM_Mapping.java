@@ -113,55 +113,54 @@ public class ECMM_Mapping {
             if (qp.paramFormat == QParams.QUIMP_11) { // if we have old format, read outlines from
                                                       // OutlineHandler
                 runFromPAQP();
+                // old flow with paQP files
+                File[] otherPaFiles = qp.findParamFiles();
+                if (otherPaFiles.length > 0) {
+                    YesNoCancelDialog yncd =
+                            new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
+                                    "\tBatch Process?\n\n" + "Process other " + QParams.PAQP_EXT
+                                            + " files in the same folder with ECMM?\n"
+                                            + "[Files already run through ECMM will be skipped!]");
+                    if (yncd.yesPressed()) {
+                        ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
+                        ArrayList<String> skipped = new ArrayList<String>(otherPaFiles.length);
+
+                        for (int j = 0; j < otherPaFiles.length; j++) {
+                            plot.close();
+
+                            paramFile = otherPaFiles[j];
+                            qp = new QParams(paramFile);
+                            qp.readParams();
+                            if (!qp.ecmmHasRun) {
+                                System.out
+                                        .println("Running on " + otherPaFiles[j].getAbsolutePath());
+                                runFromPAQP();
+                                runOn.add(otherPaFiles[j].getName());
+                            } else {
+                                System.out.println("Skipped " + otherPaFiles[j].getAbsolutePath());
+                                skipped.add(otherPaFiles[j].getName());
+                            }
+
+                        }
+                        IJ.log("\n\nBatch - Successfully ran ECMM on:");
+                        for (int i = 0; i < runOn.size(); i++) {
+                            IJ.log(runOn.get(i));
+                        }
+                        IJ.log("\nSkipped:");
+                        for (int i = 0; i < skipped.size(); i++) {
+                            IJ.log(skipped.get(i));
+                        }
+
+                    } else {
+                        return;
+                    }
+                }
             } else if (qp.paramFormat == QParams.NEW_QUIMP) { // new format
                 runFromQCONF();
                 IJ.log("The new data file " + paramFile.getName()
                         + " has been updated by results of ECMM analysis.");
             } else {
                 throw new IllegalStateException("You can not be here in this time!");
-            }
-            // old flow with paQP files
-
-            File[] otherPaFiles = qp.findParamFiles(); // see #196
-            if (otherPaFiles.length > 0) {
-                YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                        "\tBatch Process?\n\n" + "Process other " + QParams.PAQP_EXT
-                                + " files in the same folder with ECMM?\n"
-                                + "[Files already run through ECMM will be skipped!]\n"
-                                + "If one has proceeded already with new file format (QCONF),"
-                                + " this operation will update old files as well.");
-                if (yncd.yesPressed()) {
-                    ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
-                    ArrayList<String> skipped = new ArrayList<String>(otherPaFiles.length);
-
-                    for (int j = 0; j < otherPaFiles.length; j++) {
-                        plot.close();
-
-                        paramFile = otherPaFiles[j];
-                        qp = new QParams(paramFile);
-                        qp.readParams();
-                        if (!qp.ecmmHasRun) {
-                            System.out.println("Running on " + otherPaFiles[j].getAbsolutePath());
-                            runFromPAQP();
-                            runOn.add(otherPaFiles[j].getName());
-                        } else {
-                            System.out.println("Skipped " + otherPaFiles[j].getAbsolutePath());
-                            skipped.add(otherPaFiles[j].getName());
-                        }
-
-                    }
-                    IJ.log("\n\nBatch - Successfully ran ECMM on:");
-                    for (int i = 0; i < runOn.size(); i++) {
-                        IJ.log(runOn.get(i));
-                    }
-                    IJ.log("\nSkipped:");
-                    for (int i = 0; i < skipped.size(); i++) {
-                        IJ.log(skipped.get(i));
-                    }
-
-                } else {
-                    return;
-                }
             }
             IJ.log("ECMM Analysis complete");
             IJ.showStatus("Finished");
@@ -232,6 +231,10 @@ public class ECMM_Mapping {
         DataContainer dc = qp.getLoadedDataContainer();
         dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
         qp.writeParams(); // save global container
+        // generate additional OLD files
+        FormatConverter fC =
+                new FormatConverter((QParamsQconf) qp, ((QParamsQconf) qp).getParamFile().toPath());
+        fC.generateOldDataFiles();
     }
 
     /**

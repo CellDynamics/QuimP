@@ -236,6 +236,10 @@ public class ANA_ implements PlugInFilter, DialogListener {
         dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
         dc.ANAState = anaStates;
         qp.writeParams(); // save global container
+        // generate additional OLD files
+        FormatConverter fC =
+                new FormatConverter((QParamsQconf) qp, ((QParamsQconf) qp).getParamFile().toPath());
+        fC.generateOldDataFiles();
     }
 
     /**
@@ -1093,7 +1097,7 @@ class ChannelStat {
 
 /**
  * Container class for parameters concerned with ANA analysis.
- * 
+ * This class is serialized through {@link uk.ac.warwick.wsbc.QuimP.ANAStates} 
  * @author rtyson
  *
  */
