@@ -109,6 +109,7 @@ public class ProtrusionVisTest {
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addPointsToImage()}.
      */
+    @SuppressWarnings("unused")
     @Test
     public void testAddPointsToImage() throws Exception {
         ImageJ ij = new ImageJ();

@@ -21,6 +21,7 @@ public class ANA_run {
     /**
      * @param args
      */
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         ImageJ ij = new ImageJ();
         ImagePlus im = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth.tif");

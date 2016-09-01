@@ -44,7 +44,6 @@ public class Prot_Analysis extends QuimpPluginCore {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Prot_Analysis.class.getName());
 
-    private int numIndexes;
     private int numFrames;
 
     /**
@@ -159,7 +158,6 @@ public class Prot_Analysis extends QuimpPluginCore {
     private List<PolygonRoi> trackMaxima(STmap mapCell, double drop,
             final MaximaFinder maximaFinder) {
         numFrames = mapCell.motMap.length;
-        numIndexes = mapCell.motMap[0].length;
         ArrayList<PolygonRoi> ret = new ArrayList<>();
         // int[] indexes = new int[numFrames];
         int[] framesF = null;
