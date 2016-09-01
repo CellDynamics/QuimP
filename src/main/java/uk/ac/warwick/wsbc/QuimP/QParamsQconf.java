@@ -64,8 +64,9 @@ public class QParamsQconf extends QParams {
         currentHandler = 0;
         newParamFile = p;
         // prepare correct name for old parameters
-        super.setParamFile(new File(Tool.removeExtension(newParamFile.getAbsolutePath()) + "_"
-                + currentHandler + QParams.PAQP_EXT));
+        super.setParamFile(new File(Tool
+                .removeExtension(newParamFile.getParent() + File.separator + newParamFile.getName())
+                + "_" + currentHandler + QParams.PAQP_EXT));
         paramFormat = QParams.NEW_QUIMP;
     }
 
