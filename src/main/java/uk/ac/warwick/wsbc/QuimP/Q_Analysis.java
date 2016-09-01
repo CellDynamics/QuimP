@@ -63,9 +63,11 @@ public class Q_Analysis {
             String filename; // file name of paQP
 
             if (path == null) { // no file provided, ask user
-                OpenDialog od = new OpenDialog(
-                        "Open paramater file (.paQP|" + BOAState.QCONFFILEEXT + ")...",
-                        OpenDialog.getLastDirectory(), ".paQP");
+                OpenDialog od =
+                        new OpenDialog(
+                                "Open paramater file (" + QParams.PAQP_EXT + "|"
+                                        + QParamsQconf.QCONF_EXT + ")...",
+                                OpenDialog.getLastDirectory(), QParams.PAQP_EXT);
                 if (od.getFileName() == null) {
                     IJ.log("Cancelled - exiting...");
                     return;
@@ -81,7 +83,7 @@ public class Q_Analysis {
             }
             // detect old/new file format
             File paramFile = new File(directory, filename); // config file
-            if (paramFile.getName().endsWith(BOAState.QCONFFILEEXT)) // new file format TODO #152
+            if (paramFile.getName().endsWith(QParamsQconf.QCONF_EXT)) // new file format TODO #152
                 qp = new QParamsQconf(paramFile);
             else
                 qp = new QParams(paramFile); // initialize general param storage
@@ -110,8 +112,8 @@ public class Q_Analysis {
             if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
                                            // user is skipped)
                 YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                        "\tBatch Process?\n\n"
-                                + "Process other paQP files in the same folder with QAnalysis?"
+                        "\tBatch Process?\n\n" + "Process other " + QParams.PAQP_EXT
+                                + " files in the same folder with QAnalysis?"
                                 + "\n[The same parameters will be used]\n"
                                 + "If one has proceeded already with new file format (QCONF),"
                                 + " this operation will update old files as well.");
@@ -196,7 +198,7 @@ public class Q_Analysis {
         Iterator<OutlineHandler> oI = qp.getLoadedDataContainer().ECMMState.oHs.iterator();
         ArrayList<STmap> tmp = new ArrayList<>();
         while (oI.hasNext()) {
-            qp.currentHandler = i++; // set current handler number. For compatibility
+            ((QParamsQconf) qp).setActiveHandler(i++); // set current handler number.
             Qp.setup(qp); // copy selected data from general QParams to local storage
             oH = oI.next();
             run();

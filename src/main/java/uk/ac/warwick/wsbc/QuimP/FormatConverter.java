@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -78,14 +79,16 @@ public class FormatConverter {
      * 
      */
     public void generatesnQP() throws QuimpException {
-        qP.currentHandler = 0;
+        int activeHandler = 0;
         // replace location to location of QCONF
         dT.BOAState.boap.setOutputFileCore(Tool.removeExtension(path.toString()));
-        for (OutlineHandler oH : dT.ECMMState.oHs) {
+        Iterator<OutlineHandler> oHi = dT.getECMMState().oHs.iterator();
+        do {
+            qP.setActiveHandler(activeHandler++);
+            OutlineHandler oH = oHi.next();
             oH.writeOutlines(qP.getSnakeQP(), true);
             qP.writeOldParams();
-            qP.currentHandler++;
-        }
+        } while (oHi.hasNext());
 
     }
 

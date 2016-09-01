@@ -39,17 +39,41 @@ import org.apache.logging.log4j.Logger;
 public class QParamsQconf extends QParams {
 
     private static final Logger LOGGER = LogManager.getLogger(QParamsQconf.class.getName());
-
+    public static final String QCONF_EXT = ".QCONF";
     private Serializer<DataContainer> loaded; // instance of loaded data
+    private File newParamFile;
+    /**
+     * Currently processed handler.
+     * 
+     * This is compatibility parameter. Old QuimP uses separated files for every snake thus QParams
+     * contained always correct values as given snake has been loaded. New QuimP uses composed
+     * file and this field points to currently processed Handler and it must be controlled from
+     * outside. For compatibility reasons all setters and getters assumes that there is only
+     * one Handler (as in old QuimP). This field allow to set current Handler if QParamsEschange
+     * instance is used.
+     */
+    private int currentHandler;
 
     /**
      * Set default values for superclass, also prefix and path for files
      * 
-     * @param p \c QCONF file
+     * @param p \c QCONF file with extension
      */
     public QParamsQconf(File p) {
         super(p);
+        currentHandler = 0;
+        newParamFile = p;
+        // prepare correct name for old parameters
+        super.setParamFile(new File(Tool.removeExtension(newParamFile.getAbsolutePath()) + "_"
+                + currentHandler + QParams.PAQP_EXT));
         paramFormat = QParams.NEW_QUIMP;
+    }
+
+    /**
+     * @return the newParamFile
+     */
+    public File getParamFile() {
+        return newParamFile;
     }
 
     /**
@@ -99,6 +123,15 @@ public class QParamsQconf extends QParams {
         compatibilityLayer();
     }
 
+    public void setActiveHandler(int num) {
+        currentHandler = num;
+        compatibilityLayer();
+    }
+
+    public int getActiveHandler() {
+        return currentHandler;
+    }
+
     /**
      * Write all parameters in new format. 
      * 
@@ -125,35 +158,52 @@ public class QParamsQconf extends QParams {
 
     /**
      * Fill some underlying fields to assure compatibility between new and old formats.
+     * <p><b>Warning</b><p>
+     * Some data depend on status of <tt>currentHandler</tt> that points to current outline. This is 
+     * due to differences in file handling between old format (separate paQP for every cell) and new
+     * (one file).
      */
     private void compatibilityLayer() {
         // fill underlying parameters
-        super.setSegImageFile(loaded.obj.BOAState.boap.getOrgFile());
+        super.setParamFile(new File(Tool.removeExtension(newParamFile.getAbsolutePath()) + "_"
+                + currentHandler + QParams.PAQP_EXT));
+        super.setSegImageFile(getLoadedDataContainer().getBOAState().boap.getOrgFile());
+        super.guessOtherFileNames();
         super.setSnakeQP(getSnakeQP());
         super.setStatsQP(getStatsQP());
-        if (loaded.obj.BOAState != null) {
-            super.setImageScale(loaded.obj.BOAState.boap.getImageScale());
-            super.setFrameInterval(loaded.obj.BOAState.boap.getImageFrameInterval());
-            super.NMAX = loaded.obj.BOAState.boap.NMAX;
-            super.delta_t = loaded.obj.BOAState.boap.delta_t;
-            super.max_iterations = loaded.obj.BOAState.segParam.max_iterations;
-            super.setNodeRes(loaded.obj.BOAState.segParam.getNodeRes());
-            super.setBlowup(loaded.obj.BOAState.segParam.blowup);
-            super.sample_tan = loaded.obj.BOAState.segParam.sample_tan;
-            super.sample_norm = loaded.obj.BOAState.segParam.sample_norm;
-            super.vel_crit = loaded.obj.BOAState.segParam.vel_crit;
-            super.f_central = loaded.obj.BOAState.segParam.f_central;
-            super.f_contract = loaded.obj.BOAState.segParam.f_contract;
-            super.f_friction = loaded.obj.BOAState.boap.f_friction;
-            super.f_image = loaded.obj.BOAState.segParam.f_image;
-            super.sensitivity = loaded.obj.BOAState.boap.sensitivity;
-            // fill only if ANA has been run
-            if (loaded.obj.ANAState != null) {
-                super.setStartFrame(loaded.obj.ECMMState.oHs.get(currentHandler).getStartFrame());
-                super.setEndFrame(loaded.obj.ECMMState.oHs.get(currentHandler).getEndFrame());
-                super.finalShrink = loaded.obj.BOAState.segParam.finalShrink;
+        if (getLoadedDataContainer().getBOAState() != null) {
+            super.setImageScale(getLoadedDataContainer().getBOAState().boap.getImageScale());
+            super.setFrameInterval(
+                    getLoadedDataContainer().getBOAState().boap.getImageFrameInterval());
+            super.NMAX = getLoadedDataContainer().getBOAState().boap.NMAX;
+            super.delta_t = getLoadedDataContainer().getBOAState().boap.delta_t;
+            super.max_iterations = getLoadedDataContainer().getBOAState().segParam.max_iterations;
+            super.setNodeRes(getLoadedDataContainer().getBOAState().segParam.getNodeRes());
+            super.setBlowup(getLoadedDataContainer().getBOAState().segParam.blowup);
+            super.sample_tan = getLoadedDataContainer().getBOAState().segParam.sample_tan;
+            super.sample_norm = getLoadedDataContainer().getBOAState().segParam.sample_norm;
+            super.vel_crit = getLoadedDataContainer().getBOAState().segParam.vel_crit;
+            super.f_central = getLoadedDataContainer().getBOAState().segParam.f_central;
+            super.f_contract = getLoadedDataContainer().getBOAState().segParam.f_contract;
+            super.f_friction = getLoadedDataContainer().getBOAState().boap.f_friction;
+            super.f_image = getLoadedDataContainer().getBOAState().segParam.f_image;
+            super.sensitivity = getLoadedDataContainer().getBOAState().boap.sensitivity;
+            super.finalShrink = getLoadedDataContainer().getBOAState().segParam.finalShrink;
+            if (getLoadedDataContainer().getECMMState() != null) {
+                super.setStartFrame(getLoadedDataContainer().getECMMState().oHs.get(currentHandler)
+                        .getStartFrame());
+                super.setEndFrame(getLoadedDataContainer().getECMMState().oHs.get(currentHandler)
+                        .getEndFrame());
             }
-            super.guessOtherFileNames();
+            // fill only if ANA has been run
+            if (getLoadedDataContainer().getANAState() != null) {
+                super.cortexWidth = getLoadedDataContainer().getANAState().aS.get(currentHandler)
+                        .getCortexWidthScale();
+
+                super.fluTiffs =
+                        getLoadedDataContainer().getANAState().aS.get(currentHandler).fluTiffs;
+            }
+
         }
     }
 
@@ -174,7 +224,7 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public int getStartFrame() {
-        return getLoadedDataContainer().BOAState.nest.getHandler(currentHandler).startFrame;
+        return super.getStartFrame();
     }
 
     /** (non-Javadoc)
@@ -185,8 +235,8 @@ public class QParamsQconf extends QParams {
     @Override
     public void setStartFrame(int startFrame) {
         super.setStartFrame(startFrame); // backward compatibility
-        // loadedDataContainer.BOAState.nest.getHandler(currentHandler).startFrame = startFrame;
-        throw new UnsupportedOperationException("Not finished yet");
+        getLoadedDataContainer().getBOAState().nest.getHandler(currentHandler).startFrame =
+                startFrame;
     }
 
     /** (non-Javadoc)
@@ -196,7 +246,7 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public int getEndFrame() {
-        return getLoadedDataContainer().BOAState.nest.getHandler(currentHandler).endFrame;
+        return super.getEndFrame();
     }
 
     /** (non-Javadoc)
@@ -207,7 +257,7 @@ public class QParamsQconf extends QParams {
     @Override
     public void setEndFrame(int endFrame) {
         super.setEndFrame(endFrame);
-        throw new UnsupportedOperationException("Not finished yet");
+        getLoadedDataContainer().getBOAState().nest.getHandler(currentHandler).endFrame = endFrame;
     }
 
     /** (non-Javadoc)
@@ -215,7 +265,7 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public double getImageScale() {
-        return getLoadedDataContainer().BOAState.boap.getImageScale();
+        return super.getImageScale();
     }
 
     /** (non-Javadoc)
@@ -223,8 +273,8 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public void setImageScale(double imageScale) {
+        getLoadedDataContainer().getBOAState().boap.setImageScale(imageScale);
         super.setImageScale(imageScale);
-        throw new UnsupportedOperationException("Not finished yet");
     }
 
     /** (non-Javadoc)
@@ -232,7 +282,7 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public double getFrameInterval() {
-        return getLoadedDataContainer().BOAState.boap.getImageFrameInterval();
+        return super.getFrameInterval();
     }
 
     /** (non-Javadoc)
@@ -240,8 +290,8 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public void setFrameInterval(double frameInterval) {
+        getLoadedDataContainer().getBOAState().boap.setImageFrameInterval(frameInterval);
         super.setFrameInterval(frameInterval);
-        throw new UnsupportedOperationException("Not finished yet");
     }
 
     /** (non-Javadoc)
@@ -250,7 +300,7 @@ public class QParamsQconf extends QParams {
     @Override
     public Nest getNest() {
         if (getLoadedDataContainer() != null)
-            return getLoadedDataContainer().BOAState.nest;
+            return getLoadedDataContainer().getBOAState().nest;
         else
             return super.getNest();
     }
@@ -260,7 +310,7 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public int getBlowup() {
-        throw new UnsupportedOperationException("Not finished yet");
+        return super.getBlowup();
     }
 
     /* (non-Javadoc)
@@ -268,8 +318,8 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public void setBlowup(int blowup) {
-        getLoadedDataContainer().BOAState.segParam.blowup = blowup;
-        throw new UnsupportedOperationException("Not finished yet");
+        getLoadedDataContainer().getBOAState().segParam.blowup = blowup;
+        super.setBlowup(blowup);
     }
 
     /* (non-Javadoc)
@@ -277,7 +327,7 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public double getNodeRes() {
-        throw new UnsupportedOperationException("Not finished yet");
+        return super.getNodeRes();
     }
 
     /* (non-Javadoc)
@@ -285,8 +335,8 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public void setNodeRes(double nodeRes) {
-        getLoadedDataContainer().BOAState.segParam.setNodeRes(nodeRes);
-        throw new UnsupportedOperationException("Not finished yet");
+        getLoadedDataContainer().getBOAState().segParam.setNodeRes(nodeRes);
+        super.setNodeRes(nodeRes);
     }
 
     /** 

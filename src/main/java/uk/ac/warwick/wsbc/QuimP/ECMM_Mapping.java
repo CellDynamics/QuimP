@@ -67,7 +67,7 @@ public class ECMM_Mapping {
     public ECMM_Mapping(File paramFile) {
         IJ.log("ECCM with param file name as file");
         try {
-            if (paramFile.getName().endsWith(BOAState.QCONFFILEEXT)) {// new file format TODO #152
+            if (paramFile.getName().endsWith(QParamsQconf.QCONF_EXT)) {// new file format TODO #152
                 qp = new QParamsQconf(paramFile);
                 qp.readParams();
                 runFromQCONF();
@@ -91,8 +91,10 @@ public class ECMM_Mapping {
         IJ.showStatus("QuimP Analysis");
         try {
             OpenDialog od =
-                    new OpenDialog("Open paramater file (.paQP|" + BOAState.QCONFFILEEXT + ")...",
-                            OpenDialog.getLastDirectory(), ".paQP");
+                    new OpenDialog(
+                            "Open paramater file (" + QParams.PAQP_EXT + "|"
+                                    + QParamsQconf.QCONF_EXT + ")...",
+                            OpenDialog.getLastDirectory(), QParams.PAQP_EXT);
             if (od.getFileName() == null) {
                 IJ.log("Cancelled - exiting...");
                 return;
@@ -100,8 +102,8 @@ public class ECMM_Mapping {
             // load config file but check if it is new format or old
             File paramFile = new File(od.getDirectory(), od.getFileName());
             // check extension
-            if (paramFile.getName().endsWith(BOAState.QCONFFILEEXT)) // new file format see TODO
-                                                                     // #152
+            if (paramFile.getName().endsWith(QParamsQconf.QCONF_EXT)) // new file format see TODO
+                                                                      // #152
                 qp = new QParamsQconf(paramFile);
             else
                 qp = new QParams(paramFile);
@@ -123,8 +125,8 @@ public class ECMM_Mapping {
             File[] otherPaFiles = qp.findParamFiles(); // see #196
             if (otherPaFiles.length > 0) {
                 YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                        "\tBatch Process?\n\n"
-                                + "Process other paQP files in the same folder with ECMM?\n"
+                        "\tBatch Process?\n\n" + "Process other " + QParams.PAQP_EXT
+                                + " files in the same folder with ECMM?\n"
                                 + "[Files already run through ECMM will be skipped!]\n"
                                 + "If one has proceeded already with new file format (QCONF),"
                                 + " this operation will update old files as well.");
@@ -209,7 +211,8 @@ public class ECMM_Mapping {
         Nest nest = qp.getNest();
         outputOutlineHandlers = new OutlineHandlers(nest.size());
         for (int i = 0; i < nest.size(); i++) { // go over all snakes
-            qp.currentHandler = i; // set current handler number. For compatibility, all methods
+            ((QParamsQconf) qp).setActiveHandler(i); // set current handler number. For
+                                                     // compatibility, all methods
             // have the same syntax (assumes that there is only one handler)
             SnakeHandler sH = nest.getHandler(i);
             if (sH == null)

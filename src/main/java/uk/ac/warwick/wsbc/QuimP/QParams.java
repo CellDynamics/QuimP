@@ -36,12 +36,13 @@ import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
  * <li>.mapQP - maps described in documentation</li>
  * </ul>
  * <p>
- *
+ * This class exists for compatibility purposes. Allows reading old files. There is also 
+ * child class QParamsEsxhanger that is based on new file format. Because QParams is strongly 
+ * integrated with QuimP it has been left.
+ * 
  * @author rtyson
  * @see BOAp
- * @remarks This class exists for compatibility purposes. Allows reading old files. There is also 
- * child class QParamsEsxhanger that is based on new file format. Because QParams is strongly 
- * integrated with QuimP it has been left. 
+ *  
  */
 public class QParams {
 
@@ -50,6 +51,7 @@ public class QParams {
     public static final int OLD_QUIMP = 1;
     public static final int QUIMP_11 = 2;
     public static final int NEW_QUIMP = 3;
+    public static final String PAQP_EXT = ".paQP";
     /**
      * Name of the case
      * Used to set \c fileName and \c path
@@ -75,6 +77,7 @@ public class QParams {
     protected File statsQP;
     /**
      * This field is set by direct call from ANA. Left here for compatibility reasons.
+     * Main holder of fluTiffs is {@link uk.ac.warwick.wsbc.QuimP.ANAp}
      */
     File[] fluTiffs;
 
@@ -99,24 +102,11 @@ public class QParams {
     boolean ecmmHasRun = false;
 
     /**
-     * Currently processed handler.
-     * 
-     * This is compatibility parameter. Old QuimP uses separated files for every snake thus QParams
-     * contained always correct values as given snake has been loaded. New QuimP uses composed
-     * file and this field points to currently processed Handler and it must be controlled from
-     * outside. For compatibility reasons all setters and getters assumes that there is only
-     * one Handler (as in old QuimP). This field allow to set current Handler if QParamsEschange
-     * instance is used.
-     */
-    public int currentHandler;
-
-    /**
      * Read basic information from \a paQP file such as its name and path. Initialize structures
      * 
      * @param p \a paQP file
      */
     public QParams(File p) {
-        currentHandler = 0;
         setParamFile(p);
 
         paramFormat = QParams.QUIMP_11;
@@ -160,11 +150,11 @@ public class QParams {
     }
 
     /**
-     * @param paramFile the paramFile to set
+     * @param paramFile the paramFile to set.
      */
     public void setParamFile(File paramFile) {
-        this.paramFile = paramFile;
         fileName = Tool.removeExtension(paramFile.getName());
+        this.paramFile = paramFile;
         path = paramFile.getParent();
     }
 
@@ -592,7 +582,7 @@ public class QParams {
                     continue;
                 }
                 extension = Tool.getFileExtension(filenames[i]);
-                if (extension.matches("paQP")) {
+                if (extension.matches(QParams.PAQP_EXT.substring(1))) {
                     paFiles.add(filenames[i]);
                     System.out.println("paFile: " + filenames[i]);
                 }

@@ -84,6 +84,13 @@ public class DataContainer implements IQuimpSerialize {
     }
 
     /**
+     * @return the aNAState
+     */
+    public ANAStates getANAState() {
+        return ANAState;
+    }
+
+    /**
      * Called before serialization. 
      * <p>
      * Call similar method for all stored object allowing them for self-preparation for normal

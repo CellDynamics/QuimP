@@ -118,15 +118,17 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
         try {
             OpenDialog od =
-                    new OpenDialog("Open paramater file (.paQP|" + BOAState.QCONFFILEEXT + ")...",
-                            OpenDialog.getLastDirectory(), ".paQP");
+                    new OpenDialog(
+                            "Open paramater file (" + QParams.PAQP_EXT + "|"
+                                    + QParamsQconf.QCONF_EXT + ")...",
+                            OpenDialog.getLastDirectory(), QParams.PAQP_EXT);
             if (od.getFileName() == null) {
                 IJ.log("Cancelled - exiting...");
                 return;
             }
             File paramFile = new File(od.getDirectory(), od.getFileName());
             // check extension
-            if (paramFile.getName().endsWith(BOAState.QCONFFILEEXT)) // new file format TODO #152
+            if (paramFile.getName().endsWith(QParamsQconf.QCONF_EXT)) // new file format TODO #152
                 qp = new QParamsQconf(paramFile);
             else
                 qp = new QParams(paramFile);
@@ -200,8 +202,10 @@ public class ANA_ implements PlugInFilter, DialogListener {
         else
             anaStates = qp.getLoadedDataContainer().ANAState;
         for (int i = 0; i < ecmmState.oHs.size(); i++) { // go over all outlines
-            qp.currentHandler = i; // set current handler number. For compatibility, all methods
-            // have the same syntax (assumes that there is only one handler)
+            ((QParamsQconf) qp).setActiveHandler(i); // set current handler number. For
+                                                     // compatibility, all methods
+                                                     // have the same syntax (assumes that there is
+                                                     // only one handler)
             oH = ecmmState.oHs.get(i); // restore handler from ecmm
             anap = anaStates.aS.get(i); // get i-th ana parameters
             anap.setup(qp);
@@ -1120,6 +1124,9 @@ class ANAp {
 
     public ANAp() {
         fluTiffs = new File[3];
+        fluTiffs[0] = new File("/");
+        fluTiffs[1] = new File("/");
+        fluTiffs[2] = new File("/");
         presentData = new int[3];
         setCortextWidthScale(0.7); // default value
     }
@@ -1156,7 +1163,7 @@ class ANAp {
 
         this.fluTiffs = new File[src.fluTiffs.length];
         for (int i = 0; i < fluTiffs.length; i++)
-            fluTiffs[i] = new File(src.fluTiffs[i].getAbsolutePath());
+            fluTiffs[i] = new File(src.fluTiffs[i].getPath());
     }
 
     /**

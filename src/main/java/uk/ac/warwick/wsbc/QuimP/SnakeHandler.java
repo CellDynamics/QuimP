@@ -526,7 +526,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     /**
      * Find the first missing contour at series of frames and set end frame to the previous one
      */
-    void setEndFrame() {
+    void findLastFrame() {
         for (int i = startFrame; i <= BOA_.qState.boap.getFRAMES(); i++) {
             if (!isStoredAt(i)) {
                 endFrame = i - 1;
