@@ -23,7 +23,6 @@ public class FormatConverter {
     private DataContainer dT;
     private QParamsQconf qP;
     private Path path;
-    private File newDataFile;
 
     /**
      * Construct FormatConverter from QCONF file.
@@ -31,7 +30,27 @@ public class FormatConverter {
      * @param newDataFile QCONF file
      */
     public FormatConverter(File newDataFile) {
-        this.newDataFile = newDataFile;
+        LOGGER.debug("Use provided file:" + newDataFile.toString());
+        qP = new QParamsQconf(newDataFile);
+        path = Paths.get(newDataFile.getAbsolutePath());
+        try {
+            qP.readParams();
+        } catch (QuimpException e) {
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Problem with running Analysis: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Construct conversion object from QParamsQconf.
+     *  
+     * @param qP reference to QParamsQconf
+     * @param path Path where converted files will be saved.
+     */
+    public FormatConverter(QParamsQconf qP, Path path) {
+        LOGGER.debug("Use provided QParams");
+        this.qP = qP;
+        this.path = path;
     }
 
     /**
@@ -41,11 +60,7 @@ public class FormatConverter {
      * 
      */
     public void generateOldDataFiles() {
-        LOGGER.debug("Use provided file:" + newDataFile.toString());
-        qP = new QParamsQconf(newDataFile);
-        path = Paths.get(newDataFile.getAbsolutePath());
         try {
-            qP.readParams();
             dT = qP.getLoadedDataContainer();
             if (dT.ECMMState == null)
                 generatepaQP(); // no ecmm data write snakes only
