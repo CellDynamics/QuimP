@@ -24,10 +24,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
+import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOAPoint2dFilter;
 
 /**
  * @author p.baniukiewicz
@@ -70,7 +70,7 @@ public class PluginFactory_Test {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("src/test/resources/"));
         ArrayList<String> ar;
-        ar = pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
+        ar = pluginFactory.getPluginNames(IQuimpCorePlugin.DOES_SNAKES);
         HashSet<String> hs = new HashSet<>(ar);
         assertTrue(hs.contains("Plugin1"));
         assertTrue(hs.contains("Plugin2"));
@@ -87,7 +87,7 @@ public class PluginFactory_Test {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("src/test/"));
         ArrayList<String> ar;
-        ar = pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
+        ar = pluginFactory.getPluginNames(IQuimpCorePlugin.DOES_SNAKES);
         assertTrue(ar.isEmpty());
     }
 
@@ -102,7 +102,7 @@ public class PluginFactory_Test {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("../fgrtg/"));
         ArrayList<String> ar;
-        ar = pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES);
+        ar = pluginFactory.getPluginNames(IQuimpCorePlugin.DOES_SNAKES);
         assertTrue(ar.isEmpty());
     }
 
@@ -124,9 +124,9 @@ public class PluginFactory_Test {
         test.put("window", "0.02");
         test.put("alfa", "10.0");
         // correct because we check plugin type before
-        IQuimpPoint2dFilter filter1 = (IQuimpPoint2dFilter) pluginFactory.getInstance("Plugin1");
+        IQuimpBOAPoint2dFilter filter1 = (IQuimpBOAPoint2dFilter) pluginFactory.getInstance("Plugin1");
         assertEquals(filter1.getVersion(), "0.0.2");
-        IQuimpPoint2dFilter filter2 = (IQuimpPoint2dFilter) pluginFactory.getInstance("Plugin2");
+        IQuimpBOAPoint2dFilter filter2 = (IQuimpBOAPoint2dFilter) pluginFactory.getInstance("Plugin2");
         filter2.setPluginConfig(test);
         ret = filter2.getPluginConfig();
         assertEquals(Double.parseDouble(ret.get("Window")), 0.02, 1e-5);
@@ -145,7 +145,7 @@ public class PluginFactory_Test {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("src/test/"));
         // we should be sure that this casting is correct because we check plugin type before
-        IQuimpPoint2dFilter filter1 = (IQuimpPoint2dFilter) pluginFactory.getInstance("Plugin1");
+        IQuimpBOAPoint2dFilter filter1 = (IQuimpBOAPoint2dFilter) pluginFactory.getInstance("Plugin1");
         assertTrue(filter1 == null);
     }
 
@@ -225,12 +225,12 @@ public class PluginFactory_Test {
         pluginFactory = new PluginFactory(Paths.get("src/test/resources/"));
         Map<String, PluginProperties> pp = pluginFactory.getRegisterdPlugins();
         PluginProperties p1 = pp.get("Plugin1");
-        assertEquals(IQuimpPlugin.DOES_SNAKES, p1.getType());
+        assertEquals(IQuimpCorePlugin.DOES_SNAKES, p1.getType());
         assertEquals("uk.ac.warwick.wsbc.Plugin1_", p1.getClassName());
         assertEquals("0.0.2", p1.getVersion());
 
         PluginProperties p2 = pp.get("Plugin2");
-        assertEquals(IQuimpPlugin.DOES_SNAKES, p2.getType());
+        assertEquals(IQuimpCorePlugin.DOES_SNAKES, p2.getType());
         assertEquals("uk.ac.warwick.wsbc.Plugin2_", p2.getClassName());
         assertEquals("0.0.1", p2.getVersion());
 

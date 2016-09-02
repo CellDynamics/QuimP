@@ -23,7 +23,7 @@ import ij.ImagePlus;
  * @date 2 Sep 2016
  *
  */
-public class QuimpPluginCoreTest {
+public class QconfSupporterTest {
 
     /**
      * @throws java.lang.Exception
@@ -54,7 +54,7 @@ public class QuimpPluginCoreTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore#getImage()}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QconfSupporter#getImage()}.
      */
     @SuppressWarnings("unused")
     @Test
@@ -73,7 +73,7 @@ public class QuimpPluginCoreTest {
 
 }
 
-class QuimpPluginCoreRef extends QuimpPluginCore {
+class QuimpPluginCoreRef extends QconfSupporter {
 
     /**
      * 

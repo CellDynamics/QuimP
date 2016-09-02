@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
@@ -14,7 +14,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
  * @todo TODO Replace in future by IQuimpSnakeFilter
  */
-public interface IQuimpPoint2dFilter extends IQuimpPlugin {
+public interface IQuimpBOAPoint2dFilter extends IQuimpCorePlugin {
 
     /**
      * Runs filter and return filtered points in the same order as input points

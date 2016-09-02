@@ -32,7 +32,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
@@ -97,7 +97,7 @@ public class SnakePluginListTest {
         /**
          * This plugin does not have config
          */
-        Mockito.when(pluginFactory.getInstance("Test1")).thenReturn(new IQuimpPlugin() {
+        Mockito.when(pluginFactory.getInstance("Test1")).thenReturn(new IQuimpCorePlugin() {
 
             @Override
             public void showUI(boolean val) {
@@ -130,7 +130,7 @@ public class SnakePluginListTest {
         /**
          * This has config
          */
-        Mockito.when(pluginFactory.getInstance("Test2")).thenReturn(new IQuimpPlugin() {
+        Mockito.when(pluginFactory.getInstance("Test2")).thenReturn(new IQuimpCorePlugin() {
 
             @Override
             public void showUI(boolean val) {
@@ -173,7 +173,7 @@ public class SnakePluginListTest {
         /**
          * This is for testing deletions
          */
-        Mockito.when(pluginFactory.getInstance("toDelete")).thenReturn(new IQuimpPlugin() {
+        Mockito.when(pluginFactory.getInstance("toDelete")).thenReturn(new IQuimpCorePlugin() {
 
             @Override
             public void showUI(boolean val) {
@@ -207,7 +207,7 @@ public class SnakePluginListTest {
         /**
          * This will replace plugin 0
          */
-        Mockito.when(pluginFactory.getInstance("newInstance")).thenReturn(new IQuimpPlugin() {
+        Mockito.when(pluginFactory.getInstance("newInstance")).thenReturn(new IQuimpCorePlugin() {
 
             @Override
             public void showUI(boolean val) {
@@ -264,7 +264,7 @@ public class SnakePluginListTest {
      */
     @Test
     public void testGetInstance() throws Exception {
-        IQuimpPlugin inst = snakePluginList.getInstance(0);
+        IQuimpCorePlugin inst = snakePluginList.getInstance(0);
         assertEquals("1.2.3", inst.getVersion());
         assertEquals("Test_1", inst.about());
         inst = snakePluginList.getInstance(1);
@@ -284,7 +284,7 @@ public class SnakePluginListTest {
      */
     @Test
     public void testSetInstance() throws Exception {
-        IQuimpPlugin inst = snakePluginList.getInstance(0);
+        IQuimpCorePlugin inst = snakePluginList.getInstance(0);
         assertEquals("1.2.3", inst.getVersion());
         snakePluginList.setInstance(0, "newInstance", true); // slot 0
         inst = snakePluginList.getInstance(0);
@@ -336,7 +336,7 @@ public class SnakePluginListTest {
     public void testBeforeSerialize() throws Exception {
         snakePluginList.beforeSerialize();
         for (int i = 0; i < 3; i++) {
-            IQuimpPlugin inst = snakePluginList.getInstance(i);
+            IQuimpCorePlugin inst = snakePluginList.getInstance(i);
             assertEquals(inst.getVersion(), snakePluginList.getVer(i));
             assertEquals(snakePluginList.getInstance(i).getPluginConfig(),
                     snakePluginList.getConfig(i));

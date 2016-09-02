@@ -1,11 +1,7 @@
-/**
- * @file IQuimpSnakeFilter.java
- * @date 4 Apr 2016
- */
 package uk.ac.warwick.wsbc.QuimP.plugin.snakes;
 
 import uk.ac.warwick.wsbc.QuimP.Snake;
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
@@ -14,11 +10,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * Modification of Node object that form Snake should be done with carefulness. Read documentation 
  * for Snake 
  * @author p.baniukiewicz
- * @date 4 Apr 2016
  * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
  * @see uk.ac.warwick.wsbc.QuimP.Snake
  */
-public interface IQuimpSnakeFilter extends IQuimpPlugin {
+public interface IQuimpBOASnakeFilter extends IQuimpCorePlugin {
 
     /**
      * Runs filter and return filtered points in the same order as input points

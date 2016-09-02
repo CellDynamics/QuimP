@@ -25,7 +25,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpNestPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
@@ -41,7 +41,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder
  */
 public class BinarySegmentationPlugin extends QWindowBuilder
-        implements ActionListener, IQuimpPluginSynchro, IQuimpCorePlugin, ItemListener {
+        implements ActionListener, IQuimpPluginSynchro, IQuimpNestPlugin, ItemListener {
     private static final Logger LOGGER =
             LogManager.getLogger(BinarySegmentationPlugin.class.getName());
 

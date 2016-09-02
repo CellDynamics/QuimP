@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
@@ -61,7 +61,7 @@ public class ConfigStreamerTest {
         p.snakePluginList.get(0).ver = "0.01";
         p.snakePluginList.get(0).config = config;
         p.snakePluginList.get(0).isActive = true;
-        p.snakePluginList.get(0).ref = new IQuimpPlugin() {
+        p.snakePluginList.get(0).ref = new IQuimpCorePlugin() {
 
             @Override
             public void showUI(boolean val) {
@@ -104,7 +104,7 @@ public class ConfigStreamerTest {
         p.snakePluginList.get(1).ver = "0.02";
         p.snakePluginList.get(1).config = config1;
         p.snakePluginList.get(1).isActive = false;
-        p.snakePluginList.get(1).ref = new IQuimpPlugin() {
+        p.snakePluginList.get(1).ref = new IQuimpCorePlugin() {
 
             @Override
             public void showUI(boolean val) {
@@ -222,7 +222,7 @@ class tSnakePluginList {
      *
      */
     class Plugin {
-        public IQuimpPlugin ref; //!< Reference to plugin instance
+        public IQuimpCorePlugin ref; //!< Reference to plugin instance
         public boolean isActive; //!< Is activate in GUI?
         public ParamList config;
         public String name;
@@ -234,7 +234,7 @@ class tSnakePluginList {
          * @param ref Instance of plugin
          * @param isActive 
          */
-        Plugin(IQuimpPlugin ref, boolean isActive) {
+        Plugin(IQuimpCorePlugin ref, boolean isActive) {
             this.ref = ref;
             this.isActive = isActive;
             // ver = ref.getVersion();

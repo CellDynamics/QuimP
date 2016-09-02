@@ -40,8 +40,8 @@ import uk.ac.warwick.wsbc.QuimP.Tool;
  * @author p.baniukiewicz
  *
  */
-public abstract class QuimpPluginCore {
-    private static final Logger LOGGER = LogManager.getLogger(QuimpPluginCore.class.getName());
+public abstract class QconfSupporter {
+    private static final Logger LOGGER = LogManager.getLogger(QconfSupporter.class.getName());
     /**
      * Main object holding loaded configuration file. It can be either traditional QParams or
      * QParamsQconf for newer format.  
@@ -51,7 +51,7 @@ public abstract class QuimpPluginCore {
     /**
      * 
      */
-    public QuimpPluginCore() {
+    public QconfSupporter() {
         this(null);
     }
 
@@ -62,7 +62,7 @@ public abstract class QuimpPluginCore {
      * 
      * @param path Path to *.paQP/QCONF file. If <tt>null</tt> user is asked for this file
      */
-    public QuimpPluginCore(Path path) {
+    public QconfSupporter(Path path) {
         try {
             IJ.log(new Tool().getQuimPversion());
             String directory; // directory with paQP
@@ -132,6 +132,7 @@ public abstract class QuimpPluginCore {
 
     /**
      * Try to load image associated with QCONF file.
+     * 
      * @return Loaded image from QCONF or that pointed by user.
      * @throws QuimpException When user canceled and image is not loaded
      */

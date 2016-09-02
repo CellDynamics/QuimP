@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore;
+import uk.ac.warwick.wsbc.QuimP.plugin.QconfSupporter;
 
 /**
  * Test class for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap}. 
@@ -250,7 +250,7 @@ public class TrackMapTest {
  * @author p.baniukiewicz
  *
  */
-class QconfLoader extends QuimpPluginCore {
+class QconfLoader extends QconfSupporter {
 
     /**
      * 

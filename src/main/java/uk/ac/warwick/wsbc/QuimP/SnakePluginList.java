@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.InstanceCreator;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
@@ -222,7 +222,7 @@ class SnakePluginList implements IQuimpSerialize {
      *
      */
     class Plugin {
-        private transient IQuimpPlugin ref; //!< Reference to plugin instance 
+        private transient IQuimpCorePlugin ref; //!< Reference to plugin instance 
         private boolean isActive;//!< Is activate in GUI?
         private String name; //!< Name of plugin delivered from PluginFactory 
         private ParamList config; //!< Configuration read from plugin on save operation 
@@ -346,7 +346,7 @@ class SnakePluginList implements IQuimpSerialize {
          * 
          * @return reference to jar
          */
-        public IQuimpPlugin getRef() {
+        public IQuimpCorePlugin getRef() {
             return ref;
         }
     }
@@ -451,7 +451,7 @@ class SnakePluginList implements IQuimpSerialize {
      * @param i Number of plugin to return
      * @return Instance of plugin
      */
-    public IQuimpPlugin getInstance(int i) {
+    public IQuimpCorePlugin getInstance(int i) {
         return sPluginList.get(i).ref;
     }
 
@@ -517,7 +517,7 @@ class SnakePluginList implements IQuimpSerialize {
         sPluginList.set(i, new Plugin(name, act, pluginFactory)); // create new Plugin using
                                                                   // name and PluginFactory
 
-        IQuimpPlugin ref = getInstance(i);
+        IQuimpCorePlugin ref = getInstance(i);
         // connects all goods to created plugin
         if (ref != null) {
             if (ref instanceof IQuimpPluginSynchro) // if it support backward synchronization

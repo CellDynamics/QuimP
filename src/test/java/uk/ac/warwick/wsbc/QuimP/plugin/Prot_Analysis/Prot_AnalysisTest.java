@@ -23,7 +23,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackMap;
-import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore;
+import uk.ac.warwick.wsbc.QuimP.plugin.QconfSupporter;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
@@ -108,7 +108,7 @@ public class Prot_AnalysisTest {
  * @author p.baniukiewicz
  *
  */
-class QconfLoader extends QuimpPluginCore {
+class QconfLoader extends QconfSupporter {
 
     /**
      * 

@@ -83,10 +83,10 @@ import ij.process.StackConverter;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
-import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpSnakeFilter;
+import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOAPoint2dFilter;
+import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOASnakeFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
@@ -343,7 +343,7 @@ public class BOA_ implements PlugIn {
             ad.appendLine("   Plugin vers: " + entry.getValue().getVersion());
             // about is not stored in PluginProperties class due to optimization of memory
             ad.appendLine("   About (returned by plugin):");
-            IQuimpPlugin tmpinst = pluginFactory.getInstance(entry.getKey());
+            IQuimpCorePlugin tmpinst = pluginFactory.getInstance(entry.getKey());
             if (tmpinst != null) // can be null on problem with instance
             {
                 String about = tmpinst.about(); // may return null
@@ -729,7 +729,7 @@ public class BOA_ implements PlugIn {
             // build subpanel with plugins
             // get plugins names collected by PluginFactory
             ArrayList<String> pluginList =
-                    qState.snakePluginList.getPluginNames(IQuimpPlugin.DOES_SNAKES);
+                    qState.snakePluginList.getPluginNames(IQuimpCorePlugin.DOES_SNAKES);
             // add NONE to list
             pluginList.add(0, NONE);
 
@@ -2020,22 +2020,22 @@ public class BOA_ implements PlugIn {
             for (Plugin qP : qState.snakePluginList.getList()) { // iterate over list
                 if (!qP.isExecutable())
                     continue; // no plugin on this slot or not active
-                if (qP.getRef() instanceof IQuimpPoint2dFilter) { // check interface type
+                if (qP.getRef() instanceof IQuimpBOAPoint2dFilter) { // check interface type
                     if (previousConversion == isnake) { // previous was IQuimpSnakeFilter
                         dataToProcess = snakeToProcess.asList(); // and data needs to be converted
                     }
-                    IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP.getRef();
+                    IQuimpBOAPoint2dFilter qPcast = (IQuimpBOAPoint2dFilter) qP.getRef();
                     qPcast.attachData(dataToProcess);
                     dataToProcess = qPcast.runPlugin(); // store result in input variable
                     previousConversion = ipoint;
                 }
-                if (qP.getRef() instanceof IQuimpSnakeFilter) { // check interface type
+                if (qP.getRef() instanceof IQuimpBOASnakeFilter) { // check interface type
                     if (previousConversion == ipoint) { // previous was IQuimpPoint2dFilter
                         // and data must be converted to snake from dataToProcess
                         snakeToProcess =
                                 new QuimpDataConverter(dataToProcess).getSnake(snake.getSnakeID());
                     }
-                    IQuimpSnakeFilter qPcast = (IQuimpSnakeFilter) qP.getRef();
+                    IQuimpBOASnakeFilter qPcast = (IQuimpBOASnakeFilter) qP.getRef();
                     qPcast.attachData(snakeToProcess);
                     snakeToProcess = qPcast.runPlugin(); // store result as snake for next plugin
                     previousConversion = isnake;

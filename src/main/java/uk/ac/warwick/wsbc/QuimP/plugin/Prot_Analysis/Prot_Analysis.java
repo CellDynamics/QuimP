@@ -26,7 +26,7 @@ import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackMap;
-import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore;
+import uk.ac.warwick.wsbc.QuimP.plugin.QconfSupporter;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
@@ -34,7 +34,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * @date 15 Aug 2016
  *
  */
-public class Prot_Analysis extends QuimpPluginCore {
+public class Prot_Analysis extends QconfSupporter {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");

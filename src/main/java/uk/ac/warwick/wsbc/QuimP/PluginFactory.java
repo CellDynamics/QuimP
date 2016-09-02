@@ -26,7 +26,7 @@ import java.util.jar.JarFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
@@ -347,15 +347,15 @@ public class PluginFactory {
      * @param instance Instance of plugin
      * @return Codes of types from IQuimpPlugin
      * @throws IllegalArgumentException When returned type is unknown
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin
      */
     private int getPluginType(Object instance)
             throws IllegalArgumentException, NoSuchMethodException, InvocationTargetException {
 
-        int result = (int) ((IQuimpPlugin) instance).setup();
+        int result = (int) ((IQuimpCorePlugin) instance).setup();
         // decode returned result for plugin type
-        if ((result & IQuimpPlugin.DOES_SNAKES) == IQuimpPlugin.DOES_SNAKES)
-            return IQuimpPlugin.DOES_SNAKES;
+        if ((result & IQuimpCorePlugin.DOES_SNAKES) == IQuimpCorePlugin.DOES_SNAKES)
+            return IQuimpCorePlugin.DOES_SNAKES;
         else
             throw new IllegalArgumentException("Plugin returned unknown type");
     }
@@ -371,7 +371,7 @@ public class PluginFactory {
      */
     private String getPluginVersion(Object instance)
             throws NoSuchMethodException, InvocationTargetException {
-        return ((IQuimpPlugin) instance).getVersion();
+        return ((IQuimpCorePlugin) instance).getVersion();
     }
 
     /**
@@ -457,7 +457,7 @@ public class PluginFactory {
      * problem with creating instance or given \c name does not exist in
      * \c availPlugins base
      */
-    public IQuimpPlugin getInstance(final String name) {
+    public IQuimpCorePlugin getInstance(final String name) {
         try {
             if (name.isEmpty())
                 throw new IllegalArgumentException("Plugin of name: " + name + " is not loaded");
@@ -469,8 +469,8 @@ public class PluginFactory {
             if (pp == null)
                 throw new IllegalArgumentException("Plugin of name: " + name + " is not loaded");
             // load class and create instance
-            IQuimpPlugin instance =
-                    (IQuimpPlugin) getPluginInstance(pp.getFile(), pp.getClassName());
+            IQuimpCorePlugin instance =
+                    (IQuimpCorePlugin) getPluginInstance(pp.getFile(), pp.getClassName());
             return instance;
         } catch (MalformedURLException | ClassNotFoundException | InstantiationException
                 | IllegalAccessException | IllegalArgumentException e) {
