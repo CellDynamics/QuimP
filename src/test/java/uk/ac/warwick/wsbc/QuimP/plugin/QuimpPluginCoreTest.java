@@ -7,12 +7,11 @@ package uk.ac.warwick.wsbc.QuimP.plugin;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ij.IJ;
@@ -57,7 +56,9 @@ public class QuimpPluginCoreTest {
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore#getImage()}.
      */
+    @SuppressWarnings("unused")
     @Test
+    @Ignore("Use GUI for testing. Not for automated run")
     public void testGetImage() throws Exception {
         ImageJ ij = new ImageJ();
         ImagePlus i1 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frames_1-5.tif");
@@ -73,7 +74,6 @@ public class QuimpPluginCoreTest {
 }
 
 class QuimpPluginCoreRef extends QuimpPluginCore {
-    private static final Logger LOGGER = LogManager.getLogger(QuimpPluginCoreRef.class.getName());
 
     /**
      * 

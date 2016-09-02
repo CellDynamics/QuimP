@@ -186,6 +186,11 @@ public class QParamsQconf extends QParams {
             super.f_image = getLoadedDataContainer().getBOAState().segParam.f_image;
             super.sensitivity = getLoadedDataContainer().getBOAState().boap.sensitivity;
             super.finalShrink = getLoadedDataContainer().getBOAState().segParam.finalShrink;
+            // set frames from snakes
+            super.setStartFrame(getLoadedDataContainer().getBOAState().nest
+                    .getHandler(currentHandler).getStartFrame());
+            super.setEndFrame(getLoadedDataContainer().getBOAState().nest.getHandler(currentHandler)
+                    .getEndFrame());
             if (getLoadedDataContainer().getECMMState() != null) {
                 super.setStartFrame(getLoadedDataContainer().getECMMState().oHs.get(currentHandler)
                         .getStartFrame());
