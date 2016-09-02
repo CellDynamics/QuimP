@@ -3,6 +3,7 @@ package uk.ac.warwick.wsbc.QuimP;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.jar.Attributes;
@@ -96,7 +97,7 @@ public class Tool {
                                 + attributes.getValue("Implementation-Build");
                         ret[0] = attributes.getValue("Implementation-Version");
                         ret[2] = attributes.getValue("Implementation-Title");
-                        LOGGER.debug(ret);
+                        LOGGER.trace(Arrays.toString(ret));
                     }
                 } catch (Exception e) {
                     ; // do not care about problems - just use defaults defined on beginning

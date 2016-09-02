@@ -1,7 +1,3 @@
-/**
- * @file QParamsQconf.java
- * @date 26 May 2016
- */
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
@@ -16,8 +12,9 @@ import org.apache.logging.log4j.Logger;
  * The goal of this class is rather not to extend QParams but to use polymorphism to provide 
  * requested data to callers keeping compatibility with old quimP architecture. 
  * The QuimP uses QParams to keep parameters read from configuration files (\a paQP, \a snQP) and 
- * then to provide some of parameters stored in these files  to local configuration classes such as 
- * @ref uk.ac.warwick.wsbc.QuimP.ECMp "ECMp" or @ref uk.ac.warwick.wsbc.QuimP.Qp "Qp".
+ * then to provide some of parameters stored in these files  to local configuration classes such as
+ * e.g. {@link uk.ac.warwick.wsbc.QuimP.ECMp}, {@link uk.ac.warwick.wsbc.QuimP.Qp}, 
+ * {@link uk.ac.warwick.wsbc.QuimP.ANAp}.
  * QuimP supports two independent file formats:
  * <ol>
  * <li> based on separate files (old QuimP) such as \a case_cellno.paQP
@@ -29,11 +26,10 @@ import org.apache.logging.log4j.Logger;
  * Appropriate object either QParam or QParamsQconf is created upon configuration file type. 
  * Owing to Java late binding, always correct method is called even if the object is casted to QParams 
  * 
- * @todo TODO These two classes should be in separate package to have better control over fields by 
+ * TODO These two classes should be in separate package to have better control over fields by 
  * setters and getters
  * 
  * @author p.baniukiewicz
- * @date 26 May 2016
  *
  */
 public class QParamsQconf extends QParams {

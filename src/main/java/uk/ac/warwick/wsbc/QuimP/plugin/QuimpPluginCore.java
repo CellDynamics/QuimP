@@ -7,10 +7,14 @@ package uk.ac.warwick.wsbc.QuimP.plugin;
 import java.io.File;
 import java.nio.file.Path;
 
+import javax.swing.JOptionPane;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ij.IJ;
+import ij.ImagePlus;
+import ij.WindowManager;
 import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
@@ -127,6 +131,48 @@ public abstract class QuimpPluginCore {
     }
 
     /**
+     * Try to load image associated with QCONF file.
+     * @return Loaded image from QCONF or that pointed by user.
+     * @throws QuimpException When user canceled and image is not loaded
+     */
+    public ImagePlus getImage() throws QuimpException {
+        LOGGER.debug("Attempt to open image: "
+                + qp.getLoadedDataContainer().getBOAState().boap.getOrgFile().getAbsolutePath());
+        // try to load from QCONF
+        ImagePlus im =
+                IJ.openImage(qp.getLoadedDataContainer().getBOAState().boap.getOrgFile().getPath());
+        if (im == null) { // if failed ask user
+            Object[] options = { "Load from disk", "Load from IJ", "Cancel" };
+            int n = JOptionPane.showOptionDialog(IJ.getInstance(),
+                    "The image pointed in loaded QCONF file can not be found.\n"
+                            + "Would you like to load it manually?",
+                    "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                    options, options[2]);
+            if (n == JOptionPane.YES_OPTION) { // load from disk
+                LOGGER.trace("Load from disk");
+                OpenDialog od = new OpenDialog("Open image", OpenDialog.getLastDirectory(), "");
+                if (od.getFileName() == null) {
+                    return null;
+                }
+                im = IJ.openImage(od.getDirectory() + od.getFileName());
+            }
+            if (n == JOptionPane.NO_OPTION) { // or open from ij
+                LOGGER.trace("Load from IJ");
+                Object[] images = WindowManager.getImageTitles();
+                images = (images.length == 0) ? new Object[1] : images;
+                Object message = "Select image";
+                String s = (String) JOptionPane.showInputDialog(IJ.getInstance(), message,
+                        "Avaiable images", JOptionPane.PLAIN_MESSAGE, null, images, images[0]);
+                im = WindowManager.getImage(s);
+            }
+        }
+        LOGGER.debug("Opened image: " + im);
+        if (im == null)
+            throw new QuimpException("No valid image provided");
+        return im;
+    }
+
+    /**
      * Validate whether loaded <i>QCONF</i> file contains correct data.
      * <p>
      * Check for presence ECMM, and Q Analysis data in loaded QCONF.
@@ -158,15 +204,17 @@ public abstract class QuimpPluginCore {
 
     /**
      * Executed when input file is <i>QCONF</i>.
+     * @throws QuimpException 
      */
-    public void runFromQCONF() {
+    public void runFromQCONF() throws QuimpException {
         LOGGER.warn("Not implemented here");
     }
 
     /**
      * Executed when input file is <i>paQP</i>.
+     * @throws QuimpException
      */
-    public void runFromPAQP() {
+    public void runFromPAQP() throws QuimpException {
         LOGGER.warn("Not implemented here");
     }
 
