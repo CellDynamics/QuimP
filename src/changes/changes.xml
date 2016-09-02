@@ -6,6 +6,14 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="16.08.01-SNAPSHOT" date="2016-09-02" description="Release candidate 2">
+         <action dev="baniuk" type="fix" issue="203">
+            Deal with problem of restoring image from QCONF file.
+         </action>
+        <action dev="baniuk" type="update" issue="">
+            Fix of several bugs introduced after issue 196.
+        </action>
+      </release> 
       <release version="16.08.01-SNAPSHOT" date="2016-09-01" description="Release candidate 1">
          <action dev="baniuk" type="add" issue="195">
             Detect whether loaded QCONF file contains any previous data and notify user if it does.
