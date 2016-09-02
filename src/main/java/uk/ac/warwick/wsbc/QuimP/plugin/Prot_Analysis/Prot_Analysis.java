@@ -85,12 +85,11 @@ public class Prot_Analysis extends QuimpPluginCore {
      * @see uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore#runFromQCONF()
      */
     @Override
-    public void runFromQCONF() {
-        STmap[] stMap = qp.getLoadedDataContainer().QState;
-        OutlineHandlers oHs = qp.getLoadedDataContainer().ECMMState;
+    public void runFromQCONF() throws QuimpException {
+        STmap[] stMap = qp.getLoadedDataContainer().getQState();
+        OutlineHandlers oHs = qp.getLoadedDataContainer().getECMMState();
         int h = 0;
-        ImagePlus im1 =
-                IJ.openImage(qp.getLoadedDataContainer().BOAState.boap.getOrgFile().getPath());
+        ImagePlus im1 = getImage(); // will throw when no image
         ProtrusionVis pV = new ProtrusionVis(im1);
         LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells
@@ -121,8 +120,9 @@ public class Prot_Analysis extends QuimpPluginCore {
             pV.addTrackingLinesToImage(mapCell, pL);
 
             // Maps are correlated in order with Outlines in DataContainer.
-            mapCell.map2ColorImagePlus("motility_map", mapCell.motMap, oHs.oHs.get(h).migLimits[0],
-                    oHs.oHs.get(h).migLimits[1]).show();
+            // mapCell.map2ColorImagePlus("motility_map", mapCell.motMap,
+            // oHs.oHs.get(h).migLimits[0],
+            // oHs.oHs.get(h).migLimits[1]).show();
 
             h++;
         }
@@ -134,7 +134,7 @@ public class Prot_Analysis extends QuimpPluginCore {
      * @see uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore#runFromPAQP()
      */
     @Override
-    public void runFromPAQP() {
+    public void runFromPAQP() throws QuimpException {
         // TODO Auto-generated method stub
         super.runFromPAQP();
     }
