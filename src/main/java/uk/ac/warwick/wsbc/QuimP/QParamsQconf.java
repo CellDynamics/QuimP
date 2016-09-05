@@ -50,6 +50,10 @@ public class QParamsQconf extends QParams {
      */
     private int currentHandler;
 
+    public QParamsQconf() {
+
+    }
+
     /**
      * Set default values for superclass, also prefix and path for files
      * 
@@ -102,9 +106,9 @@ public class QParamsQconf extends QParams {
                     "Loading or processing of " + getParamFile().getAbsolutePath() + " failed", e);
         }
         // second check of basic logic
-        if (loaded.obj.BOAState == null)
-            throw new QuimpException("Loaded file " + getParamFile().getAbsolutePath()
-                    + " does not contain BOA data");
+        // if (loaded.obj.BOAState == null) // this check is now through QconfLoader
+        // throw new QuimpException("Loaded file " + getParamFile().getAbsolutePath()
+        // + " does not contain BOA data");
         if (!loaded.className.equals("DataContainer")
                 || !loaded.version[2].equals("QuimP") && !loaded.version[2].equals(Tool.defNote)) {
             LOGGER.error("Not QuimP file?");
@@ -117,7 +121,7 @@ public class QParamsQconf extends QParams {
             LOGGER.warn("Loaded config file is in diferent version than current QuimP (" + ver[0]
                     + " vs " + loaded.version[0]);
         }
-        compatibilityLayer();
+        compatibilityLayer(); // fill underlying data (paQP) from QCONF
     }
 
     public void setActiveHandler(int num) {
@@ -164,11 +168,11 @@ public class QParamsQconf extends QParams {
         // fill underlying parameters
         super.setParamFile(new File(Tool.removeExtension(newParamFile.getAbsolutePath()) + "_"
                 + currentHandler + QParams.PAQP_EXT));
-        super.setSegImageFile(getLoadedDataContainer().getBOAState().boap.getOrgFile());
         super.guessOtherFileNames();
         super.setSnakeQP(getSnakeQP());
         super.setStatsQP(getStatsQP());
         if (getLoadedDataContainer().getBOAState() != null) {
+            super.setSegImageFile(getLoadedDataContainer().getBOAState().boap.getOrgFile());
             super.setImageScale(getLoadedDataContainer().getBOAState().boap.getImageScale());
             super.setFrameInterval(
                     getLoadedDataContainer().getBOAState().boap.getImageFrameInterval());

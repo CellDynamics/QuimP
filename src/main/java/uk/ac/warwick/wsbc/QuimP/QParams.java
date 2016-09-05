@@ -101,6 +101,10 @@ public class QParams {
      */
     boolean ecmmHasRun = false;
 
+    public QParams() {
+
+    }
+
     /**
      * Read basic information from \a paQP file such as its name and path. Initialize structures
      * 

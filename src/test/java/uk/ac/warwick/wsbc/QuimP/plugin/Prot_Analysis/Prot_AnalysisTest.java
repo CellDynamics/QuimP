@@ -39,7 +39,7 @@ public class Prot_AnalysisTest {
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     private static final Logger LOGGER = LogManager.getLogger(Prot_AnalysisTest.class.getName());
-    static QconfLoader qL1;
+    static QconfLoaderLocal qL1;
     private STmap[] stMap;
     private ImageProcessor imp;
 
@@ -48,7 +48,7 @@ public class Prot_AnalysisTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        qL1 = new QconfLoader(
+        qL1 = new QconfLoaderLocal(
                 Paths.get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF"));
     }
 
@@ -108,12 +108,12 @@ public class Prot_AnalysisTest {
  * @author p.baniukiewicz
  *
  */
-class QconfLoader extends QconfSupporter {
+class QconfLoaderLocal extends QconfSupporter {
 
     /**
      * 
      */
-    public QconfLoader() {
+    public QconfLoaderLocal() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -121,7 +121,7 @@ class QconfLoader extends QconfSupporter {
     /**
      * @param path
      */
-    public QconfLoader(Path path) {
+    public QconfLoaderLocal(Path path) {
         super(path);
         // TODO Auto-generated constructor stub
     }

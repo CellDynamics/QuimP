@@ -35,7 +35,7 @@ public class MaximaFinderTest {
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     private static final Logger LOGGER = LogManager.getLogger(MaximaFinderTest.class.getName());
-    static QconfLoader qL1;
+    static QconfLoaderLocal qL1;
     private STmap[] stMap;
     private ImageProcessor imp;
 
@@ -44,7 +44,7 @@ public class MaximaFinderTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        qL1 = new QconfLoader(
+        qL1 = new QconfLoaderLocal(
                 Paths.get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF"));
     }
 
