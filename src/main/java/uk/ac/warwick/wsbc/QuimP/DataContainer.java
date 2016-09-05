@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 
 import com.google.gson.InstanceCreator;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
-
 /**
  * Keep outputs from every module of QuimP.
  * 
@@ -33,7 +31,7 @@ public class DataContainer implements IQuimpSerialize {
      * Indicate that Q module is not null (it has been run already on those data).
      */
     public final static int Q_RUN = 8192;
-    
+
     /**
      * Object to store all BOA state. Can be <tt>null</tt> when module has not been run yet.
      */
@@ -108,7 +106,7 @@ public class DataContainer implements IQuimpSerialize {
     public ANAStates getANAState() {
         return ANAState;
     }
-    
+
     /**
      * Get information about available modules in object.
      * 
@@ -117,14 +115,14 @@ public class DataContainer implements IQuimpSerialize {
     public int validateDataContainer() {
         int ret = 0;
         // check for all modules
-        if(getBOAState()!=null)
-            ret+=DataContainer.BOA_RUN;
-        if(getECMMState()!=null)
-            ret+=DataContainer.ECMM_RUN;
-        if(getANAState()!=null)
-            ret+=DataContainer.ANA_RUN;
-        if(getQState()!=null)
-            ret+=DataContainer.Q_RUN;
+        if (getBOAState() != null)
+            ret += DataContainer.BOA_RUN;
+        if (getECMMState() != null)
+            ret += DataContainer.ECMM_RUN;
+        if (getANAState() != null)
+            ret += DataContainer.ANA_RUN;
+        if (getQState() != null)
+            ret += DataContainer.Q_RUN;
         return ret;
     }
 

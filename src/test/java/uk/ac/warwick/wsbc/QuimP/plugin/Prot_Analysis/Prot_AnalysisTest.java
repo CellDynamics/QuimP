@@ -38,6 +38,7 @@ public class Prot_AnalysisTest {
         else
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Prot_AnalysisTest.class.getName());
     static QconfLoaderLocal qL1;
     private STmap[] stMap;

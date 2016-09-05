@@ -41,7 +41,6 @@ public class Prot_Analysis extends QconfSupporter {
         else
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
-    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Prot_Analysis.class.getName());
 
     private int numFrames;

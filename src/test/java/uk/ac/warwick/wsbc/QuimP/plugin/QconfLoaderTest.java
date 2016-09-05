@@ -42,7 +42,6 @@ public class QconfLoaderTest {
         else
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
-    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(QconfLoaderTest.class.getName());
 
     /**
