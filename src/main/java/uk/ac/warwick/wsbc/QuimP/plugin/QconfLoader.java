@@ -216,4 +216,12 @@ public class QconfLoader {
         return qp;
     }
 
+    /**
+     * 
+     * @return Version of loaded file, see {@link QParams}
+     */
+    public int getConfVersion() {
+        return getQp().paramFormat;
+    }
+
 }
