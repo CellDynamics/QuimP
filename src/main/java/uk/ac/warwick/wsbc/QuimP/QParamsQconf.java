@@ -97,7 +97,7 @@ public class QParamsQconf extends QParams {
         Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
         try {
             // load file and make first check of correctness
-            loaded = s.load(getParamFile()); // try to load (skip afterSerialzie)
+            loaded = s.load(getParamFile()); // try to load
             BOA_.qState = loaded.obj.BOAState; // restore qstate because some methods still need it
         } catch (Exception e) { // stop on fail (file or json error)
             LOGGER.error(e.getMessage());

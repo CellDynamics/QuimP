@@ -801,11 +801,15 @@ public class BOAState implements IQuimpSerialize {
                                           // pluginFactory
 
         // recreate file objects. without these lines the File objects after serialization are
-        // created
-        // but they do not keep information about root, e.g. getAbsolutePath() returns
+        // created but they do not keep information about root, e.g. getAbsolutePath() returns
         // program_path/stored_in_json_path
         boap.outputFileCore = new File(boap.outputFileCore.toString());
         boap.orgFile = new File(boap.orgFile.toString());
+        // restore local segParam to be first from segParamSnapshots
+        if (segParamSnapshots.size() > 0)
+            if (segParamSnapshots.get(0) != null)
+                segParam = new SegParam(segParamSnapshots.get(0));
+        // otherwise segParam will be default owng to SegParam constructor
     }
 
     /**
