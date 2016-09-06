@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
  */
 public class FormatConverter {
     private static final Logger LOGGER = LogManager.getLogger(FormatConverter.class.getName());
-    private DataContainer dT;
     private QParamsQconf qP;
     private Path path;
 
@@ -61,8 +60,8 @@ public class FormatConverter {
      */
     public void generateOldDataFiles() {
         try {
-            dT = qP.getLoadedDataContainer();
-            if (dT.ECMMState == null)
+            DataContainer dT = qP.getLoadedDataContainer();
+            if (dT.getECMMState() == null)
                 generatepaQP(); // no ecmm data write snakes only
             else
                 generatesnQP(); // write ecmm data
@@ -82,7 +81,8 @@ public class FormatConverter {
      */
     public void generatepaQP() throws IOException {
         // replace location to location of QCONF
-        dT.BOAState.boap.setOutputFileCore(Tool.removeExtension(path.toString()));
+        DataContainer dT = qP.getLoadedDataContainer();
+        dT.getBOAState().boap.setOutputFileCore(Tool.removeExtension(path.toString()));
         dT.BOAState.nest.writeSnakes(); // write paQP and snQP together
     }
 
@@ -96,6 +96,7 @@ public class FormatConverter {
     public void generatesnQP() throws QuimpException {
         int activeHandler = 0;
         // replace location to location of QCONF
+        DataContainer dT = qP.getLoadedDataContainer();
         dT.BOAState.boap.setOutputFileCore(Tool.removeExtension(path.toString()));
         Iterator<OutlineHandler> oHi = dT.getECMMState().oHs.iterator();
         do {
