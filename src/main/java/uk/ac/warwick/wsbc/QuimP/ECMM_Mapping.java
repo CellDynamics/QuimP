@@ -65,6 +65,31 @@ public class ECMM_Mapping {
      * Main executive constructor.
      * <p>
      * Process provided file and run the whole analysis.
+     * @startuml
+     * start
+     * if (input file given) then (no)
+     *  :ask user;
+     * endif
+     * :Load config file;
+     * if (QUIMP_11 file) then (yes)
+     *  :process it;
+     *  :scan for other files;
+     *  repeat
+     *      :process other file;
+     *  repeat while(more files?)
+     * else (no)
+     *  if(BOA data) then (no)
+     *  stop
+     *  endif
+     *  if(ECMM data) then (yes)
+     *      if(overwrite?) then (no)
+     *          end
+     *      endif
+     *  endif        
+     *  :process it;     
+     * endif
+     * end
+     * @enduml
      * 
      * @param paramFile paQP or QCONF file to process.
      */
@@ -131,12 +156,25 @@ public class ECMM_Mapping {
                         return;
                     }
                 }
-            } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) {
+            } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
+                // validate in case new format
+                if (qconfLoader.isBOAPresent() == false)
+                    throw new QuimpException("BOA data not found in QCONF file. Run BOA first.");
+                if (qconfLoader.isECMMPresent()) {
+                    YesNoCancelDialog ync;
+                    ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
+                            "You are about to override previous ECMM results. Is it ok?");
+                    if (!ync.yesPressed()) // if no or cancel
+                    {
+                        IJ.log("No changes done in input file.");
+                        return; // end}
+                    }
+                }
                 runFromQCONF();
                 IJ.log("The new data file " + paramFile.getName()
                         + " has been updated by results of ECMM analysis.");
             } else {
-                throw new IllegalStateException("You can not be here in this time!");
+                throw new IllegalStateException("QconfLoader returned unknown version of QuimP");
             }
 
             IJ.log("ECMM Analysis complete");
@@ -153,35 +191,6 @@ public class ECMM_Mapping {
     public ECMM_Mapping() {
         this((File) null); // ask user what to load
     }
-
-    /**
-     * Validate whether loaded QCONF file contains correct data.
-     * <p>
-     * Check for presence BOA data (actually it is done in {@link QParamsQconf#readParams()}
-     * in loaded QCONF and for presence ECMM data. If ECMM has been done on this file user must 
-     * confirm overriding.  
-     * 
-     * @return <tt>true</tt> when data are correct or user agreed for overriding ECMM data
-     * @throws QuimpException When there is no BOA data in file
-     */
-    // private boolean validateQconf() throws QuimpException {
-    // if (qp == null) {
-    // throw new QuimpException("QCONF file not loaded");
-    // }
-    // if (qp.paramFormat != QParams.NEW_QUIMP) // do not check if old format
-    // return true;
-    // if (qp.getLoadedDataContainer().BOAState == null) {
-    // throw new QuimpException("BOA data not found in QCONF file. Run BOA first.");
-    // }
-    // if (qp.getLoadedDataContainer().ECMMState != null) {
-    // YesNoCancelDialog ync;
-    // ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
-    // "You are about to override previous results. Is it ok?");
-    // if (!ync.yesPressed())
-    // return false;
-    // }
-    // return true;
-    // }
 
     /**
      * Main executive for ECMM processing for QParamsExchanger (new file version).
