@@ -1,7 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -13,6 +12,7 @@ import ij.IJ;
 import ij.gui.GenericDialog;
 import ij.gui.YesNoCancelDialog;
 import ij.io.OpenDialog;
+import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
 
 /**
  * Run Q analysis for ECMM data.
@@ -38,7 +38,7 @@ public class Q_Analysis {
     private static final Logger LOGGER = LogManager.getLogger(Q_Analysis.class.getName());
     GenericDialog gd;
     private OutlineHandler oH; // keep loaded handler, can change during run
-    private QParams qp;
+    private QconfLoader qconfLoader;
     private STmap stMap; // object holding all maps evaluated for current OutlineHandler (oH)
 
     /**
@@ -53,16 +53,14 @@ public class Q_Analysis {
     /**
      * Parameterized constructor for tests.
      * 
-     * @param path Path to *.paQP/QCONF file. If <tt>null</tt> user is asked for this file
+     * @param paramFile paQP or QCONF file to process. If <tt>null</tt> user is asked for this file
+     * @see uk.ac.warwick.wsbc.QuimP.ECMM_Mapping.ECMM_Mapping(File)
      */
-    public Q_Analysis(Path path) {
+    public Q_Analysis(File paramFile) {
         about();
+        IJ.showStatus("QuimP Analysis");
         try {
-            IJ.showStatus("QuimP Analysis");
-            String directory; // directory with paQP
-            String filename; // file name of paQP
-
-            if (path == null) { // no file provided, ask user
+            if (paramFile == null) { // open UI if no file provided
                 OpenDialog od =
                         new OpenDialog(
                                 "Open paramater file (" + QParams.PAQP_EXT + "|"
@@ -72,34 +70,18 @@ public class Q_Analysis {
                     IJ.log("Cancelled - exiting...");
                     return;
                 }
-                directory = od.getDirectory();
-                filename = od.getFileName();
-            } else // use name provided in constructor
-            {
-                // getParent can return null
-                directory = path.getParent() == null ? "" : path.getParent().toString();
-                filename = path.getFileName() == null ? "" : path.getFileName().toString();
-                LOGGER.debug("Use provided file:" + directory + " " + filename);
+                // load config file but check if it is new format or old
+                paramFile = new File(od.getDirectory(), od.getFileName());
             }
-            // detect old/new file format
-            File paramFile = new File(directory, filename); // config file
-            if (paramFile.getName().endsWith(QParamsQconf.QCONF_EXT)) // new file format TODO #152
-                qp = new QParamsQconf(paramFile);
-            else
-                qp = new QParams(paramFile); // initialize general param storage
-            qp.readParams(); // create associated files included in paQP and read params
-            if (!validateQconf())
-                return;
+            qconfLoader = new QconfLoader(paramFile.toPath()); // load file
             // show dialog
             if (!showDialog()) { // if user cancelled dialog
                 return; // do nothing
             }
-
-            // prepare current OutlineHandler to process (read it using loaded paQP file)
-            if (qp.paramFormat == QParams.QUIMP_11) { // if we have old format, read outlines from
-                                                      // OutlineHandler
+            if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
+                QParams qp;
                 runFromPAQP();
-                File[] otherPaFiles = qp.findParamFiles();
+                File[] otherPaFiles = qconfLoader.getQp().findParamFiles();
                 if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
                                                // user is skipped)
                     YesNoCancelDialog yncd =
@@ -136,49 +118,32 @@ public class Q_Analysis {
                         return; // no batch processing
                     }
                 }
-            } else if (qp.paramFormat == QParams.NEW_QUIMP) { // new format, everything is read by
-                                                              // readParams, just extract it
+            } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
+                // verification for components run
+                qconfLoader.getBOA(); // will throw exception if not present
+                qconfLoader.getECMM(); // will throw exception if not present
+                if (qconfLoader.isQPresent()) {
+                    YesNoCancelDialog ync;
+                    ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
+                            "You are about to override previous Q results. Is it ok?");
+                    if (!ync.yesPressed()) // if no or cancel
+                    {
+                        IJ.log("No changes done in input file.");
+                        return; // end}
+                    }
+                }
                 runFromQCONF();
                 IJ.log("The new data file " + paramFile.getName()
                         + " has been updated by results of Q Analysis.");
             } else {
-                throw new IllegalStateException("You can not be here in this time!");
+                throw new IllegalStateException("QconfLoader returned unknown version of QuimP");
             }
-
             IJ.log("QuimP Analysis complete");
             IJ.showStatus("Finished");
         } catch (QuimpException e) {
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with running Q Analysis: " + e.getMessage());
         }
-    }
-
-    /**
-     * Validate whether loaded QCONF file contains correct data.
-     * <p>
-     * Check for presence ECMM data in loaded QCONF and for presence Q Analysis data. If Q Analysis
-     * has been done on this file user must confirm overriding.  
-     * 
-     * @return <tt>true</tt> when data are correct or user agreed for overriding Q Analysis data
-     * @throws QuimpException When there is no ECMM data in file
-     */
-    private boolean validateQconf() throws QuimpException {
-        if (qp == null) {
-            throw new QuimpException("QCONF file not loaded");
-        }
-        if (qp.paramFormat != QParams.NEW_QUIMP) // do not check if old format
-            return true;
-        if (qp.getLoadedDataContainer().ECMMState == null) {
-            throw new QuimpException("ECMM data not found in QCONF file. Run ECMM first.");
-        }
-        if (qp.getLoadedDataContainer().QState != null) {
-            YesNoCancelDialog ync;
-            ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
-                    "You are about to override previous results. Is it ok?");
-            if (!ync.yesPressed())
-                return false;
-        }
-        return true;
     }
 
     /**
@@ -194,20 +159,23 @@ public class Q_Analysis {
      */
     private void runFromQCONF() throws QuimpException {
         int i = 0;
-        Iterator<OutlineHandler> oI = qp.getLoadedDataContainer().ECMMState.oHs.iterator();
+        Iterator<OutlineHandler> oI =
+                qconfLoader.getQp().getLoadedDataContainer().getECMMState().oHs.iterator();
         ArrayList<STmap> tmp = new ArrayList<>();
         while (oI.hasNext()) {
-            ((QParamsQconf) qp).setActiveHandler(i++); // set current handler number.
-            Qp.setup(qp); // copy selected data from general QParams to local storage
+            ((QParamsQconf) qconfLoader.getQp()).setActiveHandler(i++); // set current handler
+                                                                        // number.
+            Qp.setup(qconfLoader.getQp()); // copy selected data from general QParams to local
+                                           // storage
             oH = oI.next();
             run();
             tmp.add(new STmap(stMap));
         }
-        qp.getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
-        qp.writeParams(); // save global container
+        qconfLoader.getQp().getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
+        qconfLoader.getQp().writeParams(); // save global container
         // generate additional OLD files
-        FormatConverter fC =
-                new FormatConverter((QParamsQconf) qp, ((QParamsQconf) qp).getParamFile().toPath());
+        FormatConverter fC = new FormatConverter((QParamsQconf) qconfLoader.getQp(),
+                ((QParamsQconf) qconfLoader.getQp()).getParamFile().toPath());
         fC.generateOldDataFiles();
     }
 
@@ -217,8 +185,8 @@ public class Q_Analysis {
      * @throws QuimpException when OutlineHandler can not be read
      */
     private void runFromPAQP() throws QuimpException {
-        Qp.setup(qp); // copy selected data from general QParams to local storage
-        oH = new OutlineHandler(qp); // load data from file
+        Qp.setup(qconfLoader.getQp()); // copy selected data from general QParams to local storage
+        oH = new OutlineHandler(qconfLoader.getQp()); // load data from file
         if (!oH.readSuccess) {
             throw new QuimpException("Could not read OutlineHandler");
         }

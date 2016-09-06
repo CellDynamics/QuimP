@@ -40,8 +40,8 @@ public class ECMM_Mapping {
     }
     private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 
-    OutlineHandler oH, outputH;
-    OutlineHandlers outputOutlineHandlers; // output for new data file
+    private OutlineHandler oH, outputH;
+    private OutlineHandlers outputOutlineHandlers; // output for new data file
 
     static ECMplot plot;
     private QconfLoader qconfLoader;
@@ -151,15 +151,13 @@ public class ECMM_Mapping {
                         for (int i = 0; i < skipped.size(); i++) {
                             IJ.log(skipped.get(i));
                         }
-
                     } else {
-                        return;
+                        return; // no batch processing
                     }
                 }
             } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
                 // validate in case new format
-                if (qconfLoader.isBOAPresent() == false)
-                    throw new QuimpException("BOA data not found in QCONF file. Run BOA first.");
+                qconfLoader.getBOA(); // will throw exception if not present
                 if (qconfLoader.isECMMPresent()) {
                     YesNoCancelDialog ync;
                     ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",

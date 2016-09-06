@@ -27,6 +27,7 @@ import uk.ac.warwick.wsbc.QuimP.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
+import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.Serializer;
 
@@ -124,14 +125,18 @@ public class QconfLoaderTest {
 
         dC.BOAState = new BOAState();
         assertThat(q.validateQconf(), is(DataContainer.BOA_RUN));
+        assertThat(q.getBOA(), is(dC.BOAState));
         dC.ECMMState = new OutlineHandlers();
         assertThat(q.validateQconf(), is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN));
+        assertThat(q.getECMM(), is(dC.ECMMState));
         dC.ANAState = new ANAStates();
         assertThat(q.validateQconf(),
                 is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN + DataContainer.ANA_RUN));
+        assertThat(q.getANA(), is(dC.ANAState));
         dC.QState = new STmap[1];
         assertThat(q.validateQconf(), is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN
                 + DataContainer.ANA_RUN + DataContainer.Q_RUN));
+        assertThat(q.getQ(), is(dC.QState));
         dC.ANAState = null;
         assertThat(q.validateQconf(),
                 is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN + DataContainer.Q_RUN));
@@ -226,6 +231,58 @@ public class QconfLoaderTest {
         assertThat(q.isQPresent(), is(false));
         Mockito.when(q.validateQconf()).thenReturn(QParams.OLD_QUIMP);
         assertThat(q.isQPresent(), is(false));
+    }
+
+    @Test(expected = QuimpException.class)
+    public void testGetBOA() throws Exception {
+        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+
+        QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
+        ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
+        DataContainer dC = new DataContainer();
+
+        Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
+        Mockito.when(q.getQp()).thenReturn(qPc);
+        q.getBOA();
+    }
+
+    @Test(expected = QuimpException.class)
+    public void testGetQ() throws Exception {
+        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+
+        QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
+        ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
+        DataContainer dC = new DataContainer();
+
+        Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
+        Mockito.when(q.getQp()).thenReturn(qPc);
+        q.getQ();
+    }
+
+    @Test(expected = QuimpException.class)
+    public void testGetANA() throws Exception {
+        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+
+        QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
+        ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
+        DataContainer dC = new DataContainer();
+
+        Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
+        Mockito.when(q.getQp()).thenReturn(qPc);
+        q.getANA();
+    }
+
+    @Test(expected = QuimpException.class)
+    public void testGetECMM() throws Exception {
+        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+
+        QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
+        ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
+        DataContainer dC = new DataContainer();
+
+        Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
+        Mockito.when(q.getQp()).thenReturn(qPc);
+        q.getECMM();
     }
 
 }

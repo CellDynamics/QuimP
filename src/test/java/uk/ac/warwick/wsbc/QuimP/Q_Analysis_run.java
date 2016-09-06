@@ -7,6 +7,9 @@ package uk.ac.warwick.wsbc.QuimP;
  *
  */
 public class Q_Analysis_run {
+    static {
+        System.setProperty("quimp.debugLevel", "qlog4j2.xml");
+    }
 
     /**
      * @param args

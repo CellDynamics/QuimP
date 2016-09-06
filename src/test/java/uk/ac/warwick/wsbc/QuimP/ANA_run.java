@@ -10,6 +10,9 @@ import ij.ImagePlus;
  * @author p.baniukiewicz
  */
 public class ANA_run {
+    static {
+        System.setProperty("quimp.debugLevel", "qlog4j2.xml");
+    }
 
     /**
      * 

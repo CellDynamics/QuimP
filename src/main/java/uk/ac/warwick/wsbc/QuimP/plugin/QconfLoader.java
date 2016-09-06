@@ -12,10 +12,14 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.io.OpenDialog;
+import uk.ac.warwick.wsbc.QuimP.ANAStates;
+import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
+import uk.ac.warwick.wsbc.QuimP.STmap;
 
 /**
  * Load QCONF or paQP file and initiate proper instance of {@link QParams} class.
@@ -207,6 +211,54 @@ public class QconfLoader {
         else
             return false;
 
+    }
+
+    /**
+     * 
+     * @return BOAState object from loaded configuration
+     * @throws QuimpException when there is no such object in file or old format is used.
+     */
+    public BOAState getBOA() throws QuimpException {
+        if (isBOAPresent())
+            return getQp().getLoadedDataContainer().getBOAState();
+        else
+            throw new QuimpException("BOA data not found in QCONF file. Run BOA first.");
+    }
+
+    /**
+     * 
+     * @return ECMM object from loaded configuration
+     * @throws QuimpException when there is no such object in file or old format is used.
+     */
+    public OutlineHandlers getECMM() throws QuimpException {
+        if (isECMMPresent())
+            return getQp().getLoadedDataContainer().getECMMState();
+        else
+            throw new QuimpException("ECMM data not found in QCONF file. Run ECMM first.");
+    }
+
+    /**
+     * 
+     * @return ANA object from loaded configuration
+     * @throws QuimpException when there is no such object in file or old format is used.
+     */
+    public ANAStates getANA() throws QuimpException {
+        if (isANAPresent())
+            return getQp().getLoadedDataContainer().getANAState();
+        else
+            throw new QuimpException("ANA data not found in QCONF file. Run ANA first.");
+    }
+
+    /**
+     * 
+     * @return Q object from loaded configuration
+     * @throws QuimpException when there is no such object in file or old format is used.
+     */
+    public STmap[] getQ() throws QuimpException {
+        if (isQPresent())
+            return getQp().getLoadedDataContainer().getQState();
+        else
+            throw new QuimpException("Q data not found in QCONF file. Run Q Analysis first.");
     }
 
     /**
