@@ -40,6 +40,7 @@ import uk.ac.warwick.wsbc.QuimP.Tool;
  * @author p.baniukiewicz
  *
  */
+@Deprecated
 public abstract class QconfSupporter {
     private static final Logger LOGGER = LogManager.getLogger(QconfSupporter.class.getName());
     /**

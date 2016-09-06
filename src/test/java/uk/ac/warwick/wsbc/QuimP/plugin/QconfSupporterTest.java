@@ -23,6 +23,7 @@ import ij.ImagePlus;
  * @date 2 Sep 2016
  *
  */
+@Deprecated
 public class QconfSupporterTest {
 
     /**
@@ -73,6 +74,7 @@ public class QconfSupporterTest {
 
 }
 
+@SuppressWarnings("deprecation")
 class QuimpPluginCoreRef extends QconfSupporter {
 
     /**

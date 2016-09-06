@@ -5,7 +5,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
 import java.awt.Polygon;
-import java.nio.file.Path;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,21 +20,26 @@ import ij.gui.Overlay;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import ij.io.OpenDialog;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
+import uk.ac.warwick.wsbc.QuimP.QParams;
+import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackMap;
-import uk.ac.warwick.wsbc.QuimP.plugin.QconfSupporter;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
+import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * @author p.baniukiewicz
- * @date 15 Aug 2016
- *
+ * TODO This class support IQuimpPlugin for future.
  */
-public class Prot_Analysis extends QconfSupporter {
+public class Prot_Analysis implements IQuimpPlugin {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -44,6 +49,8 @@ public class Prot_Analysis extends QconfSupporter {
     private static final Logger LOGGER = LogManager.getLogger(Prot_Analysis.class.getName());
 
     private int numFrames;
+    private QconfLoader qconfLoader;
+    private File paramFile;
 
     /**
      * Default constructor. 
@@ -55,40 +62,49 @@ public class Prot_Analysis extends QconfSupporter {
     }
 
     /**
-     * @param path
+     * Constructor that allows to provide own file - used for tests.
+     * <p>
+     * @param paramFile File to process.
      */
-    public Prot_Analysis(Path path) {
-        super(path);
-        // LOGGER.debug("Frames=" + numFrames + " Resolution=" + numIndexes);
-        IJ.showStatus("Protrusion Analysis");
+    public Prot_Analysis(File paramFile) {
+        try {
+            IJ.showStatus("Protrusion Analysis");
+            if (paramFile == null) { // open UI if no file provided
+                OpenDialog od =
+                        new OpenDialog(
+                                "Open paramater file (" + QParams.PAQP_EXT + "|"
+                                        + QParamsQconf.QCONF_EXT + ")...",
+                                OpenDialog.getLastDirectory(), QParams.PAQP_EXT);
+                if (od.getFileName() == null) {
+                    IJ.log("Cancelled - exiting...");
+                    return;
+                }
+                // load config file but check if it is new format or old
+                this.paramFile = new File(od.getDirectory(), od.getFileName());
+            } else // use provided file
+                this.paramFile = paramFile;
+            runPlugin(); // run
+            IJ.log("Protrusion Analysis complete");
+            IJ.showStatus("Finished");
+        } catch (Exception e) {
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
+        }
+
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore#showDialog()
+    /**
+     * Helper method to keep logic of ECMM, ANA, Q plugins.
+     * 
+     * @throws QuimpException
      */
-    @Override
-    public boolean showDialog() {
-        // TODO Auto-generated method stub
-        return super.showDialog();
-    }
-
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore#validateQconf()
-     */
-    @Override
-    public boolean validateQconf() throws QuimpException {
-        return super.validateQconf();
-    }
-
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore#runFromQCONF()
-     */
-    @Override
-    public void runFromQCONF() throws QuimpException {
-        STmap[] stMap = qp.getLoadedDataContainer().getQState();
-        OutlineHandlers oHs = qp.getLoadedDataContainer().getECMMState();
+    private void runFromQCONF() throws QuimpException {
+        STmap[] stMap = qconfLoader.getQp().getLoadedDataContainer().getQState();
+        OutlineHandlers oHs = qconfLoader.getQp().getLoadedDataContainer().getECMMState();
         int h = 0;
-        ImagePlus im1 = getImage(); // will throw when no image
+        ImagePlus im1 = qconfLoader.getImage();
+        if (im1 == null)
+            return; // stop if no image
         ProtrusionVis pV = new ProtrusionVis(im1);
         LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells
@@ -129,17 +145,8 @@ public class Prot_Analysis extends QconfSupporter {
         pV.getOriginalImage().show();
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginCore#runFromPAQP()
-     */
-    @Override
-    public void runFromPAQP() throws QuimpException {
-        // TODO Auto-generated method stub
-        super.runFromPAQP();
-    }
-
     /**
-     * Track maxima across motility map as long as they fulfill criterion of amplitude.
+     * Track maxima across motility map as long as they fulfil criterion of amplitude.
      * 
      * @param mapCell holds all maps generated and saved by QuimP
      * @param drop the value (in x/100) while velocity remains above of the peak speed. E.g for
@@ -212,6 +219,60 @@ public class Prot_Analysis extends QconfSupporter {
             ret.add(new PolygonRoi(tForward, framesF, N, Roi.FREELINE));
         }
         return ret;
+    }
+
+    @Override
+    public int setup() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public void setPluginConfig(ParamList par) throws QuimpPluginException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public ParamList getPluginConfig() {
+        return new ParamList();
+    }
+
+    @Override
+    public void showUI(boolean val) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public String getVersion() {
+        return "QuimP Package";
+    }
+
+    @Override
+    public String about() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void runPlugin() throws QuimpPluginException {
+        try {
+            qconfLoader = new QconfLoader(paramFile.toPath()); // load file
+            if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
+                // validate in case new format
+                qconfLoader.getBOA(); // will throw exception if not present
+                qconfLoader.getECMM();
+                qconfLoader.getQ();
+                runFromQCONF();
+            } else {
+                throw new IllegalStateException(
+                        "QconfLoader returned unsupported version of QuimP");
+            }
+        } catch (Exception e) { // catch all here and convert to expected type
+            throw new QuimpPluginException(e);
+        }
+
     }
 
 }

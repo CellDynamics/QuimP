@@ -113,7 +113,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
     @Override
     public void run(ImageProcessor Ip) {
-        IJ.showStatus("QuimP Analysis");
+        IJ.showStatus("ANA Analysis");
         orgIpr = orgIpl.getProcessor();
         ECMp.plot = false;
         ecmMapping = new ECMM_Mapping(1);

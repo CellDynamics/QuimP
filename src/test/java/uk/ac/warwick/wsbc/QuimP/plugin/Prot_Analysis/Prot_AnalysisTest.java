@@ -7,7 +7,6 @@ package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,7 +22,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackMap;
-import uk.ac.warwick.wsbc.QuimP.plugin.QconfSupporter;
+import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
@@ -40,7 +39,7 @@ public class Prot_AnalysisTest {
     }
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(Prot_AnalysisTest.class.getName());
-    static QconfLoaderLocal qL1;
+    static QconfLoader qL1;
     private STmap[] stMap;
     private ImageProcessor imp;
 
@@ -49,7 +48,7 @@ public class Prot_AnalysisTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        qL1 = new QconfLoaderLocal(
+        qL1 = new QconfLoader(
                 Paths.get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF"));
     }
 
@@ -99,32 +98,6 @@ public class Prot_AnalysisTest {
         int[] retF = tM.getForwardFrames(frame, 10);
         assertThat(ret, is(expectedI));
         assertThat(retF, is(expectedF));
-    }
-
-}
-
-/**
- * Simple loader of QCONF file.
- * 
- * @author p.baniukiewicz
- *
- */
-class QconfLoaderLocal extends QconfSupporter {
-
-    /**
-     * 
-     */
-    public QconfLoaderLocal() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
-    /**
-     * @param path
-     */
-    public QconfLoaderLocal(Path path) {
-        super(path);
-        // TODO Auto-generated constructor stub
     }
 
 }

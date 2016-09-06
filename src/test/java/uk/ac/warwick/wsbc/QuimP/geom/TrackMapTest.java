@@ -7,7 +7,6 @@ package uk.ac.warwick.wsbc.QuimP.geom;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +18,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.QconfSupporter;
+import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
 
 /**
  * Test class for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap}. 
@@ -240,32 +239,6 @@ public class TrackMapTest {
         TrackMap tM = new TrackMap(originMap2, coordMap2);
         int[] ret = tM.getBackwardFrames(100 - 1, 15);
         assertThat(ret, is(expected));
-    }
-
-}
-
-/**
- * Simple loader of QCONF file.
- * 
- * @author p.baniukiewicz
- *
- */
-class QconfLoader extends QconfSupporter {
-
-    /**
-     * 
-     */
-    public QconfLoader() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
-    /**
-     * @param path
-     */
-    public QconfLoader(Path path) {
-        super(path);
-        // TODO Auto-generated constructor stub
     }
 
 }

@@ -95,7 +95,7 @@ public class ECMM_Mapping {
      */
     public ECMM_Mapping(File paramFile) {
         about();
-        IJ.showStatus("QuimP Analysis");
+        IJ.showStatus("ECMM Analysis");
         try {
             if (paramFile == null) { // open UI if no file provided
                 OpenDialog od =
