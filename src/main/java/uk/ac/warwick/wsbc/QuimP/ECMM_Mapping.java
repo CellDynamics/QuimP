@@ -111,7 +111,7 @@ public class ECMM_Mapping {
                 paramFile = new File(od.getDirectory(), od.getFileName());
             }
             qconfLoader = new QconfLoader(paramFile.toPath()); // load file
-            if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // decide what to do
+            if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
                 QParams qp;
                 runFromPAQP();
                 // old flow with paQP files - detect other paQP
