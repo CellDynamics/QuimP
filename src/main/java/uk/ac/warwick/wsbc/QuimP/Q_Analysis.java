@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -140,7 +141,7 @@ public class Q_Analysis {
             }
             IJ.log("QuimP Analysis complete");
             IJ.showStatus("Finished");
-        } catch (QuimpException e) {
+        } catch (Exception e) {
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with running Q Analysis: " + e.getMessage());
         }
@@ -156,8 +157,9 @@ public class Q_Analysis {
      * Outlines that are accessed by reference here. 
      * 
      * @throws QuimpException when saving failed or there is no ECMM data in file.
+     * @throws IOException On problem with file writing
      */
-    private void runFromQCONF() throws QuimpException {
+    private void runFromQCONF() throws QuimpException, IOException {
         int i = 0;
         Iterator<OutlineHandler> oI =
                 qconfLoader.getQp().getLoadedDataContainer().getECMMState().oHs.iterator();

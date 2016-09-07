@@ -502,67 +502,66 @@ public class QParams {
         }
     }
 
-    public void writeParams() throws QuimpException {
+    public void writeParams() throws IOException {
         LOGGER.debug("Write paQP at: " + paramFile);
-        try {
-            if (paramFile.exists()) {
-                paramFile.delete();
-            }
-
-            Random generator = new Random();
-            double d = generator.nextDouble() * 1000000; // 6 digit key to ID
-                                                         // job
-            key = Math.round(d);
-
-            PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
-
-            pPW.print(
-                    "#p2 - QuimP parameter file (QuimP11). Created " + Tool.dateAsString() + "\n");
-            pPW.print(IJ.d2s(key, 0) + "\n");
-            pPW.print(segImageFile.getAbsolutePath() + "\n");
-            pPW.print(File.separator + snakeQP.getName() + "\n");
-            // pPW.print(outFile.getAbsolutePath() + "\n");
-
-            pPW.print("#Image calibration (scale, frame interval)\n");
-            pPW.print(IJ.d2s(imageScale, 6) + "\n");
-            pPW.print(IJ.d2s(frameInterval, 3) + "\n");
-
-            pPW.print("#segmentation parameters\n");
-            pPW.print(IJ.d2s(NMAX, 0) + "\n");
-            pPW.print(IJ.d2s(delta_t, 6) + "\n");
-            pPW.print(IJ.d2s(max_iterations, 6) + "\n");
-            pPW.print(IJ.d2s(nodeRes, 6) + "\n");
-            pPW.print(IJ.d2s(blowup, 6) + "\n");
-            pPW.print(IJ.d2s(sample_tan, 0) + "\n");
-            pPW.print(IJ.d2s(sample_norm, 0) + "\n");
-            pPW.print(IJ.d2s(vel_crit, 6) + "\n");
-            pPW.print(IJ.d2s(f_central, 6) + "\n");
-            pPW.print(IJ.d2s(f_contract, 6) + "\n");
-            pPW.print(IJ.d2s(f_friction, 6) + "\n");
-            pPW.print(IJ.d2s(f_image, 6) + "\n");
-            pPW.print(IJ.d2s(sensitivity, 6) + "\n");
-
-            pPW.print("# - new parameters (cortext width, start frame, end frame,"
-                    + " final shrink, statsQP, fluImage)\n");
-            pPW.print(IJ.d2s(cortexWidth, 2) + "\n");
-            pPW.print(IJ.d2s(startFrame, 0) + "\n");
-            pPW.print(IJ.d2s(endFrame, 0) + "\n");
-            pPW.print(IJ.d2s(finalShrink, 2) + "\n");
-            pPW.print(File.separator + statsQP.getName() + "\n");
-
-            pPW.print("# - Fluorescence channel tiff's\n");
-            pPW.print(fluTiffs[0].getAbsolutePath() + "\n");
-            pPW.print(fluTiffs[1].getAbsolutePath() + "\n");
-            pPW.print(fluTiffs[2].getAbsolutePath() + "\n");
-
-            pPW.print("#END");
-
-            pPW.close();
-        } catch (IOException e) {
-            LOGGER.error("Could not write parameter file! " + e.getMessage());
-            LOGGER.debug(e.getMessage(), e);
-            throw new QuimpException("Could not write parameter file!", e);
+        // try {
+        if (paramFile.exists()) {
+            paramFile.delete();
         }
+
+        Random generator = new Random();
+        double d = generator.nextDouble() * 1000000; // 6 digit key to ID
+                                                     // job
+        key = Math.round(d);
+
+        PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
+
+        pPW.print("#p2 - QuimP parameter file (QuimP11). Created " + Tool.dateAsString() + "\n");
+        pPW.print(IJ.d2s(key, 0) + "\n");
+        pPW.print(segImageFile.getAbsolutePath() + "\n");
+        pPW.print(File.separator + snakeQP.getName() + "\n");
+        // pPW.print(outFile.getAbsolutePath() + "\n");
+
+        pPW.print("#Image calibration (scale, frame interval)\n");
+        pPW.print(IJ.d2s(imageScale, 6) + "\n");
+        pPW.print(IJ.d2s(frameInterval, 3) + "\n");
+
+        pPW.print("#segmentation parameters\n");
+        pPW.print(IJ.d2s(NMAX, 0) + "\n");
+        pPW.print(IJ.d2s(delta_t, 6) + "\n");
+        pPW.print(IJ.d2s(max_iterations, 6) + "\n");
+        pPW.print(IJ.d2s(nodeRes, 6) + "\n");
+        pPW.print(IJ.d2s(blowup, 6) + "\n");
+        pPW.print(IJ.d2s(sample_tan, 0) + "\n");
+        pPW.print(IJ.d2s(sample_norm, 0) + "\n");
+        pPW.print(IJ.d2s(vel_crit, 6) + "\n");
+        pPW.print(IJ.d2s(f_central, 6) + "\n");
+        pPW.print(IJ.d2s(f_contract, 6) + "\n");
+        pPW.print(IJ.d2s(f_friction, 6) + "\n");
+        pPW.print(IJ.d2s(f_image, 6) + "\n");
+        pPW.print(IJ.d2s(sensitivity, 6) + "\n");
+
+        pPW.print("# - new parameters (cortext width, start frame, end frame,"
+                + " final shrink, statsQP, fluImage)\n");
+        pPW.print(IJ.d2s(cortexWidth, 2) + "\n");
+        pPW.print(IJ.d2s(startFrame, 0) + "\n");
+        pPW.print(IJ.d2s(endFrame, 0) + "\n");
+        pPW.print(IJ.d2s(finalShrink, 2) + "\n");
+        pPW.print(File.separator + statsQP.getName() + "\n");
+
+        pPW.print("# - Fluorescence channel tiff's\n");
+        pPW.print(fluTiffs[0].getAbsolutePath() + "\n");
+        pPW.print(fluTiffs[1].getAbsolutePath() + "\n");
+        pPW.print(fluTiffs[2].getAbsolutePath() + "\n");
+
+        pPW.print("#END");
+
+        pPW.close();
+        // } catch (IOException e) {
+        // LOGGER.error("Could not write parameter file! " + e.getMessage());
+        // LOGGER.debug(e.getMessage(), e);
+        // throw new QuimpException("Could not write parameter file!", e);
+        // }
     }
 
     /**

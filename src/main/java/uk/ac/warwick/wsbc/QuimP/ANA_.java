@@ -183,7 +183,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
             IJ.log("ANA Analysis complete");
             IJ.showStatus("Finished");
             ecmMapping = null;
-        } catch (QuimpException e) {
+        } catch (Exception e) {
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with run of ANA processing: " + e.getMessage());
         }
@@ -196,7 +196,13 @@ public class ANA_ implements PlugInFilter, DialogListener {
         IJ.log(new Tool().getQuimPversion());
     }
 
-    private void runFromQCONF() throws QuimpException {
+    /**
+     * Main executive for ANA processing for QParamsQconf (new file version).
+     * 
+     * @throws QuimpException when OutlineHandler can not be read
+     * @throws IOException when configuration can not be saved on disk
+     */
+    private void runFromQCONF() throws IOException {
         LOGGER.debug("Processing from new file format");
         ANAStates anaStates;
         OutlineHandlers ecmmState = qconfLoader.getQp().getLoadedDataContainer().ECMMState;
@@ -252,8 +258,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
      * Main executive for ANA processing for QParams (old file version)
      * 
      * @throws QuimpException when OutlineHandler can not be read
+     * @throws IOException when configuration can not be saved on disk
      */
-    private void runFromPAQP() throws QuimpException {
+    private void runFromPAQP() throws QuimpException, IOException {
         outputOutlineHandlers = new OutlineHandlers(1);
         oH = new OutlineHandler(qconfLoader.getQp());
 
@@ -903,38 +910,32 @@ class FluoStats {
         channels[2] = new ChannelStat();
     }
 
-    public static void write(FluoStats[] s, File OUTFILE, ANAp anap) {
-        try {
-            PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
-            IJ.log("Writing to file");
-            pw.print("#p2\n#QuimP ouput - " + OUTFILE.getAbsolutePath() + "\n");
-            pw.print(
-                    "# Centroids are given in pixels.  Distance & speed & area measurements are scaled to micro meters\n");
-            pw.print("# Scale: " + anap.scale + " micro meter per pixel | Frame interval: "
-                    + anap.frameInterval + " sec\n");
-            pw.print("# Frame,X-Centroid,Y-Centroid,Displacement,Dist. Traveled,"
-                    + "Directionality,Speed,Perimeter,Elongation,Circularity,Area");
+    public static void write(FluoStats[] s, File OUTFILE, ANAp anap) throws IOException {
+        PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
+        IJ.log("Writing to file");
+        pw.print("#p2\n#QuimP ouput - " + OUTFILE.getAbsolutePath() + "\n");
+        pw.print(
+                "# Centroids are given in pixels.  Distance & speed & area measurements are scaled to micro meters\n");
+        pw.print("# Scale: " + anap.scale + " micro meter per pixel | Frame interval: "
+                + anap.frameInterval + " sec\n");
+        pw.print("# Frame,X-Centroid,Y-Centroid,Displacement,Dist. Traveled,"
+                + "Directionality,Speed,Perimeter,Elongation,Circularity,Area");
 
-            for (int i = 0; i < s.length; i++) {
-                pw.print("\n" + s[i].frame + "," + IJ.d2s(s[i].centroid.getX(), 2) + ","
-                        + IJ.d2s(s[i].centroid.getY(), 2) + "," + IJ.d2s(s[i].displacement) + ","
-                        + IJ.d2s(s[i].dist) + "," + IJ.d2s(s[i].persistance) + ","
-                        + IJ.d2s(s[i].speed) + "," + IJ.d2s(s[i].perimiter) + ","
-                        + IJ.d2s(s[i].elongation) + "," + IJ.d2s(s[i].circularity, 3) + ","
-                        + IJ.d2s(s[i].area));
-            }
-            pw.print("\n#\n# Fluorescence measurements");
-            writeFluo(s, pw, 0);
-            writeFluo(s, pw, 1);
-            writeFluo(s, pw, 2);
-            pw.close();
-        } catch (Exception e) {
-            IJ.log("Could not open out file");
-            return;
+        for (int i = 0; i < s.length; i++) {
+            pw.print("\n" + s[i].frame + "," + IJ.d2s(s[i].centroid.getX(), 2) + ","
+                    + IJ.d2s(s[i].centroid.getY(), 2) + "," + IJ.d2s(s[i].displacement) + ","
+                    + IJ.d2s(s[i].dist) + "," + IJ.d2s(s[i].persistance) + "," + IJ.d2s(s[i].speed)
+                    + "," + IJ.d2s(s[i].perimiter) + "," + IJ.d2s(s[i].elongation) + ","
+                    + IJ.d2s(s[i].circularity, 3) + "," + IJ.d2s(s[i].area));
         }
+        pw.print("\n#\n# Fluorescence measurements");
+        writeFluo(s, pw, 0);
+        writeFluo(s, pw, 1);
+        writeFluo(s, pw, 2);
+        pw.close();
     }
 
-    private static void writeFluo(FluoStats[] s, PrintWriter pw, int c) throws Exception {
+    private static void writeFluo(FluoStats[] s, PrintWriter pw, int c) {
         pw.print("\n#\n# Channel " + (c + 1)
                 + ";Frame, Total Fluo.,Mean Fluo.,Cortex Width, Cyto. Area,Total Cyto. Fluo., Mean Cyto. Fluo.,"
                 + "Cortex Area,Total Cortex Fluo., Mean Cortex Fluo., %age Cortex Fluo.");
@@ -952,70 +953,60 @@ class FluoStats {
         }
     }
 
-    public static FluoStats[] read(File INFILE) throws QuimpException {
+    public static FluoStats[] read(File INFILE) throws IOException {
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(INFILE));
-            String thisLine;
-            int i = 0;
-            // count the number of frames in .scv file
-            while ((thisLine = br.readLine()) != null) {
-                if (thisLine.startsWith("# Fluorescence measurements")) {
-                    break;
-                }
-                if (thisLine.startsWith("#")) {
-                    continue;
-                }
-                // System.out.println(thisLine);
-                i++;
+        BufferedReader br = new BufferedReader(new FileReader(INFILE));
+        String thisLine;
+        int i = 0;
+        // count the number of frames in .scv file
+        while ((thisLine = br.readLine()) != null) {
+            if (thisLine.startsWith("# Fluorescence measurements")) {
+                break;
             }
-            br.close();
-            FluoStats[] stats = new FluoStats[i];
-
-            i = 0;
-            String[] split;
-            br = new BufferedReader(new FileReader(INFILE)); // re-open and read
-            while ((thisLine = br.readLine()) != null) {
-                if (thisLine.startsWith("# Channel")) { // reached fluo stats
-                    break;
-                }
-                if (thisLine.startsWith("#")) {
-                    continue;
-                }
-                // System.out.println(thisLine);
-
-                split = thisLine.split(",");
-
-                stats[i] = new FluoStats();
-                stats[i].frame = (int) Tool.s2d(split[0]);
-                stats[i].centroid.setXY(Tool.s2d(split[1]), Tool.s2d(split[2]));
-                stats[i].displacement = Tool.s2d(split[3]);
-                stats[i].dist = Tool.s2d(split[4]);
-                stats[i].persistance = Tool.s2d(split[5]);
-                stats[i].speed = Tool.s2d(split[6]);
-                stats[i].perimiter = Tool.s2d(split[7]);
-                stats[i].elongation = Tool.s2d(split[8]);
-                stats[i].circularity = Tool.s2d(split[9]);
-                stats[i].area = Tool.s2d(split[10]);
-
-                i++;
+            if (thisLine.startsWith("#")) {
+                continue;
             }
+            // System.out.println(thisLine);
+            i++;
+        }
+        br.close();
+        FluoStats[] stats = new FluoStats[i];
 
-            readChannel(0, stats, br);
-            readChannel(1, stats, br);
-            readChannel(2, stats, br);
+        i = 0;
+        String[] split;
+        br = new BufferedReader(new FileReader(INFILE)); // re-open and read
+        while ((thisLine = br.readLine()) != null) {
+            if (thisLine.startsWith("# Channel")) { // reached fluo stats
+                break;
+            }
+            if (thisLine.startsWith("#")) {
+                continue;
+            }
+            // System.out.println(thisLine);
 
-            br.close();
-            return stats;
+            split = thisLine.split(",");
 
-        } catch (IOException e) {
-            System.err.println("Could not read file: " + e);
-            IJ.error("Could not read file: " + e);
-            throw new QuimpException(e);
+            stats[i] = new FluoStats();
+            stats[i].frame = (int) Tool.s2d(split[0]);
+            stats[i].centroid.setXY(Tool.s2d(split[1]), Tool.s2d(split[2]));
+            stats[i].displacement = Tool.s2d(split[3]);
+            stats[i].dist = Tool.s2d(split[4]);
+            stats[i].persistance = Tool.s2d(split[5]);
+            stats[i].speed = Tool.s2d(split[6]);
+            stats[i].perimiter = Tool.s2d(split[7]);
+            stats[i].elongation = Tool.s2d(split[8]);
+            stats[i].circularity = Tool.s2d(split[9]);
+            stats[i].area = Tool.s2d(split[10]);
+
+            i++;
         }
 
-        // return new FluoStats[1];
+        readChannel(0, stats, br);
+        readChannel(1, stats, br);
+        readChannel(2, stats, br);
 
+        br.close();
+        return stats;
     }
 
     private static void readChannel(int c, FluoStats[] stats, BufferedReader br)

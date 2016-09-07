@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * This class allows for recreating paQP and snQP files from new format QCONF.
- * <p><b>Note</b>
+ * <p><b>Note</b><p>
  * Other files such as stQP, maps and images are generated regardless file format used during saving
  * in each QuimP module.
  * 
@@ -65,7 +65,7 @@ public class FormatConverter {
                 generatepaQP(); // no ecmm data write snakes only
             else
                 generatesnQP(); // write ecmm data
-        } catch (QuimpException | IOException e) {
+        } catch (IOException e) {
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with running Analysis: " + e.getMessage());
         }
@@ -93,7 +93,7 @@ public class FormatConverter {
      * @throws QuimpException 
      * 
      */
-    public void generatesnQP() throws QuimpException {
+    public void generatesnQP() throws IOException {
         int activeHandler = 0;
         // replace location to location of QCONF
         DataContainer dT = qP.getLoadedDataContainer();

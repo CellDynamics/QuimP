@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -855,8 +856,9 @@ public class BOAState implements IQuimpSerialize {
 
                 qp.writeParams();
             }
-        } catch (QuimpException e) {
-            LOGGER.error("Could not write parameters to file", e);
+        } catch (IOException e) {
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Could not write parameters to file", e.getMessage());
         }
     }
 

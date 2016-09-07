@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Type;
 
 import org.apache.logging.log4j.LogManager;
@@ -142,7 +143,7 @@ public class QParamsQconf extends QParams {
      * @throws QuimpException When file can not be saved
      */
     @Override
-    public void writeParams() throws QuimpException {
+    public void writeParams() throws IOException {
         LOGGER.debug("New file format: Updating data " + getParamFile());
         try {
             loaded.obj.beforeSerialize(); // call explicitly beforeSerialize because Dump doesn't do
@@ -153,7 +154,7 @@ public class QParamsQconf extends QParams {
         } catch (FileNotFoundException e) {
             LOGGER.error("File " + getParamFile() + " could not be saved. " + e.getMessage());
             LOGGER.debug(e.getMessage(), e);
-            throw new QuimpException("File " + getParamFile() + " could not be saved. ", e);
+            throw new IOException("File " + getParamFile() + " could not be saved. ", e);
         }
     }
 
@@ -219,7 +220,7 @@ public class QParamsQconf extends QParams {
      * @throws QuimpException 
      * 
      */
-    public void writeOldParams() throws QuimpException {
+    public void writeOldParams() throws IOException {
         super.writeParams();
     }
 

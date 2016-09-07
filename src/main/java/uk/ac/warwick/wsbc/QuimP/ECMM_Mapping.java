@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 // import java.util.Vector;
 import java.util.Random;
@@ -194,9 +195,10 @@ public class ECMM_Mapping {
      * Main executive for ECMM processing for QParamsExchanger (new file version).
      *  
      * @throws QuimpException 
+     * @throws IOException On problems with writing config files
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
      */
-    private void runFromQCONF() throws QuimpException {
+    private void runFromQCONF() throws QuimpException, IOException {
         LOGGER.debug("Processing from new file format");
         Nest nest = qconfLoader.getQp().getNest();
         outputOutlineHandlers = new OutlineHandlers(nest.size());

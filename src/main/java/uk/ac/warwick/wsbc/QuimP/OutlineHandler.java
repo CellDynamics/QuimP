@@ -272,8 +272,9 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
             this.findStatLimits();
 
             return true;
-        } catch (IOException | QuimpException e) {
-            LOGGER.error("Could not read outlines", e);
+        } catch (IOException e) {
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Could not read outlines", e.getMessage());
             return false;
         }
     }
