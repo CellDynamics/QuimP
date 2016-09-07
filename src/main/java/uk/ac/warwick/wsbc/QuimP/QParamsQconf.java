@@ -207,8 +207,13 @@ public class QParamsQconf extends QParams {
                 super.cortexWidth = getLoadedDataContainer().getANAState().aS.get(currentHandler)
                         .getCortexWidthScale();
 
-                super.fluTiffs =
-                        getLoadedDataContainer().getANAState().aS.get(currentHandler).fluTiffs;
+                // copy here is due to #204 - when new tiff is added to old loaded fluTiffs,
+                // previous absolute paths / are extended to full: /xxx/yyy/Quimp
+                File[] lF = getLoadedDataContainer().getANAState().aS.get(currentHandler).fluTiffs;
+                this.fluTiffs = new File[lF.length];
+                fluTiffs[0] = new File(lF[0].getPath());
+                fluTiffs[1] = new File(lF[1].getPath());
+                fluTiffs[2] = new File(lF[2].getPath());
             }
 
         }
