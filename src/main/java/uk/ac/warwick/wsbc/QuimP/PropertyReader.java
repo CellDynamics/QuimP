@@ -12,20 +12,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Read properties from resources
+ * Read properties from resources.
  * @author baniuk
  *
  */
 public class PropertyReader {
     static final Logger LOGGER = LogManager.getLogger(PropertyReader.class.getName());
+
     /**
      * Default constructor 
      */
-    public PropertyReader(){
+    public PropertyReader() {
     }
-    
+
     /**
-     * Read property from property file
+     * Read property from property file.
      * 
      * @param propFileName property file name
      * @param propKey name of the key
@@ -38,7 +39,7 @@ public class PropertyReader {
         InputStream inputStream;
         String result = "";
         Properties prop;
-        
+
         prop = new Properties();
         inputStream = getClass().getResourceAsStream(propFileName);
         try {
@@ -50,15 +51,15 @@ public class PropertyReader {
             }
             result = prop.getProperty(propKey);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(),e);
+            LOGGER.error(e.getMessage(), e);
         } finally {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                LOGGER.error(e.getMessage(),e);
+                LOGGER.error(e.getMessage(), e);
             }
         }
-        
+
         return result;
     }
 

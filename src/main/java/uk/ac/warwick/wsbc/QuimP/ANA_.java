@@ -396,6 +396,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
         anap.presentData[1] = 0;
         anap.presentData[2] = 0;
         anap.presentData[0] = 0;
+        anap.fluTiffs[0] = new File("/");
+        anap.fluTiffs[1] = new File("/");
+        anap.fluTiffs[2] = new File("/");
     }
 
     void setImageScale() {
