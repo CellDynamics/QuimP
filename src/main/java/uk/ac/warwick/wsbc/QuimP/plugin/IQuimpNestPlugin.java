@@ -3,7 +3,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin;
 import uk.ac.warwick.wsbc.QuimP.Nest;
 
 /**
- * This core plugin accepts Nest as input and can modify it
+ * This core plugin accepts Nest as input and can modify it.
  * 
  * @author p.baniukiewicz
  *
