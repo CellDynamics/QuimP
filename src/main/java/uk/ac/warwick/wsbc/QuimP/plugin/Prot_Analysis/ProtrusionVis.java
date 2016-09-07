@@ -71,20 +71,7 @@ public class ProtrusionVis {
      */
     public void addMaximaToImage(STmap mapCell, MaximaFinder mF) {
         Polygon max = mF.getMaxima();
-        double x[][] = mapCell.getxMap();
-        double y[][] = mapCell.getyMap();
-        int[] indexes = max.xpoints;
-        int[] frames = max.ypoints;
-
-        LOGGER.trace("Frames:" + Arrays.toString(frames));
-        LOGGER.trace("Indexe:" + Arrays.toString(indexes));
-        for (int n = 0; n < max.npoints; n++) {
-            // decode frame,outline to screen coordinates
-            double xcoord = x[frames[n]][indexes[n]]; // screen coordinate of
-            double ycoord = y[frames[n]][indexes[n]]; // (frame,index) point
-            plotCircle(xcoord, ycoord, frames[n] + 1, Color.MAGENTA, 7);
-        }
-        originalImage.setOverlay(overlay); // add to image
+        addPointsToImage(mapCell, max, Color.MAGENTA, 7);
     }
 
     /**
@@ -100,7 +87,7 @@ public class ProtrusionVis {
      * BMx is backward track for maximum point no.x and FMx is the forward track for maximum point 
      * no.x. This order is respected by {@link Prot_Analysis.trackMaxima(STmap, double, MaximaFinder)} 
      */
-    public void addTrackingLinesToImage(STmap mapCell, List<PolygonRoi> pL) {
+    public void addTrackingLinesToImage(STmap mapCell, List<Polygon> pL) {
         double x[][] = mapCell.getxMap(); // temporary x and y coordinates for given cell
         double y[][] = mapCell.getyMap();
         // these are raw coordinates of tracking lines extracted from List<PolygonRoi> pL
@@ -108,39 +95,36 @@ public class ProtrusionVis {
         ArrayList<float[]> ycoorda = new ArrayList<>();
         int aL = 0;
         // iterate over polygons. A polygon stores one tracking line
-        for (PolygonRoi pR : pL) {
+        for (Polygon pR : pL) {
             // we need to sort tracking line points according to frames where they appear in
             // first convert poygon to list of Point2i object
-            List<Point2i> plR = PolygonRoi2Point2i(new ArrayList<PolygonRoi>(Arrays.asList(pR)));
+            List<Point2i> plR = Polygon2Point2i(new ArrayList<Polygon>(Arrays.asList(pR)));
             // then sort this list according y-coordinate (frame)
             Collections.sort(plR, new ListPoint2iComparator());
             // convert to polygon again but now it is sorted along frames
-            PolygonRoi plRsorted = Point2i2PolygonRoi(plR).get(0);
+            Polygon plRsorted = Point2i2Polygon(plR).get(0);
             // create store for tracking line coordinates
-            xcoorda.add(new float[plRsorted.getNCoordinates()]);
-            ycoorda.add(new float[plRsorted.getNCoordinates()]);
+            xcoorda.add(new float[plRsorted.npoints]);
+            ycoorda.add(new float[plRsorted.npoints]);
             // counter of invalid vertexes. According to TrackMap#trackForward last points can be -1
             // when user provided longer time span than available. (last in term of time)
             int invalidVertex = 0;
             // decode frame,outline to x,y
-            for (int f = 0; f < plRsorted.getNCoordinates(); f++) {
+            for (int f = 0; f < plRsorted.npoints; f++) {
                 // -1 stands for points that are outside of range - assured by TrackMap.class
-                if (plRsorted.getPolygon().ypoints[f] < 0
-                        || plRsorted.getPolygon().xpoints[f] < 0) {
+                if (plRsorted.ypoints[f] < 0 || plRsorted.xpoints[f] < 0) {
                     invalidVertex++; // count bad points
                     continue;
                 }
-                xcoorda.get(aL)[f] = (float) x[plRsorted.getPolygon().ypoints[f]][plRsorted
-                        .getPolygon().xpoints[f]];
-                ycoorda.get(aL)[f] = (float) y[plRsorted.getPolygon().ypoints[f]][plRsorted
-                        .getPolygon().xpoints[f]];
+                xcoorda.get(aL)[f] = (float) x[plRsorted.ypoints[f]][plRsorted.xpoints[f]];
+                ycoorda.get(aL)[f] = (float) y[plRsorted.ypoints[f]][plRsorted.xpoints[f]];
             }
             // now xcoorda,yccora keep coordinates of aL track, it is time to plot
             // iterate over points in sorted polygon (one track line)
             // even indexes stand for backward tracking, odd for forward tracking lines
             // Some last points can be skipped here (sorting does not influence this because
             // last points means last in term of time)
-            for (int f = 0; f < plRsorted.getNCoordinates() - invalidVertex; f++) {
+            for (int f = 0; f < plRsorted.npoints - invalidVertex; f++) {
                 // x/ycoorda keep all points of tracking lines but PolygonRoi constructor allow
                 // to define how many first of them we take. This allows us to add points together
                 // with frames - in result the line grows as frames rise. After sorting, first
@@ -148,7 +132,7 @@ public class ProtrusionVis {
                 PolygonRoi pRoi =
                         new PolygonRoi(xcoorda.get(aL), ycoorda.get(aL), f + 1, Roi.FREELINE);
                 // set where we want plot f+1 points from x/ycoorda
-                pRoi.setPosition((int) plRsorted.getPolygon().ypoints[f] + 1);
+                pRoi.setPosition((int) plRsorted.ypoints[f] + 1);
                 // set colors (remember about backward/forward order)
                 pRoi.setStrokeColor(color[aL % 2]);
                 pRoi.setFillColor(color[aL % 2]);
@@ -159,13 +143,38 @@ public class ProtrusionVis {
                 if (aL % 2 == 1) {
                     PolygonRoi pRoi1 = new PolygonRoi(xcoorda.get(aL - 1), ycoorda.get(aL - 1),
                             xcoorda.get(aL - 1).length, Roi.FREELINE);
-                    pRoi1.setPosition((int) plRsorted.getPolygon().ypoints[f] + 1);
+                    pRoi1.setPosition((int) plRsorted.ypoints[f] + 1);
                     pRoi1.setStrokeColor(color[aL % 2 - 1]);
                     pRoi1.setFillColor(color[aL % 2 - 1]);
                     overlay.add(pRoi1);
                 }
             }
             aL++;
+        }
+        originalImage.setOverlay(overlay); // add to image
+    }
+
+    /**
+     * Plot unrelated points on image (stack).
+     * 
+     * @param mapCell source of coordinate maps
+     * @param points list of points to plot in coordinates (index,frame)
+     * @param color color of point
+     * @param radius radius of point
+     */
+    public void addPointsToImage(STmap mapCell, Polygon points, Color color, double radius) {
+        double x[][] = mapCell.getxMap();
+        double y[][] = mapCell.getyMap();
+        int[] indexes = points.xpoints;
+        int[] frames = points.ypoints;
+
+        LOGGER.trace("Frames:" + Arrays.toString(frames));
+        LOGGER.trace("Indexe:" + Arrays.toString(indexes));
+        for (int n = 0; n < points.npoints; n++) {
+            // decode frame,outline to screen coordinates
+            double xcoord = x[frames[n]][indexes[n]]; // screen coordinate of
+            double ycoord = y[frames[n]][indexes[n]]; // (frame,index) point
+            plotCircle(xcoord, ycoord, frames[n] + 1, color, radius);
         }
         originalImage.setOverlay(overlay); // add to image
     }
@@ -214,10 +223,9 @@ public class ProtrusionVis {
      * @param list List of polygons to convert
      * @return List of points constructed from all polygons.
      */
-    private List<Point2i> PolygonRoi2Point2i(List<PolygonRoi> list) {
+    private List<Point2i> Polygon2Point2i(List<Polygon> list) {
         List<Point2i> ret = new ArrayList<>();
-        for (PolygonRoi p : list) { // every polygon
-            Polygon pl = p.getPolygon();
+        for (Polygon pl : list) { // every polygon
             for (int i = 0; i < pl.npoints; i++) // every point in it
                 ret.add(new Point2i(pl.xpoints[i], pl.ypoints[i]));
         }
@@ -233,13 +241,13 @@ public class ProtrusionVis {
      * @param list List of points to convert
      * @return Polygon constructed from all points. This is 1-element list.
      */
-    private List<PolygonRoi> Point2i2PolygonRoi(List<Point2i> list) {
-        List<PolygonRoi> ret = new ArrayList<>();
+    private List<Polygon> Point2i2Polygon(List<Point2i> list) {
+        List<Polygon> ret = new ArrayList<>();
         Polygon pl = new Polygon();
         for (Point2i p : list) { // every point
             pl.addPoint(p.getX(), p.getY());
         }
-        ret.add(new PolygonRoi(pl, Roi.POLYLINE));
+        ret.add(pl);
         return ret;
 
     }

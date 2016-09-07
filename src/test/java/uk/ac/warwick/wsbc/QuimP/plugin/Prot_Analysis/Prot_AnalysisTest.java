@@ -1,7 +1,3 @@
-/**
- * @file Prot_AnalysisTest.java
- * @date 13 Aug 2016
- */
 package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +23,6 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * @author p.baniukiewicz
- * @date 13 Aug 2016
  *
  */
 public class Prot_AnalysisTest {
@@ -98,6 +93,11 @@ public class Prot_AnalysisTest {
         int[] retF = tM.getForwardFrames(frame, 10);
         assertThat(ret, is(expectedI));
         assertThat(retF, is(expectedF));
+    }
+
+    @Test
+    public void testCommonPoint() {
+
     }
 
 }

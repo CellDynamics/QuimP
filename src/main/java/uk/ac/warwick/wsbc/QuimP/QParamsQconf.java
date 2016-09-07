@@ -11,9 +11,9 @@ import org.apache.logging.log4j.Logger;
 /**
  * This class override most of methods from super class QParams. 
  * The goal of this class is rather not to extend QParams but to use polymorphism to provide 
- * requested data to callers keeping compatibility with old quimP architecture. 
+ * requested data to callers keeping compatibility with old QuimP architecture. 
  * The QuimP uses QParams to keep parameters read from configuration files (\a paQP, \a snQP) and 
- * then to provide some of parameters stored in these files  to local configuration classes such as
+ * then to provide some of parameters stored in these files to local configuration classes such as
  * e.g. {@link uk.ac.warwick.wsbc.QuimP.ECMp}, {@link uk.ac.warwick.wsbc.QuimP.Qp}, 
  * {@link uk.ac.warwick.wsbc.QuimP.ANAp}.
  * QuimP supports two independent file formats:
@@ -22,8 +22,9 @@ import org.apache.logging.log4j.Logger;
  * <li> compound \a case.QCONF that contains data for all cells
  * </ol>
  * Many of parameters in underlying class QParams are set to be private and they are accessible
- * by setters and getters. Every setter/getter is overrode in this class and contains simple logic
+ * by setters and getters. Many setter/getter are overridden in this class and contains simple logic
  * to provide requested and expected data even if the source file was \a QCONF. 
+ * There is also method that convert parameters read from QCONF and fills underlying fields in QParams.
  * Appropriate object either QParam or QParamsQconf is created upon configuration file type. 
  * Owing to Java late binding, always correct method is called even if the object is casted to QParams 
  * 
