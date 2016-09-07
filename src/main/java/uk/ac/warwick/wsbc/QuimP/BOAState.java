@@ -352,7 +352,10 @@ public class BOAState implements IQuimpSerialize {
      * @see Tool
      */
     public class BOAp {
-        private File orgFile; //!< handle to original file obtained from IJ (usually image opened) 
+        /**
+         * handle to original file obtained from IJ (usually image opened).
+         */
+        private File orgFile;
         /**
          * Corename for output, initially contains path and name without extension from orgFile. 
          * Can be changed by user on save
@@ -360,26 +363,53 @@ public class BOAState implements IQuimpSerialize {
          */
         private File outputFileCore;
         /**
-         * \c outputFileCore but without path and extension
+         * <tt>outputFileCore</tt> but without path and extension.
          */
         private String fileName;
-        transient QParams readQp; //!< read in parameter file 
+        /**
+         * read in parameter file.
+         */
+        transient QParams readQp;
         // internal parameters
-        int NMAX; //!< maximum number of nodes (% of starting nodes) 
+        /**
+         * Maximum number of nodes (% of starting nodes).
+         */
+        int NMAX;
         double delta_t;
         double sensitivity;
         double f_friction;
-        private int FRAMES; //!< Number of frames in stack 
+        /**
+         * Number of frames in stack.
+         */
+        private int FRAMES;
         private int WIDTH, HEIGHT;
-        int cut_every; //!< cut loops in chain every X frames 
-        boolean oldFormat; //!< output old QuimP format? 
-        boolean saveSnake; //!< save snake data 
+        /**
+         * Cut loops in chain every X frames.
+         */
+        int cut_every;
+        /**
+         * output old QuimP format?
+         */
+        boolean oldFormat;
+        /**
+         * save snake data.
+         */
+        boolean saveSnake;
 
-        double proximity; //!< distance between centroids at which contact is tested for 
-        double proxFreeze; //!< proximity of nodes to freeze when blowing up 
+        /**
+         * distance between centroids at which contact is tested for.
+         */
+        double proximity;
+        /**
+         * proximity of nodes to freeze when blowing up
+         */
+        double proxFreeze;
         boolean savedOne;
-        boolean savePretty = true; //!< use json pretty format
-        
+        /**
+         * use json pretty format.
+         */
+        boolean savePretty = true;
+
         /**
          * Current frame, CustomStackWindow.updateSliceSelector()
          */

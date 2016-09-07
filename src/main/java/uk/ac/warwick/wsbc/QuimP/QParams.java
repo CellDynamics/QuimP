@@ -504,7 +504,6 @@ public class QParams {
 
     public void writeParams() throws IOException {
         LOGGER.debug("Write paQP at: " + paramFile);
-        // try {
         if (paramFile.exists()) {
             paramFile.delete();
         }
@@ -526,7 +525,23 @@ public class QParams {
         pPW.print(IJ.d2s(imageScale, 6) + "\n");
         pPW.print(IJ.d2s(frameInterval, 3) + "\n");
 
-        pPW.print("#segmentation parameters\n");
+        // according to BOAState and /trac/QuimP/wiki/QuimpQp
+        //!<
+        pPW.print("#segmentation parameters ("
+                + "Maximum number of nodes, "
+                + "ND, "
+                + "Max iterations, "
+                + "Node spacing, "
+                + "Blowup, "
+                + "Sample tan, "
+                + "Sample norm, "
+                + "Crit velocity, "
+                + "Central F, "
+                + "Contract F, "
+                + "ND, "
+                + "Image force, "
+                + "ND)\n");
+        /**/
         pPW.print(IJ.d2s(NMAX, 0) + "\n");
         pPW.print(IJ.d2s(delta_t, 6) + "\n");
         pPW.print(IJ.d2s(max_iterations, 6) + "\n");
@@ -541,7 +556,7 @@ public class QParams {
         pPW.print(IJ.d2s(f_image, 6) + "\n");
         pPW.print(IJ.d2s(sensitivity, 6) + "\n");
 
-        pPW.print("# - new parameters (cortext width, start frame, end frame,"
+        pPW.print("# - new parameters (cortex width, start frame, end frame,"
                 + " final shrink, statsQP, fluImage)\n");
         pPW.print(IJ.d2s(cortexWidth, 2) + "\n");
         pPW.print(IJ.d2s(startFrame, 0) + "\n");
@@ -557,11 +572,6 @@ public class QParams {
         pPW.print("#END");
 
         pPW.close();
-        // } catch (IOException e) {
-        // LOGGER.error("Could not write parameter file! " + e.getMessage());
-        // LOGGER.debug(e.getMessage(), e);
-        // throw new QuimpException("Could not write parameter file!", e);
-        // }
     }
 
     /**
