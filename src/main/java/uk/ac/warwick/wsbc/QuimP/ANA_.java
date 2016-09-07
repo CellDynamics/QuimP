@@ -1136,6 +1136,7 @@ class ANAp {
         this.fluTiffs = new File[src.fluTiffs.length];
         for (int i = 0; i < fluTiffs.length; i++)
             fluTiffs[i] = new File(src.fluTiffs[i].getPath());
+
     }
 
     /**
