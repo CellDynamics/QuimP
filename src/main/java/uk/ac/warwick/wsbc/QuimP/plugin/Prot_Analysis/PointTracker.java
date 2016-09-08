@@ -4,6 +4,7 @@ import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.vecmath.Point2i;
 
@@ -23,6 +24,18 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  */
 public class PointTracker {
     private static final Logger LOGGER = LogManager.getLogger(PointTracker.class.getName());
+    /**
+     * Allow detection common points in backward and forward tracks generated for the same
+     * starting point.
+     * @see uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst
+     */
+    final public static int WITH_SELFCROSSING = 0;
+    /**
+     * Disallow detection common points in backward and forward tracks generated for the same
+     * starting point.
+     * @see uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst
+     */
+    final public static int WITHOUT_SELFCROSSING = 1;
 
     public PointTracker() {
     }
@@ -157,10 +170,11 @@ public class PointTracker {
      * polygons in input list that have common vertex.
      * 
      * @param tracks List of polygons.
+     * @param mode WITHOUT_SELFCROSSING | WITH_SELFCROSSING
      * @return List of common points together with their parents List<Pair<Parents,Point>>.
      * If there is no common points the list is empty
      */
-    public List<Pair<Point2i, Point2i>> getIntersectionParents(List<Polygon> tracks) {
+    public List<Pair<Point2i, Point2i>> getIntersectionParents(List<Polygon> tracks, int mode) {
         ArrayList<Pair<Point2i, Point2i>> ret = new ArrayList<>();
         for (int i = 0; i < tracks.size() - 1; i++)
             for (int j = i + 1; j < tracks.size(); j++) {
@@ -171,6 +185,38 @@ public class PointTracker {
                     ret.add(pairTmp);
                 }
             }
+        if (mode == WITHOUT_SELFCROSSING)
+            return removeSelfCrossings(ret);
+        else
+            return ret;
+    }
+
+    /**
+     * Remove self crossings that happens between backward and forward tracks for the same initial
+     * point.
+     * 
+     * {@link trackMaxima} returns alternating tracks tracks, therefore every pair i,i+1 is related
+     * to the same starting points, for even i. If the flag 
+     * uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst is set, those two tracks share one point 
+     * that is also starting point.
+     * <p>
+     * This method remove those Pairs that come from parent <even,uneven>.
+     *   
+     * @param input
+     * @return input list without common points between tracks that belong to the same starting
+     * point.
+     * @see trackMaxima(STmap, double, MaximaFinder)
+     */
+    private List<Pair<Point2i, Point2i>> removeSelfCrossings(List<Pair<Point2i, Point2i>> input) {
+        ArrayList<Pair<Point2i, Point2i>> ret = new ArrayList<>(input);
+        ListIterator<Pair<Point2i, Point2i>> it = ret.listIterator();
+        while (it.hasNext()) {
+            Pair<Point2i, Point2i> element = it.next();
+            // remove because first parent is even and second is next track. <even,uneven> are
+            // <backward,forward> according to trackMaxima.
+            if (element.fst.x % 2 == 0 && element.fst.x + 1 == element.fst.y)
+                it.remove();
+        }
         return ret;
     }
 

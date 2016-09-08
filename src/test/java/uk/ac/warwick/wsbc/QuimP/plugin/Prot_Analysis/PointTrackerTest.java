@@ -80,7 +80,8 @@ public class PointTrackerTest {
         assertThat(ret.xpoints, is(expected.xpoints));
         assertThat(ret.ypoints, is(expected.ypoints));
 
-        List<Pair<Point2i, Point2i>> ret1 = new PointTracker().getIntersectionParents(test);
+        List<Pair<Point2i, Point2i>> ret1 =
+                new PointTracker().getIntersectionParents(test, PointTracker.WITH_SELFCROSSING);
         Pair<Point2i, Point2i> p = new Pair<Point2i, Point2i>(new Point2i(0, 1), new Point2i(5, 5));
 
         List<Pair<Point2i, Point2i>> expected1 =
@@ -109,7 +110,8 @@ public class PointTrackerTest {
         assertThat(ret.xpoints, is(expected.xpoints));
         assertThat(ret.ypoints, is(expected.ypoints));
 
-        List<Pair<Point2i, Point2i>> ret1 = new PointTracker().getIntersectionParents(test);
+        List<Pair<Point2i, Point2i>> ret1 =
+                new PointTracker().getIntersectionParents(test, PointTracker.WITH_SELFCROSSING);
         assertThat(ret1.size(), is(0));
     }
 
@@ -134,7 +136,8 @@ public class PointTrackerTest {
         assertThat(ret.xpoints, is(expected.xpoints));
         assertThat(ret.ypoints, is(expected.ypoints));
 
-        List<Pair<Point2i, Point2i>> ret1 = new PointTracker().getIntersectionParents(test);
+        List<Pair<Point2i, Point2i>> ret1 =
+                new PointTracker().getIntersectionParents(test, PointTracker.WITH_SELFCROSSING);
         Pair<Point2i, Point2i> p = new Pair<Point2i, Point2i>(new Point2i(0, 1), new Point2i(5, 5));
         Pair<Point2i, Point2i> p1 =
                 new Pair<Point2i, Point2i>(new Point2i(0, 1), new Point2i(9, 9));
@@ -172,7 +175,8 @@ public class PointTrackerTest {
         assertThat(ret.xpoints, is(expected.xpoints));
         assertThat(ret.ypoints, is(expected.ypoints));
 
-        List<Pair<Point2i, Point2i>> ret1 = new PointTracker().getIntersectionParents(test);
+        List<Pair<Point2i, Point2i>> ret1 =
+                new PointTracker().getIntersectionParents(test, PointTracker.WITH_SELFCROSSING);
         Pair<Point2i, Point2i> p = new Pair<Point2i, Point2i>(new Point2i(0, 1), new Point2i(1, 1));
         Pair<Point2i, Point2i> p1 =
                 new Pair<Point2i, Point2i>(new Point2i(0, 1), new Point2i(2, 2));
@@ -237,7 +241,8 @@ public class PointTrackerTest {
         assertThat(ret.xpoints, is(expected.xpoints));
         assertThat(ret.ypoints, is(expected.ypoints));
 
-        List<Pair<Point2i, Point2i>> ret1 = new PointTracker().getIntersectionParents(test);
+        List<Pair<Point2i, Point2i>> ret1 =
+                new PointTracker().getIntersectionParents(test, PointTracker.WITH_SELFCROSSING);
         Pair<Point2i, Point2i> p = new Pair<Point2i, Point2i>(new Point2i(0, 1), new Point2i(5, 5));
         Pair<Point2i, Point2i> p1 =
                 new Pair<Point2i, Point2i>(new Point2i(1, 2), new Point2i(6, 5));
@@ -281,7 +286,8 @@ public class PointTrackerTest {
         assertThat(ret.xpoints, is(expected.xpoints));
         assertThat(ret.ypoints, is(expected.ypoints));
 
-        List<Pair<Point2i, Point2i>> ret1 = new PointTracker().getIntersectionParents(test);
+        List<Pair<Point2i, Point2i>> ret1 =
+                new PointTracker().getIntersectionParents(test, PointTracker.WITH_SELFCROSSING);
         Pair<Point2i, Point2i> p =
                 new Pair<Point2i, Point2i>(new Point2i(0, 1), new Point2i(17, 70));
         Pair<Point2i, Point2i> p1 =
@@ -317,9 +323,44 @@ public class PointTrackerTest {
         assertThat(ret.xpoints, is(expected.xpoints));
         assertThat(ret.ypoints, is(expected.ypoints));
 
-        List<Pair<Point2i, Point2i>> ret1 = new PointTracker().getIntersectionParents(test);
+        List<Pair<Point2i, Point2i>> ret1 =
+                new PointTracker().getIntersectionParents(test, PointTracker.WITH_SELFCROSSING);
 
         assertThat(ret1.size(), is(0));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
+     */
+    @Test
+    public void testGetIntersectionPoints_withoutselfcrossing() throws Exception {
+        int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 400, 10 };
+        int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 7, 10 };
+
+        int[] x2 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] y2 = { 10, 9, 8, 7, 5, 5, 4, 3, 2, 1 };
+
+        int[] x3 = { 100, 200, 300, 400 };
+        int[] y3 = { 100, 5, 9, 7 };
+
+        ArrayList<Polygon> test = new ArrayList<>();
+        test.add(new Polygon(x1, y1, 10));
+        test.add(new Polygon(x2, y2, 10));
+        test.add(new Polygon(x3, y3, 4));
+
+        List<Pair<Point2i, Point2i>> ret1 =
+                new PointTracker().getIntersectionParents(test, PointTracker.WITHOUT_SELFCROSSING);
+        Pair<Point2i, Point2i> p =
+                new Pair<Point2i, Point2i>(new Point2i(0, 2), new Point2i(400, 7));
+
+        @SuppressWarnings("serial")
+        List<Pair<Point2i, Point2i>> expected1 = new ArrayList<Pair<Point2i, Point2i>>() {
+            {
+                add(p);
+            }
+        };
+        assertThat(ret1, is(expected1));
+        assertThat(test.size(), is(3));
     }
 
 }

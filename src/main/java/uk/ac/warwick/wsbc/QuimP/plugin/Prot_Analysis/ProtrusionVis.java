@@ -18,6 +18,8 @@ import javax.vecmath.Point2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sun.tools.javac.util.Pair;
+
 import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.PointRoi;
@@ -178,6 +180,29 @@ public class ProtrusionVis {
             plotCircle(xcoord, ycoord, frames[n] + 1, color, radius);
         }
         originalImage.setOverlay(overlay); // add to image
+    }
+
+    /**
+     * Plot unrelated points on image (stack). Input compatible with
+     * {@link PointTracker.getIntersectionParents(List<Polygon>, int)}.
+     * 
+     * @param mapCell source of coordinate maps
+     * @param points list of points to plot in coordinates (index,frame)
+     * @param color color of point
+     * @param radius radius of point
+     */
+    public void addPointsToImage(STmap mapCell, List<Pair<Point2i, Point2i>> points, Color color,
+            double radius) {
+        int[] x = new int[points.size()];
+        int[] y = new int[points.size()];
+        int l = 0;
+        for (Pair<Point2i, Point2i> p : points) {
+            x[l] = p.snd.x;
+            y[l] = p.snd.y;
+            l++;
+        }
+        Polygon poly = new Polygon(x, y, points.size());
+        addPointsToImage(mapCell, poly, color, radius);
     }
 
     /**

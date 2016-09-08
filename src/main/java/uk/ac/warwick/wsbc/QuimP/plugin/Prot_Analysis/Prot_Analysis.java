@@ -1,12 +1,17 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
+import java.awt.Color;
 import java.awt.Polygon;
 import java.io.File;
 import java.util.List;
 
+import javax.vecmath.Point2i;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
+
+import com.sun.tools.javac.util.Pair;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -22,6 +27,7 @@ import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
+import uk.ac.warwick.wsbc.QuimP.Tool;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
@@ -59,6 +65,7 @@ public class Prot_Analysis implements IQuimpPlugin {
      * @param paramFile File to process.
      */
     public Prot_Analysis(File paramFile) {
+        IJ.log(new Tool().getQuimPversion());
         try {
             IJ.showStatus("Protrusion Analysis");
             if (paramFile == null) { // open UI if no file provided
@@ -109,8 +116,12 @@ public class Prot_Analysis implements IQuimpPlugin {
             // compute maxima
             MaximaFinder mF = new MaximaFinder(imp);
             mF.computeMaximaIJ(1.5);
-            List<Polygon> pL = pT.trackMaxima(mapCell, 1, mF); // track maxima across motility
-                                                               // map
+            // track maxima across motility map
+            List<Polygon> pL = pT.trackMaxima(mapCell, 1, mF);
+            // find crossings
+            List<Pair<Point2i, Point2i>> crossingsP =
+                    pT.getIntersectionParents(pL, PointTracker.WITHOUT_SELFCROSSING);
+            LOGGER.trace("Crossings: " + crossingsP.size());
             // plotting
             Polygon maxi = mF.getMaxima();
             // build overlay with points
@@ -126,6 +137,7 @@ public class Prot_Analysis implements IQuimpPlugin {
 
             pV.addMaximaToImage(mapCell, mF);
             pV.addTrackingLinesToImage(mapCell, pL);
+            pV.addPointsToImage(mapCell, crossingsP, Color.YELLOW, 7);
 
             // Maps are correlated in order with Outlines in DataContainer.
             // mapCell.map2ColorImagePlus("motility_map", mapCell.motMap,
