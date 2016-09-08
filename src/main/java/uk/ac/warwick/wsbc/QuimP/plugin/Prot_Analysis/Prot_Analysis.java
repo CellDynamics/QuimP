@@ -51,8 +51,14 @@ public class Prot_Analysis implements IQuimpPlugin {
     private File paramFile;
 
     private boolean uiCancelled = false;
-    private double noiseTolerance = 1.5;
-    private double dropValue = 1;
+    @SuppressWarnings("serial")
+    // default configuration parameters
+    ParamList paramList = new ParamList() {
+        {
+            put("noiseTolerance", "1.5");
+            put("dropValue", "1");
+        }
+    };
 
     /**
      * Default constructor. 
@@ -122,9 +128,9 @@ public class Prot_Analysis implements IQuimpPlugin {
             imp.flipHorizontal();
             // compute maxima
             MaximaFinder mF = new MaximaFinder(imp);
-            mF.computeMaximaIJ(noiseTolerance); // 1.5
+            mF.computeMaximaIJ(paramList.getDoubleValue("noiseTolerance")); // 1.5
             // track maxima across motility map
-            List<Polygon> pL = pT.trackMaxima(mapCell, dropValue, mF);
+            List<Polygon> pL = pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
             // find crossings
             List<Pair<Point, Point>> crossingsP =
                     pT.getIntersectionParents(pL, PointTracker.WITHOUT_SELFCROSSING);
@@ -165,20 +171,20 @@ public class Prot_Analysis implements IQuimpPlugin {
 
     @Override
     public void setPluginConfig(ParamList par) throws QuimpPluginException {
-        // TODO Auto-generated method stub
+        paramList = new ParamList(par);
 
     }
 
     @Override
     public ParamList getPluginConfig() {
-        return new ParamList();
+        return paramList;
     }
 
     @Override
     public void showUI(boolean val) {
         GenericDialog pd = new GenericDialog("Protrusion detection dialog", IJ.getInstance());
-        pd.addNumericField("Noise tolerance", noiseTolerance, 3);
-        pd.addNumericField("Drop value", dropValue, 2);
+        pd.addNumericField("Noise tolerance", paramList.getDoubleValue("noiseTolerance"), 3);
+        pd.addNumericField("Drop value", paramList.getDoubleValue("dropValue"), 2);
         pd.addMessage("Noise tolerance - Maxima in motility map are ignored if\n"
                 + " they do not stand out from the surroundings by more\n" + " than this value\n"
                 + " \n" + "Drop value - Tracking of maximum point of motility map\n"
@@ -189,8 +195,8 @@ public class Prot_Analysis implements IQuimpPlugin {
             uiCancelled = true;
             return;
         }
-        noiseTolerance = (double) pd.getNextNumber();
-        dropValue = (double) pd.getNextNumber();
+        paramList.put("noiseTolerance", Double.toString(pd.getNextNumber()));
+        paramList.put("dropValue", Double.toString(pd.getNextNumber()));
     }
 
     @Override
