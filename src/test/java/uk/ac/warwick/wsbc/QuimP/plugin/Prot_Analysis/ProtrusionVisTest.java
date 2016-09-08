@@ -148,9 +148,7 @@ public class ProtrusionVisTest {
         p.add(new Polygon(x1, y1, x1.length));
         p.add(new Polygon(x2, y2, x2.length));
 
-        @SuppressWarnings("unchecked")
-        List<Point2i> ret = (List<Point2i>) accessPrivate("Polygon2Point2i", protrusionVis,
-                new Object[] { p }, new Class<?>[] { List.class });
+        List<Point2i> ret = PointTracker.Polygon2Point2i(p);
         List<Point2i> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
         assertThat(result, is(expected));
 

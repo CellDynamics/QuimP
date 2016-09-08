@@ -98,11 +98,12 @@ public class ProtrusionVis {
         for (Polygon pR : pL) {
             // we need to sort tracking line points according to frames where they appear in
             // first convert poygon to list of Point2i object
-            List<Point2i> plR = Polygon2Point2i(new ArrayList<Polygon>(Arrays.asList(pR)));
+            List<Point2i> plR =
+                    PointTracker.Polygon2Point2i(new ArrayList<Polygon>(Arrays.asList(pR)));
             // then sort this list according y-coordinate (frame)
             Collections.sort(plR, new ListPoint2iComparator());
             // convert to polygon again but now it is sorted along frames
-            Polygon plRsorted = Point2i2Polygon(plR).get(0);
+            Polygon plRsorted = PointTracker.Point2i2Polygon(plR);
             // create store for tracking line coordinates
             xcoorda.add(new float[plRsorted.npoints]);
             ycoorda.add(new float[plRsorted.npoints]);
@@ -212,44 +213,6 @@ public class ProtrusionVis {
         pR.setStrokeColor(color);
         pR.setFillColor(color);
         overlay.add(pR); // add to collection of overlays
-    }
-
-    /**
-     * Convert list of Polygons to list of Points.
-     * <p>
-     * The difference is that for polygons points are kept in 1d arrays, whereas for Point2i they
-     * are as separate points that allows object comparison.
-     *  
-     * @param list List of polygons to convert
-     * @return List of points constructed from all polygons.
-     */
-    private List<Point2i> Polygon2Point2i(List<Polygon> list) {
-        List<Point2i> ret = new ArrayList<>();
-        for (Polygon pl : list) { // every polygon
-            for (int i = 0; i < pl.npoints; i++) // every point in it
-                ret.add(new Point2i(pl.xpoints[i], pl.ypoints[i]));
-        }
-        return ret;
-    }
-
-    /**
-     * Convert list of Points to list of Polygons.
-     * <p>
-     * The difference is that for polygons points are kept in 1d arrays, whereas for Point2i they
-     * are as separate points that allows object comparison.
-     *  
-     * @param list List of points to convert
-     * @return Polygon constructed from all points. This is 1-element list.
-     */
-    private List<Polygon> Point2i2Polygon(List<Point2i> list) {
-        List<Polygon> ret = new ArrayList<>();
-        Polygon pl = new Polygon();
-        for (Point2i p : list) { // every point
-            pl.addPoint(p.getX(), p.getY());
-        }
-        ret.add(pl);
-        return ret;
-
     }
 
     /**

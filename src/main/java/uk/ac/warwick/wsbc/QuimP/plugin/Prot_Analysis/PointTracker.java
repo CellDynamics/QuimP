@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.vecmath.Point2i;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.sun.tools.javac.util.Pair;
 
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackMap;
@@ -101,10 +105,112 @@ public class PointTracker {
         return ret;
     }
 
+    /**
+     * Find common points among polygons.
+     * 
+     * Check whether there are common points among polygons stored in List.
+     * @param tracks List of polygons.
+     * @return Polygon of size 0 when no intersection or polygons whose vertices are common for 
+     * polygons in <tt>tracks</tt>. If there are vertexes shared among more than two polygons, they
+     * appear only once in returned polygon.
+     * <p><b>Warning</b><p>
+     * Polygon of size 0 may contain x,y, arrays of size 4, only number of points is 0
+     */
     public Polygon getIntersectionPoints(List<Polygon> tracks) {
-        Polygon ret = new Polygon();
+        List<Polygon> tmpRet = new ArrayList<>();
+        for (int i = 0; i < tracks.size() - 1; i++)
+            for (int j = i + 1; j < tracks.size(); j++) {
+                Polygon retPol = getIntersectionPoints(tracks.get(i), tracks.get(j));
+                if (retPol.npoints != 0)
+                    tmpRet.add(retPol); // add retained elements (common with p2)
+            }
+        // remove repeating vertexes
+        List<Point2i> retP2i = QuimPArrayUtils.removeDuplicates(Polygon2Point2i(tmpRet));
+        // convert from list of polygons to one polygon
+        return Point2i2Polygon(retP2i);
+    }
 
+    /**
+     * Check if p1 and p2 have common vertexes.
+     * 
+     * @param p1
+     * @param p2
+     * @return Polygon whose vertexes are those common for p1 and p2.
+     */
+    public Polygon getIntersectionPoints(Polygon p1, Polygon p2) {
+        Polygon ret = new Polygon();
+        List<Point2i> tmpRet = new ArrayList<>();
+        List<Point2i> p1p = Polygon2Point2i(Arrays.asList(p1)); // polygon as list of points
+        List<Point2i> p2p = Polygon2Point2i(Arrays.asList(p2)); // polygon as list of points
+        // check if p1 and p2 have common elements
+        p1p.retainAll(p2p);
+        tmpRet.addAll(p1p); // add retained elements (common with p2)
+
+        ret = Point2i2Polygon(tmpRet);
         return ret;
+    }
+
+    /**
+     * Find common points among polygons. 
+     * 
+     * This method provides also parents of every common point. Parents are given as indexes of 
+     * polygons in input list that have common vertex.
+     * 
+     * @param tracks List of polygons.
+     * @return List of common points together with their parents List<Pair<Parents,Point>>.
+     * If there is no common points the list is empty
+     */
+    public List<Pair<Point2i, Point2i>> getIntersectionParents(List<Polygon> tracks) {
+        ArrayList<Pair<Point2i, Point2i>> ret = new ArrayList<>();
+        for (int i = 0; i < tracks.size() - 1; i++)
+            for (int j = i + 1; j < tracks.size(); j++) {
+                Polygon retPol = getIntersectionPoints(tracks.get(i), tracks.get(j));
+                for (int n = 0; n < retPol.npoints; n++) {
+                    Pair<Point2i, Point2i> pairTmp = new Pair<Point2i, Point2i>(new Point2i(i, j),
+                            new Point2i(retPol.xpoints[n], retPol.ypoints[n]));
+                    ret.add(pairTmp);
+                }
+            }
+        return ret;
+    }
+
+    /**
+     * Convert list of Polygons to list of Points.
+     * <p>
+     * The difference is that for polygons points are kept in 1d arrays, whereas for Point2i they
+     * are as separate points that allows object comparison.
+     *  
+     * @param list List of polygons to convert
+     * @return List of points constructed from all polygons.
+     */
+    static public List<Point2i> Polygon2Point2i(List<Polygon> list) {
+        List<Point2i> ret = new ArrayList<>();
+        for (Polygon pl : list) { // every polygon
+            for (int i = 0; i < pl.npoints; i++) // every point in it
+                ret.add(new Point2i(pl.xpoints[i], pl.ypoints[i]));
+        }
+        return ret;
+    }
+
+    /**
+     * Convert list of Points to list of Polygons.
+     * <p>
+     * The difference is that for polygons points are kept in 1d arrays, whereas for Point2i they
+     * are as separate points that allows object comparison.
+     *  
+     * @param list List of points to convert
+     * @return Polygon constructed from all points. This is 1-element list.
+     */
+    static public Polygon Point2i2Polygon(List<Point2i> list) {
+        int x[] = new int[list.size()];
+        int y[] = new int[list.size()];
+        int l = 0;
+        for (Point2i p : list) { // every point
+            x[l] = p.getX();
+            y[l] = p.getY();
+            l++;
+        }
+        return new Polygon(x, y, list.size());
     }
 
 }

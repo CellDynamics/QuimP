@@ -9,9 +9,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Deliver simple methods operating on arrays
@@ -43,6 +46,20 @@ public class QuimPArrayUtils {
             }
         }
         return out;
+    }
+
+    /**
+     * Remove duplicated elements from input list.
+     * 
+     * @param in
+     * @return New list without duplicates. Ordering may be different than in input list. 
+     */
+    public static <T> List<T> removeDuplicates(List<T> in) {
+        Set<T> retNoDpl = new HashSet<>(); // no duplicates allowed
+        retNoDpl.addAll(in); // add if not present already
+        ArrayList<T> retP2i = new ArrayList<>();
+        retP2i.addAll(retNoDpl); // convert back to list
+        return retP2i;
     }
 
     /**
