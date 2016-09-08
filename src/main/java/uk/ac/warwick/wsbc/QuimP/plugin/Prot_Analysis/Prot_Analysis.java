@@ -14,6 +14,7 @@ import com.sun.tools.javac.util.Pair;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.GenericDialog;
 import ij.gui.Overlay;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
@@ -49,6 +50,10 @@ public class Prot_Analysis implements IQuimpPlugin {
     private QconfLoader qconfLoader; // main object representing loaded configuration file
     private File paramFile;
 
+    private boolean uiCancelled = false;
+    private double noiseTolerance = 1.5;
+    private double dropValue = 1;
+
     /**
      * Default constructor. 
      * <p>
@@ -65,6 +70,9 @@ public class Prot_Analysis implements IQuimpPlugin {
      */
     public Prot_Analysis(File paramFile) {
         IJ.log(new Tool().getQuimPversion());
+        showUI(true);
+        if (uiCancelled)
+            return;
         try {
             IJ.showStatus("Protrusion Analysis");
             if (paramFile == null) { // open UI if no file provided
@@ -81,7 +89,7 @@ public class Prot_Analysis implements IQuimpPlugin {
                 this.paramFile = new File(od.getDirectory(), od.getFileName());
             } else // use provided file
                 this.paramFile = paramFile;
-            runPlugin(); // run
+            runPlugin();
             IJ.log("Protrusion Analysis complete");
             IJ.showStatus("Finished");
         } catch (Exception e) { // catch all exceptions here
@@ -114,9 +122,9 @@ public class Prot_Analysis implements IQuimpPlugin {
             imp.flipHorizontal();
             // compute maxima
             MaximaFinder mF = new MaximaFinder(imp);
-            mF.computeMaximaIJ(2.6); // 1.5
+            mF.computeMaximaIJ(noiseTolerance); // 1.5
             // track maxima across motility map
-            List<Polygon> pL = pT.trackMaxima(mapCell, 1.5, mF);
+            List<Polygon> pL = pT.trackMaxima(mapCell, dropValue, mF);
             // find crossings
             List<Pair<Point, Point>> crossingsP =
                     pT.getIntersectionParents(pL, PointTracker.WITHOUT_SELFCROSSING);
@@ -168,8 +176,21 @@ public class Prot_Analysis implements IQuimpPlugin {
 
     @Override
     public void showUI(boolean val) {
-        // TODO Auto-generated method stub
+        GenericDialog pd = new GenericDialog("Protrusion detection dialog", IJ.getInstance());
+        pd.addNumericField("Noise tolerance", noiseTolerance, 3);
+        pd.addNumericField("Drop value", dropValue, 2);
+        pd.addMessage("Noise tolerance - Maxima in motility map are ignored if\n"
+                + " they do not stand out from the surroundings by more\n" + " than this value\n"
+                + " \n" + "Drop value - Tracking of maximum point of motility map\n"
+                + " stops if current point value is smaller than max-drop*max");
 
+        pd.showDialog();
+        if (pd.wasCanceled()) {
+            uiCancelled = true;
+            return;
+        }
+        noiseTolerance = (double) pd.getNextNumber();
+        dropValue = (double) pd.getNextNumber();
     }
 
     @Override
