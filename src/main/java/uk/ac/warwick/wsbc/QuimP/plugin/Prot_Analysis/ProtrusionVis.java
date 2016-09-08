@@ -5,6 +5,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +14,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.vecmath.Point2d;
-import javax.vecmath.Point2i;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -100,7 +100,7 @@ public class ProtrusionVis {
         for (Polygon pR : pL) {
             // we need to sort tracking line points according to frames where they appear in
             // first convert poygon to list of Point2i object
-            List<Point2i> plR =
+            List<Point> plR =
                     PointTracker.Polygon2Point2i(new ArrayList<Polygon>(Arrays.asList(pR)));
             // then sort this list according y-coordinate (frame)
             Collections.sort(plR, new ListPoint2iComparator());
@@ -171,10 +171,12 @@ public class ProtrusionVis {
         int[] indexes = points.xpoints;
         int[] frames = points.ypoints;
 
-        LOGGER.trace("Frames:" + Arrays.toString(frames));
-        LOGGER.trace("Indexe:" + Arrays.toString(indexes));
+        // LOGGER.trace("Frames:" + Arrays.toString(frames));
+        // LOGGER.trace("Indexe:" + Arrays.toString(indexes));
         for (int n = 0; n < points.npoints; n++) {
             // decode frame,outline to screen coordinates
+            if (frames[n] < 0 || indexes[n] < 0)
+                continue;
             double xcoord = x[frames[n]][indexes[n]]; // screen coordinate of
             double ycoord = y[frames[n]][indexes[n]]; // (frame,index) point
             plotCircle(xcoord, ycoord, frames[n] + 1, color, radius);
@@ -191,12 +193,12 @@ public class ProtrusionVis {
      * @param color color of point
      * @param radius radius of point
      */
-    public void addPointsToImage(STmap mapCell, List<Pair<Point2i, Point2i>> points, Color color,
+    public void addPointsToImage(STmap mapCell, List<Pair<Point, Point>> points, Color color,
             double radius) {
         int[] x = new int[points.size()];
         int[] y = new int[points.size()];
         int l = 0;
-        for (Pair<Point2i, Point2i> p : points) {
+        for (Pair<Point, Point> p : points) {
             x[l] = p.snd.x;
             y[l] = p.snd.y;
             l++;
@@ -255,13 +257,13 @@ public class ProtrusionVis {
  * @author p.baniukiewicz
  *
  */
-class ListPoint2iComparator implements Comparator<Point2i> {
+class ListPoint2iComparator implements Comparator<Point> {
 
     @Override
-    public int compare(Point2i o1, Point2i o2) {
-        if (o1.getY() < o2.getY())
+    public int compare(Point o1, Point o2) {
+        if (o1.y < o2.y)
             return -1;
-        if (o1.getY() > o2.getY())
+        if (o1.y > o2.y)
             return 1;
         else
             return 0;

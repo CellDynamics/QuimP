@@ -7,6 +7,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.awt.Point;
 import java.awt.Polygon;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,8 +16,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.vecmath.Point2i;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -136,9 +135,9 @@ public class ProtrusionVisTest {
      */
     @Test
     public void testPolygon2Map() throws Exception {
-        List<Point2i> expected = new ArrayList<>();
-        expected.add(new Point2i(1, 11));
-        expected.add(new Point2i(1, 44));
+        List<Point> expected = new ArrayList<>();
+        expected.add(new Point(1, 11));
+        expected.add(new Point(1, 44));
         int[] x1 = { 1, 2, 3, 1 };
         int[] y1 = { 11, 22, 33, 44 };
         int[] x2 = { 101, 102, 103 };
@@ -148,8 +147,8 @@ public class ProtrusionVisTest {
         p.add(new Polygon(x1, y1, x1.length));
         p.add(new Polygon(x2, y2, x2.length));
 
-        List<Point2i> ret = PointTracker.Polygon2Point2i(p);
-        List<Point2i> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
+        List<Point> ret = PointTracker.Polygon2Point2i(p);
+        List<Point> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
         assertThat(result, is(expected));
 
     }
@@ -209,15 +208,15 @@ public class ProtrusionVisTest {
 
     @Test
     public void testListPoint2iComparator() {
-        List<Point2i> expected = new ArrayList<>();
-        expected.add(new Point2i(1, 1));
-        expected.add(new Point2i(1, 11));
-        expected.add(new Point2i(5, 44));
+        List<Point> expected = new ArrayList<>();
+        expected.add(new Point(1, 1));
+        expected.add(new Point(1, 11));
+        expected.add(new Point(5, 44));
 
-        List<Point2i> result = new ArrayList<>();
-        result.add(new Point2i(1, 11));
-        result.add(new Point2i(5, 44));
-        result.add(new Point2i(1, 1));
+        List<Point> result = new ArrayList<>();
+        result.add(new Point(1, 11));
+        result.add(new Point(5, 44));
+        result.add(new Point(1, 1));
 
         Collections.sort(result, new ListPoint2iComparator());
         assertThat(result, is(expected));

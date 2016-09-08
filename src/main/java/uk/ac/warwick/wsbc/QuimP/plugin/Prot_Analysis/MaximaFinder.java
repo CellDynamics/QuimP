@@ -46,6 +46,7 @@ public class MaximaFinder {
     public void computeMaximaIJ(double tolerance) {
         MaximumFinder mF = new MaximumFinder();
         maxima = mF.getMaxima(iP, tolerance, false);
+        LOGGER.debug("Found maxima: " + maxima.npoints);
     }
 
     /**

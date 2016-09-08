@@ -1,11 +1,10 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.io.File;
 import java.util.List;
-
-import javax.vecmath.Point2i;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -115,14 +114,14 @@ public class Prot_Analysis implements IQuimpPlugin {
             imp.flipHorizontal();
             // compute maxima
             MaximaFinder mF = new MaximaFinder(imp);
-            mF.computeMaximaIJ(1.5);
+            mF.computeMaximaIJ(2.6); // 1.5
             // track maxima across motility map
-            List<Polygon> pL = pT.trackMaxima(mapCell, 1, mF);
+            List<Polygon> pL = pT.trackMaxima(mapCell, 1.5, mF);
             // find crossings
-            List<Pair<Point2i, Point2i>> crossingsP =
+            List<Pair<Point, Point>> crossingsP =
                     pT.getIntersectionParents(pL, PointTracker.WITHOUT_SELFCROSSING);
             LOGGER.trace("Crossings: " + crossingsP.size());
-            // plotting
+            // plotting on motility map
             Polygon maxi = mF.getMaxima();
             // build overlay with points
             Overlay overlay = new Overlay();
@@ -137,7 +136,7 @@ public class Prot_Analysis implements IQuimpPlugin {
 
             pV.addMaximaToImage(mapCell, mF);
             pV.addTrackingLinesToImage(mapCell, pL);
-            pV.addPointsToImage(mapCell, crossingsP, Color.YELLOW, 7);
+            pV.addPointsToImage(mapCell, crossingsP, Color.RED, 7);
 
             // Maps are correlated in order with Outlines in DataContainer.
             // mapCell.map2ColorImagePlus("motility_map", mapCell.motMap,
