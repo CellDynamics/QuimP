@@ -117,7 +117,7 @@ public class Prot_Analysis implements IQuimpPlugin {
         ImagePlus im1 = qconfLoader.getImage();
         if (im1 == null)
             return; // stop if no image
-        ProtrusionVis pV = new ProtrusionVis(im1);
+        TrackVisualisation.Stack pV = new TrackVisualisation.Stack(im1);
         PointTracker pT = new PointTracker();
         LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells

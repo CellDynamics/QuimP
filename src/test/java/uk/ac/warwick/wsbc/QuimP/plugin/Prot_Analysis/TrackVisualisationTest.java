@@ -1,7 +1,3 @@
-/**
- * @file ProtrusionVisTest.java
- * @date 19 Aug 2016
- */
 package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -9,13 +5,10 @@ import static org.junit.Assert.assertThat;
 
 import java.awt.Point;
 import java.awt.Polygon;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,11 +29,11 @@ import ij.ImagePlus;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 
 /**
- * @author p.baniukiewicz
+ * @author baniuk
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ProtrusionVisTest {
+public class TrackVisualisationTest {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -48,19 +41,12 @@ public class ProtrusionVisTest {
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
 
-    static Object accessPrivate(String name, ProtrusionVis obj, Object[] param,
-            Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Method prv = obj.getClass().getDeclaredMethod(name, paramtype);
-        prv.setAccessible(true);
-        return prv.invoke(obj, param);
-    }
-
-    private static final Logger LOGGER = LogManager.getLogger(ProtrusionVisTest.class.getName());
+    private static final Logger LOGGER =
+            LogManager.getLogger(TrackVisualisationTest.class.getName());
     private ImagePlus originalImage;
     // http://stackoverflow.com/questions/16467685/difference-between-mock-and-injectmocks
     // @InjectMocks
-    private ProtrusionVis protrusionVis;
+    private TrackVisualisation.Stack protrusionVis;
 
     /**
      * @throws java.lang.Exception
@@ -82,10 +68,10 @@ public class ProtrusionVisTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this); // must be as we create mocked classes in mocked already
-                                            // QParams
+        // QParams
         originalImage = IJ.openImage(
                 "/home/baniuk/Documents/Kay-copy/KZ4/KZ4-220214-cAR1-GFP-devel5.5h-agar07-14.tif");
-        protrusionVis = new ProtrusionVis(originalImage);
+        protrusionVis = new TrackVisualisation.Stack(originalImage);
     }
 
     /**
@@ -93,14 +79,6 @@ public class ProtrusionVisTest {
      */
     @After
     public void tearDown() throws Exception {
-    }
-
-    /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#ProtrusionVis(uk.ac.warwick.wsbc.QuimP.QParams, uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.MaximaFinder)}.
-     */
-    @Test
-    public void testProtrusionVisQParamsMaximaFinder() throws Exception {
-
     }
 
     /**
@@ -128,29 +106,6 @@ public class ProtrusionVisTest {
         // while (protrusionVis.getOriginalImage().isVisible()) {
         // Thread.sleep(1500);
         // }
-    }
-
-    /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#PolygonRoi2Map(java.util.List)}.
-     */
-    @Test
-    public void testPolygon2Map() throws Exception {
-        List<Point> expected = new ArrayList<>();
-        expected.add(new Point(1, 11));
-        expected.add(new Point(1, 44));
-        int[] x1 = { 1, 2, 3, 1 };
-        int[] y1 = { 11, 22, 33, 44 };
-        int[] x2 = { 101, 102, 103 };
-        int[] y2 = { 111, 112, 113 };
-
-        ArrayList<Polygon> p = new ArrayList<>();
-        p.add(new Polygon(x1, y1, x1.length));
-        p.add(new Polygon(x2, y2, x2.length));
-
-        List<Point> ret = PointTracker.Polygon2Point2i(p);
-        List<Point> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
-        assertThat(result, is(expected));
-
     }
 
     /**

@@ -8,6 +8,7 @@ import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
@@ -497,6 +498,29 @@ public class PointTrackerTest {
             }
         };
         assertThat(ret1, is(expected2));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#PolygonRoi2Map(java.util.List)}.
+     */
+    @Test
+    public void testPolygon2Map() throws Exception {
+        List<Point> expected = new ArrayList<>();
+        expected.add(new Point(1, 11));
+        expected.add(new Point(1, 44));
+        int[] x1 = { 1, 2, 3, 1 };
+        int[] y1 = { 11, 22, 33, 44 };
+        int[] x2 = { 101, 102, 103 };
+        int[] y2 = { 111, 112, 113 };
+
+        ArrayList<Polygon> p = new ArrayList<>();
+        p.add(new Polygon(x1, y1, x1.length));
+        p.add(new Polygon(x2, y2, x2.length));
+
+        List<Point> ret = PointTracker.Polygon2Point2i(p);
+        List<Point> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
+        assertThat(result, is(expected));
+
     }
 
 }
