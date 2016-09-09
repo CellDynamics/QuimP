@@ -15,13 +15,7 @@ import com.sun.tools.javac.util.Pair;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
-import ij.gui.Overlay;
-import ij.gui.PointRoi;
-import ij.gui.PolygonRoi;
-import ij.gui.Roi;
 import ij.io.OpenDialog;
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
@@ -117,17 +111,15 @@ public class Prot_Analysis implements IQuimpPlugin {
         ImagePlus im1 = qconfLoader.getImage();
         if (im1 == null)
             return; // stop if no image
-        TrackVisualisation.Stack pV = new TrackVisualisation.Stack(im1);
+        TrackVisualisation.Stack visStack = new TrackVisualisation.Stack(im1);
         PointTracker pT = new PointTracker();
         LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells
             // convert binary 2D array to ImageJ
-            float[][] motMap = QuimPArrayUtils.double2float(mapCell.motMap);
-            // rotate and flip to match orientation of ColorProcessor (QuimP default)
-            ImageProcessor imp = new FloatProcessor(motMap).rotateRight();
-            imp.flipHorizontal();
+            TrackVisualisation.Single visSingle = new TrackVisualisation.Single("motility_map",
+                    QuimPArrayUtils.double2float(mapCell.motMap));
             // compute maxima
-            MaximaFinder mF = new MaximaFinder(imp);
+            MaximaFinder mF = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
             mF.computeMaximaIJ(paramList.getDoubleValue("noiseTolerance")); // 1.5
             // track maxima across motility map
             List<Polygon> pL = pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
@@ -136,21 +128,14 @@ public class Prot_Analysis implements IQuimpPlugin {
                     pT.getIntersectionParents(pL, PointTracker.WITHOUT_SELFCROSSING);
             LOGGER.trace("Crossings: " + crossingsP.size());
             // plotting on motility map
-            Polygon maxi = mF.getMaxima();
-            // build overlay with points
-            Overlay overlay = new Overlay();
-            PointRoi pR = new PointRoi(maxi.xpoints, maxi.ypoints, maxi.xpoints.length);
-            ImagePlus im = new ImagePlus("motility_map", imp);
-            im.setOverlay(overlay);
-            overlay.add(pR);
-            for (Polygon p : pL) {
-                overlay.add(new PolygonRoi(p, Roi.FREELINE));
-            }
-            im.show();
 
-            pV.addMaximaToImage(mapCell, mF);
-            pV.addTrackingLinesToImage(mapCell, pL);
-            pV.addPointsToImage(mapCell, crossingsP, Color.RED, 7);
+            visSingle.addMaximaToImage(mF);
+            visSingle.addTrackingLinesToImage(pL);
+            visSingle.getOriginalImage().show();
+
+            visStack.addMaximaToImage(mapCell, mF);
+            visStack.addTrackingLinesToImage(mapCell, pL);
+            visStack.addCirclesToImage(mapCell, crossingsP, Color.RED, 7);
 
             // Maps are correlated in order with Outlines in DataContainer.
             // mapCell.map2ColorImagePlus("motility_map", mapCell.motMap,
@@ -160,7 +145,7 @@ public class Prot_Analysis implements IQuimpPlugin {
             h++;
         }
 
-        pV.getOriginalImage().show();
+        visStack.getOriginalImage().show();
     }
 
     @Override

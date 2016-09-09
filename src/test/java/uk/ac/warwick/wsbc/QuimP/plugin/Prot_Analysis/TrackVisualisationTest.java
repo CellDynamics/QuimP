@@ -82,31 +82,31 @@ public class TrackVisualisationTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addPointsToImage()}.
-     */
-    @SuppressWarnings("unused")
-    @Test
-    public void testAddPointsToImage() throws Exception {
-        ImageJ ij = new ImageJ();
-        int[] frames = { 0, 1, 2, 3, 4, 5, 6 };
-        int[] indexes = { 0, 0, 0, 0, 0, 0, 0 };
-        double[][] xs = { { 10 }, { 50 }, { 100 }, { 150 }, { 200 }, { 300 }, { 400 } };
-        double[][] ys = { { 50 }, { 60 }, { 160 }, { 210 }, { 360 }, { 460 }, { 510 } };
-        STmap mapCell = Mockito.mock(STmap.class);
-        MaximaFinder mF = Mockito.mock(MaximaFinder.class);
-        Mockito.when(mapCell.getxMap()).thenReturn(xs);
-        Mockito.when(mapCell.getyMap()).thenReturn(ys);
-
-        Mockito.when(mF.getMaxima()).thenReturn(new Polygon(indexes, frames, 7));
-
-        protrusionVis.addMaximaToImage(mapCell, mF);
-
-        protrusionVis.getOriginalImage().setTitle("testAddPointsToImage");
-        // protrusionVis.getOriginalImage().show();
-        // while (protrusionVis.getOriginalImage().isVisible()) {
-        // Thread.sleep(1500);
-        // }
-    }
+         * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addPointsToImage()}.
+         */
+        @SuppressWarnings("unused")
+        @Test
+        public void testAddCirclesToImage() throws Exception {
+            ImageJ ij = new ImageJ();
+            int[] frames = { 0, 1, 2, 3, 4, 5, 6 };
+            int[] indexes = { 0, 0, 0, 0, 0, 0, 0 };
+            double[][] xs = { { 10 }, { 50 }, { 100 }, { 150 }, { 200 }, { 300 }, { 400 } };
+            double[][] ys = { { 50 }, { 60 }, { 160 }, { 210 }, { 360 }, { 460 }, { 510 } };
+            STmap mapCell = Mockito.mock(STmap.class);
+            MaximaFinder mF = Mockito.mock(MaximaFinder.class);
+            Mockito.when(mapCell.getxMap()).thenReturn(xs);
+            Mockito.when(mapCell.getyMap()).thenReturn(ys);
+    
+            Mockito.when(mF.getMaxima()).thenReturn(new Polygon(indexes, frames, 7));
+    
+            protrusionVis.addMaximaToImage(mapCell, mF);
+    
+            protrusionVis.getOriginalImage().setTitle("testAddPointsToImage");
+            // protrusionVis.getOriginalImage().show();
+            // while (protrusionVis.getOriginalImage().isVisible()) {
+            // Thread.sleep(1500);
+            // }
+        }
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.QuimP.STmap, java.util.List)}.

@@ -21,6 +21,8 @@ import ij.gui.Overlay;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.GraphicsElements;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 
@@ -52,7 +54,7 @@ public abstract class TrackVisualisation {
      * 
      * @param qP Image to be plotted on. 
      */
-    public TrackVisualisation(ImagePlus originalImage) {
+    protected TrackVisualisation(ImagePlus originalImage) {
         this.originalImage = originalImage;
         LOGGER.trace("Num of slices: " + originalImage.getStackSize());
         overlay = originalImage.getOverlay(); // check for existing overlay
@@ -62,7 +64,17 @@ public abstract class TrackVisualisation {
     }
 
     /**
-     * Plot filled circle on overlay.
+     * Construct object from raw ImageProcessor.
+     * 
+     * @param name Name of the image
+     * @param imp 
+     */
+    protected TrackVisualisation(String name, ImageProcessor imp) {
+        this(new ImagePlus(name, imp));
+    }
+
+    /**
+     * Generate filled circle.
      * 
      * @param x
      * @param y
@@ -102,7 +114,64 @@ public abstract class TrackVisualisation {
     }
 
     /**
-     * Subclass for plotting on stacks in coord space [x,y,f]
+     *  Subclass for plotting on single image in coord space [x,y] (or [outline,frame]
+     * 
+     * @author baniuk
+     *
+     */
+    static class Single extends TrackVisualisation {
+
+        public Single(ImagePlus originalImage) {
+            super(originalImage);
+        }
+
+        public Single(String name, ImageProcessor imp) {
+            super(name, imp);
+        }
+
+        /**
+         * Create object from raw data like e.g. motility map. 
+         * 
+         * @param name Name of the image
+         * @param data 2D data. They will be rotated to match Matlab representation.
+         * @ see uk.ac.warwick.wsbc.QuimP.STmap
+         */
+        public Single(String name, float[][] data) {
+            super(name, new FloatProcessor(data));
+            ImageProcessor imp = originalImage.getProcessor();
+            imp = imp.rotateRight();
+            imp.flipHorizontal();
+            originalImage.setProcessor(imp);
+        }
+
+        /**
+         * Plot maxima found by {@link MaximaFinder} on current image.
+         * 
+         * @param mF properly initialized {@link MaximaFinder} object.
+         */
+        public void addMaximaToImage(MaximaFinder mF) {
+            Polygon max = mF.getMaxima();
+            PointRoi pR = new PointRoi(max.xpoints, max.ypoints, max.xpoints.length);
+            overlay.add(pR);
+            originalImage.setOverlay(overlay);
+        }
+
+        /**
+         * Add lines defined as polygons to image.
+         * 
+         * @param pL Lines to add
+         */
+        public void addTrackingLinesToImage(List<Polygon> pL) {
+            for (Polygon p : pL) {
+                overlay.add(new PolygonRoi(p, Roi.FREELINE));
+            }
+            originalImage.setOverlay(overlay);
+        }
+
+    }
+
+    /**
+     * Subclass for plotting on stacks in coord space [x,y,f].
      * 
      * @author baniuk
      *
@@ -114,6 +183,15 @@ public abstract class TrackVisualisation {
         }
 
         /**
+         * @param name
+         * @param imp
+         */
+        public Stack(String name, ImageProcessor imp) {
+            super(name, imp);
+            // TODO Auto-generated constructor stub
+        }
+
+        /**
          * Plot unrelated points on image (stack).
          * 
          * @param mapCell source of coordinate maps
@@ -121,7 +199,7 @@ public abstract class TrackVisualisation {
          * @param color color of point
          * @param radius radius of point
          */
-        public void addPointsToImage(STmap mapCell, Polygon points, Color color, double radius) {
+        public void addCirclesToImage(STmap mapCell, Polygon points, Color color, double radius) {
             double x[][] = mapCell.getxMap();
             double y[][] = mapCell.getyMap();
             int[] indexes = points.xpoints;
@@ -149,7 +227,7 @@ public abstract class TrackVisualisation {
          * @param color color of point
          * @param radius radius of point
          */
-        public void addPointsToImage(STmap mapCell, List<Pair<Point, Point>> points, Color color,
+        public void addCirclesToImage(STmap mapCell, List<Pair<Point, Point>> points, Color color,
                 double radius) {
             int[] x = new int[points.size()];
             int[] y = new int[points.size()];
@@ -160,7 +238,7 @@ public abstract class TrackVisualisation {
                 l++;
             }
             Polygon poly = new Polygon(x, y, points.size());
-            addPointsToImage(mapCell, poly, color, radius);
+            addCirclesToImage(mapCell, poly, color, radius);
         }
 
         /**
@@ -252,7 +330,7 @@ public abstract class TrackVisualisation {
          */
         public void addMaximaToImage(STmap mapCell, MaximaFinder mF) {
             Polygon max = mF.getMaxima();
-            addPointsToImage(mapCell, max, Color.MAGENTA, 7);
+            addCirclesToImage(mapCell, max, Color.MAGENTA, 7);
         }
 
         /**
@@ -271,9 +349,7 @@ public abstract class TrackVisualisation {
             oR.setPosition(frame);
             overlay.add(oR); // add to collection of overlays
         }
-
     }
-
 }
 
 /**
