@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -30,6 +32,7 @@ public class PointTrackerTest {
         else
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
+    private static final Logger LOGGER = LogManager.getLogger(PointTrackerTest.class.getName());
 
     /**
      * @throws java.lang.Exception
@@ -520,7 +523,66 @@ public class PointTrackerTest {
         List<Point> ret = PointTracker.Polygon2Point2i(p);
         List<Point> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
         assertThat(result, is(expected));
+    }
 
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
+     */
+    @Test
+    public void testEnumeratePoint() throws Exception {
+        int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+        int[] x2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+        int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+
+        ArrayList<Polygon> test = new ArrayList<>();
+        test.add(new Polygon(x1, y1, 10));
+        test.add(new Polygon(x2, y2, 10));
+
+        Point testPoint1 = new Point(3, 3);
+        int ret1 = PointTracker.enumeratePoint(test.get(0), test.get(1), testPoint1);
+        assertThat(ret1, is(2));
+
+        Point testPoint2 = new Point(11, 11);
+        int ret2 = PointTracker.enumeratePoint(test.get(0), test.get(1), testPoint2);
+        assertThat(ret2, is(10));
+
+        PointTracker.INCLUDE_INITIAL = false; // count all
+        Point testPoint3 = new Point(11, 11);
+        int ret3 = PointTracker.enumeratePoint(test.get(0), test.get(1), testPoint3);
+        assertThat(ret3, is(11));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#removeSelfRepeatings(java.util.List)}.
+     */
+    @Test
+    public void testRemoveSelfRepeatings() throws Exception {
+        int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+        int[] x2 = { 4, 4, 5, 6, 7, 8, 9, 11, 12, 13 };
+        int[] y2 = { 1, 2, 3, 6, 7, 8, 9, 11, 12, 13 };
+
+        ArrayList<Polygon> tracks = new ArrayList<>();
+        tracks.add(new Polygon(x1, y1, 10));
+        tracks.add(new Polygon(x2, y2, 10));
+        List<Pair<Point, Point>> intersections =
+                new PointTracker().getIntersectionParents(tracks, PointTracker.WITH_SELFCROSSING);
+
+        LOGGER.trace("intersections:" + intersections);
+        List<Pair<Point, Point>> ret =
+                new PointTracker().removeSelfRepeatings(intersections, tracks);
+        Pair<Point, Point> pa = new Pair<Point, Point>(new Point(0, 1), new Point(6, 6));
+
+        @SuppressWarnings("serial")
+        List<Pair<Point, Point>> expected = new ArrayList<Pair<Point, Point>>() {
+            {
+                add(pa);
+            }
+        };
+        assertThat(ret, is(expected));
     }
 
 }

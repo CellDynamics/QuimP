@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -33,13 +35,17 @@ public class PointTracker {
      * starting point.
      * @see uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst
      */
-    final public static int WITH_SELFCROSSING = 0;
+    final public static int WITH_SELFCROSSING = 2;
     /**
      * Disallow detection common points in backward and forward tracks generated for the same
      * starting point.
      * @see uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst
      */
-    final public static int WITHOUT_SELFCROSSING = 1;
+    final public static int WITHOUT_SELFCROSSING = 4;
+    /**
+     * Maximum point (source of tracks) is included in tracks.
+     */
+    public static boolean INCLUDE_INITIAL = true;
 
     public PointTracker() {
     }
@@ -62,6 +68,8 @@ public class PointTracker {
      * is always 2*number of maxima.
      * It can contain only one point (maximum if set
      * {@link geom.TrackMap.includeFirst}) or empty polygon if no tracing line exist. 
+     * @see removeSelfRepeatings(List<Pair<Point, Point>>, List<Polygon>)
+     * @see removeSelfCrossings(List<Pair<Point, Point>>)
      */
     public List<Polygon> trackMaxima(final STmap mapCell, double drop,
             final MaximaFinder maximaFinder) {
@@ -73,7 +81,7 @@ public class PointTracker {
         Polygon maxi = maximaFinder.getMaxima(); // restore computed maxima
         double[] maxValues = maximaFinder.getMaxValues(); // max values in order of maxi
         TrackMap trackMap = new TrackMap(mapCell.originMap, mapCell.coordMap); // build tracking map
-        trackMap.includeFirst = true; // include also initial point
+        trackMap.includeFirst = INCLUDE_INITIAL; // include also initial point
         int[] tForward = null;
         int[] tBackward = null;
         int N = 0;
@@ -182,20 +190,66 @@ public class PointTracker {
      * If there is no common points the list is empty
      */
     public List<Pair<Point, Point>> getIntersectionParents(List<Polygon> tracks, int mode) {
-        ArrayList<Pair<Point, Point>> ret = new ArrayList<>();
+        ArrayList<Pair<Point, Point>> retTmp = new ArrayList<>();
+        List<Pair<Point, Point>> ret;
         for (int i = 0; i < tracks.size() - 1; i++)
             for (int j = i + 1; j < tracks.size(); j++) {
                 Polygon retPol = getIntersectionPoints(tracks.get(i), tracks.get(j));
                 for (int n = 0; n < retPol.npoints; n++) {
                     Pair<Point, Point> pairTmp = new Pair<Point, Point>(new Point(i, j),
                             new Point(retPol.xpoints[n], retPol.ypoints[n]));
-                    ret.add(pairTmp);
+                    retTmp.add(pairTmp);
                 }
             }
-        if (mode == WITHOUT_SELFCROSSING)
-            return removeSelfCrossings(ret);
-        else
-            return ret;
+        ret = retTmp;
+        if ((mode & WITHOUT_SELFCROSSING) == WITHOUT_SELFCROSSING)
+            ret = removeSelfCrossings(ret);
+        return ret;
+    }
+
+    public List<Pair<Point, Point>> removeSelfRepeatings(List<Pair<Point, Point>> intersections,
+            List<Polygon> tracks) {
+        HashMap<Integer, List<Pair<Point, Point>>> map = new HashMap<>();
+        List<Pair<Point, Point>> ret = new ArrayList<>();
+        // collect all intersections into separate maps according to parent (left only i considered)
+        for (Pair<Point, Point> p : intersections) {
+            Integer parentleft = p.fst.x;
+            if (map.get(parentleft) == null) // get key
+                map.put(parentleft, new ArrayList<>()); // if no create
+            map.get(parentleft).add(p); // add crossection point to this key
+        }
+        // now, there are intersection points under keys which are their left parent.
+        // go through every set and check which point is first along this parent
+        Iterator<Integer> it = map.keySet().iterator();
+        int minInd = Integer.MAX_VALUE;
+        while (it.hasNext()) {
+            Integer key = it.next();
+            List<Pair<Point, Point>> values = map.get(key);
+            Pair<Point, Point> minPoint = null; // will newer be added to ret as it will be
+                                                // initialized or exception will be thrown
+            for (Pair<Point, Point> p : values) { // iterate over intersections for given parent
+                // get indexes of back and for tracks
+                // This is strictly related to trackMaxima return order
+                int back, forw;
+                if (p.fst.x % 2 == 0) { // if index is even it is back and forward is next one
+                    back = p.fst.x;
+                    forw = back + 1;
+                } else { // if index is uneven this is forward and back is previous
+                    forw = p.fst.x;
+                    back = forw - 1;
+                }
+                int ind = enumeratePoint(tracks.get(back), tracks.get(forw), p.snd);
+                if (ind < 0)
+                    throw new IllegalArgumentException("Point does not exist in track");
+                if (ind < minInd) {
+                    minInd = ind;
+                    minPoint = p;
+                }
+            }
+            ret.add(minPoint);
+        }
+        return ret;
+
     }
 
     /**
@@ -264,6 +318,39 @@ public class PointTracker {
             l++;
         }
         return new Polygon(x, y, list.size());
+    }
+
+    /**
+     * Get index of point in the whole track line composed from backward+forward tracks.
+     * 
+     * Assumes that order og points in tracks is correct, from first to last. (assured by 
+     * {@link trackMaxima(STmap, double, MaximaFinder)}.
+     * 
+     * Use {@link INCLUDE_INITIAL} to check whether initial point is included in tracks. If it is
+     * it means that it appears twice (for backward and forward tracks respectively). then it is 
+     * counted only one. For <tt>false</tt> state all points are counted.
+     * 
+     * @param backwardMap
+     * @param forwardMap
+     * @param point
+     * @return Total index of point or -1 if not found in these track maps.
+     */
+    static int enumeratePoint(Polygon backwardMap, Polygon forwardMap, Point point) {
+        int i = 0;
+        int delta = 0;
+        // if maximum is included in tracks it appear there twice, for backward and forward track
+        if (INCLUDE_INITIAL)
+            delta = 1;
+        // do no count last point (maximum) if it is there. It will be counted for forward track
+        for (i = 0; i < backwardMap.npoints - delta; i++)
+            if (backwardMap.xpoints[i] == point.x && backwardMap.ypoints[i] == point.y)
+                return i;
+        for (; i < forwardMap.npoints + backwardMap.npoints; i++)
+            if (forwardMap.xpoints[i - backwardMap.npoints + delta] == point.x
+                    && forwardMap.ypoints[i - backwardMap.npoints + delta] == point.y)
+                return i;
+        return -1;
+
     }
 
 }
