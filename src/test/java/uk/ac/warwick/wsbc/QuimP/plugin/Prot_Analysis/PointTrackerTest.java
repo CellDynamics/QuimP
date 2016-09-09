@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,9 +16,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import com.sun.tools.javac.util.Pair;
 
@@ -25,6 +31,7 @@ import com.sun.tools.javac.util.Pair;
  * @author baniuk
  *
  */
+@RunWith(Parameterized.class)
 public class PointTrackerTest {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
@@ -34,6 +41,24 @@ public class PointTrackerTest {
     }
     private static final Logger LOGGER = LogManager.getLogger(PointTrackerTest.class.getName());
 
+    enum Type {
+        INTERSECTION, REPEATING
+    };
+
+    private PointTracker pointTracker;
+    private ArrayList<Polygon> track;
+    private Polygon expIntersectionPoints;
+    private List<Pair<Point, Point>> expIntersectionPairs;
+    private Type type;
+
+    //!<
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+                { Type.INTERSECTION, 23.0, 5.0, 28.0 }
+                });
+    }
+    /**/
     /**
      * @throws java.lang.Exception
      */
@@ -53,6 +78,7 @@ public class PointTrackerTest {
      */
     @Before
     public void setUp() throws Exception {
+        pointTracker = new PointTracker();
     }
 
     /**
@@ -62,10 +88,35 @@ public class PointTrackerTest {
     public void tearDown() throws Exception {
     }
 
+    public PointTrackerTest(Type type, ArrayList<Polygon> track, Polygon expIntersectionPoints,
+            List<Pair<Point, Point>> expIntersectionPairs) {
+        this.type = type;
+        this.track = track;
+        this.expIntersectionPairs = expIntersectionPairs;
+        this.expIntersectionPoints = expIntersectionPoints;
+    }
+
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    public void testGetIntersectionPointsParam() throws Exception {
+
+        Assume.assumeTrue(type == Type.INTERSECTION);
+        Polygon ret = pointTracker.getIntersectionPoints(track);
+        assertThat(ret.xpoints, is(expIntersectionPoints.xpoints));
+        assertThat(ret.ypoints, is(expIntersectionPoints.ypoints));
+
+        List<Pair<Point, Point>> ret1 =
+                pointTracker.getIntersectionParents(track, PointTracker.WITH_SELFCROSSING);
+        assertThat(ret1, is(expIntersectionPairs));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
+     */
+    @Test
+    @Ignore
     public void testGetIntersectionPoints() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -95,6 +146,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_nointersect() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -121,6 +173,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_2intersects() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -158,6 +211,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_allthesame() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -212,6 +266,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_3() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -255,6 +310,7 @@ public class PointTrackerTest {
      * The same point many times. Will be returned once.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_multiple() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 17, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 70, 8, 9, 10 };
@@ -297,6 +353,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_oneelementinlist() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 17, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 70, 8, 9, 10 };
@@ -320,6 +377,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_noforward() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 17, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 70, 8, 9, 10 };
@@ -344,6 +402,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_nobackward() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 17, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 70, 8, 9, 10 };
@@ -368,6 +427,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_withoutselfcrossing() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 400, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 7, 10 };
@@ -401,6 +461,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_nobckw() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 400, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 7, 10 };
@@ -454,6 +515,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testGetIntersectionPoints_noforw() throws Exception {
         int[] x1 = { 1, 200, 3, 4, 5, 6, 7, 8, 400, 10 };
         int[] y1 = { 1, 5, 3, 4, 5, 6, 7, 8, 7, 10 };
@@ -507,6 +569,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#PolygonRoi2Map(java.util.List)}.
      */
     @Test
+    @Ignore
     public void testPolygon2Map() throws Exception {
         List<Point> expected = new ArrayList<>();
         expected.add(new Point(1, 11));
@@ -529,6 +592,7 @@ public class PointTrackerTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
      */
     @Test
+    @Ignore
     public void testEnumeratePoint() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -556,8 +620,10 @@ public class PointTrackerTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#removeSelfRepeatings(java.util.List)}.
+     * One self intersection
      */
     @Test
+    @Ignore
     public void testRemoveSelfRepeatings() throws Exception {
         int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -583,6 +649,42 @@ public class PointTrackerTest {
             }
         };
         assertThat(ret, is(expected));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#removeSelfRepeatings(java.util.List)}.
+     * No intersection
+     */
+    @Test
+    @Ignore
+    public void testRemoveSelfRepeatings_1() throws Exception {
+        int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+        int[] x2 = { 4, 4, 5, 6, 7, 8, 9, 11, 12, 13 };
+        int[] y2 = { 1, 2, 3, 60, 70, 80, 90, 11, 12, 13 };
+
+        ArrayList<Polygon> tracks = new ArrayList<>();
+        tracks.add(new Polygon(x1, y1, 10));
+        tracks.add(new Polygon(x2, y2, 10));
+        List<Pair<Point, Point>> intersections =
+                new PointTracker().getIntersectionParents(tracks, PointTracker.WITH_SELFCROSSING);
+
+        LOGGER.trace("intersections:" + intersections);
+        List<Pair<Point, Point>> ret =
+                new PointTracker().removeSelfRepeatings(intersections, tracks);
+
+        assertThat(ret.size(), is(0));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#removeSelfRepeatings(java.util.List)}.
+     * No selfcrossing, B1 B2 intersection
+     */
+    @Test
+    @Ignore
+    public void testRemoveSelfRepeatings_2() throws Exception {
+        throw new RuntimeException("not yet implemented");
     }
 
 }

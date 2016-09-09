@@ -65,7 +65,8 @@ public class PointTracker {
      * {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst} flag. Points for one tracking 
      * line are packed into PolygonRoi object. Those objects alternate -
      * backwardM1,forwardM1,backwardM2,forwardM2,... where Mx is maximum point. The size of list 
-     * is always 2*number of maxima.
+     * is always 2*number of maxima. Backward track is always on even position whereas attached
+     * forward track on next uneven.
      * It can contain only one point (maximum if set
      * {@link geom.TrackMap.includeFirst}) or empty polygon if no tracing line exist. 
      * @see removeSelfRepeatings(List<Pair<Point, Point>>, List<Polygon>)
@@ -211,7 +212,7 @@ public class PointTracker {
             List<Polygon> tracks) {
         HashMap<Integer, List<Pair<Point, Point>>> map = new HashMap<>();
         List<Pair<Point, Point>> ret = new ArrayList<>();
-        // collect all intersections into separate maps according to parent (left only i considered)
+        // collect all intersections into separate maps according to parent (left only considered)
         for (Pair<Point, Point> p : intersections) {
             Integer parentleft = p.fst.x;
             if (map.get(parentleft) == null) // get key
