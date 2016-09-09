@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.vecmath.Point2d;
@@ -37,13 +38,17 @@ import uk.ac.warwick.wsbc.QuimP.STmap;
 public abstract class TrackVisualisation {
     private static final Logger LOGGER = LogManager.getLogger(TrackVisualisation.class.getName());
     /**
-     * Definition of colors used to plot:
+     * Color for maxima points.
+     */
+    static public Color MAXIMA_COLOR = Color.MAGENTA;
+    /**
+     * Definition of colors used to plot tracks:
      * <ol>
      * <li> index 0 - backtracked position of point
      * <li> index 1 - forwardtracked position of point.
      * </ol>
      */
-    public Color[] color = { Color.YELLOW, Color.GREEN };
+    static public Color[] color = { Color.YELLOW, Color.GREEN };
     protected ImagePlus originalImage; // reference of image to be plotted on
     protected Overlay overlay;
 
@@ -107,6 +112,66 @@ public abstract class TrackVisualisation {
     }
 
     /**
+     * 
+     * @param x
+     * @param y
+     * @param frame
+     * @param color
+     */
+    public PointRoi getPoint(int x[], int y[], Color color) {
+        if (x.length != y.length)
+            throw new IllegalArgumentException("Arras of different sizes");
+        PointRoi pR = new PointRoi(x, y, x.length);
+        pR.setStrokeColor(color);
+        pR.setFillColor(color);
+        return pR;
+    }
+
+    /**
+     * Get line.
+     * 
+     * @param points Coordinates of line defined in Polygon.
+     * @param npoints Number of points in <tt>points</tt> to use.
+     * @param color Color of the line
+     * @return
+     */
+    public PolygonRoi getLine(Polygon points, int npoints, Color color) {
+        PolygonRoi pR = new PolygonRoi(points, Roi.FREELINE);
+        pR.setStrokeColor(color);
+        pR.setFillColor(color);
+        return pR;
+    }
+
+    /**
+     * Get line.
+     * 
+     * @param points Coordinates of line defined in Polygon.
+     * @param color Color of the line
+     * @return
+     */
+    public PolygonRoi getLine(Polygon points, Color color) {
+        return getLine(points, points.npoints, color);
+    }
+
+    /**
+     * Get line.
+     * 
+     * @param x Array with x coordinates
+     * @param y Array wit y coordinates.
+     * @param npoints Number of points to consider
+     * @param color
+     * @return
+     */
+    public PolygonRoi getLine(float[] x, float[] y, int npoints, Color color) {
+        if (x.length != y.length)
+            throw new IllegalArgumentException("Arras of different sizes");
+        PolygonRoi pRoi = new PolygonRoi(x, y, npoints, Roi.FREELINE);
+        pRoi.setStrokeColor(color);
+        pRoi.setFillColor(color);
+        return pRoi;
+    }
+
+    /**
      * @return the originalImage
      */
     public ImagePlus getOriginalImage() {
@@ -151,7 +216,7 @@ public abstract class TrackVisualisation {
          */
         public void addMaximaToImage(MaximaFinder mF) {
             Polygon max = mF.getMaxima();
-            PointRoi pR = new PointRoi(max.xpoints, max.ypoints, max.xpoints.length);
+            PointRoi pR = getPoint(max.xpoints, max.ypoints, TrackVisualisation.MAXIMA_COLOR);
             overlay.add(pR);
             originalImage.setOverlay(overlay);
         }
@@ -159,11 +224,17 @@ public abstract class TrackVisualisation {
         /**
          * Add lines defined as polygons to image.
          * 
-         * @param pL Lines to add
+         * @param pL Lines to add. It should follow rule 
+         * {@link PointTracker.trackMaxima(STmap, double, MaximaFinder)}
+         * 
          */
         public void addTrackingLinesToImage(List<Polygon> pL) {
-            for (Polygon p : pL) {
-                overlay.add(new PolygonRoi(p, Roi.FREELINE));
+            Iterator<Polygon> it = pL.iterator();
+            while (it.hasNext()) {
+                PolygonRoi pR = getLine(it.next(), color[0]); // back
+                overlay.add(pR);
+                pR = getLine(it.next(), color[1]); // forward
+                overlay.add(pR);
             }
             originalImage.setOverlay(overlay);
         }
@@ -297,23 +368,19 @@ public abstract class TrackVisualisation {
                     // to define how many first of them we take. This allows us to add points
                     // together with frames - in result the line grows as frames rise. After
                     // sorting, first points are those on lower frames
+                    // set colors (remember about backward/forward order)
                     PolygonRoi pRoi =
-                            new PolygonRoi(xcoorda.get(aL), ycoorda.get(aL), f + 1, Roi.FREELINE);
+                            getLine(xcoorda.get(aL), ycoorda.get(aL), f + 1, color[aL % 2]);
                     // set where we want plot f+1 points from x/ycoorda
                     pRoi.setPosition((int) plRsorted.ypoints[f] + 1);
-                    // set colors (remember about backward/forward order)
-                    pRoi.setStrokeColor(color[aL % 2]);
-                    pRoi.setFillColor(color[aL % 2]);
                     overlay.add(pRoi);
                     // If there is maximum on x frame and we plotted backward line from x-n to x, we
                     // wont to keep it during plotting forward tracking from x to x+z frames. So
                     // this whole line is plotted on every x-x+z frame
                     if (aL % 2 == 1) {
-                        PolygonRoi pRoi1 = new PolygonRoi(xcoorda.get(aL - 1), ycoorda.get(aL - 1),
-                                xcoorda.get(aL - 1).length, Roi.FREELINE);
+                        PolygonRoi pRoi1 = getLine(xcoorda.get(aL - 1), ycoorda.get(aL - 1),
+                                xcoorda.get(aL - 1).length, color[aL % 2 - 1]);
                         pRoi1.setPosition((int) plRsorted.ypoints[f] + 1);
-                        pRoi1.setStrokeColor(color[aL % 2 - 1]);
-                        pRoi1.setFillColor(color[aL % 2 - 1]);
                         overlay.add(pRoi1);
                     }
                 }
@@ -330,7 +397,7 @@ public abstract class TrackVisualisation {
          */
         public void addMaximaToImage(STmap mapCell, MaximaFinder mF) {
             Polygon max = mF.getMaxima();
-            addCirclesToImage(mapCell, max, Color.MAGENTA, 7);
+            addCirclesToImage(mapCell, max, TrackVisualisation.MAXIMA_COLOR, 7);
         }
 
         /**
