@@ -42,7 +42,7 @@ public class PointTrackerParamTest {
             LogManager.getLogger(PointTrackerParamTest.class.getName());
 
     enum Type {
-        INTERSECTION, REPEATING
+        INTERSECTION, REPEATING, ENUMERATE
     };
 
     private PointTracker pointTracker;
@@ -53,7 +53,7 @@ public class PointTrackerParamTest {
     private int selfCrossing;
 
     //!<
-    @Parameters
+    @Parameters(name = "{index}: ({0})")
     public static Collection<Object[]> data() {
         ArrayList<Object[]> ret = new ArrayList<>();
         // One common point
@@ -380,23 +380,212 @@ public class PointTrackerParamTest {
             ret.add(new Object[] { Type.REPEATING, track, expIntersectionPoints, expIntersectionPairs,
                     PointTracker.WITH_SELFCROSSING });
         }
+        //
+        // ENUMERATE****************************************************************************** 
+        //
+        // point from backtrack
+        {
+            int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            int[] x2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+            int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+
+            ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
+            Polygon expIntersectionPoints =
+                    new Polygon(new int[] {2}, new int[] {2 }, 1); // expected index at x[0]
+            @SuppressWarnings("serial")
+            List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
+                {
+                    add(new Pair<Point, Point>(new Point(3, 3), new Point())); // tested point
+                }
+            };
+            ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
+                    0 });
+        }
+        // point from forwardtrack
+        {
+            int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            int[] x2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+            int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+
+            ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
+            Polygon expIntersectionPoints =
+                    new Polygon(new int[] {10}, new int[] {10 }, 1); // expected index at x[0]
+            @SuppressWarnings("serial")
+            List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
+                {
+                    add(new Pair<Point, Point>(new Point(11, 11), new Point())); // tested point
+                }
+            };
+            ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
+                    0 });
+        }
+        // point from forwardtrack first one 
+        {
+            int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            int[] x2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+            int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+
+            ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
+            Polygon expIntersectionPoints =
+                    new Polygon(new int[] {9}, new int[] {9 }, 1); // expected index at x[0]
+            @SuppressWarnings("serial")
+            List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
+                {
+                    add(new Pair<Point, Point>(new Point(10, 10), new Point())); // tested point
+                }
+            };
+            ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
+                    0 });
+        }
+        // count all
+        {
+            int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            int[] x2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+            int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+
+            ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
+            Polygon expIntersectionPoints =
+                    new Polygon(new int[] {11}, new int[] {11 }, 1); // expected index at x[0]
+            @SuppressWarnings("serial")
+            List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
+                {
+                    add(new Pair<Point, Point>(new Point(11, 11), new Point())); // tested point
+                }
+            };
+            ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
+                    70000 });
+        }
+        // last point from backtrack but no forward track is given
+        {
+            int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            int[] x2 = {  };
+            int[] y2 = {  };
+
+            ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
+            Polygon expIntersectionPoints =
+                    new Polygon(new int[] {9}, new int[] {9 }, 1); // expected index at x[0]
+            @SuppressWarnings("serial")
+            List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
+                {
+                    add(new Pair<Point, Point>(new Point(10, 10), new Point())); // tested point
+                }
+            };
+            ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
+                    0 });
+        }
+        // before last point from backtrack but no forward track is given
+        {
+            int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            int[] x2 = {  };
+            int[] y2 = {  };
+
+            ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
+            Polygon expIntersectionPoints =
+                    new Polygon(new int[] {8}, new int[] {8 }, 1); // expected index at x[0]
+            @SuppressWarnings("serial")
+            List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
+                {
+                    add(new Pair<Point, Point>(new Point(9, 9), new Point())); // tested point
+                }
+            };
+            ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
+                    0 });
+        }
+        // point from forwardtrack but no backward track is given
+        {
+            int[] x1 = { };
+            int[] y1 = { };
+
+            int[] x2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+            int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+
+            ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
+            Polygon expIntersectionPoints =
+                    new Polygon(new int[] {1}, new int[] {1 }, 1); // expected index at x[0]
+            @SuppressWarnings("serial")
+            List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
+                {
+                    add(new Pair<Point, Point>(new Point(11, 11), new Point())); // tested point
+                }
+            };
+            ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
+                    0 });
+        }
+        // point in not on the list
+        {
+            int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            int[] x2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+            int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+
+            ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
+            Polygon expIntersectionPoints =
+                    new Polygon(new int[] {-1}, new int[] {-1}, 1); // expected index at x[0]
+            @SuppressWarnings("serial")
+            List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
+                {
+                    add(new Pair<Point, Point>(new Point(110, 110), new Point())); // tested point
+                }
+            };
+            ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
+                    0 });
+        }
+        // point from backtrack but no forward track is given + include maximum
+        {
+            int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            int[] x2 = {  };
+            int[] y2 = {  };
+
+            ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
+            Polygon expIntersectionPoints =
+                    new Polygon(new int[] {9}, new int[] {9 }, 1); // expected index at x[0]
+            @SuppressWarnings("serial")
+            List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
+                {
+                    add(new Pair<Point, Point>(new Point(10, 10), new Point())); // tested point
+                }
+            };
+            ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
+                    70000 });
+        }
+        // point from forwardtrack but no backward track is given + include maximum
+        {
+            int[] x1 = { };
+            int[] y1 = { };
+
+            int[] x2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+            int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+
+            ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
+            Polygon expIntersectionPoints =
+                    new Polygon(new int[] {1}, new int[] {1 }, 1); // expected index at x[0]
+            @SuppressWarnings("serial")
+            List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
+                {
+                    add(new Pair<Point, Point>(new Point(11, 11), new Point())); // tested point
+                }
+            };
+            ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
+                    70000 });
+        }
         
         
         return ret;
-    }
-
-    /**
-     * Helper method for build list of polygons using {x[],y[]} pairs.
-     * 
-     * @param obj
-     * @return
-     */
-    static ArrayList<Polygon> test(Object[]... obj) {
-        ArrayList<Polygon> track = new ArrayList<>();
-        for (Object[] o : obj) {
-            track.add(new Polygon((int[]) o[0], (int[]) o[1], ((int[]) o[0]).length));
-        }
-        return track;
     }
 
     /**/
@@ -466,6 +655,39 @@ public class PointTrackerParamTest {
         List<Pair<Point, Point>> ret1 =
                 new PointTracker().removeSelfRepeatings(intersections, track);
         assertThat(ret1, is(expIntersectionPairs));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
+     * Assume that tested point is first pair left in expIntersectionPairs
+     * Result is in expIntersectionPoints as x[0] coord.
+     * Use selfCrossing to decide whether use INCLUDE_INITIAL
+     */
+    @Test
+    public void testEnumeratePoint() throws Exception {
+
+        Assume.assumeTrue(type == Type.ENUMERATE);
+        if (selfCrossing > 65535) {
+            PointTracker.INCLUDE_INITIAL_ONCE = false; // count all
+        } else
+            PointTracker.INCLUDE_INITIAL_ONCE = true; // count maximum one
+        int ret1 = PointTracker.enumeratePoint(track.get(0), track.get(1),
+                expIntersectionPairs.get(0).fst);
+        assertThat(ret1, is(expIntersectionPoints.xpoints[0]));
+    }
+
+    /**
+     * Helper method for build list of polygons using {x[],y[]} pairs.
+     * 
+     * @param obj
+     * @return
+     */
+    static ArrayList<Polygon> test(Object[]... obj) {
+        ArrayList<Polygon> track = new ArrayList<>();
+        for (Object[] o : obj) {
+            track.add(new Polygon((int[]) o[0], (int[]) o[1], ((int[]) o[0]).length));
+        }
+        return track;
     }
 
     /**

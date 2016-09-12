@@ -111,7 +111,7 @@ public class PointTrackerTest {
         int ret2 = PointTracker.enumeratePoint(test.get(0), test.get(1), testPoint2);
         assertThat(ret2, is(10));
 
-        PointTracker.INCLUDE_INITIAL = false; // count all
+        PointTracker.INCLUDE_INITIAL_ONCE = false; // count all
         Point testPoint3 = new Point(11, 11);
         int ret3 = PointTracker.enumeratePoint(test.get(0), test.get(1), testPoint3);
         assertThat(ret3, is(11));

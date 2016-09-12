@@ -45,7 +45,7 @@ public class PointTracker {
     /**
      * Maximum point (source of tracks) is included in tracks.
      */
-    public static boolean INCLUDE_INITIAL = true;
+    public static boolean INCLUDE_INITIAL_ONCE = true;
 
     public PointTracker() {
     }
@@ -82,7 +82,7 @@ public class PointTracker {
         Polygon maxi = maximaFinder.getMaxima(); // restore computed maxima
         double[] maxValues = maximaFinder.getMaxValues(); // max values in order of maxi
         TrackMap trackMap = new TrackMap(mapCell.originMap, mapCell.coordMap); // build tracking map
-        trackMap.includeFirst = INCLUDE_INITIAL; // include also initial point
+        trackMap.includeFirst = INCLUDE_INITIAL_ONCE; // include also initial point
         int[] tForward = null;
         int[] tBackward = null;
         int N = 0;
@@ -227,7 +227,7 @@ public class PointTracker {
             Integer key = it.next();
             List<Pair<Point, Point>> values = map.get(key);
             Pair<Point, Point> minPoint = null; // will newer be added to ret as it will be
-                                                // initialized or exception will be thrown
+                                                // Initialised or exception will be thrown
             for (Pair<Point, Point> p : values) { // iterate over intersections for given parent
                 // get indexes of back and for tracks
                 // This is strictly related to trackMaxima return order
@@ -339,19 +339,19 @@ public class PointTracker {
     static int enumeratePoint(Polygon backwardMap, Polygon forwardMap, Point point) {
         int i = 0;
         int delta = 0;
-        // if maximum is included in tracks it appear there twice, for backward and forward track
-        if (INCLUDE_INITIAL)
+        // if maximum is included in tracks it appear there twice, for backward and forward
+        // track
+        if (INCLUDE_INITIAL_ONCE && forwardMap.npoints > 0 && backwardMap.npoints > 0)
             delta = 1;
         // do no count last point (maximum) if it is there. It will be counted for forward track
         for (i = 0; i < backwardMap.npoints - delta; i++)
             if (backwardMap.xpoints[i] == point.x && backwardMap.ypoints[i] == point.y)
                 return i;
-        for (; i < forwardMap.npoints + backwardMap.npoints; i++)
+        for (; i < forwardMap.npoints + backwardMap.npoints - delta; i++)
             if (forwardMap.xpoints[i - backwardMap.npoints + delta] == point.x
                     && forwardMap.ypoints[i - backwardMap.npoints + delta] == point.y)
                 return i;
         return -1;
-
     }
 
 }

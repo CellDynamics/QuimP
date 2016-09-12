@@ -124,8 +124,8 @@ public class Prot_Analysis implements IQuimpPlugin {
             // track maxima across motility map
             List<Polygon> pL = pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
             // find crossings
-            List<Pair<Point, Point>> crossingsP =
-                    pT.getIntersectionParents(pL, PointTracker.WITHOUT_SELFCROSSING);
+            List<Pair<Point, Point>> crossingsP = pT.removeSelfRepeatings(
+                    pT.getIntersectionParents(pL, PointTracker.WITHOUT_SELFCROSSING), pL);
             LOGGER.trace("Crossings: " + crossingsP.size());
             // plotting on motility map
 
