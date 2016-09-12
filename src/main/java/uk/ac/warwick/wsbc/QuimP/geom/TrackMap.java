@@ -4,6 +4,12 @@
  */
 package uk.ac.warwick.wsbc.QuimP.geom;
 
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
@@ -18,6 +24,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  */
 public class TrackMap {
 
+    public static final int BAD_INDEX = -1;
     /**
      * Decides whether include starting point in tracking. By default Matlab procedures do
      * not include it. Therefore, trackXX(int, int, int) returns first tracked point AFTER initial
@@ -151,15 +158,15 @@ public class TrackMap {
     /**
      * Get position of <tt>membraneIndex</tt> on frame <tt>currentFrame+1</tt>.
      * 
-     * @param currentFrame frame number, counted from 0
+     * @param frame frame number, counted from 0
      * @param membraneIndex index of point on membrane on frame <tt>currentFrame</tt>
      * @return corresponding index on next frame. Returns -1 when there is neither next frame nor
      * index.
      */
-    public int getNext(int currentFrame, int membraneIndex) {
-        if (currentFrame + 1 >= rowsFrames || membraneIndex >= colsIndexes)
-            return -1;
-        return forwardMap[currentFrame][membraneIndex];
+    public int getNext(int frame, int membraneIndex) {
+        if (frame >= rowsFrames || membraneIndex >= colsIndexes || frame < 0 || membraneIndex < 0)
+            return BAD_INDEX;
+        return forwardMap[frame][membraneIndex]; // membrane index on frame
     }
 
     /**
@@ -171,8 +178,9 @@ public class TrackMap {
      * nor index.
      */
     public int getPrev(int currentFrame, int membraneIndex) {
-        if (currentFrame - 1 < 0 || membraneIndex >= colsIndexes)
-            return -1;
+        if (currentFrame >= rowsFrames || membraneIndex >= colsIndexes || currentFrame < 0
+                || membraneIndex < 0)
+            return BAD_INDEX;
         return backwardMap[currentFrame][membraneIndex];
     }
 
@@ -185,7 +193,9 @@ public class TrackMap {
      * @param timeSpan Number of frames to track
      * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame+1</tt> to 
      * <tt>currentFrame+timeSpan</tt>
+     * @deprecated Use trackForwardValid(int, int, int) instead
      */
+    @Deprecated
     public int[] trackForward(int currentFrame, int membraneIndex, int timeSpan) {
         if (includeFirst)
             timeSpan++;
@@ -200,6 +210,35 @@ public class TrackMap {
     }
 
     /**
+     * Track given point forward.
+     * 
+     * @param currentFrame Starting frame (not included in results - depends on <tt>includeFirst</tt>
+     * flag)
+     * @param membraneIndex Tracked membrane index
+     * @param timeSpan Number of frames to track
+     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame+1</tt> to 
+     * <tt>currentFrame+timeSpan</tt>. Only correct. Do no return negative indexes but may return 
+     * empty array.
+     * Keep order [frame,index]
+     */
+    public List<Point> trackForwardValid(int currentFrame, int membraneIndex, int timeSpan) {
+        if (includeFirst)
+            timeSpan++;
+        ArrayList<Point> ret = new ArrayList<>();
+        if (includeFirst)
+            ret.add(new Point(currentFrame, membraneIndex));
+        else
+            ret.add(new Point(currentFrame + 1, getNext(currentFrame, membraneIndex)));
+        for (int t = 1; t < timeSpan; t++)
+            ret.add(new Point(currentFrame + 1 + t,
+                    getNext(currentFrame + t, (int) ret.get(t - 1).y)));
+
+        ret.removeIf(new PredicateBadIndex());
+
+        return ret;
+    }
+
+    /**
      * Track given point backward.
      * 
      * @param currentFrame Starting frame (not included in results - depends on <tt>includeFirst</tt>
@@ -208,7 +247,9 @@ public class TrackMap {
      * @param timeSpan Number of frames to track
      * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame-1</tt> to 
      * <tt>currentFrame-timeSpan</tt>
+     * @deprecated Use trackBackwardValid(int, int, int) instead
      */
+    @Deprecated
     public int[] trackBackward(int currentFrame, int membraneIndex, int timeSpan) {
         if (includeFirst)
             timeSpan++;
@@ -223,6 +264,36 @@ public class TrackMap {
     }
 
     /**
+     * Track given point backward.
+     * 
+     * @param currentFrame Starting frame (not included in results - depends on <tt>includeFirst</tt>
+     * flag)
+     * @param membraneIndex Tracked membrane index
+     * @param timeSpan Number of frames to track
+     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame-1</tt> to 
+     * <tt>currentFrame-timeSpan</tt> Only correct. Do no return negative indexes but may return 
+     * empty array.
+     * Keep order [frame,index]
+     */
+    public List<Point> trackBackwardValid(int currentFrame, int membraneIndex, int timeSpan) {
+        if (includeFirst)
+            timeSpan++;
+        ArrayList<Point> ret = new ArrayList<>();
+        if (includeFirst)
+            ret.add(new Point(currentFrame, membraneIndex));
+        else
+            ret.add(new Point(currentFrame - 1, getPrev(currentFrame, membraneIndex)));
+        for (int t = 1; t < timeSpan; t++)
+            ret.add(new Point(currentFrame - 1 - t,
+                    getPrev(currentFrame - t, (int) ret.get(t - 1).y)));
+
+        Collections.reverse(ret);
+        ret.removeIf(new PredicateBadIndex());
+
+        return ret;
+    }
+
+    /**
      * Helper that generates range of frames for given input parameters.
      * 
      * These are frames that {@link trackForward(int, int, int)} returns indexes for.
@@ -231,7 +302,9 @@ public class TrackMap {
      * @param currentFrame Starting frame (not included in results)
      * @param timeSpan timeSpan Number of frames to track
      * @return Array of frame numbers
+     * @deprecated Use trackForwardValid(int, int, int) instead
      */
+    @Deprecated
     public int[] getForwardFrames(int currentFrame, int timeSpan) {
         int f;
         if (includeFirst)
@@ -257,7 +330,9 @@ public class TrackMap {
      * @param currentFrame Starting frame (not included in results)
      * @param timeSpan timeSpan Number of frames to track
      * @return Array of frame numbers
+     * @deprecated Use trackBackwardValid(int, int, int) instead
      */
+    @Deprecated
     public int[] getBackwardFrames(int currentFrame, int timeSpan) {
         int f;
         if (includeFirst)
@@ -274,4 +349,20 @@ public class TrackMap {
         return ret;
     }
 
+}
+
+/**
+ * Predicate class for detection bad indexes in tracking methods.
+ * @author baniuk
+ *
+ */
+class PredicateBadIndex implements Predicate<Point> {
+
+    @Override
+    public boolean test(Point t) {
+        if (t.y == TrackMap.BAD_INDEX)
+            return true;
+        else
+            return false;
+    }
 }

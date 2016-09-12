@@ -7,7 +7,9 @@ package uk.ac.warwick.wsbc.QuimP.geom;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.awt.Point;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -118,6 +120,7 @@ public class TrackMapTest {
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testTrackForward_1() throws Exception {
         int[] expected = { 4, 4, 4, 4, 4, 4, 4, 4, 4, -1 };
@@ -127,10 +130,36 @@ public class TrackMapTest {
     }
 
     /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap#trackForwardValid(int, int, int)}.
+     */
+    @SuppressWarnings("serial")
+    @Test
+    public void testTrackForwardValid_1() throws Exception {
+        ArrayList<Point> e = new ArrayList<Point>() {
+            {
+                add(new Point(1, 4));
+                add(new Point(2, 4));
+                add(new Point(3, 4));
+                add(new Point(4, 4));
+                add(new Point(5, 4));
+                add(new Point(6, 4));
+                add(new Point(7, 4));
+                add(new Point(8, 4));
+                add(new Point(9, 4));
+
+            }
+        };
+        TrackMap tM = new TrackMap(originMap1, coordMap1);
+        ArrayList<Point> ret = (ArrayList<Point>) tM.trackForwardValid(0, 4, 10);
+        assertThat(ret, is(e));
+    }
+
+    /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap#trackForward(int, int, int)}.
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testTrackForward_2() throws Exception {
         //!<
@@ -151,8 +180,36 @@ public class TrackMapTest {
     }
 
     /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap#trackForwardValid(int, int, int)}.
+     * <p>
+     * Output results generated in Matlab by TrackMapTests/main.m
+     */
+    @SuppressWarnings("serial")
+    @Test
+    public void testTrackForwardValid_2() throws Exception {
+        //!<
+        ArrayList<Point> e = new ArrayList<Point>() {{
+            add(new Point(90,262-1));
+            add(new Point(91,259-1));
+            add(new Point(92,263-1));
+            add(new Point(93,269-1));
+            add(new Point(94,265-1));
+            add(new Point(95,274-1));
+            add(new Point(96,276-1));
+            add(new Point(97,265-1));
+            add(new Point(98,277-1));
+            add(new Point(99,276-1));
+        }};
+        /**/
+        TrackMap tM = new TrackMap(originMap2, coordMap2);
+        ArrayList<Point> ret = (ArrayList<Point>) tM.trackForwardValid(90 - 1, 272 - 1, 10);
+        assertThat(ret, is(e));
+    }
+
+    /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap#getForwardFrames(int, int)}.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testGetForwardFrames() throws Exception {
       //!<
@@ -177,6 +234,7 @@ public class TrackMapTest {
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testTrackBackward_1() throws Exception {
         int[] expected = { -1, 4, 4, 4, 4, 4 };
@@ -186,10 +244,33 @@ public class TrackMapTest {
     }
 
     /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap#trackBackwardValid(int, int, int)}.
+     * <p>
+     * Output results generated in Matlab by TrackMapTests/main.m
+     */
+    @SuppressWarnings("serial")
+    @Test
+    public void testTrackBackwardValid_1() throws Exception {
+        ArrayList<Point> e = new ArrayList<Point>() {
+            {
+                add(new Point(0, 4));
+                add(new Point(1, 4));
+                add(new Point(2, 4));
+                add(new Point(3, 4));
+                add(new Point(4, 4));
+            }
+        };
+        TrackMap tM = new TrackMap(originMap1, coordMap1);
+        ArrayList<Point> ret = (ArrayList<Point>) tM.trackBackwardValid(5, 4, 6);
+        assertThat(ret, is(e));
+    }
+
+    /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap#trackBackward(int, int, int)}.
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testTrackBackward_2() throws Exception {
       //!<
@@ -215,8 +296,44 @@ public class TrackMapTest {
     }
 
     /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap#trackBackwardValid(int, int, int)}.
+     * <p>
+     * Output results generated in Matlab by TrackMapTests/main.m
+     */
+    @SuppressWarnings("serial")
+    @Test
+    public void testTrackBackwardValid_2() throws Exception {
+      //!<
+        ArrayList<Point> e = new ArrayList<Point>() {
+            {
+                add(new Point(84, 303-1));
+                add(new Point(85, 301-1));
+                add(new Point(86, 300-1));
+                add(new Point(87, 297-1));
+                add(new Point(88, 291-1));
+                add(new Point(89, 287-1));
+                add(new Point(90, 278-1));
+                add(new Point(91, 282-1));
+                add(new Point(92, 278-1));
+                add(new Point(93, 284-1));
+                add(new Point(94, 281-1));
+                add(new Point(95, 292-1));
+                add(new Point(96, 294-1));
+                add(new Point(97, 283-1));
+                add(new Point(98, 297-1));
+
+            }
+        };
+        /**/
+        TrackMap tM = new TrackMap(originMap2, coordMap2);
+        ArrayList<Point> ret = (ArrayList<Point>) tM.trackBackwardValid(100 - 1, 300 - 1, 15);
+        assertThat(ret, is(e));
+    }
+
+    /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMap#getBackwardFrames(int, int)}.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testGetBackwardFrames() throws Exception {
       //!<

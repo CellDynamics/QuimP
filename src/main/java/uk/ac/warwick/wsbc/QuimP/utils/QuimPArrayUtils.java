@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -128,6 +129,32 @@ public class QuimPArrayUtils {
         ret = new int[rows][];
         for (int r = 0; r < rows; r++)
             ret[r] = new int[cols];
+        return ret;
+    }
+
+    /**
+     * Convert List of Integers to primitive type.
+     * @param input
+     * @return
+     */
+    public static int[] listToPrimitive(List<Integer> input) {
+        Iterator<Integer> it = input.iterator();
+        int[] ret = new int[input.size()];
+        int l = 0;
+        while (it.hasNext())
+            ret[l++] = it.next().intValue();
+        return ret;
+    }
+
+    /**
+     * Convert primitive integer to Integer.
+     * @param input
+     * @return
+     */
+    public static Integer[] primitiveToClass(int[] input) {
+        Integer[] ret = new Integer[input.length];
+        for (int i = 0; i < input.length; i++)
+            ret[i] = input[i];
         return ret;
     }
 
