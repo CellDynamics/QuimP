@@ -2602,7 +2602,7 @@ class ImageGroup {
                     overlay.add(oR);
 
                     // plot circle on head
-                    FloatPolygon fp1 = GraphicsElements.plotCircle(bp, 10);
+                    FloatPolygon fp1 = GraphicsElements.getCircle(bp, 10);
                     PolygonRoi oR1 = new PolygonRoi(fp1, Roi.POLYGON);
                     oR1.setStrokeColor(Color.GREEN);
                     oR1.setFillColor(Color.GREEN);

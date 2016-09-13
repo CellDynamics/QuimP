@@ -10,8 +10,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.vecmath.Point2d;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +19,6 @@ import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
-import ij.gui.Roi;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.GraphicsElements;
@@ -35,7 +32,7 @@ import uk.ac.warwick.wsbc.QuimP.STmap;
  * @author p.baniukiewicz
  *
  */
-public abstract class TrackVisualisation {
+public class TrackVisualisation {
     private static final Logger LOGGER = LogManager.getLogger(TrackVisualisation.class.getName());
     /**
      * Color for maxima points.
@@ -59,7 +56,7 @@ public abstract class TrackVisualisation {
      * 
      * @param qP Image to be plotted on. 
      */
-    protected TrackVisualisation(ImagePlus originalImage) {
+    public TrackVisualisation(ImagePlus originalImage) {
         this.originalImage = originalImage;
         LOGGER.trace("Num of slices: " + originalImage.getStackSize());
         overlay = originalImage.getOverlay(); // check for existing overlay
@@ -74,12 +71,12 @@ public abstract class TrackVisualisation {
      * @param name Name of the image
      * @param imp 
      */
-    protected TrackVisualisation(String name, ImageProcessor imp) {
+    public TrackVisualisation(String name, ImageProcessor imp) {
         this(new ImagePlus(name, imp));
     }
 
     /**
-     * Generate filled circle.
+     * Plot filled circle on overlay.
      * 
      * @param x
      * @param y
@@ -87,88 +84,80 @@ public abstract class TrackVisualisation {
      * @param color
      * @param radius
      */
-    public PolygonRoi getCircle(double x, double y, Color color, double radius) {
+    public void plotCircle(double x, double y, Color color, double radius) {
         // create ROI
-        PolygonRoi oR = new PolygonRoi(
-                GraphicsElements.plotCircle(new Point2d(x, y), (float) radius), Roi.POLYGON);
-        // set z-position of ROI!!!
-        oR.setStrokeColor(color);
-        oR.setFillColor(color);
-        return oR;
+        PolygonRoi oR = GraphicsElements.getCircle(x, y, color, radius);
+        overlay.add(oR); // add to collection of overlays
     }
 
     /**
+     * Plot unrelated points on image (static).
      * 
-     * @param x
-     * @param y
-     * @param frame
-     * @param color
+     * @param mapCell source of coordinate maps
+     * @param points list of points to plot in coordinates (index,frame)
+     * @param color color of point
+     * @param radius radius of point
      */
-    public PointRoi getPoint(double x, double y, Color color) {
-        PointRoi pR = new PointRoi(x, y);
-        pR.setStrokeColor(color);
-        pR.setFillColor(color);
-        return pR;
+    public void addStaticCirclesToImage(STmap mapCell, Polygon points, Color color, double radius) {
+        double x[][] = mapCell.getxMap();
+        double y[][] = mapCell.getyMap();
+        int[] indexes = points.xpoints;
+        int[] frames = points.ypoints;
+        for (int n = 0; n < points.npoints; n++) {
+            // decode frame,outline to screen coordinates
+            if (frames[n] < 0 || indexes[n] < 0)
+                continue;
+            double xcoord = x[frames[n]][indexes[n]]; // screen coordinate of
+            double ycoord = y[frames[n]][indexes[n]]; // (frame,index) point
+            plotCircle(xcoord, ycoord, color, radius);
+        }
+        originalImage.setOverlay(overlay); // add to image
     }
 
     /**
-     * 
-     * @param x
-     * @param y
-     * @param frame
-     * @param color
+     * Plot tracking lines before and after maxima points (static).
+     * <p>
+     * First backward tracking lines are plotted then forward in two different colors. For given 
+     * maximum first is plotted backward tracking frame by frame, then forward tracking. Backward
+     * tracking is visible as long as forward tracking is plotted. Then both disappear.
+     *  
+     * @param mapCell map related to given cell.
+     * @param pL List of polygons that keep coordinates of points of backward and forward tracks.
+     * The polygons in <tt>pL</tt> list must be in alternating order: BM1,FM1,BM2,FM2,..., where
+     * BMx is backward track for maximum point no.x and FMx is the forward track for maximum point 
+     * no.x. This order is respected by {@link Prot_Analysis.trackMaxima(STmap, double, MaximaFinder)} 
      */
-    public PointRoi getPoint(int x[], int y[], Color color) {
-        if (x.length != y.length)
-            throw new IllegalArgumentException("Arras of different sizes");
-        PointRoi pR = new PointRoi(x, y, x.length);
-        pR.setStrokeColor(color);
-        pR.setFillColor(color);
-        return pR;
-    }
-
-    /**
-     * Get line.
-     * 
-     * @param points Coordinates of line defined in Polygon.
-     * @param npoints Number of points in <tt>points</tt> to use.
-     * @param color Color of the line
-     * @return
-     */
-    public PolygonRoi getLine(Polygon points, int npoints, Color color) {
-        PolygonRoi pR = new PolygonRoi(points, Roi.FREELINE);
-        pR.setStrokeColor(color);
-        pR.setFillColor(color);
-        return pR;
-    }
-
-    /**
-     * Get line.
-     * 
-     * @param points Coordinates of line defined in Polygon.
-     * @param color Color of the line
-     * @return
-     */
-    public PolygonRoi getLine(Polygon points, Color color) {
-        return getLine(points, points.npoints, color);
-    }
-
-    /**
-     * Get line.
-     * 
-     * @param x Array with x coordinates
-     * @param y Array wit y coordinates.
-     * @param npoints Number of points to consider
-     * @param color
-     * @return
-     */
-    public PolygonRoi getLine(float[] x, float[] y, int npoints, Color color) {
-        if (x.length != y.length)
-            throw new IllegalArgumentException("Arras of different sizes");
-        PolygonRoi pRoi = new PolygonRoi(x, y, npoints, Roi.FREELINE);
-        pRoi.setStrokeColor(color);
-        pRoi.setFillColor(color);
-        return pRoi;
+    public void addStaticTrackingLinesToImage(STmap mapCell, List<Polygon> pL) {
+        double x[][] = mapCell.getxMap(); // temporary x and y coordinates for given cell
+        double y[][] = mapCell.getyMap();
+        // these are raw coordinates of tracking lines extracted from List<PolygonRoi> pL
+        ArrayList<float[]> xcoorda = new ArrayList<>();
+        ArrayList<float[]> ycoorda = new ArrayList<>();
+        int aL = 0;
+        // iterate over polygons. A polygon stores one tracking line
+        for (Polygon pR : pL) {
+            // create store for tracking line coordinates
+            xcoorda.add(new float[pR.npoints]);
+            ycoorda.add(new float[pR.npoints]);
+            // counter of invalid vertexes. According to TrackMap#trackForward last points can
+            // be -1 when user provided longer time span than available. (last in term of time)
+            int invalidVertex = 0;
+            // decode frame,outline to x,y
+            for (int f = 0; f < pR.npoints; f++) {
+                // -1 stands for points that are outside of range - assured by TrackMap.class
+                if (pR.ypoints[f] < 0 || pR.xpoints[f] < 0) {
+                    invalidVertex++; // count bad points
+                    continue;
+                }
+                xcoorda.get(aL)[f] = (float) x[pR.ypoints[f]][pR.xpoints[f]];
+                ycoorda.get(aL)[f] = (float) y[pR.ypoints[f]][pR.xpoints[f]];
+            }
+            PolygonRoi pRoi = GraphicsElements.getLine(xcoorda.get(aL), ycoorda.get(aL),
+                    pR.npoints - invalidVertex, color[aL % 2]);
+            overlay.add(pRoi);
+            aL++;
+        }
+        originalImage.setOverlay(overlay); // add to image
     }
 
     /**
@@ -179,18 +168,35 @@ public abstract class TrackVisualisation {
     }
 
     /**
-     *  Subclass for plotting on single image in coord space [x,y] (or [outline,frame]
+     * Plot static elements on image if they are not null.
+     * 
+     * @param pL tracking lines according to PointTracker.trackMaxima(STmap, double, MaximaFinder).
+     * @param mF maxima according to Prot_Analysis.MaximaFinder
+     */
+    public void addStaticElements(STmap mapCell, List<Polygon> pL, MaximaFinder mF) {
+        if (mF != null) {
+            Polygon max = mF.getMaxima();
+            addStaticCirclesToImage(mapCell, max, TrackVisualisation.MAXIMA_COLOR, 7);
+        }
+        if (pL != null) {
+            addStaticTrackingLinesToImage(mapCell, pL);
+        }
+
+    }
+
+    /**
+     * Subclass for plotting on single image in coord space [x,y] (or [outline,frame]
      * 
      * @author baniuk
      *
      */
-    static class Single extends TrackVisualisation {
+    static class Map extends TrackVisualisation {
 
-        public Single(ImagePlus originalImage) {
+        public Map(ImagePlus originalImage) {
             super(originalImage);
         }
 
-        public Single(String name, ImageProcessor imp) {
+        public Map(String name, ImageProcessor imp) {
             super(name, imp);
         }
 
@@ -201,7 +207,7 @@ public abstract class TrackVisualisation {
          * @param data 2D data. They will be rotated to match Matlab representation.
          * @ see uk.ac.warwick.wsbc.QuimP.STmap
          */
-        public Single(String name, float[][] data) {
+        public Map(String name, float[][] data) {
             super(name, new FloatProcessor(data));
             ImageProcessor imp = originalImage.getProcessor();
             imp = imp.rotateRight();
@@ -216,7 +222,8 @@ public abstract class TrackVisualisation {
          */
         public void addMaximaToImage(MaximaFinder mF) {
             Polygon max = mF.getMaxima();
-            PointRoi pR = getPoint(max.xpoints, max.ypoints, TrackVisualisation.MAXIMA_COLOR);
+            PointRoi pR = GraphicsElements.getPoint(max.xpoints, max.ypoints,
+                    TrackVisualisation.MAXIMA_COLOR);
             overlay.add(pR);
             originalImage.setOverlay(overlay);
         }
@@ -231,9 +238,9 @@ public abstract class TrackVisualisation {
         public void addTrackingLinesToImage(List<Polygon> pL) {
             Iterator<Polygon> it = pL.iterator();
             while (it.hasNext()) {
-                PolygonRoi pR = getLine(it.next(), color[0]); // back
+                PolygonRoi pR = GraphicsElements.getLine(it.next(), color[0]); // back
                 overlay.add(pR);
-                pR = getLine(it.next(), color[1]); // forward
+                pR = GraphicsElements.getLine(it.next(), color[1]); // forward
                 overlay.add(pR);
             }
             originalImage.setOverlay(overlay);
@@ -369,8 +376,8 @@ public abstract class TrackVisualisation {
                     // together with frames - in result the line grows as frames rise. After
                     // sorting, first points are those on lower frames
                     // set colors (remember about backward/forward order)
-                    PolygonRoi pRoi =
-                            getLine(xcoorda.get(aL), ycoorda.get(aL), f + 1, color[aL % 2]);
+                    PolygonRoi pRoi = GraphicsElements.getLine(xcoorda.get(aL), ycoorda.get(aL),
+                            f + 1, color[aL % 2]);
                     // set where we want plot f+1 points from x/ycoorda
                     pRoi.setPosition((int) plRsorted.ypoints[f] + 1);
                     overlay.add(pRoi);
@@ -378,8 +385,8 @@ public abstract class TrackVisualisation {
                     // wont to keep it during plotting forward tracking from x to x+z frames. So
                     // this whole line is plotted on every x-x+z frame
                     if (aL % 2 == 1) {
-                        PolygonRoi pRoi1 = getLine(xcoorda.get(aL - 1), ycoorda.get(aL - 1),
-                                xcoorda.get(aL - 1).length, color[aL % 2 - 1]);
+                        PolygonRoi pRoi1 = GraphicsElements.getLine(xcoorda.get(aL - 1),
+                                ycoorda.get(aL - 1), xcoorda.get(aL - 1).length, color[aL % 2 - 1]);
                         pRoi1.setPosition((int) plRsorted.ypoints[f] + 1);
                         overlay.add(pRoi1);
                     }
@@ -411,7 +418,7 @@ public abstract class TrackVisualisation {
          */
         public void plotCircle(double x, double y, int frame, Color color, double radius) {
             // create ROI
-            PolygonRoi oR = getCircle(x, y, color, radius);
+            PolygonRoi oR = GraphicsElements.getCircle(x, y, color, radius);
             // set z-position of ROI!!!
             oR.setPosition(frame);
             overlay.add(oR); // add to collection of overlays

@@ -109,57 +109,57 @@ public class TrackVisualisationTest {
         }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.QuimP.STmap, java.util.List)}.
-     */
-    @Test
-    public void testAddTrackingLinesToImage() throws Exception {
-        ArrayList<Polygon> testRoi = new ArrayList<>();
-        int[] frames = { 2, 3, 4, 5, 6, 7, 8 };
-        int[] indexes = { 0, 0, 0, 0, 0, 0, 0 };
-        double[][] xs = { { 0 }, { 0 }, { 10 }, { 11 }, { 12 }, { 13 }, { 14 }, { 15 }, { 16 } };
-        double[][] ys = { { 0 }, { 0 }, { 50 }, { 51 }, { 52 }, { 53 }, { 54 }, { 55 }, { 56 } };
-
-        STmap mapCell = Mockito.mock(STmap.class);
-        Mockito.when(mapCell.getxMap()).thenReturn(xs);
-        Mockito.when(mapCell.getyMap()).thenReturn(ys);
-
-        testRoi.add(new Polygon(indexes, frames, 7));
-        LOGGER.trace(Arrays.toString(testRoi.get(0).ypoints));
-        protrusionVis.addTrackingLinesToImage(mapCell, testRoi);
-
-        protrusionVis.getOriginalImage().setTitle("testAddTrackingLinesToImage");
-        // protrusionVis.getOriginalImage().show();
-        // while (protrusionVis.getOriginalImage().isVisible()) {
-        // Thread.sleep(1500);
-        // }
-    }
+             * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.QuimP.STmap, java.util.List)}.
+             */
+            @Test
+            public void testAddTrackingLinesToImage() throws Exception {
+                ArrayList<Polygon> testRoi = new ArrayList<>();
+                int[] frames = { 2, 3, 4, 5, 6, 7, 8 };
+                int[] indexes = { 0, 0, 0, 0, 0, 0, 0 };
+                double[][] xs = { { 0 }, { 0 }, { 10 }, { 11 }, { 12 }, { 13 }, { 14 }, { 15 }, { 16 } };
+                double[][] ys = { { 0 }, { 0 }, { 50 }, { 51 }, { 52 }, { 53 }, { 54 }, { 55 }, { 56 } };
+        
+                STmap mapCell = Mockito.mock(STmap.class);
+                Mockito.when(mapCell.getxMap()).thenReturn(xs);
+                Mockito.when(mapCell.getyMap()).thenReturn(ys);
+        
+                testRoi.add(new Polygon(indexes, frames, 7));
+                LOGGER.trace(Arrays.toString(testRoi.get(0).ypoints));
+                protrusionVis.addTrackingLinesToImage(mapCell, testRoi);
+        
+                protrusionVis.getOriginalImage().setTitle("testAddTrackingLinesToImage");
+                // protrusionVis.getOriginalImage().show();
+                // while (protrusionVis.getOriginalImage().isVisible()) {
+                // Thread.sleep(1500);
+                // }
+            }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.QuimP.STmap, java.util.List)}.
-     * Case with empty tracking line
-     */
-    @Test
-    public void testAddTrackingLinesToImage_1() throws Exception {
-        ArrayList<Polygon> testRoi = new ArrayList<>();
-        int[] frames = { 2, 3, 4, 5, 6, 7, 8 };
-        int[] indexes = { 0, 0, 0, 0, 0, 0, 0 };
-        double[][] xs = { { 0 }, { 0 }, { 10 }, { 11 }, { 12 }, { 13 }, { 14 }, { 15 }, { 16 } };
-        double[][] ys = { { 0 }, { 0 }, { 50 }, { 51 }, { 52 }, { 53 }, { 54 }, { 55 }, { 56 } };
-
-        STmap mapCell = Mockito.mock(STmap.class);
-        Mockito.when(mapCell.getxMap()).thenReturn(xs);
-        Mockito.when(mapCell.getyMap()).thenReturn(ys);
-
-        testRoi.add(new Polygon(indexes, frames, 0));
-        LOGGER.trace(Arrays.toString(testRoi.get(0).ypoints));
-        protrusionVis.addTrackingLinesToImage(mapCell, testRoi);
-
-        protrusionVis.getOriginalImage().setTitle("testAddTrackingLinesToImage_1");
-        // protrusionVis.getOriginalImage().show();
-        // while (protrusionVis.getOriginalImage().isVisible()) {
-        // Thread.sleep(1500);
-        // }
-    }
+             * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.QuimP.STmap, java.util.List)}.
+             * Case with empty tracking line
+             */
+            @Test
+            public void testAddTrackingLinesToImage_1() throws Exception {
+                ArrayList<Polygon> testRoi = new ArrayList<>();
+                int[] frames = { 2, 3, 4, 5, 6, 7, 8 };
+                int[] indexes = { 0, 0, 0, 0, 0, 0, 0 };
+                double[][] xs = { { 0 }, { 0 }, { 10 }, { 11 }, { 12 }, { 13 }, { 14 }, { 15 }, { 16 } };
+                double[][] ys = { { 0 }, { 0 }, { 50 }, { 51 }, { 52 }, { 53 }, { 54 }, { 55 }, { 56 } };
+        
+                STmap mapCell = Mockito.mock(STmap.class);
+                Mockito.when(mapCell.getxMap()).thenReturn(xs);
+                Mockito.when(mapCell.getyMap()).thenReturn(ys);
+        
+                testRoi.add(new Polygon(indexes, frames, 0));
+                LOGGER.trace(Arrays.toString(testRoi.get(0).ypoints));
+                protrusionVis.addTrackingLinesToImage(mapCell, testRoi);
+        
+                protrusionVis.getOriginalImage().setTitle("testAddTrackingLinesToImage_1");
+                // protrusionVis.getOriginalImage().show();
+                // while (protrusionVis.getOriginalImage().isVisible()) {
+                // Thread.sleep(1500);
+                // }
+            }
 
     @Test
     public void testListPoint2iComparator() {

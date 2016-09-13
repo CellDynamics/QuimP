@@ -4,10 +4,16 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.Color;
+import java.awt.Polygon;
+
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
 import ij.gui.OvalRoi;
+import ij.gui.PointRoi;
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
 import ij.process.FloatPolygon;
 
 /**
@@ -48,11 +54,102 @@ public class GraphicsElements {
         return fp;
     }
 
-    public static FloatPolygon plotCircle(Point2d base, float radius) {
+    public static FloatPolygon getCircle(Point2d base, float radius) {
         OvalRoi or = new OvalRoi(base.getX() - radius / 4, base.getY() - radius / 4, radius / 2,
                 radius / 2);
         return or.getFloatPolygon();
 
+    }
+
+    /**
+     * Generate filled circle.
+     * 
+     * @param x
+     * @param y
+     * @param color
+     * @param radius
+     */
+    public static PolygonRoi getCircle(double x, double y, Color color, double radius) {
+        // create ROI
+        PolygonRoi oR = new PolygonRoi(
+                GraphicsElements.getCircle(new Point2d(x, y), (float) radius), Roi.POLYGON);
+        oR.setStrokeColor(color);
+        oR.setFillColor(color);
+        return oR;
+    }
+
+    /**
+     * Generate point roi.
+     * 
+     * @param x
+     * @param y
+     * @param color
+     */
+    public static PointRoi getPoint(double x, double y, Color color) {
+        PointRoi pR = new PointRoi(x, y);
+        pR.setStrokeColor(color);
+        pR.setFillColor(color);
+        return pR;
+    }
+
+    /**
+     * Generate points roi.
+     * 
+     * @param x
+     * @param y
+     * @param color
+     */
+    public static PointRoi getPoint(int x[], int y[], Color color) {
+        if (x.length != y.length)
+            throw new IllegalArgumentException("Arras of different sizes");
+        PointRoi pR = new PointRoi(x, y, x.length);
+        pR.setStrokeColor(color);
+        pR.setFillColor(color);
+        return pR;
+    }
+
+    /**
+     * Generate line.
+     * 
+     * @param points Coordinates of line defined in Polygon.
+     * @param npoints Number of points in <tt>points</tt> to use.
+     * @param color Color of the line
+     * @return
+     */
+    public static PolygonRoi getLine(Polygon points, int npoints, Color color) {
+        PolygonRoi pR = new PolygonRoi(points, Roi.FREELINE);
+        pR.setStrokeColor(color);
+        pR.setFillColor(color);
+        return pR;
+    }
+
+    /**
+     * Generate line.
+     * 
+     * @param points Coordinates of line defined in Polygon.
+     * @param color Color of the line
+     * @return
+     */
+    public static PolygonRoi getLine(Polygon points, Color color) {
+        return GraphicsElements.getLine(points, points.npoints, color);
+    }
+
+    /**
+     * Generate line.
+     * 
+     * @param x Array with x coordinates
+     * @param y Array wit y coordinates.
+     * @param npoints Number of points to consider
+     * @param color
+     * @return
+     */
+    public static PolygonRoi getLine(float[] x, float[] y, int npoints, Color color) {
+        if (x.length != y.length)
+            throw new IllegalArgumentException("Arras of different sizes");
+        PolygonRoi pRoi = new PolygonRoi(x, y, npoints, Roi.FREELINE);
+        pRoi.setStrokeColor(color);
+        pRoi.setFillColor(color);
+        return pRoi;
     }
 
 }

@@ -108,15 +108,18 @@ public class Prot_Analysis implements IQuimpPlugin {
         STmap[] stMap = qconfLoader.getQp().getLoadedDataContainer().getQState();
         OutlineHandlers oHs = qconfLoader.getQp().getLoadedDataContainer().getECMMState();
         int h = 0;
-        ImagePlus im1 = qconfLoader.getImage();
-        if (im1 == null)
+        ImagePlus im1static = qconfLoader.getImage();
+        if (im1static == null)
             return; // stop if no image
-        TrackVisualisation.Stack visStack = new TrackVisualisation.Stack(im1);
+        ImagePlus im1dynamic = im1static.duplicate();
+        im1dynamic.setTitle("Dynamic tracking");
+        TrackVisualisation visStackStatic = new TrackVisualisation(im1static);
+        TrackVisualisation.Stack visStackDynamic = new TrackVisualisation.Stack(im1dynamic);
         PointTracker pT = new PointTracker();
         LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells
             // convert binary 2D array to ImageJ
-            TrackVisualisation.Single visSingle = new TrackVisualisation.Single("motility_map",
+            TrackVisualisation.Map visSingle = new TrackVisualisation.Map("motility_map",
                     QuimPArrayUtils.double2float(mapCell.motMap));
             // compute maxima
             MaximaFinder mF = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
@@ -133,9 +136,11 @@ public class Prot_Analysis implements IQuimpPlugin {
             visSingle.addTrackingLinesToImage(pL);
             visSingle.getOriginalImage().show();
 
-            visStack.addMaximaToImage(mapCell, mF);
-            visStack.addTrackingLinesToImage(mapCell, pL);
-            visStack.addCirclesToImage(mapCell, crossingsP, Color.RED, 7);
+            visStackStatic.addStaticElements(mapCell, pL, mF);
+
+            visStackDynamic.addMaximaToImage(mapCell, mF);
+            visStackDynamic.addTrackingLinesToImage(mapCell, pL);
+            visStackDynamic.addCirclesToImage(mapCell, crossingsP, Color.RED, 7);
 
             // Maps are correlated in order with Outlines in DataContainer.
             // mapCell.map2ColorImagePlus("motility_map", mapCell.motMap,
@@ -145,7 +150,8 @@ public class Prot_Analysis implements IQuimpPlugin {
             h++;
         }
 
-        visStack.getOriginalImage().show();
+        im1static.show();
+        im1dynamic.show();
     }
 
     @Override
