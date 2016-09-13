@@ -4,6 +4,7 @@ import java.awt.AWTEvent;
 import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Color;
+import java.awt.FileDialog;
 import java.awt.Polygon;
 import java.io.BufferedReader;
 import java.io.File;
@@ -119,16 +120,21 @@ public class ANA_ implements PlugInFilter, DialogListener {
         ecmMapping = new ECMM_Mapping(1);
 
         try {
-            OpenDialog od =
-                    new OpenDialog(
-                            "Open paramater file (" + QParams.PAQP_EXT + "|"
-                                    + QParamsQconf.QCONF_EXT + ")...",
-                            OpenDialog.getLastDirectory(), QParams.PAQP_EXT);
-            if (od.getFileName() == null) {
+            QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(); // use default
+            // engine for
+            // finding extension
+            FileDialog od = new FileDialog(IJ.getInstance(),
+                    "Open paramater file " + fileFilter.toString());
+            od.setFilenameFilter(fileFilter);
+            od.setDirectory(OpenDialog.getLastDirectory());
+            od.setMultipleMode(false);
+            od.setMode(FileDialog.LOAD);
+            od.setVisible(true);
+            if (od.getFile() == null) {
                 IJ.log("Cancelled - exiting...");
                 return;
             }
-            File paramFile = new File(od.getDirectory(), od.getFileName());
+            File paramFile = new File(od.getDirectory(), od.getFile());
             qconfLoader = new QconfLoader(paramFile.toPath()); // load file
             if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
                 runFromPAQP();
