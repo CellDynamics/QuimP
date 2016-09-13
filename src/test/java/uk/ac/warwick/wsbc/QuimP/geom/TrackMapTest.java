@@ -357,5 +357,4 @@ public class TrackMapTest {
         int[] ret = tM.getBackwardFrames(100 - 1, 15);
         assertThat(ret, is(expected));
     }
-
 }

@@ -230,7 +230,7 @@ public class TrackMap {
         else
             ret.add(new Point(currentFrame + 1, getNext(currentFrame, membraneIndex)));
         for (int t = 1; t < timeSpan; t++)
-            ret.add(new Point(currentFrame + 1 + t,
+            ret.add(new Point(ret.get(t - 1).x + 1,
                     getNext(currentFrame + t, (int) ret.get(t - 1).y)));
 
         ret.removeIf(new PredicateBadIndex());
@@ -284,7 +284,7 @@ public class TrackMap {
         else
             ret.add(new Point(currentFrame - 1, getPrev(currentFrame, membraneIndex)));
         for (int t = 1; t < timeSpan; t++)
-            ret.add(new Point(currentFrame - 1 - t,
+            ret.add(new Point(ret.get(t - 1).x - 1,
                     getPrev(currentFrame - t, (int) ret.get(t - 1).y)));
 
         Collections.reverse(ret);
