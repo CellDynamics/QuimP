@@ -83,6 +83,7 @@ public class TrackMapAnalyserTest {
         p.add(new Polygon(x1, y1, x1.length));
         p.add(new Polygon(x2, y2, x2.length));
 
+        TrackMapAnalyser.INCLUDE_INITIAL_ONCE = true;
         List<Point> ret = TrackMapAnalyser.Polygon2Point2i(p);
         List<Point> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
         assertThat(result, is(expected));
@@ -103,10 +104,12 @@ public class TrackMapAnalyserTest {
         test.add(new Polygon(x1, y1, 10));
         test.add(new Polygon(x2, y2, 10));
 
+        TrackMapAnalyser.INCLUDE_INITIAL_ONCE = true;
         Point testPoint1 = new Point(3, 3);
         int ret1 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint1);
         assertThat(ret1, is(2));
 
+        TrackMapAnalyser.INCLUDE_INITIAL_ONCE = true;
         Point testPoint2 = new Point(11, 11);
         int ret2 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint2);
         assertThat(ret2, is(10));
