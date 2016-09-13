@@ -6,6 +6,32 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="16.08.01-SNAPSHOT" date="2016-09-13" description="Release candidate 3">
+         <action dev="baniuk" type="update" issue="205">
+            Plugin code reworked.
+         </action>
+         <action dev="baniuk" type="fix" issue="200">
+            paQP files generated from QCONF contained bad segementation parameters.
+         </action>
+         <action dev="baniuk" type="fix" issue="202">
+            ANA: clear option does not work.
+         </action>
+         <action dev="baniuk" type="fix" issue="204">
+            ANA: stored bad paths in QCONF.
+         </action>
+         <action dev="baniuk" type="update" issue="206">
+            Added description of parameters in paQP file.
+         </action>
+         <action dev="baniuk" type="update" issue="208">
+            Rename toolbar menu entry.
+         </action>
+         <action dev="baniuk" type="update" issue="209">
+            Add preselection of active file format.
+         </action>
+         <action dev="baniuk" type="add" issue="61">
+            Protrusion Tracking: New output images.
+         </action>
+      </release> 
       <release version="16.08.01-SNAPSHOT" date="2016-09-02" description="Release candidate 2">
          <action dev="baniuk" type="fix" issue="203">
             Deal with problem of restoring image from QCONF file.
