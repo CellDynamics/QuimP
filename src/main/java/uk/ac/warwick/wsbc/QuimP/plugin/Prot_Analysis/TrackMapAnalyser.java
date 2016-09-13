@@ -85,7 +85,9 @@ public class TrackMapAnalyser {
         trackMap.includeFirst = INCLUDE_INITIAL_ONCE; // include also initial point
         ArrayList<Point> tForward = null;
         ArrayList<Point> tBackward = null;
-        int N = 0;
+        // end indexes of accepted elements after checking criterion
+        int Nb = 0;
+        int Nf = 0;
         // iterate through all maxima - take only indexes (x)
         for (int i = 0; i < maxi.npoints; i++) {
             int index = maxi.xpoints[i]; // considered index
@@ -99,29 +101,29 @@ public class TrackMapAnalyser {
             Collections.reverse(tBackward);
             // check where is drop off - index that has velocity below drop
             double dropValue = maxValues[i] - maxValues[i] * drop;
-            for (N = 0; N < tBackward.size() && tBackward.get(N).y >= 0; N++) {
-                double val = (mapCell.motMap[tBackward.get(N).x][tBackward.get(N).y]);
+            for (Nb = 0; Nb < tBackward.size() && tBackward.get(Nb).y >= 0; Nb++) {
+                double val = (mapCell.motMap[tBackward.get(Nb).x][tBackward.get(Nb).y]);
                 if (val < dropValue) {
-                    --N; // rewind pointer as it has been already incremented
+                    --Nb; // rewind pointer as it has been already incremented
                     break;
                 }
             }
-            N = (N < 0) ? 0 : N; // now end is the last index that fulfill criterion
+            Nb = (Nb < 0) ? 0 : Nb; // now end is the last index that fulfill criterion
             LOGGER.trace("tBackward: " + tBackward);
-            LOGGER.trace("Accepted:" + N);
+            LOGGER.trace("Accepted:" + Nb);
 
-            for (N = 0; N < tForward.size() && tForward.get(N).y >= 0; N++) {
-                double val = (mapCell.motMap[tForward.get(N).x][tForward.get(N).y]);
+            for (Nf = 0; Nf < tForward.size() && tForward.get(Nf).y >= 0; Nf++) {
+                double val = (mapCell.motMap[tForward.get(Nf).x][tForward.get(Nf).y]);
                 if (val < dropValue) {
-                    --N; // rewind pointer as it has been already incremented
+                    --Nf; // rewind pointer as it has been already incremented
                     break;
                 }
             }
-            N = (N < 0) ? 0 : N; // now end is the last index that fulfill criterion
+            Nf = (Nf < 0) ? 0 : Nf; // now end is the last index that fulfill criterion
             LOGGER.trace("tForward: " + tForward);
-            LOGGER.trace("Accepted:" + N);
+            LOGGER.trace("Accepted:" + Nf);
 
-            ret.addPair(tBackward, tForward); // store tracking lines
+            ret.addPair(tBackward.subList(0, Nb), tForward.subList(0, Nf)); // store tracking lines
         }
         return ret;
     }
