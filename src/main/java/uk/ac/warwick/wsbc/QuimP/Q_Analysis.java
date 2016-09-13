@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.FileDialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,17 +63,22 @@ public class Q_Analysis {
         IJ.showStatus("QuimP Analysis");
         try {
             if (paramFile == null) { // open UI if no file provided
-                OpenDialog od =
-                        new OpenDialog(
-                                "Open paramater file (" + QParams.PAQP_EXT + "|"
-                                        + QParamsQconf.QCONF_EXT + ")...",
-                                OpenDialog.getLastDirectory(), QParams.PAQP_EXT);
-                if (od.getFileName() == null) {
+                QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(); // use default
+                // engine for
+                // finding extension
+                FileDialog od = new FileDialog(IJ.getInstance(),
+                        "Open paramater file " + fileFilter.toString());
+                od.setFilenameFilter(fileFilter);
+                od.setDirectory(OpenDialog.getLastDirectory());
+                od.setMultipleMode(false);
+                od.setMode(FileDialog.LOAD);
+                od.setVisible(true);
+                if (od.getFile() == null) {
                     IJ.log("Cancelled - exiting...");
                     return;
                 }
                 // load config file but check if it is new format or old
-                paramFile = new File(od.getDirectory(), od.getFileName());
+                paramFile = new File(od.getDirectory(), od.getFile());
             }
             qconfLoader = new QconfLoader(paramFile.toPath()); // load file
             // show dialog
@@ -87,7 +93,8 @@ public class Q_Analysis {
                                                // user is skipped)
                     YesNoCancelDialog yncd =
                             new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                                    "\tBatch Process?\n\n" + "Process other " + QParams.PAQP_EXT
+                                    "\tBatch Process?\n\n" + "Process other "
+                                            + QuimpConfigFilefilter.oldFileExt
                                             + " files in the same folder with QAnalysis?"
                                             + "\n[The same parameters will be used]");
                     if (yncd.yesPressed()) {

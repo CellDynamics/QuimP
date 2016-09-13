@@ -1395,7 +1395,7 @@ public class BOA_ implements PlugIn {
             if (b == menuShowHistory) {
                 JOptionPane.showMessageDialog(window,
                         "The full history of changes is avaiable after saving your work in the"
-                                + " file " + QParamsQconf.QCONF_EXT);
+                                + " file " + QuimpConfigFilefilter.newFileExt);
                 /*if (historyLogger.isOpened())
                     historyLogger.closeHistory();
                 else
@@ -1410,7 +1410,8 @@ public class BOA_ implements PlugIn {
              */
             if (b == menuLoad) {
                 OpenDialog od = new OpenDialog(
-                        "Load global config data...(*" + QParamsQconf.QCONF_EXT + ")", "");
+                        "Load global config data...(*" + QuimpConfigFilefilter.newFileExt + ")",
+                        "");
                 if (od.getFileName() != null) {
                     try {
                         Serializer<DataContainer> loaded; // loaded instance

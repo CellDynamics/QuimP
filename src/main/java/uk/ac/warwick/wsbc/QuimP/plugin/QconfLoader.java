@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
+import java.awt.FileDialog;
 import java.io.File;
 import java.nio.file.Path;
 
@@ -18,6 +19,7 @@ import uk.ac.warwick.wsbc.QuimP.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
+import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 
@@ -65,14 +67,22 @@ public class QconfLoader {
         String filename; // file name of paQP
 
         if (path == null) { // no file provided, ask user
-            OpenDialog od = new OpenDialog("Open paramater file " + QParamsQconf.QCONF_EXT + ")...",
-                    OpenDialog.getLastDirectory(), QParamsQconf.QCONF_EXT);
-            if (od.getFileName() == null) {
+            QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(); // use default
+            // engine for
+            // finding extension
+            FileDialog od = new FileDialog(IJ.getInstance(),
+                    "Open paramater file " + fileFilter.toString());
+            od.setFilenameFilter(fileFilter);
+            od.setDirectory(OpenDialog.getLastDirectory());
+            od.setMultipleMode(false);
+            od.setMode(FileDialog.LOAD);
+            od.setVisible(true);
+            if (od.getFile() == null) {
                 IJ.log("Cancelled - exiting...");
                 return;
             }
             directory = od.getDirectory();
-            filename = od.getFileName();
+            filename = od.getFile();
         } else // use name provided in constructor
         {
             // getParent can return null
@@ -82,7 +92,8 @@ public class QconfLoader {
         }
         // detect old/new file format
         File paramFile = new File(directory, filename); // config file
-        if (paramFile.getName().endsWith(QParamsQconf.QCONF_EXT)) // new file format TODO #152
+        if (paramFile.getName().toLowerCase()
+                .endsWith(QuimpConfigFilefilter.newFileExt.toLowerCase())) // TODO #152
             qp = new QParamsQconf(paramFile);
         else
             qp = new QParams(paramFile); // initialize general param storage

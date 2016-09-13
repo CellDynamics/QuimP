@@ -18,6 +18,7 @@ import ij.WindowManager;
 import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
+import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.Tool;
 
@@ -70,9 +71,9 @@ public abstract class QconfSupporter {
             String filename; // file name of paQP
 
             if (path == null) { // no file provided, ask user
-                OpenDialog od =
-                        new OpenDialog("Open paramater file " + QParamsQconf.QCONF_EXT + ")...",
-                                OpenDialog.getLastDirectory(), QParamsQconf.QCONF_EXT);
+                OpenDialog od = new OpenDialog(
+                        "Open paramater file " + QuimpConfigFilefilter.newFileExt + ")...",
+                        OpenDialog.getLastDirectory(), QuimpConfigFilefilter.newFileExt);
                 if (od.getFileName() == null) {
                     IJ.log("Cancelled - exiting...");
                     return;
@@ -88,7 +89,8 @@ public abstract class QconfSupporter {
             }
             // detect old/new file format
             File paramFile = new File(directory, filename); // config file
-            if (paramFile.getName().endsWith(QParamsQconf.QCONF_EXT)) // new file format TODO #152
+            if (paramFile.getName().endsWith(QuimpConfigFilefilter.newFileExt)) // new file format
+                                                                                // TODO #152
                 qp = new QParamsQconf(paramFile);
             else
                 qp = new QParams(paramFile); // initialize general param storage

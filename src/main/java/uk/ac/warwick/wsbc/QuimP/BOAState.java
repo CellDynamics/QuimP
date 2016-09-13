@@ -658,7 +658,8 @@ public class BOAState implements IQuimpSerialize {
          * @return Full path to file with extension
          */
         public String deductParamFileName(int ID) {
-            return getOutputFileCore().getAbsoluteFile() + "_" + ID + QParams.PAQP_EXT;
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID
+                    + QuimpConfigFilefilter.oldFileExt;
         }
 
         /**
@@ -680,7 +681,7 @@ public class BOAState implements IQuimpSerialize {
          * @return Full path to file with extension
          */
         public String deductNewParamFileName() {
-            return getOutputFileCore().getAbsoluteFile() + QParamsQconf.QCONF_EXT;
+            return getOutputFileCore().getAbsoluteFile() + QuimpConfigFilefilter.newFileExt;
         }
 
     }
@@ -906,7 +907,8 @@ public class BOAState implements IQuimpSerialize {
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/176#comment:3
      */
     public boolean readParams() {
-        OpenDialog od = new OpenDialog("Open paramater file (" + QParams.PAQP_EXT + ")...", "");
+        OpenDialog od = new OpenDialog(
+                "Open paramater file (" + QuimpConfigFilefilter.oldFileExt + ")...", "");
         if (od.getFileName() == null) {
             return false;
         }

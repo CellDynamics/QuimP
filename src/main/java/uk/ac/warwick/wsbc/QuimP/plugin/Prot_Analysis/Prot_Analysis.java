@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
+import java.awt.FileDialog;
 import java.io.File;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,7 +13,7 @@ import ij.gui.GenericDialog;
 import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
-import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
+import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.Tool;
@@ -70,17 +71,23 @@ public class Prot_Analysis implements IQuimpPlugin {
         try {
             IJ.showStatus("Protrusion Analysis");
             if (paramFile == null) { // open UI if no file provided
-                OpenDialog od =
-                        new OpenDialog(
-                                "Open paramater file (" + QParams.PAQP_EXT + "|"
-                                        + QParamsQconf.QCONF_EXT + ")...",
-                                OpenDialog.getLastDirectory(), QParams.PAQP_EXT);
-                if (od.getFileName() == null) {
+                QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(".QCONF"); // use
+                                                                                        // default
+                // engine for
+                // finding extension
+                FileDialog od = new FileDialog(IJ.getInstance(),
+                        "Open paramater file " + fileFilter.toString());
+                od.setFilenameFilter(fileFilter);
+                od.setDirectory(OpenDialog.getLastDirectory());
+                od.setMultipleMode(false);
+                od.setMode(FileDialog.LOAD);
+                od.setVisible(true);
+                if (od.getFile() == null) {
                     IJ.log("Cancelled - exiting...");
                     return;
                 }
                 // load config file but check if it is new format or old
-                this.paramFile = new File(od.getDirectory(), od.getFileName());
+                this.paramFile = new File(od.getDirectory(), od.getFile());
             } else // use provided file
                 this.paramFile = paramFile;
             runPlugin();
