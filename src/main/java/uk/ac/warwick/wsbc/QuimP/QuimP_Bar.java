@@ -1,15 +1,18 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URI;
@@ -17,7 +20,9 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.text.SimpleAttributeSet;
@@ -39,9 +44,8 @@ import ij.plugin.PlugIn;
  * 
  * @author r.tyson
  * @author p.baniukiewicz
- * @date 22 Apr 2016
  */
-public class QuimP_Bar implements PlugIn, ActionListener {
+public class QuimP_Bar implements PlugIn, ActionListener, ItemListener {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -49,7 +53,10 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     static final Logger LOGGER = LogManager.getLogger(QuimP_Bar.class.getName());
-    String prefsfName = "quimp_bar"; //!< name used for storing bar location in IJ prefs
+    /**
+     * name used for storing bar location in IJ prefs
+     */
+    String prefsfName = "quimp_bar";
     String path;
     String separator = System.getProperty("file.separator");
     JFrame frame = new JFrame();
@@ -61,19 +68,20 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     JToolBar toolBarUpper = null;
     JToolBar toolBarBottom = null;
     JButton button = null;
+    JCheckBox cFileFormat;
     JTextPane toolBarTitle1 = null;
     JTextPane toolBarTitle2 = null;
-    private final Color barColor = new Color(0xFB, 0xFF, 0x94); //!< Color of title bar
+    private final Color barColor = new Color(0xFB, 0xFF, 0x94); // Color of title bar
     private MenuBar menuBar;
     private Menu menuHelp;
-    private MenuItem menuVersion; 
+    private MenuItem menuVersion;
     private MenuItem menuOpenHelp;
     private MenuItem menuOpenSite;
 
     public void run(String s) {
         String title;
         String quimpInfo[] = new Tool().getQuimPBuildInfo(); // get jar title
-        title = quimpInfo[2]+" "+quimpInfo[0];
+        title = quimpInfo[2] + " " + quimpInfo[0];
 
         frame.setTitle(title); // and set to window title
 
@@ -116,7 +124,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         menuOpenHelp.addActionListener(this);
         menuOpenSite.addActionListener(this);
         frame.setMenuBar(menuBar);
-        
+
         // captures the ImageJ KeyListener
         frame.setFocusable(true);
         frame.addKeyListener(IJ.getInstance());
@@ -158,12 +166,34 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         toolBarTitle1.setBackground(barColor);
 
         // second row - buttons and quimp icons
+        JPanel panelButtons = new JPanel();
+        GridBagConstraints cons = new GridBagConstraints();
+        panelButtons.setLayout(new GridBagLayout());
+        JPanel firstRow = new JPanel();
+        firstRow.setLayout(new FlowLayout(FlowLayout.LEADING));
+
         button = makeNavigationButton("x.jpg", "open()", "Open a file", "OPEN IMAGE");
-        toolBarUpper.add(button, c);
+        firstRow.add(button, c);
 
         button = makeNavigationButton("x.jpg", "run(\"ROI Manager...\");", "Open the ROI manager",
                 "ROI");
-        toolBarUpper.add(button);
+        firstRow.add(button);
+
+        cons.gridx = 0;
+        cons.gridy = 0;
+        cons.fill = GridBagConstraints.HORIZONTAL;
+        panelButtons.add(firstRow, cons);
+        cFileFormat = new JCheckBox("Use new file format");
+        cFileFormat.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cFileFormat.setToolTipText("Unselect to use old paQP files");
+        cFileFormat.setSelected(true); // default selection
+        cFileFormat.addItemListener(this);
+
+        cons.gridx = 0;
+        cons.gridy = 1;
+        panelButtons.add(cFileFormat, cons);
+
+        toolBarUpper.add(panelButtons);
 
         toolBarUpper.addSeparator();
 
@@ -227,7 +257,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         URL imageURL = QuimP_Bar.class.getResource(imgLocation);
         JButton newbutton = new JButton();
         newbutton.setActionCommand(actionCommand);
-        newbutton.setMargin(new Insets(2, 2, 2, 2));
+        // newbutton.setMargin(new Insets(2, 2, 2, 2));
         newbutton.setBorderPainted(true);
         newbutton.addActionListener(this);
         newbutton.setFocusable(true);
@@ -283,6 +313,15 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     protected void storeLocation() {
         Prefs.set("actionbar" + prefsfName + ".xloc", frame.getLocation().x);
         Prefs.set("actionbar" + prefsfName + ".yloc", frame.getLocation().y);
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        Object source = e.getItemSelectable();
+        if (source == cFileFormat) {
+            LOGGER.debug("Clicked file format");
+        }
+
     }
 
 }
