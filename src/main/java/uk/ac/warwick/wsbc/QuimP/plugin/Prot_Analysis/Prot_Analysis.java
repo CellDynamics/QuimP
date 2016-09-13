@@ -131,10 +131,10 @@ public class Prot_Analysis implements IQuimpPlugin {
             visSingle.addTrackingLinesToImage(trackCollection);
             visSingle.getOriginalImage().show();
 
-            // visStackStatic.addStaticElements(mapCell, pL, mF);
+            visStackStatic.addStaticElements(mapCell, trackCollection, mF);
 
-            // visStackDynamic.addMaximaToImage(mapCell, mF);
-            // visStackDynamic.addTrackingLinesToImage(mapCell, pL);
+            visStackDynamic.addMaximaToImage(mapCell, mF);
+            visStackDynamic.addTrackingLinesToImage(mapCell, trackCollection);
             // visStackDynamic.addCirclesToImage(mapCell, crossingsP, Color.RED, 7);
 
             // Maps are correlated in order with Outlines in DataContainer.

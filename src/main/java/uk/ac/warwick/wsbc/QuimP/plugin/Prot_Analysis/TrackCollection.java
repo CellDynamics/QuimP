@@ -52,8 +52,11 @@ public class TrackCollection {
      * @param forward
      */
     public void addPair(List<Point> backward, List<Point> forward) {
-        bf.add(new Pair<Track, Track>(new Track(backward, nextId++, null),
-                new Track(forward, nextId++, null)));
+        Track b = new Track(backward, nextId++, null);
+        b.type = Track.Type.BACKWARD;
+        Track f = new Track(forward, nextId++, null);
+        f.type = Track.Type.FORWARD;
+        bf.add(new Pair<Track, Track>(b, f));
 
     }
 
@@ -61,13 +64,28 @@ public class TrackCollection {
         return bf.iterator();
     }
 
+    public Iterator<Track> iteratorTrack() {
+        List<Track> ret = new ArrayList<>();
+        for (Pair<Track, Track> p : bf) {
+            ret.add(p.fst);
+            ret.add(p.snd);
+        }
+        return ret.iterator();
+    }
+
 }
 
 class Track extends ArrayList<Point> {
     private static final long serialVersionUID = 8928704797702167155L;
     private static final Logger LOGGER = LogManager.getLogger(Track.class.getName());
+
+    public static enum Type {
+        BACKWARD, FORWARD, OTHER
+    };
+
     int id;
     Point parents;
+    Type type;
 
     public Track() {
         super();
@@ -99,6 +117,7 @@ class Track extends ArrayList<Point> {
      * Not use due to similar structure as Track(int, Point)
      * @param initialCapacity
      */
+    @SuppressWarnings("unused")
     private Track(int initialCapacity) {
         super(initialCapacity);
         id = -1;

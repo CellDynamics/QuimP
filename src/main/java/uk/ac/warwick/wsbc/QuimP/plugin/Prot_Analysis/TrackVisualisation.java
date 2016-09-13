@@ -45,9 +45,10 @@ public class TrackVisualisation {
      * <ol>
      * <li> index 0 - backtracked position of point
      * <li> index 1 - forwardtracked position of point.
+     * <li> index 2 - other
      * </ol>
      */
-    static public Color[] color = { Color.YELLOW, Color.GREEN };
+    static public Color[] color = { Color.YELLOW, Color.GREEN, Color.WHITE };
     protected ImagePlus originalImage; // reference of image to be plotted on
     protected Overlay overlay;
 
@@ -129,15 +130,18 @@ public class TrackVisualisation {
      * BMx is backward track for maximum point no.x and FMx is the forward track for maximum point 
      * no.x. This order is respected by {@link Prot_Analysis.trackMaxima(STmap, double, MaximaFinder)} 
      */
-    public void addStaticTrackingLinesToImage(STmap mapCell, List<Polygon> pL) {
+    public void addStaticTrackingLinesToImage(STmap mapCell, TrackCollection trackCollection) {
         double x[][] = mapCell.getxMap(); // temporary x and y coordinates for given cell
         double y[][] = mapCell.getyMap();
         // these are raw coordinates of tracking lines extracted from List<PolygonRoi> pL
         ArrayList<float[]> xcoorda = new ArrayList<>();
         ArrayList<float[]> ycoorda = new ArrayList<>();
         int aL = 0;
-        // iterate over polygons. A polygon stores one tracking line
-        for (Polygon pR : pL) {
+        // iterate over tracks
+        Iterator<Track> it = trackCollection.iteratorTrack();
+        while (it.hasNext()) {
+            Track track = it.next();
+            Polygon pR = track.asPolygon();
             // create store for tracking line coordinates
             xcoorda.add(new float[pR.npoints]);
             ycoorda.add(new float[pR.npoints]);
@@ -154,13 +158,29 @@ public class TrackVisualisation {
                 xcoorda.get(aL)[f] = (float) x[pR.ypoints[f]][pR.xpoints[f]];
                 ycoorda.get(aL)[f] = (float) y[pR.ypoints[f]][pR.xpoints[f]];
             }
+            Color c;
+            if (track.type == Track.Type.FORWARD)
+                c = color[1];
+            else if (track.type == Track.Type.BACKWARD)
+                c = color[0];
+            else
+                c = color[2];
             PolygonRoi pRoi = GraphicsElements.getLine(xcoorda.get(aL), ycoorda.get(aL),
-                    pR.npoints - invalidVertex, color[aL % 2]);
+                    pR.npoints - invalidVertex, c);
             overlay.add(pRoi);
             aL++;
         }
         originalImage.setOverlay(overlay); // add to image
     }
+
+    // Iterator<Pair<Track, Track>> it = trackCollection.iterator();
+    // while (it.hasNext()) {
+    // Pair<Track, Track> pair = it.next();
+    // PolygonRoi pR = GraphicsElements.getLine(pair.fst.asPolygon(), color[0]); // back
+    // overlay.add(pR);
+    // pR = GraphicsElements.getLine(pair.snd.asPolygon(), color[1]); // forward
+    // overlay.add(pR);
+    // }
 
     /**
      * @return the originalImage
@@ -175,13 +195,13 @@ public class TrackVisualisation {
      * @param pL tracking lines according to PointTracker.trackMaxima(STmap, double, MaximaFinder).
      * @param mF maxima according to Prot_Analysis.MaximaFinder
      */
-    public void addStaticElements(STmap mapCell, List<Polygon> pL, MaximaFinder mF) {
+    public void addStaticElements(STmap mapCell, TrackCollection trackCollection, MaximaFinder mF) {
         if (mF != null) {
             Polygon max = mF.getMaxima();
             addStaticCirclesToImage(mapCell, max, TrackVisualisation.MAXIMA_COLOR, 7);
         }
-        if (pL != null) {
-            addStaticTrackingLinesToImage(mapCell, pL);
+        if (trackCollection != null) {
+            addStaticTrackingLinesToImage(mapCell, trackCollection);
         }
 
     }
@@ -335,15 +355,18 @@ public class TrackVisualisation {
          * BMx is backward track for maximum point no.x and FMx is the forward track for maximum point 
          * no.x. This order is respected by {@link Prot_Analysis.trackMaxima(STmap, double, MaximaFinder)} 
          */
-        public void addTrackingLinesToImage(STmap mapCell, List<Polygon> pL) {
+        public void addTrackingLinesToImage(STmap mapCell, TrackCollection trackCollection) {
             double x[][] = mapCell.getxMap(); // temporary x and y coordinates for given cell
             double y[][] = mapCell.getyMap();
             // these are raw coordinates of tracking lines extracted from List<PolygonRoi> pL
             ArrayList<float[]> xcoorda = new ArrayList<>();
             ArrayList<float[]> ycoorda = new ArrayList<>();
             int aL = 0;
-            // iterate over polygons. A polygon stores one tracking line
-            for (Polygon pR : pL) {
+            // iterate over tracks
+            Iterator<Track> it = trackCollection.iteratorTrack();
+            while (it.hasNext()) {
+                Track track = it.next();
+                Polygon pR = track.asPolygon();
                 // we need to sort tracking line points according to frames where they appear in
                 // first convert poygon to list of Point2i object
                 List<Point> plR =
