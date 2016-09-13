@@ -119,10 +119,6 @@ public class TrackVisualisation {
 
     /**
      * Plot tracking lines before and after maxima points (static).
-     * <p>
-     * First backward tracking lines are plotted then forward in two different colors. For given 
-     * maximum first is plotted backward tracking frame by frame, then forward tracking. Backward
-     * tracking is visible as long as forward tracking is plotted. Then both disappear.
      *  
      * @param mapCell map related to given cell.
      * @param pL List of polygons that keep coordinates of points of backward and forward tracks.
@@ -158,29 +154,13 @@ public class TrackVisualisation {
                 xcoorda.get(aL)[f] = (float) x[pR.ypoints[f]][pR.xpoints[f]];
                 ycoorda.get(aL)[f] = (float) y[pR.ypoints[f]][pR.xpoints[f]];
             }
-            Color c;
-            if (track.type == Track.Type.FORWARD)
-                c = color[1];
-            else if (track.type == Track.Type.BACKWARD)
-                c = color[0];
-            else
-                c = color[2];
             PolygonRoi pRoi = GraphicsElements.getLine(xcoorda.get(aL), ycoorda.get(aL),
-                    pR.npoints - invalidVertex, c);
+                    pR.npoints - invalidVertex, getColor(track));
             overlay.add(pRoi);
             aL++;
         }
         originalImage.setOverlay(overlay); // add to image
     }
-
-    // Iterator<Pair<Track, Track>> it = trackCollection.iterator();
-    // while (it.hasNext()) {
-    // Pair<Track, Track> pair = it.next();
-    // PolygonRoi pR = GraphicsElements.getLine(pair.fst.asPolygon(), color[0]); // back
-    // overlay.add(pR);
-    // pR = GraphicsElements.getLine(pair.snd.asPolygon(), color[1]); // forward
-    // overlay.add(pR);
-    // }
 
     /**
      * @return the originalImage
@@ -192,7 +172,7 @@ public class TrackVisualisation {
     /**
      * Plot static elements on image if they are not null.
      * 
-     * @param pL tracking lines according to PointTracker.trackMaxima(STmap, double, MaximaFinder).
+     * @param trackCollection initialised TrackCollection object
      * @param mF maxima according to Prot_Analysis.MaximaFinder
      */
     public void addStaticElements(STmap mapCell, TrackCollection trackCollection, MaximaFinder mF) {
@@ -204,6 +184,33 @@ public class TrackVisualisation {
             addStaticTrackingLinesToImage(mapCell, trackCollection);
         }
 
+    }
+
+    /**
+     * Helper method.
+     * 
+     * Allows to convert enum to index of array of Colors.
+     * 
+     * @param type
+     * @return Color from color array
+     */
+    protected Color getColor(Track track) {
+        Color c;
+        Track.Type type = track.type;
+        switch (type) {
+            case FORWARD:
+                c = color[1];
+                break;
+            case BACKWARD:
+                c = color[0];
+                break;
+            case OTHER:
+                c = color[2];
+                break;
+            default:
+                throw new IllegalArgumentException("Color not supported");
+        }
+        return c;
     }
 
     /**
@@ -253,17 +260,16 @@ public class TrackVisualisation {
         /**
          * Add lines defined as polygons to image.
          * 
-         * @param pL Lines to add. It should follow rule 
-         * {@link PointTracker.trackMaxima(STmap, double, MaximaFinder)}
+         * @param trackCollection initialised TrackCollection object
          * 
          */
         public void addTrackingLinesToImage(TrackCollection trackCollection) {
             Iterator<Pair<Track, Track>> it = trackCollection.iterator();
             while (it.hasNext()) {
                 Pair<Track, Track> pair = it.next();
-                PolygonRoi pR = GraphicsElements.getLine(pair.fst.asPolygon(), color[0]); // back
+                PolygonRoi pR = GraphicsElements.getLine(pair.fst.asPolygon(), getColor(pair.fst)); // back
                 overlay.add(pR);
-                pR = GraphicsElements.getLine(pair.snd.asPolygon(), color[1]); // forward
+                pR = GraphicsElements.getLine(pair.snd.asPolygon(), getColor(pair.snd)); // forward
                 overlay.add(pR);
             }
             originalImage.setOverlay(overlay);
@@ -350,10 +356,8 @@ public class TrackVisualisation {
          * tracking is visible as long as forward tracking is plotted. Then both disappear.
          *  
          * @param mapCell map related to given cell.
-         * @param pL List of polygons that keep coordinates of points of backward and forward tracks.
-         * The polygons in <tt>pL</tt> list must be in alternating order: BM1,FM1,BM2,FM2,..., where
-         * BMx is backward track for maximum point no.x and FMx is the forward track for maximum point 
-         * no.x. This order is respected by {@link Prot_Analysis.trackMaxima(STmap, double, MaximaFinder)} 
+         * @param trackCollection initialized TrackCollection object
+         * TODO This method uses old approach assuming that back and forw tracks are repeating. 
          */
         public void addTrackingLinesToImage(STmap mapCell, TrackCollection trackCollection) {
             double x[][] = mapCell.getxMap(); // temporary x and y coordinates for given cell

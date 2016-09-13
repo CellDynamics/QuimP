@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 import com.sun.tools.javac.util.Pair;
 
 /**
+ * Represent collection of tracks.
+ * 
  * @author baniuk
  *
  */
@@ -60,10 +62,20 @@ public class TrackCollection {
 
     }
 
+    /**
+     * Get iterator over pairs of tracks (related to one starting point).
+     * 
+     * @return iterator
+     */
     public Iterator<Pair<Track, Track>> iterator() {
         return bf.iterator();
     }
 
+    /**
+     * Get iterator over all tracks in collection.
+     * 
+     * @return iterator
+     */
     public Iterator<Track> iteratorTrack() {
         List<Track> ret = new ArrayList<>();
         for (Pair<Track, Track> p : bf) {
@@ -75,16 +87,37 @@ public class TrackCollection {
 
 }
 
+/**
+ * Hold one track line with additional parameters.
+ * 
+ * @author baniuk
+ *
+ */
 class Track extends ArrayList<Point> {
     private static final long serialVersionUID = 8928704797702167155L;
     private static final Logger LOGGER = LogManager.getLogger(Track.class.getName());
 
+    /**
+     * Types of tracking lines.
+     * 
+     * @author baniuk
+     *
+     */
     public static enum Type {
         BACKWARD, FORWARD, OTHER
     };
 
-    int id;
-    Point parents;
+    /**
+     * ID of tracking line. Every line in TrackCollection has different id.
+     */
+    private int id;
+    /**
+     * Parents (Ids) of this track.
+     */
+    private Point parents;
+    /**
+     * Type of track. OTHER is reserved for virtual tracks created from merging points.
+     */
     Type type;
 
     public Track() {
