@@ -45,7 +45,7 @@ import ij.plugin.PlugIn;
  * @author r.tyson
  * @author p.baniukiewicz
  */
-public class QuimP_Bar implements PlugIn, ActionListener, ItemListener {
+public class QuimP_Bar implements PlugIn, ActionListener {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -53,6 +53,10 @@ public class QuimP_Bar implements PlugIn, ActionListener, ItemListener {
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     static final Logger LOGGER = LogManager.getLogger(QuimP_Bar.class.getName());
+    /**
+     * This field is used for sharing information between bar and other plugins
+     */
+    public static boolean newFileFormat = true;
     /**
      * name used for storing bar location in IJ prefs
      */
@@ -186,8 +190,17 @@ public class QuimP_Bar implements PlugIn, ActionListener, ItemListener {
         cFileFormat = new JCheckBox("Use new file format");
         cFileFormat.setAlignmentX(Component.LEFT_ALIGNMENT);
         cFileFormat.setToolTipText("Unselect to use old paQP files");
-        cFileFormat.setSelected(true); // default selection
-        cFileFormat.addItemListener(this);
+        cFileFormat.setSelected(QuimP_Bar.newFileFormat); // default selection
+        cFileFormat.addItemListener(new ItemListener() { // set static field
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED)
+                    QuimP_Bar.newFileFormat = true;
+                else
+                    QuimP_Bar.newFileFormat = false;
+            }
+        });
 
         cons.gridx = 0;
         cons.gridy = 1;
@@ -313,15 +326,6 @@ public class QuimP_Bar implements PlugIn, ActionListener, ItemListener {
     protected void storeLocation() {
         Prefs.set("actionbar" + prefsfName + ".xloc", frame.getLocation().x);
         Prefs.set("actionbar" + prefsfName + ".yloc", frame.getLocation().y);
-    }
-
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        Object source = e.getItemSelectable();
-        if (source == cFileFormat) {
-            LOGGER.debug("Clicked file format");
-        }
-
     }
 
 }
