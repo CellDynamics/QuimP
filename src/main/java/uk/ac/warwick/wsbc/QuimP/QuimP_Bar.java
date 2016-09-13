@@ -104,7 +104,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         buildPanel(); // build the QuimP bar
         // add menu
         menuBar = new MenuBar();
-        menuHelp = new Menu("Help");
+        menuHelp = new Menu("Quimp-Help");
         menuBar.add(menuHelp);
         menuVersion = new MenuItem("About");
         menuOpenHelp = new MenuItem("Help Contents");
