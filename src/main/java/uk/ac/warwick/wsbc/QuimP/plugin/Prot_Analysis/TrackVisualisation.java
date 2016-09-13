@@ -237,12 +237,13 @@ public class TrackVisualisation {
          * {@link PointTracker.trackMaxima(STmap, double, MaximaFinder)}
          * 
          */
-        public void addTrackingLinesToImage(List<Polygon> pL) {
-            Iterator<Polygon> it = pL.iterator();
+        public void addTrackingLinesToImage(TrackCollection trackCollection) {
+            Iterator<Pair<Track, Track>> it = trackCollection.iterator();
             while (it.hasNext()) {
-                PolygonRoi pR = GraphicsElements.getLine(it.next(), color[0]); // back
+                Pair<Track, Track> pair = it.next();
+                PolygonRoi pR = GraphicsElements.getLine(pair.fst.asPolygon(), color[0]); // back
                 overlay.add(pR);
-                pR = GraphicsElements.getLine(it.next(), color[1]); // forward
+                pR = GraphicsElements.getLine(pair.snd.asPolygon(), color[1]); // forward
                 overlay.add(pR);
             }
             originalImage.setOverlay(overlay);

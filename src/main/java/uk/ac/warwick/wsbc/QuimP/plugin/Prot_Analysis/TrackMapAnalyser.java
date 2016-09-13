@@ -72,10 +72,11 @@ public class TrackMapAnalyser {
      * @see removeSelfRepeatings(List<Pair<Point, Point>>, List<Polygon>)
      * @see removeSelfCrossings(List<Pair<Point, Point>>)
      */
-    public List<Polygon> trackMaxima(final STmap mapCell, double drop,
+    public TrackCollection trackMaxima(final STmap mapCell, double drop,
             final MaximaFinder maximaFinder) {
+
         int numFrames = mapCell.motMap.length;
-        ArrayList<Polygon> ret = new ArrayList<>();
+        TrackCollection ret = new TrackCollection();
         // int[] indexes = new int[numFrames];
         Polygon maxi = maximaFinder.getMaxima(); // restore computed maxima
         double[] maxValues = maximaFinder.getMaxValues(); // max values in order of maxi
@@ -84,7 +85,6 @@ public class TrackMapAnalyser {
         trackMap.includeFirst = INCLUDE_INITIAL_ONCE; // include also initial point
         ArrayList<Point> tForward = null;
         ArrayList<Point> tBackward = null;
-        Polygon tmp;
         int N = 0;
         // iterate through all maxima - take only indexes (x)
         for (int i = 0; i < maxi.npoints; i++) {
@@ -109,10 +109,6 @@ public class TrackMapAnalyser {
             N = (N < 0) ? 0 : N; // now end is the last index that fulfill criterion
             LOGGER.trace("tBackward: " + tBackward);
             LOGGER.trace("Accepted:" + N);
-            tmp = new Polygon();
-            for (int itmp = 0; itmp < N; itmp++)
-                tmp.addPoint(tBackward.get(itmp).y, tBackward.get(itmp).x);
-            ret.add(tmp); // store tracking line in polygon
 
             for (N = 0; N < tForward.size() && tForward.get(N).y >= 0; N++) {
                 double val = (mapCell.motMap[tForward.get(N).x][tForward.get(N).y]);
@@ -125,10 +121,7 @@ public class TrackMapAnalyser {
             LOGGER.trace("tForward: " + tForward);
             LOGGER.trace("Accepted:" + N);
 
-            tmp = new Polygon();
-            for (int itmp = 0; itmp < N; itmp++)
-                tmp.addPoint(tForward.get(itmp).y, tForward.get(itmp).x);
-            ret.add(tmp); // store tracking line in polygon
+            ret.addPair(tBackward, tForward); // store tracking lines
         }
         return ret;
     }

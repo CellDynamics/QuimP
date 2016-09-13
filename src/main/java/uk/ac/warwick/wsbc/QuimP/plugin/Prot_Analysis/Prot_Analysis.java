@@ -1,16 +1,10 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Polygon;
 import java.io.File;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-
-import com.sun.tools.javac.util.Pair;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -125,22 +119,23 @@ public class Prot_Analysis implements IQuimpPlugin {
             MaximaFinder mF = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
             mF.computeMaximaIJ(paramList.getDoubleValue("noiseTolerance")); // 1.5
             // track maxima across motility map
-            List<Polygon> pL = pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
+            TrackCollection trackCollection =
+                    pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
             // find crossings
-            List<Pair<Point, Point>> crossingsP = pT.removeSelfRepeatings(
-                    pT.getIntersectionParents(pL, TrackMapAnalyser.WITHOUT_SELFCROSSING), pL);
-            LOGGER.trace("Crossings: " + crossingsP.size());
+            // List<Pair<Point, Point>> crossingsP = pT.removeSelfRepeatings(
+            // pT.getIntersectionParents(pL, TrackMapAnalyser.WITHOUT_SELFCROSSING), pL);
+            // LOGGER.trace("Crossings: " + crossingsP.size());
             // plotting on motility map
 
             visSingle.addMaximaToImage(mF);
-            visSingle.addTrackingLinesToImage(pL);
+            visSingle.addTrackingLinesToImage(trackCollection);
             visSingle.getOriginalImage().show();
 
-            visStackStatic.addStaticElements(mapCell, pL, mF);
+            // visStackStatic.addStaticElements(mapCell, pL, mF);
 
-            visStackDynamic.addMaximaToImage(mapCell, mF);
-            visStackDynamic.addTrackingLinesToImage(mapCell, pL);
-            visStackDynamic.addCirclesToImage(mapCell, crossingsP, Color.RED, 7);
+            // visStackDynamic.addMaximaToImage(mapCell, mF);
+            // visStackDynamic.addTrackingLinesToImage(mapCell, pL);
+            // visStackDynamic.addCirclesToImage(mapCell, crossingsP, Color.RED, 7);
 
             // Maps are correlated in order with Outlines in DataContainer.
             // mapCell.map2ColorImagePlus("motility_map", mapCell.motMap,

@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -56,6 +57,10 @@ public class TrackCollection {
 
     }
 
+    public Iterator<Pair<Track, Track>> iterator() {
+        return bf.iterator();
+    }
+
 }
 
 class Track extends ArrayList<Point> {
@@ -98,6 +103,16 @@ class Track extends ArrayList<Point> {
         super(initialCapacity);
         id = -1;
         parents = new Point(-1, -1);
+    }
+
+    public Polygon asPolygon() {
+        Iterator<Point> it = iterator();
+        Polygon ret = new Polygon();
+        while (it.hasNext()) {
+            Point p = it.next();
+            ret.addPoint(p.y, p.x);
+        }
+        return ret;
     }
 
 }
