@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -77,14 +78,13 @@ public class PointTracker {
         int numFrames = mapCell.motMap.length;
         ArrayList<Polygon> ret = new ArrayList<>();
         // int[] indexes = new int[numFrames];
-        int[] framesF = null;
-        int[] framesB = null;
         Polygon maxi = maximaFinder.getMaxima(); // restore computed maxima
         double[] maxValues = maximaFinder.getMaxValues(); // max values in order of maxi
         TrackMap trackMap = new TrackMap(mapCell.originMap, mapCell.coordMap); // build tracking map
         trackMap.includeFirst = INCLUDE_INITIAL_ONCE; // include also initial point
-        int[] tForward = null;
-        int[] tBackward = null;
+        ArrayList<Point> tForward = null;
+        ArrayList<Point> tBackward = null;
+        Polygon tmp;
         int N = 0;
         // iterate through all maxima - take only indexes (x)
         for (int i = 0; i < maxi.npoints; i++) {
@@ -92,44 +92,43 @@ public class PointTracker {
             int frame = maxi.ypoints[i]; // considered frame
             LOGGER.trace("Max = [" + frame + "," + index + "]");
             // trace forward every index until end of time
-            tForward = trackMap.trackForward(frame, index, numFrames - frame);
-            framesF = trackMap.getForwardFrames(frame, numFrames - frame);
+            tForward =
+                    (ArrayList<Point>) trackMap.trackForwardValid(frame, index, numFrames - frame);
             // trace backward every index until end of time
-            tBackward = trackMap.trackBackward(frame, index, frame);
-            framesB = trackMap.getBackwardFrames(frame, frame);
-            QuimPArrayUtils.reverseIntArray(framesB); // reverse have last frame on 0 index
-                                                      // (important for Polygon creation)
-            QuimPArrayUtils.reverseIntArray(tBackward);
+            tBackward = (ArrayList<Point>) trackMap.trackBackwardValid(frame, index, frame);
+            Collections.reverse(tBackward);
             // check where is drop off - index that has velocity below drop
             double dropValue = maxValues[i] - maxValues[i] * drop;
-            for (N = 0; N < tBackward.length && tBackward[N] >= 0; N++) {
-                double val = (mapCell.motMap[framesB[N]][tBackward[N]]);
+            for (N = 0; N < tBackward.size() && tBackward.get(N).y >= 0; N++) {
+                double val = (mapCell.motMap[tBackward.get(N).x][tBackward.get(N).y]);
                 if (val < dropValue) {
                     --N; // rewind pointer as it has been already incremented
                     break;
                 }
             }
             N = (N < 0) ? 0 : N; // now end is the last index that fulfill criterion
-            LOGGER.trace(
-                    "tBackward frames:" + Arrays.toString(framesB) + " size:" + framesB.length);
-            LOGGER.trace(
-                    "tBackward outlin:" + Arrays.toString(tBackward) + " size:" + tBackward.length);
+            LOGGER.trace("tBackward: " + tBackward);
             LOGGER.trace("Accepted:" + N);
-            ret.add(new Polygon(tBackward, framesB, N)); // store tracking line in polygon
+            tmp = new Polygon();
+            for (int itmp = 0; itmp < N; itmp++)
+                tmp.addPoint(tBackward.get(itmp).y, tBackward.get(itmp).x);
+            ret.add(tmp); // store tracking line in polygon
 
-            for (N = 0; N < tForward.length && tForward[N] >= 0; N++) {
-                double val = (mapCell.motMap[framesF[N]][tForward[N]]);
+            for (N = 0; N < tForward.size() && tForward.get(N).y >= 0; N++) {
+                double val = (mapCell.motMap[tForward.get(N).x][tForward.get(N).y]);
                 if (val < dropValue) {
                     --N; // rewind pointer as it has been already incremented
                     break;
                 }
             }
             N = (N < 0) ? 0 : N; // now end is the last index that fulfill criterion
-            LOGGER.trace("tForward frames:" + Arrays.toString(framesF) + " size:" + framesF.length);
-            LOGGER.trace(
-                    "tForward outlin:" + Arrays.toString(tForward) + " size:" + tForward.length);
+            LOGGER.trace("tForward: " + tForward);
             LOGGER.trace("Accepted:" + N);
-            ret.add(new Polygon(tForward, framesF, N)); // store tracking line in polygon
+
+            tmp = new Polygon();
+            for (int itmp = 0; itmp < N; itmp++)
+                tmp.addPoint(tForward.get(itmp).y, tForward.get(itmp).x);
+            ret.add(tmp); // store tracking line in polygon
         }
         return ret;
     }
