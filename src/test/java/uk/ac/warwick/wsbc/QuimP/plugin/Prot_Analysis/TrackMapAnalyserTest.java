@@ -25,7 +25,7 @@ import org.junit.Test;
  * @author baniuk
  *
  */
-public class PointTrackerTest {
+public class TrackMapAnalyserTest {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -35,7 +35,7 @@ public class PointTrackerTest {
     private static final Logger LOGGER =
             LogManager.getLogger(PointTrackerParamTest.class.getName());
 
-    private PointTracker pointTracker;
+    private TrackMapAnalyser pointTracker;
 
     /**
      * @throws java.lang.Exception
@@ -56,7 +56,7 @@ public class PointTrackerTest {
      */
     @Before
     public void setUp() throws Exception {
-        pointTracker = new PointTracker();
+        pointTracker = new TrackMapAnalyser();
     }
 
     /**
@@ -83,13 +83,13 @@ public class PointTrackerTest {
         p.add(new Polygon(x1, y1, x1.length));
         p.add(new Polygon(x2, y2, x2.length));
 
-        List<Point> ret = PointTracker.Polygon2Point2i(p);
+        List<Point> ret = TrackMapAnalyser.Polygon2Point2i(p);
         List<Point> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
         assertThat(result, is(expected));
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
      */
     @Test
     public void testEnumeratePoint() throws Exception {
@@ -104,16 +104,16 @@ public class PointTrackerTest {
         test.add(new Polygon(x2, y2, 10));
 
         Point testPoint1 = new Point(3, 3);
-        int ret1 = PointTracker.enumeratePoint(test.get(0), test.get(1), testPoint1);
+        int ret1 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint1);
         assertThat(ret1, is(2));
 
         Point testPoint2 = new Point(11, 11);
-        int ret2 = PointTracker.enumeratePoint(test.get(0), test.get(1), testPoint2);
+        int ret2 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint2);
         assertThat(ret2, is(10));
 
-        PointTracker.INCLUDE_INITIAL_ONCE = false; // count all
+        TrackMapAnalyser.INCLUDE_INITIAL_ONCE = false; // count all
         Point testPoint3 = new Point(11, 11);
-        int ret3 = PointTracker.enumeratePoint(test.get(0), test.get(1), testPoint3);
+        int ret3 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint3);
         assertThat(ret3, is(11));
     }
 

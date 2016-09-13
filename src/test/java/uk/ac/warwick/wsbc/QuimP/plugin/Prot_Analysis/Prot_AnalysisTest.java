@@ -17,7 +17,7 @@ import org.junit.Test;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.STmap;
-import uk.ac.warwick.wsbc.QuimP.geom.TrackMap;
+import uk.ac.warwick.wsbc.QuimP.geom.MapTracker;
 import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
@@ -74,19 +74,20 @@ public class Prot_AnalysisTest {
     }
 
     /**
-     * Check tracking for found maxima. This duplicate tests from {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMapTest}
+     * Check tracking for found maxima. This duplicate tests from {@link uk.ac.warwick.wsbc.QuimP.geoMapTrackerTestst}
      * but for local data.
      * 
      * @throws Exception
      * @see src/test/resources/ProtAnalysisTest/main.m
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testTracking() throws Exception {
         int[] expectedI = { 167 - 1, 150 - 1, 139 - 1, 147 - 1, 138 - 1, 136 - 1, 134 - 1, 135 - 1,
                 141 - 1, 139 - 1 };
         int[] expectedF =
                 { 22 - 1, 23 - 1, 24 - 1, 25 - 1, 26 - 1, 27 - 1, 28 - 1, 29 - 1, 30 - 1, 31 - 1 };
-        TrackMap tM = new TrackMap(stMap[0].originMap, stMap[0].coordMap);
+        MapTracker tM = new MapTracker(stMap[0].originMap, stMap[0].coordMap);
         int frame = 20; // frame from found maxima [0]
         int index = 160; // index from found maxima [0]
         int[] ret = tM.trackForward(frame, index, 10);

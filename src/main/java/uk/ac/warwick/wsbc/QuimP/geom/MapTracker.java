@@ -19,10 +19,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * Allow to track given outline point forward in backward using these maps.
  * 
  * @author p.baniukiewicz
- * @see {@link uk.ac.warwick.wsbc.QuimP.geom.TrackMapTest}
+ * @see {@link uk.ac.warwick.wsbc.QuimP.geom.MapTrackerTest}
  *
  */
-public class TrackMap {
+public class MapTracker {
 
     public static final int BAD_INDEX = -1;
     /**
@@ -61,7 +61,7 @@ public class TrackMap {
      * @see uk.ac.warwick.wsbc.QuimP.DataContainer
      * @see uk.ac.warwick.wsbc.QuimP.STmap
      */
-    public TrackMap(double[][] originMap, double[][] coordMap) {
+    public MapTracker(double[][] originMap, double[][] coordMap) {
 
         forwardMap = QuimPArrayUtils.initIntegerArray(originMap.length, originMap[0].length);
         backwardMap = QuimPArrayUtils.initIntegerArray(forwardMap.length, forwardMap[0].length);
@@ -360,7 +360,7 @@ class PredicateBadIndex implements Predicate<Point> {
 
     @Override
     public boolean test(Point t) {
-        if (t.y == TrackMap.BAD_INDEX)
+        if (t.y == MapTracker.BAD_INDEX)
             return true;
         else
             return false;

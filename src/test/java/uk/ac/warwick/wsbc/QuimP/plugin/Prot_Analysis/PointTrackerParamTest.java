@@ -45,7 +45,7 @@ public class PointTrackerParamTest {
         INTERSECTION, REPEATING, ENUMERATE
     };
 
-    private PointTracker pointTracker;
+    private TrackMapAnalyser pointTracker;
     private ArrayList<Polygon> track;
     private Polygon expIntersectionPoints;
     private List<Pair<Point, Point>> expIntersectionPairs;
@@ -67,7 +67,7 @@ public class PointTrackerParamTest {
             Polygon expIntersectionPoints = new Polygon(new int[] { 5 }, new int[] { 5 }, 1);
             Pair<Point, Point> p = new Pair<Point, Point>(new Point(0, 1), new Point(5, 5));
             List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>(Arrays.asList(p));
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         // no intersect
         // return empty polygon and empty list of pairs
@@ -80,7 +80,7 @@ public class PointTrackerParamTest {
             ArrayList<Polygon> track = test(new Object[]{x1,y1},new Object[]{x2,y2});
             Polygon expIntersectionPoints = new Polygon(new int[] {}, new int[] {}, 0);
             List<Pair<Point, Point>> expIntersectionPairs =  new ArrayList<Pair<Point, Point>>();
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         // 2 intersections
         {
@@ -98,7 +98,7 @@ public class PointTrackerParamTest {
                     add(new Pair<Point, Point>(new Point(0, 1), new Point(9, 9)));
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         // all points the same
         {
@@ -125,7 +125,7 @@ public class PointTrackerParamTest {
                     add(new Pair<Point, Point>(new Point(0, 1), new Point(10, 10)));
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         // three tracks - each cross each
         {
@@ -147,7 +147,7 @@ public class PointTrackerParamTest {
                     add(new Pair<Point, Point>(new Point(1, 2), new Point(6, 5)));
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         // one common point for three tracks
         // reduced for one common point
@@ -171,7 +171,7 @@ public class PointTrackerParamTest {
                     add(new Pair<Point, Point>(new Point(1, 2), new Point(17, 70)));
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         // only one track on input
         // returns empty polygon or list
@@ -186,7 +186,7 @@ public class PointTrackerParamTest {
 
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         // forward track is empty
         {
@@ -203,7 +203,7 @@ public class PointTrackerParamTest {
 
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         // backward track is empty
         {
@@ -220,7 +220,7 @@ public class PointTrackerParamTest {
 
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         // intersection without selfcrossing
         {
@@ -240,7 +240,7 @@ public class PointTrackerParamTest {
                     add(new Pair<Point, Point>(new Point(0, 2), new Point(400, 7)));
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITHOUT_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITHOUT_SELFCROSSING});
         }
         // without selfcrossing, no backward track for one track
         {
@@ -264,7 +264,7 @@ public class PointTrackerParamTest {
                     add(new Pair<Point, Point>(new Point(1, 2), new Point(200, 5)));
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITHOUT_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITHOUT_SELFCROSSING});
         }
         // with selfcrossing, no backward track for one track
         {
@@ -289,7 +289,7 @@ public class PointTrackerParamTest {
                     add(new Pair<Point, Point>(new Point(2, 3), new Point(100, 100)));
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         // without selfcrossing, no forward track for one track
         {
@@ -313,7 +313,7 @@ public class PointTrackerParamTest {
                     add(new Pair<Point, Point>(new Point(0, 2), new Point(400, 7)));
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITHOUT_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITHOUT_SELFCROSSING});
         }
         // with selfcrossing, no forward track for one track
         {
@@ -338,7 +338,7 @@ public class PointTrackerParamTest {
                     add(new Pair<Point, Point>(new Point(2, 3), new Point(100, 100)));
                 }
             };
-            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,PointTracker.WITH_SELFCROSSING});
+            ret.add(new Object[] {Type.INTERSECTION,track,expIntersectionPoints,expIntersectionPairs,TrackMapAnalyser.WITH_SELFCROSSING});
         }
         //
         // REPEATINGS****************************************************************************** 
@@ -360,7 +360,7 @@ public class PointTrackerParamTest {
                 }
             };
             ret.add(new Object[] { Type.REPEATING, track, expIntersectionPoints, expIntersectionPairs,
-                    PointTracker.WITH_SELFCROSSING });
+                    TrackMapAnalyser.WITH_SELFCROSSING });
         }
         // no intersection
         {
@@ -378,7 +378,7 @@ public class PointTrackerParamTest {
                 }
             };
             ret.add(new Object[] { Type.REPEATING, track, expIntersectionPoints, expIntersectionPairs,
-                    PointTracker.WITH_SELFCROSSING });
+                    TrackMapAnalyser.WITH_SELFCROSSING });
         }
         //
         // ENUMERATE****************************************************************************** 
@@ -608,7 +608,7 @@ public class PointTrackerParamTest {
      */
     @Before
     public void setUp() throws Exception {
-        pointTracker = new PointTracker();
+        pointTracker = new TrackMapAnalyser();
     }
 
     /**
@@ -628,7 +628,7 @@ public class PointTrackerParamTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#getIntersectionPoints(java.util.List)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#getIntersectionPoints(java.util.List)}.
      */
     @Test
     public void testGetIntersectionPointsParam() throws Exception {
@@ -643,7 +643,7 @@ public class PointTrackerParamTest {
     }
 
     /**
-     * {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#removeSelfRepeatings(java.util.List)}.
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#removeSelfRepeatings(java.util.List)}.
      * @throws Exception
      */
     @Test
@@ -653,12 +653,12 @@ public class PointTrackerParamTest {
         List<Pair<Point, Point>> intersections =
                 pointTracker.getIntersectionParents(track, selfCrossing);
         List<Pair<Point, Point>> ret1 =
-                new PointTracker().removeSelfRepeatings(intersections, track);
+                new TrackMapAnalyser().removeSelfRepeatings(intersections, track);
         assertThat(ret1, is(expIntersectionPairs));
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
      * Assume that tested point is first pair left in expIntersectionPairs
      * Result is in expIntersectionPoints as x[0] coord.
      * Use selfCrossing to decide whether use INCLUDE_INITIAL
@@ -668,10 +668,10 @@ public class PointTrackerParamTest {
 
         Assume.assumeTrue(type == Type.ENUMERATE);
         if (selfCrossing > 65535) {
-            PointTracker.INCLUDE_INITIAL_ONCE = false; // count all
+            TrackMapAnalyser.INCLUDE_INITIAL_ONCE = false; // count all
         } else
-            PointTracker.INCLUDE_INITIAL_ONCE = true; // count maximum one
-        int ret1 = PointTracker.enumeratePoint(track.get(0), track.get(1),
+            TrackMapAnalyser.INCLUDE_INITIAL_ONCE = true; // count maximum one
+        int ret1 = TrackMapAnalyser.enumeratePoint(track.get(0), track.get(1),
                 expIntersectionPairs.get(0).fst);
         assertThat(ret1, is(expIntersectionPoints.xpoints[0]));
     }
@@ -691,7 +691,7 @@ public class PointTrackerParamTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.PointTracker#removeSelfRepeatings(java.util.List)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#removeSelfRepeatings(java.util.List)}.
      * No selfcrossing, B1 B2 intersection
      */
     @Test

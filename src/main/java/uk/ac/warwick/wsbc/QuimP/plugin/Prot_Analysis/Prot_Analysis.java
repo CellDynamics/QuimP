@@ -115,7 +115,7 @@ public class Prot_Analysis implements IQuimpPlugin {
         im1dynamic.setTitle("Dynamic tracking");
         TrackVisualisation visStackStatic = new TrackVisualisation(im1static);
         TrackVisualisation.Stack visStackDynamic = new TrackVisualisation.Stack(im1dynamic);
-        PointTracker pT = new PointTracker();
+        TrackMapAnalyser pT = new TrackMapAnalyser();
         LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells
             // convert binary 2D array to ImageJ
@@ -128,7 +128,7 @@ public class Prot_Analysis implements IQuimpPlugin {
             List<Polygon> pL = pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
             // find crossings
             List<Pair<Point, Point>> crossingsP = pT.removeSelfRepeatings(
-                    pT.getIntersectionParents(pL, PointTracker.WITHOUT_SELFCROSSING), pL);
+                    pT.getIntersectionParents(pL, TrackMapAnalyser.WITHOUT_SELFCROSSING), pL);
             LOGGER.trace("Crossings: " + crossingsP.size());
             // plotting on motility map
 
