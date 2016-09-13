@@ -126,7 +126,8 @@ public class ECMM_Mapping {
                 if (otherPaFiles.length > 0) {
                     YesNoCancelDialog yncd =
                             new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                                    "\tBatch Process?\n\n" + "Process other " + QParams.PAQP_EXT
+                                    "\tBatch Process?\n\n" + "Process other "
+                                            + QuimpConfigFilefilter.oldFileExt
                                             + " files in the same folder with ECMM?\n"
                                             + "[Files already run through ECMM will be skipped!]");
                     if (yncd.yesPressed()) {

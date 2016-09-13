@@ -37,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 public class QParamsQconf extends QParams {
 
     private static final Logger LOGGER = LogManager.getLogger(QParamsQconf.class.getName());
-    public static final String QCONF_EXT = ".QCONF";
     private Serializer<DataContainer> loaded; // instance of loaded data
     private File newParamFile;
     /**
@@ -68,7 +67,7 @@ public class QParamsQconf extends QParams {
         // prepare correct name for old parameters
         super.setParamFile(new File(Tool
                 .removeExtension(newParamFile.getParent() + File.separator + newParamFile.getName())
-                + "_" + currentHandler + QParams.PAQP_EXT));
+                + "_" + currentHandler + QuimpConfigFilefilter.oldFileExt));
         paramFormat = QParams.NEW_QUIMP;
     }
 
@@ -169,7 +168,7 @@ public class QParamsQconf extends QParams {
     private void compatibilityLayer() {
         // fill underlying parameters
         super.setParamFile(new File(Tool.removeExtension(newParamFile.getAbsolutePath()) + "_"
-                + currentHandler + QParams.PAQP_EXT));
+                + currentHandler + QuimpConfigFilefilter.oldFileExt));
         super.guessOtherFileNames();
         super.setSnakeQP(getSnakeQP());
         super.setStatsQP(getStatsQP());

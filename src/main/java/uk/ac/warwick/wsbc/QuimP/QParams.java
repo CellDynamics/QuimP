@@ -51,7 +51,6 @@ public class QParams {
     public static final int OLD_QUIMP = 1;
     public static final int QUIMP_11 = 2;
     public static final int NEW_QUIMP = 3;
-    public static final String PAQP_EXT = ".paQP";
     /**
      * Name of the case
      * Used to set \c fileName and \c path
@@ -595,7 +594,7 @@ public class QParams {
                     continue;
                 }
                 extension = Tool.getFileExtension(filenames[i]);
-                if (extension.matches(QParams.PAQP_EXT.substring(1))) {
+                if (extension.matches(QuimpConfigFilefilter.oldFileExt.substring(1))) {
                     paFiles.add(filenames[i]);
                     System.out.println("paFile: " + filenames[i]);
                 }

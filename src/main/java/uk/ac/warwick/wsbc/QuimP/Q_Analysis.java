@@ -93,7 +93,8 @@ public class Q_Analysis {
                                                // user is skipped)
                     YesNoCancelDialog yncd =
                             new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                                    "\tBatch Process?\n\n" + "Process other " + QParams.PAQP_EXT
+                                    "\tBatch Process?\n\n" + "Process other "
+                                            + QuimpConfigFilefilter.oldFileExt
                                             + " files in the same folder with QAnalysis?"
                                             + "\n[The same parameters will be used]");
                     if (yncd.yesPressed()) {
