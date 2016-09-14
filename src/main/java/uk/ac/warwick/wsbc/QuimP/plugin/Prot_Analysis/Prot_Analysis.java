@@ -95,7 +95,7 @@ public class Prot_Analysis implements IQuimpPlugin {
             IJ.showStatus("Finished");
         } catch (Exception e) { // catch all exceptions here
             LOGGER.debug(e.getMessage(), e);
-            LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
+            LOGGER.error("Problem with run of Protrusion Analysis mapping: " + e.getMessage());
         }
 
     }

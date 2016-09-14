@@ -45,7 +45,7 @@ public class TrackMapAnalyser {
     /**
      * Maximum point (source of tracks) is included in tracks (if <tt>true</tt>).
      */
-    public static boolean INCLUDE_INITIAL_ONCE = true;
+    public static boolean INCLUDE_INITIAL = true;
 
     /**
      * Hold result of Map generation and analysis.
@@ -85,7 +85,7 @@ public class TrackMapAnalyser {
         double[] maxValues = maximaFinder.getMaxValues(); // max values in order of maxi
         MapTracker trackMap = new MapTracker(mapCell.originMap, mapCell.coordMap); // build tracking
                                                                                    // map
-        trackMap.includeFirst = INCLUDE_INITIAL_ONCE; // include also initial point
+        trackMap.includeFirst = INCLUDE_INITIAL; // include also initial point
         ArrayList<Point> tForward = null;
         ArrayList<Point> tBackward = null;
         // end indexes of accepted elements after checking criterion
@@ -107,29 +107,69 @@ public class TrackMapAnalyser {
             for (Nb = 0; Nb < tBackward.size() && tBackward.get(Nb).y >= 0; Nb++) {
                 double val = (mapCell.motMap[tBackward.get(Nb).x][tBackward.get(Nb).y]);
                 if (val < dropValue) {
-                    --Nb; // rewind pointer as it has been already incremented
                     break;
                 }
             }
-            Nb = (Nb < 0) ? 0 : Nb; // now end is the last index that fulfill criterion
             LOGGER.trace("tBackward: " + tBackward);
             LOGGER.trace("Accepted:" + Nb);
 
             for (Nf = 0; Nf < tForward.size() && tForward.get(Nf).y >= 0; Nf++) {
                 double val = (mapCell.motMap[tForward.get(Nf).x][tForward.get(Nf).y]);
                 if (val < dropValue) {
-                    --Nf; // rewind pointer as it has been already incremented
                     break;
                 }
             }
-            Nf = (Nf < 0) ? 0 : Nf; // now end is the last index that fulfill criterion
             LOGGER.trace("tForward: " + tForward);
             LOGGER.trace("Accepted:" + Nf);
+            // store tracking lines
+            // Nb and Nf are pointer AFTER last valid point
+            trackCollection.addPair(tBackward.subList(0, Nb), tForward.subList(0, Nf));
 
-            trackCollection.addPair(tBackward.subList(0, Nb), tForward.subList(0, Nf)); // store
-                                                                                        // tracking
-                                                                                        // lines
         }
+    }
+
+    /**
+     * 
+     * @return All common points among tracks without self crossings (forward-backward for the
+     * same starting point)
+     */
+    public Polygon getCommonPoints() {
+        ArrayList<Point> tmpRet = new ArrayList<>();
+        List<Pair<Track, Track>> tracks = trackCollection.getBf();
+        LOGGER.trace(tracks);
+        for (int i = 0; i < tracks.size() - 1; i++)
+            for (int j = i + 1; j < tracks.size(); j++) {
+                Track b1 = tracks.get(i).fst;
+                Track b2 = tracks.get(j).fst;
+                Track f1 = tracks.get(i).snd;
+                Track f2 = tracks.get(j).snd;
+                // check b1-b2, b1-f2, b2-f1, f1-f2
+                // b1-b2
+                {
+                    Track copy = new Track(b1);
+                    copy.retainAll(b2);
+                    tmpRet.addAll(copy);
+                }
+                // b1-f2
+                {
+                    Track copy = new Track(b1);
+                    copy.retainAll(f2);
+                    tmpRet.addAll(copy);
+                }
+                // b2-f1
+                {
+                    Track copy = new Track(b2);
+                    copy.retainAll(f1);
+                    tmpRet.addAll(copy);
+                }
+                // f1-f2
+                {
+                    Track copy = new Track(f1);
+                    copy.retainAll(f2);
+                    tmpRet.addAll(copy);
+                }
+            }
+        return Point2i2Polygon(QuimPArrayUtils.removeDuplicates(tmpRet));
     }
 
     /**
@@ -339,7 +379,7 @@ public class TrackMapAnalyser {
         int delta = 0;
         // if maximum is included in tracks it appear there twice, for backward and forward
         // track
-        if (INCLUDE_INITIAL_ONCE && forwardMap.npoints > 0 && backwardMap.npoints > 0)
+        if (INCLUDE_INITIAL && forwardMap.npoints > 0 && backwardMap.npoints > 0)
             delta = 1;
         // do no count last point (maximum) if it is there. It will be counted for forward track
         for (i = 0; i < backwardMap.npoints - delta; i++)

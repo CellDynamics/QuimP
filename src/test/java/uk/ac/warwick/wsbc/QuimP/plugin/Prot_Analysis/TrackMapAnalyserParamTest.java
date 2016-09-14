@@ -670,9 +670,9 @@ public class TrackMapAnalyserParamTest {
 
         Assume.assumeTrue(type == Type.ENUMERATE);
         if (selfCrossing > 65535) {
-            TrackMapAnalyser.INCLUDE_INITIAL_ONCE = false; // count all
+            TrackMapAnalyser.INCLUDE_INITIAL = false; // count all
         } else
-            TrackMapAnalyser.INCLUDE_INITIAL_ONCE = true; // count maximum one
+            TrackMapAnalyser.INCLUDE_INITIAL = true; // count maximum one
         int ret1 = TrackMapAnalyser.enumeratePoint(track.get(0), track.get(1),
                 expIntersectionPairs.get(0).fst);
         assertThat(ret1, is(expIntersectionPoints.xpoints[0]));

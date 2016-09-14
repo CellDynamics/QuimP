@@ -20,11 +20,22 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import com.sun.tools.javac.util.Pair;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 
 /**
  * @author baniuk
  *
  */
+@RunWith(JUnitParamsRunner.class)
 public class TrackMapAnalyserTest {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
@@ -34,6 +45,12 @@ public class TrackMapAnalyserTest {
     }
     private static final Logger LOGGER =
             LogManager.getLogger(TrackMapAnalyserParamTest.class.getName());
+
+    // https://lkrnac.net/blog/2014/01/mock-autowired-fields/
+    @Mock
+    private TrackCollection trackCollection;
+    @InjectMocks
+    private TrackMapAnalyser trackMapAnalyser;
 
     /**
      * @throws java.lang.Exception
@@ -54,6 +71,8 @@ public class TrackMapAnalyserTest {
      */
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        // trackMapAnalyser = Mockito.spy(new TrackMapAnalyser()); // injectmock does the job
     }
 
     /**
@@ -80,10 +99,23 @@ public class TrackMapAnalyserTest {
         p.add(new Polygon(x1, y1, x1.length));
         p.add(new Polygon(x2, y2, x2.length));
 
-        TrackMapAnalyser.INCLUDE_INITIAL_ONCE = true;
+        TrackMapAnalyser.INCLUDE_INITIAL = true;
         List<Point> ret = TrackMapAnalyser.Polygon2Point2i(p);
         List<Point> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
         assertThat(result, is(expected));
+    }
+
+    @Test
+    public void subList() {
+        ArrayList<Integer> a = new ArrayList<Integer>() {
+            {
+                add(1);
+                add(2);
+                add(3);
+            }
+        };
+        List<Integer> ret = a.subList(0, 0);
+        assertThat(ret.size(), is(0));
     }
 
     /**
@@ -101,20 +133,263 @@ public class TrackMapAnalyserTest {
         test.add(new Polygon(x1, y1, 10));
         test.add(new Polygon(x2, y2, 10));
 
-        TrackMapAnalyser.INCLUDE_INITIAL_ONCE = true;
+        TrackMapAnalyser.INCLUDE_INITIAL = true;
         Point testPoint1 = new Point(3, 3);
         int ret1 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint1);
         assertThat(ret1, is(2));
 
-        TrackMapAnalyser.INCLUDE_INITIAL_ONCE = true;
+        TrackMapAnalyser.INCLUDE_INITIAL = true;
         Point testPoint2 = new Point(11, 11);
         int ret2 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint2);
         assertThat(ret2, is(10));
 
-        TrackMapAnalyser.INCLUDE_INITIAL_ONCE = false; // count all
+        TrackMapAnalyser.INCLUDE_INITIAL = false; // count all
         Point testPoint3 = new Point(11, 11);
         int ret3 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint3);
         assertThat(ret3, is(11));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#getCommonPoints()}.
+     */
+    @Test
+    @Parameters(method = "valuesCommonPoints")
+    public void testGetCommonPoints(List<Pair<Track, Track>> tracks, Polygon expected)
+            throws Exception {
+        Mockito.when(trackCollection.getBf()).thenReturn(tracks);
+        Polygon ret = trackMapAnalyser.getCommonPoints();
+        assertThat(ret.xpoints, is(expected.xpoints));
+        assertThat(ret.ypoints, is(expected.ypoints));
+    }
+
+    @SuppressWarnings({ "serial", "unused" })
+    private Object[] valuesCommonPoints() {
+        //!<
+        List<Object[]> ret = new ArrayList<>();
+        {
+            // empty track - use on empty object
+            List<Pair<Track, Track>> tracks = new ArrayList<>();
+            Polygon exp = new Polygon(new int[] {  }, new int[] {  }, 0);
+            ret.add(new Object[] {tracks,exp});
+        }
+        {   // two tracks from the same origin, they have common point nut it should not be detected
+            Track b1 = new Track() {{
+                add(new Point(0,0));
+                add(new Point(1,1));
+                add(new Point(2,2));
+                add(new Point(3,3));
+                add(new Point(4,4));
+                add(new Point(5,5));
+            }};
+            Track f1 = new Track() {{
+                add(new Point(5,5));
+                add(new Point(6,6));
+                add(new Point(7,7));
+                add(new Point(8,8));
+                add(new Point(9,9));
+                add(new Point(10,10));
+            }};
+            List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {{
+                add(new Pair<Track, Track>(b1,f1));
+            }};
+            Polygon exp = new Polygon(new int[] {  }, new int[] {  }, 0);
+            ret.add(new Object[] {tracks,exp});
+        }
+        {   // three tracks - second without backtrack no common points
+            Track b1 = new Track() {{
+                add(new Point(0,0));
+                add(new Point(1,1));
+                add(new Point(2,2));
+                add(new Point(3,3));
+                add(new Point(4,4));
+                add(new Point(5,5));
+            }};
+            Track f1 = new Track() {{
+                add(new Point(5,5));
+                add(new Point(6,6));
+                add(new Point(7,7));
+                add(new Point(8,8));
+                add(new Point(9,9));
+                add(new Point(10,10));
+            }};
+            Track b2 = new Track() {{
+                add(new Point(0,10));
+                add(new Point(1,9));
+                add(new Point(2,8));
+                add(new Point(3,7));
+                add(new Point(4,6));
+                add(new Point(3,4));
+            }};
+            Track f2 = new Track() {{
+                
+            }};
+            List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {{
+                add(new Pair<Track, Track>(b1,f1));
+                add(new Pair<Track, Track>(b2,f2));
+            }};
+            Polygon exp = new Polygon(new int[] {  }, new int[] {  }, 0);
+            ret.add(new Object[] {tracks,exp});
+        }
+        {   // three tracks - second without backtrack 1 common point b1-b2
+            Track b1 = new Track() {{
+                add(new Point(0,0));
+                add(new Point(1,1));
+                add(new Point(2,2));
+                add(new Point(3,3));
+                add(new Point(4,4));
+                add(new Point(5,5));
+            }};
+            Track f1 = new Track() {{
+                add(new Point(5,5));
+                add(new Point(6,6));
+                add(new Point(7,7));
+                add(new Point(8,8));
+                add(new Point(9,9));
+                add(new Point(10,10));
+            }};
+            Track b2 = new Track() {{
+                add(new Point(0,10));
+                add(new Point(1,9));
+                add(new Point(2,8));
+                add(new Point(3,7));
+                add(new Point(4,6));
+                add(new Point(5,5));
+            }};
+            Track f2 = new Track() {{
+                
+            }};
+            List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {{
+                add(new Pair<Track, Track>(b1,f1));
+                add(new Pair<Track, Track>(b2,f2));
+            }};
+            Polygon exp = new Polygon(new int[] { 5 }, new int[] { 5 }, 1);
+            ret.add(new Object[] {tracks,exp});
+        }
+        {   // four tracks 1 common point b1-b2 and b1-f2 and f1-b2(the same point twice)
+            Track b1 = new Track() {{
+                add(new Point(0,0));
+                add(new Point(1,1));
+                add(new Point(2,2));
+                add(new Point(3,3));
+                add(new Point(4,4));
+                add(new Point(5,5));
+            }};
+            Track f1 = new Track() {{
+                add(new Point(5,5));
+                add(new Point(6,6));
+                add(new Point(7,7));
+                add(new Point(8,8));
+                add(new Point(9,9));
+                add(new Point(10,10));
+            }};
+            Track b2 = new Track() {{
+                add(new Point(0,10));
+                add(new Point(1,9));
+                add(new Point(2,8));
+                add(new Point(3,7));
+                add(new Point(4,6));
+                add(new Point(5,5));
+            }};
+            Track f2 = new Track() {{
+                add(new Point(5,5));
+                add(new Point(6,4));
+                add(new Point(7,3));
+                add(new Point(8,2));
+                add(new Point(9,1));
+                add(new Point(10,0));
+                
+            }};
+            List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {{
+                add(new Pair<Track, Track>(b1,f1));
+                add(new Pair<Track, Track>(b2,f2));
+            }};
+            Polygon exp = new Polygon(new int[] { 5 }, new int[] { 5 }, 1);
+            ret.add(new Object[] {tracks,exp});
+        }
+        {   // four tracks 2 common point (b1-b2 b1-f2 f1-b2) and f1-b2 
+            Track b1 = new Track() {{
+                add(new Point(0,0));
+                add(new Point(1,1));
+                add(new Point(2,2));
+                add(new Point(3,3));
+                add(new Point(4,4));
+                add(new Point(5,5));
+            }};
+            Track f1 = new Track() {{
+                add(new Point(5,5));
+                add(new Point(6,6));
+                add(new Point(7,7));
+                add(new Point(8,8));
+                add(new Point(9,9));
+                add(new Point(10,10));
+            }};
+            Track b2 = new Track() {{
+                add(new Point(0,10));
+                add(new Point(1,9));
+                add(new Point(2,8));
+                add(new Point(7,7));
+                add(new Point(4,6));
+                add(new Point(5,5));
+            }};
+            Track f2 = new Track() {{
+                add(new Point(5,5));
+                add(new Point(6,4));
+                add(new Point(7,3));
+                add(new Point(8,2));
+                add(new Point(9,1));
+                add(new Point(10,0));
+                
+            }};
+            List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {{
+                add(new Pair<Track, Track>(b1,f1));
+                add(new Pair<Track, Track>(b2,f2));
+            }};
+            Polygon exp = new Polygon(new int[] { 5,7 }, new int[] { 5,7 }, 2);
+            ret.add(new Object[] {tracks,exp});
+        }
+        {   // four tracks 4 common point (b1-b2 b1-f2 f1-b2 f1-f2) + repeating
+            Track b1 = new Track() {{
+                add(new Point(0,0));
+                add(new Point(1,1));
+                add(new Point(2,2));
+                add(new Point(3,3));
+                add(new Point(4,4));
+                add(new Point(50,5));
+            }};
+            Track f1 = new Track() {{
+                add(new Point(50,5));
+                add(new Point(6,6));
+                add(new Point(7,7));
+                add(new Point(8,8));
+                add(new Point(9,9));
+                add(new Point(10,10));
+            }};
+            Track b2 = new Track() {{
+                add(new Point(0,10));
+                add(new Point(1,1));
+                add(new Point(2,8));
+                add(new Point(7,7));
+                add(new Point(4,6));
+                add(new Point(5,5));
+            }};
+            Track f2 = new Track() {{
+                add(new Point(5,5));
+                add(new Point(6,4));
+                add(new Point(7,3));
+                add(new Point(8,2));
+                add(new Point(2,2));
+                add(new Point(10,10));
+                
+            }};
+            List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {{
+                add(new Pair<Track, Track>(b1,f1));
+                add(new Pair<Track, Track>(b2,f2));
+            }};
+            Polygon exp = new Polygon(new int[] { 1,2,7,10 }, new int[] { 1,2,7,10 }, 4);
+            ret.add(new Object[] {tracks,exp});
+        }
+        return ret.toArray();
+        /**/
     }
 
 }

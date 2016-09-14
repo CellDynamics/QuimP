@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class TrackCollection {
      * Every track has different id.
      */
     private ArrayList<Pair<Track, Track>> bf;
+
     int nextId = 0;
 
     public TrackCollection() {
@@ -83,6 +85,13 @@ public class TrackCollection {
             ret.add(p.snd);
         }
         return ret.iterator();
+    }
+
+    /**
+     * @return the bf
+     */
+    public List<Pair<Track, Track>> getBf() {
+        return Collections.unmodifiableList(bf);
     }
 
 }
