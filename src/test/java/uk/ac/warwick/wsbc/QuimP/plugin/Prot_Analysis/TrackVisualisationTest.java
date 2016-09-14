@@ -176,7 +176,7 @@ public class TrackVisualisationTest {
         result.add(new Point(5, 44));
         result.add(new Point(1, 1));
 
-        Collections.sort(result, new ListPoint2iComparator());
+        Collections.sort(result, protrusionVis.new ListPoint2iComparator());
         assertThat(result, is(expected));
     }
 

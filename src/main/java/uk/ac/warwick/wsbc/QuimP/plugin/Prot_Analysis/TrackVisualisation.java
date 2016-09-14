@@ -37,7 +37,7 @@ import uk.ac.warwick.wsbc.QuimP.STmap;
  * @author p.baniukiewicz
  *
  */
-public class TrackVisualisation {
+public abstract class TrackVisualisation {
     private static final Logger LOGGER = LogManager.getLogger(TrackVisualisation.class.getName());
     /**
      * Color for maxima points.
@@ -97,96 +97,10 @@ public class TrackVisualisation {
     }
 
     /**
-     * Plot unrelated points on image (static).
-     * 
-     * @param mapCell source of coordinate maps
-     * @param points list of points to plot in coordinates (index,frame)
-     * @param color color of point
-     * @param radius radius of point
-     */
-    public void addStaticCirclesToImage(STmap mapCell, Polygon points, Color color, double radius) {
-        double x[][] = mapCell.getxMap();
-        double y[][] = mapCell.getyMap();
-        int[] indexes = points.ypoints;
-        int[] frames = points.xpoints;
-        for (int n = 0; n < points.npoints; n++) {
-            // decode frame,outline to screen coordinates
-            if (frames[n] < 0 || indexes[n] < 0)
-                continue;
-            double xcoord = x[frames[n]][indexes[n]]; // screen coordinate of
-            double ycoord = y[frames[n]][indexes[n]]; // (frame,index) point
-            plotCircle(xcoord, ycoord, color, radius);
-        }
-        originalImage.setOverlay(overlay); // add to image
-    }
-
-    /**
-     * Plot tracking lines before and after maxima points (static).
-     *  
-     * @param mapCell map related to given cell.
-     * @param pL List of polygons that keep coordinates of points of backward and forward tracks.
-     * The polygons in <tt>pL</tt> list must be in alternating order: BM1,FM1,BM2,FM2,..., where
-     * BMx is backward track for maximum point no.x and FMx is the forward track for maximum point 
-     * no.x. This order is respected by {@link Prot_Analysis.trackMaxima(STmap, double, MaximaFinder)} 
-     */
-    public void addStaticTrackingLinesToImage(STmap mapCell, TrackCollection trackCollection) {
-        double x[][] = mapCell.getxMap(); // temporary x and y coordinates for given cell
-        double y[][] = mapCell.getyMap();
-        // these are raw coordinates of tracking lines extracted from List<PolygonRoi> pL
-        ArrayList<float[]> xcoorda = new ArrayList<>();
-        ArrayList<float[]> ycoorda = new ArrayList<>();
-        int aL = 0;
-        // iterate over tracks
-        Iterator<Track> it = trackCollection.iteratorTrack();
-        while (it.hasNext()) {
-            Track track = it.next();
-            Polygon pR = track.asPolygon();
-            // create store for tracking line coordinates
-            xcoorda.add(new float[pR.npoints]);
-            ycoorda.add(new float[pR.npoints]);
-            // counter of invalid vertexes. According to TrackMap#trackForward last points can
-            // be -1 when user provided longer time span than available. (last in term of time)
-            int invalidVertex = 0;
-            // decode frame,outline to x,y
-            for (int f = 0; f < pR.npoints; f++) {
-                // -1 stands for points that are outside of range - assured by TrackMap.class
-                if (pR.ypoints[f] < 0 || pR.xpoints[f] < 0) {
-                    invalidVertex++; // count bad points
-                    continue;
-                }
-                xcoorda.get(aL)[f] = (float) x[pR.xpoints[f]][pR.ypoints[f]];
-                ycoorda.get(aL)[f] = (float) y[pR.xpoints[f]][pR.ypoints[f]];
-            }
-            PolygonRoi pRoi = GraphicsElements.getLine(xcoorda.get(aL), ycoorda.get(aL),
-                    pR.npoints - invalidVertex, getColor(track));
-            overlay.add(pRoi);
-            aL++;
-        }
-        originalImage.setOverlay(overlay); // add to image
-    }
-
-    /**
      * @return the originalImage
      */
     public ImagePlus getOriginalImage() {
         return originalImage;
-    }
-
-    /**
-     * Plot static elements on image if they are not null.
-     * 
-     * @param trackCollection initialised TrackCollection object
-     * @param mF maxima according to Prot_Analysis.MaximaFinder
-     */
-    public void addStaticElements(STmap mapCell, TrackCollection trackCollection, MaximaFinder mF) {
-        if (mF != null) {
-            Polygon max = mF.getMaxima();
-            addStaticCirclesToImage(mapCell, max, TrackVisualisation.MAXIMA_COLOR, 7);
-        }
-        if (trackCollection != null) {
-            addStaticTrackingLinesToImage(mapCell, trackCollection);
-        }
-
     }
 
     /**
@@ -242,14 +156,30 @@ public class TrackVisualisation {
         public Map(String name, float[][] data) {
             super(name, new FloatProcessor(data));
             ImageProcessor imp = originalImage.getProcessor();
+            // can no be rotated here!!
             // imp = imp.rotateRight();
             // imp.flipHorizontal();
             // imp.resetRoi();
             // originalImage.setProcessor(imp);
         }
 
-        public void show() {
-
+        /**
+         * Plot unrelated points on image (static).
+         * 
+         * @param points list of points to plot in coordinates (index,frame)
+         * @param color color of point
+         * @param radius radius of point
+         */
+        public void addCirclesToImage(Polygon points, Color color, double radius) {
+            int[] indexes = points.ypoints;
+            int[] frames = points.xpoints;
+            for (int n = 0; n < points.npoints; n++) {
+                // decode frame,outline to screen coordinates
+                if (frames[n] < 0 || indexes[n] < 0)
+                    continue;
+                plotCircle(frames[n], indexes[n], color, radius);
+            }
+            originalImage.setOverlay(overlay); // add to image
         }
 
         /**
@@ -283,6 +213,108 @@ public class TrackVisualisation {
             originalImage.setOverlay(overlay);
         }
 
+    }
+
+    /**
+     * Class for plotting on [x,y] image
+     * @author baniuk
+     *
+     */
+    static class Image extends TrackVisualisation {
+        public Image(ImagePlus originalImage) {
+            super(originalImage);
+        }
+
+        public Image(String name, ImageProcessor imp) {
+            super(name, imp);
+        }
+
+        /**
+         * Plot unrelated points on image (static).
+         * 
+         * @param mapCell source of coordinate maps
+         * @param points list of points to plot in coordinates (index,frame)
+         * @param color color of point
+         * @param radius radius of point
+         */
+        public void addCirclesToImage(STmap mapCell, Polygon points, Color color, double radius) {
+            double x[][] = mapCell.getxMap();
+            double y[][] = mapCell.getyMap();
+            int[] indexes = points.ypoints;
+            int[] frames = points.xpoints;
+            for (int n = 0; n < points.npoints; n++) {
+                // decode frame,outline to screen coordinates
+                if (frames[n] < 0 || indexes[n] < 0)
+                    continue;
+                double xcoord = x[frames[n]][indexes[n]]; // screen coordinate of
+                double ycoord = y[frames[n]][indexes[n]]; // (frame,index) point
+                plotCircle(xcoord, ycoord, color, radius);
+            }
+            originalImage.setOverlay(overlay); // add to image
+        }
+
+        /**
+         * Plot static elements on image if they are not null.
+         * 
+         * @param trackCollection initialised TrackCollection object
+         * @param mF maxima according to Prot_Analysis.MaximaFinder
+         */
+        public void addElementsToImage(STmap mapCell, TrackCollection trackCollection,
+                MaximaFinder mF) {
+            if (mF != null) {
+                Polygon max = mF.getMaxima();
+                addCirclesToImage(mapCell, max, TrackVisualisation.MAXIMA_COLOR, 7);
+            }
+            if (trackCollection != null) {
+                addTrackingLinesToImage(mapCell, trackCollection);
+            }
+
+        }
+
+        /**
+         * Plot tracking lines before and after maxima points (static).
+         *  
+         * @param mapCell map related to given cell.
+         * @param pL List of polygons that keep coordinates of points of backward and forward tracks.
+         * The polygons in <tt>pL</tt> list must be in alternating order: BM1,FM1,BM2,FM2,..., where
+         * BMx is backward track for maximum point no.x and FMx is the forward track for maximum point 
+         * no.x. This order is respected by {@link Prot_Analysis.trackMaxima(STmap, double, MaximaFinder)} 
+         */
+        public void addTrackingLinesToImage(STmap mapCell, TrackCollection trackCollection) {
+            double x[][] = mapCell.getxMap(); // temporary x and y coordinates for given cell
+            double y[][] = mapCell.getyMap();
+            // these are raw coordinates of tracking lines extracted from List<PolygonRoi> pL
+            ArrayList<float[]> xcoorda = new ArrayList<>();
+            ArrayList<float[]> ycoorda = new ArrayList<>();
+            int aL = 0;
+            // iterate over tracks
+            Iterator<Track> it = trackCollection.iteratorTrack();
+            while (it.hasNext()) {
+                Track track = it.next();
+                Polygon pR = track.asPolygon();
+                // create store for tracking line coordinates
+                xcoorda.add(new float[pR.npoints]);
+                ycoorda.add(new float[pR.npoints]);
+                // counter of invalid vertexes. According to TrackMap#trackForward last points can
+                // be -1 when user provided longer time span than available. (last in term of time)
+                int invalidVertex = 0;
+                // decode frame,outline to x,y
+                for (int f = 0; f < pR.npoints; f++) {
+                    // -1 stands for points that are outside of range - assured by TrackMap.class
+                    if (pR.ypoints[f] < 0 || pR.xpoints[f] < 0) {
+                        invalidVertex++; // count bad points
+                        continue;
+                    }
+                    xcoorda.get(aL)[f] = (float) x[pR.xpoints[f]][pR.ypoints[f]];
+                    ycoorda.get(aL)[f] = (float) y[pR.xpoints[f]][pR.ypoints[f]];
+                }
+                PolygonRoi pRoi = GraphicsElements.getLine(xcoorda.get(aL), ycoorda.get(aL),
+                        pR.npoints - invalidVertex, getColor(track));
+                overlay.add(pRoi);
+                aL++;
+            }
+            originalImage.setOverlay(overlay); // add to image
+        }
     }
 
     /**
@@ -446,7 +478,7 @@ public class TrackVisualisation {
         }
 
         /**
-         * Plot filled circle on overlay.
+         * Plot filled circle on overlay on given frame.
          * 
          * @param x
          * @param y
@@ -461,25 +493,25 @@ public class TrackVisualisation {
             oR.setPosition(frame);
             overlay.add(oR); // add to collection of overlays
         }
+
+        /**
+         * Compare Point2i objects along frames (x-coordinate).
+         * 
+         * @author p.baniukiewicz
+         *
+         */
+        class ListPoint2iComparator implements Comparator<Point> {
+
+            @Override
+            public int compare(Point o1, Point o2) {
+                if (o1.x < o2.x)
+                    return -1;
+                if (o1.x > o2.x)
+                    return 1;
+                else
+                    return 0;
+            }
+
+        }
     }
-}
-
-/**
- * Compare Point2i objects along frames (x-coordinate).
- * 
- * @author p.baniukiewicz
- *
- */
-class ListPoint2iComparator implements Comparator<Point> {
-
-    @Override
-    public int compare(Point o1, Point o2) {
-        if (o1.x < o2.x)
-            return -1;
-        if (o1.x > o2.x)
-            return 1;
-        else
-            return 0;
-    }
-
 }

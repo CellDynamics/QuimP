@@ -74,8 +74,6 @@ public class Prot_Analysis implements IQuimpPlugin {
             if (paramFile == null) { // open UI if no file provided
                 QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(".QCONF"); // use
                                                                                         // default
-                // engine for
-                // finding extension
                 FileDialog od = new FileDialog(IJ.getInstance(),
                         "Open paramater file " + fileFilter.toString());
                 od.setFilenameFilter(fileFilter);
@@ -113,11 +111,19 @@ public class Prot_Analysis implements IQuimpPlugin {
         ImagePlus im1static = qconfLoader.getImage();
         if (im1static == null)
             return; // stop if no image
-        ImagePlus im1dynamic = im1static.duplicate();
-        im1dynamic.setTitle("Dynamic tracking");
-        TrackVisualisation visStackStatic = new TrackVisualisation(im1static);
-        TrackVisualisation visCommonPoints = new TrackVisualisation(im1static.duplicate());
-        TrackVisualisation.Stack visStackDynamic = new TrackVisualisation.Stack(im1dynamic);
+
+        TrackVisualisation.Image visStackStatic =
+                new TrackVisualisation.Image(im1static.duplicate());
+        visStackStatic.getOriginalImage().setTitle("Static points");
+
+        TrackVisualisation.Image visCommonPoints =
+                new TrackVisualisation.Image(im1static.duplicate());
+        visCommonPoints.getOriginalImage().setTitle("Common points");
+
+        TrackVisualisation.Stack visStackDynamic =
+                new TrackVisualisation.Stack(im1static.duplicate());
+        visStackDynamic.getOriginalImage().setTitle("Dynamic tracking");
+
         TrackMapAnalyser pT = new TrackMapAnalyser();
         LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells
@@ -133,10 +139,12 @@ public class Prot_Analysis implements IQuimpPlugin {
 
             visSingle.addMaximaToImage(mF);
             visSingle.addTrackingLinesToImage(trackCollection);
+            // visSingle.addStaticCirclesToImage(pT.getCommonPoints(), Color.ORANGE, 7);
             visSingle.getOriginalImage().show();
 
-            visStackStatic.addStaticElements(mapCell, trackCollection, mF);
-            visCommonPoints.addStaticCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 7);
+            visStackStatic.addElementsToImage(mapCell, trackCollection, mF);
+
+            visCommonPoints.addCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 7);
 
             visStackDynamic.addMaximaToImage(mapCell, mF);
             visStackDynamic.addTrackingLinesToImage(mapCell, trackCollection);
@@ -150,9 +158,8 @@ public class Prot_Analysis implements IQuimpPlugin {
             h++;
         }
 
-        im1static.show();
-        im1dynamic.show();
-        visCommonPoints.getOriginalImage().setTitle("Common points");
+        visStackStatic.getOriginalImage().show();
+        visStackDynamic.getOriginalImage().show();
         visCommonPoints.getOriginalImage().show();
     }
 
