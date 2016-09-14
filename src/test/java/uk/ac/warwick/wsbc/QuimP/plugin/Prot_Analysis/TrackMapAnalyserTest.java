@@ -33,9 +33,7 @@ public class TrackMapAnalyserTest {
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     private static final Logger LOGGER =
-            LogManager.getLogger(PointTrackerParamTest.class.getName());
-
-    private TrackMapAnalyser pointTracker;
+            LogManager.getLogger(TrackMapAnalyserParamTest.class.getName());
 
     /**
      * @throws java.lang.Exception
@@ -56,7 +54,6 @@ public class TrackMapAnalyserTest {
      */
     @Before
     public void setUp() throws Exception {
-        pointTracker = new TrackMapAnalyser();
     }
 
     /**

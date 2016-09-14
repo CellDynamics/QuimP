@@ -31,7 +31,7 @@ import com.sun.tools.javac.util.Pair;
  *
  */
 @RunWith(Parameterized.class)
-public class PointTrackerParamTest {
+public class TrackMapAnalyserParamTest {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -39,13 +39,13 @@ public class PointTrackerParamTest {
             Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     private static final Logger LOGGER =
-            LogManager.getLogger(PointTrackerParamTest.class.getName());
+            LogManager.getLogger(TrackMapAnalyserParamTest.class.getName());
 
     enum Type {
         INTERSECTION, REPEATING, ENUMERATE
     };
 
-    private TrackMapAnalyser pointTracker;
+    private TrackMapAnalyser trackMapAnalyser;
     private ArrayList<Polygon> track;
     private Polygon expIntersectionPoints;
     private List<Pair<Point, Point>> expIntersectionPairs;
@@ -608,7 +608,7 @@ public class PointTrackerParamTest {
      */
     @Before
     public void setUp() throws Exception {
-        pointTracker = new TrackMapAnalyser();
+        trackMapAnalyser = new TrackMapAnalyser();
     }
 
     /**
@@ -618,8 +618,9 @@ public class PointTrackerParamTest {
     public void tearDown() throws Exception {
     }
 
-    public PointTrackerParamTest(Type type, ArrayList<Polygon> track, Polygon expIntersectionPoints,
-            List<Pair<Point, Point>> expIntersectionPairs, int selfCrossing) {
+    public TrackMapAnalyserParamTest(Type type, ArrayList<Polygon> track,
+            Polygon expIntersectionPoints, List<Pair<Point, Point>> expIntersectionPairs,
+            int selfCrossing) {
         this.type = type;
         this.track = track;
         this.expIntersectionPairs = expIntersectionPairs;
@@ -634,11 +635,12 @@ public class PointTrackerParamTest {
     public void testGetIntersectionPointsParam() throws Exception {
 
         Assume.assumeTrue(type == Type.INTERSECTION);
-        Polygon ret = pointTracker.getIntersectionPoints(track);
+        Polygon ret = trackMapAnalyser.getIntersectionPoints(track);
         assertThat(ret.xpoints, is(expIntersectionPoints.xpoints));
         assertThat(ret.ypoints, is(expIntersectionPoints.ypoints));
 
-        List<Pair<Point, Point>> ret1 = pointTracker.getIntersectionParents(track, selfCrossing);
+        List<Pair<Point, Point>> ret1 =
+                trackMapAnalyser.getIntersectionParents(track, selfCrossing);
         assertThat(ret1, is(expIntersectionPairs));
     }
 
@@ -651,7 +653,7 @@ public class PointTrackerParamTest {
 
         Assume.assumeTrue(type == Type.REPEATING);
         List<Pair<Point, Point>> intersections =
-                pointTracker.getIntersectionParents(track, selfCrossing);
+                trackMapAnalyser.getIntersectionParents(track, selfCrossing);
         List<Pair<Point, Point>> ret1 =
                 new TrackMapAnalyser().removeSelfRepeatings(intersections, track);
         assertThat(ret1, is(expIntersectionPairs));

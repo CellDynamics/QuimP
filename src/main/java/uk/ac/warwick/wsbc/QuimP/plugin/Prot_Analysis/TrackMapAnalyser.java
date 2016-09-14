@@ -47,7 +47,20 @@ public class TrackMapAnalyser {
      */
     public static boolean INCLUDE_INITIAL_ONCE = true;
 
+    /**
+     * Hold result of Map generation and analysis.
+     */
+    private TrackCollection trackCollection;
+
+    /**
+     * @return the trackCollection
+     */
+    public TrackCollection getTrackCollection() {
+        return trackCollection;
+    }
+
     public TrackMapAnalyser() {
+        trackCollection = new TrackCollection();
     }
 
     /**
@@ -60,23 +73,13 @@ public class TrackMapAnalyser {
      * @param maximaFinder properly initialized object that holds maxima of motility map. 
      * All maxima are tracked.
      * 
-     * @return List of points tracked from every maximum point as long as they meet criterion.
+     * Return list of points tracked from every maximum point as long as they meet criterion.
      * Maximum point can be included in this list depending on setting of 
-     * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst} flag. Points for one tracking 
-     * line are packed into PolygonRoi object. Those objects alternate -
-     * backwardM1,forwardM1,backwardM2,forwardM2,... where Mx is maximum point. The size of list 
-     * is always 2*number of maxima. Backward track is always on even position whereas attached
-     * forward track on next uneven.
-     * It can contain only one point (maximum if set
-     * {@link MapTracker.TrackMap.includeFirst}) or empty polygon if no tracing line exist. 
-     * @see removeSelfRepeatings(List<Pair<Point, Point>>, List<Polygon>)
-     * @see removeSelfCrossings(List<Pair<Point, Point>>)
+     * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst} flag.
      */
-    public TrackCollection trackMaxima(final STmap mapCell, double drop,
-            final MaximaFinder maximaFinder) {
+    public void trackMaxima(final STmap mapCell, double drop, final MaximaFinder maximaFinder) {
 
         int numFrames = mapCell.motMap.length;
-        TrackCollection ret = new TrackCollection();
         // int[] indexes = new int[numFrames];
         Polygon maxi = maximaFinder.getMaxima(); // restore computed maxima
         double[] maxValues = maximaFinder.getMaxValues(); // max values in order of maxi
@@ -123,9 +126,10 @@ public class TrackMapAnalyser {
             LOGGER.trace("tForward: " + tForward);
             LOGGER.trace("Accepted:" + Nf);
 
-            ret.addPair(tBackward.subList(0, Nb), tForward.subList(0, Nf)); // store tracking lines
+            trackCollection.addPair(tBackward.subList(0, Nb), tForward.subList(0, Nf)); // store
+                                                                                        // tracking
+                                                                                        // lines
         }
-        return ret;
     }
 
     /**
@@ -248,7 +252,7 @@ public class TrackMapAnalyser {
     }
 
     /**
-     * Remove self crossings that happens between backward and forward tracks for the same initial
+     * Remove self crossings that happen between backward and forward tracks for the same initial
      * point.
      * 
      * {@link trackMaxima} returns alternating tracks tracks, therefore every pair i,i+1 is related

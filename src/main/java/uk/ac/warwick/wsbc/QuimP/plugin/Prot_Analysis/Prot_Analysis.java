@@ -126,8 +126,8 @@ public class Prot_Analysis implements IQuimpPlugin {
             MaximaFinder mF = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
             mF.computeMaximaIJ(paramList.getDoubleValue("noiseTolerance")); // 1.5
             // track maxima across motility map
-            TrackCollection trackCollection =
-                    pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
+            pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
+            TrackCollection trackCollection = pT.getTrackCollection();
             // find crossings
             // List<Pair<Point, Point>> crossingsP = pT.removeSelfRepeatings(
             // pT.getIntersectionParents(pL, TrackMapAnalyser.WITHOUT_SELFCROSSING), pL);
