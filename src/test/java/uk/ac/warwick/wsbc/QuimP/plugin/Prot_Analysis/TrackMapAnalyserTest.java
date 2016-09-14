@@ -105,6 +105,7 @@ public class TrackMapAnalyserTest {
         assertThat(result, is(expected));
     }
 
+    @SuppressWarnings("serial")
     @Test
     public void subList() {
         ArrayList<Integer> a = new ArrayList<Integer>() {

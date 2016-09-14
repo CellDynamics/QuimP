@@ -87,8 +87,8 @@ public class TrackVisualisationTest {
     @Test
     public void testAddCirclesToImage() throws Exception {
         ImageJ ij = new ImageJ();
-        int[] frames = { 0, 1, 2, 3, 4, 5, 6 };
-        int[] indexes = { 0, 0, 0, 0, 0, 0, 0 };
+        int[] indexes = { 0, 1, 2, 3, 4, 5, 6 };
+        int[] frames = { 0, 0, 0, 0, 0, 0, 0 };
         double[][] xs = { { 10 }, { 50 }, { 100 }, { 150 }, { 200 }, { 300 }, { 400 } };
         double[][] ys = { { 50 }, { 60 }, { 160 }, { 210 }, { 360 }, { 460 }, { 510 } };
         STmap mapCell = Mockito.mock(STmap.class);
@@ -167,8 +167,8 @@ public class TrackVisualisationTest {
     @Test
     public void testListPoint2iComparator() {
         List<Point> expected = new ArrayList<>();
-        expected.add(new Point(1, 1));
         expected.add(new Point(1, 11));
+        expected.add(new Point(1, 1));
         expected.add(new Point(5, 44));
 
         List<Point> result = new ArrayList<>();

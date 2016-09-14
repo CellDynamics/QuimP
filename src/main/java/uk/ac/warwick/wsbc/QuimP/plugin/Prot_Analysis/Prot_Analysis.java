@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
+import java.awt.Color;
 import java.awt.FileDialog;
 import java.io.File;
 
@@ -115,6 +116,7 @@ public class Prot_Analysis implements IQuimpPlugin {
         ImagePlus im1dynamic = im1static.duplicate();
         im1dynamic.setTitle("Dynamic tracking");
         TrackVisualisation visStackStatic = new TrackVisualisation(im1static);
+        TrackVisualisation visCommonPoints = new TrackVisualisation(im1static.duplicate());
         TrackVisualisation.Stack visStackDynamic = new TrackVisualisation.Stack(im1dynamic);
         TrackMapAnalyser pT = new TrackMapAnalyser();
         LOGGER.trace("Cells in database: " + stMap.length);
@@ -128,21 +130,17 @@ public class Prot_Analysis implements IQuimpPlugin {
             // track maxima across motility map
             pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
             TrackCollection trackCollection = pT.getTrackCollection();
-            // find crossings
-            // List<Pair<Point, Point>> crossingsP = pT.removeSelfRepeatings(
-            // pT.getIntersectionParents(pL, TrackMapAnalyser.WITHOUT_SELFCROSSING), pL);
-            // LOGGER.trace("Crossings: " + crossingsP.size());
-            // plotting on motility map
 
             visSingle.addMaximaToImage(mF);
             visSingle.addTrackingLinesToImage(trackCollection);
             visSingle.getOriginalImage().show();
 
             visStackStatic.addStaticElements(mapCell, trackCollection, mF);
+            visCommonPoints.addStaticCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 7);
 
             visStackDynamic.addMaximaToImage(mapCell, mF);
             visStackDynamic.addTrackingLinesToImage(mapCell, trackCollection);
-            // visStackDynamic.addCirclesToImage(mapCell, crossingsP, Color.RED, 7);
+            // visStackDynamic.addCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 9);
 
             // Maps are correlated in order with Outlines in DataContainer.
             // mapCell.map2ColorImagePlus("motility_map", mapCell.motMap,
@@ -154,6 +152,8 @@ public class Prot_Analysis implements IQuimpPlugin {
 
         im1static.show();
         im1dynamic.show();
+        visCommonPoints.getOriginalImage().setTitle("Common points");
+        visCommonPoints.getOriginalImage().show();
     }
 
     @Override

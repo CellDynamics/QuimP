@@ -27,6 +27,13 @@ public class MaximaFinder {
     private ImageProcessor iP;
     private Polygon maxima; // found maxima as polygon
 
+    // /**
+    // * Indicate that image processor has been rotated. By default x coordinate should be frame, y
+    // * index. But For visualisation is better to rotate image to have longer axis on bottom.
+    // * By default TrackVisualisation.Map.Map(String, float[][]) rotates image.
+    //     */
+    // public boolean ROTATED = true;
+
     /**
      * Construct MaximaFinder object.
      * 

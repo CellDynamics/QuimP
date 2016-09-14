@@ -93,8 +93,8 @@ public class TrackMapAnalyser {
         int Nf = 0;
         // iterate through all maxima - take only indexes (x)
         for (int i = 0; i < maxi.npoints; i++) {
-            int index = maxi.xpoints[i]; // considered index
-            int frame = maxi.ypoints[i]; // considered frame
+            int index = maxi.ypoints[i]; // considered index
+            int frame = maxi.xpoints[i]; // considered frame
             LOGGER.trace("Max = [" + frame + "," + index + "]");
             // trace forward every index until end of time
             tForward =
@@ -136,7 +136,6 @@ public class TrackMapAnalyser {
     public Polygon getCommonPoints() {
         ArrayList<Point> tmpRet = new ArrayList<>();
         List<Pair<Track, Track>> tracks = trackCollection.getBf();
-        LOGGER.trace(tracks);
         for (int i = 0; i < tracks.size() - 1; i++)
             for (int j = i + 1; j < tracks.size(); j++) {
                 Track b1 = tracks.get(i).fst;
@@ -169,6 +168,7 @@ public class TrackMapAnalyser {
                     tmpRet.addAll(copy);
                 }
             }
+        LOGGER.debug("Common points found:" + tmpRet.size());
         return Point2i2Polygon(QuimPArrayUtils.removeDuplicates(tmpRet));
     }
 

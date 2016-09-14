@@ -98,7 +98,8 @@ public class TrackCollection {
 
 /**
  * Hold one track line with additional parameters.
- * 
+ * <p>
+ * In general x coordinate stands for frame and y for index.
  * @author baniuk
  *
  */
@@ -171,7 +172,7 @@ class Track extends ArrayList<Point> {
         Polygon ret = new Polygon();
         while (it.hasNext()) {
             Point p = it.next();
-            ret.addPoint(p.y, p.x);
+            ret.addPoint(p.x, p.y);
         }
         return ret;
     }
