@@ -618,7 +618,7 @@ public class QParams {
      * analysis.  
      */
     void guessOtherFileNames() {
-        System.out.println("prefix: " + fileName);
+        LOGGER.debug("prefix: " + fileName);
 
         convexFile = new File(path + File.separator + fileName + "_convexityMap.maQP");
 
