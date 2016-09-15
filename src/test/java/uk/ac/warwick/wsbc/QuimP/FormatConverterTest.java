@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -101,19 +102,19 @@ public class FormatConverterTest {
         Thread.sleep(1000);
         // compare paQP
         // manualy generated one
-        FileInputStream readerexpected = new FileInputStream(
+        FileReader readerexpected = new FileReader(
                 "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0_expected.paQP");
         // expected
-        FileInputStream readertest = new FileInputStream(
+        FileReader readertest = new FileReader(
                 "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP");
 
         readerexpected.skip(76); // skip header with random controlsum
         readertest.skip(76);
-        byte[] expected = new byte[512];
-        byte[] test = new byte[512];
-        readerexpected.read(expected);
+        char[] expected = new char[512];
+        char[] test = new char[512];
+        readerexpected.read(expected, 0, 512);
         readerexpected.close();
-        readertest.read(test);
+        readertest.read(test, 0, 512);
         readertest.close();
 
         assertThat(test, is(expected));
