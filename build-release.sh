@@ -46,6 +46,7 @@ git checkout -b release/$releaseVersion $currentBranch
 echo "Prepare changelog and commit it here"
 echo '	Before continuing changelog at src/changes'
 echo '	must be modified in respect to fixed bugs'
+echo 'Be prepared for signing'
 read -r -p "Are you sure to continue? [y/N] " response
 case $response in
     [yY][eE][sS]|[yY]) 
@@ -82,7 +83,8 @@ git merge --no-ff -m "Merge release/$releaseVersion into develop" release/$relea
 # go to the master branch
 git checkout master
 # merge the version back into master but use the tagged version instead of the release/$releaseVersion HEAD
-git merge --no-ff -m "Merge previous version into master to avoid the increased version number" release/$releaseVersion~1
+git merge --no-ff -no-commit release/$releaseVersion~1
+git commit -m "Merge previous version into master to avoid the increased version number" -S
 # Get back on the develop branch
 git checkout $currentBranch
 
