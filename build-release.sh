@@ -1,10 +1,8 @@
 #!/bin/bash
 #
-# Build given project from given branch
+# Build given project from current branch
 # Perform the following actions:
-# - Checkout latest commit for project XX from branch YY (or build from working tree)
-# - Build it
-# - Build site
+# - Use maven release to build and create relevant commits
 # - Upload full site to quimp.linkpc.net (restricted to logged users)
 # - Upload only changes to public site
 # - Upload only javadoc to public site
@@ -12,20 +10,22 @@
 
 set -e
 
-if [ "$#" -ne 3 ]; then
-    echo "syntax: build-release project-path branch profile"
-    echo 'branch can be -- if working tree is used'
+if [ "$#" -ne 2 ]; then
+    echo "syntax: build-release releaseVersion developmentVersion"
+    echo "Example: build-release.sh 16.08.02 16.08.03-SNAPSHOT"
+    echo ""
+    mvn help:evaluate -Dexpression=project.version
     exit 1
 fi
 
-PROJECT=$1 # relative path to project
-BRANCH=$2 # branch of the project can be -- that stands for working tree
-PROFILE=$3 # maven profile
+releaseVersion=$1 
+developmentVersion=$2 
+
 FIJI="../Fiji.app.release/plugins" # fiji location (for uploading to repo)
 
 echo 'Before continuing changelog at src/changes'
 echo 'must be modified in respect to fixed bugs'
-echo "Commit format: git tag -a \"SNAPSHOT-13-07-16\" -m \"Releasing snaphots to Fiji internal update site\"" 
+echo 'One should be on develop branch as well'
 read -r -p "Are you sure to continue? [y/N] " response
 case $response in
     [yY][eE][sS]|[yY]) 
@@ -35,45 +35,51 @@ case $response in
         ;;
 esac
 
-# go into project dir
-cd $PROJECT
-if [ "$2" == '--' ]; then
-	echo You selected build from working directory
-else
-	echo You selected build from branch $BRANCH
-	if [ -n "$(git status --porcelain)" ]; then
-		echo 'Worknig directory is not clean.'
-		echo 'Commit all changes first (especially changelog)'
-		exit 1
-	fi
-	# checkout branch
-	git fetch
-	git checkout $BRANCH
-	git pull
-fi
+currentBranch=$(git rev-parse --abbrev-ref HEAD)
 
-# build project - it should be full jar
-mvn clean package site -P $PROFILE
+# Create local ssh-agent
+eval $(ssh-agent)
+ssh-add ~/.ssh/pi
+
+# Start the release by creating a new release branch
+git checkout -b release/$releaseVersion $currentBranch
+# The Maven release
+mvn clean
+mvn -T 1C --batch-mode release:prepare -DreleaseVersion=$releaseVersion -DdevelopmentVersion=$developmentVersion
+mvn -T 1C --batch-mode release:perform
+
 # build documentation without source code included
 ./generateDoc.sh Doxyfile-no-source
 # copy artefact to Fiij
 find $FIJI -name QuimP*.jar ! -name QuimP_11b.jar | xargs rm -fv # delete old one except old quimp
-cp -v target/QuimP_-*-jar-*.jar $FIJI # copy package
+cp -v target/checkout/target/QuimP_-*-jar-*.jar $FIJI # copy package
 # Copy site
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/ pi@quimp.linkpc.net:/var/www/restricted/site
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/checkout/target/site/ pi@quimp.linkpc.net:/var/www/restricted/site
 # Copy only changes for users
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/css target/site/images target/site/changes-report.html pi@quimp.linkpc.net:/var/www/html/site
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/checkout/target/site/css target/site/images target/site/changes-report.html pi@quimp.linkpc.net:/var/www/html/site
 # Copy only javadoc for users
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/site/apidocs/ pi@quimp.linkpc.net:/var/www/html/apidocs
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/checkout/target/site/apidocs/ pi@quimp.linkpc.net:/var/www/html/apidocs
 # copy doxygen for users
 rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats Doxygen_doc/html/ pi@quimp.linkpc.net:/var/www/html/doxygen
+
+
+# Clean up and finish
+# get back to the develop branch
+git checkout $currentBranch
+# merge the version back into develop
+git merge --no-ff -m "Merge release/$releaseVersion into develop" release/$releaseVersion
+# go to the master branch
+git checkout master
+# merge the version back into master but use the tagged version instead of the release/$releaseVersion HEAD
+git merge --no-ff -m "Merge previous version into master to avoid the increased version number" release/$releaseVersion~1
+# Get back on the develop branch
+git checkout $currentBranch
 
 echo '------------------------------------------------------------------'
 echo Postprocessing:
 echo Start Fiji from $FIJI and push plugin to plugin repository
-if [ "$2" == "--" ]; then
-	echo "Commit changes and tag them."
-	echo "git tag -a \"SNAPSHOT-13-07-16\" -m \"Releasing snaphots to Fiji internal update site\""
-fi
+echo "git push --all && git push --tags"
+kill $SSH_AGENT_PID
+# git push --all && git push --tags
 
 
