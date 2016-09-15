@@ -196,6 +196,7 @@
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
           <releaseProfiles>uber-snapshot</releaseProfiles>
+          <goals>install site</goals>
         </configuration>
       </plugin>
     </plugins>
