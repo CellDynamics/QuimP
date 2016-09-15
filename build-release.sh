@@ -40,6 +40,7 @@ currentBranch=$(git rev-parse --abbrev-ref HEAD)
 # Create local ssh-agent
 eval $(ssh-agent)
 ssh-add ~/.ssh/pi
+ssh-add ~/.ssh/trac
 
 # Start the release by creating a new release branch
 git checkout -b release/$releaseVersion $currentBranch
@@ -74,6 +75,11 @@ git checkout master
 git merge --no-ff -m "Merge previous version into master to avoid the increased version number" release/$releaseVersion~1
 # Get back on the develop branch
 git checkout $currentBranch
+
+# Updating trac version
+d=$(date +"%b %d, %Y, %H:%M:%S")
+ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version add '$releaseVersion' '$d'"
+ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version add '$developmentVersion' '$d'"
 
 echo '------------------------------------------------------------------'
 echo Postprocessing:
