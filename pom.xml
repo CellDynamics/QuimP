@@ -194,6 +194,7 @@
           <tagNameFormat>v@{project.version}</tagNameFormat>
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
+          <releaseProfiles>uber-snapshot</releaseProfiles>
         </configuration>
       </plugin>
     </plugins>
