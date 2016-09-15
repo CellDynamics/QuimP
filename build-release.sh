@@ -23,9 +23,7 @@ developmentVersion=$2
 
 FIJI="../Fiji.app.release/plugins" # fiji location (for uploading to repo)
 
-echo 'Before continuing changelog at src/changes'
-echo 'must be modified in respect to fixed bugs'
-echo 'One should be on develop branch as well'
+echo "Are you in branch you want to release?"
 read -r -p "Are you sure to continue? [y/N] " response
 case $response in
     [yY][eE][sS]|[yY]) 
@@ -44,6 +42,18 @@ ssh-add ~/.ssh/trac
 
 # Start the release by creating a new release branch
 git checkout -b release/$releaseVersion $currentBranch
+
+echo "Prepare changelog and commit it here"
+echo '	Before continuing changelog at src/changes'
+echo '	must be modified in respect to fixed bugs'
+read -r -p "Are you sure to continue? [y/N] " response
+case $response in
+    [yY][eE][sS]|[yY]) 
+        ;;
+    *)
+        exit 1
+        ;;
+esac
 # The Maven release
 mvn clean
 mvn -T 1C --batch-mode release:prepare -DreleaseVersion=$releaseVersion -DdevelopmentVersion=$developmentVersion
