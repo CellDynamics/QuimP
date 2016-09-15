@@ -1,8 +1,7 @@
-# ConfigurationHandling {#ConfigurationHandling}
+# Configuration Handling
 
 \author p.baniukiewicz
 \date 1 Apr 2016
-\tableofcontents
 
 # General file operations {#genfile}
 File names are defined in configuration class \ref uk.ac.warwick.wsbc.QuimP.BOAState.BOAp "BOAp" (see comments in Doxygen doc). The very general workflow for saving and loading configurations for particular parts of QuimP is presented below.
@@ -241,3 +240,8 @@ slist-->ser
 ser-->QuimP : <<new instance>>
 destroy ser
 @enduml
+
+## Remarks about loading QCONF {#rqconf}
+
+*QCONF* file contains names of plugins that were used. Those plugins may not be present in current user configuration and this 
+fact is noted by changing background of plugin selector to red. Here is how it is handled: Ususlly `SnakePluginList` holds names of all discovered plugins. Those names are populated to Choices during their initialization in \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.buildSetupPanel() "buildSetupPanel" by method \ref uk.ac.warwick.wsbc.QuimP.SnakePluginList.getPluginNames(int) "getPluginNames". Therefore in this workflow they both contain the same data (names). When external *QCONF* is loaded it can contain different names, not known for `SnakePluginList` nor `PluginFactory`. This situation is solved in \ref uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateChoices() "updateChoices()" that is called on every screen refresh. In this method current name from `SnakePluginList` (loaded) is tried to be selected in `Choice`. If it was not known during BOA initialization it is not present in `Choice`. Therefore it can not be selected and this situation is detected by checking `Choice` state after try of selection. If it is `NONE` it means that given plugin name is not present there and thus it has not been found during BOA initialization. In this case this name is added to the list. When user tries to select this name he gets message from `SnakePluginList` and `PluginFactory` that this name is illegal and after next refreshing default `NONE` is selected in `Choice`.

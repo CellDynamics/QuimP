@@ -7,6 +7,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 import java.awt.BorderLayout;
 import java.awt.Choice;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Label;
@@ -23,13 +24,15 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.SpinnerNumberModel;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -146,7 +149,7 @@ public abstract class QWindowBuilder {
      * related to UI elements that are created by this method (basing on
      * configuration passed in \b value). There are two special names that are
      * not related to UI directly: 
-     * -# help - defines textual help provided as parameter
+     * -# help - defines textual help provided as parameter. It supports HTML
      * -# name - defines plugin name provided as parameter 
      * 
      * The parameter list is defined as String and its content is depended on 
@@ -172,6 +175,17 @@ public abstract class QWindowBuilder {
      * <li> second entry
      * <li> ...
      * </ol>
+     * <li>button - creates JButton control. It requires 1 parameter:
+     * <ol>
+     * <li>Name on the button
+     * </ol>
+     * <li>checkbox - creates JCheckBox control. It requires 3 parameters (in
+     * order)
+     * <ol>
+     * <li>checkbox name
+     * <li>checkbox state (boolean value, \a true or \a false)
+     * <li>initial value (\a true or \a false)
+     * </ol>
      * </ul>
      * For \a choice calling uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder.setValues(final ParamList)
      * has sense only if passed parameters will be present in list already (so it has been used
@@ -189,7 +203,9 @@ public abstract class QWindowBuilder {
      *  def1.put("Name", "test");
      *  def1.put("wIndow", "spinner, -0.5, 0.5, 0.1, 0");
      *  def1.put("smootH", "spinner, -1, 10, 1, -1");
-     *  def1.put("help","FlowLayout"); 
+     *  def1.put("Load Mask", "button, Load_mask");
+     *  def1.put("Getopened", "choice,NONE");
+     *  def1.put("help","<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. It should be 8-bit image of size of original stack with <span style=\"color: #ffffff; background-color: #000000;\">black background</span> and white objects.</p>\r\n<p><strong>Get Opened</strong> - Select mask already opened in ImageJ. Alternative to <em>Load Mask</em>, will override loaded file.</p>\r\n<p><strong>step</strong> - stand for discretisation density, 1.0 means that every pixel of the outline will be mapped to Snake node.</p>\r\n<p><strong>smoothing</strong>&nbsp;- add extra Spline interpolation to the shape</p></font>"); 
      * @endcode
      * 
      * By default window is not visible yet. User must call ShowWindow
@@ -198,6 +214,20 @@ public abstract class QWindowBuilder {
      * until unfocused. User can overwrite this behavior in his own class derived from
      * QWindowBuilder
      * 
+     * This method can be overrode in implementing class that allows for e.g. setting size of the
+     * window or add listeners:
+     * @code{.java}
+     *   public void buildWindow(ParamList def) {
+     *   super.buildWindow(def);
+     *   // add preffered size to this window
+     *   pluginWnd.setPreferredSize(new Dimension(300, 450));
+     *   pluginWnd.pack();
+     *   pluginWnd.setVisible(true);
+     *   pluginWnd.addWindowListener(new myWindowAdapter()); // close not hide
+     *   ((JButton) ui.get("Load Mask")).addActionListener(this);
+     *   applyB.addActionListener(this);
+     * }
+     * @endcode
      * @param def Configuration as described
      * @throw IllegalArgumentException or other unchecked exceptions on wrong
      * syntax of \c def
@@ -209,8 +239,7 @@ public abstract class QWindowBuilder {
         this.def = def; // remember parameters
         ui.clear(); // clear all ui stored on second call of third method
 
-        pluginWnd = new JFrame(); // create frame with title given as first
-                                  // position in table
+        pluginWnd = new JFrame(); // create frame with title given as first position in table
         pluginPanel = new JPanel(); // main panel on whole window
         pluginPanel.setLayout(new BorderLayout()); // divide window on two zones
                                                    // - upper for controls,
@@ -254,10 +283,12 @@ public abstract class QWindowBuilder {
                                     Double.parseDouble(uiparams[S_MAX]), // max
                                     Double.parseDouble(uiparams[S_STEP])); // step
                     ui.put(key, new JSpinner(model));
-                    ui.put(key + "label", new Label(key)); // add description
+                    ui.put(key + "label",
+                            new Label(WordUtils.capitalize(WordUtils.capitalize(key)))); // add
+                                                                                         // description
                     break;
                 case "choice":
-                    if (uiparams.length < 2) // 4+uitype
+                    if (uiparams.length < 2) // 2+uitype
                         throw new IllegalArgumentException(
                                 "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
                     Choice c = new Choice();
@@ -265,7 +296,24 @@ public abstract class QWindowBuilder {
                         c.add(uiparams[i]);
                     c.select(0);
                     ui.put(key, c);
-                    ui.put(key + "label", new Label(key)); // add description
+                    ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+                    break;
+                case "button":
+                    if (uiparams.length != 2) // 1+uitype
+                        throw new IllegalArgumentException(
+                                "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
+                    JButton b = new JButton(uiparams[1]);
+                    ui.put(key, b);
+                    ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+                    break;
+                case "checkbox":
+                    if (uiparams.length != 3) // 2+uitype
+                        throw new IllegalArgumentException(
+                                "Probably wrong syntax in UI definition for " + uiparams[UITYPE]);
+                    JCheckBox cb = new JCheckBox(WordUtils.capitalize(uiparams[1]),
+                            Boolean.parseBoolean(uiparams[2]));
+                    ui.put(key, cb);
+                    ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
                     break;
                 default:
                     // wrong param syntax
@@ -283,14 +331,16 @@ public abstract class QWindowBuilder {
             pluginPanel.setBorder(BorderFactory.createTitledBorder("Plugin " + def.get("name")));
         }
         if (def.containsKey("help")) {
-            JTextArea helpArea = new JTextArea(10, 10); // default size of text
-                                                        // area
+            JTextPane helpArea = new JTextPane(); // default size of text area
+            // helpArea.setLineWrap(true);
+            // helpArea.setWrapStyleWord(true);
+            helpArea.setPreferredSize(new Dimension(80, 200));
+            helpArea.setContentType("text/html");
             JScrollPane helpPanel = new JScrollPane(helpArea);
             helpArea.setEditable(false);
             pluginPanel.add(helpPanel, BorderLayout.CENTER); // locate at center
                                                              // position
             helpArea.setText(def.get("help")); // set help text
-            helpArea.setLineWrap(true); // with wrapping
         }
 
         // add Apply button on south
@@ -314,7 +364,7 @@ public abstract class QWindowBuilder {
         pluginPanel.add(south, BorderLayout.SOUTH);
         pluginWnd.add(pluginPanel);
         pluginWnd.pack();
-        // add listener on close - window is hided to preserve settings
+        // add listener on close - window is hidden to preserve settings
         pluginWnd.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
                 LOGGER.trace("Window closing");
@@ -405,6 +455,15 @@ public abstract class QWindowBuilder {
                     comp.select(val);
                     break;
                 }
+                case "button": {
+                    break;
+                }
+                case "checkbox": {
+                    JCheckBox c = (JCheckBox) ui.get(key);
+                    c.setSelected(Boolean.parseBoolean(val));
+
+                    break;
+                }
                 default:
                     throw new IllegalArgumentException("Unknown UI type in setValues");
             }
@@ -447,6 +506,14 @@ public abstract class QWindowBuilder {
                     ret.put(key, val.getSelectedItem());
                     break;
                 }
+                case "button": {
+                    break;
+                }
+                case "checkbox": {
+                    JCheckBox c = (JCheckBox) m.getValue();
+                    ret.put(key, String.valueOf(c.isSelected()));
+                    break;
+                }
                 default:
                     throw new IllegalArgumentException("Unknown UI type in getValues");
             }
@@ -483,6 +550,17 @@ public abstract class QWindowBuilder {
         // get list of all params from ui as <key,val> list
         ParamList uiParam = getValues();
         return uiParam.getDoubleValue(key);
+    }
+
+    /**
+     * Return value related to given key.
+     * 
+     * @copydoc getIntegerFromUI(String)
+     */
+    public boolean getBooleanFromUI(final String key) {
+        // get list of all params from ui as <key,val> list
+        ParamList uiParam = getValues();
+        return uiParam.getBooleanValue(key);
     }
 
     /**

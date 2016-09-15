@@ -17,7 +17,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * Represent Outline object used as Snake representation after ECMM mapping
  * 
  * Outline can have the same Shape as Snake but distribution of Vert may be different than 
- * distribution of Node in Snake
+ * distribution of Node in Snake. Outline is produced after ECMM and used in further analysis
  * 
  * @author rtyson
  * @author p.baniukiewicz
@@ -74,6 +74,9 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
 
     /**
      * Conversion constructor
+     * 
+     * Convert only basic properties. Do not forget that many of Vert properties are set during 
+     * ECMM or Q Analysis
      * 
      * @param src Snake to be converted to Outline
      */
@@ -891,12 +894,6 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         head = closestV;
     }
 
-    // Vert findCoordPoint(double addAt) {
-
-    // Vert v = findCoordEdge(addAt);
-
-    // }
-
     Vert findCoordEdge(double a) {
         Vert v = head;
         do {
@@ -918,6 +915,26 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
             v = v.getNext();
         } while (!v.isHead());
         return head;
+    }
+
+    /**
+     * Call super and then oo Outline related actions
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.beforeSerialize()
+     */
+    @Override
+    public void beforeSerialize() {
+        super.beforeSerialize();
+        this.updateCurvature();
+    }
+
+    /**
+     * Call super and then oo Outline related actions
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.afterSerialize()
+     */
+    @Override
+    public void afterSerialize() throws Exception {
+        super.afterSerialize();
+        this.updateCurvature(); // WARN This may be not good idea to override loaded data
     }
 
 }

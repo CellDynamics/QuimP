@@ -4,23 +4,35 @@
     <groupId>uk.ac.warwick.wsbc</groupId>
     <artifactId>pom-quimp</artifactId>
     <version>1.0.0</version>
-    <relativePath/>
+    <relativePath />
     <!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
   </parent>
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
-  <version>16.06.01</version>
+  <version>16.08.02</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/bretschneider/quimp/</url>
+  <description>QuimP software, a set of plugins for ImageJ to quantify spatio-temporal patterns of fluorescently labeled proteins in the cortex of moving cells.</description>
+  <!-- Root of URL for documentation. MUST have / at end -->
+  <properties>
+    <manual.rootlocation>http://quimp.linkpc.net/manual/</manual.rootlocation>
+    <site.rootlocation>http://quimp.linkpc.net/history/</site.rootlocation>
+    <site.historylocation>${site.rootlocation}changes-report.html</site.historylocation>
+  </properties>
   <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
   <scm>
     <connection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</connection>
     <developerConnection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</developerConnection>
     <url>http://www.trac-wsbc.linkpc.net:8080/cgit/QuimP.git/</url>
+    <tag>v16.08.02</tag>
   </scm>
+  <issueManagement>
+    <system>Trac</system>
+    <url>http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/</url>
+  </issueManagement>
   <licenses>
     <license>
       <name>TBA</name>
@@ -64,7 +76,7 @@
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
-      <version>1.1</version>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -75,10 +87,32 @@
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.6.2</version>
+      <version>2.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-math3</artifactId>
+      <version>3.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
+    </dependency>
+    <dependency>
+      <groupId>pl.pragmatists</groupId>
+      <artifactId>JUnitParams</artifactId>
+      <version>1.0.5</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -153,6 +187,18 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <tagNameFormat>v@{project.version}</tagNameFormat>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+          <releaseProfiles>uber-snapshot</releaseProfiles>
+          <goals>install site</goals>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -161,6 +207,9 @@
       <!-- Most of this settings is dependend from folder structure -->
       <!-- Use of this profile will cause that current state of Working Directory will be utilized -->
       <id>development</id>
+      <properties>
+        <manual.location>${manual.rootlocation}develop/QuimP_Guide.html</manual.location>
+      </properties>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
@@ -168,7 +217,7 @@
         <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-core</artifactId>
-          <version>2.0.41-beta</version>
+          <version>2.1.0-RC.1</version>
           <scope>compile</scope>
         </dependency>
       </dependencies>
@@ -206,13 +255,63 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+      <properties>
+        <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
+      </properties>
     </profile>
     <profile>
-      <id>uber</id>
-      <!--Profile for building FAT jar-->
+      <id>uber-snapshot</id>
+      <!--Profile for building FAT jar with snapshot documentation-->
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
+      <properties>
+        <manual.location>${manual.rootlocation}develop/QuimP_Guide.html</manual.location>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
+            <version>2.6</version>
+            <configuration>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <archive>
+                <manifest>
+                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                </manifest>
+                <manifestEntries>
+                  <Implementation-Build>${buildNumber}</Implementation-Build>
+                </manifestEntries>
+              </archive>
+            </configuration>
+            <executions>
+              <execution>
+                <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
+                <!-- https://maven.apache.org/guides/mini/guide-default-execution-ids.html -->
+                <id>simple-command</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>uber-release</id>
+      <!--Profile for building FAT jar with release documentation-->
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -253,10 +352,18 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.17</version>
         <configuration>
-          <configLocation>google_checks.xml</configLocation>
+          <configLocation>src/test/resources/quimp_google_checks.xml</configLocation>
         </configuration>
       </plugin>
       <plugin>
@@ -283,6 +390,33 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.7.6.201602180812</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <version>2.12</version>
+        <configuration>
+          <tracUser>baniuk</tracUser>
+          <tracPassword>Idgammaqd1!</tracPassword>
+          <query>status=closed&amp;component=QuimP-BOA&amp;or&amp;status=closed&amp;component=QuimP-ANA&amp;or&amp;status=closed&amp;component=QuimP-RandomW&amp;or&amp;status=closed&amp;component=QuimP-DIC&amp;or&amp;status=closed&amp;component=QuimP-ECMM&amp;or&amp;status=closed&amp;component=QuimP-Plugin&amp;or&amp;status=closed&amp;component=QuimP-Q&amp;order=changetime</query>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>trac-report</report>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.4</version>
+        <configuration>
+          <show>private</show>
+          <quiet>true</quiet>
+        </configuration>
       </plugin>
     </plugins>
   </reporting>

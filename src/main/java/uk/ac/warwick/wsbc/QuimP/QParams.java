@@ -21,9 +21,12 @@ import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 
 /**
  * Container class for parameters defining the whole process of analysis in QuimP.
- * Stores parameters from different modules and supports writing and reading
- * segmentation parameters from files (paQP). This class defines file format
- * used for storing parameters in file. Process only main paQP file. QuimP uses
+ * Stores parameters read from configuration files and provide them to different modules.
+ * Supports writing and reading segmentation parameters from files (paQP). 
+ * This class defines file format used for storing parameters in file. 
+ * Object of this class is used for creating local configuration objects for ECMM and QAnalysis
+ * modules.
+ * Process only main paQP file. QuimP uses
  * several files to store segmentation results and algorithm parameters:
  * <ul>
  * <li>.paQP - core file, contains reference to images and parameters of
@@ -33,12 +36,13 @@ import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
  * <li>.mapQP - maps described in documentation</li>
  * </ul>
  * <p>
- *
+ * This class exists for compatibility purposes. Allows reading old files. There is also 
+ * child class QParamsEsxhanger that is based on new file format. Because QParams is strongly 
+ * integrated with QuimP it has been left.
+ * 
  * @author rtyson
  * @see BOAp
- * @remarks This class exists for compatibility purposes. Allows reading old files. There is also 
- * child class QParamsEsxhanger that is based on new file format. Because QParams is strongly 
- * integrated with QuimP it has been left. 
+ *  
  */
 public class QParams {
 
@@ -47,26 +51,45 @@ public class QParams {
     public static final int OLD_QUIMP = 1;
     public static final int QUIMP_11 = 2;
     public static final int NEW_QUIMP = 3;
-
-    protected File paramFile; //!< paQP file full name
+    /**
+     * Name of the case
+     * Used to set \c fileName and \c path
+     */
+    private File paramFile;
     private File[] otherPaFiles;
-    public int paramFormat; //!< Indicates format of data file
+    /**
+     * Indicates format of data file.
+     */
+    public int paramFormat;
+    /**
+     * Name of the data file - without path and extension. Equals to name of the case
+     * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
+     */
+    private String fileName;
+    /**
+     * Path where user files exist
+     * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
+     */
+    private String path;
+    private File segImageFile, snakeQP;
 
-    String prefix;
-    String path;
-    File segImageFile, snakeQP, statsQP;
+    protected File statsQP;
+    /**
+     * This field is set by direct call from ANA. Left here for compatibility reasons.
+     * Main holder of fluTiffs is {@link uk.ac.warwick.wsbc.QuimP.ANAp}
+     */
     File[] fluTiffs;
 
-    File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
+    private File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
     File[] fluFiles;
 
     private double imageScale;
     private double frameInterval;
     private int startFrame, endFrame;
-    
+
     private int blowup;
     private double nodeRes;
-    
+
     int NMAX, max_iterations, sample_tan, sample_norm;
     double delta_t, vel_crit, f_central, f_contract, f_image, f_friction;
     double finalShrink, cortexWidth;
@@ -77,27 +100,17 @@ public class QParams {
      */
     boolean ecmmHasRun = false;
 
-    /**
-     * Currently processed handler.
-     * 
-     * This is compatibility parameter. Old QuimP uses separated files for every snake thus QParams
-     * contained always correct values as given snake has been loaded. New QuimP uses composed
-     * file and this field points to currently processed Handler and it must be controlled from
-     * outside. For compatibility reasons all setters and getters assumes that there is only
-     * one Handler (as in old QuimP). This field allow to set current Handler if QParamsEschange
-     * instance is used.
-     */
-    public int currentHandler = 0;
+    public QParams() {
+
+    }
 
     /**
      * Read basic information from \a paQP file such as its name and path. Initialize structures
      * 
      * @param p \a paQP file
      */
-    QParams(File p) {
-        paramFile = p;
-        path = paramFile.getParent();
-        prefix = Tool.removeExtension(paramFile.getName());
+    public QParams(File p) {
+        setParamFile(p);
 
         paramFormat = QParams.QUIMP_11;
 
@@ -130,6 +143,36 @@ public class QParams {
         cortexWidth = 0.7;
         key = -1;
         sensitivity = -1;
+    }
+
+    /**
+     * @return the paramFile
+     */
+    File getParamFile() {
+        return paramFile;
+    }
+
+    /**
+     * @param paramFile the paramFile to set.
+     */
+    public void setParamFile(File paramFile) {
+        fileName = Tool.removeExtension(paramFile.getName());
+        this.paramFile = paramFile;
+        path = paramFile.getParent();
+    }
+
+    /**
+     * @return the prefix
+     */
+    public String getFileName() {
+        return fileName;
+    }
+
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
     }
 
     /**
@@ -188,12 +231,6 @@ public class QParams {
         this.frameInterval = frameInterval;
     }
 
-    void setParamFile(File p) {
-        paramFile = p;
-        path = paramFile.getParent();
-        prefix = Tool.removeExtension(paramFile.getName());
-    }
-
     /**
      * @return the startFrame
      */
@@ -220,6 +257,132 @@ public class QParams {
      */
     public void setEndFrame(int endFrame) {
         this.endFrame = endFrame;
+    }
+
+    /**
+     * @return the snakeQP
+     */
+    public File getSnakeQP() {
+        return snakeQP;
+    }
+
+    /**
+     * @param snakeQP the snakeQP to set
+     */
+    public void setSnakeQP(File snakeQP) {
+        this.snakeQP = snakeQP;
+    }
+
+    /**
+     * @return the statsQP
+     */
+    public File getStatsQP() {
+        return statsQP;
+    }
+
+    /**
+     * @param statsQP the statsQP to set
+     */
+    public void setStatsQP(File statsQP) {
+        this.statsQP = statsQP;
+    }
+
+    /**
+     * @return the segImageFile
+     */
+    public File getSegImageFile() {
+        return segImageFile;
+    }
+
+    /**
+     * @param segImageFile the segImageFile to set
+     */
+    public void setSegImageFile(File segImageFile) {
+        this.segImageFile = segImageFile;
+    }
+
+    /**
+     * @return the convexFile
+     */
+    public File getConvexFile() {
+        return convexFile;
+    }
+
+    /**
+     * @param convexFile the convexFile to set
+     */
+    public void setConvexFile(File convexFile) {
+        this.convexFile = convexFile;
+    }
+
+    /**
+     * @return the coordFile
+     */
+    public File getCoordFile() {
+        return coordFile;
+    }
+
+    /**
+     * @param coordFile the coordFile to set
+     */
+    public void setCoordFile(File coordFile) {
+        this.coordFile = coordFile;
+    }
+
+    /**
+     * @return the motilityFile
+     */
+    public File getMotilityFile() {
+        return motilityFile;
+    }
+
+    /**
+     * @param motilityFile the motilityFile to set
+     */
+    public void setMotilityFile(File motilityFile) {
+        this.motilityFile = motilityFile;
+    }
+
+    /**
+     * @return the originFile
+     */
+    public File getOriginFile() {
+        return originFile;
+    }
+
+    /**
+     * @param originFile the originFile to set
+     */
+    public void setOriginFile(File originFile) {
+        this.originFile = originFile;
+    }
+
+    /**
+     * @return the xFile
+     */
+    public File getxFile() {
+        return xFile;
+    }
+
+    /**
+     * @param xFile the xFile to set
+     */
+    public void setxFile(File xFile) {
+        this.xFile = xFile;
+    }
+
+    /**
+     * @return the yFile
+     */
+    public File getyFile() {
+        return yFile;
+    }
+
+    /**
+     * @param yFile the yFile to set
+     */
+    public void setyFile(File yFile) {
+        this.yFile = yFile;
     }
 
     /**
@@ -252,7 +415,7 @@ public class QParams {
      * @return \c true if successful
      * @throws QuimpException 
      */
-    void readParams() throws QuimpException {
+    public void readParams() throws QuimpException {
         paramFormat = QParams.OLD_QUIMP;
         try {
             BufferedReader d = new BufferedReader(new FileReader(paramFile));
@@ -338,73 +501,76 @@ public class QParams {
         }
     }
 
-    void writeParams() throws QuimpException {
-        switch (paramFormat) {
-            case QParams.QUIMP_11:
-                try {
-                    if (paramFile.exists()) {
-                        paramFile.delete();
-                    }
-
-                    Random generator = new Random();
-                    double d = generator.nextDouble() * 1000000; // 6 digit key to ID
-                                                                 // job
-                    key = Math.round(d);
-
-                    PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
-
-                    pPW.print("#p2 - QuimP parameter file (QuimP11). Created " + Tool.dateAsString()
-                            + "\n");
-                    pPW.print(IJ.d2s(key, 0) + "\n");
-                    pPW.print(segImageFile.getAbsolutePath() + "\n");
-                    pPW.print(File.separator + snakeQP.getName() + "\n");
-                    // pPW.print(outFile.getAbsolutePath() + "\n");
-
-                    pPW.print("#Image calibration (scale, frame interval)\n");
-                    pPW.print(IJ.d2s(imageScale, 6) + "\n");
-                    pPW.print(IJ.d2s(frameInterval, 3) + "\n");
-
-                    pPW.print("#segmentation parameters\n");
-                    pPW.print(IJ.d2s(NMAX, 0) + "\n");
-                    pPW.print(IJ.d2s(delta_t, 6) + "\n");
-                    pPW.print(IJ.d2s(max_iterations, 6) + "\n");
-                    pPW.print(IJ.d2s(nodeRes, 6) + "\n");
-                    pPW.print(IJ.d2s(blowup, 6) + "\n");
-                    pPW.print(IJ.d2s(sample_tan, 0) + "\n");
-                    pPW.print(IJ.d2s(sample_norm, 0) + "\n");
-                    pPW.print(IJ.d2s(vel_crit, 6) + "\n");
-                    pPW.print(IJ.d2s(f_central, 6) + "\n");
-                    pPW.print(IJ.d2s(f_contract, 6) + "\n");
-                    pPW.print(IJ.d2s(f_friction, 6) + "\n");
-                    pPW.print(IJ.d2s(f_image, 6) + "\n");
-                    pPW.print(IJ.d2s(sensitivity, 6) + "\n");
-
-                    pPW.print("# - new parameters (cortext width, start frame, end frame,"
-                            + " final shrink, statsQP, fluImage)\n");
-                    pPW.print(IJ.d2s(cortexWidth, 2) + "\n");
-                    pPW.print(IJ.d2s(startFrame, 0) + "\n");
-                    pPW.print(IJ.d2s(endFrame, 0) + "\n");
-                    pPW.print(IJ.d2s(finalShrink, 2) + "\n");
-                    pPW.print(File.separator + statsQP.getName() + "\n");
-
-                    pPW.print("# - Fluorescence channel tiff's\n");
-                    pPW.print(fluTiffs[0].getAbsolutePath() + "\n");
-                    pPW.print(fluTiffs[1].getAbsolutePath() + "\n");
-                    pPW.print(fluTiffs[2].getAbsolutePath() + "\n");
-
-                    pPW.print("#END");
-
-                    pPW.close();
-                } catch (IOException e) {
-                    LOGGER.error("Could not write parameter file! " + e.getMessage());
-                    throw new QuimpException("Could not write parameter file!", e);
-                }
-                break;
-            case QParams.NEW_QUIMP:
-                // should not hit this point as new format use QParamsExchange
-                throw new UnsupportedOperationException(
-                        "writeParams() not supported for new file format");
+    public void writeParams() throws IOException {
+        LOGGER.debug("Write paQP at: " + paramFile);
+        if (paramFile.exists()) {
+            paramFile.delete();
         }
+
+        Random generator = new Random();
+        double d = generator.nextDouble() * 1000000; // 6 digit key to ID
+                                                     // job
+        key = Math.round(d);
+
+        PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
+
+        pPW.print("#p2 - QuimP parameter file (QuimP11). Created " + Tool.dateAsString() + "\n");
+        pPW.print(IJ.d2s(key, 0) + "\n");
+        pPW.print(segImageFile.getAbsolutePath() + "\n");
+        pPW.print(File.separator + snakeQP.getName() + "\n");
+        // pPW.print(outFile.getAbsolutePath() + "\n");
+
+        pPW.print("#Image calibration (scale, frame interval)\n");
+        pPW.print(IJ.d2s(imageScale, 6) + "\n");
+        pPW.print(IJ.d2s(frameInterval, 3) + "\n");
+
+        // according to BOAState and /trac/QuimP/wiki/QuimpQp
+        //!<
+        pPW.print("#segmentation parameters ("
+                + "Maximum number of nodes, "
+                + "ND, "
+                + "Max iterations, "
+                + "Node spacing, "
+                + "Blowup, "
+                + "Sample tan, "
+                + "Sample norm, "
+                + "Crit velocity, "
+                + "Central F, "
+                + "Contract F, "
+                + "ND, "
+                + "Image force, "
+                + "ND)\n");
+        /**/
+        pPW.print(IJ.d2s(NMAX, 0) + "\n");
+        pPW.print(IJ.d2s(delta_t, 6) + "\n");
+        pPW.print(IJ.d2s(max_iterations, 6) + "\n");
+        pPW.print(IJ.d2s(nodeRes, 6) + "\n");
+        pPW.print(IJ.d2s(blowup, 6) + "\n");
+        pPW.print(IJ.d2s(sample_tan, 0) + "\n");
+        pPW.print(IJ.d2s(sample_norm, 0) + "\n");
+        pPW.print(IJ.d2s(vel_crit, 6) + "\n");
+        pPW.print(IJ.d2s(f_central, 6) + "\n");
+        pPW.print(IJ.d2s(f_contract, 6) + "\n");
+        pPW.print(IJ.d2s(f_friction, 6) + "\n");
+        pPW.print(IJ.d2s(f_image, 6) + "\n");
+        pPW.print(IJ.d2s(sensitivity, 6) + "\n");
+
+        pPW.print("# - new parameters (cortex width, start frame, end frame,"
+                + " final shrink, statsQP, fluImage)\n");
+        pPW.print(IJ.d2s(cortexWidth, 2) + "\n");
+        pPW.print(IJ.d2s(startFrame, 0) + "\n");
+        pPW.print(IJ.d2s(endFrame, 0) + "\n");
+        pPW.print(IJ.d2s(finalShrink, 2) + "\n");
+        pPW.print(File.separator + statsQP.getName() + "\n");
+
+        pPW.print("# - Fluorescence channel tiff's\n");
+        pPW.print(fluTiffs[0].getAbsolutePath() + "\n");
+        pPW.print(fluTiffs[1].getAbsolutePath() + "\n");
+        pPW.print(fluTiffs[2].getAbsolutePath() + "\n");
+
+        pPW.print("#END");
+
+        pPW.close();
     }
 
     /**
@@ -428,7 +594,7 @@ public class QParams {
                     continue;
                 }
                 extension = Tool.getFileExtension(filenames[i]);
-                if (extension.matches("paQP")) {
+                if (extension.matches(QuimpConfigFilefilter.oldFileExt.substring(1))) {
                     paFiles.add(filenames[i]);
                     System.out.println("paFile: " + filenames[i]);
                 }
@@ -447,29 +613,25 @@ public class QParams {
         }
     }
 
-    File getParamFile() {
-        return paramFile;
-    }
-
     /**
      * Generate names and handles of files associated with paQP that will be created in result of
-     * analysis  
+     * analysis.  
      */
     void guessOtherFileNames() {
-        System.out.println("prefix: " + prefix);
+        LOGGER.debug("prefix: " + fileName);
 
-        convexFile = new File(path + File.separator + prefix + "_convexityMap.maQP");
+        convexFile = new File(path + File.separator + fileName + "_convexityMap.maQP");
 
-        coordFile = new File(path + File.separator + prefix + "_coordMap.maQP");
-        motilityFile = new File(path + File.separator + prefix + "_motilityMap.maQP");
-        originFile = new File(path + File.separator + prefix + "_originMap.maQP");
-        xFile = new File(path + File.separator + prefix + "_xMap.maQP");
-        yFile = new File(path + File.separator + prefix + "_yMap.maQP");
+        coordFile = new File(path + File.separator + fileName + "_coordMap.maQP");
+        motilityFile = new File(path + File.separator + fileName + "_motilityMap.maQP");
+        originFile = new File(path + File.separator + fileName + "_originMap.maQP");
+        xFile = new File(path + File.separator + fileName + "_xMap.maQP");
+        yFile = new File(path + File.separator + fileName + "_yMap.maQP");
 
         fluFiles = new File[3];
-        fluFiles[0] = new File(path + File.separator + prefix + "_fluoCH1.maQP");
-        fluFiles[1] = new File(path + File.separator + prefix + "_fluoCH2.maQP");
-        fluFiles[2] = new File(path + File.separator + prefix + "_fluoCH3.maQP");
+        fluFiles[0] = new File(path + File.separator + fileName + "_fluoCH1.maQP");
+        fluFiles[1] = new File(path + File.separator + fileName + "_fluoCH2.maQP");
+        fluFiles[2] = new File(path + File.separator + fileName + "_fluoCH3.maQP");
 
     }
 

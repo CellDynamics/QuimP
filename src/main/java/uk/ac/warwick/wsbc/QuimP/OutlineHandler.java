@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.InvalidParameterException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,21 +17,23 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 /**
  *
  * @author tyson
+ * @warning \a QParams object is not serialized thus deserialzed OutlineHandler can not use it
  */
-public class OutlineHandler extends ShapeHandler<Outline> {
+public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
     private Outline[] outlines;
-    private int size;
-    private QParams qp;
-    public ExtendedVector2d maxCoor;
-    public ExtendedVector2d minCoor;
+    transient private QParams qp;
+    // all transient fields are rebuild in afterSerialzie findStatLimits()
+    transient private int size;
+    transient public ExtendedVector2d maxCoor;
+    transient public ExtendedVector2d minCoor;
     // min and max limits
-    public double[] migLimits;
-    public double[][] fluLims;
+    transient public double[] migLimits;
+    transient public double[][] fluLims;
     // public double[] convLimits;
-    public double[] curvLimits;
-    public double maxLength = 0;
-    public boolean readSuccess;
+    transient public double[] curvLimits;
+    transient public double maxLength = 0; //!< longest outline in outlines
+    transient public boolean readSuccess;
 
     public OutlineHandler(QParams params) {
         qp = params;
@@ -40,7 +43,7 @@ public class OutlineHandler extends ShapeHandler<Outline> {
         // System.out.println("start frame: " + startFrame + ", endframe: " +
         // endFrame);
 
-        if (!readOutlines(qp.snakeQP)) {
+        if (!readOutlines(qp.getSnakeQP())) { // initialize also arrays by findStatsLimits()
             IJ.error("Failed to read in snakQP (OutlineHandler:36)");
             readSuccess = false;
             size = 0;
@@ -56,7 +59,28 @@ public class OutlineHandler extends ShapeHandler<Outline> {
      * @param src to copy from
      */
     public OutlineHandler(final OutlineHandler src) {
-        throw new UnsupportedOperationException("Not implemented, yet");
+        super(src);
+        this.outlines = new Outline[src.outlines.length];
+        for (int o = 0; o < this.outlines.length; o++)
+            this.outlines[o] = new Outline(src.outlines[o]);
+        size = src.size;
+        /*// this is calculated by findStatLimits()
+        maxCoor = src.maxCoor;
+        minCoor = src.minCoor;
+        migLimits = new double[src.migLimits.length];
+        System.arraycopy(src.migLimits, 0, migLimits, 0, src.migLimits.length);
+        fluLims = new double[src.fluLims.length][];
+        for (int i = 0; i < src.fluLims.length; i++) {
+            fluLims[i] = new double[src.fluLims[i].length];
+            System.arraycopy(src.fluLims[i], 0, fluLims[i], 0, src.fluLims[i].length);
+        }
+        curvLimits = new double[src.curvLimits.length];
+        System.arraycopy(src.curvLimits, 0, curvLimits, 0, src.curvLimits.length);
+        */
+        for (Outline o : outlines)
+            if (o.getLength() > maxLength)
+                maxLength = o.getLength();
+        findStatLimits(); // fill maxCoor, minCoor, migLimits, fluLims, curvLimits
     }
 
     /**
@@ -72,7 +96,7 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             if (s != null)
                 setOutline(f, new Outline(s)); // convert to Outline
         }
-
+        findStatLimits();
     }
 
     public OutlineHandler(int s, int e) {
@@ -100,11 +124,14 @@ public class OutlineHandler extends ShapeHandler<Outline> {
     }
 
     public boolean isOutlineAt(int f) {
-        if (f < startFrame || f > endFrame) {
+        if (f - startFrame < 0)
             return false;
-        } else {
+        else if (f - startFrame >= outlines.length)
+            return false;
+        else if (outlines[f - startFrame] == null)
+            return false;
+        else
             return true;
-        }
     }
 
     public Outline indexGetOutline(int i) {
@@ -125,6 +152,9 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             IJ.error("Cannot locate snake file (snQP)\n'" + f.getAbsolutePath() + "'");
             return false;
         }
+        if (qp == null)
+            throw new InvalidParameterException(
+                    "QParams is null. This object has not been created (loaded) from QParams data");
 
         String thisLine;
 
@@ -232,7 +262,7 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             } // end while
             br.close();
 
-            if (qp.paramFormat == QParams.OLD_QUIMP) {
+            if (qp.paramFormat == QParams.OLD_QUIMP) { // TODO is this always true?
                 qp.setStartFrame(1);
                 qp.setEndFrame(size);
                 this.endFrame = size;
@@ -242,12 +272,19 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             this.findStatLimits();
 
             return true;
-        } catch (IOException | QuimpException e) {
-            LOGGER.error("Could not read outlines", e);
+        } catch (IOException e) {
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Could not read outlines", e.getMessage());
             return false;
         }
     }
 
+    /**
+     * Evaluate <tt>maxCoor</tt>, <tt>minCoor</tt>, <tt>migLimits</tt>, <tt>fluLims</tt>,
+     * <tt>curvLimits</tt>.
+     * 
+     * Initialize arrays as well
+     */
     private void findStatLimits() {
         maxCoor = new ExtendedVector2d();
         minCoor = new ExtendedVector2d();
@@ -262,6 +299,8 @@ public class OutlineHandler extends ShapeHandler<Outline> {
         Vert n;
         for (int i = 0; i < outlines.length; i++) {
             outline = outlines[i];
+            if (outline == null)
+                continue;
             n = outline.getHead();
             if (i == 0) {
                 minCoor.setXY(n.getX(), n.getY());
@@ -318,43 +357,20 @@ public class OutlineHandler extends ShapeHandler<Outline> {
     }
 
     /**
-     * basically clone snake into memory
-     * @todo TODO USe clone feature from class 
+     * Copy Outline into internal outlines array on correct position.
+     * 
+     * @param o Outline to copy.
+     * @param frame Frame where copy Outline to.
      */
     public void save(Outline o, int frame) {
-        Vert oV = o.getHead();
-
-        Vert nV = new Vert(oV.getX(), oV.getY(), oV.getTrackNum()); // head node
-        nV.coord = oV.coord;
-        nV.fCoord = oV.fCoord;
-        nV.gCoord = oV.gCoord;
-        nV.distance = oV.distance;
-        // nV.fluores = oV.fluores;
-        nV.setFluores(oV.fluores);
-
-        Outline n = new Outline(nV);
-
-        oV = oV.getNext();
-        do {
-            nV = n.insertVert(nV);
-
-            nV.setX(oV.getX());
-            nV.setY(oV.getY());
-            nV.coord = oV.coord;
-            nV.fCoord = oV.fCoord;
-            nV.gCoord = oV.gCoord;
-            nV.distance = oV.distance;
-            // nV.fluores = oV.cloneFluo();
-            nV.setFluores(oV.fluores);
-            nV.setTrackNum(oV.getTrackNum());
-
-            oV = oV.getNext();
-        } while (!oV.isHead());
-        // n.calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
-        outlines[frame - startFrame] = n;
+        outlines[frame - startFrame] = new Outline(o);
     }
 
+    /**
+     * Write <b>this</b> outline to disk.
+     */
     public void writeOutlines(File outFile, boolean ECMMrun) {
+        LOGGER.debug("Write outline at: " + outFile);
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
             pw.write("#QuimP11 node data");
@@ -418,5 +434,33 @@ public class OutlineHandler extends ShapeHandler<Outline> {
             // on formatting */
             v = v.getNext();
         } while (!v.isHead());
+    }
+
+    /**
+     * Prepare all Outline stored in this OutlineHandler for loading.
+     */
+    @Override
+    public void beforeSerialize() {
+        for (Outline o : outlines)
+            if (o != null)
+                o.beforeSerialize(); // convert outlines to array
+
+    }
+
+    /**
+     * Call afterSerialzie() for other objects and restoer transient fields where possible
+     */
+    @Override
+    public void afterSerialize() throws Exception {
+        for (Outline o : outlines)
+            if (o != null)
+                o.afterSerialize(); // convert array to outlines
+        // restore other fields
+        size = outlines.length;
+        for (Outline o : outlines)
+            if (o.getLength() > maxLength)
+                maxLength = o.getLength();
+        findStatLimits(); // fill maxCoor, minCoor, migLimits, fluLims, curvLimits
+
     }
 }

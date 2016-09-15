@@ -1,11 +1,9 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.jar.Attributes;
@@ -36,7 +34,7 @@ public class Tool {
      */
     public String getQuimPversion() {
         String[] quimpBuildInfo = getQuimPBuildInfo();
-        return getQuimPversion(quimpBuildInfo);
+        return getFormattedQuimPversion(quimpBuildInfo);
     }
 
     /**
@@ -50,7 +48,7 @@ public class Tool {
      * @endcode
      * @see getQuimPBuildInfo()
      */
-    public static String getQuimPversion(String[] quimpBuildInfo) {
+    public static String getFormattedQuimPversion(String[] quimpBuildInfo) {
         //!<
         String infoPlate = 
                   "---------------------------------------------------------\n" 
@@ -99,7 +97,7 @@ public class Tool {
                                 + attributes.getValue("Implementation-Build");
                         ret[0] = attributes.getValue("Implementation-Version");
                         ret[2] = attributes.getValue("Implementation-Title");
-                        LOGGER.debug(ret);
+                        LOGGER.trace(Arrays.toString(ret));
                     }
                 } catch (Exception e) {
                     ; // do not care about problems - just use defaults defined on beginning
@@ -113,21 +111,6 @@ public class Tool {
         ret[1] = ret[1] == null ? defNote : ret[1];
         ret[2] = ret[2] == null ? defNote : ret[2];
         return ret;
-    }
-
-    public static void print(double[][] a) {
-
-        for (int i = 0; i < a.length; i++) {
-            System.out.print("" + a[i][0] + " " + a[i][1] + "\n");
-        }
-    }
-
-    public static void print(double[] a) {
-
-        for (int i = 0; i < a.length; i++) {
-            System.out.print("" + a[i] + "\n");
-        }
-        System.out.println("");
     }
 
     public static double s2d(String s) {
@@ -144,108 +127,12 @@ public class Tool {
         }
     }
 
-    public static int sumArray(int[] a) {
-        int sum = 0;
-        for (int i = 0; i < a.length; i++)
-            sum += a[i];
-
-        return sum;
-    }
-
-    public static double arrayMin(double[] a) {
-        double min = a[0];
-        if (a.length == 1) {
-            return min;
-        }
-
-        for (int i = 1; i < a.length; i++) {
-            if (min > a[i]) {
-                min = a[i];
-            }
-        }
-        return min;
-    }
-
-    public static int minArrayIndex(double[] a) {
-        // find the index of the min
-        double min = a[0];
-        int iMin = 0;
-        if (a.length == 1) {
-            return iMin;
-        }
-
-        for (int i = 1; i < a.length; i++) {
-            if (min > a[i]) {
-                min = a[i];
-                iMin = i;
-            }
-        }
-        return iMin;
-    }
-
-    public static double arrayMax(double[] a) {
-        double max = a[0];
-        if (a.length == 1) {
-            return max;
-        }
-
-        for (int i = 1; i < a.length; i++) {
-            if (max < a[i]) {
-                max = a[i];
-            }
-        }
-        return max;
-    }
-
-    public static int arrayMax(int[] a) {
-        int max = a[0];
-        if (a.length == 1) {
-            return max;
-        }
-
-        for (int i = 1; i < a.length; i++) {
-            if (max < a[i]) {
-                max = a[i];
-            }
-        }
-        return max;
-    }
-
-    public static int findNumPeaks(double[] data, int peakWidth) {
-
-        int[] peaks = new int[data.length];
-        int flag;
-
-        // find local peak points
-        for (int i = peakWidth; i < data.length - peakWidth; i++) {
-            flag = 0;
-            peaks[i] = 0;
-            for (int j = -peakWidth; j <= peakWidth; j++) {
-                if (data[i + j] > data[i]) {
-                    flag = 1;
-                    break;
-                }
-            }
-            if (flag == 0) {
-                peaks[i] = 1;
-                // System.out.println("peak at " + i);
-            }
-        }
-
-        // remove consecutive points (i.e. in flat areas)
-        int realPeaks = 0;
-        for (int i = 0; i < peaks.length; i++) {
-            if (peaks[i] == 1) {
-                realPeaks++;
-                if (peaks[i + 1] == 1) {
-                    realPeaks--;
-                }
-            }
-        }
-
-        return realPeaks;
-    }
-
+    /**
+     * Get file name without extension
+     * 
+     * @param filename name of the file
+     * @return file (with path) without extension
+     */
     public static String removeExtension(String filename) {
         // extract fileName without extension
 
@@ -256,6 +143,12 @@ public class Tool {
         return filename;
     }
 
+    /**
+     * Get file extension 
+     * 
+     * @param filename Name of file
+     * @return extension without dot
+     */
     public static String getFileExtension(String filename) {
         // extract fileName without extension
 
@@ -297,20 +190,6 @@ public class Tool {
         } while (!v.isHead());
 
         return v;
-    }
-
-    public static void arrayToFile(double[][] a, String delim, File outFile) throws IOException {
-        PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
-        for (int i = 0; i < a.length; i++) {
-            if (i != 0)
-                pw.write("\n");
-            pw.write(a[i][0] + "");
-            for (int j = 1; j < a[0].length; j++) {
-                pw.write("," + a[i][j]);
-            }
-        }
-
-        pw.close();
     }
 
     public static double distanceToScale(double value, double scale) {

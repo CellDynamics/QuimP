@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,10 @@ import com.google.gson.JsonSyntaxException;
  */
 public class SerializerTest {
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     private static final Logger LOGGER = LogManager.getLogger(SerializerTest.class.getName());
     private TestClass testClass;
@@ -201,7 +205,7 @@ public class SerializerTest {
     @Test
     public void testDumpStatic() throws FileNotFoundException {
         TestClass tc = new TestClass();
-        Serializer.Dump(tc, "/tmp/dump.json");
+        Serializer.Dump(tc, "/tmp/dump.json", true);
     }
 
 }

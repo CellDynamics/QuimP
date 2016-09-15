@@ -1,12 +1,15 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.FileDialog;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 // import java.util.Vector;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 /**
  * Richard Tyson. 23/09/2009. ECM Mapping Systems Biology DTC, Warwick
@@ -22,6 +25,7 @@ import ij.io.OpenDialog;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
 
 /**
  * Main ECMM implementation class.
@@ -30,18 +34,19 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  */
 public class ECMM_Mapping {
-
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
-    @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 
-    OutlineHandler oH, outputH;
-    Outlines outputO; // output for new data file
+    private OutlineHandler oH, outputH;
+    private OutlineHandlers outputOutlineHandlers; // output for new data file
 
     static ECMplot plot;
-    QParams qp;
+    private QconfLoader qconfLoader;
 
     public ECMM_Mapping(int frames) { // work around. b is nothing
         if (ECMp.plot) {
@@ -49,70 +54,81 @@ public class ECMM_Mapping {
         }
     }
 
+    /**
+     * Run analysis for given file.
+     * 
+     * @param QPfile path to paQP or QCONF file.
+     */
     public ECMM_Mapping(String QPfile) {
-        IJ.log("ECMM with param file name as string");
-        try {
-            qp = new QParams(new File(QPfile));
-            qp.readParams();
-            // ECMp.setup(qp);
-            runFromFile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public ECMM_Mapping(File paramFile) {
-        IJ.log("ECCM with param file name as file");
-        try {
-            if (paramFile.getName().endsWith(".QCONF")) {// new file format see TODO #152
-                qp = new QParamsExchanger(paramFile);
-                qp.readParams();
-                runFromNest();
-                return;
-            } else
-                qp = new QParams(paramFile);
-            // old flow with paQP files
-            qp.readParams();
-            runFromFile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this(new File(QPfile));
     }
 
     /**
-     * Default constructor called on plugin run from IJ GUI
+     * Main executive constructor.
+     * <p>
+     * Process provided file and run the whole analysis.
+     * @startuml
+     * start
+     * if (input file given) then (no)
+     *  :ask user;
+     * endif
+     * :Load config file;
+     * if (QUIMP_11 file) then (yes)
+     *  :process it;
+     *  :scan for other files;
+     *  repeat
+     *      :process other file;
+     *  repeat while(more files?)
+     * else (no)
+     *  if(BOA data) then (no)
+     *  stop
+     *  endif
+     *  if(ECMM data) then (yes)
+     *      if(overwrite?) then (no)
+     *          end
+     *      endif
+     *  endif        
+     *  :process it;     
+     * endif
+     * end
+     * @enduml
+     * 
+     * @param paramFile paQP or QCONF file to process.
      */
-    public ECMM_Mapping() {
+    public ECMM_Mapping(File paramFile) {
         about();
+        IJ.showStatus("ECMM Analysis");
         try {
-            do {
-
-                OpenDialog od = new OpenDialog("Open paramater file (.paQP|.QCONF)...",
-                        OpenDialog.getLastDirectory(), ".paQP");
-                if (od.getFileName() == null) {
+            if (paramFile == null) { // open UI if no file provided
+                QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(); // use default
+                                                                                // engine for
+                                                                                // finding extension
+                FileDialog od = new FileDialog(IJ.getInstance(),
+                        "Open paramater file " + fileFilter.toString());
+                od.setFilenameFilter(fileFilter);
+                od.setDirectory(OpenDialog.getLastDirectory());
+                od.setMultipleMode(false);
+                od.setMode(FileDialog.LOAD);
+                od.setVisible(true);
+                if (od.getFile() == null) {
+                    IJ.log("Cancelled - exiting...");
                     return;
                 }
                 // load config file but check if it is new format or old
-                File paramFile = new File(od.getDirectory(), od.getFileName());
-                // check extension
-                if (paramFile.getName().endsWith(".QCONF")) {// new file format see TODO #152
-                    qp = new QParamsExchanger(paramFile);
-                    qp.readParams();
-                    runFromNest();
-                    return; // break strange while loop
-                } else
-                    qp = new QParams(paramFile);
-                // old flow with paQP files
-                qp.readParams();
-                runFromFile();
-
-                File[] otherPaFiles = qp.findParamFiles();
-
+                paramFile = new File(od.getDirectory(), od.getFile());
+            }
+            qconfLoader = new QconfLoader(paramFile.toPath()); // load file
+            if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
+                QParams qp;
+                runFromPAQP();
+                // old flow with paQP files - detect other paQP
+                File[] otherPaFiles = qconfLoader.getQp().findParamFiles();
                 if (otherPaFiles.length > 0) {
                     YesNoCancelDialog yncd =
                             new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                                    "\tBatch Process?\n\n"
-                                            + "Process other paQP files in the same folder with ECMM?\n"
+                                    "\tBatch Process?\n\n" + "Process other "
+                                            + QuimpConfigFilefilter.oldFileExt
+                                            + " files in the same folder with ECMM?\n"
                                             + "[Files already run through ECMM will be skipped!]");
                     if (yncd.yesPressed()) {
                         ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
@@ -127,7 +143,7 @@ public class ECMM_Mapping {
                             if (!qp.ecmmHasRun) {
                                 System.out
                                         .println("Running on " + otherPaFiles[j].getAbsolutePath());
-                                runFromFile();
+                                runFromPAQP();
                                 runOn.add(otherPaFiles[j].getName());
                             } else {
                                 System.out.println("Skipped " + otherPaFiles[j].getAbsolutePath());
@@ -143,65 +159,105 @@ public class ECMM_Mapping {
                         for (int i = 0; i < skipped.size(); i++) {
                             IJ.log(skipped.get(i));
                         }
-
                     } else {
-                        return;
+                        return; // no batch processing
                     }
                 }
+            } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
+                // validate in case new format
+                qconfLoader.getBOA(); // will throw exception if not present
+                if (qconfLoader.isECMMPresent()) {
+                    YesNoCancelDialog ync;
+                    ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
+                            "You are about to override previous ECMM results. Is it ok?");
+                    if (!ync.yesPressed()) // if no or cancel
+                    {
+                        IJ.log("No changes done in input file.");
+                        return; // end}
+                    }
+                }
+                runFromQCONF();
+                IJ.log("The new data file " + paramFile.getName()
+                        + " has been updated by results of ECMM analysis.");
+            } else {
+                throw new IllegalStateException("QconfLoader returned unknown version of QuimP");
+            }
 
-                return;
-
-            } while (true);
-
-        } catch (QuimpException e) {
-            LOGGER.error(e);
+            IJ.log("ECMM Analysis complete");
+            IJ.showStatus("Finished");
+        } catch (Exception e) { // catch all here
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
         }
     }
 
     /**
+     * Default constructor called on plugin run from IJ GUI
+     */
+    public ECMM_Mapping() {
+        this((File) null); // ask user what to load
+    }
+
+    /**
+     * Main executive for ECMM processing for QParamsExchanger (new file version).
+     *  
      * @throws QuimpException 
+     * @throws IOException On problems with writing config files
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
      */
-    private void runFromNest() throws QuimpException {
+    private void runFromQCONF() throws QuimpException, IOException {
         LOGGER.debug("Processing from new file format");
-        Nest nest = qp.getNest();
-        outputO = new Outlines(nest.size());
+        Nest nest = qconfLoader.getQp().getNest();
+        outputOutlineHandlers = new OutlineHandlers(nest.size());
         for (int i = 0; i < nest.size(); i++) { // go over all snakes
-            qp.currentHandler = i; // set current handler number. For compatibility, all methods
-            // have the same syntax (assumes that there is only one handler)
+            ((QParamsQconf) qconfLoader.getQp()).setActiveHandler(i); // set current handler number.
+                                                                      // For compatibility, all
+                                                                      // methods have the same
+                                                                      // syntax (assumes that there
+                                                                      // is only one handler)
             SnakeHandler sH = nest.getHandler(i);
             if (sH == null)
                 continue;
             oH = new OutlineHandler(sH); // convert to outline, oH is global var
-            ECMp.setup(qp);
+            ECMp.setup(qconfLoader.getQp());
             ECMp.setParams(oH.maxLength); // base params on outline in middle of
             // sequence
             if (ECMp.plot) {
                 plot = new ECMplot(oH.getSize() - 1);
             }
             run(); // fills outputH
-            outputO.oHs.set(i, new OutlineHandler(outputH));
+            outputOutlineHandlers.oHs.add(i, new OutlineHandler(outputH)); // store actual result in
+                                                                           // container
         }
 
-        DataContainer dc = qp.getLoadedDataContainer();
-        dc.ECMMState = outputO; // assign ECMM output
-        qp.writeParams();
+        DataContainer dc = qconfLoader.getQp().getLoadedDataContainer();
+        dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
+        qconfLoader.getQp().writeParams(); // save global container
+        // generate additional OLD files
+        FormatConverter fC = new FormatConverter((QParamsQconf) qconfLoader.getQp(),
+                ((QParamsQconf) qconfLoader.getQp()).getParamFile().toPath());
+        fC.generateOldDataFiles();
     }
 
+    /**
+     * Display standard QuimP about message.
+     */
     private void about() {
         IJ.log(new Tool().getQuimPversion());
     }
 
     /**
-     * Main executive for ECMM processing
+     * Main executive for ECMM processing for QParams (old file version)
+     * 
+     * @throws QuimpException when OutlineHandler can not be read
      */
-    private void runFromFile() {
-        oH = new OutlineHandler(qp);
+    private void runFromPAQP() throws QuimpException {
+        oH = new OutlineHandler(qconfLoader.getQp());
         if (!oH.readSuccess) {
-            return;
+            throw new QuimpException("Could not read OutlineHandler");
         }
 
-        ECMp.setup(qp);
+        ECMp.setup(qconfLoader.getQp());
         // System.out.println("sf " + ECMp.startFrame + ", ef " +
         // ECMp.endFrame);
         // System.out.println("outfile " + ECMp.OUTFILE.getAbsolutePath());
@@ -265,7 +321,7 @@ public class ECMM_Mapping {
             IJ.log("ECMM resolution: " + ECMp.markerRes + "(av. spacing)\n");
         }
 
-        outputH = new OutlineHandler(oH.getStartFrame(), oH.getEndFrame());
+        outputH = new OutlineHandler(oH);
         ECMp.unSnapped = 0;
         // int skippedFrames = 0; // if a frame is skipped need to divide next
         // time point migration by 2, etc...
@@ -2046,7 +2102,7 @@ class ECMp {
      * @param qp  Master configuration file
      */
     static void setup(QParams qp) {
-        INFILE = qp.snakeQP;
+        INFILE = qp.getSnakeQP();
         OUTFILE = new File(ECMp.INFILE.getAbsolutePath()); // output file (.snQP) file
         scale = qp.getImageScale();
         frameInterval = qp.getFrameInterval();

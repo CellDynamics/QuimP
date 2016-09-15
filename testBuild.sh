@@ -4,7 +4,7 @@
 cd .. # assume location in QuimP
 
 # delete old stuff
-find Fiji.app.test/plugins -name QuimP*.jar | xargs rm -fv
+find Fiji.app.test/plugins -name QuimP*.jar ! -name QuimP_11b.jar | xargs rm -fv
 find Fiji.app.test/plugins -name *-quimp*.jar | xargs rm -fv
 
 cd pom-quimp-plugin
@@ -12,7 +12,7 @@ mvn -q clean install
 cd ..
 
 cd QuimP
-mvn -q -T 1C clean install -P uber -Dmaven.test.skip=true
+mvn -q -T 1C clean install -P uber-snapshot -Dmaven.test.skip=true
 if [[ $? -ne 0 ]] ; then
    	echo Error!!!
    	exit 1

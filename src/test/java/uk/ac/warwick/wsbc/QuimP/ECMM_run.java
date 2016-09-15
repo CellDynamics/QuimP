@@ -12,7 +12,7 @@ package uk.ac.warwick.wsbc.QuimP;
 public class ECMM_run {
 
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        System.setProperty("quimp.debugLevel", "qlog4j2.xml");
     }
 
     /**

@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -10,13 +11,16 @@ import org.apache.logging.log4j.Logger;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.io.OpenDialog;
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 
 /**
  * Hold current BOA state that can be serialized
  * 
  * This class is composed from two inner classes:
- * -# BOAp - holds internal state of BOA plugin, maintained mainly for compatibility reasons
- * -# SegParam - holds segmentation parameters, exposed to UI
+ * <ul>
+ * <li> BOAp - holds internal state of BOA plugin, maintained mainly for compatibility reasons
+ * <li> SegParam - holds segmentation parameters, exposed to UI
+ * </ul>
  * 
  * Moreover there are several fields related to new features of QuimP like storing internal
  * state for every frame separately or SnakePlugins.
@@ -59,9 +63,7 @@ import ij.io.OpenDialog;
  * @see Serializer
  */
 public class BOAState implements IQuimpSerialize {
-    static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
-    }
+
     static final Logger LOGGER = LogManager.getLogger(BOAState.class.getName());
     /**
      * Reference to segmentation parameters. Holds current parameters
@@ -74,7 +76,16 @@ public class BOAState implements IQuimpSerialize {
      */
     public transient SegParam segParam;
     public BOAp boap; //!< Reference to old BOAp class, keeps internal state of BOA
-
+    /**
+     * Instance of binary segmentation plugin that converts BW masks into snakes. This is regular
+     * plugin but handled separately from SnakePlugins and it is not provided as external jar 
+     */
+    public transient BinarySegmentationPlugin binarySegmentationPlugin;
+    /**
+     * Configuration of BinarySegmentation plugin if it was used. Used during saving boa state
+     */
+    @SuppressWarnings("unused")
+    private ParamList binarySegmentationParam;
     /**
      * Keep snapshots of SegParam objects for every frame separately
      */
@@ -123,19 +134,19 @@ public class BOAState implements IQuimpSerialize {
      */
     class SegParam {
         private double nodeRes; //!< Number of nodes on ROI edge 
-        int blowup; //!< distance to blow up chain 
-        double vel_crit;
-        double f_central;
-        double f_image; //!< image force 
-        int max_iterations; //!< max iterations per contraction 
-        int sample_tan;
-        int sample_norm;
-        double f_contract;
-        double finalShrink;
+        public int blowup; //!< distance to blow up chain 
+        public double vel_crit;
+        public double f_central;
+        public double f_image; //!< image force 
+        public int max_iterations; //!< max iterations per contraction 
+        public int sample_tan;
+        public int sample_norm;
+        public double f_contract;
+        public double finalShrink;
         // Switch Params
-        boolean use_previous_snake;//!< next contraction begins with prev chain 
-        boolean showPaths;
-        boolean expandSnake; //!< whether to act as an expanding snake
+        public boolean use_previous_snake;//!< next contraction begins with prev chain 
+        public boolean showPaths;
+        public boolean expandSnake; //!< whether to act as an expanding snake
         private double min_dist; //!< min distance between nodes 
         private double max_dist; //!< max distance between nodes 
 
@@ -305,6 +316,21 @@ public class BOAState implements IQuimpSerialize {
         public double getMin_dist() {
             return min_dist;
         }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return "SegParam [nodeRes=" + nodeRes + ", blowup=" + blowup + ", vel_crit=" + vel_crit
+                    + ", f_central=" + f_central + ", f_image=" + f_image + ", max_iterations="
+                    + max_iterations + ", sample_tan=" + sample_tan + ", sample_norm=" + sample_norm
+                    + ", f_contract=" + f_contract + ", finalShrink=" + finalShrink
+                    + ", use_previous_snake=" + use_previous_snake + ", showPaths=" + showPaths
+                    + ", expandSnake=" + expandSnake + ", min_dist=" + min_dist + ", max_dist="
+                    + max_dist + "]";
+        }
+
     } // end of SegParam
 
     /**
@@ -325,27 +351,65 @@ public class BOAState implements IQuimpSerialize {
      * @see QParams
      * @see Tool
      */
-    class BOAp {
-
-        File orgFile; //!< handle to original file obtained from IJ (usually image opened) 
-        File outFile; //!< handle to \a snPQ filled in QuimP.SnakeHandler.writeSnakes() 
-        String fileName; //!< loaded image file name only, no extension (\c orgFile)
-        transient QParams readQp; //!< read in parameter file 
+    public class BOAp {
+        /**
+         * handle to original file obtained from IJ (usually image opened).
+         */
+        private File orgFile;
+        /**
+         * Corename for output, initially contains path and name without extension from orgFile. 
+         * Can be changed by user on save
+         * Change of this field causes change of the \c fileName
+         */
+        private File outputFileCore;
+        /**
+         * <tt>outputFileCore</tt> but without path and extension.
+         */
+        private String fileName;
+        /**
+         * read in parameter file.
+         */
+        transient QParams readQp;
         // internal parameters
-        int NMAX; //!< maximum number of nodes (% of starting nodes) 
+        /**
+         * Maximum number of nodes (% of starting nodes).
+         */
+        int NMAX;
         double delta_t;
         double sensitivity;
         double f_friction;
-        int FRAMES; //!< Number of frames in stack 
-        int WIDTH, HEIGHT;
-        int cut_every; //!< cut loops in chain every X frames 
-        boolean oldFormat; //!< output old QuimP format? 
-        boolean saveSnake; //!< save snake data 
+        /**
+         * Number of frames in stack.
+         */
+        private int FRAMES;
+        private int WIDTH, HEIGHT;
+        /**
+         * Cut loops in chain every X frames.
+         */
+        int cut_every;
+        /**
+         * output old QuimP format?
+         */
+        boolean oldFormat;
+        /**
+         * save snake data.
+         */
+        boolean saveSnake;
 
-        double proximity; //!< distance between centroids at which contact is tested for 
-        double proxFreeze; //!< proximity of nodes to freeze when blowing up 
+        /**
+         * distance between centroids at which contact is tested for.
+         */
+        double proximity;
+        /**
+         * proximity of nodes to freeze when blowing up
+         */
+        double proxFreeze;
         boolean savedOne;
-        
+        /**
+         * use json pretty format.
+         */
+        boolean savePretty = true;
+
         /**
          * Current frame, CustomStackWindow.updateSliceSelector()
          */
@@ -440,8 +504,7 @@ public class BOAState implements IQuimpSerialize {
             cut_every = 8; // cut loops in chain every X interations
             oldFormat = false; // output old QuimP format?
             saveSnake = true; // save snake data
-            proximity = 150; // distance between centroids at
-                             // which contact is tested for
+            proximity = 150; // distance between centroids at which contact is tested for
             proxFreeze = 1; // proximity of nodes to freeze when blowing up
             f_friction = 0.6;
             doDelete = false;
@@ -452,6 +515,7 @@ public class BOAState implements IQuimpSerialize {
             callCount = 0;
             SEGrunning = false;
             frame = 1;
+            savePretty = true;
         }
 
         /**
@@ -489,10 +553,11 @@ public class BOAState implements IQuimpSerialize {
             FileInfo fileinfo = ip.getOriginalFileInfo();
             if (fileinfo == null) {
                 orgFile = new File(File.separator, ip.getTitle());
+                setOutputFileCore(File.separator + ip.getTitle());
             } else {
                 orgFile = new File(fileinfo.directory, fileinfo.fileName);
+                setOutputFileCore(fileinfo.directory + Tool.removeExtension(orgFile.getName()));
             }
-            fileName = Tool.removeExtension(orgFile.getName());
 
             FRAMES = ip.getStackSize(); // get number of frames
 
@@ -503,97 +568,132 @@ public class BOAState implements IQuimpSerialize {
         }
 
         /**
-         * Write set of snake parameters to disk.
-         * 
-         * writeParams method creates \a paQP master file, referencing other
-         * associated files and \a csv file with statistics.
-         * 
-         * @param sID ID of cell. If many cells segmented in one time, QuimP
-         * produces separate parameter file for every of them
-         * @param startF Start frame (typically beginning of stack)
-         * @param endF End frame (typically end of stack)
-         * @see QParams
+         * @return the fRAMES
          */
-        public void writeParams(int sID, int startF, int endF) {
-            try {
-                if (saveSnake) {
-                    File paramFile = new File(outFile.getParent(), fileName + "_" + sID + ".paQP");
-                    File statsFile = new File(outFile.getParent() + File.separator + fileName + "_"
-                            + sID + ".stQP.csv");
-
-                    QParams qp = new QParams(paramFile);
-                    qp.segImageFile = orgFile;
-                    qp.snakeQP = outFile;
-                    qp.statsQP = statsFile;
-                    qp.setImageScale(BOA_.qState.boap.imageScale);
-                    qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
-                    qp.setStartFrame(startF);
-                    qp.setEndFrame(endF);
-                    qp.NMAX = NMAX;
-                    qp.setBlowup(segParam.blowup);
-                    qp.max_iterations = segParam.max_iterations;
-                    qp.sample_tan = segParam.sample_tan;
-                    qp.sample_norm = segParam.sample_norm;
-                    qp.delta_t = delta_t;
-                    qp.setNodeRes(segParam.nodeRes);
-                    qp.vel_crit = segParam.vel_crit;
-                    qp.f_central = segParam.f_central;
-                    qp.f_contract = segParam.f_contract;
-                    qp.f_image = segParam.f_image;
-                    qp.f_friction = f_friction;
-                    qp.finalShrink = segParam.finalShrink;
-                    qp.sensitivity = sensitivity;
-
-                    qp.writeParams();
-                }
-            } catch (QuimpException e) {
-                LOGGER.error("Could not write parameters to file", e);
-            }
+        public int getFRAMES() {
+            return FRAMES;
         }
 
         /**
-         * Read set of snake parameters from disk.
-         * 
-         * readParams method reads \a paQP master file, referencing other associated
-         * files.
-         * 
-         * @return Status of operation
-         * @retval true when file has been loaded successfully
-         * @retval false when file has not been opened correctly or
-         * QParams.readParams() returned \c false
-         * @see QParams
+         * @return the wIDTH
          */
-        public boolean readParams() {
-            OpenDialog od = new OpenDialog("Open paramater file (.paQP)...", "");
-            if (od.getFileName() == null) {
-                return false;
-            }
-            readQp = new QParams(new File(od.getDirectory(), od.getFileName()));
-
-            try {
-                readQp.readParams();
-            } catch (QuimpException e) {
-                BOA_.log("Failed to read parameter file " + e.getMessage());
-                return false;
-            }
-            NMAX = readQp.NMAX;
-            segParam.blowup = readQp.getBlowup();
-            segParam.max_iterations = readQp.max_iterations;
-            segParam.sample_tan = readQp.sample_tan;
-            segParam.sample_norm = readQp.sample_norm;
-            delta_t = readQp.delta_t;
-            segParam.nodeRes = readQp.getNodeRes();
-            segParam.vel_crit = readQp.vel_crit;
-            segParam.f_central = readQp.f_central;
-            segParam.f_contract = readQp.f_contract;
-            segParam.f_image = readQp.f_image;
-
-            if (readQp.paramFormat == QParams.QUIMP_11) {
-                segParam.finalShrink = readQp.finalShrink;
-            }
-            BOA_.log("Successfully read parameters");
-            return true;
+        public int getWIDTH() {
+            return WIDTH;
         }
+
+        /**
+         * @return the hEIGHT
+         */
+        public int getHEIGHT() {
+            return HEIGHT;
+        }
+
+        /**
+         * @return the orgFile
+         */
+        public File getOrgFile() {
+            return orgFile;
+        }
+
+        /**
+         * @return the outputFileCore
+         */
+        public File getOutputFileCore() {
+            return outputFileCore;
+        }
+
+        /**
+         * @param outputFileCore the outputFileCore to set
+         */
+        public void setOutputFileCore(File outputFileCore) {
+            this.outputFileCore = outputFileCore;
+            fileName = Tool.removeExtension(outputFileCore.getName());
+        }
+
+        /**
+         * @param outputFileCore the outputFileCore to set
+         */
+        public void setOutputFileCore(String outputFileCore) {
+            setOutputFileCore(new File(outputFileCore));
+        }
+
+        /**
+         * @return the fileName
+         */
+        public String getFileName() {
+            return fileName;
+        }
+
+        /**
+         * Generate Snake file name basing on ID
+         * 
+         * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+         * 
+         * @param ID of Snake
+         * @return Full path to file with extension
+         */
+        public String deductSnakeFileName(int ID) {
+            LOGGER.trace(getOutputFileCore().getAbsoluteFile());
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID + ".snQP";
+        }
+
+        /**
+         * Generate stats file name basing on ID
+         * 
+         * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+         * 
+         * @param ID of Snake
+         * @return Full path to file with extension
+         */
+        public String deductStatsFileName(int ID) {
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID + ".stQP.csv";
+        }
+
+        /**
+         * Generate main param file (old) name basing on ID.
+         * 
+         * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+         * 
+         * @param ID of Snake
+         * @return Full path to file with extension
+         */
+        public String deductParamFileName(int ID) {
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID
+                    + QuimpConfigFilefilter.oldFileExt;
+        }
+
+        /**
+         * Generate main filter config file name.
+         * 
+         * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+         * 
+         * @return Full path to file with extension
+         */
+        public String deductFilterFileName() {
+            return getOutputFileCore().getAbsoluteFile() + ".pgQP";
+        }
+
+        /**
+         * Generate main param file (new) name.
+         * 
+         * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+         * 
+         * @return Full path to file with extension
+         */
+        public String deductNewParamFileName() {
+            return getOutputFileCore().getAbsoluteFile() + QuimpConfigFilefilter.newFileExt;
+        }
+
+    }
+
+    /**
+     * Default constructor
+     */
+    public BOAState() {
+        boap = new BOAp(); // build BOAp
+        segParam = new SegParam(); // and SegParam
+        snakePluginList = new SnakePluginList();
+        binarySegmentationParam = new ParamList(); // save empty list even if plugin not used
     }
 
     /**
@@ -609,18 +709,27 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
-     * Construct full base object filling snapshots with default but valid objects
+     * Construct full base object filling snapshots with default but valid objects.
      * 
      * @param ip current image object, can be \c null. In latter case only subclasses are 
      * initialized
      * @param pf PluginFactory used for creating plugins
      * @param vu ViewUpdater reference
      */
-    public BOAState(final ImagePlus ip, PluginFactory pf, ViewUpdater vu) {
+    public BOAState(final ImagePlus ip, final PluginFactory pf, final ViewUpdater vu) {
         this();
         snakePluginList = new SnakePluginList(BOA_.NUM_SNAKE_PLUGINS, pf, vu);
         if (ip == null)
             return;
+
+        initializeSnapshots(ip, pf, vu);
+        boap.setImageScale(ip.getCalibration().pixelWidth);
+        boap.setImageFrameInterval(ip.getCalibration().frameInterval);
+        boap.setup(ip);
+    }
+
+    private void initializeSnapshots(final ImagePlus ip, final PluginFactory pf,
+            final ViewUpdater vu) {
         int numofframes = ip.getStackSize();
         // fill snaphots with default values
         segParamSnapshots =
@@ -630,14 +739,6 @@ public class BOAState implements IQuimpSerialize {
         isFrameEdited = new ArrayList<Boolean>(Collections.nCopies(numofframes, false));
         BOA_.LOGGER.debug("Initialize storage of size: " + numofframes + " size of segParams: "
                 + segParamSnapshots.size());
-        boap.setImageScale(ip.getCalibration().pixelWidth);
-        boap.setImageFrameInterval(ip.getCalibration().frameInterval);
-    }
-
-    public BOAState() {
-        boap = new BOAp(); // build BOAp
-        segParam = new SegParam(); // and SegParam
-        snakePluginList = new SnakePluginList();
     }
 
     /**
@@ -660,11 +761,11 @@ public class BOAState implements IQuimpSerialize {
      * Copy from snapshots data to current one.
      * 
      * @param frame current frame
-     * @see snakePluginList
+     * @see snakePluginListsnakePluginList
      * @see snakePluginListSnapshots 
      */
     public void restore(int frame) {
-        LOGGER.debug("Data restored from frame:" + frame);
+        LOGGER.trace("Data restored from frame:" + frame);
         SegParam tmp = segParamSnapshots.get(frame - 1);
         if (tmp != null)
             segParam = tmp;
@@ -688,16 +789,25 @@ public class BOAState implements IQuimpSerialize {
      * 
      * This method does:
      * -# Closes all windows from plugins
+     * -# Cleans all snapshots
+     * -# Set default parameters
+     * 
+     * @param ip current image object, can be \c null. In latter case only subclasses are 
+     * initialized
+     * @param pf PluginFactory used for creating plugins
+     * @param vu ViewUpdater reference
      */
-    public void reset() {
+    public void reset(final ImagePlus ip, final PluginFactory pf, final ViewUpdater vu) {
         if (snakePluginList != null)
             snakePluginList.clear();
         if (snakePluginListSnapshots != null)
             for (SnakePluginList sp : snakePluginListSnapshots)
                 if (sp != null)
                     sp.clear();
-        boap = new BOAp(); // rebuild BOAp
+        // boap = new BOAp(); // must be disabled becaue boap keeps some data related to loaded
+        // image that never changes
         segParam = new SegParam(); // and SegParam
+        initializeSnapshots(ip, pf, vu);
     }
 
     /**
@@ -706,15 +816,126 @@ public class BOAState implements IQuimpSerialize {
     @Override
     public void beforeSerialize() {
         nest.beforeSerialize(); // prepare snakes
+        if (binarySegmentationPlugin != null) // was used, store config
+            binarySegmentationParam = binarySegmentationPlugin.getPluginConfig();
+        else
+            binarySegmentationParam = new ParamList();
+
         // snakePluginListSnapshots and segParamSnapshots do not need beforeSerialize()
     }
 
     @Override
     public void afterSerialize() throws Exception {
+        LOGGER.trace("After serialize called");
         nest.afterSerialize(); // rebuild Shape<T extends PointsList<T>> from ArrayList used for
                                // storing
         snakePluginList.afterSerialize(); // assumes that snakePluginList contains valid refs to
                                           // pluginFactory
 
+        // recreate file objects. without these lines the File objects after serialization are
+        // created but they do not keep information about root, e.g. getAbsolutePath() returns
+        // program_path/stored_in_json_path
+        boap.outputFileCore = new File(boap.outputFileCore.toString());
+        boap.orgFile = new File(boap.orgFile.toString());
+        // restore local segParam to be first from segParamSnapshots
+        if (segParamSnapshots.size() > 0)
+            if (segParamSnapshots.get(0) != null)
+                segParam = new SegParam(segParamSnapshots.get(0));
+        // otherwise segParam will be default owng to SegParam constructor
+    }
+
+    /**
+    * Write set of snake parameters to disk.
+    * 
+    * writeParams method creates \a paQP master file, referencing other
+    * associated files and \a csv file with statistics.
+    * 
+    * @param sID ID of cell. If many cells segmented in one time, QuimP
+    * produces separate parameter file for every of them
+    * @param startF Start frame (typically beginning of stack)
+    * @param endF End frame (typically end of stack)
+    * @see QParams
+    * @warning Compatibility layer with old QuimP
+    * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/176#comment:3
+    */
+    public void writeParams(int sID, int startF, int endF) {
+        try {
+            if (boap.saveSnake) {
+                File paramFile = new File(boap.deductParamFileName(sID));
+                QParams qp = new QParams(paramFile);
+                qp.setSegImageFile(boap.orgFile);
+                qp.setSnakeQP(new File(boap.deductSnakeFileName(sID)));
+                qp.setStatsQP(new File(boap.deductStatsFileName(sID)));
+                qp.setImageScale(BOA_.qState.boap.imageScale);
+                qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
+                qp.setStartFrame(startF);
+                qp.setEndFrame(endF);
+                qp.NMAX = boap.NMAX;
+                qp.setBlowup(segParam.blowup);
+                qp.max_iterations = segParam.max_iterations;
+                qp.sample_tan = segParam.sample_tan;
+                qp.sample_norm = segParam.sample_norm;
+                qp.delta_t = boap.delta_t;
+                qp.setNodeRes(segParam.nodeRes);
+                qp.vel_crit = segParam.vel_crit;
+                qp.f_central = segParam.f_central;
+                qp.f_contract = segParam.f_contract;
+                qp.f_image = segParam.f_image;
+                qp.f_friction = boap.f_friction;
+                qp.finalShrink = segParam.finalShrink;
+                qp.sensitivity = boap.sensitivity;
+
+                qp.writeParams();
+            }
+        } catch (IOException e) {
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Could not write parameters to file", e.getMessage());
+        }
+    }
+
+    /**
+     * Read set of snake parameters from disk.
+     * 
+     * readParams method reads \a paQP master file, referencing other associated
+     * files.
+     * 
+     * @return Status of operation
+     * @retval true when file has been loaded successfully
+     * @retval false when file has not been opened correctly or
+     * QParams.readParams() returned \c false
+     * @see QParams
+     * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/176#comment:3
+     */
+    public boolean readParams() {
+        OpenDialog od = new OpenDialog(
+                "Open paramater file (" + QuimpConfigFilefilter.oldFileExt + ")...", "");
+        if (od.getFileName() == null) {
+            return false;
+        }
+        boap.readQp = new QParams(new File(od.getDirectory(), od.getFileName()));
+
+        try {
+            boap.readQp.readParams();
+        } catch (QuimpException e) {
+            BOA_.log("Failed to read parameter file " + e.getMessage());
+            return false;
+        }
+        boap.NMAX = boap.readQp.NMAX;
+        segParam.blowup = boap.readQp.getBlowup();
+        segParam.max_iterations = boap.readQp.max_iterations;
+        segParam.sample_tan = boap.readQp.sample_tan;
+        segParam.sample_norm = boap.readQp.sample_norm;
+        boap.delta_t = boap.readQp.delta_t;
+        segParam.nodeRes = boap.readQp.getNodeRes();
+        segParam.vel_crit = boap.readQp.vel_crit;
+        segParam.f_central = boap.readQp.f_central;
+        segParam.f_contract = boap.readQp.f_contract;
+        segParam.f_image = boap.readQp.f_image;
+
+        if (boap.readQp.paramFormat == QParams.QUIMP_11) {
+            segParam.finalShrink = boap.readQp.finalShrink;
+        }
+        BOA_.log("Successfully read parameters");
+        return true;
     }
 }

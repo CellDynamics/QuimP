@@ -6,6 +6,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,10 @@ import org.junit.Test;
  */
 public class ToolTest {
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     private static final Logger LOGGER = LogManager.getLogger(ToolTest.class.getName());
 
@@ -36,10 +40,10 @@ public class ToolTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Tool#getQuimPversion()}.
-     */
+         * Test method for {@link uk.ac.warwick.wsbc.QuimP.Tool#getQuimPversion()}.
+         */
     @Test
-    public void testGetQuimPversion() throws Exception {
+    public void testGetFormattedQuimPversion() throws Exception {
         LOGGER.debug(new Tool().getQuimPversion());
     }
 

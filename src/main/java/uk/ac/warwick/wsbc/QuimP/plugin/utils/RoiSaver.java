@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Point2d;
@@ -12,7 +13,12 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import ij.gui.ShapeRoi;
+import ij.process.FloatPolygon;
+import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.QColor;
+import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
 /**
  * Helper class to export shapes as \a *.tif images
@@ -26,7 +32,7 @@ public class RoiSaver {
     /**
      * Dummy constructor
      */
-    RoiSaver() {
+    public RoiSaver() {
     }
 
     /**
@@ -74,6 +80,48 @@ public class RoiSaver {
             LOGGER.error(e);
         }
 
+    }
+
+    /**
+     * Create stack from List of Rois
+     * 
+     * @param image Image where rois will be plotted. Number of slices must be equal to rois.size();
+     * @param fileName File to save
+     * @param ret List of Lists of Rois. First level of rois is plotted on slices, second
+     * contains rois to plot. Rois along second level are plotted with the same color across slices
+     * e.g. First roi in second level in red, second roi in second level ble etc
+     */
+    public static void saveROIs(ImagePlus image, String fileName,
+            ArrayList<ArrayList<SegmentedShapeRoi>> ret) {
+        ImagePlus cp = image.duplicate();
+        new ImageConverter(cp).convertToRGB();
+        for (ArrayList<? extends ShapeRoi> aL : ret) {
+            QColor qcolor = QColor.lightColor();
+            Color color = new Color(qcolor.getColorInt());
+            for (int i = 0; i < aL.size(); i++) {
+                ImageProcessor currentP = cp.getImageStack().getProcessor(i + 1);
+                currentP.setColor(color);
+                currentP.setLineWidth(2);
+                aL.get(i).drawPixels(currentP); // TODO catch OutOfBounds exception here to skip
+                                                // missing slices
+            }
+        }
+        IJ.saveAsTiff(cp, fileName); // save image
+    }
+
+    /**
+     * Save ROI as image
+     * 
+     * @param fileName
+     * @param roi
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver.saveROI(String, List<Point2d>) 
+     */
+    public static void saveROI(String fileName, Roi roi) {
+        if (roi == null)
+            saveROI(fileName, (List<Point2d>) null);
+        FloatPolygon fp;
+        fp = roi.getFloatPolygon(); // save common part
+        saveROI(fileName, new QuimpDataConverter(fp.xpoints, fp.ypoints).getList());
     }
 
     /**

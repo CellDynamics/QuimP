@@ -1,9 +1,8 @@
 
-# SnakePlugin {#SnakePlugin}
+# SnakePlugin
 
-\author p.baniukiewicz
-\date 19 Feb 2016
-\tableofcontents
+\author p.baniukiewicz \\
+\date 19 Feb 2016 \\
 
 # Description of use {#dou}
 
@@ -510,14 +509,14 @@ note left: see Technical details and\n **Select Plugin**
 ### set/get Plugin Config {#sgpc}
 
 These use cases are activated during uploading and downloading internal plugin configuration. QuimP
-itself does not touch these data but only store them on disk (see @ref ConfigurationHandling). 
+itself does not touch these data but only store them on disk (see [ConfigurationHandling](ConfigurationHandling.md)). 
 Parameters are passed as uk.ac.warwick.wsbc.QuimP.plugin.ParamList list.
 
 ### load/write Plugin Config {#loadc}
 
 These use cases are responsible for saving and loading data to/from disk. Basically they are strictly 
 related to previous use cases (@ref sgpc). Data obtained from plugins are packed to json file with
-extra parameters. see @ref ConfigurationHandling for details.
+extra parameters. Refer to [ConfigurationHandling](ConfigurationHandling.md) for details.
 
 Related classes and methods:
 

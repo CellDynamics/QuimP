@@ -26,14 +26,34 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  */
 public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(Shape.class.getName());
-    protected int nextTrackNumber = 1; //!< next node ID's
-    protected T head; //!< first node in double linked list, always maintained
-    protected int POINTS; //!< number of points
-    protected ExtendedVector2d centroid = null; //!< centroid point of the Shape
+    /**
+     * Next node ID's
+     * Initialized in constructor, changed during modification of shape
+     */
+    protected int nextTrackNumber = 1;
+    /**
+     * first node in double linked list, always maintained, initialized in constructor
+     */
+    protected T head;
+    /**
+     * number of points
+     * Initialized in constructor, changed on Shape modification
+     */
+    protected int POINTS;
+    /**
+     * Centroid point of the Shape. Updated by uk.ac.warwick.wsbc.QuimP.Shape.calcCentroid() called
+     * after change of the Shape and also in @ref uk.ac.warwick.wsbc.QuimP.Shape.afterSerialize() "afterSerialzie()"
+     * and @ref uk.ac.warwick.wsbc.QuimP.Shape.beforeSerialize() "beforeSerialize()"
+     */
+    protected ExtendedVector2d centroid = null;
     public static final int MAX_NODES = 10000; //!< Max number of nodes allowed in Shape 
-    private ArrayList<T> Elements = null; //!< Elements of Shape as List - initialized on Serialize
-    
-	/**
+    /**
+     * Elements of Shape as List
+     * Initialized on Serialize. Temprary array to store linked list as array to allow serialization
+     */
+    private ArrayList<T> Elements = null;
+
+    /**
      * Default constructor, creates empty Shape
      */
     public Shape() {
@@ -127,7 +147,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     public Shape(final Shape<T> src, T destType) {
         T tmpHead = src.getHead(); // get head as representative object
         Class<?> tClass = tmpHead.getClass(); // get class under Shape (T)
-        LOGGER.debug("Src class: " + tClass.getName());
+        LOGGER.trace("Src class: " + tClass.getName());
         try { // Constructor of T as type can not be called directly, use reflection
               // get Constructor of T with one parameter of Type src (conversion constructor)
             Constructor<?> ctor = destType.getClass().getDeclaredConstructor(tClass);
@@ -287,7 +307,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
 
         } while (!n.isHead());
         area = 0.5 * sum;
-        return area;
+        return area;/*!< ID number of point, unique across list */
     }
 
     /**
@@ -588,7 +608,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      */
     @Override
     public void beforeSerialize() {
+        calcCentroid();
         setPositions();
+        updateNormales(true);
+        makeAntiClockwise();
         Elements = new ArrayList<>();
         T n = getHead().getNext(); // do not store head as it is stored in head variable
         do {
@@ -630,6 +653,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
             }
         }
         clearElements();
+        calcCentroid(); // WARN Updating saved data - may be wrong
+        setPositions();
+        updateNormales(true);
+        makeAntiClockwise();
     }
 
     /**

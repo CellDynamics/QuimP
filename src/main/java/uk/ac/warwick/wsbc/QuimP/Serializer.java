@@ -126,7 +126,6 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         String str;
         str = toString(); // produce json
         LOGGER.debug("Saving at: " + filename);
-        LOGGER.trace(str);
         PrintWriter f;
         f = new PrintWriter(new File(filename));
         f.print(str);
@@ -233,11 +232,12 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * @copydoc Dump(Object, File)
+     * @copydoc Dump(Object, File, boolean)
      */
-    static void Dump(final Object obj, final String filename) throws FileNotFoundException {
+    static void Dump(final Object obj, final String filename, boolean savePretty)
+            throws FileNotFoundException {
         File file = new File(filename);
-        Serializer.Dump(obj, file);
+        Serializer.Dump(obj, file, savePretty);
     }
 
     /**
@@ -245,12 +245,17 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * 
      * @param obj to dump
      * @param filename to be saved under
+     * @param savePretty if \a true use pretty format
      * @throws FileNotFoundException when file can not be created
      * @remarks Can be used for saving already packed objects
+     * @warning This method des not call beforeSerialize(). It must be called explicitly before 
+     * dumping
      */
-    static void Dump(final Object obj, final File filename) throws FileNotFoundException {
+    static void Dump(final Object obj, final File filename, boolean savePretty)
+            throws FileNotFoundException {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setPrettyPrinting();
+        if (savePretty)
+            gsonBuilder.setPrettyPrinting();
         Gson gson = gsonBuilder.create();
         if (obj != null) {
             String str = gson.toJson(obj);

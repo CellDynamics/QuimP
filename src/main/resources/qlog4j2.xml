@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!--This default logger configuration log messages to two streams separately. All up to threshold level is logged to stdout, everything above threshold level to stderr--><!--Piotr Baniukiewicz--><!--7.12.2015-->
-<Configuration status="WARN">
+<Configuration status="warn">
     <Properties>
         <Property name="LOG_DIR">${sys:java.io.tmpdir}/QuimpLogs</Property>
     </Properties>
@@ -16,7 +16,7 @@
 		<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{2}.[%M] - %msg%n"></PatternLayout></File>
 	</Appenders>
 	<Loggers>
-		<Root level="WARN">
+		<Root level="trace">
 			<AppenderRef ref="Console_err"></AppenderRef>
 			<AppenderRef ref="Console_out"></AppenderRef><!--Here is global loglevel above which is logging-->
 			<AppenderRef ref="File_log"></AppenderRef>

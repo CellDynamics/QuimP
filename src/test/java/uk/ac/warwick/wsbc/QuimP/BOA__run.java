@@ -29,7 +29,11 @@ import ij.gui.Toolbar;
  * ps -aux | grep BOA__run | awk '{print $2}' | xargs kill
  * @endcode
  */
+@SuppressWarnings("unused")
 public class BOA__run {
+    static {
+        System.setProperty("quimp.debugLevel", "qlog4j2.xml");
+    }
 
     /**
      * @param args
@@ -43,7 +47,8 @@ public class BOA__run {
         // img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");
         // img = IJ.openImage("src/test/resources/movie03_8bit.tif");
         // img = IJ.openImage("src/test/resources/Composite-after-macro_cut.tif");
-        img = IJ.openImage("src/test/resources/Stack_cut.tif");
+        // img = IJ.openImage("src/test/resources/Stack_cut.tif");
+        img = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth.tif");
 
         img.show(); // this is necessary for plugin as it uses getcurrentimage to work
         Toolbar t = new Toolbar(); // fake toolbar to allow calls to static fields of this class

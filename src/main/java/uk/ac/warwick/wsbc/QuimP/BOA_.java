@@ -33,11 +33,15 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.BoxLayout;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -48,6 +52,7 @@ import javax.vecmath.Vector2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -78,14 +83,24 @@ import ij.process.StackConverter;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpPoint2dFilter;
-import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpSnakeFilter;
+import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOAPoint2dFilter;
+import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOASnakeFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * Main class implementing BOA plugin.
+ * 
+ * @remarks
+ * Can use system property \a quimp.debugLevel to set other than default logging level
+ * If the property \a quimp.debugLevel is not present BOA uses default logging only Warns and Errors
+ * Passing parameter - name of the xml log4j2 config file to this property enables more detailed
+ * logging. e.g.
+ * @code
+ * ./ImageJ-linux64 -Dquimp.debugLevel=qlog4j2.xml -- --java-home $JAVA_HOME
+ * @endcode
  * 
  * @author Richard Tyson
  * @author Till Bretschneider
@@ -94,9 +109,11 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * @date 4 Feb 2016
  */
 public class BOA_ implements PlugIn {
-    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
     }
     static final Logger LOGGER = LogManager.getLogger(BOA_.class.getName());
     CustomCanvas canvas;
@@ -111,7 +128,7 @@ public class BOA_ implements PlugIn {
     /**
      * Reserved word that stands for plugin that is not selected
      */
-    private final static String NONE = "NONE";
+    final static String NONE = "NONE";
     /**
      * Reserved word that states full view zoom in zoom choice. Also default text that
      * appears there
@@ -121,6 +138,7 @@ public class BOA_ implements PlugIn {
      * Hold current BOA object and provide access to only selected methods from plugin. Reference to
      * this field is passed to plugins and give them possibility to call selected methods from BOA
      * class
+     * @todo TODO Should not be static rather
      */
     public static ViewUpdater viewUpdater;
     /**
@@ -135,6 +153,7 @@ public class BOA_ implements PlugIn {
     /**
      * Configuration object, available from all modules. Must be initialized here \b AND in 
      * constructor (to reset settings on next BOA call without quitting Fiji)
+     * Keep data that will be serialized
      */
     static public BOAState qState; // current state of BOA module
 
@@ -148,6 +167,7 @@ public class BOA_ implements PlugIn {
         LOGGER.trace("Constructor called");
         qState = new BOAState(null);
         logCount = 1; // reset log count (it is also static)
+        // log4j.configurationFile
     }
 
     /**
@@ -186,7 +206,9 @@ public class BOA_ implements PlugIn {
             pluginFactory = PluginFactoryFactory.getPluginFactory(path);
         } catch (Exception e) {
             // temporary catching may in future be removed
-            LOGGER.error("run " + e);
+            LOGGER.error("run: " + e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
+            return;
         }
 
         ImagePlus ip = WindowManager.getCurrentImage();
@@ -248,7 +270,7 @@ public class BOA_ implements PlugIn {
      * Build all BOA windows and setup initial parameters for segmentation
      * Define also windowListener for cleaning after closing the main window by
      * user.
-     * 
+     * git tag -a "SNAPSHOT-13-07-16" -m "Releasing snaphots to Fiji internal update site"
      * @param ip Reference to image to be processed by BOA
      * @see BOAp
      */
@@ -307,7 +329,8 @@ public class BOA_ implements PlugIn {
      */
     void about() {
         AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
-        ad.appendLine(Tool.getQuimPversion(quimpInfo)); // dispaly template filled by quimpInfo
+        ad.appendLine(Tool.getFormattedQuimPversion(quimpInfo)); // display template filled by
+                                                                 // quimpInfo
         // get list of found plugins
         ad.appendLine("List of found plugins:");
         ad.appendDistance(); // type ----
@@ -320,7 +343,7 @@ public class BOA_ implements PlugIn {
             ad.appendLine("   Plugin vers: " + entry.getValue().getVersion());
             // about is not stored in PluginProperties class due to optimization of memory
             ad.appendLine("   About (returned by plugin):");
-            IQuimpPlugin tmpinst = pluginFactory.getInstance(entry.getKey());
+            IQuimpCorePlugin tmpinst = pluginFactory.getInstance(entry.getKey());
             if (tmpinst != null) // can be null on problem with instance
             {
                 String about = tmpinst.about(); // may return null
@@ -350,8 +373,10 @@ public class BOA_ implements PlugIn {
     public void recalculatePlugins() {
         LOGGER.trace("BOA: recalculatePlugins called");
         SnakeHandler sH;
-        if (qState.nest.isVacant())
+        if (qState.nest.isVacant()) { // only update screen
+            imageGroup.updateOverlay(qState.boap.frame);
             return;
+        }
         imageGroup.updateToFrame(qState.boap.frame);
         try {
             for (int s = 0; s < qState.nest.size(); s++) { // for each snake
@@ -373,13 +398,14 @@ public class BOA_ implements PlugIn {
                 } catch (QuimpPluginException qpe) {
                     // must be rewritten with whole runBOA #65 #67
                     BOA_.log("Error in filter module: " + qpe.getMessage());
-                    LOGGER.error(qpe);
+                    LOGGER.error("Error in filter module: " + qpe.getMessage());
+                    LOGGER.debug(qpe.getMessage(), qpe);
                     sH.storeLiveSnake(qState.boap.frame); // so store only segmented snake as final
                 }
             }
         } catch (Exception e) {
             LOGGER.error("Can not update view. Output snake may be defective: " + e.getMessage());
-            LOGGER.error(e);
+            LOGGER.debug(e.getMessage(), e);
         } finally {
             historyLogger.addEntry("Plugin settings", qState);
             qState.store(qState.boap.frame); // always remember state of the BOA that is
@@ -411,6 +437,8 @@ public class BOA_ implements PlugIn {
             LOGGER.trace("CLOSED");
             BOA_.running = false; // set marker
             qState.snakePluginList.clear(); // close all opened plugin windows
+            if (qState.binarySegmentationPlugin != null)
+                qState.binarySegmentationPlugin.showUI(false);
             canvas = null; // clear window data
             imageGroup = null;
             window = null;
@@ -427,7 +455,7 @@ public class BOA_ implements PlugIn {
         @Override
         public void windowActivated(final WindowEvent e) {
             LOGGER.trace("ACTIVATED");
-            // rebuild manu for this local window
+            // rebuild menu for this local window
             // workaround for Mac and theirs menus on top screen bar
             // IJ is doing the same for activation of its window so every time one has correct menu
             // on top
@@ -526,8 +554,9 @@ public class BOA_ implements PlugIn {
         private Checkbox cFirstPluginActiv, cSecondPluginActiv, cThirdPluginActiv;
 
         private MenuBar quimpMenuBar;
-        private MenuItem menuVersion, menuSaveConfig, menuLoadConfig, menuShowHistory, menuLoad,
-                menuDeletePlugin, menuApplyPlugin; // items
+        private MenuItem menuAbout, menuOpenHelp, menuSaveConfig, menuLoadConfig, menuShowHistory,
+                menuLoad, menuDeletePlugin, menuApplyPlugin, menuSegmentationRun,
+                menuSegmentationReset; // items
         private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
         private Color defaultColor;
 
@@ -589,23 +618,26 @@ public class BOA_ implements PlugIn {
          */
         final MenuBar buildMenu() {
             MenuBar menuBar; // main menu bar
-            Menu menuAbout; // menu About in menubar
+            Menu menuHelp; // menu About in menubar
             Menu menuConfig; // menu Config in menubar
             Menu menuFile; // menu File in menubar
             Menu menuPlugin; // menu Plugin in menubar
+            Menu menuSegmentation; // menu Segmentation in menubar
 
             menuBar = new MenuBar();
 
             menuConfig = new Menu("Preferences");
-            menuAbout = new Menu("About");
+            menuHelp = new Menu("Help");
             menuFile = new Menu("File");
             menuPlugin = new Menu("Plugin");
+            menuSegmentation = new Menu("Segmentation");
 
             // build main line
             menuBar.add(menuFile);
             menuBar.add(menuConfig);
             menuBar.add(menuPlugin);
-            menuBar.add(menuAbout);
+            menuBar.add(menuSegmentation);
+            menuBar.add(menuHelp);
 
             // add entries
             menuLoad = new MenuItem("Load global config");
@@ -619,9 +651,12 @@ public class BOA_ implements PlugIn {
             menuSaveConfig.addActionListener(this);
             menuFile.add(menuSaveConfig);
 
-            menuVersion = new MenuItem("Version");
-            menuVersion.addActionListener(this);
-            menuAbout.add(menuVersion);
+            menuOpenHelp = new MenuItem("Help Contents");
+            menuOpenHelp.addActionListener(this);
+            menuHelp.add(menuOpenHelp);
+            menuAbout = new MenuItem("About");
+            menuAbout.addActionListener(this);
+            menuHelp.add(menuAbout);
 
             cbMenuPlotOriginalSnakes = new CheckboxMenuItem("Plot original");
             cbMenuPlotOriginalSnakes.setState(qState.boap.isProcessedSnakePlotted);
@@ -642,6 +677,13 @@ public class BOA_ implements PlugIn {
             menuApplyPlugin = new MenuItem("Re-apply all");
             menuApplyPlugin.addActionListener(this);
             menuPlugin.add(menuApplyPlugin);
+
+            menuSegmentationRun = new MenuItem("Binary segmentation");
+            menuSegmentationRun.addActionListener(this);
+            menuSegmentationReset = new MenuItem("Clear all");
+            menuSegmentationReset.addActionListener(this);
+            menuSegmentation.add(menuSegmentationRun);
+            menuSegmentation.add(menuSegmentationReset);
 
             return menuBar;
         }
@@ -687,7 +729,7 @@ public class BOA_ implements PlugIn {
             // build subpanel with plugins
             // get plugins names collected by PluginFactory
             ArrayList<String> pluginList =
-                    qState.snakePluginList.getPluginNames(IQuimpPlugin.DOES_SNAKES);
+                    qState.snakePluginList.getPluginNames(IQuimpCorePlugin.DOES_SNAKES);
             // add NONE to list
             pluginList.add(0, NONE);
 
@@ -1026,6 +1068,7 @@ public class BOA_ implements PlugIn {
          * @see itemStateChanged(ItemEvent)
          * @warning This method is called from CustomStackWindow.itemStateChanged(ItemEvent)
          * to update colors of Choices
+         * @see ConfigurationHandling.md
          */
         private void updateChoices() {
             Color ok = new Color(178, 255, 102);
@@ -1035,8 +1078,23 @@ public class BOA_ implements PlugIn {
                 sFirstPluginName.select(NONE);
                 sFirstPluginName.setBackground(defaultColor);
             } else {
-                sFirstPluginName.select(qState.snakePluginList.getName(0));
-                if (qState.snakePluginList.getInstance(0) == null)
+                sFirstPluginName.select(qState.snakePluginList.getName(0)); // try to select name
+                                                                            // from pluginList in
+                                                                            // choice
+                if (sFirstPluginName.getSelectedItem().equals(NONE)) {// tried selecting but still
+                                                                      // on none - it means that
+                                                                      // plugin name from
+                                                                      // snkePluginList is not on
+                                                                      // choice list. Tis may happen
+                                                                      // when choice is propagated
+                                                                      // from directory but
+                                                                      // snakePluginList from
+                                                                      // external QCONF
+                    sFirstPluginName.add(qState.snakePluginList.getName(0)); // add to list
+                    sFirstPluginName.setBackground(bad); // set as bad
+                } else if (qState.snakePluginList.getInstance(0) == null) // WARN does not check if
+                                                                          // instance(0) is the
+                                                                          // instance of getName(0)
                     sFirstPluginName.setBackground(bad);
                 else
                     sFirstPluginName.setBackground(ok);
@@ -1047,7 +1105,10 @@ public class BOA_ implements PlugIn {
                 sSecondPluginName.setBackground(defaultColor);
             } else {
                 sSecondPluginName.select(qState.snakePluginList.getName(1));
-                if (qState.snakePluginList.getInstance(1) == null)
+                if (sSecondPluginName.getSelectedItem().equals(NONE)) {
+                    sSecondPluginName.add(qState.snakePluginList.getName(1)); // add to list
+                    sSecondPluginName.setBackground(bad); // set as bad
+                } else if (qState.snakePluginList.getInstance(1) == null)
                     sSecondPluginName.setBackground(bad);
                 else
                     sSecondPluginName.setBackground(ok);
@@ -1058,7 +1119,10 @@ public class BOA_ implements PlugIn {
                 sThirdPluginName.setBackground(defaultColor);
             } else {
                 sThirdPluginName.select(qState.snakePluginList.getName(2));
-                if (qState.snakePluginList.getInstance(2) == null)
+                if (sThirdPluginName.getSelectedItem().equals(NONE)) {
+                    sThirdPluginName.add(qState.snakePluginList.getName(2)); // add to list
+                    sThirdPluginName.setBackground(bad); // set as bad
+                } else if (qState.snakePluginList.getInstance(2) == null)
                     sThirdPluginName.setBackground(bad);
                 else
                     sThirdPluginName.setBackground(ok);
@@ -1182,8 +1246,8 @@ public class BOA_ implements PlugIn {
                 bSeg.setLabel("computing");
                 int framesCompleted;
                 try {
-                    runBoa(qState.boap.frame, qState.boap.FRAMES);
-                    framesCompleted = qState.boap.FRAMES;
+                    runBoa(qState.boap.frame, qState.boap.getFRAMES());
+                    framesCompleted = qState.boap.getFRAMES();
                     IJ.showStatus("COMPLETE");
                 } catch (BoaException be) {
                     BOA_.log(be.getMessage());
@@ -1194,7 +1258,7 @@ public class BOA_ implements PlugIn {
                 bSeg.setLabel("SEGMENT");
             } else if (b == bLoad) {
                 try {
-                    if (qState.boap.readParams()) {
+                    if (qState.readParams()) {
                         updateSpinnerValues();
                         if (loadSnakes()) {
                             run = false;
@@ -1243,13 +1307,26 @@ public class BOA_ implements PlugIn {
             }
 
             // menu listeners
-            if (b == menuVersion) {
+            if (b == menuAbout) {
                 about();
             }
+            if (b == menuOpenHelp) {
+                String url =
+                        new PropertyReader().readProperty("quimpconfig.properties", "manualURL");
+                try {
+                    java.awt.Desktop.getDesktop().browse(new URI(url));
+                } catch (Exception e1) {
+                    LOGGER.error("Could not open help: " + e1.getMessage());
+                    LOGGER.debug(e1.getMessage(), e1);
+                }
+                return;
+            }
             if (b == menuSaveConfig) {
-                String saveIn = qState.boap.orgFile.getParent();
+                String saveIn = qState.boap.getOutputFileCore().getParent();
+                // get extension from deduced output name
+                Path p = Paths.get(qState.boap.deductFilterFileName()).getFileName();
                 SaveDialog sd = new SaveDialog("Save plugin config data...", saveIn,
-                        qState.boap.fileName, ".pgQP");
+                        qState.boap.getFileName(), "." + Tool.getFileExtension(p.toString()));
                 if (sd.getFileName() != null) {
                     try {
                         // Create Serialization object with extra info layer
@@ -1259,7 +1336,8 @@ public class BOA_ implements PlugIn {
                         s.save(sd.getDirectory() + sd.getFileName()); // save it
                         s = null; // remove
                     } catch (FileNotFoundException e1) {
-                        LOGGER.error("Problem with saving plugin config");
+                        LOGGER.error("Problem with saving plugin config: " + e1.getMessage());
+                        LOGGER.debug(e1.getMessage(), e1);
                     }
                 }
             }
@@ -1299,11 +1377,13 @@ public class BOA_ implements PlugIn {
                         */
                         recalculatePlugins(); // update screen
                     } catch (IOException e1) {
-                        LOGGER.error("Problem with loading plugin config");
+                        LOGGER.error("Problem with loading plugin config: " + e1.getMessage());
+                        LOGGER.debug(e1.getMessage(), e1);
                     } catch (JsonSyntaxException e1) {
                         LOGGER.error("Problem with configuration file: " + e1.getMessage());
+                        LOGGER.debug(e1.getMessage(), e1);
                     } catch (Exception e1) {
-                        LOGGER.error(e1); // something serious
+                        LOGGER.fatal(e1.getMessage(), e1); // something serious
                     }
                 }
             }
@@ -1313,11 +1393,13 @@ public class BOA_ implements PlugIn {
              * the program
              */
             if (b == menuShowHistory) {
-                LOGGER.debug("got ShowHistory");
-                if (historyLogger.isOpened())
+                JOptionPane.showMessageDialog(window,
+                        "The full history of changes is avaiable after saving your work in the"
+                                + " file " + QuimpConfigFilefilter.newFileExt);
+                /*if (historyLogger.isOpened())
                     historyLogger.closeHistory();
                 else
-                    historyLogger.openHistory();
+                    historyLogger.openHistory();*/
             }
 
             /**
@@ -1325,21 +1407,22 @@ public class BOA_ implements PlugIn {
              * Checks also whether the name of the image sealed in config file is the same as those 
              * opened currently. If not user has an option to break the procedure or continue
              * loading.
-             * 
-             * @todo TODO Add checking loaded version using quimpInfo data sealed in Serializer.save
              */
             if (b == menuLoad) {
-                OpenDialog od = new OpenDialog("Load global config data...(*.QCONF)", "");
+                OpenDialog od = new OpenDialog(
+                        "Load global config data...(*" + QuimpConfigFilefilter.newFileExt + ")",
+                        "");
                 if (od.getFileName() != null) {
                     try {
                         Serializer<DataContainer> loaded; // loaded instance
                         // create serializer
                         Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
                         s.registerInstanceCreator(DataContainer.class,
-                                new DataContainerInstanceCreator(3, pluginFactory, viewUpdater));
+                                new DataContainerInstanceCreator(pluginFactory, viewUpdater));
                         loaded = s.load(od.getDirectory() + od.getFileName());
                         // check against image names
-                        if (!loaded.obj.BOAState.boap.fileName.equals(qState.boap.fileName)) {
+                        if (!loaded.obj.BOAState.boap.getFileName()
+                                .equals(qState.boap.getFileName())) {
                             LOGGER.warn(
                                     "The image opened currently in BOA is different from those +"
                                             + " pointed in configuration file");
@@ -1351,7 +1434,8 @@ public class BOA_ implements PlugIn {
                             if (!yncd.yesPressed())
                                 return;
                         }
-                        qState.reset(); // closes windows, etc
+                        // closes windows, etc
+                        qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
                         qState = loaded.obj.BOAState;
                         imageGroup.updateNest(qState.nest); // reconnect nest to external class
                         qState.restore(qState.boap.frame); // copy from snapshots to current object
@@ -1359,13 +1443,21 @@ public class BOA_ implements PlugIn {
                         // do not recalculatePlugins here because pluginList is empty and this
                         // method will update finalSnake overriding it by segSnake (because on
                         // empty list they are just copied)
-                        imageGroup.updateToFrame(qState.boap.frame); // calls update Sliceselector
+                        // updateToFrame calls updateSliceSelector only if there is action of
+                        // changing frame. If loaded frame is the same as current one this event is
+                        // not called.
+                        if (qState.boap.frame != imageGroup.getOrgIpl().getSlice())
+                            imageGroup.updateToFrame(qState.boap.frame); // move to frame
+                        else
+                            updateSliceSelector(); // repaint window explicitly
                     } catch (IOException e1) {
-                        LOGGER.error("Problem with loading plugin config", e1);
+                        LOGGER.error("Problem with loading plugin config. " + e1.getMessage());
+                        LOGGER.debug(e1.getMessage(), e1); // if debug enabled - get more info
                     } catch (JsonSyntaxException e1) {
-                        LOGGER.error("Problem with configuration file: " + e1.getMessage(), e1);
+                        LOGGER.error("Problem with configuration file: " + e1.getMessage());
+                        LOGGER.debug(e1.getMessage(), e1);
                     } catch (Exception e1) {
-                        LOGGER.error(e1, e1); // something serious
+                        LOGGER.fatal(e1.getMessage(), e1); // something serious
                     }
                 }
             }
@@ -1408,12 +1500,45 @@ public class BOA_ implements PlugIn {
                 recalculatePlugins(); // update screen
             }
 
+            /**
+             * Run segmentation from mask file
+             */
+            if (b == menuSegmentationRun) {
+                if (qState.binarySegmentationPlugin != null) {
+                    if (!qState.binarySegmentationPlugin.isWindowVisible())
+                        qState.binarySegmentationPlugin.showUI(true);
+                } else {
+                    qState.binarySegmentationPlugin = new BinarySegmentationPlugin(); // create
+                    // instance
+                    qState.binarySegmentationPlugin.attachData(qState.nest); // attach data
+                    qState.binarySegmentationPlugin.attachContext(viewUpdater); // allow plugin to
+                                                                                // update
+                                                                                // screen
+                    qState.binarySegmentationPlugin.showUI(true); // plugin is run internally
+                                                                  // after
+                                                                  // Apply
+                    // update screen is always on Apply button of plugin
+                }
+                BOA_.log("Run segmentation from mask file");
+            }
+
+            /**
+             * Clean all bOA state
+             */
+            if (b == menuSegmentationReset) {
+                qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
+                qState.nest.cleanNest();
+                updateSpinnerValues();
+                if (qState.boap.frame != imageGroup.getOrgIpl().getSlice())
+                    imageGroup.updateToFrame(qState.boap.frame); // move to frame
+                else
+                    updateSliceSelector(); // repaint window explicitly
+            }
+
             updateWindowState(); // window logic on any change and selectors
 
             // run segmentation for selected cases
-            if (run)
-
-            {
+            if (run) {
                 System.out.println("running from in stackwindow");
                 // run on current frame
                 try {
@@ -1620,8 +1745,9 @@ public class BOA_ implements PlugIn {
         public void updateSliceSelector() {
             super.updateSliceSelector();
             LOGGER.debug("EVENT:updateSliceSelector");
-            zSelector.setValue(imp.getCurrentSlice()); // this is delayed in
-                                                       // super.updateSliceSelector force it now
+            if (!qState.boap.singleImage)
+                zSelector.setValue(imp.getCurrentSlice()); // this is delayed in
+            // super.updateSliceSelector force it now
 
             // if in edit, save current edit and start edit of next frame if exists
             boolean wasInEdit = qState.boap.editMode;
@@ -1630,8 +1756,10 @@ public class BOA_ implements PlugIn {
                 stopEdit();
             }
 
-            qState.boap.frame = imp.getCurrentSlice();
-            frameLabel.setText("" + qState.boap.frame);
+            if (!qState.boap.singleImage) {
+                qState.boap.frame = imp.getCurrentSlice();
+                frameLabel.setText("" + qState.boap.frame);
+            }
             imageGroup.updateOverlay(qState.boap.frame); // draw overlay
             imageGroup.setIpSliceAll(qState.boap.frame);
 
@@ -1720,7 +1848,9 @@ public class BOA_ implements PlugIn {
                 qState.snakePluginList.deletePlugin(slot);
             }
         } catch (QuimpPluginException e) {
-            LOGGER.warn("Plugin " + selectedPlugin + " cannot be loaded");
+            LOGGER.warn(
+                    "Plugin " + selectedPlugin + " cannot be loaded. Reason: " + e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
         }
     }
 
@@ -1802,7 +1932,8 @@ public class BOA_ implements PlugIn {
                         } catch (QuimpPluginException qpe) {
                             // must be rewritten with whole runBOA #65 #67
                             BOA_.log("Error in filter module: " + qpe.getMessage());
-                            LOGGER.error(qpe);
+                            LOGGER.error(qpe.getMessage());
+                            LOGGER.debug(qpe.getMessage(), qpe);
                             sH.storeLiveSnake(qState.boap.frame); // store segmented nonmodified
 
                         } catch (BoaException be) {
@@ -1890,22 +2021,22 @@ public class BOA_ implements PlugIn {
             for (Plugin qP : qState.snakePluginList.getList()) { // iterate over list
                 if (!qP.isExecutable())
                     continue; // no plugin on this slot or not active
-                if (qP.getRef() instanceof IQuimpPoint2dFilter) { // check interface type
+                if (qP.getRef() instanceof IQuimpBOAPoint2dFilter) { // check interface type
                     if (previousConversion == isnake) { // previous was IQuimpSnakeFilter
                         dataToProcess = snakeToProcess.asList(); // and data needs to be converted
                     }
-                    IQuimpPoint2dFilter qPcast = (IQuimpPoint2dFilter) qP.getRef();
+                    IQuimpBOAPoint2dFilter qPcast = (IQuimpBOAPoint2dFilter) qP.getRef();
                     qPcast.attachData(dataToProcess);
                     dataToProcess = qPcast.runPlugin(); // store result in input variable
                     previousConversion = ipoint;
                 }
-                if (qP.getRef() instanceof IQuimpSnakeFilter) { // check interface type
+                if (qP.getRef() instanceof IQuimpBOASnakeFilter) { // check interface type
                     if (previousConversion == ipoint) { // previous was IQuimpPoint2dFilter
                         // and data must be converted to snake from dataToProcess
                         snakeToProcess =
                                 new QuimpDataConverter(dataToProcess).getSnake(snake.getSnakeID());
                     }
-                    IQuimpSnakeFilter qPcast = (IQuimpSnakeFilter) qP.getRef();
+                    IQuimpBOASnakeFilter qPcast = (IQuimpBOASnakeFilter) qP.getRef();
                     qPcast.attachData(snakeToProcess);
                     snakeToProcess = qPcast.runPlugin(); // store result as snake for next plugin
                     previousConversion = isnake;
@@ -2055,13 +2186,15 @@ public class BOA_ implements PlugIn {
         } catch (QuimpPluginException qpe) {
             isPluginError = true; // we have error
             BOA_.log("Error in filter module: " + qpe.getMessage());
-            LOGGER.error(qpe);
+            LOGGER.error(qpe.getMessage());
+            LOGGER.debug(qpe.getMessage(), qpe);
         } catch (BoaException be) {
             BOA_.log("New snake failed to converge");
-            LOGGER.error(be);
+            LOGGER.error(be.getMessage());
+            LOGGER.debug(be.getMessage(), be);
         } catch (Exception e) {
             BOA_.log("Undefined error from plugin");
-            LOGGER.fatal(e);
+            LOGGER.fatal(e.getMessage(), e);
         }
         // if any problem with plugin or other, store snake without modification
         // because snake.asList() returns copy
@@ -2070,7 +2203,8 @@ public class BOA_ implements PlugIn {
                 sH.storeLiveSnake(f); // so store original livesnake after segmentation
         } catch (BoaException be) {
             BOA_.log("Could not store new snake");
-            LOGGER.error(be);
+            LOGGER.error(be.getMessage());
+            LOGGER.debug(be.getMessage(), be);
         } finally {
             imageGroup.updateOverlay(f);
             historyLogger.addEntry("Added cell", qState);
@@ -2079,6 +2213,18 @@ public class BOA_ implements PlugIn {
 
     }
 
+    /**
+     * Delete SnakeHandler using the snake clicked by user
+     * 
+     * Method searches the snake in NEst that is on current frame and its centroid is close enough
+     * to clicked point. If found, the whole SnakeHandler (all Snakes of the same ID across 
+     * frames) is deleted.
+     * 
+     * @param x clicked coordinate
+     * @param y clicked coordinate  
+     * @param frame current frame
+     * @return \a true if handler deleted, \a false if not (because user does not click it)
+     */
     boolean deleteCell(int x, int y, int frame) {
         if (qState.nest.isVacant()) {
             return false;
@@ -2088,18 +2234,18 @@ public class BOA_ implements PlugIn {
         Snake snake;
         ExtendedVector2d sV;
         ExtendedVector2d mV = new ExtendedVector2d(x, y);
-        double[] distance = new double[qState.nest.size()];
+        List<Double> distance = new ArrayList<Double>();
 
         for (int i = 0; i < qState.nest.size(); i++) { // calc all distances
             sH = qState.nest.getHandler(i);
             if (sH.isStoredAt(frame)) {
                 snake = sH.getStoredSnake(frame);
                 sV = snake.getCentroid();
-                distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
+                distance.add(ExtendedVector2d.lengthP2P(mV, sV));
             }
         }
-        int minIndex = Tool.minArrayIndex(distance);
-        if (distance[minIndex] < 10) { // if closest < 10, delete it
+        int minIndex = QuimPArrayUtils.minListIndex(distance);
+        if (distance.get(minIndex) < 10) { // if closest < 10, delete it
             BOA_.log("Deleted cell " + qState.nest.getHandler(minIndex).getID());
             qState.nest.removeHandler(qState.nest.getHandler(minIndex));
             imageGroup.updateOverlay(frame);
@@ -2116,7 +2262,7 @@ public class BOA_ implements PlugIn {
         Snake snake;
         ExtendedVector2d sV;
         ExtendedVector2d mV = new ExtendedVector2d(x, y);
-        double[] distance = new double[qState.nest.size()];
+        List<Double> distance = new ArrayList<Double>();
 
         for (int i = 0; i < qState.nest.size(); i++) { // calc all distances
             sH = qState.nest.getHandler(i);
@@ -2124,16 +2270,16 @@ public class BOA_ implements PlugIn {
             if (sH.isStoredAt(frame)) {
                 snake = sH.getStoredSnake(frame);
                 sV = snake.getCentroid();
-                distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
+                distance.add(ExtendedVector2d.lengthP2P(mV, sV));
             } else {
-                distance[i] = 9999;
+                distance.add(9999.0);
             }
         }
 
-        int minIndex = Tool.minArrayIndex(distance);
+        int minIndex = QuimPArrayUtils.minListIndex(distance);
         // BOA_.log("Debug: closest index " + minIndex + ", id " +
         // nest.getHandler(minIndex).getID());
-        if (distance[minIndex] < 10) { // if closest < 10, delete it
+        if (distance.get(minIndex) < 10) { // if closest < 10, delete it
             BOA_.log("Deleted snake " + qState.nest.getHandler(minIndex).getID() + " from " + frame
                     + " onwards");
             sH = qState.nest.getHandler(minIndex);
@@ -2169,7 +2315,7 @@ public class BOA_ implements PlugIn {
                 distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
             }
         }
-        int minIndex = Tool.minArrayIndex(distance);
+        int minIndex = QuimPArrayUtils.minArrayIndex(distance);
         if (distance[minIndex] < 10 || qState.nest.size() == 1) { // if closest < 10, edit it
             sH = qState.nest.getHandler(minIndex);
             qState.boap.editingID = minIndex; // sH.getID();
@@ -2199,7 +2345,10 @@ public class BOA_ implements PlugIn {
         Roi r = canvas.getImage().getRoi();
         Roi.setColor(Color.yellow);
         SnakeHandler sH = qState.nest.getHandler(qState.boap.editingID);
-        sH.storeRoi((PolygonRoi) r, qState.boap.frame);
+        sH.storeRoi((PolygonRoi) r, qState.boap.frame); // store as final snake
+        // copy to segSnakes array
+        Snake stored = sH.getStoredSnake(qState.boap.frame);
+        sH.backupThisSnake(stored, qState.boap.frame);
         canvas.getImage().killRoi();
         imageGroup.updateOverlay(qState.boap.frame);
         qState.boap.editingID = -1;
@@ -2214,10 +2363,34 @@ public class BOA_ implements PlugIn {
     private void finish() {
         IJ.showStatus("BOA-FINISHING");
         YesNoCancelDialog ync;
-
+        File testF;
+        LOGGER.debug(qState.segParam.toString());
         if (qState.boap.saveSnake) {
             try {
-                if (qState.nest.writeSnakes()) { // write snPQ file (if any snake)
+                String saveIn = BOA_.qState.boap.getOutputFileCore().getParent();
+                SaveDialog sd = new SaveDialog("Save segmentation data...", saveIn,
+                        BOA_.qState.boap.getFileName(), "");
+                if (sd.getFileName() == null) {
+                    BOA_.log("Save canceled");
+                    return;
+                }
+                // This initialize various filenames that can be accessed bo other modules
+                BOA_.qState.boap.setOutputFileCore(sd.getDirectory() + sd.getFileName());
+
+                // check whether there is case saved and warn user
+                // there is no option to solve this problem here. User can only agree or cancel
+                // test for QCONF that is created always
+                testF = new File(qState.boap.deductNewParamFileName());
+                LOGGER.trace("Test for QCONF: " + testF.toString());
+                if (testF.exists() && !testF.isDirectory()) {
+                    ync = new YesNoCancelDialog(window, "Save Segmentation",
+                            "You are about to override previous results. Is it ok?\nIf not,"
+                                    + " previous data must be moved to another directory");
+                    if (!ync.yesPressed())
+                        return;
+                }
+                // write operations
+                if (qState.nest.writeSnakes()) { // write snPQ file (if any snake) and paQP
                     qState.nest.analyse(imageGroup.getOrgIpl().duplicate()); // write stQP file
                                                                              // and fill outFile
                                                                              // used later
@@ -2227,15 +2400,16 @@ public class BOA_ implements PlugIn {
                         Serializer<SnakePluginList> s;
                         s = new Serializer<>(qState.snakePluginList, quimpInfo);
                         s.setPretty(); // set pretty format
-                        s.save(qState.boap.outFile.getParent() + File.separator
-                                + qState.boap.fileName + ".pgQP");
+                        s.save(qState.boap.deductFilterFileName());
                         s = null; // remove
-                        // Dump BOAState object s new format
+                        // Dump BOAState object in new format
                         Serializer<DataContainer> n;
-                        n = new Serializer<>(new DataContainer(qState), quimpInfo);
-                        n.setPretty();
-                        n.save(qState.boap.outFile.getParent() + File.separator
-                                + qState.boap.fileName + ".QCONF");
+                        DataContainer dt = new DataContainer(); // create container
+                        dt.BOAState = qState; // assign boa state to correct field
+                        n = new Serializer<>(dt, quimpInfo);
+                        if (qState.boap.savePretty) // set pretty format if configured
+                            n.setPretty();
+                        n.save(qState.boap.deductNewParamFileName());
                         n = null;
                     }
                 } else {
@@ -2247,7 +2421,8 @@ public class BOA_ implements PlugIn {
                 }
             } catch (IOException e) {
                 IJ.error("Exception while saving");
-                LOGGER.error(e);
+                LOGGER.error("Exception while saving: " + e.getMessage());
+                LOGGER.debug(e.getMessage(), e);
                 return;
             }
         }
@@ -2374,6 +2549,7 @@ class ImageGroup {
      * @param frame Current frame
      */
     public void updateOverlay(int frame) {
+        LOGGER.trace("Update overlay for frame " + frame);
         SnakeHandler sH;
         Snake snake, back;
         int x, y;
@@ -2427,7 +2603,7 @@ class ImageGroup {
                     overlay.add(oR);
 
                     // plot circle on head
-                    FloatPolygon fp1 = GraphicsElements.plotCircle(bp, 10);
+                    FloatPolygon fp1 = GraphicsElements.getCircle(bp, 10);
                     PolygonRoi oR1 = new PolygonRoi(fp1, Roi.POLYGON);
                     oR1.setStrokeColor(Color.GREEN);
                     oR1.setFillColor(Color.GREEN);
@@ -2438,9 +2614,6 @@ class ImageGroup {
             } else
                 BOA_.viewUpdater.connectSnakeObject(null);
         }
-        // remember current state - image is updated on every change of state (action on plugins,
-        // segmentation ui, sliding on frames)
-
         orgIpl.setOverlay(overlay);
     }
 
@@ -2468,7 +2641,7 @@ class ImageGroup {
     }
 
     /**
-     * Calls updateSliceSelector callback
+     * Calls updateSliceSelector callback only if \a i != current frame
      * @param i
      */
     final public void setIpSliceAll(int i) {
@@ -2478,7 +2651,7 @@ class ImageGroup {
     }
 
     public void clearPaths(int fromFrame) {
-        for (int i = fromFrame; i <= BOA_.qState.boap.FRAMES; i++) {
+        for (int i = fromFrame; i <= BOA_.qState.boap.getFRAMES(); i++) {
             pathsIp = pathsStack.getProcessor(i);
             pathsIp.setValue(0);
             pathsIp.fill();
@@ -2514,7 +2687,7 @@ class ImageGroup {
             // for colour:
             // if(boap.drawColor) intensity = n.colour.getColorInt();
 
-            if (BOA_.qState.boap.HEIGHT > 800) {
+            if (BOA_.qState.boap.getHEIGHT() > 800) {
                 drawPixel(x, y, intensity, true, ip);
             } else {
                 drawPixel(x, y, intensity, false, ip);
@@ -2543,7 +2716,7 @@ class ImageGroup {
         contourIpl.setSlice(1);
         ImageProcessor contourIp;
 
-        for (int i = 1; i <= BOA_.qState.boap.FRAMES; i++) { // copy original
+        for (int i = 1; i <= BOA_.qState.boap.getFRAMES(); i++) { // copy original
             orgIp = orgStack.getProcessor(i);
             contourIp = contourStack.getProcessor(i);
             contourIp.copyBits(orgIp, 0, 0, Blitter.COPY);
@@ -2640,7 +2813,7 @@ class ImageGroup {
         int x, y;
         for (int s = 0; s < nest.size(); s++) {
             sH = nest.getHandler(s);
-            for (int i = 1; i <= BOA_.qState.boap.FRAMES; i++) {
+            for (int i = 1; i <= BOA_.qState.boap.getFRAMES(); i++) {
                 if (sH.isStoredAt(i)) {
                     snake = sH.getStoredSnake(i);
                     ip = stack.getProcessor(i);
@@ -2870,7 +3043,8 @@ class Constrictor {
                 y = yt - a * j * n.getNormal().getY();
 
                 // check that pixel is inside frame
-                if (x > 0 && y > 0 && x <= BOA_.qState.boap.WIDTH && y <= BOA_.qState.boap.HEIGHT) {
+                if (x > 0 && y > 0 && x <= BOA_.qState.boap.getWIDTH()
+                        && y <= BOA_.qState.boap.getHEIGHT()) {
                     I_outside += ip.getPixel((int) x, (int) y);
                     ++I_out;
                 }
@@ -2905,7 +3079,8 @@ class Constrictor {
                 x = xt - a * j * n.getNormal().getX();
                 y = yt - a * j * n.getNormal().getY();
                 // check that pixel is inside frame
-                if (x > 0 && y > 0 && x <= BOA_.qState.boap.WIDTH && y <= BOA_.qState.boap.HEIGHT) {
+                if (x > 0 && y > 0 && x <= BOA_.qState.boap.getWIDTH()
+                        && y <= BOA_.qState.boap.getHEIGHT()) {
                     I_outside += ip.getPixel((int) x, (int) y);
                     ++I_out;
                 }
@@ -3135,6 +3310,10 @@ class BoaException extends Exception {
         type = t;
     }
 
+    public BoaException(String string) {
+        super(string);
+    }
+
     public int getFrame() {
         return frame;
     }
@@ -3142,4 +3321,39 @@ class BoaException extends Exception {
     public int getType() {
         return type;
     }
+
+    /**
+     * 
+     */
+    public BoaException() {
+        super();
+    }
+
+    /**
+     * @param message
+     * @param cause
+     * @param enableSuppression
+     * @param writableStackTrace
+     */
+    public BoaException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    public BoaException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * @param cause
+     */
+    public BoaException(Throwable cause) {
+        super(cause);
+    }
+
 }

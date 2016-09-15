@@ -1,41 +1,60 @@
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
+import uk.ac.warwick.wsbc.QuimP.QuimpException;
+
 /**
  * Basic class derived from Exception for purposes of QuimP plugins
  * 
  * @author p.baniukiewicz
  * @date 20 Jan 2016
  * 
- * @todo //TODO in future it will be top class derived from QuimpException
  */
 @SuppressWarnings("serial")
-public class QuimpPluginException extends Exception {
+public class QuimpPluginException extends QuimpException {
 
+    /**
+     * 
+     */
     public QuimpPluginException() {
         super();
-    }
-
-    public QuimpPluginException(String message, Throwable cause,
-            boolean enableSuppression,
-            boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-
-    public QuimpPluginException(Throwable cause) {
-        super(cause);
+        // TODO Auto-generated constructor stub
     }
 
     /**
-     * Main constructor
-     * 
-     * @param arg0
-     * Reason of exception
+     * @param message
+     * @param cause
+     * @param enableSuppression
+     * @param writableStackTrace
      */
-    public QuimpPluginException(String arg0) {
-        super(arg0);
+    public QuimpPluginException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+        // TODO Auto-generated constructor stub
     }
 
-    public QuimpPluginException(String arg0, Throwable cause) {
-        super(arg0, cause);
+    /**
+     * @param message
+     * @param cause
+     */
+    public QuimpPluginException(String message, Throwable cause) {
+        super(message, cause);
+        // TODO Auto-generated constructor stub
     }
+
+    /**
+     * @param message
+     */
+    public QuimpPluginException(String message) {
+        super(message);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param cause
+     */
+    public QuimpPluginException(Throwable cause) {
+        super(cause);
+        // TODO Auto-generated constructor stub
+    }
+
 }

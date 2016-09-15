@@ -1,0 +1,117 @@
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+  <properties>
+    <title>QuimP Changes</title>
+    <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
+  </properties>
+  <body>
+      <release version="16.08.02" date="2016-09-15" description="Release">
+          <action dev="baniuk" type="add" issue="61">
+            Protrusion Tracking: New output images.
+         </action>
+      </release>
+      <release version="16.08.01-SNAPSHOT" date="2016-09-13" description="Release candidate 3">
+         <action dev="baniuk" type="update" issue="205">
+            Plugin code reworked.
+         </action>
+         <action dev="baniuk" type="fix" issue="200">
+            paQP files generated from QCONF contained bad segementation parameters.
+         </action>
+         <action dev="baniuk" type="fix" issue="202">
+            ANA: clear option does not work.
+         </action>
+         <action dev="baniuk" type="fix" issue="204">
+            ANA: stored bad paths in QCONF.
+         </action>
+         <action dev="baniuk" type="update" issue="206">
+            Added description of parameters in paQP file.
+         </action>
+         <action dev="baniuk" type="update" issue="208">
+            Rename toolbar menu entry.
+         </action>
+         <action dev="baniuk" type="update" issue="209">
+            Add preselection of active file format.
+         </action>
+         <action dev="baniuk" type="add" issue="61">
+            Protrusion Tracking: New output images.
+         </action>
+      </release> 
+      <release version="16.08.01-SNAPSHOT" date="2016-09-02" description="Release candidate 2">
+         <action dev="baniuk" type="fix" issue="203">
+            Deal with problem of restoring image from QCONF file.
+         </action>
+        <action dev="baniuk" type="update" issue="">
+            Fix of several bugs introduced after issue 196.
+        </action>
+      </release> 
+      <release version="16.08.01-SNAPSHOT" date="2016-09-01" description="Release candidate 1">
+         <action dev="baniuk" type="add" issue="195">
+            Detect whether loaded QCONF file contains any previous data and notify user if it does.
+         </action>
+        <action dev="baniuk" type="update" issue="199">
+            Option for saving outlines as separte image in ANA module.
+        </action>
+        <action dev="baniuk" type="update" issue="198">
+            Allow to load new format to ANA.
+        </action>
+        <action dev="baniuk" type="add" issue="196">
+            Data files in old format (Q111) are always generated when saving in new format (QCONF).
+        </action>
+      </release> 
+      <release version="16.08.01-SNAPSHOT" date="2016-07-30" description="Release candidate">
+         <action dev="baniuk" type="fix" issue="176">
+            Loading QCONF causes massive exceptions
+         </action>
+        <action dev="baniuk" type="add" issue="189">
+            Add options to clear all snakes and other settings from BOA menu
+        </action>
+        <action dev="baniuk" type="add" issue="150">
+            Allow to load new format to ECMM
+        </action>
+        <action dev="baniuk" type="add" issue="194">
+            Add support of new format QCONF to Q Analysis plugin
+        </action>
+      </release> 
+     <release version="16.08.01-SNAPSHOT" date="2016-07-18" description="Snapshot release">
+      <action dev="baniuk" type="fix" issue="187">
+        Current frame sometimes does not update when action taken in Binary Segmentation plugin.
+      </action>
+      <action dev="baniuk" type="fix" issue="186">
+        Binary Segmentation causes errors when snake is modified.
+      </action>
+      <action dev="baniuk" type="fix" issue="188">
+        BOA does not ask about file to save on SaveQuit.
+      </action>
+      <action dev="baniuk" type="fix" issue="176">
+        Loading QCONF causes massive exceptions sometimes.
+      </action>
+    </release> 
+    <release version="16.08.01-SNAPSHOT" date="2016-07-13" description="Snapshot release">
+      <action dev="baniuk" type="fix" issue="181">
+        Edited snakes are not processed by filters.
+      </action>
+      <action dev="baniuk" type="update" issue="179">
+        Add default log4j configuration file.
+      </action>
+      <action dev="baniuk" type="fix" issue="172">
+        Binary segmentation window can be duplicated.
+      </action>
+      <action dev="baniuk" type="add" issue="175">
+        Add about menu in QuimP bar.
+      </action>
+      <action dev="baniuk" type="add" issue="182">
+        Add link to doc from QuimP bar.
+      </action>
+      <action dev="baniuk" type="update" issue="183">
+        Random Walk GUI should offer option of creating of seed image.
+      </action>
+      <action dev="baniuk" type="fix" issue="184">
+        BinarySegmentation fails on single slice images.
+      </action>
+      <action dev="baniuk" type="update" issue="174">
+        Binary segmentation should use various sources of masks.
+      </action>
+    </release>
+  </body>
+</document>

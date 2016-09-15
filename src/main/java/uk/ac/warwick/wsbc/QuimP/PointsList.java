@@ -17,13 +17,36 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 public abstract class PointsList<T extends PointsList<T>> {
     protected transient T prev; /*!< previous point in list, \c null if no other point */
     protected transient T next; /*!< next point in list, \c null if no other point */
-    protected ExtendedVector2d point; /*!< x,y co-ordinates of the point */
-    protected ExtendedVector2d normal; /*!< normal vector */
-    protected ExtendedVector2d tan; /*!< tangent vector */
+    /**
+     *  x,y co-ordinates of the point
+     */
+    protected ExtendedVector2d point;
+    /**
+     * normal vector.
+     * Calculated by @ref uk.ac.warwick.wsbc.QuimP.PointsList.updateNormale(boolean) "updateNormale(boolean)"
+     * and implicitly by @ref uk.ac.warwick.wsbc.QuimP.Shape.updateNormales(boolean) "updateNormales(boolean)"
+     * from Shape during serialization and deserialization and changing the shape of Shape
+     */
+    protected ExtendedVector2d normal;
+    /**
+     * tangent vector
+     * Calculated by uk.ac.warwick.wsbc.QuimP.PointsList.calcTan(). Implicitly during calculating
+     * normals (see \c normal)
+     */
+    protected ExtendedVector2d tan;
     protected boolean head = false; /*!< Indicate if this point is \b head */
     protected static boolean clockwise = true; /*!< access clockwise if true */
-    protected int tracknumber = 1; /*!< ID number of point, unique across list */
-    double position = -1; /*!< normalized position on list, 0 - beginning , 1 - end of the list */
+    /**
+     * ID number of point, unique across list
+     * Given during adding point to list, controlled by Shape
+     */
+    protected int tracknumber = 1;
+    /**
+     * normalized position on list, 0 - beginning , 1 - end of the list according to Shape perimeter.
+     * Set by uk.ac.warwick.wsbc.QuimP.Shape.setPositions() and called before and after serialize
+     * and on Shape writting
+     */
+    double position = -1;
     /**
      * flag which is set when the velocity is below the critical velocity
      */
@@ -83,61 +106,61 @@ public abstract class PointsList<T extends PointsList<T>> {
     /** (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (frozen ? 1231 : 1237);
-		result = prime * result + (head ? 1231 : 1237);
-		result = prime * result + ((normal == null) ? 0 : normal.hashCode());
-		result = prime * result + ((point == null) ? 0 : point.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(position);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((tan == null) ? 0 : tan.hashCode());
-		result = prime * result + tracknumber;
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (frozen ? 1231 : 1237);
+        result = prime * result + (head ? 1231 : 1237);
+        result = prime * result + ((normal == null) ? 0 : normal.hashCode());
+        result = prime * result + ((point == null) ? 0 : point.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(position);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((tan == null) ? 0 : tan.hashCode());
+        result = prime * result + tracknumber;
+        return result;
+    }
 
-	/** (non-Javadoc)
+    /** (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof PointsList))
-			return false;
-		PointsList<?> other = (PointsList<?>) obj;
-		if (frozen != other.frozen)
-			return false;
-		if (head != other.head)
-			return false;
-		if (normal == null) {
-			if (other.normal != null)
-				return false;
-		} else if (!normal.equals(other.normal))
-			return false;
-		if (point == null) {
-			if (other.point != null)
-				return false;
-		} else if (!point.equals(other.point))
-			return false;
-		if (Double.doubleToLongBits(position) != Double.doubleToLongBits(other.position))
-			return false;
-		if (tan == null) {
-			if (other.tan != null)
-				return false;
-		} else if (!tan.equals(other.tan))
-			return false;
-		if (tracknumber != other.tracknumber)
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof PointsList))
+            return false;
+        PointsList<?> other = (PointsList<?>) obj;
+        if (frozen != other.frozen)
+            return false;
+        if (head != other.head)
+            return false;
+        if (normal == null) {
+            if (other.normal != null)
+                return false;
+        } else if (!normal.equals(other.normal))
+            return false;
+        if (point == null) {
+            if (other.point != null)
+                return false;
+        } else if (!point.equals(other.point))
+            return false;
+        if (Double.doubleToLongBits(position) != Double.doubleToLongBits(other.position))
+            return false;
+        if (tan == null) {
+            if (other.tan != null)
+                return false;
+        } else if (!tan.equals(other.tan))
+            return false;
+        if (tracknumber != other.tracknumber)
+            return false;
+        return true;
+    }
 
-	/**
+    /**
      * \c point getter
      * 
      * @return X space co-ordinate

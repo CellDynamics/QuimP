@@ -13,6 +13,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
 /**
  * Represents collection of Snakes
@@ -21,7 +22,7 @@ import ij.gui.Roi;
  * @author p.baniukiewicz
  * @date 4 May 2016
  */
-class Nest implements IQuimpSerialize {
+public class Nest implements IQuimpSerialize {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -44,6 +45,28 @@ class Nest implements IQuimpSerialize {
         nextID = 0;
         sHs = new ArrayList<SnakeHandler>();
     }
+    
+    /**
+     * Convert array of SegmentedShapeRoi to SnakeHandlers
+     * 
+     * @param roiArray First level stands for objects (SnakeHandlers(, second for Snakes within one
+     * chain
+     * @remarks Conversion within one SnakeHandler is stopped when there is defective Snake.
+     */
+    public void addHandlers(ArrayList<ArrayList<SegmentedShapeRoi>> roiArray) {
+        LOGGER.trace("Adding " + roiArray.size() + "SnakeHandlers");
+        for (List<SegmentedShapeRoi> lsS : roiArray) {
+            try {
+                sHs.add(new SnakeHandler(lsS, nextID));
+                nextID++;
+                NSNAKES++;
+                ALIVE++;
+            } catch (Exception e) {
+                LOGGER.error("A snake on frame " + lsS.get(0).getFrame() + " failed to initilise "
+                        + e.getMessage());
+            }
+        }
+    }
 
     public void addHandlers(Roi[] roiArray, int startFrame) {
         int i = 0;
@@ -54,7 +77,7 @@ class Nest implements IQuimpSerialize {
                 NSNAKES++;
                 ALIVE++;
             } catch (Exception e) {
-                BOA_.log("A snake failed to initilise");
+                BOA_.log("A snake failed to initilise: " + e.getMessage());
             }
         }
         BOA_.log("Added " + roiArray.length + " cells at frame " + startFrame);
@@ -80,6 +103,7 @@ class Nest implements IQuimpSerialize {
             BOA_.log("Added one cell, begining frame " + startFrame);
         } catch (Exception e) {
             BOA_.log("Added cell failed to initilise");
+            LOGGER.debug(e.getMessage(), e);
             return null;
         }
         BOA_.log("Cells being tracked: " + NSNAKES);
@@ -101,19 +125,23 @@ class Nest implements IQuimpSerialize {
      */
     public boolean writeSnakes() throws IOException {
         Iterator<SnakeHandler> sHitr = sHs.iterator();
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         SnakeHandler sH;
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
-            sH.setEndFrame(); // find its last frame (frame with valid contour)
+            sH.findLastFrame(); // find its last frame (frame with valid contour)
             if (sH.getStartFrame() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
-                removeHandler(sH);
+                toRemove.add(sH);
                 continue;
             }
             if (!sH.writeSnakes()) {
                 return false;
             }
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
         return true;
     }
 
@@ -160,14 +188,12 @@ class Nest implements IQuimpSerialize {
             while (sHitr.hasNext()) {
                 sH = (SnakeHandler) sHitr.next();
 
-                File pFile = new File(BOA_.qState.boap.outFile.getParent(),
-                        BOA_.qState.boap.fileName + "_" + sH.getID() + ".paQP");
+                File pFile = new File(BOA_.qState.boap.deductParamFileName(sH.getID()));
                 QParams newQp = new QParams(pFile);
                 newQp.readParams();
                 outputH = new OutlineHandler(newQp);
 
-                File statsFile = new File(BOA_.qState.boap.outFile.getParent() + File.separator
-                        + BOA_.qState.boap.fileName + "_" + sH.getID() + ".stQP.csv");
+                File statsFile = new File(BOA_.qState.boap.deductStatsFileName(sH.getID()));
                 new CellStat(outputH, oi, statsFile, BOA_.qState.boap.getImageScale(),
                         BOA_.qState.boap.getImageFrameInterval());
             }
@@ -180,16 +206,23 @@ class Nest implements IQuimpSerialize {
         // Rset live snakes to ROI's
         reviveNest();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         while (sHitr.hasNext()) {
             SnakeHandler sH = (SnakeHandler) sHitr.next();
             try {
                 sH.reset();
             } catch (Exception e) {
+                LOGGER.error("Could not reset snake " + e.getMessage(), e);
                 BOA_.log("Could not reset snake " + sH.getID());
-                BOA_.log("Removeing snake " + sH.getID());
-                removeHandler(sH);
+                BOA_.log("Removing snake " + sH.getID());
+                // collect handler to remove. It will be removed later to avoid list modification in
+                // iterator (#186)
+                toRemove.add(sH);
             }
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
     }
 
     public void removeHandler(final SnakeHandler sH) {
@@ -198,6 +231,16 @@ class Nest implements IQuimpSerialize {
         }
         sHs.remove(sH);
         NSNAKES--;
+    }
+
+    /**
+     * Remove all handlers from Nest. Make Nest empty
+     */
+    public void cleanNest() {
+        sHs.clear();
+        NSNAKES = 0;
+        ALIVE = 0;
+        nextID = 0;
     }
 
     /**
@@ -215,7 +258,7 @@ class Nest implements IQuimpSerialize {
     void resetForFrame(int f) {
         reviveNest();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
-        // BOA_.log("Reseting for frame " + f);
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         while (sHitr.hasNext()) {
             SnakeHandler sH = (SnakeHandler) sHitr.next();
             try {
@@ -227,11 +270,17 @@ class Nest implements IQuimpSerialize {
                     sH.resetForFrame(f);
                 }
             } catch (Exception e) {
+                LOGGER.error("Could not reset snake " + e.getMessage(), e);
                 BOA_.log("Could not reset snake " + sH.getID());
-                BOA_.log("Removeing snake " + sH.getID());
-                removeHandler(sH);
+                BOA_.log("Removing snake " + sH.getID());
+                // collect handler to remove. It will be removed later to avoid list modification in
+                // iterator (#186)
+                toRemove.add(sH);
             }
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
     }
 
     /**
@@ -287,17 +336,22 @@ class Nest implements IQuimpSerialize {
     @Override
     public void beforeSerialize() {
         Iterator<SnakeHandler> sHitr = sHs.iterator();
+        ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
         SnakeHandler sH;
+        // sanity operation - delete defective snakes
         while (sHitr.hasNext()) {
             sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
-            sH.setEndFrame(); // find its last frame (frame with valid contour)
+            sH.findLastFrame(); // find its last frame (frame with valid contour)
             if (sH.getStartFrame() > sH.getEndFrame()) {
                 IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
-                removeHandler(sH);
+                toRemove.add(sH);
                 continue;
             }
             sH.beforeSerialize();
         }
+        // removing from list (after iterator based loop)
+        for (int i = 0; i < toRemove.size(); i++)
+            removeHandler(toRemove.get(i));
     }
 
     @Override
