@@ -70,7 +70,7 @@ public class FormatConverterTest {
         FormatConverter fC = new FormatConverter(
                 new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
         fC.generatepaQP();
-
+        Thread.sleep(1000);
         // compare paQP
         // manualy generated one
         BufferedReader readerexpected = new BufferedReader(new FileReader(
@@ -138,7 +138,7 @@ public class FormatConverterTest {
         FormatConverter fC = new FormatConverter((QParamsQconf) qC.getQp(),
                 Paths.get("src/test/resources/FormatConverter"));
         fC.generateOldDataFiles();
-
+        Thread.sleep(1000);
         // compare paQP
         // manualy generated one
         BufferedReader readerexpected = new BufferedReader(new FileReader(
