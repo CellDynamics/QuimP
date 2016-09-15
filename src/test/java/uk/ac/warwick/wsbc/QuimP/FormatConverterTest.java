@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -50,10 +49,10 @@ public class FormatConverterTest {
      */
     @Before
     public void setUp() throws Exception {
-        Files.deleteIfExists(
-                Paths.get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.snQP"));
-        Files.deleteIfExists(
-                Paths.get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
+        Files.deleteIfExists(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString()
+                + "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.snQP"));
+        Files.deleteIfExists(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString()
+                + "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
     }
 
     /**
@@ -74,19 +73,23 @@ public class FormatConverterTest {
 
         // compare paQP
         // manualy generated one
-        FileInputStream readerexpected = new FileInputStream(
-                "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0_expected.paQP");
+        BufferedReader readerexpected = new BufferedReader(new FileReader(
+                "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0_expected.paQP"));
         // expected
-        FileInputStream readertest = new FileInputStream(
-                "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP");
+        BufferedReader readertest = new BufferedReader(new FileReader(
+                "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
 
-        readerexpected.skip(76); // skip header with random controlsum
-        readertest.skip(76);
-        byte[] expected = new byte[512];
-        byte[] test = new byte[512];
-        readerexpected.read(expected);
+        readerexpected.readLine(); // skip header with random controlsum
+        readertest.readLine();
+        readerexpected.readLine();
+        readertest.readLine();
+        readerexpected.readLine();
+        readertest.readLine();
+        char[] expected = new char[800];
+        char[] test = new char[800];
+        readerexpected.read(expected, 0, expected.length);
         readerexpected.close();
-        readertest.read(test);
+        readertest.read(test, 0, test.length);
         readertest.close();
 
         assertThat(test, is(expected));
