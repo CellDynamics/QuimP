@@ -4,14 +4,14 @@
     <groupId>uk.ac.warwick.wsbc</groupId>
     <artifactId>pom-quimp</artifactId>
     <version>1.0.0</version>
-    <relativePath/>
+    <relativePath />
     <!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
   </parent>
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
-  <version>16.08.01-SNAPSHOT</version>
+  <version>16.08.02</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/bretschneider/quimp/</url>
@@ -27,6 +27,7 @@
     <connection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</connection>
     <developerConnection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</developerConnection>
     <url>http://www.trac-wsbc.linkpc.net:8080/cgit/QuimP.git/</url>
+    <tag>v16.08.02</tag>
   </scm>
   <issueManagement>
     <system>Trac</system>
