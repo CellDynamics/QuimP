@@ -98,7 +98,7 @@ public class FormatConverterTest {
         FormatConverter fC = new FormatConverter(
                 new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
         fC.generatesnQP();
-
+        Thread.sleep(1000);
         // compare paQP
         // manualy generated one
         FileInputStream readerexpected = new FileInputStream(

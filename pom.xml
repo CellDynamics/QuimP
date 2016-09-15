@@ -400,6 +400,7 @@
         <reportSets>
           <reportSet>
             <reports>
+              <report>trac-report</report>
               <report>changes-report</report>
             </reports>
           </reportSet>
