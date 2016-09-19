@@ -183,7 +183,7 @@ public class Q_Analysis {
         qconfLoader.getQp().getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
         qconfLoader.getQp().writeParams(); // save global container
         // generate additional OLD files
-        FormatConverter fC = new FormatConverter((QParamsQconf) qconfLoader.getQp(),
+        FormatConverter fC = new FormatConverter(qconfLoader,
                 ((QParamsQconf) qconfLoader.getQp()).getParamFile().toPath());
         fC.generateOldDataFiles();
     }

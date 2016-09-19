@@ -9,6 +9,8 @@ import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
+
 /**
  * This class allows for recreating paQP and snQP files from new format QCONF.
  * <p><b>Note</b><p>
@@ -20,7 +22,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class FormatConverter {
     private static final Logger LOGGER = LogManager.getLogger(FormatConverter.class.getName());
-    private QParamsQconf qP;
+    private QconfLoader qcL;
     private Path path;
 
     /**
@@ -30,10 +32,9 @@ public class FormatConverter {
      */
     public FormatConverter(File newDataFile) {
         LOGGER.debug("Use provided file:" + newDataFile.toString());
-        qP = new QParamsQconf(newDataFile);
-        path = Paths.get(newDataFile.getAbsolutePath());
         try {
-            qP.readParams();
+            qcL = new QconfLoader(newDataFile.toPath());
+            path = Paths.get(newDataFile.getAbsolutePath());
         } catch (QuimpException e) {
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with running Analysis: " + e.getMessage());
@@ -46,9 +47,9 @@ public class FormatConverter {
      * @param qP reference to QParamsQconf
      * @param path Path where converted files will be saved.
      */
-    public FormatConverter(QParamsQconf qP, Path path) {
-        LOGGER.debug("Use provided QParams");
-        this.qP = qP;
+    public FormatConverter(QconfLoader qcL, Path path) {
+        LOGGER.debug("Use provided QconfLoader");
+        this.qcL = qcL;
         this.path = path;
     }
 
@@ -60,7 +61,7 @@ public class FormatConverter {
      */
     public void generateOldDataFiles() {
         try {
-            DataContainer dT = qP.getLoadedDataContainer();
+            DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
             if (dT.getECMMState() == null)
                 generatepaQP(); // no ecmm data write snakes only
             else
@@ -81,7 +82,7 @@ public class FormatConverter {
      */
     public void generatepaQP() throws IOException {
         // replace location to location of QCONF
-        DataContainer dT = qP.getLoadedDataContainer();
+        DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
         dT.getBOAState().boap.setOutputFileCore(Tool.removeExtension(path.toString()));
         dT.BOAState.nest.writeSnakes(); // write paQP and snQP together
     }
@@ -96,14 +97,14 @@ public class FormatConverter {
     public void generatesnQP() throws IOException {
         int activeHandler = 0;
         // replace location to location of QCONF
-        DataContainer dT = qP.getLoadedDataContainer();
+        DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
         dT.BOAState.boap.setOutputFileCore(Tool.removeExtension(path.toString()));
         Iterator<OutlineHandler> oHi = dT.getECMMState().oHs.iterator();
         do {
-            qP.setActiveHandler(activeHandler++);
+            ((QParamsQconf) qcL.getQp()).setActiveHandler(activeHandler++);
             OutlineHandler oH = oHi.next();
-            oH.writeOutlines(qP.getSnakeQP(), true);
-            qP.writeOldParams();
+            oH.writeOutlines(((QParamsQconf) qcL.getQp()).getSnakeQP(), true);
+            ((QParamsQconf) qcL.getQp()).writeOldParams();
         } while (oHi.hasNext());
 
     }

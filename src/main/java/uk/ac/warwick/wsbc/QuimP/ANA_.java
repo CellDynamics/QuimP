@@ -255,7 +255,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         dc.ANAState = anaStates;
         qconfLoader.getQp().writeParams(); // save global container
         // generate additional OLD files
-        FormatConverter fC = new FormatConverter((QParamsQconf) qconfLoader.getQp(),
+        FormatConverter fC = new FormatConverter(qconfLoader,
                 ((QParamsQconf) qconfLoader.getQp()).getParamFile().toPath());
         fC.generateOldDataFiles();
     }

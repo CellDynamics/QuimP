@@ -234,7 +234,7 @@ public class ECMM_Mapping {
         dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
         qconfLoader.getQp().writeParams(); // save global container
         // generate additional OLD files
-        FormatConverter fC = new FormatConverter((QParamsQconf) qconfLoader.getQp(),
+        FormatConverter fC = new FormatConverter(qconfLoader,
                 ((QParamsQconf) qconfLoader.getQp()).getParamFile().toPath());
         fC.generateOldDataFiles();
     }

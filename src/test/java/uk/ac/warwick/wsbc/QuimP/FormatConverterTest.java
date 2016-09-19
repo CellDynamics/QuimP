@@ -135,8 +135,8 @@ public class FormatConverterTest {
     public void testFormatConverterQParamsQconfPath() throws Exception {
         QconfLoader qC = new QconfLoader(
                 Paths.get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
-        FormatConverter fC = new FormatConverter((QParamsQconf) qC.getQp(),
-                Paths.get("src/test/resources/FormatConverter"));
+        FormatConverter fC =
+                new FormatConverter(qC, Paths.get("src/test/resources/FormatConverter"));
         fC.generateOldDataFiles();
         Thread.sleep(1000);
         // compare paQP
