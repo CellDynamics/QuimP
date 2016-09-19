@@ -5,9 +5,11 @@
 package uk.ac.warwick.wsbc.QuimP.utils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
@@ -78,6 +80,24 @@ public class QuimPArrayUtilsTest {
         ar.add(-5.0);
 
         assertThat(QuimPArrayUtils.minListIndex(ar), equalTo(2));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#file2Array(java.lang.String, java.io.File)}.
+     */
+    @Test
+    public void testFile2Array() throws Exception {
+        //!<
+        double[][] expected = { {1,2,3,4,5},
+                                {1.1,2.2,3.3,4.4,5.5},
+                                {6,7,8,9,Math.PI}};
+        /**/
+        QuimPArrayUtils.arrayToFile(expected, ",", new File("/tmp/testFile2Array.map"));
+
+        double test[][] = QuimPArrayUtils.file2Array(",", new File("/tmp/testFile2Array.map"));
+
+        assertThat(test, is(expected));
+
     }
 
 }

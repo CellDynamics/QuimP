@@ -920,22 +920,34 @@ public class BOAState implements IQuimpSerialize {
             BOA_.log("Failed to read parameter file " + e.getMessage());
             return false;
         }
-        boap.NMAX = boap.readQp.NMAX;
-        segParam.blowup = boap.readQp.getBlowup();
-        segParam.max_iterations = boap.readQp.max_iterations;
-        segParam.sample_tan = boap.readQp.sample_tan;
-        segParam.sample_norm = boap.readQp.sample_norm;
-        boap.delta_t = boap.readQp.delta_t;
-        segParam.nodeRes = boap.readQp.getNodeRes();
-        segParam.vel_crit = boap.readQp.vel_crit;
-        segParam.f_central = boap.readQp.f_central;
-        segParam.f_contract = boap.readQp.f_contract;
-        segParam.f_image = boap.readQp.f_image;
-
-        if (boap.readQp.paramFormat == QParams.QUIMP_11) {
-            segParam.finalShrink = boap.readQp.finalShrink;
-        }
+        loadParams(boap.readQp);
         BOA_.log("Successfully read parameters");
         return true;
+    }
+
+    /**
+     * Build internal boa state from QParams object.
+     * @param readQp
+     */
+    public void loadParams(QParams readQp) {
+        boap.NMAX = readQp.NMAX;
+        segParam.blowup = readQp.getBlowup();
+        segParam.max_iterations = readQp.max_iterations;
+        segParam.sample_tan = readQp.sample_tan;
+        segParam.sample_norm = readQp.sample_norm;
+        boap.delta_t = readQp.delta_t;
+        segParam.nodeRes = readQp.getNodeRes();
+        segParam.vel_crit = readQp.vel_crit;
+        segParam.f_central = readQp.f_central;
+        segParam.f_contract = readQp.f_contract;
+        segParam.f_image = readQp.f_image;
+
+        if (readQp.paramFormat == QParams.QUIMP_11) {
+            segParam.finalShrink = readQp.finalShrink;
+        }
+        boap.readQp = readQp;
+        // copy loaded data to snapshots
+        for (int f = readQp.getStartFrame(); f < readQp.getEndFrame(); f++)
+            store(f);
     }
 }

@@ -323,6 +323,14 @@ public class Nest implements IQuimpSerialize {
     }
 
     // TODO use new feature of conversion between snakes and outlines
+    /**
+     * Store OutlineHandler as finalSnake.
+     * 
+     * Use {@link uk.ac.warwick.wsbc.QuimP.SnakeHandler.copyFromFinalToSeg()} to populate 
+     * snake over segSnakes.
+     * 
+     * @param oH
+     */
     void addOutlinehandler(final OutlineHandler oH) {
         SnakeHandler sH = addHandler(oH.indexGetOutline(0).asFloatRoi(), oH.getStartFrame());
 
@@ -331,6 +339,7 @@ public class Nest implements IQuimpSerialize {
             o = oH.getOutline(i);
             sH.storeRoi((PolygonRoi) o.asFloatRoi(), i);
         }
+        sH.copyFromFinalToSeg();
     }
 
     @Override

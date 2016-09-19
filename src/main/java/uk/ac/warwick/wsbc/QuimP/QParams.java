@@ -81,7 +81,7 @@ public class QParams {
     File[] fluTiffs;
 
     private File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
-    File[] fluFiles;
+    private File[] fluFiles;
 
     private double imageScale;
     private double frameInterval;
@@ -278,6 +278,13 @@ public class QParams {
      */
     public File getStatsQP() {
         return statsQP;
+    }
+
+    /**
+     * @return the fluFiles
+     */
+    public File[] getFluFiles() {
+        return fluFiles;
     }
 
     /**
@@ -665,4 +672,5 @@ public class QParams {
                 }
         }
     }
+
 }

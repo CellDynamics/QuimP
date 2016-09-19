@@ -5,8 +5,10 @@
 package uk.ac.warwick.wsbc.QuimP.utils;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * Deliver simple methods operating on arrays
@@ -192,6 +195,48 @@ public class QuimPArrayUtils {
             }
         }
         pw.close();
+    }
+
+    /**
+     * Load map file produced by arrayToFile.
+     * 
+     * Array must have equal number of columns in every row.
+     * 
+     * @param delim Delimiter, should be the same used in arrayToFile
+     * @param inFile
+     * @return
+     * @throws IOException
+     */
+    public static double[][] file2Array(String delim, File inFile) throws IOException {
+        LineNumberReader pw = new LineNumberReader(new FileReader(inFile));
+        int lines = getNumberOfLinesinFile(inFile); // get number of rows
+        double[][] ret = new double[lines][];
+        String line = pw.readLine();
+        while (line != null) {
+            StringTokenizer tk = new StringTokenizer(line, delim);
+            ret[pw.getLineNumber() - 1] = new double[tk.countTokens()];
+            int colno = 0;
+            while (tk.hasMoreTokens())
+                ret[pw.getLineNumber() - 1][colno++] = Double.valueOf(tk.nextToken());
+            line = pw.readLine();
+        }
+        pw.close();
+        return ret;
+    }
+
+    /**
+     * Return number of lines in file
+     * 
+     * @param file
+     * @return Number of lines
+     * @throws IOException 
+     */
+    public static int getNumberOfLinesinFile(File file) throws IOException {
+        LineNumberReader lnr = new LineNumberReader(new FileReader(file));
+        lnr.skip(Long.MAX_VALUE);
+        int lines = lnr.getLineNumber() + 1;
+        lnr.close();
+        return lines;
     }
 
     public static int findNumPeaks(double[] data, int peakWidth) {
