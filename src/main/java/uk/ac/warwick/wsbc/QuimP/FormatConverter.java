@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * This class allows for recreating paQP and snQP files from new format QCONF.
@@ -60,7 +61,7 @@ public class FormatConverter {
      */
     public void generateNewDataFile() throws Exception {
         if (qcL.getConfVersion() == QParams.NEW_QUIMP)
-            throw new IllegalArgumentException("Can no convert from new format to new");
+            throw new IllegalArgumentException("Can not convert from new format to new");
         DataContainer dT = new DataContainer();
         String orginal = qcL.getQp().getFileName(); // xxx_0
         // cut last number
@@ -69,31 +70,107 @@ public class FormatConverter {
             throw new QuimpException("Input file must be in format name_no.paQP");
         orginal = orginal.substring(0, last);
         int i = 0;
-        // boa
+        // Create DataContainer
         dT.BOAState = new BOAState(qcL.getImage());
         dT.ECMMState = new OutlineHandlers();
         dT.BOAState.nest = new Nest();
         dT.ANAState = new ANAStates();
-        ArrayList<STmap> maps = new ArrayList<>();
+        ArrayList<STmap> maps = new ArrayList<>(); // temporary - we do not know number of cells
+        // temprary object - different for every _x.paQP
         QconfLoader local = new QconfLoader(Paths.get(qcL.getQp().getPath(),
-                orginal + "_" + 0 + QuimpConfigFilefilter.oldFileExt));
+                orginal + "_" + i + QuimpConfigFilefilter.oldFileExt));
+        // populate BOA seg parameters
         dT.BOAState.loadParams(local.getQp()); // load parameters
-        // populate them to snapshots
-        for (int f = local.getQp().getStartFrame(); f < local.getQp().getEndFrame(); f++)
-            dT.BOAState.store(f);
         // initialize snakes (from snQP files)
-        OutlineHandler oH = new OutlineHandler(local.getQp());
-        dT.ECMMState.oHs.add(oH);
-        BOA_.qState = dT.BOAState;
-        dT.BOAState.nest.addOutlinehandler(oH);
+        OutlineHandler oH = new OutlineHandler(local.getQp()); // load them (for on cell)
+        dT.ECMMState.oHs.add(oH); // store in ECMM object
+        BOA_.qState = dT.BOAState; // for compatibility
+        dT.BOAState.nest.addOutlinehandler(oH); // covert ECMM to Snake and store in BOA section
         STmap stMap = new STmap();
+        try {
+            stMap.motMap = QuimPArrayUtils.file2Array(",", local.getQp().getMotilityFile());
+        } catch (IOException e) {
+            LOGGER.warn(e.getMessage());
+        }
+        try {
+            stMap.convMap = QuimPArrayUtils.file2Array(",", local.getQp().getConvexFile());
+        } catch (IOException e) {
+            LOGGER.warn(e.getMessage());
+        }
+        try {
+            stMap.coordMap = QuimPArrayUtils.file2Array(",", local.getQp().getCoordFile());
+        } catch (IOException e) {
+            LOGGER.warn(e.getMessage());
+        }
+        try {
+            stMap.originMap = QuimPArrayUtils.file2Array(",", local.getQp().getOriginFile());
+        } catch (IOException e) {
+            LOGGER.warn(e.getMessage());
+        }
+        try {
+            stMap.xMap = QuimPArrayUtils.file2Array(",", local.getQp().getxFile());
+        } catch (IOException e) {
+            LOGGER.warn(e.getMessage());
+        }
+        try {
+            stMap.yMap = QuimPArrayUtils.file2Array(",", local.getQp().getyFile());
+        } catch (IOException e) {
+            LOGGER.warn(e.getMessage());
+        }
+        // TODO Load flu data as well
+        // TODO ANAstate as well
+        // FluoMap ch1 = new FluoMap(stMap.motMap.length, stMap.motMap[0].length, 1);
+        // ch1.map = QuimPArrayUtils.file2Array(",",local.getQp().get)
+        maps.add(stMap);
+        i++; // try to read 1,2,3... paPQ
+        try {
+            do {
+                local = new QconfLoader(Paths.get(qcL.getQp().getPath(),
+                        orginal + "_" + i + QuimpConfigFilefilter.oldFileExt));
+                oH = new OutlineHandler(local.getQp()); // load them (for on cell)
+                dT.ECMMState.oHs.add(oH); // store in ECMM object
+                BOA_.qState = dT.BOAState; // for compatibility
+                dT.BOAState.nest.addOutlinehandler(oH); // covert ECMM to Snake and store in BOA
+                                                        // section
+                stMap = new STmap();
+                try {
+                    stMap.motMap = QuimPArrayUtils.file2Array(",", local.getQp().getMotilityFile());
+                } catch (IOException e) {
+                    LOGGER.warn(e.getMessage());
+                }
+                try {
+                    stMap.convMap = QuimPArrayUtils.file2Array(",", local.getQp().getConvexFile());
+                } catch (IOException e) {
+                    LOGGER.warn(e.getMessage());
+                }
+                try {
+                    stMap.coordMap = QuimPArrayUtils.file2Array(",", local.getQp().getCoordFile());
+                } catch (IOException e) {
+                    LOGGER.warn(e.getMessage());
+                }
+                try {
+                    stMap.originMap =
+                            QuimPArrayUtils.file2Array(",", local.getQp().getOriginFile());
+                } catch (IOException e) {
+                    LOGGER.warn(e.getMessage());
+                }
+                try {
+                    stMap.xMap = QuimPArrayUtils.file2Array(",", local.getQp().getxFile());
+                } catch (IOException e) {
+                    LOGGER.warn(e.getMessage());
+                }
+                try {
+                    stMap.yMap = QuimPArrayUtils.file2Array(",", local.getQp().getyFile());
+                } catch (IOException e) {
+                    LOGGER.warn(e.getMessage());
+                }
+                maps.add(stMap);
+                i++;
+            } while (true); // exception thrown by QconfLoader will stop this loop
+        } catch (Exception e) {
+        }
 
-        // do {
-
-        // i++;
-        // } while (true);
-        // boa
-
+        dT.QState = maps.toArray(new STmap[0]);
         Serializer<DataContainer> n;
         n = new Serializer<>(dT, new Tool().getQuimPBuildInfo());
         n.setPretty();
