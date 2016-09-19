@@ -36,7 +36,7 @@ public class FormatConverter {
         LOGGER.debug("Use provided file:" + newDataFile.toString());
         try {
             qcL = new QconfLoader(newDataFile.toPath());
-            path = Paths.get(newDataFile.getAbsolutePath());
+            path = Paths.get(newDataFile.getParent());
         } catch (QuimpException e) {
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with running Analysis: " + e.getMessage());
@@ -81,7 +81,7 @@ public class FormatConverter {
         dT.BOAState = new BOAState(qcL.getImage());
         dT.ECMMState = new OutlineHandlers();
         dT.BOAState.nest = new Nest();
-        dT.ANAState = new ANAStates();
+        // dT.ANAState = new ANAStates();
         ArrayList<STmap> maps = new ArrayList<>(); // temporary - we do not know number of cells
         // temprary object - different for every _x.paQP
         QconfLoader local = new QconfLoader(Paths.get(qcL.getQp().getPath(),
@@ -194,7 +194,7 @@ public class FormatConverter {
      */
     public void generateOldDataFiles() {
         if (qcL.getConfVersion() == QParams.QUIMP_11)
-            throw new IllegalArgumentException("Can no convert from old format to old");
+            throw new IllegalArgumentException("Can not convert from old format to old");
         try {
             DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
             if (dT.getECMMState() == null)
@@ -245,6 +245,25 @@ public class FormatConverter {
             oH.writeOutlines(((QParamsQconf) qcL.getQp()).getSnakeQP(), true);
             ((QParamsQconf) qcL.getQp()).writeOldParams();
         } while (oHi.hasNext());
+
+    }
+
+    /**
+     * Perform conversion depending on which file has been loaded.
+     * @throws Exception 
+     * TODO Should not throw exception as generateOldDataFiles. Rework generateNewDataFile
+     */
+    public void doConversion() throws Exception {
+        switch (qcL.getConfVersion()) {
+            case QParams.NEW_QUIMP:
+                generateOldDataFiles();
+                break;
+            case QParams.QUIMP_11:
+                generateNewDataFile();
+                break;
+            default:
+                throw new IllegalArgumentException("QuimP version not supported");
+        }
 
     }
 

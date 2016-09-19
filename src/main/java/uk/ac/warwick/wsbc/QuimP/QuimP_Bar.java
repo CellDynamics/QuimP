@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -15,6 +16,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 
@@ -36,6 +38,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import ij.IJ;
 import ij.Prefs;
 import ij.WindowManager;
+import ij.io.OpenDialog;
 import ij.macro.MacroRunner;
 import ij.plugin.PlugIn;
 
@@ -77,6 +80,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     JTextPane toolBarTitle2 = null;
     private final Color barColor = new Color(0xFB, 0xFF, 0x94); // Color of title bar
     private MenuBar menuBar;
+    private Menu menuTools;
+    private MenuItem menuFormatConverter;
     private Menu menuHelp;
     private MenuItem menuVersion;
     private MenuItem menuOpenHelp;
@@ -117,16 +122,21 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         // add menu
         menuBar = new MenuBar();
         menuHelp = new Menu("Quimp-Help");
+        menuTools = new Menu("Tools");
         menuBar.add(menuHelp);
+        menuBar.add(menuTools);
         menuVersion = new MenuItem("About");
         menuOpenHelp = new MenuItem("Help Contents");
         menuOpenSite = new MenuItem("History of changes");
+        menuFormatConverter = new MenuItem("Format converter");
         menuHelp.add(menuOpenHelp);
         menuHelp.add(menuOpenSite);
         menuHelp.add(menuVersion);
+        menuTools.add(menuFormatConverter);
         menuVersion.addActionListener(this);
         menuOpenHelp.addActionListener(this);
         menuOpenSite.addActionListener(this);
+        menuFormatConverter.addActionListener(this);
         frame.setMenuBar(menuBar);
 
         // captures the ImageJ KeyListener
@@ -312,6 +322,30 @@ public class QuimP_Bar implements PlugIn, ActionListener {
                 java.awt.Desktop.getDesktop().browse(new URI(url));
             } catch (Exception e1) {
                 LOGGER.error("Could not open help: " + e1.getMessage());
+            }
+            return;
+        }
+        if (e.getSource() == menuFormatConverter) { // convert between file formats
+            QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(
+                    QuimpConfigFilefilter.newFileExt, QuimpConfigFilefilter.oldFileExt);
+            FileDialog od = new FileDialog(IJ.getInstance(),
+                    "Open paramater file " + fileFilter.toString());
+            od.setFilenameFilter(fileFilter);
+            od.setDirectory(OpenDialog.getLastDirectory());
+            od.setMultipleMode(false);
+            od.setMode(FileDialog.LOAD);
+            od.setVisible(true);
+            if (od.getFile() == null) {
+                IJ.log("Cancelled - exiting...");
+                return;
+            }
+            // load config file but check if it is new format or old
+            FormatConverter fC = new FormatConverter(new File(od.getDirectory(), od.getFile()));
+            try {
+                fC.doConversion();
+            } catch (Exception e1) {
+                LOGGER.debug(e1.getMessage(), e1);
+                LOGGER.error("Problem with run of ECMM mapping: " + e1.getMessage());
             }
             return;
         }
