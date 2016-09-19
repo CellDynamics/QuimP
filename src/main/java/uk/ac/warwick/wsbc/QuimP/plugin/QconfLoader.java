@@ -101,17 +101,33 @@ public class QconfLoader {
     }
 
     /**
-     * Try to load image associated with QCONF file.
+     * Try to load image associated with QCONF or paQP file.
      * 
      * If image has not been found, user is being asked to point relevant file.
      * @return Loaded image from QCONF or that pointed by user. <tt>null</tt> if user cancelled.
      */
     public ImagePlus getImage() {
-        LOGGER.debug("Attempt to open image: "
-                + qp.getLoadedDataContainer().getBOAState().boap.getOrgFile().getAbsolutePath());
-        // try to load from QCONF
-        ImagePlus im =
-                IJ.openImage(qp.getLoadedDataContainer().getBOAState().boap.getOrgFile().getPath());
+        if (getQp() == null)
+            return null;
+        ImagePlus im;
+        switch (getQp().paramFormat) {
+            case QParams.NEW_QUIMP:
+                LOGGER.debug(
+                        "Attempt to open image: " + qp.getLoadedDataContainer().getBOAState().boap
+                                .getOrgFile().getAbsolutePath());
+                // try to load from QCONF
+                im = IJ.openImage(
+                        qp.getLoadedDataContainer().getBOAState().boap.getOrgFile().getPath());
+                break;
+            case QParams.QUIMP_11:
+                LOGGER.debug("Attempt to open image: " + qp.getSegImageFile().toString());
+                // try to load from QCONF
+                im = IJ.openImage(qp.getSegImageFile().toString());
+                break;
+            default:
+                im = null;
+        }
+
         if (im == null) { // if failed ask user
             Object[] options = { "Load from disk", "Load from IJ", "Cancel" };
             int n = JOptionPane.showOptionDialog(IJ.getInstance(),

@@ -168,6 +168,18 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     }
 
     /**
+     * Copy all finalSnakes to segSnakes
+     */
+    public void copyFromFinalToSeg() {
+        for (int i = 0; i < finalSnakes.length; i++) {
+            if (finalSnakes[i] == null)
+                segSnakes[i] = null;
+            else
+                segSnakes[i] = new Snake(finalSnakes[i]);
+        }
+    }
+
+    /**
      * Write Snakes from this handler to \a *.snPQ file 
      * 
      * Display also user interface
@@ -510,6 +522,11 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
     }
 
+    /**
+     * Store ROI as snake in finalSnakes.
+     * @param r
+     * @param f
+     */
     void storeRoi(final PolygonRoi r, int f) {
         try {
             Snake snake = new Snake(r, ID);

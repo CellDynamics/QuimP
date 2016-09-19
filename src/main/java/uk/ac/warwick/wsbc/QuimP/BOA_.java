@@ -363,7 +363,10 @@ public class BOA_ implements PlugIn {
      * @param s String to display in BOA window
      */
     static void log(final String s) {
-        logArea.append("[" + logCount++ + "] " + s + '\n');
+        if (logArea == null)
+            LOGGER.debug("[" + logCount++ + "] " + s + '\n');
+        else
+            logArea.append("[" + logCount++ + "] " + s + '\n');
     }
 
     /**
@@ -1427,10 +1430,9 @@ public class BOA_ implements PlugIn {
                                     "The image opened currently in BOA is different from those +"
                                             + " pointed in configuration file");
                             log("Trying to apply configuration saved for other image");
-                            YesNoCancelDialog yncd =
-                                    new YesNoCancelDialog(IJ.getInstance(), "Warning",
-                                            "Trying to load configuration that does not\nmath to +"
-                                                    + " opened image.\nAre you sure?");
+                            YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(),
+                                    "Warning", "Trying to load configuration that does not\nmath to"
+                                            + " opened image.\nAre you sure?");
                             if (!yncd.yesPressed())
                                 return;
                         }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.logging.log4j.LogManager;
@@ -54,12 +55,62 @@ public class FormatConverter {
     }
 
     /**
+     * Build QCONF from old datafiles provided in constructor.
+     * @throws Exception 
+     */
+    public void generateNewDataFile() throws Exception {
+        if (qcL.getConfVersion() == QParams.NEW_QUIMP)
+            throw new IllegalArgumentException("Can no convert from new format to new");
+        DataContainer dT = new DataContainer();
+        String orginal = qcL.getQp().getFileName(); // xxx_0
+        // cut last number
+        int last = orginal.lastIndexOf('_');
+        if (last < 0)
+            throw new QuimpException("Input file must be in format name_no.paQP");
+        orginal = orginal.substring(0, last);
+        int i = 0;
+        // boa
+        dT.BOAState = new BOAState(qcL.getImage());
+        dT.ECMMState = new OutlineHandlers();
+        dT.BOAState.nest = new Nest();
+        dT.ANAState = new ANAStates();
+        ArrayList<STmap> maps = new ArrayList<>();
+        QconfLoader local = new QconfLoader(Paths.get(qcL.getQp().getPath(),
+                orginal + "_" + 0 + QuimpConfigFilefilter.oldFileExt));
+        dT.BOAState.loadParams(local.getQp()); // load parameters
+        // populate them to snapshots
+        for (int f = local.getQp().getStartFrame(); f < local.getQp().getEndFrame(); f++)
+            dT.BOAState.store(f);
+        // initialize snakes (from snQP files)
+        OutlineHandler oH = new OutlineHandler(local.getQp());
+        dT.ECMMState.oHs.add(oH);
+        BOA_.qState = dT.BOAState;
+        dT.BOAState.nest.addOutlinehandler(oH);
+        STmap stMap = new STmap();
+
+        // do {
+
+        // i++;
+        // } while (true);
+        // boa
+
+        Serializer<DataContainer> n;
+        n = new Serializer<>(dT, new Tool().getQuimPBuildInfo());
+        n.setPretty();
+        n.save(path + File.separator + orginal + QuimpConfigFilefilter.newFileExt);
+        n = null;
+
+    }
+
+    /**
      * Recreate paQP and snQP files from QCONF.
      * <p>
      * Files are created in directory where QCONF is located.
      * 
      */
     public void generateOldDataFiles() {
+        if (qcL.getConfVersion() == QParams.QUIMP_11)
+            throw new IllegalArgumentException("Can no convert from old format to old");
         try {
             DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
             if (dT.getECMMState() == null)
@@ -81,6 +132,8 @@ public class FormatConverter {
      * @throws IOException
      */
     public void generatepaQP() throws IOException {
+        if (qcL.getConfVersion() == QParams.QUIMP_11)
+            throw new IllegalArgumentException("Can no convert from old format to old");
         // replace location to location of QCONF
         DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
         dT.getBOAState().boap.setOutputFileCore(Tool.removeExtension(path.toString()));
@@ -95,6 +148,8 @@ public class FormatConverter {
      * 
      */
     public void generatesnQP() throws IOException {
+        if (qcL.getConfVersion() == QParams.QUIMP_11)
+            throw new IllegalArgumentException("Can no convert from old format to old");
         int activeHandler = 0;
         // replace location to location of QCONF
         DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
