@@ -60,6 +60,13 @@ public class FormatConverter {
      * @throws Exception 
      */
     public void generateNewDataFile() throws Exception {
+        // <!
+        LOGGER.warn("\n----------------------------------------------------------\n"
+                + "Functionalities not implemented yet:\n"
+                + "    1. Exporting all maps, especially fluoromaps\n"
+                + "    2. Support of multi cell files not tested\n"
+                + "----------------------------------------------------------\n");
+        /**/
         if (qcL.getConfVersion() == QParams.NEW_QUIMP)
             throw new IllegalArgumentException("Can not convert from new format to new");
         DataContainer dT = new DataContainer();
