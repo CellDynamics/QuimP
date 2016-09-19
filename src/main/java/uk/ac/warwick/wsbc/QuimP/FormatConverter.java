@@ -14,7 +14,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
- * This class allows for recreating paQP and snQP files from new format QCONF.
+ * This class allows for recreating paQP and snQP files from new format QCONF and vice versa.
  * <p><b>Note</b><p>
  * Other files such as stQP, maps and images are generated regardless file format used during saving
  * in each QuimP module.
