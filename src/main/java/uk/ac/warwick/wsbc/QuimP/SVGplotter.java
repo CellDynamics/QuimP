@@ -8,6 +8,9 @@ import java.io.OutputStreamWriter;
 
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.Qline;
+import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.Qtext;
+import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGdraw;
 
 public class SVGplotter {
     OutlineHandler oH;
@@ -280,7 +283,7 @@ class ScaleBar {
         rTick.thickness = thickness;
         rTick.colour = colour;
 
-        SVGdraw.line(osw, lTick);
+        SVGdraw.line(osw, lTick); // TODO replace with own Qline.draw method
         SVGdraw.line(osw, rTick);
         SVGdraw.line(osw, body);
 
@@ -292,64 +295,4 @@ class ScaleBar {
                 new ExtendedVector2d(location.getX() + textDis, location.getY() - 2));
     }
 
-}
-
-class SVGdraw {
-
-    public SVGdraw() {
-    }
-
-    static public void line(OutputStreamWriter osw, Qline l) throws IOException {
-        osw.write("\n<line x1=\"" + l.x1 + "\" y1=\"" + l.y1 + "\" x2=\"" + l.x2 + "\" y2=\"" + l.y2
-                + "\" ");
-        osw.write("style=\"stroke:" + l.colour.getColorSVG() + ";stroke-width:" + l.thickness
-                + "\"/>");
-    }
-
-    static public void text(OutputStreamWriter osw, Qtext t, ExtendedVector2d l)
-            throws IOException {
-        osw.write("\n<text x=\"" + l.getX() + "\" y=\"" + l.getY() + "\" " + "style=\"font-family: "
-                + t.font + ";font-size: " + t.size + ";fill: " + t.colour.getColorSVG() + "\">"
-                + t.text + "</text>");
-    }
-
-}
-
-class Qline {
-    public double x1, y1, x2, y2;
-    public double thickness;
-    public QColor colour;
-
-    public Qline(double xx1, double yy1, double xx2, double yy2) {
-        x1 = xx1;
-        x2 = xx2;
-        y1 = yy1;
-        y2 = yy2;
-
-        thickness = 1;
-        colour = new QColor(1, 1, 1);
-    }
-
-    public double length() {
-        return Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
-    }
-}
-
-class Qtext {
-
-    public String text;
-    public double size;
-    public QColor colour;
-    public String font;
-
-    public Qtext(String t, double s, String f) {
-        text = t;
-        size = s;
-        font = f;
-        colour = new QColor(1, 1, 1);
-    }
-
-    public int length() {
-        return text.length();
-    }
 }

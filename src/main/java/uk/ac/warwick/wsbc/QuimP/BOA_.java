@@ -89,6 +89,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOAPoint2dFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOASnakeFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
+import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
 
 /**
  * Main class implementing BOA plugin.

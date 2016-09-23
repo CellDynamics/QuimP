@@ -21,8 +21,8 @@ import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.QuimP.GraphicsElements;
 import uk.ac.warwick.wsbc.QuimP.STmap;
+import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
 
 /**
  * Support various methods of visualising protrusion data.

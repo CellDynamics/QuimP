@@ -1,8 +1,4 @@
-/**
- * @file GraphicsElements.java
- * @date 5 Apr 2016
- */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.utils.graphics;
 
 import java.awt.Color;
 import java.awt.Polygon;
@@ -17,7 +13,7 @@ import ij.gui.Roi;
 import ij.process.FloatPolygon;
 
 /**
- * This class contains static methods for creating simple graphics elements
+ * This class contains static methods for creating simple graphics elements.
  * 
  * @author p.baniukiewicz
  * @date 5 Apr 2016
