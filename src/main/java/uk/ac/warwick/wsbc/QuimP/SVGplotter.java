@@ -1,11 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.ac.warwick.wsbc.QuimP;
 
-import java.io.*;
-import ij.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
+import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 public class SVGplotter {
@@ -46,12 +47,14 @@ public class SVGplotter {
             OutputStreamWriter osw = new OutputStreamWriter(out);
 
             osw.write("<?xml version=\"1.0\" standalone=\"no\"?>\n");
-            osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + minx + " " + miny + " " + width + " " + height
-                    + "\" " + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\">\n");
+            osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + minx + " " + miny + " "
+                    + width + " " + height + "\" "
+                    + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\">\n");
             osw.write("\n");
 
-            osw.write("<rect x=\"" + minx + "\" y=\"" + miny + "\" width=\"" + width + "\" height=\"" + height + "\" "
-                    + "style=\"fill:rgb(0,0,0);stroke-width:0;" + "stroke:rgb(0,0,0)\"/>\n\n");
+            osw.write("<rect x=\"" + minx + "\" y=\"" + miny + "\" width=\"" + width
+                    + "\" height=\"" + height + "\" " + "style=\"fill:rgb(0,0,0);stroke-width:0;"
+                    + "stroke:rgb(0,0,0)\"/>\n\n");
 
             double t = 0;
             double dur = 0.2;
@@ -91,12 +94,14 @@ public class SVGplotter {
             OutputStreamWriter osw = new OutputStreamWriter(out);
 
             osw.write("<?xml version=\"1.0\" standalone=\"no\"?>\n");
-            osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + minx + " " + miny + " " + width + " " + height
-                    + "\" " + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\">\n");
+            osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + minx + " " + miny + " "
+                    + width + " " + height + "\" "
+                    + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\">\n");
             osw.write("\n");
 
-            osw.write("<rect x=\"" + minx + "\" y=\"" + miny + "\" width=\"" + width + "\" height=\"" + height + "\" "
-                    + "style=\"fill:rgb(0,0,0);stroke-width:0;" + "stroke:rgb(0,0,0)\"/>\n\n");
+            osw.write("<rect x=\"" + minx + "\" y=\"" + miny + "\" width=\"" + width
+                    + "\" height=\"" + height + "\" " + "style=\"fill:rgb(0,0,0);stroke-width:0;"
+                    + "stroke:rgb(0,0,0)\"/>\n\n");
 
             Outline o;
             double t;
@@ -136,12 +141,14 @@ public class SVGplotter {
             OutputStreamWriter osw = new OutputStreamWriter(out);
 
             osw.write("<?xml version=\"1.0\" standalone=\"no\"?>\n");
-            osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + minx + " " + miny + " " + width + " " + height
-                    + "\" " + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\">\n");
+            osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + minx + " " + miny + " "
+                    + width + " " + height + "\" "
+                    + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\">\n");
             osw.write("\n");
 
-            osw.write("<rect x=\"" + minx + "\" y=\"" + miny + "\" width=\"" + width + "\" height=\"" + height + "\" "
-                    + "style=\"fill:rgb(0,0,0);stroke-width:0;" + "stroke:rgb(0,0,0)\"/>\n\n");
+            osw.write("<rect x=\"" + minx + "\" y=\"" + miny + "\" width=\"" + width
+                    + "\" height=\"" + height + "\" " + "style=\"fill:rgb(0,0,0);stroke-width:0;"
+                    + "stroke:rgb(0,0,0)\"/>\n\n");
 
             Outline o;
             int colSize = (int) Math.ceil(oH.getSize() / (double) increment);
@@ -155,7 +162,8 @@ public class SVGplotter {
             }
 
             int barValue = (int) Math.round((width / 5d) * scale);
-            ScaleBar scaleBar = new ScaleBar(new ExtendedVector2d(minx + 5, miny + 8), "&#x3BC;m", barValue, scale);
+            ScaleBar scaleBar = new ScaleBar(new ExtendedVector2d(minx + 5, miny + 8), "&#x3BC;m",
+                    barValue, scale);
             scaleBar.thickness = 1;
             scaleBar.colour.setRGB(1, 1, 1);
             scaleBar.draw(osw);
@@ -168,13 +176,14 @@ public class SVGplotter {
         }
     }
 
-    private void plotOutline(OutputStreamWriter osw, Outline o, String colour, boolean anim, double t, double dur)
-            throws Exception {
+    private void plotOutline(OutputStreamWriter osw, Outline o, String colour, boolean anim,
+            double t, double dur) throws Exception {
         Vert v = o.getHead();
         osw.write("<polyline ");
         if (anim)
             osw.write("display=\"none\" ");
-        osw.write("fill=\"none\" style=\"stroke:" + colour + ";stroke-width:" + 0.5 + "\" points=\"\n");
+        osw.write("fill=\"none\" style=\"stroke:" + colour + ";stroke-width:" + 0.5
+                + "\" points=\"\n");
         do {
             osw.write(IJ.d2s(v.getX(), 6) + "," + IJ.d2s(v.getY(), 6) + "\n");
             v = v.getNext();
@@ -183,8 +192,9 @@ public class SVGplotter {
 
         if (anim) {
             osw.write("\" >\n");
-            osw.write("<animate id='frame_" + IJ.d2s(t) + "' attributeName='display' values='inline;none'" + " dur='"
-                    + dur + "s' fill='freeze' begin=\"" + IJ.d2s(t) + "s\" repeatCount=\"1\"/>\n");
+            osw.write("<animate id='frame_" + IJ.d2s(t)
+                    + "' attributeName='display' values='inline;none'" + " dur='" + dur
+                    + "s' fill='freeze' begin=\"" + IJ.d2s(t) + "s\" repeatCount=\"1\"/>\n");
             osw.write("</polyline>");
         } else {
             osw.write("\"/>\n");
@@ -192,19 +202,22 @@ public class SVGplotter {
         osw.write("\n");
     }
 
-    private void plotVerts(OutputStreamWriter osw, Outline o, double t, double dur) throws Exception {
+    private void plotVerts(OutputStreamWriter osw, Outline o, double t, double dur)
+            throws Exception {
         osw.write("<g id=\"verts_1\" display=\"none\">\n");
         Vert v = o.getHead();
         QColor ERcolour;
         do {
             ERcolour = getERcolor(v);
-            osw.write("<circle cx=\"" + IJ.d2s(v.getX(), 6) + "\" cy=\"" + IJ.d2s(v.getY(), 6) + "\" "
-                    + "r=\"0.7\" stroke-width=\"0\" fill=\"" + ERcolour.getColorSVG() + "\"/>");
+            osw.write("<circle cx=\"" + IJ.d2s(v.getX(), 6) + "\" cy=\"" + IJ.d2s(v.getY(), 6)
+                    + "\" " + "r=\"0.7\" stroke-width=\"0\" fill=\"" + ERcolour.getColorSVG()
+                    + "\"/>");
             v = v.getNext();
         } while (!v.isHead());
 
         osw.write("\n");
-        osw.write("<animate id='frame_" + IJ.d2s(t) + "' attributeName='display' values='inline;none'" + " dur='" + dur
+        osw.write("<animate id='frame_" + IJ.d2s(t)
+                + "' attributeName='display' values='inline;none'" + " dur='" + dur
                 + "s' fill='freeze' begin=\"" + IJ.d2s(t) + "s\" repeatCount=\"1\"/>");
         osw.write("\n</g>\n\n");
     }
@@ -259,7 +272,8 @@ class ScaleBar {
         body.thickness = thickness;
         body.colour = colour;
 
-        lTick = new Qline(location.getX(), location.getY() + tickSize, location.getX(), location.getY() - tickSize);
+        lTick = new Qline(location.getX(), location.getY() + tickSize, location.getX(),
+                location.getY() - tickSize);
         rTick = new Qline(end.getX(), end.getY() + tickSize, end.getX(), end.getY() - tickSize);
         lTick.thickness = thickness;
         lTick.colour = colour;
@@ -274,7 +288,8 @@ class ScaleBar {
         int textLength = 2 + Integer.toString(value).length();
         textLength = textLength * 4;
         double textDis = (body.length() - textLength) / 2;
-        SVGdraw.text(osw, text, new ExtendedVector2d(location.getX() + textDis, location.getY() - 2));
+        SVGdraw.text(osw, text,
+                new ExtendedVector2d(location.getX() + textDis, location.getY() - 2));
     }
 
 }
@@ -285,13 +300,17 @@ class SVGdraw {
     }
 
     static public void line(OutputStreamWriter osw, Qline l) throws IOException {
-        osw.write("\n<line x1=\"" + l.x1 + "\" y1=\"" + l.y1 + "\" x2=\"" + l.x2 + "\" y2=\"" + l.y2 + "\" ");
-        osw.write("style=\"stroke:" + l.colour.getColorSVG() + ";stroke-width:" + l.thickness + "\"/>");
+        osw.write("\n<line x1=\"" + l.x1 + "\" y1=\"" + l.y1 + "\" x2=\"" + l.x2 + "\" y2=\"" + l.y2
+                + "\" ");
+        osw.write("style=\"stroke:" + l.colour.getColorSVG() + ";stroke-width:" + l.thickness
+                + "\"/>");
     }
 
-    static public void text(OutputStreamWriter osw, Qtext t, ExtendedVector2d l) throws IOException {
-        osw.write("\n<text x=\"" + l.getX() + "\" y=\"" + l.getY() + "\" " + "style=\"font-family: " + t.font
-                + ";font-size: " + t.size + ";fill: " + t.colour.getColorSVG() + "\">" + t.text + "</text>");
+    static public void text(OutputStreamWriter osw, Qtext t, ExtendedVector2d l)
+            throws IOException {
+        osw.write("\n<text x=\"" + l.getX() + "\" y=\"" + l.getY() + "\" " + "style=\"font-family: "
+                + t.font + ";font-size: " + t.size + ";fill: " + t.colour.getColorSVG() + "\">"
+                + t.text + "</text>");
     }
 
 }

@@ -15,12 +15,15 @@ import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
- *
+ * Collection of outlines for subsequent frames (<it>f1</it> and <it>f2</it>) for one cell.
+ * 
  * @author tyson
- * @warning \a QParams object is not serialized thus deserialzed OutlineHandler can not use it
  */
 public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
+    /**
+     * Array of given cell outlines found for frames (<tt>startFrame</tt> and <tt>endFrame</tt>) 
+     */
     private Outline[] outlines;
     transient private QParams qp;
     // all transient fields are rebuild in afterSerialzie findStatLimits()

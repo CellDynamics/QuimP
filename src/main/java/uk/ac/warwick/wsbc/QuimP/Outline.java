@@ -14,10 +14,10 @@ import ij.gui.Roi;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
- * Represent Outline object used as Snake representation after ECMM mapping
+ * Represent Outline object used as Snake representation after ECMM mapping.
  * 
  * Outline can have the same Shape as Snake but distribution of Vert may be different than 
- * distribution of Node in Snake. Outline is produced after ECMM and used in further analysis
+ * distribution of Node in Snake. Outline is produced after ECMM and used in further analysis.
  * 
  * @author rtyson
  * @author p.baniukiewicz

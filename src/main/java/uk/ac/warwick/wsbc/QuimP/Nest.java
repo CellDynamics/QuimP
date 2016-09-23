@@ -16,28 +16,28 @@ import ij.gui.Roi;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
 /**
- * Represents collection of Snakes
+ * Represent collection of Snakes.
  * 
  * @author rtyson
  * @author p.baniukiewicz
- * @date 4 May 2016
  */
 public class Nest implements IQuimpSerialize {
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "Nest [sHs=" + sHs + ", NSNAKES=" + NSNAKES + ", ALIVE=" + ALIVE + ", nextID="
-                + nextID + "]";
-    }
 
     private static final Logger LOGGER = LogManager.getLogger(Nest.class.getName());
 
     private ArrayList<SnakeHandler> sHs;
-    private int NSNAKES; //!< Number of stored snakes in nest
+    /**
+     * Number of stored snakes in nest.
+     */
+    private int NSNAKES;
+    /**
+     * Number of live stored snakes in nest.
+     */
     private int ALIVE;
-    private int nextID; // handler ID's
+    /**
+     * Next free ID.
+     */
+    private int nextID;
 
     public Nest() {
         NSNAKES = 0;
@@ -45,9 +45,9 @@ public class Nest implements IQuimpSerialize {
         nextID = 0;
         sHs = new ArrayList<SnakeHandler>();
     }
-    
+
     /**
-     * Convert array of SegmentedShapeRoi to SnakeHandlers
+     * Convert array of SegmentedShapeRoi to SnakeHandlers.
      * 
      * @param roiArray First level stands for objects (SnakeHandlers(, second for Snakes within one
      * chain
@@ -372,5 +372,14 @@ public class Nest implements IQuimpSerialize {
             sH.afterSerialize();
         }
 
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Nest [sHs=" + sHs + ", NSNAKES=" + NSNAKES + ", ALIVE=" + ALIVE + ", nextID="
+                + nextID + "]";
     }
 }

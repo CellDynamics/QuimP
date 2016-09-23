@@ -59,7 +59,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * @enduml
  * 
  * @author p.baniukiewicz
- * @date 30 Mar 2016
  * @see Serializer
  */
 public class BOAState implements IQuimpSerialize {
@@ -124,8 +123,9 @@ public class BOAState implements IQuimpSerialize {
     public ArrayList<Boolean> isFrameEdited;
 
     /**
-     * Hold user parameters for segmentation algorithm
+     * Hold user parameters for segmentation algorithm.
      * 
+     * Most of those parameters are available from BOA user menu.
      * This class supports cloning and comparing.
      * 
      * @author p.baniukiewicz
@@ -133,22 +133,95 @@ public class BOAState implements IQuimpSerialize {
      * @see BOAState
      */
     class SegParam {
-        private double nodeRes; //!< Number of nodes on ROI edge 
-        public int blowup; //!< distance to blow up chain 
+        /**
+         * Number of nodes on ROI edge.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
+        private double nodeRes;
+        /**
+         * Distance to blow up chain.
+         * 
+         * Check user manual or our publications for details.
+         */
+        public int blowup;
+        /**
+         * Critical velocity.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public double vel_crit;
+        /**
+         * Central force.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public double f_central;
-        public double f_image; //!< image force 
-        public int max_iterations; //!< max iterations per contraction 
+        /**
+         * Image force.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
+        public double f_image;
+        /**
+         * Max iterations per contraction.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
+        public int max_iterations;
+        /**
+         * Sample tan.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public int sample_tan;
+        /**
+         * Sample norm.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public int sample_norm;
+        /**
+         * Contraction force.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public double f_contract;
+        /**
+         * Final shrink.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public double finalShrink;
         // Switch Params
-        public boolean use_previous_snake;//!< next contraction begins with prev chain 
+        /**
+         * Next contraction begins with prev chain.
+         */
+        public boolean use_previous_snake;
+        /**
+         * Decide whether to show paths on screen.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public boolean showPaths;
-        public boolean expandSnake; //!< whether to act as an expanding snake
-        private double min_dist; //!< min distance between nodes 
-        private double max_dist; //!< max distance between nodes 
+        /**
+         * Whether to act as an expanding snake.
+         * 
+         * Visualisation option parameter. Check user manual or our publications for details.
+         */
+        public boolean expandSnake;
+        /**
+         * Min distance between nodes.
+         * 
+         * Cell segmentation parameter.
+         */
+        private double min_dist;
+        /**
+         * Max distance between nodes.
+         * 
+         * Cell segmentation parameter.
+         */
+        private double max_dist;
 
         /**
          * Copy constructor
