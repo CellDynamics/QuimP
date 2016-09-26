@@ -636,8 +636,7 @@ public abstract class TrackVisualisation {
             for (int i = 0; i < lines.length; i++)
                 lines[i] = new Polygon();
             // plot map lines (those points that are consecutive for given map and its criterion)
-            // and
-            // default lines (those consecutive points that do no belong to any map)
+            // and default lines (those consecutive points that do no belong to any map)
             for (int f = 0; f < x.length; f++) { // over frames
                 for (int r = 0; r < x[0].length; r++) { // over indexes of outline
                     int l = 0;
@@ -657,13 +656,13 @@ public abstract class TrackVisualisation {
                                 overlay.add(pR);
                                 lines[lines.length - 1] = new Polygon();
                             }
-                        } else { // if not meet criterion plot all lines and initialzie them again
+                        } else { // if not meet criterion plot all lines and initialise them again
                             if (lines[l].npoints > 0) {
                                 PolygonRoi pR = GraphicsElements.getLine(lines[l], color[l], f + 1);
                                 overlay.add(pR);
                                 lines[l] = new Polygon();
                             }
-                            // and and add this point to default if not plotted
+                            // and and add this point to default if not plotted yet
                             if (!added) {
                                 lines[lines.length - 1].addPoint((int) Math.round(x[f][r]),
                                         (int) Math.round(y[f][r]));

@@ -1,6 +1,3 @@
-/**
- */
-
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.util.ArrayList;

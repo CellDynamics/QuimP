@@ -31,6 +31,10 @@ public class DataContainer implements IQuimpSerialize {
      * Indicate that Q module is not null (it has been run already on those data).
      */
     public final static int Q_RUN = 8192;
+    /**
+     * Indicate that QCONF contains statistics.
+     */
+    public final static int STATS_AVAIL = 16384;
 
     /**
      * Object to store all BOA state. Can be <tt>null</tt> when module has not been run yet.
@@ -53,6 +57,10 @@ public class DataContainer implements IQuimpSerialize {
      * Q Analysis module.
      */
     public STmap[] QState;
+    /**
+     * Contain stats. 
+     */
+    public StatsHandlers Stats;
     private transient PluginFactory pf;
     private transient ViewUpdater vu;
 
@@ -108,6 +116,13 @@ public class DataContainer implements IQuimpSerialize {
     }
 
     /**
+     * @return the stats
+     */
+    public StatsHandlers getStats() {
+        return Stats;
+    }
+
+    /**
      * Get information about available modules in object.
      * 
      * @return Flags according to loaded modules.
@@ -123,6 +138,8 @@ public class DataContainer implements IQuimpSerialize {
             ret += DataContainer.ANA_RUN;
         if (getQState() != null)
             ret += DataContainer.Q_RUN;
+        if (getStats() != null)
+            ret += DataContainer.STATS_AVAIL;
         return ret;
     }
 
@@ -144,6 +161,8 @@ public class DataContainer implements IQuimpSerialize {
             for (STmap stM : QState)
                 if (stM != null)
                     stM.beforeSerialize();
+        if (Stats != null)
+            Stats.beforeSerialize();
 
     }
 
@@ -169,6 +188,8 @@ public class DataContainer implements IQuimpSerialize {
             for (STmap stM : QState)
                 if (stM != null)
                     stM.afterSerialize();
+        if (Stats != null)
+            Stats.afterSerialize();
     }
 }
 
