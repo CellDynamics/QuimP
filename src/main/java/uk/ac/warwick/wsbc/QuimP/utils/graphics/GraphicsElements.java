@@ -21,14 +21,16 @@ import ij.process.FloatPolygon;
 public class GraphicsElements {
 
     /**
-     * Create an arrow 
+     * Create an arrow.
+     * <p>
+     * <p><b>Warning</b><br>
+     * input parameters can be modified
      * 
      * @param direction Directional vector
      * @param base base point 
      * @param length Length of arrow
      * @param baselength length of base as percentage of \a length
      * @return FloatPolygon
-     * @warning input parameters can be modified
      */
     public static FloatPolygon plotArrow(Vector2d direction, Point2d base, float length,
             float baselength) {
@@ -49,6 +51,12 @@ public class GraphicsElements {
         return fp;
     }
 
+    /**
+     * 
+     * @param base
+     * @param radius
+     * @return FloatPolygon
+     */
     public static FloatPolygon getCircle(Point2d base, float radius) {
         OvalRoi or = new OvalRoi(base.getX() - radius / 4, base.getY() - radius / 4, radius / 2,
                 radius / 2);
@@ -63,6 +71,7 @@ public class GraphicsElements {
      * @param y
      * @param color
      * @param radius
+     * @return PolygonRoi
      */
     public static PolygonRoi getCircle(double x, double y, Color color, double radius) {
         // create ROI
@@ -79,6 +88,7 @@ public class GraphicsElements {
      * @param x
      * @param y
      * @param color
+     * @return PointRoi
      */
     public static PointRoi getPoint(double x, double y, Color color) {
         PointRoi pR = new PointRoi(x, y);
@@ -93,6 +103,7 @@ public class GraphicsElements {
      * @param x
      * @param y
      * @param color
+     * @return PointRoi
      */
     public static PointRoi getPoint(int x[], int y[], Color color) {
         if (x.length != y.length)
@@ -109,7 +120,7 @@ public class GraphicsElements {
      * @param points Coordinates of line defined in Polygon.
      * @param npoints Number of points in <tt>points</tt> to use.
      * @param color Color of the line
-     * @return
+     * @return PolygonRoi
      */
     public static PolygonRoi getLine(Polygon points, int npoints, Color color) {
         PolygonRoi pR = new PolygonRoi(points, Roi.FREELINE);
@@ -123,7 +134,7 @@ public class GraphicsElements {
      * 
      * @param points Coordinates of line defined in Polygon.
      * @param color Color of the line
-     * @return
+     * @return PolygonRoi
      */
     public static PolygonRoi getLine(Polygon points, Color color) {
         return GraphicsElements.getLine(points, points.npoints, color);
@@ -135,7 +146,7 @@ public class GraphicsElements {
      * @param points Coordinates of line defined in Polygon.
      * @param color Color of the line
      * @param frame Frame to set ROI at.
-     * @return
+     * @return PolygonRoi
      */
     public static PolygonRoi getLine(Polygon points, Color color, int frame) {
         PolygonRoi pR = GraphicsElements.getLine(points, points.npoints, color);
@@ -150,7 +161,7 @@ public class GraphicsElements {
      * @param y Array wit y coordinates.
      * @param npoints Number of points to consider
      * @param color
-     * @return
+     * @return PolygonRoi
      */
     public static PolygonRoi getLine(float[] x, float[] y, int npoints, Color color) {
         if (x.length != y.length)

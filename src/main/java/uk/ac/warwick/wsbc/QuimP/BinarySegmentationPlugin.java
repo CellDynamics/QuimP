@@ -171,8 +171,9 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     }
 
     /**
-     * Not used here
-     * @return
+     * Not used here.
+     * 
+     * @return Success code.
      */
     @Override
     public int setup() {
@@ -180,7 +181,8 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     }
 
     /**
-     * Not used here
+     * Not used here.
+     * 
      * @param par
      * @throws QuimpPluginException
      */

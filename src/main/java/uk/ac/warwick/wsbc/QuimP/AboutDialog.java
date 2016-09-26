@@ -45,9 +45,9 @@ public class AboutDialog implements ActionListener {
     private final String c = "-"; //!< Limiter char
     
     /**
-     * Main constructor
+     * Main constructor.
      * 
-     * Builds window and menus
+     * Builds window and menus.
      * 
      * @param owner Owner of Dialog
      */
@@ -83,8 +83,9 @@ public class AboutDialog implements ActionListener {
     }
 
     /**
-     * Create simple menu bar with entries and popup
-     * Fills private fields of this class
+     * Create simple menu bar with entries and popup.
+     * 
+     * Fills private fields of this class.
      */
     private void buildMenu() {
         mbar = new JMenuBar();
@@ -107,9 +108,9 @@ public class AboutDialog implements ActionListener {
     }
 
     /**
-     * Make copy of MenuItem
+     * Make copy of MenuItem.
      * 
-     * @remarks Components can not be shared among containers. This method copies basic properties
+     * Components can not be shared among containers. This method copies basic properties
      * of component to its new instance (shallow copy of selected properties)
      * @param src source MenuItem
      * @return Copy of \c src MenuItem
@@ -125,16 +126,16 @@ public class AboutDialog implements ActionListener {
     }
 
     /**
-     * Add line of text to window TextArea
+     * Add line of text to window TextArea.
      * 
-     * @param t Text to add in subsequent lines
+     * @param t Text to add in subsequent lines.
      */
     public void appendLine(final String t) {
         info.append(t + "\n");
     }
 
     /**
-     * Add line of length of window
+     * Add line of length of window.
      */
     public void appendDistance() {
         String line;
@@ -143,10 +144,12 @@ public class AboutDialog implements ActionListener {
     }
 
     /**
-     * Show or hide main window
+     * Show or hide main window.
+     * 
+     * <p><b>Warning</b><br>
+     * When window is visible append(final String) does not work.
      * 
      * @param state \c true to show window
-     * @warning When window is visible append(final String) does not work
      */
     public void setVisible(boolean state) {
         info.setCaretPosition(0); // causes that initially view is scrolled to up
@@ -154,7 +157,7 @@ public class AboutDialog implements ActionListener {
     }
 
     /**
-     * Destroy window on exit
+     * Destroy window on exit.
      * 
      * @author p.baniukiewicz
      *
@@ -168,7 +171,7 @@ public class AboutDialog implements ActionListener {
     }
 
     /**
-     * Support for popupmenu
+     * Support for popupmenu.
      * 
      * @author p.baniukiewicz
      *
@@ -190,7 +193,8 @@ public class AboutDialog implements ActionListener {
     }
 
     /**
-     * Menu actions support
+     * Menu actions support.
+     * 
      * @param e event - currently method uses names of events (names of menus)
      */
     @Override

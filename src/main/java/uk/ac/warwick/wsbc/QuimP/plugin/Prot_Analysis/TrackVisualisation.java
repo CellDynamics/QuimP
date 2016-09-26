@@ -34,6 +34,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
  * <p>
  * <p><b>Warning</b><p>
  * It is assumed that plotted maps have frames on x-axis and indexes on y-axis
+ * 
  * @author p.baniukiewicz
  *
  */
