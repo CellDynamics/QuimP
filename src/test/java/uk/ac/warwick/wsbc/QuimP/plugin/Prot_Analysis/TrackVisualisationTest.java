@@ -28,7 +28,7 @@ import ij.ImagePlus;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 
 /**
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -69,7 +69,7 @@ public class TrackVisualisationTest {
         MockitoAnnotations.initMocks(this); // must be as we create mocked classes in mocked already
         // QParams
         originalImage = IJ.openImage(
-                "/home/baniuk/Documents/Kay-copy/KZ4/KZ4-220214-cAR1-GFP-devel5.5h-agar07-14.tif");
+                "/home/p.baniukiewicz/Documents/Kay-copy/KZ4/KZ4-220214-cAR1-GFP-devel5.5h-agar07-14.tif");
         protrusionVis = new TrackVisualisation.Stack(originalImage);
     }
 

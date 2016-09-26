@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Read properties from resources.
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class PropertyReader {

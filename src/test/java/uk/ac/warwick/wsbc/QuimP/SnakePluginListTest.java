@@ -90,7 +90,7 @@ public class SnakePluginListTest {
         cc = new ConfigContainer();
         version = new String[3];
         version[0] = "0.0.1";
-        version[1] = "baniuk";
+        version[1] = "p.baniukiewicz";
         version[2] = "QuimP";
         snakePluginList = new SnakePluginList(3, pluginFactory, null);
         cc.activePluginList = snakePluginList;
@@ -453,7 +453,7 @@ public class SnakePluginListTest {
         //!<
         String json =
                 "{\"className\":\"SnakePluginList\","
-                + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],"
                 + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
                 + "\"obj\":{\"sPluginList\":"
                 + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
@@ -604,7 +604,7 @@ public class SnakePluginListTest {
         //!<
         String json =
                 "{\"className\":\"SnakePluginList\","
-                + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],"
                 + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
                 + "\"obj\":{\"sPluginList\":"
                 + "[{\"isActive\":false,\"name\":\"\",\"ver\":\"\"},"
@@ -702,7 +702,7 @@ public class SnakePluginListTest {
         //!<
         String json =
                 "{\"className\":\"SnakePluginList\","
-                + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],"
                 + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
                 + "\"obj\":{\"sPluginList\":"
                 + "[{\"isActive\":false,\"name\":\"Test10\",\"ver\":\"1.2.3\"},"
@@ -790,7 +790,7 @@ public class SnakePluginListTest {
         //!<
         String json =
                 "{\"className\":\"SnakePluginList\","
-                + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],"
                 + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","        
                 + "\"obj\":{\"sPluginList\":"
                 + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
@@ -883,7 +883,7 @@ public class SnakePluginListTest {
         //!<
         String json =
                 "{\"className\":\"SnakePluginList\","
-                + "\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],"
+                + "\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],"
                 + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
                 + "\"obj\":{\"sPluginList\":"
                 + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"

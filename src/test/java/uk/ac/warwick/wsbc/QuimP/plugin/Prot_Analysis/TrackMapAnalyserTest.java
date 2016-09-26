@@ -32,7 +32,7 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 /**
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 @RunWith(JUnitParamsRunner.class)

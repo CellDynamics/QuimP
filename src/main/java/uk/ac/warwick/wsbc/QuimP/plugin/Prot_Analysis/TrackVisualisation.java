@@ -133,7 +133,7 @@ public abstract class TrackVisualisation {
     /**
      * Subclass for plotting on single image in coord space [outline,frame]
      * 
-     * @author baniuk
+     * @author p.baniukiewicz
      *
      */
     static class Map extends TrackVisualisation {
@@ -217,7 +217,7 @@ public abstract class TrackVisualisation {
 
     /**
      * Class for plotting on [x,y] image
-     * @author baniuk
+     * @author p.baniukiewicz
      *
      */
     static class Image extends TrackVisualisation {
@@ -320,7 +320,7 @@ public abstract class TrackVisualisation {
     /**
      * Subclass for plotting on stacks in coord space [x,y,f].
      * 
-     * @author baniuk
+     * @author p.baniukiewicz
      *
      */
     static class Stack extends TrackVisualisation {
@@ -492,6 +492,10 @@ public abstract class TrackVisualisation {
             // set z-position of ROI!!!
             oR.setPosition(frame);
             overlay.add(oR); // add to collection of overlays
+        }
+
+        public void addOutlinesToImage(STmap mapCell, ProtAnalysisConfig config) {
+
         }
 
         /**

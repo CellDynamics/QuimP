@@ -25,7 +25,7 @@ import ij.process.FloatPolygon;
  * @endcode The file must contain even number of data. Exemplary code in Matlab
  * to create such file:
  * @code{.m}
- * addpath('/home/baniuk/Documents/QuimP11_MATLAB/')
+ * addpath('/home/p.baniukiewicz/Documents/QuimP11_MATLAB/')
  * qCells = readQanalysis('Resources/after-macro');
  * testFrames = [75 125 137 1];
  * clear coords;
@@ -41,7 +41,7 @@ import ij.process.FloatPolygon;
  * end
  * @endcode
  * 
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class DataLoader {

@@ -45,7 +45,7 @@ public class SerializerTest {
         testClass = new TestClass();
         version = new String[3];
         version[0] = "0.0.1";
-        version[1] = "baniuk";
+        version[1] = "p.baniukiewicz";
         version[2] = "QuimP";
     }
 
@@ -93,7 +93,7 @@ public class SerializerTest {
     @Test(expected = JsonSyntaxException.class)
     public void testFromString() throws Exception {
         String json =
-                "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
+                "{\"className\":\"TestClass\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
         Serializer<TestClass> s = new Serializer<>(TestClass.class);
@@ -111,7 +111,7 @@ public class SerializerTest {
     @Test
     public void testFromString_1() throws Exception {
         String json =
-                "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
+                "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
         Serializer<TestClass> s = new Serializer<>(TestClass.class);
@@ -171,7 +171,7 @@ public class SerializerTest {
     @Test
     public void testFromString1() throws Exception {
         String json =
-                "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"a\":15,\"b\":15,\"al\":[4,56]}}";
+                "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"a\":15,\"b\":15,\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
         Serializer<TestClass> s = new Serializer<>(TestClass.class);
@@ -191,7 +191,7 @@ public class SerializerTest {
     @Test
     public void testFromString2() throws Exception {
         String json =
-                "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"baniuk\",\"QuimP\"],\"obj\":{\"al\":[4,56]}}";
+                "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
         Serializer<TestClass> s = new Serializer<>(TestClass.class);

@@ -19,7 +19,7 @@ import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 
 /**
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class LidReconstructor_Test {

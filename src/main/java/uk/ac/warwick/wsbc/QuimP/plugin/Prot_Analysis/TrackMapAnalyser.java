@@ -25,7 +25,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * All methods in this class are safe either for empty tracks returned by MapTracker or trackMaxima.
  * Tracking point coordinates may contain invalid values (negative).
  * 
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class TrackMapAnalyser {

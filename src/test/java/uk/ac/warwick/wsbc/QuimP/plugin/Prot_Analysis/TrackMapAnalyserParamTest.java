@@ -27,7 +27,7 @@ import org.junit.runners.Parameterized.Parameters;
 import com.sun.tools.javac.util.Pair;
 
 /**
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 @RunWith(Parameterized.class)

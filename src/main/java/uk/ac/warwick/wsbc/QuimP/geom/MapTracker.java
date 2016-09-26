@@ -353,7 +353,7 @@ public class MapTracker {
 
 /**
  * Predicate class for detection bad indexes in tracking methods.
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 class PredicateBadIndex implements Predicate<Point> {

@@ -14,7 +14,7 @@ import org.junit.Test;
  * 
  * @remarks Will be removed in final version
  * @todo Remove this class in future
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class ExtendedVector2d_Test {

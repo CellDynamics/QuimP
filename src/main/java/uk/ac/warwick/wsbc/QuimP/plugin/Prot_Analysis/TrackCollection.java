@@ -16,7 +16,7 @@ import com.sun.tools.javac.util.Pair;
 /**
  * Represent collection of tracks.
  * 
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class TrackCollection {
@@ -100,7 +100,7 @@ public class TrackCollection {
  * Hold one track line with additional parameters.
  * <p>
  * In general x coordinate stands for frame and y for index.
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 class Track extends ArrayList<Point> {
@@ -110,7 +110,7 @@ class Track extends ArrayList<Point> {
     /**
      * Types of tracking lines.
      * 
-     * @author baniuk
+     * @author p.baniukiewicz
      *
      */
     public static enum Type {

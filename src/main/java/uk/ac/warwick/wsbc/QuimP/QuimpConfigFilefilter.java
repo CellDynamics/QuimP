@@ -11,7 +11,7 @@ import java.util.Arrays;
  * Implement filter of FileDialog.
  * <p>
  * Define also default extensions for new and old file format.
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class QuimpConfigFilefilter implements FilenameFilter {
