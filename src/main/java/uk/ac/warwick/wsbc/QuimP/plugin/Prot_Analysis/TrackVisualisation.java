@@ -495,7 +495,146 @@ public abstract class TrackVisualisation {
         }
 
         public void addOutlinesToImage(STmap mapCell, ProtAnalysisConfig config) {
+            double mm[][] = mapCell.getMotMap();
+            double cm[][] = mapCell.getConvMap();
 
+            switch (config.outlinesToImage.plotType) {
+                case MOTILITY:
+                    plotOutline(mapCell.getxMap(), mapCell.getyMap(),
+                            new Color[] { config.outlinesToImage.motColor,
+                                    config.outlinesToImage.defColor },
+                            new double[] { config.outlinesToImage.motThreshold },
+                            mapCell.getMotMap());
+                    break;
+                case CONVEXITY:
+                    plotOutline(mapCell.getxMap(), mapCell.getyMap(),
+                            new Color[] { config.outlinesToImage.convColor,
+                                    config.outlinesToImage.defColor },
+                            new double[] { config.outlinesToImage.convThreshold },
+                            mapCell.getConvMap());
+                    break;
+                case CONVANDEXP:
+
+                {
+                    // prepare fake map
+                    double[][] tmpMap = new double[mm.length][];
+                    for (int f = 0; f < tmpMap.length; f++) {
+                        tmpMap[f] = new double[mm[f].length];
+                        for (int r = 0; r < mm[f].length; r++) {
+                            tmpMap[f][r] = ((mm[f][r] > 0 && cm[f][r] > 0)) ? 1.0 : -1.0;
+                        }
+                    }
+                    plotOutline(mapCell.getxMap(), mapCell.getyMap(), new Color[] {
+                            config.outlinesToImage.convColor, config.outlinesToImage.defColor },
+                            new double[] { 0 }, tmpMap);
+                }
+                    break;
+                case CONCANDRETR:
+
+                {
+                    // prepare fake map
+                    double[][] tmpMap = new double[mm.length][];
+                    for (int f = 0; f < tmpMap.length; f++) {
+                        tmpMap[f] = new double[mm[f].length];
+                        for (int r = 0; r < mm[f].length; r++) {
+                            tmpMap[f][r] = (mm[f][r] < 0 && cm[f][r] < 0) ? 1.0 : -1.0;
+                        }
+                    }
+                    plotOutline(mapCell.getxMap(), mapCell.getyMap(), new Color[] {
+                            config.outlinesToImage.motColor, config.outlinesToImage.defColor },
+                            new double[] { 0 }, tmpMap);
+                }
+                    break;
+                case BOTH: {
+                    double[][] tmpMap = new double[mm.length][];
+                    for (int f = 0; f < tmpMap.length; f++) {
+                        tmpMap[f] = new double[mm[f].length];
+                        for (int r = 0; r < mm[f].length; r++) {
+                            tmpMap[f][r] = (mm[f][r] > 0 && cm[f][r] > 0) ? 1.0 : -1.0;
+                        }
+                    }
+                    double[][] tmpMap1 = new double[mm.length][];
+                    for (int f = 0; f < tmpMap.length; f++) {
+                        tmpMap1[f] = new double[mm[f].length];
+                        for (int r = 0; r < mm[f].length; r++) {
+                            tmpMap1[f][r] = (mm[f][r] < 0 && cm[f][r] < 0) ? 1.0 : -1.0;
+                        }
+                    }
+
+                    plotOutline(mapCell.getxMap(), mapCell.getyMap(),
+                            new Color[] { config.outlinesToImage.motColor,
+                                    config.outlinesToImage.convColor,
+                                    config.outlinesToImage.defColor },
+                            new double[] { 0, 0 }, tmpMap, tmpMap1);
+
+                }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Plot Type not supported");
+            }
+
+            originalImage.setOverlay(overlay);
+        }
+
+        /**
+         * Helper method.
+         * 
+         * Plot outline according to given maps and thresholds with specified color.
+         * Points that does not meet criterion are plotted in default color.
+         * TODO finish doc
+         */
+        private void plotOutline(double[][] x, double[][] y, Color[] color, double[] threshold,
+                double[][]... map) {
+            Polygon lines[] = new Polygon[map.length + 1]; // last line is default one
+            for (int i = 0; i < lines.length; i++)
+                lines[i] = new Polygon();
+            // plot map lines (those points that are consecutive for given map and its criterion)
+            // and
+            // default lines (those consecutive points that do no belong to any map)
+            for (int f = 0; f < x.length; f++) { // over frames
+                for (int r = 0; r < x[0].length; r++) { // over indexes of outline
+                    int l = 0;
+                    boolean added = false; // indicate whether given point is plotted as map
+                    for (Object item : map) { // over maps
+                        double[][] _map = (double[][]) item;
+                        // check threshold. If point is accepted, any started default line is
+                        // finished here and new map line is started.
+                        if (_map[f][r] >= threshold[l]) {
+                            // store this point as l-th line
+                            lines[l].addPoint((int) Math.round(x[f][r]), (int) Math.round(y[f][r]));
+                            added = true; // mark that this point is plotted already within any map
+                            // plot default no-map points if any stored (stored in else part)
+                            if (lines[lines.length - 1].npoints > 0) {
+                                PolygonRoi pR = GraphicsElements.getLine(lines[lines.length - 1],
+                                        color[color.length - 1], f + 1);
+                                overlay.add(pR);
+                                lines[lines.length - 1] = new Polygon();
+                            }
+                        } else { // if not meet criterion plot all lines and initialzie them again
+                            if (lines[l].npoints > 0) {
+                                PolygonRoi pR = GraphicsElements.getLine(lines[l], color[l], f + 1);
+                                overlay.add(pR);
+                                lines[l] = new Polygon();
+                            }
+                            // and and add this point to default if not plotted
+                            if (!added) {
+                                lines[lines.length - 1].addPoint((int) Math.round(x[f][r]),
+                                        (int) Math.round(y[f][r]));
+                            }
+                        }
+                        l++;
+                    }
+                }
+                // plot if else-if above does not fire (if fire all lines are initialized again)
+                PolygonRoi pR;
+                for (int i = 0; i < lines.length; i++) {
+                    if (lines[i].npoints > 0) {
+                        pR = GraphicsElements.getLine(lines[i], color[i], f + 1);
+                        overlay.add(pR);
+                        lines[i] = new Polygon();
+                    }
+                }
+            }
         }
 
         /**

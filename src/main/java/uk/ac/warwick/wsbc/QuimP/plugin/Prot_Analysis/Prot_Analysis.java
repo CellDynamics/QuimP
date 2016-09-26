@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
-import java.awt.Color;
 import java.awt.FileDialog;
 import java.io.File;
 
@@ -22,6 +21,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtAnalysisConfig.outlinePlotTypes;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
@@ -39,6 +39,7 @@ public class Prot_Analysis implements IQuimpPlugin {
 
     private QconfLoader qconfLoader; // main object representing loaded configuration file
     private File paramFile;
+    private ProtAnalysisConfig config;
 
     private boolean uiCancelled = false;
     @SuppressWarnings("serial")
@@ -124,6 +125,10 @@ public class Prot_Analysis implements IQuimpPlugin {
                 new TrackVisualisation.Stack(im1static.duplicate());
         visStackDynamic.getOriginalImage().setTitle("Dynamic tracking");
 
+        TrackVisualisation.Stack visStackOutline =
+                new TrackVisualisation.Stack(im1static.duplicate());
+        visStackOutline.getOriginalImage().setTitle("Outlines");
+
         TrackMapAnalyser pT = new TrackMapAnalyser();
         LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells
@@ -137,17 +142,20 @@ public class Prot_Analysis implements IQuimpPlugin {
             pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
             TrackCollection trackCollection = pT.getTrackCollection();
 
-            visSingle.addMaximaToImage(mF);
-            visSingle.addTrackingLinesToImage(trackCollection);
-            // visSingle.addStaticCirclesToImage(pT.getCommonPoints(), Color.ORANGE, 7);
-            visSingle.getOriginalImage().show();
+            // visSingle.addMaximaToImage(mF);
+            // visSingle.addTrackingLinesToImage(trackCollection);
+            //// visSingle.addStaticCirclesToImage(pT.getCommonPoints(), Color.ORANGE, 7);
+            // visSingle.getOriginalImage().show();
 
-            visStackStatic.addElementsToImage(mapCell, trackCollection, mF);
+            // visStackStatic.addElementsToImage(mapCell, trackCollection, mF);
 
-            visCommonPoints.addCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 7);
+            // visCommonPoints.addCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 7);
 
-            visStackDynamic.addMaximaToImage(mapCell, mF);
-            visStackDynamic.addTrackingLinesToImage(mapCell, trackCollection);
+            // visStackDynamic.addMaximaToImage(mapCell, mF);
+            // visStackDynamic.addTrackingLinesToImage(mapCell, trackCollection);
+
+            visStackOutline.addOutlinesToImage(mapCell, config);
+
             // visStackDynamic.addCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 9);
 
             // Maps are correlated in order with Outlines in DataContainer.
@@ -158,9 +166,10 @@ public class Prot_Analysis implements IQuimpPlugin {
             h++;
         }
 
-        visStackStatic.getOriginalImage().show();
-        visStackDynamic.getOriginalImage().show();
-        visCommonPoints.getOriginalImage().show();
+        // visStackStatic.getOriginalImage().show();
+        // visStackDynamic.getOriginalImage().show();
+        // visCommonPoints.getOriginalImage().show();
+        visStackOutline.getOriginalImage().show();
     }
 
     @Override
@@ -191,12 +200,15 @@ public class Prot_Analysis implements IQuimpPlugin {
                 + " stops if current point value is smaller than max-drop*max");
 
         pd.showDialog();
+        config = new ProtAnalysisConfig();
+        config.outlinesToImage.plotType = outlinePlotTypes.CONVANDEXP;
         if (pd.wasCanceled()) {
             uiCancelled = true;
             return;
         }
         paramList.put("noiseTolerance", Double.toString(pd.getNextNumber()));
         paramList.put("dropValue", Double.toString(pd.getNextNumber()));
+        paramList.put("config", config.toString()); // TODO Here option to gson as exportable
     }
 
     @Override

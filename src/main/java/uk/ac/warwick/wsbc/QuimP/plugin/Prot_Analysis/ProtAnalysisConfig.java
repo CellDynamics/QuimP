@@ -40,11 +40,11 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
         /**
          * Default color of motility outline.
          */
-        public Color motColor = Color.RED;
+        public Color motColor = Color.BLUE;
         /**
          * Default color of convexity outline.
          */
-        public Color convColor = Color.BLUE;
+        public Color convColor = Color.RED;
         /**
          * Default color of outline.
          */

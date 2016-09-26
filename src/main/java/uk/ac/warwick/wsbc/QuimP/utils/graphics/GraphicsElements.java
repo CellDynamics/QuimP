@@ -131,6 +131,20 @@ public class GraphicsElements {
     }
 
     /**
+     * Generate line on frame f.
+     * 
+     * @param points Coordinates of line defined in Polygon.
+     * @param color Color of the line
+     * @param frame Frame to set ROI at.
+     * @return
+     */
+    public static PolygonRoi getLine(Polygon points, Color color, int frame) {
+        PolygonRoi pR = GraphicsElements.getLine(points, points.npoints, color);
+        pR.setPosition(frame);
+        return pR;
+    }
+
+    /**
      * Generate line.
      * 
      * @param x Array with x coordinates

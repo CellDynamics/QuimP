@@ -809,7 +809,7 @@ public class STmap implements IQuimpSerialize {
      * <p>
      * This is value obtained after interpolation of Outlines.
      * 
-     * @return the t
+     * @return the T
      */
     public int getT() {
         return T;
@@ -836,5 +836,19 @@ public class STmap implements IQuimpSerialize {
     @Override
     public void afterSerialize() throws Exception {
         LOGGER.debug("This class can not be deserialzied without assgning OutlineHndler");
+    }
+
+    /**
+     * @return the motMap
+     */
+    public double[][] getMotMap() {
+        return motMap;
+    }
+
+    /**
+     * @return the convMap
+     */
+    public double[][] getConvMap() {
+        return convMap;
     }
 }
