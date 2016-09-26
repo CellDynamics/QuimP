@@ -494,6 +494,13 @@ public abstract class TrackVisualisation {
             overlay.add(oR); // add to collection of overlays
         }
 
+        /**
+         * Plot outline around cell on image.
+         *  
+         * @param mapCell map related to given cell.
+         * @param config configuration object defining colors, type of plot, etc.
+         * @see {@link ProtAnalysisConfig}
+         */
         public void addOutlinesToImage(STmap mapCell, ProtAnalysisConfig config) {
             double mm[][] = mapCell.getMotMap();
             double cm[][] = mapCell.getConvMap();
@@ -513,9 +520,7 @@ public abstract class TrackVisualisation {
                             new double[] { config.outlinesToImage.convThreshold },
                             mapCell.getConvMap());
                     break;
-                case CONVANDEXP:
-
-                {
+                case CONVANDEXP: {
                     // prepare fake map
                     double[][] tmpMap = new double[mm.length][];
                     for (int f = 0; f < tmpMap.length; f++) {
@@ -529,9 +534,7 @@ public abstract class TrackVisualisation {
                             new double[] { 0 }, tmpMap);
                 }
                     break;
-                case CONCANDRETR:
-
-                {
+                case CONCANDRETR: {
                     // prepare fake map
                     double[][] tmpMap = new double[mm.length][];
                     for (int f = 0; f < tmpMap.length; f++) {
@@ -577,11 +580,18 @@ public abstract class TrackVisualisation {
         }
 
         /**
-         * Helper method.
+         * Helper method for plotting outlines.
          * 
-         * Plot outline according to given maps and thresholds with specified color.
-         * Points that does not meet criterion are plotted in default color.
-         * TODO finish doc
+         * Plot outline according to given maps and thresholds with specified colour.
+         * Points that does not meet criterion are plotted in default colour.
+         * @param x x-coordinates map
+         * @param y y-coordinates map
+         * @param color array of colours used for plotting maps given in <tt>map</tt>. The array must
+         * contain default colour on its last position. Its size is usually greater by 1 than number
+         * of maps.
+         * @param threshold array of threshold that applies to maps. Must be size of maps.
+         * @param map list of maps to be plotted with colour <tt>color</tt> if they meet criterion
+         * <tt>threshold</tt>
          */
         private void plotOutline(double[][] x, double[][] y, Color[] color, double[] threshold,
                 double[][]... map) {
