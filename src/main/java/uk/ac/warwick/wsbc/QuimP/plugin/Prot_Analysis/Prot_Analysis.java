@@ -11,6 +11,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
 import ij.io.OpenDialog;
+import ij.plugin.ZProjector;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
@@ -116,6 +117,8 @@ public class Prot_Analysis implements IQuimpPlugin {
         TrackVisualisation.Image visStackStatic =
                 new TrackVisualisation.Image(im1static.duplicate());
         visStackStatic.getOriginalImage().setTitle("Static points");
+        // Example of plotting on averaged image
+        visStackStatic.flatten(ZProjector.AVG_METHOD, false);
 
         TrackVisualisation.Image visCommonPoints =
                 new TrackVisualisation.Image(im1static.duplicate());
@@ -144,10 +147,10 @@ public class Prot_Analysis implements IQuimpPlugin {
 
             // visSingle.addMaximaToImage(mF);
             // visSingle.addTrackingLinesToImage(trackCollection);
-            //// visSingle.addStaticCirclesToImage(pT.getCommonPoints(), Color.ORANGE, 7);
+            // // visSingle.addStaticCirclesToImage(pT.getCommonPoints(), Color.ORANGE, 7);
             // visSingle.getOriginalImage().show();
 
-            // visStackStatic.addElementsToImage(mapCell, trackCollection, mF);
+            visStackStatic.addElementsToImage(mapCell, trackCollection, mF);
 
             // visCommonPoints.addCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 7);
 
@@ -166,7 +169,7 @@ public class Prot_Analysis implements IQuimpPlugin {
             h++;
         }
 
-        // visStackStatic.getOriginalImage().show();
+        visStackStatic.getOriginalImage().show();
         // visStackDynamic.getOriginalImage().show();
         // visCommonPoints.getOriginalImage().show();
         visStackOutline.getOriginalImage().show();

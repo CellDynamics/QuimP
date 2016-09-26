@@ -16,9 +16,11 @@ import org.apache.logging.log4j.Logger;
 import com.sun.tools.javac.util.Pair;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.gui.Overlay;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
+import ij.plugin.ZProjector;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.STmap;
@@ -129,6 +131,40 @@ public abstract class TrackVisualisation {
                 throw new IllegalArgumentException("Color not supported");
         }
         return c;
+    }
+
+    /**
+     * Flatten stack according to given type.
+     * 
+     * Output has the same resolution (x,y,t) as input. For stacks, slices are duplicated.
+     * 
+     * @param method How to flatten - ZProjector methods.
+     * @param preserveStack - if <b>true</b> size of output stack is preserved (slices are duplicated 
+     * to form stack with the same number of slices as original one). Otherwise only one slice is
+     * built
+     * @see {@link ij.plugin.ZProjector.setMethod(int)} 
+     */
+    public void flatten(int method, boolean preserveStack) {
+        ImageStack is = originalImage.getStack();
+        is = is.convertToFloat(); // for better averaging
+
+        ZProjector zP = new ZProjector(new ImagePlus(originalImage.getTitle(), is));
+        zP.setStartSlice(1);
+        zP.setStopSlice(originalImage.getStackSize());
+        zP.setMethod(method);
+        zP.doProjection();
+        ImagePlus ret = zP.getProjection();
+        // recreate stack if needed
+        if (originalImage.getStackSize() > 1 && preserveStack) {
+            ImageStack iS = new ImageStack(ret.getWidth(), ret.getHeight());
+            for (int s = 0; s < originalImage.getStackSize(); s++)
+                iS.addSlice(ret.getProcessor().convertToByte(true));
+            originalImage = new ImagePlus(originalImage.getTitle(), iS);
+        } else { // return only one slice (due to input format or preserveStack flag status)
+            originalImage =
+                    new ImagePlus(originalImage.getTitle(), ret.getProcessor().convertToByte(true));
+        }
+
     }
 
     /**
