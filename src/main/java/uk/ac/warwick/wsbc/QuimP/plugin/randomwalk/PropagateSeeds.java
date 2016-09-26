@@ -1,6 +1,4 @@
 /**
- * @file PropagateSeeds.java
- * @date 1 Jul 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
@@ -16,7 +14,6 @@ import ij.process.ImageProcessor;
  * Generate new seeds for n+1 frame in stack using previous results of segmentation
  * 
  * @author p.baniukiewicz
- * @date 1 Jul 2016
  *
  */
 public class PropagateSeeds {

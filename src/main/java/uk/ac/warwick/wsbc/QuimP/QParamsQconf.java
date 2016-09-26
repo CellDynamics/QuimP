@@ -401,7 +401,6 @@ public class QParamsQconf extends QParams {
  * Elements arrays
  * 
  * @author p.baniukiewicz
- * @date 26 May 2016
  *
  * @param <T>
  * @deprecated But left here as example how to tackle the problem

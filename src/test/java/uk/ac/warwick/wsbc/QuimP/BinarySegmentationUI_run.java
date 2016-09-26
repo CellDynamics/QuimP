@@ -1,6 +1,4 @@
 /**
- * @file BinarySegmentationUI_run.java
- * @date 28 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -9,7 +7,6 @@ import ij.ImageJ;
 
 /**
  * @author p.baniukiewicz
- * @date 28 Jun 2016
  *
  */
 public class BinarySegmentationUI_run {

@@ -1,6 +1,4 @@
 /**
- * @file SnakePluginListTest.java
- * @date 22 Mar 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -40,7 +38,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * Tests of SnakePluginList class and serialization
  * 
  * @author p.baniukiewicz
- * @date 22 Mar 2016
  *
  */
 @RunWith(MockitoJUnitRunner.class)

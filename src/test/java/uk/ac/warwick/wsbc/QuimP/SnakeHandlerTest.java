@@ -1,6 +1,4 @@
 /**
- * @file SnakeHandlerTest.java
- * @date 29 Apr 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -21,7 +19,6 @@ import ij.process.FloatPolygon;
 
 /**
  * @author p.baniukiewicz
- * @date 29 Apr 2016
  *
  */
 public class SnakeHandlerTest {

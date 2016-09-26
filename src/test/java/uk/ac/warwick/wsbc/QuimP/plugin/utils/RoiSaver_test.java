@@ -1,7 +1,5 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 /**
- * @file RoiSaver_test.java
- * @date 25 Jan 2016
  */
 
 import java.util.ArrayList;
@@ -16,7 +14,6 @@ import org.junit.Test;
  * Test class for ROI saver
  * 
  * @author p.baniukiewicz
- * @date 25 Jan 2016
  *
  */
 public class RoiSaver_test {

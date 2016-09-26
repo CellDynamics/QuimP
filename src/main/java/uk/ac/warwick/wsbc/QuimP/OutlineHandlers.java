@@ -1,6 +1,4 @@
 /**
- * @file OutlineHandlers.java
- * @date 27 May 2016
  */
 
 package uk.ac.warwick.wsbc.QuimP;

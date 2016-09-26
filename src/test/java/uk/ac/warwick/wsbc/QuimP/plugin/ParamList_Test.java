@@ -15,7 +15,6 @@ import org.junit.Test;
  * Test class for ParamList
  * 
  * @author p.baniukiewicz
- * @date 24 Feb 2016
  *
  */
 public class ParamList_Test {

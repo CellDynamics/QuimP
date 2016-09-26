@@ -6,7 +6,6 @@ import uk.ac.warwick.wsbc.QuimP.QuimpException;
  * Basic class derived from Exception for purposes of QuimP plugins
  * 
  * @author p.baniukiewicz
- * @date 20 Jan 2016
  * 
  */
 @SuppressWarnings("serial")

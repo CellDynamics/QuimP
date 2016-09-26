@@ -1,6 +1,4 @@
 /**
- * @file IQuimpSerialize.java
- * @date 31 Mar 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -12,7 +10,6 @@ package uk.ac.warwick.wsbc.QuimP;
  * before saving. 
  * 
  * @author p.baniukiewicz
- * @date 31 Mar 2016
  *
  */
 public interface IQuimpSerialize {

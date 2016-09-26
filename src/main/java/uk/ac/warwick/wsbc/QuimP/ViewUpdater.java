@@ -1,6 +1,4 @@
 /**
- * @file ViewUpdater.java
- * @date 4 Mar 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -22,7 +20,6 @@ import org.apache.logging.log4j.Logger;
  * -# getSnakeasXX() for current snake (only for previewing purposes).
  *  
  * @author p.baniukiewicz
- * @date 4 Mar 2016
  *
  */
 public class ViewUpdater {

@@ -1,5 +1,4 @@
 /**
- * @file BOA__run.java
  */
 package uk.ac.warwick.wsbc.QuimP;
 

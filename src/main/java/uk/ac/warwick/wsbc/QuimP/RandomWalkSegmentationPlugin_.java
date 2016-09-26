@@ -1,6 +1,4 @@
 /**
- * @file RandomWalkSegmentationPlugin_.java
- * @date 4 Jul 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -58,7 +56,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentation;
  * from seed is used for seeding related slice from image.
  *  
  * @author p.baniukiewicz
- * @date 4 Jul 2016
  *
  */
 public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, ChangeListener {

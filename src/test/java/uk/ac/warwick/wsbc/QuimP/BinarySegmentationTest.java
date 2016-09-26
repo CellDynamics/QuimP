@@ -1,6 +1,4 @@
 /**
- * @file BinarySegmentationTest.java
- * @date 27 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -32,7 +30,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
  * @author p.baniukiewicz
- * @date 27 Jun 2016
  *
  */
 public class BinarySegmentationTest {

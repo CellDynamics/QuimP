@@ -129,7 +129,6 @@ public class BOAState implements IQuimpSerialize {
      * This class supports cloning and comparing.
      * 
      * @author p.baniukiewicz
-     * @date 30 Mar 2016
      * @see BOAState
      */
     class SegParam {

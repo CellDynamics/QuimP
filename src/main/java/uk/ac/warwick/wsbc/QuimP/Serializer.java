@@ -1,6 +1,4 @@
 /**
- * @file Serializer.java
- * @date 31 Mar 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -61,7 +59,6 @@ import com.google.gson.JsonSyntaxException;
  * 
  *  
  * @author p.baniukiewicz
- * @date 31 Mar 2016
  * @see http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson
  * @see SerializerTest for examples of use
  * @see uk.ac.warwick.wsbc.QuimP.Serializer.registerInstanceCreator(Class<T>, Object)

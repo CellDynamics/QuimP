@@ -1,6 +1,4 @@
 /**
- * @file QParamsExchangerTest.java
- * @date 26 May 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -23,7 +21,6 @@ import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 
 /**
  * @author p.baniukiewicz
- * @date 26 May 2016
  *
  */
 public class QParamsExchangerTest {

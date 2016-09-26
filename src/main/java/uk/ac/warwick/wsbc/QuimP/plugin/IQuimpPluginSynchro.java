@@ -1,6 +1,4 @@
 /**
- * @file IQuimpPluginSynchro.java
- * @date 4 Mar 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
@@ -13,7 +11,6 @@ import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
  * active plugins and then redrawn on QuimP main screen. 
  * 
  * @author p.baniukiewicz
- * @date 4 Mar 2016
  *
  */
 public interface IQuimpPluginSynchro {

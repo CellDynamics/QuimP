@@ -1,6 +1,4 @@
 /**
- * @file QuimpDataConverterTest.java
- * @date 11 Apr 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
@@ -25,7 +23,6 @@ import uk.ac.warwick.wsbc.QuimP.Snake;
 
 /**
  * @author p.baniukiewicz
- * @date 11 Apr 2016
  *
  */
 public class QuimpDataConverterTest {

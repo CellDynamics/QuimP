@@ -1,6 +1,4 @@
 /**
- * @file SnakeTest.java
- * @date 10 Apr 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -26,7 +24,6 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
  * @author p.baniukiewicz
- * @date 10 Apr 2016
  *
  */
 public class SnakeTest {

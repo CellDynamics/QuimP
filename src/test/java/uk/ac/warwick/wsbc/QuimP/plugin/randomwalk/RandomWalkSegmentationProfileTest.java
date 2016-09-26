@@ -1,6 +1,4 @@
 /**
- * @file RandomWalkSegmentationProfileTest.java
- * @date 4 Jul 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
@@ -25,7 +23,6 @@ import ij.process.ImageProcessor;
  * Normal test but used for profiling
  * 
  * @author p.baniukiewicz
- * @date 4 Jul 2016
  *
  */
 public class RandomWalkSegmentationProfileTest {

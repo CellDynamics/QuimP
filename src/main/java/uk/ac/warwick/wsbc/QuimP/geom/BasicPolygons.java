@@ -1,6 +1,4 @@
 /**
- * @file BasicPolygons.java
- * @date 29 Feb 2016
  */
 package uk.ac.warwick.wsbc.QuimP.geom;
 
@@ -19,7 +17,6 @@ import org.apache.logging.log4j.Logger;
  * Calculates basic geometry on polygons defined as list of point in specified direction
  * 
  * @author p.baniukiewicz
- * @date 29 Feb 2016
  * @see http://www.mathopenref.com/coordpolygonarea.html
  * @todo integrate this class with awt.polygon maybe
  */

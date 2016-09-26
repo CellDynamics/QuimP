@@ -106,8 +106,6 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
  * @author Richard Tyson
  * @author Till Bretschneider
  * @author Piotr Baniukiewicz
- * @date 16-04-09
- * @date 4 Feb 2016
  */
 public class BOA_ implements PlugIn {
     static {

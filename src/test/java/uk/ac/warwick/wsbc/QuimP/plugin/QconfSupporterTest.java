@@ -1,6 +1,4 @@
 /**
- * @file QuimpPluginCoreTest.java
- * @date 2 Sep 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
@@ -20,7 +18,6 @@ import ij.ImagePlus;
 
 /**
  * @author p.baniukiewicz
- * @date 2 Sep 2016
  *
  */
 @Deprecated

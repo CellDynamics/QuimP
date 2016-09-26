@@ -1,6 +1,4 @@
 /**
- * @file BinarySegmentationPlugin.java
- * @date 28 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -37,7 +35,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  * Modifies provided Nest reference on Apply. Update BOA screen on Apply button
  * 
  * @author p.baniukiewicz
- * @date 28 Jun 2016
  * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder
  */
 public class BinarySegmentationPlugin extends QWindowBuilder
@@ -88,7 +85,6 @@ public class BinarySegmentationPlugin extends QWindowBuilder
      * Destroy window on exit
      * 
      * @author p.baniukiewicz
-     * @date 22 Apr 2016
      *
      */
     class myWindowAdapter extends WindowAdapter {

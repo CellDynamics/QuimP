@@ -1,5 +1,4 @@
 /**
- * @file DICLIDReconstruction_run.java
  */
 package uk.ac.warwick.wsbc.QuimP;
 

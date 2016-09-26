@@ -1,6 +1,4 @@
 /**
- * @file LinkedStringMap.java
- * @date 24 Feb 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
@@ -15,7 +13,6 @@ import java.util.function.BiFunction;
  * All keys are converted to lower case.
  * 
  * @author p.baniukiewicz
- * @date 24 Feb 2016
  *
  */
 public class LinkedStringMap<V> extends LinkedHashMap<String, V> {

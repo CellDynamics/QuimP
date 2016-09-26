@@ -1,6 +1,4 @@
 /**
- * @file QuimPArrayUtilsTest.java
- * @date 22 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP.utils;
 
@@ -21,7 +19,6 @@ import org.junit.Test;
 
 /**
  * @author p.baniukiewicz
- * @date 22 Jun 2016
  *
  */
 public class QuimPArrayUtilsTest {

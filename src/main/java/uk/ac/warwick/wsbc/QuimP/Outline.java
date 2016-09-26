@@ -21,7 +21,6 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * 
  * @author rtyson
  * @author p.baniukiewicz
- * @date 25 Apr 2016
  */
 public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(Outline.class.getName());

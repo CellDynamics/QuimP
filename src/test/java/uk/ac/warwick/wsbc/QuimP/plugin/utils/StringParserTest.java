@@ -13,7 +13,6 @@ import org.junit.Test;
  * Test class for StringParser
  * 
  * @author p.baniukiewicz
- * @date 24 Feb 2016
  *
  */
 public class StringParserTest {

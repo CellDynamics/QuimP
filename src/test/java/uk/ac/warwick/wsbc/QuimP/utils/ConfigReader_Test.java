@@ -1,6 +1,4 @@
 /**
- * @file ConfigReader_Test.java
- * @date 29 Jan 2016
  */
 package uk.ac.warwick.wsbc.QuimP.utils;
 
@@ -13,7 +11,6 @@ import org.junit.Test;
  * Test class for ConfigReader
  * 
  * @author p.baniukiewicz
- * @date 29 Jan 2016
  *
  */
 public class ConfigReader_Test {

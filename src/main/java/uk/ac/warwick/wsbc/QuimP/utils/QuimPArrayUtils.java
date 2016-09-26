@@ -1,6 +1,4 @@
 /**
- * @file QuimPArrayUtils.java
- * @date 22 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP.utils;
 
@@ -23,7 +21,6 @@ import java.util.StringTokenizer;
 /**
  * Deliver simple methods operating on arrays
  * @author p.baniukiewicz
- * @date 22 Jun 2016
  *
  */
 public class QuimPArrayUtils {

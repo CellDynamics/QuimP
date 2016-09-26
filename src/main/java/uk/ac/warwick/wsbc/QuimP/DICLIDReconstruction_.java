@@ -18,7 +18,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.dic.LidReconstructor;
  * Currently supports only 8bit images and stacks.
  * 
  * @author p.baniukiewicz
- * @date 14 Dec 2015
  * @see LidReconstructor for algorithm details *
  */
 public class DICLIDReconstruction_ implements PlugInFilter {

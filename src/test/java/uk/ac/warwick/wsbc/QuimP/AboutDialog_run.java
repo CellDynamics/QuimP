@@ -1,6 +1,4 @@
 /**
- * @file AboutDialog_run.java
- * @date 22 Apr 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -12,7 +10,6 @@ import java.awt.event.WindowEvent;
 /**
  * Runner for AboutDialog
  * @author p.baniukiewicz
- * @date 22 Apr 2016
  *
  */
 public class AboutDialog_run {

@@ -1,6 +1,4 @@
 /**
- * @file TrackOutlineTest.java
- * @date 24 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP.geom;
 
@@ -29,7 +27,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
  * @author p.baniukiewicz
- * @date 24 Jun 2016
  *
  */
 public class TrackOutlineTest {

@@ -1,5 +1,4 @@
 /**
- * @file LidReconstructor_Test.java
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 

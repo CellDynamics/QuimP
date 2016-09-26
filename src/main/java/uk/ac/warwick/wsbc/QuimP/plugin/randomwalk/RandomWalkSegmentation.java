@@ -1,6 +1,4 @@
 /**
- * @file RandomWalkSegmentation.java
- * @date 22 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
@@ -31,7 +29,6 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * Perform element-wise multiplication by value (.*val in Matlab)
  * 
  * @author p.baniukiewicz
- * @date 22 Jun 2016
  * @remarks Done in-place
  */
 class MatrixElementMultiply implements RealMatrixChangingVisitor {
@@ -70,7 +67,6 @@ class MatrixElementMultiply implements RealMatrixChangingVisitor {
  * Perform element-wise exp
  * 
  * @author p.baniukiewicz
- * @date 23 Jun 2016
  * @remarks Done in-place
  */
 class MatrixElementExp implements RealMatrixChangingVisitor {
@@ -96,7 +92,6 @@ class MatrixElementExp implements RealMatrixChangingVisitor {
  * Perform element-wise power (.^2 in Matlab) and then divide by val
  * 
  * @author p.baniukiewicz
- * @date 22 Jun 2016
  * @remarks Done in-place
  */
 class MatrixElementPowerDiv implements RealMatrixChangingVisitor {
@@ -129,7 +124,6 @@ class MatrixElementPowerDiv implements RealMatrixChangingVisitor {
  * Perform element-wise power (.^2 in Matlab)
  * 
  * @author p.baniukiewicz
- * @date 22 Jun 2016
  * @remarks Done in-place
  */
 class MatrixElementPower implements RealMatrixChangingVisitor {
@@ -155,7 +149,6 @@ class MatrixElementPower implements RealMatrixChangingVisitor {
 /**
  * Multiply in-place this matrix by another
  * @author p.baniukiewicz
- * @date 23 Jun 2016
  *
  */
 class MatrixDotProduct implements RealMatrixChangingVisitor {
@@ -190,7 +183,6 @@ class MatrixDotProduct implements RealMatrixChangingVisitor {
 /**
  * Divide in-place this matrix by another
  * @author p.baniukiewicz
- * @date 23 Jun 2016
  *
  */
 class MatrixDotDiv implements RealMatrixChangingVisitor {
@@ -225,7 +217,6 @@ class MatrixDotDiv implements RealMatrixChangingVisitor {
 /**
  * Add in-place this matrix to another
  * @author p.baniukiewicz
- * @date 23 Jun 2016
  *
  */
 class MatrixDotAdd implements RealMatrixChangingVisitor {
@@ -260,7 +251,6 @@ class MatrixDotAdd implements RealMatrixChangingVisitor {
 /**
  * Sub in-place this matrix to another
  * @author p.baniukiewicz
- * @date 23 Jun 2016
  *
  */
 class MatrixDotSub implements RealMatrixChangingVisitor {
@@ -295,7 +285,6 @@ class MatrixDotSub implements RealMatrixChangingVisitor {
 /**
  * Sub and then div in-place this matrix and another
  * @author p.baniukiewicz
- * @date 23 Jun 2016
  *
  */
 class MatrixDotSubDiv implements RealMatrixChangingVisitor {
@@ -330,7 +319,6 @@ class MatrixDotSubDiv implements RealMatrixChangingVisitor {
  * This is implementation of Matlab version of Random Walk segmentation algorithm
  * 
  * @author p.baniukiewicz
- * @date 22 Jun 2016
  * @see src/test/resources/Matlab/rw_laplace4_java_base.m at <a href="./examples.html">Examples</a>
  */
 public class RandomWalkSegmentation {

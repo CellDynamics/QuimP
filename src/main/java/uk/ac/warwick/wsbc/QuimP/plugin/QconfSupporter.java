@@ -1,6 +1,4 @@
 /**
- * @file QuimpPluginCore.java
- * @date 15 Aug 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 

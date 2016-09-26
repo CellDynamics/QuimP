@@ -24,7 +24,6 @@ import uk.ac.warwick.wsbc.QuimP.Snake;
  * breaks consistency because one time one has new object, other time reference to old one)
  * 
  * @author p.baniukiewicz
- * @date 11 Apr 2016
  *
  */
 public class QuimpDataConverter {

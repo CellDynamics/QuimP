@@ -1,6 +1,4 @@
 /**
- * @file ConfigReader.java
- * @date 29 Jan 2016
  */
 package uk.ac.warwick.wsbc.QuimP.utils;
 
@@ -38,7 +36,6 @@ import org.json.simple.parser.JSONParser;
  * @endcode
  * 
  * @author p.baniukiewicz
- * @date 29 Jan 2016
  * @deprecated Currently not used because it is based on JSONParser whereas GSon is used in project
  */
 public class ConfigReader {

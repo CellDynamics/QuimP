@@ -17,7 +17,6 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * 
  * @author rtyson
  * @author p.baniukiewicz
- * @date 20 Apr 2016
  *
  */
 public class Node extends PointsList<Node> {

@@ -1,6 +1,4 @@
 /**
- * @file QuimP/src/maven/uk/ac/warwick/wsbc/QuimP/PluginFactoryFactory.java
- * @date 17 May 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -12,7 +10,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * This class create instance of PluginFactory
  *
  * @author p.baniukiewicz
- * @date 17 May 2016
  *
  */
 public class PluginFactoryFactory {

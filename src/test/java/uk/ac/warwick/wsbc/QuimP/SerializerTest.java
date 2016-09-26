@@ -1,6 +1,4 @@
 /**
- * @file SerializerTest.java
- * @date 31 Mar 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -23,7 +21,6 @@ import com.google.gson.JsonSyntaxException;
  * Test of Serializer class 
  * 
  * @author p.baniukiewicz
- * @date 31 Mar 2016
  *
  */
 public class SerializerTest {
@@ -214,7 +211,6 @@ public class SerializerTest {
  * Dummy test class
  * 
  * @author p.baniukiewicz
- * @date 1 Apr 2016
  *
  */
 class TestClass implements IQuimpSerialize {

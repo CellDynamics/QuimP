@@ -1,6 +1,4 @@
 /**
- * @file SnakePluginList.java
- * @date 22 Mar 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -203,7 +201,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * @remarks This class is serializable and it is part of QuimP config.  
  * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
  * @author p.baniukiewicz
- * @date 22 Mar 2016
  */
 class SnakePluginList implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(SnakePluginList.class.getName());
@@ -218,7 +215,6 @@ class SnakePluginList implements IQuimpSerialize {
      * time only and they are not valid during object lifetime.
      *  
      * @author p.baniukiewicz
-     * @date 21 Mar 2016
      *
      */
     class Plugin {
@@ -654,7 +650,6 @@ class SnakePluginList implements IQuimpSerialize {
  * 
  * This class is used on load JSon representation of SnakePluginList class
  * @author p.baniukiewicz
- * @date 22 Mar 2016
  * @see GSon documentation
  */
 class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {

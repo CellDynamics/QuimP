@@ -1,6 +1,4 @@
 /**
- * @file BinarySegmentation.java
- * @date 27 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -84,7 +82,6 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  * @enduml
  * 
  * @author p.baniukiewicz
- * @date 27 Jun 2016
  * @see uk.ac.warwick.wsbc.QuimP.geom.TrackOutline
  *
  */

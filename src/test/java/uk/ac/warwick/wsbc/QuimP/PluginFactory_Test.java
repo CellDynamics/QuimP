@@ -1,6 +1,4 @@
 /**
- * @file PluginFactory_Test.java
- * @date 9 Feb 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -32,7 +30,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOAPoint2dFilter;
 
 /**
  * @author p.baniukiewicz
- * @date 9 Feb 2016
  *
  */
 @RunWith(MockitoJUnitRunner.class)

@@ -1,6 +1,4 @@
 /**
- * @file PropagateSeedsTest.java
- * @date 1 Jul 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
@@ -20,7 +18,6 @@ import ij.process.BinaryProcessor;
 
 /**
  * @author p.baniukiewicz
- * @date 1 Jul 2016
  *
  */
 @SuppressWarnings("unused")

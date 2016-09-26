@@ -1,6 +1,4 @@
 /**
- * @file RandomWalkSegmentationPlugin_run.java
- * @date 4 Jul 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -13,7 +11,6 @@ import ij.ImageJ;
 
 /**
  * @author p.baniukiewicz
- * @date 4 Jul 2016
  *
  */
 public class RandomWalkSegmentationPlugin_run {

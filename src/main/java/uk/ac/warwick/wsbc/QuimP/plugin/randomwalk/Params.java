@@ -6,7 +6,6 @@ import java.util.Arrays;
  * Hold algorithm parameters
  * 
  * @author p.baniukiewicz
- * @date 22 Jun 2016
  *
  */
 public class Params {

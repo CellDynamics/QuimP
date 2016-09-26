@@ -1,6 +1,4 @@
 /**
- * @file RandomWalkSegmentationOtherTest.java
- * @date 30 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
@@ -28,7 +26,6 @@ import ij.process.ImageProcessor;
  * Run time tests of segmentation
  * 
  * @author p.baniukiewicz
- * @date 30 Jun 2016
  * @see src/test/resources/Matlab/RW_java_tests.m at <a href="./examples.html">Examples</a>
  */
 @SuppressWarnings("unused")

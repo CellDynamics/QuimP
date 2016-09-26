@@ -29,7 +29,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * Test case of GSon, not related with any class in project
  * 
  * @author p.baniukiewicz
- * @date 23 Mar 2016
  *
  */
 public class ConfigStreamerTest {
@@ -218,7 +217,6 @@ class tSnakePluginList {
      * Keeps all Plugin related information
      * 
      * @author p.baniukiewicz
-     * @date 21 Mar 2016
      *
      */
     class Plugin {

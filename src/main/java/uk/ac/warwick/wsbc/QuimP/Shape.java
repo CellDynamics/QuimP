@@ -19,7 +19,6 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * inserting points to the Shape
  *   
  * @author p.baniukiewicz
- * @date 14 Apr 2016
  *
  * @param <T> Type of point, currently can be Node or Vert
  * @remarks Generally assumes that Shape is closed, so PointsList is looped

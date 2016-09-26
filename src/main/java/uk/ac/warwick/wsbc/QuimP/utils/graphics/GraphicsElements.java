@@ -16,7 +16,6 @@ import ij.process.FloatPolygon;
  * This class contains static methods for creating simple graphics elements.
  * 
  * @author p.baniukiewicz
- * @date 5 Apr 2016
  *
  */
 public class GraphicsElements {

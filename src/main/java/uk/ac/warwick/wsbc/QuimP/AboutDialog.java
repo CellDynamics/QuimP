@@ -1,6 +1,4 @@
 /**
- * @file AboutDialog.java
- * @date 22 Apr 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -34,7 +32,6 @@ import org.apache.logging.log4j.Logger;
  * Build About dialog with support of mouse operations
  * 
  * @author p.baniukiewicz
- * @date 22 Apr 2016
  *
  */
 public class AboutDialog implements ActionListener {
@@ -160,7 +157,6 @@ public class AboutDialog implements ActionListener {
      * Destroy window on exit
      * 
      * @author p.baniukiewicz
-     * @date 22 Apr 2016
      *
      */
     class myWindowAdapter extends WindowAdapter {
@@ -175,7 +171,6 @@ public class AboutDialog implements ActionListener {
      * Support for popupmenu
      * 
      * @author p.baniukiewicz
-     * @date 22 Apr 2016
      *
      */
     class PopupListener extends MouseAdapter {
