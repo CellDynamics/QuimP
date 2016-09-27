@@ -504,7 +504,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * 
      * @return current Shape as PolygonRoi
      */
-    Roi asFloatRoi() {
+    public Roi asFloatRoi() {
         float[] x = new float[POINTS];
         float[] y = new float[POINTS];
 

@@ -860,7 +860,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
 
     }
 
-    void clearFluores() {
+    public void clearFluores() {
         Vert v = head;
         do {
             v.setFluoresChannel(-2, -2, -2, 0);

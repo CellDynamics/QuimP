@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
+import uk.ac.warwick.wsbc.QuimP.plugin.ana.ChannelStat;
 
 /**
  * Hold statistic evaluated for one frame.
@@ -32,7 +34,10 @@ public class FrameStatistics {
     public double persistanceToSource;
     public double dispersion;
     public double extension;
-    ChannelStat[] channels;
+    /**
+     * Fluorescence stats added by ANA module.
+     */
+    public ChannelStat[] channels;
     // int cellAge;
 
     public FrameStatistics() {

@@ -49,7 +49,7 @@ public abstract class PointsList<T extends PointsList<T>> {
     /**
      * flag which is set when the velocity is below the critical velocity
      */
-    protected boolean frozen = false;
+    public boolean frozen = false;
 
     /**
      * Default constructor, assumes that first point is created on list with ID = 1

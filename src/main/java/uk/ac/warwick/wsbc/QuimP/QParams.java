@@ -77,9 +77,9 @@ public class QParams {
     protected File statsQP;
     /**
      * This field is set by direct call from ANA. Left here for compatibility reasons.
-     * Main holder of fluTiffs is {@link uk.ac.warwick.wsbc.QuimP.ANAp}
+     * Main holder of fluTiffs is {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp}
      */
-    File[] fluTiffs;
+    public File[] fluTiffs;
 
     private File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
     private File[] fluFiles;
@@ -93,13 +93,20 @@ public class QParams {
 
     int NMAX, max_iterations, sample_tan, sample_norm;
     double delta_t, vel_crit, f_central, f_contract, f_image, f_friction;
-    double finalShrink, cortexWidth;
+    public double finalShrink, cortexWidth;
     long key;
     double sensitivity; // no longer used. blank holder
     /**
      * Indicate if \a snQP has been processed by ECMM (\c true). Set by checkECMMrun
      */
-    boolean ecmmHasRun = false;
+    private boolean ecmmHasRun = false;
+
+    /**
+     * @return the ecmmHasRun
+     */
+    public boolean isEcmmHasRun() {
+        return ecmmHasRun;
+    }
 
     public QParams() {
 

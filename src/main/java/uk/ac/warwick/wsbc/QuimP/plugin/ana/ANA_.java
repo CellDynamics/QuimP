@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.ana;
 
 import java.awt.AWTEvent;
 import java.awt.Checkbox;
@@ -30,6 +30,19 @@ import ij.plugin.Converter;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+import uk.ac.warwick.wsbc.QuimP.CellStats;
+import uk.ac.warwick.wsbc.QuimP.ECMM_Mapping;
+import uk.ac.warwick.wsbc.QuimP.ECMp;
+import uk.ac.warwick.wsbc.QuimP.FormatConverter;
+import uk.ac.warwick.wsbc.QuimP.FrameStatistics;
+import uk.ac.warwick.wsbc.QuimP.Outline;
+import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
+import uk.ac.warwick.wsbc.QuimP.QParams;
+import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
+import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
+import uk.ac.warwick.wsbc.QuimP.QuimpException;
+import uk.ac.warwick.wsbc.QuimP.Tool;
+import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.filesystem.ANAParamCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
@@ -216,7 +229,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
         outputOutlineHandlers = new OutlinesCollection(ecmmState.oHs.size());
         if (qconfLoader.getQp().getLoadedDataContainer().getANAState() == null)
             // create ANA slots for all outlines
-            anaStates = new ANAParamCollection(ecmmState.oHs.size()); // store ANA options for every cell
+            anaStates = new ANAParamCollection(ecmmState.oHs.size()); // store ANA options for every
+                                                                      // cell
         else
             anaStates = qconfLoader.getQp().getLoadedDataContainer().getANAState(); // update old
         for (int i = 0; i < ecmmState.oHs.size(); i++) { // go over all outlines
@@ -249,9 +263,11 @@ public class ANA_ implements PlugInFilter, DialogListener {
                     orgIpl.getOriginalFileInfo().fileName);
             outputH = new OutlineHandler(oH); // copy input to output (ana will add fields to it)
             Ana(); // fills outputH
-            FrameStatistics.write(fluoStats, anap.STATSFILE, anap); // save fluoro to statFile for comp.
+            FrameStatistics.write(fluoStats, anap.STATSFILE, anap); // save fluoro to statFile for
+                                                                    // comp.
             CellStats statH = qconfLoader.getStats().sHs.get(i); // store fluoro in QCONF
-            statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(fluoStats)); // store stats
+            statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(fluoStats)); // store
+                                                                                        // stats
             outputOutlineHandlers.oHs.add(i, new OutlineHandler(outputH)); // store actual result in
                                                                            // container
 
@@ -306,7 +322,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
         anap.INFILE.delete();
         anap.STATSFILE.delete();
-        outputH.writeOutlines(anap.OUTFILE, qconfLoader.getQp().ecmmHasRun);
+        outputH.writeOutlines(anap.OUTFILE, qconfLoader.getQp().isEcmmHasRun());
         FrameStatistics.write(fluoStats, anap.STATSFILE, anap);
 
         // ----Write temp files-------
@@ -890,22 +906,5 @@ public class ANA_ implements PlugInFilter, DialogListener {
                 + orgIpr.getPixelValue(x - 1, y + 1);
         tempFlu = tempFlu / 9d;
         return tempFlu;
-    }
-}
-
-class ChannelStat {
-
-    double innerArea = 0;
-    double totalFluor = 0;
-    double cortexWidth = 0;
-    double meanFluor = 0;
-    double meanInnerFluor = 0;
-    double totalInnerFluor = 0;
-    double cortexArea = 0;
-    double totalCorFluo = 0;
-    double meanCorFluo = 0;
-    double percCortexFluo = 0;
-
-    ChannelStat() {
     }
 }

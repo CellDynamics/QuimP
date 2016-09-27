@@ -110,11 +110,11 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
     }
 
-    int getStartFrame() {
+    public int getStartFrame() {
         return startFrame;
     }
 
-    int getEndFrame() {
+    public int getEndFrame() {
         return endFrame;
     }
 

@@ -17,7 +17,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
  * The QuimP uses QParams to keep parameters read from configuration files (\a paQP, \a snQP) and 
  * then to provide some of parameters stored in these files to local configuration classes such as
  * e.g. {@link uk.ac.warwick.wsbc.QuimP.ECMp}, {@link uk.ac.warwick.wsbc.QuimP.Qp}, 
- * {@link uk.ac.warwick.wsbc.QuimP.ANAp}.
+ * {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp}.
  * QuimP supports two independent file formats:
  * <ol>
  * <li> based on separate files (old QuimP) such as \a case_cellno.paQP
