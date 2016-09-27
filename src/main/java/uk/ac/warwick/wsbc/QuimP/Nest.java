@@ -174,15 +174,19 @@ public class Nest implements IQuimpSerialize {
     }
 
     /**
-     * Write \a stQP file using current Snakes
+     * Write <i>stQP</i> file using current Snakes
+     * 
+     * <p><b>Warning</b><p>
+     * It can set current slice in ImagePlus (modifies the object state).
      * 
      * @param oi instance of current ImagePlus (required by CellStat that extends 
      * ij.measure.Measurements
-     * @remarks It can set current slice in ImagePlus (modifies the object state)
+     * @return CellStat objects with calculated statistics for every cell.
      */
-    public void analyse(final ImagePlus oi) {
+    public List<CellStat> analyse(final ImagePlus oi) {
         OutlineHandler outputH;
         SnakeHandler sH;
+        ArrayList<CellStat> ret = new ArrayList<>();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
         try {
             while (sHitr.hasNext()) {
@@ -194,12 +198,14 @@ public class Nest implements IQuimpSerialize {
                 outputH = new OutlineHandler(newQp);
 
                 File statsFile = new File(BOA_.qState.boap.deductStatsFileName(sH.getID()));
-                new CellStat(outputH, oi, statsFile, BOA_.qState.boap.getImageScale(),
-                        BOA_.qState.boap.getImageFrameInterval());
+                CellStat tmp = new CellStat(outputH, oi, statsFile,
+                        BOA_.qState.boap.getImageScale(), BOA_.qState.boap.getImageFrameInterval());
+                ret.add(tmp);
             }
         } catch (QuimpException e) {
             LOGGER.error(e);
         }
+        return ret;
     }
 
     public void resetNest() {

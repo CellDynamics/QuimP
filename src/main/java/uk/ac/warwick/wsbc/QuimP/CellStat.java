@@ -6,6 +6,8 @@ import java.awt.Polygon;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -17,10 +19,18 @@ import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
- *
+ * Calculate statistics for whole stack (all cells).
+ * 
+ * Stats are written on disk after calling constructor. Additionally there is separate list
+ * maintained with the same stats. They can be collected calling {@link getStatH()}
  * @author tyson
+ * @author p.baniukiewicz
  */
 public class CellStat implements Measurements {
+    /**
+     * Hold all stats for cells.
+     */
+    StatsHandler statH;
     OutlineHandler outputH;
     File OUTFILE;
     ImagePlus iPlus;
@@ -60,6 +70,14 @@ public class CellStat implements Measurements {
         write(stats, outputH.getStartFrame());
     }
 
+    /**
+     * Calculate stats.
+     * 
+     * <p><b>Warning</b><p>
+     * Number of calculated stats must be reflected in {@link buildData(FrameStat[])}
+     * 
+     * @return Array with stats for every frame for one cell.
+     */
     private FrameStat[] record() {
         // ImageStack orgStack = orgIpl.getStack();
         FrameStat[] stats = new FrameStat[outputH.getSize()];
@@ -155,10 +173,31 @@ public class CellStat implements Measurements {
             writeDummyFluo(pw, 3, startFrame, s.length);
 
             pw.close();
+            buildData(s);
         } catch (Exception e) {
             IJ.error("could not open out file");
             return;
         }
+    }
+
+    /**
+     * Complementary to write method.
+     * Create the same data as write but in form of arrays.
+     * For compatible reasons.
+     * 
+     * @param s Frame statistics calculated by {@link uk.ac.warwick.wsbc.QuimP.CellStat.record()}
+     */
+    private void buildData(FrameStat[] s) {
+        statH = new StatsHandler(s.length, 11, 11);
+        // duplicate from write method
+        statH.stats = new ArrayList<>(Arrays.asList(s));
+    }
+
+    /**
+     * @return the statH
+     */
+    public StatsHandler getStatH() {
+        return statH;
     }
 
     private void writeDummyFluo(PrintWriter pw, int channel, int startFrame, int size)
@@ -227,38 +266,4 @@ public class CellStat implements Measurements {
     // }
     // return new Line(ax1, ay1, ax2, ay2);
     // }
-}
-
-class FrameStat {
-    double area;
-    // double totalFlour;
-    // double meanFlour;
-    ExtendedVector2d centroid;
-    double elongation;
-    double circularity;
-    double perimiter;
-    double displacement;
-    double dist;
-    double persistance;
-    double speed; // over 1 frame
-    double persistanceToSource;
-    double dispersion;
-    double extension;
-    // int cellAge;
-
-    public FrameStat() {
-        centroid = new ExtendedVector2d();
-    }
-
-    public void toScale(double scale, double frameInterval) {
-        area = Tool.areaToScale(area, scale);
-        perimiter = Tool.distanceToScale(perimiter, scale);
-        displacement = Tool.distanceToScale(displacement, scale);
-        dist = Tool.distanceToScale(dist, scale);
-        speed = Tool.speedToScale(speed, scale, frameInterval); // over 1 frame
-    }
-
-    void centroidToPixels(double scale) {
-        centroid.setXY(centroid.getX() / scale, centroid.getY() / scale);
-    }
 }
