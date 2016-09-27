@@ -1,7 +1,10 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.filesystem;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import uk.ac.warwick.wsbc.QuimP.ANAp;
+import uk.ac.warwick.wsbc.QuimP.IQuimpSerialize;
 
 /**
  * Serialization container for {@link uk.ac.warwick.wsbc.QuimP.ANAp}.
@@ -9,10 +12,10 @@ import java.util.Collections;
  * @author p.baniukiewicz
  *
  */
-public class ANAStates implements IQuimpSerialize {
+public class ANAParamCollection implements IQuimpSerialize {
     public ArrayList<ANAp> aS;
 
-    public ANAStates() {
+    public ANAParamCollection() {
         aS = new ArrayList<>();
     }
 
@@ -21,7 +24,7 @@ public class ANAStates implements IQuimpSerialize {
      * 
      * @param size
      */
-    public ANAStates(int size) {
+    public ANAParamCollection(int size) {
         aS = new ArrayList<>(Collections.nCopies(size, new ANAp()));
     }
 

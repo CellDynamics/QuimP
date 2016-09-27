@@ -13,7 +13,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.io.OpenDialog;
-import uk.ac.warwick.wsbc.QuimP.ANAStates;
 import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
@@ -281,7 +280,7 @@ public class QconfLoader {
      * @return ANA object from loaded configuration
      * @throws QuimpException when there is no such object in file or old format is used.
      */
-    public ANAStates getANA() throws QuimpException {
+    public ANAParamCollection getANA() throws QuimpException {
         if (isANAPresent())
             return getQp().getLoadedDataContainer().getANAState();
         else

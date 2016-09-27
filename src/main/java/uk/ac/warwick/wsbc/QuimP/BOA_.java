@@ -2397,7 +2397,8 @@ public class BOA_ implements PlugIn {
                 // write operations
                 if (qState.nest.writeSnakes()) { // write snPQ file (if any snake) and paQP
                     // write stQP file and fill outFile used later
-                    List<CellStatsEval> ret = qState.nest.analyse(imageGroup.getOrgIpl().duplicate());
+                    List<CellStatsEval> ret =
+                            qState.nest.analyse(imageGroup.getOrgIpl().duplicate());
                     // auto save plugin config (but only if there is at least one snake)
                     if (!qState.nest.isVacant()) {
                         // Create Serialization object with extra info layer
@@ -3305,7 +3306,7 @@ class Constrictor {
  * @author rtyson
  *
  */
-class BoaException extends Exception {
+class BoaException extends QuimpException {
 
     private static final long serialVersionUID = 1L;
     private int frame;

@@ -21,7 +21,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.QuimP.ANAStates;
 import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
@@ -129,7 +128,7 @@ public class QconfLoaderTest {
         dC.ECMMState = new OutlinesCollection();
         assertThat(q.validateQconf(), is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN));
         assertThat(q.getECMM(), is(dC.ECMMState));
-        dC.ANAState = new ANAStates();
+        dC.ANAState = new ANAParamCollection();
         assertThat(q.validateQconf(),
                 is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN + DataContainer.ANA_RUN));
         assertThat(q.getANA(), is(dC.ANAState));
