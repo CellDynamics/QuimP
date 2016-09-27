@@ -15,13 +15,11 @@ import ij.WindowManager;
 import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.QuimP.ANAStates;
 import uk.ac.warwick.wsbc.QuimP.BOAState;
-import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
-import uk.ac.warwick.wsbc.QuimP.StatsHandlers;
 
 /**
  * Load QCONF or paQP file and initiate proper instance of {@link QParams} class.
@@ -271,7 +269,7 @@ public class QconfLoader {
      * @return ECMM object from loaded configuration
      * @throws QuimpException when there is no such object in file or old format is used.
      */
-    public OutlineHandlers getECMM() throws QuimpException {
+    public OutlinesCollection getECMM() throws QuimpException {
         if (isECMMPresent())
             return getQp().getLoadedDataContainer().getECMMState();
         else
@@ -307,7 +305,7 @@ public class QconfLoader {
      * @return Q object from loaded configuration
      * @throws QuimpException when there is no such object in file or old format is used.
      */
-    public StatsHandlers getStats() throws QuimpException {
+    public StatsCollection getStats() throws QuimpException {
         if (isStatsPresent())
             return getQp().getLoadedDataContainer().getStats();
         else

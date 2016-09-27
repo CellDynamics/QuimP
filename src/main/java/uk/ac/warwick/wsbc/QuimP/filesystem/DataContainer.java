@@ -4,11 +4,9 @@ import uk.ac.warwick.wsbc.QuimP.ANAStates;
 import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.BOA_;
 import uk.ac.warwick.wsbc.QuimP.IQuimpSerialize;
-import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.PluginFactory;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList;
-import uk.ac.warwick.wsbc.QuimP.StatsHandlers;
 import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
 
 /**
@@ -50,7 +48,7 @@ public class DataContainer implements IQuimpSerialize {
     /**
      * Object to store ECCM output. Can be <tt>null</tt> when module has not been run yet.
      */
-    public OutlineHandlers ECMMState;
+    public OutlinesCollection ECMMState;
     /**
      * Hold ANA state.
      */
@@ -67,7 +65,7 @@ public class DataContainer implements IQuimpSerialize {
     /**
      * Contain stats. 
      */
-    public StatsHandlers Stats;
+    public StatsCollection Stats;
     private transient PluginFactory pf;
     private transient ViewUpdater vu;
 
@@ -104,7 +102,7 @@ public class DataContainer implements IQuimpSerialize {
     /**
      * @return the eCMMState
      */
-    public OutlineHandlers getECMMState() {
+    public OutlinesCollection getECMMState() {
         return ECMMState;
     }
 
@@ -125,7 +123,7 @@ public class DataContainer implements IQuimpSerialize {
     /**
      * @return the stats
      */
-    public StatsHandlers getStats() {
+    public StatsCollection getStats() {
         return Stats;
     }
 

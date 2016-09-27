@@ -12,12 +12,12 @@ import ij.ImagePlus;
 import ij.gui.GenericDialog;
 import ij.io.OpenDialog;
 import ij.plugin.ZProjector;
-import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.Tool;
+import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
@@ -108,7 +108,7 @@ public class Prot_Analysis implements IQuimpPlugin {
      */
     private void runFromQCONF() throws QuimpException {
         STmap[] stMap = qconfLoader.getQp().getLoadedDataContainer().getQState();
-        OutlineHandlers oHs = qconfLoader.getQp().getLoadedDataContainer().getECMMState();
+        OutlinesCollection oHs = qconfLoader.getQp().getLoadedDataContainer().getECMMState();
         int h = 0;
         ImagePlus im1static = qconfLoader.getImage();
         if (im1static == null)

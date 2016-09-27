@@ -183,10 +183,10 @@ public class Nest implements IQuimpSerialize {
      * ij.measure.Measurements
      * @return CellStat objects with calculated statistics for every cell.
      */
-    public List<CellStat> analyse(final ImagePlus oi) {
+    public List<CellStatsEval> analyse(final ImagePlus oi) {
         OutlineHandler outputH;
         SnakeHandler sH;
-        ArrayList<CellStat> ret = new ArrayList<>();
+        ArrayList<CellStatsEval> ret = new ArrayList<>();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
         try {
             while (sHitr.hasNext()) {
@@ -198,7 +198,7 @@ public class Nest implements IQuimpSerialize {
                 outputH = new OutlineHandler(newQp);
 
                 File statsFile = new File(BOA_.qState.boap.deductStatsFileName(sH.getID()));
-                CellStat tmp = new CellStat(outputH, oi, statsFile,
+                CellStatsEval tmp = new CellStatsEval(outputH, oi, statsFile,
                         BOA_.qState.boap.getImageScale(), BOA_.qState.boap.getImageFrameInterval());
                 ret.add(tmp);
             }

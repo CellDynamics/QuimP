@@ -9,6 +9,7 @@ import java.awt.Polygon;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +31,7 @@ import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
@@ -51,7 +53,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     private QconfLoader qconfLoader;
 
     private OutlineHandler oH, outputH, ecmH;
-    private OutlineHandlers outputOutlineHandlers; // output for new data file
+    private OutlinesCollection outputOutlineHandlers; // output for new data file
     private Outline frameOneClone;
     private ECMM_Mapping ecmMapping;
     private ImagePlus orgIpl;
@@ -61,7 +63,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     private ArrayList<Roi> storedOuterROI;
     private ArrayList<Roi> storedInnerROI;
 
-    private FrameStat[] fluoStats;
+    private FrameStatistics[] fluoStats;
     private ANAp anap;
     private static final int m =
             Measurements.AREA + Measurements.INTEGRATED_DENSITY + Measurements.MEAN;
@@ -209,8 +211,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
     private void runFromQCONF() throws IOException, QuimpException {
         LOGGER.debug("Processing from new file format");
         ANAStates anaStates;
-        OutlineHandlers ecmmState = qconfLoader.getQp().getLoadedDataContainer().ECMMState;
-        outputOutlineHandlers = new OutlineHandlers(ecmmState.oHs.size());
+        OutlinesCollection ecmmState = qconfLoader.getQp().getLoadedDataContainer().ECMMState;
+        outputOutlineHandlers = new OutlinesCollection(ecmmState.oHs.size());
         if (qconfLoader.getQp().getLoadedDataContainer().getANAState() == null)
             // create ANA slots for all outlines
             anaStates = new ANAStates(ecmmState.oHs.size()); // store ANA options for every cell
@@ -226,9 +228,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
             anap = anaStates.aS.get(i); // get i-th ana parameters
             anap.setup(qconfLoader.getQp());
 
-            fluoStats = FrameStat.read(anap.STATSFILE); // read stat file (it is outside QCONF!!)
+            // fluoStats = FrameStat.read(anap.STATSFILE); // read stat file (it is outside QCONF!!)
             // get stats stored in QCONF
-            // fluoStats = qconfLoader.getStats().sHs.get(i).fluostats.toArray(new FluoStats[0]);
+            fluoStats = qconfLoader.getStats().sHs.get(i).framestat.toArray(new FrameStatistics[0]);
 
             investigateChannels(oH.indexGetOutline(0));// find first empty channel
             if (anap.noData && oH.getSize() == 1) {
@@ -246,10 +248,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
                     orgIpl.getOriginalFileInfo().fileName);
             outputH = new OutlineHandler(oH); // copy input to output (ana will add fields to it)
             Ana(); // fills outputH
-            FrameStat.write(fluoStats, anap.STATSFILE, anap); // save fluoro to statFile for comp.
-            StatsHandler statH = qconfLoader.getStats().sHs.get(i); // store fluoro in QCONF
-            // statH.fluostats.clear(); // clear any old fluo stats
-            // statH.fluostats = new ArrayList<FluoStats>(Arrays.asList(fluoStats));
+            FrameStatistics.write(fluoStats, anap.STATSFILE, anap); // save fluoro to statFile for comp.
+            FramesStat statH = qconfLoader.getStats().sHs.get(i); // store fluoro in QCONF
+            statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(fluoStats)); // store stats
             outputOutlineHandlers.oHs.add(i, new OutlineHandler(outputH)); // store actual result in
                                                                            // container
 
@@ -266,17 +267,17 @@ public class ANA_ implements PlugInFilter, DialogListener {
     }
 
     /**
-     * Main executive for ANA processing for QParams (old file version)
+     * Main executive for ANA processing for QParams (old file version).
      * 
      * @throws QuimpException when OutlineHandler can not be read
      * @throws IOException when configuration can not be saved on disk
      */
     private void runFromPAQP() throws QuimpException, IOException {
-        outputOutlineHandlers = new OutlineHandlers(1);
+        outputOutlineHandlers = new OutlinesCollection(1);
         oH = new OutlineHandler(qconfLoader.getQp());
 
         anap.setup(qconfLoader.getQp());
-        fluoStats = FrameStat.read(anap.STATSFILE);
+        fluoStats = FrameStatistics.read(anap.STATSFILE);
         investigateChannels(oH.indexGetOutline(0));// find first empty channel
 
         if (anap.noData && oH.getSize() == 1) {
@@ -305,7 +306,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         anap.INFILE.delete();
         anap.STATSFILE.delete();
         outputH.writeOutlines(anap.OUTFILE, qconfLoader.getQp().ecmmHasRun);
-        FrameStat.write(fluoStats, anap.STATSFILE, anap);
+        FrameStatistics.write(fluoStats, anap.STATSFILE, anap);
 
         // ----Write temp files-------
         // File tempFile = new File(ANAp.OUTFILE.getAbsolutePath() +

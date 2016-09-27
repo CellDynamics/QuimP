@@ -85,6 +85,7 @@ import ij.process.StackConverter;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.StatsCollection;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
@@ -2396,7 +2397,7 @@ public class BOA_ implements PlugIn {
                 // write operations
                 if (qState.nest.writeSnakes()) { // write snPQ file (if any snake) and paQP
                     // write stQP file and fill outFile used later
-                    List<CellStat> ret = qState.nest.analyse(imageGroup.getOrgIpl().duplicate());
+                    List<CellStatsEval> ret = qState.nest.analyse(imageGroup.getOrgIpl().duplicate());
                     // auto save plugin config (but only if there is at least one snake)
                     if (!qState.nest.isVacant()) {
                         // Create Serialization object with extra info layer
@@ -2410,7 +2411,7 @@ public class BOA_ implements PlugIn {
                         DataContainer dt = new DataContainer(); // create container
                         dt.BOAState = qState; // assign boa state to correct field
                         // extract relevant data from CellStat
-                        dt.Stats = new StatsHandlers();
+                        dt.Stats = new StatsCollection();
                         dt.Stats.copyFromCellStat(ret); // StatsHandler is initialized here.
                         n = new Serializer<>(dt, quimpInfo);
                         if (qState.boap.savePretty) // set pretty format if configured

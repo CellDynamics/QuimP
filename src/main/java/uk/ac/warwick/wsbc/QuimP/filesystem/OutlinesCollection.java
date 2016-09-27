@@ -1,12 +1,15 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.filesystem;
 
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.IQuimpSerialize;
+import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
+
 /**
- * Represent collection of OutlineHandlers.
+ * Represent collection of OutlineHandlers for cells.
  * 
  * This class is used as storage of OutlineHandlers (results of continuous segmentation) in
  * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer}.
@@ -14,9 +17,9 @@ import org.apache.logging.log4j.Logger;
  * @author p.baniukiewicz
  *
  */
-public class OutlineHandlers implements IQuimpSerialize {
+public class OutlinesCollection implements IQuimpSerialize {
     @SuppressWarnings("unused")
-    private static final Logger LOGGER = LogManager.getLogger(OutlineHandlers.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(OutlinesCollection.class.getName());
     /**
      * Contain {@link OutlineHandler} objects. 
      * 
@@ -28,11 +31,11 @@ public class OutlineHandlers implements IQuimpSerialize {
      */
     public ArrayList<OutlineHandler> oHs;
 
-    public OutlineHandlers(int size) {
+    public OutlinesCollection(int size) {
         oHs = new ArrayList<>(size);
     }
 
-    public OutlineHandlers() {
+    public OutlinesCollection() {
         oHs = new ArrayList<>();
     }
 

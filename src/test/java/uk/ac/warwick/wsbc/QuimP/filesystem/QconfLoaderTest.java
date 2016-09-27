@@ -23,7 +23,6 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import uk.ac.warwick.wsbc.QuimP.ANAStates;
 import uk.ac.warwick.wsbc.QuimP.BOAState;
-import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
@@ -127,7 +126,7 @@ public class QconfLoaderTest {
         dC.BOAState = new BOAState();
         assertThat(q.validateQconf(), is(DataContainer.BOA_RUN));
         assertThat(q.getBOA(), is(dC.BOAState));
-        dC.ECMMState = new OutlineHandlers();
+        dC.ECMMState = new OutlinesCollection();
         assertThat(q.validateQconf(), is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN));
         assertThat(q.getECMM(), is(dC.ECMMState));
         dC.ANAState = new ANAStates();

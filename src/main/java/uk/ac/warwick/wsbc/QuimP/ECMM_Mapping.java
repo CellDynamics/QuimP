@@ -25,6 +25,7 @@ import ij.io.OpenDialog;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
@@ -44,7 +45,7 @@ public class ECMM_Mapping {
     private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
 
     private OutlineHandler oH, outputH;
-    private OutlineHandlers outputOutlineHandlers; // output for new data file
+    private OutlinesCollection outputOutlineHandlers; // output for new data file
 
     static ECMplot plot;
     private QconfLoader qconfLoader;
@@ -209,7 +210,7 @@ public class ECMM_Mapping {
     private void runFromQCONF() throws QuimpException, IOException {
         LOGGER.debug("Processing from new file format");
         Nest nest = qconfLoader.getQp().getNest();
-        outputOutlineHandlers = new OutlineHandlers(nest.size());
+        outputOutlineHandlers = new OutlinesCollection(nest.size());
         for (int i = 0; i < nest.size(); i++) { // go over all snakes
             ((QParamsQconf) qconfLoader.getQp()).setActiveHandler(i); // set current handler number.
                                                                       // For compatibility, all

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
@@ -80,7 +81,7 @@ public class FormatConverter {
         int i = 0;
         // Create DataContainer
         dT.BOAState = new BOAState(qcL.getImage());
-        dT.ECMMState = new OutlineHandlers();
+        dT.ECMMState = new OutlinesCollection();
         dT.BOAState.nest = new Nest();
         // dT.ANAState = new ANAStates();
         ArrayList<STmap> maps = new ArrayList<>(); // temporary - we do not know number of cells

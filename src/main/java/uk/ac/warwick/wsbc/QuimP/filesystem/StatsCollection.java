@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.filesystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,30 +6,37 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.CellStatsEval;
+import uk.ac.warwick.wsbc.QuimP.FramesStat;
+import uk.ac.warwick.wsbc.QuimP.IQuimpSerialize;
+
 /**
  * Keep statistics for cells.
+ * 
+ * This class is used as storage of frame statistics in
+ * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer}.
  * 
  * @author p.baniukiewicz
  *
  */
-public class StatsHandlers implements IQuimpSerialize {
+public class StatsCollection implements IQuimpSerialize {
     @SuppressWarnings("unused")
-    private static final Logger LOGGER = LogManager.getLogger(StatsHandlers.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(StatsCollection.class.getName());
 
     /**
      * List of statistic objects for separate cells.
      */
-    public ArrayList<StatsHandler> sHs;
+    public ArrayList<FramesStat> sHs;
 
     /**
      * 
      * @param size Number of cells
      */
-    public StatsHandlers(int size) {
+    public StatsCollection(int size) {
         sHs = new ArrayList<>(size);
     }
 
-    public StatsHandlers() {
+    public StatsCollection() {
         sHs = new ArrayList<>();
     }
 
@@ -56,8 +63,8 @@ public class StatsHandlers implements IQuimpSerialize {
      * Copies statistics from CellStat objects into internal fields of StatsHandler.
      * @param in List of CellStat objects - size of this list equals to number of cells.
      */
-    public void copyFromCellStat(List<CellStat> in) {
-        for (CellStat cl : in) {
+    public void copyFromCellStat(List<CellStatsEval> in) {
+        for (CellStatsEval cl : in) {
             sHs.add(cl.getStatH());
         }
     }

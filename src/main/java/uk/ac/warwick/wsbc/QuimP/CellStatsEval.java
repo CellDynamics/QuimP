@@ -26,11 +26,11 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @author tyson
  * @author p.baniukiewicz
  */
-public class CellStat implements Measurements {
+public class CellStatsEval implements Measurements {
     /**
-     * Hold all stats for cells.
+     * Hold all stats for cell.
      */
-    StatsHandler statH;
+    private FramesStat statH;
     OutlineHandler outputH;
     File OUTFILE;
     ImagePlus iPlus;
@@ -49,7 +49,7 @@ public class CellStat implements Measurements {
     // Measurements.CENTROID + Measurements.SHAPE_DESCRIPTORS +
     // Measurements.PERIMETER + Measurements.ELLIPSE;
 
-    public CellStat(OutlineHandler oH, ImagePlus ip, File f, double s, double fI) {
+    public CellStatsEval(OutlineHandler oH, ImagePlus ip, File f, double s, double fI) {
         IJ.showStatus("BOA-Calculating Cell stats");
         outputH = oH;
         OUTFILE = f;
@@ -64,7 +64,7 @@ public class CellStat implements Measurements {
         // results.setDefaultHeadings();
         // analyser.setMeasurements(m);
 
-        FrameStat[] stats = record();
+        FrameStatistics[] stats = record();
         iPlus.setSlice(1);
         iPlus.killRoi();
         write(stats, outputH.getStartFrame());
@@ -78,9 +78,9 @@ public class CellStat implements Measurements {
      * 
      * @return Array with stats for every frame for one cell.
      */
-    private FrameStat[] record() {
+    private FrameStatistics[] record() {
         // ImageStack orgStack = orgIpl.getStack();
-        FrameStat[] stats = new FrameStat[outputH.getSize()];
+        FrameStatistics[] stats = new FrameStatistics[outputH.getSize()];
 
         double distance = 0;
         Outline o;
@@ -93,7 +93,7 @@ public class CellStat implements Measurements {
 
             o = outputH.getOutline(f);
             iPlus.setSlice(f); // also updates the processor
-            stats[store] = new FrameStat();
+            stats[store] = new FrameStatistics();
 
             Polygon oPoly = o.asPolygon();
             roi = new PolygonRoi(oPoly, Roi.POLYGON);
@@ -145,7 +145,7 @@ public class CellStat implements Measurements {
         return stats;
     }
 
-    private void write(FrameStat[] s, int startFrame) {
+    private void write(FrameStatistics[] s, int startFrame) {
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto
                                                                              // flush
@@ -188,16 +188,16 @@ public class CellStat implements Measurements {
      * 
      * @param s Frame statistics calculated by {@link uk.ac.warwick.wsbc.QuimP.CellStat.record()}
      */
-    private void buildData(FrameStat[] s) {
-        statH = new StatsHandler(s.length, 11, 11);
+    private void buildData(FrameStatistics[] s) {
+        statH = new FramesStat(s.length, 11, 11);
         // duplicate from write method
-        statH.framestats = new ArrayList<FrameStat>(Arrays.asList(s));
+        statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(s));
     }
 
     /**
      * @return the statH
      */
-    public StatsHandler getStatH() {
+    public FramesStat getStatH() {
         return statH;
     }
 

@@ -139,7 +139,7 @@ public class Binary_Seg implements PlugIn {
         if (!setSaveLocations())
             return;
 
-        new CellStat(OH, orgIpl, new File(outFile.getParent(), fileName + "_0.stQP.csv"),
+        new CellStatsEval(OH, orgIpl, new File(outFile.getParent(), fileName + "_0.stQP.csv"),
                 imageScale, imageFrameInterval);
 
         try {
