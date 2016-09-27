@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.QuimP.CellStatsEval;
-import uk.ac.warwick.wsbc.QuimP.FramesStat;
+import uk.ac.warwick.wsbc.QuimP.CellStats;
 import uk.ac.warwick.wsbc.QuimP.IQuimpSerialize;
 
 /**
@@ -26,7 +26,7 @@ public class StatsCollection implements IQuimpSerialize {
     /**
      * List of statistic objects for separate cells.
      */
-    public ArrayList<FramesStat> sHs;
+    public ArrayList<CellStats> sHs;
 
     /**
      * 

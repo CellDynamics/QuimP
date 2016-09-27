@@ -249,7 +249,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
             outputH = new OutlineHandler(oH); // copy input to output (ana will add fields to it)
             Ana(); // fills outputH
             FrameStatistics.write(fluoStats, anap.STATSFILE, anap); // save fluoro to statFile for comp.
-            FramesStat statH = qconfLoader.getStats().sHs.get(i); // store fluoro in QCONF
+            CellStats statH = qconfLoader.getStats().sHs.get(i); // store fluoro in QCONF
             statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(fluoStats)); // store stats
             outputOutlineHandlers.oHs.add(i, new OutlineHandler(outputH)); // store actual result in
                                                                            // container

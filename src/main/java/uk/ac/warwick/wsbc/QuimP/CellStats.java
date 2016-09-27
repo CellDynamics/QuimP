@@ -5,11 +5,10 @@ import java.util.ArrayList;
 /**
  * Keep statistics (outline and fluoro) for one cell along frames.
  * 
- * 
  * @author p.baniukiewicz
  *
  */
-public class FramesStat {
+public class CellStats {
 
     private int frames;
     private int statsElements;
@@ -20,14 +19,14 @@ public class FramesStat {
      */
     public ArrayList<FrameStatistics> framestat;
 
-    public FramesStat() {
+    public CellStats() {
         framestat = new ArrayList<>();
         frames = 0;
         statsElements = 0;
         fluoElements = 0;
     }
 
-    public FramesStat(int frames, int statsElements, int fluoElements) {
+    public CellStats(int frames, int statsElements, int fluoElements) {
         this.frames = frames;
         this.statsElements = statsElements;
         this.fluoElements = fluoElements;

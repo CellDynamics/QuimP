@@ -30,7 +30,7 @@ public class CellStatsEval implements Measurements {
     /**
      * Hold all stats for cell.
      */
-    private FramesStat statH;
+    private CellStats statH;
     OutlineHandler outputH;
     File OUTFILE;
     ImagePlus iPlus;
@@ -189,7 +189,7 @@ public class CellStatsEval implements Measurements {
      * @param s Frame statistics calculated by {@link uk.ac.warwick.wsbc.QuimP.CellStat.record()}
      */
     private void buildData(FrameStatistics[] s) {
-        statH = new FramesStat(s.length, 11, 11);
+        statH = new CellStats(s.length, 11, 11);
         // duplicate from write method
         statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(s));
     }
@@ -197,7 +197,7 @@ public class CellStatsEval implements Measurements {
     /**
      * @return the statH
      */
-    public FramesStat getStatH() {
+    public CellStats getStatH() {
         return statH;
     }
 
