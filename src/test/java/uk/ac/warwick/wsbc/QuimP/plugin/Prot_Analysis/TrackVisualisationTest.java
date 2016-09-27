@@ -25,7 +25,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.QuimP.STmap;
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
 /**
  * @author p.baniukiewicz

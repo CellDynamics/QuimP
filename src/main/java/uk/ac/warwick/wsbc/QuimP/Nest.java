@@ -13,6 +13,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
 /**

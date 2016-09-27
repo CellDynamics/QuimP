@@ -2,7 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
 
 import java.awt.Color;
 
-import uk.ac.warwick.wsbc.QuimP.IQuimpSerialize;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
 /**
  * Hold all configuration for Protrusion Analysis Module

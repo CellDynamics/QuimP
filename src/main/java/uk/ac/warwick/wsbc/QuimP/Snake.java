@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**

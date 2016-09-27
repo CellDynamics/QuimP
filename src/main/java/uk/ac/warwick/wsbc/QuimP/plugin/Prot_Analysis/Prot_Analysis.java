@@ -15,7 +15,6 @@ import ij.plugin.ZProjector;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
-import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.Tool;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
@@ -23,6 +22,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtAnalysisConfig.outlinePlotTypes;
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**

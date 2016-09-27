@@ -57,7 +57,7 @@ public class MapTracker {
      * @param originMap originMap stored in {@link uk.ac.warwick.wsbc.QuimP.filesystem.QState QState}
      * @param coordMap coordMap stored in {@link uk.ac.warwick.wsbc.QuimP.filesystem.QState QState}
      * @see uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer
-     * @see uk.ac.warwick.wsbc.QuimP.STmap
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap
      */
     public MapTracker(double[][] originMap, double[][] coordMap) {
 

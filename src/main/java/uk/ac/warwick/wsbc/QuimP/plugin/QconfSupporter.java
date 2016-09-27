@@ -183,7 +183,7 @@ public abstract class QconfSupporter {
      * ANA is not obligatory and it is not checked here.
      * <p>
      * @return <tt>true</tt> always for maintaining compatibility with
-     * {@link uk.ac.warwick.wsbc.QuimP.Q_Analysis#validateQconf()}
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Q_Analysis#validateQconf()}
      * and {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping#validateQconf()}
      * 
      * @throws QuimpException When there is no ECMM or Q Analysis data in file

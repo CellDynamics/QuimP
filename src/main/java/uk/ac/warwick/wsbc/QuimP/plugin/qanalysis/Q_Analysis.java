@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.qanalysis;
 
 import java.awt.FileDialog;
 import java.io.File;
@@ -14,6 +14,15 @@ import ij.IJ;
 import ij.gui.GenericDialog;
 import ij.gui.YesNoCancelDialog;
 import ij.io.OpenDialog;
+import uk.ac.warwick.wsbc.QuimP.FormatConverter;
+import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
+import uk.ac.warwick.wsbc.QuimP.QColor;
+import uk.ac.warwick.wsbc.QuimP.QParams;
+import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
+import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
+import uk.ac.warwick.wsbc.QuimP.QuimpException;
+import uk.ac.warwick.wsbc.QuimP.SVGplotter;
+import uk.ac.warwick.wsbc.QuimP.Tool;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;

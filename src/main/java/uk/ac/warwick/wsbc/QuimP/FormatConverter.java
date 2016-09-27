@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**

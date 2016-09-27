@@ -3,14 +3,15 @@
  * and open the template in the editor.
  */
 
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.utils.graphics.vrml;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-//import javax.media.j3d.BranchGroup;
-//import javax.media.j3d.IndexedQuadArray;
-//import javax.media.j3d.Shape3D;
+
+// import javax.media.j3d.BranchGroup;
+// import javax.media.j3d.IndexedQuadArray;
+// import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 
@@ -53,7 +54,7 @@ public class VRMLobject {
      * 
      * saver.setBranchGroup(bg); saver.save(f); }
      */
-    void transform(float x, float y, float z) {
+    public void transform(float x, float y, float z) {
         Point3f tpf = new Point3f(x, y, z);
 
         for (int i = 0; i < coords.length; i++) {
@@ -61,13 +62,13 @@ public class VRMLobject {
         }
     }
 
-    void scale(float x) {
+    public void scale(float x) {
         for (int i = 0; i < coords.length; i++) {
             coords[i].scale(x);
         }
     }
 
-    void write(File OUT) {
+    public void write(File OUT) {
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(OUT), true);
 
@@ -107,8 +108,8 @@ public class VRMLobject {
             pw.print("\n\t\tcoordIndex [");
             // write coordIndices
             for (int i = 0; i < coordIndices.length; i += 4) {
-                pw.print("\n\t\t\t" + coordIndices[i] + ", " + coordIndices[i + 1] + ", " + coordIndices[i + 2] + ", "
-                        + coordIndices[i + 3] + ", -1");
+                pw.print("\n\t\t\t" + coordIndices[i] + ", " + coordIndices[i + 1] + ", "
+                        + coordIndices[i + 2] + ", " + coordIndices[i + 3] + ", -1");
                 if (i != coordIndices.length - 4)
                     pw.print(",");
                 // break;

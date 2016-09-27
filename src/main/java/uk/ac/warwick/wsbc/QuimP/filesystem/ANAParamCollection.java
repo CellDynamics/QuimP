@@ -3,7 +3,6 @@ package uk.ac.warwick.wsbc.QuimP.filesystem;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import uk.ac.warwick.wsbc.QuimP.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
 
 /**

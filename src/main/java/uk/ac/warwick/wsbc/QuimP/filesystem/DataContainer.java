@@ -2,11 +2,10 @@ package uk.ac.warwick.wsbc.QuimP.filesystem;
 
 import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.BOA_;
-import uk.ac.warwick.wsbc.QuimP.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.PluginFactory;
-import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList;
 import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
 /**
  * Keep outputs from every module of QuimP.

@@ -18,7 +18,7 @@ import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
-import uk.ac.warwick.wsbc.QuimP.STmap;
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
 /**
  * Load QCONF or paQP file and initiate proper instance of {@link QParams} class.

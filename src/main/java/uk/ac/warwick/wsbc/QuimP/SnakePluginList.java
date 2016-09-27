@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.InstanceCreator;
 
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;

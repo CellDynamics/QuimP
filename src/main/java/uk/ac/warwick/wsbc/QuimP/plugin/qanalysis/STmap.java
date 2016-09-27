@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.qanalysis;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,11 +10,17 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.Outline;
+import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
+import uk.ac.warwick.wsbc.QuimP.QColor;
+import uk.ac.warwick.wsbc.QuimP.Tool;
+import uk.ac.warwick.wsbc.QuimP.Vert;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
- * Create spatial temporal maps from ECMM and ANA data
+ * Create spatial temporal maps from ECMM and ANA data.
  * <p>
  * This class can be serialized but only as container of maps. Data required for creation
  * of those maps are not serialized, thus restored object is not fully functional. As this is 
@@ -101,7 +107,7 @@ public class STmap implements IQuimpSerialize {
      * 
      * @param o Outline from ECMM
      * @param r Map resolution in pixels
-     * @see uk.ac.warwick.wsbc.QuimP.Qp
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Qp
      */
     public STmap(OutlineHandler o, int r) {
         mapPixelHeight = 1;

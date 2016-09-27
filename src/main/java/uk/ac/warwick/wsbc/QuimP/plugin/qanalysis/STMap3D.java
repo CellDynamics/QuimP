@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.qanalysis;
 
 import java.io.File;
 //import javax.media.j3d.BranchGroup;
@@ -13,8 +13,10 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 //import org.cybergarage.x3d.j3d.VRML97Saver;
 
+import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
+import uk.ac.warwick.wsbc.QuimP.utils.graphics.vrml.VRMLobject;
 
 /**
  *

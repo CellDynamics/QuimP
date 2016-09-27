@@ -15,8 +15,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.sun.tools.javac.util.Pair;
 
-import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.geom.MapTracker;
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**

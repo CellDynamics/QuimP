@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.io.OpenDialog;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 
 /**

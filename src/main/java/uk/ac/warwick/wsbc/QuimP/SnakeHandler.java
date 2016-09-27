@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import ij.IJ;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 

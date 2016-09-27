@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.QuimP.CellStatsEval;
 import uk.ac.warwick.wsbc.QuimP.CellStats;
-import uk.ac.warwick.wsbc.QuimP.IQuimpSerialize;
 
 /**
  * Keep statistics for cells.

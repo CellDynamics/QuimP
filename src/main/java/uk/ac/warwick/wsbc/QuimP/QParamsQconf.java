@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
 /**
  * This class override most of methods from super class QParams. 
@@ -16,7 +17,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
  * requested data to callers keeping compatibility with old QuimP architecture. 
  * The QuimP uses QParams to keep parameters read from configuration files (\a paQP, \a snQP) and 
  * then to provide some of parameters stored in these files to local configuration classes such as
- * e.g. {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMp}, {@link uk.ac.warwick.wsbc.QuimP.Qp}, 
+ * e.g. {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMp}, {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Qp}, 
  * {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp}.
  * QuimP supports two independent file formats:
  * <ol>

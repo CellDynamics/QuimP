@@ -16,6 +16,8 @@ import javax.swing.JScrollPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
+
 /**
  * Builds history logger window and logs
  * 

@@ -25,10 +25,10 @@ import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
-import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.Serializer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
 /**
  * @author p.baniukiewicz

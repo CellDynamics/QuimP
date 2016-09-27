@@ -3,8 +3,9 @@
  * and open the template in the editor.
  */
 
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.qanalysis;
 
+import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
@@ -27,7 +28,7 @@ public class FluoMap {
      * 
      * @param src source object
      */
-    FluoMap(final FluoMap src) {
+    public FluoMap(final FluoMap src) {
         this.T = src.T;
         this.res = src.res;
         this.channel = src.channel;
@@ -37,7 +38,7 @@ public class FluoMap {
         this.enabled = src.enabled;
     }
 
-    FluoMap(int t, int r, int i) {
+    public FluoMap(int t, int r, int i) {
         T = t;
         res = r;
         channel = i;
@@ -46,15 +47,15 @@ public class FluoMap {
         fluColor = new byte[T * res];
     }
 
-    void setEnabled(boolean b) {
+    public void setEnabled(boolean b) {
         enabled = b;
     }
 
-    boolean isEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 
-    void fill(int t, int p, int pN, double intensity, double max) {
+    public void fill(int t, int p, int pN, double intensity, double max) {
         // t - time, p- membrane pixel, pN-pixel index
         // System.out.println("fill with " + intensity);
         // if(intensity > 255 || intensity < 0){
@@ -70,11 +71,11 @@ public class FluoMap {
         // fluColor[pN] = (byte) intensity;
     }
 
-    byte[] getColours() {
+    public byte[] getColours() {
         return fluColor;
     }
 
-    double[][] getMap() {
+    public double[][] getMap() {
         return map;
     }
 }

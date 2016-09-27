@@ -16,9 +16,9 @@ import org.junit.Test;
 
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.geom.MapTracker;
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
