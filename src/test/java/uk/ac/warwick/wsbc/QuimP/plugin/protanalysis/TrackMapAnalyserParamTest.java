@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
+package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -25,6 +25,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.sun.tools.javac.util.Pair;
+
+import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser;
 
 /**
  * @author p.baniukiewicz
@@ -629,7 +631,7 @@ public class TrackMapAnalyserParamTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#getIntersectionPoints(java.util.List)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#getIntersectionPoints(java.util.List)}.
      */
     @Test
     public void testGetIntersectionPointsParam() throws Exception {
@@ -645,7 +647,7 @@ public class TrackMapAnalyserParamTest {
     }
 
     /**
-     * {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#removeSelfRepeatings(java.util.List)}.
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#removeSelfRepeatings(java.util.List)}.
      * @throws Exception
      */
     @Test
@@ -660,7 +662,7 @@ public class TrackMapAnalyserParamTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
      * Assume that tested point is first pair left in expIntersectionPairs
      * Result is in expIntersectionPoints as x[0] coord.
      * Use selfCrossing to decide whether use INCLUDE_INITIAL
@@ -693,7 +695,7 @@ public class TrackMapAnalyserParamTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#removeSelfRepeatings(java.util.List)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#removeSelfRepeatings(java.util.List)}.
      * No selfcrossing, B1 B2 intersection
      */
     @Test

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
+package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -30,6 +30,9 @@ import com.sun.tools.javac.util.Pair;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Track;
+import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackCollection;
+import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser;
 
 /**
  * @author p.baniukiewicz
@@ -120,7 +123,7 @@ public class TrackMapAnalyserTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
      */
     @Test
     public void testEnumeratePoint() throws Exception {
@@ -151,7 +154,7 @@ public class TrackMapAnalyserTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.TrackMapAnalyser#getCommonPoints()}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#getCommonPoints()}.
      */
     @Test
     @Parameters(method = "valuesCommonPoints")

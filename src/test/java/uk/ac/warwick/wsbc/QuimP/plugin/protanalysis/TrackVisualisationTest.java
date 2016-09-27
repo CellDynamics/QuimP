@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
+package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -25,6 +25,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.MaximaFinder;
+import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackVisualisation;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
 /**

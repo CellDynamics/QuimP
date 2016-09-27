@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
+package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.Polygon;
 

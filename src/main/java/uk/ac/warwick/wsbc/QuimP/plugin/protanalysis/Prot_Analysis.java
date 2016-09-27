@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis;
+package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.FileDialog;
 import java.io.File;
@@ -20,7 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtAnalysisConfig.outlinePlotTypes;
+import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig.outlinePlotTypes;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
