@@ -16,6 +16,7 @@ import ij.gui.YesNoCancelDialog;
 import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
 
 /**
  * Run Q analysis for ECMM data.

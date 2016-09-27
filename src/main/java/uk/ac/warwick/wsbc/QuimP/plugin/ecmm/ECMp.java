@@ -1,8 +1,9 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.ecmm;
 
 import java.io.File;
 
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.QParams;
 
 /**
  * Container class holding parameters related to ECMM analysis.

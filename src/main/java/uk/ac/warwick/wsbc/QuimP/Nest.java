@@ -252,7 +252,7 @@ public class Nest implements IQuimpSerialize {
     /**
      * @return Get number of SnakeHandlers (snakes) in nest
      */
-    int size() {
+    public int size() {
         return NSNAKES;
     }
 

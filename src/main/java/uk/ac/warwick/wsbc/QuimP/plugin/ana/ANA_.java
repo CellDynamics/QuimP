@@ -31,8 +31,6 @@ import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.CellStats;
-import uk.ac.warwick.wsbc.QuimP.ECMM_Mapping;
-import uk.ac.warwick.wsbc.QuimP.ECMp;
 import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.FrameStatistics;
 import uk.ac.warwick.wsbc.QuimP.Outline;
@@ -48,6 +46,8 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
+import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMp;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
