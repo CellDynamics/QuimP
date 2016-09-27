@@ -2,9 +2,9 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import java.util.ArrayList;
 
-import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
-
 /**
+ * Keep statistics (outline and fluoro) for one cell along frames.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -14,13 +14,13 @@ public class StatsHandler {
     private int statsElements;
     private int fluoElements;
 
-    public ArrayList<FrameStat> stats;
-    public double[][] fluoroCh1;
-    public double[][] fluoroCh2;
-    public double[][] fluoroCh3;
+    /**
+     * List of statistic calculated for subsequent frames for the same object.
+     */
+    public ArrayList<FrameStat> framestats;
 
     public StatsHandler() {
-        stats = new ArrayList<>();
+        framestats = new ArrayList<>();
         frames = 0;
         statsElements = 0;
         fluoElements = 0;
@@ -30,13 +30,7 @@ public class StatsHandler {
         this.frames = frames;
         this.statsElements = statsElements;
         this.fluoElements = fluoElements;
-        stats = new ArrayList<>(frames);
-        fluoroCh1 = QuimPArrayUtils.initDoubleArray(frames, fluoElements);
-        fluoroCh2 = QuimPArrayUtils.initDoubleArray(frames, fluoElements);
-        fluoroCh3 = QuimPArrayUtils.initDoubleArray(frames, fluoElements);
-        QuimPArrayUtils.fill2Darray(fluoroCh1, -1.0);
-        QuimPArrayUtils.fill2Darray(fluoroCh2, -1.0);
-        QuimPArrayUtils.fill2Darray(fluoroCh3, -1.0);
+        framestats = new ArrayList<>(frames);
     }
 
     /**

@@ -7,6 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
+ * Keep statistics for cells.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -14,6 +16,9 @@ public class StatsHandlers implements IQuimpSerialize {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger(StatsHandlers.class.getName());
 
+    /**
+     * List of statistic objects for separate cells.
+     */
     public ArrayList<StatsHandler> sHs;
 
     /**

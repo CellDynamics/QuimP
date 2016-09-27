@@ -104,6 +104,7 @@ public class CellStat implements Measurements {
                                                                                      // image
 
             // all theses already to scale
+            stats[store].frame = f;
             stats[store].area = is.area;
             stats[store].centroid.setX(is.xCentroid);
             stats[store].centroid.setY(is.yCentroid);
@@ -190,7 +191,7 @@ public class CellStat implements Measurements {
     private void buildData(FrameStat[] s) {
         statH = new StatsHandler(s.length, 11, 11);
         // duplicate from write method
-        statH.stats = new ArrayList<>(Arrays.asList(s));
+        statH.framestats = new ArrayList<FrameStat>(Arrays.asList(s));
     }
 
     /**

@@ -10,32 +10,25 @@ import java.io.PrintWriter;
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
-/**
- * Hold statistic evaluated for one frame.
- * 
- * @author p.baniukiewicz
- * @see {@link uk.ac.warwick.wsbc.QuimP.CellStat} 
- */
-public class FrameStat {
-    public int frame;
-    public double area;
-    // double totalFlour;
-    // double meanFlour;
-    public ExtendedVector2d centroid;
-    public double elongation;
-    public double circularity;
-    public double perimiter;
-    public double displacement;
-    public double dist;
-    public double persistance;
-    public double speed; // over 1 frame
-    public double persistanceToSource;
-    public double dispersion;
-    public double extension;
-    ChannelStat[] channels;
-    // int cellAge;
+@Deprecated
+public class FluoStats {
 
-    public FrameStat() {
+    int frame = -1;
+    double area = -1;
+    ExtendedVector2d centroid;
+    double elongation = -1;
+    double circularity = -1;
+    double perimiter = -1;
+    double displacement = -1;
+    double dist = -1;
+    double persistance = -1;
+    double speed = -1; // over 1 frame
+    double persistanceToSource = -1;
+    double dispersion = -1;
+    double extension = -1;
+    ChannelStat[] channels;
+
+    public FluoStats() {
         centroid = new ExtendedVector2d();
         channels = new ChannelStat[3];
         channels[0] = new ChannelStat();
@@ -43,25 +36,7 @@ public class FrameStat {
         channels[2] = new ChannelStat();
     }
 
-    public void toScale(double scale, double frameInterval) {
-        area = Tool.areaToScale(area, scale);
-        perimiter = Tool.distanceToScale(perimiter, scale);
-        displacement = Tool.distanceToScale(displacement, scale);
-        dist = Tool.distanceToScale(dist, scale);
-        speed = Tool.speedToScale(speed, scale, frameInterval); // over 1 frame
-    }
-
-    void centroidToPixels(double scale) {
-        centroid.setXY(centroid.getX() / scale, centroid.getY() / scale);
-    }
-
-    public void clearFluo() {
-        this.channels[0] = new ChannelStat();
-        this.channels[1] = new ChannelStat();
-        this.channels[2] = new ChannelStat();
-    }
-
-    public static void write(FrameStat[] s, File OUTFILE, ANAp anap) throws IOException {
+    public static void write(FluoStats[] s, File OUTFILE, ANAp anap) throws IOException {
         PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
         IJ.log("Writing to file");
         pw.print("#p2\n#QuimP ouput - " + OUTFILE.getAbsolutePath() + "\n");
@@ -86,7 +61,7 @@ public class FrameStat {
         pw.close();
     }
 
-    private static void writeFluo(FrameStat[] s, PrintWriter pw, int c) {
+    private static void writeFluo(FluoStats[] s, PrintWriter pw, int c) {
         pw.print("\n#\n# Channel " + (c + 1)
                 + ";Frame, Total Fluo.,Mean Fluo.,Cortex Width, Cyto. Area,Total Cyto. Fluo., Mean Cyto. Fluo.,"
                 + "Cortex Area,Total Cortex Fluo., Mean Cortex Fluo., %age Cortex Fluo.");
@@ -104,7 +79,7 @@ public class FrameStat {
         }
     }
 
-    public static FrameStat[] read(File INFILE) throws IOException {
+    public static FluoStats[] read(File INFILE) throws IOException {
 
         BufferedReader br = new BufferedReader(new FileReader(INFILE));
         String thisLine;
@@ -121,7 +96,7 @@ public class FrameStat {
             i++;
         }
         br.close();
-        FrameStat[] stats = new FrameStat[i];
+        FluoStats[] stats = new FluoStats[i];
 
         i = 0;
         String[] split;
@@ -137,7 +112,7 @@ public class FrameStat {
 
             split = thisLine.split(",");
 
-            stats[i] = new FrameStat();
+            stats[i] = new FluoStats();
             stats[i].frame = (int) Tool.s2d(split[0]);
             stats[i].centroid.setXY(Tool.s2d(split[1]), Tool.s2d(split[2]));
             stats[i].displacement = Tool.s2d(split[3]);
@@ -160,7 +135,7 @@ public class FrameStat {
         return stats;
     }
 
-    private static void readChannel(int c, FrameStat[] stats, BufferedReader br)
+    private static void readChannel(int c, FluoStats[] stats, BufferedReader br)
             throws IOException {
         String thisLine;
         String[] split;
@@ -188,5 +163,11 @@ public class FrameStat {
 
             i++;
         }
+    }
+
+    void clearFluo() {
+        this.channels[0] = new ChannelStat();
+        this.channels[1] = new ChannelStat();
+        this.channels[2] = new ChannelStat();
     }
 }
