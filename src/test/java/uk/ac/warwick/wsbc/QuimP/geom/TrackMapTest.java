@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 
 /**
  * Test class for {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker}. 

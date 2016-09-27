@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
+import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 
 /**
  * Container class for parameters defining the whole process of analysis in QuimP.

@@ -8,6 +8,8 @@ import java.lang.reflect.Type;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+
 /**
  * This class override most of methods from super class QParams. 
  * The goal of this class is rather not to extend QParams but to use polymorphism to provide 

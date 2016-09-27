@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP.plugin;
+package uk.ac.warwick.wsbc.QuimP.filesystem;
 
 import java.awt.FileDialog;
 import java.io.File;
@@ -15,13 +15,13 @@ import ij.WindowManager;
 import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.QuimP.ANAStates;
 import uk.ac.warwick.wsbc.QuimP.BOAState;
-import uk.ac.warwick.wsbc.QuimP.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
+import uk.ac.warwick.wsbc.QuimP.StatsHandlers;
 
 /**
  * Load QCONF or paQP file and initiate proper instance of {@link QParams} class.
@@ -237,7 +237,21 @@ public class QconfLoader {
             return true;
         else
             return false;
+    }
 
+    /**
+     * Just decoder of {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()}.
+     *  
+     * @return true if stats are present.
+     */
+    private boolean isStatsPresent() {
+        int ret = validateQconf();
+        if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11)
+            return false;
+        if ((ret & DataContainer.STATS_AVAIL) == DataContainer.STATS_AVAIL)
+            return true;
+        else
+            return false;
     }
 
     /**
@@ -286,6 +300,18 @@ public class QconfLoader {
             return getQp().getLoadedDataContainer().getQState();
         else
             throw new QuimpException("Q data not found in QCONF file. Run Q Analysis first.");
+    }
+
+    /**
+     * 
+     * @return Q object from loaded configuration
+     * @throws QuimpException when there is no such object in file or old format is used.
+     */
+    public StatsHandlers getStats() throws QuimpException {
+        if (isStatsPresent())
+            return getQp().getLoadedDataContainer().getStats();
+        else
+            throw new QuimpException("Stats not found in QCONF file. Run BOA Analysis first.");
     }
 
     /**

@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP.plugin;
+package uk.ac.warwick.wsbc.QuimP.filesystem;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -23,13 +23,14 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import uk.ac.warwick.wsbc.QuimP.ANAStates;
 import uk.ac.warwick.wsbc.QuimP.BOAState;
-import uk.ac.warwick.wsbc.QuimP.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.STmap;
 import uk.ac.warwick.wsbc.QuimP.Serializer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 
 /**
  * @author p.baniukiewicz
@@ -82,7 +83,7 @@ public class QconfLoaderTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader#QconfLoader(java.nio.file.Path)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#QconfLoader(java.nio.file.Path)}.
      */
     @Test
     public void testQconfLoaderPath() throws Exception {
@@ -90,7 +91,7 @@ public class QconfLoaderTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader#getImage()}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#getImage()}.
      */
     @SuppressWarnings("unused")
     @Test
@@ -107,7 +108,7 @@ public class QconfLoaderTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader#validateQconf()}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#validateQconf()}.
      */
     @Test
     public void testValidateQconf() throws Exception {
@@ -150,7 +151,7 @@ public class QconfLoaderTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader#isBOAPresent()}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#isBOAPresent()}.
      */
     @Test
     public void testIsBOAPresent() throws Exception {
@@ -171,7 +172,7 @@ public class QconfLoaderTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader#isECMMPresent()}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#isECMMPresent()}.
      */
     @Test
     public void testIsECMMPresent() throws Exception {
@@ -192,7 +193,7 @@ public class QconfLoaderTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader#isANAPresent()}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#isANAPresent()}.
      */
     @Test
     public void testIsANAPresent() throws Exception {
@@ -213,7 +214,7 @@ public class QconfLoaderTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader#isQPresent()}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#isQPresent()}.
      */
     @Test
     public void testIsQPresent() throws Exception {

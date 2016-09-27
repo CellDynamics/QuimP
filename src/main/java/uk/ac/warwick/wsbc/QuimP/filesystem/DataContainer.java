@@ -1,8 +1,15 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.filesystem;
 
-import java.lang.reflect.Type;
-
-import com.google.gson.InstanceCreator;
+import uk.ac.warwick.wsbc.QuimP.ANAStates;
+import uk.ac.warwick.wsbc.QuimP.BOAState;
+import uk.ac.warwick.wsbc.QuimP.BOA_;
+import uk.ac.warwick.wsbc.QuimP.IQuimpSerialize;
+import uk.ac.warwick.wsbc.QuimP.OutlineHandlers;
+import uk.ac.warwick.wsbc.QuimP.PluginFactory;
+import uk.ac.warwick.wsbc.QuimP.STmap;
+import uk.ac.warwick.wsbc.QuimP.SnakePluginList;
+import uk.ac.warwick.wsbc.QuimP.StatsHandlers;
+import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
 
 /**
  * Keep outputs from every module of QuimP.
@@ -126,6 +133,7 @@ public class DataContainer implements IQuimpSerialize {
      * Get information about available modules in object.
      * 
      * @return Flags according to loaded modules.
+     * @see {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader}
      */
     public int validateDataContainer() {
         int ret = 0;
@@ -190,44 +198,5 @@ public class DataContainer implements IQuimpSerialize {
                     stM.afterSerialize();
         if (Stats != null)
             Stats.afterSerialize();
-    }
-}
-
-/**
- * Object builder for GSon and DataContainer class
- * 
- * This class is used on load JSon representation of DataContainer class. Rebuilds snakePluginList
- * field that is not serialized. This field keeps current state of plugins
- * 
- * @author p.baniukiewicz
- * @see GSon documentation
- */
-class DataContainerInstanceCreator implements InstanceCreator<DataContainer> {
-
-    private PluginFactory pf;
-    private ViewUpdater vu;
-
-    public DataContainerInstanceCreator(final PluginFactory pf, final ViewUpdater vu) {
-        this.pf = pf;
-        this.vu = vu;
-    }
-
-    @Override
-    public DataContainer createInstance(Type arg0) {
-        DataContainer dt = new DataContainer(pf, vu);
-        return dt;
-    }
-}
-
-@Deprecated
-class InstanceCreatorForB implements InstanceCreator<BOAState.BOAp> {
-    private final BOAState a;
-
-    public InstanceCreatorForB(BOAState a) {
-        this.a = a;
-    }
-
-    public BOAState.BOAp createInstance(Type type) {
-        return a.new BOAp();
     }
 }

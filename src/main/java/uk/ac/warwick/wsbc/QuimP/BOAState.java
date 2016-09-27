@@ -93,7 +93,7 @@ public class BOAState implements IQuimpSerialize {
      * Keep snapshots of SnakePluginList objects for every frame separately. Plugin
      * configurations are stored as well (but without plugin references)
      */
-    ArrayList<SnakePluginList> snakePluginListSnapshots;
+    public ArrayList<SnakePluginList> snakePluginListSnapshots;
     /**
      * List of plugins selected in plugin stack and information if they are active or not
      * This field is not serializable because \a snakePluginListSnapshots keeps configurations

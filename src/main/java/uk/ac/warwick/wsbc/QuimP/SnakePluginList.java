@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.lang.reflect.Type;
@@ -202,7 +200,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
  * @author p.baniukiewicz
  */
-class SnakePluginList implements IQuimpSerialize {
+public class SnakePluginList implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(SnakePluginList.class.getName());
     // all other data that are necessary for plugins
     private transient PluginFactory pluginFactory;

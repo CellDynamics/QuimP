@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
  * Represent collection of OutlineHandlers.
  * 
  * This class is used as storage of OutlineHandlers (results of continuous segmentation) in
- * {@link uk.ac.warwick.wsbc.QuimP.DataContainer}.
+ * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer}.
  * 
  * @author p.baniukiewicz
  *

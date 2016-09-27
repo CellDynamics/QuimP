@@ -33,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,6 +55,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import com.google.gson.InstanceCreator;
 import com.google.gson.JsonSyntaxException;
 
 import ij.IJ;
@@ -82,6 +84,7 @@ import ij.process.ImageProcessor;
 import ij.process.StackConverter;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
+import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
@@ -147,7 +150,7 @@ public class BOA_ implements PlugIn {
      */
     public static String[] quimpInfo;
     private static int logCount; // add counter to logged messages
-    static final int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
+    public static final int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
     private HistoryLogger historyLogger; // logger
     /**
      * Configuration object, available from all modules. Must be initialized here \b AND in 
@@ -3359,4 +3362,30 @@ class BoaException extends Exception {
         super(cause);
     }
 
+}
+
+/**
+ * Object builder for GSon and DataContainer class
+ * 
+ * This class is used on load JSon representation of DataContainer class. Rebuilds snakePluginList
+ * field that is not serialized. This field keeps current state of plugins
+ * 
+ * @author p.baniukiewicz
+ * @see GSon documentation
+ */
+class DataContainerInstanceCreator implements InstanceCreator<DataContainer> {
+
+    private PluginFactory pf;
+    private ViewUpdater vu;
+
+    public DataContainerInstanceCreator(final PluginFactory pf, final ViewUpdater vu) {
+        this.pf = pf;
+        this.vu = vu;
+    }
+
+    @Override
+    public DataContainer createInstance(Type arg0) {
+        DataContainer dt = new DataContainer(pf, vu);
+        return dt;
+    }
 }
