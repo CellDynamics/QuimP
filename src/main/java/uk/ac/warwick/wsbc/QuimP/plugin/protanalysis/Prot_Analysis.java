@@ -165,7 +165,9 @@ public class Prot_Analysis implements IQuimpPlugin {
             // mapCell.map2ColorImagePlus("motility_map", mapCell.motMap,
             // oHs.oHs.get(h).migLimits[0],
             // oHs.oHs.get(h).migLimits[1]).show();
-
+            new ProtStat(mF, trackCollection,
+                    qconfLoader.getQp().getLoadedDataContainer().Stats.sHs.get(h), mapCell)
+                            .writeCell(null, h);
             h++;
         }
 

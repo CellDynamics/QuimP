@@ -10,6 +10,8 @@ import ij.plugin.filter.MaximumFinder;
 import ij.process.ImageProcessor;
 
 /**
+ * Calculate maxima for image.
+ * 
  * Support various methods of finding maxima in ImageJ image.
  * 
  * @author p.baniukiewicz
@@ -58,7 +60,7 @@ public class MaximaFinder {
 
     /**
      * Compute maxima from image where points different from background stand for location of maxima
-     * in <tt>iP</tt>
+     * in <tt>iP</tt>.
      * <p>
      * This method can be used for restoring maxima in compatible format supported by this class
      * from other image created outside.

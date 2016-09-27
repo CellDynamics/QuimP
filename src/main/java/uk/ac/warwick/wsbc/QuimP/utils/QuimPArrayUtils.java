@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
+import java.nio.BufferOverflowException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -102,6 +103,21 @@ public class QuimPArrayUtils {
             }
         }
         return out;
+    }
+
+    /**
+     * Convert integer array to short.
+     * @param input
+     * @return Input array converted to short
+     */
+    public static short[] int2short(int[] input) {
+        short[] ret = new short[input.length];
+        for (int i = 0; i < input.length; i++) {
+            if (input[i] > Short.MAX_VALUE)
+                throw new BufferOverflowException();
+            ret[i] = (short) input[i];
+        }
+        return ret;
     }
 
     /**
