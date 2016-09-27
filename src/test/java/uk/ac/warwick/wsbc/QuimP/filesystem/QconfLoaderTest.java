@@ -53,7 +53,7 @@ public class QconfLoaderTest {
     public static void setUpBeforeClass() throws Exception {
         DataContainer dt = new DataContainer();
         Serializer<DataContainer> serializer;
-        serializer = new Serializer<>(dt, new uk.ac.warwick.wsbc.QuimP.Tool().getQuimPBuildInfo());
+        serializer = new Serializer<>(dt, new uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection().getQuimPBuildInfo());
         serializer.setPretty();
         serializer.save("/tmp/qconftestloader.QCONF");
 

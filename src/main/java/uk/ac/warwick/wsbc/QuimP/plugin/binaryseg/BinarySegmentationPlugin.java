@@ -1,6 +1,6 @@
 /**
  */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.binaryseg;
 
 import java.awt.Choice;
 import java.awt.Dimension;
@@ -22,6 +22,9 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.io.OpenDialog;
+import uk.ac.warwick.wsbc.QuimP.BOA_;
+import uk.ac.warwick.wsbc.QuimP.Nest;
+import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpNestPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;

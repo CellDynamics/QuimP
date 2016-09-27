@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.utils.graphics.svg;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -7,10 +7,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 import ij.IJ;
+import uk.ac.warwick.wsbc.QuimP.Outline;
+import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
+import uk.ac.warwick.wsbc.QuimP.QColor;
+import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
-import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.Qline;
-import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.Qtext;
-import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGdraw;
 
 public class SVGplotter {
     OutlineHandler oH;

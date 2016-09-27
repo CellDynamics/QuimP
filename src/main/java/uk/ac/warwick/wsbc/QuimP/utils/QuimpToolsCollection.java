@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.utils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -12,15 +12,18 @@ import java.util.jar.Manifest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.Outline;
+import uk.ac.warwick.wsbc.QuimP.Vert;
+
 /**
- * Collection of tools used across QuimP
+ * Collection of tools used across QuimP.
  * 
  * @author Richard
  * @author p.baniukiewicz
  */
-public class Tool {
+public class QuimpToolsCollection {
 
-    private static final Logger LOGGER = LogManager.getLogger(Tool.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(QuimpToolsCollection.class.getName());
     public static final String defNote = "Not found"; //!< Default message if content not found in jar
 
     /**

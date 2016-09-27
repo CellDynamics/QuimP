@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Container class for parameters defining the whole process of analysis in QuimP.
@@ -164,7 +165,7 @@ public class QParams {
      * @param paramFile the paramFile to set.
      */
     public void setParamFile(File paramFile) {
-        fileName = Tool.removeExtension(paramFile.getName());
+        fileName = QuimpToolsCollection.removeExtension(paramFile.getName());
         this.paramFile = paramFile;
         path = paramFile.getParent();
     }
@@ -448,7 +449,7 @@ public class QParams {
                 d.close();
                 throw new QuimpException("QParams::Not a compatible paramater file");
             }
-            key = (long) Tool.s2d(d.readLine()); // key
+            key = (long) QuimpToolsCollection.s2d(d.readLine()); // key
             segImageFile = new File(d.readLine()); // image file name
 
             String sn = d.readLine();
@@ -469,38 +470,38 @@ public class QParams {
             System.out.println("snake file: " + snakeQP.getAbsolutePath());
 
             d.readLine(); // # blank line
-            imageScale = Tool.s2d(d.readLine());
+            imageScale = QuimpToolsCollection.s2d(d.readLine());
             if (imageScale == 0) {
                 IJ.log("Warning. Image scale was zero. Set to 1");
                 imageScale = 1;
             }
-            frameInterval = Tool.s2d(d.readLine());
+            frameInterval = QuimpToolsCollection.s2d(d.readLine());
 
             d.readLine(); // skip #segmentation parameters
-            NMAX = (int) Tool.s2d(d.readLine());
-            delta_t = Tool.s2d(d.readLine());
-            max_iterations = (int) Tool.s2d(d.readLine());
-            nodeRes = (int) Tool.s2d(d.readLine());
-            blowup = (int) Tool.s2d(d.readLine());
-            sample_tan = (int) Tool.s2d(d.readLine());
-            sample_norm = (int) Tool.s2d(d.readLine());
-            vel_crit = Tool.s2d(d.readLine());
+            NMAX = (int) QuimpToolsCollection.s2d(d.readLine());
+            delta_t = QuimpToolsCollection.s2d(d.readLine());
+            max_iterations = (int) QuimpToolsCollection.s2d(d.readLine());
+            nodeRes = (int) QuimpToolsCollection.s2d(d.readLine());
+            blowup = (int) QuimpToolsCollection.s2d(d.readLine());
+            sample_tan = (int) QuimpToolsCollection.s2d(d.readLine());
+            sample_norm = (int) QuimpToolsCollection.s2d(d.readLine());
+            vel_crit = QuimpToolsCollection.s2d(d.readLine());
 
-            f_central = Tool.s2d(d.readLine());
-            f_contract = Tool.s2d(d.readLine());
-            f_friction = Tool.s2d(d.readLine());
-            f_image = Tool.s2d(d.readLine());
-            sensitivity = Tool.s2d(d.readLine());
+            f_central = QuimpToolsCollection.s2d(d.readLine());
+            f_contract = QuimpToolsCollection.s2d(d.readLine());
+            f_friction = QuimpToolsCollection.s2d(d.readLine());
+            f_image = QuimpToolsCollection.s2d(d.readLine());
+            sensitivity = QuimpToolsCollection.s2d(d.readLine());
 
             if (l.substring(0, 3).equals("#p2")) { // new format
                 paramFormat = QParams.QUIMP_11;
                 // new params
                 d.readLine(); // # - new parameters (cortext width, start frame,
                               // end frame, final shrink, statsQP, fluImage)
-                cortexWidth = Tool.s2d(d.readLine());
-                startFrame = (int) Tool.s2d(d.readLine());
-                endFrame = (int) Tool.s2d(d.readLine());
-                finalShrink = Tool.s2d(d.readLine());
+                cortexWidth = QuimpToolsCollection.s2d(d.readLine());
+                startFrame = (int) QuimpToolsCollection.s2d(d.readLine());
+                endFrame = (int) QuimpToolsCollection.s2d(d.readLine());
+                finalShrink = QuimpToolsCollection.s2d(d.readLine());
                 statsQP = new File(paramFile.getParent() + "" + d.readLine());
 
                 d.readLine(); // # fluo channel tiffs
@@ -529,7 +530,7 @@ public class QParams {
 
         PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
 
-        pPW.print("#p2 - QuimP parameter file (QuimP11). Created " + Tool.dateAsString() + "\n");
+        pPW.print("#p2 - QuimP parameter file (QuimP11). Created " + QuimpToolsCollection.dateAsString() + "\n");
         pPW.print(IJ.d2s(key, 0) + "\n");
         pPW.print(segImageFile.getAbsolutePath() + "\n");
         pPW.print(File.separator + snakeQP.getName() + "\n");
@@ -608,7 +609,7 @@ public class QParams {
                         || filenames[i].matches(paramFile.getName())) {
                     continue;
                 }
-                extension = Tool.getFileExtension(filenames[i]);
+                extension = QuimpToolsCollection.getFileExtension(filenames[i]);
                 if (extension.matches(QuimpConfigFilefilter.oldFileExt.substring(1))) {
                     paFiles.add(filenames[i]);
                     System.out.println("paFile: " + filenames[i]);

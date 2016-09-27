@@ -11,6 +11,7 @@ import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ChannelStat;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Hold statistic evaluated for one frame.
@@ -49,11 +50,11 @@ public class FrameStatistics {
     }
 
     public void toScale(double scale, double frameInterval) {
-        area = Tool.areaToScale(area, scale);
-        perimiter = Tool.distanceToScale(perimiter, scale);
-        displacement = Tool.distanceToScale(displacement, scale);
-        dist = Tool.distanceToScale(dist, scale);
-        speed = Tool.speedToScale(speed, scale, frameInterval); // over 1 frame
+        area = QuimpToolsCollection.areaToScale(area, scale);
+        perimiter = QuimpToolsCollection.distanceToScale(perimiter, scale);
+        displacement = QuimpToolsCollection.distanceToScale(displacement, scale);
+        dist = QuimpToolsCollection.distanceToScale(dist, scale);
+        speed = QuimpToolsCollection.speedToScale(speed, scale, frameInterval); // over 1 frame
     }
 
     void centroidToPixels(double scale) {
@@ -143,16 +144,16 @@ public class FrameStatistics {
             split = thisLine.split(",");
 
             stats[i] = new FrameStatistics();
-            stats[i].frame = (int) Tool.s2d(split[0]);
-            stats[i].centroid.setXY(Tool.s2d(split[1]), Tool.s2d(split[2]));
-            stats[i].displacement = Tool.s2d(split[3]);
-            stats[i].dist = Tool.s2d(split[4]);
-            stats[i].persistance = Tool.s2d(split[5]);
-            stats[i].speed = Tool.s2d(split[6]);
-            stats[i].perimiter = Tool.s2d(split[7]);
-            stats[i].elongation = Tool.s2d(split[8]);
-            stats[i].circularity = Tool.s2d(split[9]);
-            stats[i].area = Tool.s2d(split[10]);
+            stats[i].frame = (int) QuimpToolsCollection.s2d(split[0]);
+            stats[i].centroid.setXY(QuimpToolsCollection.s2d(split[1]), QuimpToolsCollection.s2d(split[2]));
+            stats[i].displacement = QuimpToolsCollection.s2d(split[3]);
+            stats[i].dist = QuimpToolsCollection.s2d(split[4]);
+            stats[i].persistance = QuimpToolsCollection.s2d(split[5]);
+            stats[i].speed = QuimpToolsCollection.s2d(split[6]);
+            stats[i].perimiter = QuimpToolsCollection.s2d(split[7]);
+            stats[i].elongation = QuimpToolsCollection.s2d(split[8]);
+            stats[i].circularity = QuimpToolsCollection.s2d(split[9]);
+            stats[i].area = QuimpToolsCollection.s2d(split[10]);
 
             i++;
         }
@@ -180,16 +181,16 @@ public class FrameStatistics {
 
             split = thisLine.split(",");
             // split[0] == frame
-            stats[i].channels[c].totalFluor = Tool.s2d(split[1]);
-            stats[i].channels[c].meanFluor = Tool.s2d(split[2]);
-            stats[i].channels[c].cortexWidth = Tool.s2d(split[3]);
-            stats[i].channels[c].innerArea = Tool.s2d(split[4]);
-            stats[i].channels[c].totalInnerFluor = Tool.s2d(split[5]);
-            stats[i].channels[c].meanInnerFluor = Tool.s2d(split[6]);
-            stats[i].channels[c].cortexArea = Tool.s2d(split[7]);
-            stats[i].channels[c].totalCorFluo = Tool.s2d(split[8]);
-            stats[i].channels[c].meanCorFluo = Tool.s2d(split[9]);
-            stats[i].channels[c].percCortexFluo = Tool.s2d(split[10]);
+            stats[i].channels[c].totalFluor = QuimpToolsCollection.s2d(split[1]);
+            stats[i].channels[c].meanFluor = QuimpToolsCollection.s2d(split[2]);
+            stats[i].channels[c].cortexWidth = QuimpToolsCollection.s2d(split[3]);
+            stats[i].channels[c].innerArea = QuimpToolsCollection.s2d(split[4]);
+            stats[i].channels[c].totalInnerFluor = QuimpToolsCollection.s2d(split[5]);
+            stats[i].channels[c].meanInnerFluor = QuimpToolsCollection.s2d(split[6]);
+            stats[i].channels[c].cortexArea = QuimpToolsCollection.s2d(split[7]);
+            stats[i].channels[c].totalCorFluo = QuimpToolsCollection.s2d(split[8]);
+            stats[i].channels[c].meanCorFluo = QuimpToolsCollection.s2d(split[9]);
+            stats[i].channels[c].percCortexFluo = QuimpToolsCollection.s2d(split[10]);
 
             i++;
         }

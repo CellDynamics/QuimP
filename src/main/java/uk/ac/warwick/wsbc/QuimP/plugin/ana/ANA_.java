@@ -39,7 +39,6 @@ import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
-import uk.ac.warwick.wsbc.QuimP.Tool;
 import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.filesystem.ANAParamCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
@@ -49,6 +48,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMp;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Main ANA class implementing IJ PlugInFilter.
@@ -213,7 +213,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
      * Display standard QuimP about message.
      */
     private void about() {
-        IJ.log(new Tool().getQuimPversion());
+        IJ.log(new QuimpToolsCollection().getQuimPversion());
     }
 
     /**
@@ -706,7 +706,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         orgIpr.setRoi(innerPoly);
         is = ImageStatistics.getStatistics(orgIpr, m, null);
 
-        fluoStats[store].channels[anap.channel].innerArea = Tool.areaToScale(is.area, anap.scale);
+        fluoStats[store].channels[anap.channel].innerArea = QuimpToolsCollection.areaToScale(is.area, anap.scale);
         fluoStats[store].channels[anap.channel].totalInnerFluor = is.mean * is.area;
         fluoStats[store].channels[anap.channel].meanInnerFluor = is.mean; // fluoStats[store].channels[ANAp.channel].totalInnerFluor
                                                                           // /

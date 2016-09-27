@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,8 +9,6 @@ import ij.ImageStack;
 import ij.gui.GenericDialog;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.QuimP.plugin.dic.DicException;
-import uk.ac.warwick.wsbc.QuimP.plugin.dic.LidReconstructor;
 
 /**
  * Main implementation of ImageJ plugin

@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Collection of outlines for subsequent frames (<it>f1</it> and <it>f2</it>) for one cell.
@@ -177,7 +178,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
                 if (thisLine.startsWith("#")) {
                     continue;
                 }
-                N = (int) Tool.s2d(thisLine);
+                N = (int) QuimpToolsCollection.s2d(thisLine);
                 for (int i = 0; i < N; i++) {
                     // System.out.println(br.readLine() + ", " + );
                     br.readLine();
@@ -205,36 +206,36 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
                 prevn = head;
                 index++;
 
-                N = (int) Tool.s2d(thisLine);
+                N = (int) QuimpToolsCollection.s2d(thisLine);
 
                 for (int i = 0; i < N; i++) {
                     thisLine = br.readLine();
                     String[] split = thisLine.split("\t");
                     n = new Vert(index);
 
-                    n.coord = Tool.s2d(split[0]);
-                    n.setX(Tool.s2d(split[1]));
-                    n.setY(Tool.s2d(split[2]));
+                    n.coord = QuimpToolsCollection.s2d(split[0]);
+                    n.setX(QuimpToolsCollection.s2d(split[1]));
+                    n.setY(QuimpToolsCollection.s2d(split[2]));
 
-                    n.fCoord = Tool.s2d(split[3]); // Origon
-                    n.gCoord = Tool.s2d(split[4]); // G-Origon
-                    n.distance = Tool.s2d(split[5]); // speed
+                    n.fCoord = QuimpToolsCollection.s2d(split[3]); // Origon
+                    n.gCoord = QuimpToolsCollection.s2d(split[4]); // G-Origon
+                    n.distance = QuimpToolsCollection.s2d(split[5]); // speed
 
                     // store flu measurements
-                    n.fluores[0].intensity = Tool.s2d(split[6]);
+                    n.fluores[0].intensity = QuimpToolsCollection.s2d(split[6]);
 
                     if (qp.paramFormat == QParams.QUIMP_11) {
                         // has other channels and x and y
-                        n.fluores[0].x = Tool.s2d(split[7]);
-                        n.fluores[0].y = Tool.s2d(split[8]);
+                        n.fluores[0].x = QuimpToolsCollection.s2d(split[7]);
+                        n.fluores[0].y = QuimpToolsCollection.s2d(split[8]);
 
-                        n.fluores[1].intensity = Tool.s2d(split[9]);
-                        n.fluores[1].x = Tool.s2d(split[10]);
-                        n.fluores[1].y = Tool.s2d(split[11]);
+                        n.fluores[1].intensity = QuimpToolsCollection.s2d(split[9]);
+                        n.fluores[1].x = QuimpToolsCollection.s2d(split[10]);
+                        n.fluores[1].y = QuimpToolsCollection.s2d(split[11]);
 
-                        n.fluores[2].intensity = Tool.s2d(split[12]);
-                        n.fluores[2].x = Tool.s2d(split[13]);
-                        n.fluores[2].y = Tool.s2d(split[14]);
+                        n.fluores[2].intensity = QuimpToolsCollection.s2d(split[12]);
+                        n.fluores[2].x = QuimpToolsCollection.s2d(split[13]);
+                        n.fluores[2].y = QuimpToolsCollection.s2d(split[14]);
                     }
 
                     n.frozen = false;
@@ -353,7 +354,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         }
 
         // Set limits to equal positive and negative
-        migLimits = Tool.setLimitsEqual(migLimits);
+        migLimits = QuimpToolsCollection.setLimitsEqual(migLimits);
     }
 
     public int getSize() {

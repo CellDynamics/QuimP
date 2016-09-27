@@ -15,7 +15,6 @@ import ij.plugin.ZProjector;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
-import uk.ac.warwick.wsbc.QuimP.Tool;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
@@ -24,6 +23,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtAnalysisConfig.outlinePlotTypes;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * @author p.baniukiewicz
@@ -67,7 +67,7 @@ public class Prot_Analysis implements IQuimpPlugin {
      * @param paramFile File to process.
      */
     public Prot_Analysis(File paramFile) {
-        IJ.log(new Tool().getQuimPversion());
+        IJ.log(new QuimpToolsCollection().getQuimPversion());
         showUI(true);
         if (uiCancelled)
             return;

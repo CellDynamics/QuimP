@@ -1,6 +1,6 @@
 /**
  */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.binaryseg;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,6 +26,7 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
+import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentation;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**

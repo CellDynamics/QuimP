@@ -18,7 +18,7 @@ import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
-import uk.ac.warwick.wsbc.QuimP.Tool;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Add basic support for handling <i>QCONF</i> and <i>paQP</i> files.
@@ -64,7 +64,7 @@ public abstract class QconfSupporter {
      */
     public QconfSupporter(Path path) {
         try {
-            IJ.log(new Tool().getQuimPversion());
+            IJ.log(new QuimpToolsCollection().getQuimPversion());
             String directory; // directory with paQP
             String filename; // file name of paQP
 

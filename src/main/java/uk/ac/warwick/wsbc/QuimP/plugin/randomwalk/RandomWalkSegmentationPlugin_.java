@@ -1,6 +1,6 @@
 /**
  */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -41,11 +41,7 @@ import ij.plugin.Converter;
 import ij.plugin.PlugIn;
 import ij.plugin.tool.BrushTool;
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.Params;
-import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.Point;
-import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.PropagateSeeds;
-import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkException;
-import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentation;
+import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 
 /**
  * Run RandomWalkSegmentation in IJ environment.
@@ -82,7 +78,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     private BrushTool br = new BrushTool();
     private String lastTool; // tool selected in IJ
     
-    JFrame wnd;
+    public JFrame wnd;
     
     /**
      * Default constructor

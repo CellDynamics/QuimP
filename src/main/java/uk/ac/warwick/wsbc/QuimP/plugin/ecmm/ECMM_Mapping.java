@@ -34,12 +34,12 @@ import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.SnakeHandler;
-import uk.ac.warwick.wsbc.QuimP.Tool;
 import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Main ECMM implementation class.
@@ -257,7 +257,7 @@ public class ECMM_Mapping {
      * Display standard QuimP about message.
      */
     private void about() {
-        IJ.log(new Tool().getQuimPversion());
+        IJ.log(new QuimpToolsCollection().getQuimPversion());
     }
 
     /**
@@ -1724,7 +1724,7 @@ class ODEsolver {
                 // not needed
                 edge = ODEsolver.snap(p, s);
                 dist += ExtendedVector2d.lengthP2P(pp, p);
-                v.distance = Tool.speedToScale(dist, ECMp.scale, ECMp.frameInterval);
+                v.distance = QuimpToolsCollection.speedToScale(dist, ECMp.scale, ECMp.frameInterval);
                 // if (s.expanding && !ECMp.ANA) {
                 v.setLandingCoord(p, edge);
                 // }

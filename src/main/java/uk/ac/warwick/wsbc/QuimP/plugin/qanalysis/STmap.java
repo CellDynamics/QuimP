@@ -13,11 +13,11 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
 import uk.ac.warwick.wsbc.QuimP.QColor;
-import uk.ac.warwick.wsbc.QuimP.Tool;
 import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Create spatial temporal maps from ECMM and ANA data.
@@ -636,7 +636,7 @@ public class STmap implements IQuimpSerialize {
 
         // System.out.println("curve limits before: " + oH.curvLimits[0] + ", "
         // + oH.curvLimits[1]);
-        oH.curvLimits = Tool.setLimitsEqual(oH.curvLimits);
+        oH.curvLimits = QuimpToolsCollection.setLimitsEqual(oH.curvLimits);
         // System.out.println("curve limits after: " + oH.curvLimits[0] + ", " +
         // oH.curvLimits[1]);
     }

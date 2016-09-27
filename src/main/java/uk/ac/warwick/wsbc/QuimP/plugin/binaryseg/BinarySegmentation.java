@@ -1,6 +1,6 @@
 /**
  */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.binaryseg;
 
 import java.util.ArrayList;
 

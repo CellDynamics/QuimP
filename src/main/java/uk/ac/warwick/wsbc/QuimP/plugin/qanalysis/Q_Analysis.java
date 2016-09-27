@@ -21,11 +21,11 @@ import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
-import uk.ac.warwick.wsbc.QuimP.SVGplotter;
-import uk.ac.warwick.wsbc.QuimP.Tool;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
+import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGplotter;
 
 /**
  * Run Q analysis for ECMM data.
@@ -217,7 +217,7 @@ public class Q_Analysis {
      * Display standard QuimP about message.
      */
     private void about() {
-        IJ.log(new Tool().getQuimPversion());
+        IJ.log(new QuimpToolsCollection().getQuimPversion());
     }
 
     /**
@@ -349,7 +349,7 @@ class Qp {
         Qp.snQPfile = qp.getSnakeQP();
         Qp.scale = qp.getImageScale();
         Qp.frameInterval = qp.getFrameInterval();
-        Qp.filename = Tool.removeExtension(Qp.snQPfile.getName());
+        Qp.filename = QuimpToolsCollection.removeExtension(Qp.snQPfile.getName());
         Qp.outFile = new File(Qp.snQPfile.getParent() + File.separator + Qp.filename);
         Qp.startFrame = qp.getStartFrame();
         Qp.endFrame = qp.getEndFrame();

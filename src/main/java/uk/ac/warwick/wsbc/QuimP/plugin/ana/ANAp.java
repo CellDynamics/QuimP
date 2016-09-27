@@ -3,7 +3,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.ana;
 import java.io.File;
 
 import uk.ac.warwick.wsbc.QuimP.QParams;
-import uk.ac.warwick.wsbc.QuimP.Tool;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Container class for parameters concerned with ANA analysis.
@@ -104,7 +104,7 @@ public class ANAp {
 
     void setCortextWidthScale(double c) {
         cortexWidthScale = c;
-        cortexWidthPixel = Tool.distanceFromScale(cortexWidthScale, scale);
+        cortexWidthPixel = QuimpToolsCollection.distanceFromScale(cortexWidthScale, scale);
     }
 
     public double getCortexWidthScale() {

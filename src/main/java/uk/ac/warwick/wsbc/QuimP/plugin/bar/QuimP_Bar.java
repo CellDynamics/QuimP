@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.bar;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -41,6 +41,11 @@ import ij.WindowManager;
 import ij.io.OpenDialog;
 import ij.macro.MacroRunner;
 import ij.plugin.PlugIn;
+import uk.ac.warwick.wsbc.QuimP.AboutDialog;
+import uk.ac.warwick.wsbc.QuimP.FormatConverter;
+import uk.ac.warwick.wsbc.QuimP.PropertyReader;
+import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Create QuimP bar with icons to QuimP plugins
@@ -89,7 +94,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
     public void run(String s) {
         String title;
-        String quimpInfo[] = new Tool().getQuimPBuildInfo(); // get jar title
+        String quimpInfo[] = new QuimpToolsCollection().getQuimPBuildInfo(); // get jar title
         title = quimpInfo[2] + " " + quimpInfo[0];
 
         frame.setTitle(title); // and set to window title
@@ -297,7 +302,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == menuVersion) { // menu version
-            String quimpInfo = new Tool().getQuimPversion(); // prepare info plate
+            String quimpInfo = new QuimpToolsCollection().getQuimPversion(); // prepare info plate
             AboutDialog ad = new AboutDialog(frame); // create about dialog with parent 'window'
             ad.appendLine(quimpInfo); // display template filled by quimpInfo
             ad.appendDistance();

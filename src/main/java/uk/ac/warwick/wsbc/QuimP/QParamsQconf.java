@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * This class override most of methods from super class QParams. 
@@ -68,7 +69,7 @@ public class QParamsQconf extends QParams {
         currentHandler = 0;
         newParamFile = p;
         // prepare correct name for old parameters
-        super.setParamFile(new File(Tool
+        super.setParamFile(new File(QuimpToolsCollection
                 .removeExtension(newParamFile.getParent() + File.separator + newParamFile.getName())
                 + "_" + currentHandler + QuimpConfigFilefilter.oldFileExt));
         paramFormat = QParams.NEW_QUIMP;
@@ -114,13 +115,13 @@ public class QParamsQconf extends QParams {
         // throw new QuimpException("Loaded file " + getParamFile().getAbsolutePath()
         // + " does not contain BOA data");
         if (!loaded.className.equals("DataContainer")
-                || !loaded.version[2].equals("QuimP") && !loaded.version[2].equals(Tool.defNote)) {
+                || !loaded.version[2].equals("QuimP") && !loaded.version[2].equals(QuimpToolsCollection.defNote)) {
             LOGGER.error("Not QuimP file?");
             throw new QuimpException(
                     "Loaded file " + getParamFile().getAbsolutePath() + " is not QuimP file");
         }
         // TODO Check config version here - more precisely (see #151)
-        String[] ver = new Tool().getQuimPBuildInfo();
+        String[] ver = new QuimpToolsCollection().getQuimPBuildInfo();
         if (!loaded.version[0].equals(ver[0])) {
             LOGGER.warn("Loaded config file is in diferent version than current QuimP (" + ver[0]
                     + " vs " + loaded.version[0]);
@@ -170,7 +171,7 @@ public class QParamsQconf extends QParams {
      */
     private void compatibilityLayer() {
         // fill underlying parameters
-        super.setParamFile(new File(Tool.removeExtension(newParamFile.getAbsolutePath()) + "_"
+        super.setParamFile(new File(QuimpToolsCollection.removeExtension(newParamFile.getAbsolutePath()) + "_"
                 + currentHandler + QuimpConfigFilefilter.oldFileExt));
         super.guessOtherFileNames();
         super.setSnakeQP(getSnakeQP());
@@ -377,7 +378,7 @@ public class QParamsQconf extends QParams {
     @Override
     public File getSnakeQP() {
         String path = getParamFile().getParent();
-        String file = Tool.removeExtension(getParamFile().getName());
+        String file = QuimpToolsCollection.removeExtension(getParamFile().getName());
         return new File(path + File.separator + file + "_" + currentHandler + ".snQP");
     }
 
@@ -388,7 +389,7 @@ public class QParamsQconf extends QParams {
     @Override
     public File getStatsQP() {
         String path = getParamFile().getParent();
-        String file = Tool.removeExtension(getParamFile().getName());
+        String file = QuimpToolsCollection.removeExtension(getParamFile().getName());
         return new File(path + File.separator + file + "_" + currentHandler + ".stQP.csv");
     }
 
