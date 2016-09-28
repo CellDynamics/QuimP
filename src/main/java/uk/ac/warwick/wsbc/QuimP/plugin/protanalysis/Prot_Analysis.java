@@ -14,6 +14,8 @@ import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -65,7 +67,9 @@ public class Prot_Analysis implements IQuimpPlugin, ActionListener {
     // UI elements
     private JFrame wnd;
     private JButton bCancel, bApply, bHelp;
-    JFormattedTextField fieldnoiseTolerance, fielddropValue;
+    private JFormattedTextField fieldnoiseTolerance, fielddropValue;
+    private JCheckBox checkPlotMotmap, checkPlotStaticmaxima;
+    private JComboBox<ProtAnalysisConfig.outlinePlotTypes> comboPlotOutlineParam;
 
     private boolean uiCancelled = false;
     @SuppressWarnings("serial")
@@ -236,7 +240,7 @@ public class Prot_Analysis implements IQuimpPlugin, ActionListener {
      * test method to replace showUI
      */
     public void showUI2() {
-        wnd = new JFrame("Random Walker Segmentation");
+        wnd = new JFrame("Protrusion analysis plugin");
         wnd.setResizable(false);
         JPanel wndpanel = new JPanel(new BorderLayout());
 
@@ -263,8 +267,15 @@ public class Prot_Analysis implements IQuimpPlugin, ActionListener {
 
         // vis options
         JPanel visparams = new JPanel();
-        visparams.setBorder(BorderFactory.createTitledBorder("Visualisation"));
+        visparams.setBorder(BorderFactory.createTitledBorder("Simple plots"));
         visparams.setLayout(new GridLayout(2, 2));
+        checkPlotMotmap = new JCheckBox("Motility map");
+        checkPlotStaticmaxima = new JCheckBox("Outlines");
+        comboPlotOutlineParam = new JComboBox<>();
+        visparams.add(checkPlotMotmap);
+        visparams.add(new JLabel(""));
+        visparams.add(checkPlotStaticmaxima);
+        visparams.add(comboPlotOutlineParam);
         middle.add(visparams);
 
         // cancel apply row
