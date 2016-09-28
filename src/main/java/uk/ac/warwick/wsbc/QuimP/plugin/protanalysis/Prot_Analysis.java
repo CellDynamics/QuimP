@@ -150,14 +150,14 @@ public class Prot_Analysis implements IQuimpPlugin {
             // // visSingle.addStaticCirclesToImage(pT.getCommonPoints(), Color.ORANGE, 7);
             // visSingle.getOriginalImage().show();
 
-            visStackStatic.addElementsToImage(mapCell, trackCollection, mF);
+            // visStackStatic.addElementsToImage(mapCell, trackCollection, mF);
 
             // visCommonPoints.addCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 7);
 
             // visStackDynamic.addMaximaToImage(mapCell, mF);
             // visStackDynamic.addTrackingLinesToImage(mapCell, trackCollection);
 
-            visStackOutline.addOutlinesToImage(mapCell, config);
+            // visStackOutline.addOutlinesToImage(mapCell, config);
 
             // visStackDynamic.addCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 9);
 
@@ -166,15 +166,15 @@ public class Prot_Analysis implements IQuimpPlugin {
             // oHs.oHs.get(h).migLimits[0],
             // oHs.oHs.get(h).migLimits[1]).show();
             new ProtStat(mF, trackCollection,
-                    qconfLoader.getQp().getLoadedDataContainer().Stats.sHs.get(h), mapCell)
+                    qconfLoader.getQp().getLoadedDataContainer().getStats().sHs.get(h), mapCell)
                             .writeCell(null, h);
             h++;
         }
 
-        visStackStatic.getOriginalImage().show();
+        // visStackStatic.getOriginalImage().show();
         // visStackDynamic.getOriginalImage().show();
         // visCommonPoints.getOriginalImage().show();
-        visStackOutline.getOriginalImage().show();
+        // visStackOutline.getOriginalImage().show();
     }
 
     @Override

@@ -187,13 +187,13 @@ public abstract class TrackVisualisation {
          * Create object from raw data like e.g. motility map. 
          * 
          * @param name Name of the image
-         * @param data 2D data. They will be rotated to match Matlab representation.
-         * @ see uk.ac.warwick.wsbc.QuimP.STmap
+         * @param data 2D data.
+         * @see uk.ac.warwick.wsbc.QuimP.STmap
          */
         public Map(String name, float[][] data) {
             super(name, new FloatProcessor(data));
             ImageProcessor imp = originalImage.getProcessor();
-            // can no be rotated here!!
+            // can not be rotated here!!
             // imp = imp.rotateRight();
             // imp.flipHorizontal();
             // imp.resetRoi();

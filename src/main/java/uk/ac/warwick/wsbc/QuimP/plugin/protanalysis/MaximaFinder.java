@@ -89,7 +89,9 @@ public class MaximaFinder {
 
     /**
      * 
-     * @return Return maxima found by {@link computeMaximaIJ(double)}.
+     * @return Return maxima found by {@link computeMaximaIJ(double)}. The coordinates depend on
+     * orientation of input image. For typical application like analysis of motility map, x axis
+     * stands for frames and y-axis for outline indexes. 
      */
     public Polygon getMaxima() {
         if (maxima == null)
