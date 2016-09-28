@@ -47,13 +47,8 @@ public class Prot_Analysis implements IQuimpPlugin {
 
     private boolean uiCancelled = false;
     @SuppressWarnings("serial")
-    // default configuration parameters
-    ParamList paramList = new ParamList() {
-        {
-            put("noiseTolerance", "1.5");
-            put("dropValue", "1");
-        }
-    };
+    // default configuration parameters, for future using
+    ParamList paramList = new ParamList();
 
     /**
      * Default constructor. 
@@ -71,9 +66,7 @@ public class Prot_Analysis implements IQuimpPlugin {
      */
     public Prot_Analysis(File paramFile) {
         IJ.log(new QuimpToolsCollection().getQuimPversion());
-        showUI(true);
-        if (uiCancelled)
-            return;
+        config = new ProtAnalysisConfig();
         try {
             IJ.showStatus("Protrusion Analysis");
             if (paramFile == null) { // open UI if no file provided
@@ -94,6 +87,9 @@ public class Prot_Analysis implements IQuimpPlugin {
                 this.paramFile = new File(od.getDirectory(), od.getFile());
             } else // use provided file
                 this.paramFile = paramFile;
+            showUI(true);
+            if (uiCancelled)
+                return;
             runPlugin();
             IJ.log("Protrusion Analysis complete");
             IJ.showStatus("Finished");
@@ -144,9 +140,9 @@ public class Prot_Analysis implements IQuimpPlugin {
                     QuimPArrayUtils.double2float(mapCell.motMap));
             // compute maxima
             MaximaFinder mF = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
-            mF.computeMaximaIJ(paramList.getDoubleValue("noiseTolerance")); // 1.5
+            mF.computeMaximaIJ(config.noiseTolerance); // 1.5
             // track maxima across motility map
-            pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
+            pT.trackMaxima(mapCell, config.dropValue, mF);
             TrackCollection trackCollection = pT.getTrackCollection();
 
             visSingle.addMaximaToImage(mF);
@@ -203,39 +199,47 @@ public class Prot_Analysis implements IQuimpPlugin {
     @Override
     public void setPluginConfig(ParamList par) throws QuimpPluginException {
         paramList = new ParamList(par);
+        // TODO restore config from json
 
     }
 
     @Override
     public ParamList getPluginConfig() {
+        // TODO convert config to json one liner and add to paramlist
+        // paramList.put("config", json)
         return paramList;
+    }
+
+    /**
+     * test method to replace showUI
+     */
+    public void showUI2() {
+
     }
 
     @Override
     public void showUI(boolean val) {
         GenericDialog pd = new GenericDialog("Protrusion detection dialog", IJ.getInstance());
-        pd.addNumericField("Noise tolerance", paramList.getDoubleValue("noiseTolerance"), 3);
-        pd.addNumericField("Drop value", paramList.getDoubleValue("dropValue"), 2);
+        pd.addNumericField("Noise tolerance", config.noiseTolerance, 3);
+        pd.addNumericField("Drop value", config.dropValue, 2);
         pd.addMessage("Noise tolerance - Maxima in motility map are ignored if\n"
                 + " they do not stand out from the surroundings by more\n" + " than this value\n"
                 + " \n" + "Drop value - Tracking of maximum point of motility map\n"
                 + " stops if current point value is smaller than max-drop*max");
 
         pd.showDialog();
-        config = new ProtAnalysisConfig();
         config.outlinesToImage.plotType = outlinePlotTypes.CONVANDEXP;
         if (pd.wasCanceled()) {
             uiCancelled = true;
             return;
         }
-        paramList.put("noiseTolerance", Double.toString(pd.getNextNumber()));
-        paramList.put("dropValue", Double.toString(pd.getNextNumber()));
-        paramList.put("config", config.toString()); // TODO Here option to gson as exportable
+        config.noiseTolerance = pd.getNextNumber();
+        config.dropValue = pd.getNextNumber();
     }
 
     @Override
     public String getVersion() {
-        return "QuimP Package";
+        return "See QuimP version";
     }
 
     @Override

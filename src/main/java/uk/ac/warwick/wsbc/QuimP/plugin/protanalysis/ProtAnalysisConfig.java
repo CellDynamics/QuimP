@@ -5,12 +5,15 @@ import java.awt.Color;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
 /**
- * Hold all configuration for Protrusion Analysis Module
+ * Hold all configuration for Protrusion Analysis Module.
  * 
  * @author p.baniukiewicz
  *
  */
 public class ProtAnalysisConfig implements IQuimpSerialize {
+
+    public double noiseTolerance = 1.5;
+    public double dropValue = 1;
 
     /**
      * Plot types supported by {@link addOutlinesToImage(STmap, ProtAnalysisConfig)}.
