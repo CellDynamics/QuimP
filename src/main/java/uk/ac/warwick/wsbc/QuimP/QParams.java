@@ -54,7 +54,7 @@ public class QParams {
     public static final int QUIMP_11 = 2;
     public static final int NEW_QUIMP = 3;
     /**
-     * Name of the case
+     * Name of the case.
      * Used to set \c fileName and \c path
      */
     private File paramFile;
@@ -64,12 +64,13 @@ public class QParams {
      */
     public int paramFormat;
     /**
-     * Name of the data file - without path and extension. Equals to name of the case
+     * Name of the data file - without path and extension. Equals to name of the case.
+     * If initialised from {@link QParamsQconf} contains underscored cell number as well.
      * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
      */
     private String fileName;
     /**
-     * Path where user files exist
+     * Path where user files exist.
      * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
      */
     private String path;
@@ -114,9 +115,9 @@ public class QParams {
     }
 
     /**
-     * Read basic information from \a paQP file such as its name and path. Initialize structures
+     * Read basic information from <i>paQP</i> file such as its name and path. Initialise structures
      * 
-     * @param p \a paQP file
+     * @param p <i>paQP</i> file, should contain underscored cell number.
      */
     public QParams(File p) {
         setParamFile(p);
@@ -171,7 +172,9 @@ public class QParams {
     }
 
     /**
-     * @return the prefix
+     * @return the prefix. This name probably contains also underscored cell number. It is added
+     * when object of this is created from {@link QParamsQconf} and should be added when
+     * creating only this object QParams(File).
      */
     public String getFileName() {
         return fileName;
@@ -530,7 +533,8 @@ public class QParams {
 
         PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
 
-        pPW.print("#p2 - QuimP parameter file (QuimP11). Created " + QuimpToolsCollection.dateAsString() + "\n");
+        pPW.print("#p2 - QuimP parameter file (QuimP11). Created "
+                + QuimpToolsCollection.dateAsString() + "\n");
         pPW.print(IJ.d2s(key, 0) + "\n");
         pPW.print(segImageFile.getAbsolutePath() + "\n");
         pPW.print(File.separator + snakeQP.getName() + "\n");

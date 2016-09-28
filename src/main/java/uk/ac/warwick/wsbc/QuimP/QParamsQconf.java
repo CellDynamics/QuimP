@@ -78,8 +78,17 @@ public class QParamsQconf extends QParams {
     /**
      * @return the newParamFile
      */
+    @Override
     public File getParamFile() {
         return newParamFile;
+    }
+
+    /**
+     * @return the prefix. Without any cell number in contrary to super.getFileName()
+     */
+    @Override
+    public String getFileName() {
+        return QuimpToolsCollection.removeExtension(newParamFile.getName());
     }
 
     /**
@@ -114,8 +123,8 @@ public class QParamsQconf extends QParams {
         // if (loaded.obj.BOAState == null) // this check is now through QconfLoader
         // throw new QuimpException("Loaded file " + getParamFile().getAbsolutePath()
         // + " does not contain BOA data");
-        if (!loaded.className.equals("DataContainer")
-                || !loaded.version[2].equals("QuimP") && !loaded.version[2].equals(QuimpToolsCollection.defNote)) {
+        if (!loaded.className.equals("DataContainer") || !loaded.version[2].equals("QuimP")
+                && !loaded.version[2].equals(QuimpToolsCollection.defNote)) {
             LOGGER.error("Not QuimP file?");
             throw new QuimpException(
                     "Loaded file " + getParamFile().getAbsolutePath() + " is not QuimP file");
@@ -171,8 +180,9 @@ public class QParamsQconf extends QParams {
      */
     private void compatibilityLayer() {
         // fill underlying parameters
-        super.setParamFile(new File(QuimpToolsCollection.removeExtension(newParamFile.getAbsolutePath()) + "_"
-                + currentHandler + QuimpConfigFilefilter.oldFileExt));
+        super.setParamFile(
+                new File(QuimpToolsCollection.removeExtension(newParamFile.getAbsolutePath()) + "_"
+                        + currentHandler + QuimpConfigFilefilter.oldFileExt));
         super.guessOtherFileNames();
         super.setSnakeQP(getSnakeQP());
         super.setStatsQP(getStatsQP());

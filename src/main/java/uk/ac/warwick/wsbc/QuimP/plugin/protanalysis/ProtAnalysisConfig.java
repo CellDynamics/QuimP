@@ -77,6 +77,15 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      */
     public OutlinesToImage outlinesToImage;
 
+    /**
+     * Suffix for cell stats.
+     */
+    public final String cellStatSuffix = "_cellstat.csv";
+    /**
+     * Protrusion statistics file suffix. 
+     */
+    public final String protStatSuffix = "_protstat.csv";
+
     public ProtAnalysisConfig() {
         outlinesToImage = new OutlinesToImage();
     }

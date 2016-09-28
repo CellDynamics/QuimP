@@ -179,6 +179,9 @@ public class ProtStat implements IQuimpSerialize {
                                           + "protCount";
             /**/
             LOGGER.trace(h);
+            bf.print(ret + '\n');
+            bf.print(h + '\n');
+            bf.flush();
         }
 
         /**
@@ -200,6 +203,8 @@ public class ProtStat implements IQuimpSerialize {
             ret = ret.concat(Double.toString(protcount[frameno]));
 
             LOGGER.trace(ret);
+            bf.print(ret + '\n');
+            bf.flush();
         }
 
     }
@@ -267,6 +272,7 @@ public class ProtStat implements IQuimpSerialize {
                     tipFirstFrame[l] = t2.getFrame(t2.size() - 1);
                     tipLastFrame[l] = t1.getFrame(t1.size() - 1);
                 }
+                l++;
             }
         }
 
@@ -288,6 +294,9 @@ public class ProtStat implements IQuimpSerialize {
                                           + "LastFrame";
             /**/
             LOGGER.trace(h);
+            bf.print(ret + '\n');
+            bf.print(h + '\n');
+            bf.flush();
         }
 
         /**
@@ -306,6 +315,8 @@ public class ProtStat implements IQuimpSerialize {
             ret = ret.concat(Integer.toString(tipLastFrame[id]));
 
             LOGGER.trace(ret);
+            bf.print(ret + '\n');
+            bf.flush();
         }
 
     }
@@ -347,10 +358,11 @@ public class ProtStat implements IQuimpSerialize {
 
     /**
      * Add stats for this cell to output.
-     * @param bf
+     * @param bf place to write
      * @param cellno Cell number
      */
     public void writeCell(PrintWriter bf, int cellno) {
+        LOGGER.debug("Writing cell stats at:" + bf.toString());
         cellStatistics.writeCellHeader(bf, cellno);
         for (int f = 0; f < frames; f++)
             cellStatistics.writeCellRecord(bf, f);
@@ -358,10 +370,11 @@ public class ProtStat implements IQuimpSerialize {
 
     /**
      * Write stats for protrusions for this cell.
-     * @param bf
+     * @param bf place to write
      * @param cellno Cell number.
      */
     public void writeProtrusion(PrintWriter bf, int cellno) {
+        LOGGER.debug("Writing prot stats at:" + bf.toString());
         protStatistics.writeProtHeader(bf, cellno);
         for (int t = 0; t < tc.getBf().size(); t++) {
             protStatistics.writeCellRecord(bf, t);

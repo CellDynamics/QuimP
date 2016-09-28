@@ -2,6 +2,9 @@ package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.FileDialog;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Paths;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -105,8 +108,9 @@ public class Prot_Analysis implements IQuimpPlugin {
      * Helper method to keep logic of ECMM, ANA, Q plugins.
      * 
      * @throws QuimpException
+     * @throws IOException 
      */
-    private void runFromQCONF() throws QuimpException {
+    private void runFromQCONF() throws QuimpException, IOException {
         STmap[] stMap = qconfLoader.getQp().getLoadedDataContainer().getQState();
         OutlinesCollection oHs = qconfLoader.getQp().getLoadedDataContainer().getECMMState();
         int h = 0;
@@ -145,17 +149,17 @@ public class Prot_Analysis implements IQuimpPlugin {
             pT.trackMaxima(mapCell, paramList.getDoubleValue("dropValue"), mF);
             TrackCollection trackCollection = pT.getTrackCollection();
 
-            // visSingle.addMaximaToImage(mF);
-            // visSingle.addTrackingLinesToImage(trackCollection);
-            // // visSingle.addStaticCirclesToImage(pT.getCommonPoints(), Color.ORANGE, 7);
-            // visSingle.getOriginalImage().show();
+            visSingle.addMaximaToImage(mF);
+            visSingle.addTrackingLinesToImage(trackCollection);
+            // visSingle.addStaticCirclesToImage(pT.getCommonPoints(), Color.ORANGE, 7);
+            visSingle.getOriginalImage().show();
 
             // visStackStatic.addElementsToImage(mapCell, trackCollection, mF);
 
             // visCommonPoints.addCirclesToImage(mapCell, pT.getCommonPoints(), Color.ORANGE, 7);
 
-            // visStackDynamic.addMaximaToImage(mapCell, mF);
-            // visStackDynamic.addTrackingLinesToImage(mapCell, trackCollection);
+            visStackDynamic.addMaximaToImage(mapCell, mF);
+            visStackDynamic.addTrackingLinesToImage(mapCell, trackCollection);
 
             // visStackOutline.addOutlinesToImage(mapCell, config);
 
@@ -165,14 +169,27 @@ public class Prot_Analysis implements IQuimpPlugin {
             // mapCell.map2ColorImagePlus("motility_map", mapCell.motMap,
             // oHs.oHs.get(h).migLimits[0],
             // oHs.oHs.get(h).migLimits[1]).show();
+            PrintWriter cellStatFile = new PrintWriter(Paths
+                    .get(qconfLoader.getQp().getPath(),
+                            qconfLoader.getQp().getFileName() + "_" + h + config.cellStatSuffix)
+                    .toFile());
+            PrintWriter protStatFile = new PrintWriter(Paths
+                    .get(qconfLoader.getQp().getPath(),
+                            qconfLoader.getQp().getFileName() + "_" + h + config.protStatSuffix)
+                    .toFile());
             new ProtStat(mF, trackCollection,
                     qconfLoader.getQp().getLoadedDataContainer().getStats().sHs.get(h), mapCell)
-                            .writeCell(null, h);
+                            .writeProtrusion(protStatFile, h);
+            new ProtStat(mF, trackCollection,
+                    qconfLoader.getQp().getLoadedDataContainer().getStats().sHs.get(h), mapCell)
+                            .writeCell(cellStatFile, h);
+            protStatFile.close();
+            cellStatFile.close();
             h++;
         }
 
         // visStackStatic.getOriginalImage().show();
-        // visStackDynamic.getOriginalImage().show();
+        visStackDynamic.getOriginalImage().show();
         // visCommonPoints.getOriginalImage().show();
         // visStackOutline.getOriginalImage().show();
     }
