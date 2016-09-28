@@ -305,7 +305,6 @@ public abstract class TrackVisualisation {
             if (trackCollection != null) {
                 addTrackingLinesToImage(mapCell, trackCollection);
             }
-
         }
 
         /**
@@ -313,9 +312,7 @@ public abstract class TrackVisualisation {
          *  
          * @param mapCell map related to given cell.
          * @param pL List of polygons that keep coordinates of points of backward and forward tracks.
-         * The polygons in <tt>pL</tt> list must be in alternating order: BM1,FM1,BM2,FM2,..., where
-         * BMx is backward track for maximum point no.x and FMx is the forward track for maximum point 
-         * no.x. This order is respected by {@link Prot_Analysis.trackMaxima(STmap, double, MaximaFinder)} 
+         * 
          */
         public void addTrackingLinesToImage(STmap mapCell, TrackCollection trackCollection) {
             double x[][] = mapCell.getxMap(); // temporary x and y coordinates for given cell

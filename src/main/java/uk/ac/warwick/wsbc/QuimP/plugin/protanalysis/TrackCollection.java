@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,10 +28,23 @@ public class TrackCollection {
      */
     private ArrayList<Pair<Track, Track>> bf;
 
-    int nextId = 0;
+    /**
+     * Indicates whether Track stored in this collection have initial point on first entry.
+     */
+    private boolean isInitialPointIncluded;
 
-    public TrackCollection() {
+    /**
+     * @return the isInitialPointIncluded
+     */
+    public boolean isInitialPointIncluded() {
+        return isInitialPointIncluded;
+    }
+
+    private int nextId = 0;
+
+    public TrackCollection(boolean isInitialPointIncluded) {
         bf = new ArrayList<>();
+        this.isInitialPointIncluded = isInitialPointIncluded;
     }
 
     /**
@@ -50,7 +64,7 @@ public class TrackCollection {
     }
 
     /**
-     * Add pair of tracks to collection
+     * Add pair of tracks to collection.
      * 
      * @param backward
      * @param forward
@@ -101,7 +115,7 @@ public class TrackCollection {
  * <p>
  * In general x coordinate stands for frame and y for index.
  * @author p.baniukiewicz
- *
+ * @see {@link trackMaxima(STmap, double, MaximaFinder)} for order of points in Tracks.
  */
 class Track extends ArrayList<Point> {
     private static final long serialVersionUID = 8928704797702167155L;
@@ -167,6 +181,10 @@ class Track extends ArrayList<Point> {
         parents = new Point(-1, -1);
     }
 
+    /**
+     * 
+     * @return This Track as polygon.
+     */
     public Polygon asPolygon() {
         Iterator<Point> it = iterator();
         Polygon ret = new Polygon();
@@ -175,6 +193,41 @@ class Track extends ArrayList<Point> {
             ret.addPoint(p.x, p.y);
         }
         return ret;
+    }
+
+    /**
+     * Get xy coordinates of Track point according to xy maps.
+     * 
+     * @param index order of Track point
+     * @param xMap x-coordinates map compatible with {@link QuimP.plugin.qanalysis.STmap}
+     * @param yMap y-coordinates map compatible with {@link QuimP.plugin.qanalysis.STmap}
+     * @return Screen coordinates of Track point.
+     */
+    public Point2D.Double getXY(int index, double[][] xMap, double[][] yMap) {
+        Point p = get(index);
+        return new Point2D.Double(xMap[p.x][p.y], yMap[p.x][p.y]);
+    }
+
+    /**
+     * Return frame for given index of Track point.
+     * 
+     * Resolves correct mapping between coordinates.
+     * @param index index of point
+     * @return Frame of this point
+     */
+    public int getFrame(int index) {
+        return get(index).x;
+    }
+
+    /**
+     * Return outline index for given index of Track point.
+     * 
+     * Resolves correct mapping between coordinates.
+     * @param index index of point
+     * @return Outline index of this point
+     */
+    public int getOutline(int index) {
+        return get(index).y;
     }
 
 }

@@ -1,15 +1,20 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.Polygon;
+import java.awt.geom.Point2D;
 import java.io.PrintWriter;
+import java.util.Iterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import com.sun.tools.javac.util.Pair;
+
 import uk.ac.warwick.wsbc.QuimP.CellStats;
 import uk.ac.warwick.wsbc.QuimP.FrameStatistics;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
+import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Track.Type;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
 /**
@@ -46,6 +51,11 @@ public class ProtStat implements IQuimpSerialize {
     private int mapRes;
 
     /**
+     * Total number of protrusions.
+     */
+    private int protCount;
+
+    /**
      * Hold cell shape based statistics.
      */
     public CellStatistics cellStatistics;
@@ -61,8 +71,10 @@ public class ProtStat implements IQuimpSerialize {
         this.maps = maps;
         frames = maps.getT();
         mapRes = maps.getRes();
+        protCount = mf.getMaximaNumber();
 
         cellStatistics = new CellStatistics();
+        protStatistics = new ProtrusionStatistics();
 
     }
 
@@ -167,7 +179,6 @@ public class ProtStat implements IQuimpSerialize {
                                           + "protCount";
             /**/
             LOGGER.trace(h);
-
         }
 
         /**
@@ -189,17 +200,113 @@ public class ProtStat implements IQuimpSerialize {
             ret = ret.concat(Double.toString(protcount[frameno]));
 
             LOGGER.trace(ret);
-
         }
 
     }
 
     /**
      * Collection of methods for compute protrusion statistics.
+     * 
      * @author p.baniukiewicz
      *
      */
     class ProtrusionStatistics {
+        /**
+         * Indicate position of the tip on cell outline. Not normalised.
+         */
+        int[] tipPositionIndex;
+        /**
+         * Screen coordinate of the tip.
+         */
+        Point2D.Double[] tipCoordinate;
+        /**
+         * Tip frame.
+         */
+        int[] tipFrame;
+        /**
+         * First frame where tip appeared, within given criterion of motility drop.
+         */
+        int[] tipFirstFrame;
+        /**
+         * Last frame where tip appeared, within given criterion of motility drop.
+         */
+        int[] tipLastFrame;
+
+        /**
+         * Compute protrusion stats.
+         */
+        public ProtrusionStatistics() {
+            getFromTrackStats();
+        }
+
+        /**
+         * Extract statistic data from {@link TrackCollection}.
+         */
+        private void getFromTrackStats() {
+            if (tc.isInitialPointIncluded() == false)
+                throw new IllegalArgumentException(
+                        "This method assumes that initial point must be included in Track");
+            tipPositionIndex = new int[protCount];
+            tipCoordinate = new Point2D.Double[protCount];
+            tipFrame = new int[protCount];
+            tipFirstFrame = new int[protCount];
+            tipLastFrame = new int[protCount];
+            Iterator<Pair<Track, Track>> it = tc.iterator(); // over backward,forward pairs
+            int l = 0;
+            while (it.hasNext()) {
+                Pair<Track, Track> p = it.next();
+                Track t1 = p.fst;
+                Track t2 = p.snd;
+                tipPositionIndex[l] = t1.getOutline(0); // first point is maximum
+                tipCoordinate[l] = t1.getXY(0, maps.getxMap(), maps.getyMap());
+                tipFrame[l] = t1.getFrame(0);
+                if (t1.type == Type.BACKWARD && t2.type == Type.FORWARD) {
+                    tipFirstFrame[l] = t1.getFrame(t1.size() - 1);
+                    tipLastFrame[l] = t2.getFrame(t2.size() - 1);
+                } else if (t1.type == Type.FORWARD && t2.type == Type.BACKWARD) {
+                    tipFirstFrame[l] = t2.getFrame(t2.size() - 1);
+                    tipLastFrame[l] = t1.getFrame(t1.size() - 1);
+                }
+            }
+        }
+
+        /**
+         * Add header to common file before next cell.
+         * 
+         * @param cellno Number of cell.
+         */
+        private void writeProtHeader(PrintWriter bf, int cellno) {
+            //!<
+            String ret = "#Cell:"+cellno;
+            LOGGER.trace(ret);
+            String h =                     "#Id,"
+                                          + "Position,"
+                                          + "x-xoordinate,"
+                                          + "y-coordinate,"
+                                          + "Frame,"
+                                          + "FirstFrame,"
+                                          + "LastFrame";
+            /**/
+            LOGGER.trace(h);
+        }
+
+        /**
+         * Write one line for given frame for current cell.
+         * 
+         * @param bf
+         * @param frameno
+         */
+        private void writeCellRecord(PrintWriter bf, int id) {
+            String ret = Integer.toString(id + 1) + ',';
+            ret = ret.concat(Integer.toString(tipPositionIndex[id])) + ',';
+            ret = ret.concat(Double.toString(tipCoordinate[id].x)) + ',';
+            ret = ret.concat(Double.toString(tipCoordinate[id].y)) + ',';
+            ret = ret.concat(Integer.toString(tipFrame[id])) + ',';
+            ret = ret.concat(Integer.toString(tipFirstFrame[id])) + ',';
+            ret = ret.concat(Integer.toString(tipLastFrame[id]));
+
+            LOGGER.trace(ret);
+        }
 
     }
 
@@ -241,11 +348,24 @@ public class ProtStat implements IQuimpSerialize {
     /**
      * Add stats for this cell to output.
      * @param bf
+     * @param cellno Cell number
      */
     public void writeCell(PrintWriter bf, int cellno) {
         cellStatistics.writeCellHeader(bf, cellno);
         for (int f = 0; f < frames; f++)
             cellStatistics.writeCellRecord(bf, f);
+    }
+
+    /**
+     * Write stats for protrusions for this cell.
+     * @param bf
+     * @param cellno Cell number.
+     */
+    public void writeProtrusion(PrintWriter bf, int cellno) {
+        protStatistics.writeProtHeader(bf, cellno);
+        for (int t = 0; t < tc.getBf().size(); t++) {
+            protStatistics.writeCellRecord(bf, t);
+        }
     }
 
     @Override

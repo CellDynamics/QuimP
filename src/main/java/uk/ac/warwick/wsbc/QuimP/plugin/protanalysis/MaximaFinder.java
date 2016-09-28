@@ -98,4 +98,14 @@ public class MaximaFinder {
             return new Polygon();
         return maxima;
     }
+
+    /**
+     * 
+     * @return Number of points found.
+     */
+    public int getMaximaNumber() {
+        if (maxima == null)
+            return 0;
+        return maxima.npoints;
+    }
 }

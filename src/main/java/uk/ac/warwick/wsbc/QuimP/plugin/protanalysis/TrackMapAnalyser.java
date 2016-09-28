@@ -44,6 +44,9 @@ public class TrackMapAnalyser {
     final public static int WITHOUT_SELFCROSSING = 4;
     /**
      * Maximum point (source of tracks) is included in tracks (if <tt>true</tt>).
+     * 
+     * It should be changed carefully as many other procedures can assume that first point is 
+     * included in Tracks.
      */
     public static boolean INCLUDE_INITIAL = true;
 
@@ -60,7 +63,7 @@ public class TrackMapAnalyser {
     }
 
     public TrackMapAnalyser() {
-        trackCollection = new TrackCollection();
+        trackCollection = new TrackCollection(INCLUDE_INITIAL);
     }
 
     /**
@@ -75,7 +78,9 @@ public class TrackMapAnalyser {
      * 
      * Return list of points tracked from every maximum point as long as they meet criterion.
      * Maximum point can be included in this list depending on setting of 
-     * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst} flag.
+     * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst} flag. First points in tracks
+     * are initial points. Forward track is sorted within increasing frames from starting point,
+     * backward according to decreasing frames.
      */
     public void trackMaxima(final STmap mapCell, double drop, final MaximaFinder maximaFinder) {
 
@@ -124,7 +129,6 @@ public class TrackMapAnalyser {
             // store tracking lines
             // Nb and Nf are pointer AFTER last valid point
             trackCollection.addPair(tBackward.subList(0, Nb), tForward.subList(0, Nf));
-
         }
     }
 
