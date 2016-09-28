@@ -1,10 +1,23 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
+import java.awt.BorderLayout;
 import java.awt.FileDialog;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +45,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @author p.baniukiewicz
  * TODO This class support IQuimpPlugin for future.
  */
-public class Prot_Analysis implements IQuimpPlugin {
+public class Prot_Analysis implements IQuimpPlugin, ActionListener {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -43,7 +56,16 @@ public class Prot_Analysis implements IQuimpPlugin {
 
     private QconfLoader qconfLoader; // main object representing loaded configuration file
     private File paramFile;
+    /**
+     * Keep overall configuration. This object is filled in GUI and passed to runPlugin, where
+     * it is read out.
+     */
     private ProtAnalysisConfig config;
+
+    // UI elements
+    private JFrame wnd;
+    private JButton bCancel, bApply, bHelp;
+    JFormattedTextField fieldnoiseTolerance, fielddropValue;
 
     private boolean uiCancelled = false;
     @SuppressWarnings("serial")
@@ -214,6 +236,55 @@ public class Prot_Analysis implements IQuimpPlugin {
      * test method to replace showUI
      */
     public void showUI2() {
+        wnd = new JFrame("Random Walker Segmentation");
+        wnd.setResizable(false);
+        JPanel wndpanel = new JPanel(new BorderLayout());
+
+        // middle main panel - integrates fields
+        JPanel middle = new JPanel();
+        middle.setLayout(new FlowLayout());
+        wndpanel.add(middle, BorderLayout.CENTER);
+
+        // options
+        JPanel params = new JPanel();
+        params.setBorder(BorderFactory.createTitledBorder("Options"));
+        params.setLayout(new GridLayout(2, 2));
+        fielddropValue = new JFormattedTextField(NumberFormat.getInstance());
+        fielddropValue.setValue(new Double(config.dropValue));
+        fielddropValue.setColumns(4);
+        fieldnoiseTolerance = new JFormattedTextField(NumberFormat.getInstance());
+        fieldnoiseTolerance.setValue(new Double(config.noiseTolerance));
+        fieldnoiseTolerance.setColumns(4);
+        params.add(fielddropValue);
+        params.add(new JLabel("Drop value"));
+        params.add(fieldnoiseTolerance);
+        params.add(new JLabel("Sensitivity"));
+        middle.add(params);
+
+        // vis options
+        JPanel visparams = new JPanel();
+        visparams.setBorder(BorderFactory.createTitledBorder("Visualisation"));
+        visparams.setLayout(new GridLayout(2, 2));
+        middle.add(visparams);
+
+        // cancel apply row
+        JPanel caButtons = new JPanel();
+        caButtons.setLayout(new FlowLayout(FlowLayout.CENTER));
+        bApply = new JButton("Apply");
+        bApply.addActionListener(this);
+        bCancel = new JButton("Cancel");
+        bCancel.addActionListener(this);
+        bHelp = new JButton("Help");
+        bHelp.addActionListener(this);
+        caButtons.add(bApply);
+        caButtons.add(bCancel);
+        caButtons.add(bHelp);
+        wndpanel.add(caButtons, BorderLayout.SOUTH);
+
+        wnd.add(wndpanel);
+        wnd.pack();
+        wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        wnd.setVisible(true);
 
     }
 
@@ -265,6 +336,12 @@ public class Prot_Analysis implements IQuimpPlugin {
         } catch (Exception e) { // catch all here and convert to expected type
             throw new QuimpPluginException(e);
         }
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // TODO Auto-generated method stub
 
     }
 
