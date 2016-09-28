@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import ij.IJ;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
@@ -860,7 +861,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
 
     }
 
-    void clearFluores() {
+    public void clearFluores() {
         Vert v = head;
         do {
             v.setFluoresChannel(-2, -2, -2, 0);

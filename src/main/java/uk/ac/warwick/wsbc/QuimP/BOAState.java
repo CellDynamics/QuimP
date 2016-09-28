@@ -11,7 +11,10 @@ import org.apache.logging.log4j.Logger;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.io.OpenDialog;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
+import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentationPlugin;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Hold current BOA state that can be serialized
@@ -93,7 +96,7 @@ public class BOAState implements IQuimpSerialize {
      * Keep snapshots of SnakePluginList objects for every frame separately. Plugin
      * configurations are stored as well (but without plugin references)
      */
-    ArrayList<SnakePluginList> snakePluginListSnapshots;
+    public ArrayList<SnakePluginList> snakePluginListSnapshots;
     /**
      * List of plugins selected in plugin stack and information if they are active or not
      * This field is not serializable because \a snakePluginListSnapshots keeps configurations
@@ -421,7 +424,7 @@ public class BOAState implements IQuimpSerialize {
      * 
      * @author rtyson
      * @see QParams
-     * @see Tool
+     * @see QuimpToolsCollection
      */
     public class BOAp {
         /**
@@ -628,7 +631,7 @@ public class BOAState implements IQuimpSerialize {
                 setOutputFileCore(File.separator + ip.getTitle());
             } else {
                 orgFile = new File(fileinfo.directory, fileinfo.fileName);
-                setOutputFileCore(fileinfo.directory + Tool.removeExtension(orgFile.getName()));
+                setOutputFileCore(fileinfo.directory + QuimpToolsCollection.removeExtension(orgFile.getName()));
             }
 
             FRAMES = ip.getStackSize(); // get number of frames
@@ -679,7 +682,7 @@ public class BOAState implements IQuimpSerialize {
          */
         public void setOutputFileCore(File outputFileCore) {
             this.outputFileCore = outputFileCore;
-            fileName = Tool.removeExtension(outputFileCore.getName());
+            fileName = QuimpToolsCollection.removeExtension(outputFileCore.getName());
         }
 
         /**

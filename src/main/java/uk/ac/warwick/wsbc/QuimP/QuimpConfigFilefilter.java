@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
+
 /**
  * Implement filter of FileDialog.
  * <p>

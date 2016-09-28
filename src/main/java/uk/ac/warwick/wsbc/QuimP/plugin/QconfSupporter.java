@@ -18,7 +18,7 @@ import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
-import uk.ac.warwick.wsbc.QuimP.Tool;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Add basic support for handling <i>QCONF</i> and <i>paQP</i> files.
@@ -64,7 +64,7 @@ public abstract class QconfSupporter {
      */
     public QconfSupporter(Path path) {
         try {
-            IJ.log(new Tool().getQuimPversion());
+            IJ.log(new QuimpToolsCollection().getQuimPversion());
             String directory; // directory with paQP
             String filename; // file name of paQP
 
@@ -183,8 +183,8 @@ public abstract class QconfSupporter {
      * ANA is not obligatory and it is not checked here.
      * <p>
      * @return <tt>true</tt> always for maintaining compatibility with
-     * {@link uk.ac.warwick.wsbc.QuimP.Q_Analysis#validateQconf()}
-     * and {@link uk.ac.warwick.wsbc.QuimP.ECMM_Mapping#validateQconf()}
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Q_Analysis#validateQconf()}
+     * and {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping#validateQconf()}
      * 
      * @throws QuimpException When there is no ECMM or Q Analysis data in file
      */

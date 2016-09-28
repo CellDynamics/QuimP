@@ -1,5 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Q_Analysis;
+
 /**
  * Test runner for Q_Analysis
  * 

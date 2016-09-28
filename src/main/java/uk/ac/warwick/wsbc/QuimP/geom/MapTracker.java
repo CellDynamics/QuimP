@@ -47,17 +47,17 @@ public class MapTracker {
      * Construct tracking maps.
      * 
      * Prepare tracking maps that are not stored by default in 
-     * {@link uk.ac.warwick.wsbc.QuimP.DataContainer DataContainer}. This code is based on 
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer DataContainer}. This code is based on 
      * Matlab routine buildTrackMaps.m. 
      * 
      * <p><b>Note</b><p>
      * All frames are numbered from 0 as well as outline indexes.
      * Nonexisting indexes are marked as -1.
      *  
-     * @param originMap originMap stored in {@link uk.ac.warwick.wsbc.QuimP.DataContainer.QState QState}
-     * @param coordMap coordMap stored in {@link uk.ac.warwick.wsbc.QuimP.DataContainer.QState QState}
-     * @see uk.ac.warwick.wsbc.QuimP.DataContainer
-     * @see uk.ac.warwick.wsbc.QuimP.STmap
+     * @param originMap originMap stored in {@link uk.ac.warwick.wsbc.QuimP.filesystem.QState QState}
+     * @param coordMap coordMap stored in {@link uk.ac.warwick.wsbc.QuimP.filesystem.QState QState}
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap
      */
     public MapTracker(double[][] originMap, double[][] coordMap) {
 

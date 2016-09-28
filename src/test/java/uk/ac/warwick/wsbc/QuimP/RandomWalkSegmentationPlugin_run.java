@@ -8,6 +8,7 @@ import java.util.concurrent.CountDownLatch;
 
 import ij.IJ;
 import ij.ImageJ;
+import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationPlugin_;
 
 /**
  * @author p.baniukiewicz

@@ -3,6 +3,7 @@ package uk.ac.warwick.wsbc.QuimP;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANA_;
 
 /**
  * Plugin runner for in-place tests.

@@ -2,6 +2,8 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
+
 /**
  * @author p.baniukiewicz
  *

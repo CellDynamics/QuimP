@@ -17,6 +17,8 @@ import org.junit.Test;
 
 import com.google.gson.JsonSyntaxException;
 
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
+
 /**
  * Test of Serializer class 
  * 

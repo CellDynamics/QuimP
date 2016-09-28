@@ -4,6 +4,8 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import ij.IJ;
 import ij.ImageJ;
+import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentationPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationPlugin_;
 
 /**
  * @author p.baniukiewicz

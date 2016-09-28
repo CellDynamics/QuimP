@@ -10,8 +10,12 @@ import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
+import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * This class allows for recreating paQP and snQP files from new format QCONF and vice versa.
@@ -79,7 +83,7 @@ public class FormatConverter {
         int i = 0;
         // Create DataContainer
         dT.BOAState = new BOAState(qcL.getImage());
-        dT.ECMMState = new OutlineHandlers();
+        dT.ECMMState = new OutlinesCollection();
         dT.BOAState.nest = new Nest();
         // dT.ANAState = new ANAStates();
         ArrayList<STmap> maps = new ArrayList<>(); // temporary - we do not know number of cells
@@ -179,7 +183,7 @@ public class FormatConverter {
 
         dT.QState = maps.toArray(new STmap[0]);
         Serializer<DataContainer> n;
-        n = new Serializer<>(dT, new Tool().getQuimPBuildInfo());
+        n = new Serializer<>(dT, new QuimpToolsCollection().getQuimPBuildInfo());
         n.setPretty();
         n.save(path + File.separator + orginal + QuimpConfigFilefilter.newFileExt);
         n = null;
@@ -220,7 +224,7 @@ public class FormatConverter {
             throw new IllegalArgumentException("Can no convert from old format to old");
         // replace location to location of QCONF
         DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
-        dT.getBOAState().boap.setOutputFileCore(Tool.removeExtension(path.toString()));
+        dT.getBOAState().boap.setOutputFileCore(QuimpToolsCollection.removeExtension(path.toString()));
         dT.BOAState.nest.writeSnakes(); // write paQP and snQP together
     }
 
@@ -237,7 +241,7 @@ public class FormatConverter {
         int activeHandler = 0;
         // replace location to location of QCONF
         DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
-        dT.BOAState.boap.setOutputFileCore(Tool.removeExtension(path.toString()));
+        dT.BOAState.boap.setOutputFileCore(QuimpToolsCollection.removeExtension(path.toString()));
         Iterator<OutlineHandler> oHi = dT.getECMMState().oHs.iterator();
         do {
             ((QParamsQconf) qcL.getQp()).setActiveHandler(activeHandler++);
