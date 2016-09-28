@@ -87,10 +87,10 @@ public class Prot_Analysis implements IQuimpPlugin {
                 this.paramFile = new File(od.getDirectory(), od.getFile());
             } else // use provided file
                 this.paramFile = paramFile;
-            showUI(true);
+            // showUI(true);
             if (uiCancelled)
                 return;
-            runPlugin();
+            // runPlugin();
             IJ.log("Protrusion Analysis complete");
             IJ.showStatus("Finished");
         } catch (Exception e) { // catch all exceptions here
