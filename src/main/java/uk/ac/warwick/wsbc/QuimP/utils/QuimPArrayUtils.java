@@ -315,6 +315,18 @@ public class QuimPArrayUtils {
         return max;
     }
 
+    public static double arrayMax(double[][] a) {
+        double max = arrayMax(a[0]);
+        if (a.length == 1)
+            return max;
+        for (int i = 1; i < a.length; i++) {
+            double rmax = arrayMax(a[i]);
+            if (max < rmax)
+                max = rmax;
+        }
+        return max;
+    }
+
     /**
      * Find index of minimal element
      * 
@@ -376,6 +388,18 @@ public class QuimPArrayUtils {
             if (min > a[i]) {
                 min = a[i];
             }
+        }
+        return min;
+    }
+
+    public static double arrayMin(double[][] a) {
+        double min = arrayMin(a[0]);
+        if (a.length == 1)
+            return min;
+        for (int i = 1; i < a.length; i++) {
+            double rmin = arrayMin(a[i]);
+            if (min > rmin)
+                min = rmin;
         }
         return min;
     }

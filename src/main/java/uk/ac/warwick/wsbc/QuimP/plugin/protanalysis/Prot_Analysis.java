@@ -88,7 +88,7 @@ public class Prot_Analysis implements IQuimpPlugin {
         // check whether config file name is provided or ask user for it
         try {
             IJ.showStatus("Protrusion Analysis");
-            loadFile(paramFile); // load configuration file given by paramFile
+            loadFile(paramFile); // load configuration file given by paramFile and verify it
             if (qconfLoader.getQp() == null)
                 return; // not loaded
             gui.writeUI(); // set ui
@@ -198,9 +198,7 @@ public class Prot_Analysis implements IQuimpPlugin {
             }
 
             // Maps are correlated in order with Outlines in DataContainer.
-            // mapCell.map2ColorImagePlus("motility_map", mapCell.motMap,
-            // oHs.oHs.get(h).migLimits[0],
-            // oHs.oHs.get(h).migLimits[1]).show();
+            // write data
             PrintWriter cellStatFile = new PrintWriter(Paths
                     .get(qconfLoader.getQp().getPath(),
                             qconfLoader.getQp().getFileName() + "_" + h + config.cellStatSuffix)
@@ -217,6 +215,12 @@ public class Prot_Analysis implements IQuimpPlugin {
                             .writeCell(cellStatFile, h);
             protStatFile.close();
             cellStatFile.close();
+            // update static firlds in gui
+            gui.labelMaxnum.setText(Integer.toString(mF.getMaximaNumber()));
+            gui.labelMaxval.setText(
+                    String.format("%1$.3f", QuimPArrayUtils.arrayMax(mapCell.getMotMap())));
+            gui.labelMinval.setText(
+                    String.format("%1$.3f", QuimPArrayUtils.arrayMin(mapCell.getMotMap())));
             h++;
         }
 
@@ -444,11 +448,11 @@ class Prot_AnalysisUI implements ActionListener {
             labelMaxnum = new JLabel(" ");
             labelMaxnum.setBackground(Color.GREEN);
             info.add(labelMaxnum);
-            info.add(new JLabel("Max value:"));
+            info.add(new JLabel("Max motlility:"));
             labelMaxval = new JLabel(" ");
             labelMaxval.setBackground(Color.GREEN);
             info.add(labelMaxval);
-            info.add(new JLabel("Min value:"));
+            info.add(new JLabel("Min motility:"));
             labelMinval = new JLabel(" ");
             labelMinval.setBackground(Color.GREEN);
             info.add(labelMinval);
