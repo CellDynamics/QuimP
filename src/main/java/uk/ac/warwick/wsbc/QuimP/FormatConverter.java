@@ -74,7 +74,7 @@ public class FormatConverter {
         if (qcL.getConfVersion() == QParams.NEW_QUIMP)
             throw new IllegalArgumentException("Can not convert from new format to new");
         DataContainer dT = new DataContainer();
-        String orginal = qcL.getQp().getFileName(); // xxx_0
+        String orginal = qcL.getQp().getFileName(); // xxx_0 because old file loaded
         // cut last number
         int last = orginal.lastIndexOf('_');
         if (last < 0)

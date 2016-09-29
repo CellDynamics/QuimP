@@ -25,8 +25,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.MaximaFinder;
-import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackVisualisation;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
 /**
@@ -71,7 +69,7 @@ public class TrackVisualisationTest {
         MockitoAnnotations.initMocks(this); // must be as we create mocked classes in mocked already
         // QParams
         originalImage = IJ.openImage(
-                "/home/p.baniukiewicz/Documents/Kay-copy/KZ4/KZ4-220214-cAR1-GFP-devel5.5h-agar07-14.tif");
+                "/home/baniuk/Documents/Kay-copy/KZ4/KZ4-220214-cAR1-GFP-devel5.5h-agar07-14.tif");
         protrusionVis = new TrackVisualisation.Stack(originalImage);
     }
 
