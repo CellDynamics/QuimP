@@ -28,7 +28,7 @@ public class QuimpConfigFilefilter implements FilenameFilter {
     public static final String oldFileExt = ".paQP";
 
     /**
-     * Allow to provide list of accepted extensions
+     * Allow to provide list of accepted extensions with dot.
      * @param ext
      */
     public QuimpConfigFilefilter(String... ext) {

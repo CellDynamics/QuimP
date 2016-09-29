@@ -18,6 +18,7 @@ import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
+import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
 /**
@@ -52,6 +53,17 @@ public class QconfLoader {
     }
 
     /**
+     * Parametrised constructor.
+     * @param file File *.paQP/QCONF. If <tt>null</tt> user is asked for this file.
+     * @param fileFilter pre-selection filter or <tt>null</tt> to use default selected in QuimP_Bar.
+     * @throws QuimpException 
+     */
+    public QconfLoader(File file, QuimpConfigFilefilter fileFilter) throws QuimpException {
+        loader(file, fileFilter);
+
+    }
+
+    /**
      * Parameterised constructor.
      * <p>
      * Main runner.
@@ -60,13 +72,24 @@ public class QconfLoader {
      * @throws QuimpException when QCONF can not be loaded
      */
     public QconfLoader(File file) throws QuimpException {
+        loader(file, null); // use default filter set in QuimP_Bar
+
+    }
+
+    /**
+     * File loaded and initializator for this class.
+     * @param file File *.paQP/QCONF. If <tt>null</tt> user is asked for this file
+     * @param fileFilter pre-selection filter or null to use default selected in QuimP_Bar.
+     * @throws QuimpException 
+     * @see QuimP_Bar
+     */
+    private void loader(File file, QuimpConfigFilefilter fileFilter) throws QuimpException {
         String directory; // directory with paQP
         String filename; // file name of paQP
 
         if (file == null) { // no file provided, ask user
-            QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(); // use default
-                                                                            // engine for finding
-                                                                            // extension
+            if (fileFilter == null)
+                fileFilter = new QuimpConfigFilefilter(); // use default engine for finding ext.
             FileDialog od = new FileDialog(IJ.getInstance(),
                     "Open paramater file " + fileFilter.toString());
             od.setFilenameFilter(fileFilter);

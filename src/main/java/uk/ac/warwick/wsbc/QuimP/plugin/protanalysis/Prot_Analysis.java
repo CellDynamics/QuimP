@@ -31,6 +31,7 @@ import ij.ImagePlus;
 import ij.plugin.ZProjector;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QParams;
+import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
@@ -289,7 +290,9 @@ public class Prot_Analysis implements IQuimpPlugin {
     private void loadFile(File paramFile) throws QuimpPluginException {
         try {
             if (qconfLoader == null || qconfLoader.getQp() == null) {
-                qconfLoader = new QconfLoader(paramFile); // load file
+                // load new file
+                qconfLoader = new QconfLoader(paramFile,
+                        new QuimpConfigFilefilter(QuimpConfigFilefilter.newFileExt));
                 if (qconfLoader.getQp() == null)
                     return; // not loaded
                 if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
@@ -300,7 +303,8 @@ public class Prot_Analysis implements IQuimpPlugin {
                 } else {
                     qconfLoader = null; // failed load or checking
                     throw new IllegalStateException(
-                            "QconfLoader returned unsupported version of QuimP");
+                            "QconfLoader returned unsupported version of QuimP."
+                                    + " Only new format can be loaded");
                 }
             }
         } catch (Exception e) { // catch all here and convert to expected type
