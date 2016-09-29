@@ -436,19 +436,22 @@ public class STmap implements IQuimpSerialize {
      * <pre>
      * {@code
      * // Maps are correlated in order with Outlines in DataContainer.
-     * mapCell.map2ColorImagePlus("motility_map", mapCell.motMap, oHs.oHs.get(h).migLimits[0],
+     * mapCell.map2ColorImagePlus("motility_map", "rwb",mapCell.motMap, oHs.oHs.get(h).migLimits[0],
      *               oHs.oHs.get(h).migLimits[1]).show();
      * }
      * </pre>
      * 
      * @param name Name of the ImagePlus
      * @param map Map to convert
+     * @param palette Palette code, can be "rww" or "rwb".
      * @param min Minimum value in Outline that was used for creation of this map
      * @param max Maximum value in Outline that was used for creation of this map
      * @return Created ImagePlus object 
      * @see map2ImagePlus(String, ImageProcessor)
+     * @see ERColorMap2(String, double, double, double) for palettes
      */
-    public ImagePlus map2ColorImagePlus(String name, double[][] map, double min, double max) {
+    public ImagePlus map2ColorImagePlus(String name, String palette, double[][] map, double min,
+            double max) {
         int[] migColor = new int[map.length * map[0].length];
         int pN = 0;
         int T = map.length;
@@ -456,7 +459,7 @@ public class STmap implements IQuimpSerialize {
         for (int r = 0; r < T; r++)
             for (int c = 0; c < res; c++) {
                 // pN = (c * mapCell.getT()) + r;
-                QColor color = QColor.ERColorMap2("rwb", map[r][c], min, max);
+                QColor color = QColor.ERColorMap2(palette, map[r][c], min, max);
                 migColor[pN++] = color.getColorInt();
             }
         return map2ImagePlus(name, new ColorProcessor(res, T, migColor));

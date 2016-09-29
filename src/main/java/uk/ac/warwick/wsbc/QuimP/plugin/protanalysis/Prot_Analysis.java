@@ -160,15 +160,17 @@ public class Prot_Analysis implements IQuimpPlugin {
             }
             // plot motility map only
             if (config.plotMotmap) {
-                ImagePlus mm = mapCell.map2ColorImagePlus("motility_map", mapCell.getMotMap(),
-                        oHs.oHs.get(h).migLimits[0], oHs.oHs.get(h).migLimits[1]);
+                ImagePlus mm =
+                        mapCell.map2ColorImagePlus("motility_map", "rwb", mapCell.getMotMap(),
+                                oHs.oHs.get(h).migLimits[0], oHs.oHs.get(h).migLimits[1]);
                 mm.setTitle("MotilityMap_cell_" + h);
                 mm.show();
             }
             // plot convexity map only
             if (config.plotConmap) {
-                ImagePlus mm = mapCell.map2ColorImagePlus("convexity_map", mapCell.getConvMap(),
-                        oHs.oHs.get(h).curvLimits[0], oHs.oHs.get(h).curvLimits[1]);
+                ImagePlus mm =
+                        mapCell.map2ColorImagePlus("convexity_map", "rbb", mapCell.getConvMap(),
+                                oHs.oHs.get(h).curvLimits[0], oHs.oHs.get(h).curvLimits[1]);
                 mm.setTitle("ConvexityMap_cell_" + h);
                 mm.show();
             }
