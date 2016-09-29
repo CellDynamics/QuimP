@@ -47,10 +47,11 @@ public class TrackMapTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        qL1 = new QconfLoader(Paths
-                .get("src/test/resources/TrackMapTests/Stack_cut_10frames_trackMapTest.QCONF"));
-        qL2 = new QconfLoader(
-                Paths.get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF"));
+        qL1 = new QconfLoader(
+                Paths.get("src/test/resources/TrackMapTests/Stack_cut_10frames_trackMapTest.QCONF")
+                        .toFile());
+        qL2 = new QconfLoader(Paths
+                .get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF").toFile());
     }// throw new UnsupportedOperationException("Not implemented here");
 
     /**

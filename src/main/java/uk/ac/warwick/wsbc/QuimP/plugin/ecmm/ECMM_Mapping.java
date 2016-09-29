@@ -131,7 +131,7 @@ public class ECMM_Mapping {
                 // load config file but check if it is new format or old
                 paramFile = new File(od.getDirectory(), od.getFile());
             }
-            qconfLoader = new QconfLoader(paramFile.toPath()); // load file
+            qconfLoader = new QconfLoader(paramFile); // load file
             if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
                 QParams qp;
                 runFromPAQP();
@@ -1724,7 +1724,8 @@ class ODEsolver {
                 // not needed
                 edge = ODEsolver.snap(p, s);
                 dist += ExtendedVector2d.lengthP2P(pp, p);
-                v.distance = QuimpToolsCollection.speedToScale(dist, ECMp.scale, ECMp.frameInterval);
+                v.distance =
+                        QuimpToolsCollection.speedToScale(dist, ECMp.scale, ECMp.frameInterval);
                 // if (s.expanding && !ECMp.ANA) {
                 v.setLandingCoord(p, edge);
                 // }

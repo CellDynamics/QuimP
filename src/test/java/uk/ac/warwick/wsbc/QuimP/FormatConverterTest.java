@@ -138,7 +138,8 @@ public class FormatConverterTest {
     @Ignore
     public void testFormatConverterQParamsQconfPath() throws Exception {
         QconfLoader qC = new QconfLoader(
-                Paths.get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
+                Paths.get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF")
+                        .toFile());
         FormatConverter fC =
                 new FormatConverter(qC, Paths.get("src/test/resources/FormatConverter"));
         fC.generateOldDataFiles();
@@ -173,7 +174,7 @@ public class FormatConverterTest {
     @Test
     public void testGenerateNewDataFile() throws Exception {
         QconfLoader qC = new QconfLoader(
-                Paths.get("src/test/resources/FormatConverter/0pt7%agar_bleb2_0.paQP"));
+                Paths.get("src/test/resources/FormatConverter/0pt7%agar_bleb2_0.paQP").toFile());
         FormatConverter fC =
                 new FormatConverter(qC, Paths.get("src/test/resources/FormatConverter/res"));
         fC.generateNewDataFile();

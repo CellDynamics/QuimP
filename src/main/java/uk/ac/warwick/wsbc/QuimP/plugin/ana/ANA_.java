@@ -148,7 +148,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
                 return;
             }
             File paramFile = new File(od.getDirectory(), od.getFile());
-            qconfLoader = new QconfLoader(paramFile.toPath()); // load file
+            qconfLoader = new QconfLoader(paramFile); // load file
             if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
                 runFromPAQP();
             } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
@@ -706,7 +706,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
         orgIpr.setRoi(innerPoly);
         is = ImageStatistics.getStatistics(orgIpr, m, null);
 
-        fluoStats[store].channels[anap.channel].innerArea = QuimpToolsCollection.areaToScale(is.area, anap.scale);
+        fluoStats[store].channels[anap.channel].innerArea =
+                QuimpToolsCollection.areaToScale(is.area, anap.scale);
         fluoStats[store].channels[anap.channel].totalInnerFluor = is.mean * is.area;
         fluoStats[store].channels[anap.channel].meanInnerFluor = is.mean; // fluoStats[store].channels[ANAp.channel].totalInnerFluor
                                                                           // /

@@ -2,7 +2,6 @@ package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -29,11 +28,9 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.io.OpenDialog;
 import ij.plugin.ZProjector;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QParams;
-import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
@@ -59,7 +56,6 @@ public class Prot_Analysis implements IQuimpPlugin {
     private static final Logger LOGGER = LogManager.getLogger(Prot_Analysis.class.getName());
 
     private QconfLoader qconfLoader = null; // main object representing loaded configuration file
-    private File paramFile;
     private boolean uiCancelled = false;
     public Prot_AnalysisUI gui;
     @SuppressWarnings("serial")
@@ -92,25 +88,7 @@ public class Prot_Analysis implements IQuimpPlugin {
         // check whether config file name is provided or ask user for it
         try {
             IJ.showStatus("Protrusion Analysis");
-            if (paramFile == null) { // open UI if no file provided
-                QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(".QCONF"); // use
-                                                                                        // default
-                FileDialog od = new FileDialog(IJ.getInstance(),
-                        "Open paramater file " + fileFilter.toString());
-                od.setFilenameFilter(fileFilter);
-                od.setDirectory(OpenDialog.getLastDirectory());
-                od.setMultipleMode(false);
-                od.setMode(FileDialog.LOAD);
-                od.setVisible(true);
-                if (od.getFile() == null) {
-                    IJ.log("Cancelled - exiting...");
-                    return;
-                }
-                // load config file but check if it is new format or old
-                this.paramFile = new File(od.getDirectory(), od.getFile());
-            } else // use provided file
-                this.paramFile = paramFile;
-            loadFile(); // load configuration file given by this.paramFile
+            loadFile(paramFile); // load configuration file given by paramFile
             gui.writeUI(); // set ui
             showUI(true); // show it and wait for user action. Plugin is run from Apply button
             if (uiCancelled)
@@ -158,6 +136,7 @@ public class Prot_Analysis implements IQuimpPlugin {
             visStackOutline = new TrackVisualisation.Stack(im1static.duplicate());
             visStackOutline.getOriginalImage().setTitle("Outlines");
         }
+
         TrackMapAnalyser pT = new TrackMapAnalyser();
         LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells
@@ -175,8 +154,21 @@ public class Prot_Analysis implements IQuimpPlugin {
             if (config.plotMotmapmax) {
                 visSingle.addMaximaToImage(mF);
                 visSingle.addTrackingLinesToImage(trackCollection);
-                // visSingle.addStaticCirclesToImage(pT.getCommonPoints(), Color.ORANGE, 7);
                 visSingle.getOriginalImage().show();
+            }
+            // plot motility map only
+            if (config.plotMotmap) {
+                ImagePlus mm = mapCell.map2ColorImagePlus("motility_map", mapCell.getMotMap(),
+                        oHs.oHs.get(h).migLimits[0], oHs.oHs.get(h).migLimits[1]);
+                mm.setTitle("MotilityMap_cell_" + h);
+                mm.show();
+            }
+            // plot convexity map only
+            if (config.plotConmap) {
+                ImagePlus mm = mapCell.map2ColorImagePlus("convexity_map", mapCell.getConvMap(),
+                        oHs.oHs.get(h).curvLimits[0], oHs.oHs.get(h).curvLimits[1]);
+                mm.setTitle("ConvexityMap_cell_" + h);
+                mm.show();
             }
 
             // plot static lines/or maxi
@@ -286,10 +278,10 @@ public class Prot_Analysis implements IQuimpPlugin {
      * Set <tt>qconfLoader</tt> field on success or set it to <tt>null</tt>.
      * @throws QuimpPluginException
      */
-    private void loadFile() throws QuimpPluginException {
+    private void loadFile(File paramFile) throws QuimpPluginException {
         try {
             if (qconfLoader == null) {
-                qconfLoader = new QconfLoader(paramFile.toPath()); // load file
+                qconfLoader = new QconfLoader(paramFile); // load file
                 if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
                     // validate in case new format
                     qconfLoader.getBOA(); // will throw exception if not present

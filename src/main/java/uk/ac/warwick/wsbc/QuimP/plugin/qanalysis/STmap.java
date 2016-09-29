@@ -456,10 +456,10 @@ public class STmap implements IQuimpSerialize {
         for (int r = 0; r < T; r++)
             for (int c = 0; c < res; c++) {
                 // pN = (c * mapCell.getT()) + r;
-                QColor color = QColor.ERColorMap2("rwb", motMap[r][c], min, max);
+                QColor color = QColor.ERColorMap2("rwb", map[r][c], min, max);
                 migColor[pN++] = color.getColorInt();
             }
-        return map2ImagePlus("motility_map", new ColorProcessor(res, T, migColor));
+        return map2ImagePlus(name, new ColorProcessor(res, T, migColor));
     }
 
     private Vert closestFloor(Outline o, double target, char c, Vert head) {

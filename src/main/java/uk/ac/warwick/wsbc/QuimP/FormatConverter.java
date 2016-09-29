@@ -39,7 +39,7 @@ public class FormatConverter {
     public FormatConverter(File newDataFile) {
         LOGGER.debug("Use provided file:" + newDataFile.toString());
         try {
-            qcL = new QconfLoader(newDataFile.toPath());
+            qcL = new QconfLoader(newDataFile);
             path = Paths.get(newDataFile.getParent());
         } catch (QuimpException e) {
             LOGGER.debug(e.getMessage(), e);
@@ -88,8 +88,9 @@ public class FormatConverter {
         // dT.ANAState = new ANAStates();
         ArrayList<STmap> maps = new ArrayList<>(); // temporary - we do not know number of cells
         // temprary object - different for every _x.paQP
-        QconfLoader local = new QconfLoader(Paths.get(qcL.getQp().getPath(),
-                orginal + "_" + i + QuimpConfigFilefilter.oldFileExt));
+        QconfLoader local = new QconfLoader(Paths
+                .get(qcL.getQp().getPath(), orginal + "_" + i + QuimpConfigFilefilter.oldFileExt)
+                .toFile());
         // populate BOA seg parameters
         dT.BOAState.loadParams(local.getQp()); // load parameters
         // initialize snakes (from snQP files)
@@ -137,7 +138,7 @@ public class FormatConverter {
         try {
             do {
                 local = new QconfLoader(Paths.get(qcL.getQp().getPath(),
-                        orginal + "_" + i + QuimpConfigFilefilter.oldFileExt));
+                        orginal + "_" + i + QuimpConfigFilefilter.oldFileExt).toFile());
                 oH = new OutlineHandler(local.getQp()); // load them (for on cell)
                 dT.ECMMState.oHs.add(oH); // store in ECMM object
                 BOA_.qState = dT.BOAState; // for compatibility
@@ -224,7 +225,8 @@ public class FormatConverter {
             throw new IllegalArgumentException("Can no convert from old format to old");
         // replace location to location of QCONF
         DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
-        dT.getBOAState().boap.setOutputFileCore(QuimpToolsCollection.removeExtension(path.toString()));
+        dT.getBOAState().boap
+                .setOutputFileCore(QuimpToolsCollection.removeExtension(path.toString()));
         dT.BOAState.nest.writeSnakes(); // write paQP and snQP together
     }
 

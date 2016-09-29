@@ -91,7 +91,7 @@ public class Q_Analysis {
                 // load config file but check if it is new format or old
                 paramFile = new File(od.getDirectory(), od.getFile());
             }
-            qconfLoader = new QconfLoader(paramFile.toPath()); // load file
+            qconfLoader = new QconfLoader(paramFile); // load file
             // show dialog
             if (!showDialog()) { // if user cancelled dialog
                 return; // do nothing

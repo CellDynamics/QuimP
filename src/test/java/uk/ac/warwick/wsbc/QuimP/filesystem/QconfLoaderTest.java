@@ -26,8 +26,6 @@ import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.Serializer;
-import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
-import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
 /**
@@ -53,7 +51,8 @@ public class QconfLoaderTest {
     public static void setUpBeforeClass() throws Exception {
         DataContainer dt = new DataContainer();
         Serializer<DataContainer> serializer;
-        serializer = new Serializer<>(dt, new uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection().getQuimPBuildInfo());
+        serializer = new Serializer<>(dt,
+                new uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection().getQuimPBuildInfo());
         serializer.setPretty();
         serializer.save("/tmp/qconftestloader.QCONF");
 
@@ -85,7 +84,7 @@ public class QconfLoaderTest {
      */
     @Test
     public void testQconfLoaderPath() throws Exception {
-        new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF"));
+        new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF").toFile());
     }
 
     /**
@@ -100,8 +99,9 @@ public class QconfLoaderTest {
         i1.show();
         ImagePlus i2 = IJ.openImage("src/test/resources/Stack_cut.tif");
         i2.show();
-        QconfLoader o = new QconfLoader(Paths.get(
-                "src/test/resources/ProtAnalysisTest/KZ4-220214-cAR1-GFP-devel5noimage.QCONF"));
+        QconfLoader o = new QconfLoader(Paths
+                .get("src/test/resources/ProtAnalysisTest/KZ4-220214-cAR1-GFP-devel5noimage.QCONF")
+                .toFile());
         o.getImage();
     }
 
@@ -111,7 +111,8 @@ public class QconfLoaderTest {
     @Test
     public void testValidateQconf() throws Exception {
         LOGGER.trace("testValidateQconf");
-        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+        QconfLoader q =
+                Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF").toFile()));
 
         QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
         ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
@@ -153,7 +154,8 @@ public class QconfLoaderTest {
      */
     @Test
     public void testIsBOAPresent() throws Exception {
-        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+        QconfLoader q =
+                Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF").toFile()));
         Mockito.when(q.validateQconf()).thenReturn(DataContainer.BOA_RUN + DataContainer.ECMM_RUN);
         assertThat(q.isBOAPresent(), is(true));
         Mockito.when(q.validateQconf())
@@ -174,7 +176,8 @@ public class QconfLoaderTest {
      */
     @Test
     public void testIsECMMPresent() throws Exception {
-        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+        QconfLoader q =
+                Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF").toFile()));
         Mockito.when(q.validateQconf()).thenReturn(DataContainer.BOA_RUN + DataContainer.ECMM_RUN);
         assertThat(q.isECMMPresent(), is(true));
         Mockito.when(q.validateQconf())
@@ -195,7 +198,8 @@ public class QconfLoaderTest {
      */
     @Test
     public void testIsANAPresent() throws Exception {
-        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+        QconfLoader q =
+                Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF").toFile()));
         Mockito.when(q.validateQconf()).thenReturn(DataContainer.BOA_RUN + DataContainer.ANA_RUN);
         assertThat(q.isANAPresent(), is(true));
         Mockito.when(q.validateQconf())
@@ -216,7 +220,8 @@ public class QconfLoaderTest {
      */
     @Test
     public void testIsQPresent() throws Exception {
-        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+        QconfLoader q =
+                Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF").toFile()));
         Mockito.when(q.validateQconf()).thenReturn(DataContainer.BOA_RUN + DataContainer.Q_RUN);
         assertThat(q.isQPresent(), is(true));
         Mockito.when(q.validateQconf())
@@ -234,7 +239,8 @@ public class QconfLoaderTest {
 
     @Test(expected = QuimpException.class)
     public void testGetBOA() throws Exception {
-        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+        QconfLoader q =
+                Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF").toFile()));
 
         QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
         ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
@@ -247,7 +253,8 @@ public class QconfLoaderTest {
 
     @Test(expected = QuimpException.class)
     public void testGetQ() throws Exception {
-        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+        QconfLoader q =
+                Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF").toFile()));
 
         QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
         ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
@@ -260,7 +267,8 @@ public class QconfLoaderTest {
 
     @Test(expected = QuimpException.class)
     public void testGetANA() throws Exception {
-        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+        QconfLoader q =
+                Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF").toFile()));
 
         QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
         ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
@@ -273,7 +281,8 @@ public class QconfLoaderTest {
 
     @Test(expected = QuimpException.class)
     public void testGetECMM() throws Exception {
-        QconfLoader q = Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF")));
+        QconfLoader q =
+                Mockito.spy(new QconfLoader(Paths.get("/tmp/qconftestloader.QCONF").toFile()));
 
         QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
         ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;

@@ -43,8 +43,8 @@ public class Prot_AnalysisTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        qL1 = new QconfLoader(
-                Paths.get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF"));
+        qL1 = new QconfLoader(Paths
+                .get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF").toFile());
     }
 
     /**
