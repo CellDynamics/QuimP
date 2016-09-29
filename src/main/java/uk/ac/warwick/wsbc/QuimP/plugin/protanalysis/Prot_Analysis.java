@@ -89,6 +89,8 @@ public class Prot_Analysis implements IQuimpPlugin {
         try {
             IJ.showStatus("Protrusion Analysis");
             loadFile(paramFile); // load configuration file given by paramFile
+            if (qconfLoader.getQp() == null)
+                return; // not loaded
             gui.writeUI(); // set ui
             showUI(true); // show it and wait for user action. Plugin is run from Apply button
             if (uiCancelled)
@@ -280,8 +282,10 @@ public class Prot_Analysis implements IQuimpPlugin {
      */
     private void loadFile(File paramFile) throws QuimpPluginException {
         try {
-            if (qconfLoader == null) {
+            if (qconfLoader == null || qconfLoader.getQp() == null) {
                 qconfLoader = new QconfLoader(paramFile); // load file
+                if (qconfLoader.getQp() == null)
+                    return; // not loaded
                 if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
                     // validate in case new format
                     qconfLoader.getBOA(); // will throw exception if not present

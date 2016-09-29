@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.qanalysis;
 
-import java.awt.FileDialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import org.apache.logging.log4j.core.config.Configurator;
 import ij.IJ;
 import ij.gui.GenericDialog;
 import ij.gui.YesNoCancelDialog;
-import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
 import uk.ac.warwick.wsbc.QuimP.QColor;
@@ -73,25 +71,9 @@ public class Q_Analysis {
         about();
         IJ.showStatus("QuimP Analysis");
         try {
-            if (paramFile == null) { // open UI if no file provided
-                QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(); // use default
-                // engine for
-                // finding extension
-                FileDialog od = new FileDialog(IJ.getInstance(),
-                        "Open paramater file " + fileFilter.toString());
-                od.setFilenameFilter(fileFilter);
-                od.setDirectory(OpenDialog.getLastDirectory());
-                od.setMultipleMode(false);
-                od.setMode(FileDialog.LOAD);
-                od.setVisible(true);
-                if (od.getFile() == null) {
-                    IJ.log("Cancelled - exiting...");
-                    return;
-                }
-                // load config file but check if it is new format or old
-                paramFile = new File(od.getDirectory(), od.getFile());
-            }
             qconfLoader = new QconfLoader(paramFile); // load file
+            if (qconfLoader == null || qconfLoader.getQp() == null)
+                return; // failed to load exit
             // show dialog
             if (!showDialog()) { // if user cancelled dialog
                 return; // do nothing
