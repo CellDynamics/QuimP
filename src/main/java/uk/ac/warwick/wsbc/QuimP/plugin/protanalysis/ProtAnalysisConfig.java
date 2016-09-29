@@ -24,8 +24,8 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
     /**
      * Types of plots to show.
      */
-    public boolean plotMotmap, plotMotmapmax, plotConmap, plotOutline, plotStaticmax,
-            plotStaticmaxAverimage, plotDynamicmax;
+    public boolean plotMotmap = false, plotMotmapmax = true, plotConmap = false,
+            plotOutline = false, plotStaticmax = false, plotDynamicmax = false;
 
     /**
      * Plot types supported by {@link addOutlinesToImage(STmap, ProtAnalysisConfig)}.
@@ -55,11 +55,11 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
         /**
          * Indicate whether to plot maxima point on image.
          */
-        public boolean plotmax;
+        public boolean plotmax = true;
         /**
          * Indicate whether to plot track lines on image.
          */
-        public boolean plottrack;
+        public boolean plottrack = true;
         /**
          * Indicate whether to average image.
          */
@@ -76,11 +76,11 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
         /**
          * Indicate whether to plot maxima point on image.
          */
-        public boolean plotmax;
+        public boolean plotmax = true;
         /**
          * Indicate whether to plot track lines on image.
          */
-        public boolean plottrack;
+        public boolean plottrack = true;
     }
 
     /**
