@@ -1,6 +1,6 @@
 /**
  */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.ecmm;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
 

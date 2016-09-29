@@ -84,7 +84,8 @@ public class QParamsQconf extends QParams {
     }
 
     /**
-     * @return the prefix. Without any cell number in contrary to super.getFileName()
+     * @return the prefix. Without any cell number in contrary to super.getFileName(). Only filename
+     * without path and extension.
      */
     @Override
     public String getFileName() {

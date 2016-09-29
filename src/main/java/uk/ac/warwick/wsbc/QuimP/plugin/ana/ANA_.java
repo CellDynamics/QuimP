@@ -4,7 +4,6 @@ import java.awt.AWTEvent;
 import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Color;
-import java.awt.FileDialog;
 import java.awt.Polygon;
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +23,6 @@ import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.YesNoCancelDialog;
-import ij.io.OpenDialog;
 import ij.measure.Measurements;
 import ij.plugin.Converter;
 import ij.plugin.filter.PlugInFilter;
@@ -37,7 +35,6 @@ import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
-import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.filesystem.ANAParamCollection;
@@ -133,22 +130,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
         ecmMapping = new ECMM_Mapping(1);
 
         try {
-            QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(); // use default
-            // engine for
-            // finding extension
-            FileDialog od = new FileDialog(IJ.getInstance(),
-                    "Open paramater file " + fileFilter.toString());
-            od.setFilenameFilter(fileFilter);
-            od.setDirectory(OpenDialog.getLastDirectory());
-            od.setMultipleMode(false);
-            od.setMode(FileDialog.LOAD);
-            od.setVisible(true);
-            if (od.getFile() == null) {
-                IJ.log("Cancelled - exiting...");
-                return;
-            }
-            File paramFile = new File(od.getDirectory(), od.getFile());
-            qconfLoader = new QconfLoader(paramFile.toPath()); // load file
+            qconfLoader = new QconfLoader(null); // load file
+            if (qconfLoader == null || qconfLoader.getQp() == null)
+                return; // failed to load exit
             if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
                 runFromPAQP();
             } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
@@ -166,7 +150,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
                     }
                 }
                 runFromQCONF();
-                IJ.log("The new data file " + paramFile.getName()
+                IJ.log("The new data file " + qconfLoader.getQp().getFileName()
                         + " has been updated by results of ECMM analysis.");
             } else {
                 throw new IllegalStateException("QconfLoader returned unknown version of QuimP");
@@ -706,7 +690,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
         orgIpr.setRoi(innerPoly);
         is = ImageStatistics.getStatistics(orgIpr, m, null);
 
-        fluoStats[store].channels[anap.channel].innerArea = QuimpToolsCollection.areaToScale(is.area, anap.scale);
+        fluoStats[store].channels[anap.channel].innerArea =
+                QuimpToolsCollection.areaToScale(is.area, anap.scale);
         fluoStats[store].channels[anap.channel].totalInnerFluor = is.mean * is.area;
         fluoStats[store].channels[anap.channel].meanInnerFluor = is.mean; // fluoStats[store].channels[ANAp.channel].totalInnerFluor
                                                                           // /

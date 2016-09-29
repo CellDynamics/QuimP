@@ -56,17 +56,17 @@ public class QconfLoader {
      * <p>
      * Main runner.
      * 
-     * @param path Path to *.paQP/QCONF file. If <tt>null</tt> user is asked for this file
+     * @param file File *.paQP/QCONF. If <tt>null</tt> user is asked for this file
      * @throws QuimpException when QCONF can not be loaded
      */
-    public QconfLoader(Path path) throws QuimpException {
+    public QconfLoader(File file) throws QuimpException {
         String directory; // directory with paQP
         String filename; // file name of paQP
 
-        if (path == null) { // no file provided, ask user
+        if (file == null) { // no file provided, ask user
             QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(); // use default
-            // engine for
-            // finding extension
+                                                                            // engine for finding
+                                                                            // extension
             FileDialog od = new FileDialog(IJ.getInstance(),
                     "Open paramater file " + fileFilter.toString());
             od.setFilenameFilter(fileFilter);
@@ -82,13 +82,14 @@ public class QconfLoader {
             filename = od.getFile();
         } else // use name provided in constructor
         {
+            Path path = file.toPath();
             // getParent can return null
             directory = path.getParent() == null ? "" : path.getParent().toString();
             filename = path.getFileName() == null ? "" : path.getFileName().toString();
             LOGGER.debug("Use provided file:" + directory + " " + filename);
         }
         // detect old/new file format
-        File paramFile = new File(directory, filename); // config file
+        File paramFile = new File(directory, filename); // config file (copy of input)
         if (paramFile.getName().toLowerCase()
                 .endsWith(QuimpConfigFilefilter.newFileExt.toLowerCase())) // TODO #152
             qp = new QParamsQconf(paramFile);

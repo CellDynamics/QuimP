@@ -20,7 +20,6 @@ import org.junit.Test;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
-import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.MaximaFinder;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
@@ -46,8 +45,8 @@ public class MaximaFinderTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        qL1 = new QconfLoader(
-                Paths.get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF"));
+        qL1 = new QconfLoader(Paths
+                .get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF").toFile());
     }
 
     /**

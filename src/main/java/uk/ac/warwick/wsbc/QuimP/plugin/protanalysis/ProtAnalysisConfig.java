@@ -12,8 +12,20 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  */
 public class ProtAnalysisConfig implements IQuimpSerialize {
 
+    /**
+     * Sensitivity of maximum detection.
+     */
     public double noiseTolerance = 1.5;
+    /**
+     * Percentage of drop from maximum of motility map to consider point in tracking line.
+     */
     public double dropValue = 1;
+
+    /**
+     * Types of plots to show.
+     */
+    public boolean plotMotmap = false, plotMotmapmax = true, plotConmap = false,
+            plotOutline = false, plotStaticmax = false, plotDynamicmax = false;
 
     /**
      * Plot types supported by {@link addOutlinesToImage(STmap, ProtAnalysisConfig)}.
@@ -32,6 +44,44 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
     public enum outlinePlotTypes {
         MOTILITY, CONVEXITY, CONVANDEXP, CONCANDRETR, BOTH
     };
+
+    /**
+     * Configuration for static plot.
+     * 
+     * @author p.baniukiewicz
+     *
+     */
+    class StaticPlot {
+        /**
+         * Indicate whether to plot maxima point on image.
+         */
+        public boolean plotmax = true;
+        /**
+         * Indicate whether to plot track lines on image.
+         */
+        public boolean plottrack = true;
+        /**
+         * Indicate whether to average image.
+         */
+        public boolean averimage;
+    }
+
+    /**
+     * Configuration for dynamic plot.
+     * 
+     * @author p.baniukiewicz
+     *
+     */
+    class DynamicPlot {
+        /**
+         * Indicate whether to plot maxima point on image.
+         */
+        public boolean plotmax = true;
+        /**
+         * Indicate whether to plot track lines on image.
+         */
+        public boolean plottrack = true;
+    }
 
     /**
      * Configuration of plotting outlines of cells on stack of images.
@@ -78,7 +128,15 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
     /**
      * Hold configuration for plotting outlines of cells on stack of images.
      */
-    public OutlinesToImage outlinesToImage;
+    public OutlinesToImage outlinesToImage = new OutlinesToImage();
+    /**
+     * Hold configuration for plotting static images.
+     */
+    public StaticPlot staticPlot = new StaticPlot();
+    /**
+     * Hold configuration for plotting dynamic images.
+     */
+    public DynamicPlot dynamicPlot = new DynamicPlot();
 
     /**
      * Suffix for cell stats.
@@ -90,7 +148,6 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
     public final String protStatSuffix = "_protstat.csv";
 
     public ProtAnalysisConfig() {
-        outlinesToImage = new OutlinesToImage();
     }
 
     /* (non-Javadoc)
@@ -98,7 +155,6 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      */
     @Override
     public void beforeSerialize() {
-        // TODO Auto-generated method stub
 
     }
 
@@ -107,7 +163,6 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      */
     @Override
     public void afterSerialize() throws Exception {
-        // TODO Auto-generated method stub
 
     }
 

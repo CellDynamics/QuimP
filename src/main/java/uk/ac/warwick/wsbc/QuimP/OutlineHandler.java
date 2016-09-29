@@ -351,10 +351,37 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
                 n = n.getNext();
             } while (!n.isHead());
+            // see uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap.calcCurvature()
+            Vert v;
+            for (int f = getStartFrame(); f <= getEndFrame(); f++) {
+                Outline o = getOutline(f);
+                if (o == null) {
+                    LOGGER.error("ERROR: Outline at frame " + f + " is empty");
+                    continue;
+                }
+                v = o.getHead();
+
+                // find min and max of sum curvature
+                v = o.getHead();
+                if (f == getStartFrame()) {
+                    curvLimits[1] = v.curvatureSum;
+                    curvLimits[0] = v.curvatureSum;
+                }
+                do {
+                    if (v.curvatureSum > curvLimits[1]) {
+                        curvLimits[1] = v.curvatureSum;
+                    }
+                    if (v.curvatureSum < curvLimits[0]) {
+                        curvLimits[0] = v.curvatureSum;
+                    }
+                    v = v.getNext();
+                } while (!v.isHead());
+            }
         }
 
         // Set limits to equal positive and negative
         migLimits = QuimpToolsCollection.setLimitsEqual(migLimits);
+        curvLimits = QuimpToolsCollection.setLimitsEqual(curvLimits);
     }
 
     public int getSize() {

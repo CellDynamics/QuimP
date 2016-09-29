@@ -3,7 +3,6 @@ package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 import java.io.File;
 
 import ij.ImageJ;
-import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Prot_Analysis;
 
 /**
  * @author p.baniukiewicz

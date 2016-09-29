@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.ecmm;
 
-import java.awt.FileDialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import ij.ImageStack;
 // import java.awt.*;
 import ij.gui.NewImage;
 import ij.gui.YesNoCancelDialog;
-import ij.io.OpenDialog;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.FormatConverter;
@@ -113,25 +111,9 @@ public class ECMM_Mapping {
         about();
         IJ.showStatus("ECMM Analysis");
         try {
-            if (paramFile == null) { // open UI if no file provided
-                QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(); // use default
-                                                                                // engine for
-                                                                                // finding extension
-                FileDialog od = new FileDialog(IJ.getInstance(),
-                        "Open paramater file " + fileFilter.toString());
-                od.setFilenameFilter(fileFilter);
-                od.setDirectory(OpenDialog.getLastDirectory());
-                od.setMultipleMode(false);
-                od.setMode(FileDialog.LOAD);
-                od.setVisible(true);
-                if (od.getFile() == null) {
-                    IJ.log("Cancelled - exiting...");
-                    return;
-                }
-                // load config file but check if it is new format or old
-                paramFile = new File(od.getDirectory(), od.getFile());
-            }
-            qconfLoader = new QconfLoader(paramFile.toPath()); // load file
+            qconfLoader = new QconfLoader(paramFile); // load file
+            if (qconfLoader == null || qconfLoader.getQp() == null)
+                return; // failed to load exit
             if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
                 QParams qp;
                 runFromPAQP();
@@ -1724,7 +1706,8 @@ class ODEsolver {
                 // not needed
                 edge = ODEsolver.snap(p, s);
                 dist += ExtendedVector2d.lengthP2P(pp, p);
-                v.distance = QuimpToolsCollection.speedToScale(dist, ECMp.scale, ECMp.frameInterval);
+                v.distance =
+                        QuimpToolsCollection.speedToScale(dist, ECMp.scale, ECMp.frameInterval);
                 // if (s.expanding && !ECMp.ANA) {
                 v.setLandingCoord(p, edge);
                 // }
