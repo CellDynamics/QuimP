@@ -282,7 +282,7 @@ public class Prot_Analysis implements IQuimpPlugin {
     }
 
     /**
-     * Load configuration file given by this.paramFile field. (only if not loaded before).
+     * Load configuration file. (only if not loaded before).
      * 
      * Set <tt>qconfLoader</tt> field on success or set it to <tt>null</tt>.
      * @throws QuimpPluginException

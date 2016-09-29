@@ -53,10 +53,11 @@ public class QconfLoader {
     }
 
     /**
-     * Parametrised constructor.
+     * Parametrised constructor. Allow to choose file selector filter.
+     * 
      * @param file File *.paQP/QCONF. If <tt>null</tt> user is asked for this file.
      * @param fileFilter pre-selection filter or <tt>null</tt> to use default selected in QuimP_Bar.
-     * @throws QuimpException 
+     * @throws QuimpException when file can not be loaded
      */
     public QconfLoader(File file, QuimpConfigFilefilter fileFilter) throws QuimpException {
         loader(file, fileFilter);
@@ -64,12 +65,11 @@ public class QconfLoader {
     }
 
     /**
-     * Parameterised constructor.
-     * <p>
-     * Main runner.
+     * Parameterised constructor. Assume that active extension for configuration file is set by
+     * QuimP_Bar.
      * 
      * @param file File *.paQP/QCONF. If <tt>null</tt> user is asked for this file
-     * @throws QuimpException when QCONF can not be loaded
+     * @throws QuimpException when file can not be loaded
      */
     public QconfLoader(File file) throws QuimpException {
         loader(file, null); // use default filter set in QuimP_Bar
@@ -77,10 +77,11 @@ public class QconfLoader {
     }
 
     /**
-     * File loaded and initializator for this class.
-     * @param file File *.paQP/QCONF. If <tt>null</tt> user is asked for this file
+     * File loaded and initialiser for this class.
+     * 
+     * @param file File *.paQP/QCONF. If <tt>null</tt> user is asked for this file.
      * @param fileFilter pre-selection filter or null to use default selected in QuimP_Bar.
-     * @throws QuimpException 
+     * @throws QuimpException when file can not be loaded
      * @see QuimP_Bar
      */
     private void loader(File file, QuimpConfigFilefilter fileFilter) throws QuimpException {

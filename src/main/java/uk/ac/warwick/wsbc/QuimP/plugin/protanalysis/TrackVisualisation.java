@@ -192,7 +192,7 @@ public abstract class TrackVisualisation {
          */
         public Map(String name, float[][] data) {
             super(name, new FloatProcessor(data));
-            ImageProcessor imp = originalImage.getProcessor();
+            // ImageProcessor imp = originalImage.getProcessor();
             // can not be rotated here!!
             // imp = imp.rotateRight();
             // imp.flipHorizontal();
