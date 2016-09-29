@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -47,7 +48,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @author p.baniukiewicz
  * TODO This class support IQuimpPlugin for future.
  */
-public class Prot_Analysis implements IQuimpPlugin, ActionListener {
+public class Prot_Analysis implements IQuimpPlugin {
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -58,23 +59,16 @@ public class Prot_Analysis implements IQuimpPlugin, ActionListener {
 
     private QconfLoader qconfLoader; // main object representing loaded configuration file
     private File paramFile;
+    private boolean uiCancelled = false;
+    public Prot_AnalysisUI gui = new Prot_AnalysisUI();
+    @SuppressWarnings("serial")
+    // default configuration parameters, for future using
+    ParamList paramList = new ParamList();
     /**
      * Keep overall configuration. This object is filled in GUI and passed to runPlugin, where
      * it is read out.
      */
     private ProtAnalysisConfig config;
-
-    // UI elements
-    private JFrame wnd;
-    private JButton bCancel, bApply, bHelp;
-    private JFormattedTextField fieldnoiseTolerance, fielddropValue;
-    private JCheckBox checkPlotMotmap, checkPlotStaticmaxima;
-    private JComboBox<ProtAnalysisConfig.outlinePlotTypes> comboPlotOutlineParam;
-
-    private boolean uiCancelled = false;
-    @SuppressWarnings("serial")
-    // default configuration parameters, for future using
-    ParamList paramList = new ParamList();
 
     /**
      * Default constructor. 
@@ -113,6 +107,7 @@ public class Prot_Analysis implements IQuimpPlugin, ActionListener {
                 this.paramFile = new File(od.getDirectory(), od.getFile());
             } else // use provided file
                 this.paramFile = paramFile;
+            gui.writeUI(config);
             // showUI(true);
             if (uiCancelled)
                 return;
@@ -236,69 +231,6 @@ public class Prot_Analysis implements IQuimpPlugin, ActionListener {
         return paramList;
     }
 
-    /**
-     * test method to replace showUI
-     */
-    public void showUI2() {
-        wnd = new JFrame("Protrusion analysis plugin");
-        wnd.setResizable(false);
-        JPanel wndpanel = new JPanel(new BorderLayout());
-
-        // middle main panel - integrates fields
-        JPanel middle = new JPanel();
-        middle.setLayout(new FlowLayout());
-        wndpanel.add(middle, BorderLayout.CENTER);
-
-        // options
-        JPanel params = new JPanel();
-        params.setBorder(BorderFactory.createTitledBorder("Options"));
-        params.setLayout(new GridLayout(2, 2));
-        fielddropValue = new JFormattedTextField(NumberFormat.getInstance());
-        fielddropValue.setValue(new Double(config.dropValue));
-        fielddropValue.setColumns(4);
-        fieldnoiseTolerance = new JFormattedTextField(NumberFormat.getInstance());
-        fieldnoiseTolerance.setValue(new Double(config.noiseTolerance));
-        fieldnoiseTolerance.setColumns(4);
-        params.add(fielddropValue);
-        params.add(new JLabel("Drop value"));
-        params.add(fieldnoiseTolerance);
-        params.add(new JLabel("Sensitivity"));
-        middle.add(params);
-
-        // vis options
-        JPanel visparams = new JPanel();
-        visparams.setBorder(BorderFactory.createTitledBorder("Simple plots"));
-        visparams.setLayout(new GridLayout(2, 2));
-        checkPlotMotmap = new JCheckBox("Motility map");
-        checkPlotStaticmaxima = new JCheckBox("Outlines");
-        comboPlotOutlineParam = new JComboBox<>();
-        visparams.add(checkPlotMotmap);
-        visparams.add(new JLabel(""));
-        visparams.add(checkPlotStaticmaxima);
-        visparams.add(comboPlotOutlineParam);
-        middle.add(visparams);
-
-        // cancel apply row
-        JPanel caButtons = new JPanel();
-        caButtons.setLayout(new FlowLayout(FlowLayout.CENTER));
-        bApply = new JButton("Apply");
-        bApply.addActionListener(this);
-        bCancel = new JButton("Cancel");
-        bCancel.addActionListener(this);
-        bHelp = new JButton("Help");
-        bHelp.addActionListener(this);
-        caButtons.add(bApply);
-        caButtons.add(bCancel);
-        caButtons.add(bHelp);
-        wndpanel.add(caButtons, BorderLayout.SOUTH);
-
-        wnd.add(wndpanel);
-        wnd.pack();
-        wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        wnd.setVisible(true);
-
-    }
-
     @Override
     public void showUI(boolean val) {
         GenericDialog pd = new GenericDialog("Protrusion detection dialog", IJ.getInstance());
@@ -349,11 +281,272 @@ public class Prot_Analysis implements IQuimpPlugin, ActionListener {
         }
 
     }
+}
+
+/**
+ * Build GUI for plugin.
+ * 
+ * @author p.baniukiewicz
+ *
+ */
+class Prot_AnalysisUI implements ActionListener {
+    // UI elements
+    private JFrame wnd;
+    private JButton bCancel, bApply, bHelp;
+    private JFormattedTextField f_noiseTolerance, f_dropValue, f_motThreshold, f_convThreshold;
+    private JComboBox<ProtAnalysisConfig.outlinePlotTypes> o_plotType;
+    private JCheckBox c_plotMotmap, c_plotMotmapmax, c_plotConmap, c_plotOutline, c_plotStaticmax,
+            c_plotDynamicmax;
+
+    JLabel labelMaxnum, labelMaxval, labelMinval;
+
+    private JCheckBox c_staticPlotmax, c_staticPlottrack, c_staticAverimage;
+    private JCheckBox c_dynamicPlotmax, c_dynamicPlottrack;
+
+    public Prot_AnalysisUI() {
+        buildUI();
+    }
+
+    /**
+     * Copy UI settings to {@link ProtAnalysisConfig} object.
+     * @param config
+     */
+    public void readUI(ProtAnalysisConfig config) {
+        config.noiseTolerance = ((Number) f_noiseTolerance.getValue()).doubleValue();
+        config.dropValue = ((Number) f_dropValue.getValue()).doubleValue();
+
+        config.plotOutline = c_plotOutline.isSelected();
+        config.outlinesToImage.motThreshold = ((Number) f_motThreshold.getValue()).doubleValue();
+        config.outlinesToImage.convThreshold = ((Number) f_convThreshold.getValue()).doubleValue();
+        config.outlinesToImage.plotType = (outlinePlotTypes) o_plotType.getSelectedItem();
+
+        config.plotMotmap = c_plotMotmap.isSelected();
+        config.plotMotmapmax = c_plotMotmapmax.isSelected();
+        config.plotConmap = c_plotConmap.isSelected();
+
+        config.plotStaticmax = c_plotStaticmax.isSelected();
+        config.staticPlot.plotmax = c_staticPlotmax.isSelected();
+        config.staticPlot.plottrack = c_staticPlottrack.isSelected();
+        config.staticPlot.averimage = c_staticAverimage.isSelected();
+
+        config.plotDynamicmax = c_plotDynamicmax.isSelected();
+        config.dynamicPlot.plotmax = c_dynamicPlotmax.isSelected();
+        config.dynamicPlot.plottrack = c_dynamicPlottrack.isSelected();
+
+    }
+
+    /**
+     * Copy {@link ProtAnalysisConfig} settings to UI.
+     * @param config
+     */
+    public void writeUI(ProtAnalysisConfig config) {
+        f_noiseTolerance.setValue(new Double(config.noiseTolerance));
+        f_dropValue.setValue(new Double(config.dropValue));
+
+        c_plotOutline.setSelected(config.plotOutline);
+        f_motThreshold.setValue(new Double(config.outlinesToImage.motThreshold));
+        f_convThreshold.setValue(new Double(config.outlinesToImage.convThreshold));
+        o_plotType.setSelectedItem(config.outlinesToImage.plotType);
+
+        c_plotMotmap.setSelected(config.plotMotmap);
+        c_plotMotmapmax.setSelected(config.plotMotmapmax);
+        c_plotConmap.setSelected(config.plotConmap);
+
+        c_plotStaticmax.setSelected(config.plotStaticmax);
+        c_staticPlotmax.setSelected(config.staticPlot.plotmax);
+        c_staticPlottrack.setSelected(config.staticPlot.plottrack);
+        c_staticAverimage.setSelected(config.staticPlot.averimage);
+
+        c_plotDynamicmax.setSelected(config.plotDynamicmax);
+        c_dynamicPlotmax.setSelected(config.dynamicPlot.plotmax);
+        c_dynamicPlottrack.setSelected(config.dynamicPlot.plottrack);
+    }
+
+    /**
+     * Build and show UI.
+     */
+    public void showUI() {
+        wnd.setVisible(true);
+    }
+
+    /**
+     * 
+     */
+    private void buildUI() {
+        wnd = new JFrame("Protrusion analysis plugin");
+        wnd.setResizable(false);
+        JPanel wndpanel = new JPanel(new BorderLayout());
+
+        // middle main panel - integrates fields
+        JPanel middle = new JPanel();
+        middle.setLayout(new GridLayout(2, 2));
+        wndpanel.add(middle, BorderLayout.CENTER);
+        // tiles in UI
+        {
+            // options
+            JPanel params = new JPanel();
+            params.setBorder(BorderFactory.createTitledBorder("Options"));
+            GridLayout g = new GridLayout(4, 2);
+            g.setHgap(2);
+            g.setVgap(2);
+            params.setLayout(g);
+            f_dropValue = new JFormattedTextField(NumberFormat.getInstance());
+            // f_dropValue.setValue(new Double(config.dropValue));
+            f_dropValue.setColumns(4);
+            f_noiseTolerance = new JFormattedTextField(NumberFormat.getInstance());
+            // f_noiseTolerance.setValue(new Double(config.noiseTolerance));
+            f_noiseTolerance.setColumns(4);
+            params.add(f_dropValue);
+            params.add(new JLabel("Drop value"));
+            params.add(f_noiseTolerance);
+            params.add(new JLabel("Sensitivity"));
+            params.add(new JLabel(" "));
+            params.add(new JLabel(" "));
+            params.add(new JLabel(" "));
+            params.add(new JLabel(" "));
+            middle.add(params);
+        }
+        {
+            // info
+            JPanel info = new JPanel();
+            info.setBorder(BorderFactory.createTitledBorder("Info"));
+            GridLayout g = new GridLayout(4, 2);
+            g.setHgap(2);
+            g.setVgap(2);
+            info.setLayout(g);
+            info.add(new JLabel("Maxima number:"));
+            labelMaxnum = new JLabel(" ");
+            labelMaxnum.setBackground(Color.GREEN);
+            info.add(labelMaxnum);
+            info.add(new JLabel("Max value:"));
+            labelMaxval = new JLabel(" ");
+            labelMaxval.setBackground(Color.GREEN);
+            info.add(labelMaxval);
+            info.add(new JLabel("Min value:"));
+            labelMinval = new JLabel(" ");
+            labelMinval.setBackground(Color.GREEN);
+            info.add(labelMinval);
+            info.add(new JLabel(" "));
+            info.add(new JLabel(" "));
+            middle.add(info);
+        }
+        {
+            // simple plot
+            JPanel mapplots = new JPanel();
+            mapplots.setBorder(BorderFactory.createTitledBorder("Map plots"));
+            GridLayout g = new GridLayout(4, 2);
+            g.setHgap(2);
+            g.setVgap(2);
+            mapplots.setLayout(g);
+            c_plotMotmap = new JCheckBox("Motility map");
+            c_plotConmap = new JCheckBox("Convexity map");
+            c_plotMotmapmax = new JCheckBox("Maxima");
+            mapplots.add(c_plotMotmap);
+            mapplots.add(c_plotConmap);
+            mapplots.add(c_plotMotmapmax);
+            mapplots.add(new JLabel(" "));
+            mapplots.add(new JLabel(" "));
+            middle.add(mapplots);
+        }
+        {
+            // outline plot
+            JPanel outlines = new JPanel();
+            outlines.setBorder(BorderFactory.createTitledBorder("Outline plots"));
+            outlines.setLayout(new BorderLayout());
+            c_plotOutline = new JCheckBox("Outline plot");
+            c_plotOutline.setBackground(new Color(255, 255, 102));
+            outlines.add(c_plotOutline, BorderLayout.NORTH);
+            middle.add(outlines);
+            JPanel outlinesp = new JPanel();
+            GridLayout g = new GridLayout(3, 2);
+            g.setHgap(2);
+            g.setVgap(2);
+            outlinesp.setLayout(g);
+            outlines.add(outlinesp, BorderLayout.CENTER);
+            outlinesp.add(new JLabel("Plot type"));
+            outlinePlotTypes[] types = { outlinePlotTypes.MOTILITY, outlinePlotTypes.CONVEXITY,
+                    outlinePlotTypes.CONVANDEXP, outlinePlotTypes.CONCANDRETR,
+                    outlinePlotTypes.BOTH };
+            o_plotType = new JComboBox<>(types);
+            outlinesp.add(o_plotType);
+            outlinesp.add(new JLabel("Mot Thres"));
+            f_motThreshold = new JFormattedTextField(NumberFormat.getInstance());
+            f_motThreshold.setColumns(4);
+            outlinesp.add(f_motThreshold);
+            outlinesp.add(new JLabel("Conv Thres"));
+            f_convThreshold = new JFormattedTextField(NumberFormat.getInstance());
+            f_convThreshold.setColumns(4);
+            outlinesp.add(f_convThreshold);
+
+        }
+        {
+            JPanel outlines = new JPanel();
+            outlines.setBorder(BorderFactory.createTitledBorder("Maxima plot"));
+            outlines.setLayout(new BorderLayout());
+            c_plotStaticmax = new JCheckBox("Maxima plot");
+            c_plotStaticmax.setBackground(new Color(255, 255, 102));
+            outlines.add(c_plotStaticmax, BorderLayout.NORTH);
+            middle.add(outlines);
+            JPanel outlinesp = new JPanel();
+            GridLayout g = new GridLayout(3, 2);
+            g.setHgap(2);
+            g.setVgap(2);
+            outlinesp.setLayout(g);
+            outlines.add(outlinesp, BorderLayout.CENTER);
+            c_staticAverimage = new JCheckBox("Averaged plot");
+            outlinesp.add(c_staticAverimage);
+            c_staticPlotmax = new JCheckBox("Plot maxima");
+            outlinesp.add(c_staticPlotmax);
+            c_staticPlottrack = new JCheckBox("Plot tracks");
+            outlinesp.add(c_staticPlottrack);
+            outlinesp.add(new JLabel(" "));
+
+        }
+        {
+            JPanel outlines = new JPanel();
+            outlines.setBorder(BorderFactory.createTitledBorder("Dynamic plot"));
+            outlines.setLayout(new BorderLayout());
+            c_plotDynamicmax = new JCheckBox("Dynamic plot");
+            c_plotDynamicmax.setBackground(new Color(255, 255, 102));
+            outlines.add(c_plotDynamicmax, BorderLayout.NORTH);
+            middle.add(outlines);
+            JPanel outlinesp = new JPanel();
+            GridLayout g = new GridLayout(3, 2);
+            g.setHgap(2);
+            g.setVgap(2);
+            outlinesp.setLayout(g);
+            outlines.add(outlinesp, BorderLayout.CENTER);
+            c_dynamicPlotmax = new JCheckBox("Plot maxima");
+            outlinesp.add(c_dynamicPlotmax);
+            c_dynamicPlottrack = new JCheckBox("Plot tracks");
+            outlinesp.add(c_dynamicPlottrack);
+            outlinesp.add(new JLabel(" "));
+            outlinesp.add(new JLabel(" "));
+
+        }
+
+        // cancel apply row
+        JPanel caButtons = new JPanel();
+        caButtons.setLayout(new FlowLayout(FlowLayout.CENTER));
+        bApply = new JButton("Apply");
+        bApply.addActionListener(this);
+        bCancel = new JButton("Cancel");
+        bCancel.addActionListener(this);
+        bHelp = new JButton("Help");
+        bHelp.addActionListener(this);
+        caButtons.add(bApply);
+        caButtons.add(bCancel);
+        caButtons.add(bHelp);
+        wndpanel.add(caButtons, BorderLayout.SOUTH);
+
+        wnd.add(wndpanel);
+        wnd.pack();
+        wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         // TODO Auto-generated method stub
 
     }
-
 }

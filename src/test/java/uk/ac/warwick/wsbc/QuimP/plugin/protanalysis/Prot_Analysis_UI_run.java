@@ -15,7 +15,7 @@ public class Prot_Analysis_UI_run {
      * @param args
      */
     public static void main(String[] args) {
-        new Prot_Analysis(new File("src/test/resources/Stack_cut.QCONF")).showUI2();
+        new Prot_Analysis(new File("src/test/resources/Stack_cut.QCONF")).gui.showUI();
 
     }
 
