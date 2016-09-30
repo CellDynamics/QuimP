@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
@@ -128,9 +129,9 @@ public class PolarPlot {
             // a1 = (a1 < 0) ? (a1 + 2 * Math.PI) : a1; // atan2 returns -pi:pi
             double a2 = Math.atan2(ref.y, ref.x);
             // a2 = (a2 < 0) ? (a2 + 2 * Math.PI) : a2;
-            ret[i] = a1 - a2;
-            // convert to 4-squares angle
-            ret[i] = (ret[i] < 0) ? (ret[i] + 2 * Math.PI) : ret[i];
+            ret[i] = -a1 + a2;
+            // convert to 4-squares angle (left comment to comp with matlab plotPolarPlot)
+            // ret[i] = (ret[i] < 0) ? (ret[i] + 2 * Math.PI) : ret[i];
         }
         return ret;
 
@@ -233,6 +234,61 @@ public class PolarPlot {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * http://www.java2s.com/Code/Java/Collections-Data-Structure/LinearInterpolation.htm
+     * @param x
+     * @param y
+     * @param xi
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public static double[] interpLinear(double[] x, double[] y, double[] xi)
+            throws IllegalArgumentException {
+
+        if (x.length != y.length) {
+            throw new IllegalArgumentException("X and Y must be the same length");
+        }
+        if (x.length == 1) {
+            throw new IllegalArgumentException("X must contain more than one value");
+        }
+        double[] dx = new double[x.length - 1];
+        double[] dy = new double[x.length - 1];
+        double[] slope = new double[x.length - 1];
+        double[] intercept = new double[x.length - 1];
+
+        // Calculate the line equation (i.e. slope and intercept) between each point
+        for (int i = 0; i < x.length - 1; i++) {
+            dx[i] = x[i + 1] - x[i];
+            if (dx[i] == 0) {
+                throw new IllegalArgumentException(
+                        "X must be montotonic. A duplicate " + "x-value was found");
+            }
+            if (dx[i] < 0) {
+                throw new IllegalArgumentException("X must be sorted");
+            }
+            dy[i] = y[i + 1] - y[i];
+            slope[i] = dy[i] / dx[i];
+            intercept[i] = y[i] - x[i] * slope[i];
+        }
+        // Perform the interpolation here
+        double[] yi = new double[xi.length];
+        for (int i = 0; i < xi.length; i++) {
+            if ((xi[i] > x[x.length - 1]) || (xi[i] < x[0])) {
+                yi[i] = Double.NaN;
+            } else {
+                int loc = Arrays.binarySearch(x, xi[i]);
+                if (loc < -1) {
+                    loc = -loc - 2;
+                    yi[i] = slope[loc] * xi[i] + intercept[loc];
+                } else {
+                    yi[i] = y[loc];
+                }
+            }
+        }
+
+        return yi;
     }
 
 }

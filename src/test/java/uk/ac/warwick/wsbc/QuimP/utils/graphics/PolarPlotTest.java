@@ -172,13 +172,15 @@ public class PolarPlotTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#generatePlot(int)}.
+     * Compared with matlab
      */
     @Test
     public void testGeneratePlot_1() throws Exception {
         QconfLoader qconfLoader = new QconfLoader(new File(
                 "src/test/resources/ProtAnalysisTest/KZ4/KZ4-220214-cAR1-GFP-devel5.QCONF"));
-        PolarPlot pp = new PolarPlot(qconfLoader.getQ()[0], new Point2d(100, 100));
+        PolarPlot pp = new PolarPlot(qconfLoader.getQ()[0], new Point2d(512, 512));
         pp.generatePlot("/tmp/test_1.svg");
+        pp.generatePlotFrame("/tmp/test_1f2.svg", 1);
     }
 
 }
