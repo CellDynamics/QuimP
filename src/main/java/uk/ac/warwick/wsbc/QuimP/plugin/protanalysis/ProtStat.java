@@ -16,6 +16,7 @@ import uk.ac.warwick.wsbc.QuimP.FrameStatistics;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Track.Type;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * Compute statistics for one cell.
@@ -118,10 +119,10 @@ public class ProtStat implements IQuimpSerialize {
         public CellStatistics() {
             getFromCellStats(); // copy some stats from CellStats
             // calculate basic stats for motility and convexity
-            motMean = geMean(maps.motMap);
-            conMean = geMean(maps.convMap);
-            motVar = getVar(maps.motMap);
-            conVar = getVar(maps.convMap);
+            motMean = QuimPArrayUtils.geMean(maps.motMap);
+            conMean = QuimPArrayUtils.geMean(maps.convMap);
+            motVar = QuimPArrayUtils.getVar(maps.motMap);
+            conVar = QuimPArrayUtils.getVar(maps.convMap);
             protcount = countProtrusions();
         }
 
@@ -319,41 +320,6 @@ public class ProtStat implements IQuimpSerialize {
             bf.flush();
         }
 
-    }
-
-    /**
-     * Calculate mean of map for every frame (row).
-     * @param map
-     * @return Mean of map for every row as list.
-     * TODO use framewindow 
-     */
-    private double[] geMean(double[][] map) {
-        double[] ret = new double[frames];
-        for (int f = 0; f < frames; f++) { // for every frame
-            double mean = 0;
-            for (int r = 0; r < mapRes; r++)
-                mean += map[f][r];
-            ret[f] = mean / mapRes;
-        }
-        return ret;
-    }
-
-    /**
-     * Calculate variance of map for every frame (row).
-     * @param map
-     * @return Variance of map for every row as list.
-     * TODO use framewindow
-     */
-    private double[] getVar(double[][] map) {
-        double[] ret = new double[frames];
-        double[] means = geMean(map); // FIXME Efficiency issue. Mean calculated twice.
-        for (int f = 0; f < frames; f++) { // for every frame
-            double var = 0;
-            for (int r = 0; r < mapRes; r++)
-                var += Math.pow(means[f] - map[f][r], 2.0);
-            ret[f] = var / mapRes;
-        }
-        return ret;
     }
 
     /**

@@ -51,6 +51,39 @@ public class QuimPArrayUtils {
     }
 
     /**
+     * Calculate mean of map for every row.
+     * @param map
+     * @return Mean of map for every row as list.
+     */
+    public static double[] geMean(double[][] map) {
+        double[] ret = new double[map.length];
+        for (int f = 0; f < map.length; f++) { // for every frame
+            double mean = 0;
+            for (int r = 0; r < map[f].length; r++)
+                mean += map[f][r];
+            ret[f] = mean / map[f].length;
+        }
+        return ret;
+    }
+
+    /**
+     * Calculate variance of map for every row.
+     * @param map
+     * @return Variance of map for every row as list.
+     */
+    public static double[] getVar(double[][] map) {
+        double[] ret = new double[map.length];
+        double[] means = geMean(map);
+        for (int f = 0; f < map.length; f++) { // for every frame
+            double var = 0;
+            for (int r = 0; r < map[f].length; r++)
+                var += Math.pow(means[f] - map[f][r], 2.0);
+            ret[f] = var / map[f].length;
+        }
+        return ret;
+    }
+
+    /**
      * Remove duplicated elements from input list.
      * 
      * @param in
