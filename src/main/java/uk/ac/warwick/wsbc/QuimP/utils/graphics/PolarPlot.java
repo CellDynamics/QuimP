@@ -126,9 +126,7 @@ public class PolarPlot {
         double[] ret = new double[vectors.length];
         for (int i = 0; i < vectors.length; i++) {
             double a1 = Math.atan2(vectors[i].y, vectors[i].x);
-            // a1 = (a1 < 0) ? (a1 + 2 * Math.PI) : a1; // atan2 returns -pi:pi
             double a2 = Math.atan2(ref.y, ref.x);
-            // a2 = (a2 < 0) ? (a2 + 2 * Math.PI) : a2;
             ret[i] = -a1 + a2;
             // convert to 4-squares angle (left comment to comp with matlab plotPolarPlot)
             // ret[i] = (ret[i] < 0) ? (ret[i] + 2 * Math.PI) : ret[i];
@@ -162,7 +160,8 @@ public class PolarPlot {
             qc.colour = new QColor(1, 0, 0);
             qc.draw(osw);
             for (int i = 0; i < angles.length; i++) {
-                double x = Math.cos(angles[i]) * magn[i];
+                double x = Math.cos(angles[i]) * magn[i]; // TODO deal with negative values move to
+                                                          // positive
                 double y = Math.sin(angles[i]) * magn[i];
                 double x1 =
                         Math.cos(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
