@@ -39,7 +39,7 @@ public class PolarPlotTest {
     @Mock
     private STmap mapCell;
     @InjectMocks
-    private PolarPlot polarPlot;
+    private PolarPlot polarPlot = new PolarPlot(new STmap(), new Point2d(10, 10));
 
     /**
      * @throws java.lang.Exception
@@ -65,6 +65,8 @@ public class PolarPlotTest {
         MockitoAnnotations.initMocks(this);
         double[][] xmap = { { 0, 1, 2, 3, 2, 1 }, { 20, 21, 22, 23, 22, 21 } };
         double[][] ymap = { { 0, 1, 1, 0, -1, -1 }, { 0, 1, 1, 0, -1, -1 } };
+        double[][] motmap = { { 1, 1, 1, 1, 1, 1 }, { 20, 21, 22, 23, 24, 25 } };
+        Mockito.when(mapCell.getMotMap()).thenReturn(motmap);
         Mockito.when(mapCell.getxMap()).thenReturn(xmap);
         Mockito.when(mapCell.getyMap()).thenReturn(ymap);
         Mockito.when(mapCell.getT()).thenReturn(xmap.length);
@@ -88,7 +90,7 @@ public class PolarPlotTest {
     public void testGetShift() throws Exception {
 
         int expectedindex[] = { 2, 0 }; // only 2 frames
-        int c[] = polarPlot.getShift(new Point2d(10, 10));
+        int c[] = polarPlot.getShift();
         assertThat(c, is(expectedindex));
     }
 
@@ -117,9 +119,52 @@ public class PolarPlotTest {
                                new Vector2d(-1.5,0),
                                new Vector2d(-0.5,1)};
         /**/
-        Vector2d ret[] = polarPlot.getVectors(f, polarPlot.getMassCentre(),
-                polarPlot.getShift(new Point2d(10, 10)));
+        Vector2d ret[] = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
         assertThat(ret, is(expected));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getAngles(javax.vecmath.Vector2d[], javax.vecmath.Vector2d)}.
+     */
+    @Test
+    public void testGetAngles() throws Exception {
+
+        int f = 0;
+        //!<
+        double[] expected = {0, // rounded, assume that polygin is given in anticlock dir
+                             297,
+                             233,
+                             180,
+                             117,
+                             53};
+        /**/
+        Vector2d v[] = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
+        double ret[] = polarPlot.getAngles(v, v[0]);
+        for (int i = 0; i < ret.length; i++)
+            ret[i] = Math.round(ret[i] * 180 / Math.PI);
+        assertThat(ret, is(expected));
+
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getRadius(int, int, double[][])}.
+     */
+    @Test
+    public void testGetRadius() throws Exception {
+        int f = 0;
+        double[][] motmap = { { 0, 1, 2, 3, 4, 5 }, { 20, 21, 22, 23, 24, 25 } };
+        double expected[] = { 2, 3, 4, 5, 0, 1 }; // shifted by 2
+        int c[] = polarPlot.getShift();
+        double[] ret = polarPlot.getRadius(0, c[f], motmap);
+        assertThat(ret, is(expected));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#generatePlot(int)}.
+     */
+    @Test
+    public void testGeneratePlot() throws Exception {
+        polarPlot.generatePlot(0);
     }
 
 }

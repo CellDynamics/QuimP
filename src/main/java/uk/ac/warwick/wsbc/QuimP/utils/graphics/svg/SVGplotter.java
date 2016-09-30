@@ -13,6 +13,12 @@ import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+/**
+ * SVG plotter used in QuimP. Left in this form for compatibility reason.
+ * 
+ * @author rtyson
+ *
+ */
 public class SVGplotter {
     OutlineHandler oH;
     File outFile;
@@ -249,7 +255,7 @@ class ScaleBar {
     public double thickness;
     public QColor colour;
     private ExtendedVector2d location;
-    private Qtext text;
+    private SVGwritter.Qtext text;
 
     public ScaleBar(ExtendedVector2d l, String u, int v, double s) {
         location = l;
@@ -258,7 +264,7 @@ class ScaleBar {
         thickness = 1;
         colour = new QColor(1, 1, 1);
         this.setScale(s);
-        text = new Qtext(IJ.d2s(value, 0) + units, 6, "Courier");
+        text = new SVGwritter.Qtext(IJ.d2s(value, 0) + units, 6, "Courier");
         text.colour = colour;
     }
 
@@ -267,18 +273,19 @@ class ScaleBar {
     }
 
     public void draw(OutputStreamWriter osw) throws IOException {
-        Qline body, lTick, rTick;
+        SVGwritter.Qline body, lTick, rTick;
         double tickSize = 2 * thickness;
 
         ExtendedVector2d end = new ExtendedVector2d(location.getX(), location.getY());
         end.addVec(new ExtendedVector2d(length, 0));
-        body = new Qline(location.getX(), location.getY(), end.getX(), end.getY());
+        body = new SVGwritter.Qline(location.getX(), location.getY(), end.getX(), end.getY());
         body.thickness = thickness;
         body.colour = colour;
 
-        lTick = new Qline(location.getX(), location.getY() + tickSize, location.getX(),
+        lTick = new SVGwritter.Qline(location.getX(), location.getY() + tickSize, location.getX(),
                 location.getY() - tickSize);
-        rTick = new Qline(end.getX(), end.getY() + tickSize, end.getX(), end.getY() - tickSize);
+        rTick = new SVGwritter.Qline(end.getX(), end.getY() + tickSize, end.getX(),
+                end.getY() - tickSize);
         lTick.thickness = thickness;
         lTick.colour = colour;
         rTick.thickness = thickness;
