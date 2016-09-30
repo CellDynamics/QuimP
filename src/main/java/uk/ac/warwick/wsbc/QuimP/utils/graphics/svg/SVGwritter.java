@@ -22,12 +22,12 @@ public abstract class SVGwritter {
      */
     public static void writeHeader(OutputStreamWriter osw) throws IOException {
         osw.write("<?xml version=\"1.0\" standalone=\"no\"?>\n");
-        osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + (-10) + " " + (-10) + " " + 20
-                + " " + 20 + "\" "
+        osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + (-3) + " " + (-3) + " " + 6
+                + " " + 6 + "\" "
                 + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\">\n");
         osw.write("\n");
 
-        osw.write("<rect x=\"" + -10 + "\" y=\"" + -10 + "\" width=\"" + 20 + "\" height=\"" + 20
+        osw.write("<rect x=\"" + -3 + "\" y=\"" + -3 + "\" width=\"" + 6 + "\" height=\"" + 6
                 + "\" " + "style=\"fill:rgb(0,0,0);stroke-width:0;" + "stroke:rgb(0,0,0)\"/>\n\n");
     }
 

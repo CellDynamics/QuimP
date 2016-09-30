@@ -3,6 +3,8 @@ package uk.ac.warwick.wsbc.QuimP.utils.graphics;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
@@ -21,6 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
 /**
@@ -164,7 +167,18 @@ public class PolarPlotTest {
      */
     @Test
     public void testGeneratePlot() throws Exception {
-        polarPlot.generatePlot(0);
+        polarPlot.generatePlotFrame("/tmp/test.svg", 0);
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#generatePlot(int)}.
+     */
+    @Test
+    public void testGeneratePlot_1() throws Exception {
+        QconfLoader qconfLoader = new QconfLoader(new File(
+                "src/test/resources/ProtAnalysisTest/KZ4/KZ4-220214-cAR1-GFP-devel5.QCONF"));
+        PolarPlot pp = new PolarPlot(qconfLoader.getQ()[0], new Point2d(100, 100));
+        pp.generatePlot("/tmp/test_1.svg");
     }
 
 }

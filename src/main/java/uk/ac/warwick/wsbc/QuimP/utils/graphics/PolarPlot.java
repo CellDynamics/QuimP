@@ -66,8 +66,8 @@ public class PolarPlot {
      */
     Point2d[] getMassCentre() {
         Point2d[] ret = new Point2d[mapCell.getT()];
-        double xmeans[] = QuimPArrayUtils.geMean(mapCell.getxMap());
-        double ymeans[] = QuimPArrayUtils.geMean(mapCell.getyMap());
+        double xmeans[] = QuimPArrayUtils.getMeanR(mapCell.getxMap());
+        double ymeans[] = QuimPArrayUtils.getMeanR(mapCell.getyMap());
         for (int f = 0; f < mapCell.getT(); f++)
             ret[f] = new Point2d(xmeans[f], ymeans[f]);
         return ret;
@@ -136,21 +136,28 @@ public class PolarPlot {
 
     }
 
-    public void generatePlot(int f) {
+    /**
+     * Plot of one frame.
+     * 
+     * @param filename
+     * @param frame
+     */
+    public void generatePlotFrame(String filename, int frame) {
         int[] shifts = getShift(); // calculate shifts of points according to gradientcoord
         Point2d[] mass = getMassCentre(); // calc mass centres for all frames
-        Vector2d[] pv = getVectors(f, mass, shifts); // converts outline points to vectors
 
-        double[] angles = getAngles(pv, pv[0]); // first ic ref vector because they are shifted
-        double[] magn = getRadius(f, shifts[f], mapCell.getMotMap());
+        Vector2d[] pv = getVectors(frame, mass, shifts); // converts outline points to vectors
+
+        double angles[] = getAngles(pv, pv[0]); // first ic ref vector because they are shifted
+        double magn[] = getRadius(frame, shifts[frame], mapCell.getMotMap());
 
         BufferedOutputStream out;
         try {
-            out = new BufferedOutputStream(new FileOutputStream("test.svg"));
+            out = new BufferedOutputStream(new FileOutputStream(filename));
             OutputStreamWriter osw = new OutputStreamWriter(out);
-            SVGwritter.writeHeader(osw);
+            SVGwritter.writeHeader(osw); // TODO add size of page here
 
-            SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.05);
+            SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.02);
             qc.colour = new QColor(1, 0, 0);
             qc.draw(osw);
             for (int i = 0; i < angles.length; i++) {
@@ -163,7 +170,58 @@ public class PolarPlot {
                 LOGGER.trace("Point coords:" + x + " " + y + " Polar coords:" + angles[i] + " "
                         + magn[i]);
                 SVGwritter.Qline ql = new SVGwritter.Qline(x, y, x1, y1);
-                ql.thickness = 0.05;
+                ql.thickness = 0.01;
+                ql.draw(osw);
+            }
+
+            osw.write("</svg>\n");
+            osw.close();
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Plot of mean of rames.
+     * @param filename
+     */
+    public void generatePlot(String filename) {
+        int[] shifts = getShift(); // calculate shifts of points according to gradientcoord
+        Point2d[] mass = getMassCentre(); // calc mass centres for all frames
+
+        double anglesF[][] = new double[mapCell.getT()][];
+        double magnF[][] = new double[mapCell.getT()][];
+        for (int f = 0; f < mapCell.getT(); f++) {
+            Vector2d[] pv = getVectors(f, mass, shifts); // converts outline points to vectors
+
+            anglesF[f] = getAngles(pv, pv[0]); // first ic ref vector because they are shifted
+            magnF[f] = getRadius(f, shifts[f], mapCell.getMotMap());
+        }
+        double angles[] = QuimPArrayUtils.getMeanC(anglesF);
+        double magn[] = QuimPArrayUtils.getMeanC(magnF);
+
+        BufferedOutputStream out;
+        try {
+            out = new BufferedOutputStream(new FileOutputStream(filename));
+            OutputStreamWriter osw = new OutputStreamWriter(out);
+            SVGwritter.writeHeader(osw); // TODO add size of page here
+
+            SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.02);
+            qc.colour = new QColor(1, 0, 0);
+            qc.draw(osw);
+            for (int i = 0; i < angles.length; i++) {
+                double x = Math.cos(angles[i]) * magn[i];
+                double y = Math.sin(angles[i]) * magn[i];
+                double x1 =
+                        Math.cos(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
+                double y1 =
+                        Math.sin(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
+                LOGGER.trace("Point coords:" + x + " " + y + " Polar coords:" + angles[i] + " "
+                        + magn[i]);
+                SVGwritter.Qline ql = new SVGwritter.Qline(x, y, x1, y1);
+                ql.thickness = 0.01;
                 ql.draw(osw);
             }
 
@@ -176,4 +234,5 @@ public class PolarPlot {
         }
 
     }
+
 }

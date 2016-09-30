@@ -55,7 +55,7 @@ public class QuimPArrayUtils {
      * @param map
      * @return Mean of map for every row as list.
      */
-    public static double[] geMean(double[][] map) {
+    public static double[] getMeanR(double[][] map) {
         double[] ret = new double[map.length];
         for (int f = 0; f < map.length; f++) { // for every frame
             double mean = 0;
@@ -67,13 +67,29 @@ public class QuimPArrayUtils {
     }
 
     /**
+     * Calculate mean of map for every column.
+     * @param map
+     * @return Mean of map for every row as list.
+     */
+    public static double[] getMeanC(double[][] map) {
+        double[] ret = new double[map[0].length];
+        for (int r = 0; r < map[0].length; r++) { // for every frame
+            double mean = 0;
+            for (int f = 0; f < map.length; f++)
+                mean += map[f][r];
+            ret[r] = mean / map.length;
+        }
+        return ret;
+    }
+
+    /**
      * Calculate variance of map for every row.
      * @param map
      * @return Variance of map for every row as list.
      */
-    public static double[] getVar(double[][] map) {
+    public static double[] getVarR(double[][] map) {
         double[] ret = new double[map.length];
-        double[] means = geMean(map);
+        double[] means = getMeanR(map);
         for (int f = 0; f < map.length; f++) { // for every frame
             double var = 0;
             for (int r = 0; r < map[f].length; r++)
