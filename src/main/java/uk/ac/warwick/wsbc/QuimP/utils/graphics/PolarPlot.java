@@ -184,7 +184,7 @@ public class PolarPlot {
     }
 
     /**
-     * Plot of mean of rames.
+     * Plot of mean of frames.
      * @param filename
      */
     public void generatePlot(String filename) {
