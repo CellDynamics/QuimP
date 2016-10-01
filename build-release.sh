@@ -84,7 +84,7 @@ git merge --no-ff -m "Merge release/$releaseVersion into develop" release/$relea
 git checkout master
 # merge the version back into master but use the tagged version instead of the release/$releaseVersion HEAD
 git merge --no-ff -no-commit release/$releaseVersion~1
-git commit -m "Merge previous version into master to avoid the increased version number" -S
+git commit -m "Merge new version" -S
 # Get back on the develop branch
 git checkout $currentBranch
 
