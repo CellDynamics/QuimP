@@ -356,7 +356,6 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
             for (int f = getStartFrame(); f <= getEndFrame(); f++) {
                 Outline o = getOutline(f);
                 if (o == null) {
-                    LOGGER.error("ERROR: Outline at frame " + f + " is empty");
                     continue;
                 }
                 v = o.getHead();
