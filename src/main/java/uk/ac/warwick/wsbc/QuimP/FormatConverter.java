@@ -52,11 +52,17 @@ public class FormatConverter {
      *  
      * @param qP reference to QParamsQconf
      * @param path Path where converted files will be saved.
+     * @throws QuimpException When path is file.
      */
-    public FormatConverter(QconfLoader qcL, Path path) {
+    public FormatConverter(QconfLoader qcL, Path path) throws QuimpException {
         LOGGER.debug("Use provided QconfLoader");
         this.qcL = qcL;
         this.path = path;
+        if (path.toFile().exists()) {// if exist
+            if (path.toFile().isFile()) // and is file
+                throw new QuimpException("Path points to file!");
+        } else // does not exist
+            path.toFile().mkdirs();
     }
 
     /**
