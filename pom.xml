@@ -278,7 +278,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <manual.location>${manual.rootlocation}develop/QuimP_Guide.html</manual.location>
+        <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
       </properties>
       <build>
         <plugins>
