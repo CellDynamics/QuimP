@@ -135,11 +135,11 @@ public class PolarPlotTest {
         int f = 0;
         //!<
         double[] expected = {0, // rounded, assume that polygin is given in anticlock dir
-                             297,
-                             233,
+                             63,
+                             127,
                              180,
-                             117,
-                             53};
+                             -117,
+                             -53};
         /**/
         Vector2d v[] = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
         double ret[] = polarPlot.getAngles(v, v[0]);
