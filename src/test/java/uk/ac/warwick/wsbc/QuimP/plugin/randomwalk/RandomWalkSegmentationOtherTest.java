@@ -1,6 +1,4 @@
 /**
- * @file RandomWalkSegmentationOtherTest.java
- * @date 30 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
@@ -28,7 +26,6 @@ import ij.process.ImageProcessor;
  * Run time tests of segmentation
  * 
  * @author p.baniukiewicz
- * @date 30 Jun 2016
  * @see src/test/resources/Matlab/RW_java_tests.m at <a href="./examples.html">Examples</a>
  */
 @SuppressWarnings("unused")
@@ -122,7 +119,7 @@ public class RandomWalkSegmentationOtherTest {
         ImagePlus results = new ImagePlus("cmp", ret);
         /**
          * Compare to results from 
-         * /home/baniuk/Documents/Repos/QUIMP-Matlab/Matlab/Segmentation/main.m section
+         * /home/p.baniukiewicz/Documents/Repos/QUIMP-Matlab/Matlab/Segmentation/main.m section
          * %% data from Repos/Prot_counting/fromMail - testcase for java small
          * with this file:
          * @code
@@ -148,7 +145,7 @@ public class RandomWalkSegmentationOtherTest {
         ImagePlus results = new ImagePlus("cmp2", ret);
         /**
          * Compare to results from 
-         * /home/baniuk/Documents/Repos/QUIMP-Matlab/Matlab/Segmentation/main.m section
+         * /home/p.baniukiewicz/Documents/Repos/QUIMP-Matlab/Matlab/Segmentation/main.m section
          * %% data from Repos/Prot_counting/fromMail - testcase for java big
          * with this file:
          * @code

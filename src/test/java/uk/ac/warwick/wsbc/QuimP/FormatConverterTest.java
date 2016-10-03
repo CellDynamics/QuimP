@@ -14,9 +14,10 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 
 /**
  * @author p.baniukiewicz
@@ -66,6 +67,7 @@ public class FormatConverterTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#generatepaQP()}.
      */
     @Test
+    @Ignore
     public void testGeneratepaQP() throws Exception {
         FormatConverter fC = new FormatConverter(
                 new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
@@ -99,6 +101,7 @@ public class FormatConverterTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#generatesnQP()}.
      */
     @Test
+    @Ignore
     public void testGeneratesnQP() throws Exception {
         FormatConverter fC = new FormatConverter(
                 new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
@@ -132,11 +135,13 @@ public class FormatConverterTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#FormatConverter(uk.ac.warwick.wsbc.QuimP.QParamsQconf, java.nio.file.Path)}.
      */
     @Test
+    @Ignore
     public void testFormatConverterQParamsQconfPath() throws Exception {
         QconfLoader qC = new QconfLoader(
-                Paths.get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
-        FormatConverter fC = new FormatConverter((QParamsQconf) qC.getQp(),
-                Paths.get("src/test/resources/FormatConverter"));
+                Paths.get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF")
+                        .toFile());
+        FormatConverter fC =
+                new FormatConverter(qC, Paths.get("src/test/resources/FormatConverter"));
         fC.generateOldDataFiles();
         Thread.sleep(1000);
         // compare paQP
@@ -161,6 +166,18 @@ public class FormatConverterTest {
         readertest.close();
 
         assertThat(test, is(expected));
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#generateNewDataFile()}.
+     */
+    @Test
+    public void testGenerateNewDataFile() throws Exception {
+        QconfLoader qC = new QconfLoader(new File(
+                "/home/baniuk/Documents/Repos/QuimP/src/test/resources/FormatConverter/0pt7%agar_bleb2_0.paQP"));
+        FormatConverter fC =
+                new FormatConverter(qC, Paths.get("src/test/resources/FormatConverter/res"));
+        fC.generateNewDataFile();
     }
 
 }

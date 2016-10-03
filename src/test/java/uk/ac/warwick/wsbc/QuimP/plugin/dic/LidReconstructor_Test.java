@@ -1,5 +1,4 @@
 /**
- * @file LidReconstructor_Test.java
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
@@ -19,7 +18,7 @@ import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 
 /**
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class LidReconstructor_Test {

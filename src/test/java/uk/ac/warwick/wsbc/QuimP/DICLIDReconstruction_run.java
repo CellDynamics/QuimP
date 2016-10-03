@@ -1,7 +1,8 @@
 /**
- * @file DICLIDReconstruction_run.java
  */
 package uk.ac.warwick.wsbc.QuimP;
+
+import uk.ac.warwick.wsbc.QuimP.plugin.dic.DICLIDReconstruction_;
 
 /**
  * Gui checker for DICLIDReconstruction

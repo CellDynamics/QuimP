@@ -23,7 +23,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 /**
  * Helper class to export shapes as \a *.tif images
  * 
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class RoiSaver {

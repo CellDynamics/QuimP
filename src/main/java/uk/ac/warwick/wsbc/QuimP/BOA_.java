@@ -33,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,6 +55,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import com.google.gson.InstanceCreator;
 import com.google.gson.JsonSyntaxException;
 
 import ij.IJ;
@@ -82,13 +84,18 @@ import ij.process.ImageProcessor;
 import ij.process.StackConverter;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
+import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.StatsCollection;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentationPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOAPoint2dFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOASnakeFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
+import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
 
 /**
  * Main class implementing BOA plugin.
@@ -105,8 +112,6 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * @author Richard Tyson
  * @author Till Bretschneider
  * @author Piotr Baniukiewicz
- * @date 16-04-09
- * @date 4 Feb 2016
  */
 public class BOA_ implements PlugIn {
     static {
@@ -128,7 +133,7 @@ public class BOA_ implements PlugIn {
     /**
      * Reserved word that stands for plugin that is not selected
      */
-    final static String NONE = "NONE";
+    public final static String NONE = "NONE";
     /**
      * Reserved word that states full view zoom in zoom choice. Also default text that
      * appears there
@@ -148,7 +153,7 @@ public class BOA_ implements PlugIn {
      */
     public static String[] quimpInfo;
     private static int logCount; // add counter to logged messages
-    static final int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
+    public static final int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
     private HistoryLogger historyLogger; // logger
     /**
      * Configuration object, available from all modules. Must be initialized here \b AND in 
@@ -190,7 +195,7 @@ public class BOA_ implements PlugIn {
         // assign current object to ViewUpdater
         viewUpdater = new ViewUpdater(this);
         // collect information about quimp version read from jar
-        quimpInfo = new Tool().getQuimPBuildInfo();
+        quimpInfo = new QuimpToolsCollection().getQuimPBuildInfo();
         // create history logger
         historyLogger = new HistoryLogger();
 
@@ -329,8 +334,9 @@ public class BOA_ implements PlugIn {
      */
     void about() {
         AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
-        ad.appendLine(Tool.getFormattedQuimPversion(quimpInfo)); // display template filled by
-                                                                 // quimpInfo
+        ad.appendLine(QuimpToolsCollection.getFormattedQuimPversion(quimpInfo)); // display template
+                                                                                 // filled by
+        // quimpInfo
         // get list of found plugins
         ad.appendLine("List of found plugins:");
         ad.appendDistance(); // type ----
@@ -363,7 +369,10 @@ public class BOA_ implements PlugIn {
      * @param s String to display in BOA window
      */
     static void log(final String s) {
-        logArea.append("[" + logCount++ + "] " + s + '\n');
+        if (logArea == null)
+            LOGGER.debug("[" + logCount++ + "] " + s + '\n');
+        else
+            logArea.append("[" + logCount++ + "] " + s + '\n');
     }
 
     /**
@@ -1326,7 +1335,8 @@ public class BOA_ implements PlugIn {
                 // get extension from deduced output name
                 Path p = Paths.get(qState.boap.deductFilterFileName()).getFileName();
                 SaveDialog sd = new SaveDialog("Save plugin config data...", saveIn,
-                        qState.boap.getFileName(), "." + Tool.getFileExtension(p.toString()));
+                        qState.boap.getFileName(),
+                        "." + QuimpToolsCollection.getFileExtension(p.toString()));
                 if (sd.getFileName() != null) {
                     try {
                         // Create Serialization object with extra info layer
@@ -1427,10 +1437,9 @@ public class BOA_ implements PlugIn {
                                     "The image opened currently in BOA is different from those +"
                                             + " pointed in configuration file");
                             log("Trying to apply configuration saved for other image");
-                            YesNoCancelDialog yncd =
-                                    new YesNoCancelDialog(IJ.getInstance(), "Warning",
-                                            "Trying to load configuration that does not\nmath to +"
-                                                    + " opened image.\nAre you sure?");
+                            YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(),
+                                    "Warning", "Trying to load configuration that does not\nmath to"
+                                            + " opened image.\nAre you sure?");
                             if (!yncd.yesPressed())
                                 return;
                         }
@@ -2391,9 +2400,9 @@ public class BOA_ implements PlugIn {
                 }
                 // write operations
                 if (qState.nest.writeSnakes()) { // write snPQ file (if any snake) and paQP
-                    qState.nest.analyse(imageGroup.getOrgIpl().duplicate()); // write stQP file
-                                                                             // and fill outFile
-                                                                             // used later
+                    // write stQP file and fill outFile used later
+                    List<CellStatsEval> ret =
+                            qState.nest.analyse(imageGroup.getOrgIpl().duplicate());
                     // auto save plugin config (but only if there is at least one snake)
                     if (!qState.nest.isVacant()) {
                         // Create Serialization object with extra info layer
@@ -2406,6 +2415,9 @@ public class BOA_ implements PlugIn {
                         Serializer<DataContainer> n;
                         DataContainer dt = new DataContainer(); // create container
                         dt.BOAState = qState; // assign boa state to correct field
+                        // extract relevant data from CellStat
+                        dt.Stats = new StatsCollection();
+                        dt.Stats.copyFromCellStat(ret); // StatsHandler is initialized here.
                         n = new Serializer<>(dt, quimpInfo);
                         if (qState.boap.savePretty) // set pretty format if configured
                             n.setPretty();
@@ -3298,7 +3310,7 @@ class Constrictor {
  * @author rtyson
  *
  */
-class BoaException extends Exception {
+class BoaException extends QuimpException {
 
     private static final long serialVersionUID = 1L;
     private int frame;
@@ -3356,4 +3368,30 @@ class BoaException extends Exception {
         super(cause);
     }
 
+}
+
+/**
+ * Object builder for GSon and DataContainer class
+ * 
+ * This class is used on load JSon representation of DataContainer class. Rebuilds snakePluginList
+ * field that is not serialized. This field keeps current state of plugins
+ * 
+ * @author p.baniukiewicz
+ * @see GSon documentation
+ */
+class DataContainerInstanceCreator implements InstanceCreator<DataContainer> {
+
+    private PluginFactory pf;
+    private ViewUpdater vu;
+
+    public DataContainerInstanceCreator(final PluginFactory pf, final ViewUpdater vu) {
+        this.pf = pf;
+        this.vu = vu;
+    }
+
+    @Override
+    public DataContainer createInstance(Type arg0) {
+        DataContainer dt = new DataContainer(pf, vu);
+        return dt;
+    }
 }

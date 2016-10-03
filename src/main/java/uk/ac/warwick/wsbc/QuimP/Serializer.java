@@ -1,6 +1,4 @@
 /**
- * @file Serializer.java
- * @date 31 Mar 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -23,6 +21,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
 /**
  * Save wrapped class together with itself to JSON file. 
@@ -61,7 +61,6 @@ import com.google.gson.JsonSyntaxException;
  * 
  *  
  * @author p.baniukiewicz
- * @date 31 Mar 2016
  * @see http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson
  * @see SerializerTest for examples of use
  * @see uk.ac.warwick.wsbc.QuimP.Serializer.registerInstanceCreator(Class<T>, Object)

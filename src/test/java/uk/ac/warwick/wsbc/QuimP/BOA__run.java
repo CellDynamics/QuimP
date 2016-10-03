@@ -1,5 +1,4 @@
 /**
- * @file BOA__run.java
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -15,7 +14,7 @@ import ij.gui.Toolbar;
  * Main runner for BOA_ plugin. Show main window and wait for its closing and
  * then ends.
  * 
- * @author baniuk
+ * @author p.baniukiewicz
  * @note The window is run in separate thread therefore when control is returned
  * to main thread (\c main) (immediately after the window has been
  * created) then the main thread ends that results in closing of the program To prevent this

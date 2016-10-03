@@ -16,7 +16,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * Simple test class showing window from QWindowBuilder
  * 
  * @author p.baniukiewicz
- * @date 8 Feb 2016
  *
  */
 public class QWindowBuilder_run {

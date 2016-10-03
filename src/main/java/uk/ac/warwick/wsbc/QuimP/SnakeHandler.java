@@ -15,8 +15,10 @@ import org.apache.logging.log4j.Logger;
 import ij.IJ;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Store all the snakes computed for one cell across frames and it is responsible
@@ -164,6 +166,18 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
                 finalSnakes[i] = null;
             else
                 finalSnakes[i] = new Snake(segSnakes[i]);
+        }
+    }
+
+    /**
+     * Copy all finalSnakes to segSnakes
+     */
+    public void copyFromFinalToSeg() {
+        for (int i = 0; i < finalSnakes.length; i++) {
+            if (finalSnakes[i] == null)
+                segSnakes[i] = null;
+            else
+                segSnakes[i] = new Snake(finalSnakes[i]);
         }
     }
 
@@ -391,11 +405,11 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
                 prevn = head;
                 index++;
 
-                N = (int) Tool.s2d(thisLine);
+                N = (int) QuimpToolsCollection.s2d(thisLine);
 
                 for (int i = 0; i < N; i++) {
-                    x = Tool.s2d(br.readLine());
-                    y = Tool.s2d(br.readLine());
+                    x = QuimpToolsCollection.s2d(br.readLine());
+                    y = QuimpToolsCollection.s2d(br.readLine());
 
                     n = new Node(index);
                     n.setX(x);
@@ -510,6 +524,11 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
     }
 
+    /**
+     * Store ROI as snake in finalSnakes.
+     * @param r
+     * @param f
+     */
     void storeRoi(final PolygonRoi r, int f) {
         try {
             Snake snake = new Snake(r, ID);

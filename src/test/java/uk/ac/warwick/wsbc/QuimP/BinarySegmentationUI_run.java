@@ -1,15 +1,14 @@
 /**
- * @file BinarySegmentationUI_run.java
- * @date 28 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
 import ij.IJ;
 import ij.ImageJ;
+import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentationPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationPlugin_;
 
 /**
  * @author p.baniukiewicz
- * @date 28 Jun 2016
  *
  */
 public class BinarySegmentationUI_run {
@@ -33,9 +32,9 @@ public class BinarySegmentationUI_run {
         ImageJ ij = new ImageJ();
         RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
         IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
-                "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/BW_seg_5_slices.tif\")");
+                "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/BW_seg_5_slices.tif\")");
         IJ.runMacro(
-                "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
+                "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
         BinarySegmentationPlugin fp = new BinarySegmentationPlugin();
         fp.attachData(null);
         fp.showUI(true);

@@ -1,6 +1,4 @@
 /**
- * @file RandomWalkSegmentationPlugin_run.java
- * @date 4 Jul 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -10,10 +8,10 @@ import java.util.concurrent.CountDownLatch;
 
 import ij.IJ;
 import ij.ImageJ;
+import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationPlugin_;
 
 /**
  * @author p.baniukiewicz
- * @date 4 Jul 2016
  *
  */
 public class RandomWalkSegmentationPlugin_run {
@@ -27,9 +25,9 @@ public class RandomWalkSegmentationPlugin_run {
         ImageJ ij = new ImageJ();
         RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
         IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
-                "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/fluoreszenz-test_eq_smooth_frames_1-5.tif\")");
+                "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/fluoreszenz-test_eq_smooth_frames_1-5.tif\")");
         IJ.runMacro(
-                "open(\"/home/baniuk/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
+                "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
         // obj.run("");
         obj.showDialog();
 

@@ -13,31 +13,32 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
 /**
- * Represents collection of Snakes
+ * Represent collection of Snakes.
  * 
  * @author rtyson
  * @author p.baniukiewicz
- * @date 4 May 2016
  */
 public class Nest implements IQuimpSerialize {
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "Nest [sHs=" + sHs + ", NSNAKES=" + NSNAKES + ", ALIVE=" + ALIVE + ", nextID="
-                + nextID + "]";
-    }
 
     private static final Logger LOGGER = LogManager.getLogger(Nest.class.getName());
 
     private ArrayList<SnakeHandler> sHs;
-    private int NSNAKES; //!< Number of stored snakes in nest
+    /**
+     * Number of stored snakes in nest.
+     */
+    private int NSNAKES;
+    /**
+     * Number of live stored snakes in nest.
+     */
     private int ALIVE;
-    private int nextID; // handler ID's
+    /**
+     * Next free ID.
+     */
+    private int nextID;
 
     public Nest() {
         NSNAKES = 0;
@@ -45,9 +46,9 @@ public class Nest implements IQuimpSerialize {
         nextID = 0;
         sHs = new ArrayList<SnakeHandler>();
     }
-    
+
     /**
-     * Convert array of SegmentedShapeRoi to SnakeHandlers
+     * Convert array of SegmentedShapeRoi to SnakeHandlers.
      * 
      * @param roiArray First level stands for objects (SnakeHandlers(, second for Snakes within one
      * chain
@@ -174,15 +175,19 @@ public class Nest implements IQuimpSerialize {
     }
 
     /**
-     * Write \a stQP file using current Snakes
+     * Write <i>stQP</i> file using current Snakes
+     * 
+     * <p><b>Warning</b><p>
+     * It can set current slice in ImagePlus (modifies the object state).
      * 
      * @param oi instance of current ImagePlus (required by CellStat that extends 
      * ij.measure.Measurements
-     * @remarks It can set current slice in ImagePlus (modifies the object state)
+     * @return CellStat objects with calculated statistics for every cell.
      */
-    public void analyse(final ImagePlus oi) {
+    public List<CellStatsEval> analyse(final ImagePlus oi) {
         OutlineHandler outputH;
         SnakeHandler sH;
+        ArrayList<CellStatsEval> ret = new ArrayList<>();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
         try {
             while (sHitr.hasNext()) {
@@ -194,12 +199,14 @@ public class Nest implements IQuimpSerialize {
                 outputH = new OutlineHandler(newQp);
 
                 File statsFile = new File(BOA_.qState.boap.deductStatsFileName(sH.getID()));
-                new CellStat(outputH, oi, statsFile, BOA_.qState.boap.getImageScale(),
-                        BOA_.qState.boap.getImageFrameInterval());
+                CellStatsEval tmp = new CellStatsEval(outputH, oi, statsFile,
+                        BOA_.qState.boap.getImageScale(), BOA_.qState.boap.getImageFrameInterval());
+                ret.add(tmp);
             }
         } catch (QuimpException e) {
             LOGGER.error(e);
         }
+        return ret;
     }
 
     public void resetNest() {
@@ -246,7 +253,7 @@ public class Nest implements IQuimpSerialize {
     /**
      * @return Get number of SnakeHandlers (snakes) in nest
      */
-    int size() {
+    public int size() {
         return NSNAKES;
     }
 
@@ -323,6 +330,14 @@ public class Nest implements IQuimpSerialize {
     }
 
     // TODO use new feature of conversion between snakes and outlines
+    /**
+     * Store OutlineHandler as finalSnake.
+     * 
+     * Use {@link uk.ac.warwick.wsbc.QuimP.SnakeHandler.copyFromFinalToSeg()} to populate 
+     * snake over segSnakes.
+     * 
+     * @param oH
+     */
     void addOutlinehandler(final OutlineHandler oH) {
         SnakeHandler sH = addHandler(oH.indexGetOutline(0).asFloatRoi(), oH.getStartFrame());
 
@@ -331,6 +346,7 @@ public class Nest implements IQuimpSerialize {
             o = oH.getOutline(i);
             sH.storeRoi((PolygonRoi) o.asFloatRoi(), i);
         }
+        sH.copyFromFinalToSeg();
     }
 
     @Override
@@ -363,5 +379,14 @@ public class Nest implements IQuimpSerialize {
             sH.afterSerialize();
         }
 
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Nest [sHs=" + sHs + ", NSNAKES=" + NSNAKES + ", ALIVE=" + ALIVE + ", nextID="
+                + nextID + "]";
     }
 }

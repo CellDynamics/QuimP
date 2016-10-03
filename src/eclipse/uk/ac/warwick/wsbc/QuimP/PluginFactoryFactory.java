@@ -1,6 +1,4 @@
 /**
- * @file QuimP/src/eclipse/uk/ac/warwick/wsbc/QuimP/PluginFactoryFactory.java
- * @date 17 May 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -30,7 +28,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * @warning This class is related to pom.xml as well. Notice that compilation will use current 
  * Working Directory state for every plugin 
  * @author p.baniukiewicz
- * @date 17 May 2016
  *
  */
 public class PluginFactoryFactory {

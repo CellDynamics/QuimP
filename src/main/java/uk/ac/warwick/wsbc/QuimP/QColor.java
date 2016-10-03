@@ -7,6 +7,9 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import javax.vecmath.Color3f;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Just a class for colors, that does not use stupid floats represented as RGB
  * in the range 0->1
@@ -15,6 +18,7 @@ import javax.vecmath.Color3f;
  */
 public class QColor {
     public double red, green, blue;
+    private static final Logger LOGGER = LogManager.getLogger(QColor.class.getName());
 
     /**
      * Copy constructor 
@@ -163,6 +167,11 @@ public class QColor {
         double r = 1;
         double g = 1;
         double b = 1;
+
+        if (min == 0 || max == 0) {
+            LOGGER.error("Min or max value is 0, returnig default color");
+            return new QColor(r, g, b);
+        }
 
         if (d == 0) {
             return new QColor(1.0, 1.0, 1.0);

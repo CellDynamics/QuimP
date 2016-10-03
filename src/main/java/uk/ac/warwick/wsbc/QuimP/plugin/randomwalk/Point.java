@@ -4,7 +4,6 @@ package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
  * Basic class for storing point in Cartesian system
  * 
  * @author p.baniukiewicz
- * @date 23 Jun 2016
  *
  */
 public class Point {

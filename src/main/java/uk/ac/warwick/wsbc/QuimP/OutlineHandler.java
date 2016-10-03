@@ -12,15 +12,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ij.IJ;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
- *
+ * Collection of outlines for subsequent frames (<it>f1</it> and <it>f2</it>) for one cell.
+ * 
  * @author tyson
- * @warning \a QParams object is not serialized thus deserialzed OutlineHandler can not use it
  */
 public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
+    /**
+     * Array of given cell outlines found for frames (<tt>startFrame</tt> and <tt>endFrame</tt>) 
+     */
     private Outline[] outlines;
     transient private QParams qp;
     // all transient fields are rebuild in afterSerialzie findStatLimits()
@@ -107,11 +112,11 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
     }
 
-    int getStartFrame() {
+    public int getStartFrame() {
         return startFrame;
     }
 
-    int getEndFrame() {
+    public int getEndFrame() {
         return endFrame;
     }
 
@@ -173,7 +178,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
                 if (thisLine.startsWith("#")) {
                     continue;
                 }
-                N = (int) Tool.s2d(thisLine);
+                N = (int) QuimpToolsCollection.s2d(thisLine);
                 for (int i = 0; i < N; i++) {
                     // System.out.println(br.readLine() + ", " + );
                     br.readLine();
@@ -201,36 +206,36 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
                 prevn = head;
                 index++;
 
-                N = (int) Tool.s2d(thisLine);
+                N = (int) QuimpToolsCollection.s2d(thisLine);
 
                 for (int i = 0; i < N; i++) {
                     thisLine = br.readLine();
                     String[] split = thisLine.split("\t");
                     n = new Vert(index);
 
-                    n.coord = Tool.s2d(split[0]);
-                    n.setX(Tool.s2d(split[1]));
-                    n.setY(Tool.s2d(split[2]));
+                    n.coord = QuimpToolsCollection.s2d(split[0]);
+                    n.setX(QuimpToolsCollection.s2d(split[1]));
+                    n.setY(QuimpToolsCollection.s2d(split[2]));
 
-                    n.fCoord = Tool.s2d(split[3]); // Origon
-                    n.gCoord = Tool.s2d(split[4]); // G-Origon
-                    n.distance = Tool.s2d(split[5]); // speed
+                    n.fCoord = QuimpToolsCollection.s2d(split[3]); // Origon
+                    n.gCoord = QuimpToolsCollection.s2d(split[4]); // G-Origon
+                    n.distance = QuimpToolsCollection.s2d(split[5]); // speed
 
                     // store flu measurements
-                    n.fluores[0].intensity = Tool.s2d(split[6]);
+                    n.fluores[0].intensity = QuimpToolsCollection.s2d(split[6]);
 
                     if (qp.paramFormat == QParams.QUIMP_11) {
                         // has other channels and x and y
-                        n.fluores[0].x = Tool.s2d(split[7]);
-                        n.fluores[0].y = Tool.s2d(split[8]);
+                        n.fluores[0].x = QuimpToolsCollection.s2d(split[7]);
+                        n.fluores[0].y = QuimpToolsCollection.s2d(split[8]);
 
-                        n.fluores[1].intensity = Tool.s2d(split[9]);
-                        n.fluores[1].x = Tool.s2d(split[10]);
-                        n.fluores[1].y = Tool.s2d(split[11]);
+                        n.fluores[1].intensity = QuimpToolsCollection.s2d(split[9]);
+                        n.fluores[1].x = QuimpToolsCollection.s2d(split[10]);
+                        n.fluores[1].y = QuimpToolsCollection.s2d(split[11]);
 
-                        n.fluores[2].intensity = Tool.s2d(split[12]);
-                        n.fluores[2].x = Tool.s2d(split[13]);
-                        n.fluores[2].y = Tool.s2d(split[14]);
+                        n.fluores[2].intensity = QuimpToolsCollection.s2d(split[12]);
+                        n.fluores[2].x = QuimpToolsCollection.s2d(split[13]);
+                        n.fluores[2].y = QuimpToolsCollection.s2d(split[14]);
                     }
 
                     n.frozen = false;
@@ -346,10 +351,36 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
                 n = n.getNext();
             } while (!n.isHead());
+            // see uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap.calcCurvature()
+            Vert v;
+            for (int f = getStartFrame(); f <= getEndFrame(); f++) {
+                Outline o = getOutline(f);
+                if (o == null) {
+                    continue;
+                }
+                v = o.getHead();
+
+                // find min and max of sum curvature
+                v = o.getHead();
+                if (f == getStartFrame()) {
+                    curvLimits[1] = v.curvatureSum;
+                    curvLimits[0] = v.curvatureSum;
+                }
+                do {
+                    if (v.curvatureSum > curvLimits[1]) {
+                        curvLimits[1] = v.curvatureSum;
+                    }
+                    if (v.curvatureSum < curvLimits[0]) {
+                        curvLimits[0] = v.curvatureSum;
+                    }
+                    v = v.getNext();
+                } while (!v.isHead());
+            }
         }
 
         // Set limits to equal positive and negative
-        migLimits = Tool.setLimitsEqual(migLimits);
+        migLimits = QuimpToolsCollection.setLimitsEqual(migLimits);
+        curvLimits = QuimpToolsCollection.setLimitsEqual(curvLimits);
     }
 
     public int getSize() {

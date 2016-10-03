@@ -10,7 +10,6 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * node called \b head that indicates beginning of the list (and its end if the list is looped) 
  * 
  * @author p.baniukiewicz
- * @date 14 Apr 2016
  *
  * @param <T> Type of point, currently can be Node or Vert
  */
@@ -50,7 +49,7 @@ public abstract class PointsList<T extends PointsList<T>> {
     /**
      * flag which is set when the velocity is below the critical velocity
      */
-    protected boolean frozen = false;
+    public boolean frozen = false;
 
     /**
      * Default constructor, assumes that first point is created on list with ID = 1

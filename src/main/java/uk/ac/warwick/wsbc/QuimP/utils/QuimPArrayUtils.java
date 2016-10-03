@@ -1,14 +1,15 @@
 /**
- * @file QuimPArrayUtils.java
- * @date 22 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP.utils;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
+import java.nio.BufferOverflowException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,11 +17,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * Deliver simple methods operating on arrays
  * @author p.baniukiewicz
- * @date 22 Jun 2016
  *
  */
 public class QuimPArrayUtils {
@@ -102,6 +103,21 @@ public class QuimPArrayUtils {
             }
         }
         return out;
+    }
+
+    /**
+     * Convert integer array to short.
+     * @param input
+     * @return Input array converted to short
+     */
+    public static short[] int2short(int[] input) {
+        short[] ret = new short[input.length];
+        for (int i = 0; i < input.length; i++) {
+            if (input[i] > Short.MAX_VALUE)
+                throw new BufferOverflowException();
+            ret[i] = (short) input[i];
+        }
+        return ret;
     }
 
     /**
@@ -194,6 +210,48 @@ public class QuimPArrayUtils {
         pw.close();
     }
 
+    /**
+     * Load map file produced by arrayToFile.
+     * 
+     * Array must have equal number of columns in every row.
+     * 
+     * @param delim Delimiter, should be the same used in arrayToFile
+     * @param inFile
+     * @return
+     * @throws IOException
+     */
+    public static double[][] file2Array(String delim, File inFile) throws IOException {
+        LineNumberReader pw = new LineNumberReader(new FileReader(inFile));
+        int lines = getNumberOfLinesinFile(inFile); // get number of rows
+        double[][] ret = new double[lines][];
+        String line = pw.readLine();
+        while (line != null) {
+            StringTokenizer tk = new StringTokenizer(line, delim);
+            ret[pw.getLineNumber() - 1] = new double[tk.countTokens()];
+            int colno = 0;
+            while (tk.hasMoreTokens())
+                ret[pw.getLineNumber() - 1][colno++] = Double.valueOf(tk.nextToken());
+            line = pw.readLine();
+        }
+        pw.close();
+        return ret;
+    }
+
+    /**
+     * Return number of lines in file
+     * 
+     * @param file
+     * @return Number of lines
+     * @throws IOException 
+     */
+    public static int getNumberOfLinesinFile(File file) throws IOException {
+        LineNumberReader lnr = new LineNumberReader(new FileReader(file));
+        lnr.skip(Long.MAX_VALUE);
+        int lines = lnr.getLineNumber() + 1;
+        lnr.close();
+        return lines;
+    }
+
     public static int findNumPeaks(double[] data, int peakWidth) {
 
         int[] peaks = new int[data.length];
@@ -253,6 +311,18 @@ public class QuimPArrayUtils {
             if (max < a[i]) {
                 max = a[i];
             }
+        }
+        return max;
+    }
+
+    public static double arrayMax(double[][] a) {
+        double max = arrayMax(a[0]);
+        if (a.length == 1)
+            return max;
+        for (int i = 1; i < a.length; i++) {
+            double rmax = arrayMax(a[i]);
+            if (max < rmax)
+                max = rmax;
         }
         return max;
     }
@@ -318,6 +388,18 @@ public class QuimPArrayUtils {
             if (min > a[i]) {
                 min = a[i];
             }
+        }
+        return min;
+    }
+
+    public static double arrayMin(double[][] a) {
+        double min = arrayMin(a[0]);
+        if (a.length == 1)
+            return min;
+        for (int i = 1; i < a.length; i++) {
+            double rmin = arrayMin(a[i]);
+            if (min > rmin)
+                min = rmin;
         }
         return min;
     }

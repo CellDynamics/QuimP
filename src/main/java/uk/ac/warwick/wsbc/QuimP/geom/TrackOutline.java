@@ -1,6 +1,4 @@
 /**
- * @file TrackOutline.java
- * @date 24 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP.geom;
 
@@ -74,7 +72,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * @enduml
  *  
  * @author p.baniukiewicz
- * @date 24 Jun 2016
  * @see uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi
  *
  */

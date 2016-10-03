@@ -1,6 +1,4 @@
 /**
- * @file StringParser.java
- * @date 24 Feb 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
@@ -11,7 +9,6 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
  * white characters are removed during parsing.
  * 
  * @author p.baniukiewicz
- * @date 24 Feb 2016
  *
  */
 public class StringParser {

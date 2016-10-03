@@ -1,6 +1,4 @@
 /**
- * @file HistoryLogger.java
- * @date 24 Mar 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -18,6 +16,8 @@ import javax.swing.JScrollPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
+
 /**
  * Builds history logger window and logs
  * 
@@ -28,7 +28,6 @@ import org.apache.logging.log4j.Logger;
  * first parameter is description of this activity and next parameters define QuimP state.
  *  
  * @author p.baniukiewicz
- * @date 24 Mar 2016
  *
  */
 public class HistoryLogger implements WindowListener {
@@ -164,7 +163,6 @@ public class HistoryLogger implements WindowListener {
  * Serialization class. Holds all data that should be included in log
  * 
  * @author p.baniukiewicz
- * @date 29 Mar 2016
  *
  */
 class LogEntry implements IQuimpSerialize {

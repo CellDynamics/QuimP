@@ -1,6 +1,4 @@
 /**
- * @file PluginFactory.java
- * @date 4 Feb 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -135,7 +133,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * does not exist.
  * 
  * @author p.baniukiewicz
- * @date 4 Feb 2016
  */
 public class PluginFactory {
 
@@ -486,7 +483,6 @@ public class PluginFactory {
  * Store basic plugin properties read from jar file
  * 
  * @author p.baniukiewicz
- * @date 17 Feb 2016
  *
  */
 class PluginProperties {

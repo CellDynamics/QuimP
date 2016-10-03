@@ -1,6 +1,4 @@
 /**
- * @file SegmentedShapeRoi.java
- * @date 27 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP.geom;
 
@@ -22,9 +20,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * one 
  * 
  * @author p.baniukiewicz
- * @date 27 Jun 2016
  * @see uk.ac.warwick.wsbc.QuimP.geom.TrackOutline
- * @see uk.ac.warwick.wsbc.QuimP.BinarySegmentation
+ * @see uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentation
  *
  */
 public class SegmentedShapeRoi extends ShapeRoi {

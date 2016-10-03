@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
@@ -19,7 +20,6 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * inserting points to the Shape
  *   
  * @author p.baniukiewicz
- * @date 14 Apr 2016
  *
  * @param <T> Type of point, currently can be Node or Vert
  * @remarks Generally assumes that Shape is closed, so PointsList is looped
@@ -505,7 +505,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * 
      * @return current Shape as PolygonRoi
      */
-    Roi asFloatRoi() {
+    public Roi asFloatRoi() {
         float[] x = new float[POINTS];
         float[] y = new float[POINTS];
 

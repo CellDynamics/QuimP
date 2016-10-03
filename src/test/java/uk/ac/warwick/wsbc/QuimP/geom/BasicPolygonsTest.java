@@ -1,6 +1,4 @@
 /**
- * @file BasicPolygonsTest.java
- * @date 29 Feb 2016
  */
 package uk.ac.warwick.wsbc.QuimP.geom;
 
@@ -19,7 +17,6 @@ import org.junit.Test;
 
 /**
  * @author p.baniukiewicz
- * @date 29 Feb 2016
  *
  */
 public class BasicPolygonsTest {

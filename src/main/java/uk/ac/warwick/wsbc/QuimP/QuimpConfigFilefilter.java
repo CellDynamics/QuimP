@@ -7,11 +7,13 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 
+import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
+
 /**
  * Implement filter of FileDialog.
  * <p>
  * Define also default extensions for new and old file format.
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class QuimpConfigFilefilter implements FilenameFilter {
@@ -26,7 +28,7 @@ public class QuimpConfigFilefilter implements FilenameFilter {
     public static final String oldFileExt = ".paQP";
 
     /**
-     * Allow to provide list of accepted extensions
+     * Allow to provide list of accepted extensions with dot.
      * @param ext
      */
     public QuimpConfigFilefilter(String... ext) {

@@ -1,6 +1,4 @@
 /**
- * @file ParamList.java
- * @date 24 Feb 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
@@ -14,7 +12,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
  * are java.lang.String and \a key is case insensitive.
  * 
  * @author p.baniukiewicz
- * @date 24 Feb 2016
  *
  */
 public class ParamList extends LinkedStringMap<String> {

@@ -46,6 +46,7 @@ git checkout -b release/$releaseVersion $currentBranch
 echo "Prepare changelog and commit it here"
 echo '	Before continuing changelog at src/changes'
 echo '	must be modified in respect to fixed bugs'
+echo 'Be prepared for signing'
 read -r -p "Are you sure to continue? [y/N] " response
 case $response in
     [yY][eE][sS]|[yY]) 
@@ -65,13 +66,13 @@ mvn -T 1C --batch-mode release:perform
 find $FIJI -name QuimP*.jar ! -name QuimP_11b.jar | xargs rm -fv # delete old one except old quimp
 cp -v target/checkout/target/QuimP_-*-jar-*.jar $FIJI # copy package
 # Copy site
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/checkout/target/site/ pi@quimp.linkpc.net:/var/www/restricted/site
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222" --delete --stats target/checkout/target/site/ pi@quimp.linkpc.net:/var/www/restricted/site
 # Copy only changes for users
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/checkout/target/site/css target/site/images target/site/changes-report.html pi@quimp.linkpc.net:/var/www/html/site
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222" --delete --stats target/checkout/target/site/css target/checkout/target/site/images target/checkout/target/site/changes-report.html pi@quimp.linkpc.net:/var/www/html/site
 # Copy only javadoc for users
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats target/checkout/target/site/apidocs/ pi@quimp.linkpc.net:/var/www/html/apidocs
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222" --delete --stats target/checkout/target/site/apidocs/ pi@quimp.linkpc.net:/var/www/html/apidocs
 # copy doxygen for users
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats Doxygen_doc/html/ pi@quimp.linkpc.net:/var/www/html/doxygen
+rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222" --delete --stats Doxygen_doc/html/ pi@quimp.linkpc.net:/var/www/html/doxygen
 
 
 # Clean up and finish
@@ -82,13 +83,15 @@ git merge --no-ff -m "Merge release/$releaseVersion into develop" release/$relea
 # go to the master branch
 git checkout master
 # merge the version back into master but use the tagged version instead of the release/$releaseVersion HEAD
-git merge --no-ff -m "Merge previous version into master to avoid the increased version number" release/$releaseVersion~1
+git merge --no-ff -no-commit release/$releaseVersion~1
+git commit -m "Merge new version" -S
 # Get back on the develop branch
 git checkout $currentBranch
 
 # Updating trac version
 d=$(date +"%b %d, %Y, %H:%M:%S")
 ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version add '$releaseVersion' '$d'"
+d=$(date +"%b %d, %Y, %H:%M:%S")
 ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version add '$developmentVersion' '$d'"
 
 echo '------------------------------------------------------------------'

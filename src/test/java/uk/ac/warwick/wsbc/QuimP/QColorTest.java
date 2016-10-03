@@ -1,6 +1,4 @@
 /**
- * @file QColorTest.java
- * @date 3 May 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -18,7 +16,6 @@ import org.junit.Test;
  * compare objects references.
  * 
  * @author p.baniukiewicz
- * @date 3 May 2016
  *
  */
 public class QColorTest {

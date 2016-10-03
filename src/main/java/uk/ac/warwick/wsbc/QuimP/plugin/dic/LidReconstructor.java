@@ -1,5 +1,4 @@
 /**
- * @file LidReconstructor.java
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
@@ -71,7 +70,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  * pixels may not work correctly for certain cases - when maximum
  * intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
  * @author p.baniukiewicz
- * @date 10 Dec 2015
  * @see Z. Kam, “Microscopic differential interference contrast image processing
  * by line integration (LID) and deconvolution,” Bioimaging, vol. 6, no. 4,
  * pp. 166–176, 1998.

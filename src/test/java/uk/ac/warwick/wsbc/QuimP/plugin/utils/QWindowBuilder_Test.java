@@ -1,6 +1,4 @@
 /**
- * @file QWindowBuilder_Test.java
- * @date 29 Jan 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
@@ -21,7 +19,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * Test class for QWindowBuilder
  * 
  * @author p.baniukiewicz
- * @date 29 Jan 2016
  *
  */
 public class QWindowBuilder_Test {
@@ -41,7 +38,6 @@ public class QWindowBuilder_Test {
      * Instance private class for tested QWindowBuilder
      * 
      * @author p.baniukiewicz
-     * @date 2 Feb 2016
      *
      */
     class QWindowBuilderInst extends QWindowBuilder {

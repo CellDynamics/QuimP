@@ -1,14 +1,9 @@
-/**
- * @file ConfigReaderException.java
- * @date 29 Jan 2016
- */
 package uk.ac.warwick.wsbc.QuimP.utils;
 
 /**
  * Basic exception class for ConfigReader
  * 
  * @author p.baniukiewicz
- * @date 29 Jan 2016
  *
  */
 public class ConfigReaderException extends Exception {
@@ -49,8 +44,7 @@ public class ConfigReaderException extends Exception {
      * @param enableSuppression
      * @param writableStackTrace
      */
-    public ConfigReaderException(String message, Throwable cause,
-            boolean enableSuppression,
+    public ConfigReaderException(String message, Throwable cause, boolean enableSuppression,
             boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
         // TODO Auto-generated constructor stub

@@ -1,6 +1,4 @@
 /**
- * @file QWindowBuilder.java
- * @date 29 Jan 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
@@ -105,7 +103,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * @remarks All parameters passed to and from QWindowBuilder as ParamList are encoded as \b String 
  * 
  * @author p.baniukiewicz
- * @date 29 Jan 2016
  */
 public abstract class QWindowBuilder {
     final protected static Logger LOGGER = LogManager.getLogger(QWindowBuilder.class.getName());
@@ -578,7 +575,6 @@ public abstract class QWindowBuilder {
      * Stores components under \c Keys that are not case insensitive
      * 
      * @author p.baniukiewicz
-     * @date 24 Feb 2016
      *
      */
     public class ComponentList extends LinkedStringMap<Component> {

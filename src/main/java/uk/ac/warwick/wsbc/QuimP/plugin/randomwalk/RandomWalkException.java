@@ -1,6 +1,4 @@
 /**
- * @file RandomWalkException.java
- * @date 23 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
@@ -8,7 +6,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
  * @author p.baniukiewicz
- * @date 23 Jun 2016
  *
  */
 public class RandomWalkException extends QuimpPluginException {

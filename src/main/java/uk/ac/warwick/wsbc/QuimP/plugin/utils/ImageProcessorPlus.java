@@ -16,8 +16,6 @@ import ij.process.ImageProcessor;
  *
  * @warning See extendImageBeforeRotation(double) for possible problems
  * @author p.baniukiewicz
- * @date 9 Dec 2015
- * @date 4 Feb 2016
  */
 public class ImageProcessorPlus {
 
@@ -142,7 +140,6 @@ public class ImageProcessorPlus {
  * javafx.geometry.BoundingBox) that can be rotated by any angle.
  * 
  * @author p.baniukiewicz
- * @date 09 Dec 2015
  */
 class RectangleBox {
 

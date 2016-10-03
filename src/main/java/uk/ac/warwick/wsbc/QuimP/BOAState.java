@@ -11,7 +11,10 @@ import org.apache.logging.log4j.Logger;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.io.OpenDialog;
+import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
+import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentationPlugin;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Hold current BOA state that can be serialized
@@ -59,7 +62,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * @enduml
  * 
  * @author p.baniukiewicz
- * @date 30 Mar 2016
  * @see Serializer
  */
 public class BOAState implements IQuimpSerialize {
@@ -94,7 +96,7 @@ public class BOAState implements IQuimpSerialize {
      * Keep snapshots of SnakePluginList objects for every frame separately. Plugin
      * configurations are stored as well (but without plugin references)
      */
-    ArrayList<SnakePluginList> snakePluginListSnapshots;
+    public ArrayList<SnakePluginList> snakePluginListSnapshots;
     /**
      * List of plugins selected in plugin stack and information if they are active or not
      * This field is not serializable because \a snakePluginListSnapshots keeps configurations
@@ -124,31 +126,104 @@ public class BOAState implements IQuimpSerialize {
     public ArrayList<Boolean> isFrameEdited;
 
     /**
-     * Hold user parameters for segmentation algorithm
+     * Hold user parameters for segmentation algorithm.
      * 
+     * Most of those parameters are available from BOA user menu.
      * This class supports cloning and comparing.
      * 
      * @author p.baniukiewicz
-     * @date 30 Mar 2016
      * @see BOAState
      */
     class SegParam {
-        private double nodeRes; //!< Number of nodes on ROI edge 
-        public int blowup; //!< distance to blow up chain 
+        /**
+         * Number of nodes on ROI edge.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
+        private double nodeRes;
+        /**
+         * Distance to blow up chain.
+         * 
+         * Check user manual or our publications for details.
+         */
+        public int blowup;
+        /**
+         * Critical velocity.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public double vel_crit;
+        /**
+         * Central force.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public double f_central;
-        public double f_image; //!< image force 
-        public int max_iterations; //!< max iterations per contraction 
+        /**
+         * Image force.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
+        public double f_image;
+        /**
+         * Max iterations per contraction.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
+        public int max_iterations;
+        /**
+         * Sample tan.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public int sample_tan;
+        /**
+         * Sample norm.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public int sample_norm;
+        /**
+         * Contraction force.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public double f_contract;
+        /**
+         * Final shrink.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public double finalShrink;
         // Switch Params
-        public boolean use_previous_snake;//!< next contraction begins with prev chain 
+        /**
+         * Next contraction begins with prev chain.
+         */
+        public boolean use_previous_snake;
+        /**
+         * Decide whether to show paths on screen.
+         * 
+         * Cell segmentation parameter. Check user manual or our publications for details.
+         */
         public boolean showPaths;
-        public boolean expandSnake; //!< whether to act as an expanding snake
-        private double min_dist; //!< min distance between nodes 
-        private double max_dist; //!< max distance between nodes 
+        /**
+         * Whether to act as an expanding snake.
+         * 
+         * Visualisation option parameter. Check user manual or our publications for details.
+         */
+        public boolean expandSnake;
+        /**
+         * Min distance between nodes.
+         * 
+         * Cell segmentation parameter.
+         */
+        private double min_dist;
+        /**
+         * Max distance between nodes.
+         * 
+         * Cell segmentation parameter.
+         */
+        private double max_dist;
 
         /**
          * Copy constructor
@@ -349,7 +424,7 @@ public class BOAState implements IQuimpSerialize {
      * 
      * @author rtyson
      * @see QParams
-     * @see Tool
+     * @see QuimpToolsCollection
      */
     public class BOAp {
         /**
@@ -556,7 +631,7 @@ public class BOAState implements IQuimpSerialize {
                 setOutputFileCore(File.separator + ip.getTitle());
             } else {
                 orgFile = new File(fileinfo.directory, fileinfo.fileName);
-                setOutputFileCore(fileinfo.directory + Tool.removeExtension(orgFile.getName()));
+                setOutputFileCore(fileinfo.directory + QuimpToolsCollection.removeExtension(orgFile.getName()));
             }
 
             FRAMES = ip.getStackSize(); // get number of frames
@@ -607,7 +682,7 @@ public class BOAState implements IQuimpSerialize {
          */
         public void setOutputFileCore(File outputFileCore) {
             this.outputFileCore = outputFileCore;
-            fileName = Tool.removeExtension(outputFileCore.getName());
+            fileName = QuimpToolsCollection.removeExtension(outputFileCore.getName());
         }
 
         /**
@@ -920,22 +995,34 @@ public class BOAState implements IQuimpSerialize {
             BOA_.log("Failed to read parameter file " + e.getMessage());
             return false;
         }
-        boap.NMAX = boap.readQp.NMAX;
-        segParam.blowup = boap.readQp.getBlowup();
-        segParam.max_iterations = boap.readQp.max_iterations;
-        segParam.sample_tan = boap.readQp.sample_tan;
-        segParam.sample_norm = boap.readQp.sample_norm;
-        boap.delta_t = boap.readQp.delta_t;
-        segParam.nodeRes = boap.readQp.getNodeRes();
-        segParam.vel_crit = boap.readQp.vel_crit;
-        segParam.f_central = boap.readQp.f_central;
-        segParam.f_contract = boap.readQp.f_contract;
-        segParam.f_image = boap.readQp.f_image;
-
-        if (boap.readQp.paramFormat == QParams.QUIMP_11) {
-            segParam.finalShrink = boap.readQp.finalShrink;
-        }
+        loadParams(boap.readQp);
         BOA_.log("Successfully read parameters");
         return true;
+    }
+
+    /**
+     * Build internal boa state from QParams object.
+     * @param readQp
+     */
+    public void loadParams(QParams readQp) {
+        boap.NMAX = readQp.NMAX;
+        segParam.blowup = readQp.getBlowup();
+        segParam.max_iterations = readQp.max_iterations;
+        segParam.sample_tan = readQp.sample_tan;
+        segParam.sample_norm = readQp.sample_norm;
+        boap.delta_t = readQp.delta_t;
+        segParam.nodeRes = readQp.getNodeRes();
+        segParam.vel_crit = readQp.vel_crit;
+        segParam.f_central = readQp.f_central;
+        segParam.f_contract = readQp.f_contract;
+        segParam.f_image = readQp.f_image;
+
+        if (readQp.paramFormat == QParams.QUIMP_11) {
+            segParam.finalShrink = readQp.finalShrink;
+        }
+        boap.readQp = readQp;
+        // copy loaded data to snapshots
+        for (int f = readQp.getStartFrame(); f < readQp.getEndFrame(); f++)
+            store(f);
     }
 }

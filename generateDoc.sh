@@ -50,7 +50,7 @@ rsync -c --exclude "_*"  ./*.md $CURRENT_DIR
 cd $CURRENT_DIR
 rm -rf /tmp/QuimP.wiki
 
-doxygen $DEFAULT_DOXYFILE >/dev/null
+doxygen $DEFAULT_DOXYFILE &>/dev/null
 if [ $UPLOAD -eq 1 ]; then
 	# copy also images - all md files expect images in root of webpage (directory the doxegen was called from)
 	rsync -az -e 'ssh -p2222' --stats --delete *.png *.jpg html/ trac@trac-wsbc.linkpc.net:/var/www/restricted/Doxygen_doc/QuimP

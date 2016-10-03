@@ -18,6 +18,8 @@ import org.apache.logging.log4j.Logger;
 
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
+import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Container class for parameters defining the whole process of analysis in QuimP.
@@ -52,7 +54,7 @@ public class QParams {
     public static final int QUIMP_11 = 2;
     public static final int NEW_QUIMP = 3;
     /**
-     * Name of the case
+     * Name of the case.
      * Used to set \c fileName and \c path
      */
     private File paramFile;
@@ -62,12 +64,13 @@ public class QParams {
      */
     public int paramFormat;
     /**
-     * Name of the data file - without path and extension. Equals to name of the case
+     * Name of the data file - without path and extension. Equals to name of the case.
+     * If initialised from {@link QParamsQconf} contains underscored cell number as well.
      * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
      */
     private String fileName;
     /**
-     * Path where user files exist
+     * Path where user files exist.
      * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
      */
     private String path;
@@ -76,12 +79,12 @@ public class QParams {
     protected File statsQP;
     /**
      * This field is set by direct call from ANA. Left here for compatibility reasons.
-     * Main holder of fluTiffs is {@link uk.ac.warwick.wsbc.QuimP.ANAp}
+     * Main holder of fluTiffs is {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp}
      */
-    File[] fluTiffs;
+    public File[] fluTiffs;
 
     private File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
-    File[] fluFiles;
+    private File[] fluFiles;
 
     private double imageScale;
     private double frameInterval;
@@ -92,22 +95,29 @@ public class QParams {
 
     int NMAX, max_iterations, sample_tan, sample_norm;
     double delta_t, vel_crit, f_central, f_contract, f_image, f_friction;
-    double finalShrink, cortexWidth;
+    public double finalShrink, cortexWidth;
     long key;
     double sensitivity; // no longer used. blank holder
     /**
      * Indicate if \a snQP has been processed by ECMM (\c true). Set by checkECMMrun
      */
-    boolean ecmmHasRun = false;
+    private boolean ecmmHasRun = false;
+
+    /**
+     * @return the ecmmHasRun
+     */
+    public boolean isEcmmHasRun() {
+        return ecmmHasRun;
+    }
 
     public QParams() {
 
     }
 
     /**
-     * Read basic information from \a paQP file such as its name and path. Initialize structures
+     * Read basic information from <i>paQP</i> file such as its name and path. Initialise structures
      * 
-     * @param p \a paQP file
+     * @param p <i>paQP</i> file, should contain underscored cell number.
      */
     public QParams(File p) {
         setParamFile(p);
@@ -156,13 +166,15 @@ public class QParams {
      * @param paramFile the paramFile to set.
      */
     public void setParamFile(File paramFile) {
-        fileName = Tool.removeExtension(paramFile.getName());
+        fileName = QuimpToolsCollection.removeExtension(paramFile.getName());
         this.paramFile = paramFile;
         path = paramFile.getParent();
     }
 
     /**
-     * @return the prefix
+     * @return the prefix. This name probably contains also underscored cell number. It is added
+     * when object of this is created from {@link QParamsQconf} and should be added when
+     * creating only this object QParams(File).
      */
     public String getFileName() {
         return fileName;
@@ -278,6 +290,13 @@ public class QParams {
      */
     public File getStatsQP() {
         return statsQP;
+    }
+
+    /**
+     * @return the fluFiles
+     */
+    public File[] getFluFiles() {
+        return fluFiles;
     }
 
     /**
@@ -433,7 +452,7 @@ public class QParams {
                 d.close();
                 throw new QuimpException("QParams::Not a compatible paramater file");
             }
-            key = (long) Tool.s2d(d.readLine()); // key
+            key = (long) QuimpToolsCollection.s2d(d.readLine()); // key
             segImageFile = new File(d.readLine()); // image file name
 
             String sn = d.readLine();
@@ -454,38 +473,38 @@ public class QParams {
             System.out.println("snake file: " + snakeQP.getAbsolutePath());
 
             d.readLine(); // # blank line
-            imageScale = Tool.s2d(d.readLine());
+            imageScale = QuimpToolsCollection.s2d(d.readLine());
             if (imageScale == 0) {
                 IJ.log("Warning. Image scale was zero. Set to 1");
                 imageScale = 1;
             }
-            frameInterval = Tool.s2d(d.readLine());
+            frameInterval = QuimpToolsCollection.s2d(d.readLine());
 
             d.readLine(); // skip #segmentation parameters
-            NMAX = (int) Tool.s2d(d.readLine());
-            delta_t = Tool.s2d(d.readLine());
-            max_iterations = (int) Tool.s2d(d.readLine());
-            nodeRes = (int) Tool.s2d(d.readLine());
-            blowup = (int) Tool.s2d(d.readLine());
-            sample_tan = (int) Tool.s2d(d.readLine());
-            sample_norm = (int) Tool.s2d(d.readLine());
-            vel_crit = Tool.s2d(d.readLine());
+            NMAX = (int) QuimpToolsCollection.s2d(d.readLine());
+            delta_t = QuimpToolsCollection.s2d(d.readLine());
+            max_iterations = (int) QuimpToolsCollection.s2d(d.readLine());
+            nodeRes = (int) QuimpToolsCollection.s2d(d.readLine());
+            blowup = (int) QuimpToolsCollection.s2d(d.readLine());
+            sample_tan = (int) QuimpToolsCollection.s2d(d.readLine());
+            sample_norm = (int) QuimpToolsCollection.s2d(d.readLine());
+            vel_crit = QuimpToolsCollection.s2d(d.readLine());
 
-            f_central = Tool.s2d(d.readLine());
-            f_contract = Tool.s2d(d.readLine());
-            f_friction = Tool.s2d(d.readLine());
-            f_image = Tool.s2d(d.readLine());
-            sensitivity = Tool.s2d(d.readLine());
+            f_central = QuimpToolsCollection.s2d(d.readLine());
+            f_contract = QuimpToolsCollection.s2d(d.readLine());
+            f_friction = QuimpToolsCollection.s2d(d.readLine());
+            f_image = QuimpToolsCollection.s2d(d.readLine());
+            sensitivity = QuimpToolsCollection.s2d(d.readLine());
 
             if (l.substring(0, 3).equals("#p2")) { // new format
                 paramFormat = QParams.QUIMP_11;
                 // new params
                 d.readLine(); // # - new parameters (cortext width, start frame,
                               // end frame, final shrink, statsQP, fluImage)
-                cortexWidth = Tool.s2d(d.readLine());
-                startFrame = (int) Tool.s2d(d.readLine());
-                endFrame = (int) Tool.s2d(d.readLine());
-                finalShrink = Tool.s2d(d.readLine());
+                cortexWidth = QuimpToolsCollection.s2d(d.readLine());
+                startFrame = (int) QuimpToolsCollection.s2d(d.readLine());
+                endFrame = (int) QuimpToolsCollection.s2d(d.readLine());
+                finalShrink = QuimpToolsCollection.s2d(d.readLine());
                 statsQP = new File(paramFile.getParent() + "" + d.readLine());
 
                 d.readLine(); // # fluo channel tiffs
@@ -514,7 +533,8 @@ public class QParams {
 
         PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
 
-        pPW.print("#p2 - QuimP parameter file (QuimP11). Created " + Tool.dateAsString() + "\n");
+        pPW.print("#p2 - QuimP parameter file (QuimP11). Created "
+                + QuimpToolsCollection.dateAsString() + "\n");
         pPW.print(IJ.d2s(key, 0) + "\n");
         pPW.print(segImageFile.getAbsolutePath() + "\n");
         pPW.print(File.separator + snakeQP.getName() + "\n");
@@ -593,7 +613,7 @@ public class QParams {
                         || filenames[i].matches(paramFile.getName())) {
                     continue;
                 }
-                extension = Tool.getFileExtension(filenames[i]);
+                extension = QuimpToolsCollection.getFileExtension(filenames[i]);
                 if (extension.matches(QuimpConfigFilefilter.oldFileExt.substring(1))) {
                     paFiles.add(filenames[i]);
                     System.out.println("paFile: " + filenames[i]);
@@ -665,4 +685,5 @@ public class QParams {
                 }
         }
     }
+
 }

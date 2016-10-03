@@ -26,7 +26,7 @@ public class Vert extends PointsList<Vert> {
     /**
      * fluorescence channels 1-3.
      */
-    final FluoMeasurement[] fluores = new FluoMeasurement[3];
+    public final FluoMeasurement[] fluores = new FluoMeasurement[3];
     /**
      * curvature local to a node.
      * Updated by uk.ac.warwick.wsbc.QuimP.Vert.calcCurvatureLocal() and implicitly by 
@@ -414,19 +414,19 @@ public class Vert extends PointsList<Vert> {
     // return fluoNew;
     // }
 
-    void setFluoresChannel(FluoMeasurement m, int channel) {
+    public void setFluoresChannel(FluoMeasurement m, int channel) {
         fluores[channel].intensity = m.intensity;
         fluores[channel].x = m.x;
         fluores[channel].y = m.y;
     }
 
-    void setFluoresChannel(int x, int y, int i, int channel) {
+    public void setFluoresChannel(int x, int y, int i, int channel) {
         fluores[channel].intensity = i;
         fluores[channel].x = x;
         fluores[channel].y = y;
     }
 
-    void setFluores(FluoMeasurement[] m) {
+    public void setFluores(FluoMeasurement[] m) {
 
         for (int i = 0; i < 3; i++) {
             fluores[i].intensity = m[i].intensity;

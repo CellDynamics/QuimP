@@ -1,6 +1,4 @@
 /**
- * @file QParamsExchangerTest.java
- * @date 26 May 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -23,7 +21,6 @@ import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 
 /**
  * @author p.baniukiewicz
- * @date 26 May 2016
  *
  */
 public class QParamsExchangerTest {
@@ -83,7 +80,7 @@ public class QParamsExchangerTest {
     @Test
     public void testQParamsExchanger() throws Exception {
         QParamsQconf qp = new QParamsQconf(test1);
-        assertThat(qp.getFileName(), is("Stack_cut_0"));
+        assertThat(qp.getFileName(), is("Stack_cut"));
         assertThat(qp.getPath(), is("src/test/resources/test2"));
     }
 

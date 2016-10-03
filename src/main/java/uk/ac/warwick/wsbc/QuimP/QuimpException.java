@@ -1,12 +1,9 @@
 /**
- * @file QuimpException.java
- * @date 1 Jun 2016
  */
 package uk.ac.warwick.wsbc.QuimP;
 
 /**
  * @author p.baniukiewicz
- * @date 1 Jun 2016
  *
  */
 public class QuimpException extends Exception {

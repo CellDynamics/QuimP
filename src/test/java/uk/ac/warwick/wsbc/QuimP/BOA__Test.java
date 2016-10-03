@@ -13,7 +13,7 @@ import ij.ImagePlus;
 /**
  * Test class for BOA_ plugin
  * 
- * @author baniuk
+ * @author p.baniukiewicz
  *
  */
 public class BOA__Test {
