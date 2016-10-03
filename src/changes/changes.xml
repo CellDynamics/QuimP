@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="16.08.04" date="2016-10-03" description="Release">
+          <action dev="baniuk" type="fix" issue="226">
+              Included javac dependency to solve problem with dependencies removed from Fiji. See this thread: http://forum.imagej.net/t/no-javac-jar-found/2340.
+          </action>
+      </release>
       <release version="16.08.03" date="2016-10-01" description="Release">
           <action dev="baniuk" type="add" issue="216">
               Added simple tool for conversion between paQP and QCONF format.
