@@ -173,7 +173,7 @@ public class ECMM_Mapping {
                     }
                 }
                 runFromQCONF();
-                IJ.log("The new data file " + paramFile.getName()
+                IJ.log("The new data file " + qconfLoader.getQp().getParamFile().toString()
                         + " has been updated by results of ECMM analysis.");
             } else {
                 throw new IllegalStateException("QconfLoader returned unknown version of QuimP");
@@ -230,9 +230,8 @@ public class ECMM_Mapping {
         dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
         qconfLoader.getQp().writeParams(); // save global container
         // generate additional OLD files
-        FormatConverter fC = new FormatConverter(qconfLoader,
-                ((QParamsQconf) qconfLoader.getQp()).getParamFile().toPath());
-        fC.generateOldDataFiles();
+        FormatConverter fC = new FormatConverter(qconfLoader);
+        fC.generateOldDataFile();
     }
 
     /**

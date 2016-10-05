@@ -134,7 +134,7 @@ public class Q_Analysis {
                     }
                 }
                 runFromQCONF();
-                IJ.log("The new data file " + paramFile.getName()
+                IJ.log("The new data file " + qconfLoader.getQp().getParamFile().toString()
                         + " has been updated by results of Q Analysis.");
             } else {
                 throw new IllegalStateException("QconfLoader returned unknown version of QuimP");
@@ -176,9 +176,8 @@ public class Q_Analysis {
         qconfLoader.getQp().getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
         qconfLoader.getQp().writeParams(); // save global container
         // generate additional OLD files
-        FormatConverter fC = new FormatConverter(qconfLoader,
-                ((QParamsQconf) qconfLoader.getQp()).getParamFile().toPath());
-        fC.generateOldDataFiles();
+        FormatConverter fC = new FormatConverter(qconfLoader);
+        fC.generateOldDataFile();
     }
 
     /**
