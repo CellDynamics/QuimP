@@ -30,6 +30,7 @@ public class FormatConverter {
     private static final Logger LOGGER = LogManager.getLogger(FormatConverter.class.getName());
     private QconfLoader qcL;
     private Path path;
+    private Path filename;
 
     /**
      * Construct FormatConverter from QCONF file.
@@ -41,6 +42,7 @@ public class FormatConverter {
         try {
             qcL = new QconfLoader(newDataFile);
             path = Paths.get(newDataFile.getParent());
+            filename = Paths.get(qcL.getQp().getFileName()); // can contain xx_0 if old file loaded
         } catch (QuimpException e) {
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with running Analysis: " + e.getMessage());
@@ -51,13 +53,28 @@ public class FormatConverter {
      * Construct conversion object from QParamsQconf.
      *  
      * @param qP reference to QParamsQconf
+     */
+    public FormatConverter(QconfLoader qcL) {
+        LOGGER.debug("Use provided QconfLoader");
+        this.qcL = qcL;
+        this.path = qcL.getQp().getPathasPath();
+        this.filename = Paths.get(qcL.getQp().getFileName()); // can contain xx_0 if old file loaded
+    }
+
+    /**
+     * Construct conversion object from QParamsQconf.
+     *  
+     * @param qP reference to QParamsQconf
      * @param path Path where converted files will be saved.
      * @throws QuimpException When path is file.
+     * FIXME Path is not respected when converting from QCONF as QParams reads path from QCONF  
      */
+    @Deprecated
     public FormatConverter(QconfLoader qcL, Path path) throws QuimpException {
         LOGGER.debug("Use provided QconfLoader");
         this.qcL = qcL;
         this.path = path;
+        this.filename = Paths.get(qcL.getQp().getFileName()).getFileName();
         if (path.toFile().exists()) {// if exist
             if (path.toFile().isFile()) // and is file
                 throw new QuimpException("Path points to file!");
@@ -80,12 +97,12 @@ public class FormatConverter {
         if (qcL.getConfVersion() == QParams.NEW_QUIMP)
             throw new IllegalArgumentException("Can not convert from new format to new");
         DataContainer dT = new DataContainer();
-        String orginal = qcL.getQp().getFileName(); // xxx_0 because old file loaded
+        // String orginal = qcL.getQp().getFileName(); // xxx_0 because old file loaded
         // cut last number
-        int last = orginal.lastIndexOf('_');
+        int last = filename.toString().lastIndexOf('_');
         if (last < 0)
             throw new QuimpException("Input file must be in format name_no.paQP");
-        orginal = orginal.substring(0, last);
+        String orginal = filename.toString().substring(0, last);
         int i = 0;
         // Create DataContainer
         dT.BOAState = new BOAState(qcL.getImage());
@@ -203,7 +220,7 @@ public class FormatConverter {
      * Files are created in directory where QCONF is located.
      * 
      */
-    public void generateOldDataFiles() {
+    public void generateOldDataFile() {
         if (qcL.getConfVersion() == QParams.QUIMP_11)
             throw new IllegalArgumentException("Can not convert from old format to old");
         try {
@@ -228,11 +245,10 @@ public class FormatConverter {
      */
     public void generatepaQP() throws IOException {
         if (qcL.getConfVersion() == QParams.QUIMP_11)
-            throw new IllegalArgumentException("Can no convert from old format to old");
+            throw new IllegalArgumentException("Can not convert from old format to old");
         // replace location to location of QCONF
         DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
-        dT.getBOAState().boap
-                .setOutputFileCore(QuimpToolsCollection.removeExtension(path.toString()));
+        dT.getBOAState().boap.setOutputFileCore(path + File.separator + filename.toString());
         dT.BOAState.nest.writeSnakes(); // write paQP and snQP together
     }
 
@@ -245,11 +261,11 @@ public class FormatConverter {
      */
     public void generatesnQP() throws IOException {
         if (qcL.getConfVersion() == QParams.QUIMP_11)
-            throw new IllegalArgumentException("Can no convert from old format to old");
+            throw new IllegalArgumentException("Can not convert from old format to old");
         int activeHandler = 0;
         // replace location to location of QCONF
         DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
-        dT.BOAState.boap.setOutputFileCore(QuimpToolsCollection.removeExtension(path.toString()));
+        dT.BOAState.boap.setOutputFileCore(path + File.separator + filename.toString());
         Iterator<OutlineHandler> oHi = dT.getECMMState().oHs.iterator();
         do {
             ((QParamsQconf) qcL.getQp()).setActiveHandler(activeHandler++);
@@ -268,7 +284,7 @@ public class FormatConverter {
     public void doConversion() throws Exception {
         switch (qcL.getConfVersion()) {
             case QParams.NEW_QUIMP:
-                generateOldDataFiles();
+                generateOldDataFile();
                 break;
             case QParams.QUIMP_11:
                 generateNewDataFile();
