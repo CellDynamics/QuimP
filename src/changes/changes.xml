@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="16.08.06" date="2016-10-06" description="Release">
+          <action dev="baniuk" type="fix" issue="232">
+              Random Walk plugin reported bad seed colors. It was not a bug but rather lack of proper documentation.
+          </action>
+      </release>
       <release version="16.08.05" date="2016-10-06" description="Release">
           <action dev="baniuk" type="fix" issue="231">
               Fixed problem with FormatConverter.
