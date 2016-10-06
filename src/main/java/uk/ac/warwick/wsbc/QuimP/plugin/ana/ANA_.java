@@ -150,7 +150,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
                     }
                 }
                 runFromQCONF();
-                IJ.log("The new data file " + qconfLoader.getQp().getFileName()
+                IJ.log("The new data file " + qconfLoader.getQp().getParamFile().toString()
                         + " has been updated by results of ECMM analysis.");
             } else {
                 throw new IllegalStateException("QconfLoader returned unknown version of QuimP");
@@ -262,9 +262,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
         dc.ANAState = anaStates;
         qconfLoader.getQp().writeParams(); // save global container
         // generate additional OLD files (stQP is generated in loop already)
-        FormatConverter fC = new FormatConverter(qconfLoader,
-                ((QParamsQconf) qconfLoader.getQp()).getParamFile().toPath());
-        fC.generateOldDataFiles();
+        FormatConverter fC = new FormatConverter(qconfLoader);
+        fC.generateOldDataFile();
     }
 
     /**
