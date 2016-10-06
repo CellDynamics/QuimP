@@ -171,8 +171,8 @@ public class PolarPlot {
                         Math.cos(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
                 double y1 =
                         Math.sin(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
-                LOGGER.trace("Point coords:" + x + " " + y + " Polar coords:" + angles[i] + " "
-                        + magn[i]);
+                // LOGGER.trace("Point coords:" + x + " " + y + " Polar coords:"
+                // + Math.toDegrees(angles[i]) + " " + magn[i]);
                 SVGwritter.Qline ql = new SVGwritter.Qline(x, y, x1, y1);
                 ql.thickness = 0.01;
                 ql.draw(osw);
@@ -206,8 +206,20 @@ public class PolarPlot {
             for (int i = 0; i < magnF[f].length; i++)
                 magnF[f][i] -= min;
         }
-        double angles[] = QuimPArrayUtils.getMeanC(anglesF);
+        // double angles[] = QuimPArrayUtils.getMeanC(anglesF);
+        double angles[] = new double[magnF[0].length];
+        double delta = (2 * Math.PI - 0) / (magnF[0].length - 1);
+        for (int i = 0; i < angles.length; i++) {
+            angles[i] = -(0 + delta * i);
+            if (angles[i] < -Math.PI)
+                angles[i] = Math.PI + Math.PI + angles[i];
+        }
+
+        // rescale back
         double magn[] = QuimPArrayUtils.getMeanC(magnF);
+        double min = QuimPArrayUtils.arrayMin(magn);
+        for (int i = 0; i < magn.length; i++)
+            magn[i] -= (min - 0.1 * min);
 
         BufferedOutputStream out;
         try {
@@ -225,8 +237,8 @@ public class PolarPlot {
                         Math.cos(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
                 double y1 =
                         Math.sin(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
-                LOGGER.trace("Point coords:" + x + " " + y + " Polar coords:" + angles[i] + " "
-                        + magn[i]);
+                LOGGER.trace("Point coords:" + x + " " + y + " Polar coords:"
+                        + Math.toDegrees(angles[i]) + " " + magn[i]);
                 SVGwritter.Qline ql = new SVGwritter.Qline(x, y, x1, y1);
                 ql.thickness = 0.01;
                 ql.draw(osw);
