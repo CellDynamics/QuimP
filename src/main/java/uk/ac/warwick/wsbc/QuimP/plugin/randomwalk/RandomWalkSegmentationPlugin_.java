@@ -4,6 +4,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -23,7 +24,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -171,8 +174,12 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         comboPanel.add(cSeed);
 
         // Seed build zone (middle)
+        JPanel seedBuildPanels = new JPanel();
+        seedBuildPanels.setBorder(BorderFactory.createTitledBorder("Seed build"));
+        seedBuildPanels.setLayout(new BorderLayout());
+        ((BorderLayout) seedBuildPanels.getLayout()).setVgap(2);
+        // middle buttons
         JPanel seedBuildPanel = new JPanel();
-        seedBuildPanel.setBorder(BorderFactory.createTitledBorder("Seed build"));
         seedBuildPanel.setLayout(new GridLayout(1, 3, 2, 2));
         bClone = new JButton("Clone");
         bClone.setToolTipText("Clone selected original image and allow to seed it manually");
@@ -188,6 +195,26 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         seedBuildPanel.add(bClone);
         seedBuildPanel.add(bFore);
         seedBuildPanel.add(bBack);
+        seedBuildPanels.add(seedBuildPanel, BorderLayout.NORTH);
+        // middle info area
+        JTextPane helpArea = new JTextPane();
+        helpArea.setContentType("text/html");
+        helpArea.setEditable(false);
+        //!<
+        helpArea.setText(""
+                + "<font size=\"3\">"
+                + "<strong>Note</strong><br>"
+                + "The seed image has always size of the segmented data."
+                + "Thus, if one processes stack of images, he is initially "
+                + "supposed to provide the stack of seeds as well. Otherwise, "
+                + "one can cut (using ImageJ tools) only one slice and seed it, "
+                + " then Random Walk plugin will generate seeds for subsequent "
+                + "slices using <i>Erode power</i> parameter."
+                + "</font>");
+        /**/
+        JScrollPane helpAreascroll = new JScrollPane(helpArea);
+        helpAreascroll.setPreferredSize(new Dimension(200, 100));
+        seedBuildPanels.add(helpAreascroll, BorderLayout.CENTER);
 
         // Options zone (middle)
         JPanel optionsPanel = new JPanel();
@@ -224,7 +251,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         c.gridy = 0;
         c.ipadx = 50;
         c.fill = GridBagConstraints.HORIZONTAL;
-        seedoptionsPanel.add(seedBuildPanel, c);
+        seedoptionsPanel.add(seedBuildPanels, c);
         // c.gridheight = 5;
         // c.gridwidth = 1;
         c.gridx = 0;
@@ -278,6 +305,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             }
         });
         wnd.pack();
+
         wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         wnd.setVisible(true);
     }
