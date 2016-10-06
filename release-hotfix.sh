@@ -70,7 +70,7 @@ mvn -T 1C package site -P uber-snapshot
 ./generateDoc.sh Doxyfile-no-source
 # copy artefact to Fiij
 find $FIJI -name QuimP*.jar ! -name QuimP_11b.jar | xargs rm -fv # delete old one except old quimp
-cp -v target/checkout/target/QuimP_-*-jar-*.jar $FIJI # copy package
+cp -v target/QuimP_-*-jar-*.jar $FIJI # copy package
 # Copy site
 rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222" --delete --stats target/site/ pi@quimp.linkpc.net:/var/www/restricted/site
 # Copy only changes for users
