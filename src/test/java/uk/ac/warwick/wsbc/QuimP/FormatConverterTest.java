@@ -140,9 +140,8 @@ public class FormatConverterTest {
         QconfLoader qC = new QconfLoader(
                 Paths.get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF")
                         .toFile());
-        FormatConverter fC =
-                new FormatConverter(qC, Paths.get("src/test/resources/FormatConverter"));
-        fC.generateOldDataFiles();
+        FormatConverter fC = new FormatConverter(qC);
+        fC.generateOldDataFile();
         Thread.sleep(1000);
         // compare paQP
         // manualy generated one
@@ -174,10 +173,20 @@ public class FormatConverterTest {
     @Test
     public void testGenerateNewDataFile() throws Exception {
         QconfLoader qC = new QconfLoader(new File(
-                "/home/baniuk/Documents/Repos/QuimP/src/test/resources/FormatConverter/0pt7%agar_bleb2_0.paQP"));
-        FormatConverter fC =
-                new FormatConverter(qC, Paths.get("src/test/resources/FormatConverter/res"));
+                "/home/baniuk/Documents/Repos/QuimP/src/test/resources/FormatConverter/res/0pt7%agar_bleb2_0.paQP"));
+        FormatConverter fC = new FormatConverter(qC);
         fC.generateNewDataFile();
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#generateOldDataFile()}.
+     */
+    @Test
+    public void testGenerateOldDataFile() throws Exception {
+        QconfLoader qC = new QconfLoader(new File(
+                "/home/baniuk/Documents/Repos/QuimP/src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
+        FormatConverter fC = new FormatConverter(qC);
+        fC.generateOldDataFile();
     }
 
 }

@@ -10,6 +10,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -158,7 +160,7 @@ public class QParams {
     /**
      * @return the paramFile
      */
-    File getParamFile() {
+    public File getParamFile() {
         return paramFile;
     }
 
@@ -181,10 +183,18 @@ public class QParams {
     }
 
     /**
-     * @return the path
+     * @return the path of param file
      */
     public String getPath() {
         return path;
+    }
+
+    /**
+     * 
+     * @return the path of param file as Path
+     */
+    public Path getPathasPath() {
+        return Paths.get(this.getPath());
     }
 
     /**
