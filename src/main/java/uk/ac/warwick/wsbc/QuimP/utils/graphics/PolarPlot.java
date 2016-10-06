@@ -149,6 +149,10 @@ public class PolarPlot {
 
         double angles[] = getAngles(pv, pv[0]); // first ic ref vector because they are shifted
         double magn[] = getRadius(frame, shifts[frame], mapCell.getMotMap());
+        // remove negative values (shift)
+        double min = QuimPArrayUtils.arrayMin(magn);
+        for (int i = 0; i < magn.length; i++)
+            magn[i] -= min;
 
         BufferedOutputStream out;
         try {
@@ -198,6 +202,9 @@ public class PolarPlot {
 
             anglesF[f] = getAngles(pv, pv[0]); // first ic ref vector because they are shifted
             magnF[f] = getRadius(f, shifts[f], mapCell.getMotMap());
+            double min = QuimPArrayUtils.arrayMin(magnF[f]);
+            for (int i = 0; i < magnF[f].length; i++)
+                magnF[f][i] -= min;
         }
         double angles[] = QuimPArrayUtils.getMeanC(anglesF);
         double magn[] = QuimPArrayUtils.getMeanC(magnF);
