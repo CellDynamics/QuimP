@@ -160,6 +160,8 @@ public class PolarPlot {
             out = new BufferedOutputStream(new FileOutputStream(filename));
             OutputStreamWriter osw = new OutputStreamWriter(out);
             SVGwritter.writeHeader(osw, new Rectangle(-3, -3, 6, 6));
+            SVGwritter.QPolarAxes qaxes = new SVGwritter.QPolarAxes(new Rectangle(-3, -3, 6, 6));
+            qaxes.draw(osw);
             SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.02);
             qc.colour = new QColor(1, 0, 0);
             qc.draw(osw);
@@ -192,6 +194,10 @@ public class PolarPlot {
      * @param filename
      */
     public void generatePlot(String filename) {
+        // size and position of left upper corner of plot area
+        // most code below assumes that area is square and centered in 0,0
+        Rectangle plotArea = new Rectangle(-3, -3, 6, 6);
+
         int[] shifts = getShift(); // calculate shifts of points according to gradientcoord
         Point2d[] mass = getMassCentre(); // calc mass centres for all frames
 
@@ -221,11 +227,17 @@ public class PolarPlot {
         for (int i = 0; i < magn.length; i++)
             magn[i] -= (min - 0.1 * min);
 
+        // scale for plotting (6/2) - half of plot area size as plotted from centre)
+        double plotscale = plotArea.getWidth() / 2 / QuimPArrayUtils.arrayMax(magn);
+        plotscale -= plotscale * 0.05; // move a little from edge
+
         BufferedOutputStream out;
         try {
             out = new BufferedOutputStream(new FileOutputStream(filename));
             OutputStreamWriter osw = new OutputStreamWriter(out);
-            SVGwritter.writeHeader(osw, new Rectangle(-3, -3, 6, 6));
+            SVGwritter.writeHeader(osw, plotArea);
+            SVGwritter.QPolarAxes qaxes = new SVGwritter.QPolarAxes(plotArea);
+            qaxes.draw(osw);
             SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.02);
             qc.colour = new QColor(1, 0, 0);
             qc.draw(osw);
@@ -238,7 +250,8 @@ public class PolarPlot {
                         Math.sin(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
                 LOGGER.trace("Point coords:" + x + " " + y + " Polar coords:"
                         + Math.toDegrees(angles[i]) + " " + magn[i]);
-                SVGwritter.Qline ql = new SVGwritter.Qline(x, y, x1, y1);
+                SVGwritter.Qline ql = new SVGwritter.Qline(x * plotscale, y * plotscale,
+                        x1 * plotscale, y1 * plotscale);
                 ql.thickness = 0.01;
                 ql.draw(osw);
             }

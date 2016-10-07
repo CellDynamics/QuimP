@@ -42,7 +42,7 @@ public abstract class SVGwritter {
      * @author p.baniukiewicz
      *
      */
-    public static class Qcircle {
+    static public class Qcircle extends SVGwritter {
         public double x1, y1;
         public double radius;
         public QColor colour; // if null object has no filling
@@ -82,7 +82,7 @@ public abstract class SVGwritter {
      * @author p.baniukiewicz
      *
      */
-    public static class Qline {
+    public static class Qline extends SVGwritter {
         public double x1, y1, x2, y2;
         public double thickness;
         public QColor colour;
@@ -115,7 +115,7 @@ public abstract class SVGwritter {
      * @author p.baniukiewicz
      *
      */
-    public static class Qtext {
+    public static class Qtext extends SVGwritter {
 
         public String text;
         public double size;
@@ -145,7 +145,7 @@ public abstract class SVGwritter {
      * @author p.baniukiewicz
      *
      */
-    public static class QPolarAxes {
+    public static class QPolarAxes extends SVGwritter {
         private Rectangle r;
         public QColor colour;
         public double thickness;
