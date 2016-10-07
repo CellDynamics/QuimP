@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.utils.graphics;
 
+import java.awt.Rectangle;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -158,8 +159,7 @@ public class PolarPlot {
         try {
             out = new BufferedOutputStream(new FileOutputStream(filename));
             OutputStreamWriter osw = new OutputStreamWriter(out);
-            SVGwritter.writeHeader(osw); // TODO add size of page here
-
+            SVGwritter.writeHeader(osw, new Rectangle(-3, -3, 6, 6));
             SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.02);
             qc.colour = new QColor(1, 0, 0);
             qc.draw(osw);
@@ -225,8 +225,7 @@ public class PolarPlot {
         try {
             out = new BufferedOutputStream(new FileOutputStream(filename));
             OutputStreamWriter osw = new OutputStreamWriter(out);
-            SVGwritter.writeHeader(osw); // TODO add size of page here
-
+            SVGwritter.writeHeader(osw, new Rectangle(-3, -3, 6, 6));
             SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.02);
             qc.colour = new QColor(1, 0, 0);
             qc.draw(osw);
