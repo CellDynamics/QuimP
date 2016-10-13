@@ -52,13 +52,14 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      * <ol>
      * <li> SCREENPOINT - any point clicked on image. Given as {x,y} coordinates
      * <li> OUTLINEPOINT - point on outline. Given as number of this point on perimeter.
+     * <li> NOTDEFINED - not defined or selected.
      * </ol>
      * </p>
      * @author p.baniukiewicz
      *
      */
     public enum gradientType {
-        SCREENPOINT, OUTLINEPOINT
+        SCREENPOINT, OUTLINEPOINT, NOTDEFINED
     };
 
     /**
@@ -67,20 +68,28 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      * @author p.baniukiewicz
      *
      */
-    class GradientPosition {
+    class PolarPlot {
+        /**
+         * Indicate whether to use selected gradient or not.
+         */
+        public boolean useGradient = false;
+        /**
+         * Indicate whether to plot polar plots
+         */
+        public boolean plotpolar = false;
         /**
          * Type of gradinet point.
          * @see gradientType
          */
-        gradientType type;
+        public gradientType type = gradientType.NOTDEFINED;
         /**
          * Coordinates of gradient point if type is SCREENPOINT.
          */
-        Point gradientPoint;
+        public Point gradientPoint;
         /**
-         * Number of outline point choosen as gradient if type is OUTLINEPOINT.
+         * Number of outline point chosen as gradient if type is OUTLINEPOINT.
          */
-        int gradientOutline;
+        public int gradientOutline;
     }
 
     /**
@@ -178,7 +187,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
     /**
      * Hold configuration for gradient position.
      */
-    public GradientPosition gradientPosition = new GradientPosition();
+    public PolarPlot polarPlot = new PolarPlot();
 
     /**
      * Suffix for cell stats.

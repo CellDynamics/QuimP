@@ -101,4 +101,12 @@ public class Prot_AnalysisTest {
 
     }
 
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Prot_AnalysisUI#buildUI()}.
+     */
+    @Test
+    public void testBuildUI() throws Exception {
+        throw new RuntimeException("not yet implemented");
+    }
+
 }
