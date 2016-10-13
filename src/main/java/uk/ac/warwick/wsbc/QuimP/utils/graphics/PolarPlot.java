@@ -20,6 +20,9 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGwritter;
 
 /**
+ * Generate polar plots of motility speed along cell perimeter.
+ * 
+ * Use basic mapping - location of point on polar plot depends on its position on cell outline.
  * @author p.baniukiewicz
  *
  */
@@ -27,15 +30,33 @@ public class PolarPlot {
     private static final Logger LOGGER = LogManager.getLogger(PolarPlot.class.getName());
     private STmap mapCell;
     private Point2d gradientcoord;
+    /**
+     * Size and position of left upper corner of plot area.
+     * Most code below assumes that area is square and centered in 0,0.
+     */
+    protected Rectangle plotArea;
+    /**
+     * Distance of polar plot from 0. Rescaling factor.
+     */
+    public double k;
+    /**
+     * Distance of plot from edge. Rescaling factor.
+     */
+    public double u;
 
     /**
+     * Create PolarPlot object with default plot size.
      * 
      * @param mapCell
-     * @param gradientcoord
+     * @param gradientcoord coordinates of gradient point. Gradient is a feeding of cell put into 
+     * cell environment.
      */
     public PolarPlot(STmap mapCell, Point2d gradientcoord) {
         this.mapCell = mapCell;
         this.gradientcoord = gradientcoord;
+        plotArea = new Rectangle(-3, -3, 6, 6);
+        k = 0.1;
+        u = 0.05;
     }
 
     /**
@@ -137,133 +158,125 @@ public class PolarPlot {
     }
 
     /**
-     * Plot of one frame.
+     * Polar plot of one frame.
      * 
      * @param filename
      * @param frame
+     * @throws IOException 
+     * @see generatePlot
      */
-    public void generatePlotFrame(String filename, int frame) {
+    public void generatePlotFrame(String filename, int frame) throws IOException {
         int[] shifts = getShift(); // calculate shifts of points according to gradientcoord
-        Point2d[] mass = getMassCentre(); // calc mass centres for all frames
-
-        Vector2d[] pv = getVectors(frame, mass, shifts); // converts outline points to vectors
-
-        double angles[] = getAngles(pv, pv[0]); // first ic ref vector because they are shifted
+        // shift motility
         double magn[] = getRadius(frame, shifts[frame], mapCell.getMotMap());
+        // generate vector of arguments
+        double[] angles = getUniformAngles(magn.length);
         // remove negative values (shift)
         double min = QuimPArrayUtils.arrayMin(magn);
         for (int i = 0; i < magn.length; i++)
-            magn[i] -= min;
+            magn[i] -= (min + k * min); // k*min - distance from 0
 
-        BufferedOutputStream out;
-        try {
-            out = new BufferedOutputStream(new FileOutputStream(filename));
-            OutputStreamWriter osw = new OutputStreamWriter(out);
-            SVGwritter.writeHeader(osw, new Rectangle(-3, -3, 6, 6));
-            SVGwritter.QPolarAxes qaxes = new SVGwritter.QPolarAxes(new Rectangle(-3, -3, 6, 6));
-            qaxes.draw(osw);
-            SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.02);
-            qc.colour = new QColor(1, 0, 0);
-            qc.draw(osw);
-            for (int i = 0; i < angles.length; i++) {
-                double x = Math.cos(angles[i]) * magn[i]; // TODO deal with negative values move to
-                                                          // positive
-                double y = Math.sin(angles[i]) * magn[i];
-                double x1 =
-                        Math.cos(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
-                double y1 =
-                        Math.sin(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
-                // LOGGER.trace("Point coords:" + x + " " + y + " Polar coords:"
-                // + Math.toDegrees(angles[i]) + " " + magn[i]);
-                SVGwritter.Qline ql = new SVGwritter.Qline(x, y, x1, y1);
-                ql.thickness = 0.01;
-                ql.draw(osw);
-            }
+        polarPlotPoints(filename, angles, magn); // generate plot
 
-            osw.write("</svg>\n");
-            osw.close();
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     /**
-     * Plot of mean of frames.
-     * @param filename
+     * Polar plot of mean of motility along frames.
+     * 
+     * The position of point on polar plot depends on its position on cell outline, but not on
+     * real angle it is. First point after shifting is that closest to selected gradient. It is
+     * plotted on angle 0.
+     * 
+     * @param filename Name of the svg file.
+     * @throws IOException 
      */
-    public void generatePlot(String filename) {
-        // size and position of left upper corner of plot area
-        // most code below assumes that area is square and centered in 0,0
-        Rectangle plotArea = new Rectangle(-3, -3, 6, 6);
-
+    public void generatePlot(String filename) throws IOException {
         int[] shifts = getShift(); // calculate shifts of points according to gradientcoord
-        Point2d[] mass = getMassCentre(); // calc mass centres for all frames
-
-        double anglesF[][] = new double[mapCell.getT()][];
+        // contains magnitudes of polar plot (e.g. motility) shifted, so first point is that
+        // related to gradientcoord, for every frame [frames][outline points]
         double magnF[][] = new double[mapCell.getT()][];
         for (int f = 0; f < mapCell.getT(); f++) {
-            Vector2d[] pv = getVectors(f, mass, shifts); // converts outline points to vectors
-
-            anglesF[f] = getAngles(pv, pv[0]); // first ic ref vector because they are shifted
+            // shift motility for every frame to have gradientcoord related point on 0 index
             magnF[f] = getRadius(f, shifts[f], mapCell.getMotMap());
-            double min = QuimPArrayUtils.arrayMin(magnF[f]);
-            for (int i = 0; i < magnF[f].length; i++)
-                magnF[f][i] -= min;
         }
-        // double angles[] = QuimPArrayUtils.getMeanC(anglesF);
-        double angles[] = new double[magnF[0].length];
-        double delta = (2 * Math.PI - 0) / (magnF[0].length - 1);
+        // generate vector of arguments
+        double[] angles = getUniformAngles(magnF[0].length);
+
+        double magn[] = QuimPArrayUtils.getMeanC(magnF); // compute mean for map on frames
+        // rescale to remove negative values and make distance from 0 point
+        double min = QuimPArrayUtils.arrayMin(magn);
+        for (int i = 0; i < magn.length; i++)
+            magn[i] -= (min + k * min); // k*min - distance from 0
+
+        polarPlotPoints(filename, angles, magn); // generate plot
+
+    }
+
+    /**
+     * Generate svg plot of points.
+     * 
+     * @param filename name of svg file
+     * @param angles vector of arguments (angles) generated {@link getUniformAngles(int)}
+     * @param magn vector of values related to <tt>angles</tt> 
+     * @throws IOException
+     */
+    private void polarPlotPoints(String filename, double[] angles, double[] magn)
+            throws IOException {
+        // scale for plotting (6/2) - half of plot area size as plotted from centre)
+        double plotscale = plotArea.getWidth() / 2 / QuimPArrayUtils.arrayMax(magn);
+        plotscale -= plotscale * u; // move a little from edge
+        // generate svg
+        BufferedOutputStream out;
+        out = new BufferedOutputStream(new FileOutputStream(filename));
+        OutputStreamWriter osw = new OutputStreamWriter(out);
+        SVGwritter.writeHeader(osw, plotArea); // write header with sizes
+        // plot axes
+        SVGwritter.QPolarAxes qaxes = new SVGwritter.QPolarAxes(plotArea);
+        qaxes.draw(osw);
+        // circle around
+        SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.02);
+        qc.colour = new QColor(1, 0, 0);
+        qc.draw(osw);
+        // plot points
+        for (int i = 0; i < angles.length; i++) {
+            // x1;y1, x2;y2 two points that define line segment
+            double x = Math.cos(angles[i]) * magn[i];
+            double y = Math.sin(angles[i]) * magn[i];
+            double x1 = Math.cos(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
+            double y1 = Math.sin(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
+            // LOGGER.trace("Point coords:" + x + " " + y + " Polar coords:"
+            // + Math.toDegrees(angles[i]) + " " + magn[i]);
+            SVGwritter.Qline ql = new SVGwritter.Qline(x * plotscale, y * plotscale, x1 * plotscale,
+                    y1 * plotscale);
+            ql.thickness = 0.01;
+            ql.draw(osw);
+        }
+
+        osw.write("</svg>\n");
+        osw.close();
+    }
+
+    /**
+     * Generate uniformly distributed angles for given resolution.
+     * 
+     * Generate angles for polar plot (related to plot, not for position of outline points)
+     * assume basic mapping - first outline point at angle 0, second at angle delta, etc
+     * CCW system is used, but angles are counted in CW. IV and III quarter are negative, then
+     * II and I are positive.
+     * 
+     * @param res Number of angles to generate.
+     * @return Array of angles in radians counted CW, IV quarter is first and negative, II quarter
+     * is positive, e.g. -1,-2,...-90,...-180,179,178...,90,....0
+     */
+    private double[] getUniformAngles(int res) {
+        double angles[] = new double[res];
+        double delta = (2 * Math.PI - 0) / (res - 1);
         for (int i = 0; i < angles.length; i++) {
             angles[i] = -(0 + delta * i);
             if (angles[i] < -Math.PI)
-                angles[i] = Math.PI + Math.PI + angles[i];
+                angles[i] = Math.PI + Math.PI + angles[i]; // negative in II q is changed to positv
         }
-
-        // rescale back
-        double magn[] = QuimPArrayUtils.getMeanC(magnF);
-        double min = QuimPArrayUtils.arrayMin(magn);
-        for (int i = 0; i < magn.length; i++)
-            magn[i] -= (min - 0.1 * min);
-
-        // scale for plotting (6/2) - half of plot area size as plotted from centre)
-        double plotscale = plotArea.getWidth() / 2 / QuimPArrayUtils.arrayMax(magn);
-        plotscale -= plotscale * 0.05; // move a little from edge
-
-        BufferedOutputStream out;
-        try {
-            out = new BufferedOutputStream(new FileOutputStream(filename));
-            OutputStreamWriter osw = new OutputStreamWriter(out);
-            SVGwritter.writeHeader(osw, plotArea);
-            SVGwritter.QPolarAxes qaxes = new SVGwritter.QPolarAxes(plotArea);
-            qaxes.draw(osw);
-            SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.02);
-            qc.colour = new QColor(1, 0, 0);
-            qc.draw(osw);
-            for (int i = 0; i < angles.length; i++) {
-                double x = Math.cos(angles[i]) * magn[i];
-                double y = Math.sin(angles[i]) * magn[i];
-                double x1 =
-                        Math.cos(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
-                double y1 =
-                        Math.sin(angles[(i + 1) % angles.length]) * magn[(i + 1) % angles.length];
-                LOGGER.trace("Point coords:" + x + " " + y + " Polar coords:"
-                        + Math.toDegrees(angles[i]) + " " + magn[i]);
-                SVGwritter.Qline ql = new SVGwritter.Qline(x * plotscale, y * plotscale,
-                        x1 * plotscale, y1 * plotscale);
-                ql.thickness = 0.01;
-                ql.draw(osw);
-            }
-
-            osw.write("</svg>\n");
-            osw.close();
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        return angles;
     }
 
     /**
