@@ -1,7 +1,8 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.Color;
-import java.awt.Point;
+
+import javax.vecmath.Point2d;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
@@ -81,11 +82,11 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
          * Type of gradinet point.
          * @see gradientType
          */
-        public gradientType type = gradientType.NOTDEFINED;
+        public gradientType type = gradientType.SCREENPOINT;
         /**
          * Coordinates of gradient point if type is SCREENPOINT.
          */
-        public Point gradientPoint;
+        public Point2d gradientPoint = new Point2d(0, 0);
         /**
          * Number of outline point chosen as gradient if type is OUTLINEPOINT.
          */
@@ -197,6 +198,10 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      * Protrusion statistics file suffix. 
      */
     public final String protStatSuffix = "_protstat.csv";
+    /**
+     * Polar plot suffix.
+     */
+    public final String polarPlotSuffix = "_polar.svg";
 
     public ProtAnalysisConfig() {
     }

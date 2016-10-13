@@ -207,8 +207,8 @@ public class PolarPlot {
         double min = QuimPArrayUtils.arrayMin(magn);
         for (int i = 0; i < magn.length; i++)
             magn[i] -= (min + k * min); // k*min - distance from 0
-
         polarPlotPoints(filename, angles, magn); // generate plot
+        LOGGER.debug("Polar plot saved: " + filename);
 
     }
 

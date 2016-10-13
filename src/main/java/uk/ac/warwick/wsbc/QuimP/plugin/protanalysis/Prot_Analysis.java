@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -24,6 +23,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +49,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig.outlinePl
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
+import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
 
 /**
  * @author p.baniukiewicz
@@ -205,6 +206,14 @@ public class Prot_Analysis implements IQuimpPlugin {
                 visStackOutline.addOutlinesToImage(mapCell, config);
             }
 
+            // write svg plots
+            if (config.polarPlot.plotpolar && config.polarPlot.useGradient) {
+                PolarPlot pp = new PolarPlot(mapCell, config.polarPlot.gradientPoint);
+                pp.generatePlot(Paths.get(qconfLoader.getQp().getPath(),
+                        qconfLoader.getQp().getFileName() + "_" + h + config.polarPlotSuffix)
+                        .toString());
+            }
+
             // Maps are correlated in order with Outlines in DataContainer.
             // write data
             PrintWriter cellStatFile = new PrintWriter(Paths
@@ -223,7 +232,7 @@ public class Prot_Analysis implements IQuimpPlugin {
                             .writeCell(cellStatFile, h);
             protStatFile.close();
             cellStatFile.close();
-            // update static firlds in gui
+            // update static fields in gui
             gui.labelMaxnum.setText(Integer.toString(mF.getMaximaNumber()));
             gui.labelMaxval.setText(
                     String.format("%1$.3f", QuimPArrayUtils.arrayMax(mapCell.getMotMap())));
@@ -544,7 +553,6 @@ class Prot_AnalysisUI implements ActionListener {
             f_convThreshold.setPreferredSize(new Dimension(80, 26));
             outlinesp.add(f_convThreshold);
             middle.add(outlines);
-
         }
         {
             JPanel outlines = new JPanel();
@@ -568,7 +576,6 @@ class Prot_AnalysisUI implements ActionListener {
             c_staticPlottrack = new JCheckBox("Plot tracks");
             outlinesp.add(c_staticPlottrack);
             middle.add(outlines);
-
         }
         {
             JPanel outlines = new JPanel();
@@ -590,7 +597,6 @@ class Prot_AnalysisUI implements ActionListener {
             outlinesp.add(c_dynamicPlottrack);
             outlinesp.add(new JLabel(" "));
             middle.add(outlines);
-
         }
         {
             // Polar plots
@@ -614,7 +620,6 @@ class Prot_AnalysisUI implements ActionListener {
             outlinesp.add(new JLabel(" "));
             outlinesp.add(new JLabel(" "));
             middle.add(outlines);
-
         }
 
         // cancel apply row
@@ -633,7 +638,6 @@ class Prot_AnalysisUI implements ActionListener {
 
         wnd.add(wndpanel);
         wnd.pack();
-        LOGGER.debug(f_dropValue.getSize());
         wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
@@ -703,7 +707,8 @@ class Prot_AnalysisUI implements ActionListener {
             super.mousePressed(e);
             LOGGER.debug("Image coords: " + offScreenX(e.getX()) + " " + offScreenY(e.getY()));
             config.polarPlot.type = gradientType.SCREENPOINT;
-            config.polarPlot.gradientPoint = new Point(offScreenX(e.getX()), offScreenY(e.getY()));
+            config.polarPlot.gradientPoint =
+                    new Point2d(offScreenX(e.getX()), offScreenY(e.getY()));
             writeUI(); // update UI
         }
 
