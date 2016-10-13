@@ -2,10 +2,12 @@ package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,6 +23,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.vecmath.Point2d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +31,9 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
+import ij.gui.ImageCanvas;
+import ij.gui.ImageWindow;
 import ij.plugin.ZProjector;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QParams;
@@ -38,10 +44,12 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig.gradientType;
 import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig.outlinePlotTypes;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
+import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
 
 /**
  * @author p.baniukiewicz
@@ -56,7 +64,7 @@ public class Prot_Analysis implements IQuimpPlugin {
     }
     private static final Logger LOGGER = LogManager.getLogger(Prot_Analysis.class.getName());
 
-    private QconfLoader qconfLoader = null; // main object representing loaded configuration file
+    QconfLoader qconfLoader = null; // main object representing loaded configuration file
     private boolean uiCancelled = false;
     public Prot_AnalysisUI gui;
     @SuppressWarnings("serial")
@@ -198,6 +206,14 @@ public class Prot_Analysis implements IQuimpPlugin {
                 visStackOutline.addOutlinesToImage(mapCell, config);
             }
 
+            // write svg plots
+            if (config.polarPlot.plotpolar && config.polarPlot.useGradient) {
+                PolarPlot pp = new PolarPlot(mapCell, config.polarPlot.gradientPoint);
+                pp.generatePlot(Paths.get(qconfLoader.getQp().getPath(),
+                        qconfLoader.getQp().getFileName() + "_" + h + config.polarPlotSuffix)
+                        .toString());
+            }
+
             // Maps are correlated in order with Outlines in DataContainer.
             // write data
             PrintWriter cellStatFile = new PrintWriter(Paths
@@ -216,7 +232,7 @@ public class Prot_Analysis implements IQuimpPlugin {
                             .writeCell(cellStatFile, h);
             protStatFile.close();
             cellStatFile.close();
-            // update static firlds in gui
+            // update static fields in gui
             gui.labelMaxnum.setText(Integer.toString(mF.getMaximaNumber()));
             gui.labelMaxval.setText(
                     String.format("%1$.3f", QuimPArrayUtils.arrayMax(mapCell.getMotMap())));
@@ -323,16 +339,16 @@ class Prot_AnalysisUI implements ActionListener {
     private static final Logger LOGGER = LogManager.getLogger(Prot_AnalysisUI.class.getName());
     // UI elements
     private JFrame wnd;
-    private JButton bCancel, bApply, bHelp;
+    private JButton bCancel, bApply, bHelp, bGradient;
     private JFormattedTextField f_noiseTolerance, f_dropValue, f_motThreshold, f_convThreshold;
     private JComboBox<ProtAnalysisConfig.outlinePlotTypes> o_plotType;
     private JCheckBox c_plotMotmap, c_plotMotmapmax, c_plotConmap, c_plotOutline, c_plotStaticmax,
             c_plotDynamicmax;
 
-    JLabel labelMaxnum, labelMaxval, labelMinval;
+    JLabel labelMaxnum, labelMaxval, labelMinval, labelGradinet;
 
-    private JCheckBox c_staticPlotmax, c_staticPlottrack, c_staticAverimage;
-    private JCheckBox c_dynamicPlotmax, c_dynamicPlottrack;
+    private JCheckBox c_staticPlotmax, c_staticPlottrack, c_staticAverimage, c_plotPolarplot;
+    private JCheckBox c_dynamicPlotmax, c_dynamicPlottrack, c_useGradient;
 
     private ProtAnalysisConfig config;
     private Prot_Analysis model; // main model with method to run on ui action
@@ -368,6 +384,9 @@ class Prot_AnalysisUI implements ActionListener {
         config.dynamicPlot.plotmax = c_dynamicPlotmax.isSelected();
         config.dynamicPlot.plottrack = c_dynamicPlottrack.isSelected();
 
+        config.polarPlot.plotpolar = c_plotPolarplot.isSelected();
+        config.polarPlot.useGradient = c_useGradient.isSelected();
+
     }
 
     /**
@@ -394,17 +413,36 @@ class Prot_AnalysisUI implements ActionListener {
         c_plotDynamicmax.setSelected(config.plotDynamicmax);
         c_dynamicPlotmax.setSelected(config.dynamicPlot.plotmax);
         c_dynamicPlottrack.setSelected(config.dynamicPlot.plottrack);
+
+        c_plotPolarplot.setSelected(config.polarPlot.plotpolar);
+        c_useGradient.setSelected(config.polarPlot.useGradient);
+        String g;
+        switch (config.polarPlot.type) {
+            case OUTLINEPOINT:
+                g = "Not implemented";
+                c_useGradient.setSelected(true);
+                break;
+            case SCREENPOINT:
+                g = "x=" + config.polarPlot.gradientPoint.getX() + " y="
+                        + config.polarPlot.gradientPoint.getY();
+                c_useGradient.setSelected(true);
+                break;
+            default:
+                g = "";
+                c_useGradient.setSelected(false);
+        }
+        labelGradinet.setText(g);
     }
 
     /**
-     * Build and show UI.
+     * Show UI.
      */
     public void showUI(boolean val) {
         wnd.setVisible(val);
     }
 
     /**
-     * 
+     * Construct main UI.
      */
     private void buildUI() {
         wnd = new JFrame("Protrusion analysis plugin");
@@ -413,7 +451,7 @@ class Prot_AnalysisUI implements ActionListener {
 
         // middle main panel - integrates fields
         JPanel middle = new JPanel();
-        middle.setLayout(new GridLayout(2, 2));
+        middle.setLayout(new GridLayout(2, 4));
         wndpanel.add(middle, BorderLayout.CENTER);
         // tiles in UI
         {
@@ -425,15 +463,15 @@ class Prot_AnalysisUI implements ActionListener {
             g.setVgap(2);
             params.setLayout(g);
             f_dropValue = new JFormattedTextField(NumberFormat.getInstance());
-            // f_dropValue.setValue(new Double(config.dropValue));
-            f_dropValue.setColumns(4);
+            f_dropValue.setColumns(0);
+            f_dropValue.setPreferredSize(new Dimension(80, 26));
             f_noiseTolerance = new JFormattedTextField(NumberFormat.getInstance());
-            // f_noiseTolerance.setValue(new Double(config.noiseTolerance));
-            f_noiseTolerance.setColumns(4);
+            f_noiseTolerance.setColumns(0);
+            f_noiseTolerance.setPreferredSize(new Dimension(80, 26));
             params.add(f_dropValue);
-            params.add(new JLabel("Drop value"));
+            params.add(new JLabel("Drop"));
             params.add(f_noiseTolerance);
-            params.add(new JLabel("Sensitivity"));
+            params.add(new JLabel("Sens"));
             params.add(new JLabel(" "));
             params.add(new JLabel(" "));
             params.add(new JLabel(" "));
@@ -448,20 +486,21 @@ class Prot_AnalysisUI implements ActionListener {
             g.setHgap(2);
             g.setVgap(2);
             info.setLayout(g);
-            info.add(new JLabel("Maxima number:"));
+            info.add(new JLabel("Maxima no:"));
             labelMaxnum = new JLabel(" ");
             labelMaxnum.setBackground(Color.GREEN);
             info.add(labelMaxnum);
-            info.add(new JLabel("Max motlility:"));
+            info.add(new JLabel("Max val:"));
             labelMaxval = new JLabel(" ");
             labelMaxval.setBackground(Color.GREEN);
             info.add(labelMaxval);
-            info.add(new JLabel("Min motility:"));
+            info.add(new JLabel("Min val:"));
             labelMinval = new JLabel(" ");
             labelMinval.setBackground(Color.GREEN);
             info.add(labelMinval);
-            info.add(new JLabel(" "));
-            info.add(new JLabel(" "));
+            info.add(new JLabel("Gradient:"));
+            labelGradinet = new JLabel(" ");
+            info.add(labelGradinet);
             middle.add(info);
         }
         {
@@ -472,14 +511,14 @@ class Prot_AnalysisUI implements ActionListener {
             g.setHgap(2);
             g.setVgap(2);
             mapplots.setLayout(g);
-            c_plotMotmap = new JCheckBox("Motility map");
-            c_plotConmap = new JCheckBox("Convexity map");
+            c_plotMotmap = new JCheckBox("Mot map");
+            c_plotConmap = new JCheckBox("Conv map");
             c_plotMotmapmax = new JCheckBox("Maxima");
             mapplots.add(c_plotMotmap);
+            mapplots.add(new JLabel(" "));
             mapplots.add(c_plotConmap);
+            mapplots.add(new JLabel(" "));
             mapplots.add(c_plotMotmapmax);
-            mapplots.add(new JLabel(" "));
-            mapplots.add(new JLabel(" "));
             middle.add(mapplots);
         }
         {
@@ -487,10 +526,9 @@ class Prot_AnalysisUI implements ActionListener {
             JPanel outlines = new JPanel();
             outlines.setBorder(BorderFactory.createTitledBorder("Outline plots"));
             outlines.setLayout(new BorderLayout());
-            c_plotOutline = new JCheckBox("Outline plot");
+            c_plotOutline = new JCheckBox("Show");
             c_plotOutline.setBackground(new Color(255, 255, 102));
             outlines.add(c_plotOutline, BorderLayout.NORTH);
-            middle.add(outlines);
             JPanel outlinesp = new JPanel();
             GridLayout g = new GridLayout(3, 2);
             g.setHgap(2);
@@ -502,61 +540,86 @@ class Prot_AnalysisUI implements ActionListener {
                     outlinePlotTypes.CONVANDEXP, outlinePlotTypes.CONCANDRETR,
                     outlinePlotTypes.BOTH };
             o_plotType = new JComboBox<>(types);
+            o_plotType.setPreferredSize(new Dimension(80, 26));
             outlinesp.add(o_plotType);
-            outlinesp.add(new JLabel("Mot Thres"));
+            outlinesp.add(new JLabel("Mot Thr"));
             f_motThreshold = new JFormattedTextField(NumberFormat.getInstance());
-            f_motThreshold.setColumns(4);
+            f_motThreshold.setColumns(0);
+            f_motThreshold.setPreferredSize(new Dimension(80, 26));
             outlinesp.add(f_motThreshold);
-            outlinesp.add(new JLabel("Conv Thres"));
+            outlinesp.add(new JLabel("Conv Thr"));
             f_convThreshold = new JFormattedTextField(NumberFormat.getInstance());
-            f_convThreshold.setColumns(4);
+            f_convThreshold.setColumns(0);
+            f_convThreshold.setPreferredSize(new Dimension(80, 26));
             outlinesp.add(f_convThreshold);
-
+            middle.add(outlines);
         }
         {
             JPanel outlines = new JPanel();
             outlines.setBorder(BorderFactory.createTitledBorder("Maxima plot"));
             outlines.setLayout(new BorderLayout());
-            c_plotStaticmax = new JCheckBox("Maxima plot");
+            c_plotStaticmax = new JCheckBox("Show");
             c_plotStaticmax.setBackground(new Color(255, 255, 102));
             outlines.add(c_plotStaticmax, BorderLayout.NORTH);
-            middle.add(outlines);
             JPanel outlinesp = new JPanel();
             GridLayout g = new GridLayout(3, 2);
             g.setHgap(2);
             g.setVgap(2);
             outlinesp.setLayout(g);
             outlines.add(outlinesp, BorderLayout.CENTER);
-            c_staticAverimage = new JCheckBox("Averaged plot");
+            c_staticAverimage = new JCheckBox("Aver. plot");
             outlinesp.add(c_staticAverimage);
-            c_staticPlotmax = new JCheckBox("Plot maxima");
+            outlinesp.add(new JLabel(" "));
+            c_staticPlotmax = new JCheckBox("Plot maxi");
             outlinesp.add(c_staticPlotmax);
+            outlinesp.add(new JLabel(" "));
             c_staticPlottrack = new JCheckBox("Plot tracks");
             outlinesp.add(c_staticPlottrack);
-            outlinesp.add(new JLabel(" "));
-
+            middle.add(outlines);
         }
         {
             JPanel outlines = new JPanel();
             outlines.setBorder(BorderFactory.createTitledBorder("Dynamic plot"));
             outlines.setLayout(new BorderLayout());
-            c_plotDynamicmax = new JCheckBox("Dynamic plot");
+            c_plotDynamicmax = new JCheckBox("Show");
             c_plotDynamicmax.setBackground(new Color(255, 255, 102));
             outlines.add(c_plotDynamicmax, BorderLayout.NORTH);
-            middle.add(outlines);
             JPanel outlinesp = new JPanel();
             GridLayout g = new GridLayout(3, 2);
             g.setHgap(2);
             g.setVgap(2);
             outlinesp.setLayout(g);
             outlines.add(outlinesp, BorderLayout.CENTER);
-            c_dynamicPlotmax = new JCheckBox("Plot maxima");
+            c_dynamicPlotmax = new JCheckBox("Plot maxi");
             outlinesp.add(c_dynamicPlotmax);
+            outlinesp.add(new JLabel(" "));
             c_dynamicPlottrack = new JCheckBox("Plot tracks");
             outlinesp.add(c_dynamicPlottrack);
             outlinesp.add(new JLabel(" "));
+            middle.add(outlines);
+        }
+        {
+            // Polar plots
+            JPanel outlines = new JPanel();
+            outlines.setBorder(BorderFactory.createTitledBorder("Polar plot"));
+            outlines.setLayout(new BorderLayout());
+            c_plotPolarplot = new JCheckBox("Save");
+            c_plotPolarplot.setBackground(new Color(255, 255, 102));
+            outlines.add(c_plotPolarplot, BorderLayout.NORTH);
+            JPanel outlinesp = new JPanel();
+            GridLayout g = new GridLayout(3, 2);
+            g.setHgap(2);
+            g.setVgap(2);
+            outlinesp.setLayout(g);
+            outlines.add(outlinesp, BorderLayout.CENTER);
+            bGradient = new JButton("Pick grad");
+            bGradient.addActionListener(this);
+            outlinesp.add(bGradient);
+            c_useGradient = new JCheckBox("Use grad");
+            outlinesp.add(c_useGradient);
             outlinesp.add(new JLabel(" "));
-
+            outlinesp.add(new JLabel(" "));
+            middle.add(outlines);
         }
 
         // cancel apply row
@@ -576,6 +639,22 @@ class Prot_AnalysisUI implements ActionListener {
         wnd.add(wndpanel);
         wnd.pack();
         wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+
+    /**
+     * Open window with custom Canvas that allows user to click point.
+     * 
+     * Point is written directly in {@link ProtAnalysisConfig}.
+     * @param img Image to show, can be stack.
+     */
+    public void getGradient(ImagePlus img) {
+        // cut one slice from stack
+        ImagePlus copy = img.duplicate();
+        ImageStack is = copy.getImageStack();
+        ImagePlus single = new ImagePlus("", is.getProcessor(1));
+        // open the window
+        new ImageWindow(single, new CustomCanvas(single)).setVisible(true);
+
     }
 
     @Override
@@ -599,6 +678,38 @@ class Prot_AnalysisUI implements ActionListener {
             } catch (Exception e1) {
                 LOGGER.error("Could not open help: " + e1.getMessage(), e1);
             }
+        }
+        if (e.getSource() == bGradient) {
+            getGradient(model.qconfLoader.getImage());
+        }
+    }
+
+    /**
+     * Update ProtAnalysisConfig.gradientPosition to actual clicked point on image.
+     * 
+     * Used during displaying frame to allow user to pick desired gradient point.
+     * 
+     * @author p.baniukiewicz
+     *
+     */
+    class CustomCanvas extends ImageCanvas {
+        private static final long serialVersionUID = 1L;
+
+        public CustomCanvas(ImagePlus imp) {
+            super(imp);
+        }
+
+        /* (non-Javadoc)
+         * @see ij.gui.ImageCanvas#mousePressed(java.awt.event.MouseEvent)
+         */
+        @Override
+        public void mousePressed(MouseEvent e) {
+            super.mousePressed(e);
+            LOGGER.debug("Image coords: " + offScreenX(e.getX()) + " " + offScreenY(e.getY()));
+            config.polarPlot.type = gradientType.SCREENPOINT;
+            config.polarPlot.gradientPoint =
+                    new Point2d(offScreenX(e.getX()), offScreenY(e.getY()));
+            writeUI(); // update UI
         }
 
     }
