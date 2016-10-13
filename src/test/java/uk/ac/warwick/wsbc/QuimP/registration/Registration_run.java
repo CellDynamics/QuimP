@@ -1,7 +1,5 @@
 package uk.ac.warwick.wsbc.QuimP.registration;
 
-import java.awt.Dialog.ModalityType;
-
 import ij.ImageJ;
 
 /**
@@ -18,8 +16,7 @@ public class Registration_run {
      */
     public static void main(String[] args) {
         ImageJ im = new ImageJ();
-        Registration reg =
-                new Registration(im.getOwner(), "Registration", ModalityType.APPLICATION_MODAL);
+        Registration reg = new Registration(im.getOwner(), "Registration");
 
     }
 

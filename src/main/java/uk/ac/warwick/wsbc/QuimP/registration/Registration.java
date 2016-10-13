@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP.registration;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -10,37 +11,37 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  * @author p.baniukiewicz
  *
  */
-public class Registration extends JDialog implements ActionListener, ChangeListener {
+public class Registration extends JDialog implements ActionListener {
 
     private JButton bOk, bCancel;
-    private JLabel lWait;
-    private boolean waited = false;
+    private boolean waited = false; // flag that indicates that user has waited already.
     /**
      * 
      */
     private static final long serialVersionUID = -3889439366816085913L;
 
     /**
+     * Create and display registration window.
+     * 
      * @param owner
      * @param title
-     * @param modalityType
      */
-    public Registration(Window owner, String title, ModalityType modalityType) {
-        super(owner, title, modalityType);
+    public Registration(Window owner, String title) {
+        super(owner, title, ModalityType.APPLICATION_MODAL);
         buildWindow();
         setVisible(true);
     }
 
+    /**
+     * Build window.
+     */
     private void buildWindow() {
         JPanel wndpanel = new JPanel();
         wndpanel.setLayout(new BorderLayout());
@@ -52,13 +53,9 @@ public class Registration extends JDialog implements ActionListener, ChangeListe
         bOk.addActionListener(this);
         bCancel = new JButton("Cancel");
         bCancel.addActionListener(this);
-        bCancel.addChangeListener(this);
         caButtons.add(bOk);
         caButtons.add(bCancel);
         wndpanel.add(caButtons, BorderLayout.SOUTH);
-
-        lWait = new JLabel(" ");
-        wndpanel.add(lWait, BorderLayout.NORTH);
 
         add(wndpanel);
         pack();
@@ -67,21 +64,16 @@ public class Registration extends JDialog implements ActionListener, ChangeListe
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // clicked Cancel and user has not not waited yet
         if (e.getSource() == bCancel && waited == false) {
             bOk.setEnabled(false);
             bCancel.setEnabled(false);
             Worker w = new Worker(5);
             w.execute();
         }
+        // Cancel and waited already - quit
         if (e.getSource() == bCancel && waited == true) {
             dispose();
-        }
-
-    }
-
-    @Override
-    public void stateChanged(ChangeEvent arg0) {
-        if (arg0.getSource() == bCancel) {
         }
 
     }
@@ -93,6 +85,7 @@ public class Registration extends JDialog implements ActionListener, ChangeListe
      */
     public class Worker extends SwingWorker<String, String> {
         private int wait;
+        private Dimension dc;
 
         public Worker(int wait) {
             this.wait = wait;
@@ -100,21 +93,25 @@ public class Registration extends JDialog implements ActionListener, ChangeListe
 
         @Override
         protected String doInBackground() throws Exception {
+            dc = bCancel.getSize(); // remember size of button
             // This is what's called in the .execute method
             for (int i = 0; i < wait; i++) {
                 // This sends the results to the .process method
                 publish(String.valueOf(wait - i));
                 Thread.sleep(1000);
             }
-            waited = true;
+            // at the end of job reenable everything
+            waited = true; // set flag on the end of wait
             bOk.setEnabled(true);
             bCancel.setEnabled(true);
+            bCancel.setText("Cancel");
             return null;
         }
 
         protected void process(List<String> item) {
             // This updates the UI
-            lWait.setText(item.get(0));
+            bCancel.setText(item.get(0));
+            bCancel.setPreferredSize(dc); // keep size as original
         }
     }
 
