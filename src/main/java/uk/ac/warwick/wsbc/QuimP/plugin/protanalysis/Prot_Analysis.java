@@ -4,8 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,6 +30,9 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
+import ij.gui.ImageCanvas;
+import ij.gui.ImageWindow;
 import ij.plugin.ZProjector;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QParams;
@@ -38,6 +43,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig.gradientType;
 import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig.outlinePlotTypes;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
@@ -323,13 +329,13 @@ class Prot_AnalysisUI implements ActionListener {
     private static final Logger LOGGER = LogManager.getLogger(Prot_AnalysisUI.class.getName());
     // UI elements
     private JFrame wnd;
-    private JButton bCancel, bApply, bHelp;
+    private JButton bCancel, bApply, bHelp, bGradient;
     private JFormattedTextField f_noiseTolerance, f_dropValue, f_motThreshold, f_convThreshold;
     private JComboBox<ProtAnalysisConfig.outlinePlotTypes> o_plotType;
     private JCheckBox c_plotMotmap, c_plotMotmapmax, c_plotConmap, c_plotOutline, c_plotStaticmax,
             c_plotDynamicmax;
 
-    JLabel labelMaxnum, labelMaxval, labelMinval;
+    JLabel labelMaxnum, labelMaxval, labelMinval, labelGradinet;
 
     private JCheckBox c_staticPlotmax, c_staticPlottrack, c_staticAverimage;
     private JCheckBox c_dynamicPlotmax, c_dynamicPlottrack;
@@ -397,14 +403,14 @@ class Prot_AnalysisUI implements ActionListener {
     }
 
     /**
-     * Build and show UI.
+     * Show UI.
      */
     public void showUI(boolean val) {
         wnd.setVisible(val);
     }
 
     /**
-     * 
+     * Construct main UI.
      */
     private void buildUI() {
         wnd = new JFrame("Protrusion analysis plugin");
@@ -430,11 +436,13 @@ class Prot_AnalysisUI implements ActionListener {
             f_noiseTolerance = new JFormattedTextField(NumberFormat.getInstance());
             // f_noiseTolerance.setValue(new Double(config.noiseTolerance));
             f_noiseTolerance.setColumns(4);
+            bGradient = new JButton("Pick gradient");
+            bGradient.addActionListener(this);
             params.add(f_dropValue);
             params.add(new JLabel("Drop value"));
             params.add(f_noiseTolerance);
             params.add(new JLabel("Sensitivity"));
-            params.add(new JLabel(" "));
+            params.add(bGradient);
             params.add(new JLabel(" "));
             params.add(new JLabel(" "));
             params.add(new JLabel(" "));
@@ -460,8 +468,9 @@ class Prot_AnalysisUI implements ActionListener {
             labelMinval = new JLabel(" ");
             labelMinval.setBackground(Color.GREEN);
             info.add(labelMinval);
-            info.add(new JLabel(" "));
-            info.add(new JLabel(" "));
+            info.add(new JLabel("Gradient:"));
+            labelGradinet = new JLabel(" ");
+            info.add(labelGradinet);
             middle.add(info);
         }
         {
@@ -578,6 +587,15 @@ class Prot_AnalysisUI implements ActionListener {
         wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
+    public void getGradient(ImagePlus img) {
+        // cut one slice from stack
+        ImagePlus copy = img.duplicate();
+        ImageStack is = copy.getImageStack();
+        ImagePlus single = new ImagePlus("", is.getProcessor(1));
+        new ImageWindow(single, new CustomCanvas(single, config)).setVisible(true);
+
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == bApply) {
@@ -599,6 +617,37 @@ class Prot_AnalysisUI implements ActionListener {
             } catch (Exception e1) {
                 LOGGER.error("Could not open help: " + e1.getMessage(), e1);
             }
+        }
+        if (e.getSource() == bGradient) {
+
+        }
+    }
+
+    /**
+     * Update ProtAnalysisConfig.gradientPosition to actual clicked point on image.
+     * 
+     * Used during displaying frame to allow user to pick desired gradient point.
+     * 
+     * @author p.baniukiewicz
+     *
+     */
+    class CustomCanvas extends ImageCanvas {
+        private static final long serialVersionUID = 1L;
+
+        public CustomCanvas(ImagePlus imp, ProtAnalysisConfig config) {
+            super(imp);
+        }
+
+        /* (non-Javadoc)
+         * @see ij.gui.ImageCanvas#mousePressed(java.awt.event.MouseEvent)
+         */
+        @Override
+        public void mousePressed(MouseEvent e) {
+            super.mousePressed(e);
+            LOGGER.debug("Image coords: " + offScreenX(e.getX()) + " " + offScreenY(e.getY()));
+            config.gradientPosition.type = gradientType.SCREENPOINT;
+            config.gradientPosition.gradientPoint =
+                    new Point(offScreenX(e.getX()), offScreenY(e.getY()));
         }
 
     }

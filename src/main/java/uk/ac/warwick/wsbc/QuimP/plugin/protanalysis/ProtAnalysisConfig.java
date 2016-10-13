@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.Color;
+import java.awt.Point;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
@@ -37,13 +38,50 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      * <li> CONCANDRETR - parts that are concave and retracting.
      * <li> BOTH - combines CONVANDEXP and CONCANDRETR 
      * </ol>
-     * 
+     * </p>
      * @author p.baniukiewicz
      *
      */
     public enum outlinePlotTypes {
         MOTILITY, CONVEXITY, CONVANDEXP, CONCANDRETR, BOTH
     };
+
+    /**
+     * Types of gradient points.
+     * <p>
+     * <ol>
+     * <li> SCREENPOINT - any point clicked on image. Given as {x,y} coordinates
+     * <li> OUTLINEPOINT - point on outline. Given as number of this point on perimeter.
+     * </ol>
+     * </p>
+     * @author p.baniukiewicz
+     *
+     */
+    public enum gradientType {
+        SCREENPOINT, OUTLINEPOINT
+    };
+
+    /**
+     * Keep position of gradient, a point on image or a point on outline.
+     *  
+     * @author p.baniukiewicz
+     *
+     */
+    class GradientPosition {
+        /**
+         * Type of gradinet point.
+         * @see gradientType
+         */
+        gradientType type;
+        /**
+         * Coordinates of gradient point if type is SCREENPOINT.
+         */
+        Point gradientPoint;
+        /**
+         * Number of outline point choosen as gradient if type is OUTLINEPOINT.
+         */
+        int gradientOutline;
+    }
 
     /**
      * Configuration for static plot.
@@ -137,6 +175,10 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      * Hold configuration for plotting dynamic images.
      */
     public DynamicPlot dynamicPlot = new DynamicPlot();
+    /**
+     * Hold configuration for gradient position.
+     */
+    public GradientPosition gradientPosition = new GradientPosition();
 
     /**
      * Suffix for cell stats.
