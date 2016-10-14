@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.registration;
 
+import ij.IJ;
 import ij.ImageJ;
 
 /**
@@ -16,7 +17,8 @@ public class Registration_run {
      */
     public static void main(String[] args) {
         ImageJ im = new ImageJ();
-        Registration reg = new Registration(im.getOwner(), "Registration");
+        Registration reg = new Registration(IJ.getInstance(), "Registration");
+        reg.setVisible(true);
 
     }
 
