@@ -1,18 +1,29 @@
 package uk.ac.warwick.wsbc.QuimP.registration;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 /**
  * @author p.baniukiewicz
@@ -20,8 +31,17 @@ import javax.swing.SwingWorker;
  */
 public class Registration extends JDialog implements ActionListener {
 
+    static {
+        if (System.getProperty("quimp.debugLevel") == null)
+            Configurator.initialize(null, "log4j2_default.xml");
+        else
+            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
+    }
+    private static final Logger LOGGER = LogManager.getLogger(Registration.class.getName());
+
     private JButton bOk, bCancel;
     private boolean waited = false; // flag that indicates that user has waited already.
+    private JEditorPane helpArea;
     /**
      * 
      */
@@ -57,6 +77,30 @@ public class Registration extends JDialog implements ActionListener {
         caButtons.add(bCancel);
         wndpanel.add(caButtons, BorderLayout.SOUTH);
 
+        try {
+            helpArea = new JEditorPane(getClass().getResource("reg.html").toURI().toURL());
+
+            helpArea.setContentType("text/html");
+            helpArea.setEditable(false);
+            JScrollPane helpPanel = new JScrollPane(helpArea);
+            helpPanel.setPreferredSize(new Dimension(400, 500));
+            wndpanel.add(helpPanel, BorderLayout.CENTER);
+            helpArea.addHyperlinkListener(new HyperlinkListener() {
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (Exception e1) {
+                            LOGGER.error("Can not start browser: " + e1.getMessage());
+                            LOGGER.debug(e1.getMessage(), e1);
+                        }
+                    }
+                }
+            });
+        } catch (IOException | URISyntaxException e2) {
+            LOGGER.error("Can not read resource registration page: " + e2.getMessage());
+            LOGGER.debug(e2.getMessage(), e2);
+        } // default size of text area
         add(wndpanel);
         pack();
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
