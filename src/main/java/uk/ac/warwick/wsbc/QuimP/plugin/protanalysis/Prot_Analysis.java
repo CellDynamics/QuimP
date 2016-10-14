@@ -47,6 +47,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig.gradientType;
 import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig.outlinePlotTypes;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
+import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
@@ -94,6 +95,8 @@ public class Prot_Analysis implements IQuimpPlugin {
         IJ.log(new QuimpToolsCollection().getQuimPversion());
         config = new ProtAnalysisConfig();
         gui = new Prot_AnalysisUI(config, this);
+        // validate registered user
+        new Registration(IJ.getInstance(), "QuimP Registration");
         // check whether config file name is provided or ask user for it
         try {
             IJ.showStatus("Protrusion Analysis");

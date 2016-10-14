@@ -22,6 +22,7 @@ import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
+import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGplotter;
 
@@ -70,6 +71,8 @@ public class Q_Analysis {
     public Q_Analysis(File paramFile) {
         about();
         IJ.showStatus("QuimP Analysis");
+        // validate registered user
+        new Registration(IJ.getInstance(), "QuimP Registration");
         try {
             qconfLoader = new QconfLoader(paramFile); // load file
             if (qconfLoader == null || qconfLoader.getQp() == null)

@@ -44,6 +44,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMp;
+import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
@@ -124,6 +125,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
     @Override
     public void run(ImageProcessor Ip) {
+        // validate registered user
+        new Registration(IJ.getInstance(), "QuimP Registration");
         IJ.showStatus("ANA Analysis");
         orgIpr = orgIpl.getProcessor();
         ECMp.plot = false;

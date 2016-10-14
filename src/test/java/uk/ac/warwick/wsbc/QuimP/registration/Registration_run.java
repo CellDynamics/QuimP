@@ -15,6 +15,7 @@ public class Registration_run {
     /**
      * @param args
      */
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         ImageJ im = new ImageJ();
         Registration reg = new Registration(IJ.getInstance(), "Registration");

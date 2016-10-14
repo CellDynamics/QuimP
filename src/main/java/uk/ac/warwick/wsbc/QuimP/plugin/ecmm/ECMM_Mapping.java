@@ -37,6 +37,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
@@ -81,6 +82,7 @@ public class ECMM_Mapping {
      * Process provided file and run the whole analysis.
      * @startuml
      * start
+     * :Check registration;
      * if (input file given) then (no)
      *  :ask user;
      * endif
@@ -110,6 +112,8 @@ public class ECMM_Mapping {
     public ECMM_Mapping(File paramFile) {
         about();
         IJ.showStatus("ECMM Analysis");
+        // validate registered user
+        new Registration(IJ.getInstance(), "QuimP Registration");
         try {
             qconfLoader = new QconfLoader(paramFile); // load file
             if (qconfLoader == null || qconfLoader.getQp() == null)

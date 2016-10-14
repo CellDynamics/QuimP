@@ -93,6 +93,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentationPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOAPoint2dFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOASnakeFilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
+import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
@@ -249,9 +250,8 @@ public class BOA_ implements PlugIn {
                 return;
             }
         }
-
         BOA_.running = true;
-        setup(ip); // create main objects in BOA and BOAState, build window
+        setup(ip); // create main objects in BOA and BOAState, build window + registration window
 
         if (qState.boap.useSubPixel == false) {
             BOA_.log("Upgrade to ImageJ 1.46, or higher," + "\nto get sub-pixel editing.");
@@ -293,6 +293,8 @@ public class BOA_ implements PlugIn {
         window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
         window.buildWindow();
         window.setTitle(window.getTitle() + " :QuimP: " + quimpInfo[0]);
+        // validate registered user
+        new Registration(window, "QuimP Registration");
         // warn about scale
         if (qState.boap.isScaleAdjusted()) {
             BOA_.log("WARNING Scale was zero - set to 1");

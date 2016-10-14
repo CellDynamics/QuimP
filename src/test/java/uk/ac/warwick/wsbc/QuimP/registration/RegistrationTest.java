@@ -21,6 +21,7 @@ import org.mockito.runners.MockitoJUnitRunner;
  * @author p.baniukiewicz
  *
  */
+@SuppressWarnings("unused")
 @RunWith(MockitoJUnitRunner.class)
 public class RegistrationTest {
 
