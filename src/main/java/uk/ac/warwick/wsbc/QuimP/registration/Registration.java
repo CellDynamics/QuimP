@@ -42,6 +42,105 @@ import ij.Prefs;
 import uk.ac.warwick.wsbc.QuimP.QuimP;
 
 /**
+ * Support registration checking.
+ * 
+ * Registration component is self running. It should be located at very
+ * beginning of Module code. It blocks Module from execution until
+ * driving from Registration is returned to it.
+ * 
+ * 
+ * Registration process follows the scheme for cancel action:
+ * 
+ * @startuml
+ * actor User
+ * 
+ * activate Module
+ * Module-->Registration : <<create>>
+ * activate Registration
+ * Registration->Registration : check if registered
+ * Registration->UI : not registered, show UI
+ * activate UI
+ * == Cancelled ==
+ * User -> UI : Cancel
+ * UI->UI : wait
+ * ... Wait ...
+ * UI-->Registration
+ * deactivate UI
+ * Registration-->Module
+ * destroy Registration
+ * ... Continue with module...
+ * Module->Module : Run()
+ * deactivate Module
+ * @enduml
+ * 
+ * And for register action:
+ * 
+ * @startuml
+ * actor User
+ * 
+ * activate Module
+ * Module-->Registration : <<create>>
+ * activate Registration
+ * Registration->Registration : check if registered
+ * Registration->UI : not registered, show UI
+ * activate UI
+ * == Apply ==
+ * User -> UI : Apply
+ * UI->UI : compare hashes
+ * UI-->Registration
+ * deactivate UI
+ * Registration-->Module
+ * destroy Registration
+ * ... Continue with module...
+ * Module->Module : Run()
+ * deactivate Module
+ * @enduml
+ * 
+ * Tests on first run:
+ * 
+ * @startuml
+ * start
+ * :read reg details;
+ * note right
+ * From IJ_Prefs.txt file
+ * end note
+ * :compute hash from email;
+ * note left
+ * Validate whether hash and email
+ * from prefs matches
+ * end note
+ * if(hash the same as in IJ_Prefs?) then (no)
+ * 
+ * :show registration UI;
+ * if(Button) then (cancel)
+ * :wait;
+ * else (apply)
+ * :Check registration;
+ * if(registration correct) then (yes)
+ * :Store in IJ_Prefs.txt;
+ * else (no)
+ * start
+ * endif
+ * endif
+ * endif
+ * stop
+ * @enduml
+ * 
+ * UI transactions:
+ * @startuml
+ * [*] --> DisplayUI
+ * DisplayUI : Cancel
+ * DisplayUI : Apply
+ * 
+ * DisplayUI->Wait : Cancel
+ * Wait -> [*]
+ * 
+ * DisplayUI->Register : Apply
+ * Register : compute hashes\nand compare
+ * Register-> DisplayUI : hash not valid
+ * Register ->[*] : hash valid
+ * @enduml
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -98,7 +197,7 @@ public class Registration extends JDialog implements ActionListener {
     }
 
     /**
-     * Build window.
+     * Build main window.
      */
     private void buildWindow() {
         JPanel wndpanel = new JPanel();
@@ -257,6 +356,7 @@ public class Registration extends JDialog implements ActionListener {
 
     /**
      * Check if user is registered.
+     * 
      * @return True if user registration info is available in IJ_Prefs.txt and data are valid.
      */
     private boolean checkRegistration() {
@@ -299,7 +399,6 @@ public class Registration extends JDialog implements ActionListener {
             if (digest.equals(keys)) // compare both
                 return true;
         } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return false;

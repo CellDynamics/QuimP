@@ -51,7 +51,7 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
- * Create QuimP bar with icons to QuimP plugins
+ * Create QuimP bar with icons to QuimP plugins.
  * 
  * @author r.tyson
  * @author p.baniukiewicz
@@ -157,8 +157,11 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
         frame.pack();
 
-        Registration reg = new Registration(frame, "QuimP Registration");
         frame.setVisible(true);
+
+        // validate registered user
+        new Registration(frame, "QuimP Registration");
+
         WindowManager.setWindow(frontframe);
 
     }
