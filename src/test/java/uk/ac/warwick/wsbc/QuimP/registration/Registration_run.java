@@ -18,8 +18,6 @@ public class Registration_run {
     public static void main(String[] args) {
         ImageJ im = new ImageJ();
         Registration reg = new Registration(IJ.getInstance(), "Registration");
-        reg.setVisible(true);
-
     }
 
 }

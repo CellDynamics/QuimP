@@ -119,4 +119,16 @@ public class RegistrationTest {
         assertTrue(ret);
     }
 
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.registration.Registration#registerUser(java.lang.String, java.lang.String)}.
+     */
+    @Test
+    public void testRegisterUser() throws Exception {
+        Registration obj = new Registration(null, "");
+        String email = " baniuk1@gmail.com";
+        String key = "d2264e17765b74627e67e73dcad1d9d4 ";
+        accessPrivate("registerUser", obj, new Object[] { email, key },
+                new Class<?>[] { String.class, String.class });
+    }
+
 }

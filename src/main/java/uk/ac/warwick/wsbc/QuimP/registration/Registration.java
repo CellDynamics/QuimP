@@ -38,12 +38,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import ij.Prefs;
+import uk.ac.warwick.wsbc.QuimP.QuimP;
+
 /**
  * @author p.baniukiewicz
  *
  */
 public class Registration extends JDialog implements ActionListener {
-
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -59,13 +61,11 @@ public class Registration extends JDialog implements ActionListener {
 
     private JPopupMenu popup;
     private JEditorPane helpArea;
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = -3889439366816085913L;
 
     /**
-     * Create and display registration window.
+     * Create and display registration window if necessary.
      * 
      * @param owner
      * @param title
@@ -73,9 +73,12 @@ public class Registration extends JDialog implements ActionListener {
     public Registration(Window owner, String title) {
         super(owner, title, ModalityType.APPLICATION_MODAL);
         this.owner = owner;
-        buildMenu();
-        buildWindow();
-
+        // display reg window if not registered
+        if (!checkRegistration()) {
+            buildMenu();
+            buildWindow();
+            setVisible(true);
+        }
     }
 
     /**
@@ -166,7 +169,7 @@ public class Registration extends JDialog implements ActionListener {
         JPanel regarea = new JPanel();
         // regarea.setBackground(Color.YELLOW);
         regarea.setLayout(new GridLayout(3, 2));
-        ((GridLayout) regarea.getLayout()).setHgap(20);
+        ((GridLayout) regarea.getLayout()).setHgap(10);
         ((GridLayout) regarea.getLayout()).setVgap(2);
         c.gridx = 0;
         c.gridy = 1;
@@ -184,6 +187,7 @@ public class Registration extends JDialog implements ActionListener {
         add(wndpanel);
         if (owner != null)
             setLocation(owner.getLocation());
+        setAlwaysOnTop(true);
         pack();
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
@@ -201,13 +205,16 @@ public class Registration extends JDialog implements ActionListener {
         if (e.getSource() == bCancel && waited == true) {
             dispose();
         }
-        // apply - get code
+        // apply - get code, say thank you and exit
         if (e.getSource() == bOk) {
             boolean ret = validateRegInfo(tEmail.getText(), tKey.getText());
             if (ret) {
                 waited = true;
-                registerUser();
-            } else
+                registerUser(tEmail.getText(), tKey.getText());
+                JOptionPane.showMessageDialog(this, "Thank you for registering our product.", "OK!",
+                        JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            } else // not ok - message and do nothing
                 JOptionPane.showMessageDialog(this,
                         "The key you provided does not match to the email.", "Error",
                         JOptionPane.WARNING_MESSAGE);
@@ -226,10 +233,36 @@ public class Registration extends JDialog implements ActionListener {
 
     /**
      * Add registration info to the IJ configuration.
+     * 
+     * @param email
+     * @param key
      */
-    private void registerUser() {
-        // TODO Auto-generated method stub
+    private void registerUser(final String email, final String key) {
+        Prefs.set("registration" + QuimP.QUIMP_PREFS_SUFFIX + ".mail", email);
+        Prefs.set("registration" + QuimP.QUIMP_PREFS_SUFFIX + ".key", key);
 
+    }
+
+    /**
+     * Read info from IJ container
+     * 
+     * @return Array of [0] reg email, [1] key
+     */
+    private String[] readRegInfo() {
+        String[] ret = new String[2];
+        ret[0] = Prefs.get("registration" + QuimP.QUIMP_PREFS_SUFFIX + ".mail", "");
+        ret[1] = Prefs.get("registration" + QuimP.QUIMP_PREFS_SUFFIX + ".key", "");
+        return ret;
+    }
+
+    /**
+     * Check if user is registered.
+     * @return True if user registration info is available in IJ_Prefs.txt and data are valid.
+     */
+    private boolean checkRegistration() {
+        String[] reginfo = readRegInfo();
+        boolean ret = validateRegInfo(reginfo[0], reginfo[1]);
+        return ret;
     }
 
     /**
