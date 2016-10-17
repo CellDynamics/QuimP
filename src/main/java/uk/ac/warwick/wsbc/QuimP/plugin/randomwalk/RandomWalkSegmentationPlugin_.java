@@ -45,6 +45,7 @@ import ij.plugin.PlugIn;
 import ij.plugin.tool.BrushTool;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
+import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 
 /**
  * Run RandomWalkSegmentation in IJ environment.
@@ -335,6 +336,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      */
     @Override
     public void run(String arg) {
+        // validate registered user
+        new Registration(IJ.getInstance(), "QuimP Registration");
         showDialog();
     }
 

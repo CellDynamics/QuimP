@@ -10,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -44,11 +45,13 @@ import ij.plugin.PlugIn;
 import uk.ac.warwick.wsbc.QuimP.AboutDialog;
 import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
+import uk.ac.warwick.wsbc.QuimP.QuimP;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
+import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
- * Create QuimP bar with icons to QuimP plugins
+ * Create QuimP bar with icons to QuimP plugins.
  * 
  * @author r.tyson
  * @author p.baniukiewicz
@@ -65,14 +68,11 @@ public class QuimP_Bar implements PlugIn, ActionListener {
      * This field is used for sharing information between bar and other plugins
      */
     public static boolean newFileFormat = true;
-    /**
-     * name used for storing bar location in IJ prefs
-     */
-    String prefsfName = "quimp_bar";
+
     String path;
     String separator = System.getProperty("file.separator");
     JFrame frame = new JFrame();
-    Frame frontframe;
+    Window frontframe;
     int xfw = 0;
     int yfw = 0;
     int wfw = 0;
@@ -114,7 +114,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             }
         });
 
-        frontframe = WindowManager.getFrontWindow();
+        frontframe = WindowManager.getActiveWindow();
         if (frontframe != null) {
             xfw = frontframe.getLocation().x;
             yfw = frontframe.getLocation().y;
@@ -151,12 +151,17 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         frame.setResizable(false);
         // frame.setAlwaysOnTop(true);
 
-        frame.setLocation((int) Prefs.get("actionbar" + title + ".xloc", 10),
-                (int) Prefs.get("actionbar" + title + ".yloc", 10));
+        frame.setLocation((int) Prefs.get("actionbar" + QuimP.QUIMP_PREFS_SUFFIX + ".xloc", 10),
+                (int) Prefs.get("actionbar" + QuimP.QUIMP_PREFS_SUFFIX + ".yloc", 10));
         WindowManager.addWindow(frame);
 
         frame.pack();
+
         frame.setVisible(true);
+
+        // validate registered user
+        new Registration(frame, "QuimP Registration");
+
         WindowManager.setWindow(frontframe);
 
     }
@@ -363,8 +368,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     }
 
     protected void storeLocation() {
-        Prefs.set("actionbar" + prefsfName + ".xloc", frame.getLocation().x);
-        Prefs.set("actionbar" + prefsfName + ".yloc", frame.getLocation().y);
+        Prefs.set("actionbar" + QuimP.QUIMP_PREFS_SUFFIX + ".xloc", frame.getLocation().x);
+        Prefs.set("actionbar" + QuimP.QUIMP_PREFS_SUFFIX + ".yloc", frame.getLocation().y);
     }
 
 }

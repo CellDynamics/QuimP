@@ -96,7 +96,13 @@ public class QColor {
 
     }
 
+    /**
+     * Convert color to SVG codes.
+     * 
+     * @return SVG color representation
+     */
     public String getColorSVG() {
+
         return "rgb(" + (red * 100) + "%," + (green * 100) + "%," + (blue * 100) + "%)";
     }
 

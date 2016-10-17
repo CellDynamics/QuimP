@@ -11,15 +11,15 @@
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
-  <version>16.08.06</version>
+  <version>16.10.01</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/bretschneider/quimp/</url>
   <description>QuimP software, a set of plugins for ImageJ to quantify spatio-temporal patterns of fluorescently labeled proteins in the cortex of moving cells.</description>
   <!-- Root of URL for documentation. MUST have / at end -->
   <properties>
-    <manual.rootlocation>http://quimp.linkpc.net/manual/</manual.rootlocation>
-    <site.rootlocation>http://quimp.linkpc.net/history/</site.rootlocation>
+    <manual.rootlocation>http://pilip.lnx.warwick.ac.uk/docs/</manual.rootlocation>
+    <site.rootlocation>http://pilip.lnx.warwick.ac.uk/site/</site.rootlocation>
     <site.historylocation>${site.rootlocation}changes-report.html</site.historylocation>
   </properties>
   <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
@@ -278,7 +278,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <manual.location>${manual.rootlocation}develop/QuimP_Guide.html</manual.location>
+        <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
       </properties>
       <build>
         <plugins>

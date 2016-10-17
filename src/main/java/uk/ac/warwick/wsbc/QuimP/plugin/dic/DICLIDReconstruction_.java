@@ -9,6 +9,7 @@ import ij.ImageStack;
 import ij.gui.GenericDialog;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 
 /**
  * Main implementation of ImageJ plugin
@@ -19,7 +20,7 @@ import ij.process.ImageProcessor;
  * @see LidReconstructor for algorithm details *
  */
 public class DICLIDReconstruction_ implements PlugInFilter {
-       private static final Logger LOGGER =
+    private static final Logger LOGGER =
             LogManager.getLogger(DICLIDReconstruction_.class.getName());
     private LidReconstructor dic;
     private ImagePlus imp;
@@ -50,6 +51,8 @@ public class DICLIDReconstruction_ implements PlugInFilter {
      */
     @Override
     public void run(ImageProcessor ip) {
+        // validate registered user
+        new Registration(IJ.getInstance(), "QuimP Registration");
         ImageProcessor ret;
         if (!showDialog())
             return; // if user clicked Cancel or data were not valid

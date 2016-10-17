@@ -2,6 +2,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.Color;
 
+import javax.vecmath.Point2d;
+
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
 /**
@@ -37,13 +39,59 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      * <li> CONCANDRETR - parts that are concave and retracting.
      * <li> BOTH - combines CONVANDEXP and CONCANDRETR 
      * </ol>
-     * 
+     * </p>
      * @author p.baniukiewicz
      *
      */
     public enum outlinePlotTypes {
         MOTILITY, CONVEXITY, CONVANDEXP, CONCANDRETR, BOTH
     };
+
+    /**
+     * Types of gradient points.
+     * <p>
+     * <ol>
+     * <li> SCREENPOINT - any point clicked on image. Given as {x,y} coordinates
+     * <li> OUTLINEPOINT - point on outline. Given as number of this point on perimeter.
+     * <li> NOTDEFINED - not defined or selected.
+     * </ol>
+     * </p>
+     * @author p.baniukiewicz
+     *
+     */
+    public enum gradientType {
+        SCREENPOINT, OUTLINEPOINT, NOTDEFINED
+    };
+
+    /**
+     * Keep position of gradient, a point on image or a point on outline.
+     *  
+     * @author p.baniukiewicz
+     *
+     */
+    class PolarPlot {
+        /**
+         * Indicate whether to use selected gradient or not.
+         */
+        public boolean useGradient = false;
+        /**
+         * Indicate whether to plot polar plots
+         */
+        public boolean plotpolar = false;
+        /**
+         * Type of gradinet point.
+         * @see gradientType
+         */
+        public gradientType type = gradientType.SCREENPOINT;
+        /**
+         * Coordinates of gradient point if type is SCREENPOINT.
+         */
+        public Point2d gradientPoint = new Point2d(0, 0);
+        /**
+         * Number of outline point chosen as gradient if type is OUTLINEPOINT.
+         */
+        public int gradientOutline;
+    }
 
     /**
      * Configuration for static plot.
@@ -137,6 +185,10 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      * Hold configuration for plotting dynamic images.
      */
     public DynamicPlot dynamicPlot = new DynamicPlot();
+    /**
+     * Hold configuration for gradient position.
+     */
+    public PolarPlot polarPlot = new PolarPlot();
 
     /**
      * Suffix for cell stats.
@@ -146,6 +198,10 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      * Protrusion statistics file suffix. 
      */
     public final String protStatSuffix = "_protstat.csv";
+    /**
+     * Polar plot suffix.
+     */
+    public final String polarPlotSuffix = "_polar.svg";
 
     public ProtAnalysisConfig() {
     }

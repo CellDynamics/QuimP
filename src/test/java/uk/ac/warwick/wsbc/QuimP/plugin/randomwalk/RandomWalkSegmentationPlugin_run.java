@@ -25,10 +25,10 @@ public class RandomWalkSegmentationPlugin_run {
         RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
         IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
                 "open(\"/tmp/Stack_cut.tif\")");
-        //IJ.runMacro(
-        //        "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
+        // IJ.runMacro(
+        // "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
         // obj.run("");
-        obj.showDialog();
+        obj.run("");
 
         obj.wnd.addWindowListener(new WindowAdapter() {
 
