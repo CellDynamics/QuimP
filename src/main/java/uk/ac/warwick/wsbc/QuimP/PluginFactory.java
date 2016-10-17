@@ -276,7 +276,7 @@ public class PluginFactory {
                 // catch any error in plugin services - plugin is not stored
             } catch (ClassNotFoundException | NoSuchMethodException | SecurityException
                     | InstantiationException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | ClassCastException | IOException e) {
+                    | InvocationTargetException | ClassCastException | IOException | NoClassDefFoundError e) {
                 LOGGER.error("Type of plugin " + pluginName + " in jar: " + f.getPath()
                         + " can not be obtained. Ignoring this plugin");
                 LOGGER.error(e);
