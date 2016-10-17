@@ -60,6 +60,8 @@ mvn clean
 mvn -T 1C --batch-mode release:prepare -DreleaseVersion=$releaseVersion -DdevelopmentVersion=$developmentVersion
 mvn -T 1C --batch-mode release:perform
 
+echo "One can not push to release after this point!"
+
 # build documentation without source code included
 ./generateDoc.sh Doxyfile-no-source
 # build and upload Doxygen full
@@ -86,7 +88,7 @@ git merge --no-ff -m "Merge release/$releaseVersion into develop" release/$relea
 git checkout master
 # merge the version back into master but use the tagged version instead of the release/$releaseVersion HEAD
 git merge --no-ff --no-commit release/$releaseVersion~1
-git commit -m "Merge new version" -S
+git commit -m "Merge $releaseVersion version" -S
 # Get back on the develop branch
 git checkout $currentBranch
 
