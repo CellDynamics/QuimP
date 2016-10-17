@@ -13,16 +13,12 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * @author p.baniukiewicz
  *
  */
 @SuppressWarnings("unused")
-@RunWith(MockitoJUnitRunner.class)
 public class RegistrationTest {
 
     static Object accessPrivate(String name, Registration obj, Object[] param, Class<?>[] paramtype)
@@ -37,8 +33,6 @@ public class RegistrationTest {
 
     private Window owner;
     private String title;
-    @InjectMocks
-    private Registration registration;
 
     /**
      * @throws java.lang.Exception
@@ -73,7 +67,7 @@ public class RegistrationTest {
      */
     @Test
     public void testValidateRegInfo() throws Exception {
-        Registration obj = new Registration(null, "");
+        Registration obj = new Registration(null, "nowindow");
         String email = "";
         String key = "";
         boolean ret = (boolean) accessPrivate("validateRegInfo", obj, new Object[] { email, key },
@@ -86,7 +80,7 @@ public class RegistrationTest {
      */
     @Test
     public void testValidateRegInfo_1() throws Exception {
-        Registration obj = new Registration(null, "");
+        Registration obj = new Registration(null, "nowindow");
         String email = " ";
         String key = "";
         boolean ret = (boolean) accessPrivate("validateRegInfo", obj, new Object[] { email, key },
@@ -99,7 +93,7 @@ public class RegistrationTest {
      */
     @Test
     public void testValidateRegInfo_2() throws Exception {
-        Registration obj = new Registration(null, "");
+        Registration obj = new Registration(null, "nowindow");
         String email = "baniuk1@gmail.com";
         String key = "d2264e17765b74627e67e73dcad1d9d4";
         boolean ret = (boolean) accessPrivate("validateRegInfo", obj, new Object[] { email, key },
@@ -112,9 +106,22 @@ public class RegistrationTest {
      */
     @Test
     public void testValidateRegInfo_3() throws Exception {
-        Registration obj = new Registration(null, "");
+        Registration obj = new Registration(null, "nowindow");
         String email = " baniuk1@gmail.com";
         String key = "d2264e17765b74627e67e73dcad1d9d4 ";
+        boolean ret = (boolean) accessPrivate("validateRegInfo", obj, new Object[] { email, key },
+                new Class<?>[] { String.class, String.class });
+        assertTrue(ret);
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.registration.Registration#validateRegInfo(java.lang.String, java.lang.String)}.
+     */
+    @Test
+    public void testValidateRegInfo_4() throws Exception {
+        Registration obj = new Registration(null, "nowindow");
+        String email = "test@wp.pl";
+        String key = "8acb3a0f375dce7f40f7a0cbd294c74b";
         boolean ret = (boolean) accessPrivate("validateRegInfo", obj, new Object[] { email, key },
                 new Class<?>[] { String.class, String.class });
         assertTrue(ret);
@@ -125,7 +132,7 @@ public class RegistrationTest {
      */
     @Test
     public void testRegisterUser() throws Exception {
-        Registration obj = new Registration(null, "");
+        Registration obj = new Registration(null, "nowindow");
         String email = " baniuk1@gmail.com";
         String key = "d2264e17765b74627e67e73dcad1d9d4 ";
         accessPrivate("registerUser", obj, new Object[] { email, key },

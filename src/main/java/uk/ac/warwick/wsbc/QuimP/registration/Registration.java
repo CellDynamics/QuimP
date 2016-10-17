@@ -173,7 +173,7 @@ public class Registration extends JDialog implements ActionListener {
         super(owner, title, ModalityType.APPLICATION_MODAL);
         this.owner = owner;
         // display reg window if not registered
-        if (!checkRegistration()) {
+        if (checkRegistration() == false && !title.equals("nowindow")) {
             buildMenu();
             buildWindow();
             setVisible(true);
@@ -392,7 +392,9 @@ public class Registration extends JDialog implements ActionListener {
             md.update(emails.getBytes(StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder();
             for (byte b : md.digest()) { // convert to char
-                sb.append(Integer.toHexString(b & 0xff));
+                // dealing with conversion to int from byte and leading 0 for values smaller than 16
+                String ss = Integer.toHexString(0x100 | (b & 0xff)).substring(1);
+                sb.append(ss);
             }
             String digest = sb.toString().toLowerCase();
             LOGGER.trace("email: " + emails + " Digest: " + digest);
