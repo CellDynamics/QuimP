@@ -37,7 +37,7 @@ currentBranch=$(git rev-parse --abbrev-ref HEAD)
 
 # Create local ssh-agent
 eval $(ssh-agent)
-ssh-add ~/.ssh/pi
+ssh-add ~/.ssh/quimp-backend
 ssh-add ~/.ssh/trac
 
 # Start the release by creating a new release branch
@@ -62,17 +62,19 @@ mvn -T 1C --batch-mode release:perform
 
 # build documentation without source code included
 ./generateDoc.sh Doxyfile-no-source
+# build and upload Doxygen full
+./generateDoc.sh
 # copy artefact to Fiij
 find $FIJI -name QuimP*.jar ! -name QuimP_11b.jar | xargs rm -fv # delete old one except old quimp
 cp -v target/checkout/target/QuimP_-*-jar-*.jar $FIJI # copy package
 # Copy site
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222" --delete --stats target/checkout/target/site/ pi@quimp.linkpc.net:/var/www/restricted/site
+rsync -lrtz --delete --stats target/checkout/target/site/ admin@pilip.lnx.warwick.ac.uk:/data/www/html/restricted/site
 # Copy only changes for users
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222" --delete --stats target/checkout/target/site/css target/checkout/target/site/images target/checkout/target/site/changes-report.html pi@quimp.linkpc.net:/var/www/html/site
+rsync -lrtz --delete --stats target/checkout/target/site/css target/checkout/target/site/images target/checkout/target/site/changes-report.html admin@pilip.lnx.warwick.ac.uk:/data/www/html/site
 # Copy only javadoc for users
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222" --delete --stats target/checkout/target/site/apidocs/ pi@quimp.linkpc.net:/var/www/html/apidocs
+rsync -lrtz --delete --stats target/checkout/target/site/apidocs/ admin@pilip.lnx.warwick.ac.uk:/data/www/html/apidocs
 # copy doxygen for users
-rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222" --delete --stats Doxygen_doc/html/ pi@quimp.linkpc.net:/var/www/html/doxygen
+rsync -lrtz  --delete --stats Doxygen_doc/html/ admin@pilip.lnx.warwick.ac.uk:/data/www/html/doxygen
 
 
 # Clean up and finish
