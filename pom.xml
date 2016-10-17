@@ -35,8 +35,10 @@
   </issueManagement>
   <licenses>
     <license>
-      <name>TBA</name>
-      <comments>Must be reviewed</comments>
+      <name>QuimP License</name>
+      <url>http://pilip.lnx.warwick.ac.uk/LICENSE.txt</url>
+      <distribution>manual</distribution>
+      <comments>Own licence</comments>
     </license>
   </licenses>
   <organization>

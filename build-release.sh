@@ -106,6 +106,8 @@ ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version 
 cd ../pom-quimp-plugin/
 ./pushToNewVersion $currentVersion $releaseVersion $developmentVersion
 cd ../QuimP
+# copy current license to web page
+scp LICENSE.txt admin@pilip.lnx.warwick.ac.uk:/data/www/html
 
 echo '------------------------------------------------------------------'
 echo Postprocessing:
