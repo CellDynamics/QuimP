@@ -52,9 +52,7 @@ rm -rf /tmp/QuimP.wiki
 
 doxygen $DEFAULT_DOXYFILE &>/dev/null
 if [ $UPLOAD -eq 1 ]; then
-	# copy also images - all md files expect images in root of webpage (directory the doxegen was called from)
-	rsync -az -e 'ssh -p2222' --stats --delete *.png *.jpg html/ trac@trac-wsbc.linkpc.net:/var/www/restricted/Doxygen_doc/QuimP
-	rsync -lrtz -e "ssh -i ~/.ssh/pi -p 10222 -o 'IdentitiesOnly yes'" --delete --stats *.png *.jpg html/ pi@quimp.linkpc.net:/var/www/restricted/Doxygen_doc
+	rsync -lrtz  -e "ssh -i ~/.ssh/quimp-backend" --delete --stats *.png html/ admin@pilip.lnx.warwick.ac.uk:/data/www/html/restricted/Doxygen_doc
 fi
 
 
