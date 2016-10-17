@@ -12,7 +12,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sun.tools.javac.util.Pair;
+import uk.ac.warwick.wsbc.QuimP.QuimP;
+import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 
 /**
  * Represent collection of tracks.
@@ -95,8 +96,8 @@ public class TrackCollection {
     public Iterator<Track> iteratorTrack() {
         List<Track> ret = new ArrayList<>();
         for (Pair<Track, Track> p : bf) {
-            ret.add(p.fst);
-            ret.add(p.snd);
+            ret.add(p.first);
+            ret.add(p.second);
         }
         return ret.iterator();
     }

@@ -13,10 +13,9 @@ import java.util.ListIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sun.tools.javac.util.Pair;
-
 import uk.ac.warwick.wsbc.QuimP.geom.MapTracker;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
+import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
@@ -142,10 +141,10 @@ public class TrackMapAnalyser {
         List<Pair<Track, Track>> tracks = trackCollection.getBf();
         for (int i = 0; i < tracks.size() - 1; i++)
             for (int j = i + 1; j < tracks.size(); j++) {
-                Track b1 = tracks.get(i).fst;
-                Track b2 = tracks.get(j).fst;
-                Track f1 = tracks.get(i).snd;
-                Track f2 = tracks.get(j).snd;
+                Track b1 = tracks.get(i).first;
+                Track b2 = tracks.get(j).first;
+                Track f1 = tracks.get(i).second;
+                Track f2 = tracks.get(j).second;
                 // check b1-b2, b1-f2, b2-f1, f1-f2
                 // b1-b2
                 {
@@ -256,7 +255,7 @@ public class TrackMapAnalyser {
         List<Pair<Point, Point>> ret = new ArrayList<>();
         // collect all intersections into separate maps according to parent (left only considered)
         for (Pair<Point, Point> p : intersections) {
-            Integer parentleft = p.fst.x;
+            Integer parentleft = p.first.x;
             if (map.get(parentleft) == null) // get key
                 map.put(parentleft, new ArrayList<>()); // if no create
             map.get(parentleft).add(p); // add crossection point to this key
@@ -274,14 +273,14 @@ public class TrackMapAnalyser {
                 // get indexes of back and for tracks
                 // This is strictly related to trackMaxima return order
                 int back, forw;
-                if (p.fst.x % 2 == 0) { // if index is even it is back and forward is next one
-                    back = p.fst.x;
+                if (p.first.x % 2 == 0) { // if index is even it is back and forward is next one
+                    back = p.first.x;
                     forw = back + 1;
                 } else { // if index is uneven this is forward and back is previous
-                    forw = p.fst.x;
+                    forw = p.first.x;
                     back = forw - 1;
                 }
-                int ind = enumeratePoint(tracks.get(back), tracks.get(forw), p.snd);
+                int ind = enumeratePoint(tracks.get(back), tracks.get(forw), p.second);
                 if (ind < 0)
                     throw new IllegalArgumentException("Point does not exist in track");
                 if (ind < minInd) {
@@ -318,7 +317,7 @@ public class TrackMapAnalyser {
             Pair<Point, Point> element = it.next();
             // remove because first parent is even and second is next track. <even,uneven> are
             // <backward,forward> according to trackMaxima.
-            if (element.fst.x % 2 == 0 && element.fst.x + 1 == element.fst.y)
+            if (element.first.x % 2 == 0 && element.first.x + 1 == element.first.y)
                 it.remove();
         }
         return ret;
