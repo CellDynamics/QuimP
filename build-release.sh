@@ -3,16 +3,19 @@
 # Build given project from current branch
 # Perform the following actions:
 # - Use maven release to build and create relevant commits
-# - Upload full site to quimp.linkpc.net (restricted to logged users)
+# - Upload full site to piilp (restricted to logged users)
 # - Upload only changes to public site
 # - Upload only javadoc to public site
 # - Build Doxygen documenatation for user - without source code and upload it
+# - Update pom-quimp-plugin
 
 set -e
 
-if [ "$#" -ne 2 ]; then
-    echo "syntax: build-release releaseVersion developmentVersion"
-    echo "Example: build-release.sh 16.08.02 16.08.03-SNAPSHOT"
+if [ "$#" -ne 3 ]; then
+    echo "syntax: build-release releaseVersion developmentVersion currentVersion"
+    echo "Example: build-release.sh 16.08.02 16.08.03-SNAPSHOT 16.08.01-SNAPSHOT"
+    echo "Current version is the version listed in develop branch before any action"
+    echo "Should be the same as in pom-quimp-plugin"
     echo ""
     mvn help:evaluate -Dexpression=project.version
     exit 1
@@ -20,6 +23,7 @@ fi
 
 releaseVersion=$1 
 developmentVersion=$2 
+currentVersion=$3
 
 FIJI="../Fiji.app.release/plugins" # fiji location (for uploading to repo)
 
@@ -97,6 +101,11 @@ d=$(date +"%b %d, %Y, %H:%M:%S")
 ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version add '$releaseVersion' '$d'"
 d=$(date +"%b %d, %Y, %H:%M:%S")
 ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version add '$developmentVersion' '$d'"
+
+# Updating plugins master pom
+cd ../pom-quimp-plugin/
+./pushToNewVersion $currentVersion $releaseVersion $developmentVersion
+cd ../QuimP
 
 echo '------------------------------------------------------------------'
 echo Postprocessing:
