@@ -196,7 +196,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         JPanel firstRow = new JPanel();
         firstRow.setLayout(new FlowLayout(FlowLayout.LEADING));
 
-        button = makeNavigationButton("x.jpg", "open()", "Open a file", "OPEN IMAGE");
+        button = makeNavigationButton("x.jpg", "open(\"\")", "Open a file", "OPEN IMAGE");
         firstRow.add(button, c);
 
         button = makeNavigationButton("x.jpg", "run(\"ROI Manager...\");", "Open the ROI manager",
