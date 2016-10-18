@@ -154,7 +154,7 @@ public class Registration extends JDialog implements ActionListener {
     private static final Logger LOGGER = LogManager.getLogger(Registration.class.getName());
 
     private JButton bOk, bCancel;
-    private boolean waited = false; // flag that indicates that user has waited already.
+    public boolean waited = false; // flag that indicates that user has waited already.
     private JTextField tEmail, tKey;
     private Window owner;
 
@@ -173,11 +173,31 @@ public class Registration extends JDialog implements ActionListener {
         super(owner, title, ModalityType.APPLICATION_MODAL);
         this.owner = owner;
         // display reg window if not registered
-        if (checkRegistration() == false && !title.equals("nowindow")) {
+        if (checkRegistration() == false) {
+            build(title,true);
+        }
+    }
+    
+    /**
+     * Construct object but does not display window.
+     * 
+     * Allow to set some parameters before window construction.
+     * 
+     * @param owner
+     */
+    public Registration(Window owner) {
+       this.owner = owner; 
+    }
+
+    /**
+     * Construct and display window.
+     * @param title
+     * @param show indicate whether show window on screen
+     */
+    public void build(String title, boolean show) {
             buildMenu();
             buildWindow();
-            setVisible(true);
-        }
+            setVisible(show);
     }
 
     /**
@@ -347,11 +367,20 @@ public class Registration extends JDialog implements ActionListener {
      * 
      * @return Array of [0] reg email, [1] key
      */
-    private String[] readRegInfo() {
+    public String[] readRegInfo() {
         String[] ret = new String[2];
         ret[0] = Prefs.get("registration" + QuimP.QUIMP_PREFS_SUFFIX + ".mail", "");
         ret[1] = Prefs.get("registration" + QuimP.QUIMP_PREFS_SUFFIX + ".key", "");
         return ret;
+    }
+    
+    /**
+     * Read registration details from IJ and fills the registration window.
+     */
+    public void fillRegForm() {
+        String[] reg = readRegInfo();
+        tEmail.setText(reg[0]);
+        tKey.setText(reg[1]);
     }
 
     /**

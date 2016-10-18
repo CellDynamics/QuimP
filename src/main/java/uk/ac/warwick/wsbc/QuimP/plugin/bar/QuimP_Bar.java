@@ -89,6 +89,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     private final Color barColor = new Color(0xFB, 0xFF, 0x94); // Color of title bar
     private MenuBar menuBar;
     private Menu menuTools;
+    private Menu menuMisc;
+    private MenuItem menuShowreg;
     private MenuItem menuFormatConverter;
     private Menu menuHelp;
     private MenuItem menuVersion;
@@ -132,23 +134,28 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         menuBar = new MenuBar();
         menuHelp = new Menu("Quimp-Help");
         menuTools = new Menu("Tools");
+        menuMisc = new Menu("Misc");
         menuBar.add(menuHelp);
         menuBar.add(menuTools);
+        menuBar.add(menuMisc);
         menuVersion = new MenuItem("About");
         menuOpenHelp = new MenuItem("Help Contents");
         menuOpenSite = new MenuItem("History of changes");
         menuLicense = new MenuItem("Show licence");
         menuFormatConverter = new MenuItem("Format converter");
+        menuShowreg = new MenuItem("Show registration");
         menuHelp.add(menuOpenHelp);
         menuHelp.add(menuOpenSite);
         menuHelp.add(menuVersion);
         menuHelp.add(menuLicense);
         menuTools.add(menuFormatConverter);
+        menuMisc.add(menuShowreg);
         menuVersion.addActionListener(this);
         menuOpenHelp.addActionListener(this);
         menuOpenSite.addActionListener(this);
         menuLicense.addActionListener(this);
         menuFormatConverter.addActionListener(this);
+        menuShowreg.addActionListener(this);
         frame.setMenuBar(menuBar);
 
         // captures the ImageJ KeyListener
@@ -367,6 +374,15 @@ public class QuimP_Bar implements PlugIn, ActionListener {
                 }
             }
 
+            return;
+        }
+        if(e.getSource()==menuShowreg) {
+            // show window filled with reg data
+            Registration regwindow = new Registration(frame);
+            regwindow.waited = true;
+            regwindow.build("QuimP Registration",false);
+            regwindow.fillRegForm();
+            regwindow.setVisible(true);
             return;
         }
         if (e.getSource() == menuFormatConverter) { // convert between file formats

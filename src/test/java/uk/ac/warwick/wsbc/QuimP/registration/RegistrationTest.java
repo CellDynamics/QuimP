@@ -67,7 +67,7 @@ public class RegistrationTest {
      */
     @Test
     public void testValidateRegInfo() throws Exception {
-        Registration obj = new Registration(null, "nowindow");
+        Registration obj = new Registration(null);
         String email = "";
         String key = "";
         boolean ret = (boolean) accessPrivate("validateRegInfo", obj, new Object[] { email, key },
@@ -80,7 +80,7 @@ public class RegistrationTest {
      */
     @Test
     public void testValidateRegInfo_1() throws Exception {
-        Registration obj = new Registration(null, "nowindow");
+        Registration obj = new Registration(null);
         String email = " ";
         String key = "";
         boolean ret = (boolean) accessPrivate("validateRegInfo", obj, new Object[] { email, key },
@@ -93,7 +93,7 @@ public class RegistrationTest {
      */
     @Test
     public void testValidateRegInfo_2() throws Exception {
-        Registration obj = new Registration(null, "nowindow");
+        Registration obj = new Registration(null);
         String email = "baniuk1@gmail.com";
         String key = "d2264e17765b74627e67e73dcad1d9d4";
         boolean ret = (boolean) accessPrivate("validateRegInfo", obj, new Object[] { email, key },
@@ -106,7 +106,7 @@ public class RegistrationTest {
      */
     @Test
     public void testValidateRegInfo_3() throws Exception {
-        Registration obj = new Registration(null, "nowindow");
+        Registration obj = new Registration(null);
         String email = " baniuk1@gmail.com";
         String key = "d2264e17765b74627e67e73dcad1d9d4 ";
         boolean ret = (boolean) accessPrivate("validateRegInfo", obj, new Object[] { email, key },
@@ -119,7 +119,7 @@ public class RegistrationTest {
      */
     @Test
     public void testValidateRegInfo_4() throws Exception {
-        Registration obj = new Registration(null, "nowindow");
+        Registration obj = new Registration(null);
         String email = "test@wp.pl";
         String key = "8acb3a0f375dce7f40f7a0cbd294c74b";
         boolean ret = (boolean) accessPrivate("validateRegInfo", obj, new Object[] { email, key },
@@ -132,7 +132,7 @@ public class RegistrationTest {
      */
     @Test
     public void testRegisterUser() throws Exception {
-        Registration obj = new Registration(null, "nowindow");
+        Registration obj = new Registration(null);
         String email = " baniuk1@gmail.com";
         String key = "d2264e17765b74627e67e73dcad1d9d4 ";
         accessPrivate("registerUser", obj, new Object[] { email, key },
