@@ -9,13 +9,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import com.sun.tools.javac.util.Pair;
-
 import uk.ac.warwick.wsbc.QuimP.CellStats;
 import uk.ac.warwick.wsbc.QuimP.FrameStatistics;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Track.Type;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
+import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
@@ -261,8 +260,8 @@ public class ProtStat implements IQuimpSerialize {
             int l = 0;
             while (it.hasNext()) {
                 Pair<Track, Track> p = it.next();
-                Track t1 = p.fst;
-                Track t2 = p.snd;
+                Track t1 = p.first;
+                Track t2 = p.second;
                 tipPositionIndex[l] = t1.getOutline(0); // first point is maximum
                 tipCoordinate[l] = t1.getXY(0, maps.getxMap(), maps.getyMap());
                 tipFrame[l] = t1.getFrame(0);

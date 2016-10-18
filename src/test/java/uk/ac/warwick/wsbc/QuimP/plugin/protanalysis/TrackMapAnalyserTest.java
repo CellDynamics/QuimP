@@ -26,13 +26,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.sun.tools.javac.util.Pair;
-
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Track;
-import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackCollection;
-import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser;
+import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 
 /**
  * @author p.baniukiewicz

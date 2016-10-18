@@ -29,21 +29,45 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Build About dialog with support of mouse operations
+ * Build About dialog with support of mouse operations.
+ * 
+ * It can be used as universal text displayer.
  * 
  * @author p.baniukiewicz
  *
  */
 public class AboutDialog implements ActionListener {
     private static final Logger LOGGER = LogManager.getLogger(AboutDialog.class.getName());
-    public JDialog aboutWnd; //!< About window
-    private JTextArea info; //!< text area field
-    private JPopupMenu popup; //!< popup menu
-    private JMenuBar mbar; //!< the same but in menu bar
-    private final int ROWS = 30; //!< Number of rows in window
-    private final int COLS = 80; //!< Number of columns in window
-    private final String c = "-"; //!< Limiter char
-    
+    /**
+     * About window.
+     */
+    public JDialog aboutWnd;
+    private JTextArea info; // text area field
+    private JPopupMenu popup; // popup menu
+    private JMenuBar mbar; // the same but in menu bar
+    /**
+     * Number of rows in window.
+     */
+    private int ROWS = 30;
+    /**
+     * Number of columns in window.
+     */
+    private int COLS = 80;
+    private final String c = "-"; // Limiter char
+
+    /**
+     * Build window and menus with given size.
+     * 
+     * @param owner Owner of Dialog.
+     * @param rows Number of rows.
+     * @param cols Number of columns.
+     */
+    public AboutDialog(Window owner, int rows, int cols) {
+        ROWS = rows;
+        COLS = cols;
+        buildWindow(owner);
+    }
+
     /**
      * Main constructor.
      * 
@@ -52,6 +76,15 @@ public class AboutDialog implements ActionListener {
      * @param owner Owner of Dialog
      */
     public AboutDialog(Window owner) {
+        buildWindow(owner);
+    }
+
+    /**
+     * Construct the window.
+     * 
+     * @param owner
+     */
+    private void buildWindow(Window owner) {
         aboutWnd = new JDialog(owner, "Info", JDialog.ModalityType.DOCUMENT_MODAL);
         aboutWnd.addWindowListener(new myWindowAdapter());
         // located in middle of quimp qindow
