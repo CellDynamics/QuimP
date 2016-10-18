@@ -14,6 +14,7 @@
     <manual.rootlocation>http://pilip.lnx.warwick.ac.uk/docs/</manual.rootlocation>
     <site.rootlocation>http://pilip.lnx.warwick.ac.uk/site/</site.rootlocation>
     <site.historylocation>${site.rootlocation}changes-report.html</site.historylocation>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
   <scm>

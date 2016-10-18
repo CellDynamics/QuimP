@@ -51,6 +51,7 @@ echo "Prepare changelog and commit it here"
 echo '	Before continuing changelog at src/changes'
 echo '	must be modified in respect to fixed bugs'
 echo 'Be prepared for signing'
+echo 'LICENSE.txt and resources/LICENSE.txt must be the same'
 read -r -p "Are you sure to continue? [y/N] " response
 case $response in
     [yY][eE][sS]|[yY]) 
