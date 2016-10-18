@@ -17,7 +17,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 
@@ -340,6 +343,29 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             return;
         }
         if (e.getSource() == menuLicense) {
+            AboutDialog ad = new AboutDialog(frame, 50, 150);
+            BufferedReader in = null;
+            try {
+                // read file from resources
+                in = new BufferedReader(new FileReader(
+                        getClass().getClassLoader().getResource("LICENSE.txt").getFile()));
+                String line = in.readLine();
+                while (line != null) {
+                    ad.appendLine(line);
+                    line = in.readLine();
+                }
+                ad.setVisible(true);
+            } catch (IOException e1) {
+                LOGGER.debug(e1.getMessage(), e1);
+                LOGGER.error("Can not find license file in jar: " + e1.getMessage());
+            } finally {
+                try {
+                    if (in != null)
+                        in.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
 
             return;
         }
