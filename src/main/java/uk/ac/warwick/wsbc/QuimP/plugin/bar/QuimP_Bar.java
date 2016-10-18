@@ -91,6 +91,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     private MenuItem menuVersion;
     private MenuItem menuOpenHelp;
     private MenuItem menuOpenSite;
+    private MenuItem menuLicense;
 
     public void run(String s) {
         String title;
@@ -133,14 +134,17 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         menuVersion = new MenuItem("About");
         menuOpenHelp = new MenuItem("Help Contents");
         menuOpenSite = new MenuItem("History of changes");
+        menuLicense = new MenuItem("Show licence");
         menuFormatConverter = new MenuItem("Format converter");
         menuHelp.add(menuOpenHelp);
         menuHelp.add(menuOpenSite);
         menuHelp.add(menuVersion);
+        menuHelp.add(menuLicense);
         menuTools.add(menuFormatConverter);
         menuVersion.addActionListener(this);
         menuOpenHelp.addActionListener(this);
         menuOpenSite.addActionListener(this);
+        menuLicense.addActionListener(this);
         menuFormatConverter.addActionListener(this);
         frame.setMenuBar(menuBar);
 
@@ -333,6 +337,10 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             } catch (Exception e1) {
                 LOGGER.error("Could not open help: " + e1.getMessage());
             }
+            return;
+        }
+        if (e.getSource() == menuLicense) {
+
             return;
         }
         if (e.getSource() == menuFormatConverter) { // convert between file formats
