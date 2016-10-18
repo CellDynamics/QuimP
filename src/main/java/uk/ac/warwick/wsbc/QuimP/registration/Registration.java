@@ -225,7 +225,7 @@ public class Registration extends JDialog implements ActionListener {
             helpArea.setContentType("text/html");
             helpArea.setEditable(false);
             JScrollPane helpPanel = new JScrollPane(helpArea);
-            helpPanel.setPreferredSize(new Dimension(400, 500));
+            helpPanel.setPreferredSize(new Dimension(500, 600));
             c.gridx = 0;
             c.gridy = 0;
             centerarea.add(helpPanel, c);
