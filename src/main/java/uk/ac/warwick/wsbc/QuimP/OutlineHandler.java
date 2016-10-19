@@ -20,6 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * Collection of outlines for subsequent frames (<it>f1</it> and <it>f2</it>) for one cell.
  * 
  * @author tyson
+ * @author p.baniukiewicz
  */
 public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
@@ -37,7 +38,10 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     transient public double[][] fluLims;
     // public double[] convLimits;
     transient public double[] curvLimits;
-    transient public double maxLength = 0; //!< longest outline in outlines
+    /**
+     * longest outline in outlines.
+     */
+    transient public double maxLength = 0;
     transient public boolean readSuccess;
 
     public OutlineHandler(QParams params) {
@@ -479,7 +483,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     }
 
     /**
-     * Call afterSerialzie() for other objects and restoer transient fields where possible
+     * Call afterSerialzie() for other objects and restore transient fields where possible.
      */
     @Override
     public void afterSerialize() throws Exception {

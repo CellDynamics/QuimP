@@ -16,24 +16,21 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * This class override most of methods from super class QParams. 
  * The goal of this class is rather not to extend QParams but to use polymorphism to provide 
  * requested data to callers keeping compatibility with old QuimP architecture. 
- * The QuimP uses QParams to keep parameters read from configuration files (\a paQP, \a snQP) and 
+ * The QuimP uses QParams to keep parameters read from configuration files (<i>paQP</i>, <i>snQP</i>) and 
  * then to provide some of parameters stored in these files to local configuration classes such as
  * e.g. {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMp}, {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Qp}, 
  * {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp}.
  * QuimP supports two independent file formats:
  * <ol>
  * <li> based on separate files (old QuimP) such as \a case_cellno.paQP
- * <li> compound \a case.QCONF that contains data for all cells
+ * <li> compound <i>case.QCONF<i/> that contains data for all cells
  * </ol>
  * Many of parameters in underlying class QParams are set to be private and they are accessible
  * by setters and getters. Many setter/getter are overridden in this class and contains simple logic
- * to provide requested and expected data even if the source file was \a QCONF. 
+ * to provide requested and expected data even if the source file was <i>QCONF<i/>. 
  * There is also method that convert parameters read from QCONF and fills underlying fields in QParams.
  * Appropriate object either QParam or QParamsQconf is created upon configuration file type. 
  * Owing to Java late binding, always correct method is called even if the object is casted to QParams 
- * 
- * TODO These two classes should be in separate package to have better control over fields by 
- * setters and getters
  * 
  * @author p.baniukiewicz
  *
@@ -60,9 +57,9 @@ public class QParamsQconf extends QParams {
     }
 
     /**
-     * Set default values for superclass, also prefix and path for files
+     * Set default values for superclass, also prefix and path for files.
      * 
-     * @param p \c QCONF file with extension
+     * @param p <i>QCONF<i/> file with extension
      */
     public QParamsQconf(File p) {
         super(p);
@@ -103,7 +100,7 @@ public class QParamsQconf extends QParams {
     }
 
     /**
-     * Read composite \a QCONF file
+     * Read composite <i>QCONF<i/> file.
      * 
      * @throws QuimpException when problem with loading/parsing JSON
      */
@@ -154,6 +151,7 @@ public class QParamsQconf extends QParams {
      * Makes pure dump what means that object is already packed with QuimP format. Used when
      * original data has been loaded, modified and then they must be saved again under the same
      * name.
+     * 
      * @throws QuimpException When file can not be saved
      */
     @Override

@@ -57,7 +57,7 @@ public class QParams {
     public static final int NEW_QUIMP = 3;
     /**
      * Name of the case.
-     * Used to set \c fileName and \c path
+     * Used to set <i>fileName</i> and <i>path</i>
      */
     private File paramFile;
     private File[] otherPaFiles;
@@ -101,7 +101,7 @@ public class QParams {
     long key;
     double sensitivity; // no longer used. blank holder
     /**
-     * Indicate if \a snQP has been processed by ECMM (\c true). Set by checkECMMrun
+     * Indicate if <i>snQP</i> has been processed by ECMM (<tt>true</tt>). Set by checkECMMrun.
      */
     private boolean ecmmHasRun = false;
 
@@ -415,7 +415,7 @@ public class QParams {
     }
 
     /**
-     * Compatibility with child class. For this level it return \c null
+     * Compatibility with child class. For this level it return <tt>null</tt>
      * 
      * @return null
      * @warning Should not be called from super class level
@@ -426,7 +426,7 @@ public class QParams {
     }
 
     /**
-     * Compatibility with child class. For this level it return \c null
+     * Compatibility with child class. For this level it return <tt>null</tt>
      * 
      * @return null
      * @warning Should not be called from super class level
@@ -439,9 +439,9 @@ public class QParams {
     /**
      * Read the \a paQP file specified by paramFile (see uk.ac.warwick.wsbc.QuimP.QParams.QParams(File))
      * 
-     * Create handles to files stored as names in \a paQP. Read segmentation parameters
+     * Create handles to files stored as names in <i>paQP</i>. Read segmentation parameters.
      * 
-     * @return \c true if successful
+     * @return true if successful
      * @throws QuimpException 
      */
     public void readParams() throws QuimpException {
@@ -666,9 +666,9 @@ public class QParams {
     }
 
     /**
-     * Verify if \a snQP file has been already processed by ECMM.
+     * Verify if <i>snQP</i> file has been already processed by ECMM.
      * 
-     * Processed files have \b -ECMM suffix on first line 
+     * Processed files have <b>-ECMM</b> suffix on first line.
      */
     void checkECMMrun() {
         BufferedReader br = null;
