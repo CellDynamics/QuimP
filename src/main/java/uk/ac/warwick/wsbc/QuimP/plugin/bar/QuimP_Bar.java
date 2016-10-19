@@ -69,7 +69,11 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     }
     static final Logger LOGGER = LogManager.getLogger(QuimP_Bar.class.getName());
     /**
-     * This field is used for sharing information between bar and other plugins
+     * This field is used for sharing information between bar and other plugins.
+     * 
+     * It is read by {@link uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter} which is used by
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader} for serving 
+     * {@link uk.ac.warwick.wsbc.QuimP.QParams} object for client.
      */
     public static boolean newFileFormat = true;
 

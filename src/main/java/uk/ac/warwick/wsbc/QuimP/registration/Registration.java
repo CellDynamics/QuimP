@@ -174,10 +174,10 @@ public class Registration extends JDialog implements ActionListener {
         this.owner = owner;
         // display reg window if not registered
         if (checkRegistration() == false) {
-            build(title,true);
+            build(title, true);
         }
     }
-    
+
     /**
      * Construct object but does not display window.
      * 
@@ -186,7 +186,7 @@ public class Registration extends JDialog implements ActionListener {
      * @param owner
      */
     public Registration(Window owner) {
-       this.owner = owner; 
+        this.owner = owner;
     }
 
     /**
@@ -195,9 +195,9 @@ public class Registration extends JDialog implements ActionListener {
      * @param show indicate whether show window on screen
      */
     public void build(String title, boolean show) {
-            buildMenu();
-            buildWindow();
-            setVisible(show);
+        buildMenu();
+        buildWindow();
+        setVisible(show);
     }
 
     /**
@@ -317,7 +317,7 @@ public class Registration extends JDialog implements ActionListener {
         if (e.getSource() == bCancel && waited == false) {
             bOk.setEnabled(false);
             bCancel.setEnabled(false);
-            Worker w = new Worker(5);
+            Worker w = new Worker(5); // will change button text
             w.execute();
         }
         // Cancel and waited already - quit
@@ -373,7 +373,7 @@ public class Registration extends JDialog implements ActionListener {
         ret[1] = Prefs.get("registration" + QuimP.QUIMP_PREFS_SUFFIX + ".key", "");
         return ret;
     }
-    
+
     /**
      * Read registration details from IJ and fills the registration window.
      */
