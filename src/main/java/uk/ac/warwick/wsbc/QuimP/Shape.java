@@ -17,38 +17,37 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * Form abstract shape from bidirectional list of points.
  * 
  * This abstract class keeps head point of Shape and control number of points in Shape, allows for
- * inserting points to the Shape
+ * inserting points to the Shape. Generally assumes that Shape is closed, so PointsList is looped
  *   
  * @author p.baniukiewicz
  *
  * @param <T> Type of point, currently can be Node or Vert
- * @remarks Generally assumes that Shape is closed, so PointsList is looped
  */
 public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(Shape.class.getName());
     /**
-     * Next node ID's
-     * Initialized in constructor, changed during modification of shape
+     * Next node ID's.
+     * Initialized in constructor, changed during modification of shape.
      */
     protected int nextTrackNumber = 1;
     /**
-     * first node in double linked list, always maintained, initialized in constructor
+     * first node in double linked list, always maintained, initialized in constructor.
      */
     protected T head;
     /**
-     * number of points
-     * Initialized in constructor, changed on Shape modification
+     * number of points.
+     * Initialized in constructor, changed on Shape modification.
      */
     protected int POINTS;
     /**
-     * Centroid point of the Shape. Updated by uk.ac.warwick.wsbc.QuimP.Shape.calcCentroid() called
-     * after change of the Shape and also in @ref uk.ac.warwick.wsbc.QuimP.Shape.afterSerialize() "afterSerialzie()"
-     * and @ref uk.ac.warwick.wsbc.QuimP.Shape.beforeSerialize() "beforeSerialize()"
+     * Centroid point of the Shape. Updated by {@link #calcCentroid()} called.
+     * after change of the Shape and also in {@link #afterSerialize()}
+     * and {@link #beforeSerialize()}
      */
     protected ExtendedVector2d centroid = null;
     public static final int MAX_NODES = 10000; //!< Max number of nodes allowed in Shape 
     /**
-     * Elements of Shape as List
+     * Elements of Shape as List.
      * Initialized on Serialize. Temprary array to store linked list as array to allow serialization
      */
     private ArrayList<T> Elements = null;
@@ -62,9 +61,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Create Shape from existing list of points (can be one point as well)
+     * Create Shape from existing list of points (can be one point as well).
      * 
-     * @warning List of points must be looped
+     * List of points must be looped.
+     * 
      * @param h head point of the list
      * @param N number of points in the list 
      */
@@ -76,7 +76,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
 
     /**
      * Create Shape from one point, created Shape is looped. 
-     * If \c h is a list, only \c h will be maintained and list will be unlinked.
+     * If <tt>h</tt> is a list, only <tt>h</tt> will be maintained and list will be unlinked.
      * 
      * @param h head point of the list
      */
@@ -89,7 +89,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Copy constructor
+     * Copy constructor.
      * 
      * @param src source Shape to copy from
      * @throws RuntimeException when T does no have copy constructor
@@ -126,7 +126,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Conversion constructor
+     * Conversion constructor.
      * 
      * Converts between different types of PointsList. \a src is source Shape of type T to convert 
      * to other Shape based on \a PointsList other type (but in general extended from PointsList)
@@ -141,7 +141,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      *      super((Shape) src, new Vert());
      *  }
      * @endcode
-     * @see uk.ac.warwick.wsbc.QuimP.Shape.Shape(Shape<T>)
+     * @see #Shape(Shape)
      */
     @SuppressWarnings("unchecked")
     public Shape(final Shape<T> src, T destType) {

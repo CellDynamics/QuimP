@@ -355,7 +355,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             return;
         }
         if (e.getSource() == menuLicense) {
-            AboutDialog ad = new AboutDialog(frame, 50, 150);
+            AboutDialog ad = new AboutDialog(frame, 50, 130);
             BufferedReader in = null;
             try {
                 // read file from resources
@@ -383,11 +383,11 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         }
         if (e.getSource() == menuShowreg) {
             // show window filled with reg data
-            Registration regwindow = new Registration(frame);
-            regwindow.waited = true;
-            regwindow.build("QuimP Registration", false);
-            regwindow.fillRegForm();
-            regwindow.setVisible(true);
+            Registration regwindow = new Registration(frame); // use manual constructor
+            regwindow.waited = true; // user waited already
+            regwindow.build("QuimP Registration", false); // build UI
+            regwindow.fillRegForm(); // fill reg form from IJ_Prefs data
+            regwindow.setVisible(true); // show and wait for user action
             return;
         }
         if (e.getSource() == menuFormatConverter) { // convert between file formats
