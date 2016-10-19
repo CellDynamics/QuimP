@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
@@ -147,9 +148,9 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         menuHelp.add(menuOpenHelp);
         menuHelp.add(menuOpenSite);
         menuHelp.add(menuVersion);
-        menuHelp.add(menuLicense);
         menuTools.add(menuFormatConverter);
         menuMisc.add(menuShowreg);
+        menuMisc.add(menuLicense);
         menuVersion.addActionListener(this);
         menuOpenHelp.addActionListener(this);
         menuOpenSite.addActionListener(this);
@@ -376,16 +377,19 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
             return;
         }
-        if(e.getSource()==menuShowreg) {
+        if (e.getSource() == menuShowreg) {
             // show window filled with reg data
             Registration regwindow = new Registration(frame);
             regwindow.waited = true;
-            regwindow.build("QuimP Registration",false);
+            regwindow.build("QuimP Registration", false);
             regwindow.fillRegForm();
             regwindow.setVisible(true);
             return;
         }
         if (e.getSource() == menuFormatConverter) { // convert between file formats
+            JOptionPane.showMessageDialog(frame,
+                    "This is experimental tool. It may not work correctly.", "Warning",
+                    JOptionPane.WARNING_MESSAGE);
             QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(
                     QuimpConfigFilefilter.newFileExt, QuimpConfigFilefilter.oldFileExt);
             FileDialog od = new FileDialog(IJ.getInstance(),
