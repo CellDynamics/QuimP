@@ -679,6 +679,7 @@ class Prot_AnalysisUI implements ActionListener {
             try {
                 java.awt.Desktop.getDesktop().browse(new URI(url));
             } catch (Exception e1) {
+                LOGGER.debug(e1.getMessage(), e1);
                 LOGGER.error("Could not open help: " + e1.getMessage(), e1);
             }
         }

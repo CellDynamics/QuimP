@@ -17,7 +17,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 
@@ -25,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
@@ -65,7 +69,11 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     }
     static final Logger LOGGER = LogManager.getLogger(QuimP_Bar.class.getName());
     /**
-     * This field is used for sharing information between bar and other plugins
+     * This field is used for sharing information between bar and other plugins.
+     * 
+     * It is read by {@link uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter} which is used by
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader} for serving 
+     * {@link uk.ac.warwick.wsbc.QuimP.QParams} object for client.
      */
     public static boolean newFileFormat = true;
 
@@ -86,11 +94,14 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     private final Color barColor = new Color(0xFB, 0xFF, 0x94); // Color of title bar
     private MenuBar menuBar;
     private Menu menuTools;
+    private Menu menuMisc;
+    private MenuItem menuShowreg;
     private MenuItem menuFormatConverter;
     private Menu menuHelp;
     private MenuItem menuVersion;
     private MenuItem menuOpenHelp;
     private MenuItem menuOpenSite;
+    private MenuItem menuLicense;
 
     public void run(String s) {
         String title;
@@ -128,20 +139,28 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         menuBar = new MenuBar();
         menuHelp = new Menu("Quimp-Help");
         menuTools = new Menu("Tools");
+        menuMisc = new Menu("Misc");
         menuBar.add(menuHelp);
         menuBar.add(menuTools);
+        menuBar.add(menuMisc);
         menuVersion = new MenuItem("About");
         menuOpenHelp = new MenuItem("Help Contents");
         menuOpenSite = new MenuItem("History of changes");
+        menuLicense = new MenuItem("Show licence");
         menuFormatConverter = new MenuItem("Format converter");
+        menuShowreg = new MenuItem("Show registration");
         menuHelp.add(menuOpenHelp);
         menuHelp.add(menuOpenSite);
         menuHelp.add(menuVersion);
         menuTools.add(menuFormatConverter);
+        menuMisc.add(menuShowreg);
+        menuMisc.add(menuLicense);
         menuVersion.addActionListener(this);
         menuOpenHelp.addActionListener(this);
         menuOpenSite.addActionListener(this);
+        menuLicense.addActionListener(this);
         menuFormatConverter.addActionListener(this);
+        menuShowreg.addActionListener(this);
         frame.setMenuBar(menuBar);
 
         // captures the ImageJ KeyListener
@@ -196,7 +215,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         JPanel firstRow = new JPanel();
         firstRow.setLayout(new FlowLayout(FlowLayout.LEADING));
 
-        button = makeNavigationButton("x.jpg", "open()", "Open a file", "OPEN IMAGE");
+        button = makeNavigationButton("x.jpg", "open(\"\")", "Open a file", "OPEN IMAGE");
         firstRow.add(button, c);
 
         button = makeNavigationButton("x.jpg", "run(\"ROI Manager...\");", "Open the ROI manager",
@@ -335,7 +354,46 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             }
             return;
         }
+        if (e.getSource() == menuLicense) {
+            AboutDialog ad = new AboutDialog(frame, 50, 130);
+            BufferedReader in = null;
+            try {
+                // read file from resources
+                in = new BufferedReader(new FileReader(
+                        getClass().getClassLoader().getResource("LICENSE.txt").getFile()));
+                String line = in.readLine();
+                while (line != null) {
+                    ad.appendLine(line);
+                    line = in.readLine();
+                }
+                ad.setVisible(true);
+            } catch (IOException e1) {
+                LOGGER.debug(e1.getMessage(), e1);
+                LOGGER.error("Can not find license file in jar: " + e1.getMessage());
+            } finally {
+                try {
+                    if (in != null)
+                        in.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+            return;
+        }
+        if (e.getSource() == menuShowreg) {
+            // show window filled with reg data
+            Registration regwindow = new Registration(frame); // use manual constructor
+            regwindow.waited = true; // user waited already
+            regwindow.build("QuimP Registration", false); // build UI
+            regwindow.fillRegForm(); // fill reg form from IJ_Prefs data
+            regwindow.setVisible(true); // show and wait for user action
+            return;
+        }
         if (e.getSource() == menuFormatConverter) { // convert between file formats
+            JOptionPane.showMessageDialog(frame,
+                    "This is experimental tool. It may not work correctly.", "Warning",
+                    JOptionPane.WARNING_MESSAGE);
             QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(
                     QuimpConfigFilefilter.newFileExt, QuimpConfigFilefilter.oldFileExt);
             FileDialog od = new FileDialog(IJ.getInstance(),

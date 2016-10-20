@@ -1,17 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>uk.ac.warwick.wsbc</groupId>
-    <artifactId>pom-quimp</artifactId>
-    <version>1.0.0</version>
-    <relativePath />
-    <!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
-  </parent>
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
-  <version>16.10.01</version>
+  <version>16.10.02</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/bretschneider/quimp/</url>
@@ -21,13 +14,14 @@
     <manual.rootlocation>http://pilip.lnx.warwick.ac.uk/docs/</manual.rootlocation>
     <site.rootlocation>http://pilip.lnx.warwick.ac.uk/site/</site.rootlocation>
     <site.historylocation>${site.rootlocation}changes-report.html</site.historylocation>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
   <scm>
     <connection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</connection>
     <developerConnection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</developerConnection>
     <url>http://www.trac-wsbc.linkpc.net:8080/cgit/QuimP.git/</url>
-    <tag>HEAD</tag>
+    <tag>v16.10.02</tag>
   </scm>
   <issueManagement>
     <system>Trac</system>
@@ -35,13 +29,15 @@
   </issueManagement>
   <licenses>
     <license>
-      <name>TBA</name>
-      <comments>Must be reviewed</comments>
+      <name>QuimP License</name>
+      <url>http://pilip.lnx.warwick.ac.uk/LICENSE.txt</url>
+      <distribution>manual</distribution>
+      <comments>Own licence</comments>
     </license>
   </licenses>
   <organization>
-    <name>Warwick Systems Biology Centre</name>
-    <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology</url>
+    <name>Department of Computer Science, Warwick University</name>
+    <url>http://www2.warwick.ac.uk/fac/sci/dcs/</url>
   </organization>
   <developers>
     <developer>
@@ -67,23 +63,36 @@
       <timezone>London</timezone>
     </developer>
   </developers>
-  <repositories>
-    <repository>
-      <id>toolsrepo</id>
-      <name> for tools from sun</name>
-      <url>http://maven.jahia.org/maven2/</url>
-    </repository>
-  </repositories>
   <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+      <!-- https://books.sonatype.com/mvnex-book/reference/simple-project-sect-simple-core.html -->
+    </dependency>
+    <dependency>
+      <groupId>net.imagej</groupId>
+      <artifactId>ij</artifactId>
+      <version>1.50g</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.4.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.4.1</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>javax.vecmath</groupId>
       <artifactId>vecmath</artifactId>
       <version>1.5.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.googlecode.json-simple</groupId>
-      <artifactId>json-simple</artifactId>
-      <version>1.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -111,11 +120,6 @@
       <artifactId>JUnitParams</artifactId>
       <version>1.0.5</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-    	<groupId>com.sun</groupId>
-    	<artifactId>tools</artifactId>
-    	<version>1.5.0</version>
     </dependency>
   </dependencies>
   <build>
@@ -163,9 +167,15 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-      </plugin>
+          <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-creating-simple-weather.html -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.5.1</version>
+          <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+          </configuration>
+        </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -381,7 +391,8 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.8.1</version>
+        <version>2.9</version>
+        
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -409,13 +420,12 @@
         <version>2.12</version>
         <configuration>
           <tracUser>baniuk</tracUser>
-          <tracPassword>Idgammaqd1!</tracPassword>
           <query>status=closed&amp;component=QuimP-BOA&amp;or&amp;status=closed&amp;component=QuimP-ANA&amp;or&amp;status=closed&amp;component=QuimP-RandomW&amp;or&amp;status=closed&amp;component=QuimP-DIC&amp;or&amp;status=closed&amp;component=QuimP-ECMM&amp;or&amp;status=closed&amp;component=QuimP-Plugin&amp;or&amp;status=closed&amp;component=QuimP-Q&amp;order=changetime</query>
         </configuration>
         <reportSets>
           <reportSet>
             <reports>
-              <report>trac-report</report>
+              <!--<report>trac-report</report> -->
               <report>changes-report</report>
             </reports>
           </reportSet>

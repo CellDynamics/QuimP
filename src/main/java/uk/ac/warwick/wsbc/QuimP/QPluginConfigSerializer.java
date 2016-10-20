@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
@@ -23,7 +21,6 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * This class adds additional layer with data to saved plugin configuration.
  * 
  * @author p.baniukiewicz
- * @deprecated This class is out of use and it has been replaced by Serializer class
  */
 @Deprecated
 public class QPluginConfigSerializer {

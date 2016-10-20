@@ -101,20 +101,22 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
 /**
  * Main class implementing BOA plugin.
  * 
- * @remarks
- * Can use system property \a quimp.debugLevel to set other than default logging level
- * If the property \a quimp.debugLevel is not present BOA uses default logging only Warns and Errors
- * Passing parameter - name of the xml log4j2 config file to this property enables more detailed
- * logging. e.g.
- * @code
- * ./ImageJ-linux64 -Dquimp.debugLevel=qlog4j2.xml -- --java-home $JAVA_HOME
- * @endcode
- * 
  * @author Richard Tyson
  * @author Till Bretschneider
  * @author Piotr Baniukiewicz
  */
 public class BOA_ implements PlugIn {
+    /**
+     * Can use system property <tt>quimp.debugLevel</tt> to set other than default logging level If
+     * the property <tt>quimp.debugLevel</tt> is not present BOA uses default logging only Warns and
+     * Errors. Passing parameter - name of the xml log4j2 config file to this property enables more
+     * detailed logging. e.g.
+     * 
+     * <pre>
+     * <code>./ImageJ-linux64 -Dquimp.debugLevel=qlog4j2.xml -- --java-home $JAVA_HOME</code>
+     * </pre>
+     * 
+     */
     static {
         if (System.getProperty("quimp.debugLevel") == null)
             Configurator.initialize(null, "log4j2_default.xml");
@@ -136,37 +138,40 @@ public class BOA_ implements PlugIn {
      */
     public final static String NONE = "NONE";
     /**
-     * Reserved word that states full view zoom in zoom choice. Also default text that
-     * appears there
+     * Reserved word that states full view zoom in zoom choice. Also default text that appears there
      */
     private final static String fullZoom = "Frame zoom";
     /**
-     * Hold current BOA object and provide access to only selected methods from plugin. Reference to
-     * this field is passed to plugins and give them possibility to call selected methods from BOA
-     * class
-     * @todo TODO Should not be static rather
+     * Hold current BOA object and provide access to only selected methods from plugin.
+     * 
+     * Reference to this field is passed to plugins and give them possibility to call selected
+     * methods from BOA class
+     * 
+     * TODO Should not be static rather
      */
     public static ViewUpdater viewUpdater;
     /**
-     * Keep data from getQuimPBuildInfo() These information are used in About dialog, window title
-     * bar, logging, etc.
-     * Static because window related staff is in another classes
+     * Keep data from getQuimPBuildInfo().
+     * 
+     * These information are used in About dialog, window title bar, logging, etc. Static because
+     * window related staff is in another classes.
      */
     public static String[] quimpInfo;
     private static int logCount; // add counter to logged messages
     public static final int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
     private HistoryLogger historyLogger; // logger
     /**
-     * Configuration object, available from all modules. Must be initialized here \b AND in 
-     * constructor (to reset settings on next BOA call without quitting Fiji)
-     * Keep data that will be serialized
+     * Configuration object, available from all modules.
+     * 
+     * Must be initialised here <b>AND</b> in constructor (to reset settings on next BOA call
+     * without quitting Fiji) Keep data that will be serialized.
      */
     static public BOAState qState; // current state of BOA module
 
     /**
      * Main constructor.
      * 
-     * All static resources should be re-initialized here, otherwise they persist in memory between 
+     * All static resources should be re-initialized here, otherwise they persist in memory between
      * subsequent BOA calls from Fiji.
      */
     public BOA_() {
@@ -177,10 +182,10 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Main method called from Fiji. Initializes internal BOA structures.
+     * Main method called from Fiji. Initialises internal BOA structures.
      * 
      * @param arg Currently it can be string pointing to plugins directory
-     * @see uk.ac.warwick.wsbc.QuimP.BOA_.setup(final ImagePlus)
+     * @see #setup(ImagePlus)
      */
     @Override
     public void run(final String arg) {
@@ -272,10 +277,10 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Build all BOA windows and setup initial parameters for segmentation
-     * Define also windowListener for cleaning after closing the main window by
-     * user.
-     * git tag -a "SNAPSHOT-13-07-16" -m "Releasing snaphots to Fiji internal update site"
+     * Build all BOA windows and setup initial parameters for segmentation Define also
+     * windowListener for cleaning after closing the main window by user. git tag -a
+     * "SNAPSHOT-13-07-16" -m "Releasing snaphots to Fiji internal update site"
+     * 
      * @param ip Reference to image to be processed by BOA
      * @see BOAp
      */
@@ -330,7 +335,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Display about information in BOA window. 
+     * Display about information in BOA window.
      * 
      * Called from menu bar. Reads also information from all found plugins.
      */
@@ -425,18 +430,14 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Override action performed on window closing. Clear BOA._running static
-     * variable and prevent to notify user that QuimP is running when it has
-     * been closed and called again.
+     * Override action performed on window closing. Clear BOA._running static variable and prevent
+     * to notify user that QuimP is running when it has been closed and called again.
      * 
-     * @bug
-     * When user closes window by system button QuimP does not ask for
-     * saving current work. This is because by default QuimP window is
-     * managed by ImageJ and it \a probably only hides it on closing
+     * When user closes window by system button QuimP does not ask for saving current work. This is
+     * because by default QuimP window is managed by ImageJ and it probably only hides it on closing
      * 
-     * @remarks
-     * This class could be located directly in CustomStackWindow which is 
-     * included in BOA_. But it need to have access to BOA field \c running.
+     * This class could be located directly in CustomStackWindow which is included in BOA_. But it
+     * needs to have access to BOA field <tt>running</tt>.
      * 
      * @author p.baniukiewicz
      */
@@ -475,8 +476,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Supports mouse actions on image at QuimP window according to selected
-     * option
+     * Supports mouse actions on image at QuimP window according to selected option
      * 
      * @author rtyson
      *
@@ -508,9 +508,9 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Implement mouse action on image loaded to BOA Used for manual
-         * editions of segmented shape. Define reactions of mouse buttons
-         * according to GUI state, set by \b Delete and \b Edit buttons.
+         * Implement mouse action on image loaded to BOA Used for manual editions of segmented
+         * shape. Define reactions of mouse buttons according to GUI state, set by \b Delete and \b
+         * Edit buttons.
          * 
          * @see BOAp
          * @see CustomStackWindow
@@ -540,8 +540,8 @@ public class BOA_ implements PlugIn {
     /**
      * Extends standard ImageJ StackWindow adding own GUI elements.
      * 
-     * This class stands for definition of main BOA plugin GUI window. Current
-     * state of BOA plugin is stored at {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp} class.
+     * This class stands for definition of main BOA plugin GUI window. Current state of BOA plugin
+     * is stored at {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp} class.
      * 
      * @author rtyson
      * @see BOAp
@@ -585,11 +585,11 @@ public class BOA_ implements PlugIn {
         /**
          * Build user interface.
          * 
-         * This method is called as first. The interface is built in three steps:
-         * Left side of window (configuration zone) and right side of main
-         * window (logs and other info and buttons) and finally upper menubar
+         * This method is called as first. The interface is built in three steps: Left side of
+         * window (configuration zone) and right side of main window (logs and other info and
+         * buttons) and finally upper menubar
          * 
-         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow#updateWindowState()
          */
         private void buildWindow() {
 
@@ -621,10 +621,11 @@ public class BOA_ implements PlugIn {
         /**
          * Build window menu.
          * 
-         * Menu is local for this window of QuimP and it is stored in \c quimpMenuBar variable.
-         * On every time when QuimP is active, this menu is restored in 
+         * Menu is local for this window of QuimP and it is stored in \c quimpMenuBar variable. On
+         * every time when QuimP is active, this menu is restored in
          * uk.ac.warwick.wsbc.QuimP.BOA_.CustomWindowAdapter.windowActivated(WindowEvent) method
          * This is due to overwriting menu by IJ on Mac (all menus are on top screen bar)
+         * 
          * @return Reference to menu bar
          */
         final MenuBar buildMenu() {
@@ -1025,8 +1026,8 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Set default values defined in model class
-         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp} and update UI
+         * Set default values defined in model class {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}
+         * and update UI
          * 
          * @see BOAp
          */
@@ -1036,8 +1037,8 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Update spinners in BOA UI Update spinners according to values stored
-         * in machine state {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}
+         * Update spinners in BOA UI Update spinners according to values stored in machine state
+         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}
          * 
          * @see BOAp
          */
@@ -1060,8 +1061,8 @@ public class BOA_ implements PlugIn {
         /**
          * Update checkboxes
          * 
-         * @see SnakePluginList
-         * @see itemStateChanged(ItemEvent)
+         * @see uk.ac.warwick.wsbc.QuimP.SnakePluginList
+         * @see #itemStateChanged(ItemEvent)
          */
         private void updateCheckBoxes() {
             // first plugin activity
@@ -1073,13 +1074,13 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Update Choices
+         * Update Choices.
          * 
-         * @see SnakePluginList
-         * @see itemStateChanged(ItemEvent)
-         * @warning This method is called from CustomStackWindow.itemStateChanged(ItemEvent)
-         * to update colors of Choices
-         * @see ConfigurationHandling.md
+         * This method is called from CustomStackWindow.itemStateChanged(ItemEvent) to update colors
+         * of Choices.
+         * 
+         * @see uk.ac.warwick.wsbc.QuimP.SnakePluginList
+         * @see #itemStateChanged(ItemEvent)
          */
         private void updateChoices() {
             Color ok = new Color(178, 255, 102);
@@ -1142,7 +1143,9 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Implement user interface logic. Do not refresh values, rather disable/enable controls.
+         * Implement user interface logic.
+         * 
+         * Do not refresh values, rather disable/enable controls.
          */
         private void updateWindowState() {
             updateCheckBoxes(); // update checkboxes
@@ -1176,13 +1179,12 @@ public class BOA_ implements PlugIn {
         /**
          * Main method that handles all actions performed on UI elements.
          * 
-         * Do not support mouse events, only UI elements like buttons, spinners and menus. 
-         * Runs also main algorithm on specified input state and update screen on plugins
-         * operations.
+         * Do not support mouse events, only UI elements like buttons, spinners and menus. Runs also
+         * main algorithm on specified input state and update screen on plugins operations.
          * 
          * @param e Type of event
-         * @see BOAp
-         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
+         * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow#updateWindowState()
          */
         @Override
         public void actionPerformed(final ActionEvent e) {
@@ -1355,8 +1357,10 @@ public class BOA_ implements PlugIn {
             }
 
             /**
-             * Loads configuration of current filter stack. 
-             * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/155
+             * Loads configuration of current filter stack.
+             * 
+             * @see <a href=
+             *      "http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/155">http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/155</a>
              */
             if (b == menuLoadConfig) {
                 OpenDialog od = new OpenDialog("Load plugin config data...", "");
@@ -1376,17 +1380,14 @@ public class BOA_ implements PlugIn {
                         qState.store(qState.boap.frame); // copy loaded snakePluginList to snapshots
                         // commented after #155
                         /*
-                        YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Warning",
-                                "Would you like to load this configuration for all frames?");
-                        if (yncd.yesPressed()) { // propagate over all frames
-                            for (int i = 0; i < qState.snakePluginListSnapshots.size(); i++) {
-                                if (i == qState.boap.frame - 1)
-                                    continue; // do not copy itself
-                                qState.snakePluginListSnapshots.set(i,
-                                        qState.snakePluginList.getDeepCopy());
-                            }
-                        }
-                        */
+                         * YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(),
+                         * "Warning", "Would you like to load this configuration for all frames?");
+                         * if (yncd.yesPressed()) { // propagate over all frames for (int i = 0; i <
+                         * qState.snakePluginListSnapshots.size(); i++) { if (i == qState.boap.frame
+                         * - 1) continue; // do not copy itself
+                         * qState.snakePluginListSnapshots.set(i,
+                         * qState.snakePluginList.getDeepCopy()); } }
+                         */
                         recalculatePlugins(); // update screen
                     } catch (IOException e1) {
                         LOGGER.error("Problem with loading plugin config: " + e1.getMessage());
@@ -1401,22 +1402,24 @@ public class BOA_ implements PlugIn {
             }
 
             /**
-             * Shows history window. When showed all actions are notified there. This may slow down 
-             * the program
+             * Shows history window.
+             * 
+             * When showed all actions are notified there. This may slow down the program
              */
             if (b == menuShowHistory) {
                 JOptionPane.showMessageDialog(window,
                         "The full history of changes is avaiable after saving your work in the"
                                 + " file " + QuimpConfigFilefilter.newFileExt);
-                /*if (historyLogger.isOpened())
-                    historyLogger.closeHistory();
-                else
-                    historyLogger.openHistory();*/
+                /*
+                 * if (historyLogger.isOpened()) historyLogger.closeHistory(); else
+                 * historyLogger.openHistory();
+                 */
             }
 
             /**
-             * Load global config - QCONF file
-             * Checks also whether the name of the image sealed in config file is the same as those 
+             * Load global config - QCONF file.
+             * 
+             * Checks also whether the name of the image sealed in config file is the same as those
              * opened currently. If not user has an option to break the procedure or continue
              * loading.
              */
@@ -1473,11 +1476,12 @@ public class BOA_ implements PlugIn {
                 }
             }
 
-            /** 
-            * Discard all plugins. In general it does:
-            * -# reset current snakePluginList and snakePluginListSnapshots
-            * -# Copies segSnakes to finalSnakes
-            */
+            /**
+             * Discard all plugins.
+             * 
+             * In general it does: reset current snakePluginList and snakePluginListSnapshots,
+             * Copies segSnakes to finalSnakes
+             */
             if (b == menuDeletePlugin) {
                 // clear all plugins
                 qState.snakePluginList.clear();
@@ -1494,10 +1498,10 @@ public class BOA_ implements PlugIn {
             }
 
             /**
-             * Reload and re-apply all plugins stored in snakePluginListSnapshot
+             * Reload and re-apply all plugins stored in snakePluginListSnapshot.
              * 
-             * @remarks qState.snakePluginList.clear(); can not be called here because
-             * uk.ac.warwick.wsbc.QuimP.BOAState.restore(int) makes reference to 
+             * qState.snakePluginList.clear(); can not be called here because
+             * uk.ac.warwick.wsbc.QuimP.BOAState.restore(int) makes reference to
              * snakePluginListSnapshot in snakePluginList. Thus, cleaning snakePluginList deletes
              * one entry in snakePluginListSnapshot
              */
@@ -1512,7 +1516,7 @@ public class BOA_ implements PlugIn {
             }
 
             /**
-             * Run segmentation from mask file
+             * Run segmentation from mask file.
              */
             if (b == menuSegmentationRun) {
                 if (qState.binarySegmentationPlugin != null) {
@@ -1534,7 +1538,7 @@ public class BOA_ implements PlugIn {
             }
 
             /**
-             * Clean all bOA state
+             * Clean all bOA state.
              */
             if (b == menuSegmentationReset) {
                 qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
@@ -1562,12 +1566,13 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Detect changes in checkboxes and run segmentation for current frame
-         * if necessary. Transfer parameters from changed GUI element to
+         * Detect changes in checkboxes and run segmentation for current frame if necessary.
+         * 
+         * Transfer parameters from changed GUI element to
          * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp} class
          * 
          * @param e Type of event
-         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow#updateWindowState()
          */
         @Override
         public void itemStateChanged(final ItemEvent e) {
@@ -1670,12 +1675,13 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Detect changes in spinners and run segmentation for current frame if
-         * necessary. Transfer parameters from changed GUI element to
+         * Detect changes in spinners and run segmentation for current frame if necessary.
+         * 
+         * Transfer parameters from changed GUI element to
          * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp} class
          * 
          * @param ce Type of event
-         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow.updateWindowState()
+         * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow#updateWindowState()
          */
         @Override
         public void stateChanged(final ChangeEvent ce) {
@@ -1749,8 +1755,8 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Update the frame label, overlay, frame and set zoom Called when user
-         * clicks on slice selector in IJ window.
+         * Update the frame label, overlay, frame and set zoom Called when user clicks on slice
+         * selector in IJ window.
          */
         @Override
         public void updateSliceSelector() {
@@ -1804,7 +1810,7 @@ public class BOA_ implements PlugIn {
 
         /**
          * Turn delete mode off by setting proper value in
-         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}
+         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}.
          */
         void switchOffDelete() {
             qState.boap.doDelete = false;
@@ -1822,7 +1828,7 @@ public class BOA_ implements PlugIn {
 
         /**
          * Turn truncate mode off by setting proper value in
-         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}
+         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}.
          */
         void switchOfftruncate() {
             qState.boap.doDeleteSeg = false;
@@ -1840,12 +1846,12 @@ public class BOA_ implements PlugIn {
     /**
      * Creates instance (through SnakePluginList) of plugin of given name on given UI slot.
      * 
-     * Decides if plugin will be created or destroyed basing on plugin \b name from Choice list
+     * Decides if plugin will be created or destroyed basing on plugin name from Choice list
      * 
      * @param selectedPlugin Name of plugin returned from UI elements
      * @param slot Slot of plugin
      * @param act Indicates if plugins is activated in GUI
-     * @see QuimP.SnakePluginList
+     * @see uk.ac.warwick.wsbc.QuimP.SnakePluginList
      */
     private void instanceSnakePlugin(final String selectedPlugin, int slot, boolean act) {
 
@@ -1866,16 +1872,15 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Start segmentation process on range of frames
+     * Start segmentation process on range of frames.
      * 
-     * This method is called for update only current view as well (\c startF ==
-     * \c endF)
+     * This method is called for update only current view as well (<tt>startF</tt> == <tt>endF</tt>)
      * 
      * @param startF start frame
      * @param endF end frame
-     * @throws BoaException
-     * @todo TODO Rewrite exceptions here
-     * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/65
+     * @throws BoaException TODO Rewrite exceptions here
+     * @see <a href=
+     *      "http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/65">http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/65</a>
      */
     public void runBoa(int startF, int endF) throws BoaException {
         System.out.println("run BOA");
@@ -1996,19 +2001,21 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Process \c Snake by all active plugins. Processed \c Snake is returned as new Snake with
-     * the same ID. Input snake is not modified. For empty plugin list it just return input snake
+     * Process Snake by all active plugins.
+     * 
+     * Processed Snake is returned as new Snake with the same ID. Input snake is not modified. For
+     * empty plugin list it just return input snake
      *
      * This method supports two interfaces:
-     * -# IQuimpPoint2dFilter
-     * -# IQuimpSnakeFilter
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOAPoint2dFilter},
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOASnakeFilter}
      * 
      * It uses smart method to detect which interface is used for every slot to avoid unnecessary
-     * conversion between data. \c previousConversion keeps what interface was used on previous
-     * slot in plugin stack. Then for every plugin data are converted if current plugin differs
-     * from previous one. Converted data are kept in \c snakeToProcess and \c dataToProcess
-     * but only one of these variables is valid in given time. Finally after last plugin 
-     * data are converted to Snake.
+     * conversion between data. <tt>previousConversion</tt> keeps what interface was used on
+     * previous slot in plugin stack. Then for every plugin data are converted if current plugin
+     * differs from previous one. Converted data are kept in <tt>snakeToProcess</tt> and
+     * <tt>dataToProcess</tt> but only one of these variables is valid in given time. Finally after
+     * last plugin data are converted to Snake.
      * 
      * @param snake snake to be processed
      * @return Processed snake or original input one when there is no plugin selected
@@ -2173,13 +2180,12 @@ public class BOA_ implements PlugIn {
     /**
      * Add ROI to Nest.
      * 
-     * This method is called on selection that should contain object to be
-     * segmented. Initialize Snake object in Nest and it performs also initial
-     * segmentation of selected cell
+     * This method is called on selection that should contain object to be segmented. Initialise
+     * Snake object in Nest and it performs also initial segmentation of selected cell.
      * 
      * @param r ROI object (IJ)
      * @param f number of current frame
-     * @see tightenSnake(Snake)
+     * @see #tightenSnake(Snake)
      */
     // @SuppressWarnings("unchecked")
     void addCell(final Roi r, int f) {
@@ -2225,16 +2231,16 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Delete SnakeHandler using the snake clicked by user
+     * Delete SnakeHandler using the snake clicked by user.
      * 
-     * Method searches the snake in NEst that is on current frame and its centroid is close enough
-     * to clicked point. If found, the whole SnakeHandler (all Snakes of the same ID across 
-     * frames) is deleted.
+     * Method searches the snake in Nest that is on current frame and its centroid is close enough
+     * to clicked point. If found, the whole SnakeHandler (all Snakes of the same ID across frames)
+     * is deleted.
      * 
      * @param x clicked coordinate
-     * @param y clicked coordinate  
+     * @param y clicked coordinate
      * @param frame current frame
-     * @return \a true if handler deleted, \a false if not (because user does not click it)
+     * @return true if handler deleted, false if not (because user does not click it)
      */
     boolean deleteCell(int x, int y, int frame) {
         if (qState.nest.isVacant()) {
@@ -2308,8 +2314,8 @@ public class BOA_ implements PlugIn {
      * @param x Coordinate of clicked point
      * @param y Coordinate of clicked point
      * @param frame current frame in stack
-     * @see stopEdit
-     * @see updateSliceSelector
+     * @see #stopEdit()
+     * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow#updateSliceSelector()
      */
     void editSeg(int x, int y, int frame) {
         SnakeHandler sH;
@@ -2350,7 +2356,7 @@ public class BOA_ implements PlugIn {
     /**
      * Called when user ends editing.
      * 
-     * @see updateSliceSelector
+     * @see uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow#updateSliceSelector()
      */
     void stopEdit() {
         Roi r = canvas.getImage().getRoi();
@@ -2369,7 +2375,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Initializing all data saving and exporting results to disk and IJ
+     * Initializing all data saving and exporting results to disk and IJ.
      */
     private void finish() {
         IJ.showStatus("BOA-FINISHING");
@@ -2450,11 +2456,8 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Action for Quit button Set BOA_.running static field to false and close
-     * the window
+     * Action for Quit button Set BOA_.running static field to false and close the window.
      * 
-     * @author rtyson
-     * @author p.baniukiewicz
      */
     void quit() {
         YesNoCancelDialog ync;
@@ -2474,10 +2477,8 @@ public class BOA_ implements PlugIn {
 }
 
 /**
- * Hold, manipulate and draw on images
+ * Hold, manipulate and draw on images.
  * 
- * @author rtyson
- *
  */
 class ImageGroup {
     // paths - snake drawn as it contracts
@@ -2494,7 +2495,7 @@ class ImageGroup {
     private static final Logger LOGGER = LogManager.getLogger(ImageGroup.class.getName());
 
     /**
-     * Constructor
+     * Constructor.
      * 
      * @param oIpl current image opened in IJ
      * @param n Nest object associated with BOA
@@ -2527,11 +2528,11 @@ class ImageGroup {
     }
 
     /**
-     * Sets new Nest object associated with displayed image
+     * Sets new Nest object associated with displayed image.
      * 
      * Used after loading new BOAState
      * 
-     * @param newNest new Nest 
+     * @param newNest new Nest
      */
     public void updateNest(Nest newNest) {
         nest = newNest;
@@ -2553,13 +2554,15 @@ class ImageGroup {
      * Plots snakes on current frame.
      * 
      * Depending on configuration this method can plot:
-     * -# Snake after segmentation, without processing by plugins
-     * -# Snake after segmentation and after processing by all active plugins
-     * 
+     * <ol>
+     * <li>Snake after segmentation, without processing by plugins
+     * <li>Snake after segmentation and after processing by all active plugins
+     * </ol>
      * It assign also last created Snake to ViewUpdater. This Snake can be accessed by plugin for
-     * previewing purposes. If last Snake has been deleted, \c null is assigned or before last Snake
+     * previewing purposes. If last Snake has been deleted, null is assigned or before last Snake
+     * <p>
+     * Used when there is a need of redrawing screen because of new data
      * 
-     * @remarks Used when there is a need of redrawing screen because of new data  
      * @param frame Current frame
      */
     public void updateOverlay(int frame) {
@@ -2632,10 +2635,12 @@ class ImageGroup {
     }
 
     /**
-     * Updates IJ to current frame. Causes that updateSliceSelector() is called
+     * Updates IJ to current frame. Causes that updateSliceSelector() is called.
+     * 
+     * USed when there is a need to move to other frame programmatically.
      * 
      * @param frame current frame
-     * @remarks USed when there is a need to move to other frame programmatically
+     * 
      */
     public void updateToFrame(int frame) {
         clearPaths(frame);
@@ -2655,7 +2660,8 @@ class ImageGroup {
     }
 
     /**
-     * Calls updateSliceSelector callback only if \a i != current frame
+     * Calls updateSliceSelector callback only if i != current frame.
+     * 
      * @param i
      */
     final public void setIpSliceAll(int i) {
@@ -2742,9 +2748,9 @@ class ImageGroup {
     }
 
     /**
-     * Zoom current view to snake with \c snakeID
+     * Zoom current view to snake with snakeID.
      * 
-     * If snake is not found nothing happens
+     * If snake is not found nothing happens.
      * 
      * @param ic Current view
      * @param frame Frame the Snake is looked in
@@ -2845,7 +2851,7 @@ class ImageGroup {
 }
 
 /**
- * Calculate forces that affect the snake
+ * Calculate forces that affect the snake.
  * 
  * @author rtyson
  */
@@ -2916,8 +2922,7 @@ class Constrictor {
     }
 
     /**
-     * @deprecated Strictly related to absolute paths on disk. Probably for
-     * testing purposes only
+     * @deprecated Strictly related to absolute paths on disk. Probably for testing purposes only.
      */
     public boolean constrictWrite(final Snake snake, final ImageProcessor ip) {
         // for writing forces at each frame
@@ -3017,7 +3022,7 @@ class Constrictor {
     }
 
     /**
-     * @deprecated Probably old version of contractionForce(Node n)
+     * @deprecated Probably old version of contractionForce(Node n).
      */
     public ExtendedVector2d imageForceOLD(final Node n, final ImageProcessor ip) {
         ExtendedVector2d result = new ExtendedVector2d();
@@ -3196,7 +3201,9 @@ class Constrictor {
     }
 
     /**
-     * Expand all snakes while preventing overlaps. Dead snakes are ignored. Count snakes on frame
+     * Expand all snakes while preventing overlaps.
+     * 
+     * Dead snakes are ignored. Count snakes on frame.
      * 
      * @param nest
      * @param frame
@@ -3373,10 +3380,10 @@ class BoaException extends QuimpException {
 }
 
 /**
- * Object builder for GSon and DataContainer class
+ * Object builder for GSon and DataContainer class.
  * 
  * This class is used on load JSon representation of DataContainer class. Rebuilds snakePluginList
- * field that is not serialized. This field keeps current state of plugins
+ * field that is not serialized. This field keeps current state of plugins.
  * 
  * @author p.baniukiewicz
  * @see GSon documentation

@@ -13,8 +13,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sun.tools.javac.util.Pair;
-
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Overlay;
@@ -24,6 +22,7 @@ import ij.plugin.ZProjector;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
+import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
 
 /**
@@ -242,9 +241,10 @@ public abstract class TrackVisualisation {
             Iterator<Pair<Track, Track>> it = trackCollection.iterator();
             while (it.hasNext()) {
                 Pair<Track, Track> pair = it.next();
-                PolygonRoi pR = GraphicsElements.getLine(pair.fst.asPolygon(), getColor(pair.fst)); // back
+                PolygonRoi pR =
+                        GraphicsElements.getLine(pair.first.asPolygon(), getColor(pair.first)); // back
                 overlay.add(pR);
-                pR = GraphicsElements.getLine(pair.snd.asPolygon(), getColor(pair.snd)); // forward
+                pR = GraphicsElements.getLine(pair.second.asPolygon(), getColor(pair.second)); // forward
                 overlay.add(pR);
             }
             originalImage.setOverlay(overlay);
@@ -414,8 +414,8 @@ public abstract class TrackVisualisation {
             int[] y = new int[points.size()];
             int l = 0;
             for (Pair<Point, Point> p : points) {
-                x[l] = p.snd.x;
-                y[l] = p.snd.y;
+                x[l] = p.second.x;
+                y[l] = p.second.y;
                 l++;
             }
             Polygon poly = new Polygon(x, y, points.size());

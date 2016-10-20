@@ -24,9 +24,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.sun.tools.javac.util.Pair;
-
-import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser;
+import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 
 /**
  * @author p.baniukiewicz
@@ -676,7 +674,7 @@ public class TrackMapAnalyserParamTest {
         } else
             TrackMapAnalyser.INCLUDE_INITIAL = true; // count maximum one
         int ret1 = TrackMapAnalyser.enumeratePoint(track.get(0), track.get(1),
-                expIntersectionPairs.get(0).fst);
+                expIntersectionPairs.get(0).first);
         assertThat(ret1, is(expIntersectionPoints.xpoints[0]));
     }
 

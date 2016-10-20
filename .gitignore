@@ -18,6 +18,7 @@ tmp/
 local.properties
 .settings/
 .loadpath
+.sonar
 
 # Eclipse Core
 .project

@@ -1,6 +1,3 @@
 [submodule "QuimP_Doc"]
 	path = QuimP_Doc
 	url = ssh://git@trac-wsbc.linkpc.net:2222/var/GIT/QuimP_Doc.git
-[submodule "QuimP-Doc"]
-	path = QuimP-Doc
-	url = git@github.com-CellDynamics:CellDynamics/QuimP-Doc.git
