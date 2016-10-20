@@ -70,8 +70,6 @@ echo "One can not push to release after this point!"
 
 # build documentation without source code included
 ./generateDoc.sh Doxyfile-no-source
-# build and upload Doxygen full
-./generateDoc.sh
 # copy artefact to Fiij
 find $FIJI -name QuimP*.jar ! -name QuimP_11b.jar | xargs rm -fv # delete old one except old quimp
 cp -v target/checkout/target/QuimP_-*-jar-*.jar $FIJI # copy package
@@ -84,6 +82,8 @@ rsync -lrtz --delete --stats target/checkout/target/site/apidocs/ admin@pilip.ln
 # copy doxygen for users
 rsync -lrtz  --delete --stats Doxygen_doc/html/ admin@pilip.lnx.warwick.ac.uk:/data/www/html/doxygen
 
+# build and upload Doxygen full
+./generateDoc.sh
 
 # Clean up and finish
 # get back to the develop branch
@@ -106,7 +106,7 @@ ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version 
 
 # Updating plugins master pom
 cd $POMPLUGINDIR
-./pushToNewVersion $releaseVersion $developmentVersion
+./pushToNewVersion.sh $releaseVersion $developmentVersion
 cd $CURRENTDIR
 # copy current license to web page
 scp LICENSE.txt admin@pilip.lnx.warwick.ac.uk:/data/www/html
