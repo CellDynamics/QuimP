@@ -19,10 +19,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
+import java.util.Enumeration;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -72,7 +73,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
      * This field is used for sharing information between bar and other plugins.
      * 
      * It is read by {@link uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter} which is used by
-     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader} for serving 
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader} for serving
      * {@link uk.ac.warwick.wsbc.QuimP.QParams} object for client.
      */
     public static boolean newFileFormat = true;
@@ -186,8 +187,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     }
 
     /**
-     * Build QuimP panel and run macros. Macros are defined in plugins.conf file, where
-     * the name of the macro is related to class name to run.
+     * Build QuimP panel and run macros. Macros are defined in plugins.conf file, where the name of
+     * the macro is related to class name to run.
      */
     private void buildPanel() {
         toolBarTitle1 = new JTextPane(); // first title bar
@@ -358,13 +359,22 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             AboutDialog ad = new AboutDialog(frame, 50, 130);
             BufferedReader in = null;
             try {
+                // get internal name - jar name
+                String iname =
+                        new PropertyReader().readProperty("quimpconfig.properties", "internalName");
                 // read file from resources
-                in = new BufferedReader(new FileReader(
-                        getClass().getClassLoader().getResource("LICENSE.txt").getFile()));
-                String line = in.readLine();
-                while (line != null) {
-                    ad.appendLine(line);
-                    line = in.readLine();
+                Enumeration<URL> resources =
+                        getClass().getClassLoader().getResources("LICENSE.txt");
+                while (resources.hasMoreElements()) {
+                    URL reselement = resources.nextElement();
+                    if (reselement.toString().contains("/" + iname)) {
+                        in = new BufferedReader(new InputStreamReader(reselement.openStream()));
+                        String line = in.readLine();
+                        while (line != null) {
+                            ad.appendLine(line);
+                            line = in.readLine();
+                        }
+                    }
                 }
                 ad.setVisible(true);
             } catch (IOException e1) {
