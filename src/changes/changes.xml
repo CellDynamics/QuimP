@@ -2,10 +2,39 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <properties>
-    <title>QuimP Changes</title>
+    <title>QuimP Changelog</title>
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="16.10.02" date="2016-10-20" description="Release">
+          <action dev="baniuk" type="update" issue="228">
+              Services: Front-end services work on new server.
+          </action>
+          <action dev="baniuk" type="fix" issue="240">
+              BOA: BOA fails if old plugins are available in plugin directory.
+          </action>
+          <action dev="baniuk" type="add" issue="237">
+              QuimP: User can view the license from QuimP Bar. Some unsused dependencies removed.
+          </action>
+          <action dev="baniuk" type="fix" issue="238">
+              Services: Registration form on web deals with empty fields and white characters.
+          </action>
+          <action dev="baniuk" type="update" issue="246">
+              QuimP: Updated registration text.
+          </action>
+          <action dev="baniuk" type="add" issue="247">
+              QuimP: User can view the registration window from QuimP Bar.
+          </action>
+          <action dev="baniuk" type="add" issue="248">
+              QuimP: Added warning before use of FormatConverter.
+          </action>
+          <action dev="baniuk" type="fix" issue="173">
+              QuimP: Fixed Open Image from QuimP Bar on Mac.
+          </action>
+          <action dev="baniuk" type="update" issue="221">
+              QuimP: Updated JavaDoc.
+          </action>
+      </release>
       <release version="16.10.01" date="2016-10-17" description="Release">
           <action dev="baniuk" type="add" issue="233">
               QuimP: Added registration window.
