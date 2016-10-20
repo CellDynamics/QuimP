@@ -31,15 +31,14 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
 
     /**
      * Plot types supported by {@link addOutlinesToImage(STmap, ProtAnalysisConfig)}.
-     * <p>
      * <ol>
-     * <li> MOTILITY - only motility based outline.
-     * <li> CONVEXITY - only convexity based outline.
-     * <li> CONVANDEXP - parts that are convex and expanding.
-     * <li> CONCANDRETR - parts that are concave and retracting.
-     * <li> BOTH - combines CONVANDEXP and CONCANDRETR 
+     * <li>MOTILITY - only motility based outline.
+     * <li>CONVEXITY - only convexity based outline.
+     * <li>CONVANDEXP - parts that are convex and expanding.
+     * <li>CONCANDRETR - parts that are concave and retracting.
+     * <li>BOTH - combines CONVANDEXP and CONCANDRETR
      * </ol>
-     * </p>
+     * 
      * @author p.baniukiewicz
      *
      */
@@ -49,13 +48,12 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
 
     /**
      * Types of gradient points.
-     * <p>
      * <ol>
-     * <li> SCREENPOINT - any point clicked on image. Given as {x,y} coordinates
-     * <li> OUTLINEPOINT - point on outline. Given as number of this point on perimeter.
-     * <li> NOTDEFINED - not defined or selected.
+     * <li>SCREENPOINT - any point clicked on image. Given as {x,y} coordinates
+     * <li>OUTLINEPOINT - point on outline. Given as number of this point on perimeter.
+     * <li>NOTDEFINED - not defined or selected.
      * </ol>
-     * </p>
+     * 
      * @author p.baniukiewicz
      *
      */
@@ -65,7 +63,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
 
     /**
      * Keep position of gradient, a point on image or a point on outline.
-     *  
+     * 
      * @author p.baniukiewicz
      *
      */
@@ -79,7 +77,8 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
          */
         public boolean plotpolar = false;
         /**
-         * Type of gradinet point.
+         * Type of gradient point.
+         * 
          * @see gradientType
          */
         public gradientType type = gradientType.SCREENPOINT;
@@ -195,7 +194,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      */
     public final String cellStatSuffix = "_cellstat.csv";
     /**
-     * Protrusion statistics file suffix. 
+     * Protrusion statistics file suffix.
      */
     public final String protStatSuffix = "_protstat.csv";
     /**
@@ -206,7 +205,9 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
     public ProtAnalysisConfig() {
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.IQuimpSerialize#beforeSerialize()
      */
     @Override
@@ -214,7 +215,9 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.IQuimpSerialize#afterSerialize()
      */
     @Override

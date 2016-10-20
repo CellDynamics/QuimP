@@ -25,15 +25,15 @@ import uk.ac.warwick.wsbc.QuimP.Vert;
 public class QuimpToolsCollection {
 
     private static final Logger LOGGER = LogManager.getLogger(QuimpToolsCollection.class.getName());
-    public static final String defNote = "Not found"; //!< Default message if content not found in jar
+    /**
+     * Message returned by {@link #getQuimPBuildInfo()} if info is not found in jar.
+     */
+    public static final String defNote = "Not found";
 
     /**
-     * Prepare info plate for QuimP. It contains version, names, etc
+     * Prepare info plate for QuimP.
      * 
-     * @return Formatted string with QuimP version and authors
-     * @remarks By general Tool() class is static. These methods can not be so they must be called:
-     * @code{java} LOGGER.debug(new Tool().getQuimPversion());
-     * @endcode
+     * @see #getFormattedQuimPversion(String[])
      */
     public String getQuimPversion() {
         String[] quimpBuildInfo = getQuimPBuildInfo();
@@ -41,14 +41,18 @@ public class QuimpToolsCollection {
     }
 
     /**
-     * Prepare info plate for QuimP. It contains version, names, etc
+     * Prepare info plate for QuimP.
+     * 
+     * It contains version, names, etc. By general QuimpToolsCollection class is static. These
+     * methods can not be so they must be called:
+     * 
+     * <pre>
+     * <code>LOGGER.debug(new Tool().getQuimPversion());</code>
+     * </pre>
      * 
      * @param quimpBuildInfo info read from jar
      * @return Formatted string with QuimP version and authors
-     * @remarks By general Tool() class is static. These methods can not be so they must be called:
-     * @code{java} LOGGER.debug(new Tool().getQuimPversion());
-     * @endcode
-     * @see getQuimPBuildInfo()
+     * @see #getQuimPBuildInfo()
      */
     public static String getFormattedQuimPversion(String[] quimpBuildInfo) {
         //!<
@@ -58,7 +62,7 @@ public class QuimpToolsCollection {
                 + "| Till Bretschneider (Till.Bretschneider@warwick.ac.uk) |\n"
                 + "| Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)     |\n"
                 + "---------------------------------------------------------\n";
-        /**/
+        //!>
         infoPlate = infoPlate.concat("\n");
         infoPlate = infoPlate.concat("QuimP version: " + quimpBuildInfo[0]);
         infoPlate = infoPlate.concat("\n");
@@ -70,15 +74,16 @@ public class QuimpToolsCollection {
     }
 
     /**
-     * Get build info read from jar file
+     * Get build info read from jar file.
      * 
-     * @return Formatted strings with build info and version: -# [0] - contains only version string
-     *         read from \a MANIFEST.MF -# [1] - contains formatted string with build time and name
-     *         of builder read from \a MANIFEST.MF -# [2] - contains software name read from \a
-     *         MANIFEST.MF If those information are not available in jar, the \a defNote string is
-     *         returned
-     * @warning This method is jar-name dependent - looks for manifest with \a Implementation-Title
-     *          that contains \c QuimP string.
+     * @return Formatted strings with build info and version:
+     *         <ol>
+     *         <li>[0] - contains only version string read from MANIFEST.MF,
+     *         <li>[1] - contains formatted string with build time and name of builder read from
+     *         MANIFEST.MF
+     *         <li>[2] - contains software name read from MANIFEST.MF If those information are not
+     *         available in jar, the <b>defNote</b> string is returned
+     *         </ol>
      */
     public String[] getQuimPBuildInfo() {
         String[] ret = new String[3];
@@ -129,7 +134,7 @@ public class QuimpToolsCollection {
     }
 
     /**
-     * Get file name without extension
+     * Get file name without extension.
      * 
      * @param filename name of the file
      * @return file (with path) without extension
@@ -145,7 +150,7 @@ public class QuimpToolsCollection {
     }
 
     /**
-     * Get file extension
+     * Get file extension.
      * 
      * @param filename Name of file
      * @return extension without dot
@@ -227,7 +232,7 @@ public class QuimpToolsCollection {
 
     public static double[] setLimitsEqual(double[] migLimits) { // min and max
         if (migLimits.length < 2) {
-            System.out.println("Tool.237-Array to short. Needs a min and max");
+            LOGGER.warn("Array to short. Needs a min and max");
             return migLimits;
         }
         // Set limits to equal positive and negative

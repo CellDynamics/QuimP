@@ -187,8 +187,10 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     }
 
     /**
-     * Build QuimP panel and run macros. Macros are defined in plugins.conf file, where the name of
-     * the macro is related to class name to run.
+     * Build QuimP panel and run macros.
+     * 
+     * Macros are defined in plugins.conf file, where the name of the macro is related to class name
+     * to run.
      */
     private void buildPanel() {
         toolBarTitle1 = new JTextPane(); // first title bar
@@ -332,8 +334,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             ad.appendLine(quimpInfo); // display template filled by quimpInfo
             ad.appendDistance();
             ad.appendLine("All plugins for QuimP are reported in modules that use them natively.");
-            ad.appendLine(
-                    "Web page:\nhttp://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp");
+            ad.appendLine("Web page:\n"
+                    + new PropertyReader().readProperty("quimpconfig.properties", "webPage"));
             ad.setVisible(true);
             return;
         }
@@ -388,7 +390,6 @@ public class QuimP_Bar implements PlugIn, ActionListener {
                     e1.printStackTrace();
                 }
             }
-
             return;
         }
         if (e.getSource() == menuShowreg) {

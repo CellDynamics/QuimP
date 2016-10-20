@@ -53,8 +53,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
 
 /**
- * @author p.baniukiewicz
- * TODO This class support IQuimpPlugin for future.
+ * @author p.baniukiewicz TODO This class support IQuimpPlugin for future.
  */
 public class Prot_Analysis implements IQuimpPlugin {
     static {
@@ -68,27 +67,27 @@ public class Prot_Analysis implements IQuimpPlugin {
     QconfLoader qconfLoader = null; // main object representing loaded configuration file
     private boolean uiCancelled = false;
     public Prot_AnalysisUI gui;
-    @SuppressWarnings("serial")
     // default configuration parameters, for future using
     ParamList paramList = new ParamList();
     /**
-     * Keep overall configuration. This object is filled in GUI and passed to runPlugin, where
-     * it is read out.
+     * Keep overall configuration.
+     * 
+     * This object is filled in GUI and passed to runPlugin, where it is read out.
      */
     private ProtAnalysisConfig config;
 
     /**
-     * Default constructor. 
-     * <p>
-     * Run parameterized constructor with <tt>null</tt> showing file selector.
+     * Default constructor.
+     * 
+     * Run parameterised constructor with <tt>null</tt> showing file selector.
      */
     public Prot_Analysis() {
         this(null);
     }
 
     /**
-     * Constructor that allows to provide own file - used for tests.
-     * <p>
+     * Constructor that allows to provide own file.
+     * 
      * @param paramFile File to process.
      */
     public Prot_Analysis(File paramFile) {
@@ -118,7 +117,7 @@ public class Prot_Analysis implements IQuimpPlugin {
      * Helper method to keep logic of ECMM, ANA, Q plugins.
      * 
      * @throws QuimpException
-     * @throws IOException 
+     * @throws IOException
      */
     private void runFromQCONF() throws QuimpException, IOException {
         STmap[] stMap = qconfLoader.getQp().getLoadedDataContainer().getQState();
@@ -284,8 +283,8 @@ public class Prot_Analysis implements IQuimpPlugin {
 
     @Override
     public String about() {
-        // TODO Auto-generated method stub
-        return null;
+        return "Protrusion Analysis Plugin.\n" + "Author: Piotr Baniukiewicz\n"
+                + "mail: p.baniukiewicz@warwick.ac.uk";
     }
 
     @Override
@@ -304,6 +303,7 @@ public class Prot_Analysis implements IQuimpPlugin {
      * Load configuration file. (only if not loaded before).
      * 
      * Set <tt>qconfLoader</tt> field on success or set it to <tt>null</tt>.
+     * 
      * @throws QuimpPluginException
      */
     private void loadFile(File paramFile) throws QuimpPluginException {
@@ -363,7 +363,8 @@ class Prot_AnalysisUI implements ActionListener {
     }
 
     /**
-     * Copy UI settings to {@link ProtAnalysisConfig} object.
+     * Copy UI settings to {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig}
+     * object.
      */
     public void readUI() {
         config.noiseTolerance = ((Number) f_noiseTolerance.getValue()).doubleValue();
@@ -393,7 +394,7 @@ class Prot_AnalysisUI implements ActionListener {
     }
 
     /**
-     * Copy {@link ProtAnalysisConfig} settings to UI.
+     * Copy {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig} settings to UI.
      */
     public void writeUI() {
         f_noiseTolerance.setValue(new Double(config.noiseTolerance));
@@ -647,8 +648,8 @@ class Prot_AnalysisUI implements ActionListener {
     /**
      * Open window with custom Canvas that allows user to click point.
      * 
-     * Point is written directly in {@link ProtAnalysisConfig}.
      * @param img Image to show, can be stack.
+     * @see CustomCanvas
      */
     public void getGradient(ImagePlus img) {
         // cut one slice from stack
@@ -703,7 +704,9 @@ class Prot_AnalysisUI implements ActionListener {
             super(imp);
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see ij.gui.ImageCanvas#mousePressed(java.awt.event.MouseEvent)
          */
         @Override
