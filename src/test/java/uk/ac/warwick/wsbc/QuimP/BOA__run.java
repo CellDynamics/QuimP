@@ -11,22 +11,24 @@ import ij.ImagePlus;
 import ij.gui.Toolbar;
 
 /**
- * Main runner for BOA_ plugin. Show main window and wait for its closing and
- * then ends.
+ * Main runner for BOA_ plugin. Show main window and wait for its closing and then ends.
+ * 
+ * The window is run in separate thread therefore when control is returned to main thread (main)
+ * (immediately after the window has been created) then the main thread ends that results in closing
+ * of the program To prevent this behaviour thread synchronization is used. Window listener is added
+ * to BOA_ window. window is public field of BOA_ class representing CustomStackWindow internally
+ * extending Frame class.
+ * <p>
+ * This process will not finish because \c window default behaviour is to conceal itself not quit.
+ * Kill instances by
+ * 
+ * <pre>
+ * <code>ps -aux | grep BOA__run | awk '{print $2}' | xargs kill</code>
+ * </pre>
+ * 
+ * @see uk.ac.warwick.wsbc.QuimP.BOA_
  * 
  * @author p.baniukiewicz
- * @note The window is run in separate thread therefore when control is returned
- * to main thread (\c main) (immediately after the window has been
- * created) then the main thread ends that results in closing of the program To prevent this
- *  behavior thread synchronization is used. Window listener is added to BOA_ window. \c window is
- *  \c public field of BOA_ class representing \c CustomStackWindow internally
- * extending \c Frame class.
- * @see BOA_
- * @remarks This process will not finish because \c window default behavior is
- * to conceal itself not quit. Kill instances by
- * @code{.sh}
- * ps -aux | grep BOA__run | awk '{print $2}' | xargs kill
- * @endcode
  */
 @SuppressWarnings("unused")
 public class BOA__run {
@@ -36,8 +38,7 @@ public class BOA__run {
 
     /**
      * @param args
-     * @throws InterruptedException
-     * @test Runner for BOA plugin
+     * @throws InterruptedException Runner for BOA plugin
      */
     public static void main(String[] args) throws InterruptedException {
         ImagePlus img;

@@ -18,16 +18,16 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * 
  * This abstract class keeps head point of Shape and control number of points in Shape, allows for
  * inserting points to the Shape. Generally assumes that Shape is closed, so PointsList is looped
- *   
+ * 
  * @author p.baniukiewicz
  *
- * @param <T> Type of point, currently can be Node or Vert
+ * @param <T>
+ *        Type of point, currently can be Node or Vert
  */
 public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
     private static final Logger LOGGER = LogManager.getLogger(Shape.class.getName());
     /**
-     * Next node ID's.
-     * Initialized in constructor, changed during modification of shape.
+     * Next node ID's. Initialized in constructor, changed during modification of shape.
      */
     protected int nextTrackNumber = 1;
     /**
@@ -35,20 +35,18 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      */
     protected T head;
     /**
-     * number of points.
-     * Initialized in constructor, changed on Shape modification.
+     * number of points. Initialized in constructor, changed on Shape modification.
      */
     protected int POINTS;
     /**
-     * Centroid point of the Shape. Updated by {@link #calcCentroid()} called.
-     * after change of the Shape and also in {@link #afterSerialize()}
-     * and {@link #beforeSerialize()}
+     * Centroid point of the Shape. Updated by {@link #calcCentroid()} called. after change of the
+     * Shape and also in {@link #afterSerialize()} and {@link #beforeSerialize()}
      */
     protected ExtendedVector2d centroid = null;
-    public static final int MAX_NODES = 10000; //!< Max number of nodes allowed in Shape 
+    public static final int MAX_NODES = 10000; // !< Max number of nodes allowed in Shape
     /**
-     * Elements of Shape as List.
-     * Initialized on Serialize. Temprary array to store linked list as array to allow serialization
+     * Elements of Shape as List. Initialized on Serialize. Temprary array to store linked list as
+     * array to allow serialization
      */
     private ArrayList<T> Elements = null;
 
@@ -65,8 +63,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * 
      * List of points must be looped.
      * 
-     * @param h head point of the list
-     * @param N number of points in the list 
+     * @param h
+     *        head point of the list
+     * @param N
+     *        number of points in the list
      */
     public Shape(T h, int N) {
         head = h;
@@ -75,10 +75,11 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Create Shape from one point, created Shape is looped. 
-     * If <tt>h</tt> is a list, only <tt>h</tt> will be maintained and list will be unlinked.
+     * Create Shape from one point, created Shape is looped. If <tt>h</tt> is a list, only
+     * <tt>h</tt> will be maintained and list will be unlinked.
      * 
-     * @param h head point of the list
+     * @param h
+     *        head point of the list
      */
     public Shape(final T h) {
         this(h, 1);
@@ -91,8 +92,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     /**
      * Copy constructor.
      * 
-     * @param src source Shape to copy from
-     * @throws RuntimeException when T does no have copy constructor
+     * @param src
+     *        source Shape to copy from
+     * @throws RuntimeException
+     *         when T does no have copy constructor
      */
     @SuppressWarnings("unchecked")
     public Shape(final Shape<T> src) {
@@ -128,19 +131,26 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     /**
      * Conversion constructor.
      * 
-     * Converts between different types of PointsList. \a src is source Shape of type T to convert 
-     * to other Shape based on \a PointsList other type (but in general extended from PointsList)
-     * Typical approach is to convert Snake to Outline (PointsList<Node> to PointsList<Vert>)
+     * Converts between different types of PointsList. <tt>src</tt> is source Shape of type T to
+     * convert to other Shape based on <tt>PointsList</tt> other type (but in general extended from
+     * PointsList) Typical approach is to convert Snake to Outline (PointsList<Node> to
+     * PointsList<Vert>).
+     * <p>
+     * Exemplary conversion from Snake to Outline can look as follows:
      * 
-     * @param src
-     * @param destType object of base node that PointsList is composed from
-     * @throws RuntimeException when T does no have copy constructor
-     * @remarks Exemplary conversion from Snake to Outline can look as follows:
-     * @code{java}
+     * <pre>
+     * {@code
      *  public Outline(final Snake src) {
      *      super((Shape) src, new Vert());
-     *  }
-     * @endcode
+     * }
+     * </pre>
+     * 
+     * @param src
+     * @param destType
+     *        object of base node that PointsList is composed from
+     * @throws RuntimeException
+     *         when T does no have copy constructor
+     * 
      * @see #Shape(Shape)
      */
     @SuppressWarnings("unchecked")
@@ -176,7 +186,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Print Shape nodes
+     * Print Shape nodes.
      * 
      * @return String representation of Shape
      */
@@ -190,8 +200,9 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
         return out;
     }
 
-    /**
+    /*
      * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -213,8 +224,9 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
         return result;
     }
 
-    /**
+    /*
      * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -255,7 +267,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Getter for \c centroid
+     * Getter for <tt>centroid</tt>
      * 
      * @return centroid
      */
@@ -266,13 +278,12 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Calculate centroid of Snake
+     * Calculate centroid of Snake.
      * 
-     * @warning This method modifies internal field \c centroid. In two classes that use this 
-     * template (Snake and Outline) its application is different. In Snake it is called in
-     * constructor and on any change of Snake, so this field every time holds correct value.
-     * In Outline it is called on demand and putting this method in constructor leads to
-     * unpredictable errors in ECMM
+     * This method modifies internal field \c centroid. In two classes that use this template (Snake
+     * and Outline) its application is different. In Snake it is called in constructor and on any
+     * change of Snake, so this field every time holds correct value. In Outline it is called on
+     * demand and putting this method in constructor leads to unpredictable errors in ECMM
      */
     public void calcCentroid() {
         centroid = new ExtendedVector2d(0, 0);
@@ -291,7 +302,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Calculate area of the Shape
+     * Calculate area of the Shape.
      * 
      * @return Area
      */
@@ -307,11 +318,11 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
 
         } while (!n.isHead());
         area = 0.5 * sum;
-        return area;/*!< ID number of point, unique across list */
+        return area;/* !< ID number of point, unique across list */
     }
 
     /**
-     * Add up lengths between all verts
+     * Add up lengths between all verts.
      * 
      * @return length of Shape
      */
@@ -326,10 +337,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Calculate position of Shape element expressed as distance of element on Shape perimeter
-     * from \b head.
+     * Calculate position of Shape element expressed as distance of element on Shape perimeter from
+     * <b>head</b>.
      * 
-     * First element has position 0, last 1. Element at position 0.5 is in half length of perimeter  
+     * First element has position 0, last 1. Element at position 0.5 is in half length of perimeter
      */
     public void setPositions() {
         double length = getLength();
@@ -344,11 +355,12 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Update all node normales
+     * Update all node normales.
      * 
-     * Called after modification of Shape nodes
+     * Called after modification of Shape nodes.
      * 
-     * @param inner Direction of the Shape
+     * @param inner
+     *        Direction of the Shape
      */
     public void updateNormales(boolean inner) {
         T v = head;
@@ -359,7 +371,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Get head of current Shape
+     * Get head of current Shape.
      * 
      * @return Point representing head of Shape
      */
@@ -368,24 +380,28 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Add node before head node assuring that list has closed loop. 
+     * Add node before head node assuring that list has closed loop.
      * 
      * If initial list condition is defined in such way:
      * 
-     * @code
+     * <pre>
+     * {@code
      * head = new Node(0); //make a dummy head node NODES = 1; FROZEN = 0;
      * head.setPrev(head); // link head to itself head.setNext(head);
      * head.setHead(true);
-     * @endcode
+     * }
+     * </pre>
      * 
-     * The \c addPoint will produce closed bidirectional linked list.
-     * From first Node it is possible to reach last one by calling
-     * Node::getNext() and from the last one, first should be accessible
-     * by calling Node::getPrev()
+     * The <tt>addPoint</tt> will produce closed bidirectional linked list. From first Node it is
+     * possible to reach last one by calling {@link uk.ac.warwick.wsbc.QuimP.PointsList.getNext()}
+     * and from the last one, first should be accessible by calling
+     * {@link uk.ac.warwick.wsbc.QuimP.PointsList.getPrev()}.
+     * <p>
+     * For initialisation only.
      * 
-     * @param n Node to be added to list
+     * @param n
+     *        Node to be added to list
      * 
-     * @remarks For initialization only
      */
     public void addPoint(final T n) {
         T prevNode = head.getPrev();
@@ -414,12 +430,13 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     /**
      * Remove selected point from list.
      * 
-     * Check if removed point was head and if it was, the new head is randomly selected. 
-     * Neighbors are linked together
+     * Check if removed point was head and if it was, the new head is randomly selected. Neighbors
+     * are linked together. There is no protection here against removing last node at all.
      * 
-     * @param n point to remove
-     * @param inner direction of normal vectors of Shape
-     * @warning There is no protection here against removing last node at all
+     * @param n
+     *        point to remove
+     * @param inner
+     *        direction of normal vectors of Shape
      */
     public void removePoint(final T n, boolean inner) {
         n.getPrev().setNext(n.getNext());
@@ -444,7 +461,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Get number of points in Shape
+     * Get number of points in Shape.
      * 
      * @return Number of points
      */
@@ -453,7 +470,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Make Shape anti-clockwise
+     * Make Shape anti-clockwise.
      */
     public void makeAntiClockwise() {
         double sum = 0;
@@ -471,7 +488,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Turn Shape back anti clockwise
+     * Turn Shape back anti clockwise.
      */
     public void reverseSnake() {
         T tmp;
@@ -501,7 +518,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Return current Shape as ImageJ float number polygon
+     * Return current Shape as ImageJ float number polygon.
      * 
      * @return current Shape as PolygonRoi
      */
@@ -521,7 +538,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Return current Shape as ImageJ ROI object
+     * Return current Shape as ImageJ ROI object.
      * 
      * @return current Shape as ROI
      */
@@ -532,10 +549,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Count number of Points in Shape
+     * Count number of Points in Shape.
      * 
      * Number of Points is stored in local POINTS field as well. This method can verify if that
-     * field contains correct value
+     * field contains correct value.
      * 
      * @return number of Points in Shape
      */
@@ -551,7 +568,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Unfreeze all nodes in Shape
+     * Unfreeze all nodes in Shape.
      */
     public void unfreezeAll() {
         T v = head;
@@ -562,7 +579,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Freeze all nodes in Shape
+     * Freeze all nodes in Shape.
      */
     public void freezeAll() {
         T v = head;
@@ -573,10 +590,12 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Scale current Shape by \c amount in increments of \c stepSize
+     * Scale current Shape by <tt>amount</tt> in increments of <tt>stepSize</tt>.
      * 
-     * @param amount scale
-     * @param stepSize increment
+     * @param amount
+     *        scale
+     * @param stepSize
+     *        increment
      */
     public void scale(double amount, double stepSize) {
         // make sure snake access is clockwise
@@ -603,8 +622,9 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Converts list of Elements (Node, Snake) to ArrayList. Fill \c Elements field
-     * @see clearNodes()
+     * Converts list of Elements (Node, Snake) to ArrayList. Fill <tt>Elements</tt> field.
+     * 
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.clearElements()
      */
     @Override
     public void beforeSerialize() {
@@ -621,9 +641,9 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Rebuild Shape from ArryList
+     * Rebuild Shape from ArryList.
      * 
-     * @see clearElements()
+     * @see uk.ac.warwick.wsbc.QuimP.Shape.clearElements()
      */
     @Override
     public void afterSerialize() throws Exception {
@@ -660,10 +680,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Clear \c Elements array that stores list of {Node, Snake} in ArrayList form. It is used and 
-     * initialized on Serialization. This method simply delete this array saving memory 
+     * Clear <tt>Elements</tt> array that stores list of {Node, Snake} in ArrayList form. It is used
+     * and initialized on Serialization. This method simply delete this array saving memory.
      * 
-     * It should be called after every serialization.
+     * It should be called after every serialisation.
      */
     public void clearElements() {
         if (Elements != null)
