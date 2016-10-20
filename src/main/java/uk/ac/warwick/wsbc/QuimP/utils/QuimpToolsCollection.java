@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.warwick.wsbc.QuimP.Outline;
+import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.Vert;
 
 /**
@@ -31,8 +32,7 @@ public class QuimpToolsCollection {
      * 
      * @return Formatted string with QuimP version and authors
      * @remarks By general Tool() class is static. These methods can not be so they must be called:
-     * @code{java}
-     *  LOGGER.debug(new Tool().getQuimPversion());
+     * @code{java} LOGGER.debug(new Tool().getQuimPversion());
      * @endcode
      */
     public String getQuimPversion() {
@@ -46,15 +46,13 @@ public class QuimpToolsCollection {
      * @param quimpBuildInfo info read from jar
      * @return Formatted string with QuimP version and authors
      * @remarks By general Tool() class is static. These methods can not be so they must be called:
-     * @code{java}
-     *  LOGGER.debug(new Tool().getQuimPversion());
+     * @code{java} LOGGER.debug(new Tool().getQuimPversion());
      * @endcode
      * @see getQuimPBuildInfo()
      */
     public static String getFormattedQuimPversion(String[] quimpBuildInfo) {
         //!<
-        String infoPlate = 
-                  "---------------------------------------------------------\n" 
+        String infoPlate = "---------------------------------------------------------\n"
                 + "| QuimP, by                                             |\n"
                 + "| Richard Tyson (richard.tyson@warwick.ac.uk)           |\n"
                 + "| Till Bretschneider (Till.Bretschneider@warwick.ac.uk) |\n"
@@ -74,34 +72,34 @@ public class QuimpToolsCollection {
     /**
      * Get build info read from jar file
      * 
-     * @return Formatted strings with build info and version:
-     * -# [0] - contains only version string read from \a MANIFEST.MF
-     * -# [1] - contains formatted string with build time and name of builder read from \a MANIFEST.MF
-     * -# [2] - contains software name read from \a MANIFEST.MF
-     * If those information are not available in jar, the \a defNote string is returned
+     * @return Formatted strings with build info and version: -# [0] - contains only version string
+     *         read from \a MANIFEST.MF -# [1] - contains formatted string with build time and name
+     *         of builder read from \a MANIFEST.MF -# [2] - contains software name read from \a
+     *         MANIFEST.MF If those information are not available in jar, the \a defNote string is
+     *         returned
      * @warning This method is jar-name dependent - looks for manifest with \a Implementation-Title
-     * that contains \c QuimP string.
+     *          that contains \c QuimP string.
      */
     public String[] getQuimPBuildInfo() {
         String[] ret = new String[3];
         try {
             Enumeration<URL> resources =
                     getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+            // get internal name - jar name
+            String iname =
+                    new PropertyReader().readProperty("quimpconfig.properties", "internalName");
             while (resources.hasMoreElements()) {
-                Manifest manifest = new Manifest(resources.nextElement().openStream());
+                URL reselement = resources.nextElement();
+                if (!reselement.toString().contains("/" + iname))
+                    continue;
+                Manifest manifest = new Manifest(reselement.openStream());
                 Attributes attributes = manifest.getMainAttributes();
                 try {
-                    String val = attributes.getValue("Implementation-Title");
-                    if (val == null)
-                        continue;
-                    // name dependent part
-                    if (attributes.getValue("Implementation-Title").contains("QuimP")) {
-                        ret[1] = attributes.getValue("Built-By") + " on: "
-                                + attributes.getValue("Implementation-Build");
-                        ret[0] = attributes.getValue("Implementation-Version");
-                        ret[2] = attributes.getValue("Implementation-Title");
-                        LOGGER.trace(Arrays.toString(ret));
-                    }
+                    ret[1] = attributes.getValue("Built-By") + " on: "
+                            + attributes.getValue("Implementation-Build");
+                    ret[0] = attributes.getValue("Implementation-Version");
+                    ret[2] = attributes.getValue("Implementation-Title");
+                    LOGGER.trace(Arrays.toString(ret));
                 } catch (Exception e) {
                     ; // do not care about problems - just use defaults defined on beginning
                 }
@@ -147,7 +145,7 @@ public class QuimpToolsCollection {
     }
 
     /**
-     * Get file extension 
+     * Get file extension
      * 
      * @param filename Name of file
      * @return extension without dot
