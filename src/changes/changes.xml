@@ -6,7 +6,7 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
-      <release version="16.10.03" date="2016-10-20" description="Release">
+      <release version="16.10.03" date="2016-10-20" description="Hot Fix">
           <action dev="baniuk" type="fix" issue="249">
               QuimP: License could not be displayed in QuimP Bar.
           </action>
