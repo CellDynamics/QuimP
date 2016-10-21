@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -34,7 +35,9 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.ImageCanvas;
 import ij.gui.ImageWindow;
+import ij.measure.ResultsTable;
 import ij.plugin.ZProjector;
+import ij.plugin.filter.Analyzer;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
@@ -53,7 +56,20 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
 
 /**
- * @author p.baniukiewicz TODO This class support IQuimpPlugin for future.
+ * Main class for Protrusion Analysis module.
+ * 
+ * Contain business logic for protrusion analysis. The UI is built by
+ * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Prot_AnalysisUI}. The communication between
+ * these modules is through {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig}
+ * 
+ * !<
+ * @startuml
+ * Prot_Analysis *-- "1" ProtAnalysisConfig
+ * Prot_Analysis *-- "1" Prot_AnalysisUI
+ * Prot_AnalysisUI o-- "1" ProtAnalysisConfig
+ * @enduml
+ * !>
+ * @author p.baniukiewicz
  */
 public class Prot_Analysis implements IQuimpPlugin {
     static {
@@ -64,17 +80,36 @@ public class Prot_Analysis implements IQuimpPlugin {
     }
     private static final Logger LOGGER = LogManager.getLogger(Prot_Analysis.class.getName());
 
+    /**
+     * Loaded QCONF file.
+     * 
+     * Initialised by {@link #loadFile(File)} through this constructor.
+     */
     QconfLoader qconfLoader = null; // main object representing loaded configuration file
     private boolean uiCancelled = false;
+    /**
+     * Instance of module UI.
+     * 
+     * Initialised by this constructor.
+     */
     public Prot_AnalysisUI gui;
     // default configuration parameters, for future using
     ParamList paramList = new ParamList();
     /**
      * Keep overall configuration.
      * 
-     * This object is filled in GUI and passed to runPlugin, where it is read out.
+     * This object is filled in GUI and passed to runPlugin, where it is read out. Initialised by
+     * this constructor.
      */
-    private ProtAnalysisConfig config;
+    ProtAnalysisConfig config;
+
+    /**
+     * Instance of ResultTable.
+     * 
+     * Initialised by this constructor, filled by {@link #runFromQCONF()}, shown by
+     * {@link Prot_AnalysisUI#actionPerformed(ActionEvent)}
+     */
+    ResultsTable rt;
 
     /**
      * Default constructor.
@@ -93,7 +128,8 @@ public class Prot_Analysis implements IQuimpPlugin {
     public Prot_Analysis(File paramFile) {
         IJ.log(new QuimpToolsCollection().getQuimPversion());
         config = new ProtAnalysisConfig();
-        gui = new Prot_AnalysisUI(config, this);
+        gui = new Prot_AnalysisUI(this);
+        rt = createCellResultTable();
         // validate registered user
         new Registration(IJ.getInstance(), "QuimP Registration");
         // check whether config file name is provided or ask user for it
@@ -110,11 +146,44 @@ public class Prot_Analysis implements IQuimpPlugin {
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with run of Protrusion Analysis mapping: " + e.getMessage());
         }
-
     }
 
     /**
-     * Helper method to keep logic of ECMM, ANA, Q plugins.
+     * Load configuration file. (only if not loaded before).
+     * 
+     * Validates also all necessary datafields in loaded QCONF file. Set <tt>qconfLoader</tt> field
+     * on success or set it to <tt>null</tt>.
+     * 
+     * @throws QuimpException When QCONF could not be loaded or it does not meet requirements.
+     */
+    private void loadFile(File paramFile) throws QuimpException {
+        if (qconfLoader == null || qconfLoader.getQp() == null) {
+            // load new file
+            qconfLoader = new QconfLoader(paramFile,
+                    new QuimpConfigFilefilter(QuimpConfigFilefilter.newFileExt));
+            if (qconfLoader.getQp() == null)
+                return; // not loaded
+            if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
+                // validate in case new format
+                qconfLoader.getBOA(); // will throw exception if not present
+                qconfLoader.getECMM();
+                qconfLoader.getQ();
+            } else {
+                qconfLoader = null; // failed load or checking
+                throw new QuimpException("QconfLoader returned unsupported version of QuimP."
+                        + " Only new format can be loaded");
+            }
+        }
+    }
+
+    /**
+     * Main runner.
+     * 
+     * Keeps logic of ECMM, ANA, Q plugins.
+     * 
+     * This method reads entries in
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig} and performs selected
+     * actions. Additionally it collects all results for all cells in one common table.
      * 
      * @throws QuimpException
      * @throws IOException
@@ -126,6 +195,7 @@ public class Prot_Analysis implements IQuimpPlugin {
         TrackVisualisation.Image visStackStatic = null;
         TrackVisualisation.Stack visStackOutline = null;
         int h = 0;
+
         ImagePlus im1static = qconfLoader.getImage();
         if (im1static == null)
             return; // stop if no image
@@ -215,25 +285,9 @@ public class Prot_Analysis implements IQuimpPlugin {
                         qconfLoader.getQp().getFileName() + "_" + h + config.polarPlotSuffix)
                         .toString());
             }
+            // write stats, and add to table
+            writeStats(h, mapCell, mF, trackCollection).cellStatistics.addCellToCellTable(rt);
 
-            // Maps are correlated in order with Outlines in DataContainer.
-            // write data
-            PrintWriter cellStatFile = new PrintWriter(Paths
-                    .get(qconfLoader.getQp().getPath(),
-                            qconfLoader.getQp().getFileName() + "_" + h + config.cellStatSuffix)
-                    .toFile());
-            PrintWriter protStatFile = new PrintWriter(Paths
-                    .get(qconfLoader.getQp().getPath(),
-                            qconfLoader.getQp().getFileName() + "_" + h + config.protStatSuffix)
-                    .toFile());
-            new ProtStat(mF, trackCollection,
-                    qconfLoader.getQp().getLoadedDataContainer().getStats().sHs.get(h), mapCell)
-                            .writeProtrusion(protStatFile, h);
-            new ProtStat(mF, trackCollection,
-                    qconfLoader.getQp().getLoadedDataContainer().getStats().sHs.get(h), mapCell)
-                            .writeCell(cellStatFile, h);
-            protStatFile.close();
-            cellStatFile.close();
             // update static fields in gui
             gui.labelMaxnum.setText(Integer.toString(mF.getMaximaNumber()));
             gui.labelMaxval.setText(
@@ -249,6 +303,43 @@ public class Prot_Analysis implements IQuimpPlugin {
             visStackDynamic.getOriginalImage().show();
         if (config.plotOutline)
             visStackOutline.getOriginalImage().show();
+    }
+
+    /**
+     * Write cell statistic and protrusion statistics to files.
+     * 
+     * @param h Cell number
+     * @param mapCell
+     * @param mF
+     * @param trackCollection
+     * @return ProtStat instance of object that keeps cell statistics. Can be used to form e.g.
+     *         table with results.
+     * 
+     * @throws FileNotFoundException
+     */
+    private ProtStat writeStats(int h, STmap mapCell, MaximaFinder mF,
+            TrackCollection trackCollection) throws FileNotFoundException {
+        // Maps are correlated in order with Outlines in DataContainer.
+        // write data
+        PrintWriter cellStatFile = new PrintWriter(Paths
+                .get(qconfLoader.getQp().getPath(),
+                        qconfLoader.getQp().getFileName() + "_" + h + config.cellStatSuffix)
+                .toFile());
+        PrintWriter protStatFile = new PrintWriter(Paths
+                .get(qconfLoader.getQp().getPath(),
+                        qconfLoader.getQp().getFileName() + "_" + h + config.protStatSuffix)
+                .toFile());
+        new ProtStat(mF, trackCollection,
+                qconfLoader.getQp().getLoadedDataContainer().getStats().sHs.get(h), mapCell)
+                        .writeProtrusion(protStatFile, h);
+
+        ProtStat cellStat = new ProtStat(mF, trackCollection,
+                qconfLoader.getQp().getLoadedDataContainer().getStats().sHs.get(h), mapCell);
+
+        cellStat.writeCell(cellStatFile, h);
+        protStatFile.close();
+        cellStatFile.close();
+        return cellStat;
     }
 
     @Override
@@ -300,35 +391,16 @@ public class Prot_Analysis implements IQuimpPlugin {
     }
 
     /**
-     * Load configuration file. (only if not loaded before).
+     * Build cell statistic result table.
      * 
-     * Set <tt>qconfLoader</tt> field on success or set it to <tt>null</tt>.
+     * It contains statistics for all cells.
      * 
-     * @throws QuimpPluginException
+     * @return Handle to ResultTable that can be displayed by show("Name"_ method.
      */
-    private void loadFile(File paramFile) throws QuimpPluginException {
-        try {
-            if (qconfLoader == null || qconfLoader.getQp() == null) {
-                // load new file
-                qconfLoader = new QconfLoader(paramFile,
-                        new QuimpConfigFilefilter(QuimpConfigFilefilter.newFileExt));
-                if (qconfLoader.getQp() == null)
-                    return; // not loaded
-                if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
-                    // validate in case new format
-                    qconfLoader.getBOA(); // will throw exception if not present
-                    qconfLoader.getECMM();
-                    qconfLoader.getQ();
-                } else {
-                    qconfLoader = null; // failed load or checking
-                    throw new IllegalStateException(
-                            "QconfLoader returned unsupported version of QuimP."
-                                    + " Only new format can be loaded");
-                }
-            }
-        } catch (Exception e) { // catch all here and convert to expected type
-            throw new QuimpPluginException(e);
-        }
+    public ResultsTable createCellResultTable() {
+        ResultsTable rt = new ResultsTable();
+        Analyzer.setResultsTable(rt);
+        return rt;
     }
 }
 
@@ -353,11 +425,9 @@ class Prot_AnalysisUI implements ActionListener {
     private JCheckBox c_staticPlotmax, c_staticPlottrack, c_staticAverimage, c_plotPolarplot;
     private JCheckBox c_dynamicPlotmax, c_dynamicPlottrack, c_useGradient;
 
-    private ProtAnalysisConfig config;
     private Prot_Analysis model; // main model with method to run on ui action
 
-    public Prot_AnalysisUI(ProtAnalysisConfig config, Prot_Analysis model) {
-        this.config = config;
+    public Prot_AnalysisUI(Prot_Analysis model) {
         this.model = model;
         buildUI();
     }
@@ -367,29 +437,31 @@ class Prot_AnalysisUI implements ActionListener {
      * object.
      */
     public void readUI() {
-        config.noiseTolerance = ((Number) f_noiseTolerance.getValue()).doubleValue();
-        config.dropValue = ((Number) f_dropValue.getValue()).doubleValue();
+        model.config.noiseTolerance = ((Number) f_noiseTolerance.getValue()).doubleValue();
+        model.config.dropValue = ((Number) f_dropValue.getValue()).doubleValue();
 
-        config.plotOutline = c_plotOutline.isSelected();
-        config.outlinesToImage.motThreshold = ((Number) f_motThreshold.getValue()).doubleValue();
-        config.outlinesToImage.convThreshold = ((Number) f_convThreshold.getValue()).doubleValue();
-        config.outlinesToImage.plotType = (outlinePlotTypes) o_plotType.getSelectedItem();
+        model.config.plotOutline = c_plotOutline.isSelected();
+        model.config.outlinesToImage.motThreshold =
+                ((Number) f_motThreshold.getValue()).doubleValue();
+        model.config.outlinesToImage.convThreshold =
+                ((Number) f_convThreshold.getValue()).doubleValue();
+        model.config.outlinesToImage.plotType = (outlinePlotTypes) o_plotType.getSelectedItem();
 
-        config.plotMotmap = c_plotMotmap.isSelected();
-        config.plotMotmapmax = c_plotMotmapmax.isSelected();
-        config.plotConmap = c_plotConmap.isSelected();
+        model.config.plotMotmap = c_plotMotmap.isSelected();
+        model.config.plotMotmapmax = c_plotMotmapmax.isSelected();
+        model.config.plotConmap = c_plotConmap.isSelected();
 
-        config.plotStaticmax = c_plotStaticmax.isSelected();
-        config.staticPlot.plotmax = c_staticPlotmax.isSelected();
-        config.staticPlot.plottrack = c_staticPlottrack.isSelected();
-        config.staticPlot.averimage = c_staticAverimage.isSelected();
+        model.config.plotStaticmax = c_plotStaticmax.isSelected();
+        model.config.staticPlot.plotmax = c_staticPlotmax.isSelected();
+        model.config.staticPlot.plottrack = c_staticPlottrack.isSelected();
+        model.config.staticPlot.averimage = c_staticAverimage.isSelected();
 
-        config.plotDynamicmax = c_plotDynamicmax.isSelected();
-        config.dynamicPlot.plotmax = c_dynamicPlotmax.isSelected();
-        config.dynamicPlot.plottrack = c_dynamicPlottrack.isSelected();
+        model.config.plotDynamicmax = c_plotDynamicmax.isSelected();
+        model.config.dynamicPlot.plotmax = c_dynamicPlotmax.isSelected();
+        model.config.dynamicPlot.plottrack = c_dynamicPlottrack.isSelected();
 
-        config.polarPlot.plotpolar = c_plotPolarplot.isSelected();
-        config.polarPlot.useGradient = c_useGradient.isSelected();
+        model.config.polarPlot.plotpolar = c_plotPolarplot.isSelected();
+        model.config.polarPlot.useGradient = c_useGradient.isSelected();
 
     }
 
@@ -397,38 +469,38 @@ class Prot_AnalysisUI implements ActionListener {
      * Copy {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig} settings to UI.
      */
     public void writeUI() {
-        f_noiseTolerance.setValue(new Double(config.noiseTolerance));
-        f_dropValue.setValue(new Double(config.dropValue));
+        f_noiseTolerance.setValue(new Double(model.config.noiseTolerance));
+        f_dropValue.setValue(new Double(model.config.dropValue));
 
-        c_plotOutline.setSelected(config.plotOutline);
-        f_motThreshold.setValue(new Double(config.outlinesToImage.motThreshold));
-        f_convThreshold.setValue(new Double(config.outlinesToImage.convThreshold));
-        o_plotType.setSelectedItem(config.outlinesToImage.plotType);
+        c_plotOutline.setSelected(model.config.plotOutline);
+        f_motThreshold.setValue(new Double(model.config.outlinesToImage.motThreshold));
+        f_convThreshold.setValue(new Double(model.config.outlinesToImage.convThreshold));
+        o_plotType.setSelectedItem(model.config.outlinesToImage.plotType);
 
-        c_plotMotmap.setSelected(config.plotMotmap);
-        c_plotMotmapmax.setSelected(config.plotMotmapmax);
-        c_plotConmap.setSelected(config.plotConmap);
+        c_plotMotmap.setSelected(model.config.plotMotmap);
+        c_plotMotmapmax.setSelected(model.config.plotMotmapmax);
+        c_plotConmap.setSelected(model.config.plotConmap);
 
-        c_plotStaticmax.setSelected(config.plotStaticmax);
-        c_staticPlotmax.setSelected(config.staticPlot.plotmax);
-        c_staticPlottrack.setSelected(config.staticPlot.plottrack);
-        c_staticAverimage.setSelected(config.staticPlot.averimage);
+        c_plotStaticmax.setSelected(model.config.plotStaticmax);
+        c_staticPlotmax.setSelected(model.config.staticPlot.plotmax);
+        c_staticPlottrack.setSelected(model.config.staticPlot.plottrack);
+        c_staticAverimage.setSelected(model.config.staticPlot.averimage);
 
-        c_plotDynamicmax.setSelected(config.plotDynamicmax);
-        c_dynamicPlotmax.setSelected(config.dynamicPlot.plotmax);
-        c_dynamicPlottrack.setSelected(config.dynamicPlot.plottrack);
+        c_plotDynamicmax.setSelected(model.config.plotDynamicmax);
+        c_dynamicPlotmax.setSelected(model.config.dynamicPlot.plotmax);
+        c_dynamicPlottrack.setSelected(model.config.dynamicPlot.plottrack);
 
-        c_plotPolarplot.setSelected(config.polarPlot.plotpolar);
-        c_useGradient.setSelected(config.polarPlot.useGradient);
+        c_plotPolarplot.setSelected(model.config.polarPlot.plotpolar);
+        c_useGradient.setSelected(model.config.polarPlot.useGradient);
         String g;
-        switch (config.polarPlot.type) {
+        switch (model.config.polarPlot.type) {
             case OUTLINEPOINT:
                 g = "Not implemented";
                 c_useGradient.setSelected(true);
                 break;
             case SCREENPOINT:
-                g = "x=" + config.polarPlot.gradientPoint.getX() + " y="
-                        + config.polarPlot.gradientPoint.getY();
+                g = "x=" + model.config.polarPlot.gradientPoint.getX() + " y="
+                        + model.config.polarPlot.gradientPoint.getY();
                 c_useGradient.setSelected(true);
                 break;
             default:
@@ -652,6 +724,8 @@ class Prot_AnalysisUI implements ActionListener {
      * @see CustomCanvas
      */
     public void getGradient(ImagePlus img) {
+        if (img == null)
+            return;
         // cut one slice from stack
         ImagePlus copy = img.duplicate();
         ImageStack is = copy.getImageStack();
@@ -667,6 +741,8 @@ class Prot_AnalysisUI implements ActionListener {
             readUI(); // get ui values to config class
             try {
                 model.runPlugin();
+                model.rt.show("Cumulated cell statistics");
+
             } catch (Exception ex) { // catch all exceptions here
                 LOGGER.debug(ex.getMessage(), ex);
                 LOGGER.error("Problem with run of Protrusion Analysis mapping: " + ex.getMessage());
@@ -713,8 +789,8 @@ class Prot_AnalysisUI implements ActionListener {
         public void mousePressed(MouseEvent e) {
             super.mousePressed(e);
             LOGGER.debug("Image coords: " + offScreenX(e.getX()) + " " + offScreenY(e.getY()));
-            config.polarPlot.type = gradientType.SCREENPOINT;
-            config.polarPlot.gradientPoint =
+            model.config.polarPlot.type = gradientType.SCREENPOINT;
+            model.config.polarPlot.gradientPoint =
                     new Point2d(offScreenX(e.getX()), offScreenY(e.getY()));
             writeUI(); // update UI
         }

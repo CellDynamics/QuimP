@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import ij.measure.ResultsTable;
 import uk.ac.warwick.wsbc.QuimP.CellStats;
 import uk.ac.warwick.wsbc.QuimP.FrameStatistics;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
@@ -19,6 +20,28 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * Compute statistics for one cell.
+ * 
+ * !<
+ * @startuml 
+ * title Class dependency and most important methods. IQuimpSerialize <|.. ProtStat
+ * ProtStat *-- "1" CellStatistics
+ * ProtStat *-- "1" ProtrusionStatistics
+ * class ProtStat {
+ * +cellStatistics : CellStatistics
+ * +protStatistics : ProtrusionStatistics
+ * +void writeCell()
+ * +void writeProtrusion()
+ * }
+ * class CellStatistics {
+ * -void writeCellHeader()
+ * -void writeCellRecord()
+ * }
+ * class ProtrusionStatistics {
+ * -void writeProtHeader()
+ * -void writeProtRecord()
+ * }
+ * @enduml
+ * !>
  * 
  * @author p.baniukiewicz
  *
@@ -32,8 +55,7 @@ public class ProtStat implements IQuimpSerialize {
     }
     private static final Logger LOGGER = LogManager.getLogger(ProtStat.class.getName());
     /**
-     * Frame window used for computation.
-     * Should be uneven.
+     * Frame window used for computation. Should be uneven.
      */
     private final int framewindow = 3;
 
@@ -64,6 +86,14 @@ public class ProtStat implements IQuimpSerialize {
      */
     public ProtrusionStatistics protStatistics;
 
+    /**
+     * Construct the object using various data containers.
+     * 
+     * @param mf
+     * @param tc
+     * @param cs
+     * @param maps
+     */
     public ProtStat(MaximaFinder mf, TrackCollection tc, CellStats cs, STmap maps) {
         this.mf = mf;
         this.tc = tc;
@@ -127,6 +157,8 @@ public class ProtStat implements IQuimpSerialize {
 
         /**
          * Extract already calculated stats from CellStats.
+         * 
+         * Fill internal fields of this class.
          */
         private void getFromCellStats() {
             displacement = new double[frames];
@@ -146,8 +178,7 @@ public class ProtStat implements IQuimpSerialize {
         /**
          * Count protrusions for every frame.
          * 
-         * @return Number of protrusions found for every frame.
-         * TODO use framewindow
+         * @return Number of protrusions found for every frame. TODO use framewindow
          */
         private double[] countProtrusions() {
             Polygon maxima = mf.getMaxima();
@@ -165,18 +196,10 @@ public class ProtStat implements IQuimpSerialize {
          */
         private void writeCellHeader(PrintWriter bf, int cellno) {
             //!<
-            String ret = "#Cell:"+cellno;
+            String ret = "#Cell:" + cellno;
             LOGGER.trace(ret);
-            String h =                     "#Frame,"
-                                          + "Displacement,"
-                                          + "Distance,"
-                                          + "Area,"
-                                          + "Circularity,"
-                                          + "meanMot,"
-                                          + "varMot,"
-                                          + "meanConv,"
-                                          + "varConv,"
-                                          + "protCount";
+            String h = "#Frame," + "Displacement," + "Distance," + "Area," + "Circularity,"
+                    + "meanMot," + "varMot," + "meanConv," + "varConv," + "protCount";
             /**/
             LOGGER.trace(h);
             bf.print(ret + '\n');
@@ -205,6 +228,30 @@ public class ProtStat implements IQuimpSerialize {
             LOGGER.trace(ret);
             bf.print(ret + '\n');
             bf.flush();
+        }
+
+        /**
+         * Add cell statistic to given ResultsTable.
+         * 
+         * @param rt
+         * @see #writeCellRecord(PrintWriter, int)
+         * @see #writeCellHeader(PrintWriter, int)
+         */
+        public void addCellToCellTable(ResultsTable rt) {
+            // Those fields must be related to writeCellHeader and writeCellRecord
+            for (int i = 0; i < displacement.length; i++) {
+                rt.incrementCounter();
+                rt.addValue("frame", i + 1);
+                rt.addValue("displacement", displacement[i]);
+                rt.addValue("distance", distance[i]);
+                rt.addValue("area", area[i]);
+                rt.addValue("circularity", circularity[i]);
+                rt.addValue("motMean", motMean[i]);
+                rt.addValue("motVar", motVar[i]);
+                rt.addValue("conMean", conMean[i]);
+                rt.addValue("conVar", conVar[i]);
+                rt.addValue("protcount", protcount[i]);
+            }
         }
 
     }
@@ -283,15 +330,10 @@ public class ProtStat implements IQuimpSerialize {
          */
         private void writeProtHeader(PrintWriter bf, int cellno) {
             //!<
-            String ret = "#Cell:"+cellno;
+            String ret = "#Cell:" + cellno;
             LOGGER.trace(ret);
-            String h =                     "#Id,"
-                                          + "Position,"
-                                          + "x-xoordinate,"
-                                          + "y-coordinate,"
-                                          + "Frame,"
-                                          + "FirstFrame,"
-                                          + "LastFrame";
+            String h = "#Id," + "Position," + "x-xoordinate," + "y-coordinate," + "Frame,"
+                    + "FirstFrame," + "LastFrame";
             /**/
             LOGGER.trace(h);
             bf.print(ret + '\n');
@@ -305,7 +347,7 @@ public class ProtStat implements IQuimpSerialize {
          * @param bf
          * @param frameno
          */
-        private void writeCellRecord(PrintWriter bf, int id) {
+        private void writeProtRecord(PrintWriter bf, int id) {
             String ret = Integer.toString(id + 1) + ',';
             ret = ret.concat(Integer.toString(tipPositionIndex[id])) + ',';
             ret = ret.concat(Double.toString(tipCoordinate[id].x)) + ',';
@@ -323,6 +365,7 @@ public class ProtStat implements IQuimpSerialize {
 
     /**
      * Add stats for this cell to output.
+     * 
      * @param bf place to write
      * @param cellno Cell number
      */
@@ -335,6 +378,7 @@ public class ProtStat implements IQuimpSerialize {
 
     /**
      * Write stats for protrusions for this cell.
+     * 
      * @param bf place to write
      * @param cellno Cell number.
      */
@@ -342,7 +386,7 @@ public class ProtStat implements IQuimpSerialize {
         LOGGER.debug("Writing prot stats at:" + bf.toString());
         protStatistics.writeProtHeader(bf, cellno);
         for (int t = 0; t < tc.getBf().size(); t++) {
-            protStatistics.writeCellRecord(bf, t);
+            protStatistics.writeProtRecord(bf, t);
         }
     }
 

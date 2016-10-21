@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package uk.ac.warwick.wsbc.QuimP;
 
@@ -24,29 +23,27 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
- * Container class for parameters defining the whole process of analysis in QuimP.
- * Stores parameters read from configuration files and provide them to different modules.
- * Supports writing and reading segmentation parameters from files (paQP). 
- * This class defines file format used for storing parameters in file. 
- * Object of this class is used for creating local configuration objects for ECMM and QAnalysis
- * modules.
- * Process only main paQP file. QuimP uses
- * several files to store segmentation results and algorithm parameters:
+ * Container class for parameters defining the whole process of analysis in QuimP. Stores parameters
+ * read from configuration files and provide them to different modules. Supports writing and reading
+ * segmentation parameters from files (paQP). This class defines file format used for storing
+ * parameters in file. Object of this class is used for creating local configuration objects for
+ * ECMM and QAnalysis modules. Process only main paQP file. QuimP uses several files to store
+ * segmentation results and algorithm parameters:
  * <ul>
- * <li>.paQP - core file, contains reference to images and parameters of
- * algorithm. This file is saved and processed by QParams class</li>
+ * <li>.paQP - core file, contains reference to images and parameters of algorithm. This file is
+ * saved and processed by QParams class</li>
  * <li>.snQP - contains positions of all nodes for every frame</li>
  * <li>.stQP - basic shape statistics for every frame</li>
  * <li>.mapQP - maps described in documentation</li>
  * </ul>
  * <p>
- * This class exists for compatibility purposes. Allows reading old files. There is also 
- * child class QParamsEsxhanger that is based on new file format. Because QParams is strongly 
- * integrated with QuimP it has been left.
+ * This class exists for compatibility purposes. Allows reading old files. There is also child class
+ * QParamsEsxhanger that is based on new file format. Because QParams is strongly integrated with
+ * QuimP it has been left.
  * 
  * @author rtyson
  * @see BOAp
- *  
+ * 
  */
 public class QParams {
 
@@ -56,8 +53,7 @@ public class QParams {
     public static final int QUIMP_11 = 2;
     public static final int NEW_QUIMP = 3;
     /**
-     * Name of the case.
-     * Used to set <i>fileName</i> and <i>path</i>
+     * Name of the case. Used to set <i>fileName</i> and <i>path</i>
      */
     private File paramFile;
     private File[] otherPaFiles;
@@ -66,13 +62,15 @@ public class QParams {
      */
     public int paramFormat;
     /**
-     * Name of the data file - without path and extension. Equals to name of the case.
-     * If initialised from {@link QParamsQconf} contains underscored cell number as well.
+     * Name of the data file - without path and extension. Equals to name of the case. If
+     * initialised from {@link QParamsQconf} contains underscored cell number as well.
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
      */
     private String fileName;
     /**
      * Path where user files exist.
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.BOAState.BOAp
      */
     private String path;
@@ -80,8 +78,8 @@ public class QParams {
 
     protected File statsQP;
     /**
-     * This field is set by direct call from ANA. Left here for compatibility reasons.
-     * Main holder of fluTiffs is {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp}
+     * This field is set by direct call from ANA. Left here for compatibility reasons. Main holder
+     * of fluTiffs is {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp}
      */
     public File[] fluTiffs;
 
@@ -175,8 +173,8 @@ public class QParams {
 
     /**
      * @return the prefix. This name probably contains also underscored cell number. It is added
-     * when object of this is created from {@link QParamsQconf} and should be added when
-     * creating only this object QParams(File).
+     *         when object of this is created from {@link QParamsQconf} and should be added when
+     *         creating only this object QParams(File).
      */
     public String getFileName() {
         return fileName;
@@ -428,8 +426,11 @@ public class QParams {
     /**
      * Compatibility with child class. For this level it return <tt>null</tt>
      * 
+     * <b>Warning</b>
+     * <p>
+     * Should not be called from super class level
+     * 
      * @return null
-     * @warning Should not be called from super class level
      */
     public DataContainer getLoadedDataContainer() {
         LOGGER.error("Calling getLoadedDataContainer() from super class");
@@ -437,12 +438,13 @@ public class QParams {
     }
 
     /**
-     * Read the \a paQP file specified by paramFile (see uk.ac.warwick.wsbc.QuimP.QParams.QParams(File))
+     * Read the \a paQP file specified by paramFile (see
+     * uk.ac.warwick.wsbc.QuimP.QParams.QParams(File))
      * 
      * Create handles to files stored as names in <i>paQP</i>. Read segmentation parameters.
      * 
      * @return true if successful
-     * @throws QuimpException 
+     * @throws QuimpException
      */
     public void readParams() throws QuimpException {
         paramFormat = QParams.OLD_QUIMP;
@@ -556,20 +558,10 @@ public class QParams {
 
         // according to BOAState and /trac/QuimP/wiki/QuimpQp
         //!<
-        pPW.print("#segmentation parameters ("
-                + "Maximum number of nodes, "
-                + "ND, "
-                + "Max iterations, "
-                + "Node spacing, "
-                + "Blowup, "
-                + "Sample tan, "
-                + "Sample norm, "
-                + "Crit velocity, "
-                + "Central F, "
-                + "Contract F, "
-                + "ND, "
-                + "Image force, "
-                + "ND)\n");
+        pPW.print("#segmentation parameters (" + "Maximum number of nodes, " + "ND, "
+                + "Max iterations, " + "Node spacing, " + "Blowup, " + "Sample tan, "
+                + "Sample norm, " + "Crit velocity, " + "Central F, " + "Contract F, " + "ND, "
+                + "Image force, " + "ND)\n");
         /**/
         pPW.print(IJ.d2s(NMAX, 0) + "\n");
         pPW.print(IJ.d2s(delta_t, 6) + "\n");
@@ -607,8 +599,8 @@ public class QParams {
      * Traverse through current directory and sub-directories looking for \a paQP files
      * 
      * @remarks Current \a paQP file (that passed to QParams(File)) is not counted.
-     * @return Array of file handlers or empty array if there is no \a paQP files 
-     * (except \c paramFile)
+     * @return Array of file handlers or empty array if there is no \a paQP files (except \c
+     *         paramFile)
      */
     public File[] findParamFiles() {
         File directory = new File(paramFile.getParent());
@@ -645,7 +637,7 @@ public class QParams {
 
     /**
      * Generate names and handles of files associated with paQP that will be created in result of
-     * analysis.  
+     * analysis.
      */
     void guessOtherFileNames() {
         LOGGER.debug("prefix: " + fileName);

@@ -22,7 +22,8 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * Calculate statistics for whole stack (all cells).
  * 
  * Stats are written on disk after calling constructor. Additionally there is separate list
- * maintained with the same stats. They can be collected calling {@link getStatH()}
+ * maintained with the same stats. They can be collected calling {@link #getStatH()}
+ * 
  * @author tyson
  * @author p.baniukiewicz
  */
@@ -73,7 +74,9 @@ public class CellStatsEval implements Measurements {
     /**
      * Calculate stats.
      * 
-     * <p><b>Warning</b><p>
+     * <p>
+     * <b>Warning</b>
+     * <p>
      * Number of calculated stats must be reflected in {@link buildData(FrameStat[])}
      * 
      * @return Array with stats for every frame for one cell.
@@ -182,9 +185,8 @@ public class CellStatsEval implements Measurements {
     }
 
     /**
-     * Complementary to write method.
-     * Create the same data as write but in form of arrays.
-     * For compatible reasons.
+     * Complementary to write method. Create the same data as write but in form of arrays. For
+     * compatible reasons.
      * 
      * @param s Frame statistics calculated by {@link uk.ac.warwick.wsbc.QuimP.CellStat.record()}
      */
