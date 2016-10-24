@@ -6,8 +6,8 @@ import java.nio.file.Path;
 
 import javax.swing.JOptionPane;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -24,28 +24,29 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 /**
  * Load QCONF or paQP file and initiate proper instance of {@link QParams} class.
  * <p>
- * Provide also methods for QCONF verification and loading image file associated with it with 
- * user assistance.
+ * Provide also methods for QCONF verification and loading image file associated with it with user
+ * assistance.
  * 
  * @author p.baniukiewicz
  *
  */
 public class QconfLoader {
-    private static final Logger LOGGER = LogManager.getLogger(QconfLoader.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QconfLoader.class.getName());
     /**
      * Stand for bad QCONF file that can not be loaded.
      */
     public final static int QCONF_INVALID = 0;
     /**
      * Main object holding loaded configuration file. It can be either traditional QParams or
-     * QParamsQconf for newer format.  
+     * QParamsQconf for newer format.
      */
     private QParams qp = null;
 
     /**
-     * Default constructor. 
+     * Default constructor.
      * 
      * Bring file dialog to load QCONF.
+     * 
      * @throws QuimpException when QCONF can not be loaded
      */
     public QconfLoader() throws QuimpException {
@@ -126,6 +127,7 @@ public class QconfLoader {
      * Try to load image associated with QCONF or paQP file.
      * 
      * If image has not been found, user is being asked to point relevant file.
+     * 
      * @return Loaded image from QCONF or that pointed by user. <tt>null</tt> if user cancelled.
      */
     public ImagePlus getImage() {
@@ -184,11 +186,12 @@ public class QconfLoader {
      * Validate loaded QCONF file in accordance to modules run on it.
      * 
      * @return:
-     * <ol>
-     * <li> 0 if QCONF is not loaded properly.
-     * <li> QParams.QUIMP_11 if it is in old format
-     * <li> {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()} flags otherwise
-     * </ol>
+     *          <ol>
+     *          <li>0 if QCONF is not loaded properly.
+     *          <li>QParams.QUIMP_11 if it is in old format
+     *          <li>{@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()} flags
+     *          otherwise
+     *          </ol>
      */
     public int validateQconf() {
         if (getQp() == null) {
@@ -201,7 +204,7 @@ public class QconfLoader {
 
     /**
      * Just decoder of {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()}.
-     *  
+     * 
      * @return true if BOA module was run.
      */
     public boolean isBOAPresent() {
@@ -216,7 +219,7 @@ public class QconfLoader {
 
     /**
      * Just decoder of {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()}.
-     *  
+     * 
      * @return true if ECMM module was run.
      */
     public boolean isECMMPresent() {
@@ -232,7 +235,7 @@ public class QconfLoader {
 
     /**
      * Just decoder of {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()}.
-     *  
+     * 
      * @return true if ANA module was run.
      */
     public boolean isANAPresent() {
@@ -248,7 +251,7 @@ public class QconfLoader {
 
     /**
      * Just decoder of {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()}.
-     *  
+     * 
      * @return true if Q module was run.
      */
     public boolean isQPresent() {
@@ -263,7 +266,7 @@ public class QconfLoader {
 
     /**
      * Just decoder of {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()}.
-     *  
+     * 
      * @return true if stats are present.
      */
     private boolean isStatsPresent() {

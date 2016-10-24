@@ -78,18 +78,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <version>2.4.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>2.4.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.vecmath</groupId>
       <artifactId>vecmath</artifactId>
       <version>1.5.2</version>
@@ -120,6 +108,26 @@
       <artifactId>JUnitParams</artifactId>
       <version>1.0.5</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.slf4j</groupId>
+    	<artifactId>slf4j-api</artifactId>
+    	<version>1.7.6</version>
+    </dependency>
+    <dependency>
+    	<groupId>ch.qos.logback</groupId>
+    	<artifactId>logback-core</artifactId>
+    	<version>1.1.1</version>
+    </dependency>
+    <dependency>
+    	<groupId>ch.qos.logback</groupId>
+    	<artifactId>logback-classic</artifactId>
+    	<version>1.1.1</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.scijava</groupId>
+    	<artifactId>scijava-config</artifactId>
+    	<version>2.0.1</version>
     </dependency>
   </dependencies>
   <build>

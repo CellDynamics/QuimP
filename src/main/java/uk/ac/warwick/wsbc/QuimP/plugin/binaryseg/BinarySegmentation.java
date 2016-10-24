@@ -4,8 +4,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.binaryseg;
 
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -31,18 +31,18 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  * 
  * If there is break in chain (missing object), the object on the next frame will begin the new
  * chain. 
- * 
+ * !<
  * @startuml
  * User-->(Create BinarySegmentation)
  * User->(run tracking)
  * User->(get chains)
  * (Create BinarySegmentation).->(create TrackOutline) : <<extend>>
  * @enduml
- * 
+ * !>
  * After creation of object user has to call trackObjects()
  * to run tracking. Segmentation is run on object creation. Finally, getChains() should be called
  * to get results - chains of outlines.
- * 
+ * !<
  * @startuml
  * actor User
  * User->BinarySegmentation : <<create>>\n""image""
@@ -80,14 +80,14 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  * getChains->getChains : sort according to ID
  * getChains->User : return array
  * @enduml
- * 
+ * !>
  * @author p.baniukiewicz
  * @see uk.ac.warwick.wsbc.QuimP.geom.TrackOutline
  *
  */
 public class BinarySegmentation {
 
-    private static final Logger LOGGER = LogManager.getLogger(BinarySegmentation.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentation.class.getName());
 
     private int nextID = 0; // next free ID
     private ImagePlus iP; // image to process (stack)

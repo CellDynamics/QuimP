@@ -8,8 +8,8 @@ import java.util.List;
 import javax.vecmath.Point2d;
 import javax.vecmath.Tuple2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
@@ -18,27 +18,25 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
- * Low level snake definition. Form snake from Node objects. Snake is defined by
- * first \c head node. Remaining nodes are in bidirectional linked list.
+ * Low level snake definition. Form snake from Node objects. Snake is defined by first \c head node.
+ * Remaining nodes are in bidirectional linked list.
  * 
  * @remarks Node list may be modified externally but then method such as findNode(),
- * updateNormales(), calcCentroid() should be called to update internal fields of Snake. If number
- * of nodes changes it is recommended to create \b new object.
+ *          updateNormales(), calcCentroid() should be called to update internal fields of Snake. If
+ *          number of nodes changes it is recommended to create \b new object.
  * 
  * @author rtyson
  *
  */
 public class Snake extends Shape<Node> implements IQuimpSerialize {
-    private static final Logger LOGGER = LogManager.getLogger(Snake.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(Snake.class.getName());
     /**
-     * \c true if snake is alive
-     * Changed during segmentation and user interaction
+     * \c true if snake is alive Changed during segmentation and user interaction
      */
     public boolean alive;
     /**
-     * unique ID of snake
-     * Given during Snake creation by SnakeHandler. It is possible to set id explicitly by 
-     * uk.ac.warwick.wsbc.QuimP.Snake.setSnakeID(int)
+     * unique ID of snake Given during Snake creation by SnakeHandler. It is possible to set id
+     * explicitly by uk.ac.warwick.wsbc.QuimP.Snake.setSnakeID(int)
      */
     private int snakeID;
     /**
@@ -46,13 +44,12 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      */
     public double startingNnodes;
     /**
-     * number of nodes frozen
-     * Changed during segmentation
+     * number of nodes frozen Changed during segmentation
      */
     private int FROZEN;
     /**
      * Snake bounds, updated only on use getBounds(). Even though this field is serialized it is
-     * recalculated in afterSerialzie() and beforeSerialzie() 
+     * recalculated in afterSerialzie() and beforeSerialzie()
      */
     private Rectangle bounds = new Rectangle();
 
@@ -63,17 +60,12 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * @param N Number of nodes
      * @param id Unique snake ID related to object being segmented.
      * @throws Exception
-     * @warning List is referenced only not copied
-     * Behavior of this method was changed. Now it does not make copy of Node. In old 
-     * approach there was dummy node deleted in this constructor.
-     * @code{.java}
-     *  index = 0;
-     *  head = new Vert(index); // dummy head node
-     *  head.setHead(true);
-     *  prevn = head;
-     *  index++;
-     *  // insert next nodes here
-     * @endcode 
+     * @warning List is referenced only not copied Behavior of this method was changed. Now it does
+     *          not make copy of Node. In old approach there was dummy node deleted in this
+     *          constructor.
+     * @code{.java} index = 0; head = new Vert(index); // dummy head node head.setHead(true); prevn
+     *              = head; index++; // insert next nodes here
+     * @endcode
      */
     public Snake(final Node h, int N, int id) throws BoaException {
         super(h, N);
@@ -195,9 +187,11 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         calcCentroid();
     }
 
-    /* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -212,9 +206,11 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         return result;
     }
 
-    /* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -257,11 +253,10 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * Initializes \c Node list from ROIs other than polygons For non-polygon
-     * ROIs ellipse is used as first approximation of segmented shape.
-     * Parameters of ellipse are estimated usually using parameters of bounding
-     * box of user ROI This method differs from other \c initialize* methods by
-     * input data which do not contain nodes but the are defined analytically
+     * Initializes \c Node list from ROIs other than polygons For non-polygon ROIs ellipse is used
+     * as first approximation of segmented shape. Parameters of ellipse are estimated usually using
+     * parameters of bounding box of user ROI This method differs from other \c initialize* methods
+     * by input data which do not contain nodes but the are defined analytically
      * 
      * @param t index of node
      * @param xc center of ellipse
@@ -297,8 +292,8 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * Initializes \c Node list from polygon Each edge of input polygon is
-     * divided on uk.ac.warwick.wsbc.QuimP.boap.nodeRes nodes
+     * Initializes \c Node list from polygon Each edge of input polygon is divided on
+     * uk.ac.warwick.wsbc.QuimP.boap.nodeRes nodes
      * 
      * @param p Polygon extracted from IJ ROI
      * @throws Exception
@@ -345,8 +340,8 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * Initializes \c Node list from polygon Does not refine points. Use only
-     * those nodes available in polygon
+     * Initializes \c Node list from polygon Does not refine points. Use only those nodes available
+     * in polygon
      * 
      * @param p Polygon extracted from IJ ROI
      * @throws Exception
@@ -513,7 +508,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     /**
      * Go through whole list and count Nodes that are frozen.
      * 
-     * Set \c FREEZE variable 
+     * Set \c FREEZE variable
      */
     private void countFrozen() {
         Node n = head;
@@ -570,7 +565,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * 
      * @param n Node to remove
      * 
-     * @throws BoaException on insufficient number of nodes 
+     * @throws BoaException on insufficient number of nodes
      */
     final public void removeNode(Node n) throws BoaException {
         if (POINTS <= 3) {
@@ -711,9 +706,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * Cut out intersects. Done once at the end of each frame to cut out any
-     * parts of the contour that self intersect. Similar to cutLoops, but check
-     * all edges (NODES / 2) and cuts out the smallest section
+     * Cut out intersects. Done once at the end of each frame to cut out any parts of the contour
+     * that self intersect. Similar to cutLoops, but check all edges (NODES / 2) and cuts out the
+     * smallest section
      * 
      * @see cutLoops()
      * @see uk.ac.warwick.wsbc.QuimP.Outline.cutSelfIntersects()
@@ -846,8 +841,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * Ensure nodes are between \c maxDist and \c minDist apart, add remove
-     * nodes as required
+     * Ensure nodes are between \c maxDist and \c minDist apart, add remove nodes as required
      * 
      * @param shiftNewNode
      * @throws Exception
@@ -953,7 +947,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
 
     /**
      * Insert default Node after Node \c v
-     *  
+     * 
      * @param n Node to insert new Node after
      * @return Inserted Node
      */
@@ -1066,7 +1060,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         System.out.println("Editing a snake");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -1078,6 +1074,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
 
     /**
      * Call super and then oo Snake related actions
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.Shape.beforeSerialize()
      */
     @Override
@@ -1088,6 +1085,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
 
     /**
      * Call super and then oo Snake related actions
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.Shape.afterSerialize()
      */
     @Override

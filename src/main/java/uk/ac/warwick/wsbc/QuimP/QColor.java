@@ -1,27 +1,26 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package uk.ac.warwick.wsbc.QuimP;
 
 import javax.vecmath.Color3f;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Just a class for colors, that does not use stupid floats represented as RGB
- * in the range 0->1
+ * Just a class for colors, that does not use stupid floats represented as RGB in the range 0->1
  *
  * @author tyson
  */
 public class QColor {
     public double red, green, blue;
-    private static final Logger LOGGER = LogManager.getLogger(QColor.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QColor.class.getName());
 
     /**
-     * Copy constructor 
+     * Copy constructor
+     * 
      * @param src object to copy
      */
     public QColor(final QColor src) {
@@ -40,6 +39,7 @@ public class QColor {
 
     /**
      * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -58,6 +58,7 @@ public class QColor {
 
     /**
      * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

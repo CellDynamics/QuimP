@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.ImagePlus;
 import ij.io.FileInfo;
@@ -45,7 +45,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  */
 public class BOAState implements IQuimpSerialize {
 
-    static final Logger LOGGER = LogManager.getLogger(BOAState.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(BOAState.class.getName());
     /**
      * Reference to segmentation parameters. Holds current parameters.
      * 
@@ -710,7 +710,7 @@ public class BOAState implements IQuimpSerialize {
          * @return Full path to file with extension
          */
         public String deductSnakeFileName(int ID) {
-            LOGGER.trace(getOutputFileCore().getAbsoluteFile());
+            LOGGER.trace(getOutputFileCore().getAbsoluteFile().toString());
             return getOutputFileCore().getAbsoluteFile() + "_" + ID + ".snQP";
         }
 
@@ -813,7 +813,7 @@ public class BOAState implements IQuimpSerialize {
         snakePluginListSnapshots = new ArrayList<SnakePluginList>(Collections.nCopies(numofframes,
                 new SnakePluginList(BOA_.NUM_SNAKE_PLUGINS, pf, vu)));
         isFrameEdited = new ArrayList<Boolean>(Collections.nCopies(numofframes, false));
-        BOA_.LOGGER.debug("Initialize storage of size: " + numofframes + " size of segParams: "
+        LOGGER.debug("Initialize storage of size: " + numofframes + " size of segParams: "
                 + segParamSnapshots.size());
     }
 

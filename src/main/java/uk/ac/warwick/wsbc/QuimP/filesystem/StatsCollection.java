@@ -3,11 +3,11 @@ package uk.ac.warwick.wsbc.QuimP.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.wsbc.QuimP.CellStatsEval;
 import uk.ac.warwick.wsbc.QuimP.CellStats;
+import uk.ac.warwick.wsbc.QuimP.CellStatsEval;
 
 /**
  * Keep statistics for cells.
@@ -20,7 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.CellStats;
  */
 public class StatsCollection implements IQuimpSerialize {
     @SuppressWarnings("unused")
-    private static final Logger LOGGER = LogManager.getLogger(StatsCollection.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(StatsCollection.class.getName());
 
     /**
      * List of statistic objects for separate cells.
@@ -39,7 +39,9 @@ public class StatsCollection implements IQuimpSerialize {
         sHs = new ArrayList<>();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.IQuimpSerialize#beforeSerialize()
      */
     @Override
@@ -48,7 +50,9 @@ public class StatsCollection implements IQuimpSerialize {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.IQuimpSerialize#afterSerialize()
      */
     @Override
@@ -58,8 +62,9 @@ public class StatsCollection implements IQuimpSerialize {
     }
 
     /**
-     * Bridge method to maintain compatibility with old code.
-     * Copies statistics from CellStat objects into internal fields of StatsHandler.
+     * Bridge method to maintain compatibility with old code. Copies statistics from CellStat
+     * objects into internal fields of StatsHandler.
+     * 
      * @param in List of CellStat objects - size of this list equals to number of cells.
      */
     public void copyFromCellStat(List<CellStatsEval> in) {

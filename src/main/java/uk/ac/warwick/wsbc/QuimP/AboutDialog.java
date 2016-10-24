@@ -25,8 +25,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Build About dialog with support of mouse operations.
@@ -37,7 +37,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class AboutDialog implements ActionListener {
-    private static final Logger LOGGER = LogManager.getLogger(AboutDialog.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AboutDialog.class.getName());
     /**
      * About window.
      */
@@ -143,8 +143,9 @@ public class AboutDialog implements ActionListener {
     /**
      * Make copy of MenuItem.
      * 
-     * Components can not be shared among containers. This method copies basic properties
-     * of component to its new instance (shallow copy of selected properties)
+     * Components can not be shared among containers. This method copies basic properties of
+     * component to its new instance (shallow copy of selected properties)
+     * 
      * @param src source MenuItem
      * @return Copy of \c src MenuItem
      */
@@ -179,7 +180,8 @@ public class AboutDialog implements ActionListener {
     /**
      * Show or hide main window.
      * 
-     * <p><b>Warning</b><br>
+     * <p>
+     * <b>Warning</b><br>
      * When window is visible append(final String) does not work.
      * 
      * @param state \c true to show window

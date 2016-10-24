@@ -4,14 +4,13 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 
@@ -22,15 +21,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  *
  */
 public class QWindowBuilder_Test {
-    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LogManager.getLogger(QWindowBuilder_Test.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QWindowBuilder_Test.class.getName());
     private ParamList def1;
     QWindowBuilderInst inst;
 

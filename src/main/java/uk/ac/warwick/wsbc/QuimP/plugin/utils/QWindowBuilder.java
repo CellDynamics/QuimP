@@ -31,89 +31,77 @@ import javax.swing.JTextPane;
 import javax.swing.SpinnerNumberModel;
 
 import org.apache.commons.lang3.text.WordUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 
 /**
  * Simple window builder for QuimP plugins
  * 
- * Allow user to construct simple window for his plugins just by passing textual
- * description of what that window should contain.
+ * Allow user to construct simple window for his plugins just by passing textual description of what
+ * that window should contain.
  * 
- * Main function (BuildWindow) accepts HashMap with pairs <name,params> where
- * name is unique name of the parameter and params defines how this parameter
- * will be displayed in UI (see BuildWindow(final ParamList)). Using this
- * mapping there is next list \c ui created that contains the same names but now
- * joined with UI components. This list is used for addressing these component
- * basing on theirs names. The UI controls are stored at \c ui which is \a
- * protected and may be used for influencing these controls by user. To identify
- * certain UI control its name is required which is the string passed as first
- * dimension of \c def definition passed to to BuildWindow method. Below code
- * shows how to change property of control
+ * Main function (BuildWindow) accepts HashMap with pairs <name,params> where name is unique name of
+ * the parameter and params defines how this parameter will be displayed in UI (see
+ * BuildWindow(final ParamList)). Using this mapping there is next list \c ui created that contains
+ * the same names but now joined with UI components. This list is used for addressing these
+ * component basing on theirs names. The UI controls are stored at \c ui which is \a protected and
+ * may be used for influencing these controls by user. To identify certain UI control its name is
+ * required which is the string passed as first dimension of \c def definition passed to to
+ * BuildWindow method. Below code shows how to change property of control
  * 
- * @code{.java}
- * String key = "paramname"; // case insensitive
- * JSpinner comp = (JSpinner) ui.get(key); // get control using its name 
- * comp.getEditor()).getTextField().setColumns(5);
+ * @code{.java} String key = "paramname"; // case insensitive JSpinner comp = (JSpinner)
+ *              ui.get(key); // get control using its name
+ *              comp.getEditor()).getTextField().setColumns(5);
  * @endcode
  * 
- * The basic usage pattern is as follows:
+ *          The basic usage pattern is as follows:
  * 
- * @msc
- * hscale="1";
- * Caller,QWindowBuilder,AWTWindow;
- * Caller=>QWindowBuilder [label="BuildWindow(..)"];
- * Caller=>QWindowBuilder [label="ShowWindow(true)"];
- * QWindowBuilder->AWTWindow [label="Show AWT window"];
- * --- [label="Window is displayed"];
- * Caller=>QWindowBuilder [label="setValues(..)"];
- * QWindowBuilder->AWTWindow [label="update UI"];
- * Caller=>QWindowBuilder [label="getValues()"];
- * QWindowBuilder->AWTWindow [label="ask for values"];
- * AWTWindow>>QWindowBuilder [label="ParamList"]; 
- * Caller<<QWindowBuilder [label="UI values"];
- * --- [label="Ask for one value associated with name"];
- * Caller=>QWindowBuilder [label="getDoublefromUI(name)"];
- * QWindowBuilder=>QWindowBuilder [label="getVales()"];
- * QWindowBuilder=>QWindowBuilder [label="find name in ParamList"];
- * Caller<<QWindowBuilder [label="value"];
+ * @msc hscale="1"; Caller,QWindowBuilder,AWTWindow; Caller=>QWindowBuilder
+ *      [label="BuildWindow(..)"]; Caller=>QWindowBuilder [label="ShowWindow(true)"];
+ *      QWindowBuilder->AWTWindow [label="Show AWT window"]; --- [label="Window is displayed"];
+ *      Caller=>QWindowBuilder [label="setValues(..)"]; QWindowBuilder->AWTWindow [label="update
+ *      UI"]; Caller=>QWindowBuilder [label="getValues()"]; QWindowBuilder->AWTWindow [label="ask
+ *      for values"]; AWTWindow>>QWindowBuilder [label="ParamList"]; Caller<<QWindowBuilder
+ *      [label="UI values"]; --- [label="Ask for one value associated with name"];
+ *      Caller=>QWindowBuilder [label="getDoublefromUI(name)"]; QWindowBuilder=>QWindowBuilder
+ *      [label="getVales()"]; QWindowBuilder=>QWindowBuilder [label="find name in ParamList"];
+ *      Caller<<QWindowBuilder [label="value"];
  * @endmsc
  * 
- * Methods getValues() and setValues() should be used by class extending
- * QWindowBuilder for setting and achieving parameters from GUI. Note
- * that parameters in UIs are validated only when they become out of
- * focus. Until cursor is in UI its value is not updated internally,
- * thus getValues() returns its old snapshot.
+ *         Methods getValues() and setValues() should be used by class extending QWindowBuilder for
+ *         setting and achieving parameters from GUI. Note that parameters in UIs are validated only
+ *         when they become out of focus. Until cursor is in UI its value is not updated internally,
+ *         thus getValues() returns its old snapshot.
  * 
- * \c RESERVED_KEYS is list of reserved keys that are not UI elements. They are
- * processed in different way.
+ *         \c RESERVED_KEYS is list of reserved keys that are not UI elements. They are processed in
+ *         different way.
  * 
- * Other behavior:
- * By default on close or when user clicked Cancel window is hided only, not destroyed. This is 
- * due to preservation of all settings. Lifetime of window depends on QuimP
+ *         Other behavior: By default on close or when user clicked Cancel window is hided only, not
+ *         destroyed. This is due to preservation of all settings. Lifetime of window depends on
+ *         QuimP
  * 
  * @warning UI type as JSpinner keeps data in double format even in values passed through by
- * setValues(ParamList) are integer (ParamList keeps data as String). Therefore getValues can 
- * return this list with the same data but in double syntax (5 -> 5.0). Any try of convention of
- *  "5.0" to integer value will cause NumberFormatException. To avoid this problem use 
- *  QuimP.plugin.ParamList.getIntValue(String) from ParamList of treat all strings in ParamList as
- *  Double.
- * @remarks All parameters passed to and from QWindowBuilder as ParamList are encoded as \b String 
+ *          setValues(ParamList) are integer (ParamList keeps data as String). Therefore getValues
+ *          can return this list with the same data but in double syntax (5 -> 5.0). Any try of
+ *          convention of "5.0" to integer value will cause NumberFormatException. To avoid this
+ *          problem use QuimP.plugin.ParamList.getIntValue(String) from ParamList of treat all
+ *          strings in ParamList as Double.
+ * @remarks All parameters passed to and from QWindowBuilder as ParamList are encoded as \b String
  * 
  * @author p.baniukiewicz
  */
 public abstract class QWindowBuilder {
-    final protected static Logger LOGGER = LogManager.getLogger(QWindowBuilder.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QWindowBuilder.class.getName());
     protected JFrame pluginWnd; //!< main window object
     protected boolean windowState; //!< current window state \c true if visible
     protected JPanel pluginPanel; //!< Main panel extended on whole \c pluginWnd
     protected ComponentList ui; //!< list of all UI elements
     private ParamList def; //!< definition of window and parameters
 
-    final private HashSet<String> RESERVED_KEYS = new HashSet<String>(
-            Arrays.asList(new String[] { "help", "name" })); //!< reserved keys
+    final private HashSet<String> RESERVED_KEYS =
+            new HashSet<String>(Arrays.asList(new String[] { "help", "name" })); //!< reserved keys
 
     // definition string - positions of configuration data in value string (see
     // BuildWindow)
@@ -139,27 +127,21 @@ public abstract class QWindowBuilder {
     /**
      * Main window builder
      * 
-     * The window is constructed using configuration provided by \c def
-     * parameter which is Map of <key,value>. The key is the name of the
-     * parameter that should be related to value held in it (e.g window, smooth,
-     * step, etc.). The name is not case sensitive. Keys are strictly
-     * related to UI elements that are created by this method (basing on
-     * configuration passed in \b value). There are two special names that are
-     * not related to UI directly: 
-     * -# help - defines textual help provided as parameter. It supports HTML
-     * -# name - defines plugin name provided as parameter 
+     * The window is constructed using configuration provided by \c def parameter which is Map of
+     * <key,value>. The key is the name of the parameter that should be related to value held in it
+     * (e.g window, smooth, step, etc.). The name is not case sensitive. Keys are strictly related
+     * to UI elements that are created by this method (basing on configuration passed in \b value).
+     * There are two special names that are not related to UI directly: -# help - defines textual
+     * help provided as parameter. It supports HTML -# name - defines plugin name provided as
+     * parameter
      * 
-     * The parameter list is defined as String and its content is depended on 
-     * key.
-     * For \b help and \b name it contains single string with help text and
-     * plugin name respectively. 
+     * The parameter list is defined as String and its content is depended on key. For \b help and
+     * \b name it contains single string with help text and plugin name respectively.
      * 
-     * The UI elements are defined for all other cases in \b value filed of Map
-     * as comma separated string.
-     * Known UI are as follows:
+     * The UI elements are defined for all other cases in \b value filed of Map as comma separated
+     * string. Known UI are as follows:
      * <ul>
-     * <li>spinner - creates Spinner control. It requires 4 parameters (in
-     * order)
+     * <li>spinner - creates Spinner control. It requires 4 parameters (in order)
      * <ol>
      * <li>minimal range
      * <li>maximal range
@@ -168,66 +150,72 @@ public abstract class QWindowBuilder {
      * </ol>
      * <li>choice - creates Choice control. It requires 0 or more parameters - entries in list
      * <ol>
-     * <li> first entry
-     * <li> second entry
-     * <li> ...
+     * <li>first entry
+     * <li>second entry
+     * <li>...
      * </ol>
      * <li>button - creates JButton control. It requires 1 parameter:
      * <ol>
      * <li>Name on the button
      * </ol>
-     * <li>checkbox - creates JCheckBox control. It requires 3 parameters (in
-     * order)
+     * <li>checkbox - creates JCheckBox control. It requires 3 parameters (in order)
      * <ol>
      * <li>checkbox name
      * <li>checkbox state (boolean value, \a true or \a false)
      * <li>initial value (\a true or \a false)
      * </ol>
      * </ul>
-     * For \a choice calling uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder.setValues(final ParamList)
-     * has sense only if passed parameters will be present in list already (so it has been used
-     * during creation of window, passed in constructor) In this case it causes selection of
-     * this entry in list. Otherwise passed value will be ignored. \a setVales for \a Choice does
-     * not add new entry to list. 
+     * For \a choice calling uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder.setValues(final
+     * ParamList) has sense only if passed parameters will be present in list already (so it has
+     * been used during creation of window, passed in constructor) In this case it causes selection
+     * of this entry in list. Otherwise passed value will be ignored. \a setVales for \a Choice does
+     * not add new entry to list.
      * 
-     * The type of required UI element associated with given parameter name (\a
-     * Key) is coded in value of given Key in accordance with list above. The
-     * correct order of sub-parameters must be preserved. Exemplary
-     * configuration is as follows:
+     * The type of required UI element associated with given parameter name (\a Key) is coded in
+     * value of given Key in accordance with list above. The correct order of sub-parameters must be
+     * preserved. Exemplary configuration is as follows:
      * 
-     * @code{.java}
-     *  def1 = new ParamList();
-     *  def1.put("Name", "test");
-     *  def1.put("wIndow", "spinner, -0.5, 0.5, 0.1, 0");
-     *  def1.put("smootH", "spinner, -1, 10, 1, -1");
-     *  def1.put("Load Mask", "button, Load_mask");
-     *  def1.put("Getopened", "choice,NONE");
-     *  def1.put("help","<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. It should be 8-bit image of size of original stack with <span style=\"color: #ffffff; background-color: #000000;\">black background</span> and white objects.</p>\r\n<p><strong>Get Opened</strong> - Select mask already opened in ImageJ. Alternative to <em>Load Mask</em>, will override loaded file.</p>\r\n<p><strong>step</strong> - stand for discretisation density, 1.0 means that every pixel of the outline will be mapped to Snake node.</p>\r\n<p><strong>smoothing</strong>&nbsp;- add extra Spline interpolation to the shape</p></font>"); 
+     * @code{.java} def1 = new ParamList(); def1.put("Name", "test"); def1.put("wIndow", "spinner,
+     *              -0.5, 0.5, 0.1, 0"); def1.put("smootH", "spinner, -1, 10, 1, -1");
+     *              def1.put("Load Mask", "button, Load_mask"); def1.put("Getopened",
+     *              "choice,NONE"); def1.put("help","<font size=\"3\">
+     *              <p>
+     *              <strong>Load Mask</strong> - Load mask file. It should be 8-bit image of size of
+     *              original stack with <span style=\"color: #ffffff; background-color:
+     *              #000000;\">black background</span> and white objects.
+     *              </p>
+     *              \r\n
+     *              <p>
+     *              <strong>Get Opened</strong> - Select mask already opened in ImageJ. Alternative
+     *              to <em>Load Mask</em>, will override loaded file.
+     *              </p>
+     *              \r\n
+     *              <p>
+     *              <strong>step</strong> - stand for discretisation density, 1.0 means that every
+     *              pixel of the outline will be mapped to Snake node.
+     *              </p>
+     *              \r\n
+     *              <p>
+     *              <strong>smoothing</strong>&nbsp;- add extra Spline interpolation to the shape
+     *              </p>
+     *              </font>");
      * @endcode
      * 
-     * By default window is not visible yet. User must call ShowWindow
-     * or ToggleWindow. The \b Apply button does nothing. It is only to
-     * refocus after change of values in spinners. They are not updated
-     * until unfocused. User can overwrite this behavior in his own class derived from
-     * QWindowBuilder
+     *          By default window is not visible yet. User must call ShowWindow or ToggleWindow. The
+     *          \b Apply button does nothing. It is only to refocus after change of values in
+     *          spinners. They are not updated until unfocused. User can overwrite this behavior in
+     *          his own class derived from QWindowBuilder
      * 
-     * This method can be overrode in implementing class that allows for e.g. setting size of the
-     * window or add listeners:
-     * @code{.java}
-     *   public void buildWindow(ParamList def) {
-     *   super.buildWindow(def);
-     *   // add preffered size to this window
-     *   pluginWnd.setPreferredSize(new Dimension(300, 450));
-     *   pluginWnd.pack();
-     *   pluginWnd.setVisible(true);
-     *   pluginWnd.addWindowListener(new myWindowAdapter()); // close not hide
-     *   ((JButton) ui.get("Load Mask")).addActionListener(this);
-     *   applyB.addActionListener(this);
-     * }
+     *          This method can be overrode in implementing class that allows for e.g. setting size
+     *          of the window or add listeners:
+     * @code{.java} public void buildWindow(ParamList def) { super.buildWindow(def); // add
+     *              preffered size to this window pluginWnd.setPreferredSize(new Dimension(300,
+     *              450)); pluginWnd.pack(); pluginWnd.setVisible(true);
+     *              pluginWnd.addWindowListener(new myWindowAdapter()); // close not hide ((JButton)
+     *              ui.get("Load Mask")).addActionListener(this); applyB.addActionListener(this); }
      * @endcode
      * @param def Configuration as described
-     * @throw IllegalArgumentException or other unchecked exceptions on wrong
-     * syntax of \c def
+     * @throw IllegalArgumentException or other unchecked exceptions on wrong syntax of \c def
      */
     public void buildWindow(final ParamList def) {
         if (def.size() < 2)
@@ -387,7 +375,7 @@ public abstract class QWindowBuilder {
      * Toggle window visibility if input is \c true. Close it immediately if input is \c false
      * 
      * @param val Demanded state of window. If \c true visibility of window is toggled, if \c false
-     * window is closing.
+     *        window is closing.
      * @return Current status of window \c true if visible, \c false if not
      */
     public boolean toggleWindow(boolean val) {
@@ -413,17 +401,16 @@ public abstract class QWindowBuilder {
     /**
      * Set plugin parameters.
      * 
-     * Use the same parameters names as in BuildWindow(Map<String, String[]>).
-     * The name of the parameter is \a key in Map. Every parameter passed to
-     * this method must have its representation in GUI and thus it must be
-     * present in \c def parameter of BuildWindow(Map<String, String[]>) All
-     * values are passed as:
+     * Use the same parameters names as in BuildWindow(Map<String, String[]>). The name of the
+     * parameter is \a key in Map. Every parameter passed to this method must have its
+     * representation in GUI and thus it must be present in \c def parameter of
+     * BuildWindow(Map<String, String[]>) All values are passed as:
      * <ol>
      * <li>\c Double in case of spinners
      * </ol>
      * 
-     * User has to care for correct format passed to UI control. If input values
-     * are above range defined in \c def, new range is set for UI control
+     * User has to care for correct format passed to UI control. If input values are above range
+     * defined in \c def, new range is set for UI control
      * 
      * @param vals <key,value> pairs to fill UI.
      */
@@ -470,18 +457,16 @@ public abstract class QWindowBuilder {
     /**
      * Receives parameters related to UI elements as Map.
      * 
-     * To get one particular parameter use getIntegerFromUI(String) or
-     * getDoubleFromUI(String)
+     * To get one particular parameter use getIntegerFromUI(String) or getDoubleFromUI(String)
      * 
-     * @return List of <key,param>, where \b key is the name of parameter passed
-     * to QWindowBuilder class through BuildWindow method. The method
-     * remaps those keys to related UI controls and reads values
-     * associated to them.
+     * @return List of <key,param>, where \b key is the name of parameter passed to QWindowBuilder
+     *         class through BuildWindow method. The method remaps those keys to related UI controls
+     *         and reads values associated to them.
      * @see getDoubleFromUI(final String)
      * @see getIntegerFromUI(final String)
-     * @warning JSpinners are set to support \b double values and that values are returned here
-     * It means that originally pushed to UI integers are changed to Double what can affect 
-     * set/getpluginConfig from filter interface as well
+     * @warning JSpinners are set to support \b double values and that values are returned here It
+     *          means that originally pushed to UI integers are changed to Double what can affect
+     *          set/getpluginConfig from filter interface as well
      */
     public ParamList getValues() {
         ParamList ret = new ParamList();
@@ -522,13 +507,12 @@ public abstract class QWindowBuilder {
     /**
      * Return value related to given key.
      * 
-     * Value is retrieved from ui element related to given \b key. Relation
-     * between keys and ui elements is defined by user in configuration list
-     * provided to buildWindow(final ParamList).
+     * Value is retrieved from ui element related to given \b key. Relation between keys and ui
+     * elements is defined by user in configuration list provided to buildWindow(final ParamList).
      * 
      * @remarks The key must be defined and exists in that list.
-     * @remarks In case of wrong conversion it may be exception thrown. User is
-     * responsible to call this method for proper key.
+     * @remarks In case of wrong conversion it may be exception thrown. User is responsible to call
+     *          this method for proper key.
      * 
      * @param key Key to be read from configuration list, case insensitive
      * @return integer representation of value under \c key

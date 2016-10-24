@@ -6,8 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,7 +15,7 @@ import com.google.gson.GsonBuilder;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
- * Serves save and load operations for plugin configuration. Saved is current plugin stack with 
+ * Serves save and load operations for plugin configuration. Saved is current plugin stack with
  * plugins settings.
  * 
  * This class adds additional layer with data to saved plugin configuration.
@@ -24,8 +24,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  */
 @Deprecated
 public class QPluginConfigSerializer {
-    private static final Logger LOGGER =
-            LogManager.getLogger(QPluginConfigSerializer.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QPluginConfigSerializer.class.getName());
     private transient GsonBuilder gsonbuilder;
     // Definition of top layer data saved
     @SuppressWarnings("unused")
@@ -54,7 +53,8 @@ public class QPluginConfigSerializer {
 
     /**
      * Do everything after load
-     * @throws QuimpPluginException 
+     * 
+     * @throws QuimpPluginException
      */
     private void afterLoad() throws QuimpPluginException {
         activePluginList.afterSerialize();
@@ -62,6 +62,7 @@ public class QPluginConfigSerializer {
 
     /**
      * Saves configuration packed with QPluginConfig class
+     * 
      * @param filename Name of the file to save configuration
      * @throws FileNotFoundException
      */
@@ -79,13 +80,13 @@ public class QPluginConfigSerializer {
     /**
      * Loads QPluginConfigSerializer class instance from json file.
      * 
-     * If any of underlying class requires special builder it should be provided before 
-     * calling \c load method by getBuilder().
+     * If any of underlying class requires special builder it should be provided before calling \c
+     * load method by getBuilder().
      * 
      * @param filename File to load
-     * @throws IOException 
+     * @throws IOException
      * @return New object of QPluginConfigSerializer with values read from file \c filename
-     * @throws QuimpPluginException 
+     * @throws QuimpPluginException
      * @see getBuilder()
      */
     public QPluginConfigSerializer load(String filename) throws IOException, QuimpPluginException {
@@ -110,6 +111,7 @@ public class QPluginConfigSerializer {
 
     /**
      * Returns created object after loading
+     * 
      * @return SnakePluginList
      */
     public SnakePluginList getSnakePluginList() {

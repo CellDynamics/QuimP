@@ -1,0 +1,22 @@
+<configuration>
+  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.out</target>
+    <filter class="org.scijava.config.logback.StdOutFilter" />
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{120} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="stderr" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.err</target>
+    <filter class="org.scijava.config.logback.StdErrFilter" />
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{120} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="trace">
+    <appender-ref ref="stdout" />
+    <appender-ref ref="stderr" />
+  </root>
+</configuration>

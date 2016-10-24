@@ -3,8 +3,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.qanalysis;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -22,14 +22,14 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 /**
  * Create spatial temporal maps from ECMM and ANA data.
  * <p>
- * This class can be serialized but only as container of maps. Data required for creation
- * of those maps are not serialized, thus restored object is not fully functional. As this is 
- * last step in QuimP workflow it may not be necessary to load this json anymore.
+ * This class can be serialized but only as container of maps. Data required for creation of those
+ * maps are not serialized, thus restored object is not fully functional. As this is last step in
+ * QuimP workflow it may not be necessary to load this json anymore.
  * 
  * @author rtyson
  */
 public class STmap implements IQuimpSerialize {
-    private static final Logger LOGGER = LogManager.getLogger(STmap.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(STmap.class.getName());
     /**
      * Coordinates map.
      */
@@ -51,8 +51,8 @@ public class STmap implements IQuimpSerialize {
     transient int[] convColor;
     transient ImagePlus migImP, fluImP, convImP;
     /**
-     * Contain OutlineHandler used for generating maps
-     * <b>warning</b><p>
+     * Contain OutlineHandler used for generating maps <b>warning</b>
+     * <p>
      * It is not serialized
      */
     transient OutlineHandler oH;
@@ -71,7 +71,7 @@ public class STmap implements IQuimpSerialize {
     private double mapPixelWidth = 1;
 
     /**
-     * Default constructor to satisfy GSon builder. Should not be used for proper object 
+     * Default constructor to satisfy GSon builder. Should not be used for proper object
      * initialization
      */
     public STmap() {
@@ -79,11 +79,11 @@ public class STmap implements IQuimpSerialize {
     }
 
     /**
-     * Copy constructor. 
+     * Copy constructor.
      * 
-     * @param src source object
-     * <b>warning</b><p>
-     * Make a copy of serializable fields only
+     * @param src source object <b>warning</b>
+     *        <p>
+     *        Make a copy of serializable fields only
      */
     public STmap(final STmap src) {
         this.coordMap = QuimPArrayUtils.copy2darray(src.coordMap, null);
@@ -148,8 +148,7 @@ public class STmap implements IQuimpSerialize {
     }
 
     /**
-     * Generate all maps saved by Q Analysis
-     * Fill internal class fields
+     * Generate all maps saved by Q Analysis Fill internal class fields
      */
     private void generate() {
 
@@ -231,10 +230,9 @@ public class STmap implements IQuimpSerialize {
             }
 
             /*
-             * if (zeroVert.floures == -1) { fluMap[t][0] = 0; fluColor[pN] =
-             * (byte) QColor.bwScale(0, 256, oH.maxFlu, 0); } else { intFlu =
-             * interpolate(zeroVert.floures, zeroVert.getNext().floures,
-             * fraction); fluMap[t][0] = intFlu; fluColor[pN] = (byte)
+             * if (zeroVert.floures == -1) { fluMap[t][0] = 0; fluColor[pN] = (byte)
+             * QColor.bwScale(0, 256, oH.maxFlu, 0); } else { intFlu = interpolate(zeroVert.floures,
+             * zeroVert.getNext().floures, fraction); fluMap[t][0] = intFlu; fluColor[pN] = (byte)
              * QColor.bwScale(intFlu, 256, oH.maxFlu, 0); }
              */
 
@@ -285,10 +283,9 @@ public class STmap implements IQuimpSerialize {
                     }
                 }
                 /*
-                 * if (zeroVert.floures == -1) { fluMap[t][p] = 0; fluColor[pN]
-                 * = (byte) QColor.bwScale(0, 256, oH.maxFlu, 0); } else {
-                 * intFlu = interpolate(v.floures, v.getNext().floures,
-                 * fraction); fluMap[t][p] = intFlu; fluColor[pN] = (byte)
+                 * if (zeroVert.floures == -1) { fluMap[t][p] = 0; fluColor[pN] = (byte)
+                 * QColor.bwScale(0, 256, oH.maxFlu, 0); } else { intFlu = interpolate(v.floures,
+                 * v.getNext().floures, fraction); fluMap[t][p] = intFlu; fluColor[pN] = (byte)
                  * QColor.bwScale(intFlu, 256, oH.maxFlu, 0); }
                  */
 
@@ -387,10 +384,9 @@ public class STmap implements IQuimpSerialize {
         }
         // test making LUT images
         /*
-         * ImagePlus migImPLut = IJ.createImage("mig_32", "32-bit", res, T,1);
-         * ImageProcessor ipFloat = new FloatProcessor(res, T, migPixels, null);
-         * LUT lut = new LUT(); ipFloat.setLut(lut)
-         * migImPLut.setProcessor(ipFloat); resize(migImPLut); migImPLut.show();
+         * ImagePlus migImPLut = IJ.createImage("mig_32", "32-bit", res, T,1); ImageProcessor
+         * ipFloat = new FloatProcessor(res, T, migPixels, null); LUT lut = new LUT();
+         * ipFloat.setLut(lut) migImPLut.setProcessor(ipFloat); resize(migImPLut); migImPLut.show();
          */
     }
 
@@ -400,20 +396,25 @@ public class STmap implements IQuimpSerialize {
      * Usually maps are non-square and need to be rescaled for correct presentation, what this
      * method does.
      * 
-     * <p><b>Note</b><p>
-     * Take care about what <tt>ImageProcessor</tt> is used. The <tt>ColorProcessor</tt> is created 
-     * from 1D array, whereas e.g. <tt>FloatProcessor</tt> from 2D arrays. This causes that the 
-     * same map will be displayed with different orientation. QuimP natively uses maps presented 
-     * by <tt>ColorProcessor</tt>, if one uses <tt>FloatProcessor</tt> it must be rotated and 
-     * flip to maintain correct orientation. See the following example: 
+     * <p>
+     * <b>Note</b>
+     * <p>
+     * Take care about what <tt>ImageProcessor</tt> is used. The <tt>ColorProcessor</tt> is created
+     * from 1D array, whereas e.g. <tt>FloatProcessor</tt> from 2D arrays. This causes that the same
+     * map will be displayed with different orientation. QuimP natively uses maps presented by
+     * <tt>ColorProcessor</tt>, if one uses <tt>FloatProcessor</tt> it must be rotated and flip to
+     * maintain correct orientation. See the following example:
+     * 
      * <pre>
-     * {@code
-     * float[][] motMap = QuimPArrayUtils.double2float(mapCell.motMap);
-     * ImageProcessor imp = new FloatProcessor(motMap).rotateRight();
-     * imp.flipHorizontal();
-     * mapCell.map2ImagePlus("motility_map", imp).show();
+     * {
+     *     &#64;code
+     *     float[][] motMap = QuimPArrayUtils.double2float(mapCell.motMap);
+     *     ImageProcessor imp = new FloatProcessor(motMap).rotateRight();
+     *     imp.flipHorizontal();
+     *     mapCell.map2ImagePlus("motility_map", imp).show();
      * }
      * </pre>
+     * 
      * @param name Name of the ImagePlus window
      * @param imp Image processor
      * @return Created ImagePlus object
@@ -429,10 +430,13 @@ public class STmap implements IQuimpSerialize {
     /**
      * Convert raw map to colorscale.
      * 
-     * <p><b>warning</b><p>
+     * <p>
+     * <b>warning</b>
+     * <p>
      * Assumes that input 2D array map is regular and not column. This method can be used with data
      * restored from <i>QCONF</i> file in the following way:
      * <p>
+     * 
      * <pre>
      * {@code
      * // Maps are correlated in order with Outlines in DataContainer.
@@ -446,7 +450,7 @@ public class STmap implements IQuimpSerialize {
      * @param palette Palette code, can be "rww" or "rwb".
      * @param min Minimum value in Outline that was used for creation of this map
      * @param max Maximum value in Outline that was used for creation of this map
-     * @return Created ImagePlus object 
+     * @return Created ImagePlus object
      * @see map2ImagePlus(String, ImageProcessor)
      * @see ERColorMap2(String, double, double, double) for palettes
      */

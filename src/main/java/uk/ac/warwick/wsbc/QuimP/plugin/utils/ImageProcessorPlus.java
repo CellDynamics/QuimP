@@ -6,8 +6,8 @@ import java.util.Vector;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.process.ImageProcessor;
 
@@ -31,12 +31,10 @@ public class ImageProcessorPlus {
      * @warning Replaces original image and may not preserve all its attributes
      * @param ip ImageProcessor to be extended
      * @param angle Angle to be image rotated
-     * @return copy of \c ip extended to size that allows to rotate it by \c
-     * angle without clipping
+     * @return copy of \c ip extended to size that allows to rotate it by \c angle without clipping
      * @retval ImageProcessor
      */
-    public ImageProcessor extendImageBeforeRotation(ImageProcessor ip,
-            double angle) {
+    public ImageProcessor extendImageBeforeRotation(ImageProcessor ip, double angle) {
         ImageProcessor ret;
         int width = ip.getWidth();
         int height = ip.getHeight();
@@ -56,8 +54,7 @@ public class ImageProcessorPlus {
         ret.fill(); // change color of extended image
         ret.setInterpolationMethod(ip.getInterpolationMethod());
         // insert original image into extended
-        ret.insert(ip, (newWidth - ip.getWidth()) / 2,
-                (newHeight - ip.getHeight()) / 2);
+        ret.insert(ip, (newWidth - ip.getWidth()) / 2, (newHeight - ip.getHeight()) / 2);
         ret.resetRoi();
         return ret; // assign extended into current
     }
@@ -65,19 +62,15 @@ public class ImageProcessorPlus {
     /**
      * Rotate image by specified angle keeping correct rotation direction
      * 
-     * @param ip
-     * ImageProcessor to be rotated
-     * @param angle
-     * Angle of rotation in anti-clockwise direction
-     * @param addBorders
-     * if \a true rotates with extension, \a false use standard
-     * rotation with clipping
-     * @return rotated \c ip that is a copy of \c ip when \c addBorders is \b
-     * true or reference when \c addBorders is \b false
+     * @param ip ImageProcessor to be rotated
+     * @param angle Angle of rotation in anti-clockwise direction
+     * @param addBorders if \a true rotates with extension, \a false use standard rotation with
+     *        clipping
+     * @return rotated \c ip that is a copy of \c ip when \c addBorders is \b true or reference when
+     *         \c addBorders is \b false
      * @retval ImageProcessor
      */
-    public ImageProcessor rotate(ImageProcessor ip, double angle,
-            boolean addBorders) {
+    public ImageProcessor rotate(ImageProcessor ip, double angle, boolean addBorders) {
         ImageProcessor ret;
         if (addBorders)
             ret = extendImageBeforeRotation(ip, angle);
@@ -99,8 +92,7 @@ public class ImageProcessorPlus {
      * @retval ImageProcessor
      * @return Clipped image
      */
-    public ImageProcessor crop(ImageProcessor ip, int luX, int luY, int width,
-            int height) {
+    public ImageProcessor crop(ImageProcessor ip, int luX, int luY, int width, int height) {
         ip.setRoi(luX, luY, width, height);
         ip = ip.crop();
         ip.resetRoi();
@@ -110,9 +102,8 @@ public class ImageProcessorPlus {
     /**
      * Crop image
      * 
-     * Designed to use with cooperation with
-     * extendImageBeforeRotation(ImageProcessor,double). Assumes that cropping
-     * area is centered in source image
+     * Designed to use with cooperation with extendImageBeforeRotation(ImageProcessor,double).
+     * Assumes that cropping area is centered in source image
      * 
      * @param ip ImageProcessor to be cropped
      * @param width Width of clipped area
@@ -121,11 +112,8 @@ public class ImageProcessorPlus {
      * @retval ImageProcessor
      * @return Clipped image
      */
-    public ImageProcessor cropImageAfterRotation(ImageProcessor ip, int width,
-            int height) {
-        ip.setRoi((ip.getWidth() - width) / 2,
-                (ip.getHeight() - height) / 2, width,
-                height);
+    public ImageProcessor cropImageAfterRotation(ImageProcessor ip, int width, int height) {
+        ip.setRoi((ip.getWidth() - width) / 2, (ip.getHeight() - height) / 2, width, height);
         ip = ip.crop();
         ip.resetRoi();
         return ip;
@@ -136,16 +124,15 @@ public class ImageProcessorPlus {
 /**
  * Represents rectangle bounding box
  * 
- * Bounding box is defined by four corners (in contrary to
- * javafx.geometry.BoundingBox) that can be rotated by any angle.
+ * Bounding box is defined by four corners (in contrary to javafx.geometry.BoundingBox) that can be
+ * rotated by any angle.
  * 
  * @author p.baniukiewicz
  */
 class RectangleBox {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = LogManager
-            .getLogger(RectangleBox.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(RectangleBox.class.getName());
 
     private Vector<Double> x; // stores x coordinates of bounding box in
                               // clockwise order
@@ -157,13 +144,11 @@ class RectangleBox {
      * 
      * Vectors define corners in clockwise direction.
      * 
-     * @warning Vectors are referenced only, not copied. They are modified
-     * during rotation
+     * @warning Vectors are referenced only, not copied. They are modified during rotation
      * @param x \a x coordinates of bounding box in clockwise order
      * @param y \a y coordinates of bounding box in clockwise order
-     * @throws IllegalArgumentException
-     * When empty vectors are passed to constructor or input vectors
-     * have different length
+     * @throws IllegalArgumentException When empty vectors are passed to constructor or input
+     *         vectors have different length
      */
     @SuppressWarnings("unchecked")
     public RectangleBox(Vector<Double> x, Vector<Double> y) throws Exception {
@@ -241,8 +226,7 @@ class RectangleBox {
     }
 
     /**
-     * Gets width of bounding box as distance over \b x between outermost
-     * corners
+     * Gets width of bounding box as distance over \b x between outermost corners
      * 
      * @return Width of bounding box
      */
@@ -251,8 +235,7 @@ class RectangleBox {
     }
 
     /**
-     * Gets height of bounding box as distance over \b y between outermost
-     * corners
+     * Gets height of bounding box as distance over \b y between outermost corners
      * 
      * @return Height of bounding box
      */

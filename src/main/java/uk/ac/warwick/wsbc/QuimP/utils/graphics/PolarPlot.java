@@ -10,8 +10,8 @@ import java.util.Arrays;
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
@@ -23,16 +23,17 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGwritter;
  * Generate polar plots of motility speed along cell perimeter.
  * 
  * Use basic mapping - location of point on polar plot depends on its position on cell outline.
+ * 
  * @author p.baniukiewicz
  *
  */
 public class PolarPlot {
-    private static final Logger LOGGER = LogManager.getLogger(PolarPlot.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(PolarPlot.class.getName());
     private STmap mapCell;
     private Point2d gradientcoord;
     /**
-     * Size and position of left upper corner of plot area.
-     * Most code below assumes that area is square and centered in 0,0.
+     * Size and position of left upper corner of plot area. Most code below assumes that area is
+     * square and centered in 0,0.
      */
     protected Rectangle plotArea;
     /**
@@ -48,8 +49,8 @@ public class PolarPlot {
      * Create PolarPlot object with default plot size.
      * 
      * @param mapCell
-     * @param gradientcoord coordinates of gradient point. Gradient is a feeding of cell put into 
-     * cell environment.
+     * @param gradientcoord coordinates of gradient point. Gradient is a feeding of cell put into
+     *        cell environment.
      */
     public PolarPlot(STmap mapCell, Point2d gradientcoord) {
         this.mapCell = mapCell;
@@ -60,7 +61,7 @@ public class PolarPlot {
     }
 
     /**
-     * Compute shift for every frame. Shift value indicates which index of outline point should be 
+     * Compute shift for every frame. Shift value indicates which index of outline point should be
      * first in maps. This point is closest to <tt>gradientcoord</tt>.
      * 
      * @return Indexes of first points (x-coordinate) for map for every frame (y-cordinate)
@@ -97,9 +98,8 @@ public class PolarPlot {
     }
 
     /**
-     * Compute vectors for one frame between mass centre and outline point.
-     * Vectors are in order starting from closest point. This is representation of outline as 
-     * vectors.
+     * Compute vectors for one frame between mass centre and outline point. Vectors are in order
+     * starting from closest point. This is representation of outline as vectors.
      * 
      * @return List of vectors starting from closes to gradientcoord.
      */
@@ -124,7 +124,7 @@ public class PolarPlot {
      * 
      * @param f Frame to get.
      * @param shift Shift value
-     * @param map 
+     * @param map
      * @return Vector of map values with first value closest to gradientcoord
      */
     double[] getRadius(int f, int shift, double[][] map) {
@@ -162,7 +162,7 @@ public class PolarPlot {
      * 
      * @param filename
      * @param frame
-     * @throws IOException 
+     * @throws IOException
      * @see generatePlot
      */
     public void generatePlotFrame(String filename, int frame) throws IOException {
@@ -183,12 +183,12 @@ public class PolarPlot {
     /**
      * Polar plot of mean of motility along frames.
      * 
-     * The position of point on polar plot depends on its position on cell outline, but not on
-     * real angle it is. First point after shifting is that closest to selected gradient. It is
-     * plotted on angle 0.
+     * The position of point on polar plot depends on its position on cell outline, but not on real
+     * angle it is. First point after shifting is that closest to selected gradient. It is plotted
+     * on angle 0.
      * 
      * @param filename Name of the svg file.
-     * @throws IOException 
+     * @throws IOException
      */
     public void generatePlot(String filename) throws IOException {
         int[] shifts = getShift(); // calculate shifts of points according to gradientcoord
@@ -217,7 +217,7 @@ public class PolarPlot {
      * 
      * @param filename name of svg file
      * @param angles vector of arguments (angles) generated {@link getUniformAngles(int)}
-     * @param magn vector of values related to <tt>angles</tt> 
+     * @param magn vector of values related to <tt>angles</tt>
      * @throws IOException
      */
     private void polarPlotPoints(String filename, double[] angles, double[] magn)
@@ -259,14 +259,14 @@ public class PolarPlot {
     /**
      * Generate uniformly distributed angles for given resolution.
      * 
-     * Generate angles for polar plot (related to plot, not for position of outline points)
-     * assume basic mapping - first outline point at angle 0, second at angle delta, etc
-     * CCW system is used, but angles are counted in CW. IV and III quarter are negative, then
-     * II and I are positive.
+     * Generate angles for polar plot (related to plot, not for position of outline points) assume
+     * basic mapping - first outline point at angle 0, second at angle delta, etc CCW system is
+     * used, but angles are counted in CW. IV and III quarter are negative, then II and I are
+     * positive.
      * 
      * @param res Number of angles to generate.
      * @return Array of angles in radians counted CW, IV quarter is first and negative, II quarter
-     * is positive, e.g. -1,-2,...-90,...-180,179,178...,90,....0
+     *         is positive, e.g. -1,-2,...-90,...-180,179,178...,90,....0
      */
     private double[] getUniformAngles(int res) {
         double angles[] = new double[res];
@@ -281,6 +281,7 @@ public class PolarPlot {
 
     /**
      * http://www.java2s.com/Code/Java/Collections-Data-Structure/LinearInterpolation.htm
+     * 
      * @param x
      * @param y
      * @param xi

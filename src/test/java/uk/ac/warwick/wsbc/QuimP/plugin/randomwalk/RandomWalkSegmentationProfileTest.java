@@ -8,12 +8,11 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -27,14 +26,8 @@ import ij.process.ImageProcessor;
  */
 public class RandomWalkSegmentationProfileTest {
 
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER =
-            LogManager.getLogger(RandomWalkSegmentationProfileTest.class.getName());
+    static final Logger LOGGER =
+            LoggerFactory.getLogger(RandomWalkSegmentationProfileTest.class.getName());
 
     static Object accessPrivate(String name, RandomWalkSegmentation obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,

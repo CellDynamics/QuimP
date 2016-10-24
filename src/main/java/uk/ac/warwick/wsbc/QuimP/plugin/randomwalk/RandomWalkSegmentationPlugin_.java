@@ -32,9 +32,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -50,23 +49,17 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 /**
  * Run RandomWalkSegmentation in IJ environment.
  * 
- * Implements common PlugIn interface as both images are provided after run.
- * The seed can be one image - in this case seed propagation is used to generate seed for
- * subsequent frames, or it can be stack of the same size as image. In latter case every slice
- * from seed is used for seeding related slice from image.
- *  
+ * Implements common PlugIn interface as both images are provided after run. The seed can be one
+ * image - in this case seed propagation is used to generate seed for subsequent frames, or it can
+ * be stack of the same size as image. In latter case every slice from seed is used for seeding
+ * related slice from image.
+ * 
  * @author p.baniukiewicz
  *
  */
 public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, ChangeListener {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER =
-            LogManager.getLogger(RandomWalkSegmentationPlugin_.class.getName());
+    static final Logger LOGGER =
+            LoggerFactory.getLogger(RandomWalkSegmentationPlugin_.class.getName());
 
     private ImagePlus image; //!< stack or image to segment
     private ImagePlus seedImage; //!< RGB seed image
@@ -74,16 +67,16 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     private int erodeIter; //!< number of erosions for generating next seed from previous
     private boolean useSeedStack; //!< \a true if seed has the same size as image, slices are seeds 
 
-    private JComboBox<String> cImage,cSeed;
+    private JComboBox<String> cImage, cSeed;
     private JButton bClone;
-    private JToggleButton bBack,bFore;
-    private JSpinner sAlpha,sBeta,sGamma,sIter,sErode;
-    private JButton bCancel,bApply,bHelp;
+    private JToggleButton bBack, bFore;
+    private JSpinner sAlpha, sBeta, sGamma, sIter, sErode;
+    private JButton bCancel, bApply, bHelp;
     private BrushTool br = new BrushTool();
     private String lastTool; // tool selected in IJ
-    
+
     public JFrame wnd;
-    
+
     /**
      * Default constructor
      */
@@ -93,7 +86,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
 
     /**
      * Build main dialog
-     * 
+     * !<
      * @startuml
      * salt
      *   {+
@@ -123,9 +116,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      *   }
      *   }
      * @enduml
-     *   
+     * !>  
      * State diagram
-     *
+     * !<
      * @startuml
      *   [*] --> Default
      *   Default : selectors empty
@@ -154,7 +147,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      *   Run --> [*]
      *   Default --> [*]
      * @enduml
-     * 
+     * !>
      */
     public void showDialog() {
         wnd = new JFrame("Random Walker Segmentation");
@@ -202,16 +195,13 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         helpArea.setContentType("text/html");
         helpArea.setEditable(false);
         //!<
-        helpArea.setText(""
-                + "<font size=\"3\">"
-                + "<strong>Note</strong><br>"
+        helpArea.setText("" + "<font size=\"3\">" + "<strong>Note</strong><br>"
                 + "The seed image has always size of the segmented data."
                 + "Thus, if one processes stack of images, he is initially "
                 + "supposed to provide the stack of seeds as well. Otherwise, "
                 + "one can cut (using ImageJ tools) only one slice and seed it, "
                 + " then Random Walk plugin will generate seeds for subsequent "
-                + "slices using <i>Erode power</i> parameter."
-                + "</font>");
+                + "slices using <i>Erode power</i> parameter." + "</font>");
         /**/
         JScrollPane helpAreascroll = new JScrollPane(helpArea);
         helpAreascroll.setPreferredSize(new Dimension(200, 100));
@@ -330,7 +320,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     }
 
     /**
-     * Plugin runner. 
+     * Plugin runner.
      * 
      * Shows UI and perform segmentation after validating UI
      */
@@ -380,8 +370,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     }
 
     /**
-     * Verify all entries in window and set them as final assigning to object variables.
-     * All operations are here. Performs also some window logic
+     * Verify all entries in window and set them as final assigning to object variables. All
+     * operations are here. Performs also some window logic
      * 
      * @param e Component
      */
@@ -459,14 +449,14 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             }
             // 4. Read numeric data
             //!<
-            params = new Params((Integer)sAlpha.getValue(), // alpha
-                    (Integer)sBeta.getValue(), // beta
-                    (Integer)sGamma.getValue(), // gamma1
+            params = new Params((Integer) sAlpha.getValue(), // alpha
+                    (Integer) sBeta.getValue(), // beta
+                    (Integer) sGamma.getValue(), // gamma1
                     0, // not used gamma 2
-                    (Integer)sIter.getValue(), // iterations
+                    (Integer) sIter.getValue(), // iterations
                     0.1, // dt
                     8e-3 // error
-                    );
+            );
             /**/
             erodeIter = (Integer) sErode.getValue(); // erosions
             // all ok - store images to later use

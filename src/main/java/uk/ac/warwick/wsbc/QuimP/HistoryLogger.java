@@ -13,26 +13,25 @@ import java.util.ArrayList;
 
 import javax.swing.JScrollPane;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
 /**
  * Builds history logger window and logs
  * 
- * Logs are supposed to be JSon objects that hold current BOA state.
- * Logger is updated only when window is visible. Closing and then opening window causes erasing 
- * its content.
- * Method addEntry(String, SnakePluginList) should be used after every activity in QuimP, where
- * first parameter is description of this activity and next parameters define QuimP state.
- *  
+ * Logs are supposed to be JSon objects that hold current BOA state. Logger is updated only when
+ * window is visible. Closing and then opening window causes erasing its content. Method
+ * addEntry(String, SnakePluginList) should be used after every activity in QuimP, where first
+ * parameter is description of this activity and next parameters define QuimP state.
+ * 
  * @author p.baniukiewicz
  *
  */
 public class HistoryLogger implements WindowListener {
 
-    private static final Logger LOGGER = LogManager.getLogger(HistoryLogger.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(HistoryLogger.class.getName());
     private Frame historyWnd; //!< Window handler
     private ArrayList<String> history; //!< array with all entries
     private TextArea info;
@@ -81,11 +80,10 @@ public class HistoryLogger implements WindowListener {
      * Add entry to log.
      * 
      * Gather all BOA state and include in log. Uses \c Entry class to pack these information to
-     * JSon object. 
-     * Particular entries can be null if they may not be logged
-     *  
+     * JSon object. Particular entries can be null if they may not be logged
+     * 
      * @param m General message to be included in log
-     * @param bs BOA state machine object 
+     * @param bs BOA state machine object
      * @todo TODO This method should accept more detailed BOA state (e.g. all segm. params)
      */
     public void addEntry(String m, BOAState bs) {

@@ -1,14 +1,14 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
- * Represents a node in the snake - its basic component In fact this class
- * stands for bidirectional list containing Nodes. Every node has assigned 2D
- * position and several additional properties such as:
+ * Represents a node in the snake - its basic component In fact this class stands for bidirectional
+ * list containing Nodes. Every node has assigned 2D position and several additional properties such
+ * as:
  * <ul>
  * <li>velocity of Node</li>
  * <li>total force of Node</li>
@@ -20,20 +20,19 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  */
 public class Node extends PointsList<Node> {
-    private static final Logger LOGGER = LogManager.getLogger(Node.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(Node.class.getName());
     /**
-     * Velocity of the nodes, initialized in
-     * uk.ac.warwick.wsbc.QuimP.Constrictor.constrict(Snake, ImageProcessor)
+     * Velocity of the nodes, initialized in uk.ac.warwick.wsbc.QuimP.Constrictor.constrict(Snake,
+     * ImageProcessor)
      */
     private ExtendedVector2d vel;
     /**
-     * Total force at node, initialized in
-     * uk.ac.warwick.wsbc.QuimP.Constrictor.constrict(Snake, ImageProcessor)
+     * Total force at node, initialized in uk.ac.warwick.wsbc.QuimP.Constrictor.constrict(Snake,
+     * ImageProcessor)
      */
     private ExtendedVector2d F_total;
     /**
-     * Point to move node to after all new node positions have been calc
-     * initialized in
+     * Point to move node to after all new node positions have been calc initialized in
      * uk.ac.warwick.wsbc.QuimP.Constrictor.constrict(Snake, ImageProcessor)
      */
     private ExtendedVector2d prelimPoint;
@@ -90,10 +89,11 @@ public class Node extends PointsList<Node> {
         prelimPoint = new ExtendedVector2d();
     }
 
-    /** (non-Javadoc)
-     * Compare only current Node, no neighbors
-	 * @see java.lang.Object#hashCode()
-	 */
+    /**
+     * (non-Javadoc) Compare only current Node, no neighbors
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -104,9 +104,11 @@ public class Node extends PointsList<Node> {
         return result;
     }
 
-    /* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -144,7 +146,9 @@ public class Node extends PointsList<Node> {
         prelimPoint.setY(0);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -157,6 +161,7 @@ public class Node extends PointsList<Node> {
 
     /**
      * Setter to \c frozen field
+     * 
      * @return frozen
      */
     public boolean isFrozen() {
@@ -165,6 +170,7 @@ public class Node extends PointsList<Node> {
 
     /**
      * Setter to \c F_total field
+     * 
      * @return F_total
      */
     public ExtendedVector2d getF_total() {
@@ -173,6 +179,7 @@ public class Node extends PointsList<Node> {
 
     /**
      * Setter to \c vel field
+     * 
      * @return vel
      */
     public ExtendedVector2d getVel() {
@@ -234,8 +241,8 @@ public class Node extends PointsList<Node> {
     /**
      * Evaluate local curvature of Node related to previous, this and next Node
      * 
-     * @return Local curvature for \b this node in \a degrees
-     * TODO Move it to Shape as static maybe and accepting Node as parameter
+     * @return Local curvature for \b this node in \a degrees TODO Move it to Shape as static maybe
+     *         and accepting Node as parameter
      */
     public double getCurvatureLocal() {
         ExtendedVector2d edge1 =

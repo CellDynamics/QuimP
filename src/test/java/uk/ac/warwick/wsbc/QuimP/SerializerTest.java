@@ -8,31 +8,24 @@ import static org.junit.Assert.assertEquals;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
 /**
- * Test of Serializer class 
+ * Test of Serializer class
  * 
  * @author p.baniukiewicz
  *
  */
 public class SerializerTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(SerializerTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(SerializerTest.class.getName());
     private TestClass testClass;
     private String[] version;
 
@@ -143,6 +136,7 @@ public class SerializerTest {
 
     /**
      * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.load(final String)
+     * 
      * @throws Exception
      */
     @Test
@@ -163,6 +157,7 @@ public class SerializerTest {
 
     /**
      * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * 
      * @pre Extra data in json
      * @post It is ignored
      * @throws Exception
@@ -183,6 +178,7 @@ public class SerializerTest {
 
     /**
      * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * 
      * @pre Lack of data
      * @post it is not initialized and has value from constructor
      * @throws Exception

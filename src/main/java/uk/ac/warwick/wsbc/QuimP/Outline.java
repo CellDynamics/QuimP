@@ -1,13 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.awt.Polygon;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.gui.Roi;
@@ -17,30 +16,25 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 /**
  * Represent Outline object used as Snake representation after ECMM mapping.
  * 
- * Outline can have the same Shape as Snake but distribution of Vert may be different than 
+ * Outline can have the same Shape as Snake but distribution of Vert may be different than
  * distribution of Node in Snake. Outline is produced after ECMM and used in further analysis.
  * 
  * @author rtyson
  * @author p.baniukiewicz
  */
 public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
-    private static final Logger LOGGER = LogManager.getLogger(Outline.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(Outline.class.getName());
 
     /**
      * Create a Outline from existing linked list
      * 
      * @param h head node of linked list
      * @param N number of nodes in list
-     * @warning Behavior of this method was changed. Now it does not make copy of Vert. In old 
-     * approach there was dummy node deleted in this constructor.
-     * @code{.java}
-     *  index = 0;
-     *  head = new Vert(index); // dummy head node
-     *  head.setHead(true);
-     *  prevn = head;
-     *  index++;
-     *  // insert next nodes here
-     * @endcode 
+     * @warning Behavior of this method was changed. Now it does not make copy of Vert. In old
+     *          approach there was dummy node deleted in this constructor.
+     * @code{.java} index = 0; head = new Vert(index); // dummy head node head.setHead(true); prevn
+     *              = head; index++; // insert next nodes here
+     * @endcode
      * @see uk.ac.warwick.wsbc.QuimP.OutlineHandler.readOutlines(final File) for example of use
      */
     public Outline(final Vert h, int N) {
@@ -75,8 +69,8 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     /**
      * Conversion constructor
      * 
-     * Convert only basic properties. Do not forget that many of Vert properties are set during 
-     * ECMM or Q Analysis
+     * Convert only basic properties. Do not forget that many of Vert properties are set during ECMM
+     * or Q Analysis
      * 
      * @param src Snake to be converted to Outline
      */
@@ -117,7 +111,9 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         // calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -246,7 +242,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
 
     /**
      * Insert default Vert after Vert \c v
-     *  
+     * 
      * @param v Vert to insert new Vert after
      * @return Inserted Vert
      */
@@ -259,7 +255,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
      * 
      * Modify current Outline
      * 
-     * @param v 
+     * @param v
      * @return Vertex created between \c v and \c v.next
      */
     public Vert insertInterpolatedVert(final Vert v) {
@@ -919,6 +915,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
 
     /**
      * Call super and then oo Outline related actions
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.Shape.beforeSerialize()
      */
     @Override
@@ -929,6 +926,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
 
     /**
      * Call super and then oo Outline related actions
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.Shape.afterSerialize()
      */
     @Override

@@ -6,13 +6,11 @@ import java.util.ArrayList;
 // import java.util.Vector;
 import java.util.Random;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Richard Tyson. 23/09/2009. ECM Mapping Systems Biology DTC, Warwick
- * University.
+ * Richard Tyson. 23/09/2009. ECM Mapping Systems Biology DTC, Warwick University.
  */
 import ij.IJ;
 import ij.ImagePlus;
@@ -47,13 +45,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  *
  */
 public class ECMM_Mapping {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(ECMM_Mapping.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(ECMM_Mapping.class.getName());
 
     private OutlineHandler oH, outputH;
     private OutlinesCollection outputOutlineHandlers; // output for new data file
@@ -80,31 +72,12 @@ public class ECMM_Mapping {
      * Main executive constructor.
      * <p>
      * Process provided file and run the whole analysis.
-     * @startuml
-     * start
-     * :Check registration;
-     * if (input file given) then (no)
-     *  :ask user;
-     * endif
-     * :Load config file;
-     * if (QUIMP_11 file) then (yes)
-     *  :process it;
-     *  :scan for other files;
-     *  repeat
-     *      :process other file;
-     *  repeat while(more files?)
-     * else (no)
-     *  if(BOA data) then (no)
-     *  stop
-     *  endif
-     *  if(ECMM data) then (yes)
-     *      if(overwrite?) then (no)
-     *          end
-     *      endif
-     *  endif        
-     *  :process it;     
-     * endif
-     * end
+     * 
+     * @startuml start :Check registration; if (input file given) then (no) :ask user; endif :Load
+     *           config file; if (QUIMP_11 file) then (yes) :process it; :scan for other files;
+     *           repeat :process other file; repeat while(more files?) else (no) if(BOA data) then
+     *           (no) stop endif if(ECMM data) then (yes) if(overwrite?) then (no) end endif endif
+     *           :process it; endif end
      * @enduml
      * 
      * @param paramFile paQP or QCONF file to process.
@@ -200,8 +173,8 @@ public class ECMM_Mapping {
 
     /**
      * Main executive for ECMM processing for QParamsExchanger (new file version).
-     *  
-     * @throws QuimpException 
+     * 
+     * @throws QuimpException
      * @throws IOException On problems with writing config files
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
      */
@@ -394,10 +367,9 @@ public class ECMM_Mapping {
             map1 = new Mapping(o1, o2);
 
             /*
-             * if (map1.invalid) { //Use no sectors IJ.log(" invalid outline
-             * intersection, attempting non-intersect mapping...");
-             * plot.writeText("Non-intersect mapping"); ECMp.noSectors = true;
-             * map1 = new Mapping(o1, o2); ECMp.noSectors = false; }
+             * if (map1.invalid) { //Use no sectors IJ.log(" invalid outline intersection,
+             * attempting non-intersect mapping..."); plot.writeText("Non-intersect mapping");
+             * ECMp.noSectors = true; map1 = new Mapping(o1, o2); ECMp.noSectors = false; }
              */
 
             o1 = map1.migrate();
@@ -1318,12 +1290,11 @@ class Sector {
          *
          * if (ECMp.ANA) { //always contracting expanding = false; migCharges =
          * formCharges(startO1); tarCharges = formCharges(startO2); } else {
-         * //System.out.println("lengthO1: " + lengthO1+", lengthO2:
-         * "+lengthO2); if (lengthO1 >= lengthO2) { //should be lengthO1 >=
-         * lengthO2. Set to true to do forward mapping expanding = false;
-         * migCharges = formCharges(startO1); tarCharges = formCharges(startO2);
-         * } else { expanding = true; migCharges = formCharges(startO2);
-         * tarCharges = formCharges(startO1); } }
+         * //System.out.println("lengthO1: " + lengthO1+", lengthO2: "+lengthO2); if (lengthO1 >=
+         * lengthO2) { //should be lengthO1 >= lengthO2. Set to true to do forward mapping expanding
+         * = false; migCharges = formCharges(startO1); tarCharges = formCharges(startO2); } else {
+         * expanding = true; migCharges = formCharges(startO2); tarCharges = formCharges(startO1); }
+         * }
          */
         // System.out.println("sector " + ID);
         // startO1.getPoint().print("a: ");
@@ -1339,20 +1310,17 @@ class Sector {
         // is negative then the sector is expanding.
         // BUT still migrate nodes in the direction of the shorter contour...
         /*
-         * double area = Vect2d.triangleArea(startO1.getPoint(),
-         * startO1.getNext().getPoint(), startO2.getNext().getPoint()); //use
-         * next node along if area is zero if (area > 0) { //check orientation
-         * of sector (truely expanding?) trueExpand = true; } else { trueExpand
-         * = false; } if (area == 0) { IJ.log("!WARNING-left algorithm == 0");
-         * this.print(); } //System.out.println("area = " + area + ", LEFT: " +
-         * left);
+         * double area = Vect2d.triangleArea(startO1.getPoint(), startO1.getNext().getPoint(),
+         * startO2.getNext().getPoint()); //use next node along if area is zero if (area > 0) {
+         * //check orientation of sector (truely expanding?) trueExpand = true; } else { trueExpand
+         * = false; } if (area == 0) { IJ.log("!WARNING-left algorithm == 0"); this.print(); }
+         * //System.out.println("area = " + area + ", LEFT: " + left);
          *
-         * //move mig charges outwards by normal (b4 setting resolution!),
-         * //dependant on left if (expanding) { if (trueExpand) {
-         * //normal.multiply(-ECMp.w); outerDirection = -1.; } else {
-         * //normal.multiply(ECMp.w); outerDirection = 1.; } } else { if
-         * (trueExpand) { //normal.multiply(ECMp.w); outerDirection = 1.; } else
-         * { //normal.multiply(-ECMp.w); outerDirection = -1.; } } // }
+         * //move mig charges outwards by normal (b4 setting resolution!), //dependant on left if
+         * (expanding) { if (trueExpand) { //normal.multiply(-ECMp.w); outerDirection = -1.; } else
+         * { //normal.multiply(ECMp.w); outerDirection = 1.; } } else { if (trueExpand) {
+         * //normal.multiply(ECMp.w); outerDirection = 1.; } else { //normal.multiply(-ECMp.w);
+         * outerDirection = -1.; } } // }
          *
          *
          *
@@ -1562,15 +1530,15 @@ class Sector {
         chargesPoly = new FloatPolygon(x, y, x.length);
 
         /*
-         * if(true){ ECMM_Mapping.plot.drawPolygon(chargesPoly);
-         * System.out.println("x length: " + x.length);
+         * if(true){ ECMM_Mapping.plot.drawPolygon(chargesPoly); System.out.println("x length: " +
+         * x.length);
          *
          * System.out.println("tar size: "+ tarCharges.getVerts() +", mig size:
          * "+migCharges.getVerts());
          *
          *
-         * if(chargesPoly.contains(75f, 40f)) { System.out.println("TRUE"); }
-         * else{ System.out.println("FALSE"); } }
+         * if(chargesPoly.contains(75f, 40f)) { System.out.println("TRUE"); } else{
+         * System.out.println("FALSE"); } }
          */
 
     }
@@ -1919,9 +1887,8 @@ class ODEsolver {
 
             /*
              * //times by the outerDirection to make lines polar sideDis =
-             * Vect2d.distPoinToInfLine(p, v.getPoint(),
-             * v.getNext().getPoint()); if (sideDis < 0) { polarDir =
-             * s.outerDirection * -1; } else { polarDir = s.outerDirection; }
+             * Vect2d.distPoinToInfLine(p, v.getPoint(), v.getNext().getPoint()); if (sideDis < 0) {
+             * polarDir = s.outerDirection * -1; } else { polarDir = s.outerDirection; }
              *
              */
 
@@ -1938,9 +1905,9 @@ class ODEsolver {
             // ECMp.tarQ);
 
             /*
-             * sideDis = Vect2d.distPoinToInfLine(p, v.getPoint(),
-             * v.getNext().getPoint()); if (sideDis < 0) { polarDir =
-             * s.outerDirection ; } else { polarDir = s.outerDirection * -1; }
+             * sideDis = Vect2d.distPoinToInfLine(p, v.getPoint(), v.getNext().getPoint()); if
+             * (sideDis < 0) { polarDir = s.outerDirection ; } else { polarDir = s.outerDirection *
+             * -1; }
              *
              */
 

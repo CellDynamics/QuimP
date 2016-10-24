@@ -10,9 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -54,13 +53,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @author tyson
  */
 public class ANA_ implements PlugInFilter, DialogListener {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(ANA_.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(ANA_.class.getName());
 
     private QconfLoader qconfLoader;
 
@@ -106,10 +99,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
         // change to 8-bit. Nooooooo
         /*
-         * IJ.log("Warning: Image was reduced to 8-bit"); if (imp.getStackSize()
-         * == 1) { ImageConverter imConv = new ImageConverter(imp);
-         * imConv.convertToGray8(); } else { StackConverter stackconverter = new
-         * StackConverter(imp); //convert to 8bit
+         * IJ.log("Warning: Image was reduced to 8-bit"); if (imp.getStackSize() == 1) {
+         * ImageConverter imConv = new ImageConverter(imp); imConv.convertToGray8(); } else {
+         * StackConverter stackconverter = new StackConverter(imp); //convert to 8bit
          * stackconverter.convertToGray8(); }
          */
         IJ.run("Appearance...", " menu=0"); // switch off interpolation of
@@ -849,10 +841,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
     }
 
     /*
-     * private void drawSamplePoints(Outline o) { int x, y; PointRoi pr; Vert v
-     * = o.getHead(); do { x = (int) v.fluores[ANAp.channel].x; y = (int)
-     * v.fluores[ANAp.channel].y; pr = new PointRoi(x, y); overlay.add(pr); v =
-     * v.getNext(); } while (!v.isHead()); }
+     * private void drawSamplePoints(Outline o) { int x, y; PointRoi pr; Vert v = o.getHead(); do {
+     * x = (int) v.fluores[ANAp.channel].x; y = (int) v.fluores[ANAp.channel].y; pr = new
+     * PointRoi(x, y); overlay.add(pr); v = v.getNext(); } while (!v.isHead()); }
      */
 
     private void drawSamplePointsFloat(Outline o, int frame) {

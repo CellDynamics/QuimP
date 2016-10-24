@@ -10,8 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.geom.MapTracker;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
@@ -28,23 +28,25 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  *
  */
 public class TrackMapAnalyser {
-    private static final Logger LOGGER = LogManager.getLogger(TrackMapAnalyser.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(TrackMapAnalyser.class.getName());
     /**
-     * Allow detection common points in backward and forward tracks generated for the same
-     * starting point.
+     * Allow detection common points in backward and forward tracks generated for the same starting
+     * point.
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst
      */
     final public static int WITH_SELFCROSSING = 2;
     /**
      * Disallow detection common points in backward and forward tracks generated for the same
      * starting point.
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst
      */
     final public static int WITHOUT_SELFCROSSING = 4;
     /**
      * Maximum point (source of tracks) is included in tracks (if <tt>true</tt>).
      * 
-     * It should be changed carefully as many other procedures can assume that first point is 
+     * It should be changed carefully as many other procedures can assume that first point is
      * included in Tracks.
      */
     public static boolean INCLUDE_INITIAL = true;
@@ -70,16 +72,16 @@ public class TrackMapAnalyser {
      * 
      * @param mapCell holds all maps generated and saved by QuimP
      * @param drop the value (in x/100) while velocity remains above of the peak speed. E.g for
-     * drop=1 all tracked points are considered (along positive motility), drop=0.5 stands for 
-     * points that are above 0.5*peakval, where peakval is the value of found maximum.  
-     * @param maximaFinder properly initialized object that holds maxima of motility map. 
-     * All maxima are tracked.
+     *        drop=1 all tracked points are considered (along positive motility), drop=0.5 stands
+     *        for points that are above 0.5*peakval, where peakval is the value of found maximum.
+     * @param maximaFinder properly initialized object that holds maxima of motility map. All maxima
+     *        are tracked.
      * 
-     * Return list of points tracked from every maximum point as long as they meet criterion.
-     * Maximum point can be included in this list depending on setting of 
-     * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst} flag. First points in tracks
-     * are initial points. Forward track is sorted within increasing frames from starting point,
-     * backward according to decreasing frames.
+     *        Return list of points tracked from every maximum point as long as they meet criterion.
+     *        Maximum point can be included in this list depending on setting of
+     *        {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst} flag. First points in
+     *        tracks are initial points. Forward track is sorted within increasing frames from
+     *        starting point, backward according to decreasing frames.
      */
     public void trackMaxima(final STmap mapCell, double drop, final MaximaFinder maximaFinder) {
 
@@ -133,8 +135,8 @@ public class TrackMapAnalyser {
 
     /**
      * 
-     * @return All common points among tracks without self crossings (forward-backward for the
-     * same starting point)
+     * @return All common points among tracks without self crossings (forward-backward for the same
+     *         starting point)
      */
     public Polygon getCommonPoints() {
         ArrayList<Point> tmpRet = new ArrayList<>();
@@ -179,12 +181,15 @@ public class TrackMapAnalyser {
      * Find common points among polygons.
      * 
      * Check whether there are common points among polygons stored in List.
+     * 
      * @param tracks List of polygons.
-     * @return Polygon of size 0 when no intersection or polygons whose vertices are common for 
-     * polygons in <tt>tracks</tt>. If there are vertexes shared among more than two polygons, they
-     * appear only once in returned polygon.
-     * <p><b>Warning</b><p>
-     * Polygon of size 0 may contain x,y, arrays of size 4, only number of points is 0
+     * @return Polygon of size 0 when no intersection or polygons whose vertices are common for
+     *         polygons in <tt>tracks</tt>. If there are vertexes shared among more than two
+     *         polygons, they appear only once in returned polygon.
+     *         <p>
+     *         <b>Warning</b>
+     *         <p>
+     *         Polygon of size 0 may contain x,y, arrays of size 4, only number of points is 0
      */
     public Polygon getIntersectionPoints(List<Polygon> tracks) {
         List<Polygon> tmpRet = new ArrayList<>();
@@ -221,15 +226,15 @@ public class TrackMapAnalyser {
     }
 
     /**
-     * Find common points among polygons. 
+     * Find common points among polygons.
      * 
-     * This method provides also parents of every common point. Parents are given as indexes of 
+     * This method provides also parents of every common point. Parents are given as indexes of
      * polygons in input list that have common vertex.
      * 
      * @param tracks List of polygons.
      * @param mode WITHOUT_SELFCROSSING | WITH_SELFCROSSING
-     * @return List of common points together with their parents List<Pair<Parents,Point>>.
-     * If there is no common points the list is empty
+     * @return List of common points together with their parents List<Pair<Parents,Point>>. If there
+     *         is no common points the list is empty
      */
     public List<Pair<Point, Point>> getIntersectionParents(List<Polygon> tracks, int mode) {
         ArrayList<Pair<Point, Point>> retTmp = new ArrayList<>();
@@ -299,15 +304,15 @@ public class TrackMapAnalyser {
      * point.
      * 
      * {@link trackMaxima} returns alternating tracks tracks, therefore every pair i,i+1 is related
-     * to the same starting points, for even i. If the flag 
-     * uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst is set, those two tracks share one point 
+     * to the same starting points, for even i. If the flag
+     * uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst is set, those two tracks share one point
      * that is also starting point.
      * <p>
      * This method remove those Pairs that come from parent <even,uneven>.
-     *   
+     * 
      * @param input
      * @return input list without common points between tracks that belong to the same starting
-     * point.
+     *         point.
      * @see trackMaxima(STmap, double, MaximaFinder)
      */
     private List<Pair<Point, Point>> removeSelfCrossings(List<Pair<Point, Point>> input) {
@@ -328,7 +333,7 @@ public class TrackMapAnalyser {
      * <p>
      * The difference is that for polygons points are kept in 1d arrays, whereas for Point2i they
      * are as separate points that allows object comparison.
-     *  
+     * 
      * @param list List of polygons to convert
      * @return List of points constructed from all polygons.
      */
@@ -346,7 +351,7 @@ public class TrackMapAnalyser {
      * <p>
      * The difference is that for polygons points are kept in 1d arrays, whereas for Point2i they
      * are as separate points that allows object comparison.
-     *  
+     * 
      * @param list List of points to convert
      * @return Polygon constructed from all points. This is 1-element list.
      */
@@ -365,11 +370,11 @@ public class TrackMapAnalyser {
     /**
      * Get index of point in the whole track line composed from backward+forward tracks.
      * 
-     * Assumes that order og points in tracks is correct, from first to last. (assured by 
+     * Assumes that order og points in tracks is correct, from first to last. (assured by
      * {@link trackMaxima(STmap, double, MaximaFinder)}.
      * 
-     * Use {@link INCLUDE_INITIAL} to check whether initial point is included in tracks. If it is
-     * it means that it appears twice (for backward and forward tracks respectively). then it is 
+     * Use {@link INCLUDE_INITIAL} to check whether initial point is included in tracks. If it is it
+     * means that it appears twice (for backward and forward tracks respectively). then it is
      * counted only one. For <tt>false</tt> state all points are counted.
      * 
      * @param backwardMap

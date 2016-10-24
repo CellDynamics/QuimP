@@ -11,14 +11,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -26,7 +25,6 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
-import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentation;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
@@ -39,11 +37,11 @@ public class BinarySegmentationTest {
      * Accessor to private field
      * 
      * @param name Name of private field
-     * @param obj Reference to object 
-     * @throws NoSuchFieldException 
-     * @throws SecurityException 
-     * @throws IllegalArgumentException 
-     * @throws IllegalAccessException         
+     * @param obj Reference to object
+     * @throws NoSuchFieldException
+     * @throws SecurityException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
      */
     static Object accessPrivateField(String name, BinarySegmentation obj)
             throws NoSuchFieldException, SecurityException, IllegalArgumentException,
@@ -61,14 +59,7 @@ public class BinarySegmentationTest {
         return prv.invoke(obj, param);
     }
 
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER =
-            LogManager.getLogger(BinarySegmentationTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentationTest.class.getName());
 
     private ImagePlus test1;
     private ImagePlus test2;
@@ -122,7 +113,7 @@ public class BinarySegmentationTest {
     public void testBinarySegmentation() throws Exception {
         BinarySegmentation obj = new BinarySegmentation(test1);
         TrackOutline[] trackers = (TrackOutline[]) accessPrivateField("trackers", obj);
-        LOGGER.debug(Arrays.asList(trackers));
+        LOGGER.debug(Arrays.asList(trackers).toString());
     }
 
     /**
@@ -232,7 +223,7 @@ public class BinarySegmentationTest {
 
     /**
      * @test Check generated chains
-     * @pre Three objects on 5 frames 
+     * @pre Three objects on 5 frames
      * @throws Exception
      */
     @Test
@@ -256,7 +247,7 @@ public class BinarySegmentationTest {
 
     /**
      * @test Check generated chains
-     * @pre Three objects on 1-4 frames, 2 objects on 5th 
+     * @pre Three objects on 1-4 frames, 2 objects on 5th
      * @post Three objects detected but one has shorter chain (frames 1-4)
      * @throws Exception
      */
@@ -291,7 +282,7 @@ public class BinarySegmentationTest {
 
     /**
      * @test Check generated chains
-     * @pre Three objects on 2-5 frames, 2 objects on 1st 
+     * @pre Three objects on 2-5 frames, 2 objects on 1st
      * @post Three objects detected but one has shorter chain (frames 2-5)
      * @throws Exception
      */
@@ -327,7 +318,7 @@ public class BinarySegmentationTest {
 
     /**
      * @test Check generated chains
-     * @pre Three objects on frames 1,2,4 and 2 objects on 3,5 
+     * @pre Three objects on frames 1,2,4 and 2 objects on 3,5
      * @post 4 chains detected. Missing object breaks the chain
      * @throws Exception
      */

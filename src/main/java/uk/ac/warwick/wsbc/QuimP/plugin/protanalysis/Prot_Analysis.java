@@ -26,9 +26,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -72,13 +71,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
  * @author p.baniukiewicz
  */
 public class Prot_Analysis implements IQuimpPlugin {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(Prot_Analysis.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(Prot_Analysis.class.getName());
 
     /**
      * Loaded QCONF file.
@@ -411,7 +404,7 @@ public class Prot_Analysis implements IQuimpPlugin {
  *
  */
 class Prot_AnalysisUI implements ActionListener {
-    private static final Logger LOGGER = LogManager.getLogger(Prot_AnalysisUI.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(Prot_AnalysisUI.class.getName());
     // UI elements
     private JFrame wnd;
     private JButton bCancel, bApply, bHelp, bGradient;

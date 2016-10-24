@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,13 +17,7 @@ import org.junit.Test;
  *
  */
 public class ParamList_Test {
-    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
+
     private ParamList l;
 
     @Before

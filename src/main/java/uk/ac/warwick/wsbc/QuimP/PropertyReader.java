@@ -8,19 +8,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Read properties from resources.
+ * 
  * @author p.baniukiewicz
  *
  */
 public class PropertyReader {
-    static final Logger LOGGER = LogManager.getLogger(PropertyReader.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(PropertyReader.class.getName());
 
     /**
-     * Default constructor 
+     * Default constructor
      */
     public PropertyReader() {
     }
@@ -31,8 +32,8 @@ public class PropertyReader {
      * @param propFileName property file name
      * @param propKey name of the key
      * @return value for \a propKey
-     * @remarks not static because of \a getClass().Property file should be in the same package
-     * as this class or full path should be provided otherwise.
+     * @remarks not static because of \a getClass().Property file should be in the same package as
+     *          this class or full path should be provided otherwise.
      * @see http://stackoverflow.com/questions/333363/loading-a-properties-file-from-java-package
      */
     public String readProperty(String propFileName, String propKey) {

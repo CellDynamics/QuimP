@@ -7,8 +7,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
@@ -19,7 +19,9 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * This class allows for recreating paQP and snQP files from new format QCONF and vice versa.
- * <p><b>Note</b><p>
+ * <p>
+ * <b>Note</b>
+ * <p>
  * Other files such as stQP, maps and images are generated regardless file format used during saving
  * in each QuimP module.
  * 
@@ -27,7 +29,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  *
  */
 public class FormatConverter {
-    private static final Logger LOGGER = LogManager.getLogger(FormatConverter.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(FormatConverter.class.getName());
     private QconfLoader qcL;
     private Path path;
     private Path filename;
@@ -51,7 +53,7 @@ public class FormatConverter {
 
     /**
      * Construct conversion object from QParamsQconf.
-     *  
+     * 
      * @param qP reference to QParamsQconf
      */
     public FormatConverter(QconfLoader qcL) {
@@ -63,11 +65,11 @@ public class FormatConverter {
 
     /**
      * Construct conversion object from QParamsQconf.
-     *  
+     * 
      * @param qP reference to QParamsQconf
      * @param path Path where converted files will be saved.
-     * @throws QuimpException When path is file.
-     * FIXME Path is not respected when converting from QCONF as QParams reads path from QCONF  
+     * @throws QuimpException When path is file. FIXME Path is not respected when converting from
+     *         QCONF as QParams reads path from QCONF
      */
     @Deprecated
     public FormatConverter(QconfLoader qcL, Path path) throws QuimpException {
@@ -84,7 +86,8 @@ public class FormatConverter {
 
     /**
      * Build QCONF from old datafiles provided in constructor.
-     * @throws Exception 
+     * 
+     * @throws Exception
      */
     public void generateNewDataFile() throws Exception {
         // <!
@@ -238,8 +241,8 @@ public class FormatConverter {
     /**
      * Create paQP and snQP file. Latter one contains only pure snake data.
      * <p>
-     * Those files are always saved together. snQP file will contain only pure snake data.
-     * Files are created in directory where QCONF is located.
+     * Those files are always saved together. snQP file will contain only pure snake data. Files are
+     * created in directory where QCONF is located.
      * 
      * @throws IOException
      */
@@ -256,7 +259,8 @@ public class FormatConverter {
      * Rewrite snQP file using recent ECMM processed results.
      * <p>
      * Files are created in directory where QCONF is located.
-     * @throws QuimpException 
+     * 
+     * @throws QuimpException
      * 
      */
     public void generatesnQP() throws IOException {
@@ -278,8 +282,9 @@ public class FormatConverter {
 
     /**
      * Perform conversion depending on which file has been loaded.
-     * @throws Exception 
-     * TODO Should not throw exception as generateOldDataFiles. Rework generateNewDataFile
+     * 
+     * @throws Exception TODO Should not throw exception as generateOldDataFiles. Rework
+     *         generateNewDataFile
      */
     public void doConversion() throws Exception {
         switch (qcL.getConfVersion()) {

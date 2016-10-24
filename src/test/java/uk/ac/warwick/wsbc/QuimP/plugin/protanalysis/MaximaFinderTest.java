@@ -8,14 +8,13 @@ import java.awt.Polygon;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -25,17 +24,12 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
  * Test class for {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.MaximaFinder}
+ * 
  * @author p.baniukiewicz
  *
  */
 public class MaximaFinderTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(MaximaFinderTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(MaximaFinderTest.class.getName());
     static QconfLoader qL1;
     private STmap[] stMap;
     private ImageProcessor imp;
@@ -76,10 +70,11 @@ public class MaximaFinderTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.MaximaFinder#MaximaFinder(ij.process.ImageProcessor)}.
-     * Results compared with those generated in IJ from 
-     * src/test/resources/ProtAnalysisTest/fluoreszenz-test_eq_smooth_0_motilityMap.maQP
-     * when imported as text image.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.MaximaFinder#MaximaFinder(ij.process.ImageProcessor)}.
+     * Results compared with those generated in IJ from
+     * src/test/resources/ProtAnalysisTest/fluoreszenz-test_eq_smooth_0_motilityMap.maQP when
+     * imported as text image.
      */
     @Test
     public void testMaximaFinder() throws Exception {

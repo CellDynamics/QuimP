@@ -34,9 +34,8 @@ import javax.swing.SwingWorker;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.Prefs;
 import uk.ac.warwick.wsbc.QuimP.QuimP;
@@ -50,7 +49,7 @@ import uk.ac.warwick.wsbc.QuimP.QuimP;
  * 
  * 
  * Registration process follows the scheme for cancel action:
- * 
+ * !<
  * @startuml
  * actor User
  * 
@@ -72,9 +71,9 @@ import uk.ac.warwick.wsbc.QuimP.QuimP;
  * Module->Module : Run()
  * deactivate Module
  * @enduml
- * 
+ * !>
  * And for register action:
- * 
+ * !<
  * @startuml
  * actor User
  * 
@@ -95,9 +94,9 @@ import uk.ac.warwick.wsbc.QuimP.QuimP;
  * Module->Module : Run()
  * deactivate Module
  * @enduml
- * 
+ * !>
  * Tests on first run:
- * 
+ * !<
  * @startuml
  * start
  * :read reg details;
@@ -125,8 +124,9 @@ import uk.ac.warwick.wsbc.QuimP.QuimP;
  * endif
  * stop
  * @enduml
- * 
+ * !>
  * UI transactions:
+ * !<
  * @startuml
  * [*] --> DisplayUI
  * DisplayUI : Cancel
@@ -140,18 +140,12 @@ import uk.ac.warwick.wsbc.QuimP.QuimP;
  * Register-> DisplayUI : hash not valid
  * Register ->[*] : hash valid
  * @enduml
- * 
+ * !>
  * @author p.baniukiewicz
  *
  */
 public class Registration extends JDialog implements ActionListener {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(Registration.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(Registration.class.getName());
 
     private JButton bOk, bCancel;
     public boolean waited = false; // flag that indicates that user has waited already.

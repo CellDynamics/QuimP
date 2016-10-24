@@ -2,8 +2,8 @@ package uk.ac.warwick.wsbc.QuimP.filesystem;
 
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
 
@@ -18,14 +18,14 @@ import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
  */
 public class OutlinesCollection implements IQuimpSerialize {
     @SuppressWarnings("unused")
-    private static final Logger LOGGER = LogManager.getLogger(OutlinesCollection.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(OutlinesCollection.class.getName());
     /**
-     * Contain {@link OutlineHandler} objects. 
+     * Contain {@link OutlineHandler} objects.
      * 
-     * Each object ({@link OutlineHandler} represents segmented cell (outline) between 
-     * frame <it>f1</it> and <it>f2</it>  but only if segmentation process run continuously 
-     * between these frames. Outlines are returned by of ECMM module and they are almost the same
-     * as Snakes but may differ in node order or number.
+     * Each object ({@link OutlineHandler} represents segmented cell (outline) between frame
+     * <it>f1</it> and <it>f2</it> but only if segmentation process run continuously between these
+     * frames. Outlines are returned by of ECMM module and they are almost the same as Snakes but
+     * may differ in node order or number.
      * 
      */
     public ArrayList<OutlineHandler> oHs;

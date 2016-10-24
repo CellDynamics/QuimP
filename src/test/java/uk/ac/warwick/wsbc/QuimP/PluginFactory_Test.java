@@ -13,15 +13,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
@@ -34,14 +33,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOAPoint2dFilter;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PluginFactory_Test {
-    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(PluginFactory_Test.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(PluginFactory_Test.class.getName());
 
     /**
      * @throws java.lang.Exception
@@ -106,13 +98,11 @@ public class PluginFactory_Test {
     }
 
     /**
-     * @test Test method for 
-     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)}
-     * This test creates instances of plugins and calls methods from them
-     * storing and reading data from created object for plugin2
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)} This
+     *       test creates instances of plugins and calls methods from them storing and reading data
+     *       from created object for plugin2
      * 
-     * @pre Two dummy plugins in ../Test-Plugins/target/ directory of type
-     * DOES_SNAKES
+     * @pre Two dummy plugins in ../Test-Plugins/target/ directory of type DOES_SNAKES
      */
     @Test
     @Ignore("Test plugins must be recompiled")
@@ -136,9 +126,8 @@ public class PluginFactory_Test {
     }
 
     /**
-     * @test Test method for 
-     * {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)}
-     * This test try to call plugin that does not exist
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)} This
+     *       test try to call plugin that does not exist
      * 
      * @pre Empty directory but existing
      */
@@ -155,11 +144,9 @@ public class PluginFactory_Test {
     /**
      * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#scanDirectory()}
      * 
-     * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in
-     * test directory
-     * @post
-     * Return list of files that according to hardcoded criterion. For more
-     * files they may be returned in random order.
+     * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
+     * @post Return list of files that according to hardcoded criterion. For more files they may be
+     *       returned in random order.
      * @throws NoSuchMethodException
      * @throws SecurityException
      * @throws IllegalAccessException
@@ -191,8 +178,7 @@ public class PluginFactory_Test {
     /**
      * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getClassName()}
      * 
-     * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in
-     * test directory
+     * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
      * @post Qualified name of class in plugin 2 must be correct
      * @throws NoSuchMethodException
      * @throws SecurityException
@@ -222,7 +208,7 @@ public class PluginFactory_Test {
      * @test Test of reading type and version from plugins
      * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
      * @post proper versions, types and qnames
-     * @throws QuimpPluginException 
+     * @throws QuimpPluginException
      */
     @Test
     @Ignore("Test plugins must be recompiled")

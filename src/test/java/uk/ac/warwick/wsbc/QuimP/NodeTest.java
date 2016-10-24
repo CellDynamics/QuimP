@@ -7,12 +7,11 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
@@ -21,13 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  */
 public class NodeTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(NodeTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(NodeTest.class.getName());
     private Node n;
 
     /**
@@ -47,8 +40,8 @@ public class NodeTest {
     }
 
     /**
-     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node).
-     * Test copy constructor and equals methods
+     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node). Test copy constructor
+     *       and equals methods
      */
     @Test
     public void testNodeNode() throws Exception {
@@ -57,15 +50,15 @@ public class NodeTest {
         LOGGER.debug(n.toString());
         LOGGER.debug(copy.toString());
         assertEquals(n, copy);
-        LOGGER.debug(n.hashCode());
-        LOGGER.debug(copy.hashCode());
+        LOGGER.debug(Integer.toString(n.hashCode()));
+        LOGGER.debug(Integer.toString(copy.hashCode()));
         assertEquals(n.hashCode(), copy.hashCode());
         assertThat(c, is(n));
     }
 
     /**
-     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node).
-     * Test copy constructor and equals methods
+     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node). Test copy constructor
+     *       and equals methods
      * @pre Copied method is modified
      */
     @Test
@@ -75,14 +68,14 @@ public class NodeTest {
         LOGGER.debug(n.toString());
         LOGGER.debug(copy.toString());
         assertThat(copy, is(not(n)));
-        LOGGER.debug(n.hashCode());
-        LOGGER.debug(copy.hashCode());
+        LOGGER.debug(Integer.toString(n.hashCode()));
+        LOGGER.debug(Integer.toString(copy.hashCode()));
         assertThat(copy.hashCode(), is(not(n.hashCode())));
     }
 
     /**
-     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node).
-     * Test copy constructor and equals methods
+     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node). Test copy constructor
+     *       and equals methods
      * @pre Copied method is modified - underlying class method
      */
     @Test
@@ -92,8 +85,8 @@ public class NodeTest {
         LOGGER.debug(n.toString());
         LOGGER.debug(copy.toString());
         assertThat(copy, is(not(n)));
-        LOGGER.debug(n.hashCode());
-        LOGGER.debug(copy.hashCode());
+        LOGGER.debug(Integer.toString(n.hashCode()));
+        LOGGER.debug(Integer.toString(copy.hashCode()));
         assertThat(copy.hashCode(), is(not(n.hashCode())));
     }
 

@@ -5,8 +5,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
@@ -21,11 +21,10 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * 
  * @author p.baniukiewicz
  *
- * @param <T>
- *        Type of point, currently can be Node or Vert
+ * @param <T> Type of point, currently can be Node or Vert
  */
 public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
-    private static final Logger LOGGER = LogManager.getLogger(Shape.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(Shape.class.getName());
     /**
      * Next node ID's. Initialized in constructor, changed during modification of shape.
      */
@@ -63,10 +62,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * 
      * List of points must be looped.
      * 
-     * @param h
-     *        head point of the list
-     * @param N
-     *        number of points in the list
+     * @param h head point of the list
+     * @param N number of points in the list
      */
     public Shape(T h, int N) {
         head = h;
@@ -78,8 +75,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * Create Shape from one point, created Shape is looped. If <tt>h</tt> is a list, only
      * <tt>h</tt> will be maintained and list will be unlinked.
      * 
-     * @param h
-     *        head point of the list
+     * @param h head point of the list
      */
     public Shape(final T h) {
         this(h, 1);
@@ -92,10 +88,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     /**
      * Copy constructor.
      * 
-     * @param src
-     *        source Shape to copy from
-     * @throws RuntimeException
-     *         when T does no have copy constructor
+     * @param src source Shape to copy from
+     * @throws RuntimeException when T does no have copy constructor
      */
     @SuppressWarnings("unchecked")
     public Shape(final Shape<T> src) {
@@ -146,10 +140,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * </pre>
      * 
      * @param src
-     * @param destType
-     *        object of base node that PointsList is composed from
-     * @throws RuntimeException
-     *         when T does no have copy constructor
+     * @param destType object of base node that PointsList is composed from
+     * @throws RuntimeException when T does no have copy constructor
      * 
      * @see #Shape(Shape)
      */
@@ -359,8 +351,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * 
      * Called after modification of Shape nodes.
      * 
-     * @param inner
-     *        Direction of the Shape
+     * @param inner Direction of the Shape
      */
     public void updateNormales(boolean inner) {
         T v = head;
@@ -399,8 +390,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * <p>
      * For initialisation only.
      * 
-     * @param n
-     *        Node to be added to list
+     * @param n Node to be added to list
      * 
      */
     public void addPoint(final T n) {
@@ -433,10 +423,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * Check if removed point was head and if it was, the new head is randomly selected. Neighbors
      * are linked together. There is no protection here against removing last node at all.
      * 
-     * @param n
-     *        point to remove
-     * @param inner
-     *        direction of normal vectors of Shape
+     * @param n point to remove
+     * @param inner direction of normal vectors of Shape
      */
     public void removePoint(final T n, boolean inner) {
         n.getPrev().setNext(n.getNext());
@@ -592,10 +580,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     /**
      * Scale current Shape by <tt>amount</tt> in increments of <tt>stepSize</tt>.
      * 
-     * @param amount
-     *        scale
-     * @param stepSize
-     *        increment
+     * @param amount scale
+     * @param stepSize increment
      */
     public void scale(double amount, double stepSize) {
         // make sure snake access is clockwise

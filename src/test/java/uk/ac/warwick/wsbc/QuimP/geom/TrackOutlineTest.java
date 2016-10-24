@@ -7,14 +7,13 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -35,11 +34,11 @@ public class TrackOutlineTest {
      * Accessor to private field
      * 
      * @param name Name of private field
-     * @param obj Reference to object 
-     * @throws NoSuchFieldException 
-     * @throws SecurityException 
-     * @throws IllegalArgumentException 
-     * @throws IllegalAccessException         
+     * @param obj Reference to object
+     * @throws NoSuchFieldException
+     * @throws SecurityException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
      */
     static Object accessPrivateField(String name, TrackOutline obj) throws NoSuchFieldException,
             SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -48,13 +47,7 @@ public class TrackOutlineTest {
         return prv.get(obj);
     }
 
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(TrackOutlineTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(TrackOutlineTest.class.getName());
     private ImagePlus image;
     private TrackOutline obj;
 
@@ -153,7 +146,7 @@ public class TrackOutlineTest {
 
     /**
      * @test Validates what is returned from ShapeRoi.and
-     * @post operation  ret.get(1).and(new ShapeRoi(pr)); modifies ret.get(1)
+     * @post operation ret.get(1).and(new ShapeRoi(pr)); modifies ret.get(1)
      * @post If there is no intersection it return shape wit 0 width/height
      */
     @Test

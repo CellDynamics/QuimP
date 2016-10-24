@@ -4,14 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Vector;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -19,16 +18,8 @@ import ij.process.ImageProcessor;
 
 public class ImageProcessorPlus_Test {
 
-    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
     private ImagePlus image;
-    private static final Logger LOGGER =
-            LogManager.getLogger(ImageProcessorPlus_Test.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessorPlus_Test.class.getName());
     private ImageProcessorPlus ipp;
 
     /**
@@ -66,10 +57,9 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test method for
-     * {@link utils.ImageProcessorPlus.rotate(ImageProcessor,double, boolean)}
-     * @post Rotated image should have bas-reliefs oriented horizontally. Saves
-     * rotated image to /tmp/testrotateImage.tif.
+     * @test Test method for {@link utils.ImageProcessorPlus.rotate(ImageProcessor,double, boolean)}
+     * @post Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to
+     *       /tmp/testrotateImage.tif.
      */
     @Test
     public void test_Rotate() {
@@ -80,12 +70,10 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test method for
-     * {@link utils.ImageProcessorPlus.rotate(ImageProcessor,double, boolean)}
-     * with background settings
-     * @post Rotated image should have bas-reliefs oriented horizontally. Saves
-     * rotated image to /tmp/testrotateImage.tif. There should be 0
-     * background
+     * @test Test method for {@link utils.ImageProcessorPlus.rotate(ImageProcessor,double, boolean)}
+     *       with background settings
+     * @post Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to
+     *       /tmp/testrotateImage.tif. There should be 0 background
      */
     @Test
     public void test_Rotate_0background() {
@@ -154,8 +142,7 @@ public class ImageProcessorPlus_Test {
 
     /**
      * @throws Exception
-     * @test Test of RectangleBox for square image and angle 0 deg for input
-     * vectors
+     * @test Test of RectangleBox for square image and angle 0 deg for input vectors
      */
     @Test
     public void test_RectangleBoxVector_0s() throws Exception {
@@ -183,8 +170,7 @@ public class ImageProcessorPlus_Test {
 
     /**
      * @throws Exception
-     * @test Test of RectangleBox for square image and angle 45 deg for input
-     * vectors
+     * @test Test of RectangleBox for square image and angle 45 deg for input vectors
      */
     @Test
     public void test_RectangleBoxVector_45s() throws Exception {

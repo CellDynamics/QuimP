@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.QuimP;
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
@@ -23,9 +23,9 @@ import uk.ac.warwick.wsbc.QuimP.utils.Pair;
  */
 public class TrackCollection {
     /**
-     * Collection of pairs of tracks. Every pair originates from the same starting point. 
-     * First element is backward tracks, second forward. Tracks can be empty but never null.
-     * Every track has different id.
+     * Collection of pairs of tracks. Every pair originates from the same starting point. First
+     * element is backward tracks, second forward. Tracks can be empty but never null. Every track
+     * has different id.
      */
     private ArrayList<Pair<Track, Track>> bf;
 
@@ -115,12 +115,13 @@ public class TrackCollection {
  * Hold one track line with additional parameters.
  * <p>
  * In general x coordinate stands for frame and y for index.
+ * 
  * @author p.baniukiewicz
  * @see {@link trackMaxima(STmap, double, MaximaFinder)} for order of points in Tracks.
  */
 class Track extends ArrayList<Point> {
     private static final long serialVersionUID = 8928704797702167155L;
-    private static final Logger LOGGER = LogManager.getLogger(Track.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(Track.class.getName());
 
     /**
      * Types of tracking lines.
@@ -173,6 +174,7 @@ class Track extends ArrayList<Point> {
 
     /**
      * Not use due to similar structure as Track(int, Point)
+     * 
      * @param initialCapacity
      */
     @SuppressWarnings("unused")
@@ -213,6 +215,7 @@ class Track extends ArrayList<Point> {
      * Return frame for given index of Track point.
      * 
      * Resolves correct mapping between coordinates.
+     * 
      * @param index index of point
      * @return Frame of this point
      */
@@ -224,6 +227,7 @@ class Track extends ArrayList<Point> {
      * Return outline index for given index of Track point.
      * 
      * Resolves correct mapping between coordinates.
+     * 
      * @param index index of point
      * @return Outline index of this point
      */

@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
@@ -32,17 +32,17 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * it is not possible to detect the same object twice).
  * 
  * It assigns also frame number to outline
- * 
+ * !<
  * @startuml
  * User->(Create object)
  * User->(Convert Outlines to Point2d)
  * User->(get deep copy of Outlines)
  * @enduml
- * 
+ * !>
  * Creating object runs also outline detection and tracking. Detected outlines are stored in object
  * and can be accessed by reference directly from \a outlines array or as copies from 
  * getCopyofShapes().
- * 
+ * !<
  * @startuml
  * actor User
  * User-->TrackOutline : <<create>>\n""image"",""frame""
@@ -70,14 +70,14 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * end
  * getOutlines->TrackOutline
  * @enduml
- *  
+ * !> 
  * @author p.baniukiewicz
  * @see uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi
  *
  */
 public class TrackOutline {
 
-    private static final Logger LOGGER = LogManager.getLogger(TrackOutline.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(TrackOutline.class.getName());
 
     protected ImageProcessor imp; //!< Original image. It is not modified
     private ImageProcessor prepared; //!< Image under process. It is modified by Outline methods
@@ -107,6 +107,7 @@ public class TrackOutline {
 
     /**
      * Default constructor
+     * 
      * @param im Image to process (not modified), 8-bit, one slice
      * @param background Background color
      */
@@ -158,14 +159,14 @@ public class TrackOutline {
     /**
      * Try to find all outlines on image
      * 
-     * It is possible to limit number of searched outlines setting \a MAX > 0
-     * The algorithm goes through every pixel on image and if this pixel is different than 
-     * background (defined in constructor) it uses it as source of Wand. Wand should outline found
-     * object, which is then erased from image. then next pixel is analyzed.
+     * It is possible to limit number of searched outlines setting \a MAX > 0 The algorithm goes
+     * through every pixel on image and if this pixel is different than background (defined in
+     * constructor) it uses it as source of Wand. Wand should outline found object, which is then
+     * erased from image. then next pixel is analyzed.
      * 
-     * Fills \a outlines field that contains list of all ROIs obtained for this image together with 
+     * Fills \a outlines field that contains list of all ROIs obtained for this image together with
      * frame number assigned to TrackOutline
-     *  
+     * 
      */
     private void getOutlines() {
         // go through the image and look for non \a background pixels
@@ -197,9 +198,10 @@ public class TrackOutline {
 
     /**
      * Convert found outlines to List
+     * 
      * @param step step - step during conversion outline to points. For 1 every point from outline
-     * is included in output list
-     * @param smooth \a true for using smoothing during interpolation 
+     *        is included in output list
+     * @param smooth \a true for using smoothing during interpolation
      * @return List of List of ROIs
      * @see SegmentedShapeRoi.getOutlineasPoints(double, boolean)
      */
@@ -215,6 +217,7 @@ public class TrackOutline {
 
     /**
      * Return deep copy of Rois
+     * 
      * @return
      */
     public List<SegmentedShapeRoi> getCopyofShapes() {
@@ -224,7 +227,9 @@ public class TrackOutline {
         return clon;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override

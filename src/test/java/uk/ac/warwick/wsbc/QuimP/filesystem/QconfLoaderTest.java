@@ -5,9 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import java.nio.file.Paths;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,6 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImageJ;
@@ -34,13 +33,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class QconfLoaderTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "qlog4j2.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(QconfLoaderTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QconfLoaderTest.class.getName());
 
     /**
      * Prepare fake QCONF. No data just empty container.
@@ -80,7 +73,8 @@ public class QconfLoaderTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#QconfLoader(java.nio.file.Path)}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#QconfLoader(java.nio.file.Path)}.
      */
     @Test
     public void testQconfLoaderPath() throws Exception {
