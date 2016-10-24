@@ -5,7 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,12 +16,6 @@ import org.junit.Test;
  *
  */
 public class SVGwritterTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
 
     /**
      * @throws java.lang.Exception
@@ -53,7 +46,8 @@ public class SVGwritterTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGwritter#writeHeader(java.io.OutputStreamWriter)}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGwritter#writeHeader(java.io.OutputStreamWriter)}.
      */
     @Test
     public void testWriteHeader() throws Exception {

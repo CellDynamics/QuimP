@@ -9,12 +9,11 @@ import java.util.ArrayList;
 
 import javax.vecmath.Point2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.BOA_;
@@ -26,15 +25,7 @@ import uk.ac.warwick.wsbc.QuimP.Snake;
  *
  */
 public class QuimpDataConverterTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER =
-            LogManager.getLogger(QuimpDataConverterTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QuimpDataConverterTest.class.getName());
 
     private double X[], Y[];
     private ArrayList<Point2d> list;

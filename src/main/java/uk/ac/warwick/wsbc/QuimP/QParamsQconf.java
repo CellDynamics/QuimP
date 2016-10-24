@@ -5,50 +5,49 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
- * This class override most of methods from super class QParams. 
- * The goal of this class is rather not to extend QParams but to use polymorphism to provide 
- * requested data to callers keeping compatibility with old QuimP architecture. 
- * The QuimP uses QParams to keep parameters read from configuration files (<i>paQP</i>, <i>snQP</i>) and 
- * then to provide some of parameters stored in these files to local configuration classes such as
- * e.g. {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMp}, {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Qp}, 
- * {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp}.
- * QuimP supports two independent file formats:
+ * This class override most of methods from super class QParams. The goal of this class is rather
+ * not to extend QParams but to use polymorphism to provide requested data to callers keeping
+ * compatibility with old QuimP architecture. The QuimP uses QParams to keep parameters read from
+ * configuration files (<i>paQP</i>, <i>snQP</i>) and then to provide some of parameters stored in
+ * these files to local configuration classes such as e.g.
+ * {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMp},
+ * {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Qp},
+ * {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp}. QuimP supports two independent file formats:
  * <ol>
- * <li> based on separate files (old QuimP) such as \a case_cellno.paQP
- * <li> compound <i>case.QCONF<i/> that contains data for all cells
+ * <li>based on separate files (old QuimP) such as \a case_cellno.paQP
+ * <li>compound <i>case.QCONF<i/> that contains data for all cells
  * </ol>
- * Many of parameters in underlying class QParams are set to be private and they are accessible
- * by setters and getters. Many setter/getter are overridden in this class and contains simple logic
- * to provide requested and expected data even if the source file was <i>QCONF<i/>. 
- * There is also method that convert parameters read from QCONF and fills underlying fields in QParams.
- * Appropriate object either QParam or QParamsQconf is created upon configuration file type. 
- * Owing to Java late binding, always correct method is called even if the object is casted to QParams 
+ * Many of parameters in underlying class QParams are set to be private and they are accessible by
+ * setters and getters. Many setter/getter are overridden in this class and contains simple logic to
+ * provide requested and expected data even if the source file was <i>QCONF<i/>. There is also
+ * method that convert parameters read from QCONF and fills underlying fields in QParams.
+ * Appropriate object either QParam or QParamsQconf is created upon configuration file type. Owing
+ * to Java late binding, always correct method is called even if the object is casted to QParams
  * 
  * @author p.baniukiewicz
  *
  */
 public class QParamsQconf extends QParams {
 
-    private static final Logger LOGGER = LogManager.getLogger(QParamsQconf.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QParamsQconf.class.getName());
     private Serializer<DataContainer> loaded; // instance of loaded data
     private File newParamFile;
     /**
      * Currently processed handler.
      * 
      * This is compatibility parameter. Old QuimP uses separated files for every snake thus QParams
-     * contained always correct values as given snake has been loaded. New QuimP uses composed
-     * file and this field points to currently processed Handler and it must be controlled from
-     * outside. For compatibility reasons all setters and getters assumes that there is only
-     * one Handler (as in old QuimP). This field allow to set current Handler if QParamsEschange
-     * instance is used.
+     * contained always correct values as given snake has been loaded. New QuimP uses composed file
+     * and this field points to currently processed Handler and it must be controlled from outside.
+     * For compatibility reasons all setters and getters assumes that there is only one Handler (as
+     * in old QuimP). This field allow to set current Handler if QParamsEschange instance is used.
      */
     private int currentHandler;
 
@@ -82,7 +81,7 @@ public class QParamsQconf extends QParams {
 
     /**
      * @return the prefix. Without any cell number in contrary to super.getFileName(). Only filename
-     * without path and extension.
+     *         without path and extension.
      */
     @Override
     public String getFileName() {
@@ -146,7 +145,7 @@ public class QParamsQconf extends QParams {
     }
 
     /**
-     * Write all parameters in new format. 
+     * Write all parameters in new format.
      * 
      * Makes pure dump what means that object is already packed with QuimP format. Used when
      * original data has been loaded, modified and then they must be saved again under the same
@@ -172,8 +171,10 @@ public class QParamsQconf extends QParams {
 
     /**
      * Fill some underlying fields to assure compatibility between new and old formats.
-     * <p><b>Warning</b><p>
-     * Some data depend on status of <tt>currentHandler</tt> that points to current outline. This is 
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * Some data depend on status of <tt>currentHandler</tt> that points to current outline. This is
      * due to differences in file handling between old format (separate paQP for every cell) and new
      * (one file).
      */
@@ -235,27 +236,31 @@ public class QParamsQconf extends QParams {
     /**
      * Write parameter file paQP in old format (QuimP11).
      * 
-     * @throws QuimpException 
+     * @throws QuimpException
      * 
      */
     public void writeOldParams() throws IOException {
         super.writeParams();
     }
 
-    /** (non-Javadoc)
+    /**
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getStartFrame()
-     * @warning In old way this was related always to loaded file that was separate for every
-     * snake. In new way this field should not exist stand alone
+     * @warning In old way this was related always to loaded file that was separate for every snake.
+     *          In new way this field should not exist stand alone
      */
     @Override
     public int getStartFrame() {
         return super.getStartFrame();
     }
 
-    /** (non-Javadoc)
+    /**
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#setStartFrame(int)
-     * @warning In old way this was related always to loaded file that was separate for every
-     * snake. In new way this field should not exist stand alone
+     * @warning In old way this was related always to loaded file that was separate for every snake.
+     *          In new way this field should not exist stand alone
      */
     @Override
     public void setStartFrame(int startFrame) {
@@ -264,20 +269,24 @@ public class QParamsQconf extends QParams {
                 startFrame;
     }
 
-    /** (non-Javadoc)
+    /**
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getEndFrame()
-     * @warning In old way this was related always to loaded file that was separate for every
-     * snake. In new way this field should not exist stand alone
+     * @warning In old way this was related always to loaded file that was separate for every snake.
+     *          In new way this field should not exist stand alone
      */
     @Override
     public int getEndFrame() {
         return super.getEndFrame();
     }
 
-    /** (non-Javadoc)
+    /**
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#setEndFrame(int)
-     * @warning In old way this was related always to loaded file that was separate for every
-     * snake. In new way this field should not exist stand alone
+     * @warning In old way this was related always to loaded file that was separate for every snake.
+     *          In new way this field should not exist stand alone
      */
     @Override
     public void setEndFrame(int endFrame) {
@@ -285,7 +294,9 @@ public class QParamsQconf extends QParams {
         getLoadedDataContainer().getBOAState().nest.getHandler(currentHandler).endFrame = endFrame;
     }
 
-    /** (non-Javadoc)
+    /**
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getImageScale()
      */
     @Override
@@ -293,7 +304,9 @@ public class QParamsQconf extends QParams {
         return super.getImageScale();
     }
 
-    /** (non-Javadoc)
+    /**
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#setImageScale(double)
      */
     @Override
@@ -302,7 +315,9 @@ public class QParamsQconf extends QParams {
         super.setImageScale(imageScale);
     }
 
-    /** (non-Javadoc)
+    /**
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getFrameInterval()
      */
     @Override
@@ -310,7 +325,9 @@ public class QParamsQconf extends QParams {
         return super.getFrameInterval();
     }
 
-    /** (non-Javadoc)
+    /**
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#setFrameInterval(double)
      */
     @Override
@@ -319,7 +336,9 @@ public class QParamsQconf extends QParams {
         super.setFrameInterval(frameInterval);
     }
 
-    /** (non-Javadoc)
+    /**
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getNest()
      */
     @Override
@@ -330,7 +349,9 @@ public class QParamsQconf extends QParams {
             return super.getNest();
     }
 
-    /** (non-Javadoc)
+    /**
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getBlowup()
      */
     @Override
@@ -338,7 +359,9 @@ public class QParamsQconf extends QParams {
         return super.getBlowup();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#setBlowup(int)
      */
     @Override
@@ -347,7 +370,9 @@ public class QParamsQconf extends QParams {
         super.setBlowup(blowup);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getNodeRes()
      */
     @Override
@@ -355,7 +380,9 @@ public class QParamsQconf extends QParams {
         return super.getNodeRes();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#setNodeRes(int)
      */
     @Override
@@ -364,7 +391,7 @@ public class QParamsQconf extends QParams {
         super.setNodeRes(nodeRes);
     }
 
-    /** 
+    /**
      * For new file format it redirects call to super class searching for old files (paQP).
      * 
      * Finally old files can be processed together with new one.
@@ -377,11 +404,11 @@ public class QParamsQconf extends QParams {
         return super.findParamFiles();
     }
 
-    /** 
+    /**
      * Create fake snQP name, for compatibility reasons
      * 
      * @return theoretical name of snQP file which is used then to estimate names of map files by
-     * uk.ac.warwick.wsbc.QuimP.Qp class. This name contains \a suffix already  
+     *         uk.ac.warwick.wsbc.QuimP.Qp class. This name contains \a suffix already
      * @see uk.ac.warwick.wsbc.QuimP.QParams.getSnakeQP()
      */
     @Override
@@ -391,8 +418,11 @@ public class QParamsQconf extends QParams {
         return new File(path + File.separator + file + "_" + currentHandler + ".snQP");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getStatsQP()
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParamsQconf.getSnakeQP()
      */
     @Override
@@ -405,13 +435,13 @@ public class QParamsQconf extends QParams {
 }
 
 /**
- * Blocks execution of afterSerialize() in Serializer. 
+ * Blocks execution of afterSerialize() in Serializer.
  * 
- * This method is not necessary now because one does not want to restore full plugin state.
- * Other data do not need any additional operations. (
+ * This method is not necessary now because one does not want to restore full plugin state. Other
+ * data do not need any additional operations. (
  * 
  * @warning currently not used as loaded BOAState must be deserialized to restore Snakes from
- * Elements arrays
+ *          Elements arrays
  * 
  * @author p.baniukiewicz
  *

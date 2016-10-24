@@ -9,13 +9,12 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,13 +31,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  *
  */
 public class ConfigStreamerTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(ConfigStreamerTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(ConfigStreamerTest.class.getName());
     private tSnakePluginList p;
     private ConfigContainer1 cc;
 
@@ -230,7 +223,7 @@ class tSnakePluginList {
          * Main constructor
          * 
          * @param ref Instance of plugin
-         * @param isActive 
+         * @param isActive
          */
         Plugin(IQuimpCorePlugin ref, boolean isActive) {
             this.ref = ref;

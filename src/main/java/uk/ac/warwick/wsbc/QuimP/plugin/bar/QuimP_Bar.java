@@ -37,9 +37,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.Prefs;
@@ -62,13 +61,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @author p.baniukiewicz
  */
 public class QuimP_Bar implements PlugIn, ActionListener {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    static final Logger LOGGER = LogManager.getLogger(QuimP_Bar.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QuimP_Bar.class.getName());
     /**
      * This field is used for sharing information between bar and other plugins.
      * 

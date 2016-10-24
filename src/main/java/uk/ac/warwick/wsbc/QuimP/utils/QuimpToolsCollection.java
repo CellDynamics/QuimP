@@ -9,8 +9,8 @@ import java.util.Enumeration;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
@@ -24,7 +24,7 @@ import uk.ac.warwick.wsbc.QuimP.Vert;
  */
 public class QuimpToolsCollection {
 
-    private static final Logger LOGGER = LogManager.getLogger(QuimpToolsCollection.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QuimpToolsCollection.class.getName());
     /**
      * Message returned by {@link #getQuimPBuildInfo()} if info is not found in jar.
      */

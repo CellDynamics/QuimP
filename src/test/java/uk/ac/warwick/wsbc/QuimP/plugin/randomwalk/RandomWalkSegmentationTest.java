@@ -16,14 +16,13 @@ import java.util.Set;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -40,14 +39,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
         super(testImage1.getProcessor(), new Params());
     }
 
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER =
-            LogManager.getLogger(RandomWalkSegmentationTest.class.getName());
+    static final Logger LOGGER =
+            LoggerFactory.getLogger(RandomWalkSegmentationTest.class.getName());
 
     static ImagePlus testImage1rgb; // contains rgb image with test seed points
     static ImagePlus testImage1;
@@ -123,13 +116,9 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     @Test
     public void testCircshift_top() throws Exception {
         //!<
-        double[][] test =     { { 1, 2, 3, 4 },
-                                { 2, 3, 4, 5 },
-                                { 6, 7, 8, 9 } };
-        
-        double[][] expected = { { 2, 3, 4, 5 },
-                                { 6, 7, 8, 9 },
-                                { 1, 2, 3, 4 }};
+        double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 4, 5 }, { 6, 7, 8, 9 } };
+
+        double[][] expected = { { 2, 3, 4, 5 }, { 6, 7, 8, 9 }, { 1, 2, 3, 4 } };
         /**/
         RealMatrix testrm = MatrixUtils.createRealMatrix(test);
         RealMatrix shift = circshift(testrm, RandomWalkSegmentation.TOP);
@@ -144,13 +133,9 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     @Test
     public void testCircshift_bottom() throws Exception {
         //!<
-        double[][] test =     { { 1, 2, 3, 4 },
-                                { 2, 3, 4, 5 },
-                                { 6, 7, 8, 9 } };
-        
-        double[][] expected = { { 6, 7, 8, 9 },
-                                { 1, 2, 3, 4 },
-                                { 2, 3, 4, 5 } };
+        double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 4, 5 }, { 6, 7, 8, 9 } };
+
+        double[][] expected = { { 6, 7, 8, 9 }, { 1, 2, 3, 4 }, { 2, 3, 4, 5 } };
         /**/
         RealMatrix testrm = MatrixUtils.createRealMatrix(test);
         RealMatrix shift = circshift(testrm, RandomWalkSegmentation.BOTTOM);
@@ -158,20 +143,17 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test Test of getSqrdDiffIntensity(RealMatrix, RealMatrix) 
+     * @test Test of getSqrdDiffIntensity(RealMatrix, RealMatrix)
      * @throws Exception
      */
     @Test
     public void testGetSqrdDiffIntensity() throws Exception {
-      //!<
-        double[][] a =        { { 1, 2 },
-                                { 2, 3 } };
-        
-        double[][] b =        { { 3, 4 },
-                                { 6, 2 } };
-        
-        double[][] expected = { { 4, 4 },
-                                { 16, 1 } };
+        //!<
+        double[][] a = { { 1, 2 }, { 2, 3 } };
+
+        double[][] b = { { 3, 4 }, { 6, 2 } };
+
+        double[][] expected = { { 4, 4 }, { 16, 1 } };
         /**/
         RealMatrix out = getSqrdDiffIntensity(MatrixUtils.createRealMatrix(a),
                 MatrixUtils.createRealMatrix(b));
@@ -185,9 +167,7 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     @Test
     public void testGetMin() throws Exception {
         //!<
-        double[][] test =     { { 1, 2, 3, 4 },
-                                { 2, 3, 40, 5 },
-                                { 6, 7, 8, 9 } };
+        double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
         /**/
         assertThat(getMax(MatrixUtils.createRealMatrix(test)), is(40.0));
     }
@@ -198,9 +178,7 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     @Test
     public void testGetSubMatrix() {
         //!<
-        double[][] test =     { { 1, 2, 3, 4 },
-                                { 2, 3, 40, 5 },
-                                { 6, 7, 8, 9 } };
+        double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
         /**/
         int r[] = { 0, 1, 0 };
         int c[] = { 0, 2, 3 };
@@ -248,18 +226,16 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     @Test
     public void testGetValues() throws Exception {
         //!<
-        double[][] test =     { { 1, 2, 3, 4 },
-                                { 2, 3, 40, 5 },
-                                { 6, 7, 8, 9 } };
+        double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
         /**/
         double[] expected = { 1, 6, 40 };
         RealMatrix in = MatrixUtils.createRealMatrix(test);
-        LOGGER.debug(in.getEntry(1, 2)); // row,col
+        LOGGER.debug(Double.toString(in.getEntry(1, 2))); // row,col
         List<Point> ind = new ArrayList<>();
         ind.add(new Point(0, 0));
         ind.add(new Point(0, 2));
         ind.add(new Point(2, 1));
-        LOGGER.debug(ind);
+        LOGGER.debug(ind.toString());
         ArrayRealVector ret = getValues(in, ind);
         assertThat(ret.getDataRef(), is(expected));
     }
@@ -272,12 +248,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     @Test
     public void testSetValues() throws Exception {
         //!<
-        double[][] test =     { { 1, 2, 3, 4 },
-                                { 2, 3, 40, 5 },
-                                { 6, 7, 8, 9 } };
-        double[][] expected = { { -1, 2,  3, 4 },
-                                {  2, 3, -3, 5 },
-                                { -2, 7,  8, 9 } };
+        double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
+        double[][] expected = { { -1, 2, 3, 4 }, { 2, 3, -3, 5 }, { -2, 7, 8, 9 } };
         /**/
         RealMatrix in = MatrixUtils.createRealMatrix(test);
         List<Point> ind = new ArrayList<>();
@@ -298,12 +270,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     @Test
     public void testSetValues_1() throws Exception {
         //!<
-        double[][] test =     { { 1, 2, 3, 4 },
-                                { 2, 3, 40, 5 },
-                                { 6, 7, 8, 9 } };
-        double[][] expected = { { -1, 2,  3, 4 },
-                                {  2, 3, -1, 5 },
-                                { -1, 7,  8, 9 } };
+        double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
+        double[][] expected = { { -1, 2, 3, 4 }, { 2, 3, -1, 5 }, { -1, 7, 8, 9 } };
         /**/
         RealMatrix in = MatrixUtils.createRealMatrix(test);
         List<Point> ind = new ArrayList<>();
@@ -324,12 +292,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     @Test(expected = InvalidParameterException.class)
     public void testSetValues_2() throws Exception {
         //!<
-        double[][] test =     { { 1, 2, 3, 4 },
-                                { 2, 3, 40, 5 },
-                                { 6, 7, 8, 9 } };
-        double[][] expected = { { -1, 2,  3, 4 },
-                                {  2, 3, -1, 5 },
-                                { -1, 7,  8, 9 } };
+        double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
+        double[][] expected = { { -1, 2, 3, 4 }, { 2, 3, -1, 5 }, { -1, 7, 8, 9 } };
         /**/
         RealMatrix in = MatrixUtils.createRealMatrix(test);
         List<Point> ind = new ArrayList<>();

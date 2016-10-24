@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.InvalidParameterException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
@@ -23,9 +23,9 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @author p.baniukiewicz
  */
 public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSerialize {
-    private static final Logger LOGGER = LogManager.getLogger(OutlineHandler.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(OutlineHandler.class.getName());
     /**
-     * Array of given cell outlines found for frames (<tt>startFrame</tt> and <tt>endFrame</tt>) 
+     * Array of given cell outlines found for frames (<tt>startFrame</tt> and <tt>endFrame</tt>)
      */
     private Outline[] outlines;
     transient private QParams qp;
@@ -73,19 +73,15 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         for (int o = 0; o < this.outlines.length; o++)
             this.outlines[o] = new Outline(src.outlines[o]);
         size = src.size;
-        /*// this is calculated by findStatLimits()
-        maxCoor = src.maxCoor;
-        minCoor = src.minCoor;
-        migLimits = new double[src.migLimits.length];
-        System.arraycopy(src.migLimits, 0, migLimits, 0, src.migLimits.length);
-        fluLims = new double[src.fluLims.length][];
-        for (int i = 0; i < src.fluLims.length; i++) {
-            fluLims[i] = new double[src.fluLims[i].length];
-            System.arraycopy(src.fluLims[i], 0, fluLims[i], 0, src.fluLims[i].length);
-        }
-        curvLimits = new double[src.curvLimits.length];
-        System.arraycopy(src.curvLimits, 0, curvLimits, 0, src.curvLimits.length);
-        */
+        /*
+         * // this is calculated by findStatLimits() maxCoor = src.maxCoor; minCoor = src.minCoor;
+         * migLimits = new double[src.migLimits.length]; System.arraycopy(src.migLimits, 0,
+         * migLimits, 0, src.migLimits.length); fluLims = new double[src.fluLims.length][]; for (int
+         * i = 0; i < src.fluLims.length; i++) { fluLims[i] = new double[src.fluLims[i].length];
+         * System.arraycopy(src.fluLims[i], 0, fluLims[i], 0, src.fluLims[i].length); } curvLimits =
+         * new double[src.curvLimits.length]; System.arraycopy(src.curvLimits, 0, curvLimits, 0,
+         * src.curvLimits.length);
+         */
         for (Outline o : outlines)
             if (o.getLength() > maxLength)
                 maxLength = o.getLength();
@@ -96,7 +92,8 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
      * Conversion constructor
      * 
      * Converts SnakeHandler to OutlineHandler. Converted are only Snakes and their range
-     * @param snake source SnakeHandler 
+     * 
+     * @param snake source SnakeHandler
      */
     public OutlineHandler(final SnakeHandler snake) {
         this(snake.startFrame, snake.endFrame); // create array and set ranges
@@ -450,15 +447,14 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         pw.print("\n" + VERTS);
         // !< off formatting tag
         do {
-            pw.print("\n" 
-                    + IJ.d2s(v.coord, 6) + "\t" // Perimeter coord
+            pw.print("\n" + IJ.d2s(v.coord, 6) + "\t" // Perimeter coord
                     + IJ.d2s(v.getX(), 2) + "\t" // X coord
                     + IJ.d2s(v.getY(), 2) + "\t" // Y coord
                     + IJ.d2s(v.fCoord, 6) + "\t" // Origin
                     + IJ.d2s(v.gCoord, 6) + "\t" // G-Origin
                     + IJ.d2s(v.distance, 6) + "\t" // Speed
                     + IJ.d2s(v.fluores[0].intensity, 6) + "\t" // Fluor_Ch1
-                    + IJ.d2s(v.fluores[0].x, 0) + "\t"  // Ch1_x
+                    + IJ.d2s(v.fluores[0].x, 0) + "\t" // Ch1_x
                     + IJ.d2s(v.fluores[0].y, 0) + "\t" // Ch1_y
                     + IJ.d2s(v.fluores[1].intensity, 6) + "\t" // Fluor_Ch2
                     + IJ.d2s(v.fluores[1].x, 0) + "\t" // Ch2_x

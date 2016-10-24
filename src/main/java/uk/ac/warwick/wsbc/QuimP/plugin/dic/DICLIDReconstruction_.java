@@ -1,7 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -20,20 +20,19 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
  * @see LidReconstructor for algorithm details *
  */
 public class DICLIDReconstruction_ implements PlugInFilter {
-    private static final Logger LOGGER =
-            LogManager.getLogger(DICLIDReconstruction_.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(DICLIDReconstruction_.class.getName());
     private LidReconstructor dic;
     private ImagePlus imp;
     private double angle, decay;
 
     /**
-     * This method gets called by ImageJ/Fiji to determine whether the current
-     * image is of an appropriate type.
+     * This method gets called by ImageJ/Fiji to determine whether the current image is of an
+     * appropriate type.
      * 
      * @param arg can be specified in plugins.config
      * @param imp is the currently opened image
-     * @return Combination of flags determining supported formats: 
-     * \li DOES_8G - plugin supports 8bit grayscale images
+     * @return Combination of flags determining supported formats: \li DOES_8G - plugin supports
+     *         8bit grayscale images
      * @see ij.plugin.filter.PlugInFilter#setup(java.lang.String, ij.ImagePlus)
      */
     @Override
@@ -43,8 +42,7 @@ public class DICLIDReconstruction_ implements PlugInFilter {
     }
 
     /**
-     * This method is run when current image was accepted and input data were
-     * correct
+     * This method is run when current image was accepted and input data were correct
      * 
      * @param ip is the current slice
      * @see ij.plugin.filter.PlugInFilter#run(ij.process.ImageProcessor)
@@ -76,7 +74,7 @@ public class DICLIDReconstruction_ implements PlugInFilter {
             }
         } catch (DicException e) { // exception can be thrown if input image is 16-bit and saturated
             IJ.log(e.getMessage());
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage());
         } finally {
             imp.updateAndDraw();
         }
@@ -85,8 +83,8 @@ public class DICLIDReconstruction_ implements PlugInFilter {
     /**
      * Shows user dialog and check conditions.
      * 
-     * @return \c true if user clicked \b OK and input data are correct (they are numbers) or 
-     * return \c false otherwise
+     * @return \c true if user clicked \b OK and input data are correct (they are numbers) or return
+     *         \c false otherwise
      */
     public boolean showDialog() {
         GenericDialog gd = new GenericDialog("DIC reconstruction");

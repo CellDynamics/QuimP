@@ -14,8 +14,8 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,52 +25,38 @@ import com.google.gson.JsonSyntaxException;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
 /**
- * Save wrapped class together with itself to JSON file. 
+ * Save wrapped class together with itself to JSON file.
  * 
- * This serializer accepts only classes derived from IQuimpSerialize interface. 
- * Saved class is packed in top level structure that contains version of software and wrapped class
- * name. Final JSON looks as follows:
- * @code
- * {
- *  // This part comes from Serializer itself
- *  "className": "SnakePluginList",
- *  "version": [
- *      "version not found in jar",
- *       "build info not found in jar",
- *       "name not found in jar"
- *  ],
- *  "obj": {
- *   // here is content of wrapped object
- *  }
- * }
+ * This serializer accepts only classes derived from IQuimpSerialize interface. Saved class is
+ * packed in top level structure that contains version of software and wrapped class name. Final
+ * JSON looks as follows:
+ * 
+ * @code { // This part comes from Serializer itself "className": "SnakePluginList", "version": [
+ *       "version not found in jar", "build info not found in jar", "name not found in jar" ],
+ *       "obj": { // here is content of wrapped object } }
  * @endcode
  * 
- * Exemplary use case:
- * @code
- * {
- *   Serializer<SnakePluginList> s;
- *   s = new Serializer<>(boaState.snakePluginList, quimpInfo);
- *   s.setPretty(); // set pretty format
- *   s.save(sd.getDirectory() + sd.getFileName()); // save it
- *   s = null; // remove
- * }
+ *          Exemplary use case:
+ * @code { Serializer<SnakePluginList> s; s = new Serializer<>(boaState.snakePluginList, quimpInfo);
+ *       s.setPretty(); // set pretty format s.save(sd.getDirectory() + sd.getFileName()); // save
+ *       it s = null; // remove }
  * @endcode
  * 
- * There is option to no call afterSerialzie() method on class restoring. To do so set 
- * \a doAfterSerialize to \a false - derive new class and override this field.
+ *          There is option to no call afterSerialzie() method on class restoring. To do so set \a
+ *          doAfterSerialize to \a false - derive new class and override this field.
  * 
- *  
+ * 
  * @author p.baniukiewicz
  * @see http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson
  * @see SerializerTest for examples of use
  * @see uk.ac.warwick.wsbc.QuimP.Serializer.registerInstanceCreator(Class<T>, Object)
  * @remarks Restored object is constructed using its constructor. so if there is no variable value
- * in json it will have the value from constructor. GSon overrides variables after they have been 
- * created in normal process of object building. 
- * Check uk.ac.warwick.wsbc.QuimP.Serializer.fromReader(Reader) for details
+ *          in json it will have the value from constructor. GSon overrides variables after they
+ *          have been created in normal process of object building. Check
+ *          uk.ac.warwick.wsbc.QuimP.Serializer.fromReader(Reader) for details
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
-    private static final Logger LOGGER = LogManager.getLogger(Serializer.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(Serializer.class.getName());
     public transient GsonBuilder gsonBuilder;
     private transient Type t;
     protected transient boolean doAfterSerialize; //!< Indicates if afterSerialze should be called
@@ -83,7 +69,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     /**
      * Default constructor used for restoring object
      * 
-     * Template \a T can not be restored during runtime thus the type of wrapped object is not known 
+     * Template \a T can not be restored during runtime thus the type of wrapped object is not known
      * for GSon. This is why this type must be passed explicitly to Serializer.
      * 
      * @param t Type of underlying object
@@ -172,11 +158,11 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @throws IOException when file can not be read
      * @throws JsonSyntaxException on bad file or when class has not been restored correctly
      * @throws JsonIOException This exception is raised when Gson was unable to read an input stream
-     * or write to on
-     * @throws Exception from afterSerialize() method (specific to wrapped object) 
-     * @return New instance of loaded object packed in Serializer class. returned instance has 
-     * proper (no nulls or empty strings) fields: \a className, \a createdOn, \a version (and its
-     * subfields, \a obj 
+     *         or write to on
+     * @throws Exception from afterSerialize() method (specific to wrapped object)
+     * @return New instance of loaded object packed in Serializer class. returned instance has
+     *         proper (no nulls or empty strings) fields: \a className, \a createdOn, \a version
+     *         (and its subfields, \a obj
      */
     public Serializer<T> fromReader(final Reader reader)
             throws JsonSyntaxException, JsonIOException, Exception {
@@ -190,8 +176,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * Perform basic verification of loaded file.
-     * Test existence of several fields in created class related to Serializer container
+     * Perform basic verification of loaded file. Test existence of several fields in created class
+     * related to Serializer container
      * 
      * @param localref object to verify
      * @throws JsonSyntaxException on bad file or when class has not been restored correctly
@@ -247,8 +233,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @param savePretty if \a true use pretty format
      * @throws FileNotFoundException when file can not be created
      * @remarks Can be used for saving already packed objects
-     * @warning This method des not call beforeSerialize(). It must be called explicitly before 
-     * dumping
+     * @warning This method des not call beforeSerialize(). It must be called explicitly before
+     *          dumping
      */
     static void Dump(final Object obj, final File filename, boolean savePretty)
             throws FileNotFoundException {
@@ -279,37 +265,28 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * Register constructor for wrapped class.
      * 
      * It may be necessary during loading JSON file if wrapped class needs some parameters to
-     * restore its state on uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.afterSerialize() call and
-     * those parameters are passed in constructor.
+     * restore its state on uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.afterSerialize() call and those
+     * parameters are passed in constructor.
      * 
      * @param type Type of class
-     * @param typeAdapter Wrapped object builder that implements InstanceCreator interface. 
-     * Example of use:
-     * @code{.java}
-     * class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {
-     *      private int size;
-     *      private PluginFactory pf;
-     *      private List<Point2d> dt;
-     *      private ViewUpdater vu;
+     * @param typeAdapter Wrapped object builder that implements InstanceCreator interface. Example
+     *        of use:
+     * @code{.java} class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList>
+     *              { private int size; private PluginFactory pf; private List<Point2d> dt; private
+     *              ViewUpdater vu;
      *
-     * public SnakePluginListInstanceCreator(int size, final PluginFactory pf,
-     *        final List<Point2d> dataToProcess, final ViewUpdater vu) {
-     *      this.size = size;
-     *      this.pf = pf;
-     *      this.dt = dataToProcess;
-     *      this.vu = vu;
-     * }
+     *              public SnakePluginListInstanceCreator(int size, final PluginFactory pf, final
+     *              List<Point2d> dataToProcess, final ViewUpdater vu) { this.size = size; this.pf =
+     *              pf; this.dt = dataToProcess; this.vu = vu; }
      *
-     * @Override
-     * public SnakePluginList createInstance(Type arg0) {
-     *      return new SnakePluginList(size, pf, dt, vu);
-     * }
+     * @Override public SnakePluginList createInstance(Type arg0) { return new SnakePluginList(size,
+     *           pf, dt, vu); }
      * 
-     * Serializer<SnakePluginList> out;
-     * Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
-     * s.registerInstanceCreator(SnakePluginList.class,
-     *           new SnakePluginListInstanceCreator(3, pluginFactory, null, null));
-     * out = s.fromString(json);
+     *           Serializer<SnakePluginList> out; Serializer<SnakePluginList> s = new
+     *           Serializer<>(SnakePluginList.class);
+     *           s.registerInstanceCreator(SnakePluginList.class, new
+     *           SnakePluginListInstanceCreator(3, pluginFactory, null, null)); out =
+     *           s.fromString(json);
      * @endcode
      * @see uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.afterSerialize()
      * @see https://github.com/google/gson/blob/master/UserGuide.md#TOC-InstanceCreator-for-a-Parameterized-Type

@@ -8,9 +8,6 @@ import java.io.File;
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
@@ -32,13 +31,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarPlotTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(PolarPlotTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(PolarPlotTest.class.getName());
     @Mock
     private STmap mapCell;
     @InjectMocks
@@ -60,6 +53,7 @@ public class PolarPlotTest {
 
     /**
      * Define two frames composed from 5-points outline.
+     * 
      * @throws java.lang.Exception
      * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/DataforPolarPlotTest
      */
@@ -84,9 +78,10 @@ public class PolarPlotTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getShift(java.awt.geom.Point2D.Double)}.
-     * Mocked outline from 6 points, 2 frames. Gradient coord at {10,10}. Outline point
-     * at index 2 closest for first frame.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getShift(java.awt.geom.Point2D.Double)}.
+     * Mocked outline from 6 points, 2 frames. Gradient coord at {10,10}. Outline point at index 2
+     * closest for first frame.
      * 
      */
     @Test
@@ -108,38 +103,32 @@ public class PolarPlotTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getVectors(int, javax.vecmath.Point2d[], int[])}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getVectors(int, javax.vecmath.Point2d[], int[])}.
      */
     @Test
     public void testGetVectors() throws Exception {
         int f = 0;
         // expected in correct order
         //!<
-        Vector2d[] expected = {new Vector2d(0.5,1),
-                               new Vector2d(1.5,0),
-                               new Vector2d(0.5,-1),
-                               new Vector2d(-0.5,-1),
-                               new Vector2d(-1.5,0),
-                               new Vector2d(-0.5,1)};
+        Vector2d[] expected = { new Vector2d(0.5, 1), new Vector2d(1.5, 0), new Vector2d(0.5, -1),
+                new Vector2d(-0.5, -1), new Vector2d(-1.5, 0), new Vector2d(-0.5, 1) };
         /**/
         Vector2d ret[] = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
         assertThat(ret, is(expected));
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getAngles(javax.vecmath.Vector2d[], javax.vecmath.Vector2d)}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getAngles(javax.vecmath.Vector2d[], javax.vecmath.Vector2d)}.
      */
     @Test
     public void testGetAngles() throws Exception {
 
         int f = 0;
         //!<
-        double[] expected = {0, // rounded, assume that polygin is given in anticlock dir
-                             63,
-                             127,
-                             180,
-                             -117,
-                             -53};
+        double[] expected = { 0, // rounded, assume that polygin is given in anticlock dir
+                63, 127, 180, -117, -53 };
         /**/
         Vector2d v[] = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
         double ret[] = polarPlot.getAngles(v, v[0]);
@@ -150,7 +139,8 @@ public class PolarPlotTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getRadius(int, int, double[][])}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getRadius(int, int, double[][])}.
      */
     @Test
     public void testGetRadius() throws Exception {

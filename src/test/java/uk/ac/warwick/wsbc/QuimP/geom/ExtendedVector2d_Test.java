@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 import javax.vecmath.Vector2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple testing class for ExtendedVector2d class
@@ -20,14 +19,7 @@ import org.junit.Test;
 public class ExtendedVector2d_Test {
 
     // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger logger =
-            LogManager.getLogger(ExtendedVector2d_Test.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(ExtendedVector2d_Test.class.getName());
 
     /**
      * @test test toString() method
@@ -40,8 +32,8 @@ public class ExtendedVector2d_Test {
         v.add(new ExtendedVector2d(0, 0));
         v.add(new ExtendedVector2d(10, 10));
         v.add(new ExtendedVector2d(3.14, -4.56));
-        logger.debug("vector " + vv.toString());
-        logger.debug("V1 vector: " + v.toString());
+        LOGGER.debug("vector " + vv.toString());
+        LOGGER.debug("V1 vector: " + v.toString());
     }
 
     /**
@@ -50,10 +42,10 @@ public class ExtendedVector2d_Test {
     @Test
     public void test_Casting() {
         Vector2d v = new ExtendedVector2d(10, 10);
-        logger.debug("Casting: " + v.toString());
+        LOGGER.debug("Casting: " + v.toString());
 
         Vector2d v1 = new Vector2d(5, 5);
         ExtendedVector2d ev1 = new ExtendedVector2d(v1);
-        logger.debug("Casting1: " + ev1.toString());
+        LOGGER.debug("Casting1: " + ev1.toString());
     }
 }

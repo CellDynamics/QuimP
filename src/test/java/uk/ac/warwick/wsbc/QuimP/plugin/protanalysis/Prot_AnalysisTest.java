@@ -5,14 +5,13 @@ import static org.junit.Assert.assertThat;
 
 import java.nio.file.Paths;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -26,14 +25,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  *
  */
 public class Prot_AnalysisTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LogManager.getLogger(Prot_AnalysisTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(Prot_AnalysisTest.class.getName());
     static QconfLoader qL1;
     private STmap[] stMap;
     private ImageProcessor imp;
@@ -74,8 +66,8 @@ public class Prot_AnalysisTest {
     }
 
     /**
-     * Check tracking for found maxima. This duplicate tests from {@link uk.ac.warwick.wsbc.QuimP.geoMapTrackerTestst}
-     * but for local data.
+     * Check tracking for found maxima. This duplicate tests from
+     * {@link uk.ac.warwick.wsbc.QuimP.geoMapTrackerTestst} but for local data.
      * 
      * @throws Exception
      * @see src/test/resources/ProtAnalysisTest/main.m

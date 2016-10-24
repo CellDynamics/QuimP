@@ -2,8 +2,8 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
@@ -12,75 +12,63 @@ import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
 
 /**
- * Implementation of Line Integration and Deconvolution algorithm proposed by
- * Kam.
+ * Implementation of Line Integration and Deconvolution algorithm proposed by Kam.
  * 
- * This algorithm uses corrected line integration that runs in both directions
- * from current point of image \f$(x_n,y_n)\f$ to \f$r_1\f$ and end \f$r_2\f$.
- * Vector \f$dr\f$ is set to be parallel to \a 0X axis. Final formula for
- * reconstruction of pixel \f$S(x_n,y_n)\f$ is given by:
+ * This algorithm uses corrected line integration that runs in both directions from current point of
+ * image \f$(x_n,y_n)\f$ to \f$r_1\f$ and end \f$r_2\f$. Vector \f$dr\f$ is set to be parallel to \a
+ * 0X axis. Final formula for reconstruction of pixel \f$S(x_n,y_n)\f$ is given by:
  * 
- * \f[ S(x_n,y_n)=\int_{r_1}^{(x_n,y_n)}\left ( I(r)-I_{i,0}) \right
- * )e^{-\delta\left | r_n-r \right | }dr-\int_{r_2}^{(x_n,y_n)}\left (
- * I(r)-I_{i,0}) \right )e^{-\delta\left | r-r_n \right | }dr \f]
+ * \f[ S(x_n,y_n)=\int_{r_1}^{(x_n,y_n)}\left ( I(r)-I_{i,0}) \right )e^{-\delta\left | r_n-r \right
+ * | }dr-\int_{r_2}^{(x_n,y_n)}\left ( I(r)-I_{i,0}) \right )e^{-\delta\left | r-r_n \right | }dr
+ * \f]
  * 
- * The algorithm perform the following steps to reconstruct whole image: \li
- * Input is converted to 16bit and stored in private field ExtraImageProcessor
- * srcImageCopyProcessor \li The value of \c shift is added to all pixels of
- * input image. All operations are performed on copy of input \c ImageProcessor
- * or \c ImagePlus. \li Rotate image by \c angle to bring bas-reliefs
- * perpendicular to \a OX axis. Rotated image has different dimensions and it is
- * padded by 0. After this operation 0 pixels are those that belong to
- * background. \li For every line in rotated image position of \b true pixels is
- * calculated. \b True pixels are those that belong to original image excluding
- * background added during rotation. For every line position of first and last
- * \b true pixel is noted in table \c ranges \li Decay factors are
- * pre-calculated and stored in \c decays table. \li Final reconstruction is
- * performed.
+ * The algorithm perform the following steps to reconstruct whole image: \li Input is converted to
+ * 16bit and stored in private field ExtraImageProcessor srcImageCopyProcessor \li The value of \c
+ * shift is added to all pixels of input image. All operations are performed on copy of input \c
+ * ImageProcessor or \c ImagePlus. \li Rotate image by \c angle to bring bas-reliefs perpendicular
+ * to \a OX axis. Rotated image has different dimensions and it is padded by 0. After this operation
+ * 0 pixels are those that belong to background. \li For every line in rotated image position of \b
+ * true pixels is calculated. \b True pixels are those that belong to original image excluding
+ * background added during rotation. For every line position of first and last \b true pixel is
+ * noted in table \c ranges \li Decay factors are pre-calculated and stored in \c decays table. \li
+ * Final reconstruction is performed.
  * 
- * Image for reconstruction is passed during construction of DICReconstruction
- * object. For this object \c ranges and \c decays are evaluated and then user
- * can call reconstructionDicLid() method to get reconstruction. getRanges()
- * method also rotates private object thus rotation in reconstructionDicLid() is
- * not necessary (flagged by DICReconstruction::isRotated). Different situation
- * happens when the whole stack is reconstructed. To prevent creating new
- * instance of DICReconstruction for every slice the setIp(ImageProcessor)
- * method is used for connecting new slice. In this case it is assumed that
- * ImageProcessor objects are similar and they have the same geometry. \c ranges
- * are filled only once on DICReconstruction constructing thus images connected
- * by setIp(ImageProcessor) are not rotated. This situation is detected in
- * reconstructionDicLid() by \c isRotated flag.
+ * Image for reconstruction is passed during construction of DICReconstruction object. For this
+ * object \c ranges and \c decays are evaluated and then user can call reconstructionDicLid() method
+ * to get reconstruction. getRanges() method also rotates private object thus rotation in
+ * reconstructionDicLid() is not necessary (flagged by DICReconstruction::isRotated). Different
+ * situation happens when the whole stack is reconstructed. To prevent creating new instance of
+ * DICReconstruction for every slice the setIp(ImageProcessor) method is used for connecting new
+ * slice. In this case it is assumed that ImageProcessor objects are similar and they have the same
+ * geometry. \c ranges are filled only once on DICReconstruction constructing thus images connected
+ * by setIp(ImageProcessor) are not rotated. This situation is detected in reconstructionDicLid() by
+ * \c isRotated flag.
  * 
  * Privates:
  * <ul>
- * <li>\c ranges - \b true pixels begin and end on \a x axis. Set by
- * getRanges(). [r][0] - x of first pixel of line r of image, [r][1] - x of last
- * pixel of image of line r
+ * <li>\c ranges - \b true pixels begin and end on \a x axis. Set by getRanges(). [r][0] - x of
+ * first pixel of line r of image, [r][1] - x of last pixel of image of line r
  * <li>\c maxWidth - Set by getRanges()
  * <li>\c decays - set by generateDeacy(double, int)
- * <li>\c srcImageCopyProcessor - local \b copy of input ImageProcessor passed
- * to object. Set by constructors and setIp(ImageProcessor)
- * <li>\c isRotated - It is set by getRanges() that rotates object to get true
- * pixels position and cancelled by setIP
+ * <li>\c srcImageCopyProcessor - local \b copy of input ImageProcessor passed to object. Set by
+ * constructors and setIp(ImageProcessor)
+ * <li>\c isRotated - It is set by getRanges() that rotates object to get true pixels position and
+ * cancelled by setIP
  * </ul>
  * 
- * @warning
- * Currently this class supports only 8bit images. It can support also
- * 16bit input but in this case algorithm used for detection of \b true
- * pixels may not work correctly for certain cases - when maximum
- * intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
+ * @warning Currently this class supports only 8bit images. It can support also 16bit input but in
+ *          this case algorithm used for detection of \b true pixels may not work correctly for
+ *          certain cases - when maximum intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
  * @author p.baniukiewicz
- * @see Z. Kam, “Microscopic differential interference contrast image processing
- * by line integration (LID) and deconvolution,” Bioimaging, vol. 6, no. 4,
- * pp. 166–176, 1998.
- * @see B. Heise, A. Sonnleitner, and E. P. Klement, “DIC image reconstruction
- * on large cell scans.,” Microsc. Res. Tech., vol. 66, no. 6, pp. 312–320,
- * 2005.
+ * @see Z. Kam, “Microscopic differential interference contrast image processing by line integration
+ *      (LID) and deconvolution,” Bioimaging, vol. 6, no. 4, pp. 166–176, 1998.
+ * @see B. Heise, A. Sonnleitner, and E. P. Klement, “DIC image reconstruction on large cell
+ *      scans.,” Microsc. Res. Tech., vol. 66, no. 6, pp. 312–320, 2005.
  *
  */
 public class LidReconstructor {
 
-    private static final Logger LOGGER = LogManager.getLogger(LidReconstructor.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(LidReconstructor.class.getName());
     private final int shift = 1; //!< shift added to original image eliminate 0s
 
     private ImageProcessor srcIp; //!< local reference of ImageProcessor (const)
@@ -98,8 +86,7 @@ public class LidReconstructor {
      * Default constructor that accepts ImagePlus. It does not support stacks.
      * 
      * @remarks Input \c srcImage is not modified
-     * @throws DicException
-     * Throws exception after generateRanges()
+     * @throws DicException Throws exception after generateRanges()
      */
     public LidReconstructor(final ImagePlus srcImage, double decay, double angle)
             throws DicException {
@@ -110,8 +97,7 @@ public class LidReconstructor {
      * Default constructor that accepts ImageProcessor
      * 
      * @remarks Input \c ip is not modified
-     * @throws DicException
-     * Throws exception after generateRanges()
+     * @throws DicException Throws exception after generateRanges()
      */
     public LidReconstructor(final ImageProcessor ip, double decay, double angle)
             throws DicException {
@@ -128,8 +114,7 @@ public class LidReconstructor {
      * 
      * @param decay
      * @param angle
-     * @throws DicException
-     * Throws exception after generateRanges()
+     * @throws DicException Throws exception after generateRanges()
      */
     public void setParams(double decay, double angle) throws DicException {
         this.angle = angle;
@@ -138,17 +123,14 @@ public class LidReconstructor {
     }
 
     /**
-     * Assigns ImageProcessor for reconstruction to current object. Releases
-     * previous one.
+     * Assigns ImageProcessor for reconstruction to current object. Releases previous one.
      * 
-     * This method can be used for changing image connected to DICReconstruction
-     * object. New image should have the same architecture as image passed in
-     * constructor. Typically this method is used for passing next slice from
-     * stack.
+     * This method can be used for changing image connected to DICReconstruction object. New image
+     * should have the same architecture as image passed in constructor. Typically this method is
+     * used for passing next slice from stack.
      * 
      * @remarks Input \c ip is not modified
-     * @param ip
-     * New ImageProcessor containing image for reconstruction.
+     * @param ip New ImageProcessor containing image for reconstruction.
      */
     public void setIp(final ImageProcessor ip) {
         this.srcIp = ip;
@@ -165,19 +147,15 @@ public class LidReconstructor {
     }
 
     /**
-     * Recalculates true pixels range and new size of image after rotation.
-     * Setup private class fields.
+     * Recalculates true pixels range and new size of image after rotation. Setup private class
+     * fields.
      * 
-     * @throws DicException
-     * when input image is close to saturation e.g. has values of
-     * 65536-shift. This is due to applied algorithm of detection
-     * image pixels after rotation.
-     * @return Modifies private class fields: \li \c maxWidth (private field)
-     * \li \c ranges (private field) \li \c maxWidth holds width of
-     * image after rotation, \li \c ranges table that holds first and
-     * last \a x position of image line (first and last pixel of image
-     * on background after rotation), \c srcImageCopyProcessor is
-     * rotated and shifted
+     * @throws DicException when input image is close to saturation e.g. has values of 65536-shift.
+     *         This is due to applied algorithm of detection image pixels after rotation.
+     * @return Modifies private class fields: \li \c maxWidth (private field) \li \c ranges (private
+     *         field) \li \c maxWidth holds width of image after rotation, \li \c ranges table that
+     *         holds first and last \a x position of image line (first and last pixel of image on
+     *         background after rotation), \c srcImageCopyProcessor is rotated and shifted
      */
     private void getRanges() throws DicException {
         double maxpixel; // minimal pixel value
@@ -221,11 +199,9 @@ public class LidReconstructor {
     }
 
     /**
-     * Recalculates tables on demand. Calculates new ranges for true pixels and
-     * new decay table.
+     * Recalculates tables on demand. Calculates new ranges for true pixels and new decay table.
      * 
-     * @throws DicException
-     * Throws exception after generateRanges()
+     * @throws DicException Throws exception after generateRanges()
      */
     private void recalculate() throws DicException {
         // calculate preallocated decay data
@@ -236,15 +212,13 @@ public class LidReconstructor {
     }
 
     /**
-     * Reconstruct DIC image by LID method. This is main method used to
-     * reconstruct passed /c ip object.
+     * Reconstruct DIC image by LID method. This is main method used to reconstruct passed /c ip
+     * object.
      * 
-     * @remarks The reconstruction algorithm assumes that input image
-     * bas-reliefs are oriented horizontally, thus correct \c angle
-     * should be provided
-     * @warning Used optimization with detecting of image pixels based on their
-     * value may not be accurate when input image will be 16-bit and it
-     * will contain saturated pixels
+     * @remarks The reconstruction algorithm assumes that input image bas-reliefs are oriented
+     *          horizontally, thus correct \c angle should be provided
+     * @warning Used optimization with detecting of image pixels based on their value may not be
+     *          accurate when input image will be 16-bit and it will contain saturated pixels
      * @retval ImageProcessor
      * @return Return reconstruction of \c srcImage as 8-bit image
      */
@@ -302,14 +276,11 @@ public class LidReconstructor {
     }
 
     /**
-     * Generates decay table with exponential distances between pixels
-     * multiplied by decay coefficient
+     * Generates decay table with exponential distances between pixels multiplied by decay
+     * coefficient
      * 
-     * @param decay
-     * The value of decay coefficient
-     * @param length
-     * Length of table, usually equals to longest processed line on
-     * image
+     * @param decay The value of decay coefficient
+     * @param length Length of table, usually equals to longest processed line on image
      * @return Table with decays coefficients (private field)
      */
     private void generateDeacy(double decay, int length) {

@@ -16,8 +16,8 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealMatrixChangingVisitor;
 import org.apache.commons.math3.stat.StatUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
@@ -148,6 +148,7 @@ class MatrixElementPower implements RealMatrixChangingVisitor {
 
 /**
  * Multiply in-place this matrix by another
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -182,6 +183,7 @@ class MatrixDotProduct implements RealMatrixChangingVisitor {
 
 /**
  * Divide in-place this matrix by another
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -216,6 +218,7 @@ class MatrixDotDiv implements RealMatrixChangingVisitor {
 
 /**
  * Add in-place this matrix to another
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -250,6 +253,7 @@ class MatrixDotAdd implements RealMatrixChangingVisitor {
 
 /**
  * Sub in-place this matrix to another
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -284,6 +288,7 @@ class MatrixDotSub implements RealMatrixChangingVisitor {
 
 /**
  * Sub and then div in-place this matrix and another
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -323,11 +328,7 @@ class MatrixDotSubDiv implements RealMatrixChangingVisitor {
  */
 public class RandomWalkSegmentation {
 
-    static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
-    }
-    private static final Logger LOGGER =
-            LogManager.getLogger(RandomWalkSegmentation.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(RandomWalkSegmentation.class.getName());
 
     public static final int RIGHT = -10; //!< Direction of circshift coded as in Matlab */
     public static final int LEFT = 10; //!< Direction of circshift coded as in Matlab */
@@ -365,6 +366,7 @@ public class RandomWalkSegmentation {
 
     /**
      * Main runner, does segmentation
+     * 
      * @param seeds Seed arrays from decodeSeeds(ImagePlus, Color, Color)
      * @return Segmented image as ByteProcessor
      * @throws RandomWalkException On wrong seeds
@@ -434,7 +436,7 @@ public class RandomWalkSegmentation {
     }
 
     /**
-     * Create FloatProcessor 2D from RealMatrix. 
+     * Create FloatProcessor 2D from RealMatrix.
      * 
      * @param rm input matrix
      * @return FloatProcessor
@@ -447,11 +449,11 @@ public class RandomWalkSegmentation {
     /**
      * Find \b BACKGROUND and \b FOREGROUND labeled pixels on seed image and return their positions
      * 
-     * @param rgb RGB seed image 
+     * @param rgb RGB seed image
      * @param fseed color of marker for foreground pixels
      * @param bseed color of marker for background pixels
      * @return Map containing list of coordinates that belong to foreground and background. Map is
-     * addressed by two enums: \a FOREGROUND and \a BACKGROUND
+     *         addressed by two enums: \a FOREGROUND and \a BACKGROUND
      * @throws RandomWalkException When image other that RGB provided
      */
     public Map<Integer, List<Point>> decodeSeeds(final ImagePlus rgb, final Color fseed,
@@ -493,6 +495,7 @@ public class RandomWalkSegmentation {
 
     /**
      * Compare probabilities from two matrices and create third depending on winner
+     * 
      * @param fg Foreground probabilities for all points
      * @param bg Background probabilities for all points
      * @return OUT=FG>BG, 1 for every pixel that wins for FG, o otherwise
@@ -515,9 +518,9 @@ public class RandomWalkSegmentation {
      * 
      * @param input Image to be shifted
      * @param direction Shift direction
-     * @return Copy of \a input shifted by one pixel in \a direction. 
+     * @return Copy of \a input shifted by one pixel in \a direction.
      * @warning This method is adjusted to work as MAtlab code and to keep Matlab naming (
-     * rw_laplace4.m) thus the shift direction names are not adequate to shift direction
+     *          rw_laplace4.m) thus the shift direction names are not adequate to shift direction
      */
     protected RealMatrix circshift(RealMatrix input, int direction) {
         double[][] sub; // part of matrix that does no change put is shifted
@@ -573,7 +576,7 @@ public class RandomWalkSegmentation {
 
     /**
      * 
-     * @param a 
+     * @param a
      * @param b
      * @return Image (a-b).^2
      */
@@ -584,12 +587,10 @@ public class RandomWalkSegmentation {
     }
 
     /**
-     * Pre-compute gradient matrices 
-     * @return Array of precomputed data in the following order:
-     * -# [0] - gRight2
-     * -# [1] - gTop2
-     * -# [2] - gLeft2
-     * -# [3] - gBottom2
+     * Pre-compute gradient matrices
+     * 
+     * @return Array of precomputed data in the following order: -# [0] - gRight2 -# [1] - gTop2 -#
+     *         [2] - gLeft2 -# [3] - gBottom2
      */
     private RealMatrix[] precompute() {
         // setup shifted images
@@ -627,7 +628,7 @@ public class RandomWalkSegmentation {
      * @param gradients precomputed gradients returned from precompute()
      * @param params Parameters
      * @return Computed probabilities for background and foreground
-     * @retval RealMatrix[2], RealMatrix[FOREGROUND] and  RealMatrix[BACKGROUND]
+     * @retval RealMatrix[2], RealMatrix[FOREGROUND] and RealMatrix[BACKGROUND]
      */
     protected RealMatrix[] solver(RealMatrix image, Map<Integer, List<Point>> seeds,
             RealMatrix[] gradients, Params params) {
@@ -806,11 +807,10 @@ public class RandomWalkSegmentation {
      * Compute part of stability criterion for stopping iterations
      * 
      * Only in-place multiplication and minimu of result is done here
-     * @code
-     *  drl2 =  min ( min(min (wr_fg.*avgwx_fg)) , min(min (wl_fg.*avgwx_fg)) );
-     *  dtb2 =  min ( min(min (wt_fg.*avgwy_fg)) , min(min (wb_fg.*avgwy_fg)) );
-     *  D=0.25*min(drl2,dtb2); 
-     * @endcode   
+     * 
+     * @code drl2 = min ( min(min (wr_fg.*avgwx_fg)) , min(min (wl_fg.*avgwx_fg)) ); dtb2 = min (
+     *       min(min (wt_fg.*avgwy_fg)) , min(min (wb_fg.*avgwy_fg)) ); D=0.25*min(drl2,dtb2);
+     * @endcode
      * @param w__fg
      * @param avgw__fg
      * @return min(min (w__fg.*avgw__fg))
@@ -837,7 +837,8 @@ public class RandomWalkSegmentation {
     }
 
     /**
-     * Set values from \a val on indexes \a ind in array \a in 
+     * Set values from \a val on indexes \a ind in array \a in
+     * 
      * @param in Input matrix. Will be modified
      * @param ind List of indexes
      * @param val List of values, length must be the same as \a ind or 1
@@ -860,7 +861,6 @@ public class RandomWalkSegmentation {
 }
 
 /**
- * @example src/test/resources/Matlab/rw_laplace4_java_base.m
- * This is source file of segmentation in Matlab that was a base for RandomWalkSegmentation
- * Implementation
+ * @example src/test/resources/Matlab/rw_laplace4_java_base.m This is source file of segmentation in
+ *          Matlab that was a base for RandomWalkSegmentation Implementation
  */

@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -42,8 +42,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  */
 public class BinarySegmentationPlugin extends QWindowBuilder
         implements ActionListener, IQuimpPluginSynchro, IQuimpNestPlugin, ItemListener {
-    private static final Logger LOGGER =
-            LogManager.getLogger(BinarySegmentationPlugin.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentationPlugin.class.getName());
 
     private Nest nest; //!< reference to Nest object
     private ParamList uiDefinition; //!< window definition
@@ -78,7 +77,8 @@ public class BinarySegmentationPlugin extends QWindowBuilder
         uiDefinition.put("smoothing", "checkbox, interpolation," + Boolean.toString(smoothing)); // name,
         // use http://www.freeformatter.com/java-dotnet-escape.html#ad-output for escaping
         //!<
-        uiDefinition.put("help","<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. It should be 8-bit image of size of original stack with <span style=\"color: #ffffff; background-color: #000000;\">black background</span> and white objects.</p>\r\n<p><strong>Get Opened</strong> - Select mask already opened in ImageJ. Alternative to <em>Load Mask</em>, will override loaded file.</p>\r\n<p><strong>step</strong> - stand for discretisation density, 1.0 means that every pixel of the outline will be mapped to Snake node.</p>\r\n<p><strong>smoothing</strong>&nbsp;- add extra Spline interpolation to the shape</p></font>");
+        uiDefinition.put("help",
+                "<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. It should be 8-bit image of size of original stack with <span style=\"color: #ffffff; background-color: #000000;\">black background</span> and white objects.</p>\r\n<p><strong>Get Opened</strong> - Select mask already opened in ImageJ. Alternative to <em>Load Mask</em>, will override loaded file.</p>\r\n<p><strong>step</strong> - stand for discretisation density, 1.0 means that every pixel of the outline will be mapped to Snake node.</p>\r\n<p><strong>smoothing</strong>&nbsp;- add extra Spline interpolation to the shape</p></font>");
         /**/
         buildWindow(uiDefinition);
         params = new ParamList();
@@ -98,8 +98,12 @@ public class BinarySegmentationPlugin extends QWindowBuilder
         }
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder#buildWindow(uk.ac.warwick.wsbc.QuimP.plugin.ParamList)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder#buildWindow(uk.ac.warwick.wsbc.QuimP.
+     * plugin.ParamList)
      */
     @Override
     public void buildWindow(ParamList def) {
@@ -164,9 +168,8 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     /**
      * Transfer plugin configuration to QuimP
      * 
-     * Only parameters mapped to UI by QWindowBuilder are supported directly by
-     * getValues() Any other parameters created outside QWindowBuilder should be
-     * added here manually.
+     * Only parameters mapped to UI by QWindowBuilder are supported directly by getValues() Any
+     * other parameters created outside QWindowBuilder should be added here manually.
      */
     public ParamList getPluginConfig() {
         return params; // return ready list. To avoid problems with fields that are not got from

@@ -9,13 +9,12 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 
@@ -28,21 +27,21 @@ public class QParamsExchangerTest {
      * Accessor to private fields
      * 
      * Example of use:
-     * @code{.java}
-     * Snake s = new Snake(pr, 1);
-     * int ret = (int) accessPrivate("findNearestToBoundingBox", testobj, new Object[] { s },
-     *           new Class[] { Snake.class });
-     * @endcode   
+     * 
+     * @code{.java} Snake s = new Snake(pr, 1); int ret = (int)
+     *              accessPrivate("findNearestToBoundingBox", testobj, new Object[] { s }, new
+     *              Class[] { Snake.class });
+     * @endcode
      * 
      * @param name Name of private method
-     * @param obj Reference to object 
+     * @param obj Reference to object
      * @param param Array of parameters if any
      * @param paramtype Array of classes of \c param
-     * @throws SecurityException 
-     * @throws NoSuchMethodException 
-     * @throws InvocationTargetException 
-     * @throws IllegalArgumentException 
-     * @throws IllegalAccessException         
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
      */
     static Object accessPrivate(String name, QParamsQconf obj, Object[] param, Class<?>[] paramtype)
             throws NoSuchMethodException, SecurityException, IllegalAccessException,
@@ -52,14 +51,7 @@ public class QParamsExchangerTest {
         return prv.invoke(obj, param);
     }
 
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LogManager.getLogger(QParamsExchangerTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QParamsExchangerTest.class.getName());
     private File test1;
 
     /**
@@ -86,8 +78,8 @@ public class QParamsExchangerTest {
 
     /**
      * @test Compare read parameters from Stack_cut.QCONF
-     * @pre Two snakes from  1 to 30 frame, on 10th frame changed segmentation parameters, on
-     * 20th selected filter 
+     * @pre Two snakes from 1 to 30 frame, on 10th frame changed segmentation parameters, on 20th
+     *      selected filter
      * @throws Exception
      */
     @Test

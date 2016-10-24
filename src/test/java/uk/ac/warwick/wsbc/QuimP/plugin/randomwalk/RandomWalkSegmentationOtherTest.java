@@ -9,14 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -30,14 +29,8 @@ import ij.process.ImageProcessor;
  */
 @SuppressWarnings("unused")
 public class RandomWalkSegmentationOtherTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER =
-            LogManager.getLogger(RandomWalkSegmentationOtherTest.class.getName());
+    static final Logger LOGGER =
+            LoggerFactory.getLogger(RandomWalkSegmentationOtherTest.class.getName());
 
     static Object accessPrivate(String name, RandomWalkSegmentation obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
@@ -105,7 +98,8 @@ public class RandomWalkSegmentationOtherTest {
 
     /**
      * @test Test of main runner
-     * @post segmented image comparable to %% data from Repos/Prot_counting/fromMail - testcase for java
+     * @post segmented image comparable to %% data from Repos/Prot_counting/fromMail - testcase for
+     *       java
      * @throws Exception
      */
     @Test
@@ -118,12 +112,11 @@ public class RandomWalkSegmentationOtherTest {
         ImageProcessor ret = obj.run(seeds);
         ImagePlus results = new ImagePlus("cmp", ret);
         /**
-         * Compare to results from 
-         * /home/p.baniukiewicz/Documents/Repos/QUIMP-Matlab/Matlab/Segmentation/main.m section
-         * %% data from Repos/Prot_counting/fromMail - testcase for java small
-         * with this file:
-         * @code
-         * plotdiff(imread('/tmp/testRun_cmp.tif'),outj)
+         * Compare to results from
+         * /home/p.baniukiewicz/Documents/Repos/QUIMP-Matlab/Matlab/Segmentation/main.m section %%
+         * data from Repos/Prot_counting/fromMail - testcase for java small with this file:
+         * 
+         * @code plotdiff(imread('/tmp/testRun_cmp.tif'),outj)
          * @endcode
          */
         IJ.saveAsTiff(results, "/tmp/testRun_cmp.tif");
@@ -131,7 +124,8 @@ public class RandomWalkSegmentationOtherTest {
 
     /**
      * @test Test of main runner
-     * @post segmented image comparable to %% data from Repos/Prot_counting/fromMail - testcase for java
+     * @post segmented image comparable to %% data from Repos/Prot_counting/fromMail - testcase for
+     *       java
      * @throws Exception
      */
     @Test
@@ -144,12 +138,11 @@ public class RandomWalkSegmentationOtherTest {
         ImageProcessor ret = obj.run(seeds);
         ImagePlus results = new ImagePlus("cmp2", ret);
         /**
-         * Compare to results from 
-         * /home/p.baniukiewicz/Documents/Repos/QUIMP-Matlab/Matlab/Segmentation/main.m section
-         * %% data from Repos/Prot_counting/fromMail - testcase for java big
-         * with this file:
-         * @code
-         * plotdiff(imread('/tmp/testRun_cmp2.tif'),out)
+         * Compare to results from
+         * /home/p.baniukiewicz/Documents/Repos/QUIMP-Matlab/Matlab/Segmentation/main.m section %%
+         * data from Repos/Prot_counting/fromMail - testcase for java big with this file:
+         * 
+         * @code plotdiff(imread('/tmp/testRun_cmp2.tif'),out)
          * @endcode
          */
         IJ.saveAsTiff(results, "/tmp/testRun_cmp2.tif");
@@ -175,8 +168,8 @@ public class RandomWalkSegmentationOtherTest {
     /**
      * @test Test precomputed values
      * @pre outputs are saved as tiff
-     * @post results are compared with matlab \a java_output_ver.m using breakstop on
-     * \a  rw_laplace4_java_base.m
+     * @post results are compared with matlab \a java_output_ver.m using breakstop on \a
+     *       rw_laplace4_java_base.m
      * @throws Exception
      */
     @Test
@@ -219,9 +212,9 @@ public class RandomWalkSegmentationOtherTest {
 }
 
 /**
- * @example src/test/resources/Matlab/RW_java_tests.m
- * This is source of good cases for segmentation
+ * @example src/test/resources/Matlab/RW_java_tests.m This is source of good cases for segmentation
  * 
- * Comparator for results from debug from uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationTest 
+ *          Comparator for results from debug from
+ *          uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationTest
  * @include src/test/resources/Matlab/java_output_ver.m
  */

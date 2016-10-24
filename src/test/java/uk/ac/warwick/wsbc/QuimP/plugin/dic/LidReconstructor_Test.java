@@ -4,12 +4,11 @@ package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -23,17 +22,9 @@ import ij.process.ImageProcessor;
  */
 public class LidReconstructor_Test {
 
-    // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
     private ImagePlus image;
     private ImagePlus stack;
-    private static final Logger LOGGER =
-            LogManager.getLogger(LidReconstructor_Test.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(LidReconstructor_Test.class.getName());
 
     /**
      * Load test image
@@ -69,12 +60,10 @@ public class LidReconstructor_Test {
     }
 
     /**
-     * @test Test method for
-     * wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid()
-     * Saves output image at \c /tmp/testDicReconstructionLidMatrix.tif
+     * @test Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves
+     *       output image at \c /tmp/testDicReconstructionLidMatrix.tif
      * @pre Input image is square
-     * @post Output image should be properly reconstructed and have correct size
-     * of input image
+     * @post Output image should be properly reconstructed and have correct size of input image
      */
     @Test
     public void test_ReconstructionDicLid() {
@@ -92,15 +81,14 @@ public class LidReconstructor_Test {
             IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix.tif");
             LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix.tif" + " to see results");
         } catch (DicException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.toString());
         }
 
     }
 
     /**
-     * @test Test method for
-     * wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid()
-     * Saves output image at \c /tmp/testDicReconstructionLidMatrix_sat.tif
+     * @test Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves
+     *       output image at \c /tmp/testDicReconstructionLidMatrix_sat.tif
      * @pre Input image is square and saturated
      * @post Throws exception DicException because of saturated image
      */
@@ -129,9 +117,8 @@ public class LidReconstructor_Test {
     }
 
     /**
-     * @test Test method for
-     * warwick.wsbc.QuimP.plugin.dic.LidReconstructor.setIp(ImageProcessor)
-     * Saves output image at \c /tmp/testDicReconstructionLidMatrix_Stack.tif
+     * @test Test method for warwick.wsbc.QuimP.plugin.dic.LidReconstructor.setIp(ImageProcessor)
+     *       Saves output image at \c /tmp/testDicReconstructionLidMatrix_Stack.tif
      * @pre Input stack is square
      * @post Reconstructed stack
      */
@@ -155,7 +142,7 @@ public class LidReconstructor_Test {
             IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_stack.tif");
             LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_stack.tif to" + " see results");
         } catch (DicException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.toString());
         }
 
     }

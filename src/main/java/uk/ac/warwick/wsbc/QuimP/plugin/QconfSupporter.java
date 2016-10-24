@@ -7,8 +7,8 @@ import java.nio.file.Path;
 
 import javax.swing.JOptionPane;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -24,8 +24,8 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * Add basic support for handling <i>QCONF</i> and <i>paQP</i> files.
  * <p>
  * Load provided file and construct {@link uk.ac.warwick.wsbc.QuimP.QParams.QParams(File) QParams}
- * or {@link uk.ac.warwick.wsbc.QuimP.QParamsQconf.QParamsQconf(File) QParamsQconf} object
- * depending on type of input file.
+ * or {@link uk.ac.warwick.wsbc.QuimP.QParamsQconf.QParamsQconf(File) QParamsQconf} object depending
+ * on type of input file.
  * <p>
  * The main processing happens in constructor that performs the following operations:
  * <ol>
@@ -35,16 +35,16 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * <li>Run {@link runFromPAQP()} or {@link runFromQCONF()}
  * </ol>
  * The three last should be replaced in child class.
- *  
+ * 
  * @author p.baniukiewicz
  *
  */
 @Deprecated
 public abstract class QconfSupporter {
-    private static final Logger LOGGER = LogManager.getLogger(QconfSupporter.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QconfSupporter.class.getName());
     /**
      * Main object holding loaded configuration file. It can be either traditional QParams or
-     * QParamsQconf for newer format.  
+     * QParamsQconf for newer format.
      */
     protected QParams qp;
 
@@ -179,12 +179,14 @@ public abstract class QconfSupporter {
      * <p>
      * Check for presence ECMM, and Q Analysis data in loaded QCONF.
      * <p>
-     * <b>warning</b><p>
+     * <b>warning</b>
+     * <p>
      * ANA is not obligatory and it is not checked here.
      * <p>
+     * 
      * @return <tt>true</tt> always for maintaining compatibility with
-     * {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Q_Analysis#validateQconf()}
-     * and {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping#validateQconf()}
+     *         {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Q_Analysis#validateQconf()} and
+     *         {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping#validateQconf()}
      * 
      * @throws QuimpException When there is no ECMM or Q Analysis data in file
      */
@@ -206,7 +208,8 @@ public abstract class QconfSupporter {
 
     /**
      * Executed when input file is <i>QCONF</i>.
-     * @throws QuimpException 
+     * 
+     * @throws QuimpException
      */
     public void runFromQCONF() throws QuimpException {
         LOGGER.warn("Not implemented here");
@@ -214,6 +217,7 @@ public abstract class QconfSupporter {
 
     /**
      * Executed when input file is <i>paQP</i>.
+     * 
      * @throws QuimpException
      */
     public void runFromPAQP() throws QuimpException {
@@ -223,7 +227,8 @@ public abstract class QconfSupporter {
     /**
      * Getter for loaded configuration data.
      * 
-     * Useful when this class is used only for loading configuration files. 
+     * Useful when this class is used only for loading configuration files.
+     * 
      * @return the qp
      */
     public QParams getQp() {

@@ -10,12 +10,11 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
@@ -27,13 +26,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  */
 public class SnakeTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    private static final Logger LOGGER = LogManager.getLogger(SnakeTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(SnakeTest.class.getName());
 
     private String[] info = { "QuimP", "verr", "ddd" };
     private Snake snake1;
@@ -71,8 +64,8 @@ public class SnakeTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.Snake#setNewHead(int)}. Set head
-     * for non existing node.
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.Snake#setNewHead(int)}. Set head for
+     *       non existing node.
      * @pre valid snake with 4 nodes
      * @post the same snake with head in the same position
      */
@@ -98,8 +91,8 @@ public class SnakeTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.Snake#setNewHead(int)}. Set head
-     * for second node.
+     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.Snake#setNewHead(int)}. Set head for
+     *       second node.
      * @pre valid snake with 4 nodes
      * @post the same snake with head in on second position
      */
@@ -178,8 +171,8 @@ public class SnakeTest {
         LOGGER.debug(snake1.toString());
         LOGGER.debug(copy.toString());
         assertEquals(copy, snake1);
-        LOGGER.debug(snake1.hashCode());
-        LOGGER.debug(copy.hashCode());
+        LOGGER.debug(Integer.toString(snake1.hashCode()));
+        LOGGER.debug(Integer.toString(copy.hashCode()));
         assertEquals(copy.hashCode(), snake1.hashCode());
         assertThat(c, is(snake1));
         LOGGER.debug(copy.toString());
@@ -196,8 +189,8 @@ public class SnakeTest {
         Node n = copy.getHead().getNext();
         n.addVel(new ExtendedVector2d(3, 3));
         assertThat(copy, is(not(snake1)));
-        LOGGER.debug(snake1.hashCode());
-        LOGGER.debug(copy.hashCode());
+        LOGGER.debug(Integer.toString(snake1.hashCode()));
+        LOGGER.debug(Integer.toString(copy.hashCode()));
         assertThat(copy.hashCode(), is(not(snake1.hashCode())));
     }
 

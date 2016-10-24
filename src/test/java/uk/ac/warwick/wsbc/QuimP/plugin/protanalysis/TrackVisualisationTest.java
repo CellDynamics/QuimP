@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -21,6 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImageJ;
@@ -33,15 +32,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TrackVisualisationTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-
-    private static final Logger LOGGER =
-            LogManager.getLogger(TrackVisualisationTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(TrackVisualisationTest.class.getName());
     private ImagePlus originalImage;
     // http://stackoverflow.com/questions/16467685/difference-between-mock-and-injectmocks
     // @InjectMocks
@@ -81,8 +72,9 @@ public class TrackVisualisationTest {
     }
 
     /**
-         * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addPointsToImage()}.
-         */
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addPointsToImage()}.
+     */
     @SuppressWarnings("unused")
     @Test
     public void testAddCirclesToImage() throws Exception {
@@ -111,7 +103,7 @@ public class TrackVisualisationTest {
     // * Test method for {@link
     // uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.QuimP.STmap,
     // java.util.List)}.
-    //             */
+    // */
     // @Test
     // public void testAddTrackingLinesToImage() throws Exception {
     // ArrayList<Polygon> testRoi = new ArrayList<>();
@@ -140,7 +132,7 @@ public class TrackVisualisationTest {
     // uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.QuimP.STmap,
     // java.util.List)}.
     // * Case with empty tracking line
-    //             */
+    // */
     // @Test
     // public void testAddTrackingLinesToImage_1() throws Exception {
     // ArrayList<Polygon> testRoi = new ArrayList<>();

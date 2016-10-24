@@ -2,9 +2,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.Polygon;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.plugin.filter.MaximumFinder;
 import ij.process.ImageProcessor;
@@ -18,14 +17,7 @@ import ij.process.ImageProcessor;
  *
  */
 public class MaximaFinder {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LogManager.getLogger(MaximaFinder.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(MaximaFinder.class.getName());
     private ImageProcessor iP;
     private Polygon maxima; // found maxima as polygon
 
@@ -33,7 +25,7 @@ public class MaximaFinder {
     // * Indicate that image processor has been rotated. By default x coordinate should be frame, y
     // * index. But For visualisation is better to rotate image to have longer axis on bottom.
     // * By default TrackVisualisation.Map.Map(String, float[][]) rotates image.
-    //     */
+    // */
     // public boolean ROTATED = true;
 
     /**
@@ -90,8 +82,8 @@ public class MaximaFinder {
     /**
      * 
      * @return Return maxima found by {@link computeMaximaIJ(double)}. The coordinates depend on
-     * orientation of input image. For typical application like analysis of motility map, x axis
-     * stands for frames and y-axis for outline indexes. 
+     *         orientation of input image. For typical application like analysis of motility map, x
+     *         axis stands for frames and y-axis for outline indexes.
      */
     public Polygon getMaxima() {
         if (maxima == null)

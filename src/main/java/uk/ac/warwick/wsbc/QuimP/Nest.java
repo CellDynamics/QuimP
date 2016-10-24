@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -24,7 +24,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
  */
 public class Nest implements IQuimpSerialize {
 
-    private static final Logger LOGGER = LogManager.getLogger(Nest.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Nest.class.getName());
 
     private ArrayList<SnakeHandler> sHs;
     /**
@@ -51,7 +51,7 @@ public class Nest implements IQuimpSerialize {
      * Convert array of SegmentedShapeRoi to SnakeHandlers.
      * 
      * @param roiArray First level stands for objects (SnakeHandlers(, second for Snakes within one
-     * chain
+     *        chain
      * @remarks Conversion within one SnakeHandler is stopped when there is defective Snake.
      */
     public void addHandlers(ArrayList<ArrayList<SegmentedShapeRoi>> roiArray) {
@@ -86,8 +86,8 @@ public class Nest implements IQuimpSerialize {
     }
 
     /**
-     * Add ROI objects in Nest Snakes are stored in Nest object in form of
-     * SnakeHandler objects kept in \c ArrayList<SnakeHandler> \c sHs field.
+     * Add ROI objects in Nest Snakes are stored in Nest object in form of SnakeHandler objects kept
+     * in \c ArrayList<SnakeHandler> \c sHs field.
      * 
      * @param r ROI object that contain image object to be segmented
      * @param startFrame Current frame
@@ -121,8 +121,8 @@ public class Nest implements IQuimpSerialize {
      * File names are deducted in called functions.
      * 
      * @return \c true if write operation has been successful
-     * @throws IOException when the file exists but is a directory rather than a regular file, 
-     * does not exist but cannot be created, or cannot be opened for any other reason
+     * @throws IOException when the file exists but is a directory rather than a regular file, does
+     *         not exist but cannot be created, or cannot be opened for any other reason
      */
     public boolean writeSnakes() throws IOException {
         Iterator<SnakeHandler> sHitr = sHs.iterator();
@@ -177,11 +177,13 @@ public class Nest implements IQuimpSerialize {
     /**
      * Write <i>stQP</i> file using current Snakes
      * 
-     * <p><b>Warning</b><p>
+     * <p>
+     * <b>Warning</b>
+     * <p>
      * It can set current slice in ImagePlus (modifies the object state).
      * 
-     * @param oi instance of current ImagePlus (required by CellStat that extends 
-     * ij.measure.Measurements
+     * @param oi instance of current ImagePlus (required by CellStat that extends
+     *        ij.measure.Measurements
      * @return CellStat objects with calculated statistics for every cell.
      */
     public List<CellStatsEval> analyse(final ImagePlus oi) {
@@ -204,7 +206,8 @@ public class Nest implements IQuimpSerialize {
                 ret.add(tmp);
             }
         } catch (QuimpException e) {
-            LOGGER.error(e);
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error(e.getMessage());
         }
         return ret;
     }
@@ -291,7 +294,7 @@ public class Nest implements IQuimpSerialize {
     }
 
     /**
-     * Get list of snakes that are on frame  \c frame
+     * Get list of snakes that are on frame \c frame
      * 
      * @param frame Frame find snakes in
      * @return List of Snake id on \c frame
@@ -333,8 +336,8 @@ public class Nest implements IQuimpSerialize {
     /**
      * Store OutlineHandler as finalSnake.
      * 
-     * Use {@link uk.ac.warwick.wsbc.QuimP.SnakeHandler.copyFromFinalToSeg()} to populate 
-     * snake over segSnakes.
+     * Use {@link uk.ac.warwick.wsbc.QuimP.SnakeHandler.copyFromFinalToSeg()} to populate snake over
+     * segSnakes.
      * 
      * @param oH
      */
@@ -381,7 +384,9 @@ public class Nest implements IQuimpSerialize {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override

@@ -10,42 +10,31 @@ import java.util.Scanner;
 
 import javax.vecmath.Point2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.process.FloatPolygon;
 
 /**
  * Simple data loader for test
  * 
- * Load contours saved as one-column list with interleaving coordinates of
- * vertices:
+ * Load contours saved as one-column list with interleaving coordinates of vertices:
  * 
  * @code X1 Y1 X2 Y2 ... Xn Yn
- * @endcode The file must contain even number of data. Exemplary code in Matlab
- * to create such file:
- * @code{.m}
- * addpath('/home/p.baniukiewicz/Documents/QuimP11_MATLAB/')
- * qCells = readQanalysis('Resources/after-macro');
- * testFrames = [75 125 137 1];
- * clear coords;
- * for i=1:length(testFrames)
- * coords{i} = qCells.outlines{testFrames(i)}(:,2:3);
- * end
- * for i=1:length(testFrames)
- * fid = fopen(['testData_' num2str(testFrames(i)) '.dat'], 'w');
- * xy = coords{i};
- * xyr = reshape(xy',[],1); % x first
- * fprintf(fid,'%.4f\n',xyr);
- * fclose(fid);
- * end
+ * @endcode The file must contain even number of data. Exemplary code in Matlab to create such file:
+ * @code{.m} addpath('/home/p.baniukiewicz/Documents/QuimP11_MATLAB/') qCells =
+ *           readQanalysis('Resources/after-macro'); testFrames = [75 125 137 1]; clear coords; for
+ *           i=1:length(testFrames) coords{i} = qCells.outlines{testFrames(i)}(:,2:3); end for
+ *           i=1:length(testFrames) fid = fopen(['testData_' num2str(testFrames(i)) '.dat'], 'w');
+ *           xy = coords{i}; xyr = reshape(xy',[],1); % x first fprintf(fid,'%.4f\n',xyr);
+ *           fclose(fid); end
  * @endcode
  * 
  * @author p.baniukiewicz
  *
  */
 public class DataLoader {
-    private static final Logger LOGGER = LogManager.getLogger(DataLoader.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class.getName());
     private List<Double> data;
     public List<Point2d> Vert;
 
@@ -54,12 +43,9 @@ public class DataLoader {
      * 
      * Open and read datafile
      * 
-     * @param fileName
-     * file with data (with path)
-     * @throws FileNotFoundException
-     * on bad file
-     * @throws IllegalArgumentException
-     * when the number of lines in \c fileName is not power of 2
+     * @param fileName file with data (with path)
+     * @throws FileNotFoundException on bad file
+     * @throws IllegalArgumentException when the number of lines in \c fileName is not power of 2
      */
     public DataLoader(String fileName) throws FileNotFoundException, IllegalArgumentException {
         data = new ArrayList<Double>();

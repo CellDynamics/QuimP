@@ -10,26 +10,18 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author p.baniukiewicz
  *
  */
 public class QuimPArrayUtilsTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LogManager.getLogger(QuimPArrayUtilsTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(QuimPArrayUtilsTest.class.getName());
 
     /**
      * @throws java.lang.Exception
@@ -46,7 +38,8 @@ public class QuimPArrayUtilsTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#float2ddouble(float[][])}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#float2ddouble(float[][])}.
      */
     @Test
     public void testFloat2Ddouble() throws Exception {
@@ -58,7 +51,8 @@ public class QuimPArrayUtilsTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#double2float(double[][])}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#double2float(double[][])}.
      */
     @Test
     public void testDouble2Float() throws Exception {
@@ -80,14 +74,14 @@ public class QuimPArrayUtilsTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#file2Array(java.lang.String, java.io.File)}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#file2Array(java.lang.String, java.io.File)}.
      */
     @Test
     public void testFile2Array() throws Exception {
         //!<
-        double[][] expected = { {1,2,3,4,5},
-                                {1.1,2.2,3.3,4.4,5.5},
-                                {6,7,8,9,Math.PI}};
+        double[][] expected =
+                { { 1, 2, 3, 4, 5 }, { 1.1, 2.2, 3.3, 4.4, 5.5 }, { 6, 7, 8, 9, Math.PI } };
         /**/
         QuimPArrayUtils.arrayToFile(expected, ",", new File("/tmp/testFile2Array.map"));
 

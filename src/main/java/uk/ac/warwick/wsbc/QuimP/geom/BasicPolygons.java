@@ -10,8 +10,8 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Tuple2d;
 import javax.vecmath.Vector2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Calculates basic geometry on polygons defined as list of point in specified direction
@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 public class BasicPolygons {
 
     @SuppressWarnings("unused")
-    private static final Logger LOGGER = LogManager.getLogger(BasicPolygons.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(BasicPolygons.class.getName());
 
     public BasicPolygons() {
 
@@ -114,6 +114,7 @@ public class BasicPolygons {
 
     /**
      * Test if \b all points \c Ptest are inside polygon
+     * 
      * @copydetails isPointInside(List<? extends Tuple2d>, Tuple2d)
      */
     public boolean arePointsInside(final List<? extends Tuple2d> P,

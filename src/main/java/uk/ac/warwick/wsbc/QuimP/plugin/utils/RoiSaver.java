@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -27,7 +27,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
  *
  */
 public class RoiSaver {
-    private static final Logger LOGGER = LogManager.getLogger(RoiSaver.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(RoiSaver.class.getName());
 
     /**
      * Dummy constructor
@@ -38,8 +38,8 @@ public class RoiSaver {
     /**
      * Save ROI as image
      * 
-     * Get ListArray with vertices and create \a fileName.tif image with ROI For
-     * non-valid input list it creates red image of size 100 x 100
+     * Get ListArray with vertices and create \a fileName.tif image with ROI For non-valid input
+     * list it creates red image of size 100 x 100
      * 
      * @param fileName file to save image with path
      * @param vert list of vertices
@@ -77,7 +77,7 @@ public class RoiSaver {
             ip.setColor(Color.RED);
             ip.fill();
             IJ.saveAsTiff(outputImage, fileName); // save image
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage());
         }
 
     }
@@ -87,9 +87,9 @@ public class RoiSaver {
      * 
      * @param image Image where rois will be plotted. Number of slices must be equal to rois.size();
      * @param fileName File to save
-     * @param ret List of Lists of Rois. First level of rois is plotted on slices, second
-     * contains rois to plot. Rois along second level are plotted with the same color across slices
-     * e.g. First roi in second level in red, second roi in second level ble etc
+     * @param ret List of Lists of Rois. First level of rois is plotted on slices, second contains
+     *        rois to plot. Rois along second level are plotted with the same color across slices
+     *        e.g. First roi in second level in red, second roi in second level ble etc
      */
     public static void saveROIs(ImagePlus image, String fileName,
             ArrayList<ArrayList<SegmentedShapeRoi>> ret) {
@@ -114,7 +114,7 @@ public class RoiSaver {
      * 
      * @param fileName
      * @param roi
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver.saveROI(String, List<Point2d>) 
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver.saveROI(String, List<Point2d>)
      */
     public static void saveROI(String fileName, Roi roi) {
         if (roi == null)
@@ -125,11 +125,10 @@ public class RoiSaver {
     }
 
     /**
-     * Calculates \b width and \b height of bounding box for shape defined as
-     * List of Vector2d elements
+     * Calculates \b width and \b height of bounding box for shape defined as List of Vector2d
+     * elements
      * 
-     * @param vert
-     * List of vertexes of shape
+     * @param vert List of vertexes of shape
      * @return two elements array where [width height]
      * @retval double[2]
      */

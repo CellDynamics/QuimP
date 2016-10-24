@@ -51,9 +51,8 @@ import javax.swing.event.ChangeListener;
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonSyntaxException;
@@ -106,24 +105,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
  * @author Piotr Baniukiewicz
  */
 public class BOA_ implements PlugIn {
-    /**
-     * Can use system property <tt>quimp.debugLevel</tt> to set other than default logging level If
-     * the property <tt>quimp.debugLevel</tt> is not present BOA uses default logging only Warns and
-     * Errors. Passing parameter - name of the xml log4j2 config file to this property enables more
-     * detailed logging. e.g.
-     * 
-     * <pre>
-     * <code>./ImageJ-linux64 -Dquimp.debugLevel=qlog4j2.xml -- --java-home $JAVA_HOME</code>
-     * </pre>
-     * 
-     */
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
-    static final Logger LOGGER = LogManager.getLogger(BOA_.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(BOA_.class.getName());
     CustomCanvas canvas;
     CustomStackWindow window;
     static TextArea logArea;
@@ -1396,7 +1378,7 @@ public class BOA_ implements PlugIn {
                         LOGGER.error("Problem with configuration file: " + e1.getMessage());
                         LOGGER.debug(e1.getMessage(), e1);
                     } catch (Exception e1) {
-                        LOGGER.fatal(e1.getMessage(), e1); // something serious
+                        LOGGER.error(e1.getMessage(), e1); // something serious
                     }
                 }
             }
@@ -1471,7 +1453,7 @@ public class BOA_ implements PlugIn {
                         LOGGER.error("Problem with configuration file: " + e1.getMessage());
                         LOGGER.debug(e1.getMessage(), e1);
                     } catch (Exception e1) {
-                        LOGGER.fatal(e1.getMessage(), e1); // something serious
+                        LOGGER.error(e1.getMessage(), e1); // something serious
                     }
                 }
             }
@@ -2211,7 +2193,7 @@ public class BOA_ implements PlugIn {
             LOGGER.debug(be.getMessage(), be);
         } catch (Exception e) {
             BOA_.log("Undefined error from plugin");
-            LOGGER.fatal(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         // if any problem with plugin or other, store snake without modification
         // because snake.asList() returns copy
@@ -2492,7 +2474,7 @@ class ImageGroup {
     private Nest nest;
     int w, h, f;
 
-    private static final Logger LOGGER = LogManager.getLogger(ImageGroup.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageGroup.class.getName());
 
     /**
      * Constructor.

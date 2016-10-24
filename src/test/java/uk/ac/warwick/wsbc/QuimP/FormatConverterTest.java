@@ -9,7 +9,6 @@ import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -24,12 +23,6 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
  *
  */
 public class FormatConverterTest {
-    static {
-        if (System.getProperty("quimp.debugLevel") == null)
-            Configurator.initialize(null, "log4j2_default.xml");
-        else
-            Configurator.initialize(null, System.getProperty("quimp.debugLevel"));
-    }
 
     /**
      * @throws java.lang.Exception
@@ -132,7 +125,8 @@ public class FormatConverterTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#FormatConverter(uk.ac.warwick.wsbc.QuimP.QParamsQconf, java.nio.file.Path)}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#FormatConverter(uk.ac.warwick.wsbc.QuimP.QParamsQconf, java.nio.file.Path)}.
      */
     @Test
     @Ignore
