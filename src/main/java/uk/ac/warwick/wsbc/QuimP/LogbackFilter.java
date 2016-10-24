@@ -14,15 +14,16 @@ import ch.qos.logback.core.spi.FilterReply;
  */
 public class LogbackFilter extends Filter<ILoggingEvent> {
 
+    @SuppressWarnings("unused")
     private String packageName;
 
     public LogbackFilter() {
-        packageName = LogbackFilter.class.getPackage().getName();
+        packageName = LogbackFilter.class.getPackage().getName().toLowerCase();
     }
 
     @Override
     public FilterReply decide(ILoggingEvent event) {
-        if (event.getLoggerName().startsWith(packageName)) {
+        if (event.getLoggerName().toLowerCase().contains("quimp")) { // to catch plugins as well
             return FilterReply.NEUTRAL; // run next filters on QuimP
         } else {
             return FilterReply.DENY; // stop logging
