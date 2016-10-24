@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
  * @author p.baniukiewicz
  *
  */
+@Deprecated
 public class Loggers {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Loggers.class.getName());

@@ -44,6 +44,7 @@ public class LoggersTest {
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.Loggers#logg()}.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testLogg() throws Exception {
         new Loggers().logg();
@@ -52,6 +53,7 @@ public class LoggersTest {
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.Loggers#scilog()}.
      */
+    @SuppressWarnings("deprecation")
     @Test
     @Ignore
     public void testScilog() throws Exception {
