@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -46,6 +47,15 @@ public class LoggersTest {
     @Test
     public void testLogg() throws Exception {
         new Loggers().logg();
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Loggers#scilog()}.
+     */
+    @Test
+    @Ignore
+    public void testScilog() throws Exception {
+        new Loggers().scilog();
     }
 
 }
