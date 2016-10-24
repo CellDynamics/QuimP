@@ -167,15 +167,15 @@
         </configuration>
       </plugin>
       <plugin>
-          <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-creating-simple-weather.html -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.5.1</version>
-          <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
-          </configuration>
-        </plugin>
+        <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-creating-simple-weather.html -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -274,12 +274,39 @@
     <profile>
       <id>installation</id>
       <!--Default profile for building pure jar-->
+      <!--Save dependencies in separate folder-->
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
         <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
       </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.10</version>
+            <executions>
+              <execution>
+                <id>copy-dependencies</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+                  <overWriteReleases>false</overWriteReleases>
+                  <overWriteSnapshots>false</overWriteSnapshots>
+                  <overWriteIfNewer>true</overWriteIfNewer>
+                  <excludeTransitive>true</excludeTransitive>
+                  <includeScope>runtime</includeScope>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>uber-release</id>
@@ -348,7 +375,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>2.9</version>
-        
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -381,7 +407,7 @@
         <reportSets>
           <reportSet>
             <reports>
-              <!--<report>trac-report</report> -->
+              <!--<report>trac-report</report>-->
               <report>changes-report</report>
             </reports>
           </reportSet>
