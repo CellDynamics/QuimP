@@ -129,11 +129,6 @@
     	<artifactId>scijava-config</artifactId>
     	<version>2.0.1</version>
     </dependency>
-    <dependency>
-    	<groupId>org.scijava</groupId>
-    	<artifactId>scijava-common</artifactId>
-    	<version>2.50.1</version>
-    </dependency>
   </dependencies>
   <build>
     <resources>
