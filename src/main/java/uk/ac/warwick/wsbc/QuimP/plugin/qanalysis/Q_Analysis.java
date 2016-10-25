@@ -16,9 +16,9 @@ import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
 import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
-import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
@@ -83,7 +83,7 @@ public class Q_Analysis {
                     YesNoCancelDialog yncd =
                             new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
                                     "\tBatch Process?\n\n" + "Process other "
-                                            + QuimpConfigFilefilter.oldFileExt
+                                            + FileExtensions.configFileExt
                                             + " files in the same folder with QAnalysis?"
                                             + "\n[The same parameters will be used]");
                     if (yncd.yesPressed()) {

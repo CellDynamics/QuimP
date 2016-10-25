@@ -84,6 +84,7 @@ import ij.process.StackConverter;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.StatsCollection;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
@@ -1391,7 +1392,7 @@ public class BOA_ implements PlugIn {
             if (b == menuShowHistory) {
                 JOptionPane.showMessageDialog(window,
                         "The full history of changes is avaiable after saving your work in the"
-                                + " file " + QuimpConfigFilefilter.newFileExt);
+                                + " file " + FileExtensions.newConfigFileExt);
                 /*
                  * if (historyLogger.isOpened()) historyLogger.closeHistory(); else
                  * historyLogger.openHistory();
@@ -1407,7 +1408,7 @@ public class BOA_ implements PlugIn {
              */
             if (b == menuLoad) {
                 OpenDialog od = new OpenDialog(
-                        "Load global config data...(*" + QuimpConfigFilefilter.newFileExt + ")",
+                        "Load global config data...(*" + FileExtensions.newConfigFileExt + ")",
                         "");
                 if (od.getFileName() != null) {
                     try {

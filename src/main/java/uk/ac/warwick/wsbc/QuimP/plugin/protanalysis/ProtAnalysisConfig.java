@@ -189,19 +189,6 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      */
     public PolarPlot polarPlot = new PolarPlot();
 
-    /**
-     * Suffix for cell stats.
-     */
-    public final String cellStatSuffix = "_cellstat.csv";
-    /**
-     * Protrusion statistics file suffix.
-     */
-    public final String protStatSuffix = "_protstat.csv";
-    /**
-     * Polar plot suffix.
-     */
-    public final String polarPlotSuffix = "_polar.svg";
-
     public ProtAnalysisConfig() {
     }
 

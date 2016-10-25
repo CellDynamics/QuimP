@@ -11,6 +11,7 @@ import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
 import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.Vert;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
@@ -52,8 +53,8 @@ public class SVGplotter {
 
         try {
 
-            BufferedOutputStream out = new BufferedOutputStream(
-                    new FileOutputStream(outFile.getAbsolutePath() + "_motility.svg"));
+            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(
+                    outFile.getAbsolutePath() + FileExtensions.motvecimageFileExt));
             OutputStreamWriter osw = new OutputStreamWriter(out);
 
             osw.write("<?xml version=\"1.0\" standalone=\"no\"?>\n");
@@ -85,6 +86,7 @@ public class SVGplotter {
         }
     }
 
+    @Deprecated
     public void plotTrackAnim() {
 
         // oH.minCoor.print("minCoor:");
@@ -146,8 +148,8 @@ public class SVGplotter {
 
         try {
 
-            BufferedOutputStream out = new BufferedOutputStream(
-                    new FileOutputStream(outFile.getAbsolutePath() + "_track.svg"));
+            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(
+                    outFile.getAbsolutePath() + FileExtensions.trackvecimageFileExt));
             OutputStreamWriter osw = new OutputStreamWriter(out);
 
             osw.write("<?xml version=\"1.0\" standalone=\"no\"?>\n");

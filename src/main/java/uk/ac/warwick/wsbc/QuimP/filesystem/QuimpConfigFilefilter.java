@@ -1,7 +1,4 @@
-/**
- * 
- */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.filesystem;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -13,22 +10,15 @@ import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
  * Implement filter of FileDialog.
  * <p>
  * Define also default extensions for new and old file format.
+ * 
  * @author p.baniukiewicz
  *
  */
 public class QuimpConfigFilefilter implements FilenameFilter {
     private String[] ext;
     /**
-     * Extension for new file format.
-     */
-    public static final String newFileExt = ".QCONF";
-    /**
-     * Extension for old file format.
-     */
-    public static final String oldFileExt = ".paQP";
-
-    /**
      * Allow to provide list of accepted extensions with dot.
+     * 
      * @param ext
      */
     public QuimpConfigFilefilter(String... ext) {
@@ -44,12 +34,14 @@ public class QuimpConfigFilefilter implements FilenameFilter {
     public QuimpConfigFilefilter() {
         ext = new String[1];
         if (QuimP_Bar.newFileFormat == true)
-            ext[0] = newFileExt;
+            ext[0] = FileExtensions.newConfigFileExt;
         else
-            ext[0] = oldFileExt;
+            ext[0] = FileExtensions.configFileExt;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.io.FilenameFilter#accept(java.io.File, java.lang.String)
      */
     @Override
@@ -62,16 +54,17 @@ public class QuimpConfigFilefilter implements FilenameFilter {
     }
 
     /**
-     * @return the ext
+     * @return the extension
      */
     public String[] getExt() {
         return ext;
     }
 
-    /** 
-     * Return defined extensions. 
+    /**
+     * Return defined extensions.
      * 
      * Can be used for filling bar of file selectors.
+     * 
      * @see java.lang.Object#toString()
      */
     @Override

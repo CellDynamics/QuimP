@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
@@ -67,7 +68,7 @@ public class QParamsQconf extends QParams {
         // prepare correct name for old parameters
         super.setParamFile(new File(QuimpToolsCollection
                 .removeExtension(newParamFile.getParent() + File.separator + newParamFile.getName())
-                + "_" + currentHandler + QuimpConfigFilefilter.oldFileExt));
+                + "_" + currentHandler + FileExtensions.configFileExt));
         paramFormat = QParams.NEW_QUIMP;
     }
 
@@ -182,7 +183,7 @@ public class QParamsQconf extends QParams {
         // fill underlying parameters
         super.setParamFile(
                 new File(QuimpToolsCollection.removeExtension(newParamFile.getAbsolutePath()) + "_"
-                        + currentHandler + QuimpConfigFilefilter.oldFileExt));
+                        + currentHandler + FileExtensions.configFileExt));
         super.guessOtherFileNames();
         super.setSnakeQP(getSnakeQP());
         super.setStatsQP(getStatsQP());
@@ -415,7 +416,8 @@ public class QParamsQconf extends QParams {
     public File getSnakeQP() {
         String path = getParamFile().getParent();
         String file = QuimpToolsCollection.removeExtension(getParamFile().getName());
-        return new File(path + File.separator + file + "_" + currentHandler + ".snQP");
+        return new File(
+                path + File.separator + file + "_" + currentHandler + FileExtensions.snakeFileExt);
     }
 
     /*
@@ -429,13 +431,14 @@ public class QParamsQconf extends QParams {
     public File getStatsQP() {
         String path = getParamFile().getParent();
         String file = QuimpToolsCollection.removeExtension(getParamFile().getName());
-        return new File(path + File.separator + file + "_" + currentHandler + ".stQP.csv");
+        return new File(
+                path + File.separator + file + "_" + currentHandler + FileExtensions.statsFileExt);
     }
 
 }
 
 /**
- * Blocks execution of afterSerialize() in Serializer.
+ * Block execution of afterSerialize() in Serializer.
  * 
  * This method is not necessary now because one does not want to restore full plugin state. Other
  * data do not need any additional operations. (

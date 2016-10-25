@@ -16,7 +16,6 @@ import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
-import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
@@ -116,7 +115,7 @@ public class QconfLoader {
         // detect old/new file format
         File paramFile = new File(directory, filename); // config file (copy of input)
         if (paramFile.getName().toLowerCase()
-                .endsWith(QuimpConfigFilefilter.newFileExt.toLowerCase())) // TODO #152
+                .endsWith(FileExtensions.newConfigFileExt.toLowerCase())) // TODO #152
             qp = new QParamsQconf(paramFile);
         else
             qp = new QParams(paramFile); // initialize general param storage

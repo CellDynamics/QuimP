@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
@@ -475,9 +476,9 @@ public class QParams {
                 // name
                 int lastDot = sn.lastIndexOf(".");
 
-                String tempS = sn.substring(0, lastDot + 1);
+                String tempS = sn.substring(0, lastDot);
                 // System.out.println("tempS: " + tempS+", ld = " + lastDot);
-                statsQP = new File(paramFile.getParent() + tempS + "stQP.csv");
+                statsQP = new File(paramFile.getParent() + tempS + FileExtensions.statsFileExt);
                 // System.out.println("stats file: " +
                 // statsQP.getAbsolutePath());
             }
@@ -533,7 +534,7 @@ public class QParams {
     }
 
     public void writeParams() throws IOException {
-        LOGGER.debug("Write paQP at: " + paramFile);
+        LOGGER.debug("Write " + FileExtensions.configFileExt + " at: " + paramFile);
         if (paramFile.exists()) {
             paramFile.delete();
         }
@@ -616,7 +617,7 @@ public class QParams {
                     continue;
                 }
                 extension = QuimpToolsCollection.getFileExtension(filenames[i]);
-                if (extension.matches(QuimpConfigFilefilter.oldFileExt.substring(1))) {
+                if (extension.matches(FileExtensions.configFileExt.substring(1))) {
                     paFiles.add(filenames[i]);
                     System.out.println("paFile: " + filenames[i]);
                 }
@@ -642,18 +643,21 @@ public class QParams {
     void guessOtherFileNames() {
         LOGGER.debug("prefix: " + fileName);
 
-        convexFile = new File(path + File.separator + fileName + "_convexityMap.maQP");
+        convexFile = new File(path + File.separator + fileName + FileExtensions.convmapFileExt);
 
-        coordFile = new File(path + File.separator + fileName + "_coordMap.maQP");
-        motilityFile = new File(path + File.separator + fileName + "_motilityMap.maQP");
-        originFile = new File(path + File.separator + fileName + "_originMap.maQP");
-        xFile = new File(path + File.separator + fileName + "_xMap.maQP");
-        yFile = new File(path + File.separator + fileName + "_yMap.maQP");
+        coordFile = new File(path + File.separator + fileName + FileExtensions.coordmapFileExt);
+        motilityFile = new File(path + File.separator + fileName + FileExtensions.motmapFileExt);
+        originFile = new File(path + File.separator + fileName + FileExtensions.originmapFileExt);
+        xFile = new File(path + File.separator + fileName + FileExtensions.xmapFileExt);
+        yFile = new File(path + File.separator + fileName + FileExtensions.ymapFileExt);
 
         fluFiles = new File[3];
-        fluFiles[0] = new File(path + File.separator + fileName + "_fluoCH1.maQP");
-        fluFiles[1] = new File(path + File.separator + fileName + "_fluoCH2.maQP");
-        fluFiles[2] = new File(path + File.separator + fileName + "_fluoCH3.maQP");
+        fluFiles[0] = new File(
+                path + File.separator + fileName + FileExtensions.fluomapFileExt.replace('%', '1'));
+        fluFiles[1] = new File(
+                path + File.separator + fileName + FileExtensions.fluomapFileExt.replace('%', '2'));
+        fluFiles[2] = new File(
+                path + File.separator + fileName + FileExtensions.fluomapFileExt.replace('%', '3'));
 
     }
 

@@ -14,6 +14,7 @@ import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
 import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.Vert;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
@@ -349,28 +350,32 @@ public class STmap implements IQuimpSerialize {
 
         try {
             // save images
-            IJ.saveAs(migImP, "tiff",
-                    Qp.outFile.getParent() + File.separator + Qp.filename + "_motility.tiff");
-            IJ.saveAs(convImP, "tiff",
-                    Qp.outFile.getParent() + File.separator + Qp.filename + "_convexity.tiff");
+            IJ.saveAs(migImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename
+                    + FileExtensions.motimageFileExt);
+            IJ.saveAs(convImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename
+                    + FileExtensions.convimageFileExt);
 
             QuimPArrayUtils.arrayToFile(coordMap, ",",
-                    new File(Qp.outFile.getPath() + "_coordMap.maQP"));
+                    new File(Qp.outFile.getPath() + FileExtensions.coordmapFileExt));
             QuimPArrayUtils.arrayToFile(originMap, ",",
-                    new File(Qp.outFile.getPath() + "_originMap.maQP"));
+                    new File(Qp.outFile.getPath() + FileExtensions.originmapFileExt));
             QuimPArrayUtils.arrayToFile(motMap, ",",
-                    new File(Qp.outFile.getPath() + "_motilityMap.maQP"));
+                    new File(Qp.outFile.getPath() + FileExtensions.motmapFileExt));
             QuimPArrayUtils.arrayToFile(convMap, ",",
-                    new File(Qp.outFile.getPath() + "_convexityMap.maQP"));
-            QuimPArrayUtils.arrayToFile(xMap, ",", new File(Qp.outFile.getPath() + "_xMap.maQP"));
-            QuimPArrayUtils.arrayToFile(yMap, ",", new File(Qp.outFile.getPath() + "_yMap.maQP"));
+                    new File(Qp.outFile.getPath() + FileExtensions.convmapFileExt));
+            QuimPArrayUtils.arrayToFile(xMap, ",",
+                    new File(Qp.outFile.getPath() + FileExtensions.xmapFileExt));
+            QuimPArrayUtils.arrayToFile(yMap, ",",
+                    new File(Qp.outFile.getPath() + FileExtensions.ymapFileExt));
 
             for (int i = 0; i < 3; i++) {
                 if (!fluoMaps[i].isEnabled()) {
                     continue;
                 }
+                String tmpfilename = FileExtensions.fluomapFileExt.replaceFirst("%",
+                        Integer.toString(fluoMaps[i].channel));
                 QuimPArrayUtils.arrayToFile(fluoMaps[i].getMap(), ",",
-                        new File(Qp.outFile.getPath() + "_fluoCh" + fluoMaps[i].channel + ".maQP"));
+                        new File(Qp.outFile.getPath() + tmpfilename));
             }
 
         } catch (IOException e) {

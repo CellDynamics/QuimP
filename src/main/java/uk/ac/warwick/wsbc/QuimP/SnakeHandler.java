@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
@@ -215,7 +216,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         // BOA_.qState.boap.fileName + "_" + ID + ".snQP");
         // }
         String snakeOutFile = BOA_.qState.boap.deductSnakeFileName(ID);
-        LOGGER.debug("Write snQP at: " + snakeOutFile);
+        LOGGER.debug("Write " + FileExtensions.snakeFileExt + " at: " + snakeOutFile);
         PrintWriter pw = new PrintWriter(new FileWriter(snakeOutFile), true); // auto flush
         pw.write("#QuimP11 Node data");
         pw.write("\n#Node Position\tX-coord\tY-coord\tOrigin\tG-Origin\tSpeed");

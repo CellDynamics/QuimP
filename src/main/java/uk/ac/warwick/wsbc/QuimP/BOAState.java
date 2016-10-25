@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.io.OpenDialog;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentationPlugin;
@@ -711,7 +712,7 @@ public class BOAState implements IQuimpSerialize {
          */
         public String deductSnakeFileName(int ID) {
             LOGGER.trace(getOutputFileCore().getAbsoluteFile().toString());
-            return getOutputFileCore().getAbsoluteFile() + "_" + ID + ".snQP";
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID + FileExtensions.snakeFileExt;
         }
 
         /**
@@ -723,7 +724,7 @@ public class BOAState implements IQuimpSerialize {
          * @return Full path to file with extension
          */
         public String deductStatsFileName(int ID) {
-            return getOutputFileCore().getAbsoluteFile() + "_" + ID + ".stQP.csv";
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID + FileExtensions.statsFileExt;
         }
 
         /**
@@ -735,8 +736,7 @@ public class BOAState implements IQuimpSerialize {
          * @return Full path to file with extension
          */
         public String deductParamFileName(int ID) {
-            return getOutputFileCore().getAbsoluteFile() + "_" + ID
-                    + QuimpConfigFilefilter.oldFileExt;
+            return getOutputFileCore().getAbsoluteFile() + "_" + ID + FileExtensions.configFileExt;
         }
 
         /**
@@ -747,7 +747,7 @@ public class BOAState implements IQuimpSerialize {
          * @return Full path to file with extension
          */
         public String deductFilterFileName() {
-            return getOutputFileCore().getAbsoluteFile() + ".pgQP";
+            return getOutputFileCore().getAbsoluteFile() + FileExtensions.pluginFileExt;
         }
 
         /**
@@ -758,7 +758,7 @@ public class BOAState implements IQuimpSerialize {
          * @return Full path to file with extension
          */
         public String deductNewParamFileName() {
-            return getOutputFileCore().getAbsoluteFile() + QuimpConfigFilefilter.newFileExt;
+            return getOutputFileCore().getAbsoluteFile() + FileExtensions.newConfigFileExt;
         }
 
     }
@@ -986,8 +986,8 @@ public class BOAState implements IQuimpSerialize {
      *      "http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/176#comment:3">ticket/176</a>
      */
     public boolean readParams() {
-        OpenDialog od = new OpenDialog(
-                "Open paramater file (" + QuimpConfigFilefilter.oldFileExt + ")...", "");
+        OpenDialog od =
+                new OpenDialog("Open paramater file (" + FileExtensions.configFileExt + ")...", "");
         if (od.getFileName() == null) {
             return false;
         }

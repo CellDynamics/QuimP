@@ -50,7 +50,8 @@ import uk.ac.warwick.wsbc.QuimP.AboutDialog;
 import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QuimP;
-import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
+import uk.ac.warwick.wsbc.QuimP.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
@@ -65,8 +66,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     /**
      * This field is used for sharing information between bar and other plugins.
      * 
-     * It is read by {@link uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter} which is used by
-     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader} for serving
+     * It is read by {@link uk.ac.warwick.wsbc.QuimP.filesystem.QuimpConfigFilefilter} which is used
+     * by {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader} for serving
      * {@link uk.ac.warwick.wsbc.QuimP.QParams} object for client.
      */
     public static boolean newFileFormat = true;
@@ -224,7 +225,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         panelButtons.add(firstRow, cons);
         cFileFormat = new JCheckBox("Use new file format");
         cFileFormat.setAlignmentX(Component.LEFT_ALIGNMENT);
-        cFileFormat.setToolTipText("Unselect to use old paQP files");
+        cFileFormat.setToolTipText(
+                "Unselect to use old " + FileExtensions.configFileExt + "paQP files");
         cFileFormat.setSelected(QuimP_Bar.newFileFormat); // default selection
         cFileFormat.addItemListener(new ItemListener() { // set static field
 
@@ -399,7 +401,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
                     "This is experimental tool. It may not work correctly.", "Warning",
                     JOptionPane.WARNING_MESSAGE);
             QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(
-                    QuimpConfigFilefilter.newFileExt, QuimpConfigFilefilter.oldFileExt);
+                    FileExtensions.newConfigFileExt, FileExtensions.configFileExt);
             FileDialog od = new FileDialog(IJ.getInstance(),
                     "Open paramater file " + fileFilter.toString());
             od.setFilenameFilter(fileFilter);

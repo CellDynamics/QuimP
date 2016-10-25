@@ -39,10 +39,11 @@ import ij.plugin.ZProjector;
 import ij.plugin.filter.Analyzer;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QParams;
-import uk.ac.warwick.wsbc.QuimP.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
@@ -153,7 +154,7 @@ public class Prot_Analysis implements IQuimpPlugin {
         if (qconfLoader == null || qconfLoader.getQp() == null) {
             // load new file
             qconfLoader = new QconfLoader(paramFile,
-                    new QuimpConfigFilefilter(QuimpConfigFilefilter.newFileExt));
+                    new QuimpConfigFilefilter(FileExtensions.newConfigFileExt));
             if (qconfLoader.getQp() == null)
                 return; // not loaded
             if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
@@ -275,7 +276,7 @@ public class Prot_Analysis implements IQuimpPlugin {
             if (config.polarPlot.plotpolar && config.polarPlot.useGradient) {
                 PolarPlot pp = new PolarPlot(mapCell, config.polarPlot.gradientPoint);
                 pp.generatePlot(Paths.get(qconfLoader.getQp().getPath(),
-                        qconfLoader.getQp().getFileName() + "_" + h + config.polarPlotSuffix)
+                        qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.polarPlotSuffix)
                         .toString());
             }
             // write stats, and add to table
@@ -316,11 +317,11 @@ public class Prot_Analysis implements IQuimpPlugin {
         // write data
         PrintWriter cellStatFile = new PrintWriter(Paths
                 .get(qconfLoader.getQp().getPath(),
-                        qconfLoader.getQp().getFileName() + "_" + h + config.cellStatSuffix)
+                        qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.cellStatSuffix)
                 .toFile());
         PrintWriter protStatFile = new PrintWriter(Paths
                 .get(qconfLoader.getQp().getPath(),
-                        qconfLoader.getQp().getFileName() + "_" + h + config.protStatSuffix)
+                        qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.protStatSuffix)
                 .toFile());
         new ProtStat(mF, trackCollection,
                 qconfLoader.getQp().getLoadedDataContainer().getStats().sHs.get(h), mapCell)

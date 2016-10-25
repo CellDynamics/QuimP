@@ -23,6 +23,7 @@ import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
 import ij.plugin.TextReader;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
@@ -42,7 +43,7 @@ public class Q_Explorer implements PlugIn {
         try {
             // do {
             OpenDialog od = new OpenDialog(
-                    "Open paramater file (" + QuimpConfigFilefilter.oldFileExt + ")...",
+                    "Open paramater file (" + FileExtensions.configFileExt + ")...",
                     OpenDialog.getLastDirectory(), "");
             if (od.getFileName() == null) {
                 return;

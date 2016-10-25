@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
@@ -115,7 +116,7 @@ public class FormatConverter {
         ArrayList<STmap> maps = new ArrayList<>(); // temporary - we do not know number of cells
         // temprary object - different for every _x.paQP
         QconfLoader local = new QconfLoader(Paths
-                .get(qcL.getQp().getPath(), orginal + "_" + i + QuimpConfigFilefilter.oldFileExt)
+                .get(qcL.getQp().getPath(), orginal + "_" + i + FileExtensions.configFileExt)
                 .toFile());
         // populate BOA seg parameters
         dT.BOAState.loadParams(local.getQp()); // load parameters
@@ -164,7 +165,7 @@ public class FormatConverter {
         try {
             do {
                 local = new QconfLoader(Paths.get(qcL.getQp().getPath(),
-                        orginal + "_" + i + QuimpConfigFilefilter.oldFileExt).toFile());
+                        orginal + "_" + i + FileExtensions.configFileExt).toFile());
                 oH = new OutlineHandler(local.getQp()); // load them (for on cell)
                 dT.ECMMState.oHs.add(oH); // store in ECMM object
                 BOA_.qState = dT.BOAState; // for compatibility
@@ -212,7 +213,7 @@ public class FormatConverter {
         Serializer<DataContainer> n;
         n = new Serializer<>(dT, new QuimpToolsCollection().getQuimPBuildInfo());
         n.setPretty();
-        n.save(path + File.separator + orginal + QuimpConfigFilefilter.newFileExt);
+        n.save(path + File.separator + orginal + FileExtensions.newConfigFileExt);
         n = null;
 
     }

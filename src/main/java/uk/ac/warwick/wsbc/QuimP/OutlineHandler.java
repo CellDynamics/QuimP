@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ij.IJ;
+import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
@@ -155,7 +156,8 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
     private boolean readOutlines(final File f) {
         if (!f.exists()) {
-            IJ.error("Cannot locate snake file (snQP)\n'" + f.getAbsolutePath() + "'");
+            IJ.error("Cannot locate snake file (" + FileExtensions.snakeFileExt + ")\n'"
+                    + f.getAbsolutePath() + "'");
             return false;
         }
         if (qp == null)
