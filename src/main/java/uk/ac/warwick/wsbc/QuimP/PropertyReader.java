@@ -3,9 +3,13 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -27,14 +31,15 @@ public class PropertyReader {
     }
 
     /**
-     * Read property from property file.
+     * Read property from property file for QuimP package.
      * 
      * @param propFileName property file name
      * @param propKey name of the key
-     * @return value for \a propKey
-     * @remarks not static because of \a getClass().Property file should be in the same package as
-     *          this class or full path should be provided otherwise.
+     * @return value for propKey
+     * @remarks not static because of getClass().Property file should be in the same package as this
+     *          class or full path should be provided otherwise.
      * @see http://stackoverflow.com/questions/333363/loading-a-properties-file-from-java-package
+     * @see #readProperty(Class, String, String, String)
      */
     public String readProperty(String propFileName, String propKey) {
         InputStream inputStream;
@@ -56,6 +61,54 @@ public class PropertyReader {
         } finally {
             try {
                 inputStream.close();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Read property from jar file.
+     * 
+     * Used when there is many the same properties in many jars.
+     * 
+     * @param c
+     * @param partofFilename A part of expected jar name where property is located.
+     * @param propFileName
+     * @param propKey
+     * @return Value of property for <tt>propKey</tt>
+     */
+    static public String readProperty(Class<?> c, String partofFilename, String propFileName,
+            String propKey) {
+        String result = "";
+        Properties prop;
+        BufferedReader in = null;
+        prop = new Properties();
+
+        try {
+            Enumeration<URL> resources = c.getClassLoader().getResources(propFileName);
+            while (resources.hasMoreElements()) {
+                URL reselement = resources.nextElement();
+                LOGGER.trace("res " + reselement.toString() + " class " + c.getSimpleName());
+                if (reselement.toString().contains(partofFilename)) {
+                    in = new BufferedReader(new InputStreamReader(reselement.openStream()));
+                    LOGGER.trace("in " + in.toString());
+                }
+                if (in != null) {
+                    prop.load(in);
+                    result = prop.getProperty(propKey);
+                    LOGGER.trace("result " + result);
+                }
+            }
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            try {
+                if (in != null)
+                    in.close();
             } catch (IOException e) {
                 LOGGER.error(e.getMessage(), e);
             }
