@@ -52,7 +52,9 @@ public class STmap implements IQuimpSerialize {
     transient int[] convColor;
     transient ImagePlus migImP, fluImP, convImP;
     /**
-     * Contain OutlineHandler used for generating maps <b>warning</b>
+     * Contain OutlineHandler used for generating maps
+     * <p>
+     * <b>warning</b>
      * <p>
      * It is not serialized
      */
@@ -81,10 +83,12 @@ public class STmap implements IQuimpSerialize {
 
     /**
      * Copy constructor.
+     * <p>
+     * <b>warning</b>
+     * <p>
+     * Make a copy of serializable fields only
      * 
-     * @param src source object <b>warning</b>
-     *        <p>
-     *        Make a copy of serializable fields only
+     * @param src source object
      */
     public STmap(final STmap src) {
         this.coordMap = QuimPArrayUtils.copy2darray(src.coordMap, null);
@@ -149,7 +153,7 @@ public class STmap implements IQuimpSerialize {
     }
 
     /**
-     * Generate all maps saved by Q Analysis Fill internal class fields
+     * Generate all maps saved by Q Analysis Fill internal class fields.
      */
     private void generate() {
 

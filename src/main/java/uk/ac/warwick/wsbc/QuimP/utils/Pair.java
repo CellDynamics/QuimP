@@ -1,7 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP.utils;
 
 /**
- * Basic implementation of Pair
+ * Basic implementation of Pair.
  * 
  * @author p.baniukiewicz
  *
@@ -26,7 +26,9 @@ public class Pair<K, V> {
         return new Pair<K, V>(left, right);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -38,7 +40,9 @@ public class Pair<K, V> {
         return result;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -63,7 +67,9 @@ public class Pair<K, V> {
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override

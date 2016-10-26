@@ -73,13 +73,34 @@ public class ECMM_Mapping {
      * <p>
      * Process provided file and run the whole analysis.
      * 
-     * @startuml start :Check registration; if (input file given) then (no) :ask user; endif :Load
-     *           config file; if (QUIMP_11 file) then (yes) :process it; :scan for other files;
-     *           repeat :process other file; repeat while(more files?) else (no) if(BOA data) then
-     *           (no) stop endif if(ECMM data) then (yes) if(overwrite?) then (no) end endif endif
-     *           :process it; endif end
+     * !>
+     * @startuml 
+     * start
+     * :Check registration;
+     * if (input file given) then (no) 
+     * :ask user; 
+     * endif
+     * :Load config file;
+     * if (QUIMP_11 file) then (yes)
+     * :process it;
+     * :scan for other files;
+     * repeat 
+     * :process other file;
+     * repeat while(more files?) else (no)
+     * if(BOA data) then (no)
+     * stop
+     * endif
+     * if(ECMM data) then (yes)
+     * if(overwrite?) then (no)
+     * end
+     * endif
+     * endif
+     * :process it;
+     * endif
+     * end
      * @enduml
-     * 
+     * !<
+     *
      * @param paramFile paQP or QCONF file to process.
      */
     public ECMM_Mapping(File paramFile) {
@@ -97,12 +118,11 @@ public class ECMM_Mapping {
                 // old flow with paQP files - detect other paQP
                 File[] otherPaFiles = qconfLoader.getQp().findParamFiles();
                 if (otherPaFiles.length > 0) {
-                    YesNoCancelDialog yncd =
-                            new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                                    "\tBatch Process?\n\n" + "Process other "
-                                            + FileExtensions.configFileExt
-                                            + " files in the same folder with ECMM?\n"
-                                            + "[Files already run through ECMM will be skipped!]");
+                    YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(),
+                            "Batch Process?",
+                            "\tBatch Process?\n\n" + "Process other " + FileExtensions.configFileExt
+                                    + " files in the same folder with ECMM?\n"
+                                    + "[Files already run through ECMM will be skipped!]");
                     if (yncd.yesPressed()) {
                         ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
                         ArrayList<String> skipped = new ArrayList<String>(otherPaFiles.length);
@@ -165,7 +185,7 @@ public class ECMM_Mapping {
     }
 
     /**
-     * Default constructor called on plugin run from IJ GUI
+     * Default constructor called on plugin run from IJ GUI.
      */
     public ECMM_Mapping() {
         this((File) null); // ask user what to load
@@ -219,7 +239,7 @@ public class ECMM_Mapping {
     }
 
     /**
-     * Main executive for ECMM processing for QParams (old file version)
+     * Main executive for ECMM processing for QParams (old file version).
      * 
      * @throws QuimpException when OutlineHandler can not be read
      */
@@ -285,7 +305,7 @@ public class ECMM_Mapping {
     }
 
     /**
-     * Main executive for ECMM plugin
+     * Main executive for ECMM plugin.
      */
     private void run() {
         long time = System.currentTimeMillis();
@@ -563,25 +583,6 @@ class Mapping {
         return INTS;
     }
 
-    // private void removeIntersects() {
-    // //removes intersect points inserted by calcIntersects
-    // Vert v = o1.getHead();
-    // do {
-    // if (v.getPrev().isIntPoint()) {
-    // o1.removeVert(v.getPrev());
-    // }
-    // v = v.getNext();
-    // } while (!v.isHead());
-    //
-    // v = o2.getHead();
-    // do {
-    // if (v.getPrev().isIntPoint()) {
-    // o2.removeVert(v.getPrev());
-    // }
-    // v = v.getNext();
-    // } while (!v.isHead());
-    // }
-
     private void insertFake() {
         // insert one fake intersect point just after the heads done when no intersections exist
         ExtendedVector2d pos =
@@ -689,117 +690,12 @@ class Mapping {
         return valid;
     }
 
-    // private void rebuildIntsOLD() {
-    // // attempts to remove the correct intersects to leave only valid
-    // // intersections. Done by adding back in inverted ints found by
-    // // findInvertedInts()
-    //
-    // //find a good sector to start with (intState==1)
-    // Vert v1 = o1.getHead();
-    // boolean found = false;
-    // do {
-    // if (v1.isIntPoint() && v1.intState == 1) {
-    // found = true;
-    // break;
-    // }
-    // v1 = v1.getNext();
-    // } while (!v1.isHead());
-    //
-    // // if no valid sectors use a loose vert to start from (and cross fingers)
-    // if (!found) {
-    // v1 = o1.getHead();
-    // do {
-    // if (v1.isIntPoint() && (v1.intState == 4 || v1.intState == 2)) {
-    // found = true;
-    // break;
-    // }
-    // v1 = v1.getNext();
-    // } while (!v1.isHead());
-    //
-    // if (!found) {
-    // System.out.println(" COUDL NOT FIND A STATING INT POINT. Going
-    // random=BAD");
-    // }
-    // }
-    //
-    // // find matching intersection in o2
-    // Vert v2 = o2.getHead();
-    // do {
-    // if (v2.isIntPoint() && v2.intsectID == v1.intsectID) {
-    // break;
-    // }
-    // v2 = v2.getNext();
-    // } while (!v2.isHead());
-    //
-    // // from v1, retain intersect points that allow building of good sectors,
-    // // and delete the others.
-    // int startingInt = v1.intsectID;
-    // Vert v1remove;
-    //
-    // int o1count; // provide rough estimate to sector lengths
-    // int o2count; // allow us to pick the assumed best soloution
-    // do {
-    // o1count = 0;
-    // o2count = 0;
-    // do {
-    // v1 = v1.getNext();
-    // o1count++;
-    // } while (!v1.isIntPoint()); // move to next int point
-    // do {
-    // v2 = v2.getNext();
-    // o2count++;
-    // } while (!v2.isIntPoint()); // move to next int point
-    //
-    // if (v2.intsectID == v1.intsectID) {
-    // //System.out.println("good sector");
-    // continue;
-    //
-    // } //good sector
-    //
-    // do {
-    //
-    // if (v2.isIntPoint() && v2.intsectID != v1.intsectID) {
-    // //System.out.println("deleting...");
-    // v1remove = o1.getHead();
-    // do {
-    // // find matching intersect to also delete
-    // if (v1remove.isIntPoint() && v1remove.intsectID == v2.intsectID) {
-    // o1.removeVert(v1remove);
-    // break;
-    // }
-    // v1remove = v1remove.getNext();
-    // } while (!v1remove.isHead()); // move to next int point
-    //
-    // o2.removeVert(v2); // delete troublesome intersect
-    // ECMM_Mapping.plot.setColor(0, 0.8, 0);
-    // ECMM_Mapping.plot.drawCross(v2.getPoint(), 5);
-    //
-    // } else if (v2.isIntPoint() && v2.intsectID == v1.intsectID) {
-    // //System.out.println("New good sector!!");
-    // break;
-    // }
-    // v2 = v2.getNext();
-    // } while (true);
-    //
-    // } while (v1.intsectID != startingInt);
-    //
-    // // count remaining intersects
-    // v1 = o1.getHead();
-    // int intersects = 0;
-    // do {
-    // if (v1.isIntPoint()) {
-    // intersects++;
-    // }
-    // v1 = v1.getNext();
-    // } while (!v1.isHead());
-    //
-    // ECMp.numINTS = intersects;
-    //
-    // }
-
+    /**
+     * Attempts to remove the correct intersects to leave only valid intersections.
+     * 
+     * Done by adding back in inverted ints found by findInvertedInts()
+     */
     private void rebuildInts() {
-        // attempts to remove the correct intersects to leave only valid intersections. Done by
-        // adding back in inverted ints found by findInvertedInts()
 
         System.out.println("Rebuilding intersects");
         // find a good sector to start with (intState==1)
@@ -933,53 +829,6 @@ class Mapping {
         System.out.println("finished rebuilding. INTS:" + ECMp.numINTS);
     }
 
-    // private void drawRawIntsStates() {
-    // // test method that draws different labels of intersection
-    //
-    // Vert v1 = o1.getHead();
-    // do {
-    // if (v1.isIntPoint()) {
-    // if (v1.intState == 4) {
-    // ECMM_Mapping.plot.setColor(0.8, 0.8, 0);
-    // }
-    // if (v1.intState == 1) {
-    // ECMM_Mapping.plot.setColor(0, 0.8, 0);
-    // }
-    // if (v1.intState == 2) {
-    // ECMM_Mapping.plot.setColor(0, 0, 0.8);
-    // }
-    // if (v1.intState == 3) {
-    // ECMM_Mapping.plot.setColor(0.8, 0, 0);
-    // }
-    //
-    // ECMM_Mapping.plot.drawCross(v1.getPoint(), 6);
-    //
-    // }
-    // v1 = v1.getNext();
-    // } while (!v1.isHead());
-    //
-    // Vert v2 = o2.getHead();
-    // do {
-    // if (v2.isIntPoint()) {
-    // if (v2.intState == 4) {
-    // ECMM_Mapping.plot.setColor(0.8, 0.8, 0);
-    // }
-    // if (v2.intState == 1) {
-    // ECMM_Mapping.plot.setColor(0, 0.8, 0);
-    // }
-    // if (v2.intState == 2) {
-    // ECMM_Mapping.plot.setColor(0, 0, 0.8);
-    // }
-    // if (v2.intState == 3) {
-    // ECMM_Mapping.plot.setColor(0.8, 0, 0);
-    // }
-    // ECMM_Mapping.plot.drawCircle(v2.getPoint(), 12);
-    // }
-    // v2 = v2.getNext();
-    // } while (!v2.isHead());
-    //
-    // }
-
     private void drawIntersects() {
         if (!ECMp.plot)
             return;
@@ -996,10 +845,11 @@ class Mapping {
 
     }
 
+    /**
+     * forms sectors based on the intPoints inserted by 'calcIntersects' a sector is simply a
+     * pointer to the sectors starting intPoint checkValid();
+     */
     private void formSectors() {
-        // forms sectors based on the intPoints inserted by 'calcIntersects'
-        // a sector is simply a pointer to the sectors starting intPoint
-        // checkValid();
 
         // if (ECMp.plot) {
         // ECMM_Mapping.plot.setColor(0.5, 0.5, 0.5);
@@ -1164,44 +1014,6 @@ class Mapping {
         return sectors[i];
     }
 
-    // private void secondPass(Sector s, Outline mappedOutline, int
-    // noNodesAdded) {
-    // // check for low density and add in markers
-    // s.switchMigDirection();
-    // double markerResTol = ECMp.markerRes * 1.5d;
-    //
-    // Vert v = mappedOutline.getHead();
-    // Vert vp, addV; // prev vert
-    // double distance, rSize, fillGap, addAt; // relative size of gap
-    // double fillWith;
-    //
-    // for (int i = noNodesAdded; i > 1; i--) { //cycle back through success
-    // mapped nodes
-    // v = v.getPrev();
-    // vp = v.getPrev();
-    //
-    //
-    // distance = Vect2d.lengthP2P(v.getPoint(), vp.getPoint());
-    // if (distance > markerResTol) {
-    //
-    // rSize = distance / markerResTol; // gap size relative to marker density
-    // fillWith = Math.ceil(distance / markerResTol); // number of verts to
-    // insert
-    // distance = Vert.disCoord2Coord(vp.tarLandingCoord, v.tarLandingCoord);
-    // fillGap = distance / (fillWith + 1); // coord gap to inster nodes
-    //
-    // for (int j = 0; j < fillWith; j++) {
-    // addAt = Vert.addCoords(vp.tarLandingCoord, fillGap);
-    // //addV = o2.findCoordPoint(addAt);
-    // }
-    //
-    //
-    // //ECMM_Mapping.plot.drawCircle(vp.getPoint(), 4);
-    // }
-    // }
-    //
-    // s.switchMigDirection();
-    // }
 }
 
 class Sector {
@@ -1285,46 +1097,6 @@ class Sector {
 
         // create polygon off all charges for cal point inside/outside sector
         chargesPolygon();
-
-        /*
-         *
-         * if (ECMp.ANA) { //always contracting expanding = false; migCharges =
-         * formCharges(startO1); tarCharges = formCharges(startO2); } else {
-         * //System.out.println("lengthO1: " + lengthO1+", lengthO2: "+lengthO2); if (lengthO1 >=
-         * lengthO2) { //should be lengthO1 >= lengthO2. Set to true to do forward mapping expanding
-         * = false; migCharges = formCharges(startO1); tarCharges = formCharges(startO2); } else {
-         * expanding = true; migCharges = formCharges(startO2); tarCharges = formCharges(startO1); }
-         * }
-         */
-        // System.out.println("sector " + ID);
-        // startO1.getPoint().print("a: ");
-        // startO1.getNext().getPoint().print("b: ");
-        // startO2.getNext().getPoint().print("c: ");
-
-        // if (ECMp.numINTS == 1) { //no intersections, only one fake
-        // System.out.println("sdoing this here");
-        // trueExpand = false;
-        // outerDirection = -1.;
-        // } else {
-        // if area of the triangle formed by segments at the start of a sector
-        // is negative then the sector is expanding.
-        // BUT still migrate nodes in the direction of the shorter contour...
-        /*
-         * double area = Vect2d.triangleArea(startO1.getPoint(), startO1.getNext().getPoint(),
-         * startO2.getNext().getPoint()); //use next node along if area is zero if (area > 0) {
-         * //check orientation of sector (truely expanding?) trueExpand = true; } else { trueExpand
-         * = false; } if (area == 0) { IJ.log("!WARNING-left algorithm == 0"); this.print(); }
-         * //System.out.println("area = " + area + ", LEFT: " + left);
-         *
-         * //move mig charges outwards by normal (b4 setting resolution!), //dependant on left if
-         * (expanding) { if (trueExpand) { //normal.multiply(-ECMp.w); outerDirection = -1.; } else
-         * { //normal.multiply(ECMp.w); outerDirection = 1.; } } else { if (trueExpand) {
-         * //normal.multiply(ECMp.w); outerDirection = 1.; } else { //normal.multiply(-ECMp.w);
-         * outerDirection = -1.; } } // }
-         *
-         *
-         *
-         */
 
     }
 
@@ -1542,43 +1314,6 @@ class Sector {
          */
 
     }
-
-    // private void ioPolygonsOLD() { //in and out polygons
-    // float[] x = new float[migCharges.getVerts()];
-    // float[] y = new float[migCharges.getVerts()];
-    //
-    // int i = 0;
-    // Vert v = migCharges.getHead();
-    // do {
-    // x[i] = (float) v.getX();
-    // y[i] = (float) v.getY();
-    // i++;
-    // v = v.getNext();
-    // } while (!v.isHead());
-    //
-    // outerPoly = new FloatPolygon(x, y, x.length); //was this
-    // //innerPoly = new FloatPolygon(x, y, x.length);
-    //
-    // x = new float[tarCharges.getVerts()];
-    // y = new float[tarCharges.getVerts()];
-    // i = 0;
-    // v = tarCharges.getHead();
-    // do {
-    // x[i] = (float) v.getX();
-    // y[i] = (float) v.getY();
-    // i++;
-    // v = v.getNext();
-    // } while (!v.isHead());
-    //
-    // innerPoly = new FloatPolygon(x, y, x.length); //was this
-    // //outerPoly = new FloatPolygon(x, y, x.length);
-    // //System.out.println("Using ioPoly");
-    //
-    // if (ECMp.plot) {
-    // //ECMM_Mapping.plot.drawPolygon(outerPoly);
-    // //ECMM_Mapping.plot.drawPolygon(innerPoly);
-    // }
-    // }
 
     private FloatPolygon ioPolygons(Outline charges) { // in and out polygons
         float[] x = new float[charges.getNumVerts()];
@@ -1921,23 +1656,6 @@ class ODEsolver {
         return totalF;
     }
 
-    // private static void forceL(Vect2d force, Vect2d p, Vect2d s1, Vect2d s2,
-    // double q) {
-    // double L = Vect2d.lengthP2P(s1, s2);
-    // Vect2d rU = Vect2d.unitVector(s2, p);
-    // double r = Vect2d.lengthP2P(s2, p);
-    // Vect2d rpU = Vect2d.unitVector(s1, p);
-    // double rp = Vect2d.lengthP2P(s1, p);
-    //
-    // double d = (((rp + r) * (rp + r)) - (L * L)) / (2 * L);
-    // //double d = ( Math.pow((rp + r), power) - (L * L)) / (2 * L);
-    // double multiplier = ((ECMp.k * q) / d);
-    // rpU.addVec(rU);
-    //
-    // force.setX(rpU.getX() * multiplier);
-    // force.setY(rpU.getY() * multiplier);
-    // }
-
     private static void forceLpolar(ExtendedVector2d force, ExtendedVector2d p, ExtendedVector2d s1,
             ExtendedVector2d s2, double q, double power, double orientation) {
         double L = ExtendedVector2d.lengthP2P(s1, s2);
@@ -1967,7 +1685,7 @@ class ODEsolver {
 }
 
 /**
- * Class responsible for plotting ECMM outlines during computations
+ * Class responsible for plotting ECMM outlines during computations.
  * 
  * @author rtyson
  *

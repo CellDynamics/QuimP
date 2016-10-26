@@ -20,14 +20,15 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
- * Deliver simple methods operating on arrays
+ * Deliver simple methods operating on arrays.
+ * 
  * @author p.baniukiewicz
  *
  */
 public class QuimPArrayUtils {
 
     /**
-     * Convert 2D float array to double
+     * Convert 2D float array to double.
      * 
      * @param input Array to convert
      * @return converted one
@@ -52,6 +53,7 @@ public class QuimPArrayUtils {
 
     /**
      * Calculate mean of map for every row.
+     * 
      * @param map
      * @return Mean of map for every row as list.
      */
@@ -68,6 +70,7 @@ public class QuimPArrayUtils {
 
     /**
      * Calculate mean of map for every column.
+     * 
      * @param map
      * @return Mean of map for every row as list.
      */
@@ -84,6 +87,7 @@ public class QuimPArrayUtils {
 
     /**
      * Calculate variance of map for every row.
+     * 
      * @param map
      * @return Variance of map for every row as list.
      */
@@ -103,7 +107,7 @@ public class QuimPArrayUtils {
      * Remove duplicated elements from input list.
      * 
      * @param in
-     * @return New list without duplicates. Ordering may be different than in input list. 
+     * @return New list without duplicates. Ordering may be different than in input list.
      */
     public static <T> List<T> removeDuplicates(List<T> in) {
         Set<T> retNoDpl = new HashSet<>(); // no duplicates allowed
@@ -115,6 +119,7 @@ public class QuimPArrayUtils {
 
     /**
      * reverse the given array in place.
+     * 
      * @param input
      */
     public static void reverseIntArray(int[] input) {
@@ -156,6 +161,7 @@ public class QuimPArrayUtils {
 
     /**
      * Convert integer array to short.
+     * 
      * @param input
      * @return Input array converted to short
      */
@@ -171,6 +177,7 @@ public class QuimPArrayUtils {
 
     /**
      * Create 2D array of doubles.
+     * 
      * @param rows Number of rows
      * @param cols Number of columns
      * @return rows x cols array
@@ -185,6 +192,7 @@ public class QuimPArrayUtils {
 
     /**
      * Create 2D array of integers.
+     * 
      * @param rows Number of rows
      * @param cols Number of columns
      * @return rows x cols array
@@ -199,6 +207,7 @@ public class QuimPArrayUtils {
 
     /**
      * Convert List of Integers to primitive type.
+     * 
      * @param input
      * @return
      */
@@ -213,6 +222,7 @@ public class QuimPArrayUtils {
 
     /**
      * Convert primitive integer to Integer.
+     * 
      * @param input
      * @return
      */
@@ -224,13 +234,13 @@ public class QuimPArrayUtils {
     }
 
     /**
-     * Make deep copy of 2D array
+     * Make deep copy of 2D array.
      * <p>
      * If destination matrix i already initialized it must have correct size.
      * 
      * @param source source matrix
-     * @param dest destination matrix, if <tt>dest</tt> is <tt>null</tt> the matrix is initialized 
-     * in place.
+     * @param dest destination matrix, if <tt>dest</tt> is <tt>null</tt> the matrix is initialized
+     *        in place.
      * @return copy of source matrix
      */
     public static double[][] copy2darray(double[][] source, double[][] dest) {
@@ -266,7 +276,7 @@ public class QuimPArrayUtils {
      * 
      * @param delim Delimiter, should be the same used in arrayToFile
      * @param inFile
-     * @return
+     * @return loaded file as 2D array
      * @throws IOException
      */
     public static double[][] file2Array(String delim, File inFile) throws IOException {
@@ -287,11 +297,11 @@ public class QuimPArrayUtils {
     }
 
     /**
-     * Return number of lines in file
+     * Return number of lines in file.
      * 
      * @param file
      * @return Number of lines
-     * @throws IOException 
+     * @throws IOException
      */
     public static int getNumberOfLinesinFile(File file) throws IOException {
         LineNumberReader lnr = new LineNumberReader(new FileReader(file));
@@ -377,7 +387,7 @@ public class QuimPArrayUtils {
     }
 
     /**
-     * Find index of minimal element
+     * Find index of minimal element.
      * 
      * @param a array to search in
      * @return index of min(a)
@@ -519,7 +529,7 @@ public class QuimPArrayUtils {
     }
 
     /**
-     * Find index of minimal element in Collection
+     * Find index of minimal element in Collection.
      * 
      * @param a collection to search in
      * @return index of minimal element
