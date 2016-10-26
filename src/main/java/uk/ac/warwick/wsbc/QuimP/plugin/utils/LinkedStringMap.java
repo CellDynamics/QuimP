@@ -7,8 +7,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 /**
- * Extension of LinkedHashMap that assumes that \a Key is \a String are case
- * insensitive
+ * Extension of LinkedHashMap that assumes that Key is String are case insensitive.
  * 
  * All keys are converted to lower case.
  * 
@@ -53,7 +52,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         super(initialCapacity, loadFactor, accessOrder);
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see java.util.HashMap#put(java.lang.Object, java.lang.Object)
@@ -63,7 +62,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         return super.put(key.toLowerCase(), value);
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see java.util.HashMap#get(java.lang.Object)
@@ -72,7 +71,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         return super.get(key.toLowerCase());
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see java.util.HashMap#containsKey(java.lang.Object)
@@ -81,7 +80,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         return super.containsKey(key.toLowerCase());
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see java.util.HashMap#putAll(java.util.Map)
@@ -93,7 +92,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         }
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see java.util.HashMap#remove(java.lang.Object)
@@ -102,7 +101,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         return super.remove(key.toLowerCase());
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see java.util.HashMap#putIfAbsent(java.lang.Object, java.lang.Object)
@@ -121,18 +120,17 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         return super.remove(key.toLowerCase(), value);
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
-     * @see java.util.HashMap#replace(java.lang.Object, java.lang.Object,
-     * java.lang.Object)
+     * @see java.util.HashMap#replace(java.lang.Object, java.lang.Object, java.lang.Object)
      */
     @Override
     public boolean replace(String key, V oldValue, V newValue) {
         return super.replace(key.toLowerCase(), oldValue, newValue);
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see java.util.HashMap#replace(java.lang.Object, java.lang.Object)
@@ -143,7 +141,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
     }
 
     /**
-     * This method is not supported
+     * This method is not supported.
      * 
      * @see java.util.HashMap#replaceAll(java.util.function.BiFunction)
      */

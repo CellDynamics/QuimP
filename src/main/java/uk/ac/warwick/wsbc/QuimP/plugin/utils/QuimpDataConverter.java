@@ -10,18 +10,14 @@ import ij.util.Tools;
 import uk.ac.warwick.wsbc.QuimP.Snake;
 
 /**
- * Perform conversions among Snake, List and X, Y arrays
+ * Perform conversions among Snake, List and X, Y arrays.
  * 
- * As this object returns references to arrays and list, any modification done "in place" on 
+ * As this object returns references to arrays and list, any modification done "in place" on
  * returned data will affect future conversions done by calling accessor methods.
  * 
- * The base format are two arrays \c X and \c Y. All other inputs are converted to arrays first.
- * Conversion e.g. Snake->Snake causes that output Snake is not reference of input one because
- * input has been converted to arrays first.
- * 
- * @todo TODO Add optimization here. E.g counter that check if any method for accessing X,Y
- * was called. If yes new Snake must be created if not reference to old can be returned (but this
- * breaks consistency because one time one has new object, other time reference to old one)
+ * The base format are two arrays X and Y. All other inputs are converted to arrays first.
+ * Conversion e.g. Snake->Snake causes that output Snake is not reference of input one because input
+ * has been converted to arrays first.
  * 
  * @author p.baniukiewicz
  *
@@ -32,7 +28,7 @@ public class QuimpDataConverter {
     private double[] Y; /*!< extracted y coords from Vec2d */
 
     /**
-     * Default constructor
+     * Default constructor.
      */
     public QuimpDataConverter() {
         X = new double[0];
@@ -40,10 +36,10 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Default constructor if Node list is in form of List
+     * Default constructor if Node list is in form of List.
      * 
-     * @param input list of vertices. If \c input is \c null \c X and \c Y are set to 0 length
-     * arrays, Snake is \c null then
+     * @param input list of vertices. If input is null X and Y are set to 0 length arrays, Snake is
+     *        null then
      */
     public QuimpDataConverter(final List<? extends Tuple2d> input) {
         this();
@@ -52,7 +48,7 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Default if Node list is in form of two arrays with coordinates
+     * Default if Node list is in form of two arrays with coordinates.
      * 
      * @param X input list of vertices
      * @param Y input list of vertices
@@ -66,7 +62,7 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Default if Node list is in form of two arrays with coordinates
+     * Default if Node list is in form of two arrays with coordinates.
      * 
      * @param X input list of vertices
      * @param Y input list of vertices
@@ -80,10 +76,10 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Default constructor if Node list is in form of Snake object
+     * Default constructor if Node list is in form of Snake object.
      * 
-     * @param s Snake to be converted. If \c null \c X and \c Y are set to 0 length arrays, List is
-     * also 0 length.
+     * @param s Snake to be converted. If null X and Y are set to 0 length arrays, List is also 0
+     *        length.
      */
     public QuimpDataConverter(final Snake s) {
         this();
@@ -92,8 +88,7 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Converts Vector2d to \c X and \c Y arrays storing \a x and \a y
-     * coordinates of Vector2d separately
+     * Converts Vector2d to X and Y arrays storing X and Y coordinates of Vector2d separately
      * 
      * @param input List to be converted to arrays
      */
@@ -114,28 +109,31 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Data accessor
+     * Data accessor.
      * 
-     * @return Array with ordered \a X coordinates of input list. Array can have 0 length.
+     * @return Array with ordered X coordinates of input list. Array can have 0 length.
      */
     public double[] getX() {
         return X;
     }
 
     /**
-     * Data accessor
+     * Data accessor.
      * 
-     * @return Array with ordered \a Y coordinates of input list. Array can have 0 length.
+     * @return Array with ordered Y coordinates of input list. Array can have 0 length.
      */
     public double[] getY() {
         return Y;
     }
 
     /**
-     * Data accessor
+     * Data accessor.
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * If user modifies this list this object loses its consistency
      * 
      * @return List of Point2d from stored objects
-     * @warning If user modifies this list this object loses its consistency 
      */
     public List<Point2d> getList() {
         ArrayList<Point2d> list = new ArrayList<>();
@@ -145,9 +143,9 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Data accessor
+     * Data accessor.
      * 
-     * @return Array with ordered \a X coordinates of input list as float
+     * @return Array with ordered X coordinates of input list as float
      */
     public float[] getFloatX() {
         float Xf[] = new float[X.length];
@@ -157,9 +155,9 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Data accessor
+     * Data accessor.
      * 
-     * @return Array with ordered \a Y coordinates of input list as float
+     * @return Array with ordered Y coordinates of input list as float
      */
     public float[] getFloatY() {
         float Yf[] = new float[Y.length];
@@ -169,7 +167,7 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Data accessor
+     * Data accessor.
      * 
      * @return Length of input list
      */
@@ -178,10 +176,10 @@ public class QuimpDataConverter {
     }
 
     /**
-     * Return Snake created from stored data
+     * Return Snake created from stored data.
      * 
      * @param id Id of snake
-     * @return Snake object with Nodes in order of data given on input. Can be \c null
+     * @return Snake object with Nodes in order of data given on input. Can be null
      * @throws Exception on Snake creation
      */
     public Snake getSnake(int id) throws Exception {

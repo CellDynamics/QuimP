@@ -8,35 +8,38 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
- * General interface that defines filter run on points in euclidean space
+ * General interface that defines filter run on points in euclidean space.
  * 
  * @author p.baniukiewicz
  * @see uk.ac.warwick.wsbc.QuimP.PluginFactory
- * @todo TODO Replace in future by IQuimpSnakeFilter
  */
 public interface IQuimpBOAPoint2dFilter extends IQuimpCorePlugin {
 
     /**
-     * Runs filter and return filtered points in the same order as input points
+     * Runs filter and return filtered points in the same order as input points.
      * 
      * Number of returned points can be different.
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * Plugin may be run without attached data. Plugin must deal with this
      * 
      * @return Filtered points
      * @throws QuimpPluginException on any problems during filter execution
-     * @warning Plugin may be run without attached data. Plugin must deal with
-     * this
      */
     List<Point2d> runPlugin() throws QuimpPluginException;
 
     /**
-     * Attach processed data to plugin
+     * Attach processed data to plugin.
      * 
-     * This method allows to process data by plugin without running it what is important e.g. 
-     * for visualizing. 
+     * This method allows to process data by plugin without running it what is important e.g. for
+     * visualizing.
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * Plugin may be run without attached data. Plugin must deal with this
      * 
      * @param data
-     * @warning \c data may be passed as \c null from QuimP. Plugin must deal with
-     * this
      */
     void attachData(final List<Point2d> data);
 }
