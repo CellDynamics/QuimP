@@ -12,13 +12,14 @@ mvn -q clean install
 cd ..
 
 cd QuimP
-mvn -q -T 1C clean install -P uber-release -Dmaven.test.skip=true
+mvn -q -T 1C clean install -Dmaven.test.skip=true
 if [[ $? -ne 0 ]] ; then
    	echo Error!!!
    	exit 1
 fi
 # copy package
-cp -v target/QuimP_-*-jar-*.jar ../Fiji.app.test/plugins
+# cp -v target/QuimP_-*-jar-*.jar ../Fiji.app.test/plugins
+cp -v target/QuimP_*.jar ../Fiji.app.test/plugins
 cd ..
 
 # iterate over plugins dirs

@@ -72,7 +72,7 @@ echo "One can not push to release after this point!"
 ./generateDoc.sh Doxyfile-no-source
 # copy artefact to Fiij
 find $FIJI -name QuimP*.jar ! -name QuimP_11b.jar | xargs rm -fv # delete old one except old quimp
-cp -v target/checkout/target/QuimP_-*-jar-*.jar $FIJI # copy package
+cp -v target/checkout/target/QuimP_*.jar $FIJI # copy package
 # Copy site
 rsync -lrtz --delete --stats target/checkout/target/site/ admin@pilip.lnx.warwick.ac.uk:/data/www/html/restricted/site
 # Copy only changes for users

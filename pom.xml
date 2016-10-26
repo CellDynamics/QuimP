@@ -225,7 +225,7 @@
           <tagNameFormat>v@{project.version}</tagNameFormat>
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
-          <releaseProfiles>uber-snapshot</releaseProfiles>
+          <releaseProfiles>installation</releaseProfiles>
           <goals>install site</goals>
         </configuration>
       </plugin>
