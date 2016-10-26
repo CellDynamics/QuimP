@@ -39,7 +39,7 @@ public class DICLIDReconstruction_ implements PlugInFilter {
     @Override
     public int setup(String arg, ImagePlus imp) {
         this.imp = imp;
-        return DOES_8G;
+        return DOES_8G + NO_CHANGES;
     }
 
     /**
@@ -57,30 +57,33 @@ public class DICLIDReconstruction_ implements PlugInFilter {
             return; // if user clicked Cancel or data were not valid
         try {
             // create result as separate 16bit image
-            ImagePlus result = new ImagePlus("DIC_" + imp.getShortTitle(),
+            ImagePlus result = new ImagePlus("DIC_" + imp.getTitle(),
                     new ShortProcessor(ip.getWidth(), ip.getHeight()));
             dic = new LidReconstructor(imp, decay, angle);
             if (imp.getNSlices() == 1) {// if there is no stack we can avoid additional rotation
                                         // here (see DICReconstruction documentation)
                 IJ.showProgress(0.0);
                 ret = dic.reconstructionDicLid();
-                result.getProcessor().setPixels(ret.getPixels()); // DICReconstruction works with
-                                                                  // duplicates. Copy
-                // resulting array to current image
+                result.getProcessor().setPixels(ret.getPixels());
                 IJ.showProgress(1.0);
                 result.show();
             } else { // we have stack. Process slice by slice
+                // create result stack
+                ImageStack resultstack = new ImageStack(imp.getWidth(), imp.getHeight());
                 ImageStack stack = imp.getStack();
                 for (int s = 1; s <= stack.getSize(); s++) {
                     IJ.showProgress(s / (double) stack.getSize());
                     dic.setIp(stack.getProcessor(s));
                     ret = dic.reconstructionDicLid();
-                    stack.setPixels(ret.getPixels(), s);
+                    resultstack.addSlice(ret);
                 }
+                // pack in ImagePlus
+                new ImagePlus("DIC_" + imp.getTitle(), resultstack).show();
             }
         } catch (DicException e) { // exception can be thrown if input image is 16-bit and saturated
             IJ.log(e.getMessage());
-            LOGGER.error(e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Problem with DIC reconstruction: " + e.getMessage());
         } finally {
             imp.updateAndDraw();
         }

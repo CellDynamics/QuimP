@@ -212,15 +212,18 @@ public class LidReconstructor {
     }
 
     /**
-     * Reconstruct DIC image by LID method. This is main method used to reconstruct passed /c ip
+     * Reconstruct DIC image by LID method. This is main method used to reconstruct passed ip
      * object.
      * 
-     * @remarks The reconstruction algorithm assumes that input image bas-reliefs are oriented
-     *          horizontally, thus correct \c angle should be provided
-     * @warning Used optimization with detecting of image pixels based on their value may not be
-     *          accurate when input image will be 16-bit and it will contain saturated pixels
-     * @retval ImageProcessor
-     * @return Return reconstruction of \c srcImage as 8-bit image
+     * The reconstruction algorithm assumes that input image bas-reliefs are oriented horizontally,
+     * thus correct angle should be provided.
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * Used optimization with detecting of image pixels based on their value may not be accurate
+     * when input image will be 16-bit and it will contain saturated pixels
+     * 
+     * @return Return reconstruction of srcImage as 16-bit image
      */
     public ImageProcessor reconstructionDicLid() {
         double cumsumup, cumsumdown;
