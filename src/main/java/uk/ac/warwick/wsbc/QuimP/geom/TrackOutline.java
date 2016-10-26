@@ -87,7 +87,7 @@ public class TrackOutline {
     private int frame; //!< Frame for which imp has been got
 
     /**
-     * Constructor from ImageProcessor
+     * Constructor from ImageProcessor.
      * 
      * @param imp Image to process (not modified)
      * @param background Color value for background
@@ -106,7 +106,7 @@ public class TrackOutline {
     }
 
     /**
-     * Default constructor
+     * Default constructor.
      * 
      * @param im Image to process (not modified), 8-bit, one slice
      * @param background Background color
@@ -116,9 +116,9 @@ public class TrackOutline {
     }
 
     /**
-     * Filter input image to remove single pixels
+     * Filter input image to remove single pixels.
      * 
-     * Implement closing followed by opening
+     * Implement closing followed by opening.
      * 
      * @return Filtered processor
      */
@@ -135,7 +135,7 @@ public class TrackOutline {
     }
 
     /**
-     * Get outline using Wand tool
+     * Get outline using Wand tool.
      * 
      * @param col Any point inside region
      * @param row Any point inside region
@@ -157,14 +157,14 @@ public class TrackOutline {
     }
 
     /**
-     * Try to find all outlines on image
+     * Try to find all outlines on image.
      * 
-     * It is possible to limit number of searched outlines setting \a MAX > 0 The algorithm goes
+     * It is possible to limit number of searched outlines setting MAX > 0 The algorithm goes
      * through every pixel on image and if this pixel is different than background (defined in
      * constructor) it uses it as source of Wand. Wand should outline found object, which is then
      * erased from image. then next pixel is analyzed.
      * 
-     * Fills \a outlines field that contains list of all ROIs obtained for this image together with
+     * Fills outlines field that contains list of all ROIs obtained for this image together with
      * frame number assigned to TrackOutline
      * 
      */
@@ -186,7 +186,7 @@ public class TrackOutline {
     }
 
     /**
-     * Erase \a roi on image stored in object with color \a bckColor
+     * Erase roi on image stored in object with color bckColor.
      * 
      * @param roi roi on this image
      * @param bckColor color for erasing
@@ -197,13 +197,13 @@ public class TrackOutline {
     }
 
     /**
-     * Convert found outlines to List
+     * Convert found outlines to List.
      * 
      * @param step step - step during conversion outline to points. For 1 every point from outline
      *        is included in output list
-     * @param smooth \a true for using smoothing during interpolation
+     * @param smooth true for using smoothing during interpolation
      * @return List of List of ROIs
-     * @see SegmentedShapeRoi.getOutlineasPoints(double, boolean)
+     * @see SegmentedShapeRoi#getOutlineasPoints()
      */
     public List<List<Point2d>> getOutlinesasPoints(double step, boolean smooth) {
         List<List<Point2d>> ret = new ArrayList<>();
@@ -216,9 +216,8 @@ public class TrackOutline {
     }
 
     /**
-     * Return deep copy of Rois
      * 
-     * @return
+     * @return deep copy of Rois.
      */
     public List<SegmentedShapeRoi> getCopyofShapes() {
         ArrayList<SegmentedShapeRoi> clon = new ArrayList<>();

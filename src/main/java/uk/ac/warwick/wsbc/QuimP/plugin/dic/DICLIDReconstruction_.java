@@ -13,12 +13,12 @@ import ij.process.ShortProcessor;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 
 /**
- * Main implementation of ImageJ plugin
+ * Main implementation of ImageJ plugin.
  * 
  * Currently supports only 8bit images and stacks.
  * 
  * @author p.baniukiewicz
- * @see LidReconstructor for algorithm details *
+ * @see LidReconstructor
  */
 public class DICLIDReconstruction_ implements PlugInFilter {
     static final Logger LOGGER = LoggerFactory.getLogger(DICLIDReconstruction_.class.getName());
@@ -26,14 +26,9 @@ public class DICLIDReconstruction_ implements PlugInFilter {
     private ImagePlus imp;
     private double angle, decay;
 
-    /**
-     * This method gets called by ImageJ/Fiji to determine whether the current image is of an
-     * appropriate type.
+    /*
+     * (non-Javadoc)
      * 
-     * @param arg can be specified in plugins.config
-     * @param imp is the currently opened image
-     * @return Combination of flags determining supported formats: \li DOES_8G - plugin supports
-     *         8bit grayscale images
      * @see ij.plugin.filter.PlugInFilter#setup(java.lang.String, ij.ImagePlus)
      */
     @Override
@@ -43,10 +38,9 @@ public class DICLIDReconstruction_ implements PlugInFilter {
     }
 
     /**
-     * This method is run when current image was accepted and input data were correct
+     * This method is run when current image was accepted and input data were correct.
      * 
      * @param ip is the current slice
-     * @see ij.plugin.filter.PlugInFilter#run(ij.process.ImageProcessor)
      */
     @Override
     public void run(ImageProcessor ip) {
@@ -92,8 +86,8 @@ public class DICLIDReconstruction_ implements PlugInFilter {
     /**
      * Shows user dialog and check conditions.
      * 
-     * @return \c true if user clicked \b OK and input data are correct (they are numbers) or return
-     *         \c false otherwise
+     * @return true if user clicked OK and input data are correct (they are numbers) or return false
+     *         otherwise
      */
     public boolean showDialog() {
         GenericDialog gd = new GenericDialog("DIC reconstruction");

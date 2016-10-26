@@ -420,7 +420,7 @@ public class Registration extends JDialog implements ActionListener {
                 sb.append(ss);
             }
             String digest = sb.toString().toLowerCase();
-            LOGGER.trace("email: " + emails + " Digest: " + digest);
+            LOGGER.trace("email: " + email + " Digest: " + digest);
             if (digest.equals(keys)) // compare both
                 return true;
         } catch (NoSuchAlgorithmException e) {

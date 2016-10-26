@@ -11,10 +11,10 @@ import java.util.function.Predicate;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
- * Compute forward and backward tracking maps from origin and coordinates maps. 
+ * Compute forward and backward tracking maps from origin and coordinates maps.
  * 
- * Origin and coordinates maps are stored in both <i>QCONF</i> and <i>paQP</i> data files.
- * Allow to track given outline point forward in backward using these maps.
+ * Origin and coordinates maps are stored in both <i>QCONF</i> and <i>paQP</i> data files. Allow to
+ * track given outline point forward in backward using these maps.
  * 
  * @author p.baniukiewicz
  * @see {@link uk.ac.warwick.wsbc.QuimP.geom.MapTrackerTest}
@@ -24,9 +24,8 @@ public class MapTracker {
 
     public static final int BAD_INDEX = -1;
     /**
-     * Decides whether include starting point in tracking. By default Matlab procedures do
-     * not include it. Therefore, trackXX(int, int, int) returns first tracked point AFTER initial
-     * one.
+     * Decides whether include starting point in tracking. By default Matlab procedures do not
+     * include it. Therefore, trackXX(int, int, int) returns first tracked point AFTER initial one.
      */
     public boolean includeFirst = false;
 
@@ -38,23 +37,26 @@ public class MapTracker {
      */
     int rowsFrames;
     /**
-     * Number of columns in <i>Map</i> - equals to number of outline points set by resolution in
-     * Q Analysis.
+     * Number of columns in <i>Map</i> - equals to number of outline points set by resolution in Q
+     * Analysis.
      */
     int colsIndexes;
 
     /**
      * Construct tracking maps.
      * 
-     * Prepare tracking maps that are not stored by default in 
-     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer DataContainer}. This code is based on 
-     * Matlab routine buildTrackMaps.m. 
+     * Prepare tracking maps that are not stored by default in
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer}. This code is based on Matlab
+     * routine buildTrackMaps.m.
      * 
-     * <p><b>Note</b><p>
-     * All frames are numbered from 0 as well as outline indexes.
-     * Nonexisting indexes are marked as -1.
-     *  
-     * @param originMap originMap stored in {@link uk.ac.warwick.wsbc.QuimP.filesystem.QState QState}
+     * <p>
+     * <b>Note</b>
+     * <p>
+     * All frames are numbered from 0 as well as outline indexes. Nonexisting indexes are marked as
+     * -1.
+     * 
+     * @param originMap originMap stored in {@link uk.ac.warwick.wsbc.QuimP.filesystem.QState
+     *        QState}
      * @param coordMap coordMap stored in {@link uk.ac.warwick.wsbc.QuimP.filesystem.QState QState}
      * @see uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer
      * @see uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap
@@ -159,7 +161,7 @@ public class MapTracker {
      * @param frame frame number, counted from 0
      * @param membraneIndex index of point on membrane on frame <tt>currentFrame</tt>
      * @return corresponding index on next frame. Returns -1 when there is neither next frame nor
-     * index.
+     *         index.
      */
     public int getNext(int frame, int membraneIndex) {
         if (frame >= rowsFrames || membraneIndex >= colsIndexes || frame < 0 || membraneIndex < 0)
@@ -172,8 +174,8 @@ public class MapTracker {
      * 
      * @param currentFrame frame number, counted from 0
      * @param membraneIndex index of point on membrane on frame <tt>currentFrame</tt>
-     * @return corresponding index on previous frame. Returns -1 when there is neither next frame 
-     * nor index.
+     * @return corresponding index on previous frame. Returns -1 when there is neither next frame
+     *         nor index.
      */
     public int getPrev(int currentFrame, int membraneIndex) {
         if (currentFrame >= rowsFrames || membraneIndex >= colsIndexes || currentFrame < 0
@@ -185,12 +187,12 @@ public class MapTracker {
     /**
      * Track given point forward.
      * 
-     * @param currentFrame Starting frame (not included in results - depends on <tt>includeFirst</tt>
-     * flag)
+     * @param currentFrame Starting frame (not included in results - depends on
+     *        <tt>includeFirst</tt> flag)
      * @param membraneIndex Tracked membrane index
      * @param timeSpan Number of frames to track
-     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame+1</tt> to 
-     * <tt>currentFrame+timeSpan</tt>
+     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame+1</tt> to
+     *         <tt>currentFrame+timeSpan</tt>
      * @deprecated Use trackForwardValid(int, int, int) instead
      */
     @Deprecated
@@ -210,14 +212,13 @@ public class MapTracker {
     /**
      * Track given point forward.
      * 
-     * @param currentFrame Starting frame (not included in results - depends on <tt>includeFirst</tt>
-     * flag)
+     * @param currentFrame Starting frame (not included in results - depends on
+     *        <tt>includeFirst</tt> flag)
      * @param membraneIndex Tracked membrane index
      * @param timeSpan Number of frames to track
-     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame+1</tt> to 
-     * <tt>currentFrame+timeSpan</tt>. Only correct. Do no return negative indexes but may return 
-     * empty array.
-     * Keep order [frame,index]
+     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame+1</tt> to
+     *         <tt>currentFrame+timeSpan</tt>. Only correct. Do no return negative indexes but may
+     *         return empty array. Keep order [frame,index]
      */
     public List<Point> trackForwardValid(int currentFrame, int membraneIndex, int timeSpan) {
         if (includeFirst)
@@ -239,12 +240,12 @@ public class MapTracker {
     /**
      * Track given point backward.
      * 
-     * @param currentFrame Starting frame (not included in results - depends on <tt>includeFirst</tt>
-     * flag)
+     * @param currentFrame Starting frame (not included in results - depends on
+     *        <tt>includeFirst</tt> flag)
      * @param membraneIndex Tracked membrane index
      * @param timeSpan Number of frames to track
-     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame-1</tt> to 
-     * <tt>currentFrame-timeSpan</tt>
+     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame-1</tt> to
+     *         <tt>currentFrame-timeSpan</tt>
      * @deprecated Use trackBackwardValid(int, int, int) instead
      */
     @Deprecated
@@ -264,14 +265,13 @@ public class MapTracker {
     /**
      * Track given point backward.
      * 
-     * @param currentFrame Starting frame (not included in results - depends on <tt>includeFirst</tt>
-     * flag)
+     * @param currentFrame Starting frame (not included in results - depends on
+     *        <tt>includeFirst</tt> flag)
      * @param membraneIndex Tracked membrane index
      * @param timeSpan Number of frames to track
-     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame-1</tt> to 
-     * <tt>currentFrame-timeSpan</tt> Only correct. Do no return negative indexes but may return 
-     * empty array.
-     * Keep order [frame,index]
+     * @return Indexes of point <tt>membraneIndex</tt> in frames <tt>currentFrame-1</tt> to
+     *         <tt>currentFrame-timeSpan</tt> Only correct. Do no return negative indexes but may
+     *         return empty array. Keep order [frame,index]
      */
     public List<Point> trackBackwardValid(int currentFrame, int membraneIndex, int timeSpan) {
         if (includeFirst)
@@ -294,8 +294,8 @@ public class MapTracker {
     /**
      * Helper that generates range of frames for given input parameters.
      * 
-     * These are frames that {@link trackForward(int, int, int)} returns indexes for.
-     * Input parameters must be the same as for {@link trackForward(int, int, int)}.
+     * These are frames that {@link trackForward(int, int, int)} returns indexes for. Input
+     * parameters must be the same as for {@link trackForward(int, int, int)}.
      * 
      * @param currentFrame Starting frame (not included in results)
      * @param timeSpan timeSpan Number of frames to track
@@ -322,8 +322,8 @@ public class MapTracker {
     /**
      * Helper that generates range of frames for given input parameters.
      * 
-     * These are frames that {@link trackBackward(int, int, int)} returns indexes for.
-     * Input parameters must be the same as for {@link trackBackward(int, int, int)}.
+     * These are frames that {@link trackBackward(int, int, int)} returns indexes for. Input
+     * parameters must be the same as for {@link trackBackward(int, int, int)}.
      * 
      * @param currentFrame Starting frame (not included in results)
      * @param timeSpan timeSpan Number of frames to track
@@ -351,6 +351,7 @@ public class MapTracker {
 
 /**
  * Predicate class for detection bad indexes in tracking methods.
+ * 
  * @author p.baniukiewicz
  *
  */

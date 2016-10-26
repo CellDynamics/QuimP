@@ -56,9 +56,13 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  * cancelled by setIP
  * </ul>
  * 
- * @warning Currently this class supports only 8bit images. It can support also 16bit input but in
- *          this case algorithm used for detection of \b true pixels may not work correctly for
- *          certain cases - when maximum intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
+ * <p>
+ * <b>Warning</b>
+ * <p>
+ * Currently this class supports only 8bit images. It can support also 16bit input but in this case
+ * algorithm used for detection of \b true pixels may not work correctly for certain cases - when
+ * maximum intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
+ * 
  * @author p.baniukiewicz
  * @see Z. Kam, “Microscopic differential interference contrast image processing by line integration
  *      (LID) and deconvolution,” Bioimaging, vol. 6, no. 4, pp. 166–176, 1998.
@@ -85,7 +89,8 @@ public class LidReconstructor {
     /**
      * Default constructor that accepts ImagePlus. It does not support stacks.
      * 
-     * @remarks Input \c srcImage is not modified
+     * Input srcImage is not modified
+     * 
      * @throws DicException Throws exception after generateRanges()
      */
     public LidReconstructor(final ImagePlus srcImage, double decay, double angle)
@@ -129,7 +134,8 @@ public class LidReconstructor {
      * should have the same architecture as image passed in constructor. Typically this method is
      * used for passing next slice from stack.
      * 
-     * @remarks Input \c ip is not modified
+     * Input \c ip is not modified
+     * 
      * @param ip New ImageProcessor containing image for reconstruction.
      */
     public void setIp(final ImageProcessor ip) {
@@ -150,12 +156,18 @@ public class LidReconstructor {
      * Recalculates true pixels range and new size of image after rotation. Setup private class
      * fields.
      * 
+     * Modifies private class fields: <tt>maxWidth</tt>, <tt>ranges</tt>,
+     * <tt>srcImageCopyProcessor</tt>
+     * 
+     * <tt>maxWidth</tt> holds width of image after rotation
+     * 
+     * <tt>ranges</tt> table holds first and last x position of image line (first and last pixel of
+     * image on background after rotation)
+     * 
+     * <tt>srcImageCopyProcessor</tt> is rotated and shifted.
+     * 
      * @throws DicException when input image is close to saturation e.g. has values of 65536-shift.
      *         This is due to applied algorithm of detection image pixels after rotation.
-     * @return Modifies private class fields: \li \c maxWidth (private field) \li \c ranges (private
-     *         field) \li \c maxWidth holds width of image after rotation, \li \c ranges table that
-     *         holds first and last \a x position of image line (first and last pixel of image on
-     *         background after rotation), \c srcImageCopyProcessor is rotated and shifted
      */
     private void getRanges() throws DicException {
         double maxpixel; // minimal pixel value
