@@ -343,9 +343,10 @@ public class STmap implements IQuimpSerialize {
             }
 
             IJ.doCommand("Red"); // this don't always work. dun know why
-
-            IJ.saveAs(fluImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename
-                    + "_fluoCh" + fluoMaps[i].channel + ".tiff");
+            String tmpfilename = FileExtensions.fluomapFileExt.replaceFirst("%",
+                    Integer.toString(fluoMaps[i].channel));
+            IJ.saveAs(fluImP, "tiff",
+                    Qp.outFile.getParent() + File.separator + Qp.filename + tmpfilename);
         }
 
         try {
