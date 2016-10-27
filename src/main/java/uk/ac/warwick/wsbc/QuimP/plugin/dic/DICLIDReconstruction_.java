@@ -25,6 +25,8 @@ public class DICLIDReconstruction_ implements PlugInFilter {
     private LidReconstructor dic;
     private ImagePlus imp;
     private double angle, decay;
+    private int masksize;
+    private String prefilterangle;
 
     /*
      * (non-Javadoc)
@@ -93,9 +95,15 @@ public class DICLIDReconstruction_ implements PlugInFilter {
         GenericDialog gd = new GenericDialog("DIC reconstruction");
         gd.addMessage("Reconstruction of DIC image by Line Integrals\n\nShear angle"
                 + " is measured counterclockwise\n"
-                + "Decay factor is usually positive and smaller than 1");
+                + "Decay factor is usually positive and smaller than 1\n"
+                + "Prefiltering smooths image in angle that should be"
+                + "perpendicular to shear angle witm given mask size");
         gd.addNumericField("Shear", 45.0, 0, 6, "[deg]");
         gd.addNumericField("Decay", 0.0, 2, 6, "[-]");
+        gd.addChoice("Angle perpendicular\nto shear", new String[] { "0", "45", "90", "135" },
+                "45");
+        gd.addNumericField("Uneven mask size", 0, 2);
+
         gd.setResizable(false);
         gd.showDialog();
         if (gd.wasCanceled()) // check if user clicked OK or CANCEL
@@ -104,11 +112,18 @@ public class DICLIDReconstruction_ implements PlugInFilter {
         // methods are called should match to GUI build order
         angle = gd.getNextNumber();
         decay = gd.getNextNumber();
+        prefilterangle = gd.getNextChoice();
+        masksize = (int) gd.getNextNumber();
+
         if (gd.invalidNumber()) { // check if numbers in fields were correct
-            IJ.error("Not valid number");
-            LOGGER.error("One of the numbers in dialog box is not valid");
+            IJ.error("One of the numbers in dialog box is not valid");
             return false;
         }
+        if (masksize % 2 != 0) {
+            IJ.error("MAsk size must be uneven");
+            return false;
+        }
+
         return true;
     }
 

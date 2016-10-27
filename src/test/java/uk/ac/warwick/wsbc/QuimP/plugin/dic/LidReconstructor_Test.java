@@ -2,10 +2,13 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +18,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.plugin.dic.LidReconstructor.GenerateKernel;
 
 /**
  * @author p.baniukiewicz
@@ -60,10 +64,11 @@ public class LidReconstructor_Test {
     }
 
     /**
-     * @test Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves
-     *       output image at \c /tmp/testDicReconstructionLidMatrix.tif
-     * @pre Input image is square
-     * @post Output image should be properly reconstructed and have correct size of input image
+     * Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves output
+     * image at \c /tmp/testDicReconstructionLidMatrix.tif
+     * 
+     * Input image is square Output image should be properly reconstructed and have correct size of
+     * input image
      */
     @Test
     public void test_ReconstructionDicLid() {
@@ -87,12 +92,13 @@ public class LidReconstructor_Test {
     }
 
     /**
-     * @test Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves
-     *       output image at \c /tmp/testDicReconstructionLidMatrix_sat.tif
-     * @pre Input image is square and saturated
-     * @post Throws exception DicException because of saturated image
+     * Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves output
+     * image at \c /tmp/testDicReconstructionLidMatrix_sat.tif
+     * 
+     * Input image is square and saturated Throws exception DicException because of saturated image
      */
     @Test(expected = DicException.class)
+    @Ignore
     public void test_ReconstructionDicLid_saturated() throws DicException {
         ImageProcessor ret;
         LidReconstructor dcr;
@@ -117,10 +123,10 @@ public class LidReconstructor_Test {
     }
 
     /**
-     * @test Test method for warwick.wsbc.QuimP.plugin.dic.LidReconstructor.setIp(ImageProcessor)
-     *       Saves output image at \c /tmp/testDicReconstructionLidMatrix_Stack.tif
-     * @pre Input stack is square
-     * @post Reconstructed stack
+     * Test method for warwick.wsbc.QuimP.plugin.dic.LidReconstructor.setIp(ImageProcessor) Saves
+     * output image at \c /tmp/testDicReconstructionLidMatrix_Stack.tif
+     * 
+     * Input stack is square Reconstructed stack
      */
     @Test()
     public void test_ReconstructionDicLid_stack() {
@@ -144,7 +150,58 @@ public class LidReconstructor_Test {
         } catch (DicException e) {
             LOGGER.error(e.toString());
         }
+    }
 
+    @Test
+    public void test_GenerateKernel() throws Exception {
+        {//!>
+            float[] exp = {
+                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                    0.2f, 0.2f, 0.2f, 0.2f, 0.2f,
+                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f
+                    };
+         //!<   
+            GenerateKernel gk = new LidReconstructor(image, 0, 0).new GenerateKernel(5);
+            assertThat(gk.generateKernel("0"), is(exp));
+        }
+        {//!>
+            float[] exp = {
+                    0.2f, 0.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 0.2f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 0.2f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 0.0f, 0.2f
+                    };
+         //!<   
+            GenerateKernel gk = new LidReconstructor(image, 0, 0).new GenerateKernel(5);
+            assertThat(gk.generateKernel("45"), is(exp));
+        }
+        {//!>
+            float[] exp = {
+                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f
+                    };
+         //!<   
+            GenerateKernel gk = new LidReconstructor(image, 0, 0).new GenerateKernel(5);
+            assertThat(gk.generateKernel("90"), is(exp));
+        }
+        {//!>
+            float[] exp = {
+                    0.0f, 0.0f, 0.0f, 0.0f, 0.2f,
+                    0.0f, 0.0f, 0.0f, 0.2f, 0.0f,
+                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+                    0.0f, 0.2f, 0.0f, 0.0f, 0.0f,
+                    0.2f, 0.0f, 0.0f, 0.0f, 0.0f
+                    };
+         //!<   
+            GenerateKernel gk = new LidReconstructor(image, 0, 0).new GenerateKernel(5);
+            assertThat(gk.generateKernel("135"), is(exp));
+        }
     }
 
 }
