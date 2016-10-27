@@ -62,6 +62,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  * Currently this class supports only 8bit images. It can support also 16bit input but in this case
  * algorithm used for detection of \b true pixels may not work correctly for certain cases - when
  * maximum intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
+ * <p>
+ * The input image can be prefitlered before processing. This is running mean filter of given mask
+ * size applied at angle perpendicular to the shear.
  * 
  * @author p.baniukiewicz
  * @see Z. Kam, “Microscopic differential interference contrast image processing by line integration
@@ -73,18 +76,20 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
 public class LidReconstructor {
 
     static final Logger LOGGER = LoggerFactory.getLogger(LidReconstructor.class.getName());
-    private final int shift = 1; //!< shift added to original image eliminate 0s
+    private final int shift = 1; // shift added to original image eliminate 0s
 
-    private ImageProcessor srcIp; //!< local reference of ImageProcessor (const)
+    private ImageProcessor srcIp; // local reference of ImageProcessor (const)
     private double decay;
     private double angle;
-    private double[] decays; //!< reference to preallocated decay data created
-    private int maxWidth; //!< Width of image after rotation. Set by getRanges()
-    private int[][] ranges; //!< \b true pixels begin and end on \a x axis.
-    private ImageProcessor srcImageCopyProcessor; /// < local \b copy of input
-    private boolean isRotated; //!< \c true if srcImageCopyProcessor is rotated
+    private double[] decays; // reference to preallocated decay data created
+    private int maxWidth; // Width of image after rotation. Set by getRanges()
+    private int[][] ranges; // true pixels begin and end on x axis.
+    private ImageProcessor srcImageCopyProcessor; // local copy of input
+    private boolean isRotated; // true if srcImageCopyProcessor is rotated
     private ImageStatistics is;
-    private ImageProcessorPlus ipp; //!< helper class for rotating images
+    private ImageProcessorPlus ipp; // helper class for rotating images
+    private String prefilterangle;
+    private int masksize;
 
     /**
      * Default constructor that accepts ImagePlus. It does not support stacks.
@@ -101,11 +106,27 @@ public class LidReconstructor {
     /**
      * Default constructor that accepts ImageProcessor
      * 
-     * @remarks Input \c ip is not modified
+     * Input \c ip is not modified
+     * 
      * @throws DicException Throws exception after generateRanges()
      */
     public LidReconstructor(final ImageProcessor ip, double decay, double angle)
             throws DicException {
+        this(ip, decay, angle, "0", 0);
+    }
+
+    /**
+     * Default constructor.
+     * 
+     * @param ip
+     * @param decay
+     * @param angle
+     * @param prefilterangle Supported angle of prefiltering
+     * @param masksize uneven mask size, 0 switches off filtering
+     * @throws DicException
+     */
+    public LidReconstructor(final ImageProcessor ip, double decay, double angle,
+            String prefilterangle, int masksize) throws DicException {
         this.angle = angle;
         this.decay = decay;
         this.isRotated = false;
@@ -141,7 +162,8 @@ public class LidReconstructor {
     public void setIp(final ImageProcessor ip) {
         this.srcIp = ip;
         // make copy of original image to not modify it - converting to 16bit
-        this.srcImageCopyProcessor = srcIp.convertToShort(false);
+        this.srcImageCopyProcessor = srcIp.convertToShort(true);
+        new ImageProcessorPlus().runningMean(srcImageCopyProcessor, prefilterangle, masksize);
         srcImageCopyProcessor.resetMinAndMax(); // ensure that minmax will be recalculated (usually
                                                 // they are stored in class field) set interpolation
         srcImageCopyProcessor.setInterpolationMethod(ImageProcessor.BICUBIC);
@@ -304,85 +326,4 @@ public class LidReconstructor {
             decays[i] = Math.exp(-decay * i);
     }
 
-    /**
-     * Support generating kernels for running mean.
-     * 
-     * @author p.baniukiewicz
-     *
-     */
-    class GenerateKernel {
-        private int size;
-
-        /**
-         * 
-         * @param size Size of the kernel assuming its rectangularity.
-         */
-        public GenerateKernel(int size) {
-            this.size = size;
-        }
-
-        /**
-         * Generate convolution kernel.
-         * 
-         * @param option Option can be 0, 45, 90, 135 as string.
-         * @param size size of the kernel. must be uneven
-         * @return 1D array as row ordered matrix. The kernel contains 1 on diagonal and it is
-         *         normalised.
-         */
-        public float[] generateKernel(String option) {
-            float[] ret = new float[size * size];
-            int mid = size / 2; // middle element (0 indexed)
-            switch (option) {
-                case "0": // row in middle
-                    for (int i = 0; i < size; i++)
-                        ret[sub2lin(mid, i)] = 1.0f;
-                    break;
-                case "45":
-                    for (int i = 0; i < size; i++)
-                        ret[sub2lin(i, i)] = 1.0f;
-                    break;
-                case "90":
-                    for (int i = 0; i < size; i++)
-                        ret[sub2lin(i, mid)] = 1.0f;
-                    break;
-                case "135":
-                    for (int i = 0; i < size; i++)
-                        ret[sub2lin(i, size - 1 - i)] = 1.0f;
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unsupported mask angle.");
-            }
-
-            return normalise(ret);
-        }
-
-        /**
-         * Convert subscript indexes to linear.
-         * 
-         * @param row row counted from 0
-         * @param col column counted from 0
-         * @return Linear index based on row and col position
-         */
-        private int sub2lin(int row, int col) {
-            return row * size + col;
-        }
-
-        /**
-         * Normalise the kernel.
-         * 
-         * Divide every element by sum of elements.
-         * 
-         * @param kernel kernel to normalise
-         * @return normalised kernel (copy)
-         */
-        private float[] normalise(float[] kernel) {
-            float s = 0;
-            for (int i = 0; i < kernel.length; i++)
-                s += kernel[i];
-            float[] ret = new float[kernel.length];
-            for (int i = 0; i < ret.length; i++)
-                ret[i] = kernel[i] / s;
-            return ret;
-        }
-    }
 }

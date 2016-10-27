@@ -18,6 +18,7 @@ import ij.process.ImageProcessor;
  * @author p.baniukiewicz
  */
 public class ImageProcessorPlus {
+    static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessorPlus.class.getName());
 
     /**
      * Main constructor.
@@ -119,10 +120,107 @@ public class ImageProcessorPlus {
         return ip;
     }
 
+    /**
+     * Perform running mean on image using convolution.
+     * 
+     * @param ip
+     * @param prefilterangle
+     * @param masksize
+     * @see GenerateKernel
+     */
+    public void runningMean(ImageProcessor ip, String prefilterangle, int masksize) {
+        LOGGER.debug("Convolving: " + prefilterangle + " " + masksize);
+        if (masksize == 0)
+            return;
+        float[] kernel = new GenerateKernel(masksize).generateKernel(prefilterangle);
+        ip.convolve(kernel, masksize, masksize);
+    }
+
+    /**
+     * Support generating kernels for running mean.
+     * 
+     * @author p.baniukiewicz
+     *
+     */
+    class GenerateKernel {
+        private int size;
+
+        /**
+         * 
+         * @param size Size of the kernel assuming its rectangularity.
+         */
+        public GenerateKernel(int size) {
+            this.size = size;
+        }
+
+        /**
+         * Generate convolution kernel.
+         * 
+         * @param option Option can be 0, 45, 90, 135 as string.
+         * @param size size of the kernel. must be uneven
+         * @return 1D array as row ordered matrix. The kernel contains 1 on diagonal and it is
+         *         normalised.
+         */
+        public float[] generateKernel(String option) {
+            float[] ret = new float[size * size];
+            int mid = size / 2; // middle element (0 indexed)
+            switch (option) {
+                case "0": // row in middle
+                    for (int i = 0; i < size; i++)
+                        ret[sub2lin(mid, i)] = 1.0f;
+                    break;
+                case "45":
+                    for (int i = 0; i < size; i++)
+                        ret[sub2lin(i, i)] = 1.0f;
+                    break;
+                case "90":
+                    for (int i = 0; i < size; i++)
+                        ret[sub2lin(i, mid)] = 1.0f;
+                    break;
+                case "135":
+                    for (int i = 0; i < size; i++)
+                        ret[sub2lin(i, size - 1 - i)] = 1.0f;
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unsupported mask angle.");
+            }
+
+            return normalise(ret);
+        }
+
+        /**
+         * Convert subscript indexes to linear.
+         * 
+         * @param row row counted from 0
+         * @param col column counted from 0
+         * @return Linear index based on row and col position
+         */
+        private int sub2lin(int row, int col) {
+            return row * size + col;
+        }
+
+        /**
+         * Normalise the kernel.
+         * 
+         * Divide every element by sum of elements.
+         * 
+         * @param kernel kernel to normalise
+         * @return normalised kernel (copy)
+         */
+        private float[] normalise(float[] kernel) {
+            float s = 0;
+            for (int i = 0; i < kernel.length; i++)
+                s += kernel[i];
+            float[] ret = new float[kernel.length];
+            for (int i = 0; i < ret.length; i++)
+                ret[i] = kernel[i] / s;
+            return ret;
+        }
+    }
 }
 
 /**
- * Represents rectangle bounding box
+ * Represents rectangle bounding box.
  * 
  * Bounding box is defined by four corners (in contrary to javafx.geometry.BoundingBox) that can be
  * rotated by any angle.
