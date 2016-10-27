@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ij.IJ;
+import ij.ImagePlus;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus.GenerateKernel;
 
 /**
@@ -16,6 +18,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus.GenerateKernel;
  *
  */
 public class ImageProcessorPlusTest {
+    private ImagePlus image;
 
     /**
      * @throws java.lang.Exception
@@ -36,6 +39,7 @@ public class ImageProcessorPlusTest {
      */
     @Before
     public void setUp() throws Exception {
+        image = IJ.openImage("src/test/resources/AX3 stack1_slice_1.tif");
     }
 
     /**
@@ -43,6 +47,7 @@ public class ImageProcessorPlusTest {
      */
     @After
     public void tearDown() throws Exception {
+        image.close();
     }
 
     @Test
@@ -69,7 +74,7 @@ public class ImageProcessorPlusTest {
                     };
          //!<   
             GenerateKernel gk = new ImageProcessorPlus().new GenerateKernel(5);
-            assertThat(gk.generateKernel("45"), is(exp));
+            assertThat(gk.generateKernel("135"), is(exp));
         }
         {//!>
             float[] exp = {
@@ -93,7 +98,17 @@ public class ImageProcessorPlusTest {
                     };
          //!<   
             GenerateKernel gk = new ImageProcessorPlus().new GenerateKernel(5);
-            assertThat(gk.generateKernel("135"), is(exp));
+            assertThat(gk.generateKernel("45"), is(exp));
         }
+    }
+
+    /**
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus#runningMean(ij.process.ImageProcessor, java.lang.String, int)}.
+     */
+    @Test
+    public void testRunningMean() throws Exception {
+        new ImageProcessorPlus().runningMean(image.getProcessor(), "45", 9);
+        IJ.saveAsTiff(image, "/tmp/testRunningMean.tif");
     }
 }

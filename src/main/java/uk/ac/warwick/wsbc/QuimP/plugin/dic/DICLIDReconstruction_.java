@@ -55,7 +55,7 @@ public class DICLIDReconstruction_ implements PlugInFilter {
             // create result as separate 16bit image
             ImagePlus result = new ImagePlus("DIC_" + imp.getTitle(),
                     new ShortProcessor(ip.getWidth(), ip.getHeight()));
-            dic = new LidReconstructor(imp, decay, angle);
+            dic = new LidReconstructor(imp.getProcessor(), decay, angle, prefilterangle, masksize);
             if (imp.getNSlices() == 1) {// if there is no stack we can avoid additional rotation
                                         // here (see DICReconstruction documentation)
                 IJ.showProgress(0.0);
@@ -96,13 +96,13 @@ public class DICLIDReconstruction_ implements PlugInFilter {
         gd.addMessage("Reconstruction of DIC image by Line Integrals\n\nShear angle"
                 + " is measured counterclockwise\n"
                 + "Decay factor is usually positive and smaller than 1\n"
-                + "Prefiltering smooths image in angle that should be"
-                + "perpendicular to shear angle witm given mask size");
+                + "Prefiltering smooths image in angle that should be\n"
+                + "perpendicular to shear angle with given mask size");
         gd.addNumericField("Shear", 45.0, 0, 6, "[deg]");
         gd.addNumericField("Decay", 0.0, 2, 6, "[-]");
         gd.addChoice("Angle perpendicular\nto shear", new String[] { "0", "45", "90", "135" },
                 "45");
-        gd.addNumericField("Uneven mask size", 0, 2);
+        gd.addNumericField("Uneven mask size", 0, 1);
 
         gd.setResizable(false);
         gd.showDialog();
@@ -119,8 +119,8 @@ public class DICLIDReconstruction_ implements PlugInFilter {
             IJ.error("One of the numbers in dialog box is not valid");
             return false;
         }
-        if (masksize % 2 != 0) {
-            IJ.error("MAsk size must be uneven");
+        if (masksize != 0 && masksize % 2 == 0) {
+            IJ.error("Mask size must be uneven");
             return false;
         }
 

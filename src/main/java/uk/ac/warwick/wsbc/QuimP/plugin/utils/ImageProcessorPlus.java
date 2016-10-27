@@ -169,7 +169,7 @@ public class ImageProcessorPlus {
                     for (int i = 0; i < size; i++)
                         ret[sub2lin(mid, i)] = 1.0f;
                     break;
-                case "45":
+                case "135":
                     for (int i = 0; i < size; i++)
                         ret[sub2lin(i, i)] = 1.0f;
                     break;
@@ -177,7 +177,7 @@ public class ImageProcessorPlus {
                     for (int i = 0; i < size; i++)
                         ret[sub2lin(i, mid)] = 1.0f;
                     break;
-                case "135":
+                case "45":
                     for (int i = 0; i < size; i++)
                         ret[sub2lin(i, size - 1 - i)] = 1.0f;
                     break;

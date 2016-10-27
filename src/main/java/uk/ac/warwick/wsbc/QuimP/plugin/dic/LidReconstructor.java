@@ -130,6 +130,8 @@ public class LidReconstructor {
         this.angle = angle;
         this.decay = decay;
         this.isRotated = false;
+        this.prefilterangle = prefilterangle;
+        this.masksize = masksize;
         ipp = new ImageProcessorPlus();
         setIp(ip);
         recalculate();
