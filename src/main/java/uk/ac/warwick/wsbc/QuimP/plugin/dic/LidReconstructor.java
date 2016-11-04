@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
 import org.slf4j.Logger;
@@ -64,7 +62,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  * maximum intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
  * <p>
  * The input image can be prefitlered before processing. This is running mean filter of given mask
- * size applied at angle perpendicular to the shear.
+ * size applied at angle perpendicular to the shear (this angle is given by caller).
  * 
  * @author p.baniukiewicz
  * @see Z. Kam, “Microscopic differential interference contrast image processing by line integration
@@ -127,6 +125,8 @@ public class LidReconstructor {
      */
     public LidReconstructor(final ImageProcessor ip, double decay, double angle,
             String prefilterangle, int masksize) throws DicException {
+        LOGGER.trace("Use params: ip:" + ip + " decay:" + decay + " angle:" + angle
+                + " filterangle:" + prefilterangle + " masksize:" + masksize);
         this.angle = angle;
         this.decay = decay;
         this.isRotated = false;

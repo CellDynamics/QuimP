@@ -61,15 +61,13 @@ public class ImageProcessorPlus {
     }
 
     /**
-     * Rotate image by specified angle keeping correct rotation direction
+     * Rotate image by specified angle keeping correct rotation direction.
      * 
      * @param ip ImageProcessor to be rotated
      * @param angle Angle of rotation in anti-clockwise direction
-     * @param addBorders if \a true rotates with extension, \a false use standard rotation with
-     *        clipping
-     * @return rotated \c ip that is a copy of \c ip when \c addBorders is \b true or reference when
-     *         \c addBorders is \b false
-     * @retval ImageProcessor
+     * @param addBorders if true rotates with extension, false use standard rotation with clipping
+     * @return rotated ip that is a copy of ip whenaddBorders is true or reference when addBorders
+     *         is false
      */
     public ImageProcessor rotate(ImageProcessor ip, double angle, boolean addBorders) {
         ImageProcessor ret;
@@ -82,7 +80,7 @@ public class ImageProcessorPlus {
     }
 
     /**
-     * Crop image
+     * Crop image.
      * 
      * @param ip ImageProcessor to be cropped
      * @param luX Left upper corner \a x coordinate
@@ -101,7 +99,7 @@ public class ImageProcessorPlus {
     }
 
     /**
-     * Crop image
+     * Crop image.
      * 
      * Designed to use with cooperation with extendImageBeforeRotation(ImageProcessor,double).
      * Assumes that cropping area is centered in source image
@@ -155,6 +153,8 @@ public class ImageProcessorPlus {
 
         /**
          * Generate convolution kernel.
+         * 
+         * Returned kernel is compatible with ij.process.ImageProcessor.convolve(float[], int, int)
          * 
          * @param option Option can be 0, 45, 90, 135 as string.
          * @param size size of the kernel. must be uneven
