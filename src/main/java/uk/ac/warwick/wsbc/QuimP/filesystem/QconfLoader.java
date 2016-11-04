@@ -133,28 +133,34 @@ public class QconfLoader {
         if (getQp() == null)
             return null;
         ImagePlus im;
+        File imagepath = null;
         switch (getQp().paramFormat) {
             case QParams.NEW_QUIMP:
-                LOGGER.debug(
-                        "Attempt to open image: " + qp.getLoadedDataContainer().getBOAState().boap
-                                .getOrgFile().getAbsolutePath());
+                imagepath = qp.getLoadedDataContainer().getBOAState().boap.getOrgFile();
+                LOGGER.debug("Attempt to open image: " + imagepath.getAbsolutePath());
                 // try to load from QCONF
-                im = IJ.openImage(
-                        qp.getLoadedDataContainer().getBOAState().boap.getOrgFile().getPath());
+                im = IJ.openImage(imagepath.getPath());
                 break;
             case QParams.QUIMP_11:
-                LOGGER.debug("Attempt to open image: " + qp.getSegImageFile().toString());
+                imagepath = qp.getSegImageFile();
+                LOGGER.debug("Attempt to open image: " + imagepath.toString());
                 // try to load from QCONF
-                im = IJ.openImage(qp.getSegImageFile().toString());
+                im = IJ.openImage(imagepath.toString());
                 break;
             default:
                 im = null;
         }
 
         if (im == null) { // if failed ask user
+            String imagename;
+            if (imagepath != null) // get name of the image without path
+                imagename = imagepath.getName();
+            else
+                imagename = "";
             Object[] options = { "Load from disk", "Load from IJ", "Cancel" };
             int n = JOptionPane.showOptionDialog(IJ.getInstance(),
-                    "The image pointed in loaded QCONF file can not be found.\n"
+                    "The image " + imagename
+                            + " pointed in loaded configuration file can not be found.\n"
                             + "Would you like to load it manually?",
                     "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
                     options, options[2]);

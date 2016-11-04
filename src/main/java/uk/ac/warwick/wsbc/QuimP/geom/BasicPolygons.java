@@ -14,11 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Calculates basic geometry on polygons defined as list of point in specified direction
+ * Calculates basic geometry on polygons defined as list of point in specified direction.
  * 
  * @author p.baniukiewicz
  * @see http://www.mathopenref.com/coordpolygonarea.html
- * @todo integrate this class with awt.polygon maybe
  */
 public class BasicPolygons {
 
@@ -97,7 +96,7 @@ public class BasicPolygons {
     }
 
     /**
-     * Helper method
+     * Helper method.
      * 
      * @param p1
      * @param p2
@@ -113,9 +112,9 @@ public class BasicPolygons {
     }
 
     /**
-     * Test if \b all points \c Ptest are inside polygon
+     * Test if \b all points \c Ptest are inside polygon.
      * 
-     * @copydetails isPointInside(List<? extends Tuple2d>, Tuple2d)
+     * @see #isPointInside(List, Tuple2d)
      */
     public boolean arePointsInside(final List<? extends Tuple2d> P,
             final List<? extends Tuple2d> Ptest) {
@@ -128,9 +127,9 @@ public class BasicPolygons {
     }
 
     /**
-     * Test if \b any point from \c Ptest is inside of \c P
+     * Test if \b any point from \c Ptest is inside of \c P.
      * 
-     * @copydetails isPointInside(List<? extends Tuple2d>, Tuple2d)
+     * @see #isPointInside(List, Tuple2d)
      */
     public boolean isanyPointInside(final List<? extends Tuple2d> P,
             final List<? extends Tuple2d> Ptest) {
@@ -144,11 +143,15 @@ public class BasicPolygons {
 
     /**
      * Get center of mass of polygon.
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * Require correct polygon with non crossing edges.
      * 
      * @param P Vertices of polygon in specified order
      * @return Point of center of mass
-     * @warning Require correct polygon with non crossing edges.
      * @throws IllegalArgumentException when defective polygon is given (area equals 0)
+     * @see http://stackoverflow.com/questions/5271583/center-of-gravity-of-a-polygon
      */
     public Point2d polygonCenterOfMass(final List<? extends Tuple2d> P) {
 

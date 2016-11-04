@@ -239,7 +239,7 @@ public class Node extends PointsList<Node> {
     }
 
     /**
-     * Evaluate local curvature of Node related to previous, this and next Node
+     * Evaluate local curvature of Node related to previous, this and next Node.
      * 
      * @return Local curvature for \b this node in \a degrees TODO Move it to Shape as static maybe
      *         and accepting Node as parameter

@@ -49,7 +49,7 @@ public class TrackCollection {
     }
 
     /**
-     * Add pair of tracks to collection <backwardTrack,forwardTrack>
+     * Add pair of tracks to collection <backwardTrack,forwardTrack>.
      * 
      * @param backward
      * @param forward

@@ -332,7 +332,6 @@ public class Nest implements IQuimpSerialize {
         return n;
     }
 
-    // TODO use new feature of conversion between snakes and outlines
     /**
      * Store OutlineHandler as finalSnake.
      * 

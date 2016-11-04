@@ -115,9 +115,9 @@ public class FormatConverter {
         // dT.ANAState = new ANAStates();
         ArrayList<STmap> maps = new ArrayList<>(); // temporary - we do not know number of cells
         // temprary object - different for every _x.paQP
-        QconfLoader local = new QconfLoader(Paths
-                .get(qcL.getQp().getPath(), orginal + "_" + i + FileExtensions.configFileExt)
-                .toFile());
+        QconfLoader local = new QconfLoader(
+                Paths.get(qcL.getQp().getPath(), orginal + "_" + i + FileExtensions.configFileExt)
+                        .toFile());
         // populate BOA seg parameters
         dT.BOAState.loadParams(local.getQp()); // load parameters
         // initialize snakes (from snQP files)
@@ -156,8 +156,6 @@ public class FormatConverter {
         } catch (IOException e) {
             LOGGER.warn(e.getMessage());
         }
-        // TODO Load flu data as well
-        // TODO ANAstate as well
         // FluoMap ch1 = new FluoMap(stMap.motMap.length, stMap.motMap[0].length, 1);
         // ch1.map = QuimPArrayUtils.file2Array(",",local.getQp().get)
         maps.add(stMap);
