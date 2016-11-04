@@ -60,10 +60,11 @@ public class LidReconstructor_Test {
     }
 
     /**
-     * @test Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves
-     *       output image at \c /tmp/testDicReconstructionLidMatrix.tif
-     * @pre Input image is square
-     * @post Output image should be properly reconstructed and have correct size of input image
+     * Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves output
+     * image at \c /tmp/testDicReconstructionLidMatrix.tif
+     * 
+     * Input image is square Output image should be properly reconstructed and have correct size of
+     * input image
      */
     @Test
     public void test_ReconstructionDicLid() {
@@ -86,11 +87,32 @@ public class LidReconstructor_Test {
 
     }
 
+    @Test
+    public void test_ReconstructionDicLid_filt() {
+        ImageProcessor ret;
+        LidReconstructor dcr;
+        try {
+            dcr = new LidReconstructor(image.getProcessor(), 0.04, 135f, "45", 9);
+            // replace outputImage processor with result array with scaling
+            // conversion
+            ret = dcr.reconstructionDicLid();
+            ImagePlus outputImage = new ImagePlus("", ret);
+
+            assertEquals(513, outputImage.getWidth()); // size of the image
+            assertEquals(513, outputImage.getHeight());
+            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_filt.tif");
+            LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_filt.tif" + " to see results");
+        } catch (DicException e) {
+            LOGGER.error(e.toString());
+        }
+
+    }
+
     /**
-     * @test Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves
-     *       output image at \c /tmp/testDicReconstructionLidMatrix_sat.tif
-     * @pre Input image is square and saturated
-     * @post Throws exception DicException because of saturated image
+     * Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves output
+     * image at \c /tmp/testDicReconstructionLidMatrix_sat.tif
+     * 
+     * Input image is square and saturated Throws exception DicException because of saturated image
      */
     @Test(expected = DicException.class)
     public void test_ReconstructionDicLid_saturated() throws DicException {
@@ -117,10 +139,10 @@ public class LidReconstructor_Test {
     }
 
     /**
-     * @test Test method for warwick.wsbc.QuimP.plugin.dic.LidReconstructor.setIp(ImageProcessor)
-     *       Saves output image at \c /tmp/testDicReconstructionLidMatrix_Stack.tif
-     * @pre Input stack is square
-     * @post Reconstructed stack
+     * Test method for warwick.wsbc.QuimP.plugin.dic.LidReconstructor.setIp(ImageProcessor) Saves
+     * output image at \c /tmp/testDicReconstructionLidMatrix_Stack.tif
+     * 
+     * Input stack is square Reconstructed stack
      */
     @Test()
     public void test_ReconstructionDicLid_stack() {
@@ -144,7 +166,5 @@ public class LidReconstructor_Test {
         } catch (DicException e) {
             LOGGER.error(e.toString());
         }
-
     }
-
 }

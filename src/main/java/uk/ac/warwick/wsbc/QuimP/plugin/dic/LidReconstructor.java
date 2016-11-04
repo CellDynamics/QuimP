@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
 import org.slf4j.Logger;
@@ -62,6 +60,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  * Currently this class supports only 8bit images. It can support also 16bit input but in this case
  * algorithm used for detection of \b true pixels may not work correctly for certain cases - when
  * maximum intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
+ * <p>
+ * The input image can be prefitlered before processing. This is running mean filter of given mask
+ * size applied at angle perpendicular to the shear (this angle is given by caller).
  * 
  * @author p.baniukiewicz
  * @see Z. Kam, “Microscopic differential interference contrast image processing by line integration
@@ -73,18 +74,20 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
 public class LidReconstructor {
 
     static final Logger LOGGER = LoggerFactory.getLogger(LidReconstructor.class.getName());
-    private final int shift = 1; //!< shift added to original image eliminate 0s
+    private final int shift = 1; // shift added to original image eliminate 0s
 
-    private ImageProcessor srcIp; //!< local reference of ImageProcessor (const)
+    private ImageProcessor srcIp; // local reference of ImageProcessor (const)
     private double decay;
     private double angle;
-    private double[] decays; //!< reference to preallocated decay data created
-    private int maxWidth; //!< Width of image after rotation. Set by getRanges()
-    private int[][] ranges; //!< \b true pixels begin and end on \a x axis.
-    private ImageProcessor srcImageCopyProcessor; /// < local \b copy of input
-    private boolean isRotated; //!< \c true if srcImageCopyProcessor is rotated
+    private double[] decays; // reference to preallocated decay data created
+    private int maxWidth; // Width of image after rotation. Set by getRanges()
+    private int[][] ranges; // true pixels begin and end on x axis.
+    private ImageProcessor srcImageCopyProcessor; // local copy of input
+    private boolean isRotated; // true if srcImageCopyProcessor is rotated
     private ImageStatistics is;
-    private ImageProcessorPlus ipp; //!< helper class for rotating images
+    private ImageProcessorPlus ipp; // helper class for rotating images
+    private String prefilterangle;
+    private int masksize;
 
     /**
      * Default constructor that accepts ImagePlus. It does not support stacks.
@@ -101,14 +104,34 @@ public class LidReconstructor {
     /**
      * Default constructor that accepts ImageProcessor
      * 
-     * @remarks Input \c ip is not modified
+     * Input \c ip is not modified
+     * 
      * @throws DicException Throws exception after generateRanges()
      */
     public LidReconstructor(final ImageProcessor ip, double decay, double angle)
             throws DicException {
+        this(ip, decay, angle, "0", 0);
+    }
+
+    /**
+     * Default constructor.
+     * 
+     * @param ip
+     * @param decay
+     * @param angle
+     * @param prefilterangle Supported angle of prefiltering
+     * @param masksize uneven mask size, 0 switches off filtering
+     * @throws DicException
+     */
+    public LidReconstructor(final ImageProcessor ip, double decay, double angle,
+            String prefilterangle, int masksize) throws DicException {
+        LOGGER.trace("Use params: ip:" + ip + " decay:" + decay + " angle:" + angle
+                + " filterangle:" + prefilterangle + " masksize:" + masksize);
         this.angle = angle;
         this.decay = decay;
         this.isRotated = false;
+        this.prefilterangle = prefilterangle;
+        this.masksize = masksize;
         ipp = new ImageProcessorPlus();
         setIp(ip);
         recalculate();
@@ -141,7 +164,8 @@ public class LidReconstructor {
     public void setIp(final ImageProcessor ip) {
         this.srcIp = ip;
         // make copy of original image to not modify it - converting to 16bit
-        this.srcImageCopyProcessor = srcIp.convertToShort(false);
+        this.srcImageCopyProcessor = srcIp.convertToShort(true);
+        new ImageProcessorPlus().runningMean(srcImageCopyProcessor, prefilterangle, masksize);
         srcImageCopyProcessor.resetMinAndMax(); // ensure that minmax will be recalculated (usually
                                                 // they are stored in class field) set interpolation
         srcImageCopyProcessor.setInterpolationMethod(ImageProcessor.BICUBIC);
@@ -303,4 +327,5 @@ public class LidReconstructor {
         for (int i = 0; i < length; i++)
             decays[i] = Math.exp(-decay * i);
     }
+
 }
