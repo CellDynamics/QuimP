@@ -1,7 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.filesystem;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
 
@@ -24,7 +23,9 @@ public class ANAParamCollection implements IQuimpSerialize {
      * @param size
      */
     public ANAParamCollection(int size) {
-        aS = new ArrayList<>(Collections.nCopies(size, new ANAp()));
+        aS = new ArrayList<ANAp>(size);
+        for (int i = 0; i < size; i++)
+            aS.add(new ANAp());
     }
 
     @Override
