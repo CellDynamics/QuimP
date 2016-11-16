@@ -79,7 +79,7 @@ public class STmap implements IQuimpSerialize {
      * initialization
      */
     public STmap() {
-
+        this.fluoMaps = new FluoMap[3];
     }
 
     /**
@@ -92,6 +92,7 @@ public class STmap implements IQuimpSerialize {
      * @param src source object
      */
     public STmap(final STmap src) {
+        this();
         this.coordMap = QuimPArrayUtils.copy2darray(src.coordMap, null);
         this.originMap = QuimPArrayUtils.copy2darray(src.originMap, null);
         this.xMap = QuimPArrayUtils.copy2darray(src.xMap, null);
@@ -116,6 +117,7 @@ public class STmap implements IQuimpSerialize {
      * @see uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Qp
      */
     public STmap(OutlineHandler o, int r) {
+        this();
         mapPixelHeight = 1;
         mapPixelWidth = 1.0d / r;
         res = r;
@@ -138,7 +140,6 @@ public class STmap implements IQuimpSerialize {
         convColor = new int[T * res];
 
         // flu maps
-        fluoMaps = new FluoMap[3];
         Vert v = oH.indexGetOutline(0).getHead();
         for (int i = 0; i < 3; i++) {
             fluoMaps[i] = new FluoMap(T, res, i + 1);

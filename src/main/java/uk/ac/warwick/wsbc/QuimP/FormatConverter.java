@@ -16,6 +16,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.FluoMap;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
@@ -30,8 +31,8 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * 
  * By default it is assumed that provided file is QCONF. This file is stored in class and used by
  * some of private methods for creating paQP and snQP files. For converting from old files, the file
- * provided to constructor is read but not used. It is reread in loop by
- * {@link #generateOldDataFile()}.
+ * provided to constructor is read but not used. It is re-read in loop by
+ * {@link #generateNewDataFile()}.
  * 
  * @author p.baniukiewicz
  *
@@ -46,6 +47,7 @@ public class FormatConverter {
      * Construct FormatConverter from provided file.
      * 
      * @param fileToConvert file to convert
+     * @throws QuimpException if input file can not be loaded
      */
     public FormatConverter(File fileToConvert) throws QuimpException {
         LOGGER.debug("Use provided file:" + fileToConvert.toString());
@@ -76,7 +78,7 @@ public class FormatConverter {
      * 
      * It must be _0 file.
      * 
-     * @throws QuimpException
+     * @throws QuimpException on wrong inputs
      */
     public void generateNewDataFile() throws QuimpException {
         LOGGER.warn("\n----------------------------------------------------------\n"
@@ -93,7 +95,7 @@ public class FormatConverter {
         // dT.ANAState = new ANAStates();
         ArrayList<STmap> maps = new ArrayList<>(); // temporary - we do not know number of cells
 
-        // extract paQP number from file name
+        // extract paQP number from file name (loaded in constructor)
         int last = filename.toString().lastIndexOf('_'); // position of _ before number
         if (last < 0)
             throw new QuimpException("Input file must be in format name_XX.paQP",
@@ -119,7 +121,6 @@ public class FormatConverter {
         // run conversion for all paQP files. conversion always starts from 0
         i = 0; // try to read paPQ starting from 0, before we tested if user pointed correct file
         File filetoload = new File(""); // store name_XX.paQP file in loop below
-        QconfLoader local;
         OutlineHandler oH;
         STmap stMap;
         try {
@@ -127,12 +128,14 @@ public class FormatConverter {
                 // paQP files with _xx number in name
                 filetoload = Paths.get(qcL.getQp().getPath(),
                         orginal + "_" + i + FileExtensions.configFileExt).toFile();
-                local = new QconfLoader(filetoload); // load it
+                // optimisation - first file is already loaded, skip it
+                if (i != 0) // it is checked whethet it is first file
+                    qcL = new QconfLoader(filetoload); // re-load it
                 // assume that BOA params are taken from file 0_.paQP
                 if (i == 0)
-                    dT.BOAState.loadParams(local.getQp()); // load parameters only once
+                    dT.BOAState.loadParams(qcL.getQp()); // load parameters only once
                 // initialize snakes (from snQP files)
-                oH = new OutlineHandler(local.getQp()); // restore OutlineHandler
+                oH = new OutlineHandler(qcL.getQp()); // restore OutlineHandler
                 dT.ECMMState.oHs.add(oH); // store in ECMM object
                 BOA_.qState = dT.BOAState; // for compatibility - create static
                 dT.BOAState.nest.addOutlinehandler(oH); // covert ECMM to Snake and store in BOA
@@ -140,41 +143,51 @@ public class FormatConverter {
                 // load maps and store in QCONF
                 stMap = new STmap();
                 try {
-                    stMap.motMap = QuimPArrayUtils.file2Array(",", local.getQp().getMotilityFile());
+                    stMap.motMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getMotilityFile());
                 } catch (IOException e) {
                     LOGGER.warn(e.getMessage());
                 }
                 try {
-                    stMap.convMap = QuimPArrayUtils.file2Array(",", local.getQp().getConvexFile());
+                    stMap.convMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getConvexFile());
                 } catch (IOException e) {
                     LOGGER.warn(e.getMessage());
                 }
                 try {
-                    stMap.coordMap = QuimPArrayUtils.file2Array(",", local.getQp().getCoordFile());
+                    stMap.coordMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getCoordFile());
                 } catch (IOException e) {
                     LOGGER.warn(e.getMessage());
                 }
                 try {
-                    stMap.originMap =
-                            QuimPArrayUtils.file2Array(",", local.getQp().getOriginFile());
+                    stMap.originMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getOriginFile());
                 } catch (IOException e) {
                     LOGGER.warn(e.getMessage());
                 }
                 try {
-                    stMap.xMap = QuimPArrayUtils.file2Array(",", local.getQp().getxFile());
+                    stMap.xMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getxFile());
                 } catch (IOException e) {
                     LOGGER.warn(e.getMessage());
                 }
                 try {
-                    stMap.yMap = QuimPArrayUtils.file2Array(",", local.getQp().getyFile());
+                    stMap.yMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getyFile());
                 } catch (IOException e) {
                     LOGGER.warn(e.getMessage());
                 }
-                // Fluoromap // FluoMap ch1 = new FluoMap(stMap.motMap.length,
-                // stMap.motMap[0].length, 1);
-                // ch1.map = QuimPArrayUtils.file2Array(",",local.getQp().get)
+                // Fluoromap
+                // try to read 3 channels for current paQP
+                int channel = 1; // channel counter for fluoromaps
+                for (File ff : qcL.getQp().getFluFiles()) {
+                    FluoMap chm = new FluoMap(stMap.motMap.length, stMap.motMap[0].length, channel);
+                    if (ff.exists()) {// read this file
+                        chm.setMap(QuimPArrayUtils.file2Array(",", ff));
+                        chm.setEnabled(true); // loaded and valid
+                    } else
+                        chm.setEnabled(false); // by default FluMaps are enabled (compatibility
+                                               // reason)
+                    stMap.fluoMaps[channel - 1] = chm;
+                    channel++;
+                }
                 maps.add(stMap);
-                i++;
+                i++; // go to next paQP
             } while (true); // exception thrown by QconfLoader will stop this loop, e.g. trying to
                             // load nonexiting file
         } catch (Exception e) {

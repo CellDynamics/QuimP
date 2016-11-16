@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package uk.ac.warwick.wsbc.QuimP.plugin.qanalysis;
@@ -19,6 +18,7 @@ public class FluoMap {
     int res; // horizontal res
     int channel;
     double[][] map;
+
     byte[] fluColor;
 
     boolean enabled; // if no data switch false
@@ -71,11 +71,26 @@ public class FluoMap {
         // fluColor[pN] = (byte) intensity;
     }
 
+    /**
+     * 
+     * @return fluColor
+     */
     public byte[] getColours() {
         return fluColor;
     }
 
+    /**
+     * 
+     * @return map
+     */
     public double[][] getMap() {
         return map;
+    }
+
+    /**
+     * @param map the map to set
+     */
+    public void setMap(double[][] map) {
+        this.map = map;
     }
 }
