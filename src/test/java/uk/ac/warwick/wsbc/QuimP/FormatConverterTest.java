@@ -6,6 +6,8 @@ import static org.junit.Assert.assertThat;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -23,6 +25,14 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
  *
  */
 public class FormatConverterTest {
+
+    static Object accessPrivate(String name, FormatConverter obj, Object[] param,
+            Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Method prv = obj.getClass().getDeclaredMethod(name, paramtype);
+        prv.setAccessible(true);
+        return prv.invoke(obj, param);
+    }
 
     /**
      * @throws java.lang.Exception
@@ -64,7 +74,9 @@ public class FormatConverterTest {
     public void testGeneratepaQP() throws Exception {
         FormatConverter fC = new FormatConverter(
                 new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
-        fC.generatepaQP();
+
+        accessPrivate("generatepaQP", fC, new Object[] {}, new Class<?>[] {});
+
         Thread.sleep(1000);
         // compare paQP
         // manualy generated one
@@ -98,7 +110,7 @@ public class FormatConverterTest {
     public void testGeneratesnQP() throws Exception {
         FormatConverter fC = new FormatConverter(
                 new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
-        fC.generatesnQP();
+        accessPrivate("generatesnQP", fC, new Object[] {}, new Class<?>[] {});
         Thread.sleep(1000);
         // compare paQP
         // manualy generated one

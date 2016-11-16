@@ -9,15 +9,58 @@ package uk.ac.warwick.wsbc.QuimP;
 public class QuimpException extends Exception {
 
     /**
+     * Define where the message should be displayed.
+     * <ol>
+     * <li>CONSOLE - default, message goes to console.
+     * <li>GUI - message should be shown in GUI
+     * </ol>
+     * 
+     * @author p.baniukiewicz
+     *
+     */
+    public enum MessageSinkTypes {
+        CONSOLE, GUI
+    };
+
+    /**
+     * @see MessageSinkTypes
+     */
+    private MessageSinkTypes messageSinkType;
+
+    /**
+     * @param messageSinkType the messageSinkType to set
+     */
+    public void setMessageSinkType(MessageSinkTypes messageSinkType) {
+        this.messageSinkType = messageSinkType;
+    }
+
+    /**
+     * @return the type
+     */
+    public MessageSinkTypes getMessageSinkType() {
+        return messageSinkType;
+    }
+
+    /**
      * 
      */
     private static final long serialVersionUID = -7943488580659917234L;
 
     /**
-     * 
+     * Default constructor, set message sink to console.
      */
     public QuimpException() {
-        // TODO Auto-generated constructor stub
+        messageSinkType = MessageSinkTypes.CONSOLE;
+    }
+
+    /**
+     * Allow to set type of message, where it should be displayed.
+     * 
+     * @param type of message
+     * @see MessageSinkTypes
+     */
+    public QuimpException(MessageSinkTypes type) {
+        this.messageSinkType = type;
     }
 
     /**
@@ -25,7 +68,15 @@ public class QuimpException extends Exception {
      */
     public QuimpException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
+        messageSinkType = MessageSinkTypes.CONSOLE;
+    }
+
+    /**
+     * @param message
+     */
+    public QuimpException(String message, MessageSinkTypes type) {
+        super(message);
+        this.messageSinkType = type;
     }
 
     /**
@@ -33,7 +84,15 @@ public class QuimpException extends Exception {
      */
     public QuimpException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
+        messageSinkType = MessageSinkTypes.CONSOLE;
+    }
+
+    /**
+     * @param cause
+     */
+    public QuimpException(Throwable cause, MessageSinkTypes type) {
+        super(cause);
+        this.messageSinkType = type;
     }
 
     /**
@@ -42,6 +101,7 @@ public class QuimpException extends Exception {
      */
     public QuimpException(String message, Throwable cause) {
         super(message, cause);
+        messageSinkType = MessageSinkTypes.CONSOLE;
     }
 
     /**
@@ -53,7 +113,7 @@ public class QuimpException extends Exception {
     public QuimpException(String message, Throwable cause, boolean enableSuppression,
             boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
-        // TODO Auto-generated constructor stub
+        messageSinkType = MessageSinkTypes.CONSOLE;
     }
 
 }
