@@ -22,14 +22,15 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * Calculate statistics for whole stack (all cells).
  * 
  * Stats are written on disk after calling constructor. Additionally there is separate list
- * maintained with the same stats. They can be collected calling {@link #getStatH()}
+ * maintained with the same data. They can be collected calling {@link #getStatH()}. This is due to
+ * compatibility with old QuimP.
  * 
  * @author tyson
  * @author p.baniukiewicz
  */
 public class CellStatsEval implements Measurements {
     /**
-     * Hold all stats for cell.
+     * Hold all stats for cell. the same data are written to disk as csv file.
      */
     private CellStats statH;
     OutlineHandler outputH;

@@ -46,8 +46,6 @@ public class StatsCollection implements IQuimpSerialize {
      */
     @Override
     public void beforeSerialize() {
-        // TODO Auto-generated method stub
-
     }
 
     /*
@@ -57,8 +55,6 @@ public class StatsCollection implements IQuimpSerialize {
      */
     @Override
     public void afterSerialize() throws Exception {
-        // TODO Auto-generated method stub
-
     }
 
     /**

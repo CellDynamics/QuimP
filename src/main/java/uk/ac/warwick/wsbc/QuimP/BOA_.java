@@ -1408,8 +1408,7 @@ public class BOA_ implements PlugIn {
              */
             if (b == menuLoad) {
                 OpenDialog od = new OpenDialog(
-                        "Load global config data...(*" + FileExtensions.newConfigFileExt + ")",
-                        "");
+                        "Load global config data...(*" + FileExtensions.newConfigFileExt + ")", "");
                 if (od.getFileName() != null) {
                     try {
                         Serializer<DataContainer> loaded; // loaded instance
@@ -2358,7 +2357,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Initializing all data saving and exporting results to disk and IJ.
+     * Initialising all data saving and exporting results to disk and IJ.
      */
     private void finish() {
         IJ.showStatus("BOA-FINISHING");

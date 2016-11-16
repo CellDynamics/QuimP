@@ -42,8 +42,9 @@ public class STmap implements IQuimpSerialize {
     public double[][] motMap;
     transient int[] migColor;
     transient float[] migPixels;
-    // double[][] fluMap;
-    // byte[] fluColor;
+    /**
+     * Fluoroscence maps for channels.
+     */
     public FluoMap[] fluoMaps;
     /**
      * Convexity map.
