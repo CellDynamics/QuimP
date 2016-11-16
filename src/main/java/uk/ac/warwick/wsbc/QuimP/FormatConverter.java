@@ -81,10 +81,13 @@ public class FormatConverter {
      * @throws QuimpException on wrong inputs
      */
     public void generateNewDataFile() throws QuimpException {
+        //!>
         LOGGER.warn("\n----------------------------------------------------------\n"
                 + "Functionalities not implemented yet:\n"
-                + "    1. Exporting all maps, especially fluoromaps\n"
+                + "    1. Exporting ANAState\n"
+                + "    1. Exporting Stats\n"
                 + "----------------------------------------------------------\n");
+        //!<
         if (qcL.getConfVersion() == QParams.NEW_QUIMP)
             throw new IllegalArgumentException("Can not convert from new format to new");
         // create storage
