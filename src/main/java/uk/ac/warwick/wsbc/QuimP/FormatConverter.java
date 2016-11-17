@@ -36,6 +36,9 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * provided to constructor is read but not used. It is re-read in loop by
  * {@link #generateNewDataFile()}.
  * 
+ * This method is related to fields that are non-transient and any change there should be reflected
+ * here.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -86,8 +89,9 @@ public class FormatConverter {
     public void generateNewDataFile() throws QuimpException {
         //!>
         LOGGER.warn("\n----------------------------------------------------------\n"
-                + "Functionalities not implemented yet:\n"
-                + "    1. Exporting Stats\n"
+                + "Warning:\n"
+                + "    1. Stats file stQP is not read during conversion\n"
+                + "       and these data are not converted to QCONF.\n"
                 + "----------------------------------------------------------\n");
         //!<
         if (qcL.getConfVersion() == QParams.NEW_QUIMP)

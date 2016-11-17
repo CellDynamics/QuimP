@@ -2,7 +2,10 @@ package uk.ac.warwick.wsbc.QuimP.filesystem;
 
 import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.BOA_;
+import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.PluginFactory;
+import uk.ac.warwick.wsbc.QuimP.QParams;
+import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.SnakePluginList;
 import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
@@ -14,7 +17,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
  * between modules. It can be dynamically modified.
  * 
  * @author p.baniukiewicz
- *
+ * @see FormatConverter
+ * @see QParams
+ * @see QParamsQconf
  */
 public class DataContainer implements IQuimpSerialize {
 

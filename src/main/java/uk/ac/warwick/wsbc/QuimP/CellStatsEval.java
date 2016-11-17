@@ -38,19 +38,21 @@ public class CellStatsEval implements Measurements {
     ImagePlus iPlus;
     ImageProcessor iProc;
     ImageStatistics is;
-    // Analyzer analyser;
-    // ResultsTable results;
     double scale;
     double frameInterval;
-    // private static final int m = Measurements.AREA +
-    // Measurements.INTEGRATED_DENSITY + Measurements.MEAN +
-    // Measurements.MEDIAN + Measurements.STD_DEV+
-    // Measurements.CENTROID;
-    // private static final int m = Measurements.AREA +
-    // Measurements.CIRCULARITY +
-    // Measurements.CENTROID + Measurements.SHAPE_DESCRIPTORS +
-    // Measurements.PERIMETER + Measurements.ELLIPSE;
 
+    /**
+     * Create and run the object.
+     * 
+     * After creating the object, file with stats is written and stats are avaiable by calling
+     * {@link #getStatH()} method.
+     * 
+     * @param oH
+     * @param ip image associated with OutlineHandler
+     * @param f file name to write stats
+     * @param s image scale
+     * @param fI frame interval
+     */
     public CellStatsEval(OutlineHandler oH, ImagePlus ip, File f, double s, double fI) {
         IJ.showStatus("BOA-Calculating Cell stats");
         outputH = oH;
@@ -60,16 +62,35 @@ public class CellStatsEval implements Measurements {
         scale = s;
         frameInterval = fI;
 
-        // Analyzer.setMeasurements(m);
-        // results = new ResultsTable();
-        // analyser = new Analyzer(ip,m,results);
-        // results.setDefaultHeadings();
-        // analyser.setMeasurements(m);
-
         FrameStatistics[] stats = record();
         iPlus.setSlice(1);
         iPlus.killRoi();
         write(stats, outputH.getStartFrame());
+    }
+
+    /**
+     * Only create the object. Stats file is not created but results are available by calling
+     * {@link #getStatH()} method.
+     * 
+     * @param oH
+     * @param ip image associated with OutlineHandler
+     * @param f file name to write stats
+     * @param s image scale
+     * @param fI frame interval
+     */
+    public CellStatsEval(OutlineHandler oH, ImagePlus ip, double s, double fI) {
+        IJ.showStatus("BOA-Calculating Cell stats");
+        outputH = oH;
+        OUTFILE = null;
+        iPlus = ip;
+        iProc = ip.getProcessor();
+        scale = s;
+        frameInterval = fI;
+
+        FrameStatistics[] stats = record();
+        iPlus.setSlice(1);
+        iPlus.killRoi();
+        buildData(stats);
     }
 
     /**
