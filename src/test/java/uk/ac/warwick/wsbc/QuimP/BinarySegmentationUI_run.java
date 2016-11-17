@@ -14,7 +14,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationPlugin_;
 public class BinarySegmentationUI_run {
 
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        System.setProperty("logback.configurationFile", "quimp-logback.xml");
     }
 
     /**

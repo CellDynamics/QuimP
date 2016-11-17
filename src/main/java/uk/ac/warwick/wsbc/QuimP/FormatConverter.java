@@ -76,7 +76,8 @@ public class FormatConverter {
     /**
      * Build QCONF from old datafile provided in constructor.
      * 
-     * It must be _0 file.
+     * Input file given in constructor must be _0 file. The internal <tt>qcL</tt> variable will be
+     * overrode on this method call.
      * 
      * @throws QuimpException on wrong inputs
      */
@@ -179,13 +180,12 @@ public class FormatConverter {
                 // try to read 3 channels for current paQP
                 int channel = 1; // channel counter for fluoromaps
                 for (File ff : qcL.getQp().getFluFiles()) {
+                    // create Fluoro data holder
                     FluoMap chm = new FluoMap(stMap.motMap.length, stMap.motMap[0].length, channel);
-                    if (ff.exists()) {// read this file
-                        chm.setMap(QuimPArrayUtils.file2Array(",", ff));
-                        chm.setEnabled(true); // loaded and valid
+                    if (ff.exists()) {// read file stored in paQP for channel
+                        chm.setMap(QuimPArrayUtils.file2Array(",", ff)); // it sets it enabled
                     } else
-                        chm.setEnabled(false); // by default FluMaps are enabled (compatibility
-                                               // reason)
+                        chm.setEnabled(false); // not existing, disable
                     stMap.fluoMaps[channel - 1] = chm;
                     channel++;
                 }
