@@ -37,7 +37,7 @@ public class FluoMap {
     /**
      * Colors for intensities stored in map.
      * 
-     * 1D array is mapped to map[T][res] as index = tt*res.
+     * 1D array is mapped to map[tt][p] as pN = (tt * res) + p;
      */
     byte[] fluColor;
     /**

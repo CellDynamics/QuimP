@@ -12,10 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.QuimpException.MessageSinkTypes;
+import uk.ac.warwick.wsbc.QuimP.filesystem.ANAParamCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
+import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.FluoMap;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
@@ -85,7 +87,6 @@ public class FormatConverter {
         //!>
         LOGGER.warn("\n----------------------------------------------------------\n"
                 + "Functionalities not implemented yet:\n"
-                + "    1. Exporting ANAState\n"
                 + "    1. Exporting Stats\n"
                 + "----------------------------------------------------------\n");
         //!<
@@ -127,6 +128,7 @@ public class FormatConverter {
         File filetoload = new File(""); // store name_XX.paQP file in loop below
         OutlineHandler oH;
         STmap stMap;
+        ANAParamCollection anaP = new ANAParamCollection(); // holder for ANA config, for every cell
         try {
             do {
                 // paQP files with _xx number in name
@@ -190,6 +192,15 @@ public class FormatConverter {
                     channel++;
                 }
                 maps.add(stMap);
+                // ANAState - add ANAp references for every processed paQP, set only non-transient
+                // fields
+                ANAp anapTmp = new ANAp();
+                anapTmp.scale = qcL.getQp().getImageScale(); // set scale used by
+                                                             // setCortextWidthScale
+                anapTmp.setCortextWidthScale(qcL.getQp().cortexWidth); // sets also cortexWidthPixel
+                anapTmp.fluTiffs = qcL.getQp().fluTiffs; // set files
+                anaP.aS.add(anapTmp); // store in ANAParamCollection
+
                 i++; // go to next paQP
             } while (true); // exception thrown by QconfLoader will stop this loop, e.g. trying to
                             // load nonexiting file
@@ -200,6 +211,8 @@ public class FormatConverter {
         }
         // save DataContainer using Serializer
         dT.QState = maps.toArray(new STmap[0]); // convert to array
+        dT.ANAState = anaP;
+
         Serializer<DataContainer> n;
         n = new Serializer<>(dT, new QuimpToolsCollection().getQuimPBuildInfo());
         n.setPretty();
