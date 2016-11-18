@@ -265,6 +265,12 @@ public class FormatConverter {
      * 
      */
     public void generateOldDataFile() throws IOException {
+        //!>
+        LOGGER.warn("\n----------------------------------------------------------\n"
+                + "Warning:\n"
+                + "    1. Only paQP and snQP files are converted.\n"
+                + "----------------------------------------------------------\n");
+        //!<
         if (qcL.getConfVersion() == QParams.QUIMP_11)
             throw new IllegalArgumentException("Can not convert from old format to old");
         DataContainer dT = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();

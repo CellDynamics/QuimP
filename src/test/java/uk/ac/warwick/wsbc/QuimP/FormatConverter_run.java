@@ -20,7 +20,7 @@ public class FormatConverter_run {
     public static void main(String[] args) throws QuimpException {
         ImageJ ij = new ImageJ();
         FormatConverter fC = new FormatConverter(new File(
-                "/home/baniuk/Desktop/Tests/formatconv/currenttest/fluoreszenz-test_0.paQP"));
+                "/home/baniuk/Desktop/Tests/formatconv/currenttest/fluoreszenz-test.QCONF"));
         fC.doConversion();
     }
 
