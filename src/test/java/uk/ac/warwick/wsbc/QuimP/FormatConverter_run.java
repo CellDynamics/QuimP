@@ -21,6 +21,7 @@ public class FormatConverter_run {
         ImageJ ij = new ImageJ();
         FormatConverter fC = new FormatConverter(new File(
                 "/home/baniuk/Desktop/Tests/formatconv/currenttest/fluoreszenz-test.QCONF"));
+        fC.showConversionCapabilities(ij);
         fC.doConversion();
     }
 

@@ -399,9 +399,6 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             return;
         }
         if (e.getSource() == menuFormatConverter) { // convert between file formats
-            JOptionPane.showMessageDialog(frame,
-                    "This is experimental tool. It may not work correctly.", "Warning",
-                    JOptionPane.WARNING_MESSAGE);
             QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(
                     FileExtensions.newConfigFileExt, FileExtensions.configFileExt);
             FileDialog od = new FileDialog(IJ.getInstance(),
@@ -418,6 +415,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             try {
                 // load config file but check if it is new format or old
                 FormatConverter fC = new FormatConverter(new File(od.getDirectory(), od.getFile()));
+                fC.showConversionCapabilities(frame);
                 fC.doConversion();
             } catch (QuimpException qe) {
                 if (qe.getMessageSinkType() == MessageSinkTypes.GUI) { // display message as GUI

@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.Frame;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -79,6 +80,30 @@ public class FormatConverter {
         this.qcL = qcL;
         this.path = qcL.getQp().getPathasPath();
         this.filename = Paths.get(qcL.getQp().getFileName()); // can contain xx_0 if old file loaded
+    }
+
+    /**
+     * Show message with conversion capabilities.
+     */
+    public void showConversionCapabilities(Frame frame) {
+        //!>
+        JOptionPane.showMessageDialog(frame,
+                "This is experimental tool. It may not work correctly.\n"
+                + "Supported conversions\n"
+                + "paQP->QCONF features:\n"
+                + " [+] paQP->QCONF\n"
+                + " [+] snQP->QCONF\n"
+                + " [+] maQP->QCONF\n"
+                + " [-] stQP->QCONF\n"
+                + "QCONF->paQP features:\n"
+                + " [+] QCONF->paQP\n"
+                + " [+] QCONF->snQP\n"
+                + " [-] QCONF->maQP\n"
+                + " [-] QCONF->stQP\n"
+                + " [-] QCONF->tiffs",
+                "Warning",
+                JOptionPane.WARNING_MESSAGE);
+        //!<
     }
 
     /**
