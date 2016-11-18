@@ -1,5 +1,11 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.ana;
 
+/**
+ * Hold statistic of fluorescence for one channel.
+ * 
+ * @author p.baniukiewicz
+ *
+ */
 public class ChannelStat {
 
     public double innerArea = 0;

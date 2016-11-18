@@ -14,10 +14,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ana.ChannelStat;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
- * Hold statistic evaluated for one frame.
+ * Hold statistic evaluated for one frame, geometric and fluorescence.
  * 
  * @author p.baniukiewicz
- * @see {@link uk.ac.warwick.wsbc.QuimP.CellStatsEval} 
+ * @see {@link uk.ac.warwick.wsbc.QuimP.CellStatsEval}
  */
 public class FrameStatistics {
     public int frame;
@@ -145,7 +145,8 @@ public class FrameStatistics {
 
             stats[i] = new FrameStatistics();
             stats[i].frame = (int) QuimpToolsCollection.s2d(split[0]);
-            stats[i].centroid.setXY(QuimpToolsCollection.s2d(split[1]), QuimpToolsCollection.s2d(split[2]));
+            stats[i].centroid.setXY(QuimpToolsCollection.s2d(split[1]),
+                    QuimpToolsCollection.s2d(split[2]));
             stats[i].displacement = QuimpToolsCollection.s2d(split[3]);
             stats[i].dist = QuimpToolsCollection.s2d(split[4]);
             stats[i].persistance = QuimpToolsCollection.s2d(split[5]);

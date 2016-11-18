@@ -1,7 +1,8 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 /**
- *
+ * Hold fluorescence value for pixel.
+ * 
  * @author rtyson
  */
 public class FluoMeasurement {
@@ -16,6 +17,7 @@ public class FluoMeasurement {
 
     /**
      * Copy constructor
+     * 
      * @param src source object
      */
     public FluoMeasurement(FluoMeasurement src) {
@@ -24,7 +26,9 @@ public class FluoMeasurement {
         intensity = src.intensity;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -41,7 +45,9 @@ public class FluoMeasurement {
         return result;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -62,7 +68,9 @@ public class FluoMeasurement {
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
