@@ -194,15 +194,31 @@ public class FormatConverter {
                     LOGGER.warn(e.getMessage());
                 }
                 // Fluoromap
-                // try to read 3 channels for current paQP
+                // first check if there is any FluMap
                 int channel = 1; // channel counter for fluoromaps
+                int p = 0, t = 0; // sizes of flumap
+                for (File ff : qcL.getQp().getFluFiles()) { // iterate over filenames
+                    if (ff.exists()) { // if any exist, get its size. Because if there is no maps at
+                                       // all we set this object to null but if there is at least
+                                       // one we have to set all other maps to -1 array of size of
+                                       // that available one
+                        double[][] tmpFluMap = QuimPArrayUtils.file2Array(",", ff);
+                        t = tmpFluMap.length;
+                        p = tmpFluMap[0].length;
+                        break; // assume without checking that all maps are the same
+                    }
+                }
+                // if p,t are non zero we know that there is at leas map
+                // try to read 3 channels for current paQP
                 for (File ff : qcL.getQp().getFluFiles()) {
                     // create Fluoro data holder
-                    FluoMap chm = new FluoMap(stMap.motMap.length, stMap.motMap[0].length, channel);
+                    FluoMap chm = new FluoMap(t, p, channel);
                     if (ff.exists()) {// read file stored in paQP for channel
                         chm.setMap(QuimPArrayUtils.file2Array(",", ff)); // it sets it enabled
-                    } else
+                    } else {
                         chm.setEnabled(false); // not existing, disable
+                        LOGGER.warn("File " + ff.toString() + " not found");
+                    }
                     stMap.fluoMaps[channel - 1] = chm;
                     channel++;
                 }
