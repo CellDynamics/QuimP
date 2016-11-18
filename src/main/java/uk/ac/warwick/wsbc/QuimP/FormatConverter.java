@@ -8,9 +8,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.JOptionPane;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.QuimP.filesystem.ANAParamCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
@@ -81,7 +84,8 @@ public class FormatConverter {
     /**
      * Build QCONF from old datafile provided in constructor.
      * 
-     * Input file given in constructor must be _0 file. The internal <tt>qcL</tt> variable will be
+     * Input file given in constructor is considered as starting one. paQP files in successive
+     * numbers are searched in the same directory. The internal <tt>qcL</tt> variable will be
      * overrode on this method call.
      * 
      * @throws QuimpException on wrong inputs
@@ -109,15 +113,21 @@ public class FormatConverter {
         if (last < 0)
             throw new QuimpException("Input file must be in format name_XX.paQP",
                     MessageSinkTypes.GUI);
-        // number must be 0
+        int numofpaqp; // number extracted from paQP name
+        // check which file number user selected. End program if user made mistake
         try {
-            int numofpaqp; // number extracted from paQP name
             numofpaqp = Integer.parseInt(
                     filename.toString().substring(last + 1, filename.toString().length()));
-            if (numofpaqp != 0)
-                throw new QuimpException(
-                        "paQP file number is not 0. Check if you selected first file 0_.paQP",
-                        MessageSinkTypes.GUI);
+            if (numofpaqp != 0) { // warn user if not first file selected
+                int ret = JOptionPane.showConfirmDialog(IJ.getInstance(),
+                        QuimpToolsCollection.stringWrap(
+                                "Selected paQP file is not first (not a _0.paQP file)."
+                                        + "Is it ok? (No will end conversion process)",
+                                QuimP.LINE_WRAP),
+                        "Waring", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (ret != JOptionPane.YES_OPTION) // end if user not happy with it
+                    return;
+            }
         } catch (NumberFormatException e) {
             throw new QuimpException(
                     "paQP file number can not be found. Check if file name is in format name_XX.paQP",
@@ -128,7 +138,8 @@ public class FormatConverter {
 
         int i; // PaQP files counter
         // run conversion for all paQP files. conversion always starts from 0
-        i = 0; // try to read paPQ starting from 0, before we tested if user pointed correct file
+        i = numofpaqp; // try to read paPQ starting from given by user, before we tested if user
+                       // pointed correct file
         File filetoload = new File(""); // store name_XX.paQP file in loop below
         OutlineHandler oH;
         STmap stMap;
@@ -139,10 +150,10 @@ public class FormatConverter {
                 filetoload = Paths.get(qcL.getQp().getPath(),
                         orginal + "_" + i + FileExtensions.configFileExt).toFile();
                 // optimisation - first file is already loaded, skip it
-                if (i != 0) // it is checked whethet it is first file
+                if (i != numofpaqp) // it is checked whethet it is first file
                     qcL = new QconfLoader(filetoload); // re-load it
                 // assume that BOA params are taken from file 0_.paQP
-                if (i == 0)
+                if (i == numofpaqp)
                     dT.BOAState.loadParams(qcL.getQp()); // load parameters only once
                 // initialize snakes (from snQP files)
                 oH = new OutlineHandler(qcL.getQp()); // restore OutlineHandler

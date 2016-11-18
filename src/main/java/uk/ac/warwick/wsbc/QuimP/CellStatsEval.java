@@ -172,8 +172,7 @@ public class CellStatsEval implements Measurements {
 
     private void write(FrameStatistics[] s, int startFrame) {
         try {
-            PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto
-                                                                             // flush
+            PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
             // IJ.log("Writing to file");
             pw.print("#p2\n#QuimP output - " + OUTFILE.getAbsolutePath() + "\n");
             pw.print(
@@ -234,61 +233,4 @@ public class CellStatsEval implements Measurements {
             pw.print("\n" + (i + startFrame) + ",-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");
         }
     }
-
-    // private int cellAge(ImageStatistics is) {
-    // double x, y, a, b, angle;
-    // x = is.xCentroid;
-    // y = is.yCentroid;
-    // a = is.major;
-    // b = is.minor;
-    // angle = is.angle;
-    //
-    // Line.setWidth(10);
-    // Line l = majorAxis(x, y, a / 2, b / 2, angle);
-    //
-    // iPlus.setRoi(l);
-    // ProfilePlot pp = new ProfilePlot(iPlus, false);
-    // double[] profile = pp.getProfile();
-    // return Tool.findNumPeaks(profile, 5) - 1;
-    // }
-
-    // private Line majorAxis(double x, double y, double a, double b, double
-    // angle) {
-    // double beta = -angle * (Math.PI / 180);
-    // double alpha, X,Y;
-    // double ax1 = -1.;
-    // double ay1 = -1.;
-    // double bx1 = -1.;
-    // double by1 = -1.;
-    // double ax2 = -1.;
-    // double ay2 = -1.;
-    // double bx2 = -1.;
-    // double by2 = -1.;
-    //
-    // for (int i = 0; i <= 360; i += 2) {
-    // alpha = i * (Math.PI / 180);
-    // X = x + a * Math.cos(alpha) * Math.cos(beta) - b * Math.sin(alpha) *
-    // Math.sin(beta);
-    // Y = y + a * Math.cos(alpha) * Math.sin(beta) + b * Math.sin(alpha) *
-    // Math.cos(beta);
-    //
-    // if (i == 0) {
-    // ax1 = X;
-    // ay1 = Y;
-    // }
-    // if (i == 90) {
-    // bx1 = X;
-    // by1 = Y;
-    // }
-    // if (i == 180) {
-    // ax2 = X;
-    // ay2 = Y;
-    // }
-    // if (i == 270) {
-    // bx2 = X;
-    // by2 = Y;
-    // }
-    // }
-    // return new Line(ax1, ay1, ax2, ay2);
-    // }
 }
