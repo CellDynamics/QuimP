@@ -7,7 +7,7 @@
   <version>16.10.03-SNAPSHOT</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
-  <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/bretschneider/quimp/</url>
+  <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp/</url>
   <description>QuimP software, a set of plugins for ImageJ to quantify spatio-temporal patterns of fluorescently labeled proteins in the cortex of moving cells.</description>
   <!-- Root of URL for documentation. MUST have / at end -->
   <properties>
@@ -32,7 +32,7 @@
       <name>QuimP License</name>
       <url>http://pilip.lnx.warwick.ac.uk/LICENSE.txt</url>
       <distribution>manual</distribution>
-      <comments>Own licence</comments>
+      <comments>University licence</comments>
     </license>
   </licenses>
   <organization>
