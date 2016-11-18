@@ -2,14 +2,18 @@ package uk.ac.warwick.wsbc.QuimP.plugin.ana;
 
 import java.io.File;
 
+import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
  * Container class for parameters concerned with ANA analysis.
- * This class is serialized through {@link uk.ac.warwick.wsbc.QuimP.filesystem.ANAParamCollection} 
+ * 
+ * This class is serialized through {@link uk.ac.warwick.wsbc.QuimP.filesystem.ANAParamCollection}.
+ * The structure of transient and non-transient fields must be reflected in FormatConverter.
+ * 
  * @author rtyson
- *
+ * @see FormatConverter#generateNewDataFile()
  */
 public class ANAp {
 
@@ -84,8 +88,7 @@ public class ANAp {
     /**
      * Initiates ANAp class with parameters copied from BOA analysis
      * 
-     * @param qp
-     *            reference to QParams container (master file and BOA params)
+     * @param qp reference to QParams container (master file and BOA params)
      */
     void setup(QParams qp) {
         channel = 0;
@@ -102,16 +105,26 @@ public class ANAp {
         noData = true;
     }
 
-    void setCortextWidthScale(double c) {
+    public void setCortextWidthScale(double c) {
         cortexWidthScale = c;
         cortexWidthPixel = QuimpToolsCollection.distanceFromScale(cortexWidthScale, scale);
+    }
+
+    /**
+     * @return the cortexWidthPixel
+     */
+    public double getCortexWidthPixel() {
+        return cortexWidthPixel;
     }
 
     public double getCortexWidthScale() {
         return cortexWidthScale;
     }
 
-    double getCortexWidthPixel() {
-        return cortexWidthPixel;
+    /**
+     * @param cortexWidthPixel the cortexWidthPixel to set
+     */
+    public void setCortexWidthPixel(double cortexWidthPixel) {
+        this.cortexWidthPixel = cortexWidthPixel;
     }
 }

@@ -10,7 +10,7 @@ import ij.ImageJ;
  */
 public class Prot_Analysis_run {
     static {
-        System.setProperty("quimp.debugLevel", "qlog4j2.xml");
+        System.setProperty("logback.configurationFile", "quimp-logback.xml");
     }
 
     /**

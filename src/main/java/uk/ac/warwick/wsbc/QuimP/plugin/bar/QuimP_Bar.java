@@ -50,6 +50,8 @@ import uk.ac.warwick.wsbc.QuimP.AboutDialog;
 import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QuimP;
+import uk.ac.warwick.wsbc.QuimP.QuimpException;
+import uk.ac.warwick.wsbc.QuimP.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
@@ -397,9 +399,6 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             return;
         }
         if (e.getSource() == menuFormatConverter) { // convert between file formats
-            JOptionPane.showMessageDialog(frame,
-                    "This is experimental tool. It may not work correctly.", "Warning",
-                    JOptionPane.WARNING_MESSAGE);
             QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(
                     FileExtensions.newConfigFileExt, FileExtensions.configFileExt);
             FileDialog od = new FileDialog(IJ.getInstance(),
@@ -413,13 +412,24 @@ public class QuimP_Bar implements PlugIn, ActionListener {
                 IJ.log("Cancelled - exiting...");
                 return;
             }
-            // load config file but check if it is new format or old
-            FormatConverter fC = new FormatConverter(new File(od.getDirectory(), od.getFile()));
             try {
+                // load config file but check if it is new format or old
+                FormatConverter fC = new FormatConverter(new File(od.getDirectory(), od.getFile()));
+                fC.showConversionCapabilities(frame);
                 fC.doConversion();
+            } catch (QuimpException qe) {
+                if (qe.getMessageSinkType() == MessageSinkTypes.GUI) { // display message as GUI
+                    JOptionPane.showMessageDialog(frame,
+                            QuimpToolsCollection.stringWrap(
+                                    "Error during conversion: " + qe.getMessage(), QuimP.LINE_WRAP),
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                } else { // or text as usual
+                    LOGGER.debug(qe.getMessage(), qe);
+                    LOGGER.error("Problem with running FormatConverter: " + qe.getMessage());
+                }
             } catch (Exception e1) {
                 LOGGER.debug(e1.getMessage(), e1);
-                LOGGER.error("Problem with run of ECMM mapping: " + e1.getMessage());
+                LOGGER.error("Problem with running FormatConverter: " + e1.getMessage());
             }
             return;
         }

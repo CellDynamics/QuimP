@@ -222,8 +222,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
             anap = anaStates.aS.get(i); // get i-th ana parameters
             anap.setup(qconfLoader.getQp());
 
-            // fluoStats = FrameStat.read(anap.STATSFILE); // read stat file (it is outside QCONF!!)
-            // get stats stored in QCONF
+            // get stats stored in QCONF, they are extended by ANA (ChannelStat field)
             fluoStats = qconfLoader.getStats().sHs.get(i).framestat.toArray(new FrameStatistics[0]);
 
             investigateChannels(oH.indexGetOutline(0));// find first empty channel
@@ -241,7 +240,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
             anap.fluTiffs[anap.channel] = new File(orgIpl.getOriginalFileInfo().directory,
                     orgIpl.getOriginalFileInfo().fileName);
             outputH = new OutlineHandler(oH); // copy input to output (ana will add fields to it)
-            Ana(); // fills outputH
+            Ana(); // fills outputH and ChannelStat in FrameStatistics
             FrameStatistics.write(fluoStats, anap.STATSFILE, anap); // save fluoro to statFile for
                                                                     // comp.
             CellStats statH = qconfLoader.getStats().sHs.get(i); // store fluoro in QCONF
@@ -296,7 +295,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
                 orgIpl.getOriginalFileInfo().fileName);
 
         outputH = new OutlineHandler(oH.getStartFrame(), oH.getEndFrame());
-        Ana();
+        Ana(); // fills outputH and ChannelStat in FrameStatistics
 
         anap.INFILE.delete();
         anap.STATSFILE.delete();
@@ -422,7 +421,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     }
 
     /**
-     * Main method for fluorescence measurements analysis.
+     * Main method for fluorescence measurements analysis. Adds also new stats to FrameStatistics.
      */
     private void Ana() {
         Roi outerROI, innerROI;
@@ -665,6 +664,16 @@ public class ANA_ implements PlugInFilter, DialogListener {
         } while (!v.isHead());
     }
 
+    /**
+     * Compute statistics.
+     * 
+     * Update {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ChannelStat} in
+     * {@link uk.ac.warwick.wsbc.QuimP.FrameStatistics}
+     * 
+     * @param outerPoly
+     * @param innerPoly
+     * @param f
+     */
     private void setFluoStats(Polygon outerPoly, Polygon innerPoly, int f) {
 
         int store = f - anap.startFrame; // frame to index

@@ -55,14 +55,14 @@ public class QuimpToolsCollection {
      * @see #getQuimPBuildInfo()
      */
     public static String getFormattedQuimPversion(String[] quimpBuildInfo) {
-        //!<
+        //!>
         String infoPlate = "---------------------------------------------------------\n"
                 + "| QuimP, by                                             |\n"
                 + "| Richard Tyson (richard.tyson@warwick.ac.uk)           |\n"
                 + "| Till Bretschneider (Till.Bretschneider@warwick.ac.uk) |\n"
                 + "| Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)     |\n"
                 + "---------------------------------------------------------\n";
-        //!>
+        //!<
         infoPlate = infoPlate.concat("\n");
         infoPlate = infoPlate.concat("QuimP version: " + quimpBuildInfo[0]);
         infoPlate = infoPlate.concat("\n");
@@ -249,6 +249,19 @@ public class QuimpToolsCollection {
         }
 
         return migLimits;
+    }
+
+    /**
+     * Insert \n character after given number of chars keeping to not break words.
+     * 
+     * @param in Input string
+     * @param len line length
+     * @return Wrapped string
+     * @see http://stackoverflow.com/questions/8314566/splitting-a-string-on-to-several-different-lines-in-java
+     */
+    public static String stringWrap(String in, int len) {
+
+        return in.replaceAll("(.{" + len + ",}?)\\s+", "$1\n");
     }
 
 }
