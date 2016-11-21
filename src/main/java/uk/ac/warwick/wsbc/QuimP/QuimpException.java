@@ -2,11 +2,21 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
+import java.awt.Frame;
+
+import javax.swing.JOptionPane;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
+
 /**
  * @author p.baniukiewicz
  *
  */
 public class QuimpException extends Exception {
+    static final Logger LOGGER = LoggerFactory.getLogger(QuimpException.class.getName());
 
     /**
      * Define where the message should be displayed.
@@ -114,6 +124,36 @@ public class QuimpException extends Exception {
             boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
         messageSinkType = MessageSinkTypes.CONSOLE;
+    }
+
+    /**
+     * 
+     * @param message
+     * @param cause
+     * @param type
+     */
+    public QuimpException(String message, Throwable cause, MessageSinkTypes type) {
+        super(message, cause);
+        this.messageSinkType = type;
+    }
+
+    /**
+     * Handle this exception displaying it and logging.
+     * 
+     * @param frame Swing frame to display message for user, can be null
+     * @param appendMessage Message added to beginning of the exception message, can be ""
+     */
+    public void handleException(Frame frame, String appendMessage) {
+        if (getMessageSinkType() == MessageSinkTypes.GUI) { // display message as GUI
+            JOptionPane.showMessageDialog(frame, QuimpToolsCollection
+                    .stringWrap(appendMessage + " " + getMessage(), QuimP.LINE_WRAP), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            LOGGER.debug(getMessage(), this);
+            LOGGER.error(appendMessage + " " + getMessage());
+        } else { // or text as usual
+            LOGGER.debug(getMessage(), this);
+            LOGGER.error(appendMessage + " " + getMessage());
+        }
     }
 
 }

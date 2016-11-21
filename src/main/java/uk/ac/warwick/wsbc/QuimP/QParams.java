@@ -483,7 +483,7 @@ public class QParams {
                 // statsQP.getAbsolutePath());
             }
             snakeQP = new File(paramFile.getParent() + "" + sn); // snQP file
-            System.out.println("snake file: " + snakeQP.getAbsolutePath());
+            LOGGER.debug("snake file: " + snakeQP.getAbsolutePath());
 
             d.readLine(); // # blank line
             imageScale = QuimpToolsCollection.s2d(d.readLine());
@@ -528,7 +528,7 @@ public class QParams {
             d.close();
             this.guessOtherFileNames(); // generate handles of other files that will be created here
             checkECMMrun(); // check if snQP file is already processed by ECMM. Set ecmmHasRun
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new QuimpException(e);
         }
     }
@@ -665,8 +665,10 @@ public class QParams {
      * Verify if <i>snQP</i> file has been already processed by ECMM.
      * 
      * Processed files have <b>-ECMM</b> suffix on first line.
+     * 
+     * @throws Exception
      */
-    void checkECMMrun() {
+    void checkECMMrun() throws Exception {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(snakeQP));
@@ -681,7 +683,8 @@ public class QParams {
                 ecmmHasRun = false;
             }
         } catch (Exception e) {
-            System.err.println("Error: " + e);
+            LOGGER.debug("Can not find " + snakeQP.toString());
+            throw e;
         } finally {
             if (br != null)
                 try {

@@ -86,7 +86,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
 
     /**
      * Build main dialog
-     * !<
+     * !>
      * @startuml
      * salt
      *   {+
@@ -147,7 +147,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      *   Run --> [*]
      *   Default --> [*]
      * @enduml
-     * !>
+     * !<
      */
     public void showDialog() {
         wnd = new JFrame("Random Walker Segmentation");
@@ -365,6 +365,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             segmented.show();
             segmented.updateAndDraw();
         } catch (RandomWalkException e) {
+            LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Segmentation failed because: " + e.getMessage());
         }
     }

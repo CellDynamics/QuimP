@@ -2,8 +2,6 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.bar;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
-
 /**
  * Bar displayer
  * 
@@ -11,6 +9,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
  *
  */
 public class QuimP_Bar_run {
+
+    static {
+        System.setProperty("logback.configurationFile", "quimp-logback.xml");
+    }
 
     /**
      * @param args
