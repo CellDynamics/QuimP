@@ -475,7 +475,7 @@ public class RandomWalkSegmentation {
         List<Point> background = new ArrayList<>();
         // verify input condition
         if (rgb.getBitDepth() != 24)
-            throw new RandomWalkException("Unsupported image type");
+            throw new RandomWalkException("Unsupported seed image type");
         // find marked pixels
         ColorProcessor cp = (ColorProcessor) rgb; // can cast here because of type
                                                   // checking

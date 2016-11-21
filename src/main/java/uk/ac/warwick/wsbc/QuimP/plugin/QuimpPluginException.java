@@ -12,6 +12,42 @@ import uk.ac.warwick.wsbc.QuimP.QuimpException;
 public class QuimpPluginException extends QuimpException {
 
     /**
+     * @param type
+     */
+    public QuimpPluginException(MessageSinkTypes type) {
+        super(type);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param message
+     * @param type
+     */
+    public QuimpPluginException(String message, MessageSinkTypes type) {
+        super(message, type);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param message
+     * @param cause
+     * @param type
+     */
+    public QuimpPluginException(String message, Throwable cause, MessageSinkTypes type) {
+        super(message, cause, type);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param cause
+     * @param type
+     */
+    public QuimpPluginException(Throwable cause, MessageSinkTypes type) {
+        super(cause, type);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
      * 
      */
     public QuimpPluginException() {

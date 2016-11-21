@@ -35,7 +35,7 @@ public class QuimpException extends Exception {
     /**
      * @see MessageSinkTypes
      */
-    private MessageSinkTypes messageSinkType;
+    protected MessageSinkTypes messageSinkType;
 
     /**
      * @param messageSinkType the messageSinkType to set
