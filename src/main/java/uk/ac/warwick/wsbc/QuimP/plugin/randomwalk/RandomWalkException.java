@@ -5,10 +5,48 @@ package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /**
+ * Exception class for Random Walker plugin. Redirect all exceptions to GUI.
+ * 
  * @author p.baniukiewicz
  *
  */
 public class RandomWalkException extends QuimpPluginException {
+
+    /**
+     * @param type
+     */
+    public RandomWalkException(MessageSinkTypes type) {
+        super(type);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param message
+     * @param type
+     */
+    public RandomWalkException(String message, MessageSinkTypes type) {
+        super(message, type);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param message
+     * @param cause
+     * @param type
+     */
+    public RandomWalkException(String message, Throwable cause, MessageSinkTypes type) {
+        super(message, cause, type);
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @param cause
+     * @param type
+     */
+    public RandomWalkException(Throwable cause, MessageSinkTypes type) {
+        super(cause, type);
+        // TODO Auto-generated constructor stub
+    }
 
     /**
      * 
@@ -19,7 +57,7 @@ public class RandomWalkException extends QuimpPluginException {
      * 
      */
     public RandomWalkException() {
-        super();
+        super(MessageSinkTypes.GUI);
     }
 
     /**
@@ -38,21 +76,21 @@ public class RandomWalkException extends QuimpPluginException {
      * @param cause
      */
     public RandomWalkException(String arg0, Throwable cause) {
-        super(arg0, cause);
+        super(arg0, cause, MessageSinkTypes.GUI);
     }
 
     /**
      * @param arg0
      */
     public RandomWalkException(String arg0) {
-        super(arg0);
+        super(arg0, MessageSinkTypes.GUI);
     }
 
     /**
      * @param cause
      */
     public RandomWalkException(Throwable cause) {
-        super(cause);
+        super(cause, MessageSinkTypes.GUI);
     }
 
 }

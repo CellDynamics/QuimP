@@ -29,7 +29,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
@@ -51,7 +50,6 @@ import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QuimP;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
-import uk.ac.warwick.wsbc.QuimP.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
@@ -418,15 +416,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
                 fC.showConversionCapabilities(frame);
                 fC.doConversion();
             } catch (QuimpException qe) {
-                if (qe.getMessageSinkType() == MessageSinkTypes.GUI) { // display message as GUI
-                    JOptionPane.showMessageDialog(frame,
-                            QuimpToolsCollection.stringWrap(
-                                    "Error during conversion: " + qe.getMessage(), QuimP.LINE_WRAP),
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                } else { // or text as usual
-                    LOGGER.debug(qe.getMessage(), qe);
-                    LOGGER.error("Problem with running FormatConverter: " + qe.getMessage());
-                }
+                qe.handleException(frame, "Error during conversion:");
             } catch (Exception e1) {
                 LOGGER.debug(e1.getMessage(), e1);
                 LOGGER.error("Problem with running FormatConverter: " + e1.getMessage());

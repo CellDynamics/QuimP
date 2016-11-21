@@ -86,7 +86,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
 
     /**
      * Build main dialog
-     * !<
+     * !>
      * @startuml
      * salt
      *   {+
@@ -147,7 +147,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      *   Run --> [*]
      *   Default --> [*]
      * @enduml
-     * !>
+     * !<
      */
     public void showDialog() {
         wnd = new JFrame("Random Walker Segmentation");
@@ -365,7 +365,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             segmented.show();
             segmented.updateAndDraw();
         } catch (RandomWalkException e) {
-            LOGGER.error("Segmentation failed because: " + e.getMessage());
+            e.handleException(wnd, "Segmentation failed:");
         }
     }
 
@@ -448,7 +448,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                 return; // wrong seed size
             }
             // 4. Read numeric data
-            //!<
+            //!>
             params = new Params((Integer) sAlpha.getValue(), // alpha
                     (Integer) sBeta.getValue(), // beta
                     (Integer) sGamma.getValue(), // gamma1
@@ -457,7 +457,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                     0.1, // dt
                     8e-3 // error
             );
-            /**/
+            //!<
             erodeIter = (Integer) sErode.getValue(); // erosions
             // all ok - store images to later use
             image = tmpImage;
@@ -483,6 +483,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             try {
                 java.awt.Desktop.getDesktop().browse(new URI(url));
             } catch (Exception e1) {
+                LOGGER.debug(e1.getMessage(), e1);
                 LOGGER.error("Could not open help: " + e1.getMessage(), e1);
             }
         }

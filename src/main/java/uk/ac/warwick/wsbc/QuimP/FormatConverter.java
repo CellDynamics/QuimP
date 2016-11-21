@@ -114,8 +114,9 @@ public class FormatConverter {
      * overrode on this method call.
      * 
      * @throws QuimpException on wrong inputs
+     * @throws FileNotFoundException
      */
-    public void generateNewDataFile() throws QuimpException {
+    public void generateNewDataFile() throws QuimpException, FileNotFoundException {
         //!>
         LOGGER.warn("\n----------------------------------------------------------\n"
                 + "Warning:\n"
@@ -136,7 +137,8 @@ public class FormatConverter {
         // extract paQP number from file name (loaded in constructor)
         int last = filename.toString().lastIndexOf('_'); // position of _ before number
         if (last < 0)
-            throw new QuimpException("Input file must be in format name_XX.paQP",
+            throw new QuimpException(
+                    "Input file name must be in format name_XX.paQP, where XX is cell number.",
                     MessageSinkTypes.GUI);
         int numofpaqp; // number extracted from paQP name
         // check which file number user selected. End program if user made mistake
@@ -155,7 +157,8 @@ public class FormatConverter {
             }
         } catch (NumberFormatException e) {
             throw new QuimpException(
-                    "paQP file number can not be found. Check if file name is in format name_XX.paQP",
+                    "paQP file number can not be found in file name. "
+                            + "Check if file name is in format name_XX.paQP, where XX is cell number.",
                     MessageSinkTypes.GUI);
         }
         // cut last number from file name name
@@ -174,6 +177,10 @@ public class FormatConverter {
                 // paQP files with _xx number in name
                 filetoload = Paths.get(qcL.getQp().getPath(),
                         orginal + "_" + i + FileExtensions.configFileExt).toFile();
+                if (!filetoload.exists()) {// if does not exist - end loop
+                    LOGGER.warn("File " + filetoload.toString() + " does not exist.");
+                    break;
+                }
                 // optimisation - first file is already loaded, skip it
                 if (i != numofpaqp) // it is checked whethet it is first file
                     qcL = new QconfLoader(filetoload); // re-load it
@@ -260,10 +267,11 @@ public class FormatConverter {
                 i++; // go to next paQP
             } while (true); // exception thrown by QconfLoader will stop this loop, e.g. trying to
                             // load nonexiting file
-        } catch (Exception e) {
-            LOGGER.debug(e.getMessage(), e);
-            LOGGER.warn("File " + filetoload.toString() + " can not be processed. Reason: "
-                    + e.getMessage());
+
+        } catch (Exception e) { // repack exception with proper message about defective file
+            throw new QuimpException(
+                    "File " + filetoload.toString() + " can not be processed: " + e.getMessage(),
+                    e);
         }
         // save DataContainer using Serializer
         dT.QState = maps.toArray(new STmap[0]); // convert to array
@@ -272,12 +280,7 @@ public class FormatConverter {
         Serializer<DataContainer> n;
         n = new Serializer<>(dT, new QuimpToolsCollection().getQuimPBuildInfo());
         n.setPretty();
-        try {
-            n.save(path + File.separator + orginal + FileExtensions.newConfigFileExt);
-        } catch (FileNotFoundException e) {
-            LOGGER.debug(e.getMessage(), e);
-            LOGGER.error("File " + orginal + " can not be saved. Reason: " + e.getMessage());
-        }
+        n.save(path + File.separator + orginal + FileExtensions.newConfigFileExt);
         n = null;
     }
 
@@ -350,7 +353,8 @@ public class FormatConverter {
     /**
      * Perform conversion depending on which file has been loaded.
      * 
-     * @throws QuimpException on every error
+     * @throws QuimpException on every error redirected to GUI. This is final method called from
+     *         caller. All exceptions during conversion are collected and converted here to GUI.
      */
     public void doConversion() throws QuimpException {
         try {
