@@ -28,7 +28,6 @@ import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.CellStats;
-import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.FrameStatistics;
 import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
@@ -251,9 +250,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
         dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
         dc.ANAState = anaStates;
         qconfLoader.getQp().writeParams(); // save global container
-        // generate additional OLD files (stQP is generated in loop already)
-        FormatConverter fC = new FormatConverter(qconfLoader);
-        fC.generateOldDataFile();
+        // generate additional OLD files (stQP is generated in loop already), disabled #263
+        // FormatConverter fC = new FormatConverter(qconfLoader);
+        // fC.doConversion();
     }
 
     /**

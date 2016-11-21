@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.gui.GenericDialog;
 import ij.gui.YesNoCancelDialog;
-import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
 import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.QParams;
@@ -80,12 +79,11 @@ public class Q_Analysis {
                 File[] otherPaFiles = qconfLoader.getQp().findParamFiles();
                 if (otherPaFiles.length > 0) { // and process them if they are (that pointed by
                                                // user is skipped)
-                    YesNoCancelDialog yncd =
-                            new YesNoCancelDialog(IJ.getInstance(), "Batch Process?",
-                                    "\tBatch Process?\n\n" + "Process other "
-                                            + FileExtensions.configFileExt
-                                            + " files in the same folder with QAnalysis?"
-                                            + "\n[The same parameters will be used]");
+                    YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(),
+                            "Batch Process?",
+                            "\tBatch Process?\n\n" + "Process other " + FileExtensions.configFileExt
+                                    + " files in the same folder with QAnalysis?"
+                                    + "\n[The same parameters will be used]");
                     if (yncd.yesPressed()) {
                         ArrayList<String> runOn = new ArrayList<String>(otherPaFiles.length);
                         this.closeAllImages();
@@ -172,9 +170,9 @@ public class Q_Analysis {
         }
         qconfLoader.getQp().getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
         qconfLoader.getQp().writeParams(); // save global container
-        // generate additional OLD files
-        FormatConverter fC = new FormatConverter(qconfLoader);
-        fC.generateOldDataFile();
+        // generate additional OLD files, disabled #263
+        // FormatConverter fC = new FormatConverter(qconfLoader);
+        // fC.doConversion();
     }
 
     /**

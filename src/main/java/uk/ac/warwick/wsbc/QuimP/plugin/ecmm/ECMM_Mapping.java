@@ -20,7 +20,6 @@ import ij.gui.NewImage;
 import ij.gui.YesNoCancelDialog;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.Nest;
 import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
@@ -200,7 +199,7 @@ public class ECMM_Mapping {
      */
     private void runFromQCONF() throws QuimpException, IOException {
         LOGGER.debug("Processing from new file format");
-        Nest nest = qconfLoader.getQp().getNest();
+        Nest nest = ((QParamsQconf) qconfLoader.getQp()).getNest();
         outputOutlineHandlers = new OutlinesCollection(nest.size());
         for (int i = 0; i < nest.size(); i++) { // go over all snakes
             ((QParamsQconf) qconfLoader.getQp()).setActiveHandler(i); // set current handler number.
@@ -223,12 +222,12 @@ public class ECMM_Mapping {
                                                                            // container
         }
 
-        DataContainer dc = qconfLoader.getQp().getLoadedDataContainer();
+        DataContainer dc = ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer();
         dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
         qconfLoader.getQp().writeParams(); // save global container
-        // generate additional OLD files
-        FormatConverter fC = new FormatConverter(qconfLoader);
-        fC.generateOldDataFile();
+        // generate additional OLD files, disabled #263
+        // FormatConverter fC = new FormatConverter(qconfLoader);
+        // fC.doConversion();
     }
 
     /**

@@ -286,9 +286,8 @@ public class FormatConverter {
      * 
      * @throws IOException
      * 
-     *         TODO make private after #263
      */
-    public void generateOldDataFile() throws IOException {
+    private void generateOldDataFile() throws IOException {
         //!>
         LOGGER.warn("\n----------------------------------------------------------\n"
                 + "Warning:\n"

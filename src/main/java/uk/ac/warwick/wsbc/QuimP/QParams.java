@@ -597,10 +597,14 @@ public class QParams {
     }
 
     /**
-     * Traverse through current directory and sub-directories looking for \a paQP files
+     * Traverse through current directory and sub-directories looking for <i>paQP</i> files.
      * 
-     * @remarks Current \a paQP file (that passed to QParams(File)) is not counted.
-     * @return Array of file handlers or empty array if there is no \a paQP files (except \c
+     * <p>
+     * <b>Remarks</b>
+     * <p>
+     * Current <i>paQP</i> file (that passed to QParams(File)) is not counted.
+     * 
+     * @return Array of file handlers or empty array if there is no <i>paQP</i> files (except
      *         paramFile)
      */
     public File[] findParamFiles() {
@@ -640,7 +644,7 @@ public class QParams {
      * Generate names and handles of files associated with paQP that will be created in result of
      * analysis.
      */
-    void guessOtherFileNames() {
+    protected void guessOtherFileNames() {
         LOGGER.debug("prefix: " + fileName);
 
         convexFile = new File(path + File.separator + fileName + FileExtensions.convmapFileExt);
@@ -668,16 +672,15 @@ public class QParams {
      * 
      * @throws Exception
      */
-    void checkECMMrun() throws Exception {
+    private void checkECMMrun() throws Exception {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(snakeQP));
             String line = br.readLine(); // read first line
 
             String sub = line.substring(line.length() - 4, line.length());
-            System.out.println("sub string: " + sub);
             if (sub.matches("ECMM")) {
-                System.out.println("ECMM has been run on this paFile data");
+                LOGGER.info("ECMM has been run on this paFile data");
                 ecmmHasRun = true;
             } else {
                 ecmmHasRun = false;

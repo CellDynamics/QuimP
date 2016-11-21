@@ -147,7 +147,7 @@ public class FormatConverterTest {
                 Paths.get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF")
                         .toFile());
         FormatConverter fC = new FormatConverter(qC);
-        fC.generateOldDataFile();
+        accessPrivate("generateOldDataFile", fC, new Object[] {}, new Class<?>[] {});
         Thread.sleep(1000);
         // compare paQP
         // manualy generated one
@@ -192,7 +192,7 @@ public class FormatConverterTest {
         QconfLoader qC = new QconfLoader(new File(
                 "/home/baniuk/Documents/Repos/QuimP/src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
         FormatConverter fC = new FormatConverter(qC);
-        fC.generateOldDataFile();
+        accessPrivate("generateOldDataFile", fC, new Object[] {}, new Class<?>[] {});
     }
 
 }
