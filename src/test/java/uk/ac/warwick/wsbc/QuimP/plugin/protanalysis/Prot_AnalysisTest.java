@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.geom.MapTracker;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
@@ -51,7 +52,7 @@ public class Prot_AnalysisTest {
      */
     @Before
     public void setUp() throws Exception {
-        stMap = qL1.getQp().getLoadedDataContainer().QState;
+        stMap = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState;
         float[][] motMap = QuimPArrayUtils.double2float(stMap[0].motMap);
         // rotate and flip to match orientation of ColorProcessor (QuimP default)
         imp = new FloatProcessor(motMap).rotateRight();

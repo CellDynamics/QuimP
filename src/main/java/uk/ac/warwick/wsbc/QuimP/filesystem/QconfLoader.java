@@ -136,7 +136,8 @@ public class QconfLoader {
         File imagepath = null;
         switch (getQp().paramFormat) {
             case QParams.NEW_QUIMP:
-                imagepath = qp.getLoadedDataContainer().getBOAState().boap.getOrgFile();
+                imagepath = ((QParamsQconf) qp).getLoadedDataContainer().getBOAState().boap
+                        .getOrgFile();
                 LOGGER.debug("Attempt to open image: " + imagepath.getAbsolutePath());
                 // try to load from QCONF
                 im = IJ.openImage(imagepath.getPath());
@@ -204,7 +205,7 @@ public class QconfLoader {
         }
         if (getQp().paramFormat != QParams.NEW_QUIMP) // do not check if old format
             return QParams.QUIMP_11;
-        return getQp().getLoadedDataContainer().validateDataContainer();
+        return ((QParamsQconf) getQp()).getLoadedDataContainer().validateDataContainer();
     }
 
     /**
@@ -291,7 +292,7 @@ public class QconfLoader {
      */
     public BOAState getBOA() throws QuimpException {
         if (isBOAPresent())
-            return getQp().getLoadedDataContainer().getBOAState();
+            return ((QParamsQconf) getQp()).getLoadedDataContainer().getBOAState();
         else
             throw new QuimpException("BOA data not found in QCONF file. Run BOA first.");
     }
@@ -303,7 +304,7 @@ public class QconfLoader {
      */
     public OutlinesCollection getECMM() throws QuimpException {
         if (isECMMPresent())
-            return getQp().getLoadedDataContainer().getECMMState();
+            return ((QParamsQconf) getQp()).getLoadedDataContainer().getECMMState();
         else
             throw new QuimpException("ECMM data not found in QCONF file. Run ECMM first.");
     }
@@ -315,7 +316,7 @@ public class QconfLoader {
      */
     public ANAParamCollection getANA() throws QuimpException {
         if (isANAPresent())
-            return getQp().getLoadedDataContainer().getANAState();
+            return ((QParamsQconf) getQp()).getLoadedDataContainer().getANAState();
         else
             throw new QuimpException("ANA data not found in QCONF file. Run ANA first.");
     }
@@ -327,7 +328,7 @@ public class QconfLoader {
      */
     public STmap[] getQ() throws QuimpException {
         if (isQPresent())
-            return getQp().getLoadedDataContainer().getQState();
+            return ((QParamsQconf) getQp()).getLoadedDataContainer().getQState();
         else
             throw new QuimpException("Q data not found in QCONF file. Run Q Analysis first.");
     }
@@ -339,7 +340,7 @@ public class QconfLoader {
      */
     public StatsCollection getStats() throws QuimpException {
         if (isStatsPresent())
-            return getQp().getLoadedDataContainer().getStats();
+            return ((QParamsQconf) getQp()).getLoadedDataContainer().getStats();
         else
             throw new QuimpException("Stats not found in QCONF file. Run BOA Analysis first.");
     }

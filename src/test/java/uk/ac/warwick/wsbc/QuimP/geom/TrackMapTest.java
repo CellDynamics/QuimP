@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 
 /**
@@ -59,11 +60,11 @@ public class TrackMapTest {
      */
     @Before
     public void setUp() throws Exception {
-        coordMap1 = qL1.getQp().getLoadedDataContainer().QState[0].coordMap;
-        originMap1 = qL1.getQp().getLoadedDataContainer().QState[0].originMap;
+        coordMap1 = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState[0].coordMap;
+        originMap1 = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState[0].originMap;
 
-        coordMap2 = qL2.getQp().getLoadedDataContainer().QState[0].coordMap;
-        originMap2 = qL2.getQp().getLoadedDataContainer().QState[0].originMap;
+        coordMap2 = ((QParamsQconf) qL2.getQp()).getLoadedDataContainer().QState[0].coordMap;
+        originMap2 = ((QParamsQconf) qL2.getQp()).getLoadedDataContainer().QState[0].originMap;
     }
 
     /**

@@ -88,7 +88,7 @@ public abstract class QconfSupporter {
             // detect old/new file format
             File paramFile = new File(directory, filename); // config file
             if (paramFile.getName().endsWith(FileExtensions.newConfigFileExt)) // new file format
-                                                                                // TODO #152
+                                                                               // TODO #152
                 qp = new QParamsQconf(paramFile);
             else
                 qp = new QParams(paramFile); // initialize general param storage
@@ -139,10 +139,11 @@ public abstract class QconfSupporter {
      */
     public ImagePlus getImage() throws QuimpException {
         LOGGER.debug("Attempt to open image: "
-                + qp.getLoadedDataContainer().getBOAState().boap.getOrgFile().getAbsolutePath());
+                + ((QParamsQconf) qp).getLoadedDataContainer().getBOAState().boap.getOrgFile()
+                        .getAbsolutePath());
         // try to load from QCONF
-        ImagePlus im =
-                IJ.openImage(qp.getLoadedDataContainer().getBOAState().boap.getOrgFile().getPath());
+        ImagePlus im = IJ.openImage(((QParamsQconf) qp).getLoadedDataContainer().getBOAState().boap
+                .getOrgFile().getPath());
         if (im == null) { // if failed ask user
             Object[] options = { "Load from disk", "Load from IJ", "Cancel" };
             int n = JOptionPane.showOptionDialog(IJ.getInstance(),
@@ -196,10 +197,10 @@ public abstract class QconfSupporter {
         }
         if (qp.paramFormat != QParams.NEW_QUIMP) // do not check if old format
             return true;
-        if (qp.getLoadedDataContainer().ECMMState == null) {
+        if (((QParamsQconf) qp).getLoadedDataContainer().ECMMState == null) {
             throw new QuimpException("ECMM data not found in QCONF file. Run ECMM first.");
         }
-        if (qp.getLoadedDataContainer().QState == null) {
+        if (((QParamsQconf) qp).getLoadedDataContainer().QState == null) {
             throw new QuimpException(
                     "Q Analysis data not found in QCONF file. Run Q Analysis first.");
         }

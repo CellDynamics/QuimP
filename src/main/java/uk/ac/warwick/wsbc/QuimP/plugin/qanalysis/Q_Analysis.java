@@ -156,20 +156,20 @@ public class Q_Analysis {
      */
     private void runFromQCONF() throws QuimpException, IOException {
         int i = 0;
-        Iterator<OutlineHandler> oI =
-                qconfLoader.getQp().getLoadedDataContainer().getECMMState().oHs.iterator();
+        QParamsQconf qp = (QParamsQconf) qconfLoader.getQp();
+        Iterator<OutlineHandler> oI = qp.getLoadedDataContainer().getECMMState().oHs.iterator();
         ArrayList<STmap> tmp = new ArrayList<>();
         while (oI.hasNext()) {
-            ((QParamsQconf) qconfLoader.getQp()).setActiveHandler(i++); // set current handler
-                                                                        // number.
+            qp.setActiveHandler(i++); // set current handler
+                                      // number.
             Qp.setup(qconfLoader.getQp()); // copy selected data from general QParams to local
                                            // storage
             oH = oI.next();
             run();
             tmp.add(new STmap(stMap));
         }
-        qconfLoader.getQp().getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
-        qconfLoader.getQp().writeParams(); // save global container
+        qp.getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
+        qp.writeParams(); // save global container
         // generate additional OLD files, disabled #263
         // FormatConverter fC = new FormatConverter(qconfLoader);
         // fC.doConversion();

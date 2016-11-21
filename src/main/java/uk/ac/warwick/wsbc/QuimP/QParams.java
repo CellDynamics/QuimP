@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
-import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
@@ -411,31 +410,6 @@ public class QParams {
      */
     public void setyFile(File yFile) {
         this.yFile = yFile;
-    }
-
-    /**
-     * Compatibility with child class. For this level it return <tt>null</tt>
-     * 
-     * @return null
-     * @warning Should not be called from super class level
-     */
-    public Nest getNest() {
-        LOGGER.error("Calling getNest() from super class");
-        return null;
-    }
-
-    /**
-     * Compatibility with child class. For this level it return <tt>null</tt>
-     * 
-     * <b>Warning</b>
-     * <p>
-     * Should not be called from super class level
-     * 
-     * @return null
-     */
-    public DataContainer getLoadedDataContainer() {
-        LOGGER.error("Calling getLoadedDataContainer() from super class");
-        return null;
     }
 
     /**

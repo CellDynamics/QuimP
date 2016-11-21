@@ -198,21 +198,19 @@ public class ANA_ implements PlugInFilter, DialogListener {
      */
     private void runFromQCONF() throws IOException, QuimpException {
         LOGGER.debug("Processing from new file format");
+        QParamsQconf qp = (QParamsQconf) qconfLoader.getQp();
         ANAParamCollection anaStates;
-        OutlinesCollection ecmmState = qconfLoader.getQp().getLoadedDataContainer().ECMMState;
+        OutlinesCollection ecmmState = qp.getLoadedDataContainer().ECMMState;
         outputOutlineHandlers = new OutlinesCollection(ecmmState.oHs.size());
-        if (qconfLoader.getQp().getLoadedDataContainer().getANAState() == null)
+        if (qp.getLoadedDataContainer().getANAState() == null)
             // create ANA slots for all outlines
             anaStates = new ANAParamCollection(ecmmState.oHs.size()); // store ANA options for every
                                                                       // cell
         else
-            anaStates = qconfLoader.getQp().getLoadedDataContainer().getANAState(); // update old
+            anaStates = qp.getLoadedDataContainer().getANAState(); // update old
         for (int i = 0; i < ecmmState.oHs.size(); i++) { // go over all outlines
-            ((QParamsQconf) qconfLoader.getQp()).setActiveHandler(i); // set current handler number.
-                                                                      // For compatibility, all
-                                                                      // methods have the same
-                                                                      // syntax (assumes that there
-                                                                      // is only one handler)
+            qp.setActiveHandler(i); // set current handler number. For compatibility, all methods
+                                    // have the same syntax (assumes that there is only one handler)
             oH = ecmmState.oHs.get(i); // restore handler from ecmm
             anap = anaStates.aS.get(i); // get i-th ana parameters
             anap.setup(qconfLoader.getQp());
@@ -246,10 +244,10 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
         }
 
-        DataContainer dc = qconfLoader.getQp().getLoadedDataContainer();
+        DataContainer dc = qp.getLoadedDataContainer();
         dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
         dc.ANAState = anaStates;
-        qconfLoader.getQp().writeParams(); // save global container
+        qp.writeParams(); // save global container
         // generate additional OLD files (stQP is generated in loop already), disabled #263
         // FormatConverter fC = new FormatConverter(qconfLoader);
         // fC.doConversion();

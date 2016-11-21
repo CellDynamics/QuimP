@@ -94,7 +94,6 @@ public class QParamsQconf extends QParams {
      * 
      * @return the loadedDataContainer
      */
-    @Override
     public DataContainer getLoadedDataContainer() {
         return loaded.obj;
     }
@@ -342,12 +341,11 @@ public class QParamsQconf extends QParams {
      * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getNest()
      */
-    @Override
     public Nest getNest() {
         if (getLoadedDataContainer() != null)
             return getLoadedDataContainer().getBOAState().nest;
         else
-            return super.getNest();
+            return null;
     }
 
     /**

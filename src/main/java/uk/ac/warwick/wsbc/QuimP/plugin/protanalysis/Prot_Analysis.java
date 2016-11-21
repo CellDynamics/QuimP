@@ -39,6 +39,7 @@ import ij.plugin.ZProjector;
 import ij.plugin.filter.Analyzer;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QParams;
+import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
@@ -62,13 +63,13 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
  * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Prot_AnalysisUI}. The communication between
  * these modules is through {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig}
  * 
- * !<
+ * !>
  * @startuml
  * Prot_Analysis *-- "1" ProtAnalysisConfig
  * Prot_Analysis *-- "1" Prot_AnalysisUI
  * Prot_AnalysisUI o-- "1" ProtAnalysisConfig
  * @enduml
- * !>
+ * !<
  * @author p.baniukiewicz
  */
 public class Prot_Analysis implements IQuimpPlugin {
@@ -183,8 +184,9 @@ public class Prot_Analysis implements IQuimpPlugin {
      * @throws IOException
      */
     private void runFromQCONF() throws QuimpException, IOException {
-        STmap[] stMap = qconfLoader.getQp().getLoadedDataContainer().getQState();
-        OutlinesCollection oHs = qconfLoader.getQp().getLoadedDataContainer().getECMMState();
+        STmap[] stMap = ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getQState();
+        OutlinesCollection oHs =
+                ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getECMMState();
         TrackVisualisation.Stack visStackDynamic = null;
         TrackVisualisation.Image visStackStatic = null;
         TrackVisualisation.Stack visStackOutline = null;
@@ -275,9 +277,9 @@ public class Prot_Analysis implements IQuimpPlugin {
             // write svg plots
             if (config.polarPlot.plotpolar && config.polarPlot.useGradient) {
                 PolarPlot pp = new PolarPlot(mapCell, config.polarPlot.gradientPoint);
-                pp.generatePlot(Paths.get(qconfLoader.getQp().getPath(),
-                        qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.polarPlotSuffix)
-                        .toString());
+                pp.generatePlot(
+                        Paths.get(qconfLoader.getQp().getPath(), qconfLoader.getQp().getFileName()
+                                + "_" + h + FileExtensions.polarPlotSuffix).toString());
             }
             // write stats, and add to table
             writeStats(h, mapCell, mF, trackCollection).cellStatistics.addCellToCellTable(rt);
@@ -313,22 +315,20 @@ public class Prot_Analysis implements IQuimpPlugin {
      */
     private ProtStat writeStats(int h, STmap mapCell, MaximaFinder mF,
             TrackCollection trackCollection) throws FileNotFoundException {
+        QParamsQconf qp = (QParamsQconf) qconfLoader.getQp();
         // Maps are correlated in order with Outlines in DataContainer.
         // write data
-        PrintWriter cellStatFile = new PrintWriter(Paths
-                .get(qconfLoader.getQp().getPath(),
-                        qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.cellStatSuffix)
-                .toFile());
-        PrintWriter protStatFile = new PrintWriter(Paths
-                .get(qconfLoader.getQp().getPath(),
-                        qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.protStatSuffix)
-                .toFile());
-        new ProtStat(mF, trackCollection,
-                qconfLoader.getQp().getLoadedDataContainer().getStats().sHs.get(h), mapCell)
-                        .writeProtrusion(protStatFile, h);
+        PrintWriter cellStatFile = new PrintWriter(
+                Paths.get(qp.getPath(), qp.getFileName() + "_" + h + FileExtensions.cellStatSuffix)
+                        .toFile());
+        PrintWriter protStatFile = new PrintWriter(
+                Paths.get(qp.getPath(), qp.getFileName() + "_" + h + FileExtensions.protStatSuffix)
+                        .toFile());
+        new ProtStat(mF, trackCollection, qp.getLoadedDataContainer().getStats().sHs.get(h),
+                mapCell).writeProtrusion(protStatFile, h);
 
         ProtStat cellStat = new ProtStat(mF, trackCollection,
-                qconfLoader.getQp().getLoadedDataContainer().getStats().sHs.get(h), mapCell);
+                qp.getLoadedDataContainer().getStats().sHs.get(h), mapCell);
 
         cellStat.writeCell(cellStatFile, h);
         protStatFile.close();
