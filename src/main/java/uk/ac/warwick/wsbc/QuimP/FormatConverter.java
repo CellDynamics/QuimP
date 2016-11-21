@@ -60,14 +60,9 @@ public class FormatConverter {
      */
     public FormatConverter(File fileToConvert) throws QuimpException {
         LOGGER.debug("Use provided file:" + fileToConvert.toString());
-        try {
-            qcL = new QconfLoader(fileToConvert);
-            path = Paths.get(fileToConvert.getParent());
-            filename = Paths.get(qcL.getQp().getFileName()); // can contain xx_0 if old file loaded
-        } catch (QuimpException e) { // rethrow with showing in UI
-            e.setMessageSinkType(MessageSinkTypes.GUI);
-            throw e;
-        }
+        qcL = new QconfLoader(fileToConvert);
+        path = Paths.get(fileToConvert.getParent());
+        filename = Paths.get(qcL.getQp().getFileName()); // can contain xx_0 if old file loaded
     }
 
     /**
@@ -116,7 +111,7 @@ public class FormatConverter {
      * @throws QuimpException on wrong inputs
      * @throws FileNotFoundException
      */
-    public void generateNewDataFile() throws QuimpException, FileNotFoundException {
+    private void generateNewDataFile() throws QuimpException, FileNotFoundException {
         //!>
         LOGGER.warn("\n----------------------------------------------------------\n"
                 + "Warning:\n"
@@ -291,6 +286,7 @@ public class FormatConverter {
      * 
      * @throws IOException
      * 
+     *         TODO make private after #263
      */
     public void generateOldDataFile() throws IOException {
         //!>

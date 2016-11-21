@@ -181,7 +181,7 @@ public class FormatConverterTest {
         QconfLoader qC = new QconfLoader(new File(
                 "/home/baniuk/Documents/Repos/QuimP/src/test/resources/FormatConverter/res/0pt7%agar_bleb2_0.paQP"));
         FormatConverter fC = new FormatConverter(qC);
-        fC.generateNewDataFile();
+        accessPrivate("generateNewDataFile", fC, new Object[] {}, new Class<?>[] {});
     }
 
     /**

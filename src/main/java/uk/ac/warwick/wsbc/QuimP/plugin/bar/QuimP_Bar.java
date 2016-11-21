@@ -50,6 +50,7 @@ import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QuimP;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
+import uk.ac.warwick.wsbc.QuimP.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
@@ -416,6 +417,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
                 fC.showConversionCapabilities(frame);
                 fC.doConversion();
             } catch (QuimpException qe) {
+                qe.setMessageSinkType(MessageSinkTypes.GUI);
                 qe.handleException(frame, "Error during conversion:");
             } catch (Exception e1) {
                 LOGGER.debug(e1.getMessage(), e1);
