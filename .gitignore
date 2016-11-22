@@ -1,6 +1,7 @@
 **/Doxygen_doc/html/
 **/Doxygen_doc/latex/
 **/Doxygen_doc/Doxygen_doc/
+**/doc-files/*_UML.png
 doc/
 
 .directory
