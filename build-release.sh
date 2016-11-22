@@ -115,7 +115,9 @@ echo '------------------------------------------------------------------'
 echo Postprocessing:
 echo Start Fiji from $FIJI and push plugin to plugin repository
 echo "git push --all && git push --tags"
+echo "push all to trac and origin in pom-quimp-plugins"
 kill $SSH_AGENT_PID
 # git push --all && git push --tags
+
 
 
