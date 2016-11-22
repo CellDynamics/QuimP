@@ -451,10 +451,7 @@ public class QParams {
                 int lastDot = sn.lastIndexOf(".");
 
                 String tempS = sn.substring(0, lastDot);
-                // System.out.println("tempS: " + tempS+", ld = " + lastDot);
                 statsQP = new File(paramFile.getParent() + tempS + FileExtensions.statsFileExt);
-                // System.out.println("stats file: " +
-                // statsQP.getAbsolutePath());
             }
             snakeQP = new File(paramFile.getParent() + "" + sn); // snQP file
             LOGGER.debug("snake file: " + snakeQP.getAbsolutePath());
@@ -532,12 +529,10 @@ public class QParams {
         pPW.print(IJ.d2s(frameInterval, 3) + "\n");
 
         // according to BOAState and /trac/QuimP/wiki/QuimpQp
-        //!<
         pPW.print("#segmentation parameters (" + "Maximum number of nodes, " + "ND, "
                 + "Max iterations, " + "Node spacing, " + "Blowup, " + "Sample tan, "
                 + "Sample norm, " + "Crit velocity, " + "Central F, " + "Contract F, " + "ND, "
                 + "Image force, " + "ND)\n");
-        /**/
         pPW.print(IJ.d2s(NMAX, 0) + "\n");
         pPW.print(IJ.d2s(delta_t, 6) + "\n");
         pPW.print(IJ.d2s(max_iterations, 6) + "\n");
