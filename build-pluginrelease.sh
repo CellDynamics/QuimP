@@ -10,8 +10,6 @@ set -e
 if [ "$#" -ne 3 ]; then
     echo "syntax: build-pluginrelease releaseVersion developmentVersion pluginRoot"
     echo "Example: build-release.sh 16.08.02 16.08.03-SNAPSHOT ../plugin"
-    echo "Current version is the version listed in develop branch before any action"
-    echo "Should be the same as in pom-quimp-plugin"
     echo ""
     mvn help:evaluate -Dexpression=project.version
     exit 1
@@ -40,12 +38,8 @@ esac
 # Start the release by creating a new release branch
 git checkout -b release/$releaseVersion $currentBranch
 
-echo "Prepare changelog and commit it here"
-echo '	Before continuing changelog at src/changes'
-echo '	must be modified in respect to fixed bugs'
+echo "Update masterpom version to release version avalable"
 echo 'Be prepared for signing'
-echo 'LICENSE.txt and resources/LICENSE.txt must be the same'
-echo 'pom-plugin version must be updated'
 read -r -p "Are you sure to continue? [y/N] " response
 case $response in
     [yY][eE][sS]|[yY]) 
