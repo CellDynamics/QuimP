@@ -6,6 +6,35 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="16.11.01" date="2016-11-22" description="Release">
+          <action dev="baniuk" type="add" issue="230">
+              Protruision Analysis: Statistics can be previeved in IJ standard measurement window.
+          </action>
+          <action dev="baniuk" type="update" issue="250">
+              QuimP: Use standard IJ logging framework.
+          </action>
+          <action dev="baniuk" type="update" issue="245">
+              QuimP: Add automatic versioning in plugins based on Maven.
+          </action>
+          <action dev="baniuk" type="update" issue="83">
+              QuimP-DIC: Create results as new images.
+          </action>
+          <action dev="baniuk" type="add" issue="260">
+              QuimP-DIC: Add perpendicular averaging.
+          </action>
+          <action dev="baniuk" type="fix" issue="264">
+              QuimP: QCONF and paQP side-saved on new file format path contains wrong fluoro datafiles.
+          </action>
+          <action dev="baniuk" type="update" issue="223">
+              QuimP: Support conversion of ANA and Stats data by FormatConverter.
+          </action>
+          <action dev="baniuk" type="update" issue="197">
+              Random Walk: Show user friendly message when input image in wrong format.
+          </action>
+          <action dev="baniuk" type="update" issue="263">
+              QuimP: Disable modules to produce paQP files if new format selected.
+          </action>
+      </release>
       <release version="16.10.03" date="2016-10-20" description="Hot Fix">
           <action dev="baniuk" type="fix" issue="249">
               QuimP: License could not be displayed in QuimP Bar.
