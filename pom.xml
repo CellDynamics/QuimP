@@ -110,24 +110,24 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.slf4j</groupId>
-    	<artifactId>slf4j-api</artifactId>
-    	<version>1.7.6</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.6</version>
     </dependency>
     <dependency>
-    	<groupId>ch.qos.logback</groupId>
-    	<artifactId>logback-core</artifactId>
-    	<version>1.1.1</version>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
-    	<groupId>ch.qos.logback</groupId>
-    	<artifactId>logback-classic</artifactId>
-    	<version>1.1.1</version>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
-    	<groupId>org.scijava</groupId>
-    	<artifactId>scijava-config</artifactId>
-    	<version>2.0.1</version>
+      <groupId>org.scijava</groupId>
+      <artifactId>scijava-config</artifactId>
+      <version>2.0.1</version>
     </dependency>
   </dependencies>
   <build>
@@ -138,6 +138,42 @@
       </resource>
     </resources>
     <plugins>
+      <!-- https://www.smartics.eu/confluence/display/BLOG/2012/12/17/Using+PlantUML -->
+      <plugin>
+        <groupId>com.github.jeluard</groupId>
+        <artifactId>maven-plantuml-plugin</artifactId>
+        <version>7940</version>
+        <configuration>
+          <sourceFiles>
+            <directory>${basedir}/src/main/java</directory>
+            <includes>
+              <include>**/*.java</include>
+            </includes>
+          </sourceFiles>
+        </configuration>
+        <executions>
+          <execution>
+            <id>plantuml-javadoc-site</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <phase>pre-site</phase>
+            <configuration>
+              <outputDirectory>${basedir}/target/site/apidocs</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>plantuml-javadoc</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <outputDirectory>${basedir}/target/apidocs</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
