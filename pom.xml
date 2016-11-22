@@ -4,7 +4,7 @@
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
-  <version>16.10.03-SNAPSHOT</version>
+  <version>16.11.01</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>http://www2.warwick.ac.uk/fac/sci/systemsbiology/staff/baniukiewicz/quimp/</url>
@@ -21,7 +21,7 @@
     <connection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</connection>
     <developerConnection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</developerConnection>
     <url>http://www.trac-wsbc.linkpc.net:8080/cgit/QuimP.git/</url>
-    <tag>HEAD</tag>
+    <tag>v16.11.01</tag>
   </scm>
   <issueManagement>
     <system>Trac</system>
