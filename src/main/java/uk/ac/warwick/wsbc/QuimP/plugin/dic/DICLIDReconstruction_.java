@@ -70,7 +70,7 @@ public class DICLIDReconstruction_ implements PlugInFilter {
             ImagePlus result = new ImagePlus("DIC_" + imp.getTitle(),
                     new ShortProcessor(ip.getWidth(), ip.getHeight()));
             dic = new LidReconstructor(imp.getProcessor(), decay, angle, prefilterangle, masksize);
-            if (imp.getNSlices() == 1) {// if there is no stack we can avoid additional rotation
+            if (imp.getStack().getSize() == 1) {// if there is no stack we can avoid additional rotation
                                         // here (see DICReconstruction documentation)
                 IJ.showProgress(0.0);
                 ret = dic.reconstructionDicLid();

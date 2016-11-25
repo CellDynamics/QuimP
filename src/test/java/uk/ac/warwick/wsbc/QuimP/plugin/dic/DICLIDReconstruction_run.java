@@ -1,8 +1,8 @@
-/**
- */
-package uk.ac.warwick.wsbc.QuimP;
+package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.dic.DICLIDReconstruction_;
+import ij.IJ;
+import ij.ImageJ;
+import ij.ImagePlus;
 
 /**
  * Gui checker for DICLIDReconstruction
@@ -11,7 +11,7 @@ public class DICLIDReconstruction_run {
 
     // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
     static {
-        System.setProperty("log4j.configurationFile", "qlog4j2.xml");
+        System.setProperty("logback.configurationFile", "quimp-logback.xml");
     }
 
     /**
@@ -20,7 +20,12 @@ public class DICLIDReconstruction_run {
      * @test Gui checker for DICLIDReconstruction
      */
     public static void main(String[] args) throws InterruptedException {
+        ImageJ ij = new ImageJ();
+        ImagePlus i = IJ.openImage( // load images #268
+                "/tmp/C2-bleb_Image4.tif");
+        i.show();
         DICLIDReconstruction_ dic = new DICLIDReconstruction_();
-        dic.showDialog();
+        dic.setup("", i);
+        dic.run(i.getProcessor());
     }
 }
