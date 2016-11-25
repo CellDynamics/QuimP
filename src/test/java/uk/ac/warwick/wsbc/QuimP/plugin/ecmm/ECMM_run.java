@@ -2,7 +2,7 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.ecmm;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
+import ij.ImageJ;
 
 /**
  * @author p.baniukiewicz
@@ -11,14 +11,14 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
 public class ECMM_run {
 
     static {
-        System.setProperty("quimp.debugLevel", "qlog4j2.xml");
+        System.setProperty("logback.configurationFile", "quimp-logback.xml");
     }
 
     /**
      * @param args
      */
     public static void main(String[] args) {
-
+        ImageJ ij = new ImageJ();
         new ECMM_Mapping();
 
     }
