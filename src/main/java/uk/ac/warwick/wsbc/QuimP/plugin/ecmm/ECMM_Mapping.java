@@ -130,8 +130,10 @@ public class ECMM_Mapping {
                             plot.close();
 
                             paramFile = otherPaFiles[j];
-                            qp = new QParams(paramFile);
-                            qp.readParams();
+                            qconfLoader = new QconfLoader(paramFile); // load file
+                            if (qconfLoader == null || qconfLoader.getQp() == null)
+                                return; // failed to load exit
+                            qp = qconfLoader.getQp();
                             if (!qp.isEcmmHasRun()) {
                                 System.out
                                         .println("Running on " + otherPaFiles[j].getAbsolutePath());
