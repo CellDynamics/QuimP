@@ -6,6 +6,17 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="16.11.02" date="2016-11-25" description="Release">
+          <action dev="baniuk" type="fix" issue="261">
+              QuimP-ECMM: Batch processing skips _1.snQP files.
+          </action>
+          <action dev="baniuk" type="add" issue="269">
+              QuimP-RandomWalk: Better notification on lack of seed when processing stacks.
+          </action>
+          <action dev="baniuk" type="fix" issue="268">
+              QuimP-DIC: DIC does not process stacks.
+          </action>
+      </release>
       <release version="16.11.01" date="2016-11-22" description="Release">
           <action dev="baniuk" type="add" issue="230">
               Protruision Analysis: Statistics can be previeved in IJ standard measurement window.
