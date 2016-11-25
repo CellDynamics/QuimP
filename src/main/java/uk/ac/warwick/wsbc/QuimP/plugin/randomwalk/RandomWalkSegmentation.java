@@ -26,7 +26,7 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
 /**
- * Perform element-wise multiplication by value (.*val in Matlab)
+ * Perform element-wise multiplication by value (.*val in Matlab).
  * 
  * @author p.baniukiewicz
  * @remarks Done in-place
@@ -89,7 +89,7 @@ class MatrixElementExp implements RealMatrixChangingVisitor {
 }
 
 /**
- * Perform element-wise power (.^2 in Matlab) and then divide by val
+ * Perform element-wise power (.^2 in Matlab) and then divide by val.
  * 
  * @author p.baniukiewicz
  * @remarks Done in-place
@@ -121,7 +121,7 @@ class MatrixElementPowerDiv implements RealMatrixChangingVisitor {
 }
 
 /**
- * Perform element-wise power (.^2 in Matlab)
+ * Perform element-wise power (.^2 in Matlab).
  * 
  * @author p.baniukiewicz
  * @remarks Done in-place
@@ -138,7 +138,7 @@ class MatrixElementPower implements RealMatrixChangingVisitor {
     }
 
     /**
-     * Multiply entry by itself
+     * Multiply entry by itself.
      */
     @Override
     public double visit(int arg0, int arg1, double arg2) {
@@ -147,7 +147,7 @@ class MatrixElementPower implements RealMatrixChangingVisitor {
 }
 
 /**
- * Multiply in-place this matrix by another
+ * Multiply in-place this matrix by another.
  * 
  * @author p.baniukiewicz
  *
@@ -182,7 +182,7 @@ class MatrixDotProduct implements RealMatrixChangingVisitor {
 }
 
 /**
- * Divide in-place this matrix by another
+ * Divide in-place this matrix by another.
  * 
  * @author p.baniukiewicz
  *
@@ -217,7 +217,7 @@ class MatrixDotDiv implements RealMatrixChangingVisitor {
 }
 
 /**
- * Add in-place this matrix to another
+ * Add in-place this matrix to another.
  * 
  * @author p.baniukiewicz
  *
@@ -252,7 +252,7 @@ class MatrixDotAdd implements RealMatrixChangingVisitor {
 }
 
 /**
- * Sub in-place this matrix to another
+ * Sub in-place this matrix to another.
  * 
  * @author p.baniukiewicz
  *
@@ -287,7 +287,7 @@ class MatrixDotSub implements RealMatrixChangingVisitor {
 }
 
 /**
- * Sub and then div in-place this matrix and another
+ * Sub and then div in-place this matrix and another.
  * 
  * @author p.baniukiewicz
  *
@@ -321,7 +321,7 @@ class MatrixDotSubDiv implements RealMatrixChangingVisitor {
 }
 
 /**
- * This is implementation of Matlab version of Random Walk segmentation algorithm
+ * This is implementation of Matlab version of Random Walk segmentation algorithm.
  * 
  * @author p.baniukiewicz
  * @see src/test/resources/Matlab/rw_laplace4_java_base.m at <a href="./examples.html">Examples</a>
@@ -330,18 +330,42 @@ public class RandomWalkSegmentation {
 
     static final Logger LOGGER = LoggerFactory.getLogger(RandomWalkSegmentation.class.getName());
 
-    public static final int RIGHT = -10; //!< Direction of circshift coded as in Matlab */
-    public static final int LEFT = 10; //!< Direction of circshift coded as in Matlab */
-    public static final int TOP = -01; //!< Direction of circshift coded as in Matlab */
-    public static final int BOTTOM = 01; //!< Direction of circshift coded as in Matlab */
-    public static final int FOREGROUND = 0; //!< Definition of foreground pixels */
-    public static final int BACKGROUND = 1; //!< Definition of background pixels */
-
-    private RealMatrix image; //!< Image to process in 8bit greyscale
-    private Params params; //!< User provided parameters
+    /**
+     * Direction of circshift coded as in Matlab.
+     */
+    public static final int RIGHT = -10;
+    /**
+     * Direction of circshift coded as in Matlab.
+     */
+    public static final int LEFT = 10;
+    /**
+     * Direction of circshift coded as in Matlab.
+     */
+    public static final int TOP = -01;
+    /**
+     * Direction of circshift coded as in Matlab.
+     */
+    public static final int BOTTOM = 01;
+    /**
+     * Definition of foreground pixels.
+     */
+    public static final int FOREGROUND = 0;
+    /**
+     * Definition of background pixels.
+     */
+    public static final int BACKGROUND = 1;
 
     /**
-     * Construct segmentation object from ImageProcessor
+     * Image to process in 8bit greyscale.
+     */
+    private RealMatrix image;
+    /**
+     * User provided parameters.
+     */
+    private Params params;
+
+    /**
+     * Construct segmentation object from ImageProcessor.
      * 
      * @param ip image to segment
      * @param params parameters
@@ -354,7 +378,7 @@ public class RandomWalkSegmentation {
     }
 
     /**
-     * Construct segmentation object from 2D RealMatrix representing image
+     * Construct segmentation object from 2D RealMatrix representing image.
      * 
      * @param image image to segment
      * @param params parameters
@@ -365,7 +389,7 @@ public class RandomWalkSegmentation {
     }
 
     /**
-     * Main runner, does segmentation
+     * Main runner, does segmentation.
      * 
      * @param seeds Seed arrays from decodeSeeds(ImagePlus, Color, Color)
      * @return Segmented image as ByteProcessor
@@ -374,7 +398,8 @@ public class RandomWalkSegmentation {
     public ImageProcessor run(Map<Integer, List<Point>> seeds) throws RandomWalkException {
         if (seeds.get(FOREGROUND).isEmpty() || seeds.get(BACKGROUND).isEmpty())
             throw new RandomWalkException(
-                    "Seed pixels are empty, check whether correct colors were used");
+                    "Seed pixels are empty, check if:\n- correct colors were used\n- all slices have"
+                            + " been seeded (if stacked seed is used).");
         RealMatrix[] precomputed = precompute(); // precompute gradients
         RealMatrix[] solved = solver(image, seeds, precomputed, params); // run solver
         RealMatrix result = compare(solved[FOREGROUND], solved[BACKGROUND]); // result as matrix

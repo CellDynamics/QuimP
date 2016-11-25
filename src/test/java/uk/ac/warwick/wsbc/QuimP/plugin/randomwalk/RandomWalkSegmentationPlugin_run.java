@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
 import java.awt.event.WindowAdapter;
@@ -17,9 +15,10 @@ public class RandomWalkSegmentationPlugin_run {
     static {
         System.setProperty("logback.configurationFile", "quimp-logback.xml");
     }
+
     /**
      * @param args
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     @SuppressWarnings("unused")
     public static void main(String[] args) throws InterruptedException {
