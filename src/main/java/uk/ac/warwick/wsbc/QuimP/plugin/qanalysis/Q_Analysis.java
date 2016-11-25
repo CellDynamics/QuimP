@@ -93,8 +93,8 @@ public class Q_Analysis {
                         for (int j = 0; j < otherPaFiles.length; j++) {
                             IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
                             paramFile = otherPaFiles[j];
-                            qp = new QParams(paramFile);
-                            qp.readParams();
+                            qconfLoader = new QconfLoader(paramFile);
+                            qp = qconfLoader.getQp();
                             Qp.setup(qp);
                             oH = new OutlineHandler(qp); // prepare current OutlineHandler
                             if (!oH.readSuccess) {

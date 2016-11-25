@@ -1,6 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.qanalysis;
 
-import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Q_Analysis;
+import ij.ImageJ;
 
 /**
  * Test runner for Q_Analysis
@@ -10,13 +10,14 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Q_Analysis;
  */
 public class Q_Analysis_run {
     static {
-        System.setProperty("quimp.debugLevel", "qlog4j2.xml");
+        System.setProperty("logback.configurationFile", "quimp-logback.xml");
     }
 
     /**
      * @param args
      */
     public static void main(String[] args) {
+        ImageJ ij = new ImageJ();
         // if default constructor is used Q_Analysis will ask for paQP file
         // new Q_Analysis(
         // Paths.get("/home/p.baniukiewicz/Desktop/Tests/ticket150/fluoreszenz-test_eq_smooth.QCONF"));

@@ -128,19 +128,17 @@ public class ECMM_Mapping {
 
                         for (int j = 0; j < otherPaFiles.length; j++) {
                             plot.close();
-
                             paramFile = otherPaFiles[j];
                             qconfLoader = new QconfLoader(paramFile); // load file
                             if (qconfLoader == null || qconfLoader.getQp() == null)
                                 return; // failed to load exit
                             qp = qconfLoader.getQp();
                             if (!qp.isEcmmHasRun()) {
-                                System.out
-                                        .println("Running on " + otherPaFiles[j].getAbsolutePath());
+                                IJ.log("Running on " + otherPaFiles[j].getAbsolutePath());
                                 runFromPAQP();
                                 runOn.add(otherPaFiles[j].getName());
                             } else {
-                                System.out.println("Skipped " + otherPaFiles[j].getAbsolutePath());
+                                IJ.log("Skipped " + otherPaFiles[j].getAbsolutePath());
                                 skipped.add(otherPaFiles[j].getName());
                             }
 
