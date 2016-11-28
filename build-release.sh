@@ -62,6 +62,8 @@ case $response in
         ;;
 esac
 # The Maven release
+# Install curent snapshot
+mvn clean install
 mvn clean
 mvn -T 1C --batch-mode release:prepare -DreleaseVersion=$releaseVersion -DdevelopmentVersion=$developmentVersion
 mvn -T 1C --batch-mode release:perform
