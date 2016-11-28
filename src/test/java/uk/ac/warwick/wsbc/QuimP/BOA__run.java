@@ -33,7 +33,7 @@ import ij.gui.Toolbar;
 @SuppressWarnings("unused")
 public class BOA__run {
     static {
-        System.setProperty("quimp.debugLevel", "qlog4j2.xml");
+        System.setProperty("logback.configurationFile", "quimp-logback.xml");
     }
 
     /**

@@ -1930,7 +1930,6 @@ public class BOA_ implements PlugIn {
                         } catch (QuimpPluginException qpe) {
                             // must be rewritten with whole runBOA #65 #67
                             BOA_.log("Error in filter module: " + qpe.getMessage());
-                            LOGGER.error(qpe.getMessage());
                             LOGGER.debug(qpe.getMessage(), qpe);
                             sH.storeLiveSnake(qState.boap.frame); // store segmented nonmodified
 
@@ -1960,8 +1959,7 @@ public class BOA_ implements PlugIn {
                         imageGroup.setIpSliceAll(qState.boap.frame);
                         imageGroup.updateOverlay(qState.boap.frame);
                     } else {
-                        System.out.println("\nL811. Exception");
-                        throw be;
+                        throw be; // do no add LOGGER here #278
                     }
                 } finally {
                     historyLogger.addEntry("Processing", qState);
@@ -1975,7 +1973,8 @@ public class BOA_ implements PlugIn {
             /// imageGroup.drawContour(nest.getSNAKES(), frame);
             // imageGroup.updateAndDraw();
             qState.boap.SEGrunning = false;
-            e.printStackTrace();
+            LOGGER.debug(e.getMessage(), e);
+            // do no add LOGGER here #278
             throw new BoaException("Frame " + qState.boap.frame + ": " + e.getMessage(),
                     qState.boap.frame, 1);
         }
