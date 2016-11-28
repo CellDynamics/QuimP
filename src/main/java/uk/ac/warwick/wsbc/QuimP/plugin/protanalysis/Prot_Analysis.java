@@ -216,7 +216,6 @@ public class Prot_Analysis implements IQuimpPlugin {
             visStackOutline.getOriginalImage().setTitle("Outlines");
         }
 
-        TrackMapAnalyser pT = new TrackMapAnalyser();
         LOGGER.trace("Cells in database: " + stMap.length);
         for (STmap mapCell : stMap) { // iterate through cells
             // convert binary 2D array to ImageJ
@@ -226,6 +225,7 @@ public class Prot_Analysis implements IQuimpPlugin {
             MaximaFinder mF = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
             mF.computeMaximaIJ(config.noiseTolerance); // 1.5
             // track maxima across motility map
+            TrackMapAnalyser pT = new TrackMapAnalyser();
             pT.trackMaxima(mapCell, config.dropValue, mF);
             TrackCollection trackCollection = pT.getTrackCollection();
 
