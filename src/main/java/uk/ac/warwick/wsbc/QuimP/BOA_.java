@@ -2737,11 +2737,16 @@ class ImageGroup {
         SnakeHandler sH;
         Snake snake;
 
-        sH = nest.getHandler(snakeID);
+        try {
+            sH = nest.getHandler(nest.findIndex(snakeID));// snakeID
 
-        if (sH != null && sH.isStoredAt(frame)) {
-            snake = sH.getStoredSnake(frame);
-        } else {
+            if (sH != null && sH.isStoredAt(frame)) {
+                snake = sH.getStoredSnake(frame);
+            } else {
+                return;
+            }
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.debug(e.getMessage(), e);
             return;
         }
 

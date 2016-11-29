@@ -243,6 +243,20 @@ public class Nest implements IQuimpSerialize {
         NSNAKES--;
     }
 
+    int findIndex(int id) {
+        int ret = -1;
+        for (int i = 0; i < sHs.size(); i++)
+            if (sHs.get(i) != null && sHs.get(i).getID() == id) {
+                ret = i;
+                break;
+            }
+        if (ret < 0)
+            throw new IllegalArgumentException(
+                    "SnakeHandler of index " + id + " not found in nest");
+        else
+            return ret;
+    }
+
     /**
      * Remove all handlers from Nest. Make Nest empty
      */
