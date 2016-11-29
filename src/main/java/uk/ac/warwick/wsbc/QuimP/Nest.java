@@ -300,7 +300,7 @@ public class Nest implements IQuimpSerialize {
     }
 
     /**
-     * Prepare for segmentation from frame \c f
+     * Prepare for segmentation from frame f.
      * 
      * @param f current frame under segmentation
      */
@@ -319,7 +319,7 @@ public class Nest implements IQuimpSerialize {
                     sH.resetForFrame(f);
                 }
             } catch (Exception e) {
-                LOGGER.error("Could not reset snake " + e.getMessage(), e);
+                LOGGER.debug("Could not reset snake " + e.getMessage(), e);
                 BOA_.log("Could not reset snake " + sH.getID());
                 BOA_.log("Removing snake " + sH.getID());
                 // collect handler to remove. It will be removed later to avoid list modification in
@@ -333,7 +333,7 @@ public class Nest implements IQuimpSerialize {
     }
 
     /**
-     * Get list of snakes (its IDs) that are on frame \c frame
+     * Get list of snakes (its IDs) that are on frame frame.
      * 
      * @param frame Frame find snakes in
      * @return List of Snake id on \c frame
