@@ -17,7 +17,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
 /**
- * Represent collection of Snakes.
+ * Represent collection of SnakeHandlers.
  * 
  * @author rtyson
  * @author p.baniukiewicz
@@ -26,6 +26,18 @@ public class Nest implements IQuimpSerialize {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Nest.class.getName());
 
+    /**
+     * List of SnakeHandlers.
+     * 
+     * SnakeHandlers get subsequent IDs therefore index in this array matches SnakeHandler's ID.
+     * This relation can be broken when any cell is deleted using
+     * {@link #removeHandler(SnakeHandler)} method that simply removes it from array shifting other
+     * objects down.
+     * 
+     * This array should be accessed by {@link #getHandler(int)} when one needs access handler on
+     * certain index but does not care about its ID or {@link #getHandlerofId(int)} when ID is
+     * crucial.
+     */
     private ArrayList<SnakeHandler> sHs;
     /**
      * Number of stored snakes in nest.
@@ -111,8 +123,35 @@ public class Nest implements IQuimpSerialize {
         return sH;
     }
 
+    /**
+     * 
+     * @param s Index of SnakeHandler to get.
+     * @return SnakeHandler stored on index s. It may refer to SnakeHandler ID but may break when
+     *         any cell has been deleted.
+     * @see #getHandlerofId(int)
+     */
     public SnakeHandler getHandler(int s) {
         return sHs.get(s);
+    }
+
+    /**
+     * 
+     * @param id ID of SnakeHandler to find in Nest.
+     * @return SnakeHandler with demanded ID. Throw exception if not found.
+     * @see #getHandler(int)
+     */
+    public SnakeHandler getHandlerofId(int id) {
+        int ret = -1;
+        for (int i = 0; i < sHs.size(); i++)
+            if (sHs.get(i) != null && sHs.get(i).getID() == id) {
+                ret = i;
+                break;
+            }
+        if (ret < 0)
+            throw new IllegalArgumentException(
+                    "SnakeHandler of index " + id + " not found in nest");
+        else
+            return getHandler(ret);
     }
 
     /**
@@ -294,7 +333,7 @@ public class Nest implements IQuimpSerialize {
     }
 
     /**
-     * Get list of snakes that are on frame \c frame
+     * Get list of snakes (its IDs) that are on frame \c frame
      * 
      * @param frame Frame find snakes in
      * @return List of Snake id on \c frame
