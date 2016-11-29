@@ -1418,11 +1418,10 @@ public class BOA_ implements PlugIn {
                                 new DataContainerInstanceCreator(pluginFactory, viewUpdater));
                         loaded = s.load(od.getDirectory() + od.getFileName());
                         // check against image names
-                        if (!loaded.obj.BOAState.boap.getFileName()
-                                .equals(qState.boap.getFileName())) {
-                            LOGGER.warn(
-                                    "The image opened currently in BOA is different from those +"
-                                            + " pointed in configuration file");
+                        if (!loaded.obj.BOAState.boap.getOrgFile().getName()
+                                .equals(qState.boap.getOrgFile().getName())) {
+                            LOGGER.warn("The image opened currently in BOA is different from those"
+                                    + " pointed in configuration file");
                             log("Trying to apply configuration saved for other image");
                             YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(),
                                     "Warning", "Trying to load configuration that does not\nmath to"
