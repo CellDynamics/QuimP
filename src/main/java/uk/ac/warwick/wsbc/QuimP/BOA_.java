@@ -2738,8 +2738,7 @@ class ImageGroup {
         Snake snake;
 
         try {
-            sH = nest.getHandler(nest.findIndex(snakeID));// snakeID
-
+            sH = nest.getHandlerofId(snakeID);// snakeID, not index
             if (sH != null && sH.isStoredAt(frame)) {
                 snake = sH.getStoredSnake(frame);
             } else {
