@@ -476,6 +476,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
                     "Tried to delete negative frame store\n\tframe:" + frame + "\n\tsnakeID:" + ID);
         } else {
             finalSnakes[frame - startFrame] = null;
+            segSnakes[frame - startFrame] = null;
         }
     }
 
