@@ -105,7 +105,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      * @param frame Frame for which \c liveSnake will be copied to
      * @throws BoaException
      */
-    public void storeLiveSnake(int frame) throws BoaException {
+    public void storeLiveSnake(int frame) {
         finalSnakes[frame - startFrame] = null; // delete at current frame
         finalSnakes[frame - startFrame] = new Snake(liveSnake, ID);
     }
@@ -121,7 +121,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      * @param frame current frame
      * @throws BoaException
      */
-    public void backupLiveSnake(int frame) throws BoaException {
+    public void backupLiveSnake(int frame) {
 
         LOGGER.trace("Stored live snake in frame " + frame + " ID " + ID);
         segSnakes[frame - startFrame] = null; // delete at current frame

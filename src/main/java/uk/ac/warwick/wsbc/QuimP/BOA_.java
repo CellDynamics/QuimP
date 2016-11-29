@@ -2181,25 +2181,14 @@ public class BOA_ implements PlugIn {
             // if any problem with plugin or other, store snake without modification
             // because snake.asList() returns copy
         } catch (QuimpPluginException qpe) {
-            try {
-                sH.storeLiveSnake(f);
-            } catch (BoaException be) {
-                BOA_.log("Could not store new snake");
-                LOGGER.debug(be.getMessage(), be);
-            }
+            sH.storeLiveSnake(f);
             BOA_.log("Error in filter module: " + qpe.getMessage());
             LOGGER.debug(qpe.getMessage(), qpe);
         } catch (BoaException be) {
             sH.deleteStoreAt(f);
             sH.kill();
-//            try {
-//                sH.backupLiveSnake(f);
-//                sH.storeLiveSnake(f);
-//            } catch (BoaException e) {
-//                // TODO Auto-generated catch block
-//                e.printStackTrace();
-//            }
-
+            sH.backupLiveSnake(f);
+            sH.storeLiveSnake(f);
             BOA_.log("New snake failed to converge: " + be.getMessage());
             LOGGER.debug(be.getMessage(), be);
         } catch (Exception e) {
