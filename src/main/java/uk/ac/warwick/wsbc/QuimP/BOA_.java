@@ -1974,6 +1974,7 @@ public class BOA_ implements PlugIn {
             // imageGroup.updateAndDraw();
             qState.boap.SEGrunning = false;
             LOGGER.debug(e.getMessage(), e);
+            imageGroup.updateOverlay(qState.boap.frame); // update on error
             // do no add LOGGER here #278
             throw new BoaException("Frame " + qState.boap.frame + ": " + e.getMessage(),
                     qState.boap.frame, 1);
@@ -2090,10 +2091,6 @@ public class BOA_ implements PlugIn {
                     break;
                 }
             }
-            // if (i == boap.max_iterations - 1) {
-            // BOA_.log("Frame " + frame + "-max iterations reached");
-            // }
-            // break;
         }
         snake.unfreezeAll(); // set freeze tag back to false
 
@@ -2170,7 +2167,6 @@ public class BOA_ implements PlugIn {
      */
     // @SuppressWarnings("unchecked")
     void addCell(final Roi r, int f) {
-        boolean isPluginError = false; // any error from plugin?
         SnakeHandler sH = qState.nest.addHandler(r, f);
         Snake snake = sH.getLiveSnake();
         imageGroup.setProcessor(f);
@@ -2181,28 +2177,24 @@ public class BOA_ implements PlugIn {
             sH.backupLiveSnake(f);
             Snake out = iterateOverSnakePlugins(snake); // process segmented snake by plugins
             sH.storeThisSnake(out, f); // store processed snake as final
+
+            // if any problem with plugin or other, store snake without modification
+            // because snake.asList() returns copy
         } catch (QuimpPluginException qpe) {
-            isPluginError = true; // we have error
+            sH.storeLiveSnake(f);
             BOA_.log("Error in filter module: " + qpe.getMessage());
-            LOGGER.error(qpe.getMessage());
             LOGGER.debug(qpe.getMessage(), qpe);
         } catch (BoaException be) {
-            BOA_.log("New snake failed to converge");
-            LOGGER.error(be.getMessage());
+            sH.deleteStoreAt(f);
+            sH.kill();
+            sH.backupLiveSnake(f);
+            sH.storeLiveSnake(f);
+            BOA_.log("New snake failed to converge: " + be.getMessage());
             LOGGER.debug(be.getMessage(), be);
         } catch (Exception e) {
-            BOA_.log("Undefined error from plugin");
+            BOA_.log("Undefined error");
             LOGGER.error(e.getMessage(), e);
-        }
-        // if any problem with plugin or other, store snake without modification
-        // because snake.asList() returns copy
-        try {
-            if (isPluginError)
-                sH.storeLiveSnake(f); // so store original livesnake after segmentation
-        } catch (BoaException be) {
-            BOA_.log("Could not store new snake");
-            LOGGER.error(be.getMessage());
-            LOGGER.debug(be.getMessage(), be);
+            LOGGER.debug(e.getMessage(), e);
         } finally {
             imageGroup.updateOverlay(f);
             historyLogger.addEntry("Added cell", qState);
