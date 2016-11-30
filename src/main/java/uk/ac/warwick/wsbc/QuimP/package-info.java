@@ -31,10 +31,48 @@
  * 
  * //!<
  */
+
+/*
+ * //!>
+ * @startuml doc-files/datacontainer_UML.png
+ * DataContainer o--"0..1" BOAState
+ * DataContainer o--"0..1" OutlinesCollection
+ * DataContainer o--"0..1" ANAParamCollection
+ * DataContainer o--"0..1" StatsCollection
+ * DataContainer o--"0.." STmap
+ * BOAState *--"1" BOAp
+ * BOAState *--"1" ParamList
+ * BOAState *--"1.." SegParam
+ * BOAState *--"1.." SnakePluginList
+ * BOAState o--"1" Nest
+ * OutlinesCollection o--"0..1" OutlineHandler
+ * OutlineHandler o--"0..1" Outline
+ * ANAParamCollection o--"0.." ANAp
+ * STmap *--"1..3" FluoMap
+ * CellStats o-- "1..*" FrameStatistics
+ * StatsCollection o-- "1..*" CellStats
+ * DataContainer..|> IQuimpSerialize
+ * BOAState ..|> IQuimpSerialize
+ * OutlinesCollection ..|> IQuimpSerialize
+ * OutlineHandler ..|> IQuimpSerialize
+ * ANAParamCollection ..|> IQuimpSerialize
+ * STmap ..|> IQuimpSerialize
+ * StatsCollection ..|> IQuimpSerialize
+ * @enduml
+ * 
+ * //!<
+ */
 /**
  * This is the main package.
  * 
  * Below there are fragments of QuimP architecture.
+ * <h1>QCONF file description</h1> The content of QCONF file is strictly related to the QuimP
+ * architecture. User is supposed to read JavaDoc documentation for particular classes to find what
+ * data are kept there. The starting point is the main container
+ * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer} that covers the whole QCONF structure.
+ * Briefly relations among classes used by {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer}
+ * are:<br>
+ * <img src="doc-files/datacontainer_UML.png"/><br>
  * 
  * <h1>Architecture</h1>
  * <h2>Generating statistic files</h2>
