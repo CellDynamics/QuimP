@@ -87,9 +87,11 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
     @Override
     public int setup(String arg, ImagePlus imp) {
+        int cap = DOES_8G + DOES_16 + NO_CHANGES;
         about();
         if (imp == null) {
             IJ.error("Image required to take fluoresence measurments.");
+            return cap;
         }
 
         // System.out.println("flouIm dir: " +
@@ -97,7 +99,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         if (imp.getOriginalFileInfo().directory.matches("")) {
             IJ.log("Error: Fluorescence file needs to be saved to disk");
             IJ.error("Please save your fluorescence image to file.");
-            return DOES_8G + DOES_16 + NO_CHANGES;
+            return cap;
         }
 
         IJ.run("Appearance...", " menu=0"); // switch off interpolation of zoomed images
@@ -106,7 +108,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         overlay = new Overlay();
         orgIpl.setOverlay(overlay);
 
-        return DOES_8G + DOES_16 + NO_CHANGES;
+        return cap;
 
     }
 
@@ -114,6 +116,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
     public void run(ImageProcessor Ip) {
         // validate registered user
         new Registration(IJ.getInstance(), "QuimP Registration");
+        if (Ip == null)
+            return;
         IJ.showStatus("ANA Analysis");
         orgIpr = orgIpl.getProcessor();
         ECMp.plot = false;
