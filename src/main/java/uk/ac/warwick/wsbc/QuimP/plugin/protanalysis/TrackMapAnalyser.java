@@ -70,6 +70,12 @@ public class TrackMapAnalyser {
     /**
      * Track maxima across motility map as long as they fulfil criterion of amplitude.
      * 
+     * Return (as internal field {@link TrackCollection}) list of points tracked from every maximum
+     * point as long as they meet criterion. Maximum point can be included in this list depending on
+     * setting of {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst} flag. First points
+     * in tracks are initial points. Forward track is sorted within increasing frames from starting
+     * point, backward according to decreasing frames.
+     * 
      * @param mapCell holds all maps generated and saved by QuimP
      * @param drop the value (in x/100) while velocity remains above of the peak speed. E.g for
      *        drop=1 all tracked points are considered (along positive motility), drop=0.5 stands
@@ -77,11 +83,6 @@ public class TrackMapAnalyser {
      * @param maximaFinder properly initialized object that holds maxima of motility map. All maxima
      *        are tracked.
      * 
-     *        Return list of points tracked from every maximum point as long as they meet criterion.
-     *        Maximum point can be included in this list depending on setting of
-     *        {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst} flag. First points in
-     *        tracks are initial points. Forward track is sorted within increasing frames from
-     *        starting point, backward according to decreasing frames.
      */
     public void trackMaxima(final STmap mapCell, double drop, final MaximaFinder maximaFinder) {
 

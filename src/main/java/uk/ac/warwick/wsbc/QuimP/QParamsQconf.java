@@ -130,7 +130,7 @@ public class QParamsQconf extends QParams {
         String[] ver = new QuimpToolsCollection().getQuimPBuildInfo();
         if (!loaded.version[0].equals(ver[0])) {
             LOGGER.warn("Loaded config file is in diferent version than current QuimP (" + ver[0]
-                    + " vs " + loaded.version[0]);
+                    + " vs " + loaded.version[0] + ")");
         }
         compatibilityLayer(); // fill underlying data (paQP) from QCONF
     }
