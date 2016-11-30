@@ -633,8 +633,7 @@ public class BOAState implements IQuimpSerialize {
                 setOutputFileCore(File.separator + ip.getTitle());
             } else {
                 orgFile = new File(fileinfo.directory, fileinfo.fileName);
-                setOutputFileCore(fileinfo.directory
-                        + QuimpToolsCollection.removeExtension(orgFile.getName()));
+                setOutputFileCore(fileinfo.directory + orgFile.getName());
             }
 
             FRAMES = ip.getStackSize(); // get number of frames
