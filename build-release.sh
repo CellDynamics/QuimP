@@ -21,6 +21,9 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
+# generate proper images
+java -jar Doxygen_doc/plantuml.jar src/main/java/uk/ac/warwick/wsbc/QuimP/package-info.java
+
 releaseVersion=$1 
 developmentVersion=$2 
 
