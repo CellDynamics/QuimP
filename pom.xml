@@ -41,7 +41,7 @@
   </organization>
   <developers>
     <developer>
-      <id>p.baniukiewicz</id>
+      <id>pbaniukiewicz</id>
       <name>Piotr Baniukiewicz</name>
       <email>p.baniukiewicz@warwick.ac.uk</email>
       <organization>University of Warwick</organization>
@@ -58,6 +58,15 @@
       <organization>University of Warwick</organization>
       <roles>
         <role>principal investigator</role>
+        <role>researcher</role>
+      </roles>
+      <timezone>London</timezone>
+    </developer>
+    <developer>
+      <name>Richard Tyson</name>
+      <organization>University of Warwick</organization>
+      <roles>
+        <role>developer</role>
         <role>researcher</role>
       </roles>
       <timezone>London</timezone>
