@@ -9,8 +9,6 @@ import javax.vecmath.Point3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ij.IJ;
-import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
 /**
