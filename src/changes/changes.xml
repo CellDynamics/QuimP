@@ -6,6 +6,29 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="16.12.01" date="2016-12-08" description="Release">
+          <action dev="baniuk" type="fix" issue="280">
+              Protruision Analysis: Error when processing multiple cells.
+          </action>
+          <action dev="baniuk" type="update" issue="278">
+              QuimP-BOA: Suppress standard console messages.
+          </action>
+          <action dev="baniuk" type="fix" issue="281">
+              QuimP-BOA: Defective snakes are not displayed.
+          </action>
+          <action dev="baniuk" type="fix" issue="282">
+              QuimP-BOA: Zoom does not work in all cases.
+          </action>
+          <action dev="baniuk" type="fix" issue="275">
+              QuimP-BOA: False message after loading file "The image opened currently in BOA is different".
+          </action>
+          <action dev="baniuk" type="update" issue="262">
+              QuimP-ANA: ANA throws unnecessary exception if no file opened.
+          </action>
+          <action dev="baniuk" type="fix" issue="272">
+              QuimP-DIC: DIC failed on 0,90,180,270 deg.
+          </action>
+      </release>
       <release version="16.11.02" date="2016-11-25" description="Release">
           <action dev="baniuk" type="fix" issue="261">
               QuimP-ECMM: Batch processing skips _1.snQP files.
