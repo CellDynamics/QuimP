@@ -2,7 +2,11 @@ package uk.ac.warwick.wsbc.QuimP.plugin.generatemask;
 
 import java.awt.Color;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +20,8 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.Nest;
 import uk.ac.warwick.wsbc.QuimP.QParams;
+import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
+import uk.ac.warwick.wsbc.QuimP.QuimP;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.Snake;
 import uk.ac.warwick.wsbc.QuimP.SnakeHandler;
@@ -29,6 +35,10 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
+ * Convert QCONF files to BW masks.
+ * 
+ * Use Snake data produced by BOA.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -109,29 +119,40 @@ public class GenerateMask implements IQuimpPlugin {
     private void runFromQCONF() throws QuimpException {
         BOAState bs = qconfLoader.getBOA();
         Nest nest = bs.nest;
+        // create output image
         ImagePlus res = NewImage.createByteImage("test", bs.boap.getWIDTH(), bs.boap.getHEIGHT(),
                 bs.boap.getFRAMES(), NewImage.FILL_BLACK);
+        // get stacks reference
         ImageStack contourStack = res.getStack();
-        res.setSlice(1);
-        int frame;
+        res.setSlice(1); // set for first
+        int frame; // frmaes counter (from 1)
         Snake snake;
-        ImageProcessor contourIp;
-        for (frame = 1; frame <= bs.boap.getFRAMES(); frame++) {
-            List<Integer> snakes = nest.getSnakesforFrame(frame);
-            contourIp = contourStack.getProcessor(frame);
-            contourIp.setColor(Color.WHITE);
-            for (Integer snakeID : snakes) {
-                SnakeHandler sH = nest.getHandlerofId(snakeID);
+        ImageProcessor contourIp; // processor taken from stack (ref)
+        for (frame = 1; frame <= bs.boap.getFRAMES(); frame++) { // iterate over frames
+            List<Integer> snakes = nest.getSnakesforFrame(frame); // find all SnakeHandlers on frame
+            contourIp = contourStack.getProcessor(frame); // get processor from stack for frame
+            contourIp.setColor(Color.WHITE); // set plotting color
+            for (Integer snakeID : snakes) { // iterate over SnakeHandlers
+                SnakeHandler sH = nest.getHandlerofId(snakeID); // get SH of snakeID
                 if (sH != null) {
-                    snake = sH.getStoredSnake(frame);
-                    Roi roi = snake.asFloatRoi();
+                    snake = sH.getStoredSnake(frame); // get snake from this handler and current
+                                                      // frame
+                    Roi roi = snake.asFloatRoi(); // convert to ROI
                     roi.setFillColor(Color.WHITE);
-                    contourIp.fill(roi);
+                    contourIp.fill(roi); // plot on current slice
                 }
             }
         }
-
         res.show();
+        // save in QCONF folder
+        QParamsQconf qp = (QParamsQconf) qconfLoader.getQp();
+        Path filename =
+                Paths.get(qp.getPath(), qp.getFileName() + FileExtensions.generateMaskSuffix);
+        IJ.saveAsTiff(res, filename.toString());
+        JOptionPane.showMessageDialog(
+                IJ.getInstance(), QuimpToolsCollection
+                        .stringWrap("Image saved: " + filename.toString(), QuimP.LINE_WRAP),
+                "Saved!", JOptionPane.INFORMATION_MESSAGE);
 
     }
 
