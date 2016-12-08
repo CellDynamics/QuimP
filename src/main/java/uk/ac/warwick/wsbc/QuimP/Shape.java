@@ -530,7 +530,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * 
      * @return current Shape as ROI
      */
-    Roi asIntRoi() {
+    public Roi asIntRoi() {
         Polygon p = asPolygon();
         Roi r = new PolygonRoi(p, PolygonRoi.POLYGON);
         return r;

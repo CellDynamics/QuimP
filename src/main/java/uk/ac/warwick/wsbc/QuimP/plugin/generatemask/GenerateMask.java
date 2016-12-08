@@ -1,13 +1,24 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.generatemask;
 
+import java.awt.Color;
 import java.io.File;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.gui.NewImage;
+import ij.gui.Roi;
+import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.BOAState;
+import uk.ac.warwick.wsbc.QuimP.Nest;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
+import uk.ac.warwick.wsbc.QuimP.Snake;
+import uk.ac.warwick.wsbc.QuimP.SnakeHandler;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QuimpConfigFilefilter;
@@ -82,7 +93,6 @@ public class GenerateMask implements IQuimpPlugin {
             if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
                 // validate in case new format
                 qconfLoader.getBOA(); // will throw exception if not present
-                qconfLoader.getECMM();
             } else {
                 qconfLoader = null; // failed load or checking
                 throw new QuimpException("QconfLoader returned unsupported version of QuimP."
@@ -97,6 +107,31 @@ public class GenerateMask implements IQuimpPlugin {
      * @throws QuimpException
      */
     private void runFromQCONF() throws QuimpException {
+        BOAState bs = qconfLoader.getBOA();
+        Nest nest = bs.nest;
+        ImagePlus res = NewImage.createByteImage("test", bs.boap.getWIDTH(), bs.boap.getHEIGHT(),
+                bs.boap.getFRAMES(), NewImage.FILL_BLACK);
+        ImageStack contourStack = res.getStack();
+        res.setSlice(1);
+        int frame;
+        Snake snake;
+        ImageProcessor contourIp;
+        for (frame = 1; frame <= bs.boap.getFRAMES(); frame++) {
+            List<Integer> snakes = nest.getSnakesforFrame(frame);
+            contourIp = contourStack.getProcessor(frame);
+            contourIp.setColor(Color.WHITE);
+            for (Integer snakeID : snakes) {
+                SnakeHandler sH = nest.getHandlerofId(snakeID);
+                if (sH != null) {
+                    snake = sH.getStoredSnake(frame);
+                    Roi roi = snake.asFloatRoi();
+                    roi.setFillColor(Color.WHITE);
+                    contourIp.fill(roi);
+                }
+            }
+        }
+
+        res.show();
 
     }
 
