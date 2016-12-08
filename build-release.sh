@@ -21,8 +21,14 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
+# This must be rewritten because sepearate call of plantuml relays on given path and
+# output files should be populated to javadoc but they are not as javadoc
+# is generated automatically by maven after checkout - so those files are deleted
 # generate proper images
 java -jar Doxygen_doc/plantuml.jar src/main/java/uk/ac/warwick/wsbc/QuimP/package-info.java
+# and backup them as further actions may delete them (they are in repo tree)
+dirimage=`mktemp -d`
+cp -Rv src/main/java/uk/ac/warwick/wsbc/QuimP/doc-files $dirimage
 
 releaseVersion=$1 
 developmentVersion=$2 
@@ -73,6 +79,9 @@ mvn -T 1C --batch-mode release:perform
 
 echo "One can not push to release after this point!"
 
+# copy image files generated bu uml
+cp -Rv $dirimage/doc-files target/checkout/target/site/apidocs/uk/ac/warwick/wsbc/QuimP/ 
+
 # build documentation without source code included
 ./generateDoc.sh Doxyfile-no-source
 # copy artefact to Fiij
@@ -103,11 +112,7 @@ git commit -m "Merge $releaseVersion version" -S
 # Get back on the develop branch
 git checkout $currentBranch
 
-# Updating trac version
-d=$(date +"%b %d, %Y, %H:%M:%S")
-ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version add '$releaseVersion' '$d'"
-d=$(date +"%b %d, %Y, %H:%M:%S")
-ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version add '$developmentVersion' '$d'"
+rm -rf $dirimage
 
 # Updating plugins master pom
 cd $POMPLUGINDIR
@@ -115,6 +120,12 @@ cd $POMPLUGINDIR
 cd $CURRENTDIR
 # copy current license to web page
 scp LICENSE.txt admin@pilip.lnx.warwick.ac.uk:/data/www/html
+
+# Updating trac version
+d=$(date +"%b %d, %Y, %H:%M:%S")
+ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version add '$releaseVersion' '$d'"
+d=$(date +"%b %d, %Y, %H:%M:%S")
+ssh trac@trac-wsbc.linkpc.net "sudo trac-admin /var/Trac/Projects/QuimP version add '$developmentVersion' '$d'"
 
 echo '------------------------------------------------------------------'
 echo Postprocessing:
