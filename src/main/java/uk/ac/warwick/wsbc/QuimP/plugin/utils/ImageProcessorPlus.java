@@ -9,6 +9,8 @@ import javax.vecmath.Point3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ij.IJ;
+import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
 /**
@@ -44,6 +46,10 @@ public class ImageProcessorPlus {
         rb.rotateBoundingBox(angle);
         int newWidth = (int) Math.round(rb.getWidth());
         int newHeight = (int) Math.round(rb.getHeight());
+        if (newWidth < width)
+            newWidth = width;
+        if (newHeight < height)
+            newHeight = height;
         // create new array resized
         ret = ip.createProcessor(newWidth, newHeight);
         // get current background - borders will have the same value
@@ -112,7 +118,13 @@ public class ImageProcessorPlus {
      * @return Clipped image
      */
     public ImageProcessor cropImageAfterRotation(ImageProcessor ip, int width, int height) {
-        ip.setRoi((ip.getWidth() - width) / 2, (ip.getHeight() - height) / 2, width, height);
+        int sw = (ip.getWidth() - width) / 2;
+        int sh = (ip.getHeight() - height) / 2;
+        if (sw < 0)
+            sw = 0;
+        if (sh < 0)
+            sh = 0;
+        ip.setRoi(sw, sh, width, height);
         ip = ip.crop();
         ip.resetRoi();
         return ip;

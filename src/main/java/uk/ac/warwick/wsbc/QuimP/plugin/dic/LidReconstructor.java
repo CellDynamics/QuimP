@@ -157,7 +157,7 @@ public class LidReconstructor {
      * should have the same architecture as image passed in constructor. Typically this method is
      * used for passing next slice from stack.
      * 
-     * Input \c ip is not modified
+     * Input ip is not modified
      * 
      * @param ip New ImageProcessor containing image for reconstruction.
      */
@@ -192,6 +192,7 @@ public class LidReconstructor {
      * 
      * @throws DicException when input image is close to saturation e.g. has values of 65536-shift.
      *         This is due to applied algorithm of detection image pixels after rotation.
+     * @see #reconstructionDicLid()
      */
     private void getRanges() throws DicException {
         double maxpixel; // minimal pixel value
@@ -229,6 +230,12 @@ public class LidReconstructor {
             for (lastpixel = newWidth - 1; lastpixel >= 0
                     && srcImageCopyProcessor.get(lastpixel, r) == 0; lastpixel--)
                 ;
+            // if empty row, reject it all. reconstructionDicLid process pixels in ranges. such
+            // borders reject processing at all
+            if (firstpixel >= newWidth) {
+                firstpixel = 1;
+                lastpixel = 0;
+            }
             ranges[r][0] = firstpixel;
             ranges[r][1] = lastpixel;
         }
