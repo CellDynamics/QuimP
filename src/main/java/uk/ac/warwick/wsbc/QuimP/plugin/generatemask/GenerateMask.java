@@ -149,9 +149,10 @@ public class GenerateMask implements IQuimpPlugin {
         Path filename =
                 Paths.get(qp.getPath(), qp.getFileName() + FileExtensions.generateMaskSuffix);
         IJ.saveAsTiff(res, filename.toString());
+        IJ.log("Saved in: " + filename.toString());
         JOptionPane.showMessageDialog(
                 IJ.getInstance(), QuimpToolsCollection
-                        .stringWrap("Image saved: " + filename.toString(), QuimP.LINE_WRAP),
+                        .stringWrap("Image saved! (see log to find path)", QuimP.LINE_WRAP),
                 "Saved!", JOptionPane.INFORMATION_MESSAGE);
 
     }
@@ -192,7 +193,7 @@ public class GenerateMask implements IQuimpPlugin {
         try {
             IJ.showStatus("Generate mask");
             runFromQCONF();
-            IJ.log("Generate mask complete");
+            IJ.log("Mask generated!");
             IJ.showStatus("Finished");
         } catch (Exception e) { // catch all here and convert to expected type
             throw new QuimpPluginException(e);
