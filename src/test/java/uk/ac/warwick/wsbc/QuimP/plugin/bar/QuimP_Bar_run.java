@@ -2,6 +2,8 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.bar;
 
+import ij.ImageJ;
+
 /**
  * Bar displayer
  * 
@@ -18,6 +20,7 @@ public class QuimP_Bar_run {
      * @param args
      */
     public static void main(String[] args) {
+        ImageJ ij = new ImageJ();
         QuimP_Bar bar = new QuimP_Bar();
         bar.run("");
 

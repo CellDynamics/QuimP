@@ -35,7 +35,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.Pair;
  */
 @RunWith(JUnitParamsRunner.class)
 public class TrackMapAnalyserTest {
-    static final Logger LOGGER = LoggerFactory.getLogger(TrackMapAnalyserParamTest.class.getName());
+    static final Logger LOGGER = LoggerFactory.getLogger(TrackMapAnalyserTest.class.getName());
 
     // https://lkrnac.net/blog/2014/01/mock-autowired-fields/
     @Mock

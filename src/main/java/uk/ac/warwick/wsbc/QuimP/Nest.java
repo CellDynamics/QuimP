@@ -338,7 +338,7 @@ public class Nest implements IQuimpSerialize {
      * @param frame Frame find snakes in
      * @return List of Snake id on \c frame
      */
-    List<Integer> getSnakesforFrame(int frame) {
+    public List<Integer> getSnakesforFrame(int frame) {
         ArrayList<Integer> ret = new ArrayList<Integer>();
         Iterator<SnakeHandler> sHiter = sHs.iterator();
         while (sHiter.hasNext()) { // over whole nest

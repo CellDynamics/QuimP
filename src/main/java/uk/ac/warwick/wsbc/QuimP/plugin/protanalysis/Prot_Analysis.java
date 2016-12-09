@@ -41,6 +41,7 @@ import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
+import uk.ac.warwick.wsbc.QuimP.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
@@ -137,6 +138,9 @@ public class Prot_Analysis implements IQuimpPlugin {
             showUI(true); // show it and wait for user action. Plugin is run from Apply button
             if (uiCancelled)
                 return;
+        } catch (QuimpException qe) { // catch QuimpPluginException and QuimpException
+            qe.setMessageSinkType(MessageSinkTypes.GUI);
+            qe.handleException(IJ.getInstance(), "Protrusion Analysis:");
         } catch (Exception e) { // catch all exceptions here
             LOGGER.debug(e.getMessage(), e);
             LOGGER.error("Problem with run of Protrusion Analysis mapping: " + e.getMessage());
@@ -165,7 +169,7 @@ public class Prot_Analysis implements IQuimpPlugin {
                 qconfLoader.getQ();
             } else {
                 qconfLoader = null; // failed load or checking
-                throw new QuimpException("QconfLoader returned unsupported version of QuimP."
+                throw new QuimpPluginException("QconfLoader returned unsupported version of QuimP."
                         + " Only new format can be loaded");
             }
         }

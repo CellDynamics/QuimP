@@ -271,7 +271,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         // third row title
         StyledDocument doc1 = toolBarTitle2.getStyledDocument();
         doc1.setParagraphAttributes(0, doc1.getLength(), titlebaratr, false);
-        toolBarTitle2.setText("Preprocessing methods");
+        toolBarTitle2.setText("Pre- and post-processing methods");
         toolBarTitle2.setBackground(barColor);
 
         // fourth - preprocessing tools
@@ -280,6 +280,9 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         toolBarBottom.add(button);
         button = makeNavigationButton("rw.jpg", "run(\"RandomWalk\")",
                 "Run random walk segmentation", "Random Walk");
+        toolBarBottom.add(button);
+        button = makeNavigationButton("generatemask.jpg", "run(\"Generate mask\")",
+                "Convert Snakes to Masks", "Generate mask");
         toolBarBottom.add(button);
 
         toolBarUpper.setFloatable(false);
