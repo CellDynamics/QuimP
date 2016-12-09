@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="16.12.02" date="2016-12-09" description="Release">
+          <action dev="baniuk" type="add" issue="273">
+              QuimP: Plugin for rendering masks from QCONF.
+          </action>
+      </release>
       <release version="16.12.01" date="2016-12-08" description="Release">
           <action dev="baniuk" type="fix" issue="280">
               Protruision Analysis: Error when processing multiple cells.
