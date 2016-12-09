@@ -9,7 +9,7 @@ import org.junit.BeforeClass;
  * @author p.baniukiewicz
  *
  */
-public class GenerateMaskTest {
+public class GenerateMask_Test {
 
     /**
      * @throws java.lang.Exception

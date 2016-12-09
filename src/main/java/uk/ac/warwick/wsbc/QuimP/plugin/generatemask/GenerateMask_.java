@@ -43,8 +43,8 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @author p.baniukiewicz
  *
  */
-public class GenerateMask implements IQuimpPlugin {
-    static final Logger LOGGER = LoggerFactory.getLogger(GenerateMask.class.getName());
+public class GenerateMask_ implements IQuimpPlugin {
+    static final Logger LOGGER = LoggerFactory.getLogger(GenerateMask_.class.getName());
 
     /**
      * Loaded QCONF file.
@@ -60,7 +60,7 @@ public class GenerateMask implements IQuimpPlugin {
      * 
      * Run parameterised constructor with <tt>null</tt> showing file selector.
      */
-    public GenerateMask() {
+    public GenerateMask_() {
         this(null);
     }
 
@@ -69,7 +69,7 @@ public class GenerateMask implements IQuimpPlugin {
      * 
      * @param paramFile File to process.
      */
-    public GenerateMask(File paramFile) {
+    public GenerateMask_(File paramFile) {
         IJ.log(new QuimpToolsCollection().getQuimPversion());
         // validate registered user
         new Registration(IJ.getInstance(), "QuimP Registration");
