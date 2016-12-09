@@ -1,7 +1,5 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.generatemask;
 
-import java.io.File;
-
 import ij.ImageJ;
 
 /**
@@ -19,8 +17,9 @@ public class GenerateMask_run {
     @SuppressWarnings("unused")
     public static void main(String[] args) {
         ImageJ ij = new ImageJ();
-        GenerateMask pa = new GenerateMask(
-                new File("/home/baniuk/Desktop/Tests/280/July14ABD_GFP_actin_twoCells.QCONF"));
+        // GenerateMask pa = new GenerateMask(
+        // new File("/home/baniuk/Desktop/Tests/280/July14ABD_GFP_actin_twoCells.QCONF"));
+        GenerateMask pa = new GenerateMask();
 
     }
 
