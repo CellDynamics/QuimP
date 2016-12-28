@@ -606,7 +606,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     public void correctDensity(double max, double min) {
         double dist;
         Vert v = head;
-
+        int n = -1;
         do {
             dist = ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
 
@@ -617,7 +617,8 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
             } else {
                 v = v.getNext();
             }
-        } while (!v.isHead());
+            n++;
+        } while (!(v.isHead() && n != 0));
         // LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }
 
