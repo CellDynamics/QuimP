@@ -88,7 +88,7 @@ public abstract class PropagateSeeds {
         }
 
         public ImagePlus getCompositeSeed(ImagePlus org) {
-            ImageProcessor ret;
+            ImagePlus ret;
             if (seeds == null)
                 throw new IllegalArgumentException("Seeds were not stored.");
             int f = seeds.size();
@@ -110,7 +110,7 @@ public abstract class PropagateSeeds {
             else
                 ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack),
                         new ImagePlus("", bigstack));
-            return new ImagePlus("", ret);
+            return ret;
         }
 
         /**
