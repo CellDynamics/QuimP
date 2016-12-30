@@ -2,14 +2,21 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ij.IJ;
+import ij.ImagePlus;
+import ij.WindowManager;
+import ij.gui.Roi;
+import ij.macro.MacroRunner;
 import ij.process.BinaryProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.Outline;
+import uk.ac.warwick.wsbc.QuimP.geom.OutlineProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
 
 /**
@@ -32,13 +39,44 @@ public abstract class PropagateSeeds {
     public static class Contour extends PropagateSeeds {
 
         public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous) {
+            ImagePlus ret = IJ.createImage("", previous.getWidth(), previous.getHeight(), 1, 8);
+            double steps = 5 / 0.04; // total shrink/step size
             // output map integrating two lists of points
             HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
 
             List<Outline> outlines = getOutline(previous);
+            for (Outline o : outlines) {
+                // shrink outline
+                new OutlineProcessor(o).shrink(steps, 0.04, 0.1, 1); // taken from anap
+                Roi fr = o.asFloatRoi();
+                fr.setFillColor(Color.WHITE);
+                fr.setStrokeColor(Color.WHITE);
+                ret.getProcessor().drawRoi(fr);
+            }
 
             return out;
 
+        }
+
+        /**
+         * Return composite image created from background cell image and FG and BG pixels.
+         * 
+         * @param org Original image
+         * @param small Foreground mask
+         * @param big Background mask
+         * @return Composite image
+         */
+        public ImagePlus getComposite(ImagePlus org, ImagePlus small, ImagePlus big) {
+            big.setTitle("big");
+            big.show();
+            small.setTitle("small");
+            small.show();
+            org.setTitle("org");
+            org.show();
+            // using IJ macro directly
+            new MacroRunner("run(\"Merge Channels...\", \"c1=big c3=small c4=org create\")").run();
+
+            return WindowManager.getCurrentImage();
         }
 
         /**

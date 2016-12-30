@@ -14,6 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ij.IJ;
+import ij.ImageJ;
 import ij.ImagePlus;
 import ij.process.BinaryProcessor;
 import ij.process.ImageProcessor;
@@ -107,6 +108,28 @@ public class PropagateSeedsTest {
         RoiSaver.saveROI("c:/Users/baniu/Downloads/test0.tif", ret.get(0).asList());
         RoiSaver.saveROI("c:/Users/baniu/Downloads/test1.tif", ret.get(1).asList());
         RoiSaver.saveROI("c:/Users/baniu/Downloads/test2.tif", ret.get(2).asList());
+    }
+
+    @Test
+    public void testPropagateSeedOutline() throws Exception {
+        ImageJ ij = new ImageJ();
+        ImagePlus ip = testImage2.duplicate();
+        PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
+        cc.propagateSeed(ip.getProcessor());
+
+    }
+
+    @Test
+    public void testGetComposite() throws Exception {
+        ImageJ ij = new ImageJ();
+        ImagePlus ip = testImage2.duplicate();
+        PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
+        ImagePlus org = IJ.openImage("src/test/resources/G.tif");
+        ImagePlus small = IJ.openImage("src/test/resources/R.tif");
+        ImagePlus big = IJ.openImage("src/test/resources/B.tif");
+
+        ImagePlus ret = cc.getComposite(org, small, big);
+        ret.show();
     }
 
 }
