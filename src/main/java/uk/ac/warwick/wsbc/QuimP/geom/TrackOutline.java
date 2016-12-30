@@ -16,6 +16,7 @@ import ij.gui.Roi;
 import ij.gui.Wand;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 
 /**
@@ -103,6 +104,17 @@ public class TrackOutline {
         this.prepared = prepare();
         this.frame = frame;
         getOutlines();
+    }
+
+    /**
+     * Constructor from ImageProcessor for single images.
+     * 
+     * @param imp Image to process (not modified)
+     * @param background Color value for background
+     * @throws IllegalArgumentException when wrong image format is provided
+     */
+    public TrackOutline(ImageProcessor imp, int background) {
+        this(imp, background, 1);
     }
 
     /**
@@ -213,6 +225,29 @@ public class TrackOutline {
             ret.add(new QuimpDataConverter(fp.xpoints, fp.ypoints).getList());
         }
         return ret;
+    }
+
+    /**
+     * Convert found Oulines to Outline
+     * 
+     * @param step
+     * @param smooth
+     * @return List of Outline object that represents all
+     * @see SegmentedShapeRoi#getOutlineasPoints()
+     * @see #getOutlinesasPoints(double, boolean)
+     */
+    public List<Outline> getOutlines(double step, boolean smooth) {
+        List<SegmentedShapeRoi> rois = getCopyofShapes();
+        // convert to Outlines from ROIs
+        ArrayList<Outline> outlines = new ArrayList<>();
+        for (SegmentedShapeRoi sr : rois) {
+            // interpolate and reduce number of points
+            FloatPolygon pr = sr.getInterpolatedPolygon(step, smooth);
+            Outline o = new Outline(new PolygonRoi(pr, PolygonRoi.FREEROI));
+            outlines.add(o);
+        }
+        return outlines;
+
     }
 
     /**

@@ -4,6 +4,9 @@ import java.awt.Polygon;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.vecmath.Point2d;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -503,6 +506,22 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
         } while (!n.isHead());
 
         return pol;
+    }
+
+    /**
+     * Returns current Shape as list of points (copy)
+     * 
+     * @return List of Point2d objects representing coordinates of T
+     */
+    public List<Point2d> asList() {
+        List<Point2d> al = new ArrayList<Point2d>(POINTS);
+        // iterate over nodes at Shape
+        T n = head;
+        do {
+            al.add(new Point2d(n.getX(), n.getY()));
+            n = n.getNext();
+        } while (!n.isHead());
+        return al;
     }
 
     /**

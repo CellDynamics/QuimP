@@ -2,10 +2,8 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Point2d;
 import javax.vecmath.Tuple2d;
 
 import org.slf4j.Logger;
@@ -973,22 +971,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
             n = n.getNext();
         } while (!n.isHead());
         return new PolygonRoi(x, y, POINTS, Roi.POLYLINE);
-    }
-
-    /**
-     * Returns current Snake as list of Nodes (copy)
-     * 
-     * @return List of Vector2d objects representing coordinates of Snake Nodes
-     */
-    public List<Point2d> asList() {
-        List<Point2d> al = new ArrayList<Point2d>(POINTS);
-        // iterate over nodes at Snake
-        Node n = head;
-        do {
-            al.add(new Point2d(n.getX(), n.getY()));
-            n = n.getNext();
-        } while (!n.isHead());
-        return al;
     }
 
     /**
