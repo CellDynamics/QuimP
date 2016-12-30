@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ij.IJ;
@@ -83,6 +84,7 @@ public class PropagateSeedsTest {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void testIterateMorphological() throws Exception {
         ImagePlus ip = testImage2.duplicate();
         BinaryProcessor rete =
@@ -120,16 +122,16 @@ public class PropagateSeedsTest {
     }
 
     @Test
-    public void testGetComposite() throws Exception {
+    public void testGetCompositeSeed() throws Exception {
         ImageJ ij = new ImageJ();
         ImagePlus ip = testImage2.duplicate();
-        PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
+        PropagateSeeds.Contour cc = new PropagateSeeds.Contour(true);
         ImagePlus org = IJ.openImage("src/test/resources/G.tif");
-        ImagePlus small = IJ.openImage("src/test/resources/R.tif");
-        ImagePlus big = IJ.openImage("src/test/resources/B.tif");
+        ImagePlus mask = IJ.openImage("src/test/resources/GMask.tif");
 
-        ImagePlus ret = cc.getComposite(org, small, big);
-        ret.show();
+        cc.propagateSeed(mask.getStack().getProcessor(1));
+        ImagePlus ret = cc.getCompositeSeed(org);
+        IJ.saveAsTiff(ret, "c:/Users/baniu/Downloads/testGetCompositeSeed.tif");
     }
 
 }
