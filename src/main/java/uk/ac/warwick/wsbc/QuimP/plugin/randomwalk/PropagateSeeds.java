@@ -88,6 +88,7 @@ public abstract class PropagateSeeds {
         }
 
         public ImagePlus getCompositeSeed(ImagePlus org) {
+            ImageProcessor ret;
             if (seeds == null)
                 throw new IllegalArgumentException("Seeds were not stored.");
             int f = seeds.size();
@@ -103,12 +104,13 @@ public abstract class PropagateSeeds {
             }
             // check if stack or not. getComposite requires the same type
             if (org.getStack().getSize() == 1)
-                return IJTools.getComposite(org.duplicate(),
+                ret = IJTools.getComposite(org.duplicate(),
                         new ImagePlus("", smallstack.getProcessor(1)),
                         new ImagePlus("", bigstack.getProcessor(1)));
             else
-                return IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack),
+                ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack),
                         new ImagePlus("", bigstack));
+            return new ImagePlus("", ret);
         }
 
         /**

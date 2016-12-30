@@ -23,7 +23,7 @@ public class IJToolsTest {
         ImagePlus small = IJ.openImage("src/test/resources/R.tif");
         ImagePlus big = IJ.openImage("src/test/resources/B.tif");
 
-        ImagePlus ret = IJTools.getComposite(org, small, big);
+        ImagePlus ret = new ImagePlus("", IJTools.getComposite(org, small, big));
         IJ.saveAsTiff(ret, "c:/Users/baniu/Downloads/composite.tif");
         // ret.show();
     }
