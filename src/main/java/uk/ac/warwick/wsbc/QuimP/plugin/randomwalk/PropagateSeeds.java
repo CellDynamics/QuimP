@@ -31,6 +31,16 @@ public abstract class PropagateSeeds {
      */
     public static class Contour extends PropagateSeeds {
 
+        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous) {
+            // output map integrating two lists of points
+            HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
+
+            List<Outline> outlines = getOutline(previous);
+
+            return out;
+
+        }
+
         /**
          * Convert mask to outline.
          * 
