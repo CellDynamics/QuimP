@@ -11,7 +11,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ij.IJ;
@@ -20,7 +19,6 @@ import ij.ImagePlus;
 import ij.process.BinaryProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.Outline;
-import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.PropagateSeeds.Morphological;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
@@ -31,6 +29,14 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 public class PropagateSeedsTest {
 
     static Object accessPrivate(String name, PropagateSeeds.Contour obj, Object[] param,
+            Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Method prv = obj.getClass().getDeclaredMethod(name, paramtype);
+        prv.setAccessible(true);
+        return prv.invoke(obj, param);
+    }
+
+    static Object accessPrivate(String name, PropagateSeeds.Morphological obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Method prv = obj.getClass().getDeclaredMethod(name, paramtype);
@@ -74,27 +80,24 @@ public class PropagateSeedsTest {
     public void testPropagateSeed() throws Exception {
         ImagePlus ip = testImage2.duplicate();
         BinaryProcessor ret = new BinaryProcessor(ip.getProcessor().convertToByteProcessor());
-        Map<Integer, List<Point>> seed = Morphological.propagateSeed(ret, 20);
+        Map<Integer, List<Point>> seed = new PropagateSeeds.Morphological().propagateSeed(ret, 20);
         // IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testPropagateSeed_20.tif");
     }
 
-    /**
-     * @test of eroding
-     * @post eroded image on disk
-     * @throws Exception
-     */
     @Test
-    @Ignore
     public void testIterateMorphological() throws Exception {
         ImagePlus ip = testImage2.duplicate();
         BinaryProcessor rete =
                 new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
         BinaryProcessor retd =
                 new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
-        Morphological.iterateMorphological(rete, PropagateSeeds.ERODE, 3);
+        PropagateSeeds.Morphological obj = new PropagateSeeds.Morphological();
+        accessPrivate("iterateMorphological", obj, new Object[] { rete, PropagateSeeds.ERODE, 3 },
+                new Class[] { BinaryProcessor.class, int.class, int.class });
         IJ.saveAsTiff(new ImagePlus("", rete), "/tmp/testIterateMorphological_erode3.tif");
 
-        Morphological.iterateMorphological(retd, PropagateSeeds.DILATE, 5);
+        accessPrivate("iterateMorphological", obj, new Object[] { retd, PropagateSeeds.DILATE, 5 },
+                new Class[] { BinaryProcessor.class, int.class, int.class });
         IJ.saveAsTiff(new ImagePlus("", retd), "/tmp/testIterateMorphological_dilate5.tif");
 
     }

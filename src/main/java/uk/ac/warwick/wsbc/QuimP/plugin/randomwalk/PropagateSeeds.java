@@ -32,7 +32,7 @@ public abstract class PropagateSeeds {
     static int STEPS = 4;
 
     /**
-     * Contain methods for propagating seeds to next frame using contour shrinking operations.
+     * Contain methods for propagating seeds to the next frame using contour shrinking operations.
      * 
      * @author p.baniukiewicz
      *
@@ -143,7 +143,7 @@ public abstract class PropagateSeeds {
          *         is addressed by two enums: \a FOREGROUND and \a BACKGROUND
          * @see RandomWalkSegmentation.decodeSeeds(ImagePlus, Color, Color)
          */
-        public static Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, int iter) {
+        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, int iter) {
             BinaryProcessor cp = new BinaryProcessor(previous.duplicate().convertToByteProcessor());
 
             BinaryProcessor small = new BinaryProcessor(cp.duplicate().convertToByteProcessor()); // object
@@ -171,26 +171,10 @@ public abstract class PropagateSeeds {
 
             // IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_big.tif");
 
-            // output map integrating two lists of points
-            HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
-            // output lists of points. Can be null if points not found
-            List<Point> foreground = new ArrayList<>();
-            List<Point> background = new ArrayList<>();
-            for (int x = 0; x < small.getWidth(); x++)
-                for (int y = 0; y < small.getHeight(); y++) {
-                    if (small.get(x, y) > 0) // WARN Why must be y,x??
-                        foreground.add(new Point(y, x)); // remember foreground coords
-                    if (big.get(x, y) == 0)
-                        background.add(new Point(y, x)); // remember background coords
-                }
-            // pack outputs into map
-            out.put(RandomWalkSegmentation.FOREGROUND, foreground);
-            out.put(RandomWalkSegmentation.BACKGROUND, background);
-
-            return out;
+            return convertToList(small, big);
         }
 
-        static void iterateMorphological(BinaryProcessor ip, int oper, int iter) {
+        private void iterateMorphological(BinaryProcessor ip, int oper, int iter) {
             switch (oper) {
                 case ERODE:
                     for (int i = 0; i < iter; i++)
@@ -205,6 +189,32 @@ public abstract class PropagateSeeds {
                     throw new IllegalArgumentException("Binary operation not supported");
             }
         }
+    }
+
+    /**
+     * Convert processors obtained for object and background to format accepted by RW.
+     * 
+     * @param small object mask
+     * @param big background mask
+     * @return List of point coordinates accepted by RW algorithm.
+     */
+    Map<Integer, List<Point>> convertToList(BinaryProcessor small, BinaryProcessor big) {
+        // output map integrating two lists of points
+        HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
+        // output lists of points. Can be null if points not found
+        List<Point> foreground = new ArrayList<>();
+        List<Point> background = new ArrayList<>();
+        for (int x = 0; x < small.getWidth(); x++)
+            for (int y = 0; y < small.getHeight(); y++) {
+                if (small.get(x, y) > 0) // WARN Why must be y,x??
+                    foreground.add(new Point(y, x)); // remember foreground coords
+                if (big.get(x, y) == 0)
+                    background.add(new Point(y, x)); // remember background coords
+            }
+        // pack outputs into map
+        out.put(RandomWalkSegmentation.FOREGROUND, foreground);
+        out.put(RandomWalkSegmentation.BACKGROUND, background);
+        return out;
     }
 
 }

@@ -44,7 +44,6 @@ import ij.plugin.PlugIn;
 import ij.plugin.tool.BrushTool;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
-import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.PropagateSeeds.Morphological;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 
 /**
@@ -356,7 +355,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                     nextseed = obj.decodeSeeds(seedImage.getStack().getProcessor(s), Color.RED,
                             Color.GREEN);
                 } else // false - use previous frame
-                    nextseed = Morphological.propagateSeed(retIp, erodeIter);
+                    nextseed = new PropagateSeeds.Morphological().propagateSeed(retIp, erodeIter);
                 retIp = obj.run(nextseed); // segmentation and results stored for next seeding
                 ret.addSlice(retIp); // add next slice
                 IJ.showProgress(s - 1, is.getSize());
