@@ -87,6 +87,15 @@ public abstract class PropagateSeeds {
 
         }
 
+        /**
+         * Produce composite image containing seeds generated during segmentation of particular
+         * frames.
+         * 
+         * To have this method working, the Contour object must be created with storeSeeds==true.
+         * 
+         * @param org Original image 9or stack) where composite layer will be added to.
+         * @return Composite image with marked foreground and backgrund.
+         */
         public ImagePlus getCompositeSeed(ImagePlus org) {
             ImagePlus ret;
             if (seeds == null)
