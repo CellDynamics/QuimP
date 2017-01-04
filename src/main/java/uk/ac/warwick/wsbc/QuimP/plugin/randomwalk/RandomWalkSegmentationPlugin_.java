@@ -117,7 +117,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      *   beta: | "50.0   "
      *   gamma: | "100.0  "
      *   iterations: | "80     "
-     *   erode power: | "5      "
+     *   shrink power: | "5      "
+     *   shrink algorithm: | ^OUTLINE^
      *   [] Show Seeds
      *   }
      *   ~~
