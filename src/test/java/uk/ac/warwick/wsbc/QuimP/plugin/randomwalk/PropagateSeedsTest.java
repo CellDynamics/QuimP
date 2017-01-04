@@ -27,6 +27,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
  */
 @SuppressWarnings("unused")
 public class PropagateSeedsTest {
+    static {
+        System.setProperty("logback.configurationFile", "quimp-logback.xml");
+    }
 
     static Object accessPrivate(String name, PropagateSeeds.Contour obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
@@ -110,9 +113,9 @@ public class PropagateSeedsTest {
                 new Object[] { testImage2.getProcessor() },
                 new Class<?>[] { ImageProcessor.class });
 
-        RoiSaver.saveROI("c:/Users/baniu/Downloads/test0.tif", ret.get(0).asList());
-        RoiSaver.saveROI("c:/Users/baniu/Downloads/test1.tif", ret.get(1).asList());
-        RoiSaver.saveROI("c:/Users/baniu/Downloads/test2.tif", ret.get(2).asList());
+        RoiSaver.saveROI("/tmp/test0.tif", ret.get(0).asList());
+        RoiSaver.saveROI("/tmp/test1.tif", ret.get(1).asList());
+        RoiSaver.saveROI("/tmp/test2.tif", ret.get(2).asList());
     }
 
     @Test
@@ -120,21 +123,34 @@ public class PropagateSeedsTest {
         ImageJ ij = new ImageJ();
         ImagePlus ip = testImage2.duplicate();
         PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
-        cc.propagateSeed(ip.getProcessor());
+        cc.propagateSeed(ip.getProcessor(), 5);
 
     }
 
     @Test
-    public void testGetCompositeSeed() throws Exception {
+    public void testGetCompositeSeed_Contour() throws Exception {
         ImageJ ij = new ImageJ();
         ImagePlus ip = testImage2.duplicate();
         PropagateSeeds.Contour cc = new PropagateSeeds.Contour(true);
         ImagePlus org = IJ.openImage("src/test/resources/G.tif");
         ImagePlus mask = IJ.openImage("src/test/resources/GMask.tif");
 
-        cc.propagateSeed(mask.getStack().getProcessor(1));
+        cc.propagateSeed(mask.getStack().getProcessor(1), 5);
         ImagePlus ret = cc.getCompositeSeed(org);
-        IJ.saveAsTiff(ret, "c:/Users/baniu/Downloads/testGetCompositeSeed.tif");
+        IJ.saveAsTiff(ret, "/tmp/testGetCompositeSeed.tif");
+    }
+
+    @Test
+    public void testGetCompositeSeed_Morphological() throws Exception {
+        ImageJ ij = new ImageJ();
+        ImagePlus ip = testImage2.duplicate();
+        PropagateSeeds.Morphological cc = new PropagateSeeds.Morphological(true);
+        ImagePlus org = IJ.openImage("src/test/resources/G.tif");
+        ImagePlus mask = IJ.openImage("src/test/resources/GMask.tif");
+
+        cc.propagateSeed(mask.getStack().getProcessor(1), 20);
+        ImagePlus ret = cc.getCompositeSeed(org);
+        IJ.saveAsTiff(ret, "/tmp/testGetCompositeSeedM.tif");
     }
 
 }

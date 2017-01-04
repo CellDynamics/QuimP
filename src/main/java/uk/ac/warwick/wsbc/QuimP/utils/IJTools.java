@@ -3,6 +3,7 @@ package uk.ac.warwick.wsbc.QuimP.utils;
 import ij.ImagePlus;
 import ij.plugin.RGBStackMerge;
 import ij.process.ColorProcessor;
+import ij.process.LUT;
 
 /**
  * Contain IJ based procedures.
@@ -41,6 +42,17 @@ public class IJTools {
         ret.setChannel(2, big.getProcessor().convertToByteProcessor());
         ret.setChannel(3, org.getProcessor().convertToByteProcessor());
         return ret;
+    }
+
+    /**
+     * 
+     * @return 8-bit grayscale LUT
+     */
+    public static LUT getGrayLut() {
+        byte l[] = new byte[256];
+        for (int i = 0; i < 256; i++)
+            l[i] = (byte) i;
+        return new LUT(l, l, l);
     }
 
 }

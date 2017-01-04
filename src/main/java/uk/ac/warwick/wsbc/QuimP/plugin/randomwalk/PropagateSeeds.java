@@ -8,20 +8,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
 import ij.process.BinaryProcessor;
+import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.geom.OutlineProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
+import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
 import uk.ac.warwick.wsbc.QuimP.utils.IJTools;
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 
 /**
- * Generate new seeds for n+1 frame in stack using previous results of segmentation
+ * Generate new seeds for n+1 frame in stack using previous results of segmentation.
+ * 
+ * This class supports two methods:
+ * <ol>
+ * <li>Based on morphological operations
+ * <li>Based on contour shrinking (part of QuimP Outline framework)
+ * </ol>
+ * 
+ * In both cases the aim is to shrink the object (which is white) to prevent overlapping foreground
+ * and background in next frame (assuming that objects are moving). The same is for background.
+ * Finally, the new seed should have set foreground pixels to area inside the object and background
+ * pixels in remaining part of image. There should be unseeded strip of pixels around the object.
  * 
  * @author p.baniukiewicz
  *
@@ -29,7 +41,34 @@ import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 public abstract class PropagateSeeds {
     final static int ERODE = 0;
     final static int DILATE = 1;
-    static int STEPS = 4;
+    /**
+     * Default resolution used during outlining objects.
+     * 
+     * @see Contour#getOutline(ImageProcessor)
+     */
+    public static int STEPS = 4;
+    /**
+     * By default seed history is not stored.
+     */
+    protected boolean storeSeeds = false;
+    /**
+     * Container for <FG and BG> seeds pixels used for seed visualisation.
+     * 
+     * Every imageProcessor in pair contains important bits set to WHITE. For example BG pixels are
+     * white here as well as FG pixels.
+     * 
+     * @see #getCompositeSeed(ImagePlus)
+     * @see PropagateSeeds#storeSeeds
+     */
+    protected List<Pair<ImageProcessor, ImageProcessor>> seeds;
+    /**
+     * Scale color values in composite preview.
+     * 
+     * 1.0 stand for opaque colors.
+     * 
+     * @see #getCompositeSeed(ImagePlus)
+     */
+    public static double colorScaling = 0.5;
 
     /**
      * Contain methods for propagating seeds to the next frame using contour shrinking operations.
@@ -38,26 +77,56 @@ public abstract class PropagateSeeds {
      *
      */
     public static class Contour extends PropagateSeeds {
-        private List<Pair<ImageProcessor, ImageProcessor>> seeds;
-        private boolean storeSeeds = false;
 
+        /**
+         * Step size during object outline shrinking.
+         * 
+         * @see OutlineProcessor#shrink(double, double, double, double)
+         * @see ANAp
+         */
+        public static double stepSize = 0.04;
+
+        /**
+         * Default constructor without storing seed history.
+         */
         public Contour() {
             this(false);
         }
 
+        /**
+         * Allow to store seed history that can be later presented in form of composite image.
+         * 
+         * @param storeSeeds <tt>true</tt> to store seeds.
+         * @see getCompositeSeed(ImagePlus)
+         */
         public Contour(boolean storeSeeds) {
             this.storeSeeds = storeSeeds;
             if (storeSeeds)
                 seeds = new ArrayList<>();
         }
 
-        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous) {
-            ImagePlus small = IJ.createImage("", previous.getWidth(), previous.getHeight(), 1, 8);
-            ImagePlus big = IJ.createImage("", previous.getWidth(), previous.getHeight(), 1, 8);
-            double stepsshrink = 5 / 0.04; // total shrink/step size
-            double stepsexp = 10 / 0.04; // total shrink/step size
-            // output map integrating two lists of points
-            HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
+        /**
+         * Generate seeds for next frame using provided mask.
+         * 
+         * The mask provided to this method is shrunk to get new seeds of object (that can move
+         * meanwhile). The same mask is expanded and subtracted from image forming the background.
+         * 
+         * @param previous Previous result of segmentation. BW mask with white object on black
+         *        background.
+         * @param shrinkVal Shrink size for objects in pixels. Background is expanded 2*shrinkVal
+         * @return List of background and foreground coordinates.
+         * @see PropagateSeeds.Morphological#propagateSeed(ImageProcessor, int)
+         * @see OutlineProcessor#shrink(double, double, double, double)
+         */
+        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkval) {
+            ByteProcessor small = new ByteProcessor(previous.getWidth(), previous.getHeight());
+            ByteProcessor big = new ByteProcessor(previous.getWidth(), previous.getHeight());
+            small.setColor(Color.BLACK);
+            small.fill();
+            big.setColor(Color.BLACK);
+            big.fill();
+            double stepsshrink = shrinkval / stepSize; // total shrink/step size
+            double stepsexp = (shrinkval * 2) / stepSize; // total shrink/step size
 
             List<Outline> outlines = getOutline(previous);
             for (Outline o : outlines) {
@@ -68,7 +137,7 @@ public abstract class PropagateSeeds {
                 Roi fr = copy.asFloatRoi();
                 fr.setFillColor(Color.WHITE);
                 fr.setStrokeColor(Color.WHITE);
-                small.getProcessor().drawRoi(fr);
+                small.drawRoi(fr);
             }
 
             for (Outline o : outlines) {
@@ -77,56 +146,22 @@ public abstract class PropagateSeeds {
                 Roi fr = o.asFloatRoi();
                 fr.setFillColor(Color.WHITE);
                 fr.setStrokeColor(Color.WHITE);
-                big.getProcessor().drawRoi(fr);
+                big.drawRoi(fr);
             }
-            big.getProcessor().invert();
+            big.invert();
             if (storeSeeds)
-                seeds.add(Pair.createPair(small.getProcessor(), big.getProcessor()));
+                seeds.add(Pair.createPair(small, big));
 
-            return out;
+            return convertToList(small, big);
 
-        }
-
-        /**
-         * Produce composite image containing seeds generated during segmentation of particular
-         * frames.
-         * 
-         * To have this method working, the Contour object must be created with storeSeeds==true.
-         * 
-         * @param org Original image 9or stack) where composite layer will be added to.
-         * @return Composite image with marked foreground and backgrund.
-         */
-        public ImagePlus getCompositeSeed(ImagePlus org) {
-            ImagePlus ret;
-            if (seeds == null)
-                throw new IllegalArgumentException("Seeds were not stored.");
-            int f = seeds.size();
-            if (f == 0)
-                throw new IllegalArgumentException("Seeds were not stored.");
-            ImageStack smallstack =
-                    new ImageStack(seeds.get(0).first.getWidth(), seeds.get(0).first.getHeight());
-            ImageStack bigstack =
-                    new ImageStack(seeds.get(0).first.getWidth(), seeds.get(0).first.getHeight());
-            for (Pair<ImageProcessor, ImageProcessor> p : seeds) {
-                smallstack.addSlice((ImageProcessor) p.first);
-                bigstack.addSlice((ImageProcessor) p.second);
-            }
-            // check if stack or not. getComposite requires the same type
-            if (org.getStack().getSize() == 1)
-                ret = IJTools.getComposite(org.duplicate(),
-                        new ImagePlus("", smallstack.getProcessor(1)),
-                        new ImagePlus("", bigstack.getProcessor(1)));
-            else
-                ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack),
-                        new ImagePlus("", bigstack));
-            return ret;
         }
 
         /**
          * Convert mask to outline.
          * 
-         * @param previous
+         * @param previous image to outline. White object on black background.
          * @return List of Outline for current frame
+         * @see TrackOutline
          */
         private List<Outline> getOutline(ImageProcessor previous) {
             TrackOutline tO = new TrackOutline(previous, 0);
@@ -142,26 +177,43 @@ public abstract class PropagateSeeds {
      *
      */
     public static class Morphological extends PropagateSeeds {
+
         /**
-         * Generate new seeds using segmented image
+         * Default constructor without storing seed history.
+         */
+        public Morphological() {
+            this(false);
+        }
+
+        /**
+         * Allow to store seed history that can be later presented in form of composite image.
+         * 
+         * @param storeSeeds <tt>true</tt> to store seeds.
+         * @see getCompositeSeed(ImagePlus)
+         */
+        public Morphological(boolean storeSeeds) {
+            this.storeSeeds = storeSeeds;
+            if (storeSeeds)
+                seeds = new ArrayList<>();
+        }
+
+        /**
+         * Generate new seeds using segmented image.
          * 
          * @param previous segmented image, background on \b zero
          * @param iter number of erode/dilate iterations
          * 
          * @return Map containing list of coordinates that belong to foreground and background. Map
-         *         is addressed by two enums: \a FOREGROUND and \a BACKGROUND
-         * @see RandomWalkSegmentation.decodeSeeds(ImagePlus, Color, Color)
+         *         is addressed by two enums: <tt>FOREGROUND</tt> and <tt>BACKGROUND</tt>
+         * @see RandomWalkSegmentation#decodeSeeds(ImagePlus, Color, Color)
+         * @see #convertToList(BinaryProcessor, BinaryProcessor)
          */
         public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, int iter) {
             BinaryProcessor cp = new BinaryProcessor(previous.duplicate().convertToByteProcessor());
-
-            BinaryProcessor small = new BinaryProcessor(cp.duplicate().convertToByteProcessor()); // object
-                                                                                                  // smaller
-            // than on frame n
-            BinaryProcessor big = new BinaryProcessor(cp.duplicate().convertToByteProcessor()); // object
-                                                                                                // bigger
-            // than on frame n
-
+            // object smaller than on frame n
+            BinaryProcessor small = new BinaryProcessor(cp.duplicate().convertToByteProcessor());
+            // object bigger than on frame n
+            BinaryProcessor big = new BinaryProcessor(cp.duplicate().convertToByteProcessor());
             // make objects smaller
             iterateMorphological(small, PropagateSeeds.ERODE, iter);
             // make background bigger
@@ -179,6 +231,11 @@ public abstract class PropagateSeeds {
                 }
 
             // IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_big.tif");
+
+            big.invert(); // invert to have BG pixels white in seed. (required by convertToList)
+            if (storeSeeds) {
+                seeds.add(Pair.createPair(small, big));
+            }
 
             return convertToList(small, big);
         }
@@ -207,7 +264,7 @@ public abstract class PropagateSeeds {
      * @param big background mask
      * @return List of point coordinates accepted by RW algorithm.
      */
-    Map<Integer, List<Point>> convertToList(BinaryProcessor small, BinaryProcessor big) {
+    Map<Integer, List<Point>> convertToList(ImageProcessor small, ImageProcessor big) {
         // output map integrating two lists of points
         HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
         // output lists of points. Can be null if points not found
@@ -217,13 +274,56 @@ public abstract class PropagateSeeds {
             for (int y = 0; y < small.getHeight(); y++) {
                 if (small.get(x, y) > 0) // WARN Why must be y,x??
                     foreground.add(new Point(y, x)); // remember foreground coords
-                if (big.get(x, y) == 0)
+                if (big.get(x, y) > 0)
                     background.add(new Point(y, x)); // remember background coords
             }
         // pack outputs into map
         out.put(RandomWalkSegmentation.FOREGROUND, foreground);
         out.put(RandomWalkSegmentation.BACKGROUND, background);
         return out;
+    }
+
+    /**
+     * Produce composite image containing seeds generated during segmentation of particular frames.
+     * 
+     * To have this method working, the Contour object must be created with storeSeeds==true.
+     * 
+     * @param org Original image (or stack) where composite layer will be added to.
+     * @return Composite image with marked foreground and background.
+     */
+    public ImagePlus getCompositeSeed(ImagePlus org) {
+        ImagePlus ret;
+        if (seeds == null)
+            throw new IllegalArgumentException("Seeds were not stored.");
+        int f = seeds.size();
+        if (f == 0)
+            throw new IllegalArgumentException("Seeds were not stored.");
+        ImageStack smallstack =
+                new ImageStack(seeds.get(0).first.getWidth(), seeds.get(0).first.getHeight());
+        ImageStack bigstack =
+                new ImageStack(seeds.get(0).first.getWidth(), seeds.get(0).first.getHeight());
+        for (Pair<ImageProcessor, ImageProcessor> p : seeds) {
+            // just in case convert to byte
+            ImageProcessor fg = (ImageProcessor) p.first.convertToByte(true);
+            ImageProcessor bg = (ImageProcessor) p.second.convertToByte(true);
+            // make colors transparent
+            bg.multiply(colorScaling);
+            fg.multiply(colorScaling);
+            // set gray lut just in case
+            fg.setLut(IJTools.getGrayLut());
+            bg.setLut(IJTools.getGrayLut());
+            smallstack.addSlice((ImageProcessor) fg);
+            bigstack.addSlice((ImageProcessor) bg);
+        }
+        // check if stack or not. getComposite requires the same type
+        if (org.getStack().getSize() == 1)
+            ret = IJTools.getComposite(org.duplicate(),
+                    new ImagePlus("", smallstack.getProcessor(1)),
+                    new ImagePlus("", bigstack.getProcessor(1)));
+        else
+            ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack),
+                    new ImagePlus("", bigstack));
+        return ret;
     }
 
 }
