@@ -83,7 +83,8 @@ public class PropagateSeedsTest {
     public void testPropagateSeed() throws Exception {
         ImagePlus ip = testImage2.duplicate();
         BinaryProcessor ret = new BinaryProcessor(ip.getProcessor().convertToByteProcessor());
-        Map<Integer, List<Point>> seed = new PropagateSeeds.Morphological().propagateSeed(ret, 20);
+        Map<Integer, List<Point>> seed =
+                new PropagateSeeds.Morphological().propagateSeed(ret, 20, 30);
         // IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testPropagateSeed_20.tif");
     }
 
@@ -96,11 +97,11 @@ public class PropagateSeedsTest {
                 new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
         PropagateSeeds.Morphological obj = new PropagateSeeds.Morphological();
         accessPrivate("iterateMorphological", obj, new Object[] { rete, PropagateSeeds.ERODE, 3 },
-                new Class[] { BinaryProcessor.class, int.class, int.class });
+                new Class[] { BinaryProcessor.class, int.class, double.class });
         IJ.saveAsTiff(new ImagePlus("", rete), "/tmp/testIterateMorphological_erode3.tif");
 
         accessPrivate("iterateMorphological", obj, new Object[] { retd, PropagateSeeds.DILATE, 5 },
-                new Class[] { BinaryProcessor.class, int.class, int.class });
+                new Class[] { BinaryProcessor.class, int.class, double.class });
         IJ.saveAsTiff(new ImagePlus("", retd), "/tmp/testIterateMorphological_dilate5.tif");
 
     }
@@ -123,7 +124,7 @@ public class PropagateSeedsTest {
         ImageJ ij = new ImageJ();
         ImagePlus ip = testImage2.duplicate();
         PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
-        cc.propagateSeed(ip.getProcessor(), 5);
+        cc.propagateSeed(ip.getProcessor(), 5, 10);
 
     }
 
@@ -135,7 +136,7 @@ public class PropagateSeedsTest {
         ImagePlus org = IJ.openImage("src/test/resources/G.tif");
         ImagePlus mask = IJ.openImage("src/test/resources/GMask.tif");
 
-        cc.propagateSeed(mask.getStack().getProcessor(1), 5);
+        cc.propagateSeed(mask.getStack().getProcessor(1), 5, 10);
         ImagePlus ret = cc.getCompositeSeed(org);
         IJ.saveAsTiff(ret, "/tmp/testGetCompositeSeed.tif");
     }
@@ -148,7 +149,7 @@ public class PropagateSeedsTest {
         ImagePlus org = IJ.openImage("src/test/resources/G.tif");
         ImagePlus mask = IJ.openImage("src/test/resources/GMask.tif");
 
-        cc.propagateSeed(mask.getStack().getProcessor(1), 20);
+        cc.propagateSeed(mask.getStack().getProcessor(1), 20, 40);
         ImagePlus ret = cc.getCompositeSeed(org);
         IJ.saveAsTiff(ret, "/tmp/testGetCompositeSeedM.tif");
     }

@@ -113,14 +113,16 @@ public abstract class PropagateSeeds {
          * 
          * @param previous Previous result of segmentation. BW mask with white object on black
          *        background.
-         * @param shrinkPower Shrink size for objects in pixels. Background is expanded 2*shrinkVal
+         * @param shrinkPower Shrink size for objects in pixels.
+         * @param expandPower Expand size used to generate background (object is expanded and then
+         *        subtracted from background)
          * @return List of background and foreground coordinates.
          * @see PropagateSeeds.Morphological#propagateSeed(ImageProcessor, int)
          * @see OutlineProcessor#shrink(double, double, double, double)
          */
         @Override
-        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous,
-                double shrinkPower) {
+        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkPower,
+                double expandPower) {
             ByteProcessor small = new ByteProcessor(previous.getWidth(), previous.getHeight());
             ByteProcessor big = new ByteProcessor(previous.getWidth(), previous.getHeight());
             small.setColor(Color.BLACK);
@@ -128,7 +130,7 @@ public abstract class PropagateSeeds {
             big.setColor(Color.BLACK);
             big.fill();
             double stepsshrink = shrinkPower / stepSize; // total shrink/step size
-            double stepsexp = (shrinkPower * 2) / stepSize; // total shrink/step size
+            double stepsexp = (expandPower) / stepSize; // total shrink/step size
 
             List<Outline> outlines = getOutline(previous);
             for (Outline o : outlines) {
@@ -203,7 +205,8 @@ public abstract class PropagateSeeds {
          * Generate new seeds using segmented image.
          * 
          * @param previous segmented image, background on \b zero
-         * @param shrinkPower number of erode/dilate iterations
+         * @param shrinkPower number of erode iterations
+         * @param expandPower number of dilate iterations
          * 
          * @return Map containing list of coordinates that belong to foreground and background. Map
          *         is addressed by two enums: <tt>FOREGROUND</tt> and <tt>BACKGROUND</tt>
@@ -211,8 +214,8 @@ public abstract class PropagateSeeds {
          * @see #convertToList(BinaryProcessor, BinaryProcessor)
          */
         @Override
-        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous,
-                double shrinkPower) {
+        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkPower,
+                double expandPower) {
             BinaryProcessor cp = new BinaryProcessor(previous.duplicate().convertToByteProcessor());
             // object smaller than on frame n
             BinaryProcessor small = new BinaryProcessor(cp.duplicate().convertToByteProcessor());
@@ -221,7 +224,7 @@ public abstract class PropagateSeeds {
             // make objects smaller
             iterateMorphological(small, PropagateSeeds.ERODE, shrinkPower);
             // make background bigger
-            iterateMorphological(big, PropagateSeeds.DILATE, (int) (shrinkPower * 1.5));
+            iterateMorphological(big, PropagateSeeds.DILATE, (int) (expandPower));
 
             // apply big to old background making object bigger and prevent covering objects on
             // frame
@@ -330,6 +333,7 @@ public abstract class PropagateSeeds {
         return ret;
     }
 
-    abstract Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkPower);
+    abstract Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkPower,
+            double expandPower);
 
 }
