@@ -2,7 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.snakes;
 
 import java.util.List;
 
-import javax.vecmath.Point2d;
+import org.scijava.vecmath.Point2d;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;

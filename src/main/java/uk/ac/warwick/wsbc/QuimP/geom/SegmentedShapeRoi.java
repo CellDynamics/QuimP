@@ -5,7 +5,7 @@ package uk.ac.warwick.wsbc.QuimP.geom;
 import java.awt.Shape;
 import java.util.List;
 
-import javax.vecmath.Point2d;
+import org.scijava.vecmath.Point2d;
 
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
@@ -14,10 +14,9 @@ import ij.process.FloatPolygon;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 
 /**
- * Add some fields indicating that this Shape has been included already in any Snake chain 
+ * Add some fields indicating that this Shape has been included already in any Snake chain
  * 
- * Shapes among one chain have the same id. Chain id is set when following shape overlap current
- * one 
+ * Shapes among one chain have the same id. Chain id is set when following shape overlap current one
  * 
  * @author p.baniukiewicz
  * @see uk.ac.warwick.wsbc.QuimP.geom.TrackOutline
@@ -30,8 +29,8 @@ public class SegmentedShapeRoi extends ShapeRoi {
     protected int id = NOT_COUNTED; //!< positive if has any id assigned (thus it has been counted already)
     protected int frame = 0; //!< frame number where this outline was found
     /**
-     * step during conversion outline to points. For 1 every point from outline
-     * is included in output list
+     * step during conversion outline to points. For 1 every point from outline is included in
+     * output list
      */
     protected double step = 1;
     /**
@@ -105,7 +104,7 @@ public class SegmentedShapeRoi extends ShapeRoi {
      * Convert this ROI to list of points using smoothing and step
      * 
      * Use object parameters \a step, \a smooth that should be set before call this method
-     *  
+     * 
      * @return List of List of ROIs
      */
     public List<Point2d> getOutlineasPoints() {

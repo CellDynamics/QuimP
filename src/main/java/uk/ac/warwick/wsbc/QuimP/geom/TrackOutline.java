@@ -5,8 +5,7 @@ package uk.ac.warwick.wsbc.QuimP.geom;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Point2d;
-
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -3,8 +3,8 @@ package uk.ac.warwick.wsbc.QuimP.utils.graphics;
 import java.awt.Color;
 import java.awt.Polygon;
 
-import javax.vecmath.Point2d;
-import javax.vecmath.Vector2d;
+import org.scijava.vecmath.Point2d;
+import org.scijava.vecmath.Vector2d;
 
 import ij.gui.OvalRoi;
 import ij.gui.PointRoi;
@@ -23,11 +23,12 @@ public class GraphicsElements {
     /**
      * Create an arrow.
      * <p>
-     * <p><b>Warning</b><br>
+     * <p>
+     * <b>Warning</b><br>
      * input parameters can be modified
      * 
      * @param direction Directional vector
-     * @param base base point 
+     * @param base base point
      * @param length Length of arrow
      * @param baselength length of base as percentage of \a length
      * @return FloatPolygon

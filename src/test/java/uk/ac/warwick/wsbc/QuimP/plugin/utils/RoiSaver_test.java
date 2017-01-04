@@ -5,9 +5,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Point2d;
-
 import org.junit.Test;
+import org.scijava.vecmath.Point2d;
 
 /**
  * Test class for ROI saver

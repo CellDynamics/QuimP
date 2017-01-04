@@ -8,8 +8,7 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Scanner;
 
-import javax.vecmath.Point2d;
-
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

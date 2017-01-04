@@ -2,7 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.awt.Color;
 
-import javax.vecmath.Point2d;
+import org.scijava.vecmath.Point2d;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 

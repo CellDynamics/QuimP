@@ -5,13 +5,12 @@ package uk.ac.warwick.wsbc.QuimP.geom;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import javax.vecmath.Point2d;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

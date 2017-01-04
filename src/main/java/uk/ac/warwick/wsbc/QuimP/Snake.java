@@ -4,8 +4,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 
-import javax.vecmath.Tuple2d;
-
+import org.scijava.vecmath.Tuple2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
