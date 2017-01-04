@@ -2,9 +2,8 @@ package uk.ac.warwick.wsbc.QuimP.geom;
 
 import java.util.ArrayList;
 
-import javax.vecmath.Vector2d;
-
 import org.junit.Test;
+import org.scijava.vecmath.Vector2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package uk.ac.warwick.wsbc.QuimP.utils.graphics.vrml;
@@ -12,8 +11,8 @@ import java.io.PrintWriter;
 // import javax.media.j3d.BranchGroup;
 // import javax.media.j3d.IndexedQuadArray;
 // import javax.media.j3d.Shape3D;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3f;
+import org.scijava.vecmath.Color3f;
+import org.scijava.vecmath.Point3f;
 
 /**
  *
@@ -39,18 +38,16 @@ public class VRMLobject {
     }
 
     /*
-     * public void writeWithJAVA3D(File f){ colorsF[0].x = 0.3f;
-     * IndexedQuadArray quadArray = new IndexedQuadArray(coords.length,
-     * IndexedQuadArray.COORDINATES, coordIndices.length);
-     * quadArray.setCoordinates(0, coords); quadArray.setCoordinateIndices(0,
-     * coordIndices); quadArray.setColors(0, colorsF);
-     * //quadArray.setColorIndices(0, indices);
+     * public void writeWithJAVA3D(File f){ colorsF[0].x = 0.3f; IndexedQuadArray quadArray = new
+     * IndexedQuadArray(coords.length, IndexedQuadArray.COORDINATES, coordIndices.length);
+     * quadArray.setCoordinates(0, coords); quadArray.setCoordinateIndices(0, coordIndices);
+     * quadArray.setColors(0, colorsF); //quadArray.setColorIndices(0, indices);
      * 
      * 
      * Shape3D myShape = new Shape3D(quadArray);
      * 
-     * BranchGroup bg = new BranchGroup(); bg.addChild(myShape); VRML97Saver
-     * saver = new VRML97Saver();
+     * BranchGroup bg = new BranchGroup(); bg.addChild(myShape); VRML97Saver saver = new
+     * VRML97Saver();
      * 
      * saver.setBranchGroup(bg); saver.save(f); }
      */

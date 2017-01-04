@@ -5,9 +5,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Point2d;
-import javax.vecmath.Tuple2d;
-
+import org.scijava.vecmath.Point2d;
+import org.scijava.vecmath.Tuple2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

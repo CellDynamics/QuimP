@@ -1,17 +1,17 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.qanalysis;
 
 import java.io.File;
-//import javax.media.j3d.BranchGroup;
-//import javax.media.j3d.IndexedQuadArray;
-//import javax.media.j3d.QuadArray;
-//import javax.media.j3d.Shape3D;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3f;
-//import org.cybergarage.x3d.j3d.VRML97Saver;
+
+// import javax.media.j3d.BranchGroup;
+// import javax.media.j3d.IndexedQuadArray;
+// import javax.media.j3d.QuadArray;
+// import javax.media.j3d.Shape3D;
+import org.scijava.vecmath.Color3f;
+import org.scijava.vecmath.Point3f;
+// import org.cybergarage.x3d.j3d.VRML97Saver;
 
 import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;

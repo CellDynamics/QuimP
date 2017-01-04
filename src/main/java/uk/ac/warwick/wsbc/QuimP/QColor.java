@@ -4,8 +4,7 @@
 
 package uk.ac.warwick.wsbc.QuimP;
 
-import javax.vecmath.Color3f;
-
+import org.scijava.vecmath.Color3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

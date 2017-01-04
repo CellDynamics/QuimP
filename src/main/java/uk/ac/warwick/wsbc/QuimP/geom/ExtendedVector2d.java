@@ -2,16 +2,15 @@ package uk.ac.warwick.wsbc.QuimP.geom;
 
 import java.awt.geom.Line2D;
 
-import javax.vecmath.Tuple2d;
-import javax.vecmath.Tuple2f;
-import javax.vecmath.Vector2d;
-import javax.vecmath.Vector2f;
+import org.scijava.vecmath.Tuple2d;
+import org.scijava.vecmath.Tuple2f;
+import org.scijava.vecmath.Vector2d;
+import org.scijava.vecmath.Vector2f;
 
 /**
  * Defines 2D vector and performs operations on vectors and lines
  *
- * @remarks This definition of vector is often used in QuimP for expressing
- *          points as well
+ * @remarks This definition of vector is often used in QuimP for expressing points as well
  *
  * @author Richard
  */
@@ -115,9 +114,8 @@ public class ExtendedVector2d extends Vector2d {
     }
 
     /**
-     * Calculate the intersect between two edges \b A and \b B. Edge is defined
-     * as vector \b AB, where \b A and \b B stand for initial and terminal
-     * points given as vectors mounted at (0,0)
+     * Calculate the intersect between two edges \b A and \b B. Edge is defined as vector \b AB,
+     * where \b A and \b B stand for initial and terminal points given as vectors mounted at (0,0)
      * 
      * @param nA1 initial point of \b A edge
      * @param nA2 terminal point of \b A edge
@@ -232,8 +230,7 @@ public class ExtendedVector2d extends Vector2d {
     }
 
     /**
-     * Compute the intersection between two line segments, or two lines of
-     * infinite length.
+     * Compute the intersection between two line segments, or two lines of infinite length.
      *
      * @param x0 X coordinate first end point first line segment.
      * @param y0 Y coordinate first end point first line segment.
@@ -244,9 +241,9 @@ public class ExtendedVector2d extends Vector2d {
      * @param x3 X coordinate second end point second line segment.
      * @param y3 Y coordinate second end point second line segment.
      * @param intersection Preallocated by caller to double[2]
-     * @return -1 if lines are parallel (x,y unset), -2 if lines are parallel
-     *         and overlapping (x, y center) 0 if intersection outside segments
-     *         (x,y set) +1 if segments intersect (x,y set)
+     * @return -1 if lines are parallel (x,y unset), -2 if lines are parallel and overlapping (x, y
+     *         center) 0 if intersection outside segments (x,y set) +1 if segments intersect (x,y
+     *         set)
      * @see http://geosoft.no/software/geometry/Geometry.java.html
      */
     public static int segmentIntersection(double x0, double y0, double x1, double y1, double x2,
@@ -444,8 +441,7 @@ public class ExtendedVector2d extends Vector2d {
     }
 
     /**
-     * Check if two double precision numbers are "equal", i.e. close enough to a
-     * given limit.
+     * Check if two double precision numbers are "equal", i.e. close enough to a given limit.
      *
      * @param a First number to check
      * @param b Second number to check

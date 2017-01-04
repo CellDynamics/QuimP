@@ -3,9 +3,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 import java.util.Collections;
 import java.util.Vector;
 
-import javax.vecmath.Matrix3d;
-import javax.vecmath.Point3d;
-
+import org.scijava.vecmath.Matrix3d;
+import org.scijava.vecmath.Point3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

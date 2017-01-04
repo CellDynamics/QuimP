@@ -3,8 +3,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Point2d;
-import javax.vecmath.Tuple2d;
+import org.scijava.vecmath.Point2d;
+import org.scijava.vecmath.Tuple2d;
 
 import ij.util.Tools;
 import uk.ac.warwick.wsbc.QuimP.Snake;

@@ -5,9 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 
-import javax.vecmath.Point2d;
-import javax.vecmath.Vector2d;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.scijava.vecmath.Point2d;
+import org.scijava.vecmath.Vector2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
