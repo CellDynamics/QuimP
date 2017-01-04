@@ -113,20 +113,22 @@ public abstract class PropagateSeeds {
          * 
          * @param previous Previous result of segmentation. BW mask with white object on black
          *        background.
-         * @param shrinkVal Shrink size for objects in pixels. Background is expanded 2*shrinkVal
+         * @param shrinkPower Shrink size for objects in pixels. Background is expanded 2*shrinkVal
          * @return List of background and foreground coordinates.
          * @see PropagateSeeds.Morphological#propagateSeed(ImageProcessor, int)
          * @see OutlineProcessor#shrink(double, double, double, double)
          */
-        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkval) {
+        @Override
+        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous,
+                double shrinkPower) {
             ByteProcessor small = new ByteProcessor(previous.getWidth(), previous.getHeight());
             ByteProcessor big = new ByteProcessor(previous.getWidth(), previous.getHeight());
             small.setColor(Color.BLACK);
             small.fill();
             big.setColor(Color.BLACK);
             big.fill();
-            double stepsshrink = shrinkval / stepSize; // total shrink/step size
-            double stepsexp = (shrinkval * 2) / stepSize; // total shrink/step size
+            double stepsshrink = shrinkPower / stepSize; // total shrink/step size
+            double stepsexp = (shrinkPower * 2) / stepSize; // total shrink/step size
 
             List<Outline> outlines = getOutline(previous);
             for (Outline o : outlines) {
@@ -201,23 +203,25 @@ public abstract class PropagateSeeds {
          * Generate new seeds using segmented image.
          * 
          * @param previous segmented image, background on \b zero
-         * @param iter number of erode/dilate iterations
+         * @param shrinkPower number of erode/dilate iterations
          * 
          * @return Map containing list of coordinates that belong to foreground and background. Map
          *         is addressed by two enums: <tt>FOREGROUND</tt> and <tt>BACKGROUND</tt>
          * @see RandomWalkSegmentation#decodeSeeds(ImagePlus, Color, Color)
          * @see #convertToList(BinaryProcessor, BinaryProcessor)
          */
-        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, int iter) {
+        @Override
+        public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous,
+                double shrinkPower) {
             BinaryProcessor cp = new BinaryProcessor(previous.duplicate().convertToByteProcessor());
             // object smaller than on frame n
             BinaryProcessor small = new BinaryProcessor(cp.duplicate().convertToByteProcessor());
             // object bigger than on frame n
             BinaryProcessor big = new BinaryProcessor(cp.duplicate().convertToByteProcessor());
             // make objects smaller
-            iterateMorphological(small, PropagateSeeds.ERODE, iter);
+            iterateMorphological(small, PropagateSeeds.ERODE, shrinkPower);
             // make background bigger
-            iterateMorphological(big, PropagateSeeds.DILATE, (int) (iter * 1.5));
+            iterateMorphological(big, PropagateSeeds.DILATE, (int) (shrinkPower * 1.5));
 
             // apply big to old background making object bigger and prevent covering objects on
             // frame
@@ -240,7 +244,7 @@ public abstract class PropagateSeeds {
             return convertToList(small, big);
         }
 
-        private void iterateMorphological(BinaryProcessor ip, int oper, int iter) {
+        private void iterateMorphological(BinaryProcessor ip, int oper, double iter) {
             switch (oper) {
                 case ERODE:
                     for (int i = 0; i < iter; i++)
@@ -325,5 +329,7 @@ public abstract class PropagateSeeds {
                     new ImagePlus("", bigstack));
         return ret;
     }
+
+    abstract Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkPower);
 
 }

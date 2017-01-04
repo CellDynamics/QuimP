@@ -53,7 +53,9 @@ public class Params {
         this.relim = relim;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
