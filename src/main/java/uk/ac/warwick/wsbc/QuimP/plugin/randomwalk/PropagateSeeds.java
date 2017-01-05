@@ -136,8 +136,8 @@ public abstract class PropagateSeeds {
             for (Outline o : outlines) {
                 // shrink outline - copy as we want to expand it later
                 Outline copy = new Outline(o);
-                new OutlineProcessor(copy).shrink(stepsshrink, 0.04, 0.1, 1); // taken
-                                                                              // from anap
+                new OutlineProcessor(copy).shrink(stepsshrink, 0.04, 0.1, 1); // taken from anap
+                copy.unfreezeAll();
                 Roi fr = copy.asFloatRoi();
                 fr.setFillColor(Color.WHITE);
                 fr.setStrokeColor(Color.WHITE);
@@ -147,6 +147,7 @@ public abstract class PropagateSeeds {
             for (Outline o : outlines) {
                 // shrink outline - copy as we want to expand it later
                 new OutlineProcessor(o).shrink(stepsexp, -0.04, 0.1, 1); // taken from anap
+                o.unfreezeAll();
                 Roi fr = o.asFloatRoi();
                 fr.setFillColor(Color.WHITE);
                 fr.setStrokeColor(Color.WHITE);
