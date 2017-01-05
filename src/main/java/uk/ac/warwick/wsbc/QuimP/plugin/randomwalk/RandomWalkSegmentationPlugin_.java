@@ -503,8 +503,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                     8e-3 // error
             );
             //!<
-            shrinkPower = (Double) sShrinkPower.getValue(); // shrinking object
-            expandPower = (Double) sExpandPower.getValue(); // expanding to get background
+            shrinkPower = ((Integer) sShrinkPower.getValue()).doubleValue(); // shrinking object
+            expandPower = ((Integer) sExpandPower.getValue()).doubleValue(); // expanding to get
+                                                                             // background
             // all ok - store images to later use
             image = tmpImage;
             seedImage = tmpSeed;
