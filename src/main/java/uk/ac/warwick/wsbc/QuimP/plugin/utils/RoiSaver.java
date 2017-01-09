@@ -37,8 +37,8 @@ public class RoiSaver {
     /**
      * Save ROI as image
      * 
-     * Get ListArray with vertices and create \a fileName.tif image with ROI For non-valid input
-     * list it creates red image of size 100 x 100
+     * Get ListArray with vertices and create fileName.tif image with ROI For non-valid input list
+     * it creates red image of size 100 x 100
      * 
      * @param fileName file to save image with path
      * @param vert list of vertices

@@ -3,7 +3,9 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
 import java.awt.Color;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +17,11 @@ import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.Outline;
+import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.geom.OutlineProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 import uk.ac.warwick.wsbc.QuimP.utils.IJTools;
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 
@@ -39,6 +43,8 @@ import uk.ac.warwick.wsbc.QuimP.utils.Pair;
  *
  */
 public abstract class PropagateSeeds {
+    static boolean debug = Boolean.parseBoolean(
+            new PropertyReader().readProperty("quimpconfig.properties", "superDebug"));
     final static int ERODE = 0;
     final static int DILATE = 1;
     /**
@@ -133,10 +139,22 @@ public abstract class PropagateSeeds {
             double stepsexp = (expandPower) / stepSize; // total shrink/step size
 
             List<Outline> outlines = getOutline(previous);
+
+            // save extra debug info if property set
+            if (PropagateSeeds.debug) {
+                String tmp = System.getProperty("java.io.tmpdir");
+                for (Outline o : outlines) {
+                    long time = new Date().getTime();
+                    RoiSaver.saveROI(tmp + File.separator + "propagateSeed_" + time + "_"
+                            + outlines.hashCode(), o.asList());
+                }
+            }
+
             for (Outline o : outlines) {
                 // shrink outline - copy as we want to expand it later
                 Outline copy = new Outline(o);
-                new OutlineProcessor(copy).shrink(stepsshrink, 0.04, 0.1, 1); // taken from anap
+                new OutlineProcessor(copy).shrinknl(stepsshrink, stepSize, 0.1, 1); // taken from
+                                                                                    // anap
                 copy.unfreezeAll();
                 Roi fr = copy.asFloatRoi();
                 fr.setFillColor(Color.WHITE);
@@ -145,8 +163,9 @@ public abstract class PropagateSeeds {
             }
 
             for (Outline o : outlines) {
-                // shrink outline - copy as we want to expand it later
-                new OutlineProcessor(o).shrink(stepsexp, -0.04, 0.1, 1); // taken from anap
+                // frezeTh influences artifacts that appear when concave regions are expanded
+                // 0 prevent a liitle
+                new OutlineProcessor(o).shrinknl(stepsexp, -stepSize, 0.1, 0); // taken from anap
                 o.unfreezeAll();
                 Roi fr = o.asFloatRoi();
                 fr.setFillColor(Color.WHITE);

@@ -539,13 +539,13 @@ public class RandomWalkSegmentation {
     }
 
     /**
-     * Compute image circularly shifted by one pixel towards selected direction
-     * 
+     * Compute image circularly shifted by one pixel towards selected direction.
+     *
      * @param input Image to be shifted
-     * @param direction Shift direction
+     * @param direction Shift direction. This method is adjusted to work as MAtlab code and to keep
+     *        Matlab naming (rw_laplace4.m) thus the shift direction names are not adequate to shift
+     *        direction.
      * @return Copy of \a input shifted by one pixel in \a direction.
-     * @warning This method is adjusted to work as MAtlab code and to keep Matlab naming (
-     *          rw_laplace4.m) thus the shift direction names are not adequate to shift direction
      */
     protected RealMatrix circshift(RealMatrix input, int direction) {
         double[][] sub; // part of matrix that does no change put is shifted
@@ -829,7 +829,7 @@ public class RandomWalkSegmentation {
     }
 
     /**
-     * Compute part of stability criterion for stopping iterations
+     * Compute part of stability criterion for stopping iterations.
      * 
      * Only in-place multiplication and minimu of result is done here
      * 

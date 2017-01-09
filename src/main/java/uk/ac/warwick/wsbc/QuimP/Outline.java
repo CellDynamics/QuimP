@@ -619,7 +619,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
             }
             n++;
         } while (!(v.isHead() && n != 0) && n <= getNumVerts() + 1); // prevent to skipping
-                                                                     // getNext() doue to adding and
+                                                                     // getNext() due to adding and
                                                                      // removing vert
         // LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }

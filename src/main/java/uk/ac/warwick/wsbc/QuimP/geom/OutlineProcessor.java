@@ -99,8 +99,8 @@ public class OutlineProcessor {
             n = o.getHead();
             do {
                 if (!n.frozen) {
-                    n.setX(n.getX() - stepRes * fcn(n.curvatureLocal) * n.getNormal().getX());
-                    n.setY(n.getY() - stepRes * fcn(n.curvatureLocal) * n.getNormal().getY());
+                    n.setX(n.getX() - stepRes * 1.0 * n.getNormal().getX());
+                    n.setY(n.getY() - stepRes * 1.0 * n.getNormal().getY());
                 }
                 n = n.getNext();
             } while (!n.isHead());
