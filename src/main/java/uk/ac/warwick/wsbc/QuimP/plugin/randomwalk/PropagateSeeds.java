@@ -117,6 +117,9 @@ public abstract class PropagateSeeds {
          * The mask provided to this method is shrunk to get new seeds of object (that can move
          * meanwhile). The same mask is expanded and subtracted from image forming the background.
          * 
+         * Setting <tt>shrinkPower</tt> or <tt>expandPower</tt> to zero prevents contour
+         * modifications.
+         * 
          * @param previous Previous result of segmentation. BW mask with white object on black
          *        background.
          * @param shrinkPower Shrink size for objects in pixels.
@@ -173,6 +176,7 @@ public abstract class PropagateSeeds {
                 big.drawRoi(fr);
             }
             big.invert();
+            // store seeds if option ticked
             if (storeSeeds)
                 seeds.add(Pair.createPair(small, big));
 
@@ -224,6 +228,9 @@ public abstract class PropagateSeeds {
         /**
          * Generate new seeds using segmented image.
          * 
+         * Setting <tt>shrinkPower</tt> or <tt>expandPower</tt> to zero prevents contour
+         * modifications.
+         * 
          * @param previous segmented image, background on \b zero
          * @param shrinkPower number of erode iterations
          * @param expandPower number of dilate iterations
@@ -257,9 +264,8 @@ public abstract class PropagateSeeds {
                     big.putPixel(x, y, big.getPixel(x, y) | cp.getPixel(x, y));
                 }
 
-            // IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_big.tif");
-
             big.invert(); // invert to have BG pixels white in seed. (required by convertToList)
+            // store seeds if option ticked
             if (storeSeeds) {
                 seeds.add(Pair.createPair(small, big));
             }
@@ -287,21 +293,21 @@ public abstract class PropagateSeeds {
     /**
      * Convert processors obtained for object and background to format accepted by RW.
      * 
-     * @param small object mask
-     * @param big background mask
+     * @param fgmask object mask
+     * @param bgmask background mask
      * @return List of point coordinates accepted by RW algorithm.
      */
-    Map<Integer, List<Point>> convertToList(ImageProcessor small, ImageProcessor big) {
+    public Map<Integer, List<Point>> convertToList(ImageProcessor fgmask, ImageProcessor bgmask) {
         // output map integrating two lists of points
         HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
         // output lists of points. Can be null if points not found
         List<Point> foreground = new ArrayList<>();
         List<Point> background = new ArrayList<>();
-        for (int x = 0; x < small.getWidth(); x++)
-            for (int y = 0; y < small.getHeight(); y++) {
-                if (small.get(x, y) > 0) // WARN Why must be y,x??
+        for (int x = 0; x < fgmask.getWidth(); x++)
+            for (int y = 0; y < fgmask.getHeight(); y++) {
+                if (fgmask.get(x, y) > 0) // WARN Why must be y,x??
                     foreground.add(new Point(y, x)); // remember foreground coords
-                if (big.get(x, y) > 0)
+                if (bgmask.get(x, y) > 0)
                     background.add(new Point(y, x)); // remember background coords
             }
         // pack outputs into map

@@ -248,11 +248,11 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         sIter.addChangeListener(this);
         optionsPanel.add(new JLabel("Iterations"));
         optionsPanel.add(sIter);
-        sShrinkPower = new JSpinner(new SpinnerNumberModel(10, 1, 1000, 1));
+        sShrinkPower = new JSpinner(new SpinnerNumberModel(10, 0, 1000, 1));
         sShrinkPower.addChangeListener(this);
         optionsPanel.add(new JLabel("Shrink power"));
         optionsPanel.add(sShrinkPower);
-        sExpandPower = new JSpinner(new SpinnerNumberModel(15, 1, 1000, 1));
+        sExpandPower = new JSpinner(new SpinnerNumberModel(15, 0, 1000, 1));
         sExpandPower.addChangeListener(this);
         optionsPanel.add(new JLabel("Expand power"));
         optionsPanel.add(sExpandPower);
@@ -394,10 +394,18 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                 if (useSeedStack) { // true - use slices
                     nextseed = obj.decodeSeeds(seedImage.getStack().getProcessor(s), Color.RED,
                             Color.GREEN);
-                } else // false - use previous frame
+                    retIp = obj.run(nextseed); // segmentation and results stored for next seeding
+                } else {// false - use previous frame
+                    // convert unmodified masks to List
+                    ImageProcessor retIPinverted = retIp.duplicate();
+                    retIPinverted.invert();
+                    double[] meanSeed =
+                            obj.getMeanSeed(propagateSeeds.convertToList(retIp, retIPinverted));
+                    // modify masks and convert to lists
                     nextseed = propagateSeeds.propagateSeed(retIp, shrinkPower, expandPower);
-
-                retIp = obj.run(nextseed); // segmentation and results stored for next seeding
+                    retIp = obj.run(nextseed, meanSeed); // segmentation and results
+                                                         // stored for next seeding
+                }
                 ret.addSlice(retIp); // add next slice
                 IJ.showProgress(s - 1, is.getSize());
             }
@@ -468,10 +476,15 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             // verify data before - store data in object after verification
             ImagePlus tmpSeed = WindowManager.getImage((String) cSeed.getSelectedItem()); // tmp var
             ImagePlus tmpImage = WindowManager.getImage((String) cImage.getSelectedItem());
+            if (tmpSeed == null || tmpImage == null) {
+                JOptionPane.showMessageDialog(wnd, "No image selected", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             // 1. Verify sizes - must be the same
             if (tmpSeed.getWidth() != tmpImage.getWidth()
                     && tmpSeed.getHeight() != tmpImage.getHeight()) {
-                JOptionPane.showMessageDialog(wnd, "Images are incompatibile in size", "Error",
+                JOptionPane.showMessageDialog(wnd, "Images have incompatibile sizes", "Error",
                         JOptionPane.ERROR_MESSAGE);
                 return; // when wrong sizes
             }

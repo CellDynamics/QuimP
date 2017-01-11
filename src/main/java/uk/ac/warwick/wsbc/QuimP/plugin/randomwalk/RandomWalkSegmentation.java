@@ -401,7 +401,30 @@ public class RandomWalkSegmentation {
                     "Seed pixels are empty, check if:\n- correct colors were used\n- all slices have"
                             + " been seeded (if stacked seed is used).");
         RealMatrix[] precomputed = precompute(); // precompute gradients
-        RealMatrix[] solved = solver(image, seeds, precomputed, params); // run solver
+        // compute mean intensity of foreground and background pixels and run solver
+        RealMatrix[] solved = solver(image, seeds, precomputed, getMeanSeed(seeds), params);
+        RealMatrix result = compare(solved[FOREGROUND], solved[BACKGROUND]); // result as matrix
+        return RealMatrix2ImageProcessor(result).convertToByteProcessor(true);
+    }
+
+    /**
+     * Runner that allows to provide own mean intensity values for FG and BG pixels.
+     * 
+     * @param seeds
+     * @param meanseeds array of [FG] [BG] mean values of pixels.
+     * @return
+     * @throws RandomWalkException
+     * @see {@link #getMeanSeed(Map)}
+     */
+    public ImageProcessor run(Map<Integer, List<Point>> seeds, double[] meanseeds)
+            throws RandomWalkException {
+        if (seeds.get(FOREGROUND).isEmpty() || seeds.get(BACKGROUND).isEmpty())
+            throw new RandomWalkException(
+                    "Seed pixels are empty, check if:\n- correct colors were used\n- all slices have"
+                            + " been seeded (if stacked seed is used).");
+        RealMatrix[] precomputed = precompute(); // precompute gradients
+
+        RealMatrix[] solved = solver(image, seeds, precomputed, meanseeds, params); // run solver
         RealMatrix result = compare(solved[FOREGROUND], solved[BACKGROUND]); // result as matrix
         return RealMatrix2ImageProcessor(result).convertToByteProcessor(true);
     }
@@ -433,7 +456,7 @@ public class RandomWalkSegmentation {
     static public double getMin(RealMatrix input) {
         double[][] data;
         if (input instanceof Array2DRowRealMatrix)
-            data = ((Array2DRowRealMatrix) input).getDataRef(); // only avaiable for non
+            data = ((Array2DRowRealMatrix) input).getDataRef(); // only available for non
                                                                 // cache-friendly matrix
         else
             data = input.getData(); // TODO optimize using visitors because this is copy
@@ -472,13 +495,14 @@ public class RandomWalkSegmentation {
     }
 
     /**
-     * Find \b BACKGROUND and \b FOREGROUND labeled pixels on seed image and return their positions
+     * Find <b>BACKGROUND</b> and <b>FOREGROUND</b> labelled pixels on seed image and return their
+     * positions.
      * 
      * @param rgb RGB seed image
      * @param fseed color of marker for foreground pixels
      * @param bseed color of marker for background pixels
      * @return Map containing list of coordinates that belong to foreground and background. Map is
-     *         addressed by two enums: \a FOREGROUND and \a BACKGROUND
+     *         addressed by two enums: <i>FOREGROUND</i> and <i>BACKGROUND</i>
      * @throws RandomWalkException When image other that RGB provided
      */
     public Map<Integer, List<Point>> decodeSeeds(final ImagePlus rgb, final Color fseed,
@@ -489,7 +513,7 @@ public class RandomWalkSegmentation {
     }
 
     /**
-     * @copydoc decodeSeeds(ImagePlus, Color, Color)
+     * @see #decodeSeeds(ImagePlus, Color, Color)
      */
     public Map<Integer, List<Point>> decodeSeeds(final ImageProcessor rgb, final Color fseed,
             final Color bseed) throws RandomWalkException {
@@ -646,27 +670,41 @@ public class RandomWalkSegmentation {
     }
 
     /**
+     * Calculate mean intensity for FG and BG seeds for stored image.
+     * 
+     * @param seeds FG and BG seeds
+     * @return [0] - foreground mean value, [1] - background mean value for seeded pixels.
+     */
+    public double[] getMeanSeed(Map<Integer, List<Point>> seeds) {
+        double[] meanseed = new double[2];
+        // fg
+        meanseed[0] = StatUtils.mean(getValues(image, seeds.get(FOREGROUND)).getDataRef());
+        // bg
+        meanseed[1] = StatUtils.mean(getValues(image, seeds.get(BACKGROUND)).getDataRef());
+        return meanseed;
+    }
+
+    /**
      * Do main computations
      * 
      * @param image original image
      * @param seeds seed array returned from decodeSeeds(ImagePlus, Color, Color)
      * @param gradients precomputed gradients returned from precompute()
+     * @param meanseed mean values of image intensities for FG and BG. Calculated by
+     *        {@link #getMeanSeed(RealMatrix, Map)}. Can be provided separatelly.
      * @param params Parameters
      * @return Computed probabilities for background and foreground
      * @retval RealMatrix[2], RealMatrix[FOREGROUND] and RealMatrix[BACKGROUND]
      */
     protected RealMatrix[] solver(RealMatrix image, Map<Integer, List<Point>> seeds,
-            RealMatrix[] gradients, Params params) {
-        // compute mean intensity of foreground and background pixels
-        double meanseed_fg = StatUtils.mean(getValues(image, seeds.get(FOREGROUND)).getDataRef());
-        double meanseed_bg = StatUtils.mean(getValues(image, seeds.get(BACKGROUND)).getDataRef());
-        LOGGER.debug("meanseed_fg=" + meanseed_fg + " meanseed_bg=" + meanseed_bg); // correct
+            RealMatrix[] gradients, double[] meanseed, Params params) {
+        LOGGER.debug("meanseed_fg=" + meanseed[0] + " meanseed_bg=" + meanseed[1]); // correct
         LOGGER.trace("fseeds: " + seeds.get(FOREGROUND)); // correct
         LOGGER.trace("getValfseed: " + getValues(image, seeds.get(FOREGROUND))); // correct
         // compute normalised squared differences to mean seed intensities
-        RealMatrix diffI_fg = image.scalarAdd(-meanseed_fg);
+        RealMatrix diffI_fg = image.scalarAdd(-meanseed[0]);
         diffI_fg.walkInOptimizedOrder(new MatrixElementPowerDiv(65025));
-        RealMatrix diffI_bg = image.scalarAdd(-meanseed_bg);
+        RealMatrix diffI_bg = image.scalarAdd(-meanseed[1]);
         diffI_bg.walkInOptimizedOrder(new MatrixElementPowerDiv(65025));
         // compute weights for diffusion in all four directions, dependent on local gradients and
         // differences to mean intensities of seeds
