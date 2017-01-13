@@ -57,9 +57,10 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test method for {@link utils.ImageProcessorPlus.rotate(ImageProcessor,double, boolean)}
-     * @post Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to
-     *       /tmp/testrotateImage.tif.
+     * Test method for utils.ImageProcessorPlus#rotate(ImageProcessor,double, boolean).
+     * 
+     * Post: Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to
+     * /tmp/testrotateImage.tif.
      */
     @Test
     public void test_Rotate() {
@@ -70,10 +71,11 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test method for {@link utils.ImageProcessorPlus.rotate(ImageProcessor,double, boolean)}
-     *       with background settings
-     * @post Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to
-     *       /tmp/testrotateImage.tif. There should be 0 background
+     * Test method for utils.ImageProcessorPlus.rotate(ImageProcessor,double, boolean) with
+     * background settings.
+     * 
+     * Post:Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to
+     * /tmp/testrotateImage.tif. There should be 0 background
      */
     @Test
     public void test_Rotate_0background() {
@@ -85,8 +87,9 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test method for extendImageBeforeRotation(ImageProcessor,double)
-     * @post Saves extended image to /tmp/testextendImage_0s.tif.
+     * Test method for extendImageBeforeRotation(ImageProcessor,double).
+     * 
+     * Post: Saves extended image to /tmp/testextendImage_0s.tif.
      */
     @Test
     public void test_ExtendImageToRotation_0s() {
@@ -100,8 +103,9 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test method for extendImageBeforeRotation(ImageProcessor,double)
-     * @post Saves extended image to /tmp/testextendImage_45s.tif.
+     * Test method for extendImageBeforeRotation(ImageProcessor,double).
+     * 
+     * Post: Saves extended image to /tmp/testextendImage_45s.tif.
      */
     @Test
     public void test_ExtendImageToRotation_45s() {
@@ -125,7 +129,7 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test of RectangleBox for square image and angle 0 deg
+     * Test of RectangleBox for square image and angle 0 deg
      */
     @Test
     public void test_RectangleBox_0s() {
@@ -169,8 +173,9 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
+     * Test of RectangleBox for square image and angle 45 deg for input vectors.
+     * 
      * @throws Exception
-     * @test Test of RectangleBox for square image and angle 45 deg for input vectors
      */
     @Test
     public void test_RectangleBoxVector_45s() throws Exception {
@@ -197,7 +202,7 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test of RectangleBox for square image and angle 90 deg
+     * Test of RectangleBox for square image and angle 90 deg.
      */
     @Test
     public void test_RectangleBox_90s() {
@@ -213,7 +218,7 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test of RectangleBox for non square image and angle 90 deg
+     * Test of RectangleBox for non square image and angle 90 deg.
      */
     @Test
     public void test_RectangleBox_90ns() {
@@ -229,7 +234,7 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test of RectangleBox for square image and angle 45 deg
+     * Test of RectangleBox for square image and angle 45 deg
      */
     @Test
     public void test_RectangleBox_45s() {
@@ -245,7 +250,7 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
-     * @test Test of RectangleBox for square image and angle 30 deg
+     * Test of RectangleBox for square image and angle 30 deg
      */
     @Test
     public void test_RectangleBox_30s() {

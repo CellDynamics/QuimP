@@ -605,7 +605,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * @param stepSize increment
      * @param correct
      * @throws BoaException
-     * @see uk.ac.warwick.wsbc.QuimP.Shape.scale(double, double)
+     * @see uk.ac.warwick.wsbc.QuimP.Shape#scale(double, double)
      */
     public void scale(double amount, double stepSize, boolean correct) throws BoaException {
         if (amount == 0)
@@ -638,7 +638,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * Cut out a loop Insert a new node at cut point
+     * Cut out a loop Insert a new node at cut point.
      */
     public void cutLoops() {
         int MAXINTERVAL = 12; // how far ahead do you check for a loop
@@ -1053,7 +1053,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     /**
      * Call super and then oo Snake related actions
      * 
-     * @see uk.ac.warwick.wsbc.QuimP.Shape.beforeSerialize()
+     * @see uk.ac.warwick.wsbc.QuimP.Shape#beforeSerialize()
      */
     @Override
     public void beforeSerialize() {
@@ -1064,7 +1064,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     /**
      * Call super and then oo Snake related actions
      * 
-     * @see uk.ac.warwick.wsbc.QuimP.Shape.afterSerialize()
+     * @see uk.ac.warwick.wsbc.QuimP.Shape#afterSerialize()
      */
     @Override
     public void afterSerialize() throws Exception {

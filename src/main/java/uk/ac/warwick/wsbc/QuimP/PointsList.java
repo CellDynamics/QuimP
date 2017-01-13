@@ -5,9 +5,9 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 /**
  * Represents node of bidirectional list of points in Cartesian coordinates.
  * 
- * This abstract class contains basic properties of points and provides method for moving across 
- * the list. Points in list are numbered from <b>1</b> and list can be looped. There is one special
- * node called <b>head</b> that indicates beginning of the list (and its end if the list is looped) 
+ * This abstract class contains basic properties of points and provides method for moving across the
+ * list. Points in list are numbered from <b>1</b> and list can be looped. There is one special node
+ * called <b>head</b> that indicates beginning of the list (and its end if the list is looped)
  * 
  * @author p.baniukiewicz
  *
@@ -17,35 +17,34 @@ public abstract class PointsList<T extends PointsList<T>> {
     protected transient T prev; /*!< previous point in list, \c null if no other point */
     protected transient T next; /*!< next point in list, \c null if no other point */
     /**
-     *  x,y co-ordinates of the point.
+     * x,y co-ordinates of the point.
      */
     protected ExtendedVector2d point;
     /**
-     * normal vector.
-     * Calculated by {@link uk.ac.warwick.wsbc.QuimP.PointsList.updateNormale(boolean)}
-     * and implicitly by {@link uk.ac.warwick.wsbc.QuimP.Shape.updateNormales(boolean)}
-     * from Shape during serialization and deserialization and changing the shape of Shape
+     * Normal vector. Calculated by
+     * {@link uk.ac.warwick.wsbc.QuimP.PointsList#updateNormale(boolean)} and implicitly by
+     * {@link uk.ac.warwick.wsbc.QuimP.Shape#updateNormales(boolean)} from Shape during
+     * serialization and deserialization and changing the shape of Shape
      */
     protected ExtendedVector2d normal;
     /**
-     * tangent vector.
-     * Calculated by uk.ac.warwick.wsbc.QuimP.PointsList.calcTan(). Implicitly during calculating
-     * normals (see \c normal)
+     * tangent vector. Calculated by uk.ac.warwick.wsbc.QuimP.PointsList.calcTan(). Implicitly
+     * during calculating normals (see \c normal)
      */
     protected ExtendedVector2d tan;
     protected boolean head = false; /*!< Indicate if this point is \b head */
     protected static boolean clockwise = true; /*!< access clockwise if true */
     /**
-     * ID number of point, unique across list.
-     * Given during adding point to list, controlled by Shape
+     * ID number of point, unique across list. Given during adding point to list, controlled by
+     * Shape
      */
     protected int tracknumber = 1;
     /**
      * normalized position on list.
      * 
-     * 0 - beginning , 1 - end of the list according to Shape perimeter.
-     * Set by uk.ac.warwick.wsbc.QuimP.Shape.setPositions() and called before and after serialise
-     * and on Shape writing.
+     * 0 - beginning , 1 - end of the list according to Shape perimeter. Set by
+     * uk.ac.warwick.wsbc.QuimP.Shape.setPositions() and called before and after serialise and on
+     * Shape writing.
      */
     double position = -1;
     /**
@@ -75,10 +74,10 @@ public abstract class PointsList<T extends PointsList<T>> {
     }
 
     /**
-     * Copy constructor. Make copy of properties of passed point. 
+     * Copy constructor. Make copy of properties of passed point.
      * 
      * Previous or next points are not copied
-     *  
+     * 
      * @param src Source Point
      */
     public PointsList(final PointsList<?> src) {
@@ -104,9 +103,11 @@ public abstract class PointsList<T extends PointsList<T>> {
         point = new ExtendedVector2d(xx, yy);
     }
 
-    /* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -123,9 +124,11 @@ public abstract class PointsList<T extends PointsList<T>> {
         return result;
     }
 
-    /* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -235,7 +238,7 @@ public abstract class PointsList<T extends PointsList<T>> {
      * 
      * @param t true if current node is head, false otherwise
      * @warning Only one Node in Snake can be head
-     * @see uk.ac.warwick.wsbc.QuimP.Snake.setNewHead(int)
+     * @see uk.ac.warwick.wsbc.QuimP.Snake#setNewHead(int)
      * @see uk.ac.warwick.wsbc.QuimP.Snake
      */
     public void setHead(boolean t) {
@@ -316,9 +319,8 @@ public abstract class PointsList<T extends PointsList<T>> {
     /**
      * Calculate tangent at current point (i.e. unit vector between neighbours).
      *
-     * Calculate a unit vector towards neighbouring nodes and then a unit vector
-     * between their ends. direction important for normale calculation. Always
-     * calculate tan as if clockwise.
+     * Calculate a unit vector towards neighbouring nodes and then a unit vector between their ends.
+     * direction important for normale calculation. Always calculate tan as if clockwise.
      *
      * @return Tangent at point
      */

@@ -87,7 +87,7 @@ public class QPluginConfigSerializer {
      * @throws IOException
      * @return New object of QPluginConfigSerializer with values read from file \c filename
      * @throws QuimpPluginException
-     * @see getBuilder()
+     * @see #getBuilder()
      */
     public QPluginConfigSerializer load(String filename) throws IOException, QuimpPluginException {
         Gson gson = gsonbuilder.create();

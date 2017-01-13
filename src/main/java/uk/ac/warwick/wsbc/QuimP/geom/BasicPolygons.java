@@ -149,7 +149,7 @@ public class BasicPolygons {
      * 
      * @param P Vertices of polygon in specified order
      * @return Point of center of mass
-     * @throws IllegalArgumentException when defective polygon is given (area equals 0) *
+     * @throws IllegalArgumentException when defective polygon is given (area equals 0)
      * @see <a href=
      *      "link">http://stackoverflow.com/questions/5271583/center-of-gravity-of-a-polygon</a>
      */

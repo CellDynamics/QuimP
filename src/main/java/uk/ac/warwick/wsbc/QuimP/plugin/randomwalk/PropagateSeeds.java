@@ -103,7 +103,7 @@ public abstract class PropagateSeeds {
          * Allow to store seed history that can be later presented in form of composite image.
          * 
          * @param storeSeeds <tt>true</tt> to store seeds.
-         * @see getCompositeSeed(ImagePlus)
+         * @see #getCompositeSeed(ImagePlus)
          */
         public Contour(boolean storeSeeds) {
             this.storeSeeds = storeSeeds;
@@ -217,7 +217,7 @@ public abstract class PropagateSeeds {
          * Allow to store seed history that can be later presented in form of composite image.
          * 
          * @param storeSeeds <tt>true</tt> to store seeds.
-         * @see getCompositeSeed(ImagePlus)
+         * @see #getCompositeSeed(ImagePlus)
          */
         public Morphological(boolean storeSeeds) {
             this.storeSeeds = storeSeeds;

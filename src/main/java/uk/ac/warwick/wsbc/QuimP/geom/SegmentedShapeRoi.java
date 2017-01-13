@@ -131,7 +131,7 @@ public class SegmentedShapeRoi extends ShapeRoi {
      * @param step
      * @param smooth
      * 
-     * @see getOutlineasPoints()
+     * @see #getOutlineasPoints()
      */
     public void setInterpolationParameters(double step, boolean smooth) {
         this.step = step;

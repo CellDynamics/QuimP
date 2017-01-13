@@ -459,14 +459,16 @@ public abstract class QWindowBuilder {
      * 
      * To get one particular parameter use getIntegerFromUI(String) or getDoubleFromUI(String)
      * 
+     * JSpinners are set to support \b double values and that values are returned here It means that
+     * originally pushed to UI integers are changed to Double what can affect set/getpluginConfig
+     * from filter interface as well
+     * 
      * @return List of <key,param>, where \b key is the name of parameter passed to QWindowBuilder
      *         class through BuildWindow method. The method remaps those keys to related UI controls
      *         and reads values associated to them.
-     * @see getDoubleFromUI(final String)
-     * @see getIntegerFromUI(final String)
-     * @warning JSpinners are set to support \b double values and that values are returned here It
-     *          means that originally pushed to UI integers are changed to Double what can affect
-     *          set/getpluginConfig from filter interface as well
+     * @see #getDoubleFromUI(String)
+     * @see #getIntegerFromUI(String)
+     * 
      */
     public ParamList getValues() {
         ParamList ret = new ParamList();
@@ -516,7 +518,7 @@ public abstract class QWindowBuilder {
      * 
      * @param key Key to be read from configuration list, case insensitive
      * @return integer representation of value under \c key
-     * @see buildWindow(ParamList)
+     * @see #buildWindow(ParamList)
      */
     public int getIntegerFromUI(final String key) {
         return (int) getDoubleFromUI(key);

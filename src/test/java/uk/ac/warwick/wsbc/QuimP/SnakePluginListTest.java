@@ -242,8 +242,8 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList.SnakePluginList(int,
-     *       PluginFactory, ViewUpdater)}
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#SnakePluginList(int, PluginFactory, ViewUpdater)}
      */
     @Test
     public void testSnakePluginListIntPluginFactory() throws Exception {
@@ -263,7 +263,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#isActive(int)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#isActive(int)}.
      */
     @Test
     public void testIsActive() throws Exception {
@@ -271,8 +271,8 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test method for
-     *       {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setInstance(int, String, boolean)}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setInstance(int, String, boolean)}.
      */
     @Test
     public void testSetInstance() throws Exception {
@@ -285,8 +285,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test method for
-     *       {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setActive(int, boolean)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setActive(int, boolean)}.
      */
     @Test
     public void testSetActive() throws Exception {
@@ -297,7 +296,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#deletePlugin(int)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#deletePlugin(int)}.
      */
     @Test
     public void testDeletePlugin() throws Exception {
@@ -307,7 +306,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#isRefListEmpty()}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#isRefListEmpty()}.
      */
     @Test
     public void testIsRefListEmpty() throws Exception {
@@ -322,7 +321,8 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of serialization
+     * Test of serialization
+     * 
      * @throws Exception
      */
     @Test

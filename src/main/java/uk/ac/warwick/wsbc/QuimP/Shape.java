@@ -628,7 +628,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     /**
      * Converts list of Elements (Node, Snake) to ArrayList. Fill <tt>Elements</tt> field.
      * 
-     * @see uk.ac.warwick.wsbc.QuimP.Shape.clearElements()
+     * @see uk.ac.warwick.wsbc.QuimP.Shape#clearElements()
      */
     @Override
     public void beforeSerialize() {
@@ -647,7 +647,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     /**
      * Rebuild Shape from ArryList.
      * 
-     * @see uk.ac.warwick.wsbc.QuimP.Shape.clearElements()
+     * @see uk.ac.warwick.wsbc.QuimP.Shape#clearElements()
      */
     @Override
     public void afterSerialize() throws Exception {

@@ -30,7 +30,8 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
             plotOutline = false, plotStaticmax = false, plotDynamicmax = false;
 
     /**
-     * Plot types supported by {@link addOutlinesToImage(STmap, ProtAnalysisConfig)}.
+     * Plot types supported by
+     * {@link TrackVisualisation.Stack#addOutlinesToImage(uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap, ProtAnalysisConfig)}.
      * <ol>
      * <li>MOTILITY - only motility based outline.
      * <li>CONVEXITY - only convexity based outline.
@@ -134,7 +135,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      * Configuration of plotting outlines of cells on stack of images.
      * 
      * @author p.baniukiewicz
-     * @see {@link addOutlinesToImage(STmap, ProtAnalysisConfig)}
+     * @see {@link TrackVisualisation.Stack#addOutlinesToImage(uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap, ProtAnalysisConfig)}.
      */
     class OutlinesToImage {
         /**

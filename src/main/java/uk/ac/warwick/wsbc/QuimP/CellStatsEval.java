@@ -99,7 +99,7 @@ public class CellStatsEval implements Measurements {
      * <p>
      * <b>Warning</b>
      * <p>
-     * Number of calculated stats must be reflected in {@link buildData(FrameStat[])}
+     * Number of calculated stats must be reflected in {@link #buildData(FrameStatistics[])}
      * 
      * @return Array with stats for every frame for one cell.
      */

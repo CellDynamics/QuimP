@@ -372,10 +372,10 @@ public class TrackMapAnalyser {
      * Get index of point in the whole track line composed from backward+forward tracks.
      * 
      * Assumes that order og points in tracks is correct, from first to last. (assured by
-     * {@link trackMaxima(STmap, double, MaximaFinder)}.
+     * {@link #trackMaxima(STmap, double, MaximaFinder)}.
      * 
-     * Use {@link INCLUDE_INITIAL} to check whether initial point is included in tracks. If it is it
-     * means that it appears twice (for backward and forward tracks respectively). then it is
+     * Use {@link #INCLUDE_INITIAL} to check whether initial point is included in tracks. If it is
+     * it means that it appears twice (for backward and forward tracks respectively). then it is
      * counted only one. For <tt>false</tt> state all points are counted.
      * 
      * @param backwardMap

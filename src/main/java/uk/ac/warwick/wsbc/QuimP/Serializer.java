@@ -254,10 +254,10 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * Sets pretty JSON formatting on save operation
+     * Sets pretty JSON formatting on save operation.
      * 
-     * @see uk.ac.warwick.wsbc.QuimP.Serializer.toString()
-     * @see uk.ac.warwick.wsbc.QuimP.Serializer.save(final String)
+     * @see uk.ac.warwick.wsbc.QuimP.Serializer#toString()
+     * @see uk.ac.warwick.wsbc.QuimP.Serializer#save(String)
      */
     public void setPretty() {
         gsonBuilder.setPrettyPrinting();
@@ -273,23 +273,19 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @param type Type of class
      * @param typeAdapter Wrapped object builder that implements InstanceCreator interface. Example
      *        of use:
-     * @code{.java} class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList>
-     *              { private int size; private PluginFactory pf; private List<Point2d> dt; private
-     *              ViewUpdater vu;
+     * @code{class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {
+     *             private int size; private PluginFactory pf; private List<Point2d> dt; private
+     *             ViewUpdater vu;
      *
-     *              public SnakePluginListInstanceCreator(int size, final PluginFactory pf, final
-     *              List<Point2d> dataToProcess, final ViewUpdater vu) { this.size = size; this.pf =
-     *              pf; this.dt = dataToProcess; this.vu = vu; }
+     *             public SnakePluginListInstanceCreator(int size, final PluginFactory pf, final
+     *             List<Point2d> dataToProcess, final ViewUpdater vu) { this.size = size; this.pf =
+     *             pf; this.dt = dataToProcess; this.vu = vu; }
      *
-     * @Override public SnakePluginList createInstance(Type arg0) { return new SnakePluginList(size,
-     *           pf, dt, vu); }
-     * 
-     *           Serializer<SnakePluginList> out; Serializer<SnakePluginList> s = new
-     *           Serializer<>(SnakePluginList.class);
-     *           s.registerInstanceCreator(SnakePluginList.class, new
-     *           SnakePluginListInstanceCreator(3, pluginFactory, null, null)); out =
-     *           s.fromString(json);
-     * @endcode
+     *             Serializer<SnakePluginList> out; Serializer<SnakePluginList> s = new
+     *             Serializer<>(SnakePluginList.class);
+     *             s.registerInstanceCreator(SnakePluginList.class, new
+     *             SnakePluginListInstanceCreator(3, pluginFactory, null, null)); out =
+     *             s.fromString(json);}
      * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#afterSerialize()
      * @see <a href=
      *      "GSon doc">https://github.com/google/gson/blob/master/UserGuide.md#TOC-InstanceCreator-for-a-Parameterized-Type</a>
