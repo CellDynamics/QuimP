@@ -8,9 +8,9 @@ import org.scijava.vecmath.Vector2d;
 import org.scijava.vecmath.Vector2f;
 
 /**
- * Defines 2D vector and performs operations on vectors and lines
+ * Defines 2D vector and performs operations on vectors and lines.
  *
- * @remarks This definition of vector is often used in QuimP for expressing points as well
+ * This definition of vector is often used in QuimP for expressing points as well
  *
  * @author Richard
  */
@@ -115,14 +115,13 @@ public class ExtendedVector2d extends Vector2d {
 
     /**
      * Calculate the intersect between two edges \b A and \b B. Edge is defined as vector \b AB,
-     * where \b A and \b B stand for initial and terminal points given as vectors mounted at (0,0)
+     * where \b A and \b B stand for initial and terminal points given as vectors mounted at (0,0).
      * 
      * @param nA1 initial point of \b A edge
      * @param nA2 terminal point of \b A edge
      * @param nB1 initial point of \b B edge
      * @param nB2 terminal point of \b B edge
      * @return Intersect point
-     * @retval Vect2d if intersection found or \c null if not found
      * @deprecated Actually not used in this version of QuimP
      */
     @Deprecated
@@ -244,7 +243,7 @@ public class ExtendedVector2d extends Vector2d {
      * @return -1 if lines are parallel (x,y unset), -2 if lines are parallel and overlapping (x, y
      *         center) 0 if intersection outside segments (x,y set) +1 if segments intersect (x,y
      *         set)
-     * @see http://geosoft.no/software/geometry/Geometry.java.html
+     * @see <a href= "link">http://geosoft.no/software/geometry/Geometry.java.html</a>
      */
     public static int segmentIntersection(double x0, double y0, double x1, double y1, double x2,
             double y2, double x3, double y3, double[] intersection) {
@@ -447,7 +446,7 @@ public class ExtendedVector2d extends Vector2d {
      * @param b Second number to check
      * @param limit The definition of "equal".
      * @return True if the two numbers are "equal", false otherwise
-     *         http://geosoft.no/software/geometry/Geometry.java.html
+     * @see <a href= "link">http://geosoft.no/software/geometry/Geometry.java.htmll</a>
      */
     private static boolean equals(double a, double b, double limit) {
         return Math.abs(a - b) < limit;
@@ -461,7 +460,7 @@ public class ExtendedVector2d extends Vector2d {
      * @param c Third number to find smallest among.
      * @param d Fourth number to find smallest among.
      * @return Smallest of a, b, c and d.
-     * @see http://geosoft.no/software/geometry/Geometry.java.html
+     * @see <a href= "link">http://geosoft.no/software/geometry/Geometry.java.htmll</a>
      */
     private static double min(double a, double b, double c, double d) {
         return Math.min(Math.min(a, b), Math.min(c, d));
@@ -475,7 +474,7 @@ public class ExtendedVector2d extends Vector2d {
      * @param c Third number to find largest among.
      * @param d Fourth number to find largest among.
      * @return Largest of a, b, c and d.
-     * @see http://geosoft.no/software/geometry/Geometry.java.html
+     * @see <a href= "link">http://geosoft.no/software/geometry/Geometry.java.htmll</a>
      */
     private static double max(double a, double b, double c, double d) {
         return Math.max(Math.max(a, b), Math.max(c, d));

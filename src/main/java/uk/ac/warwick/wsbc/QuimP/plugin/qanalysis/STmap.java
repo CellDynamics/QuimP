@@ -430,7 +430,7 @@ public class STmap implements IQuimpSerialize {
      * @param name Name of the ImagePlus window
      * @param imp Image processor
      * @return Created ImagePlus object
-     * @see map2ColorImagePlus(String, double[][], double, double)
+     * @see #map2ColorImagePlus(String, String, double[][], double, double)
      */
     public ImagePlus map2ImagePlus(String name, ImageProcessor imp) {
         ImagePlus ret = new ImagePlus(name, imp);
@@ -463,8 +463,8 @@ public class STmap implements IQuimpSerialize {
      * @param min Minimum value in Outline that was used for creation of this map
      * @param max Maximum value in Outline that was used for creation of this map
      * @return Created ImagePlus object
-     * @see map2ImagePlus(String, ImageProcessor)
-     * @see ERColorMap2(String, double, double, double) for palettes
+     * @see #map2ImagePlus(String, ImageProcessor)
+     * @see QColor#ERColorMap2(String, double, double, double) for palettes
      */
     public ImagePlus map2ColorImagePlus(String name, String palette, double[][] map, double min,
             double max) {

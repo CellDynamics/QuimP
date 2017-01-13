@@ -64,15 +64,15 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     }
 
     /**
-     * Copy constructor. Create SnakeHandler from list of already prepared outlines
+     * Copy constructor. Create SnakeHandler from list of already prepared outlines.
      * 
-     * For every frame it copies provided snake to all three arrays: \a finalSnakes, \a segSnakes,
-     * \a liveSnake and sets first and last frame using data from \a SegmentedShapeRoi object
+     * For every frame it copies provided snake to all three arrays: finalSnakes, segSnakes,
+     * liveSnake and sets first and last frame using data from SegmentedShapeRoi object
      * 
      * @param snakes List of outlines that will be propagated from first frame. First frame is wrote
      *        down in first element of this list
      * @param id Unique Snake ID controlled by Nest object
-     * @throws Exception
+     * @throws BoaException
      * @see uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi
      */
     public SnakeHandler(List<SegmentedShapeRoi> snakes, int id) throws BoaException {
@@ -103,7 +103,6 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      * Make copy of \c liveSnake into \c final \c snakes array
      * 
      * @param frame Frame for which \c liveSnake will be copied to
-     * @throws BoaException
      */
     public void storeLiveSnake(int frame) {
         finalSnakes[frame - startFrame] = null; // delete at current frame
@@ -119,7 +118,6 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      * frame to make possible restoring original snakes when active plugin has been deselected.
      * 
      * @param frame current frame
-     * @throws BoaException
      */
     public void backupLiveSnake(int frame) {
 
@@ -148,7 +146,6 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      * 
      * @param snake Snake to store
      * @param frame Frame for which \c liveSnake will be copied to
-     * @throws BoaException
      */
     public void backupThisSnake(final Snake snake, int frame) {
         // BOA_.log("Store snake " + ID + " at frame " + frame);

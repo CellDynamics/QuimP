@@ -54,7 +54,8 @@ public class PolarPlotTest {
      * Define two frames composed from 5-points outline.
      * 
      * @throws java.lang.Exception
-     * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/DataforPolarPlotTest
+     * @see <a href=
+     *      "link">http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/DataforPolarPlotTest</a>
      */
     @Before
     public void setUp() throws Exception {
@@ -103,7 +104,7 @@ public class PolarPlotTest {
 
     /**
      * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getVectors(int, javax.vecmath.Point2d[], int[])}.
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getVectors(int, Point2d[], int[])}.
      */
     @Test
     public void testGetVectors() throws Exception {
@@ -119,7 +120,7 @@ public class PolarPlotTest {
 
     /**
      * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getAngles(javax.vecmath.Vector2d[], javax.vecmath.Vector2d)}.
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getAngles(Vector2d[], Vector2d)}.
      */
     @Test
     public void testGetAngles() throws Exception {

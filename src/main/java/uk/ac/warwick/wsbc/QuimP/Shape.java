@@ -386,9 +386,9 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * </pre>
      * 
      * The <tt>addPoint</tt> will produce closed bidirectional linked list. From first Node it is
-     * possible to reach last one by calling {@link uk.ac.warwick.wsbc.QuimP.PointsList.getNext()}
+     * possible to reach last one by calling {@link uk.ac.warwick.wsbc.QuimP.PointsList#getNext()}
      * and from the last one, first should be accessible by calling
-     * {@link uk.ac.warwick.wsbc.QuimP.PointsList.getPrev()}.
+     * {@link uk.ac.warwick.wsbc.QuimP.PointsList#getPrev()}.
      * <p>
      * For initialisation only.
      * 

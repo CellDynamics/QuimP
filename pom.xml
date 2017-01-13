@@ -436,7 +436,7 @@
         <version>2.10.4</version>
         <configuration>
           <show>private</show>
-          <quiet>true</quiet>
+          <quiet>false</quiet>
         </configuration>
       </plugin>
     </plugins>

@@ -5,8 +5,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 /**
  * Class for parsing parameter strings.
  * 
- * Assumes that string contains list of parameters separated by commas. Any
- * white characters are removed during parsing.
+ * Assumes that string contains list of parameters separated by commas. Any white character are
+ * removed during parsing.
  * 
  * @author p.baniukiewicz
  *
@@ -14,14 +14,14 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 public class StringParser {
 
     /**
-     * Get number of parameters in input string
+     * Get number of parameters in input string.
      * 
-     * Simply return number of commas in input string. Does not check other
-     * conditions.
+     * Simply return number of commas in input string. Does not check other conditions.
      * 
      * @param s string to be parsed
      * @return Number of commas or 0 when empty string
-     * @see http://stackoverflow.com/questions/15625629/regex-expressions-in-java-s-vs-s
+     * @see <a href=
+     *      "Solution">http://stackoverflow.com/questions/15625629/regex-expressions-in-java-s-vs-s</a>
      */
     static public int getNumofParam(final String s) {
         if (s.isEmpty())
@@ -33,12 +33,14 @@ public class StringParser {
     }
 
     /**
-     * Split input string into separate substrings using comma separator
+     * Split input string into separate substrings using comma separator.
+     * 
+     * All white characters are removed from string. Output array may contain empty fields if
+     * incorrect string is given
      * 
      * @param s string to be parsed
      * @return Array of substrings or empty array if empty string given
-     * @remarks All white characters are removed from string.
-     * Output array may contain empty fields if incorrect string is given
+     * 
      */
     static public String[] getParams(final String s) {
         if (s.isEmpty())

@@ -323,8 +323,10 @@ class MatrixDotSubDiv implements RealMatrixChangingVisitor {
 /**
  * This is implementation of Matlab version of Random Walk segmentation algorithm.
  * 
+ * See: src/test/resources/Matlab/rw_laplace4_java_base.m
+ * 
  * @author p.baniukiewicz
- * @see src/test/resources/Matlab/rw_laplace4_java_base.m at <a href="./examples.html">Examples</a>
+ * @see <a href="./examples.html">Examples</a>
  */
 public class RandomWalkSegmentation {
 

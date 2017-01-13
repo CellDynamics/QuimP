@@ -23,16 +23,16 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 /**
  * Add basic support for handling <i>QCONF</i> and <i>paQP</i> files.
  * <p>
- * Load provided file and construct {@link uk.ac.warwick.wsbc.QuimP.QParams.QParams(File) QParams}
- * or {@link uk.ac.warwick.wsbc.QuimP.QParamsQconf.QParamsQconf(File) QParamsQconf} object depending
- * on type of input file.
+ * Load provided file and construct {@link uk.ac.warwick.wsbc.QuimP.QParams#QParams(File)} or
+ * {@link uk.ac.warwick.wsbc.QuimP.QParamsQconf#QParamsQconf(File)} object depending on type of
+ * input file.
  * <p>
  * The main processing happens in constructor that performs the following operations:
  * <ol>
  * <li>Load provided configuration file.
- * <li>Run {@link validateQconf()}
- * <li>Run {@link showDialog()}
- * <li>Run {@link runFromPAQP()} or {@link runFromQCONF()}
+ * <li>Run {@link #validateQconf()}
+ * <li>Run {@link #showDialog()}
+ * <li>Run {@link #runFromPAQP()} or {@link #runFromQCONF()}
  * </ol>
  * The three last should be replaced in child class.
  * 

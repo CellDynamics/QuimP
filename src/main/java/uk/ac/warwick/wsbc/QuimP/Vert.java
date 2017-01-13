@@ -7,9 +7,9 @@ import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
- * Represents a vertex in the outline. Contains several methods that operate on
- * vertexes and vectors.
- * Properties defined for {@link Vert Vert} object are updated by different QuimP modules (ECMM, QA)
+ * Represents a vertex in the outline. Contains several methods that operate on vertexes and
+ * vectors. Properties defined for {@link Vert Vert} object are updated by different QuimP modules
+ * (ECMM, QA)
  * 
  * @author rtyson
  * @author p.baniukiewicz
@@ -28,47 +28,46 @@ public class Vert extends PointsList<Vert> {
      */
     public final FluoMeasurement[] fluores = new FluoMeasurement[3];
     /**
-     * curvature local to a node.
-     * Updated by uk.ac.warwick.wsbc.QuimP.Vert.calcCurvatureLocal() and implicitly by 
-     * uk.ac.warwick.wsbc.QuimP.Vert.calcCurvatureLocal() called during creation and serialization.
+     * curvature local to a node. Updated by uk.ac.warwick.wsbc.QuimP.Vert.calcCurvatureLocal() and
+     * implicitly by uk.ac.warwick.wsbc.QuimP.Vert.calcCurvatureLocal() called during creation and
+     * serialization.
      */
     public double curvatureLocal;
     /**
-     * smoothed curvature.
-     * Updated during map generation (Q Analysis) by uk.ac.warwick.wsbc.QuimP.STmap.calcCurvature()
-     * or uk.ac.warwick.wsbc.QuimP.STmap.averageCurvature(Outline)
+     * smoothed curvature. Updated during map generation (Q Analysis) by
+     * uk.ac.warwick.wsbc.QuimP.STmap.calcCurvature() or
+     * uk.ac.warwick.wsbc.QuimP.STmap.averageCurvature(Outline)
      */
     public double curvatureSmoothed;
     /**
-     * summed curvature over x microns this is the value recorded into maps.
-     * Updated during map generation (Q Analysis) by uk.ac.warwick.wsbc.QuimP.STmap.calcCurvature()
+     * summed curvature over x microns this is the value recorded into maps. Updated during map
+     * generation (Q Analysis) by uk.ac.warwick.wsbc.QuimP.STmap.calcCurvature()
      */
     public double curvatureSum;
     /**
-     * coord relative to head node on current frame.
-     * Set during ECMM
+     * coord relative to head node on current frame. Set during ECMM
      */
     public double coord;
     /**
-     * coord relative to coord on previous frame.
-     * Set by uk.ac.warwick.wsbc.QuimP.Mapping.migrate() and during changing resolution in ECMM
+     * coord relative to coord on previous frame. Set by uk.ac.warwick.wsbc.QuimP.Mapping.migrate()
+     * and during changing resolution in ECMM
      */
     public double fCoord;
     /**
-     * landing relative to previous frame.
-     * Set by uk.ac.warwick.wsbc.QuimP.Vert.setLandingCoord(ExtendedVector2d, Vert) called on solving
-     * ECMM equations
+     * landing relative to previous frame. Set by
+     * uk.ac.warwick.wsbc.QuimP.Vert.setLandingCoord(ExtendedVector2d, Vert) called on solving ECMM
+     * equations
      */
     public double fLandCoord;
     /**
-     * global coord relative to head node on frame 1.
-     * Set by uk.ac.warwick.wsbc.QuimP.Mapping.migrate() and during changing resolution  in ECMM
+     * global coord relative to head node on frame 1. Set by
+     * uk.ac.warwick.wsbc.QuimP.Mapping.migrate() and during changing resolution in ECMM
      */
     public double gCoord;
     /**
-     * landing coord relative to head node on frame 1.
-     * Set by uk.ac.warwick.wsbc.QuimP.Vert.setLandingCoord(ExtendedVector2d, Vert) called on solving
-     * ECMM equations
+     * landing coord relative to head node on frame 1. Set by
+     * uk.ac.warwick.wsbc.QuimP.Vert.setLandingCoord(ExtendedVector2d, Vert) called on solving ECMM
+     * equations
      */
     public double gLandCoord;
     public double tarLandingCoord;
@@ -86,14 +85,13 @@ public class Vert extends PointsList<Vert> {
     public boolean snapped;
     public int intsectID;
     /**
-     * Internal state of the vert.
-     * Possible values:
+     * Internal state of the vert. Possible values:
      * <ul>
-     * <li> 0 - undetermined
-     * <li> 1 - forms valid sector
-     * <li> 2 - LOOSE sector
-     * <li> 3 - forms inverted sector
-     * <li> 4 - inverted and loose
+     * <li>0 - undetermined
+     * <li>1 - forms valid sector
+     * <li>2 - LOOSE sector
+     * <li>3 - forms inverted sector
+     * <li>4 - inverted and loose
      * </ul>
      */
     public int intState;
@@ -122,7 +120,6 @@ public class Vert extends PointsList<Vert> {
      * @param xx x-axis coordinate
      * @param yy y-axis coordinate
      * @param t id of Vert
-     * @see uk.ac.warwick.wsbc.QuimP.PointListNode.PointListNode(double, double, int)
      */
     public Vert(double xx, double yy, int t) {
         super(xx, yy, t);
@@ -160,6 +157,7 @@ public class Vert extends PointsList<Vert> {
 
     /**
      * Conversion constructor
+     * 
      * @param src Node to convert to Vert
      */
     public Vert(final Node src) {
@@ -182,6 +180,7 @@ public class Vert extends PointsList<Vert> {
 
     /**
      * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -222,6 +221,7 @@ public class Vert extends PointsList<Vert> {
 
     /**
      * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -288,6 +288,7 @@ public class Vert extends PointsList<Vert> {
 
     /**
      * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -340,19 +341,17 @@ public class Vert extends PointsList<Vert> {
          * double d1 = Vec2d.lengthP2P(edge.point, edge2.point); double d2 =
          * Vec2d.lengthP2P(edge.point, p); double prop = d2 / d1;
          * 
-         * double edge2coord = edge2.coord; // if wrapping around if
-         * (edge2.coord < edge.coord) { edge2coord += 1; }
+         * double edge2coord = edge2.coord; // if wrapping around if (edge2.coord < edge.coord) {
+         * edge2coord += 1; }
          * 
-         * double coordDist = edge2coord - edge.coord; landingCoor = edge.coord
-         * + (prop * coordDist);
+         * double coordDist = edge2coord - edge.coord; landingCoor = edge.coord + (prop *
+         * coordDist);
          * 
-         * if (landingCoor >= 1) { //if wrapped around and passed 1 landingCoor
-         * -= 1; }
+         * if (landingCoor >= 1) { //if wrapped around and passed 1 landingCoor -= 1; }
          * 
-         * if (landingCoor < 0 || landingCoor > 1 || Double.isNaN(landingCoor))
-         * { IJ.write("ERROR 1: NAN or < landing coord ("+IJ.d2s(landingCoor)+
-         * ")< 0; e1=" + edge.coord + ", e2=" + edge2.coord + ", prop" + prop);
-         * }
+         * if (landingCoor < 0 || landingCoor > 1 || Double.isNaN(landingCoor)) {
+         * IJ.write("ERROR 1: NAN or < landing coord ("+IJ.d2s(landingCoor)+ ")< 0; e1=" +
+         * edge.coord + ", e2=" + edge2.coord + ", prop" + prop); }
          */
     }
 

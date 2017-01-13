@@ -431,8 +431,10 @@ public class Registration extends JDialog implements ActionListener {
 
     /**
      * Do counting and waiting in background updating UI in the same time.
+     * 
      * @author p.baniukiewicz
-     * @see http://stackoverflow.com/questions/11817688/how-to-update-swing-gui-from-inside-a-long-method
+     * @see <a href=
+     *      "link">http://stackoverflow.com/questions/11817688/how-to-update-swing-gui-from-inside-a-long-method</a>
      */
     class Worker extends SwingWorker<String, String> {
         private int wait;

@@ -27,6 +27,11 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 /**
  * Save wrapped class together with itself to JSON file.
  * 
+ * Restored object is constructed using its constructor. so if there is no variable value in json it
+ * will have the value from constructor. GSon overrides variables after they have been created in
+ * normal process of object building. Check uk.ac.warwick.wsbc.QuimP.Serializer.fromReader(Reader)
+ * for details
+ * 
  * This serializer accepts only classes derived from IQuimpSerialize interface. Saved class is
  * packed in top level structure that contains version of software and wrapped class name. Final
  * JSON looks as follows:
@@ -47,13 +52,10 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  * 
  * 
  * @author p.baniukiewicz
- * @see http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson
+ * @see <a href=
+ *      "link">http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson</a>
  * @see SerializerTest for examples of use
- * @see uk.ac.warwick.wsbc.QuimP.Serializer.registerInstanceCreator(Class<T>, Object)
- * @remarks Restored object is constructed using its constructor. so if there is no variable value
- *          in json it will have the value from constructor. GSon overrides variables after they
- *          have been created in normal process of object building. Check
- *          uk.ac.warwick.wsbc.QuimP.Serializer.fromReader(Reader) for details
+ * @see uk.ac.warwick.wsbc.QuimP.Serializer#registerInstanceCreator(Class, Object)
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
     static final Logger LOGGER = LoggerFactory.getLogger(Serializer.class.getName());
@@ -103,9 +105,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * 
      * @param filename Name of file
      * @throws FileNotFoundException if problem with saving
-     * @see uk.ac.warwick.wsbc.QuimP.Serializer.setPretty()
-     * @see uk.ac.warwick.wsbc.QuimP.Serializer.Serializer(final T obj, final String[] version)
-     * @see uk.ac.warwick.wsbc.QuimP.Serializer.toString()
+     * @see uk.ac.warwick.wsbc.QuimP.Serializer#setPretty()
+     * @see uk.ac.warwick.wsbc.QuimP.Serializer#Serializer(IQuimpSerialize, String[])
+     * @see uk.ac.warwick.wsbc.QuimP.Serializer#toString()
      */
     public void save(final String filename) throws FileNotFoundException {
         String str;
@@ -129,9 +131,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     /**
      * Load wrapped object from JSON file
      * 
-     * Calls uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.afterSerialize() after load
+     * Calls {@link IQuimpSerialize#afterSerialize()} after load
      * 
-     * @copydetails fromReader(Reader)
+     * @see #fromReader(Reader)
      */
     public Serializer<T> load(final File filename)
             throws IOException, JsonSyntaxException, JsonIOException, Exception {
@@ -288,8 +290,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      *           SnakePluginListInstanceCreator(3, pluginFactory, null, null)); out =
      *           s.fromString(json);
      * @endcode
-     * @see uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.afterSerialize()
-     * @see https://github.com/google/gson/blob/master/UserGuide.md#TOC-InstanceCreator-for-a-Parameterized-Type
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#afterSerialize()
+     * @see <a href=
+     *      "GSon doc">https://github.com/google/gson/blob/master/UserGuide.md#TOC-InstanceCreator-for-a-Parameterized-Type</a>
      */
     public void registerInstanceCreator(Class<T> type, Object typeAdapter) {
         gsonBuilder.registerTypeAdapter(type, typeAdapter);

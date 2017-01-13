@@ -117,7 +117,8 @@ public class TrackCollection {
  * In general x coordinate stands for frame and y for index.
  * 
  * @author p.baniukiewicz
- * @see {@link trackMaxima(STmap, double, MaximaFinder)} for order of points in Tracks.
+ * @see TrackMapAnalyser#trackMaxima(uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap, double,
+ *      MaximaFinder)
  */
 class Track extends ArrayList<Point> {
     private static final long serialVersionUID = 8928704797702167155L;

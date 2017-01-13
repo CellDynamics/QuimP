@@ -209,7 +209,8 @@ public class CellStatsEval implements Measurements {
      * Complementary to write method. Create the same data as write but in form of arrays. For
      * compatible reasons.
      * 
-     * @param s Frame statistics calculated by {@link uk.ac.warwick.wsbc.QuimP.CellStat.record()}
+     * @param s Frame statistics calculated by
+     *        {@link uk.ac.warwick.wsbc.QuimP.CellStatsEval#record()}
      */
     private void buildData(FrameStatistics[] s) {
         statH = new CellStats(s.length, 11, 11);

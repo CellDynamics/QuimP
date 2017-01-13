@@ -234,14 +234,14 @@ public class PluginFactory {
     }
 
     /**
-     * Extracts qualified name of classes in jar file. Class name must contain underscore
+     * Extracts qualified name of classes in jar file. Class name must contain underscore.
      * 
      * @param pathToJar path to jar file
      * @return Name of first discovered class with underscore
      * @throws IOException When jar can not be opened
      * @throws IllegalArgumentException when there is no classes in jar
-     * @see http://stackoverflow.com/questions/11016092/how-to-load-classes-at-
-     *      runtime-from-a-folder-or-jar
+     * @see <a href=
+     *      "link">http://stackoverflow.com/questions/11016092/how-to-load-classes-at-runtime-from-a-folder-or-jar</a>
      */
     private String getClassName(File pathToJar) throws IOException {
         ArrayList<String> names = new ArrayList<>(); // all discovered names

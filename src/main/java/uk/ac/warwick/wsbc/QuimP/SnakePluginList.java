@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.InstanceCreator;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
@@ -21,10 +22,14 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * 
  * Related to GUI, first plugin is at index 0, etc. Keeps also UI settings activating or
  * deactivating plugins. Produces plugins from their names using provided
- * uk.ac.warwick.wsbc.QuimP.PluginFactory The \c sPluginList is serialized (saved as JSON object).
+ * uk.ac.warwick.wsbc.QuimP.PluginFactory The sPluginList is serialized (saved as JSON object).
  * Because serialization does not touch plugins (understood as jars) directly, their configuration
- * and state must be copied locally to \c Plugin objects. This is done during preparation to
- * serialization and then after deserialization. The most important use cases are:
+ * and state must be copied locally to Plugin objects. This is done during preparation to
+ * serialization and then after deserialization.
+ * 
+ * This class is serializable and it is part of QuimP config.
+ * 
+ * The most important use cases are:
  * 
  * @startuml left to right direction
  * 
@@ -107,8 +112,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  *           iPlugin User --/ slist : setActive(i,Activity) slist->plugin : set isActive
  * @enduml
  * 
- * @remarks This class is serializable and it is part of QuimP config.
- * @see uk.ac.warwick.wsbc.QuimP.BOA_.run(final String)
+ * @see uk.ac.warwick.wsbc.QuimP.BOA_#run(String)
  * @author p.baniukiewicz
  */
 public class SnakePluginList implements IQuimpSerialize {
@@ -546,7 +550,7 @@ public class SnakePluginList implements IQuimpSerialize {
     /**
      * Return names of plugins of given type registered in PluginFactory associated with this object
      * 
-     * @see uk.ac.warwick.wsbc.QuimP.PluginFactory.getPluginNames(int)
+     * @see uk.ac.warwick.wsbc.QuimP.PluginFactory#getPluginNames(int)
      */
     public ArrayList<String> getPluginNames(int type) {
         return pluginFactory.getPluginNames(type);
@@ -559,7 +563,7 @@ public class SnakePluginList implements IQuimpSerialize {
  * This class is used on load JSon representation of SnakePluginList class
  * 
  * @author p.baniukiewicz
- * @see GSon documentation
+ * @see Gson documentation
  */
 class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {
 

@@ -113,7 +113,7 @@ public class RoiSaver {
      * 
      * @param fileName
      * @param roi
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver.saveROI(String, List<Point2d>)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver#saveROIs(ImagePlus, String, ArrayList)
      */
     public static void saveROI(String fileName, Roi roi) {
         if (roi == null)
@@ -129,7 +129,6 @@ public class RoiSaver {
      * 
      * @param vert List of vertexes of shape
      * @return two elements array where [width height]
-     * @retval double[2]
      */
     private static double[] getBoundingBox(List<Point2d> vert) {
         double minx = vert.get(0).getX();

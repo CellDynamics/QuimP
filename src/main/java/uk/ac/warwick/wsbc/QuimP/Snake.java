@@ -51,18 +51,15 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     private Rectangle bounds = new Rectangle();
 
     /**
-     * Create a snake from existing linked list (at least one head node)
+     * Create a snake from existing linked list (at least one head node).
+     * 
+     * List is referenced only not copied Behavior of this method was changed. Now it does not make
+     * copy of Node. In old approach there was dummy node deleted in this constructor.
      * 
      * @param h Node of list
      * @param N Number of nodes
      * @param id Unique snake ID related to object being segmented.
-     * @throws Exception
-     * @warning List is referenced only not copied Behavior of this method was changed. Now it does
-     *          not make copy of Node. In old approach there was dummy node deleted in this
-     *          constructor.
-     * @code{.java} index = 0; head = new Vert(index); // dummy head node head.setHead(true); prevn
-     *              = head; index++; // insert next nodes here
-     * @endcode
+     * @throws BoaException
      */
     public Snake(final Node h, int N, int id) throws BoaException {
         super(h, N);
@@ -138,10 +135,10 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * @see Snake(Roi, int, boolean)
+     * @see #Snake(Roi, int, boolean)
      * @param R
      * @param id
-     * @throws Exception
+     * @throws BoaException
      */
     public Snake(final PolygonRoi R, int id) throws BoaException {
         snakeID = id;
@@ -158,7 +155,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * 
      * @param list list of nodes as Vector2d
      * @param id id of Snake
-     * @throws Exception
+     * @throws BoaException
      */
     public Snake(final List<? extends Tuple2d> list, int id) throws BoaException {
         snakeID = id;
@@ -174,7 +171,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * @param X x coordinates of nodes
      * @param Y y coordinates of nodes
      * @param id id of Snake
-     * @throws Exception
+     * @throws BoaException
      */
     public Snake(final double X[], final double Y[], int id) throws BoaException {
         snakeID = id;
@@ -337,12 +334,12 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * Initializes \c Node list from polygon Does not refine points. Use only those nodes available
-     * in polygon
+     * Initializes Node list from polygon Does not refine points. Use only those nodes available in
+     * polygon.
      * 
      * @param p Polygon extracted from IJ ROI
      * @throws Exception
-     * @see intializePolygon(FloatPolygon)
+     * @see #intializePolygon(FloatPolygon)
      */
     private void intializePolygonDirect(final FloatPolygon p) throws Exception {
         // System.out.println("poly direct");
@@ -365,13 +362,13 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * @see intializePolygonDirect(FloatPolygon)
+     * 
+     * @see #intializePolygonDirect(FloatPolygon)
      * @param p
-     * @throws Exception
-     * @todo This method is the same as intializePolygonDirect(FloatPolygon)
+     * @throws BoaException
      */
     private void intializeFloat(final FloatPolygon p) throws BoaException {
-        // System.out.println("poly direct");
+        // TODO This method is the same as intializePolygonDirect(FloatPolygon)
         head = new Node(0); // make a dummy head node
         POINTS = 1;
         FROZEN = 0;
@@ -707,8 +704,8 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
      * that self intersect. Similar to cutLoops, but check all edges (NODES / 2) and cuts out the
      * smallest section
      * 
-     * @see cutLoops()
-     * @see uk.ac.warwick.wsbc.QuimP.Outline.cutSelfIntersects()
+     * @see #cutLoops()
+     * @see uk.ac.warwick.wsbc.QuimP.Outline#cutSelfIntersects()
      */
     public void cutIntersects() {
 
@@ -838,10 +835,10 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
-     * Ensure nodes are between \c maxDist and \c minDist apart, add remove nodes as required
+     * Ensure nodes are between maxDist and minDist apart, add remove nodes as required.
      * 
      * @param shiftNewNode
-     * @throws Exception
+     * @throws BoaException
      */
     public void correctDistance(boolean shiftNewNode) throws BoaException {
         Node.randDirection(); // choose a random direction to process the chain

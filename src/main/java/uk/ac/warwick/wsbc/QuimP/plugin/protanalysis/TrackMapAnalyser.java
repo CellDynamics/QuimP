@@ -314,7 +314,7 @@ public class TrackMapAnalyser {
      * @param input
      * @return input list without common points between tracks that belong to the same starting
      *         point.
-     * @see trackMaxima(STmap, double, MaximaFinder)
+     * @see #trackMaxima(STmap, double, MaximaFinder)
      */
     private List<Pair<Point, Point>> removeSelfCrossings(List<Pair<Point, Point>> input) {
         ArrayList<Pair<Point, Point>> ret = new ArrayList<>(input);

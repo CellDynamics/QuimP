@@ -38,7 +38,8 @@ public class PropertyReader {
      * @return value for propKey
      * @remarks not static because of getClass().Property file should be in the same package as this
      *          class or full path should be provided otherwise.
-     * @see http://stackoverflow.com/questions/333363/loading-a-properties-file-from-java-package
+     * @see <a href=
+     *      "link">http://stackoverflow.com/questions/333363/loading-a-properties-file-from-java-package</a>
      * @see #readProperty(Class, String, String, String)
      */
     public String readProperty(String propFileName, String propKey) {

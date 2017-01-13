@@ -337,8 +337,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of saving
-     * @throws Exception
+     * Test of saving.
      */
     @Test
     public void testSaveConfig() throws IOException, NoSuchMethodException, SecurityException,
@@ -352,8 +351,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of serialization
-     * @throws Exception
+     * Test of serialization
      */
     @Test
     public void testSaveConfig_serializer() throws FileNotFoundException {
@@ -364,8 +362,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of serialization
-     * @throws Exception
+     * Test of serialization
      */
     @Test
     public void testSaveConfig_serializer1() throws FileNotFoundException {
@@ -374,9 +371,12 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of saving
-     * @pre There is gap in plugin list
-     * @post Empty slot is saved with empty name
+     * Test of saving.
+     * 
+     * Pre: There is gap in plugin list
+     * 
+     * Post: Empty slot is saved with empty name.
+     * 
      * @throws IOException
      * @throws InvocationTargetException
      * @throws IllegalArgumentException
@@ -404,8 +404,7 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of loading
-     * @throws Exception
+     * Test of loading
      */
     @Test
     public void testloadConfig()
@@ -438,7 +437,8 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of serialization
+     * Test of serialization
+     * 
      * @throws Exception
      */
     @Test

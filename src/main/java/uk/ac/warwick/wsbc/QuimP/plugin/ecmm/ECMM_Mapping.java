@@ -195,7 +195,8 @@ public class ECMM_Mapping {
      * 
      * @throws QuimpException
      * @throws IOException On problems with writing config files
-     * @see http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling
+     * @see <a href=
+     *      "link">http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/ConfigurationHandling</a>
      */
     private void runFromQCONF() throws QuimpException, IOException {
         LOGGER.debug("Processing from new file format");

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Calculates basic geometry on polygons defined as list of point in specified direction.
  * 
  * @author p.baniukiewicz
- * @see http://www.mathopenref.com/coordpolygonarea.html
+ * @see <a href= "link">http://www.mathopenref.com/coordpolygonarea.html</a>
  */
 public class BasicPolygons {
 
@@ -79,7 +79,8 @@ public class BasicPolygons {
      * @param P Vertices of polygon in specified order
      * @param Ptest Point to be tested
      * @return true if <tt>Ptest</tt> is inside <tt>P</tt>, false otherwise
-     * @see http://www.shodor.org/~jmorrell/interactivate/org/shodor/util11/PolygonUtils.java
+     * @see <a href=
+     *      "link">http://www.shodor.org/~jmorrell/interactivate/org/shodor/util11/PolygonUtils.java</a>
      */
     public boolean isPointInside(final List<? extends Tuple2d> P, final Tuple2d Ptest) {
         double angle = 0;
@@ -98,7 +99,7 @@ public class BasicPolygons {
      * 
      * @param p1
      * @param p2
-     * @return
+     * @return angle between points.
      */
     private double angle2D(Point2d p1, Point2d p2) {
         double dtheta = Math.atan2(p2.y, p2.x) - Math.atan2(p1.y, p1.x);
@@ -148,8 +149,9 @@ public class BasicPolygons {
      * 
      * @param P Vertices of polygon in specified order
      * @return Point of center of mass
-     * @throws IllegalArgumentException when defective polygon is given (area equals 0)
-     * @see http://stackoverflow.com/questions/5271583/center-of-gravity-of-a-polygon
+     * @throws IllegalArgumentException when defective polygon is given (area equals 0) *
+     * @see <a href=
+     *      "link">http://stackoverflow.com/questions/5271583/center-of-gravity-of-a-polygon</a>
      */
     public Point2d polygonCenterOfMass(final List<? extends Tuple2d> P) {
 

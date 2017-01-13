@@ -236,7 +236,7 @@ public class QParamsQconf extends QParams {
     /**
      * Write parameter file paQP in old format (QuimP11).
      * 
-     * @throws QuimpException
+     * @throws IOException
      * 
      */
     public void writeOldParams() throws IOException {
@@ -395,8 +395,8 @@ public class QParamsQconf extends QParams {
      * 
      * Finally old files can be processed together with new one.
      * 
-     * @return
-     * @see uk.ac.warwick.wsbc.QuimP.QParams.findParamFiles()
+     * @return Array of found files.
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#findParamFiles()
      */
     @Override
     public File[] findParamFiles() {
@@ -404,11 +404,11 @@ public class QParamsQconf extends QParams {
     }
 
     /**
-     * Create fake snQP name, for compatibility reasons
+     * Create fake snQP name, for compatibility reasons.
      * 
      * @return theoretical name of snQP file which is used then to estimate names of map files by
      *         uk.ac.warwick.wsbc.QuimP.Qp class. This name contains \a suffix already
-     * @see uk.ac.warwick.wsbc.QuimP.QParams.getSnakeQP()
+     * @see uk.ac.warwick.wsbc.QuimP.QParams#getSnakeQP()
      */
     @Override
     public File getSnakeQP() {

@@ -257,7 +257,8 @@ public class QuimpToolsCollection {
      * @param in Input string
      * @param len line length
      * @return Wrapped string
-     * @see http://stackoverflow.com/questions/8314566/splitting-a-string-on-to-several-different-lines-in-java
+     * @see <a href=
+     *      "link">http://stackoverflow.com/questions/8314566/splitting-a-string-on-to-several-different-lines-in-java</a>
      */
     public static String stringWrap(String in, int len) {
 

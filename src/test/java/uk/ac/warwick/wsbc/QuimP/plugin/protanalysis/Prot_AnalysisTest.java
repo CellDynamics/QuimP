@@ -67,11 +67,11 @@ public class Prot_AnalysisTest {
     }
 
     /**
-     * Check tracking for found maxima. This duplicate tests from
-     * {@link uk.ac.warwick.wsbc.QuimP.geoMapTrackerTestst} but for local data.
+     * Check tracking for found maxima.
+     * 
+     * See: src/test/resources/ProtAnalysisTest/main.m
      * 
      * @throws Exception
-     * @see src/test/resources/ProtAnalysisTest/main.m
      */
     @SuppressWarnings("deprecation")
     @Test

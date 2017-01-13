@@ -24,8 +24,10 @@ import ij.process.ImageProcessor;
 /**
  * Run time tests of segmentation
  * 
+ * See: src/test/resources/Matlab/RW_java_tests.m
+ * 
  * @author p.baniukiewicz
- * @see src/test/resources/Matlab/RW_java_tests.m at <a href="./examples.html">Examples</a>
+ * @see <a href="./examples.html">Examples</a>
  */
 @SuppressWarnings("unused")
 public class RandomWalkSegmentationOtherTest {

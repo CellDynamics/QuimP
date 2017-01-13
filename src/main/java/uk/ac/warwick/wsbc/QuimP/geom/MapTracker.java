@@ -294,13 +294,13 @@ public class MapTracker {
     /**
      * Helper that generates range of frames for given input parameters.
      * 
-     * These are frames that {@link trackForward(int, int, int)} returns indexes for. Input
-     * parameters must be the same as for {@link trackForward(int, int, int)}.
+     * These are frames that {@link #trackForward(int, int, int)} returns indexes for. Input
+     * parameters must be the same as for {@link #trackForward(int, int, int)}.
      * 
      * @param currentFrame Starting frame (not included in results)
      * @param timeSpan timeSpan Number of frames to track
      * @return Array of frame numbers
-     * @deprecated Use trackForwardValid(int, int, int) instead
+     * @deprecated Use {@link #trackForwardValid(int, int, int)} instead
      */
     @Deprecated
     public int[] getForwardFrames(int currentFrame, int timeSpan) {
@@ -322,13 +322,13 @@ public class MapTracker {
     /**
      * Helper that generates range of frames for given input parameters.
      * 
-     * These are frames that {@link trackBackward(int, int, int)} returns indexes for. Input
-     * parameters must be the same as for {@link trackBackward(int, int, int)}.
+     * These are frames that {@link #trackBackward(int, int, int)} returns indexes for. Input
+     * parameters must be the same as for {@link #trackBackward(int, int, int)}.
      * 
      * @param currentFrame Starting frame (not included in results)
      * @param timeSpan timeSpan Number of frames to track
      * @return Array of frame numbers
-     * @deprecated Use trackBackwardValid(int, int, int) instead
+     * @deprecated Use {@link #trackBackwardValid(int, int, int)} instead
      */
     @Deprecated
     public int[] getBackwardFrames(int currentFrame, int timeSpan) {

@@ -137,13 +137,13 @@ public abstract class TrackVisualisation {
     /**
      * Flatten stack according to given type.
      * 
-     * Output has the same resolution (x,y,t) as input. For stacks, slices are duplicated.
+     * Output has the same resolution (x,y,t) as input. For stacks, slices are duplicated. Refer to
+     * ij.plugin.ZProjector.setMethod(int)
      * 
      * @param method How to flatten - ZProjector methods.
      * @param preserveStack - if <b>true</b> size of output stack is preserved (slices are
      *        duplicated to form stack with the same number of slices as original one). Otherwise
      *        only one slice is built
-     * @see {@link ij.plugin.ZProjector.setMethod(int)}
      */
     public void flatten(int method, boolean preserveStack) {
         ImageStack is = originalImage.getStack();
@@ -405,7 +405,7 @@ public abstract class TrackVisualisation {
 
         /**
          * Plot unrelated points on image (stack). Input compatible with
-         * {@link PointTracker.getIntersectionParents(List<Polygon>, int)}.
+         * {@link PointTracker#getIntersectionParents(List<Polygon>, int)}.
          * 
          * @param mapCell source of coordinate maps
          * @param points list of points to plot in coordinates (index,frame)

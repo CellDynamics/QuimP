@@ -215,7 +215,7 @@ public class PolarPlot {
      * Generate svg plot of points.
      * 
      * @param filename name of svg file
-     * @param angles vector of arguments (angles) generated {@link getUniformAngles(int)}
+     * @param angles vector of arguments (angles) generated {@link #getUniformAngles(int)}
      * @param magn vector of values related to <tt>angles</tt>
      * @throws IOException
      */

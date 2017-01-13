@@ -42,7 +42,8 @@ public class MaximaFinder {
      * Compute maxima using ImageJ procedure.
      * 
      * @param tolerance
-     * @see https://rsb.info.nih.gov/ij/developer/api/ij/plugin/filter/MaximumFinder.html
+     * @see <a href=
+     *      "link">https://rsb.info.nih.gov/ij/developer/api/ij/plugin/filter/MaximumFinder.html</a>
      */
     public void computeMaximaIJ(double tolerance) {
         MaximumFinder mF = new MaximumFinder();
@@ -81,7 +82,7 @@ public class MaximaFinder {
 
     /**
      * 
-     * @return Return maxima found by {@link computeMaximaIJ(double)}. The coordinates depend on
+     * @return Return maxima found by {@link #computeMaximaIJ(double)}. The coordinates depend on
      *         orientation of input image. For typical application like analysis of motility map, x
      *         axis stands for frames and y-axis for outline indexes.
      */

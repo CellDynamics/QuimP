@@ -407,7 +407,7 @@ public class BOAState implements IQuimpSerialize {
      * BOAp is static class contains internal as well as external parameters used to define snake
      * and to control contour matching algorithm. There are also several basic get/set methods for
      * accessing selected parameters, setting default
-     * {@link uk.ac.warwick.wsbc.QuimP.BOAState.SegParam.setDefaults() values} and writing/reading
+     * {@link uk.ac.warwick.wsbc.QuimP.BOAState.SegParam#setDefaults() values} and writing/reading
      * these (external) parameters to/from disk. File format used for storing data in files is
      * defined at {@link QParams} class.
      * <p>
@@ -622,7 +622,7 @@ public class BOAState implements IQuimpSerialize {
          * 
          * Most of these parameters are related to state machine of BOA. There are also parameters
          * related to internal state of Active Contour algorithm. Defaults for parameters available
-         * for user are set in {@link uk.ac.warwick.wsbc.QuimP.BOAState.SegParam.setDefaults()}
+         * for user are set in {@link uk.ac.warwick.wsbc.QuimP.BOAState.SegParam#setDefaults()}
          * 
          * @param ip Reference to segmented image passed from IJ
          */

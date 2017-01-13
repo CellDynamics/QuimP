@@ -13,8 +13,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  * Implementation of Line Integration and Deconvolution algorithm proposed by Kam.
  * 
  * This algorithm uses corrected line integration that runs in both directions from current point of
- * image \f$(x_n,y_n)\f$ to \f$r_1\f$ and end \f$r_2\f$. Vector \f$dr\f$ is set to be parallel to \a
- * 0X axis. Final formula for reconstruction of pixel \f$S(x_n,y_n)\f$ is given by:
+ * image \f$(x_n,y_n)\f$ to \f$r_1\f$ and end \f$r_2\f$. Vector \f$dr\f$ is set to be parallel to 0X
+ * axis. Final formula for reconstruction of pixel \f$S(x_n,y_n)\f$ is given by:
  * 
  * \f[ S(x_n,y_n)=\int_{r_1}^{(x_n,y_n)}\left ( I(r)-I_{i,0}) \right )e^{-\delta\left | r_n-r \right
  * | }dr-\int_{r_2}^{(x_n,y_n)}\left ( I(r)-I_{i,0}) \right )e^{-\delta\left | r-r_n \right | }dr
@@ -23,24 +23,24 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  * The algorithm perform the following steps to reconstruct whole image: \li Input is converted to
  * 16bit and stored in private field ExtraImageProcessor srcImageCopyProcessor \li The value of \c
  * shift is added to all pixels of input image. All operations are performed on copy of input \c
- * ImageProcessor or \c ImagePlus. \li Rotate image by \c angle to bring bas-reliefs perpendicular
- * to \a OX axis. Rotated image has different dimensions and it is padded by 0. After this operation
- * 0 pixels are those that belong to background. \li For every line in rotated image position of \b
- * true pixels is calculated. \b True pixels are those that belong to original image excluding
- * background added during rotation. For every line position of first and last \b true pixel is
- * noted in table \c ranges \li Decay factors are pre-calculated and stored in \c decays table. \li
- * Final reconstruction is performed.
+ * ImageProcessor or \c ImagePlus. Rotate image by angle to bring bas-reliefs perpendicular to OX
+ * axis. Rotated image has different dimensions and it is padded by 0. After this operation 0 pixels
+ * are those that belong to background. For every line in rotated image position of \b true pixels
+ * is calculated. \b True pixels are those that belong to original image excluding background added
+ * during rotation. For every line position of first and last \b true pixel is noted in table \c
+ * ranges \li Decay factors are pre-calculated and stored in \c decays table. \li Final
+ * reconstruction is performed.
  * 
  * Image for reconstruction is passed during construction of DICReconstruction object. For this
- * object \c ranges and \c decays are evaluated and then user can call reconstructionDicLid() method
- * to get reconstruction. getRanges() method also rotates private object thus rotation in
+ * object ranges and decays are evaluated and then user can call reconstructionDicLid() method to
+ * get reconstruction. getRanges() method also rotates private object thus rotation in
  * reconstructionDicLid() is not necessary (flagged by DICReconstruction::isRotated). Different
  * situation happens when the whole stack is reconstructed. To prevent creating new instance of
  * DICReconstruction for every slice the setIp(ImageProcessor) method is used for connecting new
  * slice. In this case it is assumed that ImageProcessor objects are similar and they have the same
- * geometry. \c ranges are filled only once on DICReconstruction constructing thus images connected
- * by setIp(ImageProcessor) are not rotated. This situation is detected in reconstructionDicLid() by
- * \c isRotated flag.
+ * geometry. ranges are filled only once on DICReconstruction constructing thus images connected by
+ * setIp(ImageProcessor) are not rotated. This situation is detected in reconstructionDicLid() by
+ * isRotated flag.
  * 
  * Privates:
  * <ul>
@@ -63,12 +63,15 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  * <p>
  * The input image can be prefitlered before processing. This is running mean filter of given mask
  * size applied at angle perpendicular to the shear (this angle is given by caller).
+ * <p>
+ * <ul>
+ * <li>Z. Kam, “Microscopic differential interference contrast image processing by line integration
+ * (LID) and deconvolution,” Bioimaging, vol. 6, no. 4, pp. 166–176, 1998.
+ * <li>B. Heise, A. Sonnleitner, and E. P. Klement, “DIC image reconstruction on large cell scans.,”
+ * Microsc. Res. Tech., vol. 66, no. 6, pp. 312–320, 2005.
+ * </ul>
  * 
  * @author p.baniukiewicz
- * @see Z. Kam, “Microscopic differential interference contrast image processing by line integration
- *      (LID) and deconvolution,” Bioimaging, vol. 6, no. 4, pp. 166–176, 1998.
- * @see B. Heise, A. Sonnleitner, and E. P. Klement, “DIC image reconstruction on large cell
- *      scans.,” Microsc. Res. Tech., vol. 66, no. 6, pp. 312–320, 2005.
  *
  */
 public class LidReconstructor {

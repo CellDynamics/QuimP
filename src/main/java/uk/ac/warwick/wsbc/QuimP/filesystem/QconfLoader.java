@@ -195,8 +195,8 @@ public class QconfLoader {
      *          <ol>
      *          <li>0 if QCONF is not loaded properly.
      *          <li>QParams.QUIMP_11 if it is in old format
-     *          <li>{@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()} flags
-     *          otherwise
+     *          <li>{@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer#validateDataContainer()}
+     *          flags otherwise
      *          </ol>
      */
     public int validateQconf() {
@@ -209,7 +209,8 @@ public class QconfLoader {
     }
 
     /**
-     * Just decoder of {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()}.
+     * Just decoder of
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer#validateDataContainer()}.
      * 
      * @return true if BOA module was run.
      */
@@ -224,7 +225,8 @@ public class QconfLoader {
     }
 
     /**
-     * Just decoder of {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()}.
+     * Just decoder of
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer#validateDataContainer()}.
      * 
      * @return true if ECMM module was run.
      */
@@ -256,7 +258,8 @@ public class QconfLoader {
     }
 
     /**
-     * Just decoder of {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()}.
+     * Just decoder of
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer#validateDataContainer()}.
      * 
      * @return true if Q module was run.
      */
@@ -271,7 +274,8 @@ public class QconfLoader {
     }
 
     /**
-     * Just decoder of {@link uk.ac.warwick.wsbc.QuimP.DataContainer.validateDataContainer()}.
+     * Just decoder of
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer#validateDataContainer()}.
      * 
      * @return true if stats are present.
      */
