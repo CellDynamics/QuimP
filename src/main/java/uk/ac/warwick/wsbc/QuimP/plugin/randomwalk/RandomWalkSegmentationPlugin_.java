@@ -209,7 +209,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         //!>
         helpArea.setText("" + "<font size=\"3\">" + "<strong>Note</strong><br>"
                 + "The seed image has always size of the segmented data."
-                + "Thus, if one processes stack of images, he is initially "
+                + "Thus, if one processes stack of images, he is "
                 + "supposed to provide the stack of seeds as well. Otherwise, "
                 + "one can cut (using ImageJ tools) only one slice and seed it, "
                 + " then Random Walk plugin will generate seeds for subsequent "
