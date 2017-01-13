@@ -4,7 +4,9 @@ import java.awt.Polygon;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,15 +28,15 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
     static final Logger LOGGER = LoggerFactory.getLogger(Shape.class.getName());
     /**
-     * Next node ID's. Initialized in constructor, changed during modification of shape.
+     * Next node ID's. Initialised in constructor, changed during modification of shape.
      */
     protected int nextTrackNumber = 1;
     /**
-     * first node in double linked list, always maintained, initialized in constructor.
+     * first node in double linked list, always maintained, initialised in constructor.
      */
     protected T head;
     /**
-     * number of points. Initialized in constructor, changed on Shape modification.
+     * number of points. Initialised in constructor, changed on Shape modification.
      */
     protected int POINTS;
     /**
@@ -44,8 +46,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     protected ExtendedVector2d centroid = null;
     public static final int MAX_NODES = 10000; // !< Max number of nodes allowed in Shape
     /**
-     * Elements of Shape as List. Initialized on Serialize. Temprary array to store linked list as
-     * array to allow serialization
+     * Elements of Shape as List. Initialised on Serialise. Temporary array to store linked list as
+     * array to allow serialisation
      */
     private ArrayList<T> Elements = null;
 
@@ -503,6 +505,22 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
         } while (!n.isHead());
 
         return pol;
+    }
+
+    /**
+     * Returns current Shape as list of points (copy)
+     * 
+     * @return List of Point2d objects representing coordinates of T
+     */
+    public List<Point2d> asList() {
+        List<Point2d> al = new ArrayList<Point2d>(POINTS);
+        // iterate over nodes at Shape
+        T n = head;
+        do {
+            al.add(new Point2d(n.getX(), n.getY()));
+            n = n.getNext();
+        } while (!n.isHead());
+        return al;
     }
 
     /**

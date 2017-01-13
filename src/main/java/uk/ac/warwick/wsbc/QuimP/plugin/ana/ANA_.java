@@ -40,6 +40,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.QuimP.geom.OutlineProcessor;
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping;
 import uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMp;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
@@ -519,118 +520,12 @@ public class ANA_ implements PlugInFilter, DialogListener {
     private void shrink(Outline o) {
         double steps = anap.getCortexWidthPixel() / anap.stepRes;
 
-        // System.out.println("steps: " + steps + ", step size: " +
-        // ANAp.stepRes);
-        Vert n;
-        int j;
-        int max = 10000;
-        for (j = 0; j < steps; j++) {
-            if (o.getNumVerts() <= 3) {
-                break;
-            }
-            n = o.getHead();
-            do {
-                if (!n.frozen) {
-                    n.setX(n.getX() - anap.stepRes * n.getNormal().getX());
-                    n.setY(n.getY() - anap.stepRes * n.getNormal().getY());
-                }
-                n = n.getNext();
-            } while (!n.isHead());
-            o.updateNormales(true);
-            removeProx(o);
-            freezeProx(o);
-            if (j > max) {
-                System.out.println("shrink (336) hit max iterations!");
-                break;
-            }
-        }
-
-        if (o.getNumVerts() < 3) {
-            System.out.println("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
-        }
-
-        if (o.cutSelfIntersects()) {
-            System.out.println("ANA_(382)...fixed ana intersects");
-        }
-
-        if (o.getNumVerts() < 3) {
-            System.out.println("ANA 377_NODES LESS THAN 3");
-        }
+        // shrink provided object
+        new OutlineProcessor(o).shrink(steps, anap.stepRes, anap.angleTh, anap.freezeTh);
 
         this.markFrozenNodesNormal(frameOneClone);
         orgIpl.draw();
         o.unfreezeAll();
-    }
-
-    private void removeProx(Outline o) {
-        if (o.getNumVerts() <= 3) {
-            return;
-        }
-        Vert v, vl, vr;
-        double d1, d2;
-        v = o.getHead();
-        vl = v.getPrev();
-        vr = v.getNext();
-        do {
-            d1 = ExtendedVector2d.lengthP2P(v.getPoint(), vl.getPoint());
-            d2 = ExtendedVector2d.lengthP2P(v.getPoint(), vr.getPoint());
-
-            if ((d1 < 1.5 || d2 < 1.5) && !v.frozen) { // don't remove frozen.
-                                                       // May alter angles
-                o.removeVert(v);
-            }
-            v = v.getNext().getNext();
-            vl = v.getPrev();
-            vr = v.getNext();
-        } while (!v.isHead() && !vl.isHead());
-
-    }
-
-    private void freezeProx(Outline o) {
-        // freeze a node and corresponding edge if its to close && close to
-        // paralel
-        Vert v, vT;
-        ExtendedVector2d closest, edge, link;
-        double dis, angle;
-
-        v = o.getHead();
-        do {
-            // if (!v.frozen) {
-            vT = o.getHead();
-            do {
-                if (vT.getTrackNum() == v.getTrackNum()
-                        || vT.getNext().getTrackNum() == v.getTrackNum()) {
-                    vT = vT.getNext();
-                    continue;
-                }
-                closest = ExtendedVector2d.PointToSegment(v.getPoint(), vT.getPoint(),
-                        vT.getNext().getPoint());
-                dis = ExtendedVector2d.lengthP2P(v.getPoint(), closest);
-                // System.out.println("dis: " + dis);
-                // dis=1;
-                if (dis < anap.freezeTh) {
-                    edge = ExtendedVector2d.unitVector(vT.getPoint(), vT.getNext().getPoint());
-                    link = ExtendedVector2d.unitVector(v.getPoint(), closest);
-                    angle = Math.abs(ExtendedVector2d.angle(edge, link));
-                    if (angle > Math.PI)
-                        angle = angle - Math.PI; // if > 180, shift back around
-                                                 // 180
-                    angle = angle - 1.5708; // 90 degree shift to centre around
-                                            // zero
-                    // System.out.println("angle:" + angle);
-
-                    if (angle < anap.angleTh && angle > -anap.angleTh) {
-                        v.frozen = true;
-                        vT.frozen = true;
-                        vT.getNext().frozen = true;
-                    }
-
-                }
-                vT = vT.getNext();
-            } while (!vT.isHead());
-            // }
-            v = v.getNext();
-        } while (!v.isHead());
     }
 
     private void markFrozenNodesNormal(Outline o) {

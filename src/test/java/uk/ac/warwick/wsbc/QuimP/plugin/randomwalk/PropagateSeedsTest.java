@@ -2,6 +2,8 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -12,8 +14,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ij.IJ;
+import ij.ImageJ;
 import ij.ImagePlus;
 import ij.process.BinaryProcessor;
+import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.Outline;
+import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
  * @author p.baniukiewicz
@@ -21,6 +27,25 @@ import ij.process.BinaryProcessor;
  */
 @SuppressWarnings("unused")
 public class PropagateSeedsTest {
+    static {
+        System.setProperty("logback.configurationFile", "quimp-logback.xml");
+    }
+
+    static Object accessPrivate(String name, PropagateSeeds.Contour obj, Object[] param,
+            Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Method prv = obj.getClass().getDeclaredMethod(name, paramtype);
+        prv.setAccessible(true);
+        return prv.invoke(obj, param);
+    }
+
+    static Object accessPrivate(String name, PropagateSeeds.Morphological obj, Object[] param,
+            Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Method prv = obj.getClass().getDeclaredMethod(name, paramtype);
+        prv.setAccessible(true);
+        return prv.invoke(obj, param);
+    }
 
     static ImagePlus testImage2;
 
@@ -58,15 +83,11 @@ public class PropagateSeedsTest {
     public void testPropagateSeed() throws Exception {
         ImagePlus ip = testImage2.duplicate();
         BinaryProcessor ret = new BinaryProcessor(ip.getProcessor().convertToByteProcessor());
-        Map<Integer, List<Point>> seed = PropagateSeeds.propagateSeed(ret, 20);
+        Map<Integer, List<Point>> seed =
+                new PropagateSeeds.Morphological().propagateSeed(ret, 20, 30);
         // IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testPropagateSeed_20.tif");
     }
 
-    /**
-     * @test of eroding
-     * @post eroded image on disk
-     * @throws Exception
-     */
     @Test
     public void testIterateMorphological() throws Exception {
         ImagePlus ip = testImage2.duplicate();
@@ -74,12 +95,63 @@ public class PropagateSeedsTest {
                 new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
         BinaryProcessor retd =
                 new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
-        PropagateSeeds.iterateMorphological(rete, PropagateSeeds.ERODE, 3);
+        PropagateSeeds.Morphological obj = new PropagateSeeds.Morphological();
+        accessPrivate("iterateMorphological", obj, new Object[] { rete, PropagateSeeds.ERODE, 3 },
+                new Class[] { BinaryProcessor.class, int.class, double.class });
         IJ.saveAsTiff(new ImagePlus("", rete), "/tmp/testIterateMorphological_erode3.tif");
 
-        PropagateSeeds.iterateMorphological(retd, PropagateSeeds.DILATE, 5);
+        accessPrivate("iterateMorphological", obj, new Object[] { retd, PropagateSeeds.DILATE, 5 },
+                new Class[] { BinaryProcessor.class, int.class, double.class });
         IJ.saveAsTiff(new ImagePlus("", retd), "/tmp/testIterateMorphological_dilate5.tif");
 
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testGetOutline() throws Exception {
+        PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
+        List<Outline> ret = (List<Outline>) accessPrivate("getOutline", cc,
+                new Object[] { testImage2.getProcessor() },
+                new Class<?>[] { ImageProcessor.class });
+
+        RoiSaver.saveROI("/tmp/test0.tif", ret.get(0).asList());
+        RoiSaver.saveROI("/tmp/test1.tif", ret.get(1).asList());
+        RoiSaver.saveROI("/tmp/test2.tif", ret.get(2).asList());
+    }
+
+    @Test
+    public void testPropagateSeedOutline() throws Exception {
+        ImageJ ij = new ImageJ();
+        ImagePlus ip = testImage2.duplicate();
+        PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
+        cc.propagateSeed(ip.getProcessor(), 5, 10);
+
+    }
+
+    @Test
+    public void testGetCompositeSeed_Contour() throws Exception {
+        ImageJ ij = new ImageJ();
+        ImagePlus ip = testImage2.duplicate();
+        PropagateSeeds.Contour cc = new PropagateSeeds.Contour(true);
+        ImagePlus org = IJ.openImage("src/test/resources/G.tif");
+        ImagePlus mask = IJ.openImage("src/test/resources/GMask.tif");
+
+        cc.propagateSeed(mask.getStack().getProcessor(1), 5, 10);
+        ImagePlus ret = cc.getCompositeSeed(org);
+        IJ.saveAsTiff(ret, "/tmp/testGetCompositeSeed.tif");
+    }
+
+    @Test
+    public void testGetCompositeSeed_Morphological() throws Exception {
+        ImageJ ij = new ImageJ();
+        ImagePlus ip = testImage2.duplicate();
+        PropagateSeeds.Morphological cc = new PropagateSeeds.Morphological(true);
+        ImagePlus org = IJ.openImage("src/test/resources/G.tif");
+        ImagePlus mask = IJ.openImage("src/test/resources/GMask.tif");
+
+        cc.propagateSeed(mask.getStack().getProcessor(1), 20, 40);
+        ImagePlus ret = cc.getCompositeSeed(org);
+        IJ.saveAsTiff(ret, "/tmp/testGetCompositeSeedM.tif");
     }
 
 }

@@ -21,6 +21,7 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.plugin.RoiRotator;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
 /**
@@ -160,6 +161,14 @@ public class TrackOutlineTest {
         LOGGER.debug("Shape1 " + sa1);
         LOGGER.debug("ret.get(1) after " + ret.get(1));
         RoiSaver.saveROI("/tmp/testIntersection_and.tif", sa1);
+    }
+
+    @Test
+    public void testGetOutlinesDoubleBoolean() throws Exception {
+        List<Outline> ret = obj.getOutlines(4, false);
+        RoiSaver.saveROI("c:/Users/baniu/Downloads/test0.tif", ret.get(0).asList());
+        RoiSaver.saveROI("c:/Users/baniu/Downloads/test1.tif", ret.get(1).asList());
+        RoiSaver.saveROI("c:/Users/baniu/Downloads/test2.tif", ret.get(2).asList());
     }
 
 }

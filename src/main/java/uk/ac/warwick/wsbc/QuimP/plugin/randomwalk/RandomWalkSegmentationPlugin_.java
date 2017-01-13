@@ -19,6 +19,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -64,17 +65,26 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     private ImagePlus image; //!< stack or image to segment
     private ImagePlus seedImage; //!< RGB seed image
     private Params params; // parameters
-    private int erodeIter; //!< number of erosions for generating next seed from previous
+    private double shrinkPower; //!< number of erosions for generating next seed from previous
+    private double expandPower;
     private boolean useSeedStack; //!< \a true if seed has the same size as image, slices are seeds 
 
-    private JComboBox<String> cImage, cSeed;
+    private JComboBox<String> cImage, cSeed, cShrinkMethod;
     private JButton bClone;
     private JToggleButton bBack, bFore;
-    private JSpinner sAlpha, sBeta, sGamma, sIter, sErode;
+    private JSpinner sAlpha, sBeta, sGamma, sIter, sShrinkPower, sExpandPower;
     private JButton bCancel, bApply, bHelp;
     private BrushTool br = new BrushTool();
+    private JCheckBox cShowSeed;
     private String lastTool; // tool selected in IJ
 
+    /**
+     * Define shrinking methods.
+     * 
+     * @see PropagateSeeds
+     * @see #runPlugin()
+     */
+    private String shrinkMethods[] = new String[] { "OUTLINE", "MORPHO" };
     public JFrame wnd;
 
     /**
@@ -108,7 +118,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      *   beta: | "50.0   "
      *   gamma: | "100.0  "
      *   iterations: | "80     "
-     *   erode power: | "5      "
+     *   shrink power: | "5      "
+     *   shrink algorithm: | ^OUTLINE^
+     *   [] Show Seeds
      *   }
      *   ~~
      *   {
@@ -194,23 +206,32 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         JTextPane helpArea = new JTextPane();
         helpArea.setContentType("text/html");
         helpArea.setEditable(false);
-        //!<
+        //!>
         helpArea.setText("" + "<font size=\"3\">" + "<strong>Note</strong><br>"
                 + "The seed image has always size of the segmented data."
-                + "Thus, if one processes stack of images, he is initially "
+                + "Thus, if one processes stack of images, he is "
                 + "supposed to provide the stack of seeds as well. Otherwise, "
                 + "one can cut (using ImageJ tools) only one slice and seed it, "
                 + " then Random Walk plugin will generate seeds for subsequent "
-                + "slices using <i>Erode power</i> parameter." + "</font>");
-        /**/
+                + "slices using <i>Shrink power</i> and <i>Expand power</i> parameters.<br>"
+                + "<strong>Parameters</strong><br>"
+                + "Good starting points:<br>"
+                + "OUTLINE - <i>Shrink power</i>=10, <i>Expand power</i>=15<br>"
+                + "MORPHO - <i>Shrink power</i>=3, <i>Expand power</i>=4<br>"
+                + "</font>");
+        //!<
         JScrollPane helpAreascroll = new JScrollPane(helpArea);
-        helpAreascroll.setPreferredSize(new Dimension(200, 100));
+        helpAreascroll.setPreferredSize(new Dimension(200, 200));
         seedBuildPanels.add(helpAreascroll, BorderLayout.CENTER);
 
         // Options zone (middle)
+        cShowSeed = new JCheckBox("Show seeds");
+        cShowSeed.setSelected(false);
+        cShrinkMethod = new JComboBox<String>(shrinkMethods);
+        cShrinkMethod.addActionListener(this);
         JPanel optionsPanel = new JPanel();
         optionsPanel.setBorder(BorderFactory.createTitledBorder("Segmentation options"));
-        optionsPanel.setLayout(new GridLayout(5, 2, 2, 2));
+        optionsPanel.setLayout(new GridLayout(8, 2, 2, 2));
         sAlpha = new JSpinner(new SpinnerNumberModel(400, 1, 100000, 1));
         sAlpha.addChangeListener(this);
         optionsPanel.add(new JLabel("Alpha"));
@@ -227,10 +248,17 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         sIter.addChangeListener(this);
         optionsPanel.add(new JLabel("Iterations"));
         optionsPanel.add(sIter);
-        sErode = new JSpinner(new SpinnerNumberModel(3, 1, 10, 1));
-        sErode.addChangeListener(this);
-        optionsPanel.add(new JLabel("Erode power"));
-        optionsPanel.add(sErode);
+        sShrinkPower = new JSpinner(new SpinnerNumberModel(10, 0, 1000, 1));
+        sShrinkPower.addChangeListener(this);
+        optionsPanel.add(new JLabel("Shrink power"));
+        optionsPanel.add(sShrinkPower);
+        sExpandPower = new JSpinner(new SpinnerNumberModel(15, 0, 1000, 1));
+        sExpandPower.addChangeListener(this);
+        optionsPanel.add(new JLabel("Expand power"));
+        optionsPanel.add(sExpandPower);
+        optionsPanel.add(new JLabel("Shrink method"));
+        optionsPanel.add(cShrinkMethod);
+        optionsPanel.add(cShowSeed);
 
         // integrate middle panels into one
         JPanel seedoptionsPanel = new JPanel();
@@ -337,6 +365,18 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     private void runPlugin() {
         ImageStack ret; // all images treated as stacks
         Map<Integer, List<Point>> seeds;
+        PropagateSeeds propagateSeeds;
+        // create seeding object with or without storing the history of configured type
+        switch ((String) cShrinkMethod.getSelectedItem()) {
+            case "OUTLINE":
+                propagateSeeds = new PropagateSeeds.Contour(cShowSeed.isSelected());
+                break;
+            case "MORPHO":
+                propagateSeeds = new PropagateSeeds.Morphological(cShowSeed.isSelected());
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported shrinking algorithm");
+        }
         try {
             ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
             ImageStack is = image.getStack(); // get current stack (size 1 for one image)
@@ -354,9 +394,18 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                 if (useSeedStack) { // true - use slices
                     nextseed = obj.decodeSeeds(seedImage.getStack().getProcessor(s), Color.RED,
                             Color.GREEN);
-                } else // false - use previous frame
-                    nextseed = PropagateSeeds.propagateSeed(retIp, erodeIter);
-                retIp = obj.run(nextseed); // segmentation and results stored for next seeding
+                    retIp = obj.run(nextseed); // segmentation and results stored for next seeding
+                } else {// false - use previous frame
+                    // convert unmodified masks to List
+                    ImageProcessor retIPinverted = retIp.duplicate();
+                    retIPinverted.invert();
+                    double[] meanSeed =
+                            obj.getMeanSeed(propagateSeeds.convertToList(retIp, retIPinverted));
+                    // modify masks and convert to lists
+                    nextseed = propagateSeeds.propagateSeed(retIp, shrinkPower, expandPower);
+                    retIp = obj.run(nextseed, meanSeed); // segmentation and results
+                                                         // stored for next seeding
+                }
                 ret.addSlice(retIp); // add next slice
                 IJ.showProgress(s - 1, is.getSize());
             }
@@ -364,6 +413,10 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             ImagePlus segmented = new ImagePlus("Segmented_" + image.getTitle(), ret);
             segmented.show();
             segmented.updateAndDraw();
+            // show seeds if selected
+            if (cShowSeed.isSelected()) {
+                propagateSeeds.getCompositeSeed(image.duplicate()).show();
+            }
         } catch (RandomWalkException e) {
             e.handleException(wnd, "Segmentation failed:");
         }
@@ -423,10 +476,15 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             // verify data before - store data in object after verification
             ImagePlus tmpSeed = WindowManager.getImage((String) cSeed.getSelectedItem()); // tmp var
             ImagePlus tmpImage = WindowManager.getImage((String) cImage.getSelectedItem());
+            if (tmpSeed == null || tmpImage == null) {
+                JOptionPane.showMessageDialog(wnd, "No image selected", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             // 1. Verify sizes - must be the same
             if (tmpSeed.getWidth() != tmpImage.getWidth()
                     && tmpSeed.getHeight() != tmpImage.getHeight()) {
-                JOptionPane.showMessageDialog(wnd, "Images are incompatibile in size", "Error",
+                JOptionPane.showMessageDialog(wnd, "Images have incompatibile sizes", "Error",
                         JOptionPane.ERROR_MESSAGE);
                 return; // when wrong sizes
             }
@@ -447,7 +505,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                         JOptionPane.ERROR_MESSAGE);
                 return; // wrong seed size
             }
-            // 4. Read numeric data
+            // 4. Read numeric data and other params
             //!>
             params = new Params((Integer) sAlpha.getValue(), // alpha
                     (Integer) sBeta.getValue(), // beta
@@ -458,7 +516,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                     8e-3 // error
             );
             //!<
-            erodeIter = (Integer) sErode.getValue(); // erosions
+            shrinkPower = ((Integer) sShrinkPower.getValue()).doubleValue(); // shrinking object
+            expandPower = ((Integer) sExpandPower.getValue()).doubleValue(); // expanding to get
+                                                                             // background
             // all ok - store images to later use
             image = tmpImage;
             seedImage = tmpSeed;

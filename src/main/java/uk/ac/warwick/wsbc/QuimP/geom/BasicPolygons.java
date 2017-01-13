@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
  */
 public class BasicPolygons {
 
-    @SuppressWarnings("unused")
     static final Logger LOGGER = LoggerFactory.getLogger(BasicPolygons.class.getName());
 
     public BasicPolygons() {
@@ -75,11 +74,11 @@ public class BasicPolygons {
     }
 
     /**
-     * Test whether \c Ptest is inside polygon \c P
+     * Test whether <tt>Ptest</tt> is inside polygon <tt>P</tt>
      * 
      * @param P Vertices of polygon in specified order
      * @param Ptest Point to be tested
-     * @return \c true if \c Ptest is inside \c P, \c false otherwise
+     * @return true if <tt>Ptest</tt> is inside <tt>P</tt>, false otherwise
      * @see http://www.shodor.org/~jmorrell/interactivate/org/shodor/util11/PolygonUtils.java
      */
     public boolean isPointInside(final List<? extends Tuple2d> P, final Tuple2d Ptest) {
@@ -111,7 +110,7 @@ public class BasicPolygons {
     }
 
     /**
-     * Test if \b all points \c Ptest are inside polygon.
+     * Test if all points <tt>Ptest</tt> are inside polygon <tt>P</tt>.
      * 
      * @see #isPointInside(List, Tuple2d)
      */
@@ -126,7 +125,7 @@ public class BasicPolygons {
     }
 
     /**
-     * Test if \b any point from \c Ptest is inside of \c P.
+     * Test if any point from <tt>Ptest</tt> is inside of <tt>P</tt>.
      * 
      * @see #isPointInside(List, Tuple2d)
      */
