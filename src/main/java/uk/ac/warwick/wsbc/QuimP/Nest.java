@@ -356,10 +356,10 @@ public class Nest implements IQuimpSerialize {
     }
 
     /**
-     * Count the snakes that exist at, or after, frame
+     * Count the snakes that exist at, or after, frame.
      * 
      * @param frame
-     * @return
+     * @return number of snakes
      */
     int nbSnakesAt(int frame) {
         int n = 0;

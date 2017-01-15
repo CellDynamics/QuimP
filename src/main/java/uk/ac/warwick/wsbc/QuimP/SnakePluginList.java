@@ -397,9 +397,9 @@ public class SnakePluginList implements IQuimpSerialize {
     }
 
     /**
-     * Return \c bool if i-th plugin is active or not
      * 
      * @param i Number of plugin to check
+     * @return bool if i-th plugin is active or not
      */
     public boolean isActive(int i) {
         return sPluginList.get(i).isActive;
@@ -548,7 +548,11 @@ public class SnakePluginList implements IQuimpSerialize {
     }
 
     /**
-     * Return names of plugins of given type registered in PluginFactory associated with this object
+     * Return names of plugins of given type registered in PluginFactory associated with this
+     * object.
+     * 
+     * @param type
+     * @return list of plugin names
      * 
      * @see uk.ac.warwick.wsbc.QuimP.PluginFactory#getPluginNames(int)
      */

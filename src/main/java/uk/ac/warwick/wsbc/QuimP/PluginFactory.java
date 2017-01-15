@@ -132,7 +132,9 @@ public class PluginFactory {
     /**
      * Build object connected to plugin directory.
      * 
-     * Can throw exception if there is no directory \c path.
+     * Can throw exception if there is no directory path.
+     * 
+     * @param path
      * 
      * @startuml
      *
@@ -271,7 +273,7 @@ public class PluginFactory {
     }
 
     /**
-     * Gets type of plugin
+     * Gets type of plugin.
      * 
      * Calls IQuimpPlugin.setup() method from plugin
      * 
@@ -282,6 +284,8 @@ public class PluginFactory {
      * @param instance Instance of plugin
      * @return Codes of types from IQuimpPlugin
      * @throws IllegalArgumentException When returned type is unknown
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin
      */
     private int getPluginType(Object instance)
@@ -296,13 +300,15 @@ public class PluginFactory {
     }
 
     /**
-     * Gets version of plugin
+     * Gets version of plugin.
      * 
      * Calls IQuimpPlugin.getVersion() method from plugin
      * 
      * @param instance Instance of plugin
      * @return String representing version of plugin or \c null if plugin does not support
      *         versioning
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
      */
     private String getPluginVersion(Object instance)
             throws NoSuchMethodException, InvocationTargetException {

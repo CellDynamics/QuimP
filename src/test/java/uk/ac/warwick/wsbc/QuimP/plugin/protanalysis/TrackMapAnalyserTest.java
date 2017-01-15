@@ -75,7 +75,9 @@ public class TrackMapAnalyserTest {
 
     /**
      * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#PolygonRoi2Map(java.util.List)}.
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#Polygon2Point2i(List)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testPolygon2Map() throws Exception {
@@ -114,6 +116,8 @@ public class TrackMapAnalyserTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testEnumeratePoint() throws Exception {
@@ -146,6 +150,10 @@ public class TrackMapAnalyserTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#getCommonPoints()}.
+     * 
+     * @param tracks
+     * @param expected
+     * @throws Exception
      */
     @Test
     @Parameters(method = "valuesCommonPoints")

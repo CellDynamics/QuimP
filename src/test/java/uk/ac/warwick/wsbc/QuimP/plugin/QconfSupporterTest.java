@@ -53,6 +53,8 @@ public class QconfSupporterTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.plugin.QconfSupporter#getImage()}.
+     * 
+     * @throws Exception
      */
     @SuppressWarnings("unused")
     @Test

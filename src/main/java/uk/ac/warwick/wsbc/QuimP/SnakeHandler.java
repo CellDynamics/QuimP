@@ -377,10 +377,10 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      * Read Snake from file
      *
      * @param inFile
-     * @return
+     * @return value of 1
      * @throws Exception
      * @warning May not be compatible wit old version due to changes in Snake constructor.
-     * @see uk.ac.warwick.wsbc.QuimP.OutlineHandler.readOutlines(File) for new approach
+     * @see <a href="link">uk.ac.warwick.wsbc.QuimP.OutlineHandler.readOutlines(File)</a>
      */
     @Deprecated
     public int snakeReader(final File inFile) throws Exception {

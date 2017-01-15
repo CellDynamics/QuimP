@@ -244,6 +244,8 @@ public class SnakePluginListTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#SnakePluginList(int, PluginFactory, ViewUpdater)}
+     * 
+     * @throws Exception
      */
     @Test
     public void testSnakePluginListIntPluginFactory() throws Exception {
@@ -251,7 +253,10 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#getInstance(int)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#getInstance(int)}.
+     * 
+     * @throws Exception
+     * 
      */
     @Test
     public void testGetInstance() throws Exception {
@@ -264,6 +269,8 @@ public class SnakePluginListTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#isActive(int)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testIsActive() throws Exception {
@@ -273,6 +280,8 @@ public class SnakePluginListTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setInstance(int, String, boolean)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testSetInstance() throws Exception {
@@ -286,6 +295,8 @@ public class SnakePluginListTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#setActive(int, boolean)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testSetActive() throws Exception {
@@ -297,6 +308,8 @@ public class SnakePluginListTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#deletePlugin(int)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testDeletePlugin() throws Exception {
@@ -307,6 +320,8 @@ public class SnakePluginListTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.SnakePluginList#isRefListEmpty()}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testIsRefListEmpty() throws Exception {
@@ -338,6 +353,13 @@ public class SnakePluginListTest {
 
     /**
      * Test of saving.
+     * 
+     * @throws IOException
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
      */
     @Test
     public void testSaveConfig() throws IOException, NoSuchMethodException, SecurityException,
@@ -352,6 +374,8 @@ public class SnakePluginListTest {
 
     /**
      * Test of serialization
+     * 
+     * @throws FileNotFoundException
      */
     @Test
     public void testSaveConfig_serializer() throws FileNotFoundException {
@@ -363,6 +387,8 @@ public class SnakePluginListTest {
 
     /**
      * Test of serialization
+     * 
+     * @throws FileNotFoundException
      */
     @Test
     public void testSaveConfig_serializer1() throws FileNotFoundException {
@@ -405,6 +431,14 @@ public class SnakePluginListTest {
 
     /**
      * Test of loading
+     * 
+     * @throws IOException
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws QuimpPluginException
      */
     @Test
     public void testloadConfig()
@@ -553,8 +587,9 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Only one plugin in middle
-     * @throws QuimpPluginException
+     * Only one plugin in middle
+     * 
+     * @throws Exception
      */
     @Test
     public void testloadConfig_serializer_2() throws Exception {
@@ -587,9 +622,11 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of loading not complete file
-     * @pre Wrong name of plugin in config
-     * @post This slot is null
+     * Test of loading not complete file
+     * 
+     * Pre: Wrong name of plugin in config
+     * 
+     * Post: This slot is null
      * 
      * @throws IOException
      * @throws QuimpPluginException
@@ -629,12 +666,13 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of loading not bad field in file
-     * @pre Wrong name of plugin in config
-     * @post This slot is null
+     * Test of loading not bad field in file
      * 
-     * @throws IOException
-     * @throws QuimpPluginException
+     * Pre: Wrong name of plugin in config
+     * 
+     * Post: This slot is null
+     * 
+     * @throws Exception
      */
     @Test
     public void testloadConfig_serializer_bad() throws Exception {
@@ -704,8 +742,7 @@ public class SnakePluginListTest {
      * @pre Incorrect version
      * @post Plugin loaded with message
      * 
-     * @throws IOException
-     * @throws QuimpPluginException
+     * @throws Exception
      */
     @Test
     public void testloadConfig_serializer_bad1() throws Exception {
@@ -776,13 +813,16 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of loading incompatibile config
-     * @pre Incompatibile config
-     * @post Plugin loaded but config not restored
-     * @warning This depends on plugin configuration. Wrong config is detected by exception thrown
-     *          from setPluginConfig() from IQuimpPlugin
-     * @throws IOException
-     * @throws QuimpPluginException
+     * Test of loading incompatibile config.
+     * 
+     * This depends on plugin configuration. Wrong config is detected by exception thrown from
+     * setPluginConfig() from IQuimpPlugin.
+     * 
+     * Pre: Incompatibile config
+     * 
+     * Post: Plugin loaded but config not restored
+     * 
+     * @throws Exception
      */
     @Test
     public void testloadConfig_serializer_bad2() throws Exception {

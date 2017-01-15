@@ -28,14 +28,20 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     /**
      * Create a Outline from existing linked list
      * 
+     * Behaviour of this method was changed. Now it does not make copy of Vert. In old approach
+     * there was dummy node deleted in this constructor.
+     * 
+     * <pre>
+     * {
+     *     {@code
+     *     index = 0; head = new Vert(index); // dummy head node head.setHead(true); 
+     *     prevn = head; index++; // insert next nodes here
+     * }
+     * </pre>
+     * 
      * @param h head node of linked list
      * @param N number of nodes in list
-     * @warning Behavior of this method was changed. Now it does not make copy of Vert. In old
-     *          approach there was dummy node deleted in this constructor.
-     * @code{.java} index = 0; head = new Vert(index); // dummy head node head.setHead(true); prevn
-     *              = head; index++; // insert next nodes here
-     * @endcode
-     * @see uk.ac.warwick.wsbc.QuimP.OutlineHandler.readOutlines(final File) for example of use
+     * 
      */
     public Outline(final Vert h, int N) {
         super(h, N);
@@ -630,9 +636,9 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
      * Similar to cutLoops, but check all edges (interval up to NODES/2) and cuts out the smallest
      * section
      * 
-     * @return \c true if cut something
-     * @see uk.ac.warwick.wsbc.QuimP.Snake.cutLoops()
-     * @see uk.ac.warwick.wsbc.QuimP.Snake.cutIntersects()
+     * @return true if cut something
+     * @see uk.ac.warwick.wsbc.QuimP.Snake#cutLoops()
+     * @see uk.ac.warwick.wsbc.QuimP.Snake#cutIntersects()
      */
     public boolean cutSelfIntersects() {
         boolean iCut = false;

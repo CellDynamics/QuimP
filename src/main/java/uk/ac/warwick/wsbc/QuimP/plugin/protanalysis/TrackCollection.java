@@ -12,7 +12,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.wsbc.QuimP.QuimP;
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 
 /**
@@ -203,8 +202,10 @@ class Track extends ArrayList<Point> {
      * Get xy coordinates of Track point according to xy maps.
      * 
      * @param index order of Track point
-     * @param xMap x-coordinates map compatible with {@link QuimP.plugin.qanalysis.STmap}
-     * @param yMap y-coordinates map compatible with {@link QuimP.plugin.qanalysis.STmap}
+     * @param xMap x-coordinates map compatible with
+     *        {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap}
+     * @param yMap y-coordinates map compatible with
+     *        {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap}
      * @return Screen coordinates of Track point.
      */
     public Point2D.Double getXY(int index, double[][] xMap, double[][] yMap) {

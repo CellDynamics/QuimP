@@ -95,6 +95,8 @@ public class GenerateMask_ implements IQuimpPlugin {
      * Validates also all necessary datafields in loaded QCONF file. Set <tt>qconfLoader</tt> field
      * on success or set it to <tt>null</tt>.
      * 
+     * @param paramFile
+     * 
      * @throws QuimpException When QCONF could not be loaded or it does not meet requirements.
      */
     private void loadFile(File paramFile) throws QuimpException {

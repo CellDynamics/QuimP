@@ -51,7 +51,7 @@ public class Node extends PointsList<Node> {
      * Create Node with given id
      * 
      * @param t id of Node
-     * @see uk.ac.warwick.wsbc.QuimP.PointListNode.PointListNode(int)
+     * @see uk.ac.warwick.wsbc.QuimP.PointsList
      */
     public Node(int t) {
         super(t);
@@ -80,7 +80,6 @@ public class Node extends PointsList<Node> {
      * @param xx x-axis coordinate
      * @param yy y-axis coordinate
      * @param t id of Node
-     * @see uk.ac.warwick.wsbc.QuimP.PointListNode.PointListNode(double, double, int)
      */
     public Node(double xx, double yy, int t) {
         super(xx, yy, t);

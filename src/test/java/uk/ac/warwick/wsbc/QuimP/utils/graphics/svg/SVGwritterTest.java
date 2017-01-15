@@ -47,7 +47,9 @@ public class SVGwritterTest {
 
     /**
      * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGwritter#writeHeader(java.io.OutputStreamWriter)}.
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGwritter#writeHeader(OutputStreamWriter, Rectangle)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testWriteHeader() throws Exception {

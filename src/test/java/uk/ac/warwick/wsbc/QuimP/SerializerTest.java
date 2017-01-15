@@ -50,6 +50,8 @@ public class SerializerTest {
 
     /**
      * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.save(String).
+     * 
+     * @throws Exception
      */
     @Test
     public void testSave() throws Exception {
@@ -59,6 +61,8 @@ public class SerializerTest {
 
     /**
      * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.toString().
+     * 
+     * @throws Exception
      */
     @Test
     public void testToString() throws Exception {
@@ -69,6 +73,8 @@ public class SerializerTest {
 
     /**
      * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.toString().
+     * 
+     * @throws Exception
      */
     @Test
     public void testToString_1() throws Exception {

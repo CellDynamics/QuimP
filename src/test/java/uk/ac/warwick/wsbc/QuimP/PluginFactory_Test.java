@@ -50,10 +50,13 @@ public class PluginFactory_Test {
     }
 
     /**
-     * @test Test method for {@link wsbc.QuimP.PluginFactory#getPluginNames(int)}.
+     * Test method for {@link PluginFactory#getPluginNames(int)}.
      * 
-     * @pre Two dummy plugins in directory
-     * @post Two plugins names \a Plugin1 and \a Plugin2
+     * Pre: Two dummy plugins in directory
+     * 
+     * Post: Two plugins names Plugin1 and Plugin2
+     * 
+     * @throws Exception
      */
     @Test
     @Ignore("Test plugins must be recompiled")
@@ -68,10 +71,13 @@ public class PluginFactory_Test {
     }
 
     /**
-     * Test method for {@link wsbc.QuimP.PluginFactory#getPluginNames(int)}.
+     * Test method for {@link PluginFactory#getPluginNames(int)}.
      * 
-     * @pre None plugins in directory
-     * @post empty list
+     * Pre: None plugins in directory
+     * 
+     * Post: empty list
+     * 
+     * @throws Exception
      */
     @Test
     public void test_GetPluginNames_noplugins() throws Exception {
@@ -83,10 +89,14 @@ public class PluginFactory_Test {
     }
 
     /**
-     * @test Test method for {@link wsbc.QuimP.PluginFactory#getPluginNames(int)}.
+     * Test method for {@link PluginFactory#getPluginNames(int)}.
      * 
-     * @pre Directory does not exist
-     * @post empty list
+     * Pre: Directory does not exist
+     * 
+     * Post: empty list
+     * 
+     * @throws Exception
+     * 
      */
     @Test(expected = QuimpPluginException.class)
     public void test_GetPluginNames_nodir() throws Exception {
@@ -98,11 +108,13 @@ public class PluginFactory_Test {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)} This
-     *       test creates instances of plugins and calls methods from them storing and reading data
-     *       from created object for plugin2
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)} This test
+     * creates instances of plugins and calls methods from them storing and reading data from
+     * created object for plugin2
      * 
-     * @pre Two dummy plugins in ../Test-Plugins/target/ directory of type DOES_SNAKES
+     * Pre: wo dummy plugins in ../Test-Plugins/target/ directory of type DOES_SNAKES
+     * 
+     * @throws Exception
      */
     @Test
     @Ignore("Test plugins must be recompiled")
@@ -126,10 +138,12 @@ public class PluginFactory_Test {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)} This
-     *       test try to call plugin that does not exist
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getInstance(String)} This test
+     * try to call plugin that does not exist.
      * 
-     * @pre Empty directory but existing
+     * Pre: Empty directory but existing
+     * 
+     * @throws Exception
      */
     @Test
     public void test_GetInstance_noplugin() throws Exception {
@@ -142,11 +156,13 @@ public class PluginFactory_Test {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#scanDirectory()}
+     * Test method for private PluginFactory#scanDirectory().
      * 
-     * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
-     * @post Return list of files that according to hardcoded criterion. For more files they may be
-     *       returned in random order.
+     * Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
+     * 
+     * Post: Return list of files that according to hardcoded criterion. For more files they may be
+     * returned in random order.
+     * 
      * @throws NoSuchMethodException
      * @throws SecurityException
      * @throws IllegalAccessException
@@ -176,10 +192,12 @@ public class PluginFactory_Test {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.PluginFactory#getClassName()}
+     * Test method for uk.ac.warwick.wsbc.QuimP.PluginFactory#getClassName()
      * 
-     * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
-     * @post Qualified name of class in plugin 2 must be correct
+     * Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
+     * 
+     * Post: Qualified name of class in plugin 2 must be correct
+     * 
      * @throws NoSuchMethodException
      * @throws SecurityException
      * @throws IllegalAccessException
@@ -205,9 +223,12 @@ public class PluginFactory_Test {
     }
 
     /**
-     * @test Test of reading type and version from plugins
-     * @pre Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
-     * @post proper versions, types and qnames
+     * Test of reading type and version from plugins
+     * 
+     * Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
+     * 
+     * Post: proper versions, types and qnames
+     * 
      * @throws QuimpPluginException
      */
     @Test

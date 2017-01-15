@@ -25,9 +25,13 @@ public class StringParserTest {
     }
 
     /**
-     * @test Test method for GetNumofParam
-     * @pre valid list of parameters, more spaces
-     * @post number of parameters in list
+     * Test method for GetNumofParam
+     * 
+     * Pre: valid list of parameters, more spaces
+     * 
+     * Post: number of parameters in list
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetNumofParam_1() throws Exception {
@@ -36,9 +40,13 @@ public class StringParserTest {
     }
 
     /**
-     * @test Test method for GetNumofParam
-     * @pre valid list of parameters, one element
-     * @post number of parameters in list
+     * Test method for GetNumofParam
+     * 
+     * Pre: valid list of parameters, one element
+     * 
+     * Post: number of parameters in list
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetNumofParam_2() throws Exception {
@@ -47,9 +55,13 @@ public class StringParserTest {
     }
 
     /**
-     * @test Test method for GetNumofParam
-     * @pre invalid list of parameters
-     * @post 0
+     * Test method for GetNumofParam
+     * 
+     * Pre: pre invalid list of parameters
+     * 
+     * Post: 0
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetNumofParam_3() throws Exception {
@@ -58,9 +70,13 @@ public class StringParserTest {
     }
 
     /**
-     * @test Test method for GetParams
-     * @pre invalid list of parameters
-     * @post empty array
+     * Test method for GetParams
+     * 
+     * Pre:pre invalid list of parameters
+     * 
+     * Post: empty array
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetParams() throws Exception {
@@ -70,9 +86,13 @@ public class StringParserTest {
     }
 
     /**
-     * @test Test method for GetParams
-     * @pre valid list of parameters
-     * @post array of substrings
+     * Test method for GetParams
+     * 
+     * Pre: valid list of parameters
+     * 
+     * Post: array of substrings
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetParams_1() throws Exception {
@@ -83,9 +103,13 @@ public class StringParserTest {
     }
 
     /**
-     * @test Test method for GetParams
-     * @pre invalid list of parameters
-     * @post print of array, one field is empty
+     * Test method for GetParams
+     * 
+     * Pre: invalid list of parameters
+     * 
+     * Post: print of array, one field is empty
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetParams_2() throws Exception {

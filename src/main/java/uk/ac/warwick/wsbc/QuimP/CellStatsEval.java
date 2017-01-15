@@ -74,7 +74,6 @@ public class CellStatsEval implements Measurements {
      * 
      * @param oH
      * @param ip image associated with OutlineHandler
-     * @param f file name to write stats
      * @param s image scale
      * @param fI frame interval
      */

@@ -4,6 +4,8 @@ package uk.ac.warwick.wsbc.QuimP.utils;
  * Basic implementation of Pair.
  * 
  * @author p.baniukiewicz
+ * @param <K> left object
+ * @param <V> right object
  *
  */
 public class Pair<K, V> {

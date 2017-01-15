@@ -83,9 +83,13 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test of circshift(RealMatrix, int)
-     * @pre any 2D matrix
-     * @post this matrix shifted to UP (matlab code issue)
+     * circshift(RealMatrix, int)
+     * 
+     * Pre: any 2D matrix
+     * 
+     * Post: this matrix shifted to UP (matlab code issue)
+     * 
+     * @throws Exception
      */
     @Test
     public void testCircshift_right() throws Exception {
@@ -97,9 +101,13 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test of circshift(RealMatrix, int)
-     * @pre any 2D matrix
-     * @post this matrix shifted to BOTTOM
+     * circshift(RealMatrix, int)
+     * 
+     * Pre: any 2D matrix
+     * 
+     * Post: this matrix shifted to BOTTOM
+     * 
+     * @throws Exception
      */
     @Test
     public void testCircshift_left() throws Exception {
@@ -111,9 +119,13 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test of circshift(RealMatrix, int)
-     * @pre any 2D matrix
-     * @post this matrix shifted to LEFT
+     * circshift(RealMatrix, int)
+     * 
+     * Pre: any 2D matrix
+     * 
+     * Post: this matrix shifted to LEFT
+     * 
+     * @throws Exception
      */
     @Test
     public void testCircshift_top() throws Exception {
@@ -128,9 +140,13 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test Test of circshift(RealMatrix, int)
-     * @pre any 2D matrix
-     * @post this matrix shifted to BOTTOM
+     * Test of circshift(RealMatrix, int)
+     * 
+     * Pre: any 2D matrix
+     * 
+     * Post: this matrix shifted to BOTTOM
+     * 
+     * @throws Exception
      */
     @Test
     public void testCircshift_bottom() throws Exception {
@@ -145,7 +161,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test Test of getSqrdDiffIntensity(RealMatrix, RealMatrix)
+     * Test of getSqrdDiffIntensity(RealMatrix, RealMatrix)
+     * 
      * @throws Exception
      */
     @Test
@@ -163,7 +180,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test Test of getMin(RealMatrix)
+     * Test of getMin(RealMatrix)
+     * 
      * @throws Exception
      */
     @Test
@@ -175,7 +193,7 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test Analysis of getSubMatrix from Apache
+     * Analysis of getSubMatrix from Apache
      */
     @Test
     public void testGetSubMatrix() {
@@ -191,9 +209,11 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test Test of decodeSeeds(ImagePlus, Color, Color)
-     * @pre Image with gree/red seed with known positions (\a segtest_small.rgb.tif)
-     * @post Two lists with positions ot seeds
+     * Test of decodeSeeds(ImagePlus, Color, Color)
+     * 
+     * Pre: Image with gree/red seed with known positions (\a segtest_small.rgb.tif)
+     * 
+     * Post: Two lists with positions ot seeds
      * 
      * @throws Exception
      */
@@ -222,7 +242,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test Test of getValues(RealMatrix, List<Point>)
+     * Test of getValues(RealMatrix, List<Point>)
+     * 
      * @throws Exception
      */
     @Test
@@ -243,8 +264,10 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test of setValues(RealMatrix, List<Point>, ArrayRealVector)
-     * @pre number of values equals number of indexes
+     * of setValues(RealMatrix, List<Point>, ArrayRealVector)
+     * 
+     * Pre: number of values equals number of indexes
+     * 
      * @throws Exception
      */
     @Test
@@ -264,9 +287,12 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test of setValues(RealMatrix, List<Point>, ArrayRealVector)
-     * @pre one value many indexes
-     * @post the same value in every provided index
+     * of setValues(RealMatrix, List<Point>, ArrayRealVector)
+     * 
+     * Pre: one value many indexes
+     * 
+     * Post: the same value in every provided index
+     * 
      * @throws Exception
      */
     @Test
@@ -274,7 +300,7 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
         //!<
         double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
         double[][] expected = { { -1, 2, 3, 4 }, { 2, 3, -1, 5 }, { -1, 7, 8, 9 } };
-        /**/
+        //!>
         RealMatrix in = MatrixUtils.createRealMatrix(test);
         List<Point> ind = new ArrayList<>();
         ind.add(new Point(0, 0)); // col,row
@@ -286,9 +312,12 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     }
 
     /**
-     * @test of setValues(RealMatrix, List<Point>, ArrayRealVector)
-     * @pre number of values is not 1 and does not equal to the number of indexes
-     * @post exception
+     * setValues(RealMatrix, List<Point>, ArrayRealVector)
+     * 
+     * Pre: number of values is not 1 and does not equal to the number of indexes
+     * 
+     * Post: exception
+     * 
      * @throws Exception
      */
     @Test(expected = InvalidParameterException.class)

@@ -418,7 +418,6 @@ public class QParams {
      * 
      * Create handles to files stored as names in <i>paQP</i>. Read segmentation parameters.
      * 
-     * @return true if successful
      * @throws QuimpException
      */
     public void readParams() throws QuimpException {

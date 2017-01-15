@@ -131,15 +131,6 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * convert to other Shape based on <tt>PointsList</tt> other type (but in general extended from
      * PointsList) Typical approach is to convert Snake to Outline (PointsList<Node> to
      * PointsList<Vert>).
-     * <p>
-     * Exemplary conversion from Snake to Outline can look as follows:
-     * 
-     * <pre>
-     * {@code
-     *  public Outline(final Snake src) {
-     *      super((Shape) src, new Vert());
-     * }
-     * </pre>
      * 
      * @param src
      * @param destType object of base node that PointsList is composed from
@@ -406,7 +397,11 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     }
 
     /**
-     * Insert point \c ne after point \c n
+     * Insert point ne after point n
+     * 
+     * @param n
+     * @param ne
+     * @return new node
      */
     public T insertPoint(final T n, final T ne) {
         T newNode = ne;

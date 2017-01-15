@@ -34,10 +34,11 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 public class BinarySegmentationTest {
 
     /**
-     * Accessor to private field
+     * Accessor to private field.
      * 
      * @param name Name of private field
      * @param obj Reference to object
+     * @return of private method
      * @throws NoSuchFieldException
      * @throws SecurityException
      * @throws IllegalArgumentException

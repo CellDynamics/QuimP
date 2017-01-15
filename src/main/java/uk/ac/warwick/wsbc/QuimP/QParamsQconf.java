@@ -20,7 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * configuration files (<i>paQP</i>, <i>snQP</i>) and then to provide some of parameters stored in
  * these files to local configuration classes such as e.g.
  * {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMp},
- * {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Qp},
+ * {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Q_Analysis},
  * {@link uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp}. QuimP supports two independent file formats:
  * <ol>
  * <li>based on separate files (old QuimP) such as \a case_cellno.paQP
@@ -151,7 +151,7 @@ public class QParamsQconf extends QParams {
      * original data has been loaded, modified and then they must be saved again under the same
      * name.
      * 
-     * @throws QuimpException When file can not be saved
+     * @throws IOException When file can not be saved
      */
     @Override
     public void writeParams() throws IOException {
@@ -337,9 +337,8 @@ public class QParamsQconf extends QParams {
     }
 
     /**
-     * (non-Javadoc)
      * 
-     * @see uk.ac.warwick.wsbc.QuimP.QParams#getNest()
+     * @return {@link Nest} object from loaded dataset.
      */
     public Nest getNest() {
         if (getLoadedDataContainer() != null)
@@ -348,7 +347,7 @@ public class QParamsQconf extends QParams {
             return null;
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getBlowup()

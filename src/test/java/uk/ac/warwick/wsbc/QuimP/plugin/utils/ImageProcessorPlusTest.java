@@ -105,6 +105,8 @@ public class ImageProcessorPlusTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus#runningMean(ij.process.ImageProcessor, java.lang.String, int)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testRunningMean() throws Exception {

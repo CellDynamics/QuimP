@@ -54,6 +54,7 @@ import org.scijava.vecmath.Vector2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonSyntaxException;
 
@@ -2898,6 +2899,9 @@ class Constrictor {
     }
 
     /**
+     * @param snake
+     * @param ip
+     * @return true on success
      * @deprecated Strictly related to absolute paths on disk. Probably for testing purposes only.
      */
     public boolean constrictWrite(final Snake snake, final ImageProcessor ip) {
@@ -2998,6 +3002,9 @@ class Constrictor {
     }
 
     /**
+     * @param n
+     * @param ip
+     * @return image force
      * @deprecated Probably old version of contractionForce(Node n).
      */
     public ExtendedVector2d imageForceOLD(final Node n, final ImageProcessor ip) {
@@ -3362,7 +3369,7 @@ class BoaException extends QuimpException {
  * field that is not serialized. This field keeps current state of plugins.
  * 
  * @author p.baniukiewicz
- * @see GSon documentation
+ * @see Gson
  */
 class DataContainerInstanceCreator implements InstanceCreator<DataContainer> {
 

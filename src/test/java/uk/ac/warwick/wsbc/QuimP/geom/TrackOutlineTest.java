@@ -35,6 +35,7 @@ public class TrackOutlineTest {
      * 
      * @param name Name of private field
      * @param obj Reference to object
+     * @return of private method
      * @throws NoSuchFieldException
      * @throws SecurityException
      * @throws IllegalArgumentException

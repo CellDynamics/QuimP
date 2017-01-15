@@ -64,10 +64,14 @@ public class SnakeTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.Snake#setNewHead(int)}. Set head for
-     *       non existing node.
-     * @pre valid snake with 4 nodes
-     * @post the same snake with head in the same position
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Snake#setNewHead(int)}. Set head for non
+     * existing node.
+     * 
+     * Pre: valid snake with 4 nodes
+     * 
+     * Post: the same snake with head in the same position
+     * 
+     * @throws Exception
      */
     @Test
     public void testSetNewHead() throws Exception {
@@ -91,10 +95,14 @@ public class SnakeTest {
     }
 
     /**
-     * @test Test method for {@link uk.ac.warwick.wsbc.QuimP.Snake#setNewHead(int)}. Set head for
-     *       second node.
-     * @pre valid snake with 4 nodes
-     * @post the same snake with head in on second position
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Snake#setNewHead(int)}. Set head for second
+     * node.
+     * 
+     * Pre: valid snake with 4 nodes
+     * 
+     * Post: the same snake with head in on second position
+     * 
+     * @throws Exception
      */
     @Test
     public void testSetNewHead_1() throws Exception {
@@ -116,9 +124,11 @@ public class SnakeTest {
     }
 
     /**
-     * @test Test of Snake Serializer
-     * @pre Snake is saved to disk
-     * @post Snake is loaded and restored
+     * Test of Snake Serializer
+     * 
+     * Pre: Snake is saved to disk
+     * 
+     * Post: Snake is loaded and restored
      * 
      * @throws IOException
      * @throws Exception
@@ -161,7 +171,8 @@ public class SnakeTest {
     }
 
     /**
-     * @test Test of copy constructor
+     * Test of copy constructor
+     * 
      * @throws Exception
      */
     @Test
@@ -180,8 +191,11 @@ public class SnakeTest {
     }
 
     /**
-     * @test Test of copy constructor
-     * @pre One node differs
+     * Test of copy constructor
+     * 
+     * Pre: One node differs
+     * 
+     * @throws Exception
      */
     @Test
     public void testSnakeSnakeInt_2() throws Exception {

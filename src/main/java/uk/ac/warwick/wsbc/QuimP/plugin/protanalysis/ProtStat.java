@@ -185,6 +185,7 @@ public class ProtStat implements IQuimpSerialize {
         /**
          * Add header to common file before next cell.
          * 
+         * @param bf 
          * @param cellno Number of cell.
          */
         private void writeCellHeader(PrintWriter bf, int cellno) {
@@ -319,6 +320,7 @@ public class ProtStat implements IQuimpSerialize {
         /**
          * Add header to common file before next cell.
          * 
+         * @param bf
          * @param cellno Number of cell.
          */
         private void writeProtHeader(PrintWriter bf, int cellno) {
@@ -338,7 +340,7 @@ public class ProtStat implements IQuimpSerialize {
          * Write one line for given frame for current cell.
          * 
          * @param bf
-         * @param frameno
+         * @param id
          */
         private void writeProtRecord(PrintWriter bf, int id) {
             String ret = Integer.toString(id + 1) + ',';

@@ -33,6 +33,8 @@ public class QuimpToolsCollection {
     /**
      * Prepare info plate for QuimP.
      * 
+     * @return QuimP version
+     * 
      * @see #getFormattedQuimPversion(String[])
      */
     public String getQuimPversion() {

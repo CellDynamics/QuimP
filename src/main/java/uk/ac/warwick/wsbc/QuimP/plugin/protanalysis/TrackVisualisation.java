@@ -64,7 +64,7 @@ public abstract class TrackVisualisation {
      * 
      * If input image contains any overlay data, they will be extended by new plots.
      * 
-     * @param qP Image to be plotted on.
+     * @param originalImage Image to be plotted on.
      */
     public TrackVisualisation(ImagePlus originalImage) {
         this.originalImage = originalImage;
@@ -90,7 +90,6 @@ public abstract class TrackVisualisation {
      * 
      * @param x
      * @param y
-     * @param frame
      * @param color
      * @param radius
      */
@@ -112,7 +111,7 @@ public abstract class TrackVisualisation {
      * 
      * Allows to convert enum to index of array of Colors.
      * 
-     * @param type
+     * @param track
      * @return Color from color array
      */
     protected Color getColor(Track track) {
@@ -189,7 +188,6 @@ public abstract class TrackVisualisation {
          * 
          * @param name Name of the image
          * @param data 2D data.
-         * @see uk.ac.warwick.wsbc.QuimP.STmap
          */
         public Map(String name, float[][] data) {
             super(name, new FloatProcessor(data));
@@ -296,6 +294,7 @@ public abstract class TrackVisualisation {
         /**
          * Plot static elements on image if they are not null.
          * 
+         * @param mapCell
          * @param trackCollection initialised TrackCollection object
          * @param mF maxima according to Prot_Analysis.MaximaFinder
          */
@@ -314,8 +313,7 @@ public abstract class TrackVisualisation {
          * Plot tracking lines before and after maxima points (static).
          * 
          * @param mapCell map related to given cell.
-         * @param pL List of polygons that keep coordinates of points of backward and forward
-         *        tracks.
+         * @param trackCollection
          * 
          */
         public void addTrackingLinesToImage(STmap mapCell, TrackCollection trackCollection) {
@@ -405,7 +403,7 @@ public abstract class TrackVisualisation {
 
         /**
          * Plot unrelated points on image (stack). Input compatible with
-         * {@link PointTracker#getIntersectionParents(List<Polygon>, int)}.
+         * {@link TrackMapAnalyser#getIntersectionParents(List, int)}.
          * 
          * @param mapCell source of coordinate maps
          * @param points list of points to plot in coordinates (index,frame)
@@ -537,7 +535,7 @@ public abstract class TrackVisualisation {
          * 
          * @param mapCell map related to given cell.
          * @param config configuration object defining colors, type of plot, etc.
-         * @see {@link ProtAnalysisConfig}
+         * @see ProtAnalysisConfig
          */
         public void addOutlinesToImage(STmap mapCell, ProtAnalysisConfig config) {
             double mm[][] = mapCell.getMotMap();

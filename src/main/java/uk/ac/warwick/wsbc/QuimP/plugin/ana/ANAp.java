@@ -13,7 +13,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * The structure of transient and non-transient fields must be reflected in FormatConverter.
  * 
  * @author rtyson
- * @see FormatConverter#generateNewDataFile()
+ * @see FormatConverter#doConversion()
  */
 public class ANAp {
 

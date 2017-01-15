@@ -384,7 +384,7 @@ public class QColor {
     /**
      * Get a random light color
      * 
-     * @return
+     * @return random color
      */
     public static QColor lightColor() {
         double r = (Math.random() / 1.3) + 0.23;

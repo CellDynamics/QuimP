@@ -209,7 +209,7 @@ public class QuimPArrayUtils {
      * Convert List of Integers to primitive type.
      * 
      * @param input
-     * @return
+     * @return array of ints converted from List<Integer>
      */
     public static int[] listToPrimitive(List<Integer> input) {
         Iterator<Integer> it = input.iterator();
@@ -224,7 +224,7 @@ public class QuimPArrayUtils {
      * Convert primitive integer to Integer.
      * 
      * @param input
-     * @return
+     * @return array of Integers converted from array of ints
      */
     public static Integer[] primitiveToClass(int[] input) {
         Integer[] ret = new Integer[input.length];
@@ -507,7 +507,7 @@ public class QuimPArrayUtils {
      * <p>
      * Assumes regular array.
      * 
-     * @param forwardMap
+     * @param array
      * @param d
      */
     public static <T> void fill2Darray(double[][] array, double d) {
@@ -520,7 +520,7 @@ public class QuimPArrayUtils {
      * <p>
      * Assumes regular array.
      * 
-     * @param forwardMap
+     * @param array
      * @param d
      */
     public static <T> void fill2Darray(int[][] array, int d) {

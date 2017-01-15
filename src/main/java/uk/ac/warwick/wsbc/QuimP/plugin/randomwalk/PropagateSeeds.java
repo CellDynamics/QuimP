@@ -126,7 +126,7 @@ public abstract class PropagateSeeds {
          * @param expandPower Expand size used to generate background (object is expanded and then
          *        subtracted from background)
          * @return List of background and foreground coordinates.
-         * @see PropagateSeeds.Morphological#propagateSeed(ImageProcessor, int)
+         * @see PropagateSeeds.Morphological#propagateSeed(ImageProcessor, double, double)
          * @see OutlineProcessor#shrink(double, double, double, double)
          */
         @Override
@@ -238,7 +238,7 @@ public abstract class PropagateSeeds {
          * @return Map containing list of coordinates that belong to foreground and background. Map
          *         is addressed by two enums: <tt>FOREGROUND</tt> and <tt>BACKGROUND</tt>
          * @see RandomWalkSegmentation#decodeSeeds(ImagePlus, Color, Color)
-         * @see #convertToList(BinaryProcessor, BinaryProcessor)
+         * @see #convertToList(ImageProcessor, ImageProcessor)
          */
         @Override
         public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkPower,

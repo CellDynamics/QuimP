@@ -66,9 +66,9 @@ public class FormatConverter {
     }
 
     /**
-     * Construct conversion object from QParamsQconf.
+     * Construct conversion object from QconfLoader.
      * 
-     * @param qP reference to QParamsQconf
+     * @param qcL reference to QconfLoader
      */
     public FormatConverter(QconfLoader qcL) {
         LOGGER.debug("Use provided QconfLoader");
@@ -79,6 +79,8 @@ public class FormatConverter {
 
     /**
      * Show message with conversion capabilities.
+     * 
+     * @param frame
      */
     public void showConversionCapabilities(Frame frame) {
         //!>

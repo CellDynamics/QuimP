@@ -67,7 +67,9 @@ public class FormatConverterTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#generatepaQP()}.
+     * Test method for FormatConverter#generatepaQP().
+     * 
+     * @throws Exception
      */
     @Test
     @Ignore
@@ -103,7 +105,9 @@ public class FormatConverterTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#generatesnQP()}.
+     * Test method for private FormatConverter#generatesnQP.
+     * 
+     * @throws Exception
      */
     @Test
     @Ignore
@@ -137,8 +141,9 @@ public class FormatConverterTest {
     }
 
     /**
-     * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#FormatConverter(uk.ac.warwick.wsbc.QuimP.QParamsQconf, java.nio.file.Path)}.
+     * Test method for private FormatConverter#generateOldDataFile.
+     * 
+     * @throws Exception
      */
     @Test
     @Ignore
@@ -174,7 +179,9 @@ public class FormatConverterTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#generateNewDataFile()}.
+     * Test method for private FormatConverter#generateNewDataFile().
+     * 
+     * @throws Exception
      */
     @Test
     public void testGenerateNewDataFile() throws Exception {
@@ -185,7 +192,9 @@ public class FormatConverterTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.FormatConverter#generateOldDataFile()}.
+     * Test method for private FormatConverter#generateOldDataFile().
+     * 
+     * @throws Exception
      */
     @Test
     public void testGenerateOldDataFile() throws Exception {

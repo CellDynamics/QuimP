@@ -12,6 +12,7 @@ import java.util.function.BiFunction;
  * All keys are converted to lower case.
  * 
  * @author p.baniukiewicz
+ * @param <V>
  *
  */
 public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
@@ -111,7 +112,7 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         return super.putIfAbsent(key.toLowerCase(), value);
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see java.util.HashMap#remove(java.lang.Object, java.lang.Object)

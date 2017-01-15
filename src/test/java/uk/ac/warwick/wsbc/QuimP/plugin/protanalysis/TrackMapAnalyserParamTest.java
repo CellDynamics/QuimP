@@ -669,6 +669,8 @@ public class TrackMapAnalyserParamTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#getIntersectionPoints(java.util.List)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetIntersectionPointsParam() throws Exception {
@@ -684,7 +686,7 @@ public class TrackMapAnalyserParamTest {
     }
 
     /**
-     * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#removeSelfRepeatings(java.util.List)}.
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#removeSelfRepeatings(List, List)}.
      * 
      * @throws Exception
      */
@@ -702,8 +704,11 @@ public class TrackMapAnalyserParamTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
+     * 
      * Assume that tested point is first pair left in expIntersectionPairs Result is in
      * expIntersectionPoints as x[0] coord. Use selfCrossing to decide whether use INCLUDE_INITIAL
+     * 
+     * @throws Exception
      */
     @Test
     public void testEnumeratePoint() throws Exception {
@@ -722,7 +727,7 @@ public class TrackMapAnalyserParamTest {
      * Helper method for build list of polygons using {x[],y[]} pairs.
      * 
      * @param obj
-     * @return
+     * @return array of polygons from input arrays
      */
     static ArrayList<Polygon> test(Object[]... obj) {
         ArrayList<Polygon> track = new ArrayList<>();
@@ -734,8 +739,11 @@ public class TrackMapAnalyserParamTest {
 
     /**
      * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#removeSelfRepeatings(java.util.List)}.
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackMapAnalyser#removeSelfRepeatings(List, List)}.
+     * 
      * No selfcrossing, B1 B2 intersection
+     * 
+     * @throws Exception
      */
     @Test
     @Ignore

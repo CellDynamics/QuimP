@@ -527,7 +527,10 @@ public abstract class QWindowBuilder {
     /**
      * Return value related to given key.
      * 
-     * @copydoc getIntegerFromUI(String)
+     * @param key
+     * @return {@link #getIntegerFromUI(String)}
+     * 
+     * @see #getIntegerFromUI(String)
      */
     public double getDoubleFromUI(final String key) {
         // get list of all params from ui as <key,val> list
@@ -538,7 +541,10 @@ public abstract class QWindowBuilder {
     /**
      * Return value related to given key.
      * 
-     * @copydoc getIntegerFromUI(String)
+     * @param key
+     * @return {@link #getIntegerFromUI(String)}
+     * 
+     * @see #getIntegerFromUI(String)
      */
     public boolean getBooleanFromUI(final String key) {
         // get list of all params from ui as <key,val> list
@@ -549,7 +555,10 @@ public abstract class QWindowBuilder {
     /**
      * Return value related to given key. Added for convenience
      * 
-     * @copydoc getIntegerFromUI(String)
+     * @param key
+     * @return {@link #getIntegerFromUI(String)}
+     * 
+     * @see #getIntegerFromUI(String)
      */
     public String getStringFromUI(final String key) {
         // get list of all params from ui as <key,val> list
@@ -558,7 +567,7 @@ public abstract class QWindowBuilder {
     }
 
     /**
-     * Stores components under \c Keys that are not case insensitive
+     * Stores components under Keys that are not case insensitive
      * 
      * @author p.baniukiewicz
      *

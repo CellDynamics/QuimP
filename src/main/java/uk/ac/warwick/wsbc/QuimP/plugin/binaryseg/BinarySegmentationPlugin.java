@@ -219,7 +219,8 @@ public class BinarySegmentationPlugin extends QWindowBuilder
      * Perform segmentation and modify Nest reference passed to this object
      * 
      * @see uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi
-     * @see uk.ac.warwick.wsbc.QuimP.BinarySegmentation.BinarySegmentation(ImagePlus)
+     * @see <a href=
+     *      "link">uk.ac.warwick.wsbc.QuimP.BinarySegmentation.BinarySegmentation(ImagePlus)</a>
      */
     @Override
     public void runPlugin() throws QuimpPluginException {

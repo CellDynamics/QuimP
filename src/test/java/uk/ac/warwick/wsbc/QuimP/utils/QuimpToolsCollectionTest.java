@@ -32,6 +32,8 @@ public class QuimpToolsCollectionTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection#getQuimPversion()}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetFormattedQuimPversion() throws Exception {

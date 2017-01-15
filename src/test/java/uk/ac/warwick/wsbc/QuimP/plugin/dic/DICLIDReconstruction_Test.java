@@ -49,6 +49,8 @@ public class DICLIDReconstruction_Test {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.plugin.dic.DICLIDReconstruction_#showDialog()}.
+     * 
+     * @throws Exception
      */
     @Test
     @Ignore
@@ -59,6 +61,8 @@ public class DICLIDReconstruction_Test {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.plugin.dic.DICLIDReconstruction_#roundtofull(double)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testRoundtofull() throws Exception {

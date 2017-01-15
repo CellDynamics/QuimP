@@ -40,6 +40,8 @@ public class QuimPArrayUtilsTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#float2ddouble(float[][])}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testFloat2Ddouble() throws Exception {
@@ -53,6 +55,8 @@ public class QuimPArrayUtilsTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#double2float(double[][])}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testDouble2Float() throws Exception {
@@ -76,6 +80,8 @@ public class QuimPArrayUtilsTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils#file2Array(java.lang.String, java.io.File)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testFile2Array() throws Exception {

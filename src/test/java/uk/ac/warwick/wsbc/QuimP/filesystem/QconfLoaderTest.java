@@ -74,7 +74,9 @@ public class QconfLoaderTest {
 
     /**
      * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#QconfLoader(java.nio.file.Path)}.
+     * {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#QconfLoader(java.io.File)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testQconfLoaderPath() throws Exception {
@@ -83,6 +85,8 @@ public class QconfLoaderTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#getImage()}.
+     * 
+     * @throws Exception
      */
     @SuppressWarnings("unused")
     @Test
@@ -101,6 +105,8 @@ public class QconfLoaderTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#validateQconf()}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testValidateQconf() throws Exception {
@@ -145,6 +151,8 @@ public class QconfLoaderTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#isBOAPresent()}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testIsBOAPresent() throws Exception {
@@ -167,6 +175,8 @@ public class QconfLoaderTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#isECMMPresent()}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testIsECMMPresent() throws Exception {
@@ -189,6 +199,8 @@ public class QconfLoaderTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#isANAPresent()}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testIsANAPresent() throws Exception {
@@ -211,6 +223,8 @@ public class QconfLoaderTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader#isQPresent()}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testIsQPresent() throws Exception {

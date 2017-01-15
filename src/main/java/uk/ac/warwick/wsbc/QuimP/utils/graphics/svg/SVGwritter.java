@@ -19,6 +19,7 @@ public abstract class SVGwritter {
      * Generate typical header.
      * 
      * @param osw
+     * @param d
      * @throws IOException
      */
     public static void writeHeader(OutputStreamWriter osw, Rectangle d) throws IOException {
@@ -65,13 +66,9 @@ public abstract class SVGwritter {
             else
                 col = colour.getColorSVG();
             //!<
-            osw.write(
-                      "<circle cx=\""+x1+"\""
-                           + " cy=\""+y1+"\""
-                           + " r=\""+radius+"\""
-                           + " fill=\""+col+"\""
-                           + " stroke=\""+strokecolour.getColorSVG()+"\""
-                           + " stroke-width=\""+thickness+"\"/>\n");
+            osw.write("<circle cx=\"" + x1 + "\"" + " cy=\"" + y1 + "\"" + " r=\"" + radius + "\""
+                    + " fill=\"" + col + "\"" + " stroke=\"" + strokecolour.getColorSVG() + "\""
+                    + " stroke-width=\"" + thickness + "\"/>\n");
             /**/
         }
     }

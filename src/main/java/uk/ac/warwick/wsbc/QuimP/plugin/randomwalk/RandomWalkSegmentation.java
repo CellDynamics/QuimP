@@ -414,9 +414,9 @@ public class RandomWalkSegmentation {
      * 
      * @param seeds
      * @param meanseeds array of [FG] [BG] mean values of pixels.
-     * @return
+     * @return Segmented image
      * @throws RandomWalkException
-     * @see {@link #getMeanSeed(Map)}
+     * @see #getMeanSeed(Map)
      */
     public ImageProcessor run(Map<Integer, List<Point>> seeds, double[] meanseeds)
             throws RandomWalkException {
@@ -515,6 +515,11 @@ public class RandomWalkSegmentation {
     }
 
     /**
+     * @param rgb
+     * @param fseed
+     * @param bseed
+     * @return {@link #decodeSeeds(ImagePlus, Color, Color)}
+     * @throws RandomWalkException
      * @see #decodeSeeds(ImagePlus, Color, Color)
      */
     public Map<Integer, List<Point>> decodeSeeds(final ImageProcessor rgb, final Color fseed,
@@ -693,7 +698,7 @@ public class RandomWalkSegmentation {
      * @param seeds seed array returned from decodeSeeds(ImagePlus, Color, Color)
      * @param gradients precomputed gradients returned from precompute()
      * @param meanseed mean values of image intensities for FG and BG. Calculated by
-     *        {@link #getMeanSeed(RealMatrix, Map)}. Can be provided separatelly.
+     *        {@link #getMeanSeed(Map)}. Can be provided separately.
      * @param params Parameters
      * @return Computed probabilities for background and foreground
      * @retval RealMatrix[2], RealMatrix[FOREGROUND] and RealMatrix[BACKGROUND]

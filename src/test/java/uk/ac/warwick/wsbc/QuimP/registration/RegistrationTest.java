@@ -63,7 +63,9 @@ public class RegistrationTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.registration.Registration#validateRegInfo(java.lang.String, java.lang.String)}.
+     * Test method for private Registration#validateRegInfo(java.lang.String, java.lang.String).
+     * 
+     * @throws Exception
      */
     @Test
     public void testValidateRegInfo() throws Exception {
@@ -76,7 +78,9 @@ public class RegistrationTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.registration.Registration#validateRegInfo(java.lang.String, java.lang.String)}.
+     * Test method for private Registration#validateRegInfo(java.lang.String, java.lang.String).
+     * 
+     * @throws Exception
      */
     @Test
     public void testValidateRegInfo_1() throws Exception {
@@ -89,7 +93,9 @@ public class RegistrationTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.registration.Registration#validateRegInfo(java.lang.String, java.lang.String)}.
+     * Test method for private Registration#validateRegInfo(java.lang.String, java.lang.String).
+     * 
+     * @throws Exception
      */
     @Test
     public void testValidateRegInfo_2() throws Exception {
@@ -102,7 +108,9 @@ public class RegistrationTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.registration.Registration#validateRegInfo(java.lang.String, java.lang.String)}.
+     * Test method for private Registration#validateRegInfo(java.lang.String, java.lang.String).
+     * 
+     * @throws Exception
      */
     @Test
     public void testValidateRegInfo_3() throws Exception {
@@ -115,7 +123,9 @@ public class RegistrationTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.registration.Registration#validateRegInfo(java.lang.String, java.lang.String)}.
+     * Test method for private Registration#validateRegInfo(java.lang.String, java.lang.String).
+     * 
+     * @throws Exception
      */
     @Test
     public void testValidateRegInfo_4() throws Exception {
@@ -128,7 +138,9 @@ public class RegistrationTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.registration.Registration#registerUser(java.lang.String, java.lang.String)}.
+     * Test method for private Registration#registerUser(java.lang.String, java.lang.String).
+     * 
+     * @throws Exception
      */
     @Test
     public void testRegisterUser() throws Exception {

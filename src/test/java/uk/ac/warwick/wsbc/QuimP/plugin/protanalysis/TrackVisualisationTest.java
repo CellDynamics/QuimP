@@ -73,7 +73,9 @@ public class TrackVisualisationTest {
 
     /**
      * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.plugin.Prot_Analysis.ProtrusionVis#addPointsToImage()}.
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.TrackVisualisation.Stack#addMaximaToImage(STmap, MaximaFinder)}.
+     * 
+     * @throws Exception
      */
     @SuppressWarnings("unused")
     @Test

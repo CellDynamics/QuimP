@@ -55,9 +55,14 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.getPolyPerim(final List<E>).
-     * @pre Four point polygon
-     * @post Perimeter
+     * Test method for QuimP.geom.BasicPolygons.getPolyPerim(final List<E>).
+     * 
+     * Pre: Four point polygon
+     * 
+     * Post: Perimeter
+     * 
+     * @throws Exception
+     * 
      */
     @Test
     public void testGetPolyPerim() throws Exception {
@@ -67,9 +72,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.getPolyPerim(final List<E>).
-     * @pre Only one point
-     * @post Perimeter equals 0
+     * Test method for QuimP.geom.BasicPolygons.getPolyPerim(final List<E>).
+     * 
+     * Pre: Only one point
+     * 
+     * Post: Perimeter equals 0
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetPolyPerim_1() throws Exception {
@@ -79,9 +88,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.getPolyArea(final List<E>).
-     * @pre Four point polygon
-     * @post Area
+     * Test method for QuimP.geom.BasicPolygons.getPolyArea(final List<E>).
+     * 
+     * Pre: Four point polygon
+     * 
+     * Post: Area
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetPolyArea() throws Exception {
@@ -91,9 +104,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.getPolyArea(final List<E>).
-     * @pre one point
-     * @post Area equals 0
+     * Test method for QuimP.geom.BasicPolygons.getPolyArea(final List<E>).
+     * 
+     * Pre: one point
+     * 
+     * Post: Area equals 0
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetPolyArea_1() throws Exception {
@@ -103,9 +120,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.getPolyArea(final List<E>).
-     * @pre two points
-     * @post Area equals 0
+     * Test method for QuimP.geom.BasicPolygons.getPolyArea(final List<E>).
+     * 
+     * Pre: two points
+     * 
+     * Post:Area equals 0
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetPolyArea_2() throws Exception {
@@ -115,9 +136,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.isPointInside(final List<E>, final Tuple2d)
-     * @pre Point inside
-     * @post Return true
+     * Test method for QuimP.geom.BasicPolygons.isPointInside(final List<E>, final Tuple2d)
+     * 
+     * Pre: Point inside
+     * 
+     * Post: Return true
+     * 
+     * @throws Exception
      */
     @Test
     public void testIsPointInside() throws Exception {
@@ -127,9 +152,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.isPointInside(final List<E>, final Tuple2d).
-     * @pre Point equals vertices
-     * @post Return true
+     * Test method for QuimP.geom.BasicPolygons.isPointInside(final List<E>, final Tuple2d).
+     * 
+     * Pre: Point equals vertices
+     * 
+     * Post: Return true
+     * 
+     * @throws Exception
      */
     @Test
     public void testIsPointInside_1() throws Exception {
@@ -139,9 +168,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.isPointInside(final List<E>, final Tuple2d).
-     * @pre Point outside
-     * @post Return false
+     * Test method for QuimP.geom.BasicPolygons.isPointInside(final List<E>, final Tuple2d).
+     * 
+     * Pre: Point outside
+     * 
+     * Post: Return false
+     * 
+     * @throws Exception
      */
     @Test
     public void testIsPointInside_2() throws Exception {
@@ -151,9 +184,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.arePointsInside(final List<E>, final List<E>).
-     * @pre Points inside
-     * @post Return true
+     * Test method for QuimP.geom.BasicPolygons.arePointsInside(final List<E>, final List<E>).
+     * 
+     * Pre: Points inside
+     * 
+     * Post: Return true
+     * 
+     * @throws Exception
      */
     @Test
     public void testarePointsInside() throws Exception {
@@ -163,9 +200,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.arePointsInside(final List<E>, final List<E>).
-     * @pre Points inside and one outside
-     * @post Return false
+     * Test method for QuimP.geom.BasicPolygons.arePointsInside(final List<E>, final List<E>).
+     * 
+     * Pre: Points inside and one outside
+     * 
+     * Post: Return false
+     * 
+     * @throws Exception
      */
     @Test
     public void testarePointsInside_1() throws Exception {
@@ -177,9 +218,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.isanyPointInside(final List<E>, final List<E>)
-     * @pre Points inside and one outside
-     * @post Return true
+     * Test method for QuimP.geom.BasicPolygons.isanyPointInside(final List<E>, final List<E>)
+     * 
+     * Pre: Points inside and one outside
+     * 
+     * Post: Return true
+     * 
+     * @throws Exception
      */
     @Test
     public void testisanyPointInside() throws Exception {
@@ -191,9 +236,13 @@ public class BasicPolygonsTest {
     }
 
     /**
-     * @test Test method for QuimP.geom.BasicPolygons.isanyPointInside(final List<E>, final List<E>)
-     * @pre All outside
-     * @post Return true
+     * Test method for QuimP.geom.BasicPolygons.isanyPointInside(final List<E>, final List<E>)
+     * 
+     * Pre: All outside
+     * 
+     * Post: Return true
+     * 
+     * @throws Exception
      */
     @Test
     public void testisanyPointInside_1() throws Exception {

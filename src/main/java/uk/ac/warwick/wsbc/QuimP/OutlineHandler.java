@@ -402,6 +402,9 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
     /**
      * Write <b>this</b> outline to disk.
+     * 
+     * @param outFile
+     * @param ECMMrun
      */
     public void writeOutlines(File outFile, boolean ECMMrun) {
         LOGGER.debug("Write outline at: " + outFile);

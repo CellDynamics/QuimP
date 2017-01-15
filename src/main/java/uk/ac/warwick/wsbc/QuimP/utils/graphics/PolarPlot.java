@@ -100,6 +100,10 @@ public class PolarPlot {
      * Compute vectors for one frame between mass centre and outline point. Vectors are in order
      * starting from closest point. This is representation of outline as vectors.
      * 
+     * @param f
+     * @param mass
+     * @param shift
+     * 
      * @return List of vectors starting from closes to gradientcoord.
      */
     Vector2d[] getVectors(int f, Point2d[] mass, int[] shift) {
@@ -162,7 +166,7 @@ public class PolarPlot {
      * @param filename
      * @param frame
      * @throws IOException
-     * @see generatePlot
+     * @see #generatePlot
      */
     public void generatePlotFrame(String filename, int frame) throws IOException {
         int[] shifts = getShift(); // calculate shifts of points according to gradientcoord
@@ -284,7 +288,7 @@ public class PolarPlot {
      * @param x
      * @param y
      * @param xi
-     * @return
+     * @return linear interpolation of y=f(xi)
      * @throws IllegalArgumentException
      */
     public static double[] interpLinear(double[] x, double[] y, double[] xi)

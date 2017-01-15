@@ -148,7 +148,7 @@ public class OutlineProcessor {
      * Shrink the outline linearly.
      * 
      * @param steps Number of steps
-     * @param delta shift done in one step
+     * @param stepRes shift done in one step
      * @param angleTh
      * @param freezeTh
      */

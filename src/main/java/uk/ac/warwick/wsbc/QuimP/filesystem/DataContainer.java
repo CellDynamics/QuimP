@@ -135,7 +135,7 @@ public class DataContainer implements IQuimpSerialize {
      * Get information about available modules in object.
      * 
      * @return Flags according to loaded modules.
-     * @see {@link uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader}
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader
      */
     public int validateDataContainer() {
         int ret = 0;

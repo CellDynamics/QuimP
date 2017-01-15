@@ -97,6 +97,10 @@ public class LidReconstructor {
      * 
      * Input srcImage is not modified
      * 
+     * @param srcImage Image to process
+     * @param decay
+     * @param angle DIC angle
+     * 
      * @throws DicException Throws exception after generateRanges()
      */
     public LidReconstructor(final ImagePlus srcImage, double decay, double angle)
@@ -107,7 +111,11 @@ public class LidReconstructor {
     /**
      * Default constructor that accepts ImageProcessor
      * 
-     * Input \c ip is not modified
+     * Input ip is not modified
+     * 
+     * @param ip ImageProcessor to process
+     * @param decay
+     * @param angle DIC angle
      * 
      * @throws DicException Throws exception after generateRanges()
      */
@@ -330,7 +338,6 @@ public class LidReconstructor {
      * 
      * @param decay The value of decay coefficient
      * @param length Length of table, usually equals to longest processed line on image
-     * @return Table with decays coefficients (private field)
      */
     private void generateDeacy(double decay, int length) {
         decays = new double[length];

@@ -17,7 +17,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * Hold statistic evaluated for one frame, geometric and fluorescence.
  * 
  * @author p.baniukiewicz
- * @see {@link uk.ac.warwick.wsbc.QuimP.CellStatsEval}
+ * @see uk.ac.warwick.wsbc.QuimP.CellStatsEval
  */
 public class FrameStatistics {
     public int frame;

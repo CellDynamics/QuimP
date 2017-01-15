@@ -78,10 +78,12 @@ public class PolarPlotTest {
     }
 
     /**
-     * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getShift(java.awt.geom.Point2D.Double)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getShift()}.
+     * 
      * Mocked outline from 6 points, 2 frames. Gradient coord at {10,10}. Outline point at index 2
      * closest for first frame.
+     * 
+     * @throws Exception
      * 
      */
     @Test
@@ -94,6 +96,8 @@ public class PolarPlotTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getMassCentre()}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetMassCentre() throws Exception {
@@ -105,6 +109,8 @@ public class PolarPlotTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getVectors(int, Point2d[], int[])}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetVectors() throws Exception {
@@ -121,6 +127,8 @@ public class PolarPlotTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getAngles(Vector2d[], Vector2d)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetAngles() throws Exception {
@@ -141,6 +149,8 @@ public class PolarPlotTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#getRadius(int, int, double[][])}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testGetRadius() throws Exception {
@@ -153,7 +163,10 @@ public class PolarPlotTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#generatePlot(int)}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#generatePlot(String)}.
+     * 
+     * @throws Exception
      */
     @Test
     public void testGeneratePlot() throws Exception {
@@ -161,8 +174,12 @@ public class PolarPlotTest {
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#generatePlot(int)}.
+     * Test method for
+     * {@link uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot#generatePlot(String)}.
+     * 
      * Compared with matlab
+     * 
+     * @throws Exception
      */
     @Test
     public void testGeneratePlot_1() throws Exception {

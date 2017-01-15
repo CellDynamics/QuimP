@@ -83,6 +83,7 @@ public class QuimpException extends Exception {
 
     /**
      * @param message
+     * @param type
      */
     public QuimpException(String message, MessageSinkTypes type) {
         super(message);
@@ -99,6 +100,7 @@ public class QuimpException extends Exception {
 
     /**
      * @param cause
+     * @param type
      */
     public QuimpException(Throwable cause, MessageSinkTypes type) {
         super(cause);

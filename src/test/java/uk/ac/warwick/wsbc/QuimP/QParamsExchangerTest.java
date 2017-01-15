@@ -37,6 +37,7 @@ public class QParamsExchangerTest {
      * @param obj Reference to object
      * @param param Array of parameters if any
      * @param paramtype Array of classes of \c param
+     * @return of private method
      * @throws SecurityException
      * @throws NoSuchMethodException
      * @throws InvocationTargetException

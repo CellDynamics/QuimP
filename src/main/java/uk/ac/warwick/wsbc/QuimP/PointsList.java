@@ -299,6 +299,8 @@ public abstract class PointsList<T extends PointsList<T>> {
 
     /**
      * Updates the normal (must point inwards).
+     * 
+     * @param inner
      */
     public void updateNormale(boolean inner) {
         boolean c = clockwise;

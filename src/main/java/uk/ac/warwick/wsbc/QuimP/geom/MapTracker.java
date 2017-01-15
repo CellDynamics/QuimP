@@ -17,7 +17,6 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * track given outline point forward in backward using these maps.
  * 
  * @author p.baniukiewicz
- * @see {@link uk.ac.warwick.wsbc.QuimP.geom.MapTrackerTest}
  *
  */
 public class MapTracker {
@@ -55,9 +54,9 @@ public class MapTracker {
      * All frames are numbered from 0 as well as outline indexes. Nonexisting indexes are marked as
      * -1.
      * 
-     * @param originMap originMap stored in {@link uk.ac.warwick.wsbc.QuimP.filesystem.QState
-     *        QState}
-     * @param coordMap coordMap stored in {@link uk.ac.warwick.wsbc.QuimP.filesystem.QState QState}
+     * @param originMap originMap stored in
+     *        {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer}
+     * @param coordMap coordMap stored in {@link uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer}
      * @see uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer
      * @see uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap
      */

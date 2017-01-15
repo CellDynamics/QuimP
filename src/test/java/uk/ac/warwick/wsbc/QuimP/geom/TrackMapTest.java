@@ -75,10 +75,11 @@ public class TrackMapTest {
     }
 
     /**
-     * Test method for
-     * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#TrackMap(double[][], double[][])}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker}.
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
+     * 
+     * @throws Exception
      */
     @Test
     public void testTrackMap() throws Exception {
@@ -105,8 +106,10 @@ public class TrackMapTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#trackForward(int, int, int)}.
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
+     * 
+     * @throws Exception
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "javadoc" })
     @Test
     public void testTrackForward_1() throws Exception {
         int[] expected = { 4, 4, 4, 4, 4, 4, 4, 4, 4, -1 };
@@ -118,6 +121,8 @@ public class TrackMapTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#trackForwardValid(int, int, int)}.
+     * 
+     * @throws Exception
      */
     @SuppressWarnings("serial")
     @Test
@@ -145,8 +150,10 @@ public class TrackMapTest {
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#trackForward(int, int, int)}.
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
+     * 
+     * @throws Exception
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "javadoc" })
     @Test
     public void testTrackForward_2() throws Exception {
         //!<
@@ -163,6 +170,8 @@ public class TrackMapTest {
      * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#trackForwardValid(int, int, int)}.
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
+     * 
+     * @throws Exception
      */
     @SuppressWarnings("serial")
     @Test
@@ -191,7 +200,7 @@ public class TrackMapTest {
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#getForwardFrames(int, int)}.
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "javadoc" })
     @Test
     public void testGetForwardFrames() throws Exception {
         //!<
@@ -208,8 +217,10 @@ public class TrackMapTest {
      * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#trackBackward(int, int, int)}.
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
+     * 
+     * @throws Exception
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "javadoc" })
     @Test
     public void testTrackBackward_1() throws Exception {
         int[] expected = { -1, 4, 4, 4, 4, 4 };
@@ -223,6 +234,8 @@ public class TrackMapTest {
      * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#trackBackwardValid(int, int, int)}.
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
+     * 
+     * @throws Exception
      */
     @SuppressWarnings("serial")
     @Test
@@ -246,8 +259,10 @@ public class TrackMapTest {
      * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#trackBackward(int, int, int)}.
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
+     * 
+     * @throws Exception
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "javadoc" })
     @Test
     public void testTrackBackward_2() throws Exception {
         //!<
@@ -264,6 +279,8 @@ public class TrackMapTest {
      * {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#trackBackwardValid(int, int, int)}.
      * <p>
      * Output results generated in Matlab by TrackMapTests/main.m
+     * 
+     * @throws Exception
      */
     @SuppressWarnings("serial")
     @Test
@@ -297,8 +314,10 @@ public class TrackMapTest {
 
     /**
      * Test method for {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#getBackwardFrames(int, int)}.
+     * 
+     * @throws Exception
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "javadoc" })
     @Test
     public void testGetBackwardFrames() throws Exception {
         //!<

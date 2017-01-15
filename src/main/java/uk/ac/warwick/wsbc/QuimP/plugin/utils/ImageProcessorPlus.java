@@ -166,7 +166,6 @@ public class ImageProcessorPlus {
          * Returned kernel is compatible with ij.process.ImageProcessor.convolve(float[], int, int)
          * 
          * @param option Option can be 0, 45, 90, 135 as string.
-         * @param size size of the kernel. must be uneven
          * @return 1D array as row ordered matrix. The kernel contains 1 on diagonal and it is
          *         normalised.
          */
@@ -251,14 +250,15 @@ class RectangleBox {
      * 
      * Vectors define corners in clockwise direction.
      * 
-     * @warning Vectors are referenced only, not copied. They are modified during rotation
-     * @param x \a x coordinates of bounding box in clockwise order
-     * @param y \a y coordinates of bounding box in clockwise order
+     * Vectors are referenced only, not copied. They are modified during rotation.
+     * 
+     * @param x x coordinates of bounding box in clockwise order
+     * @param y y coordinates of bounding box in clockwise order
      * @throws IllegalArgumentException When empty vectors are passed to constructor or input
      *         vectors have different length
      */
     @SuppressWarnings("unchecked")
-    public RectangleBox(Vector<Double> x, Vector<Double> y) throws Exception {
+    public RectangleBox(Vector<Double> x, Vector<Double> y) throws IllegalArgumentException {
         this.x = (Vector<Double>) x.clone();
         this.y = (Vector<Double>) y.clone();
         // get average of x and y

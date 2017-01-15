@@ -40,8 +40,10 @@ public class NodeTest {
     }
 
     /**
-     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node). Test copy constructor
-     *       and equals methods
+     * Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node). Test copy constructor and
+     * equals methods.
+     * 
+     * @throws Exception
      */
     @Test
     public void testNodeNode() throws Exception {
@@ -57,9 +59,12 @@ public class NodeTest {
     }
 
     /**
-     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node). Test copy constructor
-     *       and equals methods
-     * @pre Copied method is modified
+     * Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node). Test copy constructor and
+     * equals methods.
+     * 
+     * Pre: Copied method is modified
+     * 
+     * @throws Exception
      */
     @Test
     public void testNodeNode_1() throws Exception {
@@ -74,9 +79,12 @@ public class NodeTest {
     }
 
     /**
-     * @test Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node). Test copy constructor
-     *       and equals methods
-     * @pre Copied method is modified - underlying class method
+     * Test method for uk.ac.warwick.wsbc.QuimP.Node.Node(final Node). Test copy constructor and
+     * equals methods.
+     * 
+     * Pre: Copied method is modified - underlying class method
+     * 
+     * @throws Exception
      */
     @Test
     public void testNodeNode_2() throws Exception {

@@ -73,9 +73,12 @@ public class MaximaFinderTest {
     /**
      * Test method for
      * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.MaximaFinder#MaximaFinder(ij.process.ImageProcessor)}.
+     * 
      * Results compared with those generated in IJ from
      * src/test/resources/ProtAnalysisTest/fluoreszenz-test_eq_smooth_0_motilityMap.maQP when
      * imported as text image.
+     * 
+     * @throws Exception
      */
     @Test
     public void testMaximaFinder() throws Exception {

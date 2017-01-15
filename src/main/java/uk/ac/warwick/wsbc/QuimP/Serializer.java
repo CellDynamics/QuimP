@@ -33,25 +33,26 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  * for details
  * 
  * This serializer accepts only classes derived from IQuimpSerialize interface. Saved class is
- * packed in top level structure that contains version of software and wrapped class name. Final
- * JSON looks as follows:
+ * packed in top level structure that contains version of software and wrapped class name. Exemplary
+ * use case:
  * 
- * @code { // This part comes from Serializer itself "className": "SnakePluginList", "version": [
- *       "version not found in jar", "build info not found in jar", "name not found in jar" ],
- *       "obj": { // here is content of wrapped object } }
- * @endcode
+ * <pre>
+ * {
+ *     &#64;code
+ *     Serializer<SnakePluginList> s;
+ *     s = new Serializer<>(boaState.snakePluginList, quimpInfo);
+ *     s.setPretty(); // set pretty format s.save(sd.getDirectory() + sd.getFileName()); // save
+ *     it s = null; // remove
  * 
- *          Exemplary use case:
- * @code { Serializer<SnakePluginList> s; s = new Serializer<>(boaState.snakePluginList, quimpInfo);
- *       s.setPretty(); // set pretty format s.save(sd.getDirectory() + sd.getFileName()); // save
- *       it s = null; // remove }
- * @endcode
+ * }
+ * </pre>
  * 
- *          There is option to no call afterSerialzie() method on class restoring. To do so set \a
- *          doAfterSerialize to \a false - derive new class and override this field.
+ * There is option to skip call afterSerialzie() method on class restoring. To do so set
+ * {@link #doAfterSerialize} to false - derive new class and override this field.
  * 
  * 
  * @author p.baniukiewicz
+ * @param <T>
  * @see <a href=
  *      "link">http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson</a>
  * @see SerializerTest for examples of use
@@ -120,7 +121,13 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * @copydoc load(File)
+     * @param filename to load
+     * @return Serializer object
+     * @throws IOException
+     * @throws JsonSyntaxException
+     * @throws JsonIOException
+     * @throws Exception
+     * @see #load(File)
      */
     public Serializer<T> load(final String filename)
             throws IOException, JsonSyntaxException, JsonIOException, Exception {
@@ -129,10 +136,16 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * Load wrapped object from JSON file
+     * Load wrapped object from JSON file.
      * 
      * Calls {@link IQuimpSerialize#afterSerialize()} after load
      * 
+     * @param filename
+     * @return Serialiser object
+     * @throws IOException
+     * @throws JsonSyntaxException
+     * @throws JsonIOException
+     * @throws Exception
      * @see #fromReader(Reader)
      */
     public Serializer<T> load(final File filename)
@@ -145,7 +158,12 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     /**
      * Restore wrapped object from JSON string
      * 
-     * @copydetails fromReader(Reader)
+     * @param json
+     * @return Serialise object
+     * @throws JsonSyntaxException
+     * @throws JsonIOException
+     * @throws Exception
+     * @see #fromReader(Reader)
      */
     public Serializer<T> fromString(final String json)
             throws JsonSyntaxException, JsonIOException, Exception {
@@ -205,7 +223,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * Calls uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.beforeSerialize() before conversion
      * 
      * @return JSON string
-     * @see uk.ac.warwick.wsbc.QuimP.Serializer.setPretty()
+     * @see uk.ac.warwick.wsbc.QuimP.Serializer#setPretty()
      */
     public String toString() {
         Gson gson = gsonBuilder.create();
@@ -219,7 +237,11 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * @copydoc Dump(Object, File, boolean)
+     * @param obj
+     * @param filename
+     * @param savePretty
+     * @throws FileNotFoundException
+     * @see #Dump(Object, String, boolean)
      */
     static void Dump(final Object obj, final String filename, boolean savePretty)
             throws FileNotFoundException {

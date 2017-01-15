@@ -33,14 +33,14 @@ public class TrackMapAnalyser {
      * Allow detection common points in backward and forward tracks generated for the same starting
      * point.
      * 
-     * @see uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst
+     * @see uk.ac.warwick.wsbc.QuimP.geom.MapTracker#includeFirst
      */
     final public static int WITH_SELFCROSSING = 2;
     /**
      * Disallow detection common points in backward and forward tracks generated for the same
      * starting point.
      * 
-     * @see uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst
+     * @see uk.ac.warwick.wsbc.QuimP.geom.MapTracker#includeFirst
      */
     final public static int WITHOUT_SELFCROSSING = 4;
     /**
@@ -72,7 +72,7 @@ public class TrackMapAnalyser {
      * 
      * Return (as internal field {@link TrackCollection}) list of points tracked from every maximum
      * point as long as they meet criterion. Maximum point can be included in this list depending on
-     * setting of {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker.includeFirst} flag. First points
+     * setting of {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker#includeFirst} flag. First points
      * in tracks are initial points. Forward track is sorted within increasing frames from starting
      * point, backward according to decreasing frames.
      * 
@@ -304,7 +304,7 @@ public class TrackMapAnalyser {
      * Remove self crossings that happen between backward and forward tracks for the same initial
      * point.
      * 
-     * {@link trackMaxima} returns alternating tracks tracks, therefore every pair i,i+1 is related
+     * {@link #trackMaxima} returns alternating tracks tracks, therefore every pair i,i+1 is related
      * to the same starting points, for even i. If the flag
      * uk.ac.warwick.wsbc.QuimP.geom.TrackMap.includeFirst is set, those two tracks share one point
      * that is also starting point.

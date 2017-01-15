@@ -135,7 +135,8 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      * Configuration of plotting outlines of cells on stack of images.
      * 
      * @author p.baniukiewicz
-     * @see {@link TrackVisualisation.Stack#addOutlinesToImage(uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap, ProtAnalysisConfig)}.
+     * @see TrackVisualisation.Stack#addOutlinesToImage(uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap,
+     *      ProtAnalysisConfig)
      */
     class OutlinesToImage {
         /**

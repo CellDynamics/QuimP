@@ -113,6 +113,10 @@ public class BasicPolygons {
     /**
      * Test if all points <tt>Ptest</tt> are inside polygon <tt>P</tt>.
      * 
+     * @param P
+     * @param Ptest
+     * @return {@link #isPointInside(List, Tuple2d)}
+     * 
      * @see #isPointInside(List, Tuple2d)
      */
     public boolean arePointsInside(final List<? extends Tuple2d> P,
@@ -127,6 +131,10 @@ public class BasicPolygons {
 
     /**
      * Test if any point from <tt>Ptest</tt> is inside of <tt>P</tt>.
+     * 
+     * @param P
+     * @param Ptest
+     * @return {@link #isPointInside(List, Tuple2d)}
      * 
      * @see #isPointInside(List, Tuple2d)
      */
