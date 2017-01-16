@@ -1,10 +1,8 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-
-import uk.ac.warwick.wsbc.QuimP.plugin.utils.IPadArray;
 
 public class IPadArray_Test implements IPadArray {
 
@@ -13,16 +11,17 @@ public class IPadArray_Test implements IPadArray {
     // LogManager.getLogger(IPadArray_test.class.getName());
 
     /**
-     * @test test of getIndex method for symmetric padding
-     * @pre vector of 0:9 numbers (virtual indexes) and window of size 5
-     * @post
+     * test of getIndex method for symmetric padding
+     * 
+     * pre: vector of 0:9 numbers (virtual indexes) and window of size 5
      */
     @Test
     public void test_getIndex_CIRCULAR() {
         int dataSize = 10;
         int expected[] = { 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4 };
         for (int l = 0; l < expected.length; l++) {
-            assertTrue(expected[l] == IPadArray.getIndex(dataSize, l - window, IPadArray.CIRCULARPAD));
+            assertTrue(
+                    expected[l] == IPadArray.getIndex(dataSize, l - window, IPadArray.CIRCULARPAD));
         }
     }
 

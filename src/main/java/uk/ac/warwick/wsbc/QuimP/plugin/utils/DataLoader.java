@@ -19,15 +19,20 @@ import ij.process.FloatPolygon;
  * 
  * Load contours saved as one-column list with interleaving coordinates of vertices:
  * 
- * @code X1 Y1 X2 Y2 ... Xn Yn
- * @endcode The file must contain even number of data. Exemplary code in Matlab to create such file:
- * @code{.m} addpath('/home/p.baniukiewicz/Documents/QuimP11_MATLAB/') qCells =
+ * The file must contain even number of data. Exemplary code in Matlab to create such file:
+ * 
+ * <pre>
+ * <code>
+ * X1 Y1 X2 Y2 ... Xn Yn
+ * 
+ * addpath('/home/p.baniukiewicz/Documents/QuimP11_MATLAB/') qCells =
  *           readQanalysis('Resources/after-macro'); testFrames = [75 125 137 1]; clear coords; for
  *           i=1:length(testFrames) coords{i} = qCells.outlines{testFrames(i)}(:,2:3); end for
  *           i=1:length(testFrames) fid = fopen(['testData_' num2str(testFrames(i)) '.dat'], 'w');
  *           xy = coords{i}; xyr = reshape(xy',[],1); % x first fprintf(fid,'%.4f\n',xyr);
  *           fclose(fid); end
- * @endcode
+ * </code>
+ * </pre>
  * 
  * @author p.baniukiewicz
  *
@@ -77,7 +82,6 @@ public class DataLoader {
      * Return loaded data
      * 
      * @return loaded polygon as List<Point2d>
-     * @retval List<Vector2d>
      */
     public List<Point2d> getData() {
         return Vert;

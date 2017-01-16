@@ -62,9 +62,10 @@ public class Nest implements IQuimpSerialize {
     /**
      * Convert array of SegmentedShapeRoi to SnakeHandlers.
      * 
+     * Conversion within one SnakeHandler is stopped when there is defective Snake.
+     * 
      * @param roiArray First level stands for objects (SnakeHandlers(, second for Snakes within one
      *        chain
-     * @remarks Conversion within one SnakeHandler is stopped when there is defective Snake.
      */
     public void addHandlers(ArrayList<ArrayList<SegmentedShapeRoi>> roiArray) {
         LOGGER.trace("Adding " + roiArray.size() + "SnakeHandlers");

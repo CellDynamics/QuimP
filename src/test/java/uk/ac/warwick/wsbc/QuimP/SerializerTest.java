@@ -83,9 +83,12 @@ public class SerializerTest {
     }
 
     /**
-     * @test Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
-     * @pre missing important field
-     * @post exception thrown
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * 
+     * pre: missing important field
+     * 
+     * post: exception thrown
+     * 
      * @throws Exception
      */
     @Test(expected = JsonSyntaxException.class)
@@ -103,7 +106,8 @@ public class SerializerTest {
     }
 
     /**
-     * @test Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * 
      * @throws Exception
      */
     @Test
@@ -121,9 +125,12 @@ public class SerializerTest {
     }
 
     /**
-     * @test Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
-     * @pre empty fields in version
-     * @post exception
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * 
+     * pre: empty fields in version
+     * 
+     * post: exception
+     * 
      * @throws Exception
      */
     @Test(expected = JsonSyntaxException.class)
@@ -164,8 +171,10 @@ public class SerializerTest {
     /**
      * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
      * 
-     * @pre Extra data in json
-     * @post It is ignored
+     * pre: Extra data in json
+     * 
+     * post: It is ignored
+     * 
      * @throws Exception
      */
     @Test
@@ -185,8 +194,10 @@ public class SerializerTest {
     /**
      * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
      * 
-     * @pre Lack of data
-     * @post it is not initialized and has value from constructor
+     * pre: Lack of data
+     * 
+     * post: it is not initialized and has value from constructor
+     * 
      * @throws Exception
      */
     @Test

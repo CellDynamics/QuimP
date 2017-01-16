@@ -12,15 +12,28 @@ public interface IQuimpCorePlugin {
 
     // any change here should be reflected in
     // uk.ac.warwick.wsbc.QuimP.PluginFactory.getPluginType(File, String)
-    int GENERAL = 0; //!< Type of plugin not defined
-    int DOES_SNAKES = 1; //!< Plugin process snakes only
-    int CHANGE_SIZE = 32; //!< Plugin change size of input data
-    int MODIFY_INPUT = 64; //!< Plugin modify input data in place
+    /**
+     * Type of plugin not defined
+     */
+    int GENERAL = 0;
+    /**
+     * Plugin process snakes only
+     */
+    int DOES_SNAKES = 1;
+    /**
+     * Plugin change size of input data
+     */
+    int CHANGE_SIZE = 32;
+    /**
+     * Plugin modify input data in place
+     */
+    int MODIFY_INPUT = 64;
 
     /**
      * Provide basic information to QuimP about plugin.
      * 
-     * @warning It must return at least type of plugin
+     * It must return at least type of plugin
+     * 
      * @return Combination of flags specifying: -# type of plugin (obligatory) -# modification of
      *         input size (e.g. reduction of polygon points)
      */
@@ -33,9 +46,11 @@ public interface IQuimpCorePlugin {
      * Caller do not modify these values and only stores them as the were returned by
      * getPluginConfig() method.
      * 
-     * @remarks Numerical values should be passed as Double
-     * @warning setPluginConfig(ParamList) and getPluginConfig() should use the same convention of
-     *          key naming and parameters casting
+     * Numerical values should be passed as Double
+     * 
+     * setPluginConfig(ParamList) and getPluginConfig() should use the same convention of key naming
+     * and parameters casting
+     * 
      * @param par
      * @throws QuimpPluginException on problems with understanding parameters by plugin e.g. \b key
      *         is not understood or converting from \c String \b value to other type has not been

@@ -7,7 +7,8 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
 /**
  * Previous implementation of plotter.
- * @author 
+ * 
+ * @author tyson
  * 
  */
 @Deprecated

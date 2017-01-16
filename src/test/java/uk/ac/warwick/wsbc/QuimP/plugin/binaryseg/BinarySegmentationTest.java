@@ -107,7 +107,8 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check outline generation
+     * Check outline generation
+     * 
      * @throws Exception
      */
     @Test
@@ -118,8 +119,10 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check intersection
-     * @pre Slices do not overlap
+     * Check intersection
+     * 
+     * pre: Slices do not overlap
+     * 
      * @throws Exception
      */
     @Test
@@ -135,8 +138,10 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check intersection
-     * @pre Slices do overlap
+     * Check intersection
+     * 
+     * pre: Slices do overlap
+     * 
      * @throws Exception
      */
     @Test
@@ -152,8 +157,10 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check intersection for one Roi and Array of ROIs
-     * @pre One slice does overlap
+     * Check intersection for one Roi and Array of ROIs
+     * 
+     * pre: One slice does overlap
+     * 
      * @throws Exception
      */
     @Test
@@ -177,9 +184,12 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check intersection for one Roi and Array of ROIs
-     * @pre The same slice as on input (referenced)
-     * @post this slice correctly labeled
+     * Check intersection for one Roi and Array of ROIs
+     * 
+     * pre: The same slice as on input (referenced)
+     * 
+     * post: this slice correctly labelled
+     * 
      * @throws Exception
      */
     @Test
@@ -196,8 +206,10 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check intersection for one Roi and Array of ROIs
-     * @pre Slices do not overlap
+     * Check intersection for one Roi and Array of ROIs
+     * 
+     * pre: Slices do not overlap
+     * 
      * @throws Exception
      */
     @Test
@@ -223,8 +235,10 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check generated chains
-     * @pre Three objects on 5 frames
+     * Check generated chains
+     * 
+     * pre: Three objects on 5 frames
+     * 
      * @throws Exception
      */
     @Test
@@ -247,9 +261,12 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check generated chains
-     * @pre Three objects on 1-4 frames, 2 objects on 5th
-     * @post Three objects detected but one has shorter chain (frames 1-4)
+     * Check generated chains
+     * 
+     * pre: Three objects on 1-4 frames, 2 objects on 5th
+     * 
+     * post: Three objects detected but one has shorter chain (frames 1-4)
+     * 
      * @throws Exception
      */
     @Test
@@ -282,9 +299,12 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check generated chains
-     * @pre Three objects on 2-5 frames, 2 objects on 1st
-     * @post Three objects detected but one has shorter chain (frames 2-5)
+     * Check generated chains
+     * 
+     * pre: Three objects on 2-5 frames, 2 objects on 1st
+     * 
+     * post: Three objects detected but one has shorter chain (frames 2-5)
+     * 
      * @throws Exception
      */
     @Test
@@ -318,9 +338,12 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check generated chains
-     * @pre Three objects on frames 1,2,4 and 2 objects on 3,5
-     * @post 4 chains detected. Missing object breaks the chain
+     * Check generated chains
+     * 
+     * pre: Three objects on frames 1,2,4 and 2 objects on 3,5
+     * 
+     * post: 4 chains detected. Missing object breaks the chain
+     * 
      * @throws Exception
      */
     @Test
@@ -361,9 +384,12 @@ public class BinarySegmentationTest {
     }
 
     /**
-     * @test Check generated chains
-     * @pre only one slice on input
-     * @post Correct segmentation
+     * Check generated chains
+     * 
+     * pre: only one slice on input
+     * 
+     * post: Correct segmentation
+     * 
      * @throws Exception
      */
     @Test

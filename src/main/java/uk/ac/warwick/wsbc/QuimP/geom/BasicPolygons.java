@@ -30,10 +30,14 @@ public class BasicPolygons {
      * Calculates area of polygon.
      * 
      * Supports triangles, regular and irregular polygons, convex or concave polygons
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * Polygon can not intersect itself.
      * 
      * @param P Vertices of polygon in specified order
      * @return Area
-     * @warning Polygon can not intersect itself.
+     * 
      */
     public double getPolyArea(final List<? extends Tuple2d> P) {
         int i, j;

@@ -13,7 +13,8 @@ import ij.process.ImageProcessor;
 /**
  * Class implementing extra functionalities for ij.ImageProcessor
  *
- * @warning See extendImageBeforeRotation(double) for possible problems
+ * Check {@link #extendImageBeforeRotation(ImageProcessor, double)} for possible problems
+ * 
  * @author p.baniukiewicz
  */
 public class ImageProcessorPlus {
@@ -27,12 +28,14 @@ public class ImageProcessorPlus {
 
     /**
      * Add borders around image to prevent cropping during rotating.
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * Replaces original image and may not preserve all its attributes
      * 
-     * @warning Replaces original image and may not preserve all its attributes
      * @param ip ImageProcessor to be extended
      * @param angle Angle to be image rotated
-     * @return copy of \c ip extended to size that allows to rotate it by \c angle without clipping
-     * @retval ImageProcessor
+     * @return copy of ip extended to size that allows to rotate it by angle without clipping
      */
     public ImageProcessor extendImageBeforeRotation(ImageProcessor ip, double angle) {
         ImageProcessor ret;
@@ -84,14 +87,16 @@ public class ImageProcessorPlus {
 
     /**
      * Crop image.
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * Modifies current object
      * 
      * @param ip ImageProcessor to be cropped
      * @param luX Left upper corner \a x coordinate
      * @param luY Left upper corner \a y coordinate
      * @param width Width of clipped area
      * @param height Height of clipped area
-     * @remarks Modifies current object
-     * @retval ImageProcessor
      * @return Clipped image
      */
     public ImageProcessor crop(ImageProcessor ip, int luX, int luY, int width, int height) {
@@ -103,15 +108,17 @@ public class ImageProcessorPlus {
 
     /**
      * Crop image.
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * Modifies current object Designed to use with cooperation with
+     * extendImageBeforeRotation(ImageProcessor,double).
      * 
-     * Designed to use with cooperation with extendImageBeforeRotation(ImageProcessor,double).
      * Assumes that cropping area is centered in source image
      * 
      * @param ip ImageProcessor to be cropped
      * @param width Width of clipped area
      * @param height Height of clipped area
-     * @remarks Modifies current object
-     * @retval ImageProcessor
      * @return Clipped image
      */
     public ImageProcessor cropImageAfterRotation(ImageProcessor ip, int width, int height) {

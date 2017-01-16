@@ -8,8 +8,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.LinkedStringMap;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
 
 /**
- * List of parameters in <\a key,\a value> HashList, where both \a key and \a value
- * are java.lang.String and \a key is case insensitive.
+ * List of parameters in <key,value> HashList, where both key and value are java.lang.String and key
+ * is case insensitive.
  * 
  * @author p.baniukiewicz
  *
@@ -19,7 +19,8 @@ public class ParamList extends LinkedStringMap<String> {
     private static final long serialVersionUID = -8762132735734951785L;
 
     /**
-     * Copy constructor
+     * Copy constructor.
+     * 
      * @param src Source to copy
      */
     public ParamList(ParamList src) {
@@ -38,7 +39,7 @@ public class ParamList extends LinkedStringMap<String> {
     }
 
     /**
-     * Store Integer value in List. Key is not case sensitive
+     * Store Integer value in List. Key is not case sensitive.
      * 
      * @param key name of key
      * @param value to store
@@ -48,7 +49,7 @@ public class ParamList extends LinkedStringMap<String> {
     }
 
     /**
-     * Store Double value in List. Key is not case sensitive
+     * Store Double value in List. Key is not case sensitive.
      * 
      * @param key name of key
      * @param value to store
@@ -58,7 +59,7 @@ public class ParamList extends LinkedStringMap<String> {
     }
 
     /**
-     * Store String value in List. Key is not case sensitive
+     * Store String value in List. Key is not case sensitive.
      * 
      * @param key name of key
      * @param value to store
@@ -68,7 +69,7 @@ public class ParamList extends LinkedStringMap<String> {
     }
 
     /**
-     * Store Boolean value in List. Key is not case sensitive
+     * Store Boolean value in List. Key is not case sensitive.
      * 
      * @param key name of key
      * @param value to store
@@ -78,22 +79,21 @@ public class ParamList extends LinkedStringMap<String> {
     }
 
     /**
-     * Get Integer value from list associated with \c key. Key is not case
-     * sensitive
-     * @param key name of key
-     * @return associated value
-     * @remarks
+     * Get Integer value from list associated with \c key. Key is not case sensitive.
+     * 
      * For safety it take double and then converts it to integer. It helps with dealing with type
      * changing in QWindowBuilder. By default it keeps all in double and passed data returns in
      * double as well
+     * 
+     * @param key name of key
+     * @return associated value
      */
     public int getIntValue(String key) {
         return new Double(getDoubleValue(key)).intValue();
     }
 
     /**
-     * Get Double value from list associated with \c key. Key is not case
-     * sensitive
+     * Get Double value from list associated with \c key. Key is not case sensitive.
      * 
      * @param key name of key
      * @return associated value
@@ -103,8 +103,7 @@ public class ParamList extends LinkedStringMap<String> {
     }
 
     /**
-     * Get String value from list associated with \c key. Key is not case
-     * sensitive
+     * . Get String value from list associated with \c key. Key is not case sensitive
      * 
      * @param key name of key
      * @return associated value
@@ -114,8 +113,7 @@ public class ParamList extends LinkedStringMap<String> {
     }
 
     /**
-     * Get Boolean value from list associated with \c key. Key is not case
-     * sensitive
+     * Get Boolean value from list associated with \c key. Key is not case sensitive.
      * 
      * @param key name of key
      * @return associated value
@@ -125,13 +123,13 @@ public class ParamList extends LinkedStringMap<String> {
     }
 
     /**
-     * Get string associated with \c key and parse it to split according to 
-     * delimiter
+     * Get string associated with key and parse it to split according to delimiter.
+     * 
+     * May be used only when val under key can be parsed
      * 
      * @param key to be read
      * @return Split substrings or empty array in case of any error
      * @see StringParser
-     * @warning May be used only \c val under \c key can be parsed
      */
     public String[] getParsed(String key) {
         String val = get(key);

@@ -18,9 +18,9 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * Low level snake definition. Form snake from Node objects. Snake is defined by first \c head node.
  * Remaining nodes are in bidirectional linked list.
  * 
- * @remarks Node list may be modified externally but then method such as findNode(),
- *          updateNormales(), calcCentroid() should be called to update internal fields of Snake. If
- *          number of nodes changes it is recommended to create \b new object.
+ * Node list may be modified externally but then method such as findNode(), updateNormales(),
+ * calcCentroid() should be called to update internal fields of Snake. If number of nodes changes it
+ * is recommended to create \b new object.
  * 
  * @author rtyson
  *
@@ -28,7 +28,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 public class Snake extends Shape<Node> implements IQuimpSerialize {
     static final Logger LOGGER = LoggerFactory.getLogger(Snake.class.getName());
     /**
-     * \c true if snake is alive Changed during segmentation and user interaction
+     * true if snake is alive Changed during segmentation and user interaction
      */
     public boolean alive;
     /**
@@ -239,8 +239,11 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     /**
+     * Change current snakeID.
+     * 
+     * Should be used carefully.
+     * 
      * @param snakeID the snakeID to set
-     * @warning Should be used carefully
      */
     protected void setSnakeID(int snakeID) {
         this.snakeID = snakeID;

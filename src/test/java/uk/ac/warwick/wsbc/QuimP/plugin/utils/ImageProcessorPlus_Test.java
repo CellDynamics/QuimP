@@ -145,8 +145,10 @@ public class ImageProcessorPlus_Test {
     }
 
     /**
+     * Test of RectangleBox for square image and angle 0 deg for input vectors
+     * 
      * @throws Exception
-     * @test Test of RectangleBox for square image and angle 0 deg for input vectors
+     * 
      */
     @Test
     public void test_RectangleBoxVector_0s() throws Exception {

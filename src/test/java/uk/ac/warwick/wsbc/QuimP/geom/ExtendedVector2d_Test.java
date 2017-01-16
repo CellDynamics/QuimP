@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple testing class for ExtendedVector2d class
  * 
- * @remarks Will be removed in final version
- * @todo Remove this class in future
  * @author p.baniukiewicz
  *
  */
@@ -21,8 +19,9 @@ public class ExtendedVector2d_Test {
     static final Logger LOGGER = LoggerFactory.getLogger(ExtendedVector2d_Test.class.getName());
 
     /**
-     * @test test toString() method
-     * @post Content of List in log file
+     * test toString() method
+     * 
+     * post: Content of List in log file
      */
     @Test
     public void test_ToString() {
@@ -36,7 +35,7 @@ public class ExtendedVector2d_Test {
     }
 
     /**
-     * @test casting of {@link ExtendedVector2d} to javax.vecmath.Vector2d
+     * casting of {@link ExtendedVector2d} to javax.vecmath.Vector2d
      */
     @Test
     public void test_Casting() {

@@ -37,14 +37,12 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  * use case:
  * 
  * <pre>
- * {
- *     &#64;code
+ * <code>
  *     Serializer<SnakePluginList> s;
  *     s = new Serializer<>(boaState.snakePluginList, quimpInfo);
  *     s.setPretty(); // set pretty format s.save(sd.getDirectory() + sd.getFileName()); // save
  *     it s = null; // remove
- * 
- * }
+ * </code>
  * </pre>
  * 
  * There is option to skip call afterSerialzie() method on class restoring. To do so set
@@ -55,7 +53,6 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  * @param <T>
  * @see <a href=
  *      "link">http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson</a>
- * @see SerializerTest for examples of use
  * @see uk.ac.warwick.wsbc.QuimP.Serializer#registerInstanceCreator(Class, Object)
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
@@ -252,13 +249,17 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     /**
      * Performs pure dump of provided object without packing it into super class
      * 
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * This method does not call beforeSerialize(). It must be called explicitly before dumping
+     * 
+     * Can be used for saving already packed objects
+     * 
      * @param obj to dump
      * @param filename to be saved under
      * @param savePretty if \a true use pretty format
      * @throws FileNotFoundException when file can not be created
-     * @remarks Can be used for saving already packed objects
-     * @warning This method des not call beforeSerialize(). It must be called explicitly before
-     *          dumping
      */
     static void Dump(final Object obj, final File filename, boolean savePretty)
             throws FileNotFoundException {
@@ -292,10 +293,11 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * restore its state on uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.afterSerialize() call and those
      * parameters are passed in constructor.
      * 
-     * @param type Type of class
-     * @param typeAdapter Wrapped object builder that implements InstanceCreator interface. Example
-     *        of use:
-     * @code{class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {
+     * Example of use:
+     * 
+     * <pre>
+     * <code>
+     * class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {
      *             private int size; private PluginFactory pf; private List<Point2d> dt; private
      *             ViewUpdater vu;
      *
@@ -307,7 +309,12 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      *             Serializer<>(SnakePluginList.class);
      *             s.registerInstanceCreator(SnakePluginList.class, new
      *             SnakePluginListInstanceCreator(3, pluginFactory, null, null)); out =
-     *             s.fromString(json);}
+     *             s.fromString(json);
+     * </code>
+     * </pre>
+     * 
+     * @param type Type of class
+     * @param typeAdapter Wrapped object builder that implements InstanceCreator interface.
      * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#afterSerialize()
      * @see <a href=
      *      "GSon doc">https://github.com/google/gson/blob/master/UserGuide.md#TOC-InstanceCreator-for-a-Parameterized-Type</a>

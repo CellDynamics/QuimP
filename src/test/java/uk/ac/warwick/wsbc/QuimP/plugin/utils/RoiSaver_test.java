@@ -17,9 +17,11 @@ import org.scijava.vecmath.Point2d;
 public class RoiSaver_test {
 
     /**
-     * @test Test method for tools.images.filters.RoiSaver.saveROI(String, List<Vector2d>)
-     * @pre Simple polygon
-     * @post Image /tmp/test_SaveROI_case1.tif
+     * Test method for tools.images.filters.RoiSaver.saveROI(String, List<Vector2d>)
+     * 
+     * pre: Simple polygon
+     * 
+     * post: Image /tmp/test_SaveROI_case1.tif
      */
     @Test
     public void test_SaveROI_case1() {
@@ -31,9 +33,11 @@ public class RoiSaver_test {
     }
 
     /**
-     * @test Test method for tools.images.filters.RoiSaver.saveROI(String,List<Vector2d>)
-     * @pre Empty list
-     * @post Uniform \b red Image /tmp/test_SaveROI_case2.tif
+     * Test method for tools.images.filters.RoiSaver.saveROI(String,List<Vector2d>)
+     * 
+     * pre: Empty list
+     * 
+     * post: Uniform \b red Image /tmp/test_SaveROI_case2.tif
      */
     @Test
     public void test_SaveROI_case2() {
@@ -42,10 +46,12 @@ public class RoiSaver_test {
     }
 
     /**
-     * @test Test method for uk.ac.warwick.wsbc.tools.images.filters.RoiSaver.saveROI(String,
-     *       List<Vector2d>)
-     * @pre null pointer
-     * @post Uniform \b red Image /tmp/test_SaveROI_case3.tif
+     * Test method for uk.ac.warwick.wsbc.tools.images.filters.RoiSaver.saveROI(String,
+     * List<Vector2d>)
+     * 
+     * pre: null pointer
+     * 
+     * post: Uniform \b red Image /tmp/test_SaveROI_case3.tif
      */
     @Test
     public void test_SaveROI_case3() {

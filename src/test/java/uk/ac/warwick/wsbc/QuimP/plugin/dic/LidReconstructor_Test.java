@@ -41,8 +41,9 @@ public class LidReconstructor_Test {
     }
 
     /**
+     * May not detect changes done on image (e.g. rotation)
+     * 
      * @throws java.lang.Exception
-     * @warning May not detect changes done on image (e.g. rotation)
      */
     @After
     public void tearDown() throws Exception {
@@ -61,7 +62,7 @@ public class LidReconstructor_Test {
 
     /**
      * Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves output
-     * image at \c /tmp/testDicReconstructionLidMatrix.tif
+     * image at /tmp/testDicReconstructionLidMatrix.tif
      * 
      * Input image is square Output image should be properly reconstructed and have correct size of
      * input image

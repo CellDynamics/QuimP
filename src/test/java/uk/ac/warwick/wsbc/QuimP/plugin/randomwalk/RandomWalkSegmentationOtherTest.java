@@ -26,6 +26,14 @@ import ij.process.ImageProcessor;
  * 
  * See: src/test/resources/Matlab/RW_java_tests.m
  * 
+ * See: src/test/resources/Matlab/RW_java_tests.m This is source of good cases for segmentation
+ * 
+ * Comparator for results from debug from
+ * uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationTest
+ * 
+ * See: src/test/resources/Matlab/java_output_ver.m
+ *
+ * 
  * @author p.baniukiewicz
  * @see <a href="./examples.html">Examples</a>
  */
@@ -99,9 +107,11 @@ public class RandomWalkSegmentationOtherTest {
     }
 
     /**
-     * @test Test of main runner
-     * @post segmented image comparable to %% data from Repos/Prot_counting/fromMail - testcase for
-     *       java
+     * Test of main runner
+     * 
+     * post: segmented image comparable to %% data from Repos/Prot_counting/fromMail - testcase for
+     * java
+     * 
      * @throws Exception
      */
     @Test
@@ -113,21 +123,22 @@ public class RandomWalkSegmentationOtherTest {
         // number of seed correct with matlab file
         ImageProcessor ret = obj.run(seeds);
         ImagePlus results = new ImagePlus("cmp", ret);
-        /**
+        /*
          * Compare to results from
          * /home/p.baniukiewicz/Documents/Repos/QUIMP-Matlab/Matlab/Segmentation/main.m section %%
          * data from Repos/Prot_counting/fromMail - testcase for java small with this file:
          * 
-         * @code plotdiff(imread('/tmp/testRun_cmp.tif'),outj)
-         * @endcode
+         * plotdiff(imread('/tmp/testRun_cmp.tif'),outj)
          */
         IJ.saveAsTiff(results, "/tmp/testRun_cmp.tif");
     }
 
     /**
-     * @test Test of main runner
-     * @post segmented image comparable to %% data from Repos/Prot_counting/fromMail - testcase for
-     *       java
+     * Test of main runner
+     * 
+     * post: segmented image comparable to %% data from Repos/Prot_counting/fromMail - testcase for
+     * java
+     * 
      * @throws Exception
      */
     @Test
@@ -144,16 +155,20 @@ public class RandomWalkSegmentationOtherTest {
          * /home/p.baniukiewicz/Documents/Repos/QUIMP-Matlab/Matlab/Segmentation/main.m section %%
          * data from Repos/Prot_counting/fromMail - testcase for java big with this file:
          * 
-         * @code plotdiff(imread('/tmp/testRun_cmp2.tif'),out)
-         * @endcode
+         * <code>
+         * plotdiff(imread('/tmp/testRun_cmp2.tif'),out)
+         * </code>
          */
         IJ.saveAsTiff(results, "/tmp/testRun_cmp2.tif");
     }
 
     /**
-     * @test Test of main runner
-     * @pre wrong colors used for seeding
-     * @post Exception
+     * Test of main runner
+     * 
+     * pre: wrong colors used for seeding
+     * 
+     * post: Exception
+     * 
      * @throws Exception
      */
     @Test(expected = RandomWalkException.class)
@@ -168,10 +183,13 @@ public class RandomWalkSegmentationOtherTest {
     }
 
     /**
-     * @test Test precomputed values
-     * @pre outputs are saved as tiff
-     * @post results are compared with matlab \a java_output_ver.m using breakstop on \a
-     *       rw_laplace4_java_base.m
+     * Test precomputed values
+     * 
+     * pre: outputs are saved as tiff
+     * 
+     * post: results are compared with matlab \a java_output_ver.m using breakstop on \a
+     * rw_laplace4_java_base.m
+     * 
      * @throws Exception
      */
     @Test
@@ -198,7 +216,7 @@ public class RandomWalkSegmentationOtherTest {
     }
 
     /**
-     * @test Export to RealMatrix and then to tiff
+     * Export to RealMatrix and then to tiff
      */
     @Test
     public void testConversion() {
@@ -212,11 +230,3 @@ public class RandomWalkSegmentationOtherTest {
     }
 
 }
-
-/**
- * @example src/test/resources/Matlab/RW_java_tests.m This is source of good cases for segmentation
- * 
- *          Comparator for results from debug from
- *          uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationTest
- * @include src/test/resources/Matlab/java_output_ver.m
- */

@@ -33,11 +33,12 @@ public class PropertyReader {
     /**
      * Read property from property file for QuimP package.
      * 
+     * not static because of getClass().Property file should be in the same package as this class or
+     * full path should be provided otherwise.
+     * 
      * @param propFileName property file name
      * @param propKey name of the key
      * @return value for propKey
-     * @remarks not static because of getClass().Property file should be in the same package as this
-     *          class or full path should be provided otherwise.
      * @see <a href=
      *      "link">http://stackoverflow.com/questions/333363/loading-a-properties-file-from-java-package</a>
      * @see #readProperty(Class, String, String, String)

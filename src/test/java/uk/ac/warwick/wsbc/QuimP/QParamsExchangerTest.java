@@ -24,19 +24,22 @@ import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
  */
 public class QParamsExchangerTest {
     /**
-     * Accessor to private fields
+     * Accessor to private fields.
      * 
      * Example of use:
      * 
-     * @code{.java} Snake s = new Snake(pr, 1); int ret = (int)
-     *              accessPrivate("findNearestToBoundingBox", testobj, new Object[] { s }, new
-     *              Class[] { Snake.class });
-     * @endcode
+     * <pre>
+     * <code>
+     *     Snake s = new Snake(pr, 1);
+     *     int ret = (int) accessPrivate("findNearestToBoundingBox", testobj, new Object[] { s },
+     *             new Class[] { Snake.class });
+     * </code>
+     * </pre>
      * 
      * @param name Name of private method
      * @param obj Reference to object
      * @param param Array of parameters if any
-     * @param paramtype Array of classes of \c param
+     * @param paramtype Array of classes of param
      * @return of private method
      * @throws SecurityException
      * @throws NoSuchMethodException
@@ -78,9 +81,11 @@ public class QParamsExchangerTest {
     }
 
     /**
-     * @test Compare read parameters from Stack_cut.QCONF
-     * @pre Two snakes from 1 to 30 frame, on 10th frame changed segmentation parameters, on 20th
-     *      selected filter
+     * Compare read parameters from Stack_cut.QCONF
+     * 
+     * pre: Two snakes from 1 to 30 frame, on 10th frame changed segmentation parameters, on 20th
+     * selected filter
+     * 
      * @throws Exception
      */
     @Test
@@ -105,9 +110,12 @@ public class QParamsExchangerTest {
     }
 
     /**
-     * @test no file
-     * @pre there is no file
-     * @post QuimpException
+     * no file
+     * 
+     * pre: there is no file
+     * 
+     * post: QuimpException
+     * 
      * @throws Exception
      */
     @Test(expected = QuimpException.class)

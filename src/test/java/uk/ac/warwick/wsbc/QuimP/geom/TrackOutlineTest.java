@@ -31,7 +31,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 public class TrackOutlineTest {
 
     /**
-     * Accessor to private field
+     * Accessor to private field.
      * 
      * @param name Name of private field
      * @param obj Reference to object
@@ -92,8 +92,10 @@ public class TrackOutlineTest {
     }
 
     /**
-     * @test testPrepare
-     * @post Generate filtered image
+     * testPrepare
+     * 
+     * post: Generate filtered image
+     * 
      * @throws Exception
      */
     @Test
@@ -105,8 +107,10 @@ public class TrackOutlineTest {
     }
 
     /**
-     * @test testGetOutlines
-     * @post Finds all outlines in image and saves them to separate files
+     * testGetOutlines
+     * 
+     * post: Finds all outlines in image and saves them to separate files
+     * 
      * @throws Exception
      */
     @Test
@@ -122,8 +126,10 @@ public class TrackOutlineTest {
     }
 
     /**
-     * @test testGetOutlines_1
-     * @post Finds all outlines in image with smoothing
+     * testGetOutlines_1
+     * 
+     * post: Finds all outlines in image with smoothing
+     * 
      * @throws Exception
      */
     @Test
@@ -134,8 +140,10 @@ public class TrackOutlineTest {
     }
 
     /**
-     * @test testGetOutlines_2
-     * @post Finds all outlines in image with smoothing and step 6
+     * testGetOutlines_2
+     * 
+     * post: Finds all outlines in image with smoothing and step 6
+     * 
      * @throws Exception
      */
     @Test
@@ -146,9 +154,10 @@ public class TrackOutlineTest {
     }
 
     /**
-     * @test Validates what is returned from ShapeRoi.and
-     * @post operation ret.get(1).and(new ShapeRoi(pr)); modifies ret.get(1)
-     * @post If there is no intersection it return shape wit 0 width/height
+     * Validates what is returned from ShapeRoi.and
+     * 
+     * post: operation ret.get(1).and(new ShapeRoi(pr)); modifies ret.get(1) If there is no
+     * intersection it return shape wit 0 width/height
      */
     @Test
     public void testIntersection() {

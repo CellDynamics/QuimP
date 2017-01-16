@@ -51,44 +51,36 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * required which is the string passed as first dimension of \c def definition passed to to
  * BuildWindow method. Below code shows how to change property of control
  * 
- * @code{.java} String key = "paramname"; // case insensitive JSpinner comp = (JSpinner)
- *              ui.get(key); // get control using its name
- *              comp.getEditor()).getTextField().setColumns(5);
- * @endcode
+ * <pre>
+ * <code>
+ * String key = "paramname"; // case insensitive JSpinner comp = (JSpinner)
+ * ui.get(key); // get control using its name
+ * comp.getEditor()).getTextField().setColumns(5);
+ * </code>
+ * </pre>
  * 
- *          The basic usage pattern is as follows:
+ * <p>
+ * <b>Warning</b>
+ * <p>
+ * UI type as JSpinner keeps data in double format even in values passed through by
+ * setValues(ParamList) are integer (ParamList keeps data as String). Therefore getValues can return
+ * this list with the same data but in double syntax (5 -> 5.0). Any try of convention of "5.0" to
+ * integer value will cause NumberFormatException. To avoid this problem use
+ * QuimP.plugin.ParamList.getIntValue(String) from ParamList of treat all strings in ParamList as
+ * Double.
  * 
- * @msc hscale="1"; Caller,QWindowBuilder,AWTWindow; Caller=>QWindowBuilder
- *      [label="BuildWindow(..)"]; Caller=>QWindowBuilder [label="ShowWindow(true)"];
- *      QWindowBuilder->AWTWindow [label="Show AWT window"]; --- [label="Window is displayed"];
- *      Caller=>QWindowBuilder [label="setValues(..)"]; QWindowBuilder->AWTWindow [label="update
- *      UI"]; Caller=>QWindowBuilder [label="getValues()"]; QWindowBuilder->AWTWindow [label="ask
- *      for values"]; AWTWindow>>QWindowBuilder [label="ParamList"]; Caller<<QWindowBuilder
- *      [label="UI values"]; --- [label="Ask for one value associated with name"];
- *      Caller=>QWindowBuilder [label="getDoublefromUI(name)"]; QWindowBuilder=>QWindowBuilder
- *      [label="getVales()"]; QWindowBuilder=>QWindowBuilder [label="find name in ParamList"];
- *      Caller<<QWindowBuilder [label="value"];
- * @endmsc
+ * Methods getValues() and setValues() should be used by class extending QWindowBuilder for setting
+ * and achieving parameters from GUI. Note that parameters in UIs are validated only when they
+ * become out of focus. Until cursor is in UI its value is not updated internally, thus getValues()
+ * returns its old snapshot.
  * 
- *         Methods getValues() and setValues() should be used by class extending QWindowBuilder for
- *         setting and achieving parameters from GUI. Note that parameters in UIs are validated only
- *         when they become out of focus. Until cursor is in UI its value is not updated internally,
- *         thus getValues() returns its old snapshot.
+ * RESERVED_KEYS is list of reserved keys that are not UI elements. They are processed in different
+ * way.
  * 
- *         \c RESERVED_KEYS is list of reserved keys that are not UI elements. They are processed in
- *         different way.
+ * Other behaviour: By default on close or when user clicked Cancel window is hided only, not
+ * destroyed. This is due to preservation of all settings. Lifetime of window depends on QuimP
  * 
- *         Other behavior: By default on close or when user clicked Cancel window is hided only, not
- *         destroyed. This is due to preservation of all settings. Lifetime of window depends on
- *         QuimP
- * 
- * @warning UI type as JSpinner keeps data in double format even in values passed through by
- *          setValues(ParamList) are integer (ParamList keeps data as String). Therefore getValues
- *          can return this list with the same data but in double syntax (5 -> 5.0). Any try of
- *          convention of "5.0" to integer value will cause NumberFormatException. To avoid this
- *          problem use QuimP.plugin.ParamList.getIntValue(String) from ParamList of treat all
- *          strings in ParamList as Double.
- * @remarks All parameters passed to and from QWindowBuilder as ParamList are encoded as \b String
+ * All parameters passed to and from QWindowBuilder as ParamList are encoded as \b String
  * 
  * @author p.baniukiewicz
  */
@@ -175,7 +167,9 @@ public abstract class QWindowBuilder {
      * value of given Key in accordance with list above. The correct order of sub-parameters must be
      * preserved. Exemplary configuration is as follows:
      * 
-     * @code{.java} def1 = new ParamList(); def1.put("Name", "test"); def1.put("wIndow", "spinner,
+     * <pre>
+     * <code>
+     * def1 = new ParamList(); def1.put("Name", "test"); def1.put("wIndow", "spinner,
      *              -0.5, 0.5, 0.1, 0"); def1.put("smootH", "spinner, -1, 10, 1, -1");
      *              def1.put("Load Mask", "button, Load_mask"); def1.put("Getopened",
      *              "choice,NONE"); def1.put("help","<font size=\"3\">
@@ -199,23 +193,30 @@ public abstract class QWindowBuilder {
      *              <strong>smoothing</strong>&nbsp;- add extra Spline interpolation to the shape
      *              </p>
      *              </font>");
-     * @endcode
+     * </code>
+     * </pre>
      * 
-     *          By default window is not visible yet. User must call ShowWindow or ToggleWindow. The
-     *          \b Apply button does nothing. It is only to refocus after change of values in
-     *          spinners. They are not updated until unfocused. User can overwrite this behavior in
-     *          his own class derived from QWindowBuilder
+     * By default window is not visible yet. User must call ShowWindow or ToggleWindow. The \b Apply
+     * button does nothing. It is only to refocus after change of values in spinners. They are not
+     * updated until unfocused. User can overwrite this behavior in his own class derived from
+     * QWindowBuilder
      * 
-     *          This method can be overrode in implementing class that allows for e.g. setting size
-     *          of the window or add listeners:
-     * @code{.java} public void buildWindow(ParamList def) { super.buildWindow(def); // add
+     * This method can be overrode in implementing class that allows for e.g. setting size of the
+     * window or add listeners:
+     * 
+     * <pre>
+     * <code>
+     * public void buildWindow(ParamList def) { super.buildWindow(def); // add
      *              preffered size to this window pluginWnd.setPreferredSize(new Dimension(300,
      *              450)); pluginWnd.pack(); pluginWnd.setVisible(true);
      *              pluginWnd.addWindowListener(new myWindowAdapter()); // close not hide ((JButton)
      *              ui.get("Load Mask")).addActionListener(this); applyB.addActionListener(this); }
-     * @endcode
+     * </code>
+     * </pre>
+     * 
+     * Throw IllegalArgumentException or other unchecked exceptions on wrong syntax of \c def
+     * 
      * @param def Configuration as described
-     * @throw IllegalArgumentException or other unchecked exceptions on wrong syntax of \c def
      */
     public void buildWindow(final ParamList def) {
         if (def.size() < 2)
@@ -512,9 +513,8 @@ public abstract class QWindowBuilder {
      * Value is retrieved from ui element related to given \b key. Relation between keys and ui
      * elements is defined by user in configuration list provided to buildWindow(final ParamList).
      * 
-     * @remarks The key must be defined and exists in that list.
-     * @remarks In case of wrong conversion it may be exception thrown. User is responsible to call
-     *          this method for proper key.
+     * The key must be defined and exists in that list. In case of wrong conversion it may be
+     * exception thrown. User is responsible to call this method for proper key.
      * 
      * @param key Key to be read from configuration list, case insensitive
      * @return integer representation of value under \c key

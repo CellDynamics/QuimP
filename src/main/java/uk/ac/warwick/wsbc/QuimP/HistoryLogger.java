@@ -84,9 +84,9 @@ public class HistoryLogger implements WindowListener {
      * 
      * @param m General message to be included in log
      * @param bs BOA state machine object
-     * @todo TODO This method should accept more detailed BOA state (e.g. all segm. params)
      */
     public void addEntry(String m, BOAState bs) {
+        // TODO This method should accept more detailed BOA state (e.g. all segm. params)
         if (historyWnd.isVisible()) {
             if (bs == null)
                 return;
@@ -180,9 +180,9 @@ class LogEntry implements IQuimpSerialize {
      * @param counter number of log entry
      * @param action description of action
      * @param bs BOA state machine
-     * @todo TODO replace with snakePluginLists (beforeSerialize will not be called then)
      */
     public LogEntry(int counter, String action, BOAState bs) {
+        // TODO replace with snakePluginLists (beforeSerialize will not be called then)
         super();
         this.id = counter;
         this.action = action;

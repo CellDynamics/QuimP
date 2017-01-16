@@ -17,8 +17,10 @@ public class PropertyReaderTest {
     static final Logger LOGGER = LoggerFactory.getLogger(PropertyReaderTest.class.getName());
 
     /**
-     * @test read property and display it
-     * @post value of key displayed
+     * read property and display it
+     * 
+     * Post: value of key displayed
+     * 
      * @throws Exception
      */
     @Test

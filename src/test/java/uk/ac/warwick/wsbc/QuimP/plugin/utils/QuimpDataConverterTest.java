@@ -55,8 +55,10 @@ public class QuimpDataConverterTest {
     }
 
     /**
-     * @test testConversion_1
-     * @pre list on input
+     * testConversion_1
+     * 
+     * pre: list on input
+     * 
      * @throws Exception
      */
     @Test
@@ -78,8 +80,10 @@ public class QuimpDataConverterTest {
     }
 
     /**
-     * @test testConversion_2
-     * @pre XY on input
+     * testConversion_2
+     * 
+     * pre: XY on input
+     * 
      * @throws Exception
      */
     @Test
@@ -101,8 +105,10 @@ public class QuimpDataConverterTest {
     }
 
     /**
-     * @test testConversion_3
-     * @pre snake on input
+     * testConversion_3
+     * 
+     * pre: snake on input
+     * 
      * @throws Exception
      */
     @Test
@@ -124,8 +130,10 @@ public class QuimpDataConverterTest {
     }
 
     /**
-     * @test testConversion_4
-     * @pre snake null on input
+     * testConversion_4
+     * 
+     * pre: snake null on input
+     * 
      * @throws Exception
      */
     @Test
@@ -140,8 +148,10 @@ public class QuimpDataConverterTest {
     }
 
     /**
-     * @test testConversion_5
-     * @pre list null on input
+     * testConversion_5
+     * 
+     * pre: list null on input
+     * 
      * @throws Exception
      */
     @Test
@@ -156,8 +166,10 @@ public class QuimpDataConverterTest {
     }
 
     /**
-     * @test testConversion_6
-     * @pre list o len on input
+     * testConversion_6
+     * 
+     * pre: list o len on input
+     * 
      * @throws Exception
      */
     @Test

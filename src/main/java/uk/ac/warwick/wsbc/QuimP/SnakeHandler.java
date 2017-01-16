@@ -31,18 +31,33 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  */
 public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize {
     static final Logger LOGGER = LoggerFactory.getLogger(SnakeHandler.class.getName());
-    private transient Roi roi; // <! initial ROI, not stored but rebuilt from snake on load
-    private Snake liveSnake; // <! initial snake being currently processed */
-    private Snake[] finalSnakes; //!< series of snakes, result of cell segm. and plugin processing*/
-    private Snake[] segSnakes; //!< series of snakes, result of cell segmentation only  */
-    private int ID; //!< ID of Snakes stored in this SnakeHandler */
+    /**
+     * initial ROI, not stored but rebuilt from snake on load
+     */
+    private transient Roi roi;
+    /**
+     * initial snake being currently processed
+     */
+    private Snake liveSnake;
+    /**
+     * series of snakes, result of cell segm. and plugin processing
+     */
+    private Snake[] finalSnakes;
+    /**
+     * series of snakes, result of cell segmentation only
+     */
+    private Snake[] segSnakes;
+    /**
+     * ID of Snakes stored in this SnakeHandler
+     */
+    private int ID;
 
     public SnakeHandler() {
         // endFrame = BOA_.qState.boap.FRAMES;
     }
 
     /**
-     * Constructor of SnakeHandler. Stores ROI with object for segmentation
+     * Constructor of SnakeHandler. Stores ROI with object for segmentation.
      * 
      * @param r ROI with selected object
      * @param frame Current frame for which the ROI is taken
@@ -376,10 +391,11 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     /**
      * Read Snake from file
      *
+     * May not be compatible wit old version due to changes in Snake constructor.
+     *
      * @param inFile
      * @return value of 1
      * @throws Exception
-     * @warning May not be compatible wit old version due to changes in Snake constructor.
      * @see <a href="link">uk.ac.warwick.wsbc.QuimP.OutlineHandler.readOutlines(File)</a>
      */
     @Deprecated

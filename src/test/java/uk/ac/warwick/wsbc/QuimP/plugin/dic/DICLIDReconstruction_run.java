@@ -16,8 +16,7 @@ public class DICLIDReconstruction_run {
 
     /**
      * @param args
-     * @throws InterruptedException
-     * @test Gui checker for DICLIDReconstruction
+     * @throws InterruptedException Gui checker for DICLIDReconstruction
      */
     public static void main(String[] args) throws InterruptedException {
         ImageJ ij = new ImageJ();

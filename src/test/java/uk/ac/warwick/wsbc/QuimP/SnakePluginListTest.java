@@ -43,7 +43,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 public class SnakePluginListTest {
 
     /**
-     * Accessor to private fields
+     * Accessor to private fields.
      * 
      * @param name Name of private method
      * @param ref Object
@@ -509,7 +509,8 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Try to load config where is more than one json structure
+     * Try to load config where is more than one json structure
+     * 
      * @throws QuimpPluginException
      */
     @Test
@@ -549,7 +550,8 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Only one plugin in middle
+     * Only one plugin in middle
+     * 
      * @throws QuimpPluginException
      */
     @Test
@@ -700,9 +702,11 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of loading plugin config with wrong version
-     * @pre Incorrect version
-     * @post Plugin loaded with message
+     * Test of loading plugin config with wrong version
+     * 
+     * pre: Incorrect version
+     * 
+     * post: Plugin loaded with message
      * 
      * @throws IOException
      * @throws QuimpPluginException
@@ -738,9 +742,11 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of loading plugin config with wrong version
-     * @pre Incorrect version
-     * @post Plugin loaded with message
+     * Test of loading plugin config with wrong version
+     * 
+     * pre: Incorrect version
+     * 
+     * post: Plugin loaded with message
      * 
      * @throws Exception
      */
@@ -770,11 +776,15 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of loading incompatibile config
-     * @pre Incompatibile config
-     * @post Plugin loaded but config not restored
-     * @warning This depends on plugin configuration. Wrong config is detected by exception thrown
-     *          from setPluginConfig() from IQuimpPlugin
+     * Test of loading incompatibile config
+     * 
+     * This depends on plugin configuration. Wrong config is detected by exception thrown from
+     * setPluginConfig() from IQuimpPlugin
+     * 
+     * pre: Incompatibile config
+     * 
+     * post: Plugin loaded but config not restored
+     * 
      * @throws IOException
      * @throws QuimpPluginException
      */
@@ -851,10 +861,14 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of loading incompatibile config for plugin numbers
-     * @pre Less plugins
-     * @post List is adjusted
-     * @warning This situation must be detected on load and reported
+     * Test of loading incompatible config for plugin numbers
+     * 
+     * This situation must be detected on load and reported
+     * 
+     * pre: Less plugins
+     * 
+     * post: List is adjusted
+     * 
      * @throws IOException
      * @throws QuimpPluginException
      */
@@ -887,9 +901,12 @@ public class SnakePluginListTest {
     }
 
     /**
-     * @test Test of loading incompatibile config - empty slot
-     * @pre Empty slot
-     * @post Correct order of plugins
+     * Test of loading incompatible config - empty slot
+     * 
+     * pre: Empty slot
+     * 
+     * post: Correct order of plugins
+     * 
      * @throws IOException
      * @throws QuimpPluginException
      */

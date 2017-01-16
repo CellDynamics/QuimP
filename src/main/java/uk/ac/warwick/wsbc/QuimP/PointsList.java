@@ -236,8 +236,12 @@ public abstract class PointsList<T extends PointsList<T>> {
     /**
      * Set head marker to current node.
      * 
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * Only one Node in Snake can be head
+     * 
      * @param t true if current node is head, false otherwise
-     * @warning Only one Node in Snake can be head
      * @see uk.ac.warwick.wsbc.QuimP.Snake#setNewHead(int)
      * @see uk.ac.warwick.wsbc.QuimP.Snake
      */

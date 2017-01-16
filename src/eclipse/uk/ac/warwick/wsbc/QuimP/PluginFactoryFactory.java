@@ -23,8 +23,12 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
  * All plugins must be added to quimp build path as source reference. getPluginFactory(String)
  * should be also filled.
  *
- * @warning This class is related to pom.xml as well. Notice that compilation will use current
- *          Working Directory state for every plugin
+ * <p>
+ * <b>Warning</b>
+ * <p>
+ * This class is related to pom.xml as well. Notice that compilation will use current Working
+ * Directory state for every plugin
+ * 
  * @author p.baniukiewicz
  *
  */

@@ -185,10 +185,8 @@ public class ExtendedVector2d extends Vector2d {
      * @param nA2
      * @param nB1
      * @param nB2
-     * @return
-     * @see #lineIntersectionOLD()
+     * @return line intersection point
      */
-    @SuppressWarnings("javadoc")
     @Deprecated
     public static ExtendedVector2d lineIntersectionOLD2(ExtendedVector2d nA1, ExtendedVector2d nA2,
             ExtendedVector2d nB1, ExtendedVector2d nB2) {

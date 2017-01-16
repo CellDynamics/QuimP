@@ -243,24 +243,28 @@ public class QParamsQconf extends QParams {
         super.writeParams();
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
+     * In old way this was related always to loaded file that was separate for every snake. In new
+     * way this field should not exist stand alone
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getStartFrame()
-     * @warning In old way this was related always to loaded file that was separate for every snake.
-     *          In new way this field should not exist stand alone
+     * 
      */
     @Override
     public int getStartFrame() {
         return super.getStartFrame();
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
+     * In old way this was related always to loaded file that was separate for every snake. In new
+     * way this field should not exist stand alone
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#setStartFrame(int)
-     * @warning In old way this was related always to loaded file that was separate for every snake.
-     *          In new way this field should not exist stand alone
+     * 
      */
     @Override
     public void setStartFrame(int startFrame) {
@@ -269,24 +273,26 @@ public class QParamsQconf extends QParams {
                 startFrame;
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
+     * In old way this was related always to loaded file that was separate for every snake. In new
+     * way this field should not exist stand alone
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getEndFrame()
-     * @warning In old way this was related always to loaded file that was separate for every snake.
-     *          In new way this field should not exist stand alone
      */
     @Override
     public int getEndFrame() {
         return super.getEndFrame();
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
+     * In old way this was related always to loaded file that was separate for every snake. In new
+     * way this field should not exist stand alone
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#setEndFrame(int)
-     * @warning In old way this was related always to loaded file that was separate for every snake.
-     *          In new way this field should not exist stand alone
      */
     @Override
     public void setEndFrame(int endFrame) {
@@ -294,7 +300,7 @@ public class QParamsQconf extends QParams {
         getLoadedDataContainer().getBOAState().nest.getHandler(currentHandler).endFrame = endFrame;
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getImageScale()
@@ -304,7 +310,7 @@ public class QParamsQconf extends QParams {
         return super.getImageScale();
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#setImageScale(double)
@@ -315,7 +321,7 @@ public class QParamsQconf extends QParams {
         super.setImageScale(imageScale);
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#getFrameInterval()
@@ -325,7 +331,7 @@ public class QParamsQconf extends QParams {
         return super.getFrameInterval();
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * 
      * @see uk.ac.warwick.wsbc.QuimP.QParams#setFrameInterval(double)
@@ -440,8 +446,7 @@ public class QParamsQconf extends QParams {
  * This method is not necessary now because one does not want to restore full plugin state. Other
  * data do not need any additional operations. (
  * 
- * @warning currently not used as loaded BOAState must be deserialized to restore Snakes from
- *          Elements arrays
+ * Currently not used as loaded BOAState must be deserialized to restore Snakes from Elements arrays
  * 
  * @author p.baniukiewicz
  *

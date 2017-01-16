@@ -187,8 +187,8 @@ public abstract class QconfSupporter {
      * <p>
      * 
      * @return <tt>true</tt> always for maintaining compatibility with
-     *         {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Q_Analysis#validateQconf()} and
-     *         {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping#validateQconf()}
+     *         uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.Q_Analysis#validateQconf() and
+     *         uk.ac.warwick.wsbc.QuimP.plugin.ecmm.ECMM_Mapping#validateQconf()
      * 
      * @throws QuimpException When there is no ECMM or Q Analysis data in file
      */

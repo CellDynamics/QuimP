@@ -28,8 +28,9 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 /**
  * Perform element-wise multiplication by value (.*val in Matlab).
  * 
+ * Done in-place
+ * 
  * @author p.baniukiewicz
- * @remarks Done in-place
  */
 class MatrixElementMultiply implements RealMatrixChangingVisitor {
 
@@ -66,8 +67,9 @@ class MatrixElementMultiply implements RealMatrixChangingVisitor {
 /**
  * Perform element-wise exp
  * 
+ * Done in-place
+ * 
  * @author p.baniukiewicz
- * @remarks Done in-place
  */
 class MatrixElementExp implements RealMatrixChangingVisitor {
 
@@ -91,8 +93,9 @@ class MatrixElementExp implements RealMatrixChangingVisitor {
 /**
  * Perform element-wise power (.^2 in Matlab) and then divide by val.
  * 
+ * Done in-place
+ * 
  * @author p.baniukiewicz
- * @remarks Done in-place
  */
 class MatrixElementPowerDiv implements RealMatrixChangingVisitor {
 
@@ -123,8 +126,9 @@ class MatrixElementPowerDiv implements RealMatrixChangingVisitor {
 /**
  * Perform element-wise power (.^2 in Matlab).
  * 
+ * Done in-place
+ * 
  * @author p.baniukiewicz
- * @remarks Done in-place
  */
 class MatrixElementPower implements RealMatrixChangingVisitor {
 
@@ -700,8 +704,8 @@ public class RandomWalkSegmentation {
      * @param meanseed mean values of image intensities for FG and BG. Calculated by
      *        {@link #getMeanSeed(Map)}. Can be provided separately.
      * @param params Parameters
-     * @return Computed probabilities for background and foreground
-     * @retval RealMatrix[2], RealMatrix[FOREGROUND] and RealMatrix[BACKGROUND]
+     * @return Computed probabilities for background and foreground, RealMatrix[2],
+     *         RealMatrix[FOREGROUND] and RealMatrix[BACKGROUND]
      */
     protected RealMatrix[] solver(RealMatrix image, Map<Integer, List<Point>> seeds,
             RealMatrix[] gradients, double[] meanseed, Params params) {
@@ -848,9 +852,9 @@ public class RandomWalkSegmentation {
      * @param diffI normalized squared differences to mean seed intensities
      * @param grad2 normalized the squared gradients by the maximum gradient
      * @return wr_fg = exp(P.alpha*diffI_fg+P.beta*G.gradright2);
-     * @todo optimize this part, see matlab code, products are the same
      */
     private RealMatrix computeweights(RealMatrix diffI, RealMatrix grad2) {
+        // TODO optimize this part, see matlab code, products are the same
         double alpha = params.alpha;
         double beta = params.beta;
         double[][] diffI2d;
@@ -878,9 +882,13 @@ public class RandomWalkSegmentation {
      * 
      * Only in-place multiplication and minimu of result is done here
      * 
-     * @code drl2 = min ( min(min (wr_fg.*avgwx_fg)) , min(min (wl_fg.*avgwx_fg)) ); dtb2 = min (
+     * <pre>
+     * <code>
+     * drl2 = min ( min(min (wr_fg.*avgwx_fg)) , min(min (wl_fg.*avgwx_fg)) ); dtb2 = min (
      *       min(min (wt_fg.*avgwy_fg)) , min(min (wb_fg.*avgwy_fg)) ); D=0.25*min(drl2,dtb2);
-     * @endcode
+     * </code>
+     * </pre>
+     * 
      * @param w__fg
      * @param avgw__fg
      * @return min(min (w__fg.*avgw__fg))
@@ -907,12 +915,16 @@ public class RandomWalkSegmentation {
     }
 
     /**
-     * Set values from \a val on indexes \a ind in array \a in
+     * Set values from val on indexes ind in array in
+     * 
+     * <p>
+     * <b>Warning</b>
+     * <p>
+     * modify in
      * 
      * @param in Input matrix. Will be modified
      * @param ind List of indexes
      * @param val List of values, length must be the same as \a ind or 1
-     * @warning modify \a in
      */
     protected void setValues(RealMatrix in, List<Point> ind, ArrayRealVector val) {
         if (ind.size() != val.getDimension() & val.getDimension() != 1)

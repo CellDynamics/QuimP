@@ -66,8 +66,10 @@ public class RandomWalkSegmentationProfileTest {
     }
 
     /**
-     * @test Test of main runner use propagateseed
-     * @pre two frames
+     * Test of main runner use propagateseed
+     * 
+     * pre: two frames
+     * 
      * @throws Exception
      */
     @Test
