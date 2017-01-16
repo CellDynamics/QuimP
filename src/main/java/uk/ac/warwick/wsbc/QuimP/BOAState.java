@@ -17,6 +17,40 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentationPlugin;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+/*
+ * //!<
+ * @startuml doc-files/BOAState_UML.png
+ * BOAState *-- "1" BOAp
+ * BOAState *-- "1" SegParam
+ * BOAState <|.. IQuimpSerialize
+ * BOAState : +boap
+ * BOAState : +SegParam
+ * BOAState : -segParamSnapshots
+ * BOAState : +SnakePluginList
+ * BOAState : +Nest
+ * BOAState : ... 
+ * BOAState : +beforeSerialize()
+ * BOAState : +afterSerialize()
+ * BOAState : +store()
+ * BOAState : +storeOnlyEdited()
+ * SegParam : +nodeList
+ * SegParam : +f_image
+ * SegParam : +equals()
+ * SegParam : +hashCode()
+ * SegParam : +setDefaults()
+ * SegParam : ...()
+ * SegParam : ...
+ * IQuimpSerialize : +beforeSerialize()
+ * IQuimpSerialize : +afterSerialize()
+ * BOAp : -imageScale
+ * BOAp : -scaleAdjusted
+ * BOAp : +frame
+ * BOAp : ~zoom
+ * BOAp : ...
+ * BOAp : ...()
+ * @enduml
+ * //!>
+ */
 /**
  * Hold current BOA state that can be serialized.
  * 
@@ -27,19 +61,9 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * </ul>
  * 
  * Moreover there are several fields related to new features of QuimP like storing internal state
- * for every frame separately or SnakePlugins.
+ * for every frame separately or SnakePlugins.<br>
  * 
- * @startuml BOAState *-- "1" BOAp BOAState *-- "1" SegParam BOAState <|.. IQuimpSerialize
- * 
- *           BOAState : +boap BOAState : +SegParam BOAState : -segParamSnapshots BOAState :
- *           +SnakePluginList BOAState : +Nest BOAState : ... BOAState : +beforeSerialize() BOAState
- *           : +afterSerialize() BOAState : +store() BOAState : +storeOnlyEdited() SegParam :
- *           +nodeList SegParam : +f_image SegParam : +equals() SegParam : +hashCode() SegParam :
- *           +setDefaults() SegParam : ...() SegParam : ... IQuimpSerialize : +beforeSerialize()
- *           IQuimpSerialize : +afterSerialize() BOAp : -imageScale BOAp : -scaleAdjusted BOAp :
- *           +frame BOAp : ~zoom BOAp : ... BOAp : ...()
- * 
- * @enduml
+ * <img src="doc-files/BOAState_UML.png"/><br>
  * 
  * @author p.baniukiewicz
  * @see Serializer

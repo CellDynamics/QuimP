@@ -40,19 +40,10 @@ import org.slf4j.LoggerFactory;
 import ij.Prefs;
 import uk.ac.warwick.wsbc.QuimP.QuimP;
 
-/**
- * Support registration checking.
- * 
- * Registration component is self running. It should be located at very
- * beginning of Module code. It blocks Module from execution until
- * driving from Registration is returned to it.
- * 
- * 
- * Registration process follows the scheme for cancel action:
- * !<
- * @startuml
+/*
+ * !>
+ * @startuml doc-files/Registration_1_UML.png
  * actor User
- * 
  * activate Module
  * Module-->Registration : <<create>>
  * activate Registration
@@ -71,12 +62,9 @@ import uk.ac.warwick.wsbc.QuimP.QuimP;
  * Module->Module : Run()
  * deactivate Module
  * @enduml
- * !>
- * And for register action:
- * !<
- * @startuml
- * actor User
  * 
+ * @startuml doc-files/Registration_2_UML.png
+ * actor User
  * activate Module
  * Module-->Registration : <<create>>
  * activate Registration
@@ -94,10 +82,8 @@ import uk.ac.warwick.wsbc.QuimP.QuimP;
  * Module->Module : Run()
  * deactivate Module
  * @enduml
- * !>
- * Tests on first run:
- * !<
- * @startuml
+ * 
+ * @startuml doc-files/Registration_3_UML.png
  * start
  * :read reg details;
  * note right
@@ -124,10 +110,8 @@ import uk.ac.warwick.wsbc.QuimP.QuimP;
  * endif
  * stop
  * @enduml
- * !>
- * UI transactions:
- * !<
- * @startuml
+ * 
+ * @startuml doc-files/Registration_4_UML.png
  * [*] --> DisplayUI
  * DisplayUI : Cancel
  * DisplayUI : Apply
@@ -140,7 +124,24 @@ import uk.ac.warwick.wsbc.QuimP.QuimP;
  * Register-> DisplayUI : hash not valid
  * Register ->[*] : hash valid
  * @enduml
- * !>
+ * 
+ * !<
+ */
+/**
+ * Support registration checking.
+ * 
+ * Registration component is self running. It should be located at very beginning of Module code. It
+ * blocks Module from execution until driving from Registration is returned to it.
+ * 
+ * Registration process follows the scheme for cancel action: <br>
+ * <img src="doc-files/Registration_1_UML.png"/><br>
+ * And for register action: <br>
+ * <img src="doc-files/Registration_2_UML.png"/><br>
+ * Tests on first run: <br>
+ * <img src="doc-files/Registration_3_UML.png"/><br>
+ * UI transactions: <br>
+ * <img src="doc-files/Registration_4_UML.png"/><br>
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -185,6 +186,7 @@ public class Registration extends JDialog implements ActionListener {
 
     /**
      * Construct and display window.
+     * 
      * @param title
      * @param show indicate whether show window on screen
      */

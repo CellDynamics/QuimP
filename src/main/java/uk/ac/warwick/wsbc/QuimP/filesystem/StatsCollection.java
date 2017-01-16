@@ -19,7 +19,6 @@ import uk.ac.warwick.wsbc.QuimP.CellStatsEval;
  *
  */
 public class StatsCollection implements IQuimpSerialize {
-    @SuppressWarnings("unused")
     static final Logger LOGGER = LoggerFactory.getLogger(StatsCollection.class.getName());
 
     /**

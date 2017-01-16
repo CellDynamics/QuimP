@@ -47,6 +47,71 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 
+/*
+ * !>
+ * @startuml doc-files/RandomWalkSegmentationPlugin_1_UML.png
+ * salt
+ *   {+
+ *   Random Walk segmentation
+ *   ~~
+ *   {+
+ *   Define images
+ *   Open image:  |  ^Original image ^
+ *   Open seed:   |  ^Seed image     ^
+ *   }
+ *   {+
+ *   or create it:
+ *   [  Clone  ] | [   FG   ] | [   BG   ]
+ *   }
+ *   ==
+ *   {+
+ *   Segmentation parameters
+ *   alpha: | "400.0  "
+ *   beta: | "50.0   "
+ *   gamma: | "100.0  "
+ *   iterations: | "80     "
+ *   shrink power: | "5      "
+ *   shrink algorithm: | ^OUTLINE^
+ *   [] Show Seeds
+ *   }
+ *   ~~
+ *   {
+ *   [     OK     ] | [   Cancel   ]
+ *   }
+ *   }
+ * @enduml
+ * 
+ * @startuml doc-files/RandomWalkSegmentationPlugin_2_UML.png
+ *   [*] --> Default
+ *   Default : selectors empty
+ *   Default : **Clone**, **BG** and **FG** //inactive//
+ *   Default --> ImageSelected : when **Image** selector not empty
+ *   ImageSelected : **Clone** //active//
+ *   Default --> SeedSelected : when **Seed** selector not empty and image tthere is valid
+ *   SeedSelected : **Clone**, **BG** and **FG** //active//
+ *   SeedSelected --> SeedCreation
+ *   ImageSelected --> SeedCreation : Clicked **Clone**
+ *   SeedCreation : Original image cloned and converted to RGB
+ *   SeedCreation : **BG** and **FG** //active//
+ *   SeedCreation : **SeedImage** selector filled with name of cloned image
+ *   SeedCreation --> Sketch : **BG** or **FG** clicked
+ *   Sketch : Draw tool selected in IJ
+ *   Sketch : **BG** or **FG** changed to notify
+ *   Default -> Run
+ *   Run : Verify all fields
+ *   Run : Run algorithm
+ *   Sketch --> Run
+ *   Sketch --> [*]
+ *   SeedCreation --> Run
+ *   SeedCreation --> [*]
+ *   ImageSelected --> Run
+ *   ImageSelected --> [*]
+ *   Run --> [*]
+ *   Default --> [*]
+ * @enduml
+ * 
+ * !<
+ */
 /**
  * Run RandomWalkSegmentation in IJ environment.
  * 
@@ -95,71 +160,10 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     }
 
     /**
-     * Build main dialog
-     * !>
-     * @startuml
-     * salt
-     *   {+
-     *   Random Walk segmentation
-     *   ~~
-     *   {+
-     *   Define images
-     *   Open image:  |  ^Original image ^
-     *   Open seed:   |  ^Seed image     ^
-     *   }
-     *   {+
-     *   or create it:
-     *   [  Clone  ] | [   FG   ] | [   BG   ]
-     *   }
-     *   ==
-     *   {+
-     *   Segmentation parameters
-     *   alpha: | "400.0  "
-     *   beta: | "50.0   "
-     *   gamma: | "100.0  "
-     *   iterations: | "80     "
-     *   shrink power: | "5      "
-     *   shrink algorithm: | ^OUTLINE^
-     *   [] Show Seeds
-     *   }
-     *   ~~
-     *   {
-     *   [     OK     ] | [   Cancel   ]
-     *   }
-     *   }
-     * @enduml
-     * !>  
-     * State diagram
-     * !<
-     * @startuml
-     *   [*] --> Default
-     *   Default : selectors empty
-     *   Default : **Clone**, **BG** and **FG** //inactive//
-     *   Default --> ImageSelected : when **Image** selector not empty
-     *   ImageSelected : **Clone** //active//
-     *   Default --> SeedSelected : when **Seed** selector not empty and image tthere is valid
-     *   SeedSelected : **Clone**, **BG** and **FG** //active//
-     *   SeedSelected --> SeedCreation
-     *   ImageSelected --> SeedCreation : Clicked **Clone**
-     *   SeedCreation : Original image cloned and converted to RGB
-     *   SeedCreation : **BG** and **FG** //active//
-     *   SeedCreation : **SeedImage** selector filled with name of cloned image
-     *   SeedCreation --> Sketch : **BG** or **FG** clicked
-     *   Sketch : Draw tool selected in IJ
-     *   Sketch : **BG** or **FG** changed to notify
-     *   Default -> Run
-     *   Run : Verify all fields
-     *   Run : Run algorithm
-     *   Sketch --> Run
-     *   Sketch --> [*]
-     *   SeedCreation --> Run
-     *   SeedCreation --> [*]
-     *   ImageSelected --> Run
-     *   ImageSelected --> [*]
-     *   Run --> [*]
-     *   Default --> [*]
-     * @enduml
-     * !<
+     * Build main dialog<br>
+     * <img src="doc-files/RandomWalkSegmentationPlugin_1_UML.png"/><br>
+     * State diagram <br>
+     * <img src="doc-files/RandomWalkSegmentationPlugin_2_UML.png"/><br>
      */
     public void showDialog() {
         wnd = new JFrame("Random Walker Segmentation");

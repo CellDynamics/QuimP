@@ -17,7 +17,6 @@ import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
  *
  */
 public class OutlinesCollection implements IQuimpSerialize {
-    @SuppressWarnings("unused")
     static final Logger LOGGER = LoggerFactory.getLogger(OutlinesCollection.class.getName());
     /**
      * Contain {@link OutlineHandler} objects.

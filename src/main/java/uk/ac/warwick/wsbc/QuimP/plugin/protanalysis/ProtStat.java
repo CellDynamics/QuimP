@@ -17,11 +17,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
-/**
- * Compute statistics for one cell.
- * 
- * !<
- * @startuml 
+/*
+ * !>
+ * @startuml doc-files/ProtStat_1_UML.png 
  * title Class dependency and most important methods. IQuimpSerialize <|.. ProtStat
  * ProtStat *-- "1" CellStatistics
  * ProtStat *-- "1" ProtrusionStatistics
@@ -40,7 +38,13 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * -void writeProtRecord()
  * }
  * @enduml
- * !>
+ * !<
+ */
+/**
+ * Compute statistics for one cell.
+ * 
+ * <br>
+ * <img src="doc-files/ProtStat_1_UML.png"/><br>
  * 
  * @author p.baniukiewicz
  *
@@ -185,7 +189,7 @@ public class ProtStat implements IQuimpSerialize {
         /**
          * Add header to common file before next cell.
          * 
-         * @param bf 
+         * @param bf
          * @param cellno Number of cell.
          */
         private void writeCellHeader(PrintWriter bf, int cellno) {

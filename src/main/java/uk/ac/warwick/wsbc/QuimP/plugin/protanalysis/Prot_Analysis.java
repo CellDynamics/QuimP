@@ -57,20 +57,24 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
 
+/*
+ * !>
+ * @startuml doc-files/Prot_Analysis_1_UML.png
+ * Prot_Analysis *-- "1" ProtAnalysisConfig
+ * Prot_Analysis *-- "1" Prot_AnalysisUI
+ * Prot_AnalysisUI o-- "1" ProtAnalysisConfig
+ * @enduml
+ * !<
+ */
 /**
  * Main class for Protrusion Analysis module.
  * 
  * Contain business logic for protrusion analysis. The UI is built by
  * {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Prot_AnalysisUI}. The communication between
  * these modules is through {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.ProtAnalysisConfig}
+ * <br>
+ * <img src="doc-files/Prot_Analysis_1_UML.png"/><br>
  * 
- * !>
- * @startuml
- * Prot_Analysis *-- "1" ProtAnalysisConfig
- * Prot_Analysis *-- "1" Prot_AnalysisUI
- * Prot_AnalysisUI o-- "1" ProtAnalysisConfig
- * @enduml
- * !<
  * @author p.baniukiewicz
  */
 public class Prot_Analysis implements IQuimpPlugin {

@@ -237,7 +237,6 @@ public class ImageProcessorPlus {
  */
 class RectangleBox {
 
-    @SuppressWarnings("unused")
     static final Logger LOGGER = LoggerFactory.getLogger(RectangleBox.class.getName());
 
     private Vector<Double> x; // stores x coordinates of bounding box in

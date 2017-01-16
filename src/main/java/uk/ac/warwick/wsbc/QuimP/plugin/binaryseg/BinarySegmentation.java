@@ -13,37 +13,16 @@ import ij.gui.ShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
 
-/**
- * Run Binary segmentation converting black-white masks to ordered ROIs.
- * <p>
- * This class mainly join subsequent outlines to chains that contain outlines related by origin (
- * when next outline originates from previous - it means that next object overlap previous one)
- * The segmentation itself - generation of outlines for one slice is done in TrackOutline class 
- * <p>
- * The ROIs are grouped according to their origin and they have assigned frame number where they 
- * appeared. The algorithm is as follows:
- * The frames from input stack from first to before last are processed. For every i-th frame the
- * outlines are obtained and compared with i+1 frame. If any of k-th outline from i+1 frame overlap
- * l-th outline on i-th frame, the k-th outline gets the same id as l-th but only if k-th does not
- * have any ID yet. There for if there is outline that does not have source on i-th frame, it will 
- * skipped now but it will be found in next iteration and because it does not have ID,
- * the new will be assigned to it.
- * 
- * If there is break in chain (missing object), the object on the next frame will begin the new
- * chain. 
- * !<
- * @startuml
+/*
+ * //!>
+ * @startuml doc-files/BinarySegmentation_1_UML.png
  * User-->(Create BinarySegmentation)
  * User->(run tracking)
  * User->(get chains)
  * (Create BinarySegmentation).->(create TrackOutline) : <<extend>>
  * @enduml
- * !>
- * After creation of object user has to call trackObjects()
- * to run tracking. Segmentation is run on object creation. Finally, getChains() should be called
- * to get results - chains of outlines.
- * !<
- * @startuml
+ * 
+ * @startuml doc-files/BinarySegmentation_2_UML.png
  * actor User
  * User->BinarySegmentation : <<create>>\n""image""
  * loop for every frame
@@ -80,7 +59,31 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  * getChains->getChains : sort according to ID
  * getChains->User : return array
  * @enduml
- * !>
+ * 
+ * //!<
+ */
+/**
+ * Run Binary segmentation converting black-white masks to ordered ROIs.
+ * <p>
+ * This class mainly join subsequent outlines to chains that contain outlines related by origin (
+ * when next outline originates from previous - it means that next object overlap previous one) The
+ * segmentation itself - generation of outlines for one slice is done in TrackOutline class
+ * <p>
+ * The ROIs are grouped according to their origin and they have assigned frame number where they
+ * appeared. The algorithm is as follows: The frames from input stack from first to before last are
+ * processed. For every i-th frame the outlines are obtained and compared with i+1 frame. If any of
+ * k-th outline from i+1 frame overlap l-th outline on i-th frame, the k-th outline gets the same id
+ * as l-th but only if k-th does not have any ID yet. There for if there is outline that does not
+ * have source on i-th frame, it will skipped now but it will be found in next iteration and because
+ * it does not have ID, the new will be assigned to it.
+ * 
+ * If there is break in chain (missing object), the object on the next frame will begin the new
+ * chain. <br>
+ * <img src="doc-files/BinarySegmentation_1_UML.png"/><br>
+ * After creation of object user has to call trackObjects() to run tracking. Segmentation is run on
+ * object creation. Finally, getChains() should be called to get results - chains of outlines. <br>
+ * <img src="doc-files/BinarySegmentation_2_UML.png"/><br>
+ * 
  * @author p.baniukiewicz
  * @see uk.ac.warwick.wsbc.QuimP.geom.TrackOutline
  *
@@ -96,8 +99,8 @@ public class BinarySegmentation {
      */
     int backgroundColor = 0;
     /**
-     * Array of segmented slices. 
-     * One TrackOutline object can have some outlines, depending how many objects were on this slice
+     * Array of segmented slices. One TrackOutline object can have some outlines, depending how many
+     * objects were on this slice
      */
     private TrackOutline[] trackers;
 
@@ -164,8 +167,8 @@ public class BinarySegmentation {
     /**
      * Main runner for tracking.
      * 
-     * In result of this method the ROIs kept in TrackOutline objects will be modified by giving them 
-     * IDs of their parent. 
+     * In result of this method the ROIs kept in TrackOutline objects will be modified by giving
+     * them IDs of their parent.
      */
     public void trackObjects() {
         if (trackers.length == 1) { // only one slice, use the same reference for testIntersect
@@ -185,14 +188,14 @@ public class BinarySegmentation {
     }
 
     /**
-     * Compose chains of object related to each others along frames. 
+     * Compose chains of object related to each others along frames.
      * 
      * Relation means that previous object and next one overlap, thus their segmentations will be
      * assigned to the same group and they will be in correct order as they appeared in stack
      * 
-     * @return List of Lists that contains outlines. First level of list is the chain (found
-     * related objects), the second level are outlines for this chain. Every outline has coded
-     * frame where it appeared. 
+     * @return List of Lists that contains outlines. First level of list is the chain (found related
+     *         objects), the second level are outlines for this chain. Every outline has coded frame
+     *         where it appeared.
      */
     public ArrayList<ArrayList<SegmentedShapeRoi>> getChains() {
         ArrayList<ArrayList<SegmentedShapeRoi>> ret = new ArrayList<>(nextID);

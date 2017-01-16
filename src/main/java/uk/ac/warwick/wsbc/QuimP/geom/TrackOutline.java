@@ -18,32 +18,15 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 
-/**
- * Convert BW masks into list of vertices in correct order. Stand as ROI holder.
- * 
- * The algorithm uses IJ tools for tracking and filling (deleting) objects
- * It goes through all points of the image and for every visited point
- * it checks whether the value is different than defined background.
- * If it is, the Wand tool is used to select object given by
- * the pixel value inside it. 
- * The ROI (outline) is then stored in this object and served as reference
- * The ROI is then used to delete selected object from image (using background value).
- * Next, the algorithm moves to next pixel (of the same image the object has been deleted from, so
- * it is not possible to detect the same object twice).
- * 
- * It assigns also frame number to outline
- * !<
- * @startuml
+/*
+ * //!>
+ * @startuml doc-files/TrackOutline_1_UML.png
  * User->(Create object)
  * User->(Convert Outlines to Point2d)
  * User->(get deep copy of Outlines)
  * @enduml
- * !>
- * Creating object runs also outline detection and tracking. Detected outlines are stored in object
- * and can be accessed by reference directly from \a outlines array or as copies from 
- * getCopyofShapes().
- * !<
- * @startuml
+ * 
+ * @startuml doc-files/TrackOutline_2_UML.png
  * actor User
  * User-->TrackOutline : <<create>>\n""image"",""frame""
  * TrackOutline->prepare : ""image""
@@ -70,7 +53,27 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  * end
  * getOutlines->TrackOutline
  * @enduml
- * !> 
+ * 
+ * //!<
+ */
+/**
+ * Convert BW masks into list of vertices in correct order. Stand as ROI holder.
+ * 
+ * The algorithm uses IJ tools for tracking and filling (deleting) objects It goes through all
+ * points of the image and for every visited point it checks whether the value is different than
+ * defined background. If it is, the Wand tool is used to select object given by the pixel value
+ * inside it. The ROI (outline) is then stored in this object and served as reference The ROI is
+ * then used to delete selected object from image (using background value). Next, the algorithm
+ * moves to next pixel (of the same image the object has been deleted from, so it is not possible to
+ * detect the same object twice).
+ * 
+ * It assigns also frame number to outline<br>
+ * <img src="doc-files/TrackOutline_1_UML.png"/><br>
+ * Creating object runs also outline detection and tracking. Detected outlines are stored in object
+ * and can be accessed by reference directly from \a outlines array or as copies from
+ * getCopyofShapes().<br>
+ * <img src="doc-files/TrackOutline_2_UML.png"/><br>
+ * 
  * @author p.baniukiewicz
  * @see uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi
  *

@@ -37,6 +37,36 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+/*
+ * //!>
+ * @startuml doc-files/ECMM_Mapping_1_UML.png
+ * start
+ * :Check registration;
+ * if (input file given) then (no) 
+ * :ask user; 
+ * endif
+ * :Load config file;
+ * if (QUIMP_11 file) then (yes)
+ * :process it;
+ * :scan for other files;
+ * repeat 
+ * :process other file;
+ * repeat while(more files?) else (no)
+ * if(BOA data) then (no)
+ * stop
+ * endif
+ * if(ECMM data) then (yes)
+ * if(overwrite?) then (no)
+ * end
+ * endif
+ * endif
+ * :process it;
+ * endif
+ * end
+ * @enduml
+ * 
+ * //!< 
+ */
 /**
  * Main ECMM implementation class.
  * 
@@ -70,35 +100,9 @@ public class ECMM_Mapping {
     /**
      * Main executive constructor.
      * <p>
-     * Process provided file and run the whole analysis.
+     * Process provided file and run the whole analysis.<br>
+     * <img src="doc-files/ECMM_Mapping_1_UML.png"/><br>
      * 
-     * !>
-     * @startuml 
-     * start
-     * :Check registration;
-     * if (input file given) then (no) 
-     * :ask user; 
-     * endif
-     * :Load config file;
-     * if (QUIMP_11 file) then (yes)
-     * :process it;
-     * :scan for other files;
-     * repeat 
-     * :process other file;
-     * repeat while(more files?) else (no)
-     * if(BOA data) then (no)
-     * stop
-     * endif
-     * if(ECMM data) then (yes)
-     * if(overwrite?) then (no)
-     * end
-     * endif
-     * endif
-     * :process it;
-     * endif
-     * end
-     * @enduml
-     * !<
      *
      * @param paramFile paQP or QCONF file to process.
      */
