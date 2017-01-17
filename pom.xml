@@ -4,7 +4,7 @@
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
-  <version>16.12.03-SNAPSHOT</version>
+  <version>17.01.02-SNAPSHOT</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>www.warwick.ac.uk/quimp</url>
