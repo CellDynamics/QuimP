@@ -31,7 +31,7 @@ public class IJToolsTest {
         ImagePlus big = IJ.openImage("src/test/resources/B1.tif");
 
         ImagePlus ret = IJTools.getComposite(org, small, big);
-        IJ.saveAsTiff(ret, "/tmp/Downloads/compositestack.tif");
+        IJ.saveAsTiff(ret, "/tmp/compositestack.tif");
     }
 
 }

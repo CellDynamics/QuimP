@@ -18,11 +18,13 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 
 /**
  * @author p.baniukiewicz
- *
+ * 
+ * TODO Run all tests on directories in /tmp after copying relevant files
  */
 public class FormatConverterTest {
 
@@ -184,9 +186,10 @@ public class FormatConverterTest {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void testGenerateNewDataFile() throws Exception {
         QconfLoader qC = new QconfLoader(new File(
-                "/home/baniuk/Documents/Repos/QuimP/src/test/resources/FormatConverter/res/0pt7%agar_bleb2_0.paQP"));
+                "/home/baniuk/Documents/Repos/QuimP/src/test/resources/FormatConverter/res/fluoreszenz-test_eq_smooth_0_expected.paQP"));
         FormatConverter fC = new FormatConverter(qC);
         accessPrivate("generateNewDataFile", fC, new Object[] {}, new Class<?>[] {});
     }
