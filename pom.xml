@@ -235,7 +235,7 @@
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
           <releaseProfiles>installation</releaseProfiles>
-          <goals>install site</goals>
+          <goals>install</goals>
         </configuration>
       </plugin>
     </plugins>
