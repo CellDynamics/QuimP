@@ -176,9 +176,9 @@ public class TrackOutlineTest {
     @Test
     public void testGetOutlinesDoubleBoolean() throws Exception {
         List<Outline> ret = obj.getOutlines(4, false);
-        RoiSaver.saveROI("c:/Users/baniu/Downloads/test0.tif", ret.get(0).asList());
-        RoiSaver.saveROI("c:/Users/baniu/Downloads/test1.tif", ret.get(1).asList());
-        RoiSaver.saveROI("c:/Users/baniu/Downloads/test2.tif", ret.get(2).asList());
+        RoiSaver.saveROI("/tmp/test0.tif", ret.get(0).asList());
+        RoiSaver.saveROI("/tmp/test1.tif", ret.get(1).asList());
+        RoiSaver.saveROI("/tmp/test2.tif", ret.get(2).asList());
     }
 
 }
