@@ -6,6 +6,20 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="17.01.01" date="2017-01-17" description="Release">
+          <action dev="baniuk" type="update" issue="302">
+              QuimP: Add convert masks plugin to plugin menu.
+          </action>
+          <action dev="baniuk" type="fix" issue="311">
+              QuimP: Possibe bug in correct density function.
+          </action>
+          <action dev="baniuk" type="update" issue="287">
+              QuimP: Switch to forked vecmath available in ImageJ jars. 
+          </action>
+          <action dev="baniuk" type="add" issue="309">
+              QuimP-RandomWalk: Added object shrinking/expanding using contours. 
+          </action>
+      </release>
       <release version="16.12.02" date="2016-12-09" description="Release">
           <action dev="baniuk" type="add" issue="273">
               QuimP: Plugin for rendering masks from QCONF.
