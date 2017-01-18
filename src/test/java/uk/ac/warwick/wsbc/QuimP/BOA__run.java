@@ -48,7 +48,8 @@ public class BOA__run {
         // img = IJ.openImage("src/test/resources/movie03_8bit.tif");
         // img = IJ.openImage("src/test/resources/Composite-after-macro_cut.tif");
         // img = IJ.openImage("src/test/resources/Stack_cut.tif");
-        img = IJ.openImage("/home/baniuk/Desktop/Tests/275/fluoreszenz-test.tif kept stack.tif");
+        img = IJ.openImage(
+                "/home/baniuk/Desktop/Tests/ticket263/fluoreszenz-test.tif kept stack.tif");
 
         img.show(); // this is necessary for plugin as it uses getcurrentimage to work
         Toolbar t = new Toolbar(); // fake toolbar to allow calls to static fields of this class

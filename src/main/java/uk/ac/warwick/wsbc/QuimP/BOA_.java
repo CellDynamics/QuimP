@@ -2380,7 +2380,9 @@ public class BOA_ implements PlugIn {
                         return;
                 }
                 // write operations
-                if (qState.nest.writeSnakes()) { // write snPQ file (if any snake) and paQP
+                // blocked by #263
+                // if (qState.nest.writeSnakes()) { // write snPQ file (if any snake) and paQP
+                {
                     // write stQP file and fill outFile used later
                     List<CellStatsEval> ret =
                             qState.nest.analyse(imageGroup.getOrgIpl().duplicate());
@@ -2405,12 +2407,12 @@ public class BOA_ implements PlugIn {
                         n.save(qState.boap.deductNewParamFileName());
                         n = null;
                     }
-                } else {
-                    ync = new YesNoCancelDialog(window, "Save Segmentation",
-                            "Quit without saving?");
-                    if (!ync.yesPressed()) {
-                        return;
-                    }
+                    // } else {
+                    // ync = new YesNoCancelDialog(window, "Save Segmentation",
+                    // "Quit without saving?");
+                    // if (!ync.yesPressed()) {
+                    // return;
+                    // }
                 }
             } catch (IOException e) {
                 IJ.error("Exception while saving");
