@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="17.01.02" date="2017-01-18" description="Release">
+          <action dev="baniuk" type="fix" issue="263">
+              QuimP: Disabled generation of old files in
+          </action>
+      </release>
       <release version="17.01.01" date="2017-01-17" description="Release">
           <action dev="baniuk" type="update" issue="302">
               QuimP: Add convert masks plugin to plugin menu.
