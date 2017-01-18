@@ -2385,7 +2385,7 @@ public class BOA_ implements PlugIn {
                 {
                     // write stQP file and fill outFile used later
                     List<CellStatsEval> ret =
-                            qState.nest.analyse(imageGroup.getOrgIpl().duplicate());
+                            qState.nest.analyse(imageGroup.getOrgIpl().duplicate(), true);
                     // auto save plugin config (but only if there is at least one snake)
                     if (!qState.nest.isVacant()) {
                         // Create Serialization object with extra info layer

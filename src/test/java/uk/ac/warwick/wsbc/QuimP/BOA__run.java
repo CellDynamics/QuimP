@@ -7,6 +7,7 @@ import java.awt.event.WindowEvent;
 import java.util.concurrent.CountDownLatch;
 
 import ij.IJ;
+import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Toolbar;
 
@@ -42,6 +43,7 @@ public class BOA__run {
      */
     public static void main(String[] args) throws InterruptedException {
         ImagePlus img;
+        ImageJ ij = new ImageJ();
         // create synchronization latch
         CountDownLatch startSignal = new CountDownLatch(1);
         // img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");

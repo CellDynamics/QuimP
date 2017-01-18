@@ -44,12 +44,12 @@ public class CellStatsEval implements Measurements {
     /**
      * Create and run the object.
      * 
-     * After creating the object, file with stats is written and stats are avaiable by calling
+     * After creating the object, file with stats is written and stats are available by calling
      * {@link #getStatH()} method.
      * 
      * @param oH
      * @param ip image associated with OutlineHandler
-     * @param f file name to write stats
+     * @param f file name to write stats, if null file is not created
      * @param s image scale
      * @param fI frame interval
      */
@@ -65,7 +65,10 @@ public class CellStatsEval implements Measurements {
         FrameStatistics[] stats = record();
         iPlus.setSlice(1);
         iPlus.killRoi();
-        write(stats, outputH.getStartFrame());
+        if (f == null)
+            buildData(stats);
+        else
+            write(stats, outputH.getStartFrame()); // also call buildData
     }
 
     /**
@@ -78,18 +81,7 @@ public class CellStatsEval implements Measurements {
      * @param fI frame interval
      */
     public CellStatsEval(OutlineHandler oH, ImagePlus ip, double s, double fI) {
-        IJ.showStatus("BOA-Calculating Cell stats");
-        outputH = oH;
-        OUTFILE = null;
-        iPlus = ip;
-        iProc = ip.getProcessor();
-        scale = s;
-        frameInterval = fI;
-
-        FrameStatistics[] stats = record();
-        iPlus.setSlice(1);
-        iPlus.killRoi();
-        buildData(stats);
+        this(oH, ip, null, s, fI);
     }
 
     /**

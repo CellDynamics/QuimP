@@ -224,30 +224,29 @@ public class Nest implements IQuimpSerialize {
      * 
      * @param oi instance of current ImagePlus (required by CellStat that extends
      *        ij.measure.Measurements
+     * @param saveFile if true stQP file is saved in disk, false stats are evaluated only and
+     *        returned
      * @return CellStat objects with calculated statistics for every cell.
      */
-    public List<CellStatsEval> analyse(final ImagePlus oi) {
+    public List<CellStatsEval> analyse(final ImagePlus oi, boolean saveFile) {
         OutlineHandler outputH;
         SnakeHandler sH;
         ArrayList<CellStatsEval> ret = new ArrayList<>();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
-        try {
-            while (sHitr.hasNext()) {
-                sH = (SnakeHandler) sHitr.next();
+        while (sHitr.hasNext()) {
+            sH = (SnakeHandler) sHitr.next();
 
-                File pFile = new File(BOA_.qState.boap.deductParamFileName(sH.getID()));
-                QParams newQp = new QParams(pFile);
-                newQp.readParams();
-                outputH = new OutlineHandler(newQp);
-
-                File statsFile = new File(BOA_.qState.boap.deductStatsFileName(sH.getID()));
-                CellStatsEval tmp = new CellStatsEval(outputH, oi, statsFile,
-                        BOA_.qState.boap.getImageScale(), BOA_.qState.boap.getImageFrameInterval());
-                ret.add(tmp);
+            File statsFile;
+            if (saveFile == true) { // compatibility with old (#263), reread snakes from snQP
+                outputH = new OutlineHandler(sH);
+                statsFile = new File(BOA_.qState.boap.deductStatsFileName(sH.getID()));
+            } else { // new approach use conversion constructor
+                statsFile = null;
+                outputH = new OutlineHandler(sH);
             }
-        } catch (QuimpException e) {
-            LOGGER.debug(e.getMessage(), e);
-            LOGGER.error(e.getMessage());
+            CellStatsEval tmp = new CellStatsEval(outputH, oi, statsFile,
+                    BOA_.qState.boap.getImageScale(), BOA_.qState.boap.getImageFrameInterval());
+            ret.add(tmp);
         }
         return ret;
     }

@@ -90,7 +90,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     }
 
     /**
-     * Conversion constructor
+     * Conversion constructor.
      * 
      * Converts SnakeHandler to OutlineHandler. Converted are only Snakes and their range
      * 
