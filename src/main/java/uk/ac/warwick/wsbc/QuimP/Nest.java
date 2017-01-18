@@ -160,7 +160,7 @@ public class Nest implements IQuimpSerialize {
      * 
      * File names are deducted in called functions.
      * 
-     * @return \c true if write operation has been successful
+     * @return true if write operation has been successful
      * @throws IOException when the file exists but is a directory rather than a regular file, does
      *         not exist but cannot be created, or cannot be opened for any other reason
      */
