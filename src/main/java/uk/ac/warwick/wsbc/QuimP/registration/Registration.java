@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -149,7 +147,14 @@ public class Registration extends JDialog implements ActionListener {
     static final Logger LOGGER = LoggerFactory.getLogger(Registration.class.getName());
 
     private JButton bOk, bCancel;
-    public boolean waited = false; // flag that indicates that user has waited already.
+    /**
+     * Flag that indicates that user has waited already.
+     */
+    public boolean waited = false;
+    /**
+     * How long to wait in sec.
+     */
+    private final int secondsToWait = 5;
     private JTextField tEmail, tKey;
     private Window owner;
 
@@ -231,8 +236,7 @@ public class Registration extends JDialog implements ActionListener {
         wndpanel.add(caButtons, BorderLayout.SOUTH);
         // registration area and key and email
         JPanel centerarea = new JPanel();
-        centerarea.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
+        centerarea.setLayout(new BorderLayout());
         wndpanel.add(centerarea, BorderLayout.CENTER);
         // html info
         try {
@@ -242,9 +246,7 @@ public class Registration extends JDialog implements ActionListener {
             helpArea.setEditable(false);
             JScrollPane helpPanel = new JScrollPane(helpArea);
             helpPanel.setPreferredSize(new Dimension(500, 600));
-            c.gridx = 0;
-            c.gridy = 0;
-            centerarea.add(helpPanel, c);
+            centerarea.add(helpPanel, BorderLayout.CENTER);
             // add mouse listeners
             helpArea.addMouseListener(new MouseAdapter() {
                 @Override
@@ -286,16 +288,15 @@ public class Registration extends JDialog implements ActionListener {
         regarea.setLayout(new GridLayout(3, 2));
         ((GridLayout) regarea.getLayout()).setHgap(10);
         ((GridLayout) regarea.getLayout()).setVgap(2);
-        c.gridx = 0;
-        c.gridy = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        centerarea.add(regarea, c);
+        centerarea.add(regarea, BorderLayout.SOUTH);
         tEmail = new JTextField(16);
         tKey = new JTextField(16);
         regarea.add(new JLabel(""));
         regarea.add(new JLabel(""));
+
         regarea.add(tEmail);
         regarea.add(new JLabel("Registration email"));
+
         regarea.add(tKey);
         regarea.add(new JLabel("Your key"));
 
@@ -313,7 +314,7 @@ public class Registration extends JDialog implements ActionListener {
         if (e.getSource() == bCancel && waited == false) {
             bOk.setEnabled(false);
             bCancel.setEnabled(false);
-            Worker w = new Worker(5); // will change button text
+            Worker w = new Worker(secondsToWait); // will change button text
             w.execute();
         }
         // Cancel and waited already - quit

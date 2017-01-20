@@ -1,7 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.registration;
 
 import ij.IJ;
-import ij.ImageJ;
 
 /**
  * @author p.baniukiewicz
@@ -9,7 +8,7 @@ import ij.ImageJ;
  */
 public class Registration_run {
     static {
-        System.setProperty("quimp.debugLevel", "qlog4j2.xml");
+        System.setProperty("logback.configurationFile", "quimp-logback.xml");
     }
 
     /**
@@ -17,7 +16,7 @@ public class Registration_run {
      */
     @SuppressWarnings("unused")
     public static void main(String[] args) {
-        ImageJ im = new ImageJ();
+        // ImageJ im = new ImageJ();
         Registration reg = new Registration(IJ.getInstance(), "Registration");
     }
 
