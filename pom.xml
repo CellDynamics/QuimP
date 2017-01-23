@@ -18,14 +18,14 @@
   </properties>
   <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
   <scm>
-    <connection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</connection>
-    <developerConnection>scm:git:file://localhost/home/baniuk/Documents/Repos/QuimP</developerConnection>
-    <url>http://www.trac-wsbc.linkpc.net:8080/cgit/QuimP.git/</url>
+    <connection>scm:git:https://github.com/CellDynamics/QuimPpriv.git</connection>
+    <developerConnection>scm:git:https://github.com/CellDynamics/QuimPpriv.git</developerConnection>
+    <url>https://github.com/CellDynamics/QuimPpriv/</url>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
-    <system>Trac</system>
-    <url>http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/</url>
+    <system>GitHub</system>
+    <url>https://github.com/CellDynamics/QuimPpriv/issues/</url>
   </issueManagement>
   <licenses>
     <license>
@@ -134,9 +134,9 @@
       <version>2.0.1</version>
     </dependency>
     <dependency>
-    	<groupId>org.scijava</groupId>
-    	<artifactId>vecmath</artifactId>
-    	<version>1.6.0-scijava-2</version>
+      <groupId>org.scijava</groupId>
+      <artifactId>vecmath</artifactId>
+      <version>1.6.0-scijava-2</version>
     </dependency>
   </dependencies>
   <build>
@@ -223,6 +223,30 @@
                 <source>src/maven</source>
               </sources>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <inherited>false</inherited>
+        <!-- only execute these in the parent -->
+        <executions>
+          <execution>
+            <id>git submodule update</id>
+            <phase>initialize</phase>
+            <configuration>
+              <executable>git</executable>
+              <arguments>
+                <argument>submodule</argument>
+                <argument>update</argument>
+                <argument>--init</argument>
+                <argument>--recursive</argument>
+              </arguments>
+            </configuration>
+            <goals>
+              <goal>exec</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
