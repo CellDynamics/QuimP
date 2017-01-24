@@ -63,6 +63,9 @@ public class QuimpToolsCollection {
                 + "| Richard Tyson (richard.tyson@warwick.ac.uk)           |\n"
                 + "| Till Bretschneider (Till.Bretschneider@warwick.ac.uk) |\n"
                 + "| Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)     |\n"
+                + "| Web page: "
+                + new PropertyReader().readProperty("quimpconfig.properties", "webPage")
+                + "                     |\n"
                 + "---------------------------------------------------------\n";
         //!<
         infoPlate = infoPlate.concat("\n");

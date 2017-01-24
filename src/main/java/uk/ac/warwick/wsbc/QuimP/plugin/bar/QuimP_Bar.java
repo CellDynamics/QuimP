@@ -333,8 +333,6 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             ad.appendLine(quimpInfo); // display template filled by quimpInfo
             ad.appendDistance();
             ad.appendLine("All plugins for QuimP are reported in modules that use them natively.");
-            ad.appendLine("Web page:\n"
-                    + new PropertyReader().readProperty("quimpconfig.properties", "webPage"));
             ad.setVisible(true);
             return;
         }
