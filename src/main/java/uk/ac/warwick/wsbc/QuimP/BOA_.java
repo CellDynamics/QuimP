@@ -2362,13 +2362,14 @@ public class BOA_ implements PlugIn {
             try {
                 String saveIn = BOA_.qState.boap.getOutputFileCore().getParent();
                 SaveDialog sd = new SaveDialog("Save segmentation data...", saveIn,
-                        BOA_.qState.boap.getFileName(), "");
+                        BOA_.qState.boap.getFileName() + ".QCONF", "");
                 if (sd.getFileName() == null) {
                     BOA_.log("Save canceled");
                     return;
                 }
-                // This initialize various filenames that can be accessed bo other modules
-                BOA_.qState.boap.setOutputFileCore(sd.getDirectory() + sd.getFileName());
+                // This initialize various filenames that can be accessed by other modules
+                BOA_.qState.boap.setOutputFileCore(
+                        sd.getDirectory() + QuimpToolsCollection.removeExtension(sd.getFileName()));
 
                 // check whether there is case saved and warn user
                 // there is no option to solve this problem here. User can only agree or cancel
