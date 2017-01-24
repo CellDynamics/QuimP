@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
-import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
 /*
  * //!>
@@ -244,16 +244,18 @@ public class PluginFactory {
      * 
      * @param path
      * 
-     * @throws QuimpPluginException when plugin directory can not be read
      */
-    public PluginFactory(final Path path) throws QuimpPluginException {
+    public PluginFactory(final Path path) {
         LOGGER.debug("Attached " + path.toString());
-        // check if dir exists
-        if (Files.notExists(path))
-            throw new QuimpPluginException("Plugin directory can not be read");
-        root = path;
         availPlugins = new HashMap<String, PluginProperties>();
-        scanDirectory(); // throw PluginException on wrong path
+        // check if dir exists
+        if (Files.notExists(path)) {
+            LOGGER.warn("Plugin directory can not be read");
+            root = Paths.get("/");
+        } else {
+            root = path;
+            scanDirectory();
+        }
     }
 
     /**

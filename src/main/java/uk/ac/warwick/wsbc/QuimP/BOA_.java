@@ -142,7 +142,10 @@ public class BOA_ implements PlugIn {
      */
     public static String[] quimpInfo;
     private static int logCount; // add counter to logged messages
-    public static final int NUM_SNAKE_PLUGINS = 3; /*!< number of Snake plugins  */
+    /**
+     * Number of Snake plugins available.
+     */
+    public static final int NUM_SNAKE_PLUGINS = 3;
     private HistoryLogger historyLogger; // logger
     /**
      * Configuration object, available from all modules.
