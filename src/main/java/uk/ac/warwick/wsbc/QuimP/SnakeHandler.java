@@ -535,6 +535,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
             }
         } catch (Exception e) {
             BOA_.log("Could not reset live snake form frame" + f);
+            LOGGER.debug(e.getMessage(), e);
         }
     }
 
@@ -552,8 +553,8 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
             storeAt(snake, f);
             // BOA_.log("Storing ROI snake " + ID + " frame " + f);
         } catch (Exception e) {
-            BOA_.log("Could not stor ROI");
-            e.printStackTrace();
+            BOA_.log("Could not store ROI");
+            LOGGER.debug(e.getMessage(), e);
         }
     }
 
