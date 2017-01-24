@@ -202,7 +202,7 @@ public class FormatConverterTest {
     @Test
     public void testGenerateOldDataFile() throws Exception {
         QconfLoader qC = new QconfLoader(new File(
-                "/home/baniuk/Documents/Repos/QuimP/src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
+                "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
         FormatConverter fC = new FormatConverter(qC);
         accessPrivate("generateOldDataFile", fC, new Object[] {}, new Class<?>[] {});
     }
