@@ -12,194 +12,194 @@
           </action>
       </release>
       <release version="17.01.01" date="2017-01-17" description="Release">
-          <action dev="baniuk" type="update" issue="302">
+          <action dev="baniuk" type="update" issue="198">
               QuimP: Add convert masks plugin to plugin menu.
           </action>
-          <action dev="baniuk" type="fix" issue="311">
+          <action dev="baniuk" type="fix" issue="207">
               QuimP: Possibe bug in correct density function.
           </action>
-          <action dev="baniuk" type="update" issue="287">
+          <action dev="baniuk" type="update" issue="trac/287">
               QuimP: Switch to forked vecmath available in ImageJ jars. 
           </action>
-          <action dev="baniuk" type="add" issue="309">
+          <action dev="baniuk" type="add" issue="205">
               QuimP-RandomWalk: Added object shrinking/expanding using contours. 
           </action>
       </release>
       <release version="16.12.02" date="2016-12-09" description="Release">
-          <action dev="baniuk" type="add" issue="273">
+          <action dev="baniuk" type="add" issue="trac/273">
               QuimP: Plugin for rendering masks from QCONF.
           </action>
       </release>
       <release version="16.12.01" date="2016-12-08" description="Release">
-          <action dev="baniuk" type="fix" issue="280">
+          <action dev="baniuk" type="fix" issue="190">
               Protruision Analysis: Error when processing multiple cells.
           </action>
-          <action dev="baniuk" type="update" issue="278">
+          <action dev="baniuk" type="update" issue="188">
               QuimP-BOA: Suppress standard console messages.
           </action>
-          <action dev="baniuk" type="fix" issue="281">
+          <action dev="baniuk" type="fix" issue="191">
               QuimP-BOA: Defective snakes are not displayed.
           </action>
-          <action dev="baniuk" type="fix" issue="282">
+          <action dev="baniuk" type="fix" issue="192">
               QuimP-BOA: Zoom does not work in all cases.
           </action>
-          <action dev="baniuk" type="fix" issue="275">
+          <action dev="baniuk" type="fix" issue="185">
               QuimP-BOA: False message after loading file "The image opened currently in BOA is different".
           </action>
-          <action dev="baniuk" type="update" issue="262">
+          <action dev="baniuk" type="update" issue="172">
               QuimP-ANA: ANA throws unnecessary exception if no file opened.
           </action>
-          <action dev="baniuk" type="fix" issue="272">
+          <action dev="baniuk" type="fix" issue="182">
               QuimP-DIC: DIC failed on 0,90,180,270 deg.
           </action>
       </release>
       <release version="16.11.02" date="2016-11-25" description="Release">
-          <action dev="baniuk" type="fix" issue="261">
+          <action dev="baniuk" type="fix" issue="171">
               QuimP-ECMM: Batch processing skips _1.snQP files.
           </action>
-          <action dev="baniuk" type="add" issue="269">
+          <action dev="baniuk" type="add" issue="179">
               QuimP-RandomWalk: Better notification on lack of seed when processing stacks.
           </action>
-          <action dev="baniuk" type="fix" issue="268">
+          <action dev="baniuk" type="fix" issue="172">
               QuimP-DIC: DIC does not process stacks.
           </action>
       </release>
       <release version="16.11.01" date="2016-11-22" description="Release">
-          <action dev="baniuk" type="add" issue="230">
+          <action dev="baniuk" type="add" issue="156">
               Protruision Analysis: Statistics can be previeved in IJ standard measurement window.
           </action>
-          <action dev="baniuk" type="update" issue="250">
+          <action dev="baniuk" type="update" issue="168">
               QuimP: Use standard IJ logging framework.
           </action>
-          <action dev="baniuk" type="update" issue="245">
+          <action dev="baniuk" type="update" issue="trac/245">
               QuimP: Add automatic versioning in plugins based on Maven.
           </action>
-          <action dev="baniuk" type="update" issue="83">
+          <action dev="baniuk" type="update" issue="38">
               QuimP-DIC: Create results as new images.
           </action>
-          <action dev="baniuk" type="add" issue="260">
+          <action dev="baniuk" type="add" issue="170">
               QuimP-DIC: Add perpendicular averaging.
           </action>
-          <action dev="baniuk" type="fix" issue="264">
+          <action dev="baniuk" type="fix" issue="174">
               QuimP: QCONF and paQP side-saved on new file format path contains wrong fluoro datafiles.
           </action>
-          <action dev="baniuk" type="update" issue="223">
+          <action dev="baniuk" type="update" issue="151">
               QuimP: Support conversion of ANA and Stats data by FormatConverter.
           </action>
-          <action dev="baniuk" type="update" issue="197">
+          <action dev="baniuk" type="update" issue="125">
               Random Walk: Show user friendly message when input image in wrong format.
           </action>
-          <action dev="baniuk" type="update" issue="263">
+          <action dev="baniuk" type="update" issue="173">
               QuimP: Disable modules to produce paQP files if new format selected.
           </action>
       </release>
       <release version="16.10.03" date="2016-10-20" description="Hot Fix">
-          <action dev="baniuk" type="fix" issue="249">
+          <action dev="baniuk" type="fix" issue="167">
               QuimP: License could not be displayed in QuimP Bar.
           </action>
       </release>
       <release version="16.10.02" date="2016-10-20" description="Release">
-          <action dev="baniuk" type="update" issue="228">
+          <action dev="baniuk" type="update" issue="trac/228">
               Services: Front-end services work on new server.
           </action>
-          <action dev="baniuk" type="fix" issue="240">
+          <action dev="baniuk" type="fix" issue="163">
               BOA: BOA fails if old plugins are available in plugin directory.
           </action>
-          <action dev="baniuk" type="add" issue="237">
+          <action dev="baniuk" type="add" issue="160">
               QuimP: User can view the license from QuimP Bar. Some unsused dependencies removed.
           </action>
-          <action dev="baniuk" type="fix" issue="238">
+          <action dev="baniuk" type="fix" issue="161">
               Services: Registration form on web deals with empty fields and white characters.
           </action>
-          <action dev="baniuk" type="update" issue="246">
+          <action dev="baniuk" type="update" issue="164">
               QuimP: Updated registration text.
           </action>
-          <action dev="baniuk" type="add" issue="247">
+          <action dev="baniuk" type="add" issue="165">
               QuimP: User can view the registration window from QuimP Bar.
           </action>
-          <action dev="baniuk" type="add" issue="248">
+          <action dev="baniuk" type="add" issue="166">
               QuimP: Added warning before use of FormatConverter.
           </action>
-          <action dev="baniuk" type="fix" issue="173">
+          <action dev="baniuk" type="fix" issue="101">
               QuimP: Fixed Open Image from QuimP Bar on Mac.
           </action>
-          <action dev="baniuk" type="update" issue="221">
+          <action dev="baniuk" type="update" issue="149">
               QuimP: Updated JavaDoc.
           </action>
       </release>
       <release version="16.10.01" date="2016-10-17" description="Release">
-          <action dev="baniuk" type="add" issue="233">
+          <action dev="baniuk" type="add" issue="159">
               QuimP: Added registration window.
           </action>
-          <action dev="baniuk" type="add" issue="220">
+          <action dev="baniuk" type="add" issue="148">
               Protruision Analysis: Added polar plots.
           </action>
       </release>
       <release version="16.08.06" date="2016-10-06" description="Release">
-          <action dev="baniuk" type="fix" issue="232">
+          <action dev="baniuk" type="fix" issue="158">
               Random Walk plugin reported bad seed colors. It was not a bug but rather lack of proper documentation.
           </action>
       </release>
       <release version="16.08.05" date="2016-10-06" description="Release">
-          <action dev="baniuk" type="fix" issue="231">
+          <action dev="baniuk" type="fix" issue="157">
               Fixed problem with FormatConverter.
           </action>
       </release>
       <release version="16.08.04" date="2016-10-03" description="Release">
-          <action dev="baniuk" type="fix" issue="226">
+          <action dev="baniuk" type="fix" issue="154">
               Included javac dependency to solve problem with dependencies removed from Fiji. See this thread: http://forum.imagej.net/t/no-javac-jar-found/2340.
           </action>
       </release>
       <release version="16.08.03" date="2016-10-01" description="Release">
-          <action dev="baniuk" type="add" issue="216">
+          <action dev="baniuk" type="add" issue="144">
               Added simple tool for conversion between paQP and QCONF format.
           </action>
-          <action dev="baniuk" type="add" issue="219">
+          <action dev="baniuk" type="add" issue="147">
               Protrusion Analysis: Added outline plots.   
           </action>
-          <action dev="baniuk" type="add" issue="214">
+          <action dev="baniuk" type="add" issue="142">
               Protrusion Analysis: Added averaged background images.  
           </action>
-          <action dev="baniuk" type="add" issue="222">
+          <action dev="baniuk" type="add" issue="150">
               Protrusion Analysis: Added export of statistics.  
           </action>
-          <action dev="baniuk" type="add" issue="224">
+          <action dev="baniuk" type="add" issue="152">
               Protruision Analysis: Added user interface.  
           </action>
       </release>
       <release version="16.08.02" date="2016-09-15" description="Release">
-          <action dev="baniuk" type="add" issue="61">
+          <action dev="baniuk" type="add" issue="24">
             Protrusion Tracking: New output images.
          </action>
       </release>
       <release version="16.08.01-SNAPSHOT" date="2016-09-13" description="Release candidate 3">
-         <action dev="baniuk" type="update" issue="205">
+         <action dev="baniuk" type="update" issue="133">
             Plugin code reworked.
          </action>
-         <action dev="baniuk" type="fix" issue="200">
+         <action dev="baniuk" type="fix" issue="128">
             paQP files generated from QCONF contained bad segementation parameters.
          </action>
-         <action dev="baniuk" type="fix" issue="202">
+         <action dev="baniuk" type="fix" issue="130">
             ANA: clear option does not work.
          </action>
-         <action dev="baniuk" type="fix" issue="204">
+         <action dev="baniuk" type="fix" issue="132">
             ANA: stored bad paths in QCONF.
          </action>
-         <action dev="baniuk" type="update" issue="206">
+         <action dev="baniuk" type="update" issue="134">
             Added description of parameters in paQP file.
          </action>
-         <action dev="baniuk" type="update" issue="208">
+         <action dev="baniuk" type="update" issue="136">
             Rename toolbar menu entry.
          </action>
-         <action dev="baniuk" type="update" issue="209">
+         <action dev="baniuk" type="update" issue="137">
             Add preselection of active file format.
          </action>
-         <action dev="baniuk" type="add" issue="61">
+         <action dev="baniuk" type="add" issue="24">
             Protrusion Tracking: New output images.
          </action>
       </release> 
       <release version="16.08.01-SNAPSHOT" date="2016-09-02" description="Release candidate 2">
-         <action dev="baniuk" type="fix" issue="203">
+         <action dev="baniuk" type="fix" issue="131">
             Deal with problem of restoring image from QCONF file.
          </action>
         <action dev="baniuk" type="update" issue="">
@@ -207,70 +207,70 @@
         </action>
       </release> 
       <release version="16.08.01-SNAPSHOT" date="2016-09-01" description="Release candidate 1">
-         <action dev="baniuk" type="add" issue="195">
+         <action dev="baniuk" type="add" issue="123">
             Detect whether loaded QCONF file contains any previous data and notify user if it does.
          </action>
-        <action dev="baniuk" type="update" issue="199">
+        <action dev="baniuk" type="update" issue="127">
             Option for saving outlines as separte image in ANA module.
         </action>
-        <action dev="baniuk" type="update" issue="198">
+        <action dev="baniuk" type="update" issue="126">
             Allow to load new format to ANA.
         </action>
-        <action dev="baniuk" type="add" issue="196">
+        <action dev="baniuk" type="add" issue="124">
             Data files in old format (Q111) are always generated when saving in new format (QCONF).
         </action>
       </release> 
       <release version="16.08.01-SNAPSHOT" date="2016-07-30" description="Release candidate">
-         <action dev="baniuk" type="fix" issue="176">
+         <action dev="baniuk" type="fix" issue="104">
             Loading QCONF causes massive exceptions
          </action>
-        <action dev="baniuk" type="add" issue="189">
+        <action dev="baniuk" type="add" issue="117">
             Add options to clear all snakes and other settings from BOA menu
         </action>
-        <action dev="baniuk" type="add" issue="150">
+        <action dev="baniuk" type="add" issue="83">
             Allow to load new format to ECMM
         </action>
-        <action dev="baniuk" type="add" issue="194">
+        <action dev="baniuk" type="add" issue="122">
             Add support of new format QCONF to Q Analysis plugin
         </action>
       </release> 
      <release version="16.08.01-SNAPSHOT" date="2016-07-18" description="Snapshot release">
-      <action dev="baniuk" type="fix" issue="187">
+      <action dev="baniuk" type="fix" issue="115">
         Current frame sometimes does not update when action taken in Binary Segmentation plugin.
       </action>
-      <action dev="baniuk" type="fix" issue="186">
+      <action dev="baniuk" type="fix" issue="114">
         Binary Segmentation causes errors when snake is modified.
       </action>
-      <action dev="baniuk" type="fix" issue="188">
+      <action dev="baniuk" type="fix" issue="116">
         BOA does not ask about file to save on SaveQuit.
       </action>
-      <action dev="baniuk" type="fix" issue="176">
+      <action dev="baniuk" type="fix" issue="104">
         Loading QCONF causes massive exceptions sometimes.
       </action>
     </release> 
     <release version="16.08.01-SNAPSHOT" date="2016-07-13" description="Snapshot release">
-      <action dev="baniuk" type="fix" issue="181">
+      <action dev="baniuk" type="fix" issue="109">
         Edited snakes are not processed by filters.
       </action>
-      <action dev="baniuk" type="update" issue="179">
+      <action dev="baniuk" type="update" issue="107">
         Add default log4j configuration file.
       </action>
-      <action dev="baniuk" type="fix" issue="172">
+      <action dev="baniuk" type="fix" issue="100">
         Binary segmentation window can be duplicated.
       </action>
-      <action dev="baniuk" type="add" issue="175">
+      <action dev="baniuk" type="add" issue="103">
         Add about menu in QuimP bar.
       </action>
-      <action dev="baniuk" type="add" issue="182">
+      <action dev="baniuk" type="add" issue="110">
         Add link to doc from QuimP bar.
       </action>
-      <action dev="baniuk" type="update" issue="183">
+      <action dev="baniuk" type="update" issue="111">
         Random Walk GUI should offer option of creating of seed image.
       </action>
-      <action dev="baniuk" type="fix" issue="184">
+      <action dev="baniuk" type="fix" issue="112">
         BinarySegmentation fails on single slice images.
       </action>
-      <action dev="baniuk" type="update" issue="174">
+      <action dev="baniuk" type="update" issue="102">
         Binary segmentation should use various sources of masks.
       </action>
     </release>
