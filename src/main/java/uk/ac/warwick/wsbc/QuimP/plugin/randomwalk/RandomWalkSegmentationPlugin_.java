@@ -127,12 +127,14 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     static final Logger LOGGER =
             LoggerFactory.getLogger(RandomWalkSegmentationPlugin_.class.getName());
 
-    private ImagePlus image; //!< stack or image to segment
-    private ImagePlus seedImage; //!< RGB seed image
-    private Params params; // parameters
-    private double shrinkPower; //!< number of erosions for generating next seed from previous
-    private double expandPower;
-    private boolean useSeedStack; //!< \a true if seed has the same size as image, slices are seeds 
+    private ImagePlus image; // stack or image to segment.
+    private ImagePlus seedImage; // RGB seed image
+    private Params params; // All parameters
+    private double shrinkPower; // Number of erosions for generating next seed from previous one, or
+                                // number of pixels to shrink contour.
+    private double expandPower; // Number of dilatations for generating next seed from previous one,
+                                // or number of pixels to expand contour.
+    private boolean useSeedStack; // true if seed has the same size as image, slices are seeds
 
     private JComboBox<String> cImage, cSeed, cShrinkMethod;
     private JButton bClone;
@@ -150,6 +152,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      * @see #runPlugin()
      */
     private String shrinkMethods[] = new String[] { "OUTLINE", "MORPHO" };
+    /**
+     * Reference to underlying Frame object.
+     */
     public JFrame wnd;
 
     /**
@@ -417,9 +422,13 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             ImagePlus segmented = new ImagePlus("Segmented_" + image.getTitle(), ret);
             segmented.show();
             segmented.updateAndDraw();
-            // show seeds if selected
+            // show seeds if selected and not stack seeds
             if (cShowSeed.isSelected()) {
-                propagateSeeds.getCompositeSeed(image.duplicate()).show();
+                if (useSeedStack == true)
+                    LOGGER.warn("Effective seeds are not displayed if"
+                            + " initial seeds are provided as stack");
+                else
+                    propagateSeeds.getCompositeSeed(image.duplicate()).show();
             }
         } catch (RandomWalkException e) {
             e.handleException(wnd, "Segmentation failed:");
