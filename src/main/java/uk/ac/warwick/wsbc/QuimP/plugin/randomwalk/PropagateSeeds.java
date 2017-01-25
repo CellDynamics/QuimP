@@ -328,8 +328,7 @@ public abstract class PropagateSeeds {
         ImagePlus ret;
         if (seeds == null)
             throw new IllegalArgumentException("Seeds were not stored.");
-        int f = seeds.size();
-        if (f == 0)
+        if (seeds.size() == 0)
             throw new IllegalArgumentException("Seeds were not stored.");
         ImageStack smallstack =
                 new ImageStack(seeds.get(0).first.getWidth(), seeds.get(0).first.getHeight());
