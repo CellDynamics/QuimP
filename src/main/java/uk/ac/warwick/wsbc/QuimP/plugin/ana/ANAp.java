@@ -13,33 +13,88 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * The structure of transient and non-transient fields must be reflected in FormatConverter.
  * 
  * @author rtyson
+ * @author p.baniukiewicz
  * @see FormatConverter#doConversion()
  */
 public class ANAp {
 
-    transient public File INFILE;
-    transient public File OUTFILE;
-    transient public File STATSFILE;
-    transient public File FLUOFILE;
-    private double cortexWidthPixel; // in pixels
-    private double cortexWidthScale; // at scale
+    /**
+     * Array of fluorescent channels.
+     */
     public File[] fluTiffs;
-    transient public double stepRes = 0.04; // step size in pixels
-    transient public double freezeTh = 1;
-    transient public double angleTh = 0.1;
-    transient public double oneFrameRes = 1;
+    /**
+     * Input file reference.
+     * 
+     * snQP file if run from paQP.
+     */
+    transient public File INFILE;
+    /**
+     * Output snQP file reference (the same as {@link #INFILE}
+     */
+    transient public File OUTFILE;
+    /**
+     * Reference to Stats file.
+     * 
+     * USed in QCONF/paQP.
+     */
+    transient public File STATSFILE;
+    /**
+     * Atomic step during contour shrinking.
+     */
+    transient final public double stepRes = 0.04; // step size in pixels
+    /**
+     * Angle to freeze neighbouring vertexes.
+     */
+    transient final public double freezeTh = 1;
+    /**
+     * @see uk.ac.warwick.wsbc.QuimP.geom.OutlineProcessor#shrink(double, double, double, double)
+     */
+    transient final public double angleTh = 0.1;
+    /**
+     * @see uk.ac.warwick.wsbc.QuimP.Outline#setResolution(double)
+     */
+    transient final public double oneFrameRes = 1;
+    /**
+     * Image scale.
+     * 
+     * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
+     */
     transient public double scale = 1.0;
+    /**
+     * Frame interval.
+     * 
+     * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
+     */
     transient public double frameInterval;
-    transient public int startFrame, endFrame;
-    transient boolean normalise = true;
-    transient boolean sampleAtSame = false;
+    /**
+     * Frame range.
+     * 
+     * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
+     */
+    transient public int startFrame;
+    /**
+     * Frame range.
+     * 
+     * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
+     */
+    transient public int endFrame;
+
+    // parameters of algorithm and control variables
+    transient boolean normalise = true; // UI setting
+    transient boolean sampleAtSame = false; // UI setting
+    transient boolean plotOutlines = false; // UI setting, plot outlines on new image
     transient int[] presentData;
     transient boolean cleared;
     transient boolean noData;
-    transient int channel = 0;
-    transient int useLocFromCh;
-    transient boolean plotOutlines = false; // plot outlines on new image
+    transient int channel = 0; // UI setting
+    transient int useLocFromCh; // UI setting
 
+    private double cortexWidthPixel; // in pixels
+    private double cortexWidthScale; // at scale
+
+    /**
+     * Default constructor.
+     */
     public ANAp() {
         fluTiffs = new File[3];
         fluTiffs[0] = new File("/");
@@ -58,13 +113,8 @@ public class ANAp {
         this.INFILE = new File(src.INFILE.getAbsolutePath());
         this.OUTFILE = new File(src.OUTFILE.getAbsolutePath());
         this.STATSFILE = new File(src.STATSFILE.getAbsolutePath());
-        this.FLUOFILE = new File(src.FLUOFILE.getAbsolutePath());
         this.cortexWidthPixel = src.cortexWidthPixel;
         this.cortexWidthScale = src.cortexWidthScale;
-        this.stepRes = src.stepRes;
-        this.freezeTh = src.freezeTh;
-        this.angleTh = src.angleTh;
-        this.oneFrameRes = src.oneFrameRes;
         this.scale = src.scale;
         this.frameInterval = src.frameInterval;
         this.startFrame = src.startFrame;
@@ -105,6 +155,10 @@ public class ANAp {
         noData = true;
     }
 
+    /**
+     * 
+     * @param c the scale
+     */
     public void setCortextWidthScale(double c) {
         cortexWidthScale = c;
         cortexWidthPixel = QuimpToolsCollection.distanceFromScale(cortexWidthScale, scale);
@@ -117,6 +171,10 @@ public class ANAp {
         return cortexWidthPixel;
     }
 
+    /**
+     * 
+     * @return cortexWidthScale
+     */
     public double getCortexWidthScale() {
         return cortexWidthScale;
     }

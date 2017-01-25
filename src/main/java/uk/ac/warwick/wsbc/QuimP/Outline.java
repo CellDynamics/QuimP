@@ -327,7 +327,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     }
 
     /**
-     * Evenly spaces a new vertices around the ouline by following vectors between verts
+     * Evenly spaces a new vertices around the outline by following vectors between verts
      * 
      * @param density
      */

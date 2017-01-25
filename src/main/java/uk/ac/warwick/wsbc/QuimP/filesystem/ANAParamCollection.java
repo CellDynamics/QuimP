@@ -11,14 +11,24 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
  *
  */
 public class ANAParamCollection implements IQuimpSerialize {
+    /**
+     * Array of configuration options for every cell present in the image.
+     */
     public ArrayList<ANAp> aS;
 
+    /**
+     * Default constructor.
+     * 
+     * Create empty store for {@link ANAp} configurations.
+     */
     public ANAParamCollection() {
         aS = new ArrayList<>();
     }
 
     /**
-     * Create <tt>size</tt> elements in array.
+     * Create <tt>size</tt> elements in store for {@link ANAp} configurations.
+     * 
+     * Size of the store usually equals to the number of cells in the image.
      * 
      * @param size
      */
@@ -28,11 +38,21 @@ public class ANAParamCollection implements IQuimpSerialize {
             aS.add(new ANAp());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#beforeSerialize()
+     */
     @Override
     public void beforeSerialize() {
 
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#afterSerialize()
+     */
     @Override
     public void afterSerialize() throws Exception {
 

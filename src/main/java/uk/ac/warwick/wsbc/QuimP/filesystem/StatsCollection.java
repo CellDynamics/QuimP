@@ -27,6 +27,9 @@ public class StatsCollection implements IQuimpSerialize {
     public ArrayList<CellStats> sHs;
 
     /**
+     * Create <tt>size</tt> elements in store for {@link CellStats} objects.
+     * 
+     * Size of the store usually equals to the number of cells in the image.
      * 
      * @param size Number of cells
      */
@@ -34,6 +37,11 @@ public class StatsCollection implements IQuimpSerialize {
         sHs = new ArrayList<>(size);
     }
 
+    /**
+     * Default constructor.
+     * 
+     * Create empty store for {@link CellStats} objects.
+     */
     public StatsCollection() {
         sHs = new ArrayList<>();
     }

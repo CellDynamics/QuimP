@@ -265,8 +265,7 @@ public class BOA_ implements PlugIn {
 
     /**
      * Build all BOA windows and setup initial parameters for segmentation Define also
-     * windowListener for cleaning after closing the main window by user. git tag -a
-     * "SNAPSHOT-13-07-16" -m "Releasing snaphots to Fiji internal update site"
+     * windowListener for cleaning after closing the main window by user.
      * 
      * @param ip Reference to image to be processed by BOA
      * @see BOAp
