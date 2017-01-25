@@ -364,7 +364,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     }
 
     /**
-     * Run segmentation - fired from UI
+     * Run segmentation - fired from UI.
      */
     private void runPlugin() {
         ImageStack ret; // all images treated as stacks

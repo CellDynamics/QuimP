@@ -25,13 +25,12 @@ public class RandomWalkSegmentationPlugin_run {
         CountDownLatch startSignal = new CountDownLatch(1);
         ImageJ ij = new ImageJ();
         RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
-        IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
-                "open(\"/tmp/Stack_cut.tif\")");
-        // IJ.runMacro(
-        // "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
-        // obj.run("");
+        // IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
+        // "open(\"src/test/resources/ticket209gh/fluoreszenz-test.tif\")");
+        // IJ.runMacro("open(\"src/test/resources/ticket209gh/segmented_color.tif\")");
+        IJ.openImage("src/test/resources/ticket209gh/fluoreszenz-test.tif").show();
+        IJ.openImage("src/test/resources/ticket209gh/segmented_color.tif").show();
         obj.run("");
-
         obj.wnd.addWindowListener(new WindowAdapter() {
 
             @Override

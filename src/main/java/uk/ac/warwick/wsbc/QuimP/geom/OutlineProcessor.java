@@ -8,7 +8,7 @@ import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANA_;
 
 /**
- * Support algorithm for processing outlines.
+ * Support algorithms for processing outlines.
  * 
  * @author p.baniukiewicz
  * @see ANA_

@@ -226,7 +226,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
      */
     public void removeVert(final Vert v) {
         if (POINTS <= 3) {
-            LOGGER.error("Outline. 175. Can't remove node. less than 3 would remain");
+            LOGGER.error("Outline. 175. Can't remove node. Less than 3 would remain");
             return;
         }
         super.removePoint(v, true);
