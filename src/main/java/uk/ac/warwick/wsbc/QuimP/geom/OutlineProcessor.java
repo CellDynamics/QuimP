@@ -112,6 +112,12 @@ public class OutlineProcessor {
             o.updateNormales(true);
             o.updateCurvature();
 
+            // do not shrink if there are 4 nodes or less
+            if (o.getNumPoints() <= 4) {
+                LOGGER.debug("Stopped iterations");
+                break;
+            }
+
             if (j > max) {
                 LOGGER.warn("shrink (336) hit max iterations!");
                 break;
