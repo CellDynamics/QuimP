@@ -93,15 +93,15 @@ public class ANA_ implements PlugInFilter, DialogListener {
         about();
         if (imp == null) {
             IJ.error("Image required to take fluoresence measurments.");
-            return cap;
+            return DONE;
         }
 
         // System.out.println("flouIm dir: " +
         // imp.getOriginalFileInfo().directory);
-        if (imp.getOriginalFileInfo().directory.matches("")) {
+        if (imp.getOriginalFileInfo() == null || imp.getOriginalFileInfo().directory.matches("")) {
             IJ.log("Error: Fluorescence file needs to be saved to disk");
             IJ.error("Please save your fluorescence image to file.");
-            return cap;
+            return DONE;
         }
 
         IJ.run("Appearance...", " menu=0"); // switch off interpolation of zoomed images
