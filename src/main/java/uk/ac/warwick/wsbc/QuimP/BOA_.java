@@ -220,8 +220,8 @@ public class BOA_ implements PlugIn {
 
         lastTool = IJ.getToolName();
         // stack or single image?
-        if (ip == null) {
-            IJ.error("Image required");
+        if (ip == null || ip.getNChannels() > 1) {
+            IJ.error("Single channel image required");
             return;
         } else if (ip.getStackSize() == 1) {
             qState.boap.singleImage = true;
