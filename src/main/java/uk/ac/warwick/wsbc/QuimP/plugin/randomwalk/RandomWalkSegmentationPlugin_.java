@@ -30,6 +30,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -100,6 +101,7 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
  *   Default -> Run
  *   Run : Verify all fields
  *   Run : Run algorithm
+ *   Run : Maintain UI state
  *   Sketch --> Run
  *   Sketch --> [*]
  *   SeedCreation --> Run
@@ -110,6 +112,25 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
  *   Default --> [*]
  * @enduml
  * 
+ * @startuml doc-files/RandomWalkSegmentationPlugin_3_UML.png
+ * actor "IJ plugin runner"
+ * actor User
+ * "IJ plugin runner" -> RandomWalkSegmentationPlugin_ : run()
+ * RandomWalkSegmentationPlugin_ -> RandomWalkSegmentationPlugin_ :showDialog()
+ * ...
+ * User -> Dialog : click Apply 
+ * Dialog -> RWWorker : <<create>>
+ * activate RWWorker
+ * RWWorker -> Dialog : enableUI(false)
+ * RWWorker -> Dialog : rename button
+ * RWWorker -> RandomWalkSegmentationPlugin_ : runPlugin()
+ * RandomWalkSegmentationPlugin_ --> IJ : update progress
+ * RandomWalkSegmentationPlugin_ --> RWWorker : done
+ * RWWorker -> Dialog : enableUI(true)
+ * RWWorker -> Dialog : rename button
+ * RWWorker --> Dialog : <<end>>
+ * deactivate RWWorker
+ * @enduml
  * !<
  */
 /**
@@ -119,6 +140,9 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
  * image - in this case seed propagation is used to generate seed for subsequent frames, or it can
  * be stack of the same size as image. In latter case every slice from seed is used for seeding
  * related slice from image.
+ * 
+ * Principles of working:<br>
+ * <img src="doc-files/RandomWalkSegmentationPlugin_3_UML.png"/><br>
  * 
  * @author p.baniukiewicz
  *
@@ -132,7 +156,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     private Params params; // All parameters
     private double shrinkPower; // Number of erosions for generating next seed from previous one, or
                                 // number of pixels to shrink contour.
-    private double expandPower; // Number of dilatations for generating next seed from previous one,
+    private double expandPower; // Number of dilations for generating next seed from previous one,
                                 // or number of pixels to expand contour.
     private boolean useSeedStack; // true if seed has the same size as image, slices are seeds
 
@@ -144,6 +168,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     private BrushTool br = new BrushTool();
     private JCheckBox cShowSeed;
     private String lastTool; // tool selected in IJ
+    private boolean isCanceled; // true if user click Cancel, false if clicked Apply
+    private boolean isRun; // true if segmentation is running
 
     /**
      * Define shrinking methods.
@@ -162,6 +188,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      */
     public RandomWalkSegmentationPlugin_() {
         lastTool = IJ.getToolName(); // remember selected tool
+        isCanceled = false;
+        isRun = false;
     }
 
     /**
@@ -329,7 +357,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                 for (String s : WindowManager.getImageTitles())
                     cImage.addItem(s);
                 cImage.setSelectedItem(sel);
-                selectorLogic();
+                uiLogic();
             }
         });
         wnd.pack();
@@ -339,9 +367,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     }
 
     /**
-     * Control status of FG, BG and Clone buttons
+     * Control status of FG, BG and Clone buttons.
      */
-    private void selectorLogic() {
+    private void uiLogic() {
         // disable on start only if there is no image
         if (cImage.getSelectedItem() == null) // if not null it must be string
             bClone.setEnabled(false);
@@ -354,6 +382,29 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             bFore.setEnabled(true);
             bBack.setEnabled(true);
         }
+    }
+
+    /**
+     * Set the same status for all UI elements except Cancel button.
+     * 
+     * @param status
+     */
+    private void enableUI(boolean status) {
+        cImage.setEnabled(status);
+        cSeed.setEnabled(status);
+        cShrinkMethod.setEnabled(status);
+        bClone.setEnabled(status);
+        bBack.setEnabled(status);
+        bFore.setEnabled(status);
+        sAlpha.setEnabled(status);
+        sBeta.setEnabled(status);
+        sGamma.setEnabled(status);
+        sIter.setEnabled(status);
+        sShrinkPower.setEnabled(status);
+        sExpandPower.setEnabled(status);
+        bApply.setEnabled(status);
+        bHelp.setEnabled(status);
+        cShowSeed.setEnabled(status);
     }
 
     /**
@@ -386,9 +437,10 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             default:
                 throw new IllegalArgumentException("Unsupported shrinking algorithm");
         }
+        isRun = true; // segmentation started
+        ImageStack is = image.getStack(); // get current stack (size 1 for one image)
         try {
             ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
-            ImageStack is = image.getStack(); // get current stack (size 1 for one image)
             // segment first slice (or image if it is not stack)
             RandomWalkSegmentation obj = new RandomWalkSegmentation(is.getProcessor(1), params);
             seeds = obj.decodeSeeds(seedImage.getStack().getProcessor(1), Color.RED, Color.GREEN); // generate
@@ -396,7 +448,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             ImageProcessor retIp = obj.run(seeds); // segmentation
             ret.addSlice(retIp.convertToByte(true)); // store output in new stack
             // iterate over all slices after first (may not run for one image)
-            for (int s = 2; s <= is.getSize(); s++) {
+            for (int s = 2; s <= is.getSize() && isCanceled == false; s++) {
                 Map<Integer, List<Point>> nextseed;
                 obj = new RandomWalkSegmentation(is.getProcessor(s), params);
                 // get seeds from previous result
@@ -432,6 +484,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             }
         } catch (RandomWalkException e) {
             e.handleException(wnd, "Segmentation failed:");
+        } finally {
+            isRun = false; // segmentation stopped
+            IJ.showProgress(is.getSize() + 1, is.getSize()); // erase progress bar
         }
     }
 
@@ -446,7 +501,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         Object b = e.getSource();
         // enable disable controls depending on selectors (see diagram)
         if (b == cImage || b == cSeed) {
-            selectorLogic();
+            uiLogic();
         }
         // Start data verification, show message on problem and exit method setting FGBG unselected
         // 0. check if we can paint on selected image if user try
@@ -486,6 +541,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             }
         }
         if (b == bApply) {
+            isCanceled = false; // run
             // verify data before - store data in object after verification
             ImagePlus tmpSeed = WindowManager.getImage((String) cSeed.getSelectedItem()); // tmp var
             ImagePlus tmpImage = WindowManager.getImage((String) cImage.getSelectedItem());
@@ -535,7 +591,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             // all ok - store images to later use
             image = tmpImage;
             seedImage = tmpSeed;
-            runPlugin(); // run process - it gives new image
+            RWWorker rww = new RWWorker();
+            rww.execute();
+            // runPlugin(); // run process - it gives new image
             // decelect seeds buttons
             bBack.setSelected(false);
             bFore.setSelected(false);
@@ -561,7 +619,10 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             }
         }
         if (b == bCancel) {
-            wnd.dispose();
+            isCanceled = true;
+            if (isRun == false)
+                wnd.dispose(); // Close window but only when segmentation is not run. Otherwise only
+                               // set isCanceled to false
         }
 
     }
@@ -569,6 +630,27 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     @Override
     public void stateChanged(ChangeEvent e) {
         LOGGER.debug("State changed");
+    }
+
+    /**
+     * Swing worker class.
+     * 
+     * Run segmentation and take care about renaming/blocking UI elements.
+     * 
+     * @author p.baniukiewicz
+     *
+     */
+    class RWWorker extends SwingWorker<Object, Object> {
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            bCancel.setText("STOP"); // use cancel to stopping
+            enableUI(false);
+            runPlugin(); // will update IJ progress bar
+            enableUI(true);
+            bCancel.setText("Cancel");
+            return null;
+        }
     }
 
 }
