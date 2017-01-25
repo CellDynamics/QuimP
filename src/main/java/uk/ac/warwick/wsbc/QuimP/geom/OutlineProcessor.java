@@ -8,7 +8,7 @@ import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANA_;
 
 /**
- * Support algorithm for processing outlines.
+ * Support algorithms for processing outlines.
  * 
  * @author p.baniukiewicz
  * @see ANA_
@@ -111,6 +111,12 @@ public class OutlineProcessor {
             o.correctDensity(d, d / 2);
             o.updateNormales(true);
             o.updateCurvature();
+
+            // do not shrink if there are 4 nodes or less
+            if (o.getNumPoints() <= 4) {
+                LOGGER.debug("Stopped iterations");
+                break;
+            }
 
             if (j > max) {
                 LOGGER.warn("shrink (336) hit max iterations!");

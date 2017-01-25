@@ -251,7 +251,7 @@ public abstract class PropagateSeeds {
             // make objects smaller
             iterateMorphological(small, PropagateSeeds.ERODE, shrinkPower);
             // make background bigger
-            iterateMorphological(big, PropagateSeeds.DILATE, (int) (expandPower));
+            iterateMorphological(big, PropagateSeeds.DILATE, expandPower);
 
             // apply big to old background making object bigger and prevent covering objects on
             // frame

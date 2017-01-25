@@ -402,35 +402,31 @@ public class RandomWalkSegmentation {
      * @throws RandomWalkException On wrong seeds
      */
     public ImageProcessor run(Map<Integer, List<Point>> seeds) throws RandomWalkException {
-        if (seeds.get(FOREGROUND).isEmpty() || seeds.get(BACKGROUND).isEmpty())
-            throw new RandomWalkException(
-                    "Seed pixels are empty, check if:\n- correct colors were used\n- all slices have"
-                            + " been seeded (if stacked seed is used).");
-        RealMatrix[] precomputed = precompute(); // precompute gradients
-        // compute mean intensity of foreground and background pixels and run solver
-        RealMatrix[] solved = solver(image, seeds, precomputed, getMeanSeed(seeds), params);
-        RealMatrix result = compare(solved[FOREGROUND], solved[BACKGROUND]); // result as matrix
-        return RealMatrix2ImageProcessor(result).convertToByteProcessor(true);
+        return run(seeds, null);
     }
 
     /**
      * Runner that allows to provide own mean intensity values for FG and BG pixels.
      * 
      * @param seeds
-     * @param meanseeds array of [FG] [BG] mean values of pixels.
+     * @param meanseeds array of [FG] [BG] mean values of pixels. Set to null to compute from seeds.
      * @return Segmented image
      * @throws RandomWalkException
      * @see #getMeanSeed(Map)
      */
     public ImageProcessor run(Map<Integer, List<Point>> seeds, double[] meanseeds)
             throws RandomWalkException {
+        RealMatrix[] solved;
         if (seeds.get(FOREGROUND).isEmpty() || seeds.get(BACKGROUND).isEmpty())
             throw new RandomWalkException(
                     "Seed pixels are empty, check if:\n- correct colors were used\n- all slices have"
-                            + " been seeded (if stacked seed is used).");
+                            + " been seeded (if stacked seed is used)\n"
+                            + "- Shrink/expand parameters are not too big.");
         RealMatrix[] precomputed = precompute(); // precompute gradients
-
-        RealMatrix[] solved = solver(image, seeds, precomputed, meanseeds, params); // run solver
+        if (meanseeds == null)
+            solved = solver(image, seeds, precomputed, getMeanSeed(seeds), params);
+        else
+            solved = solver(image, seeds, precomputed, meanseeds, params); // run solver
         RealMatrix result = compare(solved[FOREGROUND], solved[BACKGROUND]); // result as matrix
         return RealMatrix2ImageProcessor(result).convertToByteProcessor(true);
     }
