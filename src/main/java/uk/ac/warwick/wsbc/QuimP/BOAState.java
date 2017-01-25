@@ -517,8 +517,14 @@ public class BOAState implements IQuimpSerialize {
         boolean zoom;
         boolean doDelete;
         boolean doDeleteSeg;
-        boolean editMode; //!< is select a cell for editing active? 
-        int editingID; //!< currently editing cell iD. -1 if not editing
+        /**
+         * is select a cell for editing active? 
+         */
+        boolean editMode;
+        /**
+         * currently editing cell iD. -1 if not editing
+         */
+        int editingID;
         boolean useSubPixel = true;
         /**
          * Block rerun of runBoa() when spinners have been changed programmatically.
@@ -526,7 +532,10 @@ public class BOAState implements IQuimpSerialize {
          * Modification of spinners from code causes that stateChanged() event is called.
          */
         boolean supressStateChangeBOArun = false;
-        int callCount; // <! use to test how many times a method is called
+        /**
+         * use to test how many times a method is called
+         */
+        int callCount;
         /**
          * Indicate that {@link uk.ac.warwick.wsbc.QuimP.BOA_#runBoa(int, int)} is active.
          * 
@@ -535,9 +544,9 @@ public class BOAState implements IQuimpSerialize {
          * {@link uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow#updateSliceSelector()} which then
          * fire other methods.
          */
-        boolean SEGrunning; //!< is segmentation running 
-        private double imageScale; //!< scale of image read from ip
-        private boolean scaleAdjusted = false; //!< \c true when adjusted in constructor
+        boolean SEGrunning; 
+        private double imageScale; // scale of image read from ip
+        private boolean scaleAdjusted = false; // true when adjusted in constructor
 
         /**
          * @return the imageScale
