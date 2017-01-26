@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,11 +95,8 @@ public class PluginFactory_Test {
      * 
      * Post: empty list
      * 
-     * @throws Exception
-     * 
      */
-    @Test(expected = QuimpPluginException.class)
-    public void test_GetPluginNames_nodir() throws Exception {
+    public void test_GetPluginNames_nodir() {
         PluginFactory pluginFactory;
         pluginFactory = new PluginFactory(Paths.get("../fgrtg/"));
         ArrayList<String> ar;

@@ -1,5 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.scijava</groupId>
+    <artifactId>pom-scijava</artifactId>
+    <version>12.0.0</version>
+    <relativePath/>
+  </parent>
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>QuimP_</artifactId>
@@ -9,14 +15,18 @@
   <name>QuimP</name>
   <url>www.warwick.ac.uk/quimp</url>
   <description>QuimP software, a set of plugins for ImageJ to quantify spatio-temporal patterns of fluorescently labeled proteins in the cortex of moving cells.</description>
+  <inceptionYear>2002</inceptionYear>
   <!-- Root of URL for documentation. MUST have / at end -->
   <properties>
     <manual.rootlocation>http://pilip.lnx.warwick.ac.uk/docs/</manual.rootlocation>
     <site.rootlocation>http://pilip.lnx.warwick.ac.uk/site/</site.rootlocation>
     <site.historylocation>${site.rootlocation}changes-report.html</site.historylocation>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!--package-name>com.mycompany.imagej</package-name-->
+    <!--main-class>com.mycompany.imagej.Process_Pixels</main-class-->
+    <license.licenseName>QuimP License</license.licenseName>
+    <license.copyrightOwners>University of Warwick</license.copyrightOwners>
   </properties>
-  <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
   <scm>
     <connection>scm:git:https://github.com/CellDynamics/QuimPpriv.git</connection>
     <developerConnection>scm:git:https://github.com/CellDynamics/QuimPpriv.git</developerConnection>
@@ -31,8 +41,8 @@
     <license>
       <name>QuimP License</name>
       <url>http://pilip.lnx.warwick.ac.uk/LICENSE.txt</url>
-      <distribution>manual</distribution>
-      <comments>University licence</comments>
+      <distribution>repo</distribution>
+      <comments>University of Warwick licence</comments>
     </license>
   </licenses>
   <organization>
@@ -46,8 +56,11 @@
       <email>p.baniukiewicz@warwick.ac.uk</email>
       <organization>University of Warwick</organization>
       <roles>
+        <role>lead</role>
         <role>developer</role>
-        <role>researcher</role>
+        <role>support</role>
+        <role>reviewer</role>
+        <role>maintainer</role>
       </roles>
       <timezone>London</timezone>
     </developer>
@@ -57,86 +70,86 @@
       <email>T.Bretschneider@warwick.ac.uk</email>
       <organization>University of Warwick</organization>
       <roles>
-        <role>principal investigator</role>
-        <role>researcher</role>
-      </roles>
-      <timezone>London</timezone>
-    </developer>
-    <developer>
-      <name>Richard Tyson</name>
-      <organization>University of Warwick</organization>
-      <roles>
-        <role>developer</role>
-        <role>researcher</role>
+        <role>founder</role>
+        <role>support</role>
       </roles>
       <timezone>London</timezone>
     </developer>
   </developers>
+  <contributors>
+    <contributor>
+      <name>Richard Tyson</name>
+      <organization>University of Warwick</organization>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>London</timezone>
+    </contributor>
+  </contributors>
+  <mailingLists>
+    <mailingList>
+      <name>ImageJ Forum</name>
+      <archive>http://forum.imagej.net/</archive>
+    </mailingList>
+  </mailingLists>
+  <ciManagement>
+    <system>None</system>
+  </ciManagement>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
       <scope>test</scope>
-      <!-- https://books.sonatype.com/mvnex-book/reference/simple-project-sect-simple-core.html -->
-    </dependency>
-    <dependency>
-      <groupId>net.imagej</groupId>
-      <artifactId>ij</artifactId>
-      <version>1.51h</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>2.0.41-beta</version>
+      <version>2.6.8</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>pl.pragmatists</groupId>
+      <artifactId>JUnitParams</artifactId>
+      <version>1.0.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.imagej</groupId>
+      <artifactId>ij</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.7</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-math3</artifactId>
-      <version>3.6.1</version>
     </dependency>
     <dependency>
+      <!-- not in pom-scijava -->
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.1</version>
     </dependency>
     <dependency>
-      <groupId>pl.pragmatists</groupId>
-      <artifactId>JUnitParams</artifactId>
-      <version>1.0.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.21</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>1.1.7</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.1.7</version>
     </dependency>
     <dependency>
       <groupId>org.scijava</groupId>
       <artifactId>scijava-config</artifactId>
-      <version>2.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.scijava</groupId>
       <artifactId>vecmath</artifactId>
-      <version>1.6.0-scijava-2</version>
     </dependency>
   </dependencies>
   <build>
@@ -148,9 +161,9 @@
     </resources>
     <plugins>
       <plugin>
+        <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.4</version>
         <executions>
           <execution>
             <phase>validate</phase>
@@ -171,7 +184,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.1</version>
         <configuration>
           <archive>
             <manifest>
@@ -187,11 +199,6 @@
         <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-creating-simple-weather.html -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.5.1</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -210,7 +217,6 @@
         <!-- Default PluginFactory - not mocked -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.10</version>
         <executions>
           <execution>
             <id>add-source</id>
@@ -229,7 +235,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>1.5.0</version>
         <inherited>false</inherited>
         <!-- only execute these in the parent -->
         <executions>
@@ -254,7 +259,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
         <configuration>
           <tagNameFormat>v@{project.version}</tagNameFormat>
           <pushChanges>false</pushChanges>
@@ -328,7 +332,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
-            <version>2.10</version>
             <executions>
               <execution>
                 <id>copy-dependencies</id>

@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import ij.IJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.PropagateSeeds;
 
 /**
  * @author p.baniukiewicz
@@ -12,6 +11,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.PropagateSeeds;
  */
 public class IJToolsTest {
 
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testGetComposite() throws Exception {
         ImagePlus org = IJ.openImage("src/test/resources/G.tif");
@@ -23,9 +26,12 @@ public class IJToolsTest {
         // ret.show();
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testGetComposite_stack() throws Exception {
-        PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
         ImagePlus org = IJ.openImage("src/test/resources/G1.tif");
         ImagePlus small = IJ.openImage("src/test/resources/R1.tif");
         ImagePlus big = IJ.openImage("src/test/resources/B1.tif");

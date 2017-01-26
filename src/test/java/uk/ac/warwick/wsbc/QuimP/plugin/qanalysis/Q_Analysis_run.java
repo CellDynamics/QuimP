@@ -16,6 +16,7 @@ public class Q_Analysis_run {
     /**
      * @param args
      */
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         ImageJ ij = new ImageJ();
         // if default constructor is used Q_Analysis will ask for paQP file

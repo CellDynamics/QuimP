@@ -19,6 +19,7 @@ public class QuimP_Bar_run {
     /**
      * @param args
      */
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         ImageJ ij = new ImageJ();
         QuimP_Bar bar = new QuimP_Bar();

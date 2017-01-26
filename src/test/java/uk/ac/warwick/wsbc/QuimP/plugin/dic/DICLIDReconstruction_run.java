@@ -18,6 +18,7 @@ public class DICLIDReconstruction_run {
      * @param args
      * @throws InterruptedException Gui checker for DICLIDReconstruction
      */
+    @SuppressWarnings("unused")
     public static void main(String[] args) throws InterruptedException {
         ImageJ ij = new ImageJ();
         ImagePlus i = IJ.openImage( // load images #272
