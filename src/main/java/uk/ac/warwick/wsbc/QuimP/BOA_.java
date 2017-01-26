@@ -892,11 +892,7 @@ public class BOA_ implements PlugIn {
             sZoom.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    sZoom.removeAll();
-                    sZoom.add(fullZoom); // default word for full zoom (100% of view)
-                    List<Integer> frames = qState.nest.getSnakesforFrame(qState.boap.frame);
-                    for (Integer i : frames)
-                        sZoom.add(i.toString());
+                    fillZoomChoice();
                 }
             });
             // -------------------------------
@@ -907,6 +903,17 @@ public class BOA_ implements PlugIn {
             controlPanel.add(bottomPanel, BorderLayout.SOUTH);
 
             return controlPanel;
+        }
+
+        /**
+         * Rebuild Zoom choice UI according to cells on current frame {@link BOAp#frame}.
+         */
+        private void fillZoomChoice() {
+            sZoom.removeAll();
+            sZoom.add(fullZoom); // default word for full zoom (100% of view)
+            List<Integer> frames = qState.nest.getSnakesforFrame(qState.boap.frame);
+            for (Integer i : frames)
+                sZoom.add(i.toString());
         }
 
         /**
@@ -1024,7 +1031,7 @@ public class BOA_ implements PlugIn {
 
         /**
          * Update spinners in BOA UI Update spinners according to values stored in machine state
-         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}
+         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}.
          * 
          * @see BOAp
          */
@@ -1045,7 +1052,7 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Update checkboxes
+         * Update checkboxes.
          * 
          * @see uk.ac.warwick.wsbc.QuimP.SnakePluginList
          * @see #itemStateChanged(ItemEvent)
@@ -1125,6 +1132,9 @@ public class BOA_ implements PlugIn {
                 else
                     sThirdPluginName.setBackground(ok);
             }
+            // zoom choice
+            if (qState.boap.snakeToZoom > -1)
+                sZoom.select(String.valueOf(qState.boap.snakeToZoom));
 
         }
 
@@ -1438,6 +1448,8 @@ public class BOA_ implements PlugIn {
                         imageGroup.updateNest(qState.nest); // reconnect nest to external class
                         qState.restore(qState.boap.frame); // copy from snapshots to current object
                         updateSpinnerValues(); // update segmentation gui
+                        fillZoomChoice(); // refill frame zoom choice to make possible selection
+                                          // last zoomed cell (called from updateChoice)
                         // do not recalculatePlugins here because pluginList is empty and this
                         // method will update finalSnake overriding it by segSnake (because on
                         // empty list they are just copied)
