@@ -98,9 +98,67 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
+/*
+ * !>
+ * @startuml doc-files/BOA_1_UML.png
+ * actor User
+ * participant updateSliceSelector
+ * participant updateSpinnerValues
+ * participant updateWindowState
+ * participant actionPerformed
+ * participant fillZoomChoice
+ * 
+ * note over fillZoomChoice
+ * Fills zoom choice selector
+ * with current cell numbers
+ * endnote
+ * note over of updateSliceSelector
+ * Called as event on every
+ * slice change by user or
+ * programmatically (e.g. ""setIpSliceAll"")
+ * endnote
+ * note over of updateWindowState
+ * Contain also window logic
+ * endnote
+ * == Action taken by user ==
+ * User --> updateSliceSelector : any action as e.g. segmentation
+ * updateSliceSelector -> updateSpinnerValues
+ * updateSpinnerValues -> updateWindowState
+ * User --> fillZoomChoice : mouse pressed on choice
+ * == Restoring QCONF ==
+ * User --> actionPerformed : load Qconf
+ * actionPerformed -> updateSpinnerValues
+ * actionPerformed -> fillZoomChoice
+ * actionPerformed -> updateSliceSelector : can be called implicitly by moving slice ""updateToFrame""
+ * note left : see user actions for\ncontinuation
+ * actionPerformed -> updateWindowState
+ * == building window ==
+ * buildWindow -> updateWindowState
+ * == any change in spinners or other UIs ==
+ * User --> itemStateChanged : click
+ * User --> stateChanged : click
+ * itemStateChanged -> updateWindowState
+ * itemStateChanged -> updateChoices
+ * note left : ""updateWindowState"" calls ""updateChoices""\nbut here second call sets\ncolors on updated plugins
+ * stateChanged -> updateWindowState
+ * @enduml
+ * 
+ * @startuml doc-files/BOA_2_UML.png
+ * updateWindowState -> updateChoices
+ * updateWindowState -> updateCheckboxes
+ * @enduml
+ * !<
+ */
 
 /**
  * Main class implementing BOA plugin.
+ * 
+ * Refreshing window scheme (depending on the use case, some parts can be refreshed twice. For
+ * example, loading QCONF causes that {@link CustomStackWindow#updateWindowState()} is called two
+ * times. <br>
+ * <img src="doc-files/BOA_1_UML.png"/><br>
+ * <br>
+ * <img src="doc-files/BOA_2_UML.png"/><br>
  * 
  * @author Richard Tyson
  * @author Till Bretschneider
@@ -892,11 +950,7 @@ public class BOA_ implements PlugIn {
             sZoom.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    sZoom.removeAll();
-                    sZoom.add(fullZoom); // default word for full zoom (100% of view)
-                    List<Integer> frames = qState.nest.getSnakesforFrame(qState.boap.frame);
-                    for (Integer i : frames)
-                        sZoom.add(i.toString());
+                    fillZoomChoice();
                 }
             });
             // -------------------------------
@@ -907,6 +961,17 @@ public class BOA_ implements PlugIn {
             controlPanel.add(bottomPanel, BorderLayout.SOUTH);
 
             return controlPanel;
+        }
+
+        /**
+         * Rebuild Zoom choice UI according to cells on current frame {@link BOAp#frame}.
+         */
+        private void fillZoomChoice() {
+            sZoom.removeAll();
+            sZoom.add(fullZoom); // default word for full zoom (100% of view)
+            List<Integer> frames = qState.nest.getSnakesforFrame(qState.boap.frame);
+            for (Integer i : frames)
+                sZoom.add(i.toString());
         }
 
         /**
@@ -1024,7 +1089,7 @@ public class BOA_ implements PlugIn {
 
         /**
          * Update spinners in BOA UI Update spinners according to values stored in machine state
-         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}
+         * {@link uk.ac.warwick.wsbc.QuimP.BOAState.BOAp}.
          * 
          * @see BOAp
          */
@@ -1045,7 +1110,7 @@ public class BOA_ implements PlugIn {
         }
 
         /**
-         * Update checkboxes
+         * Update checkboxes.
          * 
          * @see uk.ac.warwick.wsbc.QuimP.SnakePluginList
          * @see #itemStateChanged(ItemEvent)
@@ -1125,6 +1190,9 @@ public class BOA_ implements PlugIn {
                 else
                     sThirdPluginName.setBackground(ok);
             }
+            // zoom choice
+            if (qState.boap.snakeToZoom > -1)
+                sZoom.select(String.valueOf(qState.boap.snakeToZoom));
 
         }
 
@@ -1438,6 +1506,8 @@ public class BOA_ implements PlugIn {
                         imageGroup.updateNest(qState.nest); // reconnect nest to external class
                         qState.restore(qState.boap.frame); // copy from snapshots to current object
                         updateSpinnerValues(); // update segmentation gui
+                        fillZoomChoice(); // refill frame zoom choice to make possible selection
+                                          // last zoomed cell (called from updateChoice)
                         // do not recalculatePlugins here because pluginList is empty and this
                         // method will update finalSnake overriding it by segSnake (because on
                         // empty list they are just copied)
@@ -1445,7 +1515,8 @@ public class BOA_ implements PlugIn {
                         // changing frame. If loaded frame is the same as current one this event is
                         // not called.
                         if (qState.boap.frame != imageGroup.getOrgIpl().getSlice())
-                            imageGroup.updateToFrame(qState.boap.frame); // move to frame
+                            imageGroup.updateToFrame(qState.boap.frame); // move to frame (will call
+                                                                         // updateSliceSelector)
                         else
                             updateSliceSelector(); // repaint window explicitly
                     } catch (IOException e1) {
@@ -1639,7 +1710,7 @@ public class BOA_ implements PlugIn {
             }
 
             updateWindowState(); // window logic on any change
-            updateChoices(); // only for updating colors after calling
+            updateChoices(); // only for updating colors after updating window state
 
             try {
                 if (run) {
@@ -1784,8 +1855,8 @@ public class BOA_ implements PlugIn {
             LOGGER.trace(
                     "Snakes at this frame: " + qState.nest.getSnakesforFrame(qState.boap.frame));
             if (!qState.boap.SEGrunning) { // do not update or restore state when we hit this
-                                           // event from runBoa() method
-                                           // (through setIpSliceAll(int))
+                                           // event from runBoa() method (through
+                                           // setIpSliceAll(int))
                 qState.restore(qState.boap.frame);
                 updateSpinnerValues();
                 updateWindowState();
