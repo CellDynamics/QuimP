@@ -347,6 +347,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
              */
             @Override
             public void windowGainedFocus(WindowEvent e) {
+                if (isRun == true)
+                    return;
                 Object sel = cSeed.getSelectedItem();
                 cSeed.removeAllItems();
                 for (String s : WindowManager.getImageTitles())
@@ -426,6 +428,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         ImageStack ret; // all images treated as stacks
         Map<Integer, List<Point>> seeds;
         PropagateSeeds propagateSeeds;
+        ImagePlus prev = null; // preview window, null if not opened
         // create seeding object with or without storing the history of configured type
         switch ((String) cShrinkMethod.getSelectedItem()) {
             case "OUTLINE":
@@ -439,6 +442,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         }
         isRun = true; // segmentation started
         ImageStack is = image.getStack(); // get current stack (size 1 for one image)
+        prev = new ImagePlus();
+        prev.setTitle("Previev");
         try {
             ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
             // segment first slice (or image if it is not stack)
@@ -447,6 +452,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                                                                                                    // seeds
             ImageProcessor retIp = obj.run(seeds); // segmentation
             ret.addSlice(retIp.convertToByte(true)); // store output in new stack
+            prev.setProcessor(retIp);
+            prev.show();
+            prev.updateAndDraw();
             // iterate over all slices after first (may not run for one image)
             for (int s = 2; s <= is.getSize() && isCanceled == false; s++) {
                 Map<Integer, List<Point>> nextseed;
@@ -468,6 +476,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                                                          // stored for next seeding
                 }
                 ret.addSlice(retIp); // add next slice
+                prev.setProcessor(retIp);
+                prev.setActivated();
+                prev.updateAndDraw();
                 IJ.showProgress(s - 1, is.getSize());
             }
             // convert to ImagePlus and show
@@ -490,6 +501,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         } finally {
             isRun = false; // segmentation stopped
             IJ.showProgress(is.getSize() + 1, is.getSize()); // erase progress bar
+            if (prev != null)
+                prev.close();
         }
     }
 
