@@ -482,8 +482,11 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                 else
                     propagateSeeds.getCompositeSeed(image.duplicate()).show();
             }
-        } catch (RandomWalkException e) {
-            e.handleException(wnd, "Segmentation failed:");
+        } catch (RandomWalkException rwe) {
+            rwe.handleException(wnd, "Segmentation problem:");
+        } catch (Exception e) {
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Random Walk Segmentation error: " + e.getMessage(), e);
         } finally {
             isRun = false; // segmentation stopped
             IJ.showProgress(is.getSize() + 1, is.getSize()); // erase progress bar
@@ -593,7 +596,6 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
             seedImage = tmpSeed;
             RWWorker rww = new RWWorker();
             rww.execute();
-            // runPlugin(); // run process - it gives new image
             // decelect seeds buttons
             bBack.setSelected(false);
             bFore.setSelected(false);
