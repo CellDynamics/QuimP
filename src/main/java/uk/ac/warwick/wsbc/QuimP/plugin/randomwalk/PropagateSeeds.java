@@ -323,13 +323,15 @@ public abstract class PropagateSeeds {
      * 
      * @param org Original image (or stack) where composite layer will be added to.
      * @return Composite image with marked foreground and background.
+     * @throws RandomWalkException When seeds were not collected.
      */
-    public ImagePlus getCompositeSeed(ImagePlus org) {
+    public ImagePlus getCompositeSeed(ImagePlus org) throws RandomWalkException {
         ImagePlus ret;
         if (seeds == null)
             throw new IllegalArgumentException("Seeds were not stored.");
         if (seeds.size() == 0)
-            throw new IllegalArgumentException("Seeds were not stored.");
+            throw new RandomWalkException(
+                    "Seeds were not stored. You need at least two iteration to collect one seed");
         ImageStack smallstack =
                 new ImageStack(seeds.get(0).first.getWidth(), seeds.get(0).first.getHeight());
         ImageStack bigstack =
