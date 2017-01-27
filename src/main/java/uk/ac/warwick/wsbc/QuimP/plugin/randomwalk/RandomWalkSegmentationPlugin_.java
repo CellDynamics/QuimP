@@ -73,7 +73,7 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
  *   iterations: | "80     "
  *   shrink power: | "5      "
  *   shrink algorithm: | ^OUTLINE^
- *   [] Show Seeds
+ *   [] Show Seeds | [] Preview
  *   }
  *   ~~
  *   {
@@ -166,7 +166,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     private JSpinner sAlpha, sBeta, sGamma, sIter, sShrinkPower, sExpandPower;
     private JButton bCancel, bApply, bHelp;
     private BrushTool br = new BrushTool();
-    private JCheckBox cShowSeed;
+    private JCheckBox cShowSeed, cShowPreview;
     private String lastTool; // tool selected in IJ
     private boolean isCanceled; // true if user click Cancel, false if clicked Apply
     private boolean isRun; // true if segmentation is running
@@ -264,6 +264,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         // Options zone (middle)
         cShowSeed = new JCheckBox("Show seeds");
         cShowSeed.setSelected(false);
+        cShowPreview = new JCheckBox("Show preview");
+        cShowPreview.setSelected(false);
         cShrinkMethod = new JComboBox<String>(shrinkMethods);
         cShrinkMethod.addActionListener(this);
         JPanel optionsPanel = new JPanel();
@@ -296,6 +298,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         optionsPanel.add(new JLabel("Shrink method"));
         optionsPanel.add(cShrinkMethod);
         optionsPanel.add(cShowSeed);
+        optionsPanel.add(cShowPreview);
 
         // integrate middle panels into one
         JPanel seedoptionsPanel = new JPanel();
@@ -407,6 +410,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         bApply.setEnabled(status);
         bHelp.setEnabled(status);
         cShowSeed.setEnabled(status);
+        cShowPreview.setEnabled(status);
     }
 
     /**
@@ -442,8 +446,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         }
         isRun = true; // segmentation started
         ImageStack is = image.getStack(); // get current stack (size 1 for one image)
-        prev = new ImagePlus();
-        prev.setTitle("Previev");
+        // if preview selected - prepare image
+        if (cShowPreview.isSelected())
+            prev = new ImagePlus();
         try {
             ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
             // segment first slice (or image if it is not stack)
@@ -452,9 +457,12 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                                                                                                    // seeds
             ImageProcessor retIp = obj.run(seeds); // segmentation
             ret.addSlice(retIp.convertToByte(true)); // store output in new stack
-            prev.setProcessor(retIp);
-            prev.show();
-            prev.updateAndDraw();
+            if (cShowPreview.isSelected()) { // display first slice
+                prev.setProcessor(retIp);
+                prev.setTitle("Previev - frame: " + 1);
+                prev.show();
+                prev.updateAndDraw();
+            }
             // iterate over all slices after first (may not run for one image)
             for (int s = 2; s <= is.getSize() && isCanceled == false; s++) {
                 Map<Integer, List<Point>> nextseed;
@@ -476,9 +484,12 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
                                                          // stored for next seeding
                 }
                 ret.addSlice(retIp); // add next slice
-                prev.setProcessor(retIp);
-                prev.setActivated();
-                prev.updateAndDraw();
+                if (cShowPreview.isSelected()) { // show preview remaining slices
+                    prev.setProcessor(retIp);
+                    prev.setTitle("Previev - frame: " + s);
+                    prev.setActivated();
+                    prev.updateAndDraw();
+                }
                 IJ.showProgress(s - 1, is.getSize());
             }
             // convert to ImagePlus and show
