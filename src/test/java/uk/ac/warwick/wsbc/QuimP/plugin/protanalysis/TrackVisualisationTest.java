@@ -59,8 +59,8 @@ public class TrackVisualisationTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this); // must be as we create mocked classes in mocked already
         // QParams
-        originalImage = IJ.openImage(
-                "/home/baniuk/Documents/Kay-copy/KZ4/KZ4-220214-cAR1-GFP-devel5.5h-agar07-14.tif");
+        originalImage =
+                IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frames_1-5.tif");
         protrusionVis = new TrackVisualisation.Stack(originalImage);
     }
 
@@ -158,6 +158,9 @@ public class TrackVisualisationTest {
     // // }
     // }
 
+    /**
+     * 
+     */
     @Test
     public void testListPoint2iComparator() {
         List<Point> expected = new ArrayList<>();

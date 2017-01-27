@@ -22,7 +22,7 @@ public class DICLIDReconstruction_run {
     public static void main(String[] args) throws InterruptedException {
         ImageJ ij = new ImageJ();
         ImagePlus i = IJ.openImage( // load images #272
-                "/home/baniuk/Downloads/C2-bleb_Image4.tif");
+                "src/test/resources/C2-bleb_Image4.tif");
         i.show();
         DICLIDReconstruction_ dic = new DICLIDReconstruction_();
         dic.setup("", i);
