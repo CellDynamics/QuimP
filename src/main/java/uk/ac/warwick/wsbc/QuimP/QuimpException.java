@@ -146,14 +146,12 @@ public class QuimpException extends Exception {
      * @param appendMessage Message added to beginning of the exception message, can be ""
      */
     public void handleException(Frame frame, String appendMessage) {
+        LOGGER.debug(getMessage(), this);
         if (getMessageSinkType() == MessageSinkTypes.GUI) { // display message as GUI
             JOptionPane.showMessageDialog(frame, QuimpToolsCollection
                     .stringWrap(appendMessage + " " + getMessage(), QuimP.LINE_WRAP), "Error",
                     JOptionPane.ERROR_MESSAGE);
-            LOGGER.debug(getMessage(), this);
-            LOGGER.error(appendMessage + " " + getMessage());
         } else { // or text as usual
-            LOGGER.debug(getMessage(), this);
             LOGGER.error(appendMessage + " " + getMessage());
         }
     }
