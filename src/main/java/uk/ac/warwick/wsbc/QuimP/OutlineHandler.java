@@ -431,6 +431,11 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         }
     }
 
+    /**
+     * @param f
+     * @param o
+     */
+    @Deprecated
     static public void writeSingle(String f, Outline o) {
         try {
             File outFile = new File("/Users/rtyson/Documents/phd/tmp/" + f);

@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.Vector;
 
 import org.junit.After;
@@ -16,7 +17,13 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
+/**
+ * @author p.baniukiewicz
+ *
+ */
 public class ImageProcessorPlus_Test {
+
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     private ImagePlus image;
     static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessorPlus_Test.class.getName());
@@ -36,6 +43,9 @@ public class ImageProcessorPlus_Test {
     public static void tearDownAfterClass() throws Exception {
     }
 
+    /**
+     * @throws Exception
+     */
     @Before
     public void setUp() throws Exception {
         image = IJ.openImage("src/test/resources/testObject.tif"); // opens test
@@ -66,7 +76,7 @@ public class ImageProcessorPlus_Test {
     public void test_Rotate() {
         double angle = 135;
         ImageProcessor ret = ipp.rotate(image.getProcessor(), angle, true);
-        IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testrotateImage.tif");
+        IJ.saveAsTiff(new ImagePlus("", ret), tmpdir + "testrotateImage.tif");
         LOGGER.info("Check /tmp/testrotateImage.tif to see results of rotation");
     }
 
@@ -82,7 +92,7 @@ public class ImageProcessorPlus_Test {
         double angle = 135;
         image.getProcessor().setBackgroundValue(0);
         ImageProcessor ret = ipp.rotate(image.getProcessor(), angle, true);
-        IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testrotateImage_0background.tif");
+        IJ.saveAsTiff(new ImagePlus("", ret), tmpdir + "testrotateImage_0background.tif");
         LOGGER.info("Check /tmp/testrotateImage_0background.tif to see results of rotation");
     }
 
@@ -98,7 +108,7 @@ public class ImageProcessorPlus_Test {
         ret = ipp.extendImageBeforeRotation(image.getProcessor(), angle);
         assertEquals(513, ret.getWidth()); // size of the image
         assertEquals(513, ret.getHeight());
-        IJ.saveAsTiff(new ImagePlus("extended", ret), "/tmp/testextendImage_0s.tif");
+        IJ.saveAsTiff(new ImagePlus("extended", ret), tmpdir + "testextendImage_0s.tif");
         LOGGER.info("Check /tmp/testextendImage_0s.tif to see results");
     }
 
@@ -114,7 +124,7 @@ public class ImageProcessorPlus_Test {
         ret = ipp.extendImageBeforeRotation(image.getProcessor(), angle);
         assertEquals(725, ret.getWidth()); // size of the image
         assertEquals(725, ret.getHeight());
-        IJ.saveAsTiff(new ImagePlus("extended", ret), "/tmp/testextendImage_45s.tif");
+        IJ.saveAsTiff(new ImagePlus("extended", ret), tmpdir + "testextendImage_45s.tif");
         LOGGER.info("Check /tmp/testextendImage_45s.tif to see results");
     }
 
@@ -124,7 +134,7 @@ public class ImageProcessorPlus_Test {
         ret = ipp.crop(image.getProcessor(), 10, 10, 200, 200);
         assertEquals(200, ret.getWidth()); // size of the image
         assertEquals(200, ret.getHeight());
-        IJ.saveAsTiff(new ImagePlus("extended", ret), "/tmp/testcrop.tif");
+        IJ.saveAsTiff(new ImagePlus("extended", ret), tmpdir + "testcrop.tif");
         LOGGER.info("Check /tmp/testcrop.tif to see results");
     }
 

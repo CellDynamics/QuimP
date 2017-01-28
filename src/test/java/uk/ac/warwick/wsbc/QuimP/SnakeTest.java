@@ -8,6 +8,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.After;
@@ -27,6 +28,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  */
 public class SnakeTest {
     static final Logger LOGGER = LoggerFactory.getLogger(SnakeTest.class.getName());
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     private String[] info = { "QuimP", "verr", "ddd" };
     private Snake snake1;
@@ -139,12 +141,12 @@ public class SnakeTest {
         Serializer<Snake> serializer;
         serializer = new Serializer<>(snake1, info);
         serializer.setPretty();
-        serializer.save("/tmp/snake1.tmp");
+        serializer.save(tmpdir + "snake1.tmp");
 
         // load it
         Snake loaded;
         Serializer<Snake> loader = new Serializer<>(Snake.class);
-        loaded = loader.load("/tmp/snake1.tmp").obj;
+        loaded = loader.load(tmpdir + "snake1.tmp").obj;
         LOGGER.debug(loaded.toString());
         assertEquals(snake1.getNumNodes(), loaded.getNumNodes());
         for (int i = 0; i < snake1.getNumNodes(); i++) {
@@ -208,6 +210,9 @@ public class SnakeTest {
         assertThat(copy.hashCode(), is(not(snake1.hashCode())));
     }
 
+    /**
+     * 
+     */
     @Test
     public void testSnakeToOutline() {
         Outline o = new Outline(snake1);

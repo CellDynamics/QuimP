@@ -5,6 +5,7 @@ package uk.ac.warwick.wsbc.QuimP;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
@@ -26,6 +27,8 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  */
 public class SerializerTest {
     static final Logger LOGGER = LoggerFactory.getLogger(SerializerTest.class.getName());
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
+
     private TestClass testClass;
     private String[] version;
 
@@ -56,7 +59,7 @@ public class SerializerTest {
     @Test
     public void testSave() throws Exception {
         Serializer<TestClass> s = new Serializer<>(testClass, version);
-        s.save("/tmp/serializertest.josn");
+        s.save(tmpdir + "serializertest.josn");
     }
 
     /**
@@ -155,13 +158,13 @@ public class SerializerTest {
     @Test
     public void testLoad() throws Exception {
         Serializer<TestClass> save = new Serializer<>(testClass, version);
-        save.save("/tmp/local.josn");
+        save.save(tmpdir + "local.josn");
         save = null;
 
         Serializer<TestClass> out;
         TestClass obj;
         Serializer<TestClass> s = new Serializer<>(TestClass.class);
-        out = s.load("/tmp/local.josn");
+        out = s.load(tmpdir + "local.josn");
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
@@ -214,10 +217,13 @@ public class SerializerTest {
         assertArrayEquals(out.version, version);
     }
 
+    /**
+     * @throws FileNotFoundException
+     */
     @Test
     public void testDumpStatic() throws FileNotFoundException {
         TestClass tc = new TestClass();
-        Serializer.Dump(tc, "/tmp/dump.json", true);
+        Serializer.Dump(tc, tmpdir + "dump.json", true);
     }
 
 }

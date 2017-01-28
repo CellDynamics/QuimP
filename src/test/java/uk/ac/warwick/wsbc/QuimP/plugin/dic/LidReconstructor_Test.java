@@ -4,6 +4,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.dic;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +23,8 @@ import ij.process.ImageProcessor;
  *
  */
 public class LidReconstructor_Test {
+
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     private ImagePlus image;
     private ImagePlus stack;
@@ -80,7 +84,7 @@ public class LidReconstructor_Test {
 
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
-            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix.tif");
+            IJ.saveAsTiff(outputImage, tmpdir + "testDicReconstructionLidMatrix.tif");
             LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix.tif" + " to see results");
         } catch (DicException e) {
             LOGGER.error(e.toString());
@@ -88,6 +92,9 @@ public class LidReconstructor_Test {
 
     }
 
+    /**
+     * 
+     */
     @Test
     public void test_ReconstructionDicLid_filt() {
         ImageProcessor ret;
@@ -101,7 +108,7 @@ public class LidReconstructor_Test {
 
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
-            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_filt.tif");
+            IJ.saveAsTiff(outputImage, tmpdir + "testDicReconstructionLidMatrix_filt.tif");
             LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_filt.tif" + " to see results");
         } catch (DicException e) {
             LOGGER.error(e.toString());
@@ -111,7 +118,7 @@ public class LidReconstructor_Test {
 
     /**
      * Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves output
-     * image at \c /tmp/testDicReconstructionLidMatrix_sat.tif
+     * image at /tmp/testDicReconstructionLidMatrix_sat.tif
      * 
      * Input image is square and saturated Throws exception DicException because of saturated image
      * 
@@ -133,7 +140,7 @@ public class LidReconstructor_Test {
             ImagePlus outputImage = new ImagePlus("", ret);
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
-            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_sat.tif");
+            IJ.saveAsTiff(outputImage, tmpdir + "testDicReconstructionLidMatrix_sat.tif");
             LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_sat.tif" + " to see results");
         } catch (DicException e) {
             throw e;
@@ -164,7 +171,7 @@ public class LidReconstructor_Test {
 
             assertEquals(513, outputImage.getWidth()); // size of the image
             assertEquals(513, outputImage.getHeight());
-            IJ.saveAsTiff(outputImage, "/tmp/testDicReconstructionLidMatrix_stack.tif");
+            IJ.saveAsTiff(outputImage, tmpdir + "testDicReconstructionLidMatrix_stack.tif");
             LOGGER.trace("Check /tmp/testDicReconstructionLidMatrix_stack.tif to" + " see results");
         } catch (DicException e) {
             LOGGER.error(e.toString());

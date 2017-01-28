@@ -1,5 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP.utils;
 
+import java.io.File;
+
 import org.junit.Test;
 
 import ij.IJ;
@@ -10,6 +12,8 @@ import ij.ImagePlus;
  *
  */
 public class IJToolsTest {
+
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**
      * 
@@ -22,7 +26,7 @@ public class IJToolsTest {
         ImagePlus big = IJ.openImage("src/test/resources/B.tif");
 
         ImagePlus ret = IJTools.getComposite(org, small, big);
-        IJ.saveAsTiff(ret, "/tmp/composite.tif");
+        IJ.saveAsTiff(ret, tmpdir + "composite.tif");
         // ret.show();
     }
 
@@ -37,7 +41,7 @@ public class IJToolsTest {
         ImagePlus big = IJ.openImage("src/test/resources/B1.tif");
 
         ImagePlus ret = IJTools.getComposite(org, small, big);
-        IJ.saveAsTiff(ret, "/tmp/compositestack.tif");
+        IJ.saveAsTiff(ret, tmpdir + "compositestack.tif");
     }
 
 }

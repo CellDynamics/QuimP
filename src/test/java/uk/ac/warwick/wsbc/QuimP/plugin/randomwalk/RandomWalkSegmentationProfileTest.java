@@ -3,6 +3,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
 import java.awt.Color;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -28,6 +29,8 @@ public class RandomWalkSegmentationProfileTest {
 
     static final Logger LOGGER =
             LoggerFactory.getLogger(RandomWalkSegmentationProfileTest.class.getName());
+
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     static Object accessPrivate(String name, RandomWalkSegmentation obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
@@ -88,9 +91,9 @@ public class RandomWalkSegmentationProfileTest {
         LOGGER.info("--Time used -- " + (double) (stopTime - startTime) / 1000000000.0 + " [s]");
 
         ImagePlus results_frame_2 = new ImagePlus("cmp", ret_frame_2);
-        IJ.saveAsTiff(results_frame_2, "/tmp/testRun_4_f2.tif");
+        IJ.saveAsTiff(results_frame_2, tmpdir + "testRun_4_f2.tif");
         ImagePlus results_frame_1 = new ImagePlus("cmp", ret_frame_1);
-        IJ.saveAsTiff(results_frame_1, "/tmp/testRun_4_f1.tif");
+        IJ.saveAsTiff(results_frame_1, tmpdir + "testRun_4_f1.tif");
     }
 
 }

@@ -3,6 +3,8 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,6 +20,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus.GenerateKernel;
  *
  */
 public class ImageProcessorPlusTest {
+
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
+
     private ImagePlus image;
 
     /**
@@ -111,6 +116,6 @@ public class ImageProcessorPlusTest {
     @Test
     public void testRunningMean() throws Exception {
         new ImageProcessorPlus().runningMean(image.getProcessor(), "45", 9);
-        IJ.saveAsTiff(image, "/tmp/testRunningMean.tif");
+        IJ.saveAsTiff(image, tmpdir + "testRunningMean.tif");
     }
 }
