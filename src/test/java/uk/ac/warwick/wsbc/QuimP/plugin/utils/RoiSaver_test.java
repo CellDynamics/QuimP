@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 /**
  */
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import org.scijava.vecmath.Point2d;
  */
 public class RoiSaver_test {
 
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
+
     /**
      * Test method for tools.images.filters.RoiSaver.saveROI(String, List<Vector2d>)
      * 
@@ -29,7 +32,7 @@ public class RoiSaver_test {
         testcase.add(new Point2d(0, 0));
         testcase.add(new Point2d(50, 100));
         testcase.add(new Point2d(100, 0));
-        RoiSaver.saveROI("/tmp/test_SaveROI_case1.tif", testcase);
+        RoiSaver.saveROI(tmpdir + "test_SaveROI_case1.tif", testcase);
     }
 
     /**
@@ -42,7 +45,7 @@ public class RoiSaver_test {
     @Test
     public void test_SaveROI_case2() {
         ArrayList<Point2d> testcase = new ArrayList<>();
-        RoiSaver.saveROI("/tmp/test_SaveROI_case2.tif", testcase);
+        RoiSaver.saveROI(tmpdir + "test_SaveROI_case2.tif", testcase);
     }
 
     /**
@@ -55,7 +58,7 @@ public class RoiSaver_test {
      */
     @Test
     public void test_SaveROI_case3() {
-        RoiSaver.saveROI("/tmp/test_SaveROI_case3.tif", (List<Point2d>) null);
+        RoiSaver.saveROI(tmpdir + "test_SaveROI_case3.tif", (List<Point2d>) null);
     }
 
 }

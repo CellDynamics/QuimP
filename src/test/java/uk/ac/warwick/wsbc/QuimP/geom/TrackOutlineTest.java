@@ -2,6 +2,7 @@
  */
 package uk.ac.warwick.wsbc.QuimP.geom;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -29,6 +30,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
  *
  */
 public class TrackOutlineTest {
+
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**
      * Accessor to private field.
@@ -103,7 +106,7 @@ public class TrackOutlineTest {
         ImageProcessor ret = obj.prepare();
         ImagePlus r = image.duplicate();
         r.setProcessor(ret);
-        IJ.saveAsTiff(r, "/tmp/testPrepare.tif");
+        IJ.saveAsTiff(r, tmpdir + "testPrepare.tif");
     }
 
     /**
@@ -119,10 +122,10 @@ public class TrackOutlineTest {
         LOGGER.debug("Found " + ret.size());
         ImagePlus r = image.duplicate();
         r.setProcessor((ImageProcessor) accessPrivateField("prepared", obj));
-        IJ.saveAsTiff(r, "/tmp/testGetOutlines.tif");
-        RoiSaver.saveROI("/tmp/testGetOutlines_roi0.tif", ret.get(0));
-        RoiSaver.saveROI("/tmp/testGetOutlines_roi1.tif", ret.get(1));
-        RoiSaver.saveROI("/tmp/testGetOutlines_roi2.tif", ret.get(2));
+        IJ.saveAsTiff(r, tmpdir + "testGetOutlines.tif");
+        RoiSaver.saveROI(tmpdir + "testGetOutlines_roi0.tif", ret.get(0));
+        RoiSaver.saveROI(tmpdir + "testGetOutlines_roi1.tif", ret.get(1));
+        RoiSaver.saveROI(tmpdir + "testGetOutlines_roi2.tif", ret.get(2));
     }
 
     /**
@@ -136,7 +139,7 @@ public class TrackOutlineTest {
     public void testGetOutlines_1() throws Exception {
         List<List<Point2d>> ret = obj.getOutlinesasPoints(1, true);
         LOGGER.debug("Found " + ret.size());
-        RoiSaver.saveROI("/tmp/testGetOutlines_roi_s.tif", ret.get(0));
+        RoiSaver.saveROI(tmpdir + "testGetOutlines_roi_s.tif", ret.get(0));
     }
 
     /**
@@ -150,7 +153,7 @@ public class TrackOutlineTest {
     public void testGetOutlines_6() throws Exception {
         List<List<Point2d>> ret = obj.getOutlinesasPoints(6, true);
         LOGGER.debug("Found " + ret.size());
-        RoiSaver.saveROI("/tmp/testGetOutlines_roi_s6.tif", ret.get(0));
+        RoiSaver.saveROI(tmpdir + "testGetOutlines_roi_s6.tif", ret.get(0));
     }
 
     /**
@@ -170,15 +173,18 @@ public class TrackOutlineTest {
         ShapeRoi sa1 = ret.get(1).and(new ShapeRoi(pr)); // make common part
         LOGGER.debug("Shape1 " + sa1);
         LOGGER.debug("ret.get(1) after " + ret.get(1));
-        RoiSaver.saveROI("/tmp/testIntersection_and.tif", sa1);
+        RoiSaver.saveROI(tmpdir + "testIntersection_and.tif", sa1);
     }
 
+    /**
+     * @throws Exception
+     */
     @Test
     public void testGetOutlinesDoubleBoolean() throws Exception {
         List<Outline> ret = obj.getOutlines(4, false);
-        RoiSaver.saveROI("/tmp/test0.tif", ret.get(0).asList());
-        RoiSaver.saveROI("/tmp/test1.tif", ret.get(1).asList());
-        RoiSaver.saveROI("/tmp/test2.tif", ret.get(2).asList());
+        RoiSaver.saveROI(tmpdir + "test0.tif", ret.get(0).asList());
+        RoiSaver.saveROI(tmpdir + "test1.tif", ret.get(1).asList());
+        RoiSaver.saveROI(tmpdir + "test2.tif", ret.get(2).asList());
     }
 
 }

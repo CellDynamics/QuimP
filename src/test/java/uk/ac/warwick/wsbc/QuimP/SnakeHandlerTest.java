@@ -5,6 +5,8 @@ package uk.ac.warwick.wsbc.QuimP;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +25,7 @@ import ij.process.FloatPolygon;
 public class SnakeHandlerTest {
 
     static final Logger LOGGER = LoggerFactory.getLogger(SnakeHandlerTest.class.getName());
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     private SnakeHandler sH;
     private String[] info = { "QuimP", "verr", "ddd" };
@@ -71,14 +74,20 @@ public class SnakeHandlerTest {
         sH = null;
     }
 
+    /**
+     * @throws Exception
+     */
     @Test
     public void testSerializeSnakeHandler_1() throws Exception {
         Serializer<SnakeHandler> serializer;
         serializer = new Serializer<>(sH, info);
         serializer.setPretty();
-        serializer.save("/tmp/snakehandler1.tmp");
+        serializer.save(tmpdir + "snakehandler1.tmp");
     }
 
+    /**
+     * 
+     */
     @Test
     public void testSnakeHandlerToOutline() {
         OutlineHandler oH = new OutlineHandler(sH);

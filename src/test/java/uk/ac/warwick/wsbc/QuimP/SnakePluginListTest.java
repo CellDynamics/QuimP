@@ -42,6 +42,8 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 @RunWith(MockitoJUnitRunner.class)
 public class SnakePluginListTest {
 
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
+
     /**
      * Accessor to private fields.
      * 
@@ -367,7 +369,7 @@ public class SnakePluginListTest {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         snakePluginList.beforeSerialize();
         LOGGER.trace(gson.toJson(cc));
-        FileWriter f = new FileWriter(new File("/tmp/snakePluginList.json"));
+        FileWriter f = new FileWriter(new File(tmpdir + "snakePluginList.json"));
         f.write(gson.toJson(cc));
         f.close();
     }
@@ -381,7 +383,7 @@ public class SnakePluginListTest {
     public void testSaveConfig_serializer() throws FileNotFoundException {
         Serializer<SnakePluginList> s = new Serializer<>(snakePluginList, version);
         s.setPretty();
-        s.save("/tmp/snakePluginList_serializer.json");
+        s.save(tmpdir + "snakePluginList_serializer.json");
         LOGGER.trace(s.toString());
     }
 
@@ -450,7 +452,7 @@ public class SnakePluginListTest {
         gsonbuilder.registerTypeAdapter(SnakePluginList.class,
                 new SnakePluginListInstanceCreator(3, pluginFactory, null));
         Gson gson = gsonbuilder.create();
-        FileReader f = new FileReader(new File("/tmp/snakePluginList.json"));
+        FileReader f = new FileReader(new File(tmpdir + "snakePluginList.json"));
         ConfigContainer localcc;
         localcc = gson.fromJson(f, ConfigContainer.class);
         f.close();
@@ -678,7 +680,6 @@ public class SnakePluginListTest {
      */
     @Test
     public void testloadConfig_serializer_bad() throws Exception {
-        //!<
         String json = "{\"className\":\"SnakePluginList\","
                 + "\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],"
                 + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
@@ -687,7 +688,6 @@ public class SnakePluginListTest {
                 + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
                 + "{\"window\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"2.3.4\"},"
                 + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
-        // */
 
         Serializer<SnakePluginList> out;
         Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
@@ -713,7 +713,6 @@ public class SnakePluginListTest {
      */
     @Test
     public void testloadConfig_bad1() throws IOException, QuimpPluginException {
-        //!<
         String json = "{ \"version\": \"3.0.0\"," + "\"softwareName\": \"QuimP::BOA\","
                 + " \"activePluginList\": {" + "\"sPluginList\": [" + "{" + "\"isActive\": false,"
                 + "\"name\": \"Test1\"," + "\"ver\": \"1.2.3\"" + "}," + "{" + "\"isActive\": true,"
@@ -721,7 +720,6 @@ public class SnakePluginListTest {
                 + ",\"alpha\": \"-0.45\"" + "}," + "\"ver\": \"20.3.4\"}," // here wrong name
                 + "{" + "\"isActive\": true," + "\"name\": \"toDelete\"," + "\"ver\": \"2.3.4\""
                 + "}]}}";
-        // */
 
         GsonBuilder gsonbuilder = new GsonBuilder();
         // http: //
@@ -752,7 +750,6 @@ public class SnakePluginListTest {
      */
     @Test
     public void testloadConfig_serializer_bad1() throws Exception {
-        //!<
         String json = "{\"className\":\"SnakePluginList\","
                 + "\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],"
                 + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
@@ -761,7 +758,6 @@ public class SnakePluginListTest {
                 + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
                 + "{\"window\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"20.3.4\"},"
                 + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
-        // */
 
         Serializer<SnakePluginList> out;
         Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
@@ -790,7 +786,6 @@ public class SnakePluginListTest {
      */
     @Test
     public void testloadConfig_bad2() throws IOException, QuimpPluginException {
-        //!<
         String json = "{ \"version\": \"3.0.0\"," + "\"softwareName\": \"QuimP::BOA\","
                 + " \"activePluginList\": {" + "\"sPluginList\": [" + "{" + "\"isActive\": false,"
                 + "\"name\": \"Test1\"," + "\"ver\": \"1.2.3\"" + "}," + "{" + "\"isActive\": true,"
@@ -799,7 +794,6 @@ public class SnakePluginListTest {
                                                                                         // name
                 + ",\"alpha\": \"-0.45\"" + "}," + "\"ver\": \"2.3.4\"}," + "{"
                 + "\"isActive\": true," + "\"name\": \"toDelete\"," + "\"ver\": \"2.3.4\"" + "}]}}";
-        // */
 
         GsonBuilder gsonbuilder = new GsonBuilder();
         // http: //
@@ -836,7 +830,6 @@ public class SnakePluginListTest {
      */
     @Test
     public void testloadConfig_serializer_bad2() throws Exception {
-        //!<
         String json = "{\"className\":\"SnakePluginList\","
                 + "\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],"
                 + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\","
@@ -845,7 +838,6 @@ public class SnakePluginListTest {
                 + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
                 + "{\"window10\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"2.3.4\"},"
                 + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
-        // */
 
         Serializer<SnakePluginList> out;
         Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
@@ -874,12 +866,10 @@ public class SnakePluginListTest {
      */
     @Test
     public void testloadConfig_bad3() throws IOException, QuimpPluginException {
-        //!<
         String json = "{ \"version\": \"3.0.0\"," + "\"softwareName\": \"QuimP::BOA\","
                 + " \"activePluginList\": {" + "\"sPluginList\": [" + "{" + "\"isActive\": false,"
                 + "\"name\": \"Test1\"," + "\"ver\": \"1.2.3\"" + "}," + "{" + "\"isActive\": true,"
                 + "\"name\": \"toDelete\"," + "\"ver\": \"2.3.4\"" + "}]}}";
-        // */
 
         GsonBuilder gsonbuilder = new GsonBuilder();
         // http: //
@@ -912,14 +902,12 @@ public class SnakePluginListTest {
      */
     @Test
     public void testloadConfig_bad4() throws IOException, QuimpPluginException {
-        //!<
         String json = "{ \"version\": \"3.0.0\"," + "\"softwareName\": \"QuimP::BOA\","
                 + " \"activePluginList\": {" + "\"sPluginList\": [" + "{" + "\"isActive\": false,"
                 + "\"name\": \"Test1\"," + "\"ver\": \"1.2.3\"" + "}," + "{" + "\"isActive\": true," // see
                                                                                                      // testSaveConfig_gap
                 + "\"name\": \"\"," + "\"ver\": \"\"}," + "{" + "\"isActive\": true,"
                 + "\"name\": \"toDelete\"," + "\"ver\": \"2.3.4\"" + "}]}}";
-        // */
 
         GsonBuilder gsonbuilder = new GsonBuilder();
         // http: //

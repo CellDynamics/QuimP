@@ -18,13 +18,12 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 
 /**
  * @author p.baniukiewicz
  * 
- * TODO Run all tests on directories in /tmp after copying relevant files
+ *         TODO Run all tests on directories in /tmp after copying relevant files
  */
 public class FormatConverterTest {
 
@@ -189,7 +188,7 @@ public class FormatConverterTest {
     @Ignore
     public void testGenerateNewDataFile() throws Exception {
         QconfLoader qC = new QconfLoader(new File(
-                "/home/baniuk/Documents/Repos/QuimP/src/test/resources/FormatConverter/res/fluoreszenz-test_eq_smooth_0_expected.paQP"));
+                "src/test/resources/FormatConverter/res/fluoreszenz-test_eq_smooth_0_expected.paQP"));
         FormatConverter fC = new FormatConverter(qC);
         accessPrivate("generateNewDataFile", fC, new Object[] {}, new Class<?>[] {});
     }
@@ -201,8 +200,8 @@ public class FormatConverterTest {
      */
     @Test
     public void testGenerateOldDataFile() throws Exception {
-        QconfLoader qC = new QconfLoader(new File(
-                "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
+        QconfLoader qC = new QconfLoader(
+                new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
         FormatConverter fC = new FormatConverter(qC);
         accessPrivate("generateOldDataFile", fC, new Object[] {}, new Class<?>[] {});
     }

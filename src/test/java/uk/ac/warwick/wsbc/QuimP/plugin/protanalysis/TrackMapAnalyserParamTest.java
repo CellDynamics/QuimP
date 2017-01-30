@@ -45,6 +45,9 @@ public class TrackMapAnalyserParamTest {
     private int selfCrossing;
 
     //!<
+    /**
+     * @return test set
+     */
     @Parameters(name = "{index}: ({0})")
     public static Collection<Object[]> data() {
         ArrayList<Object[]> ret = new ArrayList<>();
