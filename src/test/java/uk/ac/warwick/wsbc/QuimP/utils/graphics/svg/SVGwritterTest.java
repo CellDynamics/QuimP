@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.utils.graphics.svg;
 
 import java.awt.Rectangle;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
@@ -16,6 +17,8 @@ import org.junit.Test;
  *
  */
 public class SVGwritterTest {
+
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**
      * @throws java.lang.Exception
@@ -53,7 +56,7 @@ public class SVGwritterTest {
      */
     @Test
     public void testWriteHeader() throws Exception {
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream("/tmp/t.svg"));
+        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(tmpdir + "t.svg"));
         OutputStreamWriter osw = new OutputStreamWriter(out);
         SVGwritter.writeHeader(osw, new Rectangle(-10, -10, 10, 10));
         SVGwritter.QPolarAxes qc = new SVGwritter.QPolarAxes(new Rectangle(-10, -10, 10, 10));

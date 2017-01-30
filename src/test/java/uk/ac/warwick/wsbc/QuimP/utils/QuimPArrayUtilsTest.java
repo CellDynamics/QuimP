@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class QuimPArrayUtilsTest {
     static final Logger LOGGER = LoggerFactory.getLogger(QuimPArrayUtilsTest.class.getName());
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**
      * @throws java.lang.Exception
@@ -67,6 +68,9 @@ public class QuimPArrayUtilsTest {
                 assertEquals(in[r][c], out[r][c], 1e-3);
     }
 
+    /**
+     * @throws Exception
+     */
     @Test
     public void testMinListIndex() throws Exception {
         ArrayList<Double> ar = new ArrayList<>();
@@ -85,13 +89,11 @@ public class QuimPArrayUtilsTest {
      */
     @Test
     public void testFile2Array() throws Exception {
-        //!<
         double[][] expected =
                 { { 1, 2, 3, 4, 5 }, { 1.1, 2.2, 3.3, 4.4, 5.5 }, { 6, 7, 8, 9, Math.PI } };
-        /**/
-        QuimPArrayUtils.arrayToFile(expected, ",", new File("/tmp/testFile2Array.map"));
+        QuimPArrayUtils.arrayToFile(expected, ",", new File(tmpdir + "testFile2Array.map"));
 
-        double test[][] = QuimPArrayUtils.file2Array(",", new File("/tmp/testFile2Array.map"));
+        double test[][] = QuimPArrayUtils.file2Array(",", new File(tmpdir + "testFile2Array.map"));
 
         assertThat(test, is(expected));
 

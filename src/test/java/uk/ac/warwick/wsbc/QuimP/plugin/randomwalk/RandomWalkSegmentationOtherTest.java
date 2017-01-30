@@ -3,6 +3,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
 import java.awt.Color;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -41,6 +42,8 @@ import ij.process.ImageProcessor;
 public class RandomWalkSegmentationOtherTest {
     static final Logger LOGGER =
             LoggerFactory.getLogger(RandomWalkSegmentationOtherTest.class.getName());
+
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     static Object accessPrivate(String name, RandomWalkSegmentation obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
@@ -130,7 +133,7 @@ public class RandomWalkSegmentationOtherTest {
          * 
          * plotdiff(imread('/tmp/testRun_cmp.tif'),outj)
          */
-        IJ.saveAsTiff(results, "/tmp/testRun_cmp.tif");
+        IJ.saveAsTiff(results, tmpdir + "testRun_cmp.tif");
     }
 
     /**
@@ -159,7 +162,7 @@ public class RandomWalkSegmentationOtherTest {
          * plotdiff(imread('/tmp/testRun_cmp2.tif'),out)
          * </code>
          */
-        IJ.saveAsTiff(results, "/tmp/testRun_cmp2.tif");
+        IJ.saveAsTiff(results, tmpdir + "testRun_cmp2.tif");
     }
 
     /**
@@ -200,19 +203,19 @@ public class RandomWalkSegmentationOtherTest {
 
         IJ.saveAsTiff(
                 new ImagePlus("gRight2", RandomWalkSegmentation.RealMatrix2ImageProcessor(ret[0])),
-                "/tmp/testPrecompute_gRight2.tif");
+                tmpdir + "testPrecompute_gRight2.tif");
 
         IJ.saveAsTiff(
                 new ImagePlus("gTop2", RandomWalkSegmentation.RealMatrix2ImageProcessor(ret[1])),
-                "/tmp/testPrecompute_gTop2.tif");
+                tmpdir + "testPrecompute_gTop2.tif");
 
         IJ.saveAsTiff(
                 new ImagePlus("gLeft2", RandomWalkSegmentation.RealMatrix2ImageProcessor(ret[2])),
-                "/tmp/testPrecompute_gLeft2.tif");
+                tmpdir + "testPrecompute_gLeft2.tif");
 
         IJ.saveAsTiff(
                 new ImagePlus("gBottom2", RandomWalkSegmentation.RealMatrix2ImageProcessor(ret[3])),
-                "/tmp/testPrecompute_gBottom2.tif");
+                tmpdir + "testPrecompute_gBottom2.tif");
     }
 
     /**
@@ -225,7 +228,7 @@ public class RandomWalkSegmentationOtherTest {
 
         IJ.saveAsTiff(
                 new ImagePlus("orimage", RandomWalkSegmentation.RealMatrix2ImageProcessor(image)),
-                "/tmp/testConversion_image.tif");
+                tmpdir + "testConversion_image.tif");
 
     }
 

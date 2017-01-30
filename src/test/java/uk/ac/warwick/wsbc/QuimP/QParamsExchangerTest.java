@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Paths;
 
 import org.junit.After;
 import org.junit.Before;
@@ -73,11 +74,14 @@ public class QParamsExchangerTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * @throws Exception
+     */
     @Test
     public void testQParamsExchanger() throws Exception {
         QParamsQconf qp = new QParamsQconf(test1);
         assertThat(qp.getFileName(), is("Stack_cut"));
-        assertThat(qp.getPath(), is("src/test/resources/test2"));
+        assertThat(qp.getPath(), is(Paths.get("src", "test", "resources", "test2").toString()));
     }
 
     /**

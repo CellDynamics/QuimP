@@ -27,8 +27,7 @@ public class ANA_run {
     @SuppressWarnings("unused")
     public static void main(String[] args) {
         ImageJ ij = new ImageJ();
-        ImagePlus im = IJ.openImage(
-                "/home/baniuk/Desktop/Tests/formatconv/currenttest/fluoreszenz-test.tif kept stack.tif");
+        ImagePlus im = IJ.openImage("src/test/resources/fluoreszenz-test.tif kept stack.tif");
         im.show();
         ANA_ ana = new ANA_();
         ana.setup(new String(), im);

@@ -31,6 +31,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 @RunWith(MockitoJUnitRunner.class)
 public class PolarPlotTest {
     static final Logger LOGGER = LoggerFactory.getLogger(PolarPlotTest.class.getName());
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
     @Mock
     private STmap mapCell;
     @InjectMocks
@@ -170,7 +171,7 @@ public class PolarPlotTest {
      */
     @Test
     public void testGeneratePlot() throws Exception {
-        polarPlot.generatePlotFrame("/tmp/test.svg", 0);
+        polarPlot.generatePlotFrame(tmpdir + "test.svg", 0);
     }
 
     /**
@@ -186,8 +187,8 @@ public class PolarPlotTest {
         QconfLoader qconfLoader = new QconfLoader(new File(
                 "src/test/resources/ProtAnalysisTest/KZ4/KZ4-220214-cAR1-GFP-devel5.QCONF"));
         PolarPlot pp = new PolarPlot(qconfLoader.getQ()[0], new Point2d(512, 512));
-        pp.generatePlot("/tmp/test_1.svg");
-        pp.generatePlotFrame("/tmp/test_1f2.svg", 1);
+        pp.generatePlot(tmpdir + "test_1.svg");
+        pp.generatePlotFrame(tmpdir + "test_1f2.svg", 1);
     }
 
 }

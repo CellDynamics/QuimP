@@ -31,10 +31,15 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  *
  */
 public class ConfigStreamerTest {
+
     static final Logger LOGGER = LoggerFactory.getLogger(ConfigStreamerTest.class.getName());
+    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
     private tSnakePluginList p;
     private ConfigContainer1 cc;
 
+    /**
+     * @throws Exception
+     */
     @Before
     public void setUp() throws Exception {
         ParamList config = new ParamList();
@@ -139,29 +144,41 @@ public class ConfigStreamerTest {
 
     }
 
+    /**
+     * @throws Exception
+     */
     @After
     public void tearDown() throws Exception {
     }
 
+    /**
+     * @throws IOException
+     */
     @Test
     public void test_create() throws IOException {
         Gson gson = new Gson();
         LOGGER.trace(gson.toJson(cc));
-        FileWriter f = new FileWriter(new File("/tmp/t1.json"));
+        FileWriter f = new FileWriter(new File(tmpdir + "t1.json"));
         f.write(gson.toJson(cc));
         f.close();
 
     }
 
+    /**
+     * @throws IOException
+     */
     @Test
     public void test_create_pretty() throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         LOGGER.trace(gson.toJson(cc));
-        FileWriter f = new FileWriter(new File("/tmp/t2.json"));
+        FileWriter f = new FileWriter(new File(tmpdir + "t2.json"));
         f.write(gson.toJson(cc));
         f.close();
     }
 
+    /**
+     * @throws IOException
+     */
     @Test
     @Ignore
     public void test_load() throws IOException {
@@ -171,7 +188,7 @@ public class ConfigStreamerTest {
         gsonbuilder.registerTypeAdapter(tSnakePluginList.class,
                 new tSnakePluginListInstanceCreator(3));
         Gson gson = gsonbuilder.create();
-        FileReader f = new FileReader(new File("/tmp/t2.json"));
+        FileReader f = new FileReader(new File(tmpdir + "t2.json"));
         tSnakePluginList local;
         // local = new tSnakePluginList(2);
         local = gson.fromJson(f, tSnakePluginList.class);
@@ -182,6 +199,9 @@ public class ConfigStreamerTest {
 
     }
 
+    /**
+     * @throws IOException
+     */
     @Test
     @Ignore
     public void test_create_pretty_static() throws IOException {
