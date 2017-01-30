@@ -28,14 +28,14 @@
     <license.copyrightOwners>University of Warwick</license.copyrightOwners>
   </properties>
   <scm>
-    <connection>scm:git:https://github.com/CellDynamics/QuimPpriv.git</connection>
-    <developerConnection>scm:git:https://github.com/CellDynamics/QuimPpriv.git</developerConnection>
-    <url>https://github.com/CellDynamics/QuimPpriv/</url>
+    <connection>scm:git:https://github.com/CellDynamics/QuimP.git</connection>
+    <developerConnection>scm:git:https://github.com/CellDynamics/QuimP.git</developerConnection>
+    <url>https://github.com/CellDynamics/QuimP/</url>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/CellDynamics/QuimPpriv/issues/</url>
+    <url>https://github.com/CellDynamics/QuimP/issues/</url>
   </issueManagement>
   <licenses>
     <license>
