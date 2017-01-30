@@ -6,9 +6,50 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="17.02.01" date="2017-01-30" description="Release">
+          <action dev="baniuk" type="fix" issue="215">
+              Protruision Analysis: Fixed tests.
+          </action>
+          <action dev="baniuk" type="add" issue="213">
+              QuimP-RandomWalk: Added option for real time previewing segmentation progress.
+          </action>
+          <action dev="baniuk" type="update" issue="212">
+              QuimP: Added scijava pom as parent pom.
+          </action>
+          <action dev="baniuk" type="fix" issue="211">
+              QuimP: Fixed problem with displaying registration window.
+          </action>
+          <action dev="baniuk" type="fix" issue="209">
+              QuimP-RandomWalk: Fixed crashing when there is less than 3 nodes left after contour shrinking. It happened when too big shrinking power was used.
+          </action>
+          <action dev="baniuk" type="update" issue="208">
+              QuimP-RandomWalk: Segmentation process does not block UI anymore.
+          </action>
+          <action dev="baniuk" type="update" issue="204">
+              QuimP: Change webpage in quimp info.
+          </action>
+          <action dev="baniuk" type="fix" issue="203">
+              QuimP-RandomWalk: Fixed problem when show seeds option was used together with seeding every slice separatelly (seeds of size of input image).
+          </action>
+          <action dev="baniuk" type="fix" issue="202">
+              QuimP-BOA: Fixed bug when user deleted accidentally contour in edit mode and then quit from edit mode.
+          </action>
+          <action dev="baniuk" type="fix" issue="201">
+              QuimP-BOA: Fixed double extension when overwriting file.
+          </action>
+          <action dev="baniuk" type="fix" issue="199">
+              QuimP-BOA: Zoom selector did not update when QCONF file was loaded.
+          </action>
+          <action dev="baniuk" type="fix" issue="8">
+              QuimP-ANA: Ana plugin failed when input image was created in IJ.
+          </action>
+           <action dev="baniuk" type="fix" issue="7">
+              QuimP-BOA: BOA crashed when input image was more than one channel.
+          </action>
+      </release>
       <release version="17.01.02" date="2017-01-18" description="Release">
           <action dev="baniuk" type="fix" issue="263">
-              QuimP: Disabled generation of old files in
+              QuimP: Disabled generation of old files in QuimP modules if QCONF file is loaded.
           </action>
       </release>
       <release version="17.01.01" date="2017-01-17" description="Release">
