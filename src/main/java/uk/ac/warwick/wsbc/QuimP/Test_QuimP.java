@@ -15,6 +15,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * Inserts an image or stack into a stack.
  */
@@ -23,6 +24,9 @@ public class Test_QuimP implements PlugIn {
     private static final int m =
             Measurements.AREA + Measurements.INTEGRATED_DENSITY + Measurements.MEAN;
 
+    /* (non-Javadoc)
+     * @see ij.plugin.PlugIn#run(java.lang.String)
+     */
     @Override
     public void run(String arg) {
         // testAngle();
@@ -36,6 +40,9 @@ public class Test_QuimP implements PlugIn {
         // this.colorConvert();
     }
 
+    /**
+     * Test area.
+     */
     void testArea() {
         ImagePlus imp = WindowManager.getCurrentImage();
         if (imp == null) {
@@ -75,6 +82,9 @@ public class Test_QuimP implements PlugIn {
 
     }
 
+    /**
+     * Test angle.
+     */
     void testAngle() {
 
         Vert a, b, c;
@@ -92,6 +102,11 @@ public class Test_QuimP implements PlugIn {
         System.out.println("curv = " + curvature);
     }
 
+    /**
+     * Test qparams.
+     *
+     * @throws QuimpException the quimp exception
+     */
     void testQparams() throws QuimpException {
         QParams p = new QParams(
                 new File("/Users/rtyson/Documents/phd/tmp/smallStack/SmallStack_0.paQP"));
@@ -106,6 +121,9 @@ public class Test_QuimP implements PlugIn {
         // p.writeParams();
     }
 
+    /**
+     * Test overlay.
+     */
     void testOverlay() {
 
         ImagePlus imp = IJ.getImage();

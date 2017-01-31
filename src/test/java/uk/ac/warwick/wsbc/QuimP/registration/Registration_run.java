@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.registration;
 
 import ij.IJ;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *

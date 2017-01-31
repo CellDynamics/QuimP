@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+// TODO: Auto-generated Javadoc
 /**
  * Base class for Shape holders.
  * 
@@ -27,6 +28,9 @@ public abstract class ShapeHandler<T extends Shape<?>> {
      */
     protected int endFrame;
 
+    /**
+     * Instantiates a new shape handler.
+     */
     ShapeHandler() {
     }
 

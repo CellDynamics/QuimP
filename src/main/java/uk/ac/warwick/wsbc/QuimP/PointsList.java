@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * Represents node of bidirectional list of points in Cartesian coordinates.
  * 
@@ -14,7 +15,15 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @param <T> Type of point, currently can be Node or Vert
  */
 public abstract class PointsList<T extends PointsList<T>> {
+    
+    /**
+     * The prev.
+     */
     protected transient T prev; /*!< previous point in list, \c null if no other point */
+    
+    /**
+     * The next.
+     */
     protected transient T next; /*!< next point in list, \c null if no other point */
     /**
      * x,y co-ordinates of the point.
@@ -32,7 +41,15 @@ public abstract class PointsList<T extends PointsList<T>> {
      * during calculating normals (see \c normal)
      */
     protected ExtendedVector2d tan;
+    
+    /**
+     * The head.
+     */
     protected boolean head = false; /*!< Indicate if this point is \b head */
+    
+    /**
+     * The clockwise.
+     */
     protected static boolean clockwise = true; /*!< access clockwise if true */
     /**
      * ID number of point, unique across list. Given during adding point to list, controlled by
@@ -200,35 +217,76 @@ public abstract class PointsList<T extends PointsList<T>> {
         point.setY(y);
     }
 
+    /**
+     * Sets the clockwise.
+     *
+     * @param b the new clockwise
+     */
     public static void setClockwise(boolean b) {
         PointsList.clockwise = b;
     }
 
+    /**
+     * Gets the point.
+     *
+     * @return the point
+     */
     public ExtendedVector2d getPoint() {
         return point;
     }
 
+    /**
+     * Gets the track num.
+     *
+     * @return the track num
+     */
     public int getTrackNum() {
         return tracknumber;
     }
 
+    /**
+     * Gets the normal.
+     *
+     * @return the normal
+     */
     public ExtendedVector2d getNormal() {
         return normal;
     }
 
+    /**
+     * Gets the tangent.
+     *
+     * @return the tangent
+     */
     public ExtendedVector2d getTangent() {
         return tan;
     }
 
+    /**
+     * Checks if is head.
+     *
+     * @return true, if is head
+     */
     public boolean isHead() {
         return head;
     }
 
+    /**
+     * Sets the normal.
+     *
+     * @param x the x
+     * @param y the y
+     */
     public void setNormal(double x, double y) {
         normal.setX(x);
         normal.setY(y);
     }
 
+    /**
+     * Sets the track num.
+     *
+     * @param b the new track num
+     */
     public void setTrackNum(int b) {
         tracknumber = b;
     }

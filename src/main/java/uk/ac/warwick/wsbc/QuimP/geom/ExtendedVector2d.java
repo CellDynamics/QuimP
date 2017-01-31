@@ -7,6 +7,7 @@ import org.scijava.vecmath.Tuple2f;
 import org.scijava.vecmath.Vector2d;
 import org.scijava.vecmath.Vector2f;
 
+// TODO: Auto-generated Javadoc
 /**
  * Defines 2D vector and performs operations on vectors and lines.
  *
@@ -16,26 +17,44 @@ import org.scijava.vecmath.Vector2f;
  */
 public class ExtendedVector2d extends Vector2d {
 
+    /**
+     * @param v
+     */
     public ExtendedVector2d(double[] v) {
         super(v);
     }
 
+    /**
+     * @param t1
+     */
     public ExtendedVector2d(Tuple2d t1) {
         super(t1);
     }
 
+    /**
+     * @param t1
+     */
     public ExtendedVector2d(Tuple2f t1) {
         super(t1);
     }
 
+    /**
+     * @param v1
+     */
     public ExtendedVector2d(Vector2d v1) {
         super(v1);
     }
 
+    /**
+     * @param v1
+     */
     public ExtendedVector2d(Vector2f v1) {
         super(v1);
     }
 
+    /**
+     * 
+     */
     public ExtendedVector2d() {
         super();
     }
@@ -54,6 +73,9 @@ public class ExtendedVector2d extends Vector2d {
 
     private static final long serialVersionUID = -7238793665995665600L;
 
+    /**
+     * 
+     */
     public void makeUnit() {
 
         double length = length();
@@ -65,30 +87,47 @@ public class ExtendedVector2d extends Vector2d {
         }
     }
 
+    /**
+     * @param nx
+     * @param ny
+     */
     public void setXY(double nx, double ny) {
         y = ny;
         x = nx;
 
     }
 
+    /**
+     * @param v
+     */
     public void addVec(ExtendedVector2d v) {
         x += v.getX();
         y += v.getY();
     }
 
+    /**
+     * @param d
+     */
     public void multiply(double d) {
         x *= d;
         y *= d;
     }
 
+    /**
+     * @param p
+     */
     public void power(double p) {
         x = Math.pow(x, p);
         y = Math.pow(y, p);
 
     }
 
+    /**
+     * @param a
+     * @param b
+     * @return calc unit vector to target
+     */
     public static ExtendedVector2d unitVector(ExtendedVector2d a, ExtendedVector2d b) {
-        // calc unit vector to target
         ExtendedVector2d vec = ExtendedVector2d.vecP2P(a, b);
 
         double length = vec.length();
@@ -99,6 +138,11 @@ public class ExtendedVector2d extends Vector2d {
         return vec;
     }
 
+    /**
+     * @param a
+     * @param b
+     * @return vector between points
+     */
     public static ExtendedVector2d vecP2P(ExtendedVector2d a, ExtendedVector2d b) {
         // calc a vector between two points
         ExtendedVector2d vec = new ExtendedVector2d();
@@ -108,6 +152,11 @@ public class ExtendedVector2d extends Vector2d {
         return vec;
     }
 
+    /**
+     * @param a
+     * @param b
+     * @return length of the vector
+     */
     public static double lengthP2P(ExtendedVector2d a, ExtendedVector2d b) {
         ExtendedVector2d v = vecP2P(a, b);
         return v.length();
@@ -372,15 +421,26 @@ public class ExtendedVector2d extends Vector2d {
         return equals(distanceFrom1, 0.0, LIMIT) && equals(distanceFrom2, 0.0, LIMIT) ? 1 : 0;
     }
 
+    /**
+     * @param a
+     * @param b
+     * @param c
+     * @return area of triangle (can be negative)
+     */
     public static double triangleArea(ExtendedVector2d a, ExtendedVector2d b, ExtendedVector2d c) {
         // calc area of a triangle (can be negative)
         return (b.getX() - a.getX()) * (c.getY() - a.getY())
                 - (c.getX() - a.getX()) * (b.getY() - a.getY());
     }
 
+    /**
+     * @param P
+     * @param S0
+     * @param S1
+     * @return calculate the closest point on a segment to point P
+     */
     public static ExtendedVector2d PointToSegment(ExtendedVector2d P, ExtendedVector2d S0,
             ExtendedVector2d S1) {
-        // calculate the closest point on a segment to point P
         ExtendedVector2d v = ExtendedVector2d.vecP2P(S0, S1);
         ExtendedVector2d w = ExtendedVector2d.vecP2P(S0, P);
 
@@ -402,20 +462,35 @@ public class ExtendedVector2d extends Vector2d {
         return v;
     }
 
+    /**
+     * @param P
+     * @param S0
+     * @param S1
+     * @return distance between closest point and segment
+     */
     public static double distPointToSegment(ExtendedVector2d P, ExtendedVector2d S0,
             ExtendedVector2d S1) {
         ExtendedVector2d closest = ExtendedVector2d.PointToSegment(P, S0, S1);
         return ExtendedVector2d.lengthP2P(P, closest);
     }
 
+    /**
+     * @param a
+     * @param b
+     * @return scalar dot
+     */
     public static double dot(ExtendedVector2d a, ExtendedVector2d b) {
         double d = a.getX() * b.getX();
         d += a.getY() * b.getY();
         return d;
     }
 
+    /**
+     * @param aa
+     * @param bb
+     * @return calc angle between 2 vectors
+     */
     public static double angleNonRelative(ExtendedVector2d aa, ExtendedVector2d bb) {
-        // calc angle between 2 vectors
         ExtendedVector2d a;
         ExtendedVector2d b;
         a = new ExtendedVector2d(aa.getX(), aa.getY()); // make a copy
@@ -426,8 +501,12 @@ public class ExtendedVector2d extends Vector2d {
         return Math.acos(dot(a, b));
     }
 
+    /**
+     * @param aa
+     * @param bb
+     * @return calc angle between 2 vectors
+     */
     public static double angle(ExtendedVector2d aa, ExtendedVector2d bb) {
-        // calc angle between 2 vectors
         ExtendedVector2d a;
         ExtendedVector2d b;
         a = new ExtendedVector2d(aa.getX(), aa.getY()); // make a copy
@@ -438,6 +517,12 @@ public class ExtendedVector2d extends Vector2d {
         return Math.atan2(b.getY(), b.getX()) - Math.atan2(a.getY(), a.getX());
     }
 
+    /**
+     * @param p
+     * @param a
+     * @param b
+     * @return distance of point to line given as two points
+     */
     public static double distPoinToInfLine(ExtendedVector2d p, ExtendedVector2d a,
             ExtendedVector2d b) {
         return (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);

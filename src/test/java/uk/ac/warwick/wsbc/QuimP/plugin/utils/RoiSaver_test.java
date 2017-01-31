@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test class for ROI saver
  * 
@@ -17,6 +18,9 @@ import org.scijava.vecmath.Point2d;
  */
 public class RoiSaver_test {
 
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**

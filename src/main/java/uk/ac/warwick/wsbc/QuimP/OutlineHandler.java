@@ -17,6 +17,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Collection of outlines for subsequent frames (<it>f1</it> and <it>f2</it>) for one cell.
  * 
@@ -24,6 +25,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @author p.baniukiewicz
  */
 public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSerialize {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(OutlineHandler.class.getName());
     /**
      * Array of given cell outlines found for frames (<tt>startFrame</tt> and <tt>endFrame</tt>)
@@ -32,19 +37,48 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     transient private QParams qp;
     // all transient fields are rebuild in afterSerialzie findStatLimits()
     transient private int size;
+    
+    /**
+     * The max coor.
+     */
     transient public ExtendedVector2d maxCoor;
+    
+    /**
+     * The min coor.
+     */
     transient public ExtendedVector2d minCoor;
+    
+    /**
+     * The mig limits.
+     */
     // min and max limits
     transient public double[] migLimits;
+    
+    /**
+     * The flu lims.
+     */
     transient public double[][] fluLims;
+    
+    /**
+     * The curv limits.
+     */
     // public double[] convLimits;
     transient public double[] curvLimits;
     /**
      * longest outline in outlines.
      */
     transient public double maxLength = 0;
+    
+    /**
+     * The read success.
+     */
     transient public boolean readSuccess;
 
+    /**
+     * Instantiates a new outline handler.
+     *
+     * @param params the params
+     */
     public OutlineHandler(QParams params) {
         qp = params;
         startFrame = qp.getStartFrame();
@@ -106,6 +140,12 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         findStatLimits();
     }
 
+    /**
+     * Instantiates a new outline handler.
+     *
+     * @param s the s
+     * @param e the e
+     */
     public OutlineHandler(int s, int e) {
         size = e - s + 1;
         outlines = new Outline[size];
@@ -114,14 +154,30 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
     }
 
+    /**
+     * Gets the start frame.
+     *
+     * @return the start frame
+     */
     public int getStartFrame() {
         return startFrame;
     }
 
+    /**
+     * Gets the end frame.
+     *
+     * @return the end frame
+     */
     public int getEndFrame() {
         return endFrame;
     }
 
+    /**
+     * Gets the outline.
+     *
+     * @param f the f
+     * @return the outline
+     */
     public Outline getOutline(int f) {
         if (f - startFrame < 0 || f - startFrame > outlines.length) {
             IJ.log("Tried to access OOR frame store\n\t...frame:" + f);
@@ -130,6 +186,12 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         return outlines[f - startFrame];
     }
 
+    /**
+     * Checks if is outline at.
+     *
+     * @param f the f
+     * @return true, if is outline at
+     */
     public boolean isOutlineAt(int f) {
         if (f - startFrame < 0)
             return false;
@@ -141,10 +203,22 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
             return true;
     }
 
+    /**
+     * Index get outline.
+     *
+     * @param i the i
+     * @return the outline
+     */
     public Outline indexGetOutline(int i) {
         return outlines[i];
     }
 
+    /**
+     * Sets the outline.
+     *
+     * @param f the f
+     * @param o the o
+     */
     public void setOutline(int f, Outline o) {
         outlines[f - startFrame] = o;
         double length = o.getLength();
@@ -386,6 +460,11 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         curvLimits = QuimpToolsCollection.setLimitsEqual(curvLimits);
     }
 
+    /**
+     * Gets the size.
+     *
+     * @return the size
+     */
     public int getSize() {
         return size;
     }

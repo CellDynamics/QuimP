@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3f;
 
+// TODO: Auto-generated Javadoc
 /**
  *
  * @author rtyson
@@ -31,12 +32,26 @@ public class VRMLobject {
     private float creaseAngle = 2.0f;
     private boolean solid = true;
 
+    /**
+     * Instantiates a new VRM lobject.
+     *
+     * @param p the p
+     * @param c the c
+     * @param i the i
+     */
     public VRMLobject(Point3f[] p, Color3f[] c, int[] i) {
         coords = p;
         colorsF = c;
         coordIndices = i;
     }
 
+    /**
+     * Transform.
+     *
+     * @param x the x
+     * @param y the y
+     * @param z the z
+     */
     /*
      * public void writeWithJAVA3D(File f){ colorsF[0].x = 0.3f; IndexedQuadArray quadArray = new
      * IndexedQuadArray(coords.length, IndexedQuadArray.COORDINATES, coordIndices.length);
@@ -59,12 +74,22 @@ public class VRMLobject {
         }
     }
 
+    /**
+     * Scale.
+     *
+     * @param x the x
+     */
     public void scale(float x) {
         for (int i = 0; i < coords.length; i++) {
             coords[i].scale(x);
         }
     }
 
+    /**
+     * Write.
+     *
+     * @param OUT the out
+     */
     public void write(File OUT) {
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(OUT), true);

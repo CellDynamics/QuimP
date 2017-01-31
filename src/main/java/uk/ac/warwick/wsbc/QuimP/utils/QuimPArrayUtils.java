@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+// TODO: Auto-generated Javadoc
 /**
  * Deliver simple methods operating on arrays.
  * 
@@ -256,6 +257,14 @@ public class QuimPArrayUtils {
         return ret;
     }
 
+    /**
+     * Array to file.
+     *
+     * @param a the a
+     * @param delim the delim
+     * @param outFile the out file
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static void arrayToFile(double[][] a, String delim, File outFile) throws IOException {
         PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
         for (int i = 0; i < a.length; i++) {
@@ -311,6 +320,13 @@ public class QuimPArrayUtils {
         return lines;
     }
 
+    /**
+     * Find num peaks.
+     *
+     * @param data the data
+     * @param peakWidth the peak width
+     * @return the int
+     */
     public static int findNumPeaks(double[] data, int peakWidth) {
 
         int[] peaks = new int[data.length];
@@ -346,6 +362,12 @@ public class QuimPArrayUtils {
         return realPeaks;
     }
 
+    /**
+     * Array max.
+     *
+     * @param a the a
+     * @return the int
+     */
     public static int arrayMax(int[] a) {
         int max = a[0];
         if (a.length == 1) {
@@ -360,6 +382,12 @@ public class QuimPArrayUtils {
         return max;
     }
 
+    /**
+     * Array max.
+     *
+     * @param a the a
+     * @return the double
+     */
     public static double arrayMax(double[] a) {
         double max = a[0];
         if (a.length == 1) {
@@ -374,6 +402,12 @@ public class QuimPArrayUtils {
         return max;
     }
 
+    /**
+     * Array max.
+     *
+     * @param a the a
+     * @return the double
+     */
     public static double arrayMax(double[][] a) {
         double max = arrayMax(a[0]);
         if (a.length == 1)
@@ -437,6 +471,12 @@ public class QuimPArrayUtils {
         return ret;
     }
 
+    /**
+     * Array min.
+     *
+     * @param a the a
+     * @return the double
+     */
     public static double arrayMin(double[] a) {
         double min = a[0];
         if (a.length == 1) {
@@ -451,6 +491,12 @@ public class QuimPArrayUtils {
         return min;
     }
 
+    /**
+     * Array min.
+     *
+     * @param a the a
+     * @return the double
+     */
     public static double arrayMin(double[][] a) {
         double min = arrayMin(a[0]);
         if (a.length == 1)
@@ -463,6 +509,12 @@ public class QuimPArrayUtils {
         return min;
     }
 
+    /**
+     * Sum array.
+     *
+     * @param a the a
+     * @return the int
+     */
     public static int sumArray(int[] a) {
         int sum = 0;
         for (int i = 0; i < a.length; i++)
@@ -471,6 +523,11 @@ public class QuimPArrayUtils {
         return sum;
     }
 
+    /**
+     * Prints the.
+     *
+     * @param a the a
+     */
     public static void print(double[] a) {
 
         for (int i = 0; i < a.length; i++) {
@@ -479,6 +536,11 @@ public class QuimPArrayUtils {
         System.out.println("");
     }
 
+    /**
+     * Prints the.
+     *
+     * @param a the a
+     */
     public static void print(double[][] a) {
 
         for (int i = 0; i < a.length; i++) {

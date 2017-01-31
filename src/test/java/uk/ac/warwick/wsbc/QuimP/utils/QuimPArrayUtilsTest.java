@@ -16,12 +16,21 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class QuimPArrayUtilsTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QuimPArrayUtilsTest.class.getName());
+    
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**

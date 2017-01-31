@@ -8,6 +8,7 @@ import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * Accessor that masks all public methods from object it holds except those manually exposed.
  * 
@@ -21,6 +22,10 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ViewUpdater {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(ViewUpdater.class.getName());
     private Object o;
     private Snake snake; //!< Hold one snake from main view that can be requested by plugin

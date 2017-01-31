@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
 import java.util.Arrays;
 
+// TODO: Auto-generated Javadoc
 /**
  * Hold algorithm parameters
  * 
@@ -9,11 +10,35 @@ import java.util.Arrays;
  *
  */
 public class Params {
+    
+    /**
+     * The alpha.
+     */
     double alpha;
+    
+    /**
+     * The beta.
+     */
     double beta;
+    
+    /**
+     * The gamma.
+     */
     double[] gamma;
+    
+    /**
+     * The Iter.
+     */
     int Iter;
+    
+    /**
+     * The dt.
+     */
     double dt;
+    
+    /**
+     * The relim.
+     */
     double relim;
 
     /**

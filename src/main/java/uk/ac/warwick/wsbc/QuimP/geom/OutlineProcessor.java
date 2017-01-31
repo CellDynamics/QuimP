@@ -7,6 +7,7 @@ import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANA_;
 
+// TODO: Auto-generated Javadoc
 /**
  * Support algorithms for processing outlines.
  * 
@@ -14,6 +15,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANA_;
  * @see ANA_
  */
 public class OutlineProcessor {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(OutlineProcessor.class.getName());
 
     private Outline o;

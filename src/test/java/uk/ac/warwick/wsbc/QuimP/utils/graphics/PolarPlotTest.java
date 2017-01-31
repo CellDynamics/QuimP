@@ -24,13 +24,22 @@ import org.slf4j.LoggerFactory;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PolarPlotTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(PolarPlotTest.class.getName());
+    
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
     @Mock
     private STmap mapCell;

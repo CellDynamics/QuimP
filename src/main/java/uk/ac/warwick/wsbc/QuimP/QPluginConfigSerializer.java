@@ -14,6 +14,7 @@ import com.google.gson.GsonBuilder;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
+// TODO: Auto-generated Javadoc
 /**
  * Serves save and load operations for plugin configuration. Saved is current plugin stack with
  * plugins settings.
@@ -24,12 +25,24 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  */
 @Deprecated
 public class QPluginConfigSerializer {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QPluginConfigSerializer.class.getName());
     private transient GsonBuilder gsonbuilder;
     // Definition of top layer data saved
     @SuppressWarnings("unused")
     private String[] version; /*!< Version of QuimP added to top layer */
+    
+    /**
+     * The software name.
+     */
     public final String softwareName = "QuimP"; /*!< Name of the software */
+    
+    /**
+     * The active plugin list.
+     */
     public SnakePluginList activePluginList; /*!< Plugin configurations */
 
     /**

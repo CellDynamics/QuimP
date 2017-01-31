@@ -7,6 +7,7 @@ import java.util.concurrent.CountDownLatch;
 import ij.IJ;
 import ij.ImageJ;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *

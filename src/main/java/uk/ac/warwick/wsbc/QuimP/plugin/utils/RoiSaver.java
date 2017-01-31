@@ -19,6 +19,7 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
+// TODO: Auto-generated Javadoc
 /**
  * Helper class to export shapes as \a *.tif images
  * 
@@ -26,6 +27,10 @@ import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
  *
  */
 public class RoiSaver {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(RoiSaver.class.getName());
 
     /**

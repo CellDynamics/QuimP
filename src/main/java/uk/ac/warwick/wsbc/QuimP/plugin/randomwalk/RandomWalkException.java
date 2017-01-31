@@ -4,6 +4,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
+// TODO: Auto-generated Javadoc
 /**
  * Exception class for Random Walker plugin. Redirect all exceptions to GUI.
  * 

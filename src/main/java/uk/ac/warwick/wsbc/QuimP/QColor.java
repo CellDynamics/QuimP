@@ -8,13 +8,30 @@ import org.scijava.vecmath.Color3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * Just a class for colors, that does not use stupid floats represented as RGB in the range 0->1
  *
  * @author tyson
  */
 public class QColor {
-    public double red, green, blue;
+
+    /**
+     * Color component.
+     */
+    public double red;
+    /**
+     * Color component.
+     */
+    public double green;
+    /**
+     * Color component.
+     */
+    public double blue;
+
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QColor.class.getName());
 
     /**
@@ -28,10 +45,20 @@ public class QColor {
         blue = src.blue;
     }
 
+    /**
+     * Instantiates a new q color.
+     *
+     * @param r the r
+     * @param g the g
+     * @param b the b
+     */
     public QColor(double r, double g, double b) {
         this.setRGB(r, g, b);
     }
 
+    /**
+     * Prints the.
+     */
     public void print() {
         System.out.println("R:" + red + " G: " + green + " B: " + blue);
     }
@@ -78,6 +105,13 @@ public class QColor {
         return true;
     }
 
+    /**
+     * Sets the RGB.
+     *
+     * @param r the r
+     * @param g the g
+     * @param b the b
+     */
     public void setRGB(double r, double g, double b) {
         red = r;
         blue = b;
@@ -106,37 +140,81 @@ public class QColor {
         return "rgb(" + (red * 100) + "%," + (green * 100) + "%," + (blue * 100) + "%)";
     }
 
+    /**
+     * Gets the red.
+     *
+     * @return the red
+     */
     public double getRed() {
         return red;
     }
 
+    /**
+     * Gets the green.
+     *
+     * @return the green
+     */
     public double getGreen() {
         return green;
     }
 
+    /**
+     * Gets the blue.
+     *
+     * @return the blue
+     */
     public double getBlue() {
         return blue;
     }
 
+    /**
+     * Gets the red.
+     *
+     * @param bits the bits
+     * @return the red
+     */
     public int getRed(int bits) {
         // returns the color with a color space of size 'bits'
         return (int) Math.round(red * bits);
     }
 
+    /**
+     * Gets the green.
+     *
+     * @param bits the bits
+     * @return the green
+     */
     public int getGreen(int bits) {
         // returns the color with a color space of size 'bits'
         return (int) Math.round(green * bits);
     }
 
+    /**
+     * Gets the blue.
+     *
+     * @param bits the bits
+     * @return the blue
+     */
     public int getBlue(int bits) {
         // returns the color with a color space of size 'bits'
         return (int) Math.round(blue * bits);
     }
 
+    /**
+     * Gets the color int.
+     *
+     * @return the color int
+     */
     public int getColorInt() {
         return getRed(255) * 65536 + getGreen(255) * 256 + getBlue(255);
     }
 
+    /**
+     * Color int 23 f.
+     *
+     * @param c the c
+     * @return the color 3 f
+     */
     public static Color3f colorInt23f(int c) {
         float blueF = c % 256;
         int s = (int) (c / 256);
@@ -151,14 +229,32 @@ public class QColor {
         return new Color3f(redF, greenF, blueF);
     }
 
+    /**
+     * Gets the color BW.
+     *
+     * @param bits the bits
+     * @return the color BW
+     */
     public int getColorBW(int bits) {
         return (int) Math.round(((red + green + blue) / 3) * bits);
     }
 
     // static methods *************
 
+    /**
+     * The colour maps.
+     */
     public static String[] colourMaps = { "Summer", "Cool", "Hot", "Grey" };
 
+    /**
+     * ER color map 2.
+     *
+     * @param c the c
+     * @param d the d
+     * @param min the min
+     * @param max the max
+     * @return the q color
+     */
     public static QColor ERColorMap2(String c, double d, double min, double max) {
         if (c.equals("rwb")) {
             return RWBmap(d, max, min);
@@ -169,6 +265,14 @@ public class QColor {
         }
     }
 
+    /**
+     * RW bmap.
+     *
+     * @param d the d
+     * @param max the max
+     * @param min the min
+     * @return the q color
+     */
     public static QColor RWBmap(double d, double max, double min) {
         double r = 1;
         double g = 1;
@@ -255,6 +359,14 @@ public class QColor {
 
     }
 
+    /**
+     * RB blut.
+     *
+     * @param reds the reds
+     * @param greens the greens
+     * @param blues the blues
+     * @return the int
+     */
     static int RBBlut(byte[] reds, byte[] greens, byte[] blues) {
         int[] r = { 0, 0, 1, 25, 49, 73, 98, 122, 146, 162, 173, 184, 195, 207, 217, 229, 240, 252,
                 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 };
@@ -270,6 +382,15 @@ public class QColor {
         return r.length;
     }
 
+    /**
+     * Bw scale.
+     *
+     * @param value the value
+     * @param bits the bits
+     * @param max the max
+     * @param min the min
+     * @return the int
+     */
     public static int bwScale(double value, int bits, double max, double min) {
         if (value > max || value < min) {
             // System.out.println("Warning! bwScale value not in range:

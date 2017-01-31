@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin;
 
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 
+// TODO: Auto-generated Javadoc
 /**
  * Basic class derived from Exception for purposes of QuimP plugins
  * 

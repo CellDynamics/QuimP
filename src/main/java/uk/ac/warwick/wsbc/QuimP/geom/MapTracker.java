@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
+// TODO: Auto-generated Javadoc
 /**
  * Compute forward and backward tracking maps from origin and coordinates maps.
  * 
@@ -21,6 +22,9 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  */
 public class MapTracker {
 
+    /**
+     * 
+     */
     public static final int BAD_INDEX = -1;
     /**
      * Decides whether include starting point in tracking. By default Matlab procedures do not
@@ -28,7 +32,14 @@ public class MapTracker {
      */
     public boolean includeFirst = false;
 
+    /**
+     * The forward map.
+     */
     int[][] forwardMap;
+    
+    /**
+     * The backward map.
+     */
     int[][] backwardMap;
 
     /**

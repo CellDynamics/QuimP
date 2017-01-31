@@ -18,6 +18,7 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 
+// TODO: Auto-generated Javadoc
 /*
  * //!>
  * @startuml doc-files/TrackOutline_1_UML.png
@@ -80,11 +81,25 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  */
 public class TrackOutline {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(TrackOutline.class.getName());
 
+    /**
+     * The imp.
+     */
     protected ImageProcessor imp; //!< Original image. It is not modified
     private ImageProcessor prepared; //!< Image under process. It is modified by Outline methods
+    
+    /**
+     * The outlines.
+     */
     public ArrayList<SegmentedShapeRoi> outlines; //!< List of found outlines as ROIs
+    
+    /**
+     * The background.
+     */
     protected int background; //!< Background color
     private int MAX = -1; //!< Maximal number of searched objects,  all objects if negative
     private int frame; //!< Frame for which imp has been got

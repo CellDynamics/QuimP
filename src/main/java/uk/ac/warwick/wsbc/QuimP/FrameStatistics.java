@@ -13,6 +13,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ChannelStat;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Hold statistic evaluated for one frame, geometric and fluorescence.
  * 
@@ -20,20 +21,60 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @see uk.ac.warwick.wsbc.QuimP.CellStatsEval
  */
 public class FrameStatistics {
+    /**
+     * 
+     */
     public int frame;
+
+    /**
+     * 
+     */
     public double area;
     // double totalFlour;
     // double meanFlour;
+    /**
+     * 
+     */
     public ExtendedVector2d centroid;
+    /**
+     * 
+     */
     public double elongation;
+    /**
+     * 
+     */
     public double circularity;
+    /**
+     * 
+     */
     public double perimiter;
+    /**
+     * 
+     */
     public double displacement;
+    /**
+     * 
+     */
     public double dist;
+    /**
+     * 
+     */
     public double persistance;
+    /**
+     * 
+     */
     public double speed; // over 1 frame
+    /**
+     * 
+     */
     public double persistanceToSource;
+    /**
+     * 
+     */
     public double dispersion;
+    /**
+     * 
+     */
     public double extension;
     /**
      * Fluorescence stats added by ANA module.
@@ -41,6 +82,9 @@ public class FrameStatistics {
     public ChannelStat[] channels;
     // int cellAge;
 
+    /**
+     * 
+     */
     public FrameStatistics() {
         centroid = new ExtendedVector2d();
         channels = new ChannelStat[3];
@@ -49,6 +93,10 @@ public class FrameStatistics {
         channels[2] = new ChannelStat();
     }
 
+    /**
+     * @param scale
+     * @param frameInterval
+     */
     public void toScale(double scale, double frameInterval) {
         area = QuimpToolsCollection.areaToScale(area, scale);
         perimiter = QuimpToolsCollection.distanceToScale(perimiter, scale);
@@ -57,16 +105,29 @@ public class FrameStatistics {
         speed = QuimpToolsCollection.speedToScale(speed, scale, frameInterval); // over 1 frame
     }
 
+    /**
+     * 
+     * @param scale
+     */
     void centroidToPixels(double scale) {
         centroid.setXY(centroid.getX() / scale, centroid.getY() / scale);
     }
 
+    /**
+     * 
+     */
     public void clearFluo() {
         this.channels[0] = new ChannelStat();
         this.channels[1] = new ChannelStat();
         this.channels[2] = new ChannelStat();
     }
 
+    /**
+     * @param s
+     * @param OUTFILE
+     * @param anap
+     * @throws IOException
+     */
     public static void write(FrameStatistics[] s, File OUTFILE, ANAp anap) throws IOException {
         PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
         IJ.log("Writing to file");
@@ -110,6 +171,11 @@ public class FrameStatistics {
         }
     }
 
+    /**
+     * @param INFILE
+     * @return Array of statistics for all object in frame
+     * @throws IOException
+     */
     public static FrameStatistics[] read(File INFILE) throws IOException {
 
         BufferedReader br = new BufferedReader(new FileReader(INFILE));

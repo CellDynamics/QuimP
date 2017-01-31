@@ -15,6 +15,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * Read properties from resources.
  * 
@@ -22,6 +23,10 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class PropertyReader {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(PropertyReader.class.getName());
 
     /**

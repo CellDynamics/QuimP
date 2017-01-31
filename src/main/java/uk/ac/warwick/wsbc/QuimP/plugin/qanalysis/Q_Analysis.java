@@ -24,6 +24,7 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGplotter;
 
+// TODO: Auto-generated Javadoc
 /**
  * Run Q analysis for ECMM data.
  * 
@@ -39,7 +40,15 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGplotter;
  * @author p.baniukiewicz
  */
 public class Q_Analysis {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(Q_Analysis.class.getName());
+    
+    /**
+     * The gd.
+     */
     GenericDialog gd;
     private OutlineHandler oH; // keep loaded handler, can change during run
     private QconfLoader qconfLoader;

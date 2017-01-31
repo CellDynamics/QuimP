@@ -14,6 +14,7 @@ import ij.process.FloatPolygon;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * Low level snake definition. Form snake from Node objects. Snake is defined by first \c head node.
  * Remaining nodes are in bidirectional linked list.
@@ -26,6 +27,10 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  */
 public class Snake extends Shape<Node> implements IQuimpSerialize {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(Snake.class.getName());
     /**
      * true if snake is alive Changed during segmentation and user interaction
@@ -446,6 +451,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         updateNormales(BOA_.qState.segParam.expandSnake);
     }
 
+    /**
+     * Prints the snake.
+     */
     public void printSnake() {
         System.out.println("Print Nodes (" + POINTS + ")");
         int i = 0;
@@ -575,14 +583,29 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         super.removePoint(n, BOA_.qState.segParam.expandSnake);
     }
 
+    /**
+     * Blowup.
+     *
+     * @throws Exception the exception
+     */
     public void blowup() throws Exception {
         scale(BOA_.qState.segParam.blowup, 4, true);
     }
 
+    /**
+     * Shrink snake.
+     *
+     * @throws BoaException the boa exception
+     */
     public void shrinkSnake() throws BoaException {
         scale(-BOA_.qState.segParam.finalShrink, 0.5, false);
     }
 
+    /**
+     * Implode.
+     *
+     * @throws Exception the exception
+     */
     public void implode() throws Exception {
         // calculate centroid
         double cx;
@@ -1037,6 +1060,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         return true;
     }
 
+    /**
+     * Edits the snake.
+     */
     public void editSnake() {
         System.out.println("Editing a snake");
     }

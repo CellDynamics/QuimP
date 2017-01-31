@@ -13,6 +13,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class override most of methods from super class QParams. The goal of this class is rather
  * not to extend QParams but to use polymorphism to provide requested data to callers keeping
@@ -38,6 +39,9 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  */
 public class QParamsQconf extends QParams {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QParamsQconf.class.getName());
     private Serializer<DataContainer> loaded; // instance of loaded data
     private File newParamFile;
@@ -52,6 +56,9 @@ public class QParamsQconf extends QParams {
      */
     private int currentHandler;
 
+    /**
+     * Instantiates a new q params qconf.
+     */
     public QParamsQconf() {
 
     }
@@ -135,11 +142,21 @@ public class QParamsQconf extends QParams {
         compatibilityLayer(); // fill underlying data (paQP) from QCONF
     }
 
+    /**
+     * Sets the active handler.
+     *
+     * @param num the new active handler
+     */
     public void setActiveHandler(int num) {
         currentHandler = num;
         compatibilityLayer();
     }
 
+    /**
+     * Gets the active handler.
+     *
+     * @return the active handler
+     */
     public int getActiveHandler() {
         return currentHandler;
     }

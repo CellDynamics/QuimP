@@ -17,6 +17,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
+// TODO: Auto-generated Javadoc
 /*
  * //!>
  * @startuml doc-files/SnakePluginList_1_UML.png
@@ -213,6 +214,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  * @author p.baniukiewicz
  */
 public class SnakePluginList implements IQuimpSerialize {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(SnakePluginList.class.getName());
     // all other data that are necessary for plugins
     private transient PluginFactory pluginFactory;
@@ -282,6 +287,15 @@ public class SnakePluginList implements IQuimpSerialize {
             this.name = name;
         }
 
+        /**
+         * Instantiates a new plugin.
+         *
+         * @param name the name
+         * @param isActive the is active
+         * @param pf the pf
+         * @param config the config
+         * @throws QuimpPluginException the quimp plugin exception
+         */
         @Deprecated
         public Plugin(final String name, boolean isActive, final PluginFactory pf,
                 final ParamList config) throws QuimpPluginException {

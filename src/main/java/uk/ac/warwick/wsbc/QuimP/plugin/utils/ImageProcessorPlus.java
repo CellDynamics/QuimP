@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * Class implementing extra functionalities for ij.ImageProcessor
  *
@@ -18,6 +19,10 @@ import ij.process.ImageProcessor;
  * @author p.baniukiewicz
  */
 public class ImageProcessorPlus {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessorPlus.class.getName());
 
     /**

@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -21,6 +22,20 @@ import org.junit.Test;
 @SuppressWarnings("unused")
 public class RegistrationTest {
 
+    /**
+     * Access private.
+     *
+     * @param name the name
+     * @param obj the obj
+     * @param param the param
+     * @param paramtype the paramtype
+     * @return the object
+     * @throws NoSuchMethodException the no such method exception
+     * @throws SecurityException the security exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws InvocationTargetException the invocation target exception
+     */
     static Object accessPrivate(String name, Registration obj, Object[] param, Class<?>[] paramtype)
             throws NoSuchMethodException, SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException {

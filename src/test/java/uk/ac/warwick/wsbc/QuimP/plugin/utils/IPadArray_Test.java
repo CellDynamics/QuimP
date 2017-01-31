@@ -4,6 +4,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+// TODO: Auto-generated Javadoc
+/**
+ * @author p.baniukiewicz
+ *
+ */
 public class IPadArray_Test implements IPadArray {
 
     private int window = 5; // size of virtual window
@@ -25,6 +30,9 @@ public class IPadArray_Test implements IPadArray {
         }
     }
 
+    /**
+     * 
+     */
     @Test
     public void test_getIndex_SYMMETRIC() {
         int dataSize = 10;

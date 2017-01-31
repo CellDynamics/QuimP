@@ -18,19 +18,50 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.vrml.VRMLobject;
 
+// TODO: Auto-generated Javadoc
 /**
  *
  * @author rtyson
  */
 public class STMap3D {
 
+    /**
+     * The y map.
+     */
     double[][] xMap, yMap;
+    
+    /**
+     * The colors.
+     */
     int[] colors;
+    
+    /**
+     * The verts.
+     */
     int VERTS;
+    
+    /**
+     * The res.
+     */
     int RES;
+    
+    /**
+     * The time.
+     */
     int TIME;
+    
+    /**
+     * The cell 3 d.
+     */
     VRMLobject cell3d;
 
+    /**
+     * Instantiates a new ST map 3 D.
+     *
+     * @param xm the xm
+     * @param ym the ym
+     * @param col the col
+     */
     public STMap3D(double[][] xm, double[][] ym, int[] col) {
         xMap = xm;
         yMap = ym;
@@ -41,6 +72,9 @@ public class STMap3D {
         VERTS = col.length;
     }
 
+    /**
+     * Builds the.
+     */
     void build() {
         Point3f[] coords = new Point3f[VERTS];
         Color3f[] colorsF = new Color3f[VERTS];
@@ -94,14 +128,29 @@ public class STMap3D {
 
     }
 
+    /**
+     * To origin.
+     *
+     * @param centre the centre
+     */
     void toOrigin(ExtendedVector2d centre) {
         cell3d.transform((float) -centre.getX(), 0, (float) -centre.getY());
     }
 
+    /**
+     * Scale.
+     *
+     * @param f the f
+     */
     void scale(float f) {
         cell3d.scale(f);
     }
 
+    /**
+     * Write.
+     *
+     * @param CELL the cell
+     */
     void write(File CELL) {
         if (CELL.exists()) {
             CELL.delete();

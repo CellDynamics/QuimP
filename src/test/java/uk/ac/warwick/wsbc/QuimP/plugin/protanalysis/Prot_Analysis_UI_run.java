@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.protanalysis;
 
 import java.io.File;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *

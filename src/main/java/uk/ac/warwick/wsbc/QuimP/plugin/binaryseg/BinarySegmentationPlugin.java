@@ -32,6 +32,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
 
+// TODO: Auto-generated Javadoc
 /**
  * Show UI for segmentation from masks and run it.
  * 
@@ -42,6 +43,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  */
 public class BinarySegmentationPlugin extends QWindowBuilder
         implements ActionListener, IQuimpPluginSynchro, IQuimpNestPlugin, ItemListener {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentationPlugin.class.getName());
 
     private Nest nest; //!< reference to Nest object
@@ -91,6 +96,10 @@ public class BinarySegmentationPlugin extends QWindowBuilder
      *
      */
     class myWindowAdapter extends WindowAdapter {
+        
+        /* (non-Javadoc)
+         * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
+         */
         @Override
         public void windowClosing(WindowEvent we) {
             LOGGER.debug("Window closed");
@@ -198,17 +207,26 @@ public class BinarySegmentationPlugin extends QWindowBuilder
 
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#showUI(boolean)
+     */
     @Override
     public void showUI(boolean val) {
         toggleWindow(val);
 
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getVersion()
+     */
     @Override
     public String getVersion() {
         return "Not versioned separately";
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#about()
+     */
     @Override
     public String about() {
         return "Convert masks int oSnakes\n" + "Author: Piotr Baniukiewicz\n"
@@ -251,11 +269,17 @@ public class BinarySegmentationPlugin extends QWindowBuilder
         }
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpNestPlugin#attachData(uk.ac.warwick.wsbc.QuimP.Nest)
+     */
     @Override
     public void attachData(Nest data) {
         this.nest = data;
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
+     */
     @Override
     public void itemStateChanged(ItemEvent e) {
         String selectedMask;

@@ -2,6 +2,7 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import java.util.ArrayList;
 
+// TODO: Auto-generated Javadoc
 /**
  * Keep statistics (outline and fluoro) for one cell along frames.
  * 
@@ -19,6 +20,9 @@ public class CellStats {
      */
     public ArrayList<FrameStatistics> framestat;
 
+    /**
+     * 
+     */
     public CellStats() {
         framestat = new ArrayList<>();
         frames = 0;
@@ -26,6 +30,11 @@ public class CellStats {
         fluoElements = 0;
     }
 
+    /**
+     * @param frames
+     * @param statsElements
+     * @param fluoElements
+     */
     public CellStats(int frames, int statsElements, int fluoElements) {
         this.frames = frames;
         this.statsElements = statsElements;

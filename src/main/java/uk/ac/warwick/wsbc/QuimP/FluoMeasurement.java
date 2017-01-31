@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+// TODO: Auto-generated Javadoc
 /**
  * Hold fluorescence value for pixel.
  * 
@@ -7,8 +8,24 @@ package uk.ac.warwick.wsbc.QuimP;
  */
 public class FluoMeasurement {
 
-    public double x, y, intensity;
+    /**
+     * 
+     */
+    public double x;
+    /**
+     * 
+     */
+    public double y;
+    /**
+     * 
+     */
+    public double intensity;
 
+    /**
+     * @param xx
+     * @param yy
+     * @param i
+     */
     public FluoMeasurement(double xx, double yy, double i) {
         x = xx;
         y = yy;

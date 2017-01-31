@@ -14,6 +14,7 @@ import uk.ac.warwick.wsbc.QuimP.Vert;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * SVG plotter used in QuimP. Left in this form for compatibility reason.
  * 
@@ -21,16 +22,51 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  */
 public class SVGplotter {
+    
+    /**
+     * The o H.
+     */
     OutlineHandler oH;
+    
+    /**
+     * The out file.
+     */
     File outFile;
+    
+    /**
+     * The scale.
+     */
     double scale;
+    
+    /**
+     * The delta T.
+     */
     double deltaT;
+    
+    /**
+     * The channel.
+     */
     int channel;
 
+    /**
+     * The color with.
+     */
     String colorWith;
 
+    /**
+     * The color map.
+     */
     QColor[] colorMap;
 
+    /**
+     * Instantiates a new SV gplotter.
+     *
+     * @param o the o
+     * @param t the t
+     * @param s the s
+     * @param c the c
+     * @param out the out
+     */
     public SVGplotter(OutlineHandler o, double t, double s, int c, File out) {
         oH = o;
         deltaT = t;
@@ -39,6 +75,11 @@ public class SVGplotter {
         channel = c;
     }
 
+    /**
+     * Plot track ER.
+     *
+     * @param c the c
+     */
     public void plotTrackER(String c) {
         colorWith = c;
         // System.out.println("max min: " + oH.maxM + ", " + oH.minM);
@@ -86,6 +127,9 @@ public class SVGplotter {
         }
     }
 
+    /**
+     * Plot track anim.
+     */
     @Deprecated
     public void plotTrackAnim() {
 
@@ -134,6 +178,12 @@ public class SVGplotter {
         }
     }
 
+    /**
+     * Plot track.
+     *
+     * @param trackColor the track color
+     * @param increment the increment
+     */
     public void plotTrack(String trackColor, int increment) {
 
         // oH.minCoor.print("minCoor:");

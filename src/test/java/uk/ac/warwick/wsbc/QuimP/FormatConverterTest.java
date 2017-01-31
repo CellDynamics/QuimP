@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  * 
@@ -27,6 +28,20 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
  */
 public class FormatConverterTest {
 
+    /**
+     * Access private.
+     *
+     * @param name the name
+     * @param obj the obj
+     * @param param the param
+     * @param paramtype the paramtype
+     * @return the object
+     * @throws NoSuchMethodException the no such method exception
+     * @throws SecurityException the security exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws InvocationTargetException the invocation target exception
+     */
     static Object accessPrivate(String name, FormatConverter obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {

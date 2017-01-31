@@ -19,11 +19,16 @@ import uk.ac.warwick.wsbc.QuimP.BOA_;
 import uk.ac.warwick.wsbc.QuimP.Node;
 import uk.ac.warwick.wsbc.QuimP.Snake;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class QuimpDataConverterTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QuimpDataConverterTest.class.getName());
 
     private double X[], Y[];

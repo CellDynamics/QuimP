@@ -17,6 +17,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
+// TODO: Auto-generated Javadoc
 /*
  * !>
  * @startuml doc-files/ProtStat_1_UML.png 
@@ -50,6 +51,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  *
  */
 public class ProtStat implements IQuimpSerialize {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(ProtStat.class.getName());
     /**
      * Frame window used for computation. Should be uneven.
@@ -113,10 +118,25 @@ public class ProtStat implements IQuimpSerialize {
      */
     class CellStatistics {
 
+        /**
+         * The displacement.
+         */
         // parameter vs. frames
         double[] displacement;
+        
+        /**
+         * The distance.
+         */
         double[] distance;
+        
+        /**
+         * The area.
+         */
         double[] area;
+        
+        /**
+         * The circularity.
+         */
         double[] circularity;
         /**
          * Mean of motility.
@@ -389,12 +409,18 @@ public class ProtStat implements IQuimpSerialize {
         }
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#beforeSerialize()
+     */
     @Override
     public void beforeSerialize() {
         // TODO Auto-generated method stub
 
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#afterSerialize()
+     */
     @Override
     public void afterSerialize() throws Exception {
         // TODO Auto-generated method stub

@@ -4,6 +4,7 @@ import java.io.File;
 
 import ij.ImageJ;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *

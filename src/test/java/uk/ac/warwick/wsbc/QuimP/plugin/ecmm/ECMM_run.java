@@ -4,6 +4,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.ecmm;
 
 import ij.ImageJ;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
