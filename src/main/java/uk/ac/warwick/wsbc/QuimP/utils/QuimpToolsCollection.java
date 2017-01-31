@@ -16,6 +16,7 @@ import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.Vert;
 
+// TODO: Auto-generated Javadoc
 /**
  * Collection of tools used across QuimP.
  * 
@@ -24,6 +25,9 @@ import uk.ac.warwick.wsbc.QuimP.Vert;
  */
 public class QuimpToolsCollection {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QuimpToolsCollection.class.getName());
     /**
      * Message returned by {@link #getQuimPBuildInfo()} if info is not found in jar.
@@ -124,6 +128,12 @@ public class QuimpToolsCollection {
         return ret;
     }
 
+    /**
+     * S 2 d.
+     *
+     * @param s the s
+     * @return the double
+     */
     public static double s2d(String s) {
         Double d;
         try {
@@ -170,6 +180,13 @@ public class QuimpToolsCollection {
         return filename;
     }
 
+    /**
+     * Closest floor.
+     *
+     * @param o the o
+     * @param target the target
+     * @return the vert
+     */
     public static Vert closestFloor(Outline o, double target) {
         // find the vert with coor closest (floored) to target coordinate
 
@@ -203,38 +220,93 @@ public class QuimpToolsCollection {
         return v;
     }
 
+    /**
+     * Distance to scale.
+     *
+     * @param value the value
+     * @param scale the scale
+     * @return the double
+     */
     public static double distanceToScale(double value, double scale) {
         // assums pixelwidth is in micro meters
         return value * scale;
     }
 
+    /**
+     * Area to scale.
+     *
+     * @param value the value
+     * @param scale the scale
+     * @return the double
+     */
     public static double areaToScale(double value, double scale) {
         // assums pixelwidth is in micro meters
         return value * (scale * scale);
     }
 
+    /**
+     * Speed to scale.
+     *
+     * @param value the value
+     * @param scale the scale
+     * @param frameInterval the frame interval
+     * @return the double
+     */
     public static double speedToScale(double value, double scale, double frameInterval) {
         return (value * scale) / frameInterval;
     }
 
+    /**
+     * Distance to scale.
+     *
+     * @param value the value
+     * @param scale the scale
+     * @return the double
+     */
     public static double distanceToScale(int value, double scale) {
         return value * scale;
     }
 
+    /**
+     * Distance from scale.
+     *
+     * @param value the value
+     * @param scale the scale
+     * @return the double
+     */
     public static double distanceFromScale(double value, double scale) {
         return value / scale;
     }
 
+    /**
+     * Speed to scale.
+     *
+     * @param value the value
+     * @param scale the scale
+     * @param frameInterval the frame interval
+     * @return the double
+     */
     public static double speedToScale(int value, double scale, double frameInterval) {
         return (value * scale) / frameInterval;
     }
 
+    /**
+     * Date as string.
+     *
+     * @return the string
+     */
     public static String dateAsString() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
         return formatter.format(date);
     }
 
+    /**
+     * Sets the limits equal.
+     *
+     * @param migLimits the mig limits
+     * @return the double[]
+     */
     public static double[] setLimitsEqual(double[] migLimits) { // min and max
         if (migLimits.length < 2) {
             LOGGER.warn("Array to short. Needs a min and max");

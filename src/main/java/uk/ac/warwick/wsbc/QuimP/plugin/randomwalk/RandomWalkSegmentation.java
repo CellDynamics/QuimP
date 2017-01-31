@@ -25,6 +25,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
+// TODO: Auto-generated Javadoc
 /**
  * Perform element-wise multiplication by value (.*val in Matlab).
  * 
@@ -334,6 +335,9 @@ class MatrixDotSubDiv implements RealMatrixChangingVisitor {
  */
 public class RandomWalkSegmentation {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(RandomWalkSegmentation.class.getName());
 
     /**

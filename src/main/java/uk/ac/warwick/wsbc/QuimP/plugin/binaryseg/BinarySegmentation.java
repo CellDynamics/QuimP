@@ -13,6 +13,7 @@ import ij.gui.ShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
 
+// TODO: Auto-generated Javadoc
 /*
  * //!>
  * @startuml doc-files/BinarySegmentation_1_UML.png
@@ -90,6 +91,9 @@ import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
  */
 public class BinarySegmentation {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentation.class.getName());
 
     private int nextID = 0; // next free ID

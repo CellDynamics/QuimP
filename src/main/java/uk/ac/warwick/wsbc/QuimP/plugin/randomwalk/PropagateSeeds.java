@@ -25,6 +25,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 import uk.ac.warwick.wsbc.QuimP.utils.IJTools;
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 
+// TODO: Auto-generated Javadoc
 /**
  * Generate new seeds for n+1 frame in stack using previous results of segmentation.
  * 
@@ -43,9 +44,21 @@ import uk.ac.warwick.wsbc.QuimP.utils.Pair;
  *
  */
 public abstract class PropagateSeeds {
+    
+    /**
+     * The debug.
+     */
     static boolean debug = Boolean.parseBoolean(
             new PropertyReader().readProperty("quimpconfig.properties", "superDebug"));
+    
+    /**
+     * The Constant ERODE.
+     */
     final static int ERODE = 0;
+    
+    /**
+     * The Constant DILATE.
+     */
     final static int DILATE = 1;
     /**
      * Default resolution used during outlining objects.
@@ -360,6 +373,14 @@ public abstract class PropagateSeeds {
         return ret;
     }
 
+    /**
+     * Propagate seed.
+     *
+     * @param previous the previous
+     * @param shrinkPower the shrink power
+     * @param expandPower the expand power
+     * @return the map
+     */
     abstract Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkPower,
             double expandPower);
 

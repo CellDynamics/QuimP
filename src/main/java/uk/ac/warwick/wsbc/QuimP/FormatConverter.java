@@ -27,6 +27,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class allows for recreating paQP and snQP files from new format QCONF and vice versa.
  * <p>

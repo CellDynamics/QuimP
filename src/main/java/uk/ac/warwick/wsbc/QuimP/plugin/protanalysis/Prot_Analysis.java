@@ -57,6 +57,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
 
+// TODO: Auto-generated Javadoc
 /*
  * !>
  * @startuml doc-files/Prot_Analysis_1_UML.png
@@ -78,6 +79,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
  * @author p.baniukiewicz
  */
 public class Prot_Analysis implements IQuimpPlugin {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(Prot_Analysis.class.getName());
 
     /**
@@ -93,6 +98,10 @@ public class Prot_Analysis implements IQuimpPlugin {
      * Initialised by this constructor.
      */
     public Prot_AnalysisUI gui;
+    
+    /**
+     * The param list.
+     */
     // default configuration parameters, for future using
     ParamList paramList = new ParamList();
     /**
@@ -346,12 +355,18 @@ public class Prot_Analysis implements IQuimpPlugin {
         return cellStat;
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setup()
+     */
     @Override
     public int setup() {
         // TODO Auto-generated method stub
         return 0;
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setPluginConfig(uk.ac.warwick.wsbc.QuimP.plugin.ParamList)
+     */
     @Override
     public void setPluginConfig(ParamList par) throws QuimpPluginException {
         paramList = new ParamList(par);
@@ -359,6 +374,9 @@ public class Prot_Analysis implements IQuimpPlugin {
 
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getPluginConfig()
+     */
     @Override
     public ParamList getPluginConfig() {
         // TODO convert config to json one liner and add to paramlist
@@ -366,22 +384,34 @@ public class Prot_Analysis implements IQuimpPlugin {
         return paramList;
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#showUI(boolean)
+     */
     @Override
     public void showUI(boolean val) {
         gui.showUI(val);
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getVersion()
+     */
     @Override
     public String getVersion() {
         return "See QuimP version";
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#about()
+     */
     @Override
     public String about() {
         return "Protrusion Analysis Plugin.\n" + "Author: Piotr Baniukiewicz\n"
                 + "mail: p.baniukiewicz@warwick.ac.uk";
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin#runPlugin()
+     */
     @Override
     public void runPlugin() throws QuimpPluginException {
         try {

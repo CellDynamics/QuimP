@@ -2,6 +2,7 @@
  */
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
+// TODO: Auto-generated Javadoc
 /**
  * Class for parsing parameter strings.
  * 

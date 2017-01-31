@@ -4,6 +4,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin.bar;
 
 import ij.ImageJ;
 
+// TODO: Auto-generated Javadoc
 /**
  * Bar displayer
  * 

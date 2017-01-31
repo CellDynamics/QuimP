@@ -11,6 +11,7 @@ import org.junit.Test;
 import ij.IJ;
 import ij.ImagePlus;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test class for BOA_ plugin.
  * 
@@ -19,6 +20,9 @@ import ij.ImagePlus;
  */
 public class BOA__Test {
 
+    /**
+     * The img.
+     */
     ImagePlus img;
 
     /**

@@ -8,11 +8,16 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class QuimpToolsCollectionTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QuimpToolsCollectionTest.class.getName());
 
     /**

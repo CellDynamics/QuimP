@@ -10,6 +10,7 @@ import uk.ac.warwick.wsbc.QuimP.SnakePluginList;
 import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
+// TODO: Auto-generated Javadoc
 /**
  * Integrate outputs from every module of QuimP.
  * 

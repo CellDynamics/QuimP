@@ -18,6 +18,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * Calculate statistics for whole stack (all cells).
  * 
@@ -33,12 +34,40 @@ public class CellStatsEval implements Measurements {
      * Hold all stats for cell. the same data are written to disk as csv file.
      */
     private CellStats statH;
+    
+    /**
+     * The output H.
+     */
     OutlineHandler outputH;
+    
+    /**
+     * The outfile.
+     */
     File OUTFILE;
+    
+    /**
+     * The i plus.
+     */
     ImagePlus iPlus;
+    
+    /**
+     * The i proc.
+     */
     ImageProcessor iProc;
+    
+    /**
+     * The is.
+     */
     ImageStatistics is;
+    
+    /**
+     * The scale.
+     */
     double scale;
+    
+    /**
+     * The frame interval.
+     */
     double frameInterval;
 
     /**

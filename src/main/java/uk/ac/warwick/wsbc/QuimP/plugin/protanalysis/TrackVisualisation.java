@@ -25,6 +25,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
 
+// TODO: Auto-generated Javadoc
 /**
  * Support various methods of visualising protrusion data.
  * <p>
@@ -42,6 +43,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
  *
  */
 public abstract class TrackVisualisation {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(TrackVisualisation.class.getName());
     /**
      * Color for maxima points.
@@ -56,7 +61,15 @@ public abstract class TrackVisualisation {
      * </ol>
      */
     static public Color[] color = { Color.YELLOW, Color.GREEN, Color.WHITE };
+    
+    /**
+     * The original image.
+     */
     protected ImagePlus originalImage; // reference of image to be plotted on
+    
+    /**
+     * The overlay.
+     */
     protected Overlay overlay;
 
     /**
@@ -175,10 +188,21 @@ public abstract class TrackVisualisation {
      */
     static class Map extends TrackVisualisation {
 
+        /**
+         * Instantiates a new map.
+         *
+         * @param originalImage the original image
+         */
         public Map(ImagePlus originalImage) {
             super(originalImage);
         }
 
+        /**
+         * Instantiates a new map.
+         *
+         * @param name the name
+         * @param imp the imp
+         */
         public Map(String name, ImageProcessor imp) {
             super(name, imp);
         }
@@ -259,10 +283,22 @@ public abstract class TrackVisualisation {
      *
      */
     static class Image extends TrackVisualisation {
+        
+        /**
+         * Instantiates a new image.
+         *
+         * @param originalImage the original image
+         */
         public Image(ImagePlus originalImage) {
             super(originalImage);
         }
 
+        /**
+         * Instantiates a new image.
+         *
+         * @param name the name
+         * @param imp the imp
+         */
         public Image(String name, ImageProcessor imp) {
             super(name, imp);
         }
@@ -361,6 +397,11 @@ public abstract class TrackVisualisation {
      */
     static class Stack extends TrackVisualisation {
 
+        /**
+         * Instantiates a new stack.
+         *
+         * @param originalImage the original image
+         */
         public Stack(ImagePlus originalImage) {
             super(originalImage);
         }
@@ -691,6 +732,9 @@ public abstract class TrackVisualisation {
          */
         class ListPoint2iComparator implements Comparator<Point> {
 
+            /* (non-Javadoc)
+             * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+             */
             @Override
             public int compare(Point o1, Point o2) {
                 if (o1.x < o2.x)

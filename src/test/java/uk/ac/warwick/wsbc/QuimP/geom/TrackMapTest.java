@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test class for {@link uk.ac.warwick.wsbc.QuimP.geom.MapTracker}.
  * 
@@ -27,13 +28,40 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
  *
  */
 public class TrackMapTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(TrackMapTest.class.getName());
+    
+    /**
+     * The q L 1.
+     */
     static QconfLoader qL1;
+    
+    /**
+     * The origin map 1.
+     */
     double[][] originMap1;
+    
+    /**
+     * The coord map 1.
+     */
     double[][] coordMap1;
 
+    /**
+     * The q L 2.
+     */
     static QconfLoader qL2;
+    
+    /**
+     * The origin map 2.
+     */
     double[][] originMap2;
+    
+    /**
+     * The coord map 2.
+     */
     double[][] coordMap2;
 
     /**

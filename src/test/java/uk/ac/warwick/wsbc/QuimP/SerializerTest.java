@@ -19,6 +19,7 @@ import com.google.gson.JsonSyntaxException;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test of Serializer class
  * 
@@ -26,7 +27,15 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  *
  */
 public class SerializerTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(SerializerTest.class.getName());
+    
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     private TestClass testClass;

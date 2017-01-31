@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
 
+// TODO: Auto-generated Javadoc
 /**
  * Basic class for storing point in Cartesian system
  * 
@@ -7,6 +8,10 @@ package uk.ac.warwick.wsbc.QuimP.plugin.randomwalk;
  *
  */
 public class Point {
+    
+    /**
+     * The col.
+     */
     int row, col;
 
     /**

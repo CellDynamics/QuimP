@@ -11,11 +11,16 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class QuimpException extends Exception {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QuimpException.class.getName());
 
     /**
@@ -29,7 +34,15 @@ public class QuimpException extends Exception {
      *
      */
     public enum MessageSinkTypes {
-        CONSOLE, GUI
+        
+        /**
+         * The console.
+         */
+        CONSOLE, 
+ /**
+  * The gui.
+  */
+ GUI
     };
 
     /**

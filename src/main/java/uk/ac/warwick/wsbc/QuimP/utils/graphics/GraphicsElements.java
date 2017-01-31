@@ -12,6 +12,7 @@ import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class contains static methods for creating simple graphics elements.
  * 

@@ -28,6 +28,7 @@ import javax.swing.JTextArea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * Build About dialog with support of mouse operations.
  * 
@@ -198,6 +199,10 @@ public class AboutDialog implements ActionListener {
      *
      */
     class myWindowAdapter extends WindowAdapter {
+        
+        /* (non-Javadoc)
+         * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
+         */
         @Override
         public void windowClosing(WindowEvent we) {
             LOGGER.trace("windowClosing");
@@ -212,10 +217,17 @@ public class AboutDialog implements ActionListener {
      *
      */
     class PopupListener extends MouseAdapter {
+        
+        /* (non-Javadoc)
+         * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+         */
         public void mousePressed(MouseEvent e) {
             maybeShowPopup(e);
         }
 
+        /* (non-Javadoc)
+         * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
+         */
         public void mouseReleased(MouseEvent e) {
             maybeShowPopup(e);
         }

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 
+// TODO: Auto-generated Javadoc
 /**
  * Represent collection of tracks.
  * 
@@ -42,6 +43,11 @@ public class TrackCollection {
 
     private int nextId = 0;
 
+    /**
+     * Instantiates a new track collection.
+     *
+     * @param isInitialPointIncluded the is initial point included
+     */
     public TrackCollection(boolean isInitialPointIncluded) {
         bf = new ArrayList<>();
         this.isInitialPointIncluded = isInitialPointIncluded;

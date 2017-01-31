@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -56,6 +57,9 @@ public class QParamsExchangerTest {
         return prv.invoke(obj, param);
     }
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QParamsExchangerTest.class.getName());
     private File test1;
 

@@ -15,11 +15,16 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class NodeTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(NodeTest.class.getName());
     private Node n;
 
@@ -98,6 +103,9 @@ public class NodeTest {
         assertThat(copy.hashCode(), is(not(n.hashCode())));
     }
 
+    /**
+     * 
+     */
     @Test
     public void testNode2Vert() {
         Vert v = new Vert(n);

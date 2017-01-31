@@ -25,12 +25,16 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class TrackOutlineTest {
 
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**
@@ -51,6 +55,9 @@ public class TrackOutlineTest {
         return prv.get(obj);
     }
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(TrackOutlineTest.class.getName());
     private ImagePlus image;
     private TrackOutline obj;

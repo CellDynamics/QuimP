@@ -19,6 +19,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * Normal test but used for profiling
  * 
@@ -27,11 +28,31 @@ import ij.process.ImageProcessor;
  */
 public class RandomWalkSegmentationProfileTest {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER =
             LoggerFactory.getLogger(RandomWalkSegmentationProfileTest.class.getName());
 
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
+    /**
+     * Access private.
+     *
+     * @param name the name
+     * @param obj the obj
+     * @param param the param
+     * @param paramtype the paramtype
+     * @return the object
+     * @throws NoSuchMethodException the no such method exception
+     * @throws SecurityException the security exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws InvocationTargetException the invocation target exception
+     */
     static Object accessPrivate(String name, RandomWalkSegmentation obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -42,6 +63,10 @@ public class RandomWalkSegmentationProfileTest {
 
     private ImagePlus testImage2_1seed;
     private ImagePlus fluoreszenz_1, fluoreszenz_2;
+    
+    /**
+     * The p.
+     */
     Params p;
 
     /**

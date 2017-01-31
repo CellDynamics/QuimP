@@ -4,6 +4,7 @@ package uk.ac.warwick.wsbc.QuimP.plugin;
 
 import uk.ac.warwick.wsbc.QuimP.ViewUpdater;
 
+// TODO: Auto-generated Javadoc
 /**
  * The interface that add synchronization between plugin and QuimP.
  * 

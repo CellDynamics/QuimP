@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.filesystem;
 
+// TODO: Auto-generated Javadoc
 /**
  * Contain list of all extensions supported by QuimP.
  * 

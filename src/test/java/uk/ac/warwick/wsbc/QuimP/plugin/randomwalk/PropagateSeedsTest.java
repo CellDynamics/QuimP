@@ -22,6 +22,7 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -31,8 +32,26 @@ public class PropagateSeedsTest {
     static {
         System.setProperty("logback.configurationFile", "quimp-logback.xml");
     }
+    
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
+    /**
+     * Access private.
+     *
+     * @param name the name
+     * @param obj the obj
+     * @param param the param
+     * @param paramtype the paramtype
+     * @return the object
+     * @throws NoSuchMethodException the no such method exception
+     * @throws SecurityException the security exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws InvocationTargetException the invocation target exception
+     */
     static Object accessPrivate(String name, PropagateSeeds.Contour obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -41,6 +60,20 @@ public class PropagateSeedsTest {
         return prv.invoke(obj, param);
     }
 
+    /**
+     * Access private.
+     *
+     * @param name the name
+     * @param obj the obj
+     * @param param the param
+     * @param paramtype the paramtype
+     * @return the object
+     * @throws NoSuchMethodException the no such method exception
+     * @throws SecurityException the security exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws InvocationTargetException the invocation target exception
+     */
     static Object accessPrivate(String name, PropagateSeeds.Morphological obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -49,6 +82,9 @@ public class PropagateSeedsTest {
         return prv.invoke(obj, param);
     }
 
+    /**
+     * The test image 2.
+     */
     static ImagePlus testImage2;
 
     /**
@@ -81,6 +117,11 @@ public class PropagateSeedsTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * Test propagate seed.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testPropagateSeed() throws Exception {
         ImagePlus ip = testImage2.duplicate();

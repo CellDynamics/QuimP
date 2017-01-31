@@ -47,12 +47,17 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Main ANA class implementing IJ PlugInFilter.
  * 
  * @author tyson
  */
 public class ANA_ implements PlugInFilter, DialogListener {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(ANA_.class.getName());
 
     private QconfLoader qconfLoader;
@@ -87,6 +92,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
         anap = new ANAp();
     }
 
+    /* (non-Javadoc)
+     * @see ij.plugin.filter.PlugInFilter#setup(java.lang.String, ij.ImagePlus)
+     */
     @Override
     public int setup(String arg, ImagePlus imp) {
         int cap = DOES_8G + DOES_16 + NO_CHANGES;
@@ -114,6 +122,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
     }
 
+    /* (non-Javadoc)
+     * @see ij.plugin.filter.PlugInFilter#run(ij.process.ImageProcessor)
+     */
     @Override
     public void run(ImageProcessor Ip) {
         // validate registered user
@@ -345,6 +356,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
     }
 
+    /* (non-Javadoc)
+     * @see ij.gui.DialogListener#dialogItemChanged(ij.gui.GenericDialog, java.awt.AWTEvent)
+     */
     @Override
     public boolean dialogItemChanged(GenericDialog gd, AWTEvent e) {
 
@@ -386,6 +400,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
         return true;// gd.invalidNumber();
     }
 
+    /**
+     * Reset fluo.
+     */
     void resetFluo() {
         // reset all fluo back to -2 and st res to 2 if only one frame
         Outline o;
@@ -413,6 +430,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
         anap.fluTiffs[2] = new File("/");
     }
 
+    /**
+     * Sets the image scale.
+     */
     void setImageScale() {
         orgIpl.getCalibration().frameInterval = anap.frameInterval;
         orgIpl.getCalibration().pixelHeight = anap.scale;

@@ -20,6 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Create spatial temporal maps from ECMM and ANA data.
  * <p>
@@ -30,17 +31,69 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @author rtyson
  */
 public class STmap implements IQuimpSerialize {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(STmap.class.getName());
     /**
      * Coordinates map.
+     * 
+     * Each node has an associated position. The co-ordinate map, rather than contain values
+     * regarding motility, fluorescence or convexity, instead contains the position values of nodes.
+     * The main purpose of the co-ordinate map, along with the origin map, is for tracking positions
+     * through time.
+     * 
+     * @see <a href=
+     *      "http://pilip.lnx.warwick.ac.uk/docs/develop/QuimP_Guide.html#x1-320005">Manual</a>
      */
     public double[][] coordMap;
-    public double[][] originMap, xMap, yMap;
+    /**
+     * Each node has an origin, the position a node originated from on the previous frame. The
+     * origin map contains origin values and can be used, along with the co-ordinate map, to track
+     * positions through time.
+     * 
+     * @see <a href=
+     *      "http://pilip.lnx.warwick.ac.uk/docs/develop/QuimP_Guide.html#x1-320005">Manual</a>
+     */
+    public double[][] originMap;
+    /**
+     * Contains horizontal image pixel co-ordinates (those on the image used for segmentation)
+     * relating to map pixels.
+     * 
+     * @see <a href=
+     *      "http://pilip.lnx.warwick.ac.uk/docs/develop/QuimP_Guide.html#x1-320005">Manual</a>
+     */
+    public double[][] xMap;
+    /**
+     * Contains vertical image pixel co-ordinates (those on the image used for segmentation)
+     * relating to map pixels.
+     * 
+     * @see <a href=
+     *      "http://pilip.lnx.warwick.ac.uk/docs/develop/QuimP_Guide.html#x1-320005">Manual</a>
+     */
+    public double[][] yMap;
     /**
      * Motility map.
+     * 
+     * Pixels are coloured according to node speed, as calculated by ECMM. Red shades represent
+     * expanding regions, blue shades contracting regions. Pixel values within the tiff image are
+     * scaled to fill the colour spectrum. The map file extended _motilityMap.maPQ contains
+     * un-scaled values, in microns per second.
+     * 
+     * @see <a href=
+     *      "http://pilip.lnx.warwick.ac.uk/docs/develop/QuimP_Guide.html#x1-320005">Manual</a>
      */
     public double[][] motMap;
+    
+    /**
+     * The mig color.
+     */
     transient int[] migColor;
+    
+    /**
+     * The mig pixels.
+     */
     transient float[] migPixels;
     /**
      * Fluoroscence maps for channels.
@@ -50,7 +103,15 @@ public class STmap implements IQuimpSerialize {
      * Convexity map.
      */
     public double[][] convMap;
+    
+    /**
+     * The conv color.
+     */
     transient int[] convColor;
+    
+    /**
+     * The conv im P.
+     */
     transient ImagePlus migImP, fluImP, convImP;
     /**
      * Contain OutlineHandler used for generating maps
@@ -854,10 +915,16 @@ public class STmap implements IQuimpSerialize {
         return yMap;
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#beforeSerialize()
+     */
     @Override
     public void beforeSerialize() {
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#afterSerialize()
+     */
     @Override
     public void afterSerialize() throws Exception {
         LOGGER.debug("This class can not be deserialzied without assgning OutlineHndler");

@@ -35,6 +35,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Convert QCONF files to BW masks.
  * 
@@ -44,6 +45,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  *
  */
 public class GenerateMask_ implements IQuimpPlugin {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(GenerateMask_.class.getName());
 
     /**
@@ -52,6 +57,10 @@ public class GenerateMask_ implements IQuimpPlugin {
      * Initialised by {@link #loadFile(File)} through this constructor.
      */
     private QconfLoader qconfLoader; // main object representing loaded configuration file
+    
+    /**
+     * The param list.
+     */
     // default configuration parameters, for future using
     ParamList paramList = new ParamList();
 
@@ -163,37 +172,58 @@ public class GenerateMask_ implements IQuimpPlugin {
 
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setup()
+     */
     @Override
     public int setup() {
         // TODO Auto-generated method stub
         return 0;
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setPluginConfig(uk.ac.warwick.wsbc.QuimP.plugin.ParamList)
+     */
     @Override
     public void setPluginConfig(ParamList par) throws QuimpPluginException {
         paramList = new ParamList(par);
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getPluginConfig()
+     */
     @Override
     public ParamList getPluginConfig() {
         return paramList;
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#showUI(boolean)
+     */
     @Override
     public void showUI(boolean val) {
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getVersion()
+     */
     @Override
     public String getVersion() {
         return "See QuimP version";
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#about()
+     */
     @Override
     public String about() {
         return "Generate mask plugin.\n" + "Author: Piotr Baniukiewicz\n"
                 + "mail: p.baniukiewicz@warwick.ac.uk";
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin#runPlugin()
+     */
     @Override
     public void runPlugin() throws QuimpPluginException {
         try {

@@ -25,16 +25,36 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 @RunWith(Parameterized.class)
 public class TrackMapAnalyserParamTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(TrackMapAnalyserParamTest.class.getName());
 
+    /**
+     * The Enum Type.
+     */
     enum Type {
-        INTERSECTION, REPEATING, ENUMERATE
+        
+        /**
+         * The intersection.
+         */
+        INTERSECTION, 
+ /**
+  * The repeating.
+  */
+ REPEATING, 
+ /**
+  * The enumerate.
+  */
+ ENUMERATE
     };
 
     private TrackMapAnalyser trackMapAnalyser;
@@ -659,6 +679,15 @@ public class TrackMapAnalyserParamTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * Instantiates a new track map analyser param test.
+     *
+     * @param type the type
+     * @param track the track
+     * @param expIntersectionPoints the exp intersection points
+     * @param expIntersectionPairs the exp intersection pairs
+     * @param selfCrossing the self crossing
+     */
     public TrackMapAnalyserParamTest(Type type, ArrayList<Polygon> track,
             Polygon expIntersectionPoints, List<Pair<Point, Point>> expIntersectionPairs,
             int selfCrossing) {

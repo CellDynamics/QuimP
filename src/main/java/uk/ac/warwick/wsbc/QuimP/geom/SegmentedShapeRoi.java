@@ -13,6 +13,7 @@ import ij.gui.ShapeRoi;
 import ij.process.FloatPolygon;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 
+// TODO: Auto-generated Javadoc
 /**
  * Add some fields indicating that this Shape has been included already in any Snake chain
  * 
@@ -24,9 +25,20 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
  *
  */
 public class SegmentedShapeRoi extends ShapeRoi {
+    
+    /**
+     * The Constant NOT_COUNTED.
+     */
     public static final int NOT_COUNTED = -1; //!< Code for not counted yet shape
 
+    /**
+     * The id.
+     */
     protected int id = NOT_COUNTED; //!< positive if has any id assigned (thus it has been counted already)
+    
+    /**
+     * The frame.
+     */
     protected int frame = 0; //!< frame number where this outline was found
     /**
      * step during conversion outline to points. For 1 every point from outline is included in

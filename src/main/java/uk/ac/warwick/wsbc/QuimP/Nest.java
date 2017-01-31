@@ -16,6 +16,7 @@ import ij.gui.Roi;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 
+// TODO: Auto-generated Javadoc
 /**
  * Represent collection of SnakeHandlers.
  * 
@@ -52,6 +53,9 @@ public class Nest implements IQuimpSerialize {
      */
     private int nextID;
 
+    /**
+     * 
+     */
     public Nest() {
         NSNAKES = 0;
         ALIVE = 0;
@@ -82,6 +86,10 @@ public class Nest implements IQuimpSerialize {
         }
     }
 
+    /**
+     * @param roiArray
+     * @param startFrame
+     */
     public void addHandlers(Roi[] roiArray, int startFrame) {
         int i = 0;
         for (; i < roiArray.length; i++) {
@@ -186,11 +194,17 @@ public class Nest implements IQuimpSerialize {
         return true;
     }
 
+    /**
+     * @param sH
+     */
     public void kill(final SnakeHandler sH) {
         sH.kill();
         ALIVE--;
     }
 
+    /**
+     * 
+     */
     public void reviveNest() {
         Iterator<SnakeHandler> sHitr = sHs.iterator();
         while (sHitr.hasNext()) {
@@ -200,6 +214,9 @@ public class Nest implements IQuimpSerialize {
         ALIVE = NSNAKES;
     }
 
+    /**
+     * @return true if Nest is empty
+     */
     public boolean isVacant() {
         if (NSNAKES == 0) {
             return true;
@@ -207,6 +224,9 @@ public class Nest implements IQuimpSerialize {
         return false;
     }
 
+    /**
+     * @return true if all snakes in Nest are dead
+     */
     public boolean allDead() {
         if (ALIVE == 0 || NSNAKES == 0) {
             return true;
@@ -251,8 +271,10 @@ public class Nest implements IQuimpSerialize {
         return ret;
     }
 
+    /**
+     * Reset live snakes to ROI's.
+     */
     public void resetNest() {
-        // Rset live snakes to ROI's
         reviveNest();
         Iterator<SnakeHandler> sHitr = sHs.iterator();
         ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
@@ -274,6 +296,11 @@ public class Nest implements IQuimpSerialize {
             removeHandler(toRemove.get(i));
     }
 
+    /**
+     * Remove {@link SnakeHandler} from Nest.
+     * 
+     * @param sH SnakeHandler to remove.
+     */
     public void removeHandler(final SnakeHandler sH) {
         if (sH.isLive()) {
             ALIVE--;
@@ -390,6 +417,9 @@ public class Nest implements IQuimpSerialize {
         sH.copyFromFinalToSeg();
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#beforeSerialize()
+     */
     @Override
     public void beforeSerialize() {
         Iterator<SnakeHandler> sHitr = sHs.iterator();
@@ -411,6 +441,9 @@ public class Nest implements IQuimpSerialize {
             removeHandler(toRemove.get(i));
     }
 
+    /* (non-Javadoc)
+     * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#afterSerialize()
+     */
     @Override
     public void afterSerialize() throws Exception {
         Iterator<SnakeHandler> sHitr = sHs.iterator();

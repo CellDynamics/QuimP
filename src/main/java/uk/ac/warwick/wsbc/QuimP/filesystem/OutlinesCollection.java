@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
 
+// TODO: Auto-generated Javadoc
 /**
  * Represent collection of OutlineHandlers for cells.
  * 
@@ -17,6 +18,10 @@ import uk.ac.warwick.wsbc.QuimP.OutlineHandler;
  *
  */
 public class OutlinesCollection implements IQuimpSerialize {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(OutlinesCollection.class.getName());
     /**
      * Contain {@link OutlineHandler} objects.
@@ -29,10 +34,18 @@ public class OutlinesCollection implements IQuimpSerialize {
      */
     public ArrayList<OutlineHandler> oHs;
 
+    /**
+     * Instantiates a new outlines collection.
+     *
+     * @param size the size
+     */
     public OutlinesCollection(int size) {
         oHs = new ArrayList<>(size);
     }
 
+    /**
+     * Instantiates a new outlines collection.
+     */
     public OutlinesCollection() {
         oHs = new ArrayList<>();
     }

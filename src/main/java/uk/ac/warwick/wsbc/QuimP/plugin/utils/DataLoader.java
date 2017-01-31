@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import ij.process.FloatPolygon;
 
+// TODO: Auto-generated Javadoc
 /**
  * Simple data loader for test
  * 
@@ -38,8 +39,15 @@ import ij.process.FloatPolygon;
  *
  */
 public class DataLoader {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class.getName());
     private List<Double> data;
+    /**
+     * 
+     */
     public List<Point2d> Vert;
 
     /**

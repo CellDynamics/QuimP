@@ -24,6 +24,7 @@ import com.google.gson.JsonSyntaxException;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
+// TODO: Auto-generated Javadoc
 /**
  * Save wrapped class together with itself to JSON file.
  * 
@@ -56,14 +57,41 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  * @see uk.ac.warwick.wsbc.QuimP.Serializer#registerInstanceCreator(Class, Object)
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(Serializer.class.getName());
+    
+    /**
+     * The gson builder.
+     */
     public transient GsonBuilder gsonBuilder;
     private transient Type t;
+    
+    /**
+     * The do after serialize.
+     */
     protected transient boolean doAfterSerialize; //!< Indicates if afterSerialze should be called
 
+    /**
+     * The class name.
+     */
     public String className; //!< Name of wrapped class, decoded from object
+    
+    /**
+     * The version.
+     */
     public String[] version; //!< Version and other information passed to serializer
+    
+    /**
+     * The created on.
+     */
     public String createdOn; //!< Date when file has been created
+    
+    /**
+     * The obj.
+     */
     public T obj; //!< Wrapped object being serialized
 
     /**
@@ -323,16 +351,25 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         gsonBuilder.registerTypeAdapter(type, typeAdapter);
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.reflect.ParameterizedType#getActualTypeArguments()
+     */
     @Override
     public Type[] getActualTypeArguments() {
         return new Type[] { t };
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.reflect.ParameterizedType#getRawType()
+     */
     @Override
     public Type getRawType() {
         return Serializer.class;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.reflect.ParameterizedType#getOwnerType()
+     */
     @Override
     public Type getOwnerType() {
         return null;

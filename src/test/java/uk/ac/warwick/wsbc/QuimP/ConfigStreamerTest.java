@@ -24,6 +24,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test case of GSon, not related with any class in project
  * 
@@ -32,7 +33,14 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
  */
 public class ConfigStreamerTest {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(ConfigStreamerTest.class.getName());
+    
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
     private tSnakePluginList p;
     private ConfigContainer1 cc;

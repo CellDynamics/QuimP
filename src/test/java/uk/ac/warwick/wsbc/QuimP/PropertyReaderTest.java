@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test class for PropertyReader
  * 
@@ -14,6 +15,10 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class PropertyReaderTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(PropertyReaderTest.class.getName());
 
     /**

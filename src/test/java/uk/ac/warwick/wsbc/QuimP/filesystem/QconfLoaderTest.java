@@ -28,13 +28,22 @@ import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.Serializer;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class QconfLoaderTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QconfLoaderTest.class.getName());
+    
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**
@@ -264,6 +273,11 @@ public class QconfLoaderTest {
         q.getBOA();
     }
 
+    /**
+     * Test get Q.
+     *
+     * @throws Exception the exception
+     */
     @Test(expected = QuimpException.class)
     public void testGetQ() throws Exception {
         QconfLoader q =

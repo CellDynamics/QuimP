@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import ij.Prefs;
 import uk.ac.warwick.wsbc.QuimP.QuimP;
 
+// TODO: Auto-generated Javadoc
 /*
  * !>
  * @startuml doc-files/Registration_1_UML.png
@@ -144,6 +145,10 @@ import uk.ac.warwick.wsbc.QuimP.QuimP;
  *
  */
 public class Registration extends JDialog implements ActionListener {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(Registration.class.getName());
 
     private JButton bOk, bCancel;
@@ -308,6 +313,9 @@ public class Registration extends JDialog implements ActionListener {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         // clicked Cancel and user has not not waited yet
@@ -443,10 +451,18 @@ public class Registration extends JDialog implements ActionListener {
         private int wait;
         private Dimension dc;
 
+        /**
+         * Instantiates a new worker.
+         *
+         * @param wait the wait
+         */
         public Worker(int wait) {
             this.wait = wait;
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.SwingWorker#doInBackground()
+         */
         @Override
         protected String doInBackground() throws Exception {
             dc = bCancel.getSize(); // remember size of button
@@ -464,6 +480,9 @@ public class Registration extends JDialog implements ActionListener {
             return null;
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.SwingWorker#process(java.util.List)
+         */
         protected void process(List<String> item) {
             // This updates the UI
             bCancel.setText(item.get(0));
@@ -478,10 +497,17 @@ public class Registration extends JDialog implements ActionListener {
      *
      */
     class PopupListener extends MouseAdapter {
+        
+        /* (non-Javadoc)
+         * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+         */
         public void mousePressed(MouseEvent e) {
             maybeShowPopup(e);
         }
 
+        /* (non-Javadoc)
+         * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
+         */
         public void mouseReleased(MouseEvent e) {
             maybeShowPopup(e);
         }

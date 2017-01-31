@@ -13,6 +13,7 @@ import ij.gui.Roi;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * Represent Outline object used as Snake representation after ECMM mapping.
  * 
@@ -23,6 +24,10 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @author p.baniukiewicz
  */
 public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(Outline.class.getName());
 
     /**
@@ -128,6 +133,9 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
                 + super.toString() + "]";
     }
 
+    /**
+     * 
+     */
     public void print() {
         IJ.log("Print verts (" + POINTS + ")");
         int i = 0;
@@ -164,6 +172,10 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         }
     }
 
+    /**
+     * @param title
+     * @param per
+     */
     public void plotOutline(String title, boolean per) {
         double[] xArr = new double[POINTS]; // arrays to hold x and y co-ords
         // (duplicate last to join)
@@ -189,6 +201,11 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         // Tool.plotXY(xArr, yArr, title);
     }
 
+    /**
+     * @param v
+     * @param z
+     * @param title
+     */
     public void plotRegion(Vert v, int z, String title) {
         double[] xArr = new double[z];
         double[] yArr = new double[z];
@@ -277,8 +294,14 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         return newVert;
     }
 
+    /**
+     * interpolate between co-ordinates (that run 0-1).
+     * 
+     * @param a
+     * @param b
+     * @return interpolated value between a and b
+     */
     public double interpolateCoord(double a, double b) {
-        // interpolate between co-ordinates (that run 0-1)
         if (a > b) {
             b = b + 1;
         }
@@ -427,9 +450,12 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         // LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }
 
+    /**
+     * Evenly spaces a new vertices around the outline by following vectors between verts.
+     * 
+     * @param numVerts
+     */
     public void setResolutionN(double numVerts) {
-        // evenly spaces a new vertices around the ouline by following vectors
-        // between verts
         double length = getLength();
         // int numVerts = (int) Math.round((length / density)); // must be round
         // number of verts
@@ -525,6 +551,9 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         oldHead = null;
     }
 
+    /**
+     * @return volume of outline
+     */
     public double calcVolume() {
         double sum;
         sum = 0.0;
@@ -539,6 +568,9 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         return 0.5 * sum;
     }
 
+    /**
+     * @return area of outline
+     */
     public double calcArea() {
         double area, sum;
         sum = 0.0;
@@ -554,6 +586,10 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         return area;
     }
 
+    /**
+     * @param v
+     * @return next intersection
+     */
     public static Vert getNextIntersect(Vert v) {
         do {
             v = v.getNext();
@@ -561,6 +597,11 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         return v;
     }
 
+    /**
+     * @param v
+     * @param id
+     * @return intersection
+     */
     public static Vert findIntersect(Vert v, int id) {
         int count = 0; // debug
         do {
@@ -577,6 +618,11 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         return v;
     }
 
+    /**
+     * @param intA
+     * @param intB
+     * @return distance between intersections
+     */
     public static int distBetweenInts(Vert intA, Vert intB) {
         int d = 0;
         do {
@@ -590,6 +636,11 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         return d;
     }
 
+    /**
+     * @param intA
+     * @param intB
+     * @return ?
+     */
     public static int invertsBetween(Vert intA, Vert intB) {
         int i = 0;
         int count = 0;
@@ -609,6 +660,10 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         return i;
     }
 
+    /**
+     * @param max
+     * @param min
+     */
     public void correctDensity(double max, double min) {
         double dist;
         Vert v = head;
@@ -752,6 +807,10 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         } while (!v.isHead());
     }
 
+    /**
+     * Reset all linear coordinates related to node {@link Vert#coord}, {@link Vert#gCoord},
+     * {@link Vert#fCoord}.
+     */
     public void resetAllCoords() {
         double length = getLength();
         double d = 0.;
@@ -767,6 +826,9 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         // LOGGER.trace("head =[" + getHead().getX() + "," + getHead().getY() + "]");
     }
 
+    /**
+     * 
+     */
     public Object clone() {
         // clone the outline
         Vert oV = head;
@@ -803,6 +865,9 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         return n;
     }
 
+    /**
+     * @return true if error found
+     */
     public boolean checkCoordErrors() {
         Vert v = head;
 
@@ -822,9 +887,13 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
 
     }
 
+    /**
+     * find the first node in terms of coord (c) or fcoord (f) ie closest to zero
+     * 
+     * @param c coordinate code
+     * @return First node according to given coordinate code.
+     */
     public Vert findFirstNode(char c) {
-        // find the first node in terms of coord (c) or fcoord (f)
-        // ie closest to zero
 
         Vert v = head;
         Vert vFirst = v;
@@ -866,6 +935,9 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
 
     }
 
+    /**
+     * 
+     */
     public void clearFluores() {
         Vert v = head;
         do {
@@ -876,6 +948,10 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         } while (!v.isHead());
     }
 
+    /**
+     * 
+     * @param pHead
+     */
     void setHeadclosest(ExtendedVector2d pHead) {
         double dis, curDis;
         Vert v = head;
@@ -899,6 +975,11 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         head = closestV;
     }
 
+    /**
+     * 
+     * @param a
+     * @return ?
+     */
     Vert findCoordEdge(double a) {
         Vert v = head;
         do {
@@ -922,8 +1003,8 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         return head;
     }
 
-    /**
-     * Call super and then oo Outline related actions
+    /*
+     * (non-Javadoc)
      * 
      * @see uk.ac.warwick.wsbc.QuimP.Shape#beforeSerialize()
      */
@@ -933,8 +1014,8 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
         this.updateCurvature();
     }
 
-    /**
-     * Call super and then oo Outline related actions
+    /*
+     * (non-Javadoc)
      * 
      * @see uk.ac.warwick.wsbc.QuimP.Shape#afterSerialize()
      */

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.warwick.wsbc.QuimP.QColor;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
+// TODO: Auto-generated Javadoc
 /**
  * Hold fluorescence map for given channel together with indexed colors.
  * 
@@ -17,6 +18,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  */
 
 public class FluoMap {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(FluoMap.class.getName());
     /**
      * Number of frames.
@@ -60,6 +65,11 @@ public class FluoMap {
         this.enabled = src.enabled;
     }
 
+    /**
+     * @param t
+     * @param r
+     * @param i
+     */
     public FluoMap(int t, int r, int i) {
         T = t;
         res = r;
@@ -69,10 +79,16 @@ public class FluoMap {
         fluColor = new byte[T * res];
     }
 
+    /**
+     * @param b
+     */
     public void setEnabled(boolean b) {
         enabled = b;
     }
 
+    /**
+     * @return true if enabled
+     */
     public boolean isEnabled() {
         return enabled;
     }

@@ -7,6 +7,7 @@ import org.scijava.vecmath.Vector2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * Simple testing class for ExtendedVector2d class
  * 
@@ -15,6 +16,9 @@ import org.slf4j.LoggerFactory;
  */
 public class ExtendedVector2d_Test {
 
+    /**
+     * The Constant LOGGER.
+     */
     // http://stackoverflow.com/questions/21083834/load-log4j2-configuration-file-programmatically
     static final Logger LOGGER = LoggerFactory.getLogger(ExtendedVector2d_Test.class.getName());
 

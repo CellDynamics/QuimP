@@ -4,6 +4,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 
+// TODO: Auto-generated Javadoc
 /**
  * Filter that filters out packages that not belong to QuimP.
  * 
@@ -17,10 +18,16 @@ public class LogbackFilter extends Filter<ILoggingEvent> {
     @SuppressWarnings("unused")
     private String packageName;
 
+    /**
+     * 
+     */
     public LogbackFilter() {
         packageName = LogbackFilter.class.getPackage().getName().toLowerCase();
     }
 
+    /* (non-Javadoc)
+     * @see ch.qos.logback.core.filter.Filter#decide(java.lang.Object)
+     */
     @Override
     public FilterReply decide(ILoggingEvent event) {
         if (event.getLoggerName().toLowerCase().contains("quimp")) { // to catch plugins as well

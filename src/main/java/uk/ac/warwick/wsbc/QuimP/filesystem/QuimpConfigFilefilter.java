@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
 
+// TODO: Auto-generated Javadoc
 /**
  * Implement filter of FileDialog.
  * <p>
@@ -16,6 +17,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
  */
 public class QuimpConfigFilefilter implements FilenameFilter {
     private String[] ext;
+
     /**
      * Allow to provide list of accepted extensions with dot.
      * 

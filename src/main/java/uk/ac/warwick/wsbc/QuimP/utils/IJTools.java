@@ -5,6 +5,7 @@ import ij.plugin.RGBStackMerge;
 import ij.process.ColorProcessor;
 import ij.process.LUT;
 
+// TODO: Auto-generated Javadoc
 /**
  * Contain IJ based procedures.
  * 

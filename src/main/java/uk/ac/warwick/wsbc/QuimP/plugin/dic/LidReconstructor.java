@@ -9,6 +9,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
 
+// TODO: Auto-generated Javadoc
 /**
  * Implementation of Line Integration and Deconvolution algorithm proposed by Kam.
  * 
@@ -76,6 +77,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  */
 public class LidReconstructor {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(LidReconstructor.class.getName());
     private final int shift = 1; // shift added to original image eliminate 0s
 

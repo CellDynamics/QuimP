@@ -6,6 +6,7 @@ import uk.ac.warwick.wsbc.QuimP.FormatConverter;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Container class for parameters concerned with ANA analysis.
  * 
@@ -79,14 +80,45 @@ public class ANAp {
      */
     transient public int endFrame;
 
+    /**
+     * The normalise.
+     */
     // parameters of algorithm and control variables
     transient boolean normalise = true; // UI setting
+    
+    /**
+     * The sample at same.
+     */
     transient boolean sampleAtSame = false; // UI setting
+    
+    /**
+     * The plot outlines.
+     */
     transient boolean plotOutlines = false; // UI setting, plot outlines on new image
+    
+    /**
+     * The present data.
+     */
     transient int[] presentData;
+    
+    /**
+     * The cleared.
+     */
     transient boolean cleared;
+    
+    /**
+     * The no data.
+     */
     transient boolean noData;
+    
+    /**
+     * The channel.
+     */
     transient int channel = 0; // UI setting
+    
+    /**
+     * The use loc from ch.
+     */
     transient int useLocFromCh; // UI setting
 
     private double cortexWidthPixel; // in pixels

@@ -15,12 +15,16 @@ import ij.IJ;
 import ij.ImagePlus;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus.GenerateKernel;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class ImageProcessorPlusTest {
 
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     private ImagePlus image;
@@ -55,6 +59,9 @@ public class ImageProcessorPlusTest {
         image.close();
     }
 
+    /**
+     * @throws Exception
+     */
     @Test
     public void test_GenerateKernel() throws Exception {
         {//!>

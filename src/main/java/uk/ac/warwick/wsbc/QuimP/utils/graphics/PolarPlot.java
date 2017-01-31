@@ -18,6 +18,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.IPadArray;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGwritter;
 
+// TODO: Auto-generated Javadoc
 /**
  * Generate polar plots of motility speed along cell perimeter.
  * 
@@ -27,6 +28,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.svg.SVGwritter;
  *
  */
 public class PolarPlot {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(PolarPlot.class.getName());
     private STmap mapCell;
     private Point2d gradientcoord;

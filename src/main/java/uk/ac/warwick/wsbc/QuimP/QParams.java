@@ -22,6 +22,7 @@ import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Container class for parameters defining the whole process of analysis in QuimP. Stores parameters
  * read from configuration files and provide them to different modules. Supports writing and reading
@@ -47,10 +48,24 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  */
 public class QParams {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QParams.class.getName());
 
+    /**
+     * The Constant OLD_QUIMP.
+     */
     public static final int OLD_QUIMP = 1;
+
+    /**
+     * The Constant QUIMP_11.
+     */
     public static final int QUIMP_11 = 2;
+
+    /**
+     * The Constant NEW_QUIMP.
+     */
     public static final int NEW_QUIMP = 3;
     /**
      * Name of the case. Used to set <i>fileName</i> and <i>path</i>
@@ -76,6 +91,9 @@ public class QParams {
     private String path;
     private File segImageFile, snakeQP;
 
+    /**
+     * The stats QP.
+     */
     protected File statsQP;
     /**
      * This field is set by direct call from ANA. Left here for compatibility reasons. Main holder
@@ -93,10 +111,33 @@ public class QParams {
     private int blowup;
     private double nodeRes;
 
+    /**
+     * The sample norm.
+     */
     int NMAX, max_iterations, sample_tan, sample_norm;
+
+    /**
+     * The f friction.
+     */
     double delta_t, vel_crit, f_central, f_contract, f_image, f_friction;
-    public double finalShrink, cortexWidth;
+
+    /**
+     * Shrink value
+     */
+    public double finalShrink;
+    /**
+     * The cortex width.
+     */
+    public double cortexWidth;
+
+    /**
+     * The key.
+     */
     long key;
+
+    /**
+     * The sensitivity.
+     */
     double sensitivity; // no longer used. blank holder
     /**
      * Indicate if <i>snQP</i> has been processed by ECMM (<tt>true</tt>). Set by checkECMMrun.
@@ -110,6 +151,9 @@ public class QParams {
         return ecmmHasRun;
     }
 
+    /**
+     * Instantiates a new q params.
+     */
     public QParams() {
 
     }
@@ -503,6 +547,11 @@ public class QParams {
         }
     }
 
+    /**
+     * Write params.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public void writeParams() throws IOException {
         LOGGER.debug("Write " + FileExtensions.configFileExt + " at: " + paramFile);
         if (paramFile.exists()) {

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.warwick.wsbc.QuimP.CellStats;
 import uk.ac.warwick.wsbc.QuimP.CellStatsEval;
 
+// TODO: Auto-generated Javadoc
 /**
  * Keep statistics for cells.
  * 
@@ -19,6 +20,10 @@ import uk.ac.warwick.wsbc.QuimP.CellStatsEval;
  *
  */
 public class StatsCollection implements IQuimpSerialize {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(StatsCollection.class.getName());
 
     /**

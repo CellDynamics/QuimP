@@ -33,6 +33,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
+// TODO: Auto-generated Javadoc
 /**
  * Tests of SnakePluginList class and serialization
  * 
@@ -42,6 +43,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 @RunWith(MockitoJUnitRunner.class)
 public class SnakePluginListTest {
 
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**
@@ -64,6 +68,9 @@ public class SnakePluginListTest {
         prv.invoke(obj, (Object[]) null);
     }
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(SnakePluginListTest.class.getName());
     @Mock
     private PluginFactory pluginFactory;

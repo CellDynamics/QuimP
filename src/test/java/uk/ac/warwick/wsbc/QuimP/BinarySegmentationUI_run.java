@@ -7,6 +7,7 @@ import ij.ImageJ;
 import uk.ac.warwick.wsbc.QuimP.plugin.binaryseg.BinarySegmentationPlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationPlugin_;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *

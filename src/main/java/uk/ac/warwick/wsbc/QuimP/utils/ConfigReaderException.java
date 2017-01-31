@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.utils;
 
+// TODO: Auto-generated Javadoc
 /**
  * Basic exception class for ConfigReader
  * 

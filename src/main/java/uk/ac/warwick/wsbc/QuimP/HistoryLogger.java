@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
+// TODO: Auto-generated Javadoc
 /**
  * Builds history logger window and logs
  * 
@@ -111,10 +112,16 @@ public class HistoryLogger implements WindowListener {
         return historyWnd.isVisible();
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.WindowListener#windowOpened(java.awt.event.WindowEvent)
+     */
     @Override
     public void windowOpened(WindowEvent e) {
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.WindowListener#windowClosing(java.awt.event.WindowEvent)
+     */
     @Override
     public void windowClosing(WindowEvent e) {
         LOGGER.debug("History windowClosing");
@@ -126,6 +133,9 @@ public class HistoryLogger implements WindowListener {
 
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.WindowListener#windowClosed(java.awt.event.WindowEvent)
+     */
     @Override
     public void windowClosed(WindowEvent e) {
         LOGGER.debug("History windowClosed");
@@ -137,20 +147,32 @@ public class HistoryLogger implements WindowListener {
 
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.WindowListener#windowIconified(java.awt.event.WindowEvent)
+     */
     @Override
     public void windowIconified(WindowEvent e) {
 
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.WindowListener#windowDeiconified(java.awt.event.WindowEvent)
+     */
     @Override
     public void windowDeiconified(WindowEvent e) {
 
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.WindowListener#windowActivated(java.awt.event.WindowEvent)
+     */
     @Override
     public void windowActivated(WindowEvent e) {
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.WindowListener#windowDeactivated(java.awt.event.WindowEvent)
+     */
     @Override
     public void windowDeactivated(WindowEvent e) {
     }

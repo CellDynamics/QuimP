@@ -37,6 +37,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /*
  * //!>
  * @startuml doc-files/ECMM_Mapping_1_UML.png
@@ -74,14 +75,24 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  *
  */
 public class ECMM_Mapping {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(ECMM_Mapping.class.getName());
 
     private OutlineHandler oH, outputH;
     private OutlinesCollection outputOutlineHandlers; // output for new data file
 
+    /**
+     * The plot.
+     */
     static ECMplot plot;
     private QconfLoader qconfLoader;
 
+    /**
+     * @param frames
+     */
     public ECMM_Mapping(int frames) { // work around. b is nothing
         if (ECMp.plot) {
             plot = new ECMplot(frames);
@@ -277,6 +288,12 @@ public class ECMM_Mapping {
 
     }
 
+    /**
+     * @param m
+     * @param Ipr
+     * @param d
+     * @return Processed outline
+     */
     public OutlineHandler runByANA(OutlineHandler m, ImageProcessor Ipr, double d) { // ana uses
                                                                                      // this
         // IJ.log("ECM Mapping (Memory) - R Tyson");
@@ -914,6 +931,10 @@ class Mapping {
         }
     }
 
+    /**
+     * 
+     * @return mapped outline
+     */
     public Outline migrate() {
         Vert newVert; // placed at the marker
         ExtendedVector2d newPos;

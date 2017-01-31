@@ -26,12 +26,17 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TrackVisualisationTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(TrackVisualisationTest.class.getName());
     private ImagePlus originalImage;
     // http://stackoverflow.com/questions/16467685/difference-between-mock-and-injectmocks

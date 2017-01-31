@@ -29,12 +29,17 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import uk.ac.warwick.wsbc.QuimP.utils.Pair;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 @RunWith(JUnitParamsRunner.class)
 public class TrackMapAnalyserTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(TrackMapAnalyserTest.class.getName());
 
     // https://lkrnac.net/blog/2014/01/mock-autowired-fields/
@@ -99,6 +104,9 @@ public class TrackMapAnalyserTest {
         assertThat(result, is(expected));
     }
 
+    /**
+     * Sub list.
+     */
     @SuppressWarnings("serial")
     @Test
     public void subList() {

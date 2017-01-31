@@ -56,6 +56,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Create QuimP bar with icons to QuimP plugins.
  * 
@@ -63,6 +64,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @author p.baniukiewicz
  */
 public class QuimP_Bar implements PlugIn, ActionListener {
+
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QuimP_Bar.class.getName());
     /**
      * This field is used for sharing information between bar and other plugins.
@@ -73,19 +78,74 @@ public class QuimP_Bar implements PlugIn, ActionListener {
      */
     public static boolean newFileFormat = true;
 
+    /**
+     * The path.
+     */
     String path;
+
+    /**
+     * The separator.
+     */
     String separator = System.getProperty("file.separator");
+
+    /**
+     * The frame.
+     */
     JFrame frame = new JFrame();
+
+    /**
+     * The frontframe.
+     */
     Window frontframe;
+
+    /**
+     * The xfw.
+     */
     int xfw = 0;
+
+    /**
+     * The yfw.
+     */
     int yfw = 0;
+
+    /**
+     * The wfw.
+     */
     int wfw = 0;
+
+    /**
+     * The hfw.
+     */
     int hfw = 0;
+
+    /**
+     * The tool bar upper.
+     */
     JToolBar toolBarUpper = null;
+
+    /**
+     * The tool bar bottom.
+     */
     JToolBar toolBarBottom = null;
+
+    /**
+     * The button.
+     */
     JButton button = null;
+
+    /**
+     * The c file format.
+     */
     JCheckBox cFileFormat;
+
+    /**
+     * The tool bar title 1.
+     */
     JTextPane toolBarTitle1 = null;
+
+    /**
+     * The tool bar title 2.
+     */
     JTextPane toolBarTitle2 = null;
     private final Color barColor = new Color(0xFB, 0xFF, 0x94); // Color of title bar
     private MenuBar menuBar;
@@ -99,6 +159,11 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     private MenuItem menuOpenSite;
     private MenuItem menuLicense;
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ij.plugin.PlugIn#run(java.lang.String)
+     */
     public void run(String s) {
         String title;
         String quimpInfo[] = new QuimpToolsCollection().getQuimPBuildInfo(); // get jar title
@@ -304,6 +369,15 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         frame.getContentPane().add(toolBarBottom, c);
     }
 
+    /**
+     * Make navigation button.
+     *
+     * @param imageName the image name
+     * @param actionCommand the action command
+     * @param toolTipText the tool tip text
+     * @param altText the alt text
+     * @return the j button
+     */
     protected JButton makeNavigationButton(String imageName, String actionCommand,
             String toolTipText, String altText) {
 
@@ -326,6 +400,11 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         return newbutton;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == menuVersion) { // menu version
             String quimpInfo = new QuimpToolsCollection().getQuimPversion(); // prepare info plate
@@ -434,6 +513,9 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         frame.repaint();
     }
 
+    /**
+     * Store location.
+     */
     protected void storeLocation() {
         Prefs.set("actionbar" + QuimP.QUIMP_PREFS_SUFFIX + ".xloc", frame.getLocation().x);
         Prefs.set("actionbar" + QuimP.QUIMP_PREFS_SUFFIX + ".yloc", frame.getLocation().y);

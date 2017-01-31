@@ -6,6 +6,7 @@ import org.scijava.vecmath.Point2d;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
+// TODO: Auto-generated Javadoc
 /**
  * Hold all configuration for Protrusion Analysis Module.
  * 
@@ -24,10 +25,29 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
     public double dropValue = 1;
 
     /**
-     * Types of plots to show.
+     * Type of plots to show.
      */
-    public boolean plotMotmap = false, plotMotmapmax = true, plotConmap = false,
-            plotOutline = false, plotStaticmax = false, plotDynamicmax = false;
+    public boolean plotMotmap = false;
+    /**
+     * Type of plots to show.
+     */
+    public boolean plotMotmapmax = true;
+    /**
+     * Type of plots to show.
+     */
+    public boolean plotConmap = false;
+    /**
+     * Type of plots to show.
+     */
+    public boolean plotOutline = false;
+    /**
+     * Type of plots to show.
+     */
+    public boolean plotStaticmax = false;
+    /**
+     * Type of plots to show.
+     */
+    public boolean plotDynamicmax = false;
 
     /**
      * Plot types supported by
@@ -44,7 +64,27 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      *
      */
     public enum outlinePlotTypes {
-        MOTILITY, CONVEXITY, CONVANDEXP, CONCANDRETR, BOTH
+
+        /**
+         * The motility.
+         */
+        MOTILITY,
+        /**
+         * The convexity.
+         */
+        CONVEXITY,
+        /**
+         * The convandexp.
+         */
+        CONVANDEXP,
+        /**
+         * The concandretr.
+         */
+        CONCANDRETR,
+        /**
+         * The both.
+         */
+        BOTH
     };
 
     /**
@@ -59,7 +99,19 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      *
      */
     public enum gradientType {
-        SCREENPOINT, OUTLINEPOINT, NOTDEFINED
+
+        /**
+         * The screenpoint.
+         */
+        SCREENPOINT,
+        /**
+         * The outlinepoint.
+         */
+        OUTLINEPOINT,
+        /**
+         * The notdefined.
+         */
+        NOTDEFINED
     };
 
     /**
@@ -191,6 +243,9 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      */
     public PolarPlot polarPlot = new PolarPlot();
 
+    /**
+     * Instantiates a new prot analysis config.
+     */
     public ProtAnalysisConfig() {
     }
 
