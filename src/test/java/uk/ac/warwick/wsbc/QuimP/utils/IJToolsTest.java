@@ -7,12 +7,16 @@ import org.junit.Test;
 import ij.IJ;
 import ij.ImagePlus;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class IJToolsTest {
 
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**

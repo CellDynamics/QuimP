@@ -15,6 +15,7 @@ import ij.gui.Roi;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * Form abstract shape from bidirectional list of points.
  * 
@@ -26,6 +27,10 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @param <T> Type of point, currently can be Node or Vert
  */
 public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(Shape.class.getName());
     /**
      * Next node ID's. Initialised in constructor, changed during modification of shape.
@@ -44,6 +49,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * Shape and also in {@link #afterSerialize()} and {@link #beforeSerialize()}
      */
     protected ExtendedVector2d centroid = null;
+    
+    /**
+     * The Constant MAX_NODES.
+     */
     public static final int MAX_NODES = 10000; // !< Max number of nodes allowed in Shape
     /**
      * Elements of Shape as List. Initialised on Serialise. Temporary array to store linked list as

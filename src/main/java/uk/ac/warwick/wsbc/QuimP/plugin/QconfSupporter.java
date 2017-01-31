@@ -20,6 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Add basic support for handling <i>QCONF</i> and <i>paQP</i> files.
  * <p>
@@ -42,6 +43,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 @Deprecated
 @SuppressWarnings("javadoc")
 public abstract class QconfSupporter {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QconfSupporter.class.getName());
     /**
      * Main object holding loaded configuration file. It can be either traditional QParams or

@@ -21,6 +21,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.QuimpDataConverter;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Store all the snakes computed for one cell across frames and it is responsible for writing them
  * to file.
@@ -30,6 +31,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  *
  */
 public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(SnakeHandler.class.getName());
     /**
      * initial ROI, not stored but rebuilt from snake on load
@@ -52,6 +57,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
      */
     private int ID;
 
+    /**
+     * Instantiates a new snake handler.
+     */
     public SnakeHandler() {
         // endFrame = BOA_.qState.boap.FRAMES;
     }
@@ -343,10 +351,21 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         pw.close();
     }
 
+    /**
+     * Gets the live snake.
+     *
+     * @return the live snake
+     */
     public Snake getLiveSnake() {
         return liveSnake;
     }
 
+    /**
+     * Gets the backup snake.
+     *
+     * @param f the f
+     * @return the backup snake
+     */
     public Snake getBackupSnake(int f) {
         LOGGER.trace("Asked for backup snake at frame " + f + " ID " + ID);
         if (f - startFrame < 0) {
@@ -462,27 +481,53 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         return 1;
     }
 
+    /**
+     * Revive.
+     */
     public void revive() {
         liveSnake.alive = true;
     }
 
+    /**
+     * Kill.
+     */
     public void kill() {
         liveSnake.alive = false;
     }
 
+    /**
+     * Reset.
+     *
+     * @throws Exception the exception
+     */
     public void reset() throws Exception {
         liveSnake = new Snake(roi, ID, false);
         // snakes = new Snake[boap.FRAMES - startFrame + 1]; // stored snakes
     }
 
+    /**
+     * Gets the id.
+     *
+     * @return the id
+     */
     public int getID() {
         return ID;
     }
 
+    /**
+     * Checks if is live.
+     *
+     * @return true, if is live
+     */
     public boolean isLive() {
         return liveSnake.alive;
     }
 
+    /**
+     * Delete store at.
+     *
+     * @param frame the frame
+     */
     void deleteStoreAt(int frame) {
         if (frame - startFrame < 0) {
             BOA_.log(
@@ -493,12 +538,23 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
     }
 
+    /**
+     * Delete store from.
+     *
+     * @param frame the frame
+     */
     void deleteStoreFrom(int frame) {
         for (int i = frame; i <= BOA_.qState.boap.getFRAMES(); i++) {
             deleteStoreAt(i);
         }
     }
 
+    /**
+     * Store at.
+     *
+     * @param s the s
+     * @param frame the frame
+     */
     void storeAt(final Snake s, int frame) {
         s.calcCentroid();
         if (frame - startFrame < 0) {
@@ -509,10 +565,20 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         }
     }
 
+    /**
+     * Gets the start frame.
+     *
+     * @return the start frame
+     */
     int getStartFrame() {
         return startFrame;
     }
 
+    /**
+     * Gets the end frame.
+     *
+     * @return the end frame
+     */
     int getEndFrame() {
         return endFrame;
     }

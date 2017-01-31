@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import ij.plugin.filter.MaximumFinder;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * Calculate maxima for image.
  * 
@@ -17,6 +18,10 @@ import ij.process.ImageProcessor;
  *
  */
 public class MaximaFinder {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(MaximaFinder.class.getName());
     private ImageProcessor iP;
     private Polygon maxima; // found maxima as polygon

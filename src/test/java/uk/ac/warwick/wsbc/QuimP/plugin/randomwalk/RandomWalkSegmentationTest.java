@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.ImagePlus;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test protected methods
  * 
@@ -37,14 +38,27 @@ import ij.ImagePlus;
  */
 public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
 
+    /**
+     * Instantiates a new random walk segmentation test.
+     */
     public RandomWalkSegmentationTest() {
         super(testImage1.getProcessor(), new Params());
     }
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER =
             LoggerFactory.getLogger(RandomWalkSegmentationTest.class.getName());
 
+    /**
+     * The test image 1 rgb.
+     */
     static ImagePlus testImage1rgb; // contains rgb image with test seed points
+    
+    /**
+     * The test image 1.
+     */
     static ImagePlus testImage1;
 
     /**

@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP;
 
+// TODO: Auto-generated Javadoc
 /**
  * Static definitions.
  * 

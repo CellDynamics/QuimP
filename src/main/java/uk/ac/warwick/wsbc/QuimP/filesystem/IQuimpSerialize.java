@@ -2,6 +2,7 @@
  */
 package uk.ac.warwick.wsbc.QuimP.filesystem;
 
+// TODO: Auto-generated Javadoc
 /**
  * Interface that is required by Serializer class.
  * 

@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+// TODO: Auto-generated Javadoc
 /**
  * Extension of LinkedHashMap that assumes that Key is String are case insensitive.
  * 
@@ -19,6 +20,9 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
 
     private static final long serialVersionUID = -8577387803055420569L;
 
+    /**
+     * 
+     */
     public LinkedStringMap() {
     }
 
@@ -63,18 +67,20 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         return super.put(key.toLowerCase(), value);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      * 
+     * @param key
+     * @return value for key
      * @see java.util.HashMap#get(java.lang.Object)
      */
     public V get(String key) {
         return super.get(key.toLowerCase());
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      * 
+     * @param key
+     * @return true if contains key
      * @see java.util.HashMap#containsKey(java.lang.Object)
      */
     public boolean containsKey(String key) {
@@ -93,9 +99,10 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         }
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      * 
+     * @param key
+     * @return value removed
      * @see java.util.HashMap#remove(java.lang.Object)
      */
     public V remove(String key) {
@@ -112,9 +119,11 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
         return super.putIfAbsent(key.toLowerCase(), value);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      * 
+     * @param key
+     * @param value
+     * @return true if removed
      * @see java.util.HashMap#remove(java.lang.Object, java.lang.Object)
      */
     public boolean remove(String key, Object value) {

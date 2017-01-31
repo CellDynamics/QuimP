@@ -17,15 +17,23 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class ImageProcessorPlus_Test {
 
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     private ImagePlus image;
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessorPlus_Test.class.getName());
     private ImageProcessorPlus ipp;
 
@@ -35,10 +43,16 @@ public class ImageProcessorPlus_Test {
     public ImageProcessorPlus_Test() {
     }
 
+    /**
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
     }
 
+    /**
+     * @throws Exception
+     */
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
     }
@@ -53,6 +67,9 @@ public class ImageProcessorPlus_Test {
         ipp = new ImageProcessorPlus();
     }
 
+    /**
+     * @throws Exception
+     */
     @After
     public void tearDown() throws Exception {
         if (image.changes) { // check if source was modified
@@ -128,6 +145,9 @@ public class ImageProcessorPlus_Test {
         LOGGER.info("Check /tmp/testextendImage_45s.tif to see results");
     }
 
+    /**
+     * 
+     */
     @Test
     public void test_crop() {
         ImageProcessor ret;

@@ -5,6 +5,7 @@ import java.io.File;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 
+// TODO: Auto-generated Javadoc
 /**
  * Container class holding parameters related to ECMM analysis.
  * 
@@ -13,49 +14,182 @@ import uk.ac.warwick.wsbc.QuimP.QParams;
  */
 public class ECMp {
 
+    /**
+     * 
+     */
     static public File INFILE; // snQP file
+    /**
+     * 
+     */
     static public File OUTFILE;
+    /**
+     * 
+     */
     static public double scale;
+    /**
+     * 
+     */
     static public double frameInterval;
-    static public int startFrame, endFrame;
+    /**
+     * 
+     */
+    static public int startFrame;
+    /**
+     * 
+     */
+    static public int endFrame;
+    /**
+     * 
+     */
     static public ImageProcessor image;
+    /**
+     * 
+     */
     static public int numINTS;
+    /**
+     * 
+     */
     static public boolean ANA;
+    /**
+     * 
+     */
     static public boolean plot;
+    /**
+     * 
+     */
     static public boolean lineCharges;
-    static public double markerRes; // resolution of outlines
-    static public double chargeDensity;// field complexity (set to -1 to leave
-                                       // as marker density)
-    static public double maxVertF; // max force allowed on a marker (0.06)
+    /**
+     * resolution of outlines
+     */
+    static public double markerRes;
+    /**
+     * field complexity (set to -1 to leave as marker density)
+     */
+    static public double chargeDensity;
+    /**
+     * max force allowed on a marker (0.06)
+     */
+    static public double maxVertF;
+    /**
+     * 
+     */
     static public double migPower;
+    /**
+     * 
+     */
     static public double tarPower;
+    /**
+     * 
+     */
     static public double migQ; // was 0.4E-6
+    /**
+     * 
+     */
     static public double tarQ;
+    /**
+     * 
+     */
     static public double mobileQ;
-    static public double d;// threshold distance to stop
-    static public double w; // size of displacment of mig edge charges
-    static public double h; // Euler time step, was 0.6
+    /**
+     * threshold distance to stop
+     */
+    static public double d;
+    /**
+     * size of displacment of mig edge charges
+     */
+    static public double w;
+    /**
+     * Euler time step, was 0.6
+     */
+    static public double h;
+    /**
+     * 
+     */
     static public int maxIter;
+    /**
+     * 
+     */
     static public double k;
+    /**
+     * 
+     */
     static public double anaMigDist;
+    /**
+     * 
+     */
     static public boolean forceNoSectors;
+    /**
+     * 
+     */
     static public boolean forceForwardMapping;
+    /**
+     * 
+     */
     static public boolean forceBackwardMapping;
+    /**
+     * 
+     */
     static public boolean disableDensityCorrections;
-    static public int its; // total euler iterations
-    static public int unSnapped; // number of nodes that failed to snap
+    /**
+     * total euler iterations
+     */
+    static public int its;
+    /**
+     * number of nodes that failed to snap
+     */
+    static public int unSnapped;
+    /**
+     * 
+     */
     static public int visualRes;
+    /**
+     * 
+     */
     static public double maxCellSize;
 
+    /**
+     * The draw intersects.
+     */
     static boolean drawIntersects;
+    
+    /**
+     * The draw initial outlines.
+     */
     static boolean drawInitialOutlines;
+    
+    /**
+     * The draw solution outlines.
+     */
     static boolean drawSolutionOutlines;
+    
+    /**
+     * The draw paths.
+     */
     static boolean drawPaths;
+    
+    /**
+     * The draw fails.
+     */
     static boolean drawFails;
+    
+    /**
+     * The save temp.
+     */
     static boolean saveTemp;
+    
+    /**
+     * The inspect sectors.
+     */
     static boolean inspectSectors;
+    
+    /**
+     * The preserve heads.
+     */
     static boolean preserveHeads = false; //!< true if original head should be preserved
 
+    /**
+     * 
+     */
     public ECMp() {
     }
 
@@ -105,7 +239,7 @@ public class ECMp {
     /**
      * Fills ECMp fields with values from previous analysis (master paQP file)
      * 
-     * @param qp  Master configuration file
+     * @param qp Master configuration file
      */
     static void setup(QParams qp) {
         INFILE = qp.getSnakeQP();

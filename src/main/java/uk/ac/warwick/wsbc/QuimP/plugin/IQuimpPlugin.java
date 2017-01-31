@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
+// TODO: Auto-generated Javadoc
 /**
  * This interface supports plugins used in QuimP Bar.
  * <p>

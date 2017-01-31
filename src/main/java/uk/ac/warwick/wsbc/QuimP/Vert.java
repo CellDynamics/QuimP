@@ -6,10 +6,11 @@ import java.util.Arrays;
 import ij.IJ;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * Represents a vertex in the outline. Contains several methods that operate on vertexes and
- * vectors. Properties defined for {@link Vert Vert} object are updated by different QuimP modules
- * (ECMM, QA)
+ * vectors. Properties defined for {@link Vert} object are updated by different QuimP modules (ECMM,
+ * QA)
  * 
  * @author rtyson
  * @author p.baniukiewicz
@@ -28,48 +29,57 @@ public class Vert extends PointsList<Vert> {
      */
     public final FluoMeasurement[] fluores = new FluoMeasurement[3];
     /**
-     * curvature local to a node. Updated by uk.ac.warwick.wsbc.QuimP.Vert.calcCurvatureLocal() and
-     * implicitly by uk.ac.warwick.wsbc.QuimP.Vert.calcCurvatureLocal() called during creation and
-     * serialization.
+     * curvature local to a node. Updated by {@link Vert#calcCurvatureLocal()} called during
+     * creation and serialization.
      */
     public double curvatureLocal;
     /**
-     * smoothed curvature. Updated during map generation (Q Analysis) by
-     * uk.ac.warwick.wsbc.QuimP.STmap.calcCurvature() or
-     * uk.ac.warwick.wsbc.QuimP.STmap.averageCurvature(Outline)
+     * Smoothed curvature. Updated during map generation (Q Analysis) by
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap#calcCurvature()} or
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap#averageCurvature(Outline)}
      */
+    @SuppressWarnings("javadoc")
     public double curvatureSmoothed;
     /**
      * summed curvature over x microns this is the value recorded into maps. Updated during map
-     * generation (Q Analysis) by uk.ac.warwick.wsbc.QuimP.STmap.calcCurvature()
+     * generation (Q Analysis) by
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap#calcCurvature()}
      */
+    @SuppressWarnings("javadoc")
     public double curvatureSum;
     /**
      * coord relative to head node on current frame. Set during ECMM
      */
     public double coord;
     /**
-     * coord relative to coord on previous frame. Set by uk.ac.warwick.wsbc.QuimP.Mapping.migrate()
-     * and during changing resolution in ECMM
+     * coord relative to coord on previous frame. Set by
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.Mapping#migrate()} and during changing resolution
+     * in ECMM
      */
+    @SuppressWarnings("javadoc")
     public double fCoord;
     /**
      * landing relative to previous frame. Set by
-     * uk.ac.warwick.wsbc.QuimP.Vert.setLandingCoord(ExtendedVector2d, Vert) called on solving ECMM
-     * equations
+     * {@link uk.ac.warwick.wsbc.QuimP.Vert#setLandingCoord(ExtendedVector2d, Vert)} called on
+     * solving ECMM equations
      */
     public double fLandCoord;
     /**
      * global coord relative to head node on frame 1. Set by
-     * uk.ac.warwick.wsbc.QuimP.Mapping.migrate() and during changing resolution in ECMM
+     * {@link uk.ac.warwick.wsbc.QuimP.plugin.ecmm.Mapping#migrate()} and during changing resolution
+     * in ECMM
      */
+    @SuppressWarnings("javadoc")
     public double gCoord;
     /**
      * landing coord relative to head node on frame 1. Set by
-     * uk.ac.warwick.wsbc.QuimP.Vert.setLandingCoord(ExtendedVector2d, Vert) called on solving ECMM
-     * equations
+     * {@link uk.ac.warwick.wsbc.QuimP.Vert#setLandingCoord(ExtendedVector2d, Vert)} called on
+     * solving ECMM equations
      */
     public double gLandCoord;
+    /**
+     * 
+     */
     public double tarLandingCoord;
     /**
      * Color of Vert.
@@ -83,6 +93,9 @@ public class Vert extends PointsList<Vert> {
      * The vert has been snapped to an edge.
      */
     public boolean snapped;
+    /**
+     * 
+     */
     public int intsectID;
     /**
      * Internal state of the vert. Possible values:
@@ -276,6 +289,9 @@ public class Vert extends PointsList<Vert> {
         return true;
     }
 
+    /**
+     * @param s
+     */
     public void print(String s) {
         System.out.print(s + "vert: " + tracknumber + ", x:" + getX() + ", y:" + getY()
                 + ", coord: " + coord + ", fCoord: " + fCoord + ", gCoord: " + gCoord);
@@ -303,16 +319,27 @@ public class Vert extends PointsList<Vert> {
                 + point + ", tracknumber=" + tracknumber + ", position=" + position + "]";
     }
 
+    /**
+     * @return intPoint
+     */
     public boolean isIntPoint() {
         return intPoint;
     }
 
+    /**
+     * @param t
+     * @param i
+     */
     public void setIntPoint(boolean t, int i) {
         intPoint = t;
         intsectID = i;
         tracknumber = -1;
     }
 
+    /**
+     * @param p
+     * @param edge
+     */
     public void setLandingCoord(ExtendedVector2d p, Vert edge) {
         Vert edge2 = edge.getNext(); // 'edge' is the 1st vert of an edge
 
@@ -377,6 +404,9 @@ public class Vert extends PointsList<Vert> {
         return landing;
     }
 
+    /**
+     * 
+     */
     public void calcCurvatureLocal() {
 
         ExtendedVector2d edge1 =
@@ -413,18 +443,31 @@ public class Vert extends PointsList<Vert> {
     // return fluoNew;
     // }
 
+    /**
+     * @param m
+     * @param channel
+     */
     public void setFluoresChannel(FluoMeasurement m, int channel) {
         fluores[channel].intensity = m.intensity;
         fluores[channel].x = m.x;
         fluores[channel].y = m.y;
     }
 
+    /**
+     * @param x
+     * @param y
+     * @param i
+     * @param channel
+     */
     public void setFluoresChannel(int x, int y, int i, int channel) {
         fluores[channel].intensity = i;
         fluores[channel].x = x;
         fluores[channel].y = y;
     }
 
+    /**
+     * @param m
+     */
     public void setFluores(FluoMeasurement[] m) {
 
         for (int i = 0; i < 3; i++) {
@@ -434,6 +477,13 @@ public class Vert extends PointsList<Vert> {
         }
     }
 
+    /**
+     * Dis coord 2 coord.
+     *
+     * @param a the a
+     * @param b the b
+     * @return the double
+     */
     static double disCoord2Coord(double a, double b) {
         if (a < b)
             return b - a;
@@ -443,6 +493,13 @@ public class Vert extends PointsList<Vert> {
             return 0;
     }
 
+    /**
+     * Adds the coords.
+     *
+     * @param a the a
+     * @param b the b
+     * @return the double
+     */
     static double addCoords(double a, double b) {
         double r = a + b;
         if (r >= 1)

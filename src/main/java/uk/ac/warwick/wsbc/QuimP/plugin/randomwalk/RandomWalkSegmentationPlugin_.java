@@ -48,6 +48,7 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 
+// TODO: Auto-generated Javadoc
 /*
  * !>
  * @startuml doc-files/RandomWalkSegmentationPlugin_1_UML.png
@@ -148,6 +149,10 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
  *
  */
 public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, ChangeListener {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER =
             LoggerFactory.getLogger(RandomWalkSegmentationPlugin_.class.getName());
 
@@ -653,6 +658,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
 
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
     @Override
     public void stateChanged(ChangeEvent e) {
         LOGGER.debug("State changed");
@@ -668,6 +676,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      */
     class RWWorker extends SwingWorker<Object, Object> {
 
+        /* (non-Javadoc)
+         * @see javax.swing.SwingWorker#doInBackground()
+         */
         @Override
         protected Object doInBackground() throws Exception {
             bCancel.setText("STOP"); // use cancel to stopping

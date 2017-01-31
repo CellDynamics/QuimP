@@ -23,6 +23,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test class for {@link uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.MaximaFinder}
  * 
@@ -30,7 +31,15 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  *
  */
 public class MaximaFinderTest {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(MaximaFinderTest.class.getName());
+    
+    /**
+     * The q L 1.
+     */
     static QconfLoader qL1;
     private STmap[] stMap;
     private ImageProcessor imp;

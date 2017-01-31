@@ -18,16 +18,24 @@ import ij.ImageStack;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class LidReconstructor_Test {
 
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     private ImagePlus image;
     private ImagePlus stack;
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(LidReconstructor_Test.class.getName());
 
     /**

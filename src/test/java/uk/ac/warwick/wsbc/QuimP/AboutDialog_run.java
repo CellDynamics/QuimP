@@ -7,6 +7,7 @@ import java.awt.Panel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+// TODO: Auto-generated Javadoc
 /**
  * Runner for AboutDialog
  * @author p.baniukiewicz

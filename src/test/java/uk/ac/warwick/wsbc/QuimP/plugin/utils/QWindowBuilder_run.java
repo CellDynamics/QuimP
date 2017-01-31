@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 
+// TODO: Auto-generated Javadoc
 /**
  * Simple test class showing window from QWindowBuilder
  * 
@@ -19,6 +20,12 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  */
 public class QWindowBuilder_run {
 
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     * @throws InterruptedException the interrupted exception
+     */
     public static void main(String[] args) throws InterruptedException {
         final Logger LOGGER = LoggerFactory.getLogger(QWindowBuilder_run.class.getName());
         ParamList def1;

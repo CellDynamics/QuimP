@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test class for QWindowBuilder
  * 
@@ -21,8 +22,16 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  *
  */
 public class QWindowBuilder_Test {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QWindowBuilder_Test.class.getName());
     private ParamList def1;
+    
+    /**
+     * The inst.
+     */
     QWindowBuilderInst inst;
 
     /**
@@ -34,9 +43,17 @@ public class QWindowBuilder_Test {
     class QWindowBuilderInst extends QWindowBuilder {
     }
 
+    /**
+     * The name.
+     */
     @Rule
     public TestName name = new TestName(); // !< Allow to get tested method name (called at setUp())
 
+    /**
+     * Sets the up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
         def1 = new ParamList(); // setup window params
@@ -53,6 +70,11 @@ public class QWindowBuilder_Test {
         inst = new QWindowBuilderInst(); // create window object
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void tearDown() throws Exception {
         def1.clear();

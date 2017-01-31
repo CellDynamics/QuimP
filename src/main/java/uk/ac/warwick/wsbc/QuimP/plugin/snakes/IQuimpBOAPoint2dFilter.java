@@ -7,6 +7,7 @@ import org.scijava.vecmath.Point2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 
+// TODO: Auto-generated Javadoc
 /**
  * General interface that defines filter run on points in euclidean space.
  * 

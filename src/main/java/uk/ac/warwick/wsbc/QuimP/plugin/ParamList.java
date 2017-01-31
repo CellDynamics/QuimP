@@ -7,6 +7,7 @@ import java.util.Map;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.LinkedStringMap;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.StringParser;
 
+// TODO: Auto-generated Javadoc
 /**
  * List of parameters in <key,value> HashList, where both key and value are java.lang.String and key
  * is case insensitive.

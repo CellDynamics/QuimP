@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test class for StringParser
  * 
@@ -16,8 +17,16 @@ import org.slf4j.LoggerFactory;
  */
 public class StringParserTest {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(StringParserTest.class.getName());
 
+    /**
+     * Test get numof param.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testGetNumofParam() throws Exception {
         String s = "1, 2,3.1";

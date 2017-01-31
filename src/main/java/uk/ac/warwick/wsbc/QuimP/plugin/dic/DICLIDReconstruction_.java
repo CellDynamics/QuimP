@@ -15,6 +15,7 @@ import ij.process.ShortProcessor;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
+// TODO: Auto-generated Javadoc
 /**
  * Main implementation of ImageJ plugin.
  * 
@@ -24,6 +25,10 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * @see LidReconstructor
  */
 public class DICLIDReconstruction_ implements PlugInFilter {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(DICLIDReconstruction_.class.getName());
     private LidReconstructor dic;
     private ImagePlus imp;

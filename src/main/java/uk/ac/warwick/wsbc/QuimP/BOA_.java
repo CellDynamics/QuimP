@@ -98,6 +98,7 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
+// TODO: Auto-generated Javadoc
 /*
  * !>
  * @startuml doc-files/BOA_1_UML.png
@@ -166,10 +167,30 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
  */
 public class BOA_ implements PlugIn {
     private static final Logger LOGGER = LoggerFactory.getLogger(BOA_.class.getName());
+    
+    /**
+     * The canvas.
+     */
     CustomCanvas canvas;
+    
+    /**
+     * The window.
+     */
     CustomStackWindow window;
+    
+    /**
+     * The log area.
+     */
     static TextArea logArea;
+    
+    /**
+     * The running.
+     */
     static boolean running = false;
+    
+    /**
+     * The image group.
+     */
     ImageGroup imageGroup;
     private Constrictor constrictor;
     private PluginFactory pluginFactory; // load and maintain plugins
@@ -486,6 +507,10 @@ public class BOA_ implements PlugIn {
      * @author p.baniukiewicz
      */
     class CustomWindowAdapter extends WindowAdapter {
+        
+        /* (non-Javadoc)
+         * @see java.awt.event.WindowAdapter#windowClosed(java.awt.event.WindowEvent)
+         */
         @Override
         // This method will be called when BOA_ window is closed already
         // It is too late for asking user
@@ -503,11 +528,17 @@ public class BOA_ implements PlugIn {
             viewUpdater = null;
         }
 
+        /* (non-Javadoc)
+         * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
+         */
         @Override
         public void windowClosing(final WindowEvent arg0) {
             LOGGER.trace("CLOSING");
         }
 
+        /* (non-Javadoc)
+         * @see java.awt.event.WindowAdapter#windowActivated(java.awt.event.WindowEvent)
+         */
         @Override
         public void windowActivated(final WindowEvent e) {
             LOGGER.trace("ACTIVATED");
@@ -594,15 +625,38 @@ public class BOA_ implements PlugIn {
     class CustomStackWindow extends StackWindow
             implements ActionListener, ItemListener, ChangeListener {
 
+        /**
+         * The Constant DEFAULT_SPINNER_SIZE.
+         */
         final static int DEFAULT_SPINNER_SIZE = 5;
+        
+        /**
+         * The Constant SNAKE_PLUGIN_NUM.
+         */
         final static int SNAKE_PLUGIN_NUM = 3; /*!< number of currently supported plugins  */
         private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
         private Button bAdd, bDel, bDelSeg, bQuit;
         private Checkbox cPrevSnake, cExpSnake, cPath;
         private Choice sZoom;
+        
+        /**
+         * The log panel.
+         */
         JScrollPane logPanel;
+        
+        /**
+         * The frame label.
+         */
         Label fpsLabel, pixelLabel, frameLabel;
+        
+        /**
+         * The ds final shrink.
+         */
         JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
+        
+        /**
+         * The is sample norm.
+         */
         JSpinner isMaxIterations, isBlowup, isSample_tan, isSample_norm;
         private Choice sFirstPluginName, sSecondPluginName, sThirdPluginName;
         private Button bFirstPluginGUI, bSecondPluginGUI, bThirdPluginGUI;
@@ -1872,6 +1926,9 @@ public class BOA_ implements PlugIn {
             bDel.setLabel("Delete cell");
         }
 
+        /* (non-Javadoc)
+         * @see ij.gui.ImageWindow#setImage(ij.ImagePlus)
+         */
         @Override
         public void setImage(ImagePlus imp2) {
             double m = this.ic.getMagnification();
@@ -1890,6 +1947,9 @@ public class BOA_ implements PlugIn {
             bDelSeg.setLabel("Truncate Seg");
         }
 
+        /**
+         * Sets the scales text.
+         */
         void setScalesText() {
             pixelLabel.setText("Scale: " + IJ.d2s(qState.boap.getImageScale(), 6) + " \u00B5m");
             fpsLabel.setText(
@@ -2179,6 +2239,9 @@ public class BOA_ implements PlugIn {
         // imageGroup.drawPath(snake, frame); //draw final contour on path image
     }
 
+    /**
+     * Sets the scales.
+     */
     void setScales() {
         GenericDialog gd = new GenericDialog("Set image scale", window);
         gd.addNumericField("Frame interval (seconds)", qState.boap.getImageFrameInterval(), 3);
@@ -2200,12 +2263,20 @@ public class BOA_ implements PlugIn {
 
     }
 
+    /**
+     * Update image scale.
+     */
     void updateImageScale() {
         imageGroup.getOrgIpl().getCalibration().frameInterval = qState.boap.getImageFrameInterval();
         imageGroup.getOrgIpl().getCalibration().pixelHeight = qState.boap.getImageScale();
         imageGroup.getOrgIpl().getCalibration().pixelWidth = qState.boap.getImageScale();
     }
 
+    /**
+     * Load snakes.
+     *
+     * @return true, if successful
+     */
     boolean loadSnakes() {
 
         YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Load associated snakes?",
@@ -2320,6 +2391,13 @@ public class BOA_ implements PlugIn {
         return false;
     }
 
+    /**
+     * Delete segmentation.
+     *
+     * @param x the x
+     * @param y the y
+     * @param frame the frame
+     */
     void deleteSegmentation(int x, int y, int frame) {
         SnakeHandler sH;
         Snake snake;
@@ -2417,6 +2495,12 @@ public class BOA_ implements PlugIn {
         qState.boap.editingID = -1;
     }
 
+    /**
+     * Delete seg.
+     *
+     * @param x the x
+     * @param y the y
+     */
     void deleteSeg(int x, int y) {
     }
 

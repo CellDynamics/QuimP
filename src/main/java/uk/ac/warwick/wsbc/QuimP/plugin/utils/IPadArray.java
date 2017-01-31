@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.plugin.utils;
 
+// TODO: Auto-generated Javadoc
 /**
  * Basic interface for all family of filters based on moving window.
  * 

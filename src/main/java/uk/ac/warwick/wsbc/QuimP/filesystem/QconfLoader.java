@@ -20,6 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
+// TODO: Auto-generated Javadoc
 /**
  * Load QCONF or paQP file and initiate proper instance of {@link QParams} class.
  * <p>
@@ -30,6 +31,10 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
  *
  */
 public class QconfLoader {
+
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QconfLoader.class.getName());
     /**
      * Stand for bad QCONF file that can not be loaded.

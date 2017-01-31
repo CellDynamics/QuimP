@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.utils;
 
+// TODO: Auto-generated Javadoc
 /**
  * Basic implementation of Pair.
  * 
@@ -9,9 +10,23 @@ package uk.ac.warwick.wsbc.QuimP.utils;
  *
  */
 public class Pair<K, V> {
+    
+    /**
+     * The first.
+     */
     public K first;
+    
+    /**
+     * The second.
+     */
     public V second;
 
+    /**
+     * Instantiates a new pair.
+     *
+     * @param left the left
+     * @param right the right
+     */
     public Pair(K left, V right) {
         this.first = left;
         this.second = right;

@@ -26,18 +26,41 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 
+// TODO: Auto-generated Javadoc
 /**
  *
  * @author rtyson
  */
 public class Q_Explorer implements PlugIn {
 
+    /**
+     * The map canvs.
+     */
     MapCanvas[] mapCanvs;
+    
+    /**
+     * The mov canvas.
+     */
     MovCanvas movCanvas;
+    
+    /**
+     * The explorer window.
+     */
     ExplorerStackWindow explorerWindow;
+    
+    /**
+     * The image manager.
+     */
     ImageManager imageManager;
+    
+    /**
+     * The o H.
+     */
     OutlineHandler oH;
 
+    /* (non-Javadoc)
+     * @see ij.plugin.PlugIn#run(java.lang.String)
+     */
     @Override
     public void run(String string) {
         try {
@@ -61,13 +84,24 @@ public class Q_Explorer implements PlugIn {
         }
     }
 
+    /**
+     * The Class MapCanvas.
+     */
     @SuppressWarnings("serial")
     class MapCanvas extends ImageCanvas {
 
+        /**
+         * Instantiates a new map canvas.
+         *
+         * @param imp the imp
+         */
         MapCanvas(ImagePlus imp) {
             super(imp);
         }
 
+        /* (non-Javadoc)
+         * @see ij.gui.ImageCanvas#mousePressed(java.awt.event.MouseEvent)
+         */
         @Override
         public void mousePressed(MouseEvent e) {
             super.mousePressed(e);
@@ -76,36 +110,65 @@ public class Q_Explorer implements PlugIn {
         }
     }
 
+    /**
+     * The Class MovCanvas.
+     */
     @SuppressWarnings("serial")
     class MovCanvas extends ImageCanvas {
 
+        /**
+         * Instantiates a new mov canvas.
+         *
+         * @param imp the imp
+         */
         MovCanvas(ImagePlus imp) {
             super(imp);
         }
 
+        /* (non-Javadoc)
+         * @see ij.gui.ImageCanvas#mousePressed(java.awt.event.MouseEvent)
+         */
         @Override
         public void mousePressed(MouseEvent e) {
             IJ.log("Movie pressed at: (" + offScreenX(e.getX()) + "," + offScreenY(e.getY()) + ")");
         }
     }
 
+    /**
+     * The Class ExplorerStackWindow.
+     */
     @SuppressWarnings("serial")
     class ExplorerStackWindow extends StackWindow
             implements ActionListener, ItemListener, ChangeListener {
 
+        /**
+         * Instantiates a new explorer stack window.
+         *
+         * @param imp the imp
+         * @param stackCanvas the stack canvas
+         */
         ExplorerStackWindow(ImagePlus imp, ImageCanvas stackCanvas) {
             super(imp, stackCanvas);
 
         }
 
+        /* (non-Javadoc)
+         * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
+         */
         @Override
         public void itemStateChanged(ItemEvent ie) {
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+         */
         @Override
         public void stateChanged(ChangeEvent ce) {
         }
 
+        /* (non-Javadoc)
+         * @see ij.gui.StackWindow#updateSliceSelector()
+         */
         @Override
         public void updateSliceSelector() {
             super.updateSliceSelector();
@@ -114,6 +177,9 @@ public class Q_Explorer implements PlugIn {
         } // update the frame label, overlay, frame and set zoom
     }
 
+    /**
+     * Setup.
+     */
     void setup() {
         oH = new OutlineHandler(EXp.qp);
         if (!oH.readSuccess) {
@@ -124,6 +190,9 @@ public class Q_Explorer implements PlugIn {
         buildWindows();
     }
 
+    /**
+     * Builds the windows.
+     */
     void buildWindows() {
         mapCanvs = new MapCanvas[imageManager.nbMaps];
         mapCanvs[0] = new MapCanvas(imageManager.mapsIpl[0]);
@@ -139,10 +208,21 @@ public class Q_Explorer implements PlugIn {
         imageManager.updateOverlays();
     }
 
+    /**
+     * Map update.
+     *
+     * @param x the x
+     * @param y the y
+     */
     void mapUpdate(int x, int y) {
         imageManager.setSlice(y);
     }
 
+    /**
+     * Map 2 mov.
+     *
+     * @return the extended vector 2 d
+     */
     ExtendedVector2d map2Mov() {
         return new ExtendedVector2d(-1, -1);
     }

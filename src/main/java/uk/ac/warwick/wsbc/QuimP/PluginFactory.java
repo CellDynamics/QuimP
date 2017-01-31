@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 
+// TODO: Auto-generated Javadoc
 /*
  * //!>
  * @startuml doc-files/PluginFactory_1_UML.png
@@ -203,6 +204,9 @@ import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
  */
 public class PluginFactory {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(PluginFactory.class.getName());
     /**
      * Name pattern of plugins

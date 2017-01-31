@@ -11,6 +11,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Toolbar;
 
+// TODO: Auto-generated Javadoc
 /**
  * Main runner for BOA_ plugin. Show main window and wait for its closing and then ends.
  * 

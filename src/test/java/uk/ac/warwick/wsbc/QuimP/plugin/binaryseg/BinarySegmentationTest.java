@@ -28,12 +28,16 @@ import uk.ac.warwick.wsbc.QuimP.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.RoiSaver;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 public class BinarySegmentationTest {
 
+    /**
+     * The tmpdir.
+     */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**
@@ -55,6 +59,20 @@ public class BinarySegmentationTest {
         return prv.get(obj);
     }
 
+    /**
+     * Access private.
+     *
+     * @param name the name
+     * @param obj the obj
+     * @param param the param
+     * @param paramtype the paramtype
+     * @return the object
+     * @throws NoSuchMethodException the no such method exception
+     * @throws SecurityException the security exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws IllegalArgumentException the illegal argument exception
+     * @throws InvocationTargetException the invocation target exception
+     */
     static Object accessPrivate(String name, BinarySegmentation obj, Object[] param,
             Class<?>[] paramtype) throws NoSuchMethodException, SecurityException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -63,6 +81,9 @@ public class BinarySegmentationTest {
         return prv.invoke(obj, param);
     }
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentationTest.class.getName());
 
     private ImagePlus test1;

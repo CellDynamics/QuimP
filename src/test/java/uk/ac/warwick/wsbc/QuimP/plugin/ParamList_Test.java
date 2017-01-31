@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+// TODO: Auto-generated Javadoc
 /**
  * Test class for ParamList
  * 
@@ -20,46 +21,86 @@ public class ParamList_Test {
 
     private ParamList l;
 
+    /**
+     * Sets the up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
         l = new ParamList();
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void tearDown() throws Exception {
         l = null;
     }
 
+    /**
+     * Test set int value.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testSetIntValue() throws Exception {
         l.setIntValue("KEY", 10);
         assertEquals(10, l.getIntValue("key"));
     }
 
+    /**
+     * Test set double value.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testSetDoubleValue() throws Exception {
         l.setDoubleValue("KEY", 10.1);
         assertEquals(10.1, l.getDoubleValue("key"), 1e-5);
     }
 
+    /**
+     * Test set string value.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testSetStringValue() throws Exception {
         l.setStringValue("key", "v");
         assertEquals("v", l.getStringValue("Key"));
     }
 
+    /**
+     * Test set boolean value.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testSetBooleanValue() throws Exception {
         l.setBooleanValue("key", true);
         assertTrue(l.getBooleanValue("KEY"));
     }
 
+    /**
+     * Test put.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testPut() throws Exception {
         l.put("key", "v");
         assertEquals("v", l.get("Key"));
     }
 
+    /**
+     * Test contains key.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testContainsKey() throws Exception {
         l.put("Key", "1.1");
@@ -67,6 +108,11 @@ public class ParamList_Test {
 
     }
 
+    /**
+     * Test put all.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testPutAll() throws Exception {
         HashMap<String, String> s = new HashMap<>();
@@ -76,6 +122,11 @@ public class ParamList_Test {
         assertTrue(l.containsKey("KEY1") && l.containsKey("KEY2"));
     }
 
+    /**
+     * Test remove object.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testRemoveObject() throws Exception {
         l.put("Key", "1.1");
@@ -84,6 +135,11 @@ public class ParamList_Test {
         assertFalse(l.containsKey("rem"));
     }
 
+    /**
+     * Test remove object object.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testRemoveObjectObject() throws Exception {
         l.put("Key", "1.1");
@@ -92,6 +148,9 @@ public class ParamList_Test {
         assertFalse(l.containsKey("rem"));
     }
 
+    /**
+     * Test shallow copy.
+     */
     @Test
     public void testShallowCopy() {
         HashMap<String, String> s = new HashMap<>();

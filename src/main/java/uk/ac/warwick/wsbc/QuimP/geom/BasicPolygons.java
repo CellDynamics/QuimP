@@ -12,6 +12,7 @@ import org.scijava.vecmath.Vector2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * Calculates basic geometry on polygons defined as list of point in specified direction.
  * 
@@ -20,8 +21,14 @@ import org.slf4j.LoggerFactory;
  */
 public class BasicPolygons {
 
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(BasicPolygons.class.getName());
 
+    /**
+     * 
+     */
     public BasicPolygons() {
 
     }

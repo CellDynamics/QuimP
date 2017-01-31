@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
+// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *

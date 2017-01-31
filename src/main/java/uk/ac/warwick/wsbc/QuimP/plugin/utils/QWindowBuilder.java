@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
 
+// TODO: Auto-generated Javadoc
 /**
  * Simple window builder for QuimP plugins
  * 
@@ -85,10 +86,30 @@ import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
  * @author p.baniukiewicz
  */
 public abstract class QWindowBuilder {
+    
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(QWindowBuilder.class.getName());
+    
+    /**
+     * The plugin wnd.
+     */
     protected JFrame pluginWnd; //!< main window object
+    
+    /**
+     * The window state.
+     */
     protected boolean windowState; //!< current window state \c true if visible
+    
+    /**
+     * The plugin panel.
+     */
     protected JPanel pluginPanel; //!< Main panel extended on whole \c pluginWnd
+    
+    /**
+     * The ui.
+     */
     protected ComponentList ui; //!< list of all UI elements
     private ParamList def; //!< definition of window and parameters
 
@@ -103,8 +124,15 @@ public abstract class QWindowBuilder {
     final private int S_STEP = 3; //!< spinner step value
     final private int S_DEFAULT = 4; //!< spinner default value
 
+    /**
+     * The apply B.
+     */
     // definition of constant elements of UI
     protected JButton applyB; //!< Apply button (do nothing but may be overwritten) 
+    
+    /**
+     * The cancel B.
+     */
     protected JButton cancelB; //!< Cancel button (hides it)
 
     /**
