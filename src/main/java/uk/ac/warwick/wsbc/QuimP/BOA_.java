@@ -1560,7 +1560,7 @@ public class BOA_ implements PlugIn {
                             if (!yncd.yesPressed())
                                 return;
                         }
-                        // replace orgFile with those already opened. It is possible as BOA can not
+                        // replace orgFile with that already opened. It is possible as BOA can not
                         // exist without image loaded so this field will always be true.
                         loaded.obj.BOAState.boap.setOrgFile(qState.boap.getOrgFile());
                         // closes windows, etc

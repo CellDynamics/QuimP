@@ -24,7 +24,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @author p.baniukiewicz
  */
 public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
-    
+
     /**
      * The Constant LOGGER.
      */
@@ -173,58 +173,6 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     }
 
     /**
-     * @param title
-     * @param per
-     */
-    public void plotOutline(String title, boolean per) {
-        double[] xArr = new double[POINTS]; // arrays to hold x and y co-ords
-        // (duplicate last to join)
-        double[] yArr = new double[POINTS];
-
-        Vert v = head;
-        int i = 0;
-        do {
-            xArr[i] = v.getX();
-            yArr[i] = v.getY();
-
-            if (per && v.isIntPoint()) {
-                xArr[i] = xArr[i] - 4;
-                yArr[i] = yArr[i] + 3;
-            }
-            i++;
-            v = v.getNext();
-        } while (!v.isHead());
-
-        // xArr[i] = head.getX(); // duplicate last vert
-        // yArr[i] = head.getY();
-
-        // Tool.plotXY(xArr, yArr, title);
-    }
-
-    /**
-     * @param v
-     * @param z
-     * @param title
-     */
-    public void plotRegion(Vert v, int z, String title) {
-        double[] xArr = new double[z];
-        double[] yArr = new double[z];
-
-        int i = 0;
-        do {
-            xArr[i] = v.getX();
-            yArr[i] = v.getY();
-            if (i == z - 1) {
-                break;
-            }
-            i++;
-            v = v.getNext();
-        } while (!v.isHead());
-
-        // Tool.plotXY(xArr, yArr, title);
-    }
-
-    /**
      * Get number of Vert objects forming current Outline
      * 
      * @return number of Vert in current Outline
@@ -237,7 +185,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
      * Remove selected Vert from list.
      * 
      * Perform check if removed Vert was head and if it was, the new head is randomly selected.
-     * Neighbors are linked together
+     * Neighbours are linked together
      * 
      * @param v Vert to remove
      */

@@ -57,53 +57,52 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  * @see uk.ac.warwick.wsbc.QuimP.Serializer#registerInstanceCreator(Class, Object)
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
-    
+
     /**
      * The Constant LOGGER.
      */
     static final Logger LOGGER = LoggerFactory.getLogger(Serializer.class.getName());
-    
+
     /**
      * The gson builder.
      */
     public transient GsonBuilder gsonBuilder;
     private transient Type t;
-    
-    /**
-     * The do after serialize.
-     */
-    protected transient boolean doAfterSerialize; //!< Indicates if afterSerialze should be called
 
     /**
-     * The class name.
+     * Indicates if afterSerialze should be called.
      */
-    public String className; //!< Name of wrapped class, decoded from object
-    
-    /**
-     * The version.
-     */
-    public String[] version; //!< Version and other information passed to serializer
-    
-    /**
-     * The created on.
-     */
-    public String createdOn; //!< Date when file has been created
-    
-    /**
-     * The obj.
-     */
-    public T obj; //!< Wrapped object being serialized
+    protected transient boolean doAfterSerialize;
 
     /**
-     * Default constructor used for restoring object
+     * Name of wrapped class, decoded from object.
+     */
+    public String className;
+
+    /**
+     * Version and other information passed to serializer.
+     */
+    public String[] version;
+
+    /**
+     * Date when file has been created.
+     */
+    public String createdOn;
+
+    /**
+     * Wrapped object being serialized.
+     */
+    public T obj;
+
+    /**
+     * Default constructor used for restoring object.
      * 
      * Template \a T can not be restored during runtime thus the type of wrapped object is not known
      * for GSon. This is why this type must be passed explicitly to Serializer.
      * 
      * @param t Type of underlying object
-     * @see SerializerTest for examples of use
      */
-    public Serializer(Type t) {
+    public Serializer(final Type t) {
         doAfterSerialize = true; // by default use afterSerialize methods to restore object state
         gsonBuilder = new GsonBuilder();
         obj = null;
@@ -112,7 +111,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * Constructor used for saving wrapped class
+     * Constructor used for saving wrapped class.
      * 
      * @param obj Object being saved
      * @param version Extra information saved as top layer
@@ -351,7 +350,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         gsonBuilder.registerTypeAdapter(type, typeAdapter);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.reflect.ParameterizedType#getActualTypeArguments()
      */
     @Override
@@ -359,7 +360,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         return new Type[] { t };
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.reflect.ParameterizedType#getRawType()
      */
     @Override
@@ -367,7 +370,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         return Serializer.class;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.reflect.ParameterizedType#getOwnerType()
      */
     @Override
