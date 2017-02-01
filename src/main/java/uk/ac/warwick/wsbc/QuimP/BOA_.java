@@ -167,27 +167,27 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.GraphicsElements;
  */
 public class BOA_ implements PlugIn {
     private static final Logger LOGGER = LoggerFactory.getLogger(BOA_.class.getName());
-    
+
     /**
      * The canvas.
      */
     CustomCanvas canvas;
-    
+
     /**
      * The window.
      */
     CustomStackWindow window;
-    
+
     /**
      * The log area.
      */
     static TextArea logArea;
-    
+
     /**
      * The running.
      */
     static boolean running = false;
-    
+
     /**
      * The image group.
      */
@@ -507,8 +507,10 @@ public class BOA_ implements PlugIn {
      * @author p.baniukiewicz
      */
     class CustomWindowAdapter extends WindowAdapter {
-        
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.awt.event.WindowAdapter#windowClosed(java.awt.event.WindowEvent)
          */
         @Override
@@ -528,7 +530,9 @@ public class BOA_ implements PlugIn {
             viewUpdater = null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
          */
         @Override
@@ -536,7 +540,9 @@ public class BOA_ implements PlugIn {
             LOGGER.trace("CLOSING");
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.awt.event.WindowAdapter#windowActivated(java.awt.event.WindowEvent)
          */
         @Override
@@ -629,7 +635,7 @@ public class BOA_ implements PlugIn {
          * The Constant DEFAULT_SPINNER_SIZE.
          */
         final static int DEFAULT_SPINNER_SIZE = 5;
-        
+
         /**
          * The Constant SNAKE_PLUGIN_NUM.
          */
@@ -638,22 +644,22 @@ public class BOA_ implements PlugIn {
         private Button bAdd, bDel, bDelSeg, bQuit;
         private Checkbox cPrevSnake, cExpSnake, cPath;
         private Choice sZoom;
-        
+
         /**
          * The log panel.
          */
         JScrollPane logPanel;
-        
+
         /**
          * The frame label.
          */
         Label fpsLabel, pixelLabel, frameLabel;
-        
+
         /**
          * The ds final shrink.
          */
         JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
-        
+
         /**
          * The is sample norm.
          */
@@ -1554,6 +1560,9 @@ public class BOA_ implements PlugIn {
                             if (!yncd.yesPressed())
                                 return;
                         }
+                        // replace orgFile with those already opened. It is possible as BOA can not
+                        // exist without image loaded so this field will always be true.
+                        loaded.obj.BOAState.boap.setOrgFile(qState.boap.getOrgFile());
                         // closes windows, etc
                         qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
                         qState = loaded.obj.BOAState;
@@ -1926,7 +1935,9 @@ public class BOA_ implements PlugIn {
             bDel.setLabel("Delete cell");
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see ij.gui.ImageWindow#setImage(ij.ImagePlus)
          */
         @Override

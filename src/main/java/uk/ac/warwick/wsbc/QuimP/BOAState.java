@@ -19,7 +19,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 // TODO: Auto-generated Javadoc
 /*
- * //!<
+ * //!>
  * @startuml doc-files/BOAState_UML.png
  * BOAState *-- "1" BOAp
  * BOAState *-- "1" SegParam
@@ -50,7 +50,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * BOAp : ...
  * BOAp : ...()
  * @enduml
- * //!>
+ * //!<
  */
 /**
  * Hold current BOA state that can be serialized.
@@ -457,6 +457,9 @@ public class BOAState implements IQuimpSerialize {
     public class BOAp {
         /**
          * handle to original file obtained from IJ (usually image opened).
+         * 
+         * This filed is serialised for further verification of QCONF and image matching but not
+         * restored on load to not overwrite currently opened image name.
          */
         private File orgFile;
         /**
@@ -479,17 +482,17 @@ public class BOAState implements IQuimpSerialize {
          * Maximum number of nodes (% of starting nodes).
          */
         int NMAX;
-        
+
         /**
          * The delta t.
          */
         double delta_t;
-        
+
         /**
          * The sensitivity.
          */
         double sensitivity;
-        
+
         /**
          * The f friction.
          */
@@ -520,7 +523,7 @@ public class BOAState implements IQuimpSerialize {
          * Proximity of nodes to freeze when blowing up.
          */
         double proxFreeze;
-        
+
         /**
          * The saved one.
          */
@@ -543,35 +546,35 @@ public class BOAState implements IQuimpSerialize {
          * The single image.
          */
         boolean singleImage;
-        
+
         /**
          * The params exist.
          */
         String paramsExist; // on startup check if defaults are needed to set
-        
+
         /**
          * The zoom.
          */
         boolean zoom;
-        
+
         /**
          * The do delete.
          */
         boolean doDelete;
-        
+
         /**
          * The do delete seg.
          */
         boolean doDeleteSeg;
         /**
-         * is select a cell for editing active? 
+         * is select a cell for editing active?
          */
         boolean editMode;
         /**
          * currently editing cell iD. -1 if not editing
          */
         int editingID;
-        
+
         /**
          * The use sub pixel.
          */
@@ -594,7 +597,7 @@ public class BOAState implements IQuimpSerialize {
          * {@link uk.ac.warwick.wsbc.QuimP.BOA_.CustomStackWindow#updateSliceSelector()} which then
          * fire other methods.
          */
-        boolean SEGrunning; 
+        boolean SEGrunning;
         private double imageScale; // scale of image read from ip
         private boolean scaleAdjusted = false; // true when adjusted in constructor
 
@@ -753,6 +756,13 @@ public class BOAState implements IQuimpSerialize {
          */
         public File getOrgFile() {
             return orgFile;
+        }
+
+        /**
+         * @param orgFile the orgFile to set
+         */
+        public void setOrgFile(File orgFile) {
+            this.orgFile = orgFile;
         }
 
         /**
@@ -984,7 +994,9 @@ public class BOAState implements IQuimpSerialize {
         // snakePluginListSnapshots and segParamSnapshots do not need beforeSerialize()
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize#afterSerialize()
      */
     @Override
