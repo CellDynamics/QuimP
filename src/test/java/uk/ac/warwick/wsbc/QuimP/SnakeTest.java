@@ -28,18 +28,18 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  *
  */
 public class SnakeTest {
-    
+
     /**
      * The Constant LOGGER.
      */
     static final Logger LOGGER = LoggerFactory.getLogger(SnakeTest.class.getName());
-    
+
     /**
      * The tmpdir.
      */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
-    private String[] info = { "QuimP", "verr", "ddd" };
+    private QuimpVersion info = new QuimpVersion("QuimP", "verr", "ddd");
     private Snake snake1;
 
     /**
@@ -154,7 +154,7 @@ public class SnakeTest {
 
         // load it
         Snake loaded;
-        Serializer<Snake> loader = new Serializer<>(Snake.class);
+        Serializer<Snake> loader = new Serializer<>(Snake.class, QuimP.TOOL_VERSION);
         loaded = loader.load(tmpdir + "snake1.tmp").obj;
         LOGGER.debug(loaded.toString());
         assertEquals(snake1.getNumNodes(), loaded.getNumNodes());

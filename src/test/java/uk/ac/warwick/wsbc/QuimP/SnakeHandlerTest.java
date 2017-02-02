@@ -29,14 +29,14 @@ public class SnakeHandlerTest {
      * The Constant LOGGER.
      */
     static final Logger LOGGER = LoggerFactory.getLogger(SnakeHandlerTest.class.getName());
-    
+
     /**
      * The tmpdir.
      */
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     private SnakeHandler sH;
-    private String[] info = { "QuimP", "verr", "ddd" };
+    private QuimpVersion info = new QuimpVersion("QuimP", "verr", "ddd");
 
     /**
      * @throws java.lang.Exception

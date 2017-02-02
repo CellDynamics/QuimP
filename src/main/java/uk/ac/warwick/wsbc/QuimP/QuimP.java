@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-// TODO: Auto-generated Javadoc
+import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
+
 /**
  * Static definitions.
  * 
@@ -16,4 +17,10 @@ public class QuimP {
      * Desired length of line in message box.
      */
     static public final int LINE_WRAP = 60;
+
+    /**
+     * Quimp package version taken from jar.
+     */
+    static public final QuimpVersion TOOL_VERSION = new QuimpToolsCollection().getQuimPBuildInfo();
+
 }
