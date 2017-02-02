@@ -88,11 +88,11 @@ public class Vert extends PointsList<Vert> {
     /**
      * Vert represents an intersect point and is temporary. Mark start end of sectors.
      */
-    private boolean intPoint;
+    transient private boolean intPoint;
     /**
      * The vert has been snapped to an edge.
      */
-    public boolean snapped;
+    transient public boolean snapped;
     /**
      * 
      */
