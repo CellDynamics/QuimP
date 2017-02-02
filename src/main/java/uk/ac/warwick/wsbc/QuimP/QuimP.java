@@ -15,10 +15,18 @@ public class QuimP {
      * Desired length of line in message box.
      */
     static public final int LINE_WRAP = 60;
-
     /**
-     * The debug state.
+     * Switch on/off additional debug.
+     * 
+     * This switch causes that additional debug information can be produced.
      */
-    static public boolean debug = Boolean.parseBoolean(
-            new PropertyReader().readProperty("quimpconfig.properties", "superDebug"));
+    static public boolean SUPER_DEBUG =
+            Boolean.parseBoolean(System.getProperty("quimpconfig.superDebug"));
+    /**
+     * This field keeps localisation of -quimp plugins.
+     * 
+     * By default it is Fiji.app/plugins folder but it can be overwritten by setting system
+     * property.
+     */
+    static public String PLUGIN_DIR = System.getProperty("quimpconfig.pluginDirectory");
 }

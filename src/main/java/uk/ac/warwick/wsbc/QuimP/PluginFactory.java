@@ -250,7 +250,7 @@ public class PluginFactory {
      * 
      */
     public PluginFactory(final Path path) {
-        if (QuimP.debug)
+        if (QuimP.SUPER_DEBUG)
             getSystemClassPath();
         LOGGER.debug("Attached " + path.toString());
         availPlugins = new HashMap<String, PluginProperties>();

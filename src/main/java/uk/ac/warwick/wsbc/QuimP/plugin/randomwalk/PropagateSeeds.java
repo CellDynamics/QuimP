@@ -151,7 +151,7 @@ public abstract class PropagateSeeds {
             List<Outline> outlines = getOutline(previous);
 
             // save extra debug info if property set
-            if (QuimP.debug) {
+            if (QuimP.SUPER_DEBUG) {
                 String tmp = System.getProperty("java.io.tmpdir");
                 for (Outline o : outlines) {
                     long time = new Date().getTime();
