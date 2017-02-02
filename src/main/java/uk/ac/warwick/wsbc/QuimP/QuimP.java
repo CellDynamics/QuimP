@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.QuimP;
 
-// TODO: Auto-generated Javadoc
 /**
  * Static definitions.
  * 
@@ -16,4 +15,10 @@ public class QuimP {
      * Desired length of line in message box.
      */
     static public final int LINE_WRAP = 60;
+
+    /**
+     * The debug state.
+     */
+    static public boolean debug = Boolean.parseBoolean(
+            new PropertyReader().readProperty("quimpconfig.properties", "superDebug"));
 }

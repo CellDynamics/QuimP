@@ -17,7 +17,7 @@ import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.Outline;
-import uk.ac.warwick.wsbc.QuimP.PropertyReader;
+import uk.ac.warwick.wsbc.QuimP.QuimP;
 import uk.ac.warwick.wsbc.QuimP.geom.OutlineProcessor;
 import uk.ac.warwick.wsbc.QuimP.geom.TrackOutline;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
@@ -44,18 +44,12 @@ import uk.ac.warwick.wsbc.QuimP.utils.Pair;
  *
  */
 public abstract class PropagateSeeds {
-    
-    /**
-     * The debug.
-     */
-    static boolean debug = Boolean.parseBoolean(
-            new PropertyReader().readProperty("quimpconfig.properties", "superDebug"));
-    
+
     /**
      * The Constant ERODE.
      */
     final static int ERODE = 0;
-    
+
     /**
      * The Constant DILATE.
      */
@@ -157,7 +151,7 @@ public abstract class PropagateSeeds {
             List<Outline> outlines = getOutline(previous);
 
             // save extra debug info if property set
-            if (PropagateSeeds.debug) {
+            if (QuimP.debug) {
                 String tmp = System.getProperty("java.io.tmpdir");
                 for (Outline o : outlines) {
                     long time = new Date().getTime();

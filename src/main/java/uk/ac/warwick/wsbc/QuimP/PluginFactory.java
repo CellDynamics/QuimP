@@ -250,6 +250,8 @@ public class PluginFactory {
      * 
      */
     public PluginFactory(final Path path) {
+        if (QuimP.debug)
+            getSystemClassPath();
         LOGGER.debug("Attached " + path.toString());
         availPlugins = new HashMap<String, PluginProperties>();
         // check if dir exists
@@ -331,7 +333,7 @@ public class PluginFactory {
                     | NoClassDefFoundError e) {
                 LOGGER.error("Type of plugin " + pluginName + " in jar: " + f.getPath()
                         + " can not be obtained. Ignoring this plugin");
-                LOGGER.error(e.getMessage());
+                LOGGER.debug(e.getMessage(), e);
             }
 
         }
@@ -431,6 +433,7 @@ public class PluginFactory {
             MalformedURLException {
         URL[] url = new URL[] { plugin.toURI().toURL() };
         ClassLoader child = new URLClassLoader(url);
+        LOGGER.trace("Trying to load class: " + className + " from " + plugin.toString());
         Class<?> classToLoad = Class.forName(className, true, child);
         Object instance = classToLoad.newInstance();
         return instance;
@@ -486,9 +489,23 @@ public class PluginFactory {
                 | IllegalAccessException | IllegalArgumentException e) {
             LOGGER.error(
                     "Plugin " + name + " can not be instanced (reason: " + e.getMessage() + ")");
+            LOGGER.debug(e.getMessage(), e);
             return null;
         }
 
+    }
+
+    /**
+     * Prints system classpath.
+     */
+    public static void getSystemClassPath() {
+        LOGGER.trace("--- CLASPATH ---");
+        ClassLoader cl = ClassLoader.getSystemClassLoader();
+        URL[] urls = ((URLClassLoader) cl).getURLs();
+        for (URL urll : urls) {
+            LOGGER.trace(urll.getFile());
+        }
+        LOGGER.trace("--- CLASPATH ---");
     }
 }
 
