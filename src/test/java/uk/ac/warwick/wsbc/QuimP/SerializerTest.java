@@ -7,6 +7,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.junit.After;
@@ -19,7 +22,6 @@ import com.google.gson.JsonSyntaxException;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test of Serializer class
  * 
@@ -27,12 +29,12 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  *
  */
 public class SerializerTest {
-    
+
     /**
      * The Constant LOGGER.
      */
     static final Logger LOGGER = LoggerFactory.getLogger(SerializerTest.class.getName());
-    
+
     /**
      * The tmpdir.
      */
@@ -233,6 +235,55 @@ public class SerializerTest {
     public void testDumpStatic() throws FileNotFoundException {
         TestClass tc = new TestClass();
         Serializer.Dump(tc, tmpdir + "dump.json", true);
+    }
+
+    /**
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Serializer#getVersion(java.lang.String)}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testGetVersion() throws Exception {
+        Path ret;
+        assertEquals(Serializer.getVersion("src/test/resources/ticket199/fluoreszenz-test.QCONF"),
+                17.0103, 1e-5);
+
+        ret = writeDummyFile("17.01.03-SNAPSHOT");
+        assertEquals(Serializer.getVersion(ret.toString()), 17.0103, 1e-5);
+
+        ret = writeDummyFile("17.01.03");
+        assertEquals(Serializer.getVersion(ret.toString()), 17.0103, 1e-5);
+
+        ret = writeDummyFile("1.01.0-SNAPSHOT");
+        assertEquals(Serializer.getVersion(ret.toString()), 1.010, 1e-5);
+
+        ret = writeDummyFile("17.01-SNAPSHOT");
+        assertEquals(Serializer.getVersion(ret.toString()), 17.01, 1e-5);
+
+        ret = writeDummyFile("1701-SNAPSHOT");
+        assertEquals(Serializer.getVersion(ret.toString()), 1701, 1e-5);
+
+        ret = writeDummyFile("17.01.03_SNAPSHOT");
+        assertEquals(Serializer.getVersion(ret.toString()), 0.0, 1e-5);
+    }
+
+    /**
+     * Helper method. Write pseudo file with QCONF extension and simulated QCONF structure.
+     * 
+     * @param ver Version to inject
+     * @return Path to created file
+     * @throws IOException
+     */
+    private Path writeDummyFile(String ver) throws IOException {
+        File filename = File.createTempFile("serializer", ".QCONF");
+        PrintWriter pw = new PrintWriter(filename);
+        pw.write("{\n");
+        pw.write("  \"className\": \"DataContainer\",\n");
+        pw.write("  \"version\": [\n");
+        pw.write("    \"" + ver + "\",\n");
+        pw.write("    \"baniuk on: 2017-01-25 14:56:43\",\n");
+        pw.close();
+        return filename.toPath();
     }
 
 }

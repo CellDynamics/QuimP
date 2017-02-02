@@ -11,8 +11,11 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +29,7 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
 // TODO: Auto-generated Javadoc
 /**
- * Save wrapped class together with itself to JSON file.
+ * Save wrapped class to JSON file.
  * 
  * Restored object is constructed using its constructor. so if there is no variable value in json it
  * will have the value from constructor. GSon overrides variables after they have been created in
@@ -57,6 +60,15 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
  * @see uk.ac.warwick.wsbc.QuimP.Serializer#registerInstanceCreator(Class, Object)
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
+
+    /**
+     * Line number in QCONF file where QuimP version exists.
+     * 
+     * Used for gathering version before loading JSON.
+     * 
+     * @see #getVersion(String)
+     */
+    final static int VER_LINE = 4;
 
     /**
      * The Constant LOGGER.
@@ -311,6 +323,37 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      */
     public void setPretty() {
         gsonBuilder.setPrettyPrinting();
+    }
+
+    /**
+     * Read QuimP version from QCONF file.
+     * 
+     * It does not deserialize JSON, just plain string reading from file.
+     * 
+     * @param filename
+     * @return Version string encoded as double. Any -SNAPSHOT suffix is removed. Return 0.0 on
+     *         error.
+     */
+    static Double getVersion(String filename) {
+        String ver;
+        Double ret;
+        try (Stream<String> lines = Files.lines(Paths.get(filename))) {
+            ver = lines.skip(VER_LINE - 1).findFirst().get();
+            // remove ""
+            ver = ver.replaceAll("([ \",]|-SNAPSHOT)", "");
+            int dotcount = ver.length() - ver.replace(".", "").length();
+            if (dotcount > 3)
+                throw new IllegalArgumentException();
+            if (dotcount == 2) {
+                int seconddotpos = ver.lastIndexOf('.');
+                ver = ver.substring(0, seconddotpos) + ver.substring(seconddotpos + 1);
+            }
+            ret = new Double(ver);
+        } catch (IOException | IllegalArgumentException ne) {
+            LOGGER.debug("Cant obtain version " + ne);
+            ret = new Double(0.0);
+        }
+        return ret;
     }
 
     /**
