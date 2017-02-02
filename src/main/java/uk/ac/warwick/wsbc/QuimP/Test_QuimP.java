@@ -19,12 +19,15 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 /**
  * Inserts an image or stack into a stack.
  */
+@Deprecated
 public class Test_QuimP implements PlugIn {
 
     private static final int m =
             Measurements.AREA + Measurements.INTEGRATED_DENSITY + Measurements.MEAN;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see ij.plugin.PlugIn#run(java.lang.String)
      */
     @Override
@@ -73,11 +76,10 @@ public class Test_QuimP implements PlugIn {
         /*
          * //ImageProcessor orgIp = orgStack.getProcessor(i + 1);
          * 
-         * PolygonFiller pf = new PolygonFiller();
-         * pf.setPolygon(roi.getXCoordinates(), roi.getYCoordinates(),
-         * roi.getNCoordinates()); Rectangle b = roi.getBounds();
-         * orgIp.setRoi(poly); orgIp.setMask(pf.getMask(b.width, b.height));
-         * ImageStatistics is = ImageStatistics.getStatistics(orgIp, m, null);
+         * PolygonFiller pf = new PolygonFiller(); pf.setPolygon(roi.getXCoordinates(),
+         * roi.getYCoordinates(), roi.getNCoordinates()); Rectangle b = roi.getBounds();
+         * orgIp.setRoi(poly); orgIp.setMask(pf.getMask(b.width, b.height)); ImageStatistics is =
+         * ImageStatistics.getStatistics(orgIp, m, null);
          */
 
     }
@@ -234,31 +236,29 @@ public class Test_QuimP implements PlugIn {
      * private void test3Dout(){
      * 
      * QParams qp = new QParams(new File(
-     * "/Users/rtyson/Documents/phd/tmp/test/QuimP11analysis/SmallStack_0.paQP")
-     * ); qp.readParams(); OutlineHandler oH = new OutlineHandler(qp); if
-     * (!oH.readSuccess) { return; }else{ System.out.println(
-     * "Contours read in. Size: " + oH.getSize());
+     * "/Users/rtyson/Documents/phd/tmp/test/QuimP11analysis/SmallStack_0.paQP") ); qp.readParams();
+     * OutlineHandler oH = new OutlineHandler(qp); if (!oH.readSuccess) { return; }else{
+     * System.out.println( "Contours read in. Size: " + oH.getSize());
      * 
      * }
      * 
-     * int res = 150; Point3f[] coords= new Point3f[ res * oH.getSize()];
-     * Color3f[] colors = new Color3f[res * oH.getSize()]; int coCount = 0;
+     * int res = 150; Point3f[] coords= new Point3f[ res * oH.getSize()]; Color3f[] colors = new
+     * Color3f[res * oH.getSize()]; int coCount = 0;
      * 
-     * Vect2d centre = oH.getOutline(1).getCentroid();
-     * centre.setX(centre.getX()*-1); centre.setY(centre.getY()*-1);
+     * Vect2d centre = oH.getOutline(1).getCentroid(); centre.setX(centre.getX()*-1);
+     * centre.setY(centre.getY()*-1);
      * 
      * Outline o, op; Vect2d pHead; for(int i = 0; i < oH.getSize(); i++){ o =
-     * oH.indexGetOutline(i); o.setResolutionN(res); if(i!=0){ op =
-     * oH.indexGetOutline(i-1); pHead = op.getHead().getPoint();
-     * o.setHeadclosest(pHead); }
+     * oH.indexGetOutline(i); o.setResolutionN(res); if(i!=0){ op = oH.indexGetOutline(i-1); pHead =
+     * op.getHead().getPoint(); o.setHeadclosest(pHead); }
      * 
      * Vert n = o.getHead(); do{ coords[coCount] = new
-     * Point3f((float)(n.getX()+centre.getX()),(i*1.0f),(float)(n.getY()+centre.
-     * getY())); colors[coCount] = new Color3f(0.5f,(float)Math.random(),0f);
+     * Point3f((float)(n.getX()+centre.getX()),(i*1.0f),(float)(n.getY()+centre. getY()));
+     * colors[coCount] = new Color3f(0.5f,(float)Math.random(),0f);
      * 
      * 
-     * coCount++; n = n.getPrev(); // go tuther way round to point normals
-     * outwards }while(!n.isHead()); }
+     * coCount++; n = n.getPrev(); // go tuther way round to point normals outwards
+     * }while(!n.isHead()); }
      * 
      * int[] indices= new int[(res*4)* (oH.getSize()-1)]; System.out.println(
      * "indeices length: "+indices.length);
@@ -267,50 +267,46 @@ public class Test_QuimP implements PlugIn {
      * 
      * base = i / 4;
      * 
-     * indices[i] = base; indices[i+1] = base+1; indices[i+2] = base+1+res;
-     * indices[i+3] = base + res;
+     * indices[i] = base; indices[i+1] = base+1; indices[i+2] = base+1+res; indices[i+3] = base +
+     * res;
      * 
-     * if(((i-((res-1)*4)))%(4*res) == 0){ indices[i+1] = base+1-res;
-     * indices[i+2] = base+1; //System.out.print("\twraped: "); }
+     * if(((i-((res-1)*4)))%(4*res) == 0){ indices[i+1] = base+1-res; indices[i+2] = base+1;
+     * //System.out.print("\twraped: "); }
      * 
-     * //System.out.println(""+indices[i] +"," +indices[i+1]+","
-     * +indices[i+2]+"," +indices[i+3]); }
+     * //System.out.println(""+indices[i] +"," +indices[i+1]+"," +indices[i+2]+"," +indices[i+3]); }
      * 
      * 
-     * System.out.println("coord length" + coords.length); System.out.println(
-     * "max index = "+ Tool.arrayMax(indices));
+     * System.out.println("coord length" + coords.length); System.out.println( "max index = "+
+     * Tool.arrayMax(indices));
      * 
      * /*
      * 
-     * //biuld a simple quad Point3f[] coords={ new Point3f(-0.2f,0.2f,-0.2f),
-     * new Point3f(-0.2f,-0.2f,-0.2f), new Point3f(0.2f,-0.2f,-0.2f), new
-     * Point3f(0.2f,0.2f,-0.2f), new Point3f(-0.2f,0.2f,0.2f), new
-     * Point3f(-0.2f,-0.2f,0.2f), new Point3f(0.2f,-0.2f,0.2f), new
+     * //biuld a simple quad Point3f[] coords={ new Point3f(-0.2f,0.2f,-0.2f), new
+     * Point3f(-0.2f,-0.2f,-0.2f), new Point3f(0.2f,-0.2f,-0.2f), new Point3f(0.2f,0.2f,-0.2f), new
+     * Point3f(-0.2f,0.2f,0.2f), new Point3f(-0.2f,-0.2f,0.2f), new Point3f(0.2f,-0.2f,0.2f), new
      * Point3f(0.2f,0.2f,0.2f) };
      * 
      * int[] indices={ 0,1,2,3, 5,6,7,4, 1,5,6,2, 0,4,7,3, 1,5,4,0, 2,6,7,3 };
      * 
-     * //QuadArray quads = new QuadArray(4,GeometryArray.COORDINATES);
-     * //quads.setCoordinates(0, coords);
+     * //QuadArray quads = new QuadArray(4,GeometryArray.COORDINATES); //quads.setCoordinates(0,
+     * coords);
      * 
      * //IndexedLineArray lineArray=new IndexedLineArray(coords.length,
-     * //IndexedQuadArray.COORDINATES,indices.length);
-     * //lineArray.setCoordinates(0,coords);
+     * //IndexedQuadArray.COORDINATES,indices.length); //lineArray.setCoordinates(0,coords);
      * //lineArray.setCoordinateIndices(0,indices);
      * 
-     * IndexedQuadArray quadArray = new IndexedQuadArray(coords.length,
-     * IndexedQuadArray.COORDINATES | QuadArray.COLOR_3,indices.length);
-     * quadArray.setCoordinates(0,coords);
-     * quadArray.setCoordinateIndices(0,indices); quadArray.setColors(0,
-     * colors); quadArray.setColorIndices(0, indices);
+     * IndexedQuadArray quadArray = new IndexedQuadArray(coords.length, IndexedQuadArray.COORDINATES
+     * | QuadArray.COLOR_3,indices.length); quadArray.setCoordinates(0,coords);
+     * quadArray.setCoordinateIndices(0,indices); quadArray.setColors(0, colors);
+     * quadArray.setColorIndices(0, indices);
      * 
-     * //Appearance a = new Appearance(); //PolygonAttributes pAttr = new
-     * PolygonAttributes(1, 0, 0.1f); // a.setPolygonAttributes(pAttr);
+     * //Appearance a = new Appearance(); //PolygonAttributes pAttr = new PolygonAttributes(1, 0,
+     * 0.1f); // a.setPolygonAttributes(pAttr);
      * 
      * Shape3D myShape = new Shape3D(quadArray);
      * 
-     * BranchGroup bg = new BranchGroup(); bg.addChild(myShape); VRML97Saver
-     * saver = new VRML97Saver();
+     * BranchGroup bg = new BranchGroup(); bg.addChild(myShape); VRML97Saver saver = new
+     * VRML97Saver();
      * 
      * saver.setBranchGroup(bg); saver.save("/temp/cube_A.wrl");
      * 
