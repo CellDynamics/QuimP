@@ -282,7 +282,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * 17.02.02 - changed String[] version to QuimpVersion
      * 
      * @param localref
-     * @param json
+     * @param reader
      */
     private void convert(Serializer<T> localref, final Reader reader) {
         // means that there is old String[] version there
@@ -316,6 +316,11 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
                 throw new IllegalArgumentException(e);
             }
 
+        } else // probably correct object - check fields
+        {
+            if (localref.version.getBuildstamp() == null || localref.version.getName() == null
+                    || localref.version.getVersion() == null)
+                throw new IllegalArgumentException("Invalid version structure");
         }
 
     }
