@@ -219,7 +219,7 @@ public class BOA_ implements PlugIn {
      * These information are used in About dialog, window title bar, logging, etc. Static because
      * window related staff is in another classes.
      */
-    public static String[] quimpInfo;
+    public static QuimpVersion quimpInfo;
     private static int logCount; // add counter to logged messages
     /**
      * Number of Snake plugins available.
@@ -362,7 +362,7 @@ public class BOA_ implements PlugIn {
         canvas = new CustomCanvas(imageGroup.getOrgIpl());
         window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
         window.buildWindow();
-        window.setTitle(window.getTitle() + " :QuimP: " + quimpInfo[0]);
+        window.setTitle(window.getTitle() + " :QuimP: " + quimpInfo.getVersion());
         // validate registered user
         new Registration(window, "QuimP Registration");
         // warn about scale

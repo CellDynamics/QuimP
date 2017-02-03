@@ -51,6 +51,7 @@ import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QuimP;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
 import uk.ac.warwick.wsbc.QuimP.QuimpException.MessageSinkTypes;
+import uk.ac.warwick.wsbc.QuimP.QuimpVersion;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
@@ -166,8 +167,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
      */
     public void run(String s) {
         String title;
-        String quimpInfo[] = new QuimpToolsCollection().getQuimPBuildInfo(); // get jar title
-        title = quimpInfo[2] + " " + quimpInfo[0];
+        QuimpVersion quimpInfo = new QuimpToolsCollection().getQuimPBuildInfo(); // get jar title
+        title = quimpInfo.getName() + " " + quimpInfo.getVersion();
 
         frame.setTitle(title); // and set to window title
 

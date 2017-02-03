@@ -2,7 +2,6 @@
  */
 package uk.ac.warwick.wsbc.QuimP;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -77,7 +76,7 @@ public class SnakePluginListTest {
 
     private SnakePluginList snakePluginList;
     private ConfigContainer cc;
-    private String[] version;
+    private QuimpVersion version;
 
     /**
      * Creates three fake plugins and fourth that will replace one of them
@@ -87,10 +86,7 @@ public class SnakePluginListTest {
     @Before
     public void setUp() throws Exception {
         cc = new ConfigContainer();
-        version = new String[3];
-        version[0] = "0.0.1";
-        version[1] = "p.baniukiewicz";
-        version[2] = "QuimP";
+        version = new QuimpVersion("0.0.1", "p.baniukiewicz", "QuimP");
         snakePluginList = new SnakePluginList(3, pluginFactory, null);
         cc.activePluginList = snakePluginList;
         /**
@@ -503,7 +499,7 @@ public class SnakePluginListTest {
                 new SnakePluginListInstanceCreator(3, pluginFactory, null));
         out = s.fromString(json);
 
-        assertArrayEquals(out.version, version);
+        assertEquals(out.version, version);
 
         assertEquals(3, out.obj.getList().size());
         assertFalse(out.obj.isActive(0));
@@ -620,7 +616,7 @@ public class SnakePluginListTest {
                 new SnakePluginListInstanceCreator(3, pluginFactory, null));
         out = s.fromString(json);
 
-        assertArrayEquals(out.version, version);
+        assertEquals(out.version, version);
 
         assertEquals(3, out.obj.getList().size());
         assertTrue(out.obj.isActive(0));

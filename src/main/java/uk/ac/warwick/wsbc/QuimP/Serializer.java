@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.Since;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 
@@ -94,7 +95,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     /**
      * Version and other information passed to serializer.
      */
-    public String[] version;
+    @Since(16.0202)
+    public QuimpVersion version;
 
     /**
      * Date when file has been created.
@@ -105,6 +107,11 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * Wrapped object being serialized.
      */
     public T obj;
+
+    /**
+     * Name of the input/output file
+     */
+    private transient String filename;
 
     /**
      * Default constructor used for restoring object.
@@ -118,7 +125,21 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         doAfterSerialize = true; // by default use afterSerialize methods to restore object state
         gsonBuilder = new GsonBuilder();
         obj = null;
-        version = new String[0];
+        version = null;
+        this.t = t;
+    }
+
+    public Serializer(final Type t, final QuimpVersion version) {
+        doAfterSerialize = true; // by default use afterSerialize methods to restore object state
+        gsonBuilder = new GsonBuilder();
+        try {
+            gsonBuilder.setVersion(convertStringVersion(version.getVersion()));
+        } catch (QuimpException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        obj = null;
+        this.version = version;
         this.t = t;
     }
 
@@ -128,7 +149,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @param obj Object being saved
      * @param version Extra information saved as top layer
      */
-    public Serializer(final T obj, final String[] version) {
+    public Serializer(final T obj, final QuimpVersion version) {
         this(obj.getClass());
         this.obj = obj;
         className = obj.getClass().getSimpleName();
@@ -147,6 +168,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @see uk.ac.warwick.wsbc.QuimP.Serializer#toString()
      */
     public void save(final String filename) throws FileNotFoundException {
+        this.filename = filename;
         String str;
         str = toString(); // produce json
         LOGGER.debug("Saving at: " + filename);
@@ -187,6 +209,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     public Serializer<T> load(final File filename)
             throws IOException, JsonSyntaxException, JsonIOException, Exception {
         LOGGER.debug("Loading from: " + filename.getPath());
+        this.filename = filename.getPath();
         FileReader f = new FileReader(filename);
         return fromReader(f);
     }
@@ -204,13 +227,14 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     public Serializer<T> fromString(final String json)
             throws JsonSyntaxException, JsonIOException, Exception {
         LOGGER.debug("Reading from string");
-        return fromReader(new StringReader(json));
+        Reader reader = new StringReader(json);
+        return fromReader(reader);
     }
 
     /**
      * Restore wrapped object from JSON string
      * 
-     * @param reader JSON reader
+     * @param reader
      * @throws IOException when file can not be read
      * @throws JsonSyntaxException on bad file or when class has not been restored correctly
      * @throws JsonIOException This exception is raised when Gson was unable to read an input stream
@@ -222,10 +246,11 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      */
     public Serializer<T> fromReader(final Reader reader)
             throws JsonSyntaxException, JsonIOException, Exception {
+
         Gson gson = gsonBuilder.create();
         Serializer<T> localref;
         localref = gson.fromJson(reader, this);
-        verify(localref); // verification of correctness
+        verify(localref, reader); // verification of correctness
         if (doAfterSerialize)
             localref.obj.afterSerialize();
         return localref;
@@ -236,21 +261,63 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * related to Serializer container
      * 
      * @param localref object to verify
+     * @param json
      * @throws JsonSyntaxException on bad file or when class has not been restored correctly
      */
-    private void verify(Serializer<T> localref) throws JsonSyntaxException {
+    private void verify(Serializer<T> localref, final Reader reader) throws JsonSyntaxException {
         // basic verification of loaded file, check whether some fields have reasonable values
         try {
-            if (localref.className.isEmpty() || localref.createdOn.isEmpty()
-                    || localref.version.length != 3 || localref.obj == null)
+            if (localref.obj == null || localref.className.isEmpty()
+                    || localref.createdOn.isEmpty())
                 throw new JsonSyntaxException("Can not map loaded gson to class");
-        } catch (NullPointerException np) {
+            convert(localref, reader);
+        } catch (NullPointerException | IllegalArgumentException np) {
             throw new JsonSyntaxException("Can not map loaded gson to class", np);
         }
-        for (String obj : localref.version) {
-            if (obj == null || obj.isEmpty())
-                throw new JsonSyntaxException("Can not map loaded gson to class");
+    }
+
+    /**
+     * This method adds missing version fields for QCONFs saved before 17.02.02
+     * 
+     * 17.02.02 - changed String[] version to QuimpVersion
+     * 
+     * @param localref
+     * @param json
+     */
+    private void convert(Serializer<T> localref, final Reader reader) {
+        // means that there is old String[] version there
+        if (localref.version == null) {
+            try {
+                // read first 6 lines of old fileformat
+                char[] buf = new char[256];
+                reader.reset();
+                reader.read(buf);
+                String sbuf = new String(buf);
+                // short verification
+                if (!sbuf.contains("DataContainer") || !sbuf.contains("version"))
+                    throw new Exception("Conversion from format<17.02.02 failed");
+                // conversion
+                int pos = sbuf.indexOf("\"version\"");
+                pos = sbuf.indexOf("\"", pos + 9);
+                int pos2 = sbuf.indexOf("\"", pos + 1);
+                String version = sbuf.substring(pos + 1, pos2);
+                pos = sbuf.indexOf("\"", pos2 + 1);
+                pos2 = sbuf.indexOf("\"", pos + 1);
+                String name = sbuf.substring(pos + 1, pos2);
+                pos = sbuf.indexOf("\"", pos2 + 1);
+                pos2 = sbuf.indexOf("\"", pos + 1);
+                String intname = sbuf.substring(pos + 1, pos2);
+
+                localref.version = new QuimpVersion(version, name, intname);
+                LOGGER.debug(localref.version.toString());
+
+            } catch (Exception e) {
+                // catch here to have closed stream on IOException
+                throw new IllegalArgumentException(e);
+            }
+
         }
+
     }
 
     /**
@@ -334,26 +401,42 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @return Version string encoded as double. Any -SNAPSHOT suffix is removed. Return 0.0 on
      *         error.
      */
-    static Double getVersion(String filename) {
+    static public Double getVersion(String filename) {
         String ver;
         Double ret;
         try (Stream<String> lines = Files.lines(Paths.get(filename))) {
             ver = lines.skip(VER_LINE - 1).findFirst().get();
-            // remove "" and other stuff
-            ver = ver.replaceAll("([ \",]|-SNAPSHOT)", "");
-            int dotcount = ver.length() - ver.replace(".", "").length();
-            if (dotcount > 3)
-                throw new IllegalArgumentException();
-            if (dotcount == 2) {
-                int seconddotpos = ver.lastIndexOf('.');
-                ver = ver.substring(0, seconddotpos) + ver.substring(seconddotpos + 1);
-            }
-            ret = new Double(ver);
+            ret = convertStringVersion(ver);
         } catch (Exception ne) {
             LOGGER.debug("Cant obtain version " + ne);
             ret = new Double(0.0);
         }
         return ret;
+    }
+
+    /**
+     * Convert string in format a.b.c-SNAPSHOT to double a.bc
+     * 
+     * @param ver String version to convert
+     * @return Double representation of version string
+     * @throws QuimpException Exceptions on wrong conversions
+     */
+    private static Double convertStringVersion(String ver) throws QuimpException {
+        String ret;
+        try {
+            // remove "" and other stuff
+            ret = ver.replaceAll("([ \",]|-SNAPSHOT)", "");
+            int dotcount = ret.length() - ret.replace(".", "").length();
+            if (dotcount > 3)
+                throw new IllegalArgumentException();
+            if (dotcount == 2) {
+                int seconddotpos = ret.lastIndexOf('.');
+                ret = ret.substring(0, seconddotpos) + ret.substring(seconddotpos + 1);
+            }
+            return new Double(ret);
+        } catch (Exception ex) {
+            throw new QuimpException(ex);
+        }
     }
 
     /**

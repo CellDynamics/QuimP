@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.Outline;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
+import uk.ac.warwick.wsbc.QuimP.QuimpVersion;
 import uk.ac.warwick.wsbc.QuimP.Vert;
 
 // TODO: Auto-generated Javadoc
@@ -39,10 +40,10 @@ public class QuimpToolsCollection {
      * 
      * @return QuimP version
      * 
-     * @see #getFormattedQuimPversion(String[])
+     * @see #getFormattedQuimPversion(QuimpVersion)
      */
     public String getQuimPversion() {
-        String[] quimpBuildInfo = getQuimPBuildInfo();
+        QuimpVersion quimpBuildInfo = getQuimPBuildInfo();
         return getFormattedQuimPversion(quimpBuildInfo);
     }
 
@@ -60,7 +61,7 @@ public class QuimpToolsCollection {
      * @return Formatted string with QuimP version and authors
      * @see #getQuimPBuildInfo()
      */
-    public static String getFormattedQuimPversion(String[] quimpBuildInfo) {
+    public static String getFormattedQuimPversion(QuimpVersion quimpBuildInfo) {
         //!>
         String infoPlate = "---------------------------------------------------------\n"
                 + "| QuimP, by                                             |\n"
@@ -73,11 +74,11 @@ public class QuimpToolsCollection {
                 + "---------------------------------------------------------\n";
         //!<
         infoPlate = infoPlate.concat("\n");
-        infoPlate = infoPlate.concat("QuimP version: " + quimpBuildInfo[0]);
+        infoPlate = infoPlate.concat("QuimP version: " + quimpBuildInfo.getVersion());
         infoPlate = infoPlate.concat("\n");
-        infoPlate = infoPlate.concat("Build by: " + quimpBuildInfo[1]);
+        infoPlate = infoPlate.concat("Build by: " + quimpBuildInfo.getBuildstamp());
         infoPlate = infoPlate.concat("\n");
-        infoPlate = infoPlate.concat("Internal name: " + quimpBuildInfo[2]);
+        infoPlate = infoPlate.concat("Internal name: " + quimpBuildInfo.getName());
         infoPlate = infoPlate.concat("\n");
         return infoPlate;
     }
@@ -85,16 +86,9 @@ public class QuimpToolsCollection {
     /**
      * Get build info read from jar file.
      * 
-     * @return Formatted strings with build info and version:
-     *         <ol>
-     *         <li>[0] - contains only version string read from MANIFEST.MF,
-     *         <li>[1] - contains formatted string with build time and name of builder read from
-     *         MANIFEST.MF
-     *         <li>[2] - contains software name read from MANIFEST.MF If those information are not
-     *         available in jar, the <b>defNote</b> string is returned
-     *         </ol>
+     * @return Formatted strings with build info and version.
      */
-    public String[] getQuimPBuildInfo() {
+    public QuimpVersion getQuimPBuildInfo() {
         String[] ret = new String[3];
         try {
             Enumeration<URL> resources =
@@ -125,7 +119,9 @@ public class QuimpToolsCollection {
         ret[0] = ret[0] == null ? defNote : ret[0];
         ret[1] = ret[1] == null ? defNote : ret[1];
         ret[2] = ret[2] == null ? defNote : ret[2];
-        return ret;
+        // prepare output
+        QuimpVersion retmap = new QuimpVersion(ret[0], ret[1], ret[2]);
+        return retmap;
     }
 
     /**
