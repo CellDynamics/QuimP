@@ -109,7 +109,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     /**
      * Default constructor used for restoring object.
      * 
-     * Template \a T can not be restored during runtime thus the type of wrapped object is not known
+     * Template T can not be restored during runtime thus the type of wrapped object is not known
      * for GSon. This is why this type must be passed explicitly to Serializer.
      * 
      * @param t Type of underlying object
@@ -339,7 +339,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         Double ret;
         try (Stream<String> lines = Files.lines(Paths.get(filename))) {
             ver = lines.skip(VER_LINE - 1).findFirst().get();
-            // remove ""
+            // remove "" and other stuff
             ver = ver.replaceAll("([ \",]|-SNAPSHOT)", "");
             int dotcount = ver.length() - ver.replace(".", "").length();
             if (dotcount > 3)
@@ -349,7 +349,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
                 ver = ver.substring(0, seconddotpos) + ver.substring(seconddotpos + 1);
             }
             ret = new Double(ver);
-        } catch (IOException | IllegalArgumentException ne) {
+        } catch (Exception ne) {
             LOGGER.debug("Cant obtain version " + ne);
             ret = new Double(0.0);
         }

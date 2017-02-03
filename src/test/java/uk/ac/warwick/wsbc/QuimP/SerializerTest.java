@@ -265,6 +265,7 @@ public class SerializerTest {
 
         ret = writeDummyFile("17.01.03_SNAPSHOT");
         assertEquals(Serializer.getVersion(ret.toString()), 0.0, 1e-5);
+
     }
 
     /**
