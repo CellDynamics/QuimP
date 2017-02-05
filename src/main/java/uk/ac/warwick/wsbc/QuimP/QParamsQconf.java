@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
+import uk.ac.warwick.wsbc.QuimP.filesystem.versions.Converter170202;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 // TODO: Auto-generated Javadoc
@@ -113,6 +114,7 @@ public class QParamsQconf extends QParams {
     @Override
     public void readParams() throws QuimpException {
         Serializer<DataContainer> s = new Serializer<>(DataContainer.class, QuimP.TOOL_VERSION);
+        s.registerConverter(new Converter170202<>(QuimP.TOOL_VERSION));
         try {
             // load file and make first check of correctness
             loaded = s.load(getParamFile()); // try to load

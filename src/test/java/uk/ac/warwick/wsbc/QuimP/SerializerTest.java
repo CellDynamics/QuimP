@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
+import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.filesystem.versions.Converter170202;
 
@@ -208,6 +209,28 @@ public class SerializerTest {
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
         assertEquals(out.timeStamp, version);
+    }
+
+    /**
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.load(final String)
+     * 
+     * Pre: Load file in older version
+     * 
+     * Post the same file converted to current version
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testLoad_1() throws Exception {
+        Serializer<DataContainer> out;
+        QuimpVersion toolversion = new QuimpVersion("20.20.02", "baniuk", "QuimP");
+        // provide also current version of tool as in debug there is no jar
+        Serializer<DataContainer> s = new Serializer<>(DataContainer.class, toolversion);
+        // now define border trigger for this converter. Start it if version in json is lower than
+        // defined in class
+        s.registerConverter(new Converter170202<>(toolversion));
+        out = s.load("src/test/resources/ticket199/fluoreszenz-test.QCONF");
+        assertEquals(toolversion, out.timeStamp);
     }
 
     /**

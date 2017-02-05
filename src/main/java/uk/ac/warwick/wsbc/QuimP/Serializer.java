@@ -27,37 +27,32 @@ import com.google.gson.annotations.Since;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.filesystem.versions.IQconfOlderConverter;
 
-// TODO: Auto-generated Javadoc
 /**
- * Save wrapped class to JSON file.
+ * Support saving and loading wrapped class to/from JSON file or string.
  * 
- * Restored object is constructed using its constructor. so if there is no variable value in json it
- * will have the value from constructor. GSon overrides variables after they have been created in
- * normal process of object building. Check uk.ac.warwick.wsbc.QuimP.Serializer.fromReader(Reader)
- * for details
+ * Restored object is constructed using its constructor. If JSON file does not contain variable
+ * available in class being restored, it will have the value assigned in constructor or null. GSon
+ * overrides variables after they have been created in normal process of object building. Check
+ * {@link #fromReader(Reader)} for details.
  * 
  * This serializer accepts only classes derived from IQuimpSerialize interface. Saved class is
  * packed in top level structure that contains version of software and wrapped class name. Exemplary
- * use case:
- * 
- * <pre>
- * <code>
- *     Serializer<SnakePluginList> s;
- *     s = new Serializer<>(boaState.snakePluginList, quimpInfo);
- *     s.setPretty(); // set pretty format s.save(sd.getDirectory() + sd.getFileName()); // save
- *     it s = null; // remove
- * </code>
- * </pre>
+ * use case: {@link uk.ac.warwick.wsbc.QuimP.SerializerTest#testLoad_1()}
  * 
  * There is option to skip call afterSerialzie() method on class restoring. To do so set
  * {@link #doAfterSerialize} to false - derive new class and override this field.
  * 
+ * Serializer supports <tt>Since</tt> tags from GSon library. User can write his own converters
+ * executed if specified condition is met. Serializer compares version of callee tool (provided in
+ * Serializer constructor) with trigger version returned by converter {@link IQconfOlderConverter}
+ * and executes conversion provided by it.
  * 
  * @author p.baniukiewicz
  * @param <T>
  * @see <a href=
  *      "link">http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson</a>
  * @see uk.ac.warwick.wsbc.QuimP.Serializer#registerInstanceCreator(Class, Object)
+ * @see #registerConverter(IQconfOlderConverter)
  */
 public class Serializer<T extends IQuimpSerialize> implements ParameterizedType {
 
@@ -151,7 +146,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @param filename Name of file
      * @throws FileNotFoundException if problem with saving
      * @see uk.ac.warwick.wsbc.QuimP.Serializer#setPretty()
-     * @see uk.ac.warwick.wsbc.QuimP.Serializer#Serializer(IQuimpSerialize, String[])
+     * @see uk.ac.warwick.wsbc.QuimP.Serializer#Serializer(IQuimpSerialize, QuimpVersion)
      * @see uk.ac.warwick.wsbc.QuimP.Serializer#toString()
      */
     public void save(final String filename) throws FileNotFoundException {
@@ -255,17 +250,11 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * Set
+     * Perform basic verification of loaded file.
      * 
-     * @param reader
-     */
-    private void setVerionsformFile(String source) {
-
-    }
-
-    /**
-     * Perform basic verification of loaded file. Test existence of several fields in created class
-     * related to Serializer container
+     * It verifies rather on general level for fields added by Serializer itself. More detailed
+     * verification related to serialized class should be performed after full restoration of
+     * wrapped object.
      * 
      * @param localref object to verify
      * @throws JsonSyntaxException on bad file or when class has not been restored correctly
@@ -294,47 +283,11 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
             return; // no converters registered
 
         for (IQconfOlderConverter<T> converter : converters) {
+            // compare version loaded from file. If read version from file is smaller than returned
+            // by converter - execute conversion
             if (converter.executeForLowerThan() > loadedQconfVersion)
                 converter.upgradeFromOld(localref);
         }
-        // means that there is old String[] version there
-        // if (localref.version == null) {
-        // try {
-        // // read first 256 charslines of old fileformat
-        // char[] buf = new char[256];
-        // reader.reset();
-        // reader.read(buf);
-        // String sbuf = new String(buf);
-        // // short verification
-        // if (!sbuf.contains("DataContainer") || !sbuf.contains("version"))
-        // throw new Exception("Conversion from format<17.02.02 failed");
-        // // conversion
-        // int pos = sbuf.indexOf("\"version\"");
-        // pos = sbuf.indexOf("\"", pos + 9);
-        // int pos2 = sbuf.indexOf("\"", pos + 1);
-        // String version = sbuf.substring(pos + 1, pos2);
-        // pos = sbuf.indexOf("\"", pos2 + 1);
-        // pos2 = sbuf.indexOf("\"", pos + 1);
-        // String name = sbuf.substring(pos + 1, pos2);
-        // pos = sbuf.indexOf("\"", pos2 + 1);
-        // pos2 = sbuf.indexOf("\"", pos + 1);
-        // String intname = sbuf.substring(pos + 1, pos2);
-        //
-        // localref.version = new QuimpVersion(version, name, intname);
-        // LOGGER.debug(localref.version.toString());
-        //
-        // } catch (Exception e) {
-        // // catch here to have closed stream on IOException
-        // throw new IllegalArgumentException(e);
-        // }
-        //
-        // } else // probably correct object - check fields
-        // {
-        // if (localref.version.getBuildstamp() == null || localref.version.getName() == null
-        // || localref.version.getVersion() == null)
-        // throw new IllegalArgumentException("Invalid version structure");
-        // }
-
     }
 
     /**
@@ -345,6 +298,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * 
      * @param converter
      * @see IQconfOlderConverter
+     * @see #convert(Serializer)
      */
     public void registerConverter(IQconfOlderConverter<T> converter) {
         converters.add(converter);
