@@ -27,7 +27,7 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
  * @param <T> Type of point, currently can be Node or Vert
  */
 public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
-    
+
     /**
      * The Constant LOGGER.
      */
@@ -49,7 +49,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
      * Shape and also in {@link #afterSerialize()} and {@link #beforeSerialize()}
      */
     protected ExtendedVector2d centroid = null;
-    
+
     /**
      * The Constant MAX_NODES.
      */
@@ -438,7 +438,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
 
         // if removing head randomly assign a neighbour as new head
         if (n.isHead()) {
-            if (Math.random() <= 1.0) { // WARN Change to original code here!
+            if (Math.random() > 0.5) {
                 head = n.getNext();
             } else {
                 head = n.getPrev();
