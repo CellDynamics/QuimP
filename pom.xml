@@ -10,7 +10,7 @@
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
-  <version>17.02.02-SNAPSHOT</version>
+  <version>17.02.02</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>www.warwick.ac.uk/quimp</url>
@@ -31,7 +31,7 @@
     <connection>scm:git:https://github.com/CellDynamics/QuimP.git</connection>
     <developerConnection>scm:git:https://github.com/CellDynamics/QuimP.git</developerConnection>
     <url>https://github.com/CellDynamics/QuimP/</url>
-    <tag>HEAD</tag>
+    <tag>v17.02.02</tag>
   </scm>
   <issueManagement>
     <system>GitHub</system>
