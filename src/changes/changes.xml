@@ -6,6 +6,23 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="17.02.02" date="2017-02-06" description="Release">
+          <action dev="baniuk" type="fix" issue="221">
+              QuimP: Removed Test QuimP module from menu.
+          </action>
+          <action dev="baniuk" type="fix" issue="219">
+              QuimP-BOA: File patch in QCONF was not updated when user changed location of image.
+          </action>
+          <action dev="baniuk" type="update" issue="218">
+              Updates on JavaDoc.
+          </action>
+          <action dev="baniuk" type="update" issue="">
+              Removed unnecessary fields from QCONF.
+          </action>
+          <action dev="baniuk" type="update" issue="">
+              Fixed pom.xml for wrong repository name and doclint.
+          </action>
+      </release>
       <release version="17.02.01" date="2017-01-30" description="Release">
           <action dev="baniuk" type="fix" issue="215">
               Protruision Analysis: Fixed tests.
