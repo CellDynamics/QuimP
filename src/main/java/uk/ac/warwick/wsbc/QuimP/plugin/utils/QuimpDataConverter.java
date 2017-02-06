@@ -179,9 +179,14 @@ public class QuimpDataConverter {
     /**
      * Return Snake created from stored data.
      * 
+     * On snake creation first node is removed and head is randomly picked among neighbours so snake
+     * nodes can be shifted by 1 position comparing to input arrays.
+     * 
      * @param id Id of snake
      * @return Snake object with Nodes in order of data given on input. Can be null
      * @throws Exception on Snake creation
+     * @see uk.ac.warwick.wsbc.QuimP.Snake#Snake(double[], double[], int)
+     * @see uk.ac.warwick.wsbc.QuimP.Snake#removeNode(uk.ac.warwick .wsbc.QuimP.Node)
      */
     public Snake getSnake(int id) throws Exception {
         if (X.length == 0 || Y.length == 0)
