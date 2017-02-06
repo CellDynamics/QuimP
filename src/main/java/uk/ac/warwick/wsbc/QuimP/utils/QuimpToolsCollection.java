@@ -33,7 +33,7 @@ public class QuimpToolsCollection {
     /**
      * Message returned by {@link #getQuimPBuildInfo()} if info is not found in jar.
      */
-    public static final String defNote = "Not found";
+    public static final String defNote = "0.0.0";
 
     /**
      * Prepare info plate for QuimP.

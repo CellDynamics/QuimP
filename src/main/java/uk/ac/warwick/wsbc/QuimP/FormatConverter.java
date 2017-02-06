@@ -276,7 +276,7 @@ public class FormatConverter {
         dT.ANAState = anaP;
 
         Serializer<DataContainer> n;
-        n = new Serializer<>(dT, new QuimpToolsCollection().getQuimPBuildInfo());
+        n = new Serializer<>(dT, QuimP.TOOL_VERSION);
         n.setPretty();
         n.save(path + File.separator + orginal + FileExtensions.newConfigFileExt);
         n = null;

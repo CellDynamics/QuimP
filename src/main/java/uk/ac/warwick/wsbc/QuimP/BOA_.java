@@ -267,7 +267,7 @@ public class BOA_ implements PlugIn {
         // assign current object to ViewUpdater
         viewUpdater = new ViewUpdater(this);
         // collect information about quimp version read from jar
-        quimpInfo = new QuimpToolsCollection().getQuimPBuildInfo();
+        quimpInfo = QuimP.TOOL_VERSION;
         // create history logger
         historyLogger = new HistoryLogger();
 
@@ -1482,7 +1482,8 @@ public class BOA_ implements PlugIn {
                     try {
                         Serializer<SnakePluginList> loaded; // loaded instance
                         // create serializer
-                        Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
+                        Serializer<SnakePluginList> s =
+                                new Serializer<>(SnakePluginList.class, QuimP.TOOL_VERSION);
                         // pass data to constructor of serialized object. Those data are not
                         // serialized and must be passed externally
                         s.registerInstanceCreator(SnakePluginList.class,
@@ -1544,7 +1545,8 @@ public class BOA_ implements PlugIn {
                     try {
                         Serializer<DataContainer> loaded; // loaded instance
                         // create serializer
-                        Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
+                        Serializer<DataContainer> s =
+                                new Serializer<>(DataContainer.class, QuimP.TOOL_VERSION);
                         s.registerInstanceCreator(DataContainer.class,
                                 new DataContainerInstanceCreator(pluginFactory, viewUpdater));
                         loaded = s.load(od.getDirectory() + od.getFileName());

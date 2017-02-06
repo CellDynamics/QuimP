@@ -3,24 +3,28 @@
 package uk.ac.warwick.wsbc.QuimP;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Path;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
+import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
+import uk.ac.warwick.wsbc.QuimP.filesystem.versions.Converter170202;
 
 /**
  * Test of Serializer class
@@ -49,7 +53,7 @@ public class SerializerTest {
     @Before
     public void setUp() throws Exception {
         testClass = new TestClass();
-        version = new QuimpVersion("0.0.1", "p.baniukiewicz", "QuimP");
+        version = new QuimpVersion("17.02.02-SNAPSHOT", "p.baniukiewicz", "QuimP");
     }
 
     /**
@@ -65,7 +69,6 @@ public class SerializerTest {
      * @throws Exception
      */
     @Test
-    @Ignore
     public void testSave() throws Exception {
         Serializer<TestClass> s = new Serializer<>(testClass, version);
         s.save(tmpdir + "serializertest.josn");
@@ -77,7 +80,6 @@ public class SerializerTest {
      * @throws Exception
      */
     @Test
-    @Ignore
     public void testToString() throws Exception {
         Serializer<TestClass> s = new Serializer<>(testClass, version);
         s.setPretty();
@@ -90,7 +92,6 @@ public class SerializerTest {
      * @throws Exception
      */
     @Test
-    @Ignore
     public void testToString_1() throws Exception {
         Serializer<TestClass> s = new Serializer<>(testClass, version);
         LOGGER.debug(s.toString());
@@ -117,7 +118,7 @@ public class SerializerTest {
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
-        assertEquals(out.version, version);
+        assertEquals(out.timeStamp, version);
     }
 
     /**
@@ -131,13 +132,37 @@ public class SerializerTest {
                 "{\"className\":\"DataContainer\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
-        Serializer<TestClass> s =
-                new Serializer<>(TestClass.class, new QuimpVersion("0.00.01", "baniuk", "QuimP"));
+        Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
+        s.registerConverter(new Converter170202<>(version));
         out = s.fromString(json);
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
-        assertEquals(out.version, version);
+        assertEquals(version, out.timeStamp);
+    }
+
+    /**
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
+     * 
+     * pre: Correct json in format >17.02.02
+     * 
+     * post: Conversion class is not run
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testFromString_3() throws Exception {
+        String json =
+                "{\"className\":\"DataContainer\",\"createdOn\":\"1 2 3\",\"timeStamp\":{\"version\":\"17.09.02-SNAPSHOT\",\"buildstamp\":\"p.baniukiewicz\",\"name\":\"QuimP\"},\"obj\":{\"a\":15,\"al\":[4,56]}}";
+        Serializer<TestClass> out;
+        TestClass obj;
+        Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
+        s.registerConverter(new Converter170202<>(version));
+        out = s.fromString(json);
+        obj = out.obj;
+        assertEquals(testClass.al, obj.al);
+        assertEquals(testClass.a, obj.a);
+        assertNotEquals(version, out.timeStamp);
     }
 
     /**
@@ -151,17 +176,18 @@ public class SerializerTest {
      */
     @Test(expected = JsonSyntaxException.class)
     public void testFromString_2() throws Exception {
+        QuimpVersion version = new QuimpVersion("17.02.02", "baniuk", "QuimP");
         String json =
-                "{\"className\":\"DataContainer\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
+                "{\"className\":\"DataContainer\",\"createdOn\":\"1 2 3\",\"versionn\":[\"0.0.1\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
-        Serializer<TestClass> s =
-                new Serializer<>(TestClass.class, new QuimpVersion("0.00.01", "baniuk", "QuimP"));
+        Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
+        s.registerConverter(new Converter170202<>(version));
         out = s.fromString(json);
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
-        assertEquals(out.version, version);
+        assertEquals(out.timeStamp, version);
     }
 
     /**
@@ -170,7 +196,6 @@ public class SerializerTest {
      * @throws Exception
      */
     @Test
-    @Ignore
     public void testLoad() throws Exception {
         Serializer<TestClass> save = new Serializer<>(testClass, version);
         save.save(tmpdir + "local.josn");
@@ -178,12 +203,34 @@ public class SerializerTest {
 
         Serializer<TestClass> out;
         TestClass obj;
-        Serializer<TestClass> s = new Serializer<>(TestClass.class);
+        Serializer<TestClass> s = new Serializer<>(TestClass.class, QuimP.TOOL_VERSION);
         out = s.load(tmpdir + "local.josn");
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
-        assertEquals(out.version, version);
+        assertEquals(out.timeStamp, version);
+    }
+
+    /**
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.load(final String)
+     * 
+     * Pre: Load file in older version
+     * 
+     * Post the same file converted to current version
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testLoad_1() throws Exception {
+        Serializer<DataContainer> out;
+        QuimpVersion toolversion = new QuimpVersion("20.20.02", "baniuk", "QuimP");
+        // provide also current version of tool as in debug there is no jar
+        Serializer<DataContainer> s = new Serializer<>(DataContainer.class, toolversion);
+        // now define border trigger for this converter. Start it if version in json is lower than
+        // defined in class
+        s.registerConverter(new Converter170202<>(toolversion));
+        out = s.load("src/test/resources/ticket199/fluoreszenz-test.QCONF");
+        assertEquals(toolversion, out.timeStamp);
     }
 
     /**
@@ -196,18 +243,18 @@ public class SerializerTest {
      * @throws Exception
      */
     @Test
-    @Ignore
     public void testFromString1() throws Exception {
         String json =
                 "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"a\":15,\"b\":15,\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
-        Serializer<TestClass> s = new Serializer<>(TestClass.class);
+        Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
+        s.registerConverter(new Converter170202<>(version));
         out = s.fromString(json);
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
-        assertEquals(out.version, version);
+        assertEquals(out.timeStamp, version);
     }
 
     /**
@@ -220,62 +267,90 @@ public class SerializerTest {
      * @throws Exception
      */
     @Test
-    @Ignore
     public void testFromString2() throws Exception {
         String json =
                 "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"al\":[4,56]}}";
         Serializer<TestClass> out;
         TestClass obj;
-        Serializer<TestClass> s = new Serializer<>(TestClass.class);
+        Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
+        s.registerConverter(new Converter170202<>(version));
         out = s.fromString(json);
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
         assertEquals(testClass.a, obj.a);
-        assertEquals(out.version, version);
+        assertEquals(out.timeStamp, version);
     }
 
     /**
      * @throws FileNotFoundException
      */
     @Test
-    @Ignore
     public void testDumpStatic() throws FileNotFoundException {
         TestClass tc = new TestClass();
         Serializer.Dump(tc, tmpdir + "dump.json", true);
     }
 
     /**
-     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Serializer#getVersion(java.lang.String)}.
+     * Test method for {@link uk.ac.warwick.wsbc.QuimP.Serializer#getQconfVersion(Reader)}.
      * 
      * @throws Exception
      */
     @Test
-    @Ignore
-    public void testGetVersion() throws Exception {
-        Path ret;
-        assertEquals(Serializer.getVersion("src/test/resources/ticket199/fluoreszenz-test.QCONF"),
+    public void testGetQconfVersion() throws Exception {
+        Serializer<TestClass> s = new Serializer<>(testClass, version);
+        assertEquals(
+                s.getQconfVersion(new BufferedReader(
+                        new FileReader("src/test/resources/ticket199/fluoreszenz-test.QCONF"))),
                 17.0103, 1e-5);
 
-        ret = writeDummyFile("17.01.03-SNAPSHOT");
-        assertEquals(Serializer.getVersion(ret.toString()), 17.0103, 1e-5);
+        Reader ret;
+        ret = giveDummyFile("17.01.03-SNAPSHOT");
+        assertEquals(s.getQconfVersion(ret), 17.0103, 1e-5);
+        ret.close();
 
-        ret = writeDummyFile("17.01.03");
-        assertEquals(Serializer.getVersion(ret.toString()), 17.0103, 1e-5);
+        ret = giveDummyFile("17.01.03");
+        assertEquals(s.getQconfVersion(ret), 17.0103, 1e-5);
+        ret.close();
 
-        ret = writeDummyFile("1.01.0-SNAPSHOT");
-        assertEquals(Serializer.getVersion(ret.toString()), 1.010, 1e-5);
+        ret = giveDummyFile("1.01.0-SNAPSHOT");
+        assertEquals(s.getQconfVersion(ret), 1.010, 1e-5);
+        ret.close();
 
-        ret = writeDummyFile("17.01-SNAPSHOT");
-        assertEquals(Serializer.getVersion(ret.toString()), 17.01, 1e-5);
+        ret = giveDummyFile("17.01-SNAPSHOT");
+        assertEquals(s.getQconfVersion(ret), 17.01, 1e-5);
+        ret.close();
 
-        ret = writeDummyFile("1701-SNAPSHOT");
-        assertEquals(Serializer.getVersion(ret.toString()), 1701, 1e-5);
+        ret = giveDummyFile("1701-SNAPSHOT");
+        assertEquals(s.getQconfVersion(ret), 1701, 1e-5);
+        ret.close();
 
-        ret = writeDummyFile("17.01.03_SNAPSHOT");
-        assertEquals(Serializer.getVersion(ret.toString()), 0.0, 1e-5);
+    }
 
-        ret = writeDummyFile("not found");
-        assertEquals(Serializer.getVersion(ret.toString()), 0.0, 1e-5);
+    /**
+     * @throws Exception
+     */
+    @Test(expected = Exception.class)
+    public void testGetQconfVersion_bad() throws Exception {
+        Serializer<TestClass> s = new Serializer<>(testClass, version);
+        Reader ret;
+        // bad cases
+        ret = giveDummyFile("17.01.03_SNAPSHOT");
+        assertEquals(s.getQconfVersion(ret), 0.0, 1e-5);
+        ret.close();
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = Exception.class)
+    public void testGetQconfVersion_bad1() throws Exception {
+        Serializer<TestClass> s = new Serializer<>(testClass, version);
+        Reader ret;
+        // bad cases
+        ret = giveDummyFile("not found");
+        assertEquals(s.getQconfVersion(ret), 0.0, 1e-5);
+        ret.close();
 
     }
 
@@ -286,16 +361,10 @@ public class SerializerTest {
      * @return Path to created file
      * @throws IOException
      */
-    private Path writeDummyFile(String ver) throws IOException {
-        File filename = File.createTempFile("serializer", ".QCONF");
-        PrintWriter pw = new PrintWriter(filename);
-        pw.write("{\n");
-        pw.write("  \"className\": \"DataContainer\",\n");
-        pw.write("  \"version\": [\n");
-        pw.write("    \"" + ver + "\",\n");
-        pw.write("    \"baniuk on: 2017-01-25 14:56:43\",\n");
-        pw.close();
-        return filename.toPath();
+    private Reader giveDummyFile(String ver) throws IOException {
+        String qconf = "{" + "\"className\":\"DataContainer\"," + "\"version\": [" + "\"" + ver
+                + "\"," + "\"baniuk on: 2017-01-25 14:56:43\",";
+        return new StringReader(qconf);
     }
 
 }

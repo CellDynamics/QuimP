@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
+import uk.ac.warwick.wsbc.QuimP.filesystem.versions.Converter170202;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 // TODO: Auto-generated Javadoc
@@ -112,7 +113,8 @@ public class QParamsQconf extends QParams {
      */
     @Override
     public void readParams() throws QuimpException {
-        Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
+        Serializer<DataContainer> s = new Serializer<>(DataContainer.class, QuimP.TOOL_VERSION);
+        s.registerConverter(new Converter170202<>(QuimP.TOOL_VERSION));
         try {
             // load file and make first check of correctness
             loaded = s.load(getParamFile()); // try to load
@@ -127,17 +129,17 @@ public class QParamsQconf extends QParams {
         // if (loaded.obj.BOAState == null) // this check is now through QconfLoader
         // throw new QuimpException("Loaded file " + getParamFile().getAbsolutePath()
         // + " does not contain BOA data");
-        if (!loaded.className.equals("DataContainer") || !loaded.version.getName().equals("QuimP")
-                && !loaded.version.getName().equals(QuimpToolsCollection.defNote)) {
+        if (!loaded.className.equals("DataContainer") || !loaded.timeStamp.getName().equals("QuimP")
+                && !loaded.timeStamp.getName().equals(QuimpToolsCollection.defNote)) {
             LOGGER.error("Not QuimP file?");
             throw new QuimpException(
                     "Loaded file " + getParamFile().getAbsolutePath() + " is not QuimP file");
         }
         // TODO Check config version here - more precisely (see #151)
-        QuimpVersion ver = new QuimpToolsCollection().getQuimPBuildInfo();
-        if (!loaded.version.getVersion().equals(ver.getVersion())) {
+        QuimpVersion ver = QuimP.TOOL_VERSION;
+        if (!loaded.timeStamp.getVersion().equals(ver.getVersion())) {
             LOGGER.warn("Loaded config file is in different version than current QuimP ("
-                    + ver.getVersion() + " vs " + loaded.version.getVersion() + ")");
+                    + ver.getVersion() + " vs " + loaded.timeStamp.getVersion() + ")");
         }
         compatibilityLayer(); // fill underlying data (paQP) from QCONF
     }
@@ -486,7 +488,7 @@ class SerializerNoPluginSupport<T extends IQuimpSerialize> extends Serializer<T>
      * @param t
      */
     public SerializerNoPluginSupport(Type t) {
-        super(t);
+        super(t, QuimP.TOOL_VERSION);
         doAfterSerialize = true; // false blocks afterSerialzie()
     }
 

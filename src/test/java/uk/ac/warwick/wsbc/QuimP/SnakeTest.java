@@ -154,7 +154,7 @@ public class SnakeTest {
 
         // load it
         Snake loaded;
-        Serializer<Snake> loader = new Serializer<>(Snake.class);
+        Serializer<Snake> loader = new Serializer<>(Snake.class, QuimP.TOOL_VERSION);
         loaded = loader.load(tmpdir + "snake1.tmp").obj;
         LOGGER.debug(loaded.toString());
         assertEquals(snake1.getNumNodes(), loaded.getNumNodes());

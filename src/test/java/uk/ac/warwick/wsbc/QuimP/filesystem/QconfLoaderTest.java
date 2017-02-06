@@ -25,6 +25,7 @@ import uk.ac.warwick.wsbc.QuimP.BOAState;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
+import uk.ac.warwick.wsbc.QuimP.QuimpVersion;
 import uk.ac.warwick.wsbc.QuimP.Serializer;
 import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
 
@@ -35,12 +36,12 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class QconfLoaderTest {
-    
+
     /**
      * The Constant LOGGER.
      */
     static final Logger LOGGER = LoggerFactory.getLogger(QconfLoaderTest.class.getName());
-    
+
     /**
      * The tmpdir.
      */
@@ -55,8 +56,7 @@ public class QconfLoaderTest {
     public static void setUpBeforeClass() throws Exception {
         DataContainer dt = new DataContainer();
         Serializer<DataContainer> serializer;
-        serializer = new Serializer<>(dt,
-                new uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection().getQuimPBuildInfo());
+        serializer = new Serializer<>(dt, new QuimpVersion("17.10.11", "p.baniukiewicz", "QuimP"));
         serializer.setPretty();
         serializer.save(tmpdir + "qconftestloader.QCONF");
 

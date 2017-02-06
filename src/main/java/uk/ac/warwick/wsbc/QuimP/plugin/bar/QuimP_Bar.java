@@ -167,7 +167,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
      */
     public void run(String s) {
         String title;
-        QuimpVersion quimpInfo = new QuimpToolsCollection().getQuimPBuildInfo(); // get jar title
+        QuimpVersion quimpInfo = QuimP.TOOL_VERSION; // get jar title
         title = quimpInfo.getName() + " " + quimpInfo.getVersion();
 
         frame.setTitle(title); // and set to window title

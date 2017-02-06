@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
-import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -93,8 +92,7 @@ public class HistoryLogger implements WindowListener {
             if (bs == null)
                 return;
             LogEntry en = new LogEntry(id++, m, bs);
-            Serializer<LogEntry> s =
-                    new Serializer<>(en, new QuimpToolsCollection().getQuimPBuildInfo());
+            Serializer<LogEntry> s = new Serializer<>(en, QuimP.TOOL_VERSION);
 
             String jsontmp = s.toString();
             history.add(jsontmp); // store in array
