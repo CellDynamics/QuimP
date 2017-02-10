@@ -30,6 +30,10 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.versions.IQconfOlderConverter;
 /**
  * Support saving and loading wrapped class to/from JSON file or string.
  * 
+ * The Serializer class wraps provided objects and converts it to Gson together with itself.
+ * Serializer adds fields like wrapped class name and versioning data (@link {@link QuimpVersion})
+ * to JSON.
+ * 
  * Restored object is constructed using its constructor. If JSON file does not contain variable
  * available in class being restored, it will have the value assigned in constructor or null. GSon
  * overrides variables after they have been created in normal process of object building. Check
@@ -112,7 +116,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * for GSon. This is why this type must be passed explicitly to Serializer.
      * 
      * @param t
-     * @param version Version of QuimP framework this class is called from.
+     * @param version Version of framework this class is called from.
      */
     public Serializer(final Type t, final QuimpVersion version) {
         doAfterSerialize = true; // by default use afterSerialize methods to restore object state
@@ -126,7 +130,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * Constructor used for saving wrapped class.
      * 
      * @param obj Object being saved
-     * @param version Extra information saved as top layer
+     * @param version Version of framework this class is called from.
      */
     public Serializer(final T obj, final QuimpVersion version) {
         doAfterSerialize = true; // by default use afterSerialize methods to restore object state
@@ -139,9 +143,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * Save wrapped object passed in constructor as JSON file
+     * Save wrapped object passed in constructor as JSON file.
      * 
-     * Calls uk.ac.warwick.wsbc.QuimP.IQuimpSerialize.beforeSerialize() before save
+     * Calls {@link IQuimpSerialize#beforeSerialize()} before save.
      * 
      * @param filename Name of file
      * @throws FileNotFoundException if problem with saving
@@ -200,7 +204,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * Restore wrapped object from JSON string
+     * Restore wrapped object from JSON string.
      * 
      * @param json
      * @return Serialise object
@@ -222,7 +226,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     }
 
     /**
-     * Restore wrapped object from JSON string
+     * Restore wrapped object from JSON string.
      * 
      * @param reader
      * @throws IOException when file can not be read
@@ -413,7 +417,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * 
      * @param ver String version to convert
      * @return Double representation of version string
-     * @throws IllegalArgumentException Exceptions on wrong conversions
+     * @throws JsonSyntaxException on wrong conversions (due to e.g. wrong wile read or bad
+     *         structure)
      */
     private Double convertStringVersion(String ver) {
         String ret;
