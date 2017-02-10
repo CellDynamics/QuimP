@@ -23,4 +23,18 @@ public class QuimP {
      */
     static public final QuimpVersion TOOL_VERSION = new QuimpToolsCollection().getQuimPBuildInfo();
 
+    /**
+     * Switch on/off additional debug.
+     * 
+     * This switch causes that additional debug information can be produced.
+     */
+    static public boolean SUPER_DEBUG =
+            Boolean.parseBoolean(System.getProperty("quimpconfig.superDebug"));
+    /**
+     * This field keeps localisation of -quimp plugins.
+     * 
+     * By default it is Fiji.app/plugins folder but it can be overwritten by setting system
+     * property.
+     */
+    static public String PLUGIN_DIR = System.getProperty("quimpconfig.pluginDirectory");
 }

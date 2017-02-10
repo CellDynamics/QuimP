@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class PropertyReader {
-    
+
     /**
      * The Constant LOGGER.
      */
@@ -101,7 +101,6 @@ public class PropertyReader {
                 LOGGER.trace("res " + reselement.toString() + " class " + c.getSimpleName());
                 if (reselement.toString().contains(partofFilename)) {
                     in = new BufferedReader(new InputStreamReader(reselement.openStream()));
-                    LOGGER.trace("in " + in.toString());
                 }
                 if (in != null) {
                     prop.load(in);
