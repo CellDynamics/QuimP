@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.QuimP;
 
 import java.io.File;
@@ -22,10 +20,32 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.Since;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.QuimP.filesystem.versions.IQconfOlderConverter;
+/*
+ * !>
+ * @startuml doc-files/Serializer_1_UML.png
+ * actor User
+ * User -> registerConverter : if newer version\nthan QCONF
+ * ...
+ * User -> load
+ * load -> load : getQconfVersion
+ * note left: read version tag\n from JSON\nwithout deserialization
+ * load -> fromReader : get reader\nfrom input
+ * fromReader -> fromReader : set JSon version
+ * fromReader -> fromReader : load JSon
+ * fromReader -> verify
+ * verify -> verify : check basic syntax
+ * verify -> convert : run format conversion
+ * note over converter : ""IQconfOlderConverter""\nregistered
+ * loop over converters
+ * convert -> converter : iterate over\nconverters
+ * converter --> convert
+ * end loop
+ * @enduml
+ * !<
+ */
 
 /**
  * Support saving and loading wrapped class to/from JSON file or string.
@@ -50,6 +70,11 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.versions.IQconfOlderConverter;
  * executed if specified condition is met. Serializer compares version of callee tool (provided in
  * Serializer constructor) with trigger version returned by converter {@link IQconfOlderConverter}
  * and executes conversion provided by it.
+ * <p>
+ * <b>Important</b>: Until and Since tags are resolved using version of QCONF provided from callee
+ * on json saving or by version read from QCONF file on its loading. Version read from JSON is also
+ * used to decide whether apply converter or not but on load only.
+ * </p>
  * 
  * @author p.baniukiewicz
  * @param <T>
@@ -82,9 +107,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     public String className;
 
     /**
-     * Version and other information passed to serializer.
+     * Version and other information passed to serializer. Since(17.0202)
      */
-    @Since(17.0202)
     public QuimpVersion timeStamp;
 
     /**
@@ -100,9 +124,17 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     /**
      * Version stored in QCONF file loaded by Serialiser.
      * 
-     * If class is serialised (saved) it contains version provided with constructor.
+     * If class is serialised (saved) it contains version provided with constructor. This version is
+     * provided to GSon on loading json
      */
-    private transient Double loadedQconfVersion;
+    private transient Double qconfVersionToLoad;
+
+    /**
+     * Version provided form callee.
+     * 
+     * This version is provided to GSon on saving json.
+     */
+    private transient Double qconfVersionToSave;
 
     /**
      * List of format converters called on every load when certain condition is met.
@@ -139,7 +171,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         this.obj = obj;
         className = obj.getClass().getSimpleName();
         this.timeStamp = version;
-        this.loadedQconfVersion = convertStringVersion(version.getVersion());
+        // set it as callee version if we will save json (json version is read on load only)
+        this.qconfVersionToSave = convertStringVersion(version.getVersion());
     }
 
     /**
@@ -181,7 +214,11 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     /**
      * Load wrapped object from JSON file.
      * 
-     * Calls {@link IQuimpSerialize#afterSerialize()} after load
+     * Calls {@link IQuimpSerialize#afterSerialize()} after load. The general steps taken on GSon
+     * load are as follows:
+     * <p>
+     * <img src="doc-files/Serializer_1_UML.png"/>
+     * </p>
      * 
      * @param filename
      * @return Serialiser object
@@ -196,7 +233,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         LOGGER.debug("Loading from: " + filename.getPath());
         // gather version from JSON
         FileReader vr = new FileReader(filename);
-        loadedQconfVersion = getQconfVersion(vr);
+        qconfVersionToLoad = getQconfVersion(vr);
         vr.close(); // on duplicate to avoid problems with moving pointer
 
         FileReader f = new FileReader(filename);
@@ -218,7 +255,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         LOGGER.debug("Reading from string");
         // gather version from JSON
         Reader vr = new StringReader(json);
-        loadedQconfVersion = getQconfVersion(vr);
+        qconfVersionToLoad = getQconfVersion(vr);
         vr.close(); // on duplicate to avoid problems with moving pointer
 
         Reader reader = new StringReader(json);
@@ -229,6 +266,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * Restore wrapped object from JSON string.
      * 
      * @param reader
+     * @see #load(File)
      * @throws IOException when file can not be read
      * @throws JsonSyntaxException on bad file or when class has not been restored correctly
      * @throws JsonIOException This exception is raised when Gson was unable to read an input stream
@@ -242,7 +280,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
             throws JsonSyntaxException, JsonIOException, Exception {
 
         // set version to load (read from file)
-        gsonBuilder.setVersion(loadedQconfVersion);
+        gsonBuilder.setVersion(qconfVersionToLoad);
 
         Gson gson = gsonBuilder.create();
         Serializer<T> localref;
@@ -278,6 +316,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     /**
      * This method is called on load and goes through registered converters executing them.
      * 
+     * Perform conversions from older version to current (newer).
+     * 
      * @param localref
      * @throws QuimpException on problems with conversion
      * @see #registerConverter(IQconfOlderConverter)
@@ -289,7 +329,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         for (IQconfOlderConverter<T> converter : converters) {
             // compare version loaded from file. If read version from file is smaller than returned
             // by converter - execute conversion
-            if (converter.executeForLowerThan() > loadedQconfVersion)
+            if (converter.executeForLowerThan() > qconfVersionToLoad)
                 converter.upgradeFromOld(localref);
         }
     }
@@ -317,6 +357,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @see uk.ac.warwick.wsbc.QuimP.Serializer#setPretty()
      */
     public String toString() {
+        // set version to save (read from calee)
+        gsonBuilder.setVersion(qconfVersionToSave);
         Gson gson = gsonBuilder.create();
         // fill date of creation
         Date dNow = new Date();

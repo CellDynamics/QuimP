@@ -87,6 +87,7 @@ import uk.ac.warwick.wsbc.QuimP.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.StatsCollection;
+import uk.ac.warwick.wsbc.QuimP.filesystem.versions.Converter170202;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
@@ -1488,6 +1489,7 @@ public class BOA_ implements PlugIn {
                         // create serializer
                         Serializer<SnakePluginList> s =
                                 new Serializer<>(SnakePluginList.class, QuimP.TOOL_VERSION);
+                        s.registerConverter(new Converter170202<>(QuimP.TOOL_VERSION));
                         // pass data to constructor of serialized object. Those data are not
                         // serialized and must be passed externally
                         s.registerInstanceCreator(SnakePluginList.class,
@@ -1551,6 +1553,7 @@ public class BOA_ implements PlugIn {
                         // create serializer
                         Serializer<DataContainer> s =
                                 new Serializer<>(DataContainer.class, QuimP.TOOL_VERSION);
+                        s.registerConverter(new Converter170202<>(QuimP.TOOL_VERSION));
                         s.registerInstanceCreator(DataContainer.class,
                                 new DataContainerInstanceCreator(pluginFactory, viewUpdater));
                         loaded = s.load(od.getDirectory() + od.getFileName());

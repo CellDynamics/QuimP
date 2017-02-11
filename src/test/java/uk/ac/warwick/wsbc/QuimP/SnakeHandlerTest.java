@@ -36,7 +36,7 @@ public class SnakeHandlerTest {
     static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
     private SnakeHandler sH;
-    private QuimpVersion info = new QuimpVersion("QuimP", "verr", "ddd");
+    private QuimpVersion info = new QuimpVersion("0.0.0", "verr", "ddd");
 
     /**
      * @throws java.lang.Exception

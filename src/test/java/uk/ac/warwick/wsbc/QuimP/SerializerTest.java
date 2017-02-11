@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.Since;
 
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
@@ -100,7 +101,7 @@ public class SerializerTest {
     /**
      * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.fromString(final String).
      * 
-     * pre: missing important field
+     * pre: missing variable in json
      * 
      * post: exception thrown
      * 
@@ -203,7 +204,7 @@ public class SerializerTest {
 
         Serializer<TestClass> out;
         TestClass obj;
-        Serializer<TestClass> s = new Serializer<>(TestClass.class, QuimP.TOOL_VERSION);
+        Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
         out = s.load(tmpdir + "local.josn");
         obj = out.obj;
         assertEquals(testClass.al, obj.al);
@@ -365,6 +366,304 @@ public class SerializerTest {
         String qconf = "{" + "\"className\":\"DataContainer\"," + "\"version\": [" + "\"" + ver
                 + "\"," + "\"baniuk on: 2017-01-25 14:56:43\",";
         return new StringReader(qconf);
+    }
+
+    // behaviour of GSon
+
+    /**
+     * Test method for uk.ac.warwick.wsbc.QuimP.Serializer.save(String).
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testSave_gson() throws Exception {
+        version = new QuimpVersion("1.0.0", "p.baniukiewicz", "QuimP");
+        TestClass_1 obj = new TestClass_1();
+        Serializer<TestClass_1> s = new Serializer<>(obj, version);
+        s.save(tmpdir + "testclass1.josn");
+    }
+
+    /**
+     * Gson behaviour
+     * 
+     * Pre: Json contains all fields
+     * 
+     * Post: All fields are loaded
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testGson_1() throws Exception {
+        version = new QuimpVersion("1.0.0", "p.baniukiewicz", "QuimP");
+        //!>
+        String json ="{"
+                + "\"className\":\"TestClass_1\","
+                + "\"timeStamp\":{"
+                    + "\"version\":\"1.0.0\","
+                    + "\"buildstamp\":\"p.baniukiewicz\","
+                    + "\"name\":\"QuimP\""
+                    + "},"
+                + "\"createdOn\":\"Sun 2017.02.12 at 12:25:00 PM GMT\","
+                + "\"obj\":{"
+                    + "\"a\":20,"
+                    + "\"b\":25,"
+                    + "\"c\":30,"
+                    + "\"d\":35,"
+                    + "\"e\":40"
+                    + "}"
+                + "}";
+        //!<
+        Serializer<TestClass_1> out;
+        TestClass_1 obj;
+        Serializer<TestClass_1> s = new Serializer<>(TestClass_1.class, version);
+        out = s.fromString(json);
+        obj = out.obj;
+        assertEquals(20, obj.a);
+        assertEquals(25, obj.b);
+        assertEquals(30, obj.c);
+        assertEquals(35, obj.d);
+        assertEquals(40, obj.e);
+    }
+
+    /**
+     * Gson behaviour
+     * 
+     * Pre: Json lack of b field
+     * 
+     * Post: b filed has vale from constructor, no error
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testGson_2() throws Exception {
+        version = new QuimpVersion("1.0.0", "p.baniukiewicz", "QuimP");
+        //!>
+        String json ="{"
+                + "\"className\":\"TestClass_1\","
+                + "\"timeStamp\":{"
+                    + "\"version\":\"1.0.0\","
+                    + "\"buildstamp\":\"p.baniukiewicz\","
+                    + "\"name\":\"QuimP\""
+                    + "},"
+                + "\"createdOn\":\"Sun 2017.02.12 at 12:25:00 PM GMT\","
+                + "\"obj\":{"
+                    + "\"a\":20,"
+                    + "\"c\":30,"
+                    + "\"d\":35,"
+                    + "\"e\":40"
+                    + "}"
+                + "}";
+        //!<
+        Serializer<TestClass_1> out;
+        TestClass_1 obj;
+        Serializer<TestClass_1> s = new Serializer<>(TestClass_1.class, version);
+        out = s.fromString(json);
+        obj = out.obj;
+        assertEquals(20, obj.a);
+        assertEquals(20, obj.b); // !
+        assertEquals(30, obj.c);
+        assertEquals(35, obj.d);
+        assertEquals(40, obj.e);
+    }
+
+    /**
+     * Gson behaviour
+     * 
+     * Pre: Json contains field f not available in object
+     * 
+     * Post: Class is restored normally, f is skipped
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testGson_3() throws Exception {
+        version = new QuimpVersion("1.0.0", "p.baniukiewicz", "QuimP");
+        //!>
+        String json ="{"
+                + "\"className\":\"TestClass_1\","
+                + "\"timeStamp\":{"
+                    + "\"version\":\"1.0.0\","
+                    + "\"buildstamp\":\"p.baniukiewicz\","
+                    + "\"name\":\"QuimP\""
+                    + "},"
+                + "\"createdOn\":\"Sun 2017.02.12 at 12:25:00 PM GMT\","
+                + "\"obj\":{"
+                    + "\"a\":20,"
+                    + "\"b\":25,"
+                    + "\"c\":30,"
+                    + "\"d\":35,"
+                    + "\"e\":40,"
+                    + "\"f\":40"
+                    + "}"
+                + "}";
+        //!<
+        Serializer<TestClass_1> out;
+        TestClass_1 obj;
+        Serializer<TestClass_1> s = new Serializer<>(TestClass_1.class, version);
+        out = s.fromString(json);
+        obj = out.obj;
+        assertEquals(20, obj.a);
+        assertEquals(25, obj.b);
+        assertEquals(30, obj.c);
+        assertEquals(35, obj.d);
+        assertEquals(40, obj.e);
+    }
+
+    /**
+     * Gson behaviour
+     * 
+     * Pre: Json contains field f since 1.1 but calee is in 1.0
+     * 
+     * Post: Class is restored normally, f has default value from constructor
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testGson_4() throws Exception {
+        version = new QuimpVersion("1.0.0", "p.baniukiewicz", "QuimP");
+        //!>
+        String json ="{"
+                + "\"className\":\"TestClass_2\","
+                + "\"timeStamp\":{"
+                    + "\"version\":\"1.0.0\","
+                    + "\"buildstamp\":\"p.baniukiewicz\","
+                    + "\"name\":\"QuimP\""
+                    + "},"
+                + "\"createdOn\":\"Sun 2017.02.12 at 12:25:00 PM GMT\","
+                + "\"obj\":{"
+                    + "\"a\":20,"
+                    + "\"b\":25,"
+                    + "\"c\":30,"
+                    + "\"d\":35,"
+                    + "\"e\":40,"
+                    + "\"f\":40"
+                    + "}"
+                + "}";
+        //!<
+        Serializer<TestClass_2> out;
+        TestClass_2 obj;
+        Serializer<TestClass_2> s = new Serializer<>(TestClass_2.class, version);
+        out = s.fromString(json);
+        obj = out.obj;
+        assertEquals(20, obj.a);
+        assertEquals(25, obj.b);
+        assertEquals(30, obj.c);
+        assertEquals(35, obj.d);
+        assertEquals(40, obj.e);
+        assertEquals(0, obj.f); // value from constructor
+    }
+
+    /**
+     * Gson behaviour
+     * 
+     * Pre: Json contains field f since 1.1 but calee is in 1.2 and saved json is in the same
+     * version
+     * 
+     * Post: Class is restored normally, f has value from json
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testGson_5() throws Exception {
+        version = new QuimpVersion("1.2.0", "p.baniukiewicz", "QuimP");
+        //!>
+        String json ="{"
+                + "\"className\":\"TestClass_2\","
+                + "\"timeStamp\":{"
+                    + "\"version\":\"1.2.0\","
+                    + "\"buildstamp\":\"p.baniukiewicz\","
+                    + "\"name\":\"QuimP\""
+                    + "},"
+                + "\"createdOn\":\"Sun 2017.02.12 at 12:25:00 PM GMT\","
+                + "\"obj\":{"
+                    + "\"a\":20,"
+                    + "\"b\":25,"
+                    + "\"c\":30,"
+                    + "\"d\":35,"
+                    + "\"e\":40,"
+                    + "\"f\":40"
+                    + "}"
+                + "}";
+        //!<
+        Serializer<TestClass_2> out;
+        TestClass_2 obj;
+        Serializer<TestClass_2> s = new Serializer<>(TestClass_2.class, version);
+        out = s.fromString(json);
+        obj = out.obj;
+        assertEquals(20, obj.a);
+        assertEquals(25, obj.b);
+        assertEquals(30, obj.c);
+        assertEquals(35, obj.d);
+        assertEquals(40, obj.e);
+        assertEquals(40, obj.f);
+    }
+
+}
+
+/**
+ * Dummy test class with support GSon annotations.
+ * 
+ * @author p.baniukiewicz
+ *
+ */
+class TestClass_2 implements IQuimpSerialize {
+    int a;
+    int b;
+    int c;
+    int d;
+    int e;
+    @Since(1.1)
+    int f;
+
+    @Override
+    public void beforeSerialize() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public TestClass_2() {
+        a = 15;
+        b = 20;
+        c = 30;
+    }
+
+    @Override
+    public void afterSerialize() throws Exception {
+        // TODO Auto-generated method stub
+
+    }
+
+}
+
+/**
+ * Dummy test class.
+ * 
+ * @author p.baniukiewicz
+ *
+ */
+class TestClass_1 implements IQuimpSerialize {
+    int a;
+    int b;
+    int c;
+    int d;
+    int e;
+
+    @Override
+    public void beforeSerialize() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public TestClass_1() {
+        a = 15;
+        b = 20;
+        c = 30;
+    }
+
+    @Override
+    public void afterSerialize() throws Exception {
+        // TODO Auto-generated method stub
+
     }
 
 }

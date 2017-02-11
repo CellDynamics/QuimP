@@ -25,8 +25,14 @@ public interface IQconfOlderConverter<T extends IQuimpSerialize> {
     public void upgradeFromOld(Serializer<T> localref) throws QuimpException;
 
     /**
-     * @return Version for which this Converter should be executed (or lower). Format returned: a.bc
-     *         if version string equals a.b.c-xxx
+     * Threshold to execture converter.
+     * 
+     * Converter is executed if version returned by this method is lower than that provided in
+     * {@link Serializer#Serializer(IQuimpSerialize, uk.ac.warwick.wsbc.QuimP.QuimpVersion)}
+     * constructor.
+     * 
+     * @return Version for which this Converter. Format returned: a.bc if version string equals
+     *         a.b.c-xxx.
      */
     public Double executeForLowerThan();
 
