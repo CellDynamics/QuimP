@@ -126,20 +126,12 @@ public class QParamsQconf extends QParams {
                     "Loading or processing of " + getParamFile().getAbsolutePath() + " failed", e);
         }
         // second check of basic logic
-        // if (loaded.obj.BOAState == null) // this check is now through QconfLoader
-        // throw new QuimpException("Loaded file " + getParamFile().getAbsolutePath()
-        // + " does not contain BOA data");
+        // checking against nulls is in Serializer
         if (!loaded.className.equals("DataContainer") || !loaded.timeStamp.getName().equals("QuimP")
                 && !loaded.timeStamp.getName().equals(QuimpToolsCollection.defNote)) {
             LOGGER.error("Not QuimP file?");
             throw new QuimpException(
                     "Loaded file " + getParamFile().getAbsolutePath() + " is not QuimP file");
-        }
-        // TODO Check config version here - more precisely (see #151)
-        QuimpVersion ver = QuimP.TOOL_VERSION;
-        if (!loaded.timeStamp.getVersion().equals(ver.getVersion())) {
-            LOGGER.warn("Loaded config file is in different version than current QuimP ("
-                    + ver.getVersion() + " vs " + loaded.timeStamp.getVersion() + ")");
         }
         compatibilityLayer(); // fill underlying data (paQP) from QCONF
     }

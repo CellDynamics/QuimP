@@ -66,10 +66,10 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.versions.IQconfOlderConverter;
  * There is option to skip call afterSerialzie() method on class restoring. To do so set
  * {@link #doAfterSerialize} to false - derive new class and override this field.
  * 
- * Serializer supports <tt>Since</tt> tags from GSon library. User can write his own converters
- * executed if specified condition is met. Serializer compares version of callee tool (provided in
- * Serializer constructor) with trigger version returned by converter {@link IQconfOlderConverter}
- * and executes conversion provided by it.
+ * Serializer supports <tt>Since, Until</tt> tags from GSon library. User can write his own
+ * converters executed if specified condition is met. Serializer compares version of callee tool
+ * (provided in Serializer constructor) with trigger version returned by converter
+ * {@link IQconfOlderConverter} and executes conversion provided by it.
  * <p>
  * <b>Important</b>: Until and Since tags are resolved using version of QCONF provided from callee
  * on json saving or by version read from QCONF file on its loading. Version read from JSON is also
@@ -279,13 +279,20 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     public Serializer<T> fromReader(final Reader reader)
             throws JsonSyntaxException, JsonIOException, Exception {
 
+        // warn user if newer config is load to older QuimP
+        if (qconfVersionToLoad > convertStringVersion(timeStamp.getVersion()))
+            LOGGER.warn("You are trying to load config file which is in newer version"
+                    + " than software you are using. (" + qconfVersionToLoad + " vs "
+                    + convertStringVersion(timeStamp.getVersion()) + ")");
+
         // set version to load (read from file)
         gsonBuilder.setVersion(qconfVersionToLoad);
 
         Gson gson = gsonBuilder.create();
         Serializer<T> localref;
         localref = gson.fromJson(reader, this);
-        verify(localref); // verification of correctness and conversin to current format
+        verify(localref); // verification of correctness and conversion to current format
+
         if (doAfterSerialize)
             localref.obj.afterSerialize();
         return localref;
@@ -306,10 +313,12 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
         try {
             if (localref.obj == null || localref.className.isEmpty()
                     || localref.createdOn.isEmpty())
-                throw new JsonSyntaxException("Can not map loaded gson to class");
+                throw new JsonSyntaxException(
+                        "Can not map loaded gson to class. Is it proper file?");
             convert(localref);
         } catch (NullPointerException | IllegalArgumentException | QuimpException np) {
-            throw new JsonSyntaxException("Can not map loaded gson to class", np);
+            throw new JsonSyntaxException("Can not map loaded gson to class. Is it proper file?",
+                    np);
         }
     }
 
