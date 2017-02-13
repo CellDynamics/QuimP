@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import ij.IJ;
+import ij.measure.ResultsTable;
 import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANAp;
 import uk.ac.warwick.wsbc.QuimP.plugin.ana.ChannelStat;
@@ -262,4 +263,28 @@ public class FrameStatistics {
             i++;
         }
     }
+
+    /**
+     * Add channel statistic to given ResultsTable.
+     * 
+     * @param rt
+     * @param channelno
+     */
+    public void addFluoToResultTable(ResultsTable rt, int channelno) {
+        // Those fields must be related to writeFluo
+        ChannelStat cs = channels[channelno]; // reference to channel
+        rt.incrementCounter();
+        rt.addValue("frame", frame);
+        rt.addValue("TotalFluo", cs.totalFluor);
+        rt.addValue("MeanFluo", cs.meanFluor);
+        rt.addValue("Cortex Width", cs.cortexWidth);
+        rt.addValue("Cyto. Area", cs.innerArea);
+        rt.addValue("Total Cyto. Fluo.", cs.totalInnerFluor);
+        rt.addValue("Mean Cyto. Fluo.h", cs.meanInnerFluor);
+        rt.addValue("Cortex Area", cs.cortexArea);
+        rt.addValue("Total Cortex Fluo.", cs.totalCorFluo);
+        rt.addValue("Mean Cortex Fluo.", cs.meanCorFluo);
+        rt.addValue("%age Cortex Fluo.", cs.percCortexFluo);
+    }
+
 }

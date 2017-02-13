@@ -81,48 +81,51 @@ public class ANAp {
     transient public int endFrame;
 
     /**
-     * The normalise.
+     * The normalise. UI setting
      */
-    // parameters of algorithm and control variables
-    transient boolean normalise = true; // UI setting
-    
+    transient boolean normalise = true;
+
     /**
-     * The sample at same.
+     * The sample at same. UI setting
      */
-    transient boolean sampleAtSame = false; // UI setting
-    
+    transient boolean sampleAtSame = false;
+
     /**
-     * The plot outlines.
+     * UI setting, plot outlines on new image.
      */
-    transient boolean plotOutlines = false; // UI setting, plot outlines on new image
-    
+    transient boolean plotOutlines = false;
+
     /**
      * The present data.
      */
     transient int[] presentData;
-    
+
     /**
      * The cleared.
      */
     transient boolean cleared;
-    
+
     /**
      * The no data.
      */
     transient boolean noData;
-    
+
     /**
-     * The channel.
+     * The channel. UI setting
      */
-    transient int channel = 0; // UI setting
-    
+    transient int channel = 0;
+
     /**
-     * The use loc from ch.
+     * The use loc from ch.UI setting
      */
-    transient int useLocFromCh; // UI setting
+    transient int useLocFromCh;
 
     private double cortexWidthPixel; // in pixels
     private double cortexWidthScale; // at scale
+    /**
+     * UI setting. Show results in IJ table at the end
+     */
+    transient boolean fluoResultTable = false;
 
     /**
      * Default constructor.
