@@ -20,7 +20,7 @@ import uk.ac.warwick.wsbc.QuimP.CellStatsEval;
  *
  */
 public class StatsCollection implements IQuimpSerialize {
-    
+
     /**
      * The Constant LOGGER.
      */
@@ -79,6 +79,13 @@ public class StatsCollection implements IQuimpSerialize {
         for (CellStatsEval cl : in) {
             sHs.add(cl.getStatH());
         }
+    }
+
+    /**
+     * @return the sHs
+     */
+    public ArrayList<CellStats> getStatCollection() {
+        return sHs;
     }
 
 }

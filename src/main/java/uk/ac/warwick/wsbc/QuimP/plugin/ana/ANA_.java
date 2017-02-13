@@ -23,7 +23,9 @@ import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.YesNoCancelDialog;
 import ij.measure.Measurements;
+import ij.measure.ResultsTable;
 import ij.plugin.Converter;
+import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
@@ -54,7 +56,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * @author tyson
  */
 public class ANA_ implements PlugInFilter, DialogListener {
-    
+
     /**
      * The Constant LOGGER.
      */
@@ -92,7 +94,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
         anap = new ANAp();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see ij.plugin.filter.PlugInFilter#setup(java.lang.String, ij.ImagePlus)
      */
     @Override
@@ -122,7 +126,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see ij.plugin.filter.PlugInFilter#run(ij.process.ImageProcessor)
      */
     @Override
@@ -191,6 +197,17 @@ public class ANA_ implements PlugInFilter, DialogListener {
                 orgIplclone.draw();
             }
 
+            if (anap.fluoResultTable)
+                if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) {
+                    ResultsTable rt = new ResultsTable();
+                    Analyzer.setResultsTable(rt);
+                    // iterate over cells
+                    for (CellStats cs : qconfLoader.getStats().getStatCollection()) {
+                        cs.addFluosToResultTable(rt, anap.channel);
+                    }
+                    rt.show("Fluo data for channel " + anap.channel);
+                } else
+                    LOGGER.warn("Results can be shown in IJ table only in QCONF path");
             IJ.log("ANA Analysis complete");
             IJ.showStatus("Finished");
             ecmMapping = null;
@@ -342,6 +359,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         pd.addCheckbox("Sample at Ch" + (anap.useLocFromCh + 1) + " locations", anap.sampleAtSame);
         pd.addCheckbox("Clear stored measurements", false);
         pd.addCheckbox("New image with outlines? ", anap.plotOutlines);
+        pd.addCheckbox("Copy results to IJ Table?", anap.fluoResultTable);
         pd.addDialogListener(this);
 
         frameOneClone = (Outline) oH.indexGetOutline(0).clone();
@@ -356,7 +374,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see ij.gui.DialogListener#dialogItemChanged(ij.gui.GenericDialog, java.awt.AWTEvent)
      */
     @Override
@@ -387,6 +407,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         anap.normalise = gd.getNextBoolean();
         anap.sampleAtSame = gd.getNextBoolean();
         anap.plotOutlines = ((Checkbox) gd.getCheckboxes().elementAt(3)).getState();
+        anap.fluoResultTable = ((Checkbox) gd.getCheckboxes().elementAt(4)).getState();
         anap.setCortextWidthScale(scale);
         if (anap.cleared) { // can't deselect
             cb.setState(true);

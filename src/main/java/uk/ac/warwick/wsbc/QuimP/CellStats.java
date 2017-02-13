@@ -2,6 +2,8 @@ package uk.ac.warwick.wsbc.QuimP;
 
 import java.util.ArrayList;
 
+import ij.measure.ResultsTable;
+
 // TODO: Auto-generated Javadoc
 /**
  * Keep statistics (outline and fluoro) for one cell along frames.
@@ -11,8 +13,19 @@ import java.util.ArrayList;
  */
 public class CellStats {
 
+    /**
+     * Number of frames stored in.
+     */
     private int frames;
+    /**
+     * Number of parameters stored for cell statistic. This is like number of columns in output
+     * array.
+     */
     private int statsElements;
+    /**
+     * Number of parameters stored for fluoro statistic. This is like number of columns in output
+     * array.
+     */
     private int fluoElements;
 
     /**
@@ -61,5 +74,18 @@ public class CellStats {
      */
     public int getFluoElements() {
         return fluoElements;
+    }
+
+    /**
+     * Add results stored in {@link FrameStatistics} object to ResultTable for all frames.
+     * 
+     * @param rt table to fill
+     * @param channelno channel number
+     * @see FrameStatistics#addFluoToResultTable(ResultsTable, int)
+     */
+    public void addFluosToResultTable(ResultsTable rt, int channelno) {
+        for (FrameStatistics fs : framestat)
+            fs.addFluoToResultTable(rt, channelno);
+
     }
 }
