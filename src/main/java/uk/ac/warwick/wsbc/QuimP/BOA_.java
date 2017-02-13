@@ -1014,6 +1014,7 @@ public class BOA_ implements PlugIn {
             sZoom.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
+                    LOGGER.trace("EVENT:mousePressed");
                     fillZoomChoice();
                 }
             });
@@ -1029,13 +1030,24 @@ public class BOA_ implements PlugIn {
 
         /**
          * Rebuild Zoom choice UI according to cells on current frame {@link BOAp#frame}.
+         * 
+         * According to #193 if there is no cell left it creates empty entry and set it selected to
+         * enforce user to set explicitly default unzoom value and fire itemStateChanged.
          */
         private void fillZoomChoice() {
+            String prev = sZoom.getSelectedItem();
+            LOGGER.trace(prev);
             sZoom.removeAll();
             sZoom.add(fullZoom); // default word for full zoom (100% of view)
             List<Integer> frames = qState.nest.getSnakesforFrame(qState.boap.frame);
             for (Integer i : frames)
                 sZoom.add(i.toString());
+            if (sZoom.getItemCount() == 1) { // dirty trick to enforce triggering itemStateChanged
+                                             // if only default entry left (#193)
+                sZoom.add("");
+                sZoom.select("");
+            } else
+                sZoom.select(prev); // select last selected (if exists)
         }
 
         /**
@@ -1306,7 +1318,7 @@ public class BOA_ implements PlugIn {
          */
         @Override
         public void actionPerformed(final ActionEvent e) {
-            LOGGER.debug("EVENT:actionPerformed");
+            LOGGER.trace("EVENT:actionPerformed");
             boolean run = false; // some actions require to re-run segmentation. They set it to true
             Object b = e.getSource();
             if (b == bDel && !qState.boap.editMode && !qState.boap.doDeleteSeg) {
@@ -1698,7 +1710,7 @@ public class BOA_ implements PlugIn {
          */
         @Override
         public void itemStateChanged(final ItemEvent e) {
-            LOGGER.debug("EVENT:itemStateChanged");
+            LOGGER.trace("EVENT:itemStateChanged");
             if (qState.boap.doDelete) {
                 BOA_.log("**WARNING:DELETE IS ON**");
             }
@@ -1763,6 +1775,7 @@ public class BOA_ implements PlugIn {
 
             // Action on zoom selector
             if (source == sZoom) {
+                LOGGER.trace("zoom val " + sZoom.getSelectedItem());
                 if (sZoom.getSelectedItem().equals(fullZoom)) { // user selected default position
                                                                 // (no zoom)
                     qState.boap.snakeToZoom = -1; // set negative value to indicate no zoom
@@ -1807,7 +1820,7 @@ public class BOA_ implements PlugIn {
          */
         @Override
         public void stateChanged(final ChangeEvent ce) {
-            LOGGER.debug("EVENT:stateChanged");
+            LOGGER.trace("EVENT:stateChanged");
             if (qState.boap.doDelete) {
                 BOA_.log("**WARNING:DELETE IS ON**");
             }
