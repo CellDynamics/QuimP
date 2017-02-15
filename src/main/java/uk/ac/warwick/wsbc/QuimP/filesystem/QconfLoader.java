@@ -3,6 +3,7 @@ package uk.ac.warwick.wsbc.QuimP.filesystem;
 import java.awt.FileDialog;
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.JOptionPane;
 
@@ -12,8 +13,10 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
+import ij.io.FileInfo;
 import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.QuimP.BOAState;
+import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
 import uk.ac.warwick.wsbc.QuimP.QuimpException;
@@ -130,7 +133,8 @@ public class QconfLoader {
     /**
      * Try to load image associated with QCONF or paQP file.
      * 
-     * If image has not been found, user is being asked to point relevant file.
+     * If image has not been found, user is being asked to point relevant file. If file is loaded
+     * from disk it updates <tt>orgFile</tt> in {@link BOAp}
      * 
      * @return Loaded image from QCONF or that pointed by user. <tt>null</tt> if user cancelled.
      */
@@ -177,6 +181,7 @@ public class QconfLoader {
                     return null;
                 }
                 im = IJ.openImage(od.getDirectory() + od.getFileName());
+
             }
             if (n == JOptionPane.NO_OPTION) { // or open from ij
                 LOGGER.trace("Load from IJ");
@@ -186,6 +191,24 @@ public class QconfLoader {
                 String s = (String) JOptionPane.showInputDialog(IJ.getInstance(), message,
                         "Avaiable images", JOptionPane.PLAIN_MESSAGE, null, images, images[0]);
                 im = WindowManager.getImage(s);
+
+            }
+            // replace old image paths in QCONF to new one
+            if (im != null) {
+                Path orgFile;
+                FileInfo fileinfo = im.getOriginalFileInfo();
+                if (fileinfo == null) {
+                    orgFile = Paths.get(File.separator, im.getTitle());
+                } else {
+                    orgFile = Paths.get(fileinfo.directory, fileinfo.fileName);
+                }
+                try {
+                    if (isBOAPresent())
+                        getBOA().boap.setOrgFile(orgFile.toFile());
+                } catch (QuimpException e) {
+                    throw new Error(); // should never be here, we know that there is BOA and ew are
+                                       // on new path
+                }
             }
         }
         LOGGER.debug("Opened image: " + im);
