@@ -1579,6 +1579,9 @@ public class BOA_ implements PlugIn {
                         // replace orgFile with that already opened. It is possible as BOA can not
                         // exist without image loaded so this field will always be true.
                         loaded.obj.BOAState.boap.setOrgFile(qState.boap.getOrgFile());
+                        // replace outputFileCore with current one
+                        loaded.obj.BOAState.boap.setOutputFileCore(od.getDirectory()
+                                + QuimpToolsCollection.removeExtension(od.getFileName()));
                         // closes windows, etc
                         qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
                         qState = loaded.obj.BOAState;
@@ -2542,6 +2545,8 @@ public class BOA_ implements PlugIn {
         LOGGER.debug(qState.segParam.toString());
         if (qState.boap.saveSnake) {
             try {
+                // this field is set on loading of QCONF thus BOA will ask to save in the same
+                // folder
                 String saveIn = BOA_.qState.boap.getOutputFileCore().getParent();
                 SaveDialog sd = new SaveDialog("Save segmentation data...", saveIn,
                         BOA_.qState.boap.getFileName() + ".QCONF", "");

@@ -4,7 +4,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -35,12 +37,12 @@ import uk.ac.warwick.wsbc.QuimP.plugin.qanalysis.STmap;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class QconfLoaderTest {
-    
+
     /**
      * The Constant LOGGER.
      */
     static final Logger LOGGER = LoggerFactory.getLogger(QconfLoaderTest.class.getName());
-    
+
     /**
      * The tmpdir.
      */
@@ -108,10 +110,15 @@ public class QconfLoaderTest {
         i1.show();
         ImagePlus i2 = IJ.openImage("src/test/resources/Stack_cut.tif");
         i2.show();
-        QconfLoader o = new QconfLoader(Paths
-                .get("src/test/resources/ProtAnalysisTest/KZ4-220214-cAR1-GFP-devel5noimage.QCONF")
-                .toFile());
+        Files.copy(
+                Paths.get(
+                        "src/test/resources/ProtAnalysisTest/KZ4-220214-cAR1-GFP-devel5noimage.QCONF"),
+                Paths.get(tmpdir + "KZ4-220214-cAR1-GFP-devel5noimage_cp.QCONF"),
+                StandardCopyOption.REPLACE_EXISTING);
+        QconfLoader o = new QconfLoader(
+                Paths.get(tmpdir + "KZ4-220214-cAR1-GFP-devel5noimage_cp.QCONF").toFile());
         o.getImage();
+        o.getQp().writeParams();
     }
 
     /**
