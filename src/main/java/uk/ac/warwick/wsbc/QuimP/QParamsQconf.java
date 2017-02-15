@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.warwick.wsbc.QuimP.BOAState.BOAp;
 import uk.ac.warwick.wsbc.QuimP.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.QuimP.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.QuimP.filesystem.IQuimpSerialize;
@@ -109,6 +110,8 @@ public class QParamsQconf extends QParams {
     /**
      * Read composite <i>QCONF<i/> file.
      * 
+     * Update <tt>outputFileCore</tt> in {@link BOAp} to current QCONF.
+     * 
      * @throws QuimpException when problem with loading/parsing JSON
      */
     @Override
@@ -118,7 +121,12 @@ public class QParamsQconf extends QParams {
         try {
             // load file and make first check of correctness
             loaded = s.load(getParamFile()); // try to load
-            BOA_.qState = loaded.obj.BOAState; // restore qstate because some methods still need it
+            BOA_.qState = getLoadedDataContainer().getBOAState(); // restore qstate because some
+                                                                  // methods still need it
+            // update path and file core name
+            if (getLoadedDataContainer().getBOAState() != null)
+                getLoadedDataContainer().getBOAState().boap.setOutputFileCore(
+                        QuimpToolsCollection.removeExtension(newParamFile.getAbsolutePath()));
         } catch (Exception e) { // stop on fail (file or json error)
             LOGGER.error(e.getMessage());
             LOGGER.debug(e.getMessage(), e);
@@ -168,11 +176,20 @@ public class QParamsQconf extends QParams {
     public void writeParams() throws IOException {
         LOGGER.debug("New file format: Updating data " + getParamFile());
         try {
-            loaded.obj.beforeSerialize(); // call explicitly beforeSerialize because Dump doesn't do
-            Serializer.Dump(loaded, getParamFile(), BOA_.qState.boap.savePretty); // "loaded" is
-                                                                                  // already
-                                                                                  // packed by
-                                                                                  // Serializer
+            // loaded.obj.beforeSerialize(); // call explicitly beforeSerialize because Dump doesn't
+            // do
+            // Serializer.Dump(loaded, getParamFile(), BOA_.qState.boap.savePretty); // "loaded" is
+            // already
+            // packed by
+            // Serializer
+            Serializer<DataContainer> n;
+            n = new Serializer<>(getLoadedDataContainer(),
+                    new QuimpToolsCollection().getQuimPBuildInfo());
+            if (getLoadedDataContainer().BOAState.boap.savePretty) // set pretty format if
+                                                                   // configured
+                n.setPretty();
+            n.save(getParamFile().getAbsolutePath());
+            n = null;
         } catch (FileNotFoundException e) {
             LOGGER.error("File " + getParamFile() + " could not be saved. " + e.getMessage());
             LOGGER.debug(e.getMessage(), e);
