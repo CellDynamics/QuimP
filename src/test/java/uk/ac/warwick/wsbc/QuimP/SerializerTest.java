@@ -285,6 +285,7 @@ public class SerializerTest {
     /**
      * @throws FileNotFoundException
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testDumpStatic() throws FileNotFoundException {
         TestClass tc = new TestClass();

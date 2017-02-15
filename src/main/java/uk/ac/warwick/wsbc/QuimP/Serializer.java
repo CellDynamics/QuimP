@@ -384,7 +384,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @param savePretty
      * @throws FileNotFoundException
      * @see #Dump(Object, String, boolean)
+     * @deprecated It does not support GSon versioning
      */
+    @Deprecated
     static void Dump(final Object obj, final String filename, boolean savePretty)
             throws FileNotFoundException {
         File file = new File(filename);
@@ -405,7 +407,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
      * @param filename to be saved under
      * @param savePretty if \a true use pretty format
      * @throws FileNotFoundException when file can not be created
+     * @deprecated It does not support GSon versioning
      */
+    @Deprecated
     static void Dump(final Object obj, final File filename, boolean savePretty)
             throws FileNotFoundException {
         GsonBuilder gsonBuilder = new GsonBuilder();
