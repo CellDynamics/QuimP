@@ -7,6 +7,7 @@ import ij.CompositeImage;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.process.ImageProcessor;
 
 /**
@@ -28,22 +29,33 @@ public class PropagateSeeds_run {
     public static void main(String[] args) throws RandomWalkException {
         ImageJ ij = new ImageJ();
         ImagePlus mask = IJ.openImage(
-                "/home/baniuk/baniuk1@gmail.com/Warwick/Abstract/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_rough_snakemask.tif");
+                "/home/baniuk/baniuk1@gmail.com/Warwick/Abstract/C1-talA_mNeon_bleb_0pt7%agar_FLU_snakemask.tif");
         ImagePlus org = IJ.openImage(
-                "/home/baniuk/baniuk1@gmail.com/Warwick/Abstract/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18.tif");
+                "/home/baniuk/baniuk1@gmail.com/Warwick/Abstract/C1-talA_mNeon_bleb_0pt7%agar_FLU.tif");
         mask.show();
         org.show();
+        ImageStack is = mask.getStack();
         PropagateSeeds.Contour cc = new PropagateSeeds.Contour(true);
-        cc.propagateSeed(mask.getProcessor(), 20, 10);
+        for (int i = 1; i <= is.getSize(); i++) {
+            cc.propagateSeed(mask.getStack().getProcessor(i), 20, 10);
+        }
         CompositeImage ret = (CompositeImage) cc.getCompositeSeed(org);
         ret.show();
-        ImageProcessor r = ret.getProcessor(1);
-        IJ.saveAsTiff(new ImagePlus("red", r),
-                "/home/baniuk/baniuk1@gmail.com/Warwick/Abstract/rough_snakemask_shrink.tif");
-        r = ret.getProcessor(2);
-        IJ.saveAsTiff(new ImagePlus("green", r),
-                "/home/baniuk/baniuk1@gmail.com/Warwick/Abstract/rough_snakemask_expand.tif");
+        ImageStack resultstack_red = new ImageStack(mask.getWidth(), mask.getHeight());
+        ImageStack resultstack_green = new ImageStack(mask.getWidth(), mask.getHeight());
+        for (int i = 1; i <= is.getSize(); i++) {
+            ret.setZ(i);
+            ImageProcessor red = ret.getProcessor(1);
+            ImageProcessor green = ret.getProcessor(2);
+            resultstack_red.addSlice(red);
+            resultstack_green.addSlice(green);
+        }
+        IJ.saveAsTiff(new ImagePlus("red", resultstack_red),
+                "/home/baniuk/baniuk1@gmail.com/Warwick/Abstract/rough_snakemask_shrink_stack.tif");
+        IJ.saveAsTiff(new ImagePlus("green", resultstack_green),
+                "/home/baniuk/baniuk1@gmail.com/Warwick/Abstract/rough_snakemask_expand_stack.tif");
 
+        ij.quit();
     }
 
 }
