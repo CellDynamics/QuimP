@@ -6,9 +6,23 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+      <release version="17.02.04" date="2017-02-16" description="Release">
+          <action dev="baniuk" type="add" issue="225">
+              QuimP-ANA: Fluorescence data can be exported to IJ table for current channel.
+          </action>
+          <action dev="baniuk" type="fix" issue="222">
+              QuimP-BOA: Identified problem with plugin, Java-8 update site must be enabled to have vecmath included in IJ classpath.
+          </action>
+          <action dev="baniuk" type="fix" issue="193">
+              QuimP-BOA: Fixed problem with cell unzooming on Windows.
+          </action>
+          <action dev="baniuk" type="fix" issue="118">
+              QuimP: Paths to image and QCONF file stored in it are now updated on every save. QCONF can be copied now to other location without risk of accidental modifying of old location. QCONF container is regenerated on every save, internal version and date are updated then.
+          </action>
+      </release>
       <release version="17.02.03" date="2017-02-07" description="Release">
           <action dev="baniuk" type="fix" issue="224">
-              QuimP-ANA: Contour shrinking behaviour in ANA.
+              QuimP-ANA: Contour shrinking behavior in ANA.
           </action>
       </release>
       <release version="17.02.02" date="2017-02-06" description="Release">
@@ -30,7 +44,7 @@
       </release>
       <release version="17.02.01" date="2017-01-30" description="Release">
           <action dev="baniuk" type="fix" issue="215">
-              Protruision Analysis: Fixed tests.
+              Protrusion Analysis: Fixed tests.
           </action>
           <action dev="baniuk" type="add" issue="213">
               QuimP-RandomWalk: Added option for real time previewing segmentation progress.
@@ -51,7 +65,7 @@
               QuimP: Change webpage in quimp info.
           </action>
           <action dev="baniuk" type="fix" issue="203">
-              QuimP-RandomWalk: Fixed problem when show seeds option was used together with seeding every slice separatelly (seeds of size of input image).
+              QuimP-RandomWalk: Fixed problem when show seeds option was used together with seeding every slice separately (seeds of size of input image).
           </action>
           <action dev="baniuk" type="fix" issue="202">
               QuimP-BOA: Fixed bug when user deleted accidentally contour in edit mode and then quit from edit mode.
@@ -79,7 +93,7 @@
               QuimP: Add convert masks plugin to plugin menu.
           </action>
           <action dev="baniuk" type="fix" issue="207">
-              QuimP: Possibe bug in correct density function.
+              QuimP: Possible bug in correct density function.
           </action>
           <action dev="baniuk" type="update" issue="trac/287">
               QuimP: Switch to forked vecmath available in ImageJ jars. 
@@ -95,7 +109,7 @@
       </release>
       <release version="16.12.01" date="2016-12-08" description="Release">
           <action dev="baniuk" type="fix" issue="190">
-              Protruision Analysis: Error when processing multiple cells.
+              Protrusion Analysis: Error when processing multiple cells.
           </action>
           <action dev="baniuk" type="update" issue="188">
               QuimP-BOA: Suppress standard console messages.
@@ -129,7 +143,7 @@
       </release>
       <release version="16.11.01" date="2016-11-22" description="Release">
           <action dev="baniuk" type="add" issue="156">
-              Protruision Analysis: Statistics can be previeved in IJ standard measurement window.
+              Protrusion Analysis: Statistics can be previewed in IJ standard measurement window.
           </action>
           <action dev="baniuk" type="update" issue="168">
               QuimP: Use standard IJ logging framework.
@@ -169,7 +183,7 @@
               BOA: BOA fails if old plugins are available in plugin directory.
           </action>
           <action dev="baniuk" type="add" issue="160">
-              QuimP: User can view the license from QuimP Bar. Some unsused dependencies removed.
+              QuimP: User can view the license from QuimP Bar. Some unused dependencies removed.
           </action>
           <action dev="baniuk" type="fix" issue="161">
               Services: Registration form on web deals with empty fields and white characters.
@@ -195,7 +209,7 @@
               QuimP: Added registration window.
           </action>
           <action dev="baniuk" type="add" issue="148">
-              Protruision Analysis: Added polar plots.
+              Protrusion Analysis: Added polar plots.
           </action>
       </release>
       <release version="16.08.06" date="2016-10-06" description="Release">
@@ -227,7 +241,7 @@
               Protrusion Analysis: Added export of statistics.  
           </action>
           <action dev="baniuk" type="add" issue="152">
-              Protruision Analysis: Added user interface.  
+              Protrusion Analysis: Added user interface.  
           </action>
       </release>
       <release version="16.08.02" date="2016-09-15" description="Release">
@@ -240,7 +254,7 @@
             Plugin code reworked.
          </action>
          <action dev="baniuk" type="fix" issue="128">
-            paQP files generated from QCONF contained bad segementation parameters.
+            paQP files generated from QCONF contained bad segmentation parameters.
          </action>
          <action dev="baniuk" type="fix" issue="130">
             ANA: clear option does not work.
@@ -274,7 +288,7 @@
             Detect whether loaded QCONF file contains any previous data and notify user if it does.
          </action>
         <action dev="baniuk" type="update" issue="127">
-            Option for saving outlines as separte image in ANA module.
+            Option for saving outlines as separate image in ANA module.
         </action>
         <action dev="baniuk" type="update" issue="126">
             Allow to load new format to ANA.
