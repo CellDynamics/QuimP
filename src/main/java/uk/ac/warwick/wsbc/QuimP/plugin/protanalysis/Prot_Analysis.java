@@ -36,7 +36,6 @@ import ij.gui.ImageCanvas;
 import ij.gui.ImageWindow;
 import ij.measure.ResultsTable;
 import ij.plugin.ZProjector;
-import ij.plugin.filter.Analyzer;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
 import uk.ac.warwick.wsbc.QuimP.QParams;
 import uk.ac.warwick.wsbc.QuimP.QParamsQconf;
@@ -423,7 +422,6 @@ public class Prot_Analysis implements IQuimpPlugin {
      */
     public ResultsTable createCellResultTable() {
         ResultsTable rt = new ResultsTable();
-        Analyzer.setResultsTable(rt);
         return rt;
     }
 

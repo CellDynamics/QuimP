@@ -25,7 +25,6 @@ import ij.gui.YesNoCancelDialog;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
 import ij.plugin.Converter;
-import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
@@ -200,7 +199,6 @@ public class ANA_ implements PlugInFilter, DialogListener {
             if (anap.fluoResultTable)
                 if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) {
                     ResultsTable rt = new ResultsTable();
-                    Analyzer.setResultsTable(rt);
                     // iterate over cells
                     for (CellStats cs : qconfLoader.getStats().getStatCollection()) {
                         cs.addFluosToResultTable(rt, anap.channel);
