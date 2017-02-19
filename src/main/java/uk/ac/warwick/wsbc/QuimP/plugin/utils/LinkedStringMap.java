@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 
 // TODO: Auto-generated Javadoc
 /**
- * Extension of LinkedHashMap that assumes that Key is String are case insensitive.
+ * Extension of LinkedHashMap that assumes that Key is String and it is case insensitive.
  * 
  * All keys are converted to lower case.
  * 

@@ -75,7 +75,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  *
  */
 public class ECMM_Mapping {
-    
+
     /**
      * The Constant LOGGER.
      */
@@ -194,7 +194,7 @@ public class ECMM_Mapping {
             IJ.showStatus("Finished");
         } catch (Exception e) { // catch all here
             LOGGER.debug(e.getMessage(), e);
-            LOGGER.error("Problem with run of ECMM mapping: " + e.getMessage());
+            LOGGER.error("Problem with running ECMM mapping: " + e.getMessage());
         }
     }
 

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.Macro;
 import ij.gui.NewImage;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
@@ -35,17 +36,16 @@ import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Convert QCONF files to BW masks.
  * 
- * Use Snake data produced by BOA.
+ * Use Snake data produced by BOA and stored in QCONF file.
  * 
  * @author p.baniukiewicz
  *
  */
 public class GenerateMask_ implements IQuimpPlugin {
-    
+
     /**
      * The Constant LOGGER.
      */
@@ -57,45 +57,33 @@ public class GenerateMask_ implements IQuimpPlugin {
      * Initialised by {@link #loadFile(File)} through this constructor.
      */
     private QconfLoader qconfLoader; // main object representing loaded configuration file
-    
+
     /**
-     * The param list.
+     * default configuration parameters, for future using.
      */
-    // default configuration parameters, for future using
     ParamList paramList = new ParamList();
 
     /**
-     * Default constructor.
-     * 
-     * Run parameterised constructor with <tt>null</tt> showing file selector.
+     * Indicate that plugin is run as macro from script. Blocks all UIs.
+     */
+    private MessageSinkTypes runAsMacro = MessageSinkTypes.GUI;
+
+    /**
+     * Default constructor. Empty as plugin is run by {@link #run(String)} method called by IJ
+     * because of PlugIn interface
      */
     public GenerateMask_() {
-        this(null);
     }
 
     /**
      * Constructor that allows to provide own file.
      * 
-     * @param paramFile File to process.
+     * @param paramFile it can be null to ask user fo file or it can be parameters string like that
+     *        passed in macro.
+     * @see #about()
      */
-    public GenerateMask_(File paramFile) {
-        IJ.log(new QuimpToolsCollection().getQuimPversion());
-        // validate registered user
-        new Registration(IJ.getInstance(), "QuimP Registration");
-        // check whether config file name is provided or ask user for it
-        try {
-            IJ.showStatus("Generate Mask");
-            loadFile(paramFile); // load configuration file given by paramFile and verify it
-            if (qconfLoader.getQp() == null)
-                return; // not loaded
-            runPlugin();
-        } catch (QuimpException qe) {
-            qe.setMessageSinkType(MessageSinkTypes.GUI);
-            qe.handleException(IJ.getInstance(), "GenerateMask:");
-        } catch (Exception e) { // catch all exceptions here
-            LOGGER.debug(e.getMessage(), e);
-            LOGGER.error("Problem with run of GenerateMask plugin: " + e.getMessage());
-        }
+    public GenerateMask_(String paramFile) {
+        run(paramFile);
     }
 
     /**
@@ -132,6 +120,7 @@ public class GenerateMask_ implements IQuimpPlugin {
      * @throws QuimpException
      */
     private void runFromQCONF() throws QuimpException {
+        IJ.showStatus("Generate mask");
         BOAState bs = qconfLoader.getBOA();
         Nest nest = bs.nest;
         // create output image
@@ -165,14 +154,21 @@ public class GenerateMask_ implements IQuimpPlugin {
                 Paths.get(qp.getPath(), qp.getFileName() + FileExtensions.generateMaskSuffix);
         IJ.saveAsTiff(res, filename.toString());
         IJ.log("Saved in: " + filename.toString());
-        JOptionPane.showMessageDialog(
-                IJ.getInstance(), QuimpToolsCollection
-                        .stringWrap("Image saved! (see log to find path)", QuimP.LINE_WRAP),
-                "Saved!", JOptionPane.INFORMATION_MESSAGE);
+        if (runAsMacro == MessageSinkTypes.GUI) {
+            JOptionPane.showMessageDialog(
+                    IJ.getInstance(), QuimpToolsCollection
+                            .stringWrap("Image saved! (see log to find path)", QuimP.LINE_WRAP),
+                    "Saved!", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            IJ.log("Mask generated!");
+        }
+        IJ.showStatus("Finished");
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setup()
      */
     @Override
@@ -181,15 +177,21 @@ public class GenerateMask_ implements IQuimpPlugin {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setPluginConfig(uk.ac.warwick.wsbc.QuimP.plugin.ParamList)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setPluginConfig(uk.ac.warwick.wsbc.QuimP.
+     * plugin.ParamList)
      */
     @Override
     public void setPluginConfig(ParamList par) throws QuimpPluginException {
         paramList = new ParamList(par);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getPluginConfig()
      */
     @Override
@@ -197,14 +199,18 @@ public class GenerateMask_ implements IQuimpPlugin {
         return paramList;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#showUI(boolean)
      */
     @Override
     public void showUI(boolean val) {
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getVersion()
      */
     @Override
@@ -212,29 +218,62 @@ public class GenerateMask_ implements IQuimpPlugin {
         return "See QuimP version";
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#about()
      */
     @Override
     public String about() {
         return "Generate mask plugin.\n" + "Author: Piotr Baniukiewicz\n"
-                + "mail: p.baniukiewicz@warwick.ac.uk";
+                + "mail: p.baniukiewicz@warwick.ac.uk\n" + "This plugin supports macro parameters\n"
+                + "\tfilenam=path_to_QCONF";
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin#runPlugin()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ij.plugin.PlugIn#run(java.lang.String)
      */
     @Override
-    public void runPlugin() throws QuimpPluginException {
-        try {
-            IJ.showStatus("Generate mask");
-            runFromQCONF();
-            IJ.log("Mask generated!");
-            IJ.showStatus("Finished");
-        } catch (QuimpException e) { // catch internal exceptions here and convert to expected type
-            throw new QuimpPluginException(e);
+    public void run(String arg) {
+        File paramFile;
+        String params;
+        IJ.log(new QuimpToolsCollection().getQuimPversion());
+        // decode possible params passed in macro or from constructor
+        if (arg == null) {
+            params = Macro.getOptions();
+        } else {
+            params = arg;
         }
-        // Other exceptions are catched in constructor and presented in log window
+        if (params == null) { // no params - set file to null to allow show file
+                              // selector by QcobfLoader
+            paramFile = null;
+        } else { // there is something, parse it
+            runAsMacro = MessageSinkTypes.CONSOLE; // set errors to console
+            String val = Macro.getValue(params, "filename", null);
+            if (val == null) {
+                LOGGER.error("Wrong macro parameter\n" + about());
+                return;
+            }
+            paramFile = new File(val);
+        }
+        // validate registered user
+        new Registration(IJ.getInstance(), "QuimP Registration");
+        // check whether config file name is provided or ask user for it
+        try {
+            IJ.showStatus("Generate Mask");
+            loadFile(paramFile); // load configuration file given by paramFile and verify it
+            if (qconfLoader.getQp() == null)
+                return; // not loaded
+            runFromQCONF();
+        } catch (QuimpException qe) {
+            qe.setMessageSinkType(runAsMacro);
+            qe.handleException(IJ.getInstance(), "GenerateMask:");
+        } catch (Exception e) { // catch all exceptions here
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Problem with running GenerateMask plugin: " + e.getMessage());
+        }
 
     }
 

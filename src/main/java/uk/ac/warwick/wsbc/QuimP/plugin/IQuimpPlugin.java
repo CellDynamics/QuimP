@@ -1,5 +1,7 @@
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
+import ij.plugin.PlugIn;
+
 // TODO: Auto-generated Javadoc
 /**
  * This interface supports plugins used in QuimP Bar.
@@ -9,13 +11,6 @@ package uk.ac.warwick.wsbc.QuimP.plugin;
  * @author p.baniukiewicz
  *
  */
-public interface IQuimpPlugin extends IQuimpCorePlugin {
-    /**
-     * Run plugin.
-     * 
-     * This method should deal with data loading and processing
-     * @throws QuimpPluginException on any problems during filter execution
-     */
-    void runPlugin() throws QuimpPluginException;
+public interface IQuimpPlugin extends IQuimpCorePlugin, PlugIn {
 
 }

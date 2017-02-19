@@ -16,7 +16,7 @@ import ij.process.FloatPolygon;
 
 // TODO: Auto-generated Javadoc
 /**
- * Simple data loader for test
+ * Simple data loader for test.
  * 
  * Load contours saved as one-column list with interleaving coordinates of vertices:
  * 
@@ -39,7 +39,7 @@ import ij.process.FloatPolygon;
  *
  */
 public class DataLoader {
-    
+
     /**
      * The Constant LOGGER.
      */
