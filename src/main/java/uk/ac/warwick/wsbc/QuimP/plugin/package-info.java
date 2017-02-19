@@ -1,11 +1,3 @@
-/*
- * !>
- * @startuml doc-files/plugins_1_UML.png
- * User -> (Run plugin\nfrom IJ)
- * User -> (Run plugin\nfrom code)
- * @enduml
- * !<
- */
 /**
  * This package contains interfaces that define QuimP plugins.
  * 
@@ -25,13 +17,16 @@
  * <li>Default constructor should do nothing for running the plugin
  * <li>Other constructor are allowed, for example for testing
  * <li>The main runner is {@link uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin#run(String)} method.
- * Input parameter can be used for passing parameters from e.g. parameterised constructor. It is not
- * that parameter that contain options given in IJ macro scripts.
+ * Input parameter for {@link uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin#run(String) }can be used
+ * for passing parameters from e.g. parameterised constructor. It is not that parameter that contain
+ * options given in IJ macro scripts. It can be epmty or null.
  * <li>Plugin should be able to run with options given in IJ macro - in this case without UI and
  * with showing all messages in console.
  * </ol>
  * <p>
- * There are two use cases possible:
+ * 
+ * <h2>Plugin template</h2> Abstract class {@link uk.ac.warwick.wsbc.QuimP.plugin.PluginTemplate}
+ * contains basic code that supports macros and calls from UI.
  * 
  * @author p.baniukiewicz
  */

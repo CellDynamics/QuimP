@@ -21,6 +21,11 @@
  * <li>none - will open file selector
  * <li><i>filename</i>=path_to_qconf - load and process the file.
  * </ol>
+ * <p>
+ * 
+ * <pre>
+ * {@code run("Generate mask","filename=[C:/Users/baniu/Google Drive/Warwick/Abstract/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine.QCONF]") }
+ * </pre>
  * 
  * @author p.baniukiewicz
  *

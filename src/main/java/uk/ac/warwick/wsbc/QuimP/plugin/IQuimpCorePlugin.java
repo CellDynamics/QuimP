@@ -96,7 +96,9 @@ public interface IQuimpCorePlugin {
      * One can use white characters in this string to limit line length because there is no
      * guarantee that displayer will wrap lines.
      * 
-     * @return String \a about (any format) or \c null if not supported
+     * It can shows also simple help for supported macro options.
+     * 
+     * @return String about (any format) or null if not supported
      */
     String about();
 }

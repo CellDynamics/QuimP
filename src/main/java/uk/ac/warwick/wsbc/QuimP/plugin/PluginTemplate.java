@@ -37,6 +37,8 @@ public abstract class PluginTemplate implements IQuimpPlugin {
 
     /**
      * Indicate that plugin is run as macro from script. Blocks all UIs.
+     * 
+     * Use this variable in child class to decide whether to show message in UI or console.
      */
     protected MessageSinkTypes runAsMacro = MessageSinkTypes.GUI;
 
@@ -46,6 +48,12 @@ public abstract class PluginTemplate implements IQuimpPlugin {
      * Initialised by {@link #loadFile(File)} through this constructor.
      */
     protected QconfLoader qconfLoader; // main object representing loaded configuration file
+
+    /**
+     * Default constructor, should not run plugin.
+     */
+    public PluginTemplate() {
+    }
 
     /**
      * Load configuration file. (only if not loaded before).
@@ -128,7 +136,10 @@ public abstract class PluginTemplate implements IQuimpPlugin {
     /**
      * This method should assign all internal variables of child class to values read from options.
      * 
-     * It should also deal with null and must set {@link #paramFile} variable.
+     * It should also deal with null and must set {@link #paramFile} variable. It also provides
+     * simple syntax checking. In case of problems, missing variables etc the {@link #about()}
+     * should be called and displayed to user (rather in console as wrong syntax happens only when
+     * called from macro or code)
      * 
      * @param options string in form key=val,key1=val1, etc or null
      */
@@ -139,23 +150,25 @@ public abstract class PluginTemplate implements IQuimpPlugin {
      * 
      * @see ij.plugin.PlugIn#run(java.lang.String)
      */
+    /**
+     * That method shows version in console, checks registration and calls {@link #runFromQCONF()}
+     * which is main runner for plugin.
+     */
     @Override
     public void run(String arg) {
-
         String options;
         IJ.log(new QuimpToolsCollection().getQuimPversion());
         // decode possible params passed in macro or from constructor
-        if (arg == null) {
-            options = Macro.getOptions();
+        if (arg == null || arg.isEmpty()) { // no options passed directly to method
+            options = Macro.getOptions(); // check if there are any in macro
         } else {
-            options = arg;
+            options = arg; // options passed here - they must be in the same format as in macro
         }
-        if (options == null) { // no params - set file to null to allow show file
-                               // selector by QcobfLoader
-            parseOptions(options);
+        if (options == null || options.isEmpty()) { // something was passed but it was null
+            parseOptions(options); // let user decide
         } else { // there is something, parse it
-            runAsMacro = MessageSinkTypes.CONSOLE; // set errors to console
-            parseOptions(options);
+            runAsMacro = MessageSinkTypes.CONSOLE; // set errors to console, we are in macro mode
+            parseOptions(options); // user will decide
         }
         // validate registered user
         new Registration(IJ.getInstance(), "QuimP Registration");
@@ -164,7 +177,7 @@ public abstract class PluginTemplate implements IQuimpPlugin {
             loadFile(paramFile); // load configuration file given by paramFile and verify it
             if (qconfLoader.getQp() == null)
                 return; // not loaded
-            runFromQCONF();
+            runFromQCONF(); // run plugin
         } catch (QuimpException qe) {
             qe.setMessageSinkType(runAsMacro);
             qe.handleException(IJ.getInstance(), "GenerateMask:");
@@ -176,6 +189,10 @@ public abstract class PluginTemplate implements IQuimpPlugin {
     }
 
     /**
+     * Main runner.
+     * 
+     * This method expects that all variables are already set (vy {@link #run(String)}.
+     * 
      * @throws QuimpException
      */
     protected abstract void runFromQCONF() throws QuimpException;
