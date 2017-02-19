@@ -213,7 +213,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
             ecmMapping = null;
         } catch (Exception e) {
             LOGGER.debug(e.getMessage(), e);
-            LOGGER.error("Problem with run of ANA processing: " + e.getMessage());
+            LOGGER.error("Problem with running ANA processing: " + e.getMessage());
         }
     }
 

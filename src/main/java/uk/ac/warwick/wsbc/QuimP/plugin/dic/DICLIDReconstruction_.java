@@ -9,9 +9,11 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.GenericDialog;
-import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginFilter;
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
+import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
 
@@ -24,8 +26,8 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimPArrayUtils;
  * @author p.baniukiewicz
  * @see LidReconstructor
  */
-public class DICLIDReconstruction_ implements PlugInFilter {
-    
+public class DICLIDReconstruction_ implements IQuimpPluginFilter {
+
     /**
      * The Constant LOGGER.
      */
@@ -75,8 +77,9 @@ public class DICLIDReconstruction_ implements PlugInFilter {
             ImagePlus result = new ImagePlus("DIC_" + imp.getTitle(),
                     new ShortProcessor(ip.getWidth(), ip.getHeight()));
             dic = new LidReconstructor(imp.getProcessor(), decay, angle, prefilterangle, masksize);
-            if (imp.getStack().getSize() == 1) {// if there is no stack we can avoid additional rotation
-                                        // here (see DICReconstruction documentation)
+            if (imp.getStack().getSize() == 1) {// if there is no stack we can avoid additional
+                                                // rotation
+                // here (see DICReconstruction documentation)
                 IJ.showProgress(0.0);
                 ret = dic.reconstructionDicLid();
                 result.getProcessor().setPixels(ret.getPixels());
@@ -166,6 +169,36 @@ public class DICLIDReconstruction_ implements PlugInFilter {
         int i = QuimPArrayUtils.minListIndex(Arrays.asList(d));
         i = i > 3 ? 0 : i; // deal with 180 that should be 0
         return Integer.toString(i * 45);
+    }
+
+    @Override
+    public int setup() {
+        return 0;
+    }
+
+    @Override
+    public void setPluginConfig(ParamList par) throws QuimpPluginException {
+    }
+
+    @Override
+    public ParamList getPluginConfig() {
+        return null;
+    }
+
+    @Override
+    public void showUI(boolean val) {
+    }
+
+    @Override
+    public String getVersion() {
+        return "See QuimP version";
+    }
+
+    @Override
+    public String about() {
+        return "DIC plugin.\n" + "Author: Piotr Baniukiewicz\n"
+                + "mail: p.baniukiewicz@warwick.ac.uk\n" + "This plugin supports macro parameters\n"
+                + "Check macro recorder";
     }
 
 }
