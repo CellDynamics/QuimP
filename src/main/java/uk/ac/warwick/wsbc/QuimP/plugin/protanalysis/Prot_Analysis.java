@@ -79,7 +79,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.graphics.PolarPlot;
  * @author p.baniukiewicz
  */
 public class Prot_Analysis implements IQuimpPlugin {
-    
+
     /**
      * The Constant LOGGER.
      */
@@ -98,7 +98,11 @@ public class Prot_Analysis implements IQuimpPlugin {
      * Initialised by this constructor.
      */
     public Prot_AnalysisUI gui;
-    
+    /**
+     * Indicate that plugin is run as macro from script. Blocks all UIs.
+     */
+    private MessageSinkTypes runAsMacro = MessageSinkTypes.GUI;
+
     /**
      * The param list.
      */
@@ -123,10 +127,8 @@ public class Prot_Analysis implements IQuimpPlugin {
     /**
      * Default constructor.
      * 
-     * Run parameterised constructor with <tt>null</tt> showing file selector.
      */
     public Prot_Analysis() {
-        this(null);
     }
 
     /**
@@ -134,30 +136,8 @@ public class Prot_Analysis implements IQuimpPlugin {
      * 
      * @param paramFile File to process.
      */
-    public Prot_Analysis(File paramFile) {
-        IJ.log(new QuimpToolsCollection().getQuimPversion());
-        config = new ProtAnalysisConfig();
-        gui = new Prot_AnalysisUI(this);
-        rt = createCellResultTable();
-        // validate registered user
-        new Registration(IJ.getInstance(), "QuimP Registration");
-        // check whether config file name is provided or ask user for it
-        try {
-            IJ.showStatus("Protrusion Analysis");
-            loadFile(paramFile); // load configuration file given by paramFile and verify it
-            if (qconfLoader.getQp() == null)
-                return; // not loaded
-            gui.writeUI(); // set ui
-            showUI(true); // show it and wait for user action. Plugin is run from Apply button
-            if (uiCancelled)
-                return;
-        } catch (QuimpException qe) { // catch QuimpPluginException and QuimpException
-            qe.setMessageSinkType(MessageSinkTypes.GUI);
-            qe.handleException(IJ.getInstance(), "Protrusion Analysis:");
-        } catch (Exception e) { // catch all exceptions here
-            LOGGER.debug(e.getMessage(), e);
-            LOGGER.error("Problem with run of Protrusion Analysis mapping: " + e.getMessage());
-        }
+    public Prot_Analysis(String paramFile) {
+        run(paramFile);
     }
 
     /**
@@ -355,7 +335,9 @@ public class Prot_Analysis implements IQuimpPlugin {
         return cellStat;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setup()
      */
     @Override
@@ -364,8 +346,12 @@ public class Prot_Analysis implements IQuimpPlugin {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setPluginConfig(uk.ac.warwick.wsbc.QuimP.plugin.ParamList)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setPluginConfig(uk.ac.warwick.wsbc.QuimP.
+     * plugin.ParamList)
      */
     @Override
     public void setPluginConfig(ParamList par) throws QuimpPluginException {
@@ -374,7 +360,9 @@ public class Prot_Analysis implements IQuimpPlugin {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getPluginConfig()
      */
     @Override
@@ -384,7 +372,9 @@ public class Prot_Analysis implements IQuimpPlugin {
         return paramList;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#showUI(boolean)
      */
     @Override
@@ -392,7 +382,9 @@ public class Prot_Analysis implements IQuimpPlugin {
         gui.showUI(val);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getVersion()
      */
     @Override
@@ -400,7 +392,9 @@ public class Prot_Analysis implements IQuimpPlugin {
         return "See QuimP version";
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#about()
      */
     @Override
@@ -409,11 +403,7 @@ public class Prot_Analysis implements IQuimpPlugin {
                 + "mail: p.baniukiewicz@warwick.ac.uk";
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin#runPlugin()
-     */
-    @Override
-    public void runPlugin() throws QuimpPluginException {
+    void runPlugin() throws QuimpPluginException {
         try {
             IJ.showStatus("Protrusion Analysis");
             runFromQCONF();
@@ -435,6 +425,40 @@ public class Prot_Analysis implements IQuimpPlugin {
         ResultsTable rt = new ResultsTable();
         Analyzer.setResultsTable(rt);
         return rt;
+    }
+
+    @Override
+    public void run(String arg) {
+        // set file name or null if no file provided
+        File paramFile;
+        if (arg == null || arg.isEmpty()) {
+            paramFile = null;
+        } else {
+            paramFile = new File(arg);
+        }
+        IJ.log(new QuimpToolsCollection().getQuimPversion());
+        config = new ProtAnalysisConfig();
+        gui = new Prot_AnalysisUI(this);
+        rt = createCellResultTable();
+        // validate registered user
+        new Registration(IJ.getInstance(), "QuimP Registration");
+        // check whether config file name is provided or ask user for it
+        try {
+            IJ.showStatus("Protrusion Analysis");
+            loadFile(paramFile); // load configuration file given by paramFile and verify it
+            if (qconfLoader.getQp() == null)
+                return; // not loaded
+            gui.writeUI(); // set ui
+            showUI(true); // show it and wait for user action. Plugin is run from Apply button
+            if (uiCancelled)
+                return;
+        } catch (QuimpException qe) { // catch QuimpPluginException and QuimpException
+            qe.setMessageSinkType(runAsMacro);
+            qe.handleException(IJ.getInstance(), "Protrusion Analysis:");
+        } catch (Exception e) { // catch all exceptions here
+            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error("Problem with running Protrusion Analysis mapping: " + e.getMessage());
+        }
     }
 }
 
@@ -781,7 +805,8 @@ class Prot_AnalysisUI implements ActionListener {
 
             } catch (Exception ex) { // catch all exceptions here
                 LOGGER.debug(ex.getMessage(), ex);
-                LOGGER.error("Problem with run of Protrusion Analysis mapping: " + ex.getMessage());
+                LOGGER.error(
+                        "Problem with running of Protrusion Analysis mapping: " + ex.getMessage());
             }
         }
         if (e.getSource() == bCancel) {
