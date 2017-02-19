@@ -17,6 +17,10 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
 /**
+ * This is template for general purpose plugin based on QCONF file exchange platform.
+ * 
+ * Should not be used for standard IJ plugins.
+ * 
  * @author p.baniukiewicz
  *
  */

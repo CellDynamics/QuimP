@@ -37,7 +37,6 @@ import uk.ac.warwick.wsbc.QuimP.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /*
  * //!>
  * @startuml doc-files/ECMM_Mapping_1_UML.png
@@ -72,6 +71,7 @@ import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
  * Main ECMM implementation class.
  * 
  * @author rtyson
+ * @author p.baniukiewicz
  *
  */
 public class ECMM_Mapping {

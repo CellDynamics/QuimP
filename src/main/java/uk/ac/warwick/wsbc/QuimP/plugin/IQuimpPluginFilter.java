@@ -1,6 +1,6 @@
 package uk.ac.warwick.wsbc.QuimP.plugin;
 
-import ij.plugin.PlugIn;
+import ij.plugin.filter.PlugInFilter;
 
 /**
  * This interface supports plugins used in QuimP Bar.
@@ -10,6 +10,6 @@ import ij.plugin.PlugIn;
  * @author p.baniukiewicz
  *
  */
-public interface IQuimpPlugin extends IQuimpCorePlugin, PlugIn {
+public interface IQuimpPluginFilter extends IQuimpCorePlugin, PlugInFilter {
 
 }

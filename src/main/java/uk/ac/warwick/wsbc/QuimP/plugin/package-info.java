@@ -1,7 +1,7 @@
 /**
  * This package contains interfaces that define QuimP plugins.
  * 
- * There are two kinds of plugins:
+ * There are two kinds of Quimp plugins:
  * <ol>
  * <li>Utilised by BOA module - those must implement
  * {@link uk.ac.warwick.wsbc.QuimP.plugin.snakes.IQuimpBOAPoint2dFilter} or
@@ -9,6 +9,13 @@
  * <li>General purpose plugins - they constitute extensible QuimP Toolbar. They implement
  * {@link uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin}</li>
  * </ol>
+ * General purpose plugins differ from standard IJ plugins based only on
+ * {@link ij.plugin.filter.PlugInFilter} or {@link ij.plugin.PlugIn} interfaces (those are extended
+ * by {@link uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin} and
+ * {@link uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPluginFilter} respectively. General purpose plugins
+ * are meant to be used with QCONF file platform. If plugin works like standard IJ plugin it should
+ * implement only IJ interfaces or IQuimp interfaces but it can be based on e.g.
+ * {@link uk.ac.warwick.wsbc.QuimP.plugin.PluginTemplate}.
  * 
  * General plugins can be run from IJ macro scripts thus they also implement
  * {@link ij.plugin.PlugIn} interface (via {@link uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin}),
@@ -26,7 +33,8 @@
  * <p>
  * 
  * <h2>Plugin template</h2> Abstract class {@link uk.ac.warwick.wsbc.QuimP.plugin.PluginTemplate}
- * contains basic code that supports macros and calls from UI.
+ * contains basic code that supports macros and calls from UI. <b>Only for plugins that interfere
+ * with QCONF platform</b>
  * 
  * @author p.baniukiewicz
  */

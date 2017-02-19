@@ -42,13 +42,14 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.WindowManager;
 import ij.plugin.Converter;
-import ij.plugin.PlugIn;
 import ij.plugin.tool.BrushTool;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.QuimP.PropertyReader;
+import uk.ac.warwick.wsbc.QuimP.plugin.IQuimpPlugin;
+import uk.ac.warwick.wsbc.QuimP.plugin.ParamList;
+import uk.ac.warwick.wsbc.QuimP.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 
-// TODO: Auto-generated Javadoc
 /*
  * !>
  * @startuml doc-files/RandomWalkSegmentationPlugin_1_UML.png
@@ -117,7 +118,7 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
  * actor "IJ plugin runner"
  * actor User
  * "IJ plugin runner" -> RandomWalkSegmentationPlugin_ : run()
- * RandomWalkSegmentationPlugin_ -> RandomWalkSegmentationPlugin_ :showDialog()
+ * RandomWalkSegmentationPlugin_ -> RandomWalkSegmentationPlugin_ :showUI(true)
  * ...
  * User -> Dialog : click Apply 
  * Dialog -> RWWorker : <<create>>
@@ -148,8 +149,8 @@ import uk.ac.warwick.wsbc.QuimP.registration.Registration;
  * @author p.baniukiewicz
  *
  */
-public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, ChangeListener {
-    
+public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin, ActionListener, ChangeListener {
+
     /**
      * The Constant LOGGER.
      */
@@ -203,7 +204,8 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      * State diagram <br>
      * <img src="doc-files/RandomWalkSegmentationPlugin_2_UML.png"/><br>
      */
-    public void showDialog() {
+    @Override
+    public void showUI(boolean val) {
         wnd = new JFrame("Random Walker Segmentation");
         wnd.setResizable(false);
         JPanel panel = new JPanel(new BorderLayout());
@@ -373,7 +375,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
         wnd.pack();
 
         wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        wnd.setVisible(true);
+        wnd.setVisible(val);
     }
 
     /**
@@ -427,7 +429,7 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
     public void run(String arg) {
         // validate registered user
         new Registration(IJ.getInstance(), "QuimP Registration");
-        showDialog();
+        showUI(true);
     }
 
     /**
@@ -658,12 +660,44 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
      */
     @Override
     public void stateChanged(ChangeEvent e) {
         LOGGER.debug("State changed");
+    }
+
+    @Override
+    public int setup() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public void setPluginConfig(ParamList par) throws QuimpPluginException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public ParamList getPluginConfig() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getVersion() {
+        return "See QuimP version";
+    }
+
+    @Override
+    public String about() {
+        return "Random Walk plugin.\n" + "Author: Piotr Baniukiewicz\n"
+                + "mail: p.baniukiewicz@warwick.ac.uk\n"
+                + "This plugin does not supports macro parameters\n";
     }
 
     /**
@@ -676,7 +710,9 @@ public class RandomWalkSegmentationPlugin_ implements PlugIn, ActionListener, Ch
      */
     class RWWorker extends SwingWorker<Object, Object> {
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see javax.swing.SwingWorker#doInBackground()
          */
         @Override
