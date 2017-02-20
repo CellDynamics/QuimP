@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.QuimP.BOA_;
+import uk.ac.warwick.wsbc.quimp.BOA_;
 
 /**
  * Compatibility layer for ImageJ.

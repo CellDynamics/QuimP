@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.QuimP.plugin.randomwalk.RandomWalkSegmentationPlugin_;
+import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentationPlugin_;
 
 /**
  * Compatibility layer for ImageJ.

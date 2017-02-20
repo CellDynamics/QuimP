@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+	   <release version="17.02.05-SNAPSHOT" date="" description="Release">
+          <action dev="baniuk" type="add" issue="">
+              QuimP: Reworked plugin interfaces to make them compatibile with IJ macro. Generate mask can be called from macro. Relevant documentation is in JavaDoc plugin package.
+          </action>
+      </release>	
       <release version="17.02.04" date="2017-02-16" description="Release">
           <action dev="baniuk" type="add" issue="225">
               QuimP-ANA: Fluorescence data can be exported to IJ table for current channel.
