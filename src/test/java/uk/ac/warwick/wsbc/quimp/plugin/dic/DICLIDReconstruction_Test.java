@@ -10,8 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import uk.ac.warwick.wsbc.quimp.plugin.dic.DICLIDReconstruction_;
-
 // TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
@@ -51,7 +49,7 @@ public class DICLIDReconstruction_Test {
 
     /**
      * Test method for
-     * {@link uk.ac.warwick.wsbc.quimp.plugin.dic.DICLIDReconstruction_#showDialog()}.
+     * {@link uk.ac.warwick.wsbc.quimp.plugin.dic.DICLIDReconstruction_#showUI(boolean)}.
      * 
      * @throws Exception
      */

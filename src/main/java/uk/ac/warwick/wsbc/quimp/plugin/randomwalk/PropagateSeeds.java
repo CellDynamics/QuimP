@@ -59,7 +59,7 @@ public abstract class PropagateSeeds {
      * 
      * @see Contour#getOutline(ImageProcessor)
      */
-    public static int STEPS = 4;
+    public static final int STEPS = 4;
     /**
      * By default seed history is not stored.
      */
@@ -81,7 +81,7 @@ public abstract class PropagateSeeds {
      * 
      * @see #getCompositeSeed(ImagePlus)
      */
-    public static double colorScaling = 0.5;
+    public static final double colorScaling = 0.5;
 
     /**
      * Contain methods for propagating seeds to the next frame using contour shrinking operations.
@@ -97,7 +97,7 @@ public abstract class PropagateSeeds {
          * @see OutlineProcessor#shrink(double, double, double, double)
          * @see ANAp
          */
-        public static double stepSize = 0.04;
+        public static final double stepSize = 0.04;
 
         /**
          * Default constructor without storing seed history.

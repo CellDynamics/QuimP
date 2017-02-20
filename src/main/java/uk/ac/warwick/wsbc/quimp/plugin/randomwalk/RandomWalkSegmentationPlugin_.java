@@ -642,7 +642,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin, ActionListen
             new Converter().run("RGB Color");
             duplicatedImage.setTitle("SEED_" + tmpImage.getTitle());
 
-            cSeed.addItem(new String(duplicatedImage.getTitle()));
+            cSeed.addItem(duplicatedImage.getTitle());
             cSeed.setSelectedItem(duplicatedImage.getTitle());
         }
         if (b == bHelp) {
