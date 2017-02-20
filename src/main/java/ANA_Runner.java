@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.QuimP.plugin.ana.ANA_;
+import uk.ac.warwick.wsbc.quimp.plugin.ana.ANA_;
 
 /**
  * Compatibility layer for ImageJ.

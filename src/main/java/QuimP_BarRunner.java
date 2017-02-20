@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.QuimP.plugin.bar.QuimP_Bar;
+import uk.ac.warwick.wsbc.quimp.plugin.bar.QuimP_Bar;
 
 /**
  * Compatibility layer for ImageJ.

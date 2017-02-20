@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.QuimP.plugin.generatemask.GenerateMask_;
+import uk.ac.warwick.wsbc.quimp.plugin.generatemask.GenerateMask_;
 
 /**
  * Compatibility layer for ImageJ.
