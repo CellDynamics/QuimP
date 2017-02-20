@@ -377,8 +377,9 @@ public class Prot_Analysis implements IQuimpPlugin {
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#showUI(boolean)
      */
     @Override
-    public void showUI(boolean val) {
+    public int showUI(boolean val) {
         gui.showUI(val);
+        return 0;
     }
 
     /*

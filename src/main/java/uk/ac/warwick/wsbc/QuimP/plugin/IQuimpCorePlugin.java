@@ -75,8 +75,11 @@ public interface IQuimpCorePlugin {
      * UI is not obligatory. This function must be implemented but may do nothing.
      * 
      * @param val
+     * @return integer value that in principle can be e.g. information about cancelling window.
+     *         Exemplary return can be: {@code return toggleWindow() ? 1 : 0;}, where toggle window
+     *         returns boolean value.
      */
-    void showUI(boolean val);
+    int showUI(boolean val);
 
     /**
      * Get version of plugin.

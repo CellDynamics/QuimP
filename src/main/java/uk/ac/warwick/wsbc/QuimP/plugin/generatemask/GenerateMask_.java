@@ -94,7 +94,8 @@ public class GenerateMask_ extends PluginTemplate {
      * @see uk.ac.warwick.wsbc.QuimP.plugin.PluginTemplate#showUI(boolean)
      */
     @Override
-    public void showUI(boolean val) {
+    public int showUI(boolean val) {
+        return 0;
     }
 
     /*

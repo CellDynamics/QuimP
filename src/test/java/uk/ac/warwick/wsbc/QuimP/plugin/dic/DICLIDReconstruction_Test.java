@@ -56,7 +56,7 @@ public class DICLIDReconstruction_Test {
     @Test
     @Ignore
     public void testShowDialog() throws Exception {
-        new DICLIDReconstruction_().showDialog();
+        new DICLIDReconstruction_().showUI(true);
     }
 
     /**

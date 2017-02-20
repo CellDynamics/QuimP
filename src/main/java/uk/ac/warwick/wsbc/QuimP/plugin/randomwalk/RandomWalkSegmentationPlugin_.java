@@ -203,9 +203,11 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin, ActionListen
      * <img src="doc-files/RandomWalkSegmentationPlugin_1_UML.png"/><br>
      * State diagram <br>
      * <img src="doc-files/RandomWalkSegmentationPlugin_2_UML.png"/><br>
+     * 
+     * @return always 0, not used here.
      */
     @Override
-    public void showUI(boolean val) {
+    public int showUI(boolean val) {
         wnd = new JFrame("Random Walker Segmentation");
         wnd.setResizable(false);
         JPanel panel = new JPanel(new BorderLayout());
@@ -376,6 +378,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin, ActionListen
 
         wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         wnd.setVisible(val);
+        return 0;
     }
 
     /**

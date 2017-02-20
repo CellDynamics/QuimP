@@ -43,7 +43,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.QWindowBuilder;
  */
 public class BinarySegmentationPlugin extends QWindowBuilder
         implements ActionListener, IQuimpPluginSynchro, IQuimpNestPlugin, ItemListener {
-    
+
     /**
      * The Constant LOGGER.
      */
@@ -96,8 +96,10 @@ public class BinarySegmentationPlugin extends QWindowBuilder
      *
      */
     class myWindowAdapter extends WindowAdapter {
-        
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
          */
         @Override
@@ -207,16 +209,20 @@ public class BinarySegmentationPlugin extends QWindowBuilder
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#showUI(boolean)
      */
     @Override
-    public void showUI(boolean val) {
-        toggleWindow(val);
+    public int showUI(boolean val) {
+        return toggleWindow(val) ? 1 : 0;
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getVersion()
      */
     @Override
@@ -224,7 +230,9 @@ public class BinarySegmentationPlugin extends QWindowBuilder
         return "Not versioned separately";
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#about()
      */
     @Override
@@ -269,15 +277,20 @@ public class BinarySegmentationPlugin extends QWindowBuilder
         }
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpNestPlugin#attachData(uk.ac.warwick.wsbc.QuimP.Nest)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * uk.ac.warwick.wsbc.QuimP.plugin.IQuimpNestPlugin#attachData(uk.ac.warwick.wsbc.QuimP.Nest)
      */
     @Override
     public void attachData(Nest data) {
         this.nest = data;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
      */
     @Override

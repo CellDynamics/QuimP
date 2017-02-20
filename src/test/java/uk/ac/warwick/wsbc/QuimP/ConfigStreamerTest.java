@@ -37,7 +37,7 @@ public class ConfigStreamerTest {
      * The Constant LOGGER.
      */
     static final Logger LOGGER = LoggerFactory.getLogger(ConfigStreamerTest.class.getName());
-    
+
     /**
      * The tmpdir.
      */
@@ -69,8 +69,8 @@ public class ConfigStreamerTest {
         p.snakePluginList.get(0).ref = new IQuimpCorePlugin() {
 
             @Override
-            public void showUI(boolean val) {
-                // TODO Auto-generated method stub
+            public int showUI(boolean val) {
+                return 0;
 
             }
 
@@ -112,8 +112,8 @@ public class ConfigStreamerTest {
         p.snakePluginList.get(1).ref = new IQuimpCorePlugin() {
 
             @Override
-            public void showUI(boolean val) {
-                // TODO Auto-generated method stub
+            public int showUI(boolean val) {
+                return 0;
 
             }
 

@@ -9,29 +9,31 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
 
-// TODO: Auto-generated Javadoc
 /**
  * Implementation of Line Integration and Deconvolution algorithm proposed by Kam.
- * 
+ * <p>
+ * <h1>Principles</h1>
+ * <p>
  * This algorithm uses corrected line integration that runs in both directions from current point of
- * image \f$(x_n,y_n)\f$ to \f$r_1\f$ and end \f$r_2\f$. Vector \f$dr\f$ is set to be parallel to 0X
- * axis. Final formula for reconstruction of pixel \f$S(x_n,y_n)\f$ is given by:
- * 
- * \f[ S(x_n,y_n)=\int_{r_1}^{(x_n,y_n)}\left ( I(r)-I_{i,0}) \right )e^{-\delta\left | r_n-r \right
- * | }dr-\int_{r_2}^{(x_n,y_n)}\left ( I(r)-I_{i,0}) \right )e^{-\delta\left | r-r_n \right | }dr
- * \f]
- * 
- * The algorithm perform the following steps to reconstruct whole image: \li Input is converted to
- * 16bit and stored in private field ExtraImageProcessor srcImageCopyProcessor \li The value of \c
- * shift is added to all pixels of input image. All operations are performed on copy of input \c
- * ImageProcessor or \c ImagePlus. Rotate image by angle to bring bas-reliefs perpendicular to OX
- * axis. Rotated image has different dimensions and it is padded by 0. After this operation 0 pixels
- * are those that belong to background. For every line in rotated image position of \b true pixels
- * is calculated. \b True pixels are those that belong to original image excluding background added
- * during rotation. For every line position of first and last \b true pixel is noted in table \c
- * ranges \li Decay factors are pre-calculated and stored in \c decays table. \li Final
- * reconstruction is performed.
- * 
+ * image (<i>x_n,y_n</i>) to <i>r_1</i> and end <i>r_2</i>. Vector <i>dr</i> is set to be parallel
+ * to 0X axis. Final formula for reconstruction of pixel (<i>x_n,y_n</i>) is given by:<br>
+ * <img src="doc-files/eq.png"/><br>
+ * <h1>Algorithm</h1>
+ * <p>
+ * The algorithm perform the following steps to reconstruct the whole image:
+ * <ol>
+ * <li>Input is converted to 16bit and stored in private field ExtraImageProcessor
+ * srcImageCopyProcessor
+ * <li>The value of shift is added to all pixels of input image. All operations are performed on
+ * copy of input ImageProcessor or ImagePlus. Rotate image by angle to bring bas-reliefs
+ * perpendicular to OX axis. Rotated image has different dimensions and it is padded by 0. After
+ * this operation 0 pixels are those that belong to background. For every line in rotated image
+ * position of true pixels is calculated. True pixels are those that belong to original image
+ * excluding background added during rotation. For every line position of first and last true pixel
+ * is noted in table ranges
+ * <li>Decay factors are pre-calculated and stored in decays table.
+ * <li>Final reconstruction is performed.
+ * </ol>
  * Image for reconstruction is passed during construction of DICReconstruction object. For this
  * object ranges and decays are evaluated and then user can call reconstructionDicLid() method to
  * get reconstruction. getRanges() method also rotates private object thus rotation in
@@ -40,21 +42,20 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  * DICReconstruction for every slice the setIp(ImageProcessor) method is used for connecting new
  * slice. In this case it is assumed that ImageProcessor objects are similar and they have the same
  * geometry. ranges are filled only once on DICReconstruction constructing thus images connected by
- * setIp(ImageProcessor) are not rotated. This situation is detected in reconstructionDicLid() by
- * isRotated flag.
- * 
+ * setIp(ImageProcessor) are not rotated. This situation is detected in
+ * {@link #reconstructionDicLid()} by <tt>isRotated</tt> flag.
+ * <p>
  * Privates:
  * <ul>
- * <li>\c ranges - \b true pixels begin and end on \a x axis. Set by getRanges(). [r][0] - x of
- * first pixel of line r of image, [r][1] - x of last pixel of image of line r
- * <li>\c maxWidth - Set by getRanges()
- * <li>\c decays - set by generateDeacy(double, int)
- * <li>\c srcImageCopyProcessor - local \b copy of input ImageProcessor passed to object. Set by
- * constructors and setIp(ImageProcessor)
- * <li>\c isRotated - It is set by getRanges() that rotates object to get true pixels position and
- * cancelled by setIP
+ * <li><i>ranges</i> - true pixels begin and end on x axis. Set by getRanges(). [r][0] - x of first
+ * pixel of line r of image, [r][1] - x of last pixel of image of line r
+ * <li><i>maxWidth</i> - Set by getRanges()
+ * <li><i>decays</i> - set by generateDeacy(double, int)
+ * <li><i>srcImageCopyProcessor</i> - local <b>copy</b> of input ImageProcessor passed to object.
+ * Set by constructors and setIp(ImageProcessor)
+ * <li><i>isRotated</i> - It is set by getRanges() that rotates object to get true pixels position
+ * and cancelled by setIP
  * </ul>
- * 
  * <p>
  * <b>Warning</b>
  * <p>
@@ -64,6 +65,7 @@ import uk.ac.warwick.wsbc.QuimP.plugin.utils.ImageProcessorPlus;
  * <p>
  * The input image can be prefitlered before processing. This is running mean filter of given mask
  * size applied at angle perpendicular to the shear (this angle is given by caller).
+ * <h1>References</h1>
  * <p>
  * <ul>
  * <li>Z. Kam, “Microscopic differential interference contrast image processing by line integration

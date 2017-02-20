@@ -70,7 +70,7 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
         // validate registered user
         new Registration(IJ.getInstance(), "QuimP Registration");
         ImageProcessor ret;
-        if (!showDialog())
+        if (showUI(true) == 0)
             return; // if user clicked Cancel or data were not valid
         try {
             // create result as separate 16bit image
@@ -109,46 +109,6 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
     }
 
     /**
-     * Shows user dialog and check conditions.
-     * 
-     * @return true if user clicked OK and input data are correct (they are numbers) or return false
-     *         otherwise
-     */
-    public boolean showDialog() {
-        GenericDialog gd = new GenericDialog("DIC reconstruction");
-        gd.addMessage("Reconstruction of DIC image by Line Integrals.\n");
-        gd.addNumericField("Shear angle (measured counterclockwise)", 45.0, 0, 6, "[deg]");
-        gd.addNumericField("Decay factor (>0)", 0.0, 2, 6, "[-]");
-        // gd.addChoice("Angle perpendicular to shear", new String[] { "0", "45", "90", "135" },
-        // "45");
-        gd.addNumericField("Filter mask size (odd, 0 to switch filtering off)", 0, 0);
-
-        gd.setResizable(false);
-        gd.showDialog();
-        if (gd.wasCanceled()) // check if user clicked OK or CANCEL
-            return false;
-        // read GUI elements and store results in private fields order as these
-        // methods are called should match to GUI build order
-        angle = Math.abs(gd.getNextNumber());
-        if (angle >= 360)
-            angle -= 360;
-        decay = gd.getNextNumber();
-        prefilterangle = roundtofull(angle + 90); // filtering angle
-        masksize = (int) gd.getNextNumber();
-
-        if (gd.invalidNumber()) { // check if numbers in fields were correct
-            IJ.error("One of the numbers in dialog box is not valid");
-            return false;
-        }
-        if (masksize != 0 && masksize % 2 == 0) {
-            IJ.error("Mask size must be uneven");
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Round given angle to closest full angle: 0, 45, 90, 135
      * 
      * @param angle input angle in range <0;360)
@@ -171,29 +131,93 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
         return Integer.toString(i * 45);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setup()
+     */
     @Override
     public int setup() {
         return 0;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#setPluginConfig(uk.ac.warwick.wsbc.QuimP.
+     * plugin.ParamList)
+     */
     @Override
     public void setPluginConfig(ParamList par) throws QuimpPluginException {
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getPluginConfig()
+     */
     @Override
     public ParamList getPluginConfig() {
         return null;
     }
 
+    /**
+     * Shows user dialog and check conditions.
+     * 
+     * @return 1 if user clicked OK and input data are correct (they are numbers) or return 0
+     *         otherwise
+     */
     @Override
-    public void showUI(boolean val) {
+    public int showUI(boolean val) {
+        GenericDialog gd = new GenericDialog("DIC reconstruction");
+        gd.addMessage("Reconstruction of DIC image by Line Integrals.\n");
+        gd.addNumericField("Shear angle (measured counterclockwise)", 45.0, 0, 6, "[deg]");
+        gd.addNumericField("Decay factor (>0)", 0.0, 2, 6, "[-]");
+        // gd.addChoice("Angle perpendicular to shear", new String[] { "0", "45", "90", "135" },
+        // "45");
+        gd.addNumericField("Filter mask size (odd, 0 to switch filtering off)", 0, 0);
+
+        gd.setResizable(false);
+        gd.showDialog();
+        if (gd.wasCanceled()) // check if user clicked OK or CANCEL
+            return 0;
+        // read GUI elements and store results in private fields order as these
+        // methods are called should match to GUI build order
+        angle = Math.abs(gd.getNextNumber());
+        if (angle >= 360)
+            angle -= 360;
+        decay = gd.getNextNumber();
+        prefilterangle = roundtofull(angle + 90); // filtering angle
+        masksize = (int) gd.getNextNumber();
+
+        if (gd.invalidNumber()) { // check if numbers in fields were correct
+            IJ.error("One of the numbers in dialog box is not valid");
+            return 0;
+        }
+        if (masksize != 0 && masksize % 2 == 0) {
+            IJ.error("Mask size must be uneven");
+            return 0;
+        }
+
+        return 1;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#getVersion()
+     */
     @Override
     public String getVersion() {
         return "See QuimP version";
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#about()
+     */
     @Override
     public String about() {
         return "DIC plugin.\n" + "Author: Piotr Baniukiewicz\n"

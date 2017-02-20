@@ -99,7 +99,8 @@ public class SnakePluginListTest {
         Mockito.when(pluginFactory.getInstance("Test1")).thenReturn(new IQuimpCorePlugin() {
 
             @Override
-            public void showUI(boolean val) {
+            public int showUI(boolean val) {
+                return 0;
             }
 
             @Override
@@ -132,7 +133,8 @@ public class SnakePluginListTest {
         Mockito.when(pluginFactory.getInstance("Test2")).thenReturn(new IQuimpCorePlugin() {
 
             @Override
-            public void showUI(boolean val) {
+            public int showUI(boolean val) {
+                return 0;
             }
 
             @Override
@@ -175,7 +177,8 @@ public class SnakePluginListTest {
         Mockito.when(pluginFactory.getInstance("toDelete")).thenReturn(new IQuimpCorePlugin() {
 
             @Override
-            public void showUI(boolean val) {
+            public int showUI(boolean val) {
+                return 0;
             }
 
             @Override
@@ -209,7 +212,8 @@ public class SnakePluginListTest {
         Mockito.when(pluginFactory.getInstance("newInstance")).thenReturn(new IQuimpCorePlugin() {
 
             @Override
-            public void showUI(boolean val) {
+            public int showUI(boolean val) {
+                return 0;
             }
 
             @Override

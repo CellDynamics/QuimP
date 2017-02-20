@@ -16,10 +16,43 @@ import uk.ac.warwick.wsbc.QuimP.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.QuimP.registration.Registration;
 import uk.ac.warwick.wsbc.QuimP.utils.QuimpToolsCollection;
 
+/*
+ * !>
+ * @startuml doc-files/PluginTemplate_1_UML.png
+ * actor User
+ * activate PluginTemplate
+ * User -> PluginTemplate : run(arg)
+ * alt arg == null || arg.isEmpty()
+ * PluginTemplate -> Macro : getOptions()
+ * Macro --> PluginTemplate : options
+ * else
+ * PluginTemplate -> PluginTemplate : options = arg
+ * end
+ * alt options == null || options.isEmpty()
+ * PluginTemplate->PluginTemplate : showUI
+ * else
+ * PluginTemplate->PluginTemplate : runAsMacro = MessageSinkTypes.CONSOLE
+ * end
+ * PluginTemplate->PluginTemplate : parseOptions(options)
+ * PluginTemplate->Registration : <<create>>
+ * PluginTemplate -> PluginTemplate : loadFile()
+ * PluginTemplate -> PluginTemplate : runFromQCONF()
+ * PluginTemplate --> User
+ * deactivate PluginTemplate
+ * @enduml
+ * !<
+ */
+
 /**
  * This is template for general purpose plugin based on QCONF file exchange platform.
  * 
- * Should not be used for standard IJ plugins.
+ * Should not be used for standard IJ plugins. There are two ways to initiate the plugin: 1) from
+ * constructor, 2) from {@link #run(String)} method. The latter is default one whereas the
+ * constructor should just call {@link #run(String)}. Note, that plugin architecture assumes that
+ * default constructor (and any other) does not run the plugins. Parametrised constructor can be
+ * used for tests. Here is sequence of actions:<br>
+ * <img src="doc-files/PluginTemplate_1_UML.png"/><br>
+ * 
  * 
  * @author p.baniukiewicz
  *
@@ -119,7 +152,7 @@ public abstract class PluginTemplate implements IQuimpPlugin {
      * @see uk.ac.warwick.wsbc.QuimP.plugin.IQuimpCorePlugin#showUI(boolean)
      */
     @Override
-    public abstract void showUI(boolean val);
+    public abstract int showUI(boolean val);
 
     /*
      * (non-Javadoc)
@@ -145,7 +178,7 @@ public abstract class PluginTemplate implements IQuimpPlugin {
      * should be called and displayed to user (rather in console as wrong syntax happens only when
      * called from macro or code)
      * 
-     * @param options string in form key=val,key1=val1, etc or null
+     * @param options string in form key=val key1=val1 etc or null
      */
     protected abstract void parseOptions(String options);
 
@@ -168,11 +201,11 @@ public abstract class PluginTemplate implements IQuimpPlugin {
         } else {
             options = arg; // options passed here - they must be in the same format as in macro
         }
-        if (options == null || options.isEmpty()) { // something was passed but it was null
-            parseOptions(options); // let user decide
+        if (options == null || options.isEmpty()) { // nothing passed let user decide about defaults
+            showUI(true); // and in UI
         } else { // there is something, parse it
             runAsMacro = MessageSinkTypes.CONSOLE; // set errors to console, we are in macro mode
-            parseOptions(options); // user will decide
+            parseOptions(options); // parse whatever it is
         }
         // validate registered user
         new Registration(IJ.getInstance(), "QuimP Registration");
