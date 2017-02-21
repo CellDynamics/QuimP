@@ -1,22 +1,9 @@
 package uk.ac.warwick.wsbc.quimp.geom.filters;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.Panel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
-
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTextArea;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.scijava.vecmath.Point2d;
 import org.scijava.vecmath.Tuple2d;
@@ -24,16 +11,9 @@ import org.scijava.vecmath.Vector2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.wsbc.quimp.PropertyReader;
-import uk.ac.warwick.wsbc.quimp.ViewUpdater;
 import uk.ac.warwick.wsbc.quimp.geom.BasicPolygons;
-import uk.ac.warwick.wsbc.quimp.plugin.IQuimpPluginSynchro;
-import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.quimp.plugin.snakes.IQuimpBOAPoint2dFilter;
-import uk.ac.warwick.wsbc.quimp.plugin.snakes.IQuimpBOASnakeFilter;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.IPadArray;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.QWindowBuilder;
 
 /**
  * Implementation of HatFilter for removing convexes from polygon.
@@ -123,64 +103,38 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.QWindowBuilder;
  * 
  * @author p.baniukiewicz
  */
-public class HatSnakeFilter extends QWindowBuilder implements IQuimpBOAPoint2dFilter, IPadArray,
-        ChangeListener, ActionListener, IQuimpPluginSynchro {
+public class HatSnakeFilter implements IPadArray {
+
   static final Logger LOGGER = LoggerFactory.getLogger(HatSnakeFilter.class.getName());
-  private final int DRAW_SIZE = 200; // size of draw area in window
 
   private int window; // filter's window size
   private int pnum; // how many protrusions to remove
   private double alev; // minimal acceptance level
   private List<Point2d> points; // original contour passed from QuimP
-  private ParamList uiDefinition; // Definition of UI for this plugin
-  private ExPolygon pout; // output polygon based on \c out
-  private List<Point2d> out; // output after filtering
-  private JTextArea logArea;
-  private int err; // general counter of log entries
-  private ViewUpdater qcontext; // remember QuimP context to recalculate and update its view
 
   /**
    * Construct HatFilter Input array with data is virtually circularly padded.
    */
   public HatSnakeFilter() {
-    LOGGER.trace("Entering constructor");
     this.window = 15;
     this.pnum = 1;
     this.alev = 0;
     LOGGER.debug("Set default parameter: window=" + window + " pnum=" + pnum + " alev=" + alev);
-    // create UI using QWindowBuilder
-    uiDefinition = new ParamList(); // will hold ui definitions
-    // configure window, names of UI elements are also names of variables
-    // exported/imported by set/getPluginConfig
-    uiDefinition.put("name", "HatFilter"); // name of window
-    uiDefinition.put("window", "spinner, 3, 51, 2," + Integer.toString(window));
-    uiDefinition.put("pnum", "spinner, 1, 6, 1," + Integer.toString(pnum));
-    uiDefinition.put("alev", "spinner, 0, 1,0.01," + Double.toString(alev));
-    buildWindow(uiDefinition); // construct ui (not shown yet)
-    points = null; // not attached yet
-    pout = null; // not calculated yet
-    err = 1; // first line in log window
   }
 
   /**
-   * Attach data to process.
+   * Constructor passing algorithm parameters.
    * 
-   * <p>Data are as list of vectors defining points of polygon. Passed points should be sorted
-   * according to a clockwise or anti-clockwise direction
-   * 
-   * @param data Polygon points (can be null)
-   * @see IQuimpBOASnakeFilter#attachData(uk.ac.warwick.wsbc.quimp.Snake)
+   * @param window size of the window
+   * @param pnum number of protrusions to find
+   * @param alev threshold
+   * @see HatSnakeFilter
    */
-  @Override
-  public void attachData(List<Point2d> data) {
-    LOGGER.trace("Entering attachData");
-    points = data;
-    pout = null; // delete any processed polygon
-    if (points == null) {
-      LOGGER.info("No data attached");
-      return;
-    }
-
+  public HatSnakeFilter(int window, int pnum, double alev) {
+    super();
+    this.window = window;
+    this.pnum = pnum;
+    this.alev = alev;
   }
 
   /**
@@ -190,13 +144,14 @@ public class HatSnakeFilter extends QWindowBuilder implements IQuimpBOAPoint2dFi
    * any other ui element. User can expect that points will be always valid but they optionally may
    * have 0 length.
    * 
+   * @param data contour to process
+   * 
    * @return Processed input list, size of output list may be different than input. Empty output
    *         is also allowed.
-   * @see #actionPerformed(ActionEvent)
-   * @see #stateChanged(ChangeEvent)
+   * @throws QuimpPluginException on wrong input data
    */
-  @Override
-  public List<Point2d> runPlugin() throws QuimpPluginException {
+  public List<Point2d> runPlugin(List<Point2d> data) throws QuimpPluginException {
+    points = data;
     // internal parameters are not updated here but when user click apply
     LOGGER.info(String.format("Run plugin with params: window %d, pnum %d, alev %f", window, pnum,
             alev));
@@ -421,220 +376,6 @@ public class HatSnakeFilter extends QWindowBuilder implements IQuimpBOAPoint2dFi
 
     LOGGER.debug("w " + std);
     return std;
-  }
-
-  /**
-   * This method should return a flag word that specifies the filters capabilities.
-   * 
-   * @return Configuration codes
-   * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin
-   */
-  @Override
-  public int setup() {
-    LOGGER.trace("Entering setup");
-    return DOES_SNAKES + CHANGE_SIZE;
-  }
-
-  /**
-   * Configure plugin and overrides default values.
-   * 
-   * <p>Supported keys:
-   * <ol>
-   * <li><i>window</i> - size of main window
-   * <li><i>crown</i> - size of inner window
-   * <li><i>sigma</i> - cut-off value (see class description)
-   * </ol>
-   * 
-   * @param par configuration as pairs (key,val). Keys are defined by plugin creator and plugin
-   *        caller do not modify them.
-   * @throws QuimpPluginException on wrong parameters list or wrong parameter conversion
-   * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpPlugin#setPluginConfig(ParamList)
-   */
-  @Override
-  public void setPluginConfig(final ParamList par) throws QuimpPluginException {
-    try {
-      window = par.getIntValue("window");
-      pnum = par.getIntValue("pnum");
-      alev = par.getDoubleValue("alev");
-      setValues(par); // copy incoming parameters to UI
-    } catch (Exception e) {
-      // we should never hit this exception as parameters are not touched by caller they are
-      // only passed to configuration saver and restored from it
-      throw new QuimpPluginException("Wrong input argument->" + e.getMessage(), e);
-    }
-  }
-
-  /**
-   * Transfer plugin configuration to QuimP
-   * 
-   * <p>Only parameters mapped to UI by QWindowBuilder are supported directly by getValues() Any
-   * other parameters created outside QWindowBuilder should be added here manually.
-   */
-  @Override
-  public ParamList getPluginConfig() {
-    return getValues();
-  }
-
-  @Override
-  public int showUi(boolean val) {
-    LOGGER.trace("Got message to show UI");
-    if (toggleWindow(val) == true) {
-      recalculatePlugin();
-    }
-    return 0;
-  }
-
-  /**
-   * Plugin version.
-   */
-  @Override
-  public String getVersion() {
-    String trimmedClassName = getClass().getSimpleName();
-    trimmedClassName = trimmedClassName.substring(0, trimmedClassName.length() - 1); // no _
-    // _ at the end of class does not appears in final jar name, we need it to
-    // distinguish between plugins
-    return PropertyReader.readProperty(getClass(), trimmedClassName,
-            "quimp/plugin/plugin.properties", "internalVersion");
-  }
-
-  /**
-   * Override of uk.ac.warwick.wsbc.plugin.utils.QWindowBuilder.BuildWindow()
-   * 
-   * <p>The aim is to: 1) attach listeners for spinners for preventing even numbers 2) attach
-   * listener for build-in apply button 3) add draw field DrawPanel
-   */
-  @Override
-  public void buildWindow(final ParamList def) {
-    super.buildWindow(def); // window must be built first
-
-    // attach listeners to ui to update window on new parameters
-    ((JSpinner) ui.get("Window")).addChangeListener(this); // attach listener to selected ui
-    ((JSpinner) ui.get("pnum")).addChangeListener(this); // attach listener to selected ui
-    ((JSpinner) ui.get("alev")).addChangeListener(this); // attach listener to selected ui
-    applyB.addActionListener(this); // attach listener to apply button
-    // in place of CENTER pane in BorderLayout layout from super.BuildWindow
-    // we create few extra controls
-    GridLayout gc = new GridLayout(2, 1, 5, 5);
-    Panel jp = new Panel(); // panel in CENTER pane
-    jp.setLayout(gc);
-
-    Panel jp1 = new Panel(); // subpanel for two text fields
-    jp1.setLayout(gc);
-
-    // help is supported by QBuildWindow but here we moved it on different than default position
-    JTextArea helpArea = new JTextArea(); // default size of text area
-    helpArea.setEditable(false);
-    helpArea.setText(
-            "About plugin\n" + "Click Apply to update main view. Preview shows only last selected"
-                    + " object and update it on any change of plugin parameters");
-    helpArea.setLineWrap(true); // with wrapping
-
-    logArea = new JTextArea(); // default size of text area
-
-    logArea.setEditable(false);
-    logArea.setText("Log:\n"); // set help text
-    logArea.setLineWrap(true); // with wrapping
-    JScrollPane helpPanel = new JScrollPane(helpArea);
-    jp1.add(helpPanel);
-    JScrollPane logPanel = new JScrollPane(logArea);
-    jp1.add(logPanel);
-    jp.add(jp1);
-
-    pluginPanel.add(jp, BorderLayout.CENTER); // add in center position (in place of help zone)
-    pluginWnd.pack();
-    pluginWnd.addWindowListener(new HatWindowAdapter()); // add listener for winodw activation
-  }
-
-  /**
-   * React on spinners changes.
-   */
-  @Override
-  public void stateChanged(ChangeEvent ce) {
-    if (isWindowVisible() == true) // prevent applying default values before setPluginConfig is
-                                   // used because method is called on window creation
-      recalculatePlugin();
-  }
-
-  /**
-   * React on Apply button.
-   * 
-   * <p>Here Apply button copies window content into plugin structures. This is different approach
-   * than in LoessFilter and MeanFilter where window content was copied while {@link #runPlugin()}
-   * command. This button run plugin and creates preview of filtered data
-   * 
-   */
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    Object b = e.getSource();
-    if (b == applyB) { // pressed apply, copy ui data to plugin
-      // order of these two is important because updateView() externally run the whole
-      // plugin and reconnects external data what updates preview and delete any recalculated
-      // result.
-      qcontext.updateView(); // run whole plugin from BOA context
-      recalculatePlugin(); // transfers data from ui to plugin and plot example on screen
-    }
-  }
-
-  /**
-   * Recalculate plugin on every change of its parameter.
-   * 
-   * <p>Used only for previewing. Repaint window as well
-   */
-  private void recalculatePlugin() {
-    // check if we have correct data
-    if (points == null) {
-      LOGGER.warn("No data attached");
-      return;
-    }
-    // transfer data from ui
-    window = getIntegerFromUI("window");
-    pnum = getIntegerFromUI("pnum");
-    alev = getDoubleFromUI("alev");
-    LOGGER.debug(String.format("Updated from UI: window %d, pnum %d, alev %f", window, pnum, alev));
-    // run plugin for set parameters
-    try {
-      out = runPlugin(); // may throw if no data attached this is inly to get preview
-      // fit to size from original polygon, modified one will be centered to original one
-    } catch (QuimpPluginException e1) { // ignore exception in general
-      LOGGER.error(e1.toString());
-      logArea.append("#" + err + ": " + e1.getMessage() + '\n');
-      err++;
-    }
-  }
-
-  @Override
-  public void attachContext(ViewUpdater b) {
-    qcontext = b;
-  }
-
-  @Override
-  public String about() {
-    return "Delete convexity from outline.\n" + "Author: Piotr Baniukiewicz\n"
-            + "mail: p.baniukiewicz@warwick.ac.uk";
-  }
-
-  /**
-   * Add action on window focus
-   * 
-   * <p>This is used for updating preview screen in plugin. When window became in focus, last snake
-   * stored in ViewUpdater is gathered. This snake is updated on every action in BOA. Data from
-   * ViewUpdater may be null if user deleted Snake. If there is more snakes on screen after
-   * deleting Snake id=n, active became Snake id=n-1
-   * 
-   * @author p.baniukiewicz
-   *
-   */
-  class HatWindowAdapter extends WindowAdapter {
-    @Override
-    public void windowActivated(WindowEvent e) {
-      points = qcontext.getSnakeasPoints(); // get last snake from ViewUpdater
-      if (points != null) {
-        recalculatePlugin();
-      } else { // if data from ViewUpdater are null, invalidate output as well and clear view
-        pout = null;
-      }
-      super.windowActivated(e);
-    }
   }
 
   /**
