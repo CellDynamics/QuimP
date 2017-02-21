@@ -30,228 +30,226 @@ import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
  * @author p.baniukiewicz
  */
 public class CellStatsEval implements Measurements {
-    /**
-     * Hold all stats for cell. the same data are written to disk as csv file.
-     */
-    private CellStats statH;
-    
-    /**
-     * The output H.
-     */
-    OutlineHandler outputH;
-    
-    /**
-     * The outfile.
-     */
-    File OUTFILE;
-    
-    /**
-     * The i plus.
-     */
-    ImagePlus iPlus;
-    
-    /**
-     * The i proc.
-     */
-    ImageProcessor iProc;
-    
-    /**
-     * The is.
-     */
-    ImageStatistics is;
-    
-    /**
-     * The scale.
-     */
-    double scale;
-    
-    /**
-     * The frame interval.
-     */
-    double frameInterval;
+  /**
+   * Hold all stats for cell. the same data are written to disk as csv file.
+   */
+  private CellStats statH;
 
-    /**
-     * Create and run the object.
-     * 
-     * After creating the object, file with stats is written and stats are available by calling
-     * {@link #getStatH()} method.
-     * 
-     * @param oH
-     * @param ip image associated with OutlineHandler
-     * @param f file name to write stats, if null file is not created
-     * @param s image scale
-     * @param fI frame interval
-     */
-    public CellStatsEval(OutlineHandler oH, ImagePlus ip, File f, double s, double fI) {
-        IJ.showStatus("BOA-Calculating Cell stats");
-        outputH = oH;
-        OUTFILE = f;
-        iPlus = ip;
-        iProc = ip.getProcessor();
-        scale = s;
-        frameInterval = fI;
+  /**
+   * The output H.
+   */
+  OutlineHandler outputH;
 
-        FrameStatistics[] stats = record();
-        iPlus.setSlice(1);
-        iPlus.killRoi();
-        if (f == null)
-            buildData(stats);
-        else
-            write(stats, outputH.getStartFrame()); // also call buildData
+  /**
+   * The outfile.
+   */
+  File OUTFILE;
+
+  /**
+   * The i plus.
+   */
+  ImagePlus iPlus;
+
+  /**
+   * The i proc.
+   */
+  ImageProcessor iProc;
+
+  /**
+   * The is.
+   */
+  ImageStatistics is;
+
+  /**
+   * The scale.
+   */
+  double scale;
+
+  /**
+   * The frame interval.
+   */
+  double frameInterval;
+
+  /**
+   * Create and run the object.
+   * 
+   * After creating the object, file with stats is written and stats are available by calling
+   * {@link #getStatH()} method.
+   * 
+   * @param oH
+   * @param ip image associated with OutlineHandler
+   * @param f file name to write stats, if null file is not created
+   * @param s image scale
+   * @param fI frame interval
+   */
+  public CellStatsEval(OutlineHandler oH, ImagePlus ip, File f, double s, double fI) {
+    IJ.showStatus("BOA-Calculating Cell stats");
+    outputH = oH;
+    OUTFILE = f;
+    iPlus = ip;
+    iProc = ip.getProcessor();
+    scale = s;
+    frameInterval = fI;
+
+    FrameStatistics[] stats = record();
+    iPlus.setSlice(1);
+    iPlus.killRoi();
+    if (f == null)
+      buildData(stats);
+    else
+      write(stats, outputH.getStartFrame()); // also call buildData
+  }
+
+  /**
+   * Only create the object. Stats file is not created but results are available by calling
+   * {@link #getStatH()} method.
+   * 
+   * @param oH
+   * @param ip image associated with OutlineHandler
+   * @param s image scale
+   * @param fI frame interval
+   */
+  public CellStatsEval(OutlineHandler oH, ImagePlus ip, double s, double fI) {
+    this(oH, ip, null, s, fI);
+  }
+
+  /**
+   * Calculate stats.
+   * 
+   * <p>
+   * <b>Warning</b>
+   * <p>
+   * Number of calculated stats must be reflected in {@link #buildData(FrameStatistics[])}
+   * 
+   * @return Array with stats for every frame for one cell.
+   */
+  private FrameStatistics[] record() {
+    // ImageStack orgStack = orgIpl.getStack();
+    FrameStatistics[] stats = new FrameStatistics[outputH.getSize()];
+
+    double distance = 0;
+    Outline o;
+    PolygonRoi roi;
+    int store;
+
+    for (int f = outputH.getStartFrame(); f <= outputH.getEndFrame(); f++) {
+      IJ.showProgress(f, outputH.getEndFrame());
+      store = f - outputH.getStartFrame();
+
+      o = outputH.getOutline(f);
+      iPlus.setSlice(f); // also updates the processor
+      stats[store] = new FrameStatistics();
+
+      Polygon oPoly = o.asPolygon();
+      roi = new PolygonRoi(oPoly, Roi.POLYGON);
+
+      iPlus.setRoi(roi);
+      is = iPlus.getStatistics(AREA + CENTROID + ELLIPSE + SHAPE_DESCRIPTORS); // this does
+                                                                               // scale to
+                                                                               // image
+
+      // all theses already to scale
+      stats[store].frame = f;
+      stats[store].area = is.area;
+      stats[store].centroid.setX(is.xCentroid);
+      stats[store].centroid.setY(is.yCentroid);
+
+      stats[store].elongation = is.major / is.minor; // include both axis
+                                                     // plus elongation
+      stats[store].perimiter = roi.getLength(); // o.getLength();
+      stats[store].circularity =
+              4 * Math.PI * (stats[store].area / (stats[store].perimiter * stats[store].perimiter));
+      stats[store].displacement =
+              ExtendedVector2d.lengthP2P(stats[0].centroid, stats[store].centroid);
+
+      if (store != 0) {
+        stats[store].speed =
+                ExtendedVector2d.lengthP2P(stats[store - 1].centroid, stats[store].centroid);
+        distance += ExtendedVector2d.lengthP2P(stats[store - 1].centroid, stats[store].centroid);
+        stats[store].dist = distance;
+      } else {
+        stats[store].dist = 0;
+        stats[store].speed = 0;
+      }
+
+      if (distance != 0) {
+        stats[store].persistance = stats[store].displacement / distance;
+      } else {
+        stats[store].persistance = 0;
+      }
+
     }
 
-    /**
-     * Only create the object. Stats file is not created but results are available by calling
-     * {@link #getStatH()} method.
-     * 
-     * @param oH
-     * @param ip image associated with OutlineHandler
-     * @param s image scale
-     * @param fI frame interval
-     */
-    public CellStatsEval(OutlineHandler oH, ImagePlus ip, double s, double fI) {
-        this(oH, ip, null, s, fI);
+    // convert centroid to pixels
+    for (int f = outputH.getStartFrame(); f <= outputH.getEndFrame(); f++) {
+      store = f - outputH.getStartFrame();
+      stats[store].centroidToPixels(scale);
     }
 
-    /**
-     * Calculate stats.
-     * 
-     * <p>
-     * <b>Warning</b>
-     * <p>
-     * Number of calculated stats must be reflected in {@link #buildData(FrameStatistics[])}
-     * 
-     * @return Array with stats for every frame for one cell.
-     */
-    private FrameStatistics[] record() {
-        // ImageStack orgStack = orgIpl.getStack();
-        FrameStatistics[] stats = new FrameStatistics[outputH.getSize()];
+    return stats;
+  }
 
-        double distance = 0;
-        Outline o;
-        PolygonRoi roi;
-        int store;
+  private void write(FrameStatistics[] s, int startFrame) {
+    try {
+      PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
+      // IJ.log("Writing to file");
+      pw.print("#p2\n#QuimP output - " + OUTFILE.getAbsolutePath() + "\n");
+      pw.print(
+              "# Centroids are given in pixels.  Distance & speed & area measurements are scaled to micro meters\n");
+      pw.print("# Scale: " + scale + " micro meter per pixel | Frame interval: " + frameInterval
+              + " sec\n");
+      pw.print("# Frame,X-Centroid,Y-Centroid,Displacement,Dist. Traveled,"
+              + "Directionality,Speed,Perimeter,Elongation,Circularity,Area");
 
-        for (int f = outputH.getStartFrame(); f <= outputH.getEndFrame(); f++) {
-            IJ.showProgress(f, outputH.getEndFrame());
-            store = f - outputH.getStartFrame();
+      for (int i = 0; i < s.length; i++) {
+        pw.print("\n" + (i + startFrame) + "," + IJ.d2s(s[i].centroid.getX(), 2) + ","
+                + IJ.d2s(s[i].centroid.getY(), 2) + "," + IJ.d2s(s[i].displacement) + ","
+                + IJ.d2s(s[i].dist) + "," + IJ.d2s(s[i].persistance) + "," + IJ.d2s(s[i].speed)
+                + "," + IJ.d2s(s[i].perimiter) + "," + IJ.d2s(s[i].elongation) + ","
+                + IJ.d2s(s[i].circularity, 3) + "," + IJ.d2s(s[i].area));
 
-            o = outputH.getOutline(f);
-            iPlus.setSlice(f); // also updates the processor
-            stats[store] = new FrameStatistics();
+      }
 
-            Polygon oPoly = o.asPolygon();
-            roi = new PolygonRoi(oPoly, Roi.POLYGON);
+      pw.print("\n#\n# Fluorescence measurements");
+      writeDummyFluo(pw, 1, startFrame, s.length);
+      writeDummyFluo(pw, 2, startFrame, s.length);
+      writeDummyFluo(pw, 3, startFrame, s.length);
 
-            iPlus.setRoi(roi);
-            is = iPlus.getStatistics(AREA + CENTROID + ELLIPSE + SHAPE_DESCRIPTORS); // this does
-                                                                                     // scale to
-                                                                                     // image
-
-            // all theses already to scale
-            stats[store].frame = f;
-            stats[store].area = is.area;
-            stats[store].centroid.setX(is.xCentroid);
-            stats[store].centroid.setY(is.yCentroid);
-
-            stats[store].elongation = is.major / is.minor; // include both axis
-                                                           // plus elongation
-            stats[store].perimiter = roi.getLength(); // o.getLength();
-            stats[store].circularity = 4 * Math.PI
-                    * (stats[store].area / (stats[store].perimiter * stats[store].perimiter));
-            stats[store].displacement =
-                    ExtendedVector2d.lengthP2P(stats[0].centroid, stats[store].centroid);
-
-            if (store != 0) {
-                stats[store].speed = ExtendedVector2d.lengthP2P(stats[store - 1].centroid,
-                        stats[store].centroid);
-                distance += ExtendedVector2d.lengthP2P(stats[store - 1].centroid,
-                        stats[store].centroid);
-                stats[store].dist = distance;
-            } else {
-                stats[store].dist = 0;
-                stats[store].speed = 0;
-            }
-
-            if (distance != 0) {
-                stats[store].persistance = stats[store].displacement / distance;
-            } else {
-                stats[store].persistance = 0;
-            }
-
-        }
-
-        // convert centroid to pixels
-        for (int f = outputH.getStartFrame(); f <= outputH.getEndFrame(); f++) {
-            store = f - outputH.getStartFrame();
-            stats[store].centroidToPixels(scale);
-        }
-
-        return stats;
+      pw.close();
+      buildData(s);
+    } catch (Exception e) {
+      IJ.error("could not open out file");
+      return;
     }
+  }
 
-    private void write(FrameStatistics[] s, int startFrame) {
-        try {
-            PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
-            // IJ.log("Writing to file");
-            pw.print("#p2\n#QuimP output - " + OUTFILE.getAbsolutePath() + "\n");
-            pw.print(
-                    "# Centroids are given in pixels.  Distance & speed & area measurements are scaled to micro meters\n");
-            pw.print("# Scale: " + scale + " micro meter per pixel | Frame interval: "
-                    + frameInterval + " sec\n");
-            pw.print("# Frame,X-Centroid,Y-Centroid,Displacement,Dist. Traveled,"
-                    + "Directionality,Speed,Perimeter,Elongation,Circularity,Area");
+  /**
+   * Complementary to write method. Create the same data as write but in form of arrays. For
+   * compatible reasons.
+   * 
+   * @param s Frame statistics calculated by
+   *        {@link uk.ac.warwick.wsbc.quimp.CellStatsEval#record()}
+   */
+  private void buildData(FrameStatistics[] s) {
+    statH = new CellStats(s.length, 11, 11);
+    // duplicate from write method
+    statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(s));
+  }
 
-            for (int i = 0; i < s.length; i++) {
-                pw.print("\n" + (i + startFrame) + "," + IJ.d2s(s[i].centroid.getX(), 2) + ","
-                        + IJ.d2s(s[i].centroid.getY(), 2) + "," + IJ.d2s(s[i].displacement) + ","
-                        + IJ.d2s(s[i].dist) + "," + IJ.d2s(s[i].persistance) + ","
-                        + IJ.d2s(s[i].speed) + "," + IJ.d2s(s[i].perimiter) + ","
-                        + IJ.d2s(s[i].elongation) + "," + IJ.d2s(s[i].circularity, 3) + ","
-                        + IJ.d2s(s[i].area));
+  /**
+   * @return the statH
+   */
+  public CellStats getStatH() {
+    return statH;
+  }
 
-            }
-
-            pw.print("\n#\n# Fluorescence measurements");
-            writeDummyFluo(pw, 1, startFrame, s.length);
-            writeDummyFluo(pw, 2, startFrame, s.length);
-            writeDummyFluo(pw, 3, startFrame, s.length);
-
-            pw.close();
-            buildData(s);
-        } catch (Exception e) {
-            IJ.error("could not open out file");
-            return;
-        }
+  private void writeDummyFluo(PrintWriter pw, int channel, int startFrame, int size)
+          throws Exception {
+    pw.print("\n#\n# Channel " + channel
+            + ";Frame, Total Fluo.,Mean Fluo.,Cortex Width, Cyto. Area,Total Cyto. Fluo., Mean Cyto. Fluo.,"
+            + "Cortex Area,Total Cortex Fluo., Mean Cortex Fluo., %age Cortex Fluo.");
+    for (int i = 0; i < size; i++) {
+      pw.print("\n" + (i + startFrame) + ",-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");
     }
-
-    /**
-     * Complementary to write method. Create the same data as write but in form of arrays. For
-     * compatible reasons.
-     * 
-     * @param s Frame statistics calculated by
-     *        {@link uk.ac.warwick.wsbc.quimp.CellStatsEval#record()}
-     */
-    private void buildData(FrameStatistics[] s) {
-        statH = new CellStats(s.length, 11, 11);
-        // duplicate from write method
-        statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(s));
-    }
-
-    /**
-     * @return the statH
-     */
-    public CellStats getStatH() {
-        return statH;
-    }
-
-    private void writeDummyFluo(PrintWriter pw, int channel, int startFrame, int size)
-            throws Exception {
-        pw.print("\n#\n# Channel " + channel
-                + ";Frame, Total Fluo.,Mean Fluo.,Cortex Width, Cyto. Area,Total Cyto. Fluo., Mean Cyto. Fluo.,"
-                + "Cortex Area,Total Cortex Fluo., Mean Cortex Fluo., %age Cortex Fluo.");
-        for (int i = 0; i < size; i++) {
-            pw.print("\n" + (i + startFrame) + ",-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");
-        }
-    }
+  }
 }

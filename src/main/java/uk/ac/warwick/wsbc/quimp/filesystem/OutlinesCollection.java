@@ -18,56 +18,56 @@ import uk.ac.warwick.wsbc.quimp.OutlineHandler;
  *
  */
 public class OutlinesCollection implements IQuimpSerialize {
-    
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = LoggerFactory.getLogger(OutlinesCollection.class.getName());
-    /**
-     * Contain {@link OutlineHandler} objects.
-     * 
-     * Each object ({@link OutlineHandler} represents segmented cell (outline) between frame
-     * <it>f1</it> and <it>f2</it> but only if segmentation process run continuously between these
-     * frames. Outlines are returned by of ECMM module and they are almost the same as Snakes but
-     * may differ in node order or number.
-     * 
-     */
-    public ArrayList<OutlineHandler> oHs;
 
-    /**
-     * Instantiates a new outlines collection.
-     *
-     * @param size the size
-     */
-    public OutlinesCollection(int size) {
-        oHs = new ArrayList<>(size);
-    }
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(OutlinesCollection.class.getName());
+  /**
+   * Contain {@link OutlineHandler} objects.
+   * 
+   * Each object ({@link OutlineHandler} represents segmented cell (outline) between frame
+   * <it>f1</it> and <it>f2</it> but only if segmentation process run continuously between these
+   * frames. Outlines are returned by of ECMM module and they are almost the same as Snakes but
+   * may differ in node order or number.
+   * 
+   */
+  public ArrayList<OutlineHandler> oHs;
 
-    /**
-     * Instantiates a new outlines collection.
-     */
-    public OutlinesCollection() {
-        oHs = new ArrayList<>();
-    }
+  /**
+   * Instantiates a new outlines collection.
+   *
+   * @param size the size
+   */
+  public OutlinesCollection(int size) {
+    oHs = new ArrayList<>(size);
+  }
 
-    /**
-     * Prepare Outlines for serialization. Build arrays from Outline objects stored in
-     * OutlineHandlers
-     */
-    @Override
-    public void beforeSerialize() {
-        if (oHs != null)
-            for (OutlineHandler oH : oHs)
-                oH.beforeSerialize();
-    }
+  /**
+   * Instantiates a new outlines collection.
+   */
+  public OutlinesCollection() {
+    oHs = new ArrayList<>();
+  }
 
-    /**
-     * Rebuild every Outline from temporary array
-     */
-    @Override
-    public void afterSerialize() throws Exception {
-        if (oHs != null)
-            for (OutlineHandler oH : oHs)
-                oH.afterSerialize();
-    }
+  /**
+   * Prepare Outlines for serialization. Build arrays from Outline objects stored in
+   * OutlineHandlers
+   */
+  @Override
+  public void beforeSerialize() {
+    if (oHs != null)
+      for (OutlineHandler oH : oHs)
+        oH.beforeSerialize();
+  }
+
+  /**
+   * Rebuild every Outline from temporary array
+   */
+  @Override
+  public void afterSerialize() throws Exception {
+    if (oHs != null)
+      for (OutlineHandler oH : oHs)
+        oH.afterSerialize();
+  }
 }

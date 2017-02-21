@@ -204,309 +204,307 @@ import uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin;
  */
 public class PluginFactory {
 
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = LoggerFactory.getLogger(PluginFactory.class.getName());
-    /**
-     * Name pattern of plugins
-     */
-    private static final String PATTERN = "-quimp";
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(PluginFactory.class.getName());
+  /**
+   * Name pattern of plugins
+   */
+  private static final String PATTERN = "-quimp";
 
-    /**
-     * List of plugins found in initial directory path passed to constructor.
-     * 
-     * Plugins are organized in list <name, <path, qname, type>> where:
-     * <ol>
-     * <li>name is the name of plugin extracted from plugin jar filename. Name is always encoded as
-     * Name - starts with capital letter
-     * <li>path is full path with jar filename
-     * <li>qname is qualified name of plugin class obtained from jar name
-     * <li>type is type of plugin read from IQuimpPlugin.setup() method
-     * </ol>
-     * 
-     * This field is set by scanDirectory() method -> getPluginType()
-     */
-    private HashMap<String, PluginProperties> availPlugins;
-    private Path root;
+  /**
+   * List of plugins found in initial directory path passed to constructor.
+   * 
+   * Plugins are organized in list <name, <path, qname, type>> where:
+   * <ol>
+   * <li>name is the name of plugin extracted from plugin jar filename. Name is always encoded as
+   * Name - starts with capital letter
+   * <li>path is full path with jar filename
+   * <li>qname is qualified name of plugin class obtained from jar name
+   * <li>type is type of plugin read from IQuimpPlugin.setup() method
+   * </ol>
+   * 
+   * This field is set by scanDirectory() method -> getPluginType()
+   */
+  private HashMap<String, PluginProperties> availPlugins;
+  private Path root;
 
-    /**
-     * Accessor to internal database of loaded plugins.
-     * 
-     * @return Non-modifiable database of loaded plugins
-     */
-    public Map<String, PluginProperties> getRegisterdPlugins() {
+  /**
+   * Accessor to internal database of loaded plugins.
+   * 
+   * @return Non-modifiable database of loaded plugins
+   */
+  public Map<String, PluginProperties> getRegisterdPlugins() {
 
-        return Collections.unmodifiableMap(availPlugins);
+    return Collections.unmodifiableMap(availPlugins);
+  }
+
+  /**
+   * Build object connected to plugin directory.
+   * 
+   * Can throw exception if there is no directory path. <br>
+   * <img src="doc-files/PluginFactory_2_UML.png"/><br>
+   * 
+   * @param path
+   * 
+   */
+  public PluginFactory(final Path path) {
+    if (QuimP.SUPER_DEBUG)
+      getSystemClassPath();
+    LOGGER.debug("Attached " + path.toString());
+    availPlugins = new HashMap<String, PluginProperties>();
+    // check if dir exists
+    if (Files.notExists(path)) {
+      LOGGER.warn("Plugin directory can not be read");
+      root = Paths.get("/");
+    } else {
+      root = path;
+      scanDirectory();
     }
+  }
 
-    /**
-     * Build object connected to plugin directory.
-     * 
-     * Can throw exception if there is no directory path. <br>
-     * <img src="doc-files/PluginFactory_2_UML.png"/><br>
-     * 
-     * @param path
-     * 
-     */
-    public PluginFactory(final Path path) {
-        if (QuimP.SUPER_DEBUG)
-            getSystemClassPath();
-        LOGGER.debug("Attached " + path.toString());
-        availPlugins = new HashMap<String, PluginProperties>();
-        // check if dir exists
-        if (Files.notExists(path)) {
-            LOGGER.warn("Plugin directory can not be read");
-            root = Paths.get("/");
-        } else {
-            root = path;
-            scanDirectory();
-        }
-    }
+  /**
+   * Scan path for files that match PATTERN name and end with .jar.
+   * 
+   * Fill availPlugins field. Field name is filled as Name without dependency how original
+   * filename was written. It is converted to small letters and then first char is upper-case
+   * written. <br>
+   * <img src="doc-files/PluginFactory_3_UML.png"/><br>
+   * 
+   * @return table of files that fulfill criterion:
+   *         <ol>
+   *         <li>have extension
+   *         <li>extension is .jar or .JAR
+   *         <li>contain PATTERN in name
+   *         </ol>
+   *         If there is no plugins in directory it returns 0 length array
+   */
+  private File[] scanDirectory() {
+    File fi = new File(root.toString());
+    File[] listFiles = fi.listFiles(new FilenameFilter() {
 
-    /**
-     * Scan path for files that match PATTERN name and end with .jar.
-     * 
-     * Fill availPlugins field. Field name is filled as Name without dependency how original
-     * filename was written. It is converted to small letters and then first char is upper-case
-     * written. <br>
-     * <img src="doc-files/PluginFactory_3_UML.png"/><br>
-     * 
-     * @return table of files that fulfill criterion:
-     *         <ol>
-     *         <li>have extension
-     *         <li>extension is .jar or .JAR
-     *         <li>contain PATTERN in name
-     *         </ol>
-     *         If there is no plugins in directory it returns 0 length array
-     */
-    private File[] scanDirectory() {
-        File fi = new File(root.toString());
-        File[] listFiles = fi.listFiles(new FilenameFilter() {
-
-            @Override
-            public boolean accept(File dir, final String name) {
-                String sname = name.toLowerCase();
-                if (sname.lastIndexOf('.') <= 0)
-                    return false; // no extension
-                int lastIndex = sname.lastIndexOf('.');
-                // get extension
-                String ext = sname.substring(lastIndex);
-                if (!ext.equals(".jar"))
-                    return false; // no jar extension
-                // now we have .jar file, check name pattern
-                if (sname.contains(PATTERN))
-                    return true;
-                else
-                    return false;
-            }
-        });
-        if (listFiles == null) // should no be because of checking in constr.
-            return new File[0]; // but if yes return empty array
-        // decode names from listFiles and fill availPlugins names and paths
-        for (File f : listFiles) {
-            // build plugin name from file name
-            String filename = f.getName().toLowerCase();
-            int lastindex = filename.lastIndexOf(PATTERN);
-            // cut from beginning to -quimp
-            String pluginName = filename.substring(0, lastindex);
-            // change first letter to upper to match class-naming convention
-            pluginName = pluginName.substring(0, 1).toUpperCase() + pluginName.substring(1);
-            // check plugin type
-            try {
-                // ask for class names in jar
-                String cname = getClassName(f);
-                // make temporary instance
-                Object inst = getPluginInstance(f, cname);
-                // get type of path.classname plugin
-                int type = getPluginType(inst);
-                // get version of path.classname plugin
-                String ver = getPluginVersion(inst);
-                // create entry with classname and path
-                availPlugins.put(pluginName, new PluginProperties(f, cname, type, ver));
-                LOGGER.debug("Registered plugin: " + pluginName + " "
-                        + availPlugins.get(pluginName).toString());
-                // catch any error in plugin services - plugin is not stored
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException
-                    | InstantiationException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | ClassCastException | IOException
-                    | NoClassDefFoundError e) {
-                LOGGER.error("Type of plugin " + pluginName + " in jar: " + f.getPath()
-                        + " can not be obtained. Ignoring this plugin");
-                LOGGER.debug(e.getMessage(), e);
-            }
-
-        }
-        return Arrays.copyOf(listFiles, listFiles.length);
-    }
-
-    /**
-     * Extracts qualified name of classes in jar file. Class name must contain underscore.
-     * 
-     * @param pathToJar path to jar file
-     * @return Name of first discovered class with underscore
-     * @throws IOException When jar can not be opened
-     * @throws IllegalArgumentException when there is no classes in jar
-     * @see <a href=
-     *      "link">http://stackoverflow.com/questions/11016092/how-to-load-classes-at-runtime-from-a-folder-or-jar</a>
-     */
-    private String getClassName(File pathToJar) throws IOException {
-        ArrayList<String> names = new ArrayList<>(); // all discovered names
-        JarFile jarFile = new JarFile(pathToJar);
-        Enumeration<JarEntry> e = jarFile.entries();
-
-        while (e.hasMoreElements()) {
-            JarEntry je = (JarEntry) e.nextElement();
-            String entryname = je.getName();
-            if (je.isDirectory() || !entryname.endsWith("_.class")) {
-                continue;
-            }
-            // -6 because of .class
-            String className = je.getName().substring(0, je.getName().length() - 6);
-            className = className.replace('/', '.');
-            names.add(className);
-            LOGGER.debug("In " + pathToJar.toString() + " found class " + entryname);
-        }
-        jarFile.close();
-        if (names.isEmpty())
-            throw new IllegalArgumentException(
-                    "getClassName: There is no underscored classes in jar");
-        if (names.size() > 1)
-            LOGGER.warn("More than one underscored class in jar " + pathToJar.toString()
-                    + " Take first one " + names.get(0));
-        return names.get(0);
-    }
-
-    /**
-     * Gets type of plugin.
-     * 
-     * Calls IQuimpPlugin.setup() method from plugin. <br>
-     * <img src="doc-files/PluginFactory_4_UML.png"/><br>
-     * 
-     * @param instance Instance of plugin
-     * @return Codes of types from IQuimpPlugin
-     * @throws IllegalArgumentException When returned type is unknown
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin
-     */
-    private int getPluginType(Object instance)
-            throws IllegalArgumentException, NoSuchMethodException, InvocationTargetException {
-
-        int result = (int) ((IQuimpCorePlugin) instance).setup();
-        // decode returned result for plugin type
-        if ((result & IQuimpCorePlugin.DOES_SNAKES) == IQuimpCorePlugin.DOES_SNAKES)
-            return IQuimpCorePlugin.DOES_SNAKES;
+      @Override
+      public boolean accept(File dir, final String name) {
+        String sname = name.toLowerCase();
+        if (sname.lastIndexOf('.') <= 0)
+          return false; // no extension
+        int lastIndex = sname.lastIndexOf('.');
+        // get extension
+        String ext = sname.substring(lastIndex);
+        if (!ext.equals(".jar"))
+          return false; // no jar extension
+        // now we have .jar file, check name pattern
+        if (sname.contains(PATTERN))
+          return true;
         else
-            throw new IllegalArgumentException("Plugin returned unknown type");
-    }
-
-    /**
-     * Gets version of plugin.
-     * 
-     * Calls IQuimpPlugin.getVersion() method from plugin
-     * 
-     * @param instance Instance of plugin
-     * @return String representing version of plugin or null if plugin does not support versioning
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     */
-    private String getPluginVersion(Object instance)
-            throws NoSuchMethodException, InvocationTargetException {
-        return ((IQuimpCorePlugin) instance).getVersion();
-    }
-
-    /**
-     * Creates instance of plugin. <br>
-     * <img src="doc-files/PluginFactory_5_UML.png"/><br>
-     * 
-     * @param plugin plugin File handler to plugin
-     * @param className
-     * @return className Formatted fully qualified class name
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws ClassNotFoundException
-     * @throws MalformedURLException
-     */
-    private Object getPluginInstance(final File plugin, final String className)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException,
-            MalformedURLException {
-        URL[] url = new URL[] { plugin.toURI().toURL() };
-        ClassLoader child = new URLClassLoader(url);
-        LOGGER.trace("Trying to load class: " + className + " from " + plugin.toString());
-        Class<?> classToLoad = Class.forName(className, true, child);
-        Object instance = classToLoad.newInstance();
-        return instance;
-    }
-
-    /**
-     * Return list of plugins of given types.
-     * 
-     * @param type Type defined in uk.ac.warwick.wsbc.plugin.IQuimpPlugin
-     * @return List of names of plugins of type type. If there is no plugins in directory (this type
-     *         or any) returned list has length 0
-     */
-    public ArrayList<String> getPluginNames(int type) {
-        ArrayList<String> ret = new ArrayList<String>();
-        // Iterate over our collection
-        Iterator<Map.Entry<String, PluginProperties>> it = availPlugins.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, PluginProperties> me = it.next();
-            if (me.getValue().getType() == type) // if type found
-                ret.add(me.getKey()); // add to list of plugins of this type
-        }
-        if (ret.isEmpty())
-            LOGGER.warn("No plugins found");
-        return ret;
-    }
-
-    /**
-     * Return instance of plugin name.
-     * 
-     * <br>
-     * <img src="doc-files/PluginFactory_6_UML.png"/><br>
-     * 
-     * @param name Name of plugin compatible with general rules
-     * @return reference to plugin of name or null when there is any problem with creating instance
-     *         or given name does not exist in availPlugins base
-     */
-    public IQuimpCorePlugin getInstance(final String name) {
-        try {
-            if (name.isEmpty())
-                throw new IllegalArgumentException("Plugin of name: " + name + " is not loaded");
-            // usually name of plugin is spelled with Capital letter first
-            // make sure that name is in correct format
-            String qname = name.substring(0, 1).toUpperCase() + name.substring(1);
-            // find name in database
-            PluginProperties pp = availPlugins.get(qname);
-            if (pp == null)
-                throw new IllegalArgumentException("Plugin of name: " + name + " is not loaded");
-            // load class and create instance
-            IQuimpCorePlugin instance =
-                    (IQuimpCorePlugin) getPluginInstance(pp.getFile(), pp.getClassName());
-            return instance;
-        } catch (MalformedURLException | ClassNotFoundException | InstantiationException
-                | IllegalAccessException | IllegalArgumentException e) {
-            LOGGER.error(
-                    "Plugin " + name + " can not be instanced (reason: " + e.getMessage() + ")");
-            LOGGER.debug(e.getMessage(), e);
-            return null;
-        }
+          return false;
+      }
+    });
+    if (listFiles == null) // should no be because of checking in constr.
+      return new File[0]; // but if yes return empty array
+    // decode names from listFiles and fill availPlugins names and paths
+    for (File f : listFiles) {
+      // build plugin name from file name
+      String filename = f.getName().toLowerCase();
+      int lastindex = filename.lastIndexOf(PATTERN);
+      // cut from beginning to -quimp
+      String pluginName = filename.substring(0, lastindex);
+      // change first letter to upper to match class-naming convention
+      pluginName = pluginName.substring(0, 1).toUpperCase() + pluginName.substring(1);
+      // check plugin type
+      try {
+        // ask for class names in jar
+        String cname = getClassName(f);
+        // make temporary instance
+        Object inst = getPluginInstance(f, cname);
+        // get type of path.classname plugin
+        int type = getPluginType(inst);
+        // get version of path.classname plugin
+        String ver = getPluginVersion(inst);
+        // create entry with classname and path
+        availPlugins.put(pluginName, new PluginProperties(f, cname, type, ver));
+        LOGGER.debug(
+                "Registered plugin: " + pluginName + " " + availPlugins.get(pluginName).toString());
+        // catch any error in plugin services - plugin is not stored
+      } catch (ClassNotFoundException | NoSuchMethodException | SecurityException
+              | InstantiationException | IllegalAccessException | IllegalArgumentException
+              | InvocationTargetException | ClassCastException | IOException
+              | NoClassDefFoundError e) {
+        LOGGER.error("Type of plugin " + pluginName + " in jar: " + f.getPath()
+                + " can not be obtained. Ignoring this plugin");
+        LOGGER.debug(e.getMessage(), e);
+      }
 
     }
+    return Arrays.copyOf(listFiles, listFiles.length);
+  }
 
-    /**
-     * Prints system classpath.
-     */
-    public static void getSystemClassPath() {
-        LOGGER.trace("--- CLASPATH ---");
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
-        URL[] urls = ((URLClassLoader) cl).getURLs();
-        for (URL urll : urls) {
-            LOGGER.trace(urll.getFile());
-        }
-        LOGGER.trace("--- CLASPATH ---");
+  /**
+   * Extracts qualified name of classes in jar file. Class name must contain underscore.
+   * 
+   * @param pathToJar path to jar file
+   * @return Name of first discovered class with underscore
+   * @throws IOException When jar can not be opened
+   * @throws IllegalArgumentException when there is no classes in jar
+   * @see <a href=
+   *      "link">http://stackoverflow.com/questions/11016092/how-to-load-classes-at-runtime-from-a-folder-or-jar</a>
+   */
+  private String getClassName(File pathToJar) throws IOException {
+    ArrayList<String> names = new ArrayList<>(); // all discovered names
+    JarFile jarFile = new JarFile(pathToJar);
+    Enumeration<JarEntry> e = jarFile.entries();
+
+    while (e.hasMoreElements()) {
+      JarEntry je = (JarEntry) e.nextElement();
+      String entryname = je.getName();
+      if (je.isDirectory() || !entryname.endsWith("_.class")) {
+        continue;
+      }
+      // -6 because of .class
+      String className = je.getName().substring(0, je.getName().length() - 6);
+      className = className.replace('/', '.');
+      names.add(className);
+      LOGGER.debug("In " + pathToJar.toString() + " found class " + entryname);
     }
+    jarFile.close();
+    if (names.isEmpty())
+      throw new IllegalArgumentException("getClassName: There is no underscored classes in jar");
+    if (names.size() > 1)
+      LOGGER.warn("More than one underscored class in jar " + pathToJar.toString()
+              + " Take first one " + names.get(0));
+    return names.get(0);
+  }
+
+  /**
+   * Gets type of plugin.
+   * 
+   * Calls IQuimpPlugin.setup() method from plugin. <br>
+   * <img src="doc-files/PluginFactory_4_UML.png"/><br>
+   * 
+   * @param instance Instance of plugin
+   * @return Codes of types from IQuimpPlugin
+   * @throws IllegalArgumentException When returned type is unknown
+   * @throws NoSuchMethodException
+   * @throws InvocationTargetException
+   * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin
+   */
+  private int getPluginType(Object instance)
+          throws IllegalArgumentException, NoSuchMethodException, InvocationTargetException {
+
+    int result = (int) ((IQuimpCorePlugin) instance).setup();
+    // decode returned result for plugin type
+    if ((result & IQuimpCorePlugin.DOES_SNAKES) == IQuimpCorePlugin.DOES_SNAKES)
+      return IQuimpCorePlugin.DOES_SNAKES;
+    else
+      throw new IllegalArgumentException("Plugin returned unknown type");
+  }
+
+  /**
+   * Gets version of plugin.
+   * 
+   * Calls IQuimpPlugin.getVersion() method from plugin
+   * 
+   * @param instance Instance of plugin
+   * @return String representing version of plugin or null if plugin does not support versioning
+   * @throws NoSuchMethodException
+   * @throws InvocationTargetException
+   */
+  private String getPluginVersion(Object instance)
+          throws NoSuchMethodException, InvocationTargetException {
+    return ((IQuimpCorePlugin) instance).getVersion();
+  }
+
+  /**
+   * Creates instance of plugin. <br>
+   * <img src="doc-files/PluginFactory_5_UML.png"/><br>
+   * 
+   * @param plugin plugin File handler to plugin
+   * @param className
+   * @return className Formatted fully qualified class name
+   * @throws InstantiationException
+   * @throws IllegalAccessException
+   * @throws ClassNotFoundException
+   * @throws MalformedURLException
+   */
+  private Object getPluginInstance(final File plugin, final String className)
+          throws InstantiationException, IllegalAccessException, ClassNotFoundException,
+          MalformedURLException {
+    URL[] url = new URL[] { plugin.toURI().toURL() };
+    ClassLoader child = new URLClassLoader(url);
+    LOGGER.trace("Trying to load class: " + className + " from " + plugin.toString());
+    Class<?> classToLoad = Class.forName(className, true, child);
+    Object instance = classToLoad.newInstance();
+    return instance;
+  }
+
+  /**
+   * Return list of plugins of given types.
+   * 
+   * @param type Type defined in uk.ac.warwick.wsbc.plugin.IQuimpPlugin
+   * @return List of names of plugins of type type. If there is no plugins in directory (this type
+   *         or any) returned list has length 0
+   */
+  public ArrayList<String> getPluginNames(int type) {
+    ArrayList<String> ret = new ArrayList<String>();
+    // Iterate over our collection
+    Iterator<Map.Entry<String, PluginProperties>> it = availPlugins.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry<String, PluginProperties> me = it.next();
+      if (me.getValue().getType() == type) // if type found
+        ret.add(me.getKey()); // add to list of plugins of this type
+    }
+    if (ret.isEmpty())
+      LOGGER.warn("No plugins found");
+    return ret;
+  }
+
+  /**
+   * Return instance of plugin name.
+   * 
+   * <br>
+   * <img src="doc-files/PluginFactory_6_UML.png"/><br>
+   * 
+   * @param name Name of plugin compatible with general rules
+   * @return reference to plugin of name or null when there is any problem with creating instance
+   *         or given name does not exist in availPlugins base
+   */
+  public IQuimpCorePlugin getInstance(final String name) {
+    try {
+      if (name.isEmpty())
+        throw new IllegalArgumentException("Plugin of name: " + name + " is not loaded");
+      // usually name of plugin is spelled with Capital letter first
+      // make sure that name is in correct format
+      String qname = name.substring(0, 1).toUpperCase() + name.substring(1);
+      // find name in database
+      PluginProperties pp = availPlugins.get(qname);
+      if (pp == null)
+        throw new IllegalArgumentException("Plugin of name: " + name + " is not loaded");
+      // load class and create instance
+      IQuimpCorePlugin instance =
+              (IQuimpCorePlugin) getPluginInstance(pp.getFile(), pp.getClassName());
+      return instance;
+    } catch (MalformedURLException | ClassNotFoundException | InstantiationException
+            | IllegalAccessException | IllegalArgumentException e) {
+      LOGGER.error("Plugin " + name + " can not be instanced (reason: " + e.getMessage() + ")");
+      LOGGER.debug(e.getMessage(), e);
+      return null;
+    }
+
+  }
+
+  /**
+   * Prints system classpath.
+   */
+  public static void getSystemClassPath() {
+    LOGGER.trace("--- CLASPATH ---");
+    ClassLoader cl = ClassLoader.getSystemClassLoader();
+    URL[] urls = ((URLClassLoader) cl).getURLs();
+    for (URL urll : urls) {
+      LOGGER.trace(urll.getFile());
+    }
+    LOGGER.trace("--- CLASPATH ---");
+  }
 }
 
 /**
@@ -516,65 +514,65 @@ public class PluginFactory {
  *
  */
 class PluginProperties {
-    private File file; // !< handle to file on disk
-    private int type; // !< type of plugin
-    private String className; // !< name of plugin class
-    private String version; // !< version returned from plugin
+  private File file; // !< handle to file on disk
+  private int type; // !< type of plugin
+  private String className; // !< name of plugin class
+  private String version; // !< version returned from plugin
 
-    /**
-     * Version getter.
-     * 
-     * @return the version
-     */
-    public String getVersion() {
-        return version;
-    }
+  /**
+   * Version getter.
+   * 
+   * @return the version
+   */
+  public String getVersion() {
+    return version;
+  }
 
-    /**
-     * @return the className
-     */
-    public String getClassName() {
-        return className;
-    }
+  /**
+   * @return the className
+   */
+  public String getClassName() {
+    return className;
+  }
 
-    /**
-     * Construct plugin properties object.
-     * 
-     * @param file Reference to plugin file
-     * @param className Qualified class name of plugin
-     * @param type Type of plugin returned by IQuimpPlugin.setup() method
-     * @param version Version of plugin returned from IQuimpPlugin.getVersion() method
-     */
-    PluginProperties(final File file, final String className, int type, final String version) {
-        this.file = file;
-        this.type = type;
-        this.className = className;
-        if (version == null) // if plugin does not support versioning may return null
-            this.version = "";
-        else
-            this.version = version;
-    }
+  /**
+   * Construct plugin properties object.
+   * 
+   * @param file Reference to plugin file
+   * @param className Qualified class name of plugin
+   * @param type Type of plugin returned by IQuimpPlugin.setup() method
+   * @param version Version of plugin returned from IQuimpPlugin.getVersion() method
+   */
+  PluginProperties(final File file, final String className, int type, final String version) {
+    this.file = file;
+    this.type = type;
+    this.className = className;
+    if (version == null) // if plugin does not support versioning may return null
+      this.version = "";
+    else
+      this.version = version;
+  }
 
-    /**
-     * File getter.
-     * 
-     * @return File object
-     */
-    public File getFile() {
-        return file;
-    }
+  /**
+   * File getter.
+   * 
+   * @return File object
+   */
+  public File getFile() {
+    return file;
+  }
 
-    /**
-     * Type getter.
-     * 
-     * @return Type of File plugin
-     */
-    public int getType() {
-        return type;
-    }
+  /**
+   * Type getter.
+   * 
+   * @return Type of File plugin
+   */
+  public int getType() {
+    return type;
+  }
 
-    @Override
-    public String toString() {
-        return "ClassName: " + className + " path: " + file + " type: " + type + " ver: " + version;
-    }
+  @Override
+  public String toString() {
+    return "ClassName: " + className + " path: " + file + " type: " + type + " ver: " + version;
+  }
 }

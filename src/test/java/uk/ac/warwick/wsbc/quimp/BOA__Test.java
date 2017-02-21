@@ -20,54 +20,54 @@ import ij.ImagePlus;
  */
 public class BOA__Test {
 
-    /**
-     * The img.
-     */
-    ImagePlus img;
+  /**
+   * The img.
+   */
+  ImagePlus img;
 
-    /**
-     * @throws Exception
-     */
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-    }
+  /**
+   * @throws Exception
+   */
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+  }
 
-    /**
-     * @throws Exception
-     */
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
-    }
+  /**
+   * @throws Exception
+   */
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+  }
 
-    /**
-     * @throws Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-        img = IJ.openImage("src/test/resources/movie03.tif");
-    }
+  /**
+   * @throws Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+    img = IJ.openImage("src/test/resources/movie03.tif");
+  }
 
-    /**
-     * @throws Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-        img = null;
-    }
+  /**
+   * @throws Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+    img = null;
+  }
 
-    /**
-     * 
-     */
-    @Test
-    public void testExample() {
-        assertEquals(10, 10);
-    }
+  /**
+   * 
+   */
+  @Test
+  public void testExample() {
+    assertEquals(10, 10);
+  }
 
-    /**
-     * 
-     */
-    @Test
-    public void testExample1() {
-        assertEquals(10, 10);
-    }
+  /**
+   * 
+   */
+  @Test
+  public void testExample1() {
+    assertEquals(10, 10);
+  }
 }

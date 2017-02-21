@@ -17,28 +17,28 @@ import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
  */
 public class Converter170202<T extends IQuimpSerialize> implements IQconfOlderConverter<T> {
 
-    /**
-     * Version below the {@link #upgradeFromOld(Serializer)} will be executed.
-     */
-    final public Double trigger = new Double(17.0202);
-    private QuimpVersion version;
+  /**
+   * Version below the {@link #upgradeFromOld(Serializer)} will be executed.
+   */
+  final public Double trigger = new Double(17.0202);
+  private QuimpVersion version;
 
-    /**
-     * @param version new version format. The old version will be replaced with this one
-     */
-    public Converter170202(QuimpVersion version) {
-        this.version = version;
-    }
+  /**
+   * @param version new version format. The old version will be replaced with this one
+   */
+  public Converter170202(QuimpVersion version) {
+    this.version = version;
+  }
 
-    @Override
-    public void upgradeFromOld(Serializer<T> localref) throws QuimpException {
-        if (localref.timeStamp == null)
-            localref.timeStamp = version;
-    }
+  @Override
+  public void upgradeFromOld(Serializer<T> localref) throws QuimpException {
+    if (localref.timeStamp == null)
+      localref.timeStamp = version;
+  }
 
-    @Override
-    public Double executeForLowerThan() {
-        return trigger;
-    }
+  @Override
+  public Double executeForLowerThan() {
+    return trigger;
+  }
 
 }

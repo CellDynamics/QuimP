@@ -16,24 +16,24 @@ import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
  */
 public interface IQconfOlderConverter<T extends IQuimpSerialize> {
 
-    /**
-     * This method is run when deserialised class is in version lower that version of loader.
-     * 
-     * @param localref reference to loaded object
-     * @throws QuimpException on problems with conversion
-     */
-    public void upgradeFromOld(Serializer<T> localref) throws QuimpException;
+  /**
+   * This method is run when deserialised class is in version lower that version of loader.
+   * 
+   * @param localref reference to loaded object
+   * @throws QuimpException on problems with conversion
+   */
+  public void upgradeFromOld(Serializer<T> localref) throws QuimpException;
 
-    /**
-     * Threshold to execture converter.
-     * 
-     * Converter is executed if version returned by this method is lower than that provided in
-     * {@link Serializer#Serializer(IQuimpSerialize, uk.ac.warwick.wsbc.quimp.QuimpVersion)}
-     * constructor.
-     * 
-     * @return Version for which this Converter. Format returned: a.bc if version string equals
-     *         a.b.c-xxx.
-     */
-    public Double executeForLowerThan();
+  /**
+   * Threshold to execture converter.
+   * 
+   * Converter is executed if version returned by this method is lower than that provided in
+   * {@link Serializer#Serializer(IQuimpSerialize, uk.ac.warwick.wsbc.quimp.QuimpVersion)}
+   * constructor.
+   * 
+   * @return Version for which this Converter. Format returned: a.bc if version string equals
+   *         a.b.c-xxx.
+   */
+  public Double executeForLowerThan();
 
 }

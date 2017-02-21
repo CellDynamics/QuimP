@@ -35,46 +35,46 @@ import uk.ac.warwick.wsbc.quimp.BOA_;
  */
 @SuppressWarnings("unused")
 public class BOA__run {
-    static {
-        System.setProperty("logback.configurationFile", "quimp-logback.xml");
-    }
+  static {
+    System.setProperty("logback.configurationFile", "quimp-logback.xml");
+  }
 
-    /**
-     * @param args
-     * @throws InterruptedException Runner for BOA plugin
-     */
-    public static void main(String[] args) throws InterruptedException {
-        ImagePlus img;
-        ImageJ ij = new ImageJ();
-        // create synchronization latch
-        CountDownLatch startSignal = new CountDownLatch(1);
-        // img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");
-        // img = IJ.openImage("src/test/resources/movie03_8bit.tif");
-        // img = IJ.openImage("src/test/resources/Composite-after-macro_cut.tif");
-        // img = IJ.openImage("src/test/resources/Stack_cut.tif");
-        img = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
+  /**
+   * @param args
+   * @throws InterruptedException Runner for BOA plugin
+   */
+  public static void main(String[] args) throws InterruptedException {
+    ImagePlus img;
+    ImageJ ij = new ImageJ();
+    // create synchronization latch
+    CountDownLatch startSignal = new CountDownLatch(1);
+    // img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");
+    // img = IJ.openImage("src/test/resources/movie03_8bit.tif");
+    // img = IJ.openImage("src/test/resources/Composite-after-macro_cut.tif");
+    // img = IJ.openImage("src/test/resources/Stack_cut.tif");
+    img = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
 
-        img.show(); // this is necessary for plugin as it uses getcurrentimage to work
-        Toolbar t = new Toolbar(); // fake toolbar to allow calls to static fields of this class
-                                   // inside boa
-        BOA_ ob = new BOA_();
+    img.show(); // this is necessary for plugin as it uses getcurrentimage to work
+    Toolbar t = new Toolbar(); // fake toolbar to allow calls to static fields of this class
+                               // inside boa
+    BOA_ ob = new BOA_();
 
-        ob.run("../../Fiji.app.test/plugins/"); // run BOA, control is immediately returned
-        // ob.run("../plugins_test/target/"); // run BOA, control is immediately returned
+    ob.run("../../Fiji.app.test/plugins/"); // run BOA, control is immediately returned
+    // ob.run("../plugins_test/target/"); // run BOA, control is immediately returned
 
-        // add window listener to BOA_ window window is \public field of BOA_ class
-        // representing CustomStackWindow internally extending Frame class
-        ob.window.addWindowListener(new WindowAdapter() {
+    // add window listener to BOA_ window window is \public field of BOA_ class
+    // representing CustomStackWindow internally extending Frame class
+    ob.window.addWindowListener(new WindowAdapter() {
 
-            @Override
-            // This method will be called when BOA_ window is closed
-            public void windowClosed(WindowEvent arg0) {
-                startSignal.countDown(); // decrease latch by 1
-            }
-        });
-        // main thread waits here until Latch reaches 0
-        startSignal.await();
-        img.close();
-    }
+      @Override
+      // This method will be called when BOA_ window is closed
+      public void windowClosed(WindowEvent arg0) {
+        startSignal.countDown(); // decrease latch by 1
+      }
+    });
+    // main thread waits here until Latch reaches 0
+    startSignal.await();
+    img.close();
+  }
 
 }

@@ -16,35 +16,35 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
  *
  */
 public class QuimpToolsCollectionTest {
-    
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = LoggerFactory.getLogger(QuimpToolsCollectionTest.class.getName());
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-    }
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(QuimpToolsCollectionTest.class.getName());
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-    }
+  /**
+   * @throws java.lang.Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+  }
 
-    /**
-     * Test method for
-     * {@link uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection#getQuimPversion()}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testGetFormattedQuimPversion() throws Exception {
-        LOGGER.debug(new QuimpToolsCollection().getQuimPversion());
-    }
+  /**
+   * @throws java.lang.Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+  }
+
+  /**
+   * Test method for
+   * {@link uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection#getQuimPversion()}.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testGetFormattedQuimPversion() throws Exception {
+    LOGGER.debug(new QuimpToolsCollection().getQuimPversion());
+  }
 
 }

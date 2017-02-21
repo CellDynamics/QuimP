@@ -32,164 +32,164 @@ import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
  */
 public class HistoryLogger implements WindowListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HistoryLogger.class.getName());
-    private Frame historyWnd; //!< Window handler
-    private ArrayList<String> history; //!< array with all entries
-    private TextArea info;
-    private int id; //!< message counter
+  private static final Logger LOGGER = LoggerFactory.getLogger(HistoryLogger.class.getName());
+  private Frame historyWnd; //!< Window handler
+  private ArrayList<String> history; //!< array with all entries
+  private TextArea info;
+  private int id; //!< message counter
 
-    /**
-     * Construct main window
-     */
-    public HistoryLogger() {
-        id = 1;
-        historyWnd = new Frame("History");
-        Panel p = new Panel();
-        p.setLayout(new GridLayout(1, 1)); // main window panel
-        Panel tp = new Panel(); // panel with text area
-        tp.setLayout(new GridLayout(1, 1));
-        info = new TextArea(10, 60); // area to write
-        info.setEditable(false);
-        info.setBackground(Color.WHITE);
-        tp.add(info); // add to panel
+  /**
+   * Construct main window
+   */
+  public HistoryLogger() {
+    id = 1;
+    historyWnd = new Frame("History");
+    Panel p = new Panel();
+    p.setLayout(new GridLayout(1, 1)); // main window panel
+    Panel tp = new Panel(); // panel with text area
+    tp.setLayout(new GridLayout(1, 1));
+    info = new TextArea(10, 60); // area to write
+    info.setEditable(false);
+    info.setBackground(Color.WHITE);
+    tp.add(info); // add to panel
 
-        JScrollPane infoPanel = new JScrollPane(tp);
-        p.add(infoPanel);
-        historyWnd.add(p);
-        historyWnd.pack();
-        historyWnd.addWindowListener(this);
+    JScrollPane infoPanel = new JScrollPane(tp);
+    p.add(infoPanel);
+    historyWnd.add(p);
+    historyWnd.pack();
+    historyWnd.addWindowListener(this);
 
-        history = new ArrayList<String>();
+    history = new ArrayList<String>();
 
+  }
+
+  /**
+   * Make window visible
+   */
+  public void openHistory() {
+    historyWnd.setVisible(true);
+  }
+
+  /**
+   * Close window and call windowClosing() and windowClosed() methods
+   */
+  public void closeHistory() {
+    historyWnd.setVisible(false);
+  }
+
+  /**
+   * Add entry to log.
+   * 
+   * Gather all BOA state and include in log. Uses \c Entry class to pack these information to
+   * JSon object. Particular entries can be null if they may not be logged
+   * 
+   * @param m General message to be included in log
+   * @param bs BOA state machine object
+   */
+  public void addEntry(String m, BOAState bs) {
+    // TODO This method should accept more detailed BOA state (e.g. all segm. params)
+    if (historyWnd.isVisible()) {
+      if (bs == null)
+        return;
+      LogEntry en = new LogEntry(id++, m, bs);
+      Serializer<LogEntry> s = new Serializer<>(en, QuimP.TOOL_VERSION);
+
+      String jsontmp = s.toString();
+      history.add(jsontmp); // store in array
+      info.append(jsontmp + '\n'); // add to log window
+      LOGGER.debug(jsontmp);
+      en = null;
     }
 
-    /**
-     * Make window visible
-     */
-    public void openHistory() {
-        historyWnd.setVisible(true);
-    }
+  }
 
-    /**
-     * Close window and call windowClosing() and windowClosed() methods
-     */
-    public void closeHistory() {
-        historyWnd.setVisible(false);
-    }
+  /**
+   * Check if window is opened
+   * 
+   * @return \c true is window is visible
+   */
+  public boolean isOpened() {
+    return historyWnd.isVisible();
+  }
 
-    /**
-     * Add entry to log.
-     * 
-     * Gather all BOA state and include in log. Uses \c Entry class to pack these information to
-     * JSon object. Particular entries can be null if they may not be logged
-     * 
-     * @param m General message to be included in log
-     * @param bs BOA state machine object
-     */
-    public void addEntry(String m, BOAState bs) {
-        // TODO This method should accept more detailed BOA state (e.g. all segm. params)
-        if (historyWnd.isVisible()) {
-            if (bs == null)
-                return;
-            LogEntry en = new LogEntry(id++, m, bs);
-            Serializer<LogEntry> s = new Serializer<>(en, QuimP.TOOL_VERSION);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.awt.event.WindowListener#windowOpened(java.awt.event.WindowEvent)
+   */
+  @Override
+  public void windowOpened(WindowEvent e) {
+  }
 
-            String jsontmp = s.toString();
-            history.add(jsontmp); // store in array
-            info.append(jsontmp + '\n'); // add to log window
-            LOGGER.debug(jsontmp);
-            en = null;
-        }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.awt.event.WindowListener#windowClosing(java.awt.event.WindowEvent)
+   */
+  @Override
+  public void windowClosing(WindowEvent e) {
+    LOGGER.debug("History windowClosing");
+    historyWnd.setVisible(false);
+    info.setText("");
+    id = 1;
+    history.clear();
+    historyWnd.dispose();
 
-    }
+  }
 
-    /**
-     * Check if window is opened
-     * 
-     * @return \c true is window is visible
-     */
-    public boolean isOpened() {
-        return historyWnd.isVisible();
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.awt.event.WindowListener#windowClosed(java.awt.event.WindowEvent)
+   */
+  @Override
+  public void windowClosed(WindowEvent e) {
+    LOGGER.debug("History windowClosed");
+    historyWnd.setVisible(false);
+    info.setText("");
+    id = 1;
+    history.clear();
+    historyWnd.dispose();
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.awt.event.WindowListener#windowOpened(java.awt.event.WindowEvent)
-     */
-    @Override
-    public void windowOpened(WindowEvent e) {
-    }
+  }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.awt.event.WindowListener#windowClosing(java.awt.event.WindowEvent)
-     */
-    @Override
-    public void windowClosing(WindowEvent e) {
-        LOGGER.debug("History windowClosing");
-        historyWnd.setVisible(false);
-        info.setText("");
-        id = 1;
-        history.clear();
-        historyWnd.dispose();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.awt.event.WindowListener#windowIconified(java.awt.event.WindowEvent)
+   */
+  @Override
+  public void windowIconified(WindowEvent e) {
 
-    }
+  }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.awt.event.WindowListener#windowClosed(java.awt.event.WindowEvent)
-     */
-    @Override
-    public void windowClosed(WindowEvent e) {
-        LOGGER.debug("History windowClosed");
-        historyWnd.setVisible(false);
-        info.setText("");
-        id = 1;
-        history.clear();
-        historyWnd.dispose();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.awt.event.WindowListener#windowDeiconified(java.awt.event.WindowEvent)
+   */
+  @Override
+  public void windowDeiconified(WindowEvent e) {
 
-    }
+  }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.awt.event.WindowListener#windowIconified(java.awt.event.WindowEvent)
-     */
-    @Override
-    public void windowIconified(WindowEvent e) {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.awt.event.WindowListener#windowActivated(java.awt.event.WindowEvent)
+   */
+  @Override
+  public void windowActivated(WindowEvent e) {
+  }
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.awt.event.WindowListener#windowDeiconified(java.awt.event.WindowEvent)
-     */
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.awt.event.WindowListener#windowActivated(java.awt.event.WindowEvent)
-     */
-    @Override
-    public void windowActivated(WindowEvent e) {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.awt.event.WindowListener#windowDeactivated(java.awt.event.WindowEvent)
-     */
-    @Override
-    public void windowDeactivated(WindowEvent e) {
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.awt.event.WindowListener#windowDeactivated(java.awt.event.WindowEvent)
+   */
+  @Override
+  public void windowDeactivated(WindowEvent e) {
+  }
 
 }
 
@@ -200,41 +200,41 @@ public class HistoryLogger implements WindowListener {
  *
  */
 class LogEntry implements IQuimpSerialize {
-    public int id; //!< Number of entry
-    public String action; //!< Textual description of taken action
-    // selected fields to be logged (from BOAState)
-    public int frame; //!< current frame, CustomStackWindow.updateSliceSelector()
-    public BOAState.SegParam segParam; //!< Reference to segmentation parameters
-    public String fileName; //!< Current data file name
-    public SnakePluginList snakePluginList; //!< Plugin config
+  public int id; //!< Number of entry
+  public String action; //!< Textual description of taken action
+  // selected fields to be logged (from BOAState)
+  public int frame; //!< current frame, CustomStackWindow.updateSliceSelector()
+  public BOAState.SegParam segParam; //!< Reference to segmentation parameters
+  public String fileName; //!< Current data file name
+  public SnakePluginList snakePluginList; //!< Plugin config
 
-    /**
-     * Main constructor
-     * 
-     * Object of this class is created temporarily only for logging purposes.
-     * 
-     * @param counter number of log entry
-     * @param action description of action
-     * @param bs BOA state machine
-     */
-    public LogEntry(int counter, String action, BOAState bs) {
-        // TODO replace with snakePluginLists (beforeSerialize will not be called then)
-        super();
-        this.id = counter;
-        this.action = action;
-        this.frame = bs.boap.frame;
-        this.segParam = bs.segParam;
-        this.fileName = bs.boap.getFileName();
-        this.snakePluginList = bs.snakePluginList;
+  /**
+   * Main constructor
+   * 
+   * Object of this class is created temporarily only for logging purposes.
+   * 
+   * @param counter number of log entry
+   * @param action description of action
+   * @param bs BOA state machine
+   */
+  public LogEntry(int counter, String action, BOAState bs) {
+    // TODO replace with snakePluginLists (beforeSerialize will not be called then)
+    super();
+    this.id = counter;
+    this.action = action;
+    this.frame = bs.boap.frame;
+    this.segParam = bs.segParam;
+    this.fileName = bs.boap.getFileName();
+    this.snakePluginList = bs.snakePluginList;
 
-    }
+  }
 
-    @Override
-    public void beforeSerialize() {
-        snakePluginList.beforeSerialize();
-    }
+  @Override
+  public void beforeSerialize() {
+    snakePluginList.beforeSerialize();
+  }
 
-    @Override
-    public void afterSerialize() throws Exception {
-    }
+  @Override
+  public void afterSerialize() throws Exception {
+  }
 }

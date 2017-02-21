@@ -15,31 +15,31 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
  */
 public interface IQuimpBOAPoint2dFilter extends IQuimpCorePlugin {
 
-    /**
-     * Runs filter and return filtered points in the same order as input points.
-     * 
-     * Number of returned points can be different.
-     * <p>
-     * <b>Warning</b>
-     * <p>
-     * Plugin may be run without attached data. Plugin must deal with this
-     * 
-     * @return Filtered points
-     * @throws QuimpPluginException on any problems during filter execution
-     */
-    List<Point2d> runPlugin() throws QuimpPluginException;
+  /**
+   * Runs filter and return filtered points in the same order as input points.
+   * 
+   * Number of returned points can be different.
+   * <p>
+   * <b>Warning</b>
+   * <p>
+   * Plugin may be run without attached data. Plugin must deal with this
+   * 
+   * @return Filtered points
+   * @throws QuimpPluginException on any problems during filter execution
+   */
+  List<Point2d> runPlugin() throws QuimpPluginException;
 
-    /**
-     * Attach processed data to plugin.
-     * 
-     * This method allows to process data by plugin without running it what is important e.g. for
-     * visualizing.
-     * <p>
-     * <b>Warning</b>
-     * <p>
-     * Plugin may be run without attached data. Plugin must deal with this
-     * 
-     * @param data
-     */
-    void attachData(final List<Point2d> data);
+  /**
+   * Attach processed data to plugin.
+   * 
+   * This method allows to process data by plugin without running it what is important e.g. for
+   * visualizing.
+   * <p>
+   * <b>Warning</b>
+   * <p>
+   * Plugin may be run without attached data. Plugin must deal with this
+   * 
+   * @param data
+   */
+  void attachData(final List<Point2d> data);
 }

@@ -9,28 +9,28 @@ import uk.ac.warwick.wsbc.quimp.HistoryLogger;
  */
 public class HistoryLogger_run {
 
-    /**
-     * The hs.
-     */
-    HistoryLogger hs;
+  /**
+   * The hs.
+   */
+  HistoryLogger hs;
 
-    /**
-     * 
-     */
-    public HistoryLogger_run() {
-        hs = new HistoryLogger();
-    }
+  /**
+   * 
+   */
+  public HistoryLogger_run() {
+    hs = new HistoryLogger();
+  }
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        HistoryLogger_run hsr = new HistoryLogger_run();
-        hsr.hs.openHistory();
+  /**
+   * @param args
+   */
+  public static void main(String[] args) {
+    HistoryLogger_run hsr = new HistoryLogger_run();
+    hsr.hs.openHistory();
 
-        hsr.hs.addEntry("Test 1", null);
-        hsr.hs.addEntry("Test 2", null);
+    hsr.hs.addEntry("Test 1", null);
+    hsr.hs.addEntry("Test 2", null);
 
-    }
+  }
 
 }

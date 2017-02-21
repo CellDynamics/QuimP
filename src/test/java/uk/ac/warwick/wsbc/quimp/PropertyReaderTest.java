@@ -17,22 +17,22 @@ import uk.ac.warwick.wsbc.quimp.PropertyReader;
  *
  */
 public class PropertyReaderTest {
-    
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = LoggerFactory.getLogger(PropertyReaderTest.class.getName());
 
-    /**
-     * read property and display it
-     * 
-     * Post: value of key displayed
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testReadProperty() throws Exception {
-        LOGGER.debug(new PropertyReader().readProperty("quimpconfig.properties", "manualURL"));
-    }
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(PropertyReaderTest.class.getName());
+
+  /**
+   * read property and display it
+   * 
+   * Post: value of key displayed
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testReadProperty() throws Exception {
+    LOGGER.debug(new PropertyReader().readProperty("quimpconfig.properties", "manualURL"));
+  }
 
 }

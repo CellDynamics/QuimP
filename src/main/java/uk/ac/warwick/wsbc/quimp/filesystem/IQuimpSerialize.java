@@ -14,19 +14,19 @@ package uk.ac.warwick.wsbc.quimp.filesystem;
  *
  */
 public interface IQuimpSerialize {
-    /**
-     * This method is called just before JSON is generated.
-     * 
-     * @see uk.ac.warwick.wsbc.quimp.Serializer#save(String)
-     */
-    public void beforeSerialize();
+  /**
+   * This method is called just before JSON is generated.
+   * 
+   * @see uk.ac.warwick.wsbc.quimp.Serializer#save(String)
+   */
+  public void beforeSerialize();
 
-    /**
-     * This method is called after restoring object from JSON but before returning the object.
-     * 
-     * @throws Exception from wrapped object in any problem. This is implementation dependent
-     * @see uk.ac.warwick.wsbc.quimp.Serializer#load(String)
-     */
-    public void afterSerialize() throws Exception;
+  /**
+   * This method is called after restoring object from JSON but before returning the object.
+   * 
+   * @throws Exception from wrapped object in any problem. This is implementation dependent
+   * @see uk.ac.warwick.wsbc.quimp.Serializer#load(String)
+   */
+  public void afterSerialize() throws Exception;
 
 }
