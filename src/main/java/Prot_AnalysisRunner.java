@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.QuimP.plugin.protanalysis.Prot_Analysis;
+import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.Prot_Analysis;
 
 /**
  * Compatibility layer for ImageJ.
