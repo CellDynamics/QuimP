@@ -51,6 +51,7 @@ import uk.ac.warwick.wsbc.quimp.PropertyReader;
 import uk.ac.warwick.wsbc.quimp.QuimP;
 import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.QuimpException.MessageSinkTypes;
+import uk.ac.warwick.wsbc.quimp.QuimpVersion;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.quimp.registration.Registration;
@@ -72,8 +73,12 @@ public class QuimP_Bar implements PlugIn, ActionListener {
   /**
    * This field is used for sharing information between bar and other plugins.
    * 
+   * <<<<<<< HEAD
    * <p>It is read by {@link uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter} which is
    * used
+   * =======
+   * It is read by {@link uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter} which is used
+   * >>>>>>> feature/task_220-GSon-versioning
    * by {@link uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader} for serving
    * {@link uk.ac.warwick.wsbc.quimp.QParams} object for client.
    */
@@ -167,8 +172,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
    */
   public void run(String s) {
     String title;
-    String quimpInfo[] = new QuimpToolsCollection().getQuimPBuildInfo(); // get jar title
-    title = quimpInfo[2] + " " + quimpInfo[0];
+    QuimpVersion quimpInfo = QuimP.TOOL_VERSION; // get jar title
+    title = quimpInfo.getName() + " " + quimpInfo.getVersion();
 
     frame.setTitle(title); // and set to window title
 

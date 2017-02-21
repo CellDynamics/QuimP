@@ -21,10 +21,6 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.Params;
-import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.Point;
-import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkException;
-import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentation;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -230,17 +226,17 @@ public class RandomWalkSegmentationOtherTest {
     RealMatrix[] ret = (RealMatrix[]) accessPrivate("precompute", obj, new Object[0], new Class[0]);
 
     IJ.saveAsTiff(
-            new ImagePlus("gRight2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[0])),
+            new ImagePlus("gRight2", RandomWalkSegmentation.RealMatrix2ImageProcessor(ret[0])),
             tmpdir + "testPrecompute_gRight2.tif");
 
-    IJ.saveAsTiff(new ImagePlus("gTop2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[1])),
+    IJ.saveAsTiff(new ImagePlus("gTop2", RandomWalkSegmentation.RealMatrix2ImageProcessor(ret[1])),
             tmpdir + "testPrecompute_gTop2.tif");
 
-    IJ.saveAsTiff(new ImagePlus("gLeft2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[2])),
+    IJ.saveAsTiff(new ImagePlus("gLeft2", RandomWalkSegmentation.RealMatrix2ImageProcessor(ret[2])),
             tmpdir + "testPrecompute_gLeft2.tif");
 
     IJ.saveAsTiff(
-            new ImagePlus("gBottom2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[3])),
+            new ImagePlus("gBottom2", RandomWalkSegmentation.RealMatrix2ImageProcessor(ret[3])),
             tmpdir + "testPrecompute_gBottom2.tif");
   }
 
@@ -249,9 +245,9 @@ public class RandomWalkSegmentationOtherTest {
    */
   @Test
   public void testConversion() {
-    RealMatrix image = RandomWalkSegmentation.imageProcessor2RealMatrix(testImage1.getProcessor());
+    RealMatrix image = RandomWalkSegmentation.ImageProcessor2RealMatrix(testImage1.getProcessor());
 
-    IJ.saveAsTiff(new ImagePlus("orimage", RandomWalkSegmentation.realMatrix2ImageProcessor(image)),
+    IJ.saveAsTiff(new ImagePlus("orimage", RandomWalkSegmentation.RealMatrix2ImageProcessor(image)),
             tmpdir + "testConversion_image.tif");
 
   }

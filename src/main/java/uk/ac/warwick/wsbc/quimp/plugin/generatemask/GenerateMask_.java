@@ -20,9 +20,9 @@ import uk.ac.warwick.wsbc.quimp.Nest;
 import uk.ac.warwick.wsbc.quimp.QParamsQconf;
 import uk.ac.warwick.wsbc.quimp.QuimP;
 import uk.ac.warwick.wsbc.quimp.QuimpException;
+import uk.ac.warwick.wsbc.quimp.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.quimp.Snake;
 import uk.ac.warwick.wsbc.quimp.SnakeHandler;
-import uk.ac.warwick.wsbc.quimp.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.PluginTemplate;
@@ -94,7 +94,7 @@ public class GenerateMask_ extends PluginTemplate {
    * @see uk.ac.warwick.wsbc.quimp.plugin.PluginTemplate#showUI(boolean)
    */
   @Override
-  public int showUI(boolean val) {
+  public int showUi(boolean val) {
     return 0;
   }
 

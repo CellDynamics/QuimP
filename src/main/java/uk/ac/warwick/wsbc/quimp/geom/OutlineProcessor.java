@@ -7,7 +7,6 @@ import uk.ac.warwick.wsbc.quimp.Outline;
 import uk.ac.warwick.wsbc.quimp.Vert;
 import uk.ac.warwick.wsbc.quimp.plugin.ana.ANA_;
 
-// TODO: Auto-generated Javadoc
 /**
  * Support algorithms for processing outlines.
  * 
@@ -21,32 +20,32 @@ public class OutlineProcessor {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(OutlineProcessor.class.getName());
 
-  private Outline o;
+  private Outline outline;
 
   /**
+   * Assign outline to be processed to object.
    * 
-   * @param o Reference to Outline to be processed
+   * @param outline Reference to Outline to be processed
    */
-  public OutlineProcessor(Outline o) {
-    this.o = o;
+  public OutlineProcessor(Outline outline) {
+    this.outline = outline;
   }
 
   /**
    * Compute running mean on <tt>curvatureLocal</tt>.
    * 
-   * FIXME There is no looping, first and last vertexes are skipped.
-   * 
    * @param window Window size
    * @return array of filtered coefficients in order of vertexes.
    */
   public double[] runningmeanfilter(int window) {
+    // FIXME There is no looping, first and last vertexes are skipped.
     int half = window / 2;
     // copy to array
-    double[] curv = new double[o.getNumVerts()];
-    double[] curvf = new double[o.getNumVerts()];
+    double[] curv = new double[outline.getNumVerts()];
+    double[] curvf = new double[outline.getNumVerts()];
     Vert n;
     int l = 0;
-    n = o.getHead();
+    n = outline.getHead();
     do {
       curv[l] = n.curvatureLocal;
       n = n.getNext();
@@ -64,7 +63,7 @@ public class OutlineProcessor {
       curvf[i] = min / window;
     }
 
-    n = o.getHead();
+    n = outline.getHead();
     l = 0;
     do {
       n.curvatureLocal = curvf[l];
@@ -79,29 +78,29 @@ public class OutlineProcessor {
   /**
    * Shrink the outline nonlinearly.
    * 
-   * @param steps
-   * @param stepRes
-   * @param angleTh
-   * @param freezeTh
+   * @param steps number of steps - integer
+   * @param stepRes length of the step
+   * @param angleTh angle threshold
+   * @param freezeTh freeze threshold
    * @see #shrink(double, double, double, double)
    */
   public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh) {
     LOGGER.debug("Steps: " + steps);
-    LOGGER.debug("Original res: " + o.getNumVerts());
+    LOGGER.debug("Original res: " + outline.getNumVerts());
     int meanmasksize = 5;
     // System.out.println("steps: " + steps + ", step size: " +
     // ANAp.stepRes);
     Vert n;
     int j;
     int max = 10000;
-    double d = o.getLength() / o.getNumVerts();
+    double d = outline.getLength() / outline.getNumVerts();
 
     for (j = 0; j < steps; j++) {
       runningmeanfilter(meanmasksize);
-      if (o.getNumVerts() <= 3) {
+      if (outline.getNumVerts() <= 3) {
         break;
       }
-      n = o.getHead();
+      n = outline.getHead();
       do {
         if (!n.frozen) {
           n.setX(n.getX() - stepRes * 1.0 * n.getNormal().getX());
@@ -112,13 +111,13 @@ public class OutlineProcessor {
 
       removeProx();
       freezeProx(angleTh, freezeTh);
-      // double d = o.getLength() / o.getNumVerts();
-      o.correctDensity(d, d / 2);
-      o.updateNormales(true);
-      o.updateCurvature();
+      // double d = outline.getLength() / outline.getNumVerts();
+      outline.correctDensity(d, d / 2);
+      outline.updateNormales(true);
+      outline.updateCurvature();
 
       // do not shrink if there are 4 nodes or less
-      if (o.getNumPoints() <= 4) {
+      if (outline.getNumPoints() <= 4) {
         LOGGER.debug("Stopped iterations");
         break;
       }
@@ -129,29 +128,30 @@ public class OutlineProcessor {
       }
     }
 
-    if (o.getNumVerts() < 3) {
+    if (outline.getNumVerts() < 3) {
       System.out.println("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
     }
 
-    if (o.cutSelfIntersects()) {
+    if (outline.cutSelfIntersects()) {
       System.out.println("ANA_(382)...fixed ana intersects");
     }
 
-    if (o.getNumVerts() < 3) {
+    if (outline.getNumVerts() < 3) {
       System.out.println("ANA 377_NODES LESS THAN 3");
     }
 
-    // LOGGER.debug("Shrank Verts: " + o.getNumVerts());
-    // LOGGER.debug("Verts after density correction: " + o.getNumVerts());
+    // LOGGER.debug("Shrank Verts: " + outline.getNumVerts());
+    // LOGGER.debug("Verts after density correction: " + outline.getNumVerts());
     // LOGGER.debug("Density " + d + " [" + d / 4 + "," + d / 2 + "]");
   }
 
   private double fcn(double curv) {
     double ret;
-    if (curv >= 0)
+    if (curv >= 0) {
       ret = 1.0;
-    else
+    } else {
       ret = 1 + 10 * (Math.exp(-curv * 0.5) / Math.exp(0.5));
+    }
     return ret;
   }
 
@@ -160,18 +160,18 @@ public class OutlineProcessor {
    * 
    * @param steps Number of steps
    * @param stepRes shift done in one step
-   * @param angleTh
-   * @param freezeTh
+   * @param angleTh angle threshold
+   * @param freezeTh freeze threshold
    */
   public void shrink(double steps, double stepRes, double angleTh, double freezeTh) {
     Vert n;
     int j;
     int max = 10000;
     for (j = 0; j < steps; j++) {
-      if (o.getNumVerts() <= 3) {
+      if (outline.getNumVerts() <= 3) {
         break;
       }
-      n = o.getHead();
+      n = outline.getHead();
       do {
         if (!n.frozen) {
           n.setX(n.getX() - stepRes * n.getNormal().getX());
@@ -179,7 +179,7 @@ public class OutlineProcessor {
         }
         n = n.getNext();
       } while (!n.isHead());
-      o.updateNormales(true);
+      outline.updateNormales(true);
       removeProx();
       freezeProx(angleTh, freezeTh);
       if (j > max) {
@@ -188,15 +188,15 @@ public class OutlineProcessor {
       }
     }
 
-    if (o.getNumVerts() < 3) {
+    if (outline.getNumVerts() < 3) {
       System.out.println("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
     }
 
-    if (o.cutSelfIntersects()) {
+    if (outline.cutSelfIntersects()) {
       System.out.println("ANA_(382)...fixed ana intersects");
     }
 
-    if (o.getNumVerts() < 3) {
+    if (outline.getNumVerts() < 3) {
       System.out.println("ANA 377_NODES LESS THAN 3");
     }
   }
@@ -205,12 +205,15 @@ public class OutlineProcessor {
    * Remove close vertexes.
    */
   private void removeProx() {
-    if (o.getNumVerts() <= 3) {
+    if (outline.getNumVerts() <= 3) {
       return;
     }
-    Vert v, vl, vr;
-    double d1, d2;
-    v = o.getHead();
+    Vert v;
+    Vert vl;
+    Vert vr;
+    double d1;
+    double d2;
+    v = outline.getHead();
     vl = v.getPrev();
     vr = v.getNext();
     do {
@@ -218,7 +221,7 @@ public class OutlineProcessor {
       d2 = ExtendedVector2d.lengthP2P(v.getPoint(), vr.getPoint());
 
       if ((d1 < 1.5 || d2 < 1.5) && !v.frozen) { // don't remove frozen. May alter angles
-        o.removeVert(v);
+        outline.removeVert(v);
       }
       v = v.getNext().getNext();
       vl = v.getPrev();
@@ -230,58 +233,65 @@ public class OutlineProcessor {
   /**
    * Freeze a node and corresponding edge if its to close && close to paralel.
    * 
-   * @param angleTh
-   * @param freezeTh
+   * @param angleTh angle threshold
+   * @param freezeTh freeze threshold
    */
   private void freezeProx(double angleTh, double freezeTh) {
-    Vert v, vT;
-    ExtendedVector2d closest, edge, link;
-    double dis, angle;
+    Vert v;
+    Vert vtmp;
+    ExtendedVector2d closest;
+    ExtendedVector2d edge;
+    ExtendedVector2d link;
+    double dis;
+    double angle;
 
-    v = o.getHead();
+    v = outline.getHead();
     do {
       // if (!v.frozen) {
-      vT = o.getHead();
+      vtmp = outline.getHead();
       do {
-        if (vT.getTrackNum() == v.getTrackNum() || vT.getNext().getTrackNum() == v.getTrackNum()) {
-          vT = vT.getNext();
+        if (vtmp.getTrackNum() == v.getTrackNum()
+                || vtmp.getNext().getTrackNum() == v.getTrackNum()) {
+          vtmp = vtmp.getNext();
           continue;
         }
-        closest = ExtendedVector2d.PointToSegment(v.getPoint(), vT.getPoint(),
-                vT.getNext().getPoint());
+        closest = ExtendedVector2d.PointToSegment(v.getPoint(), vtmp.getPoint(),
+                vtmp.getNext().getPoint());
         dis = ExtendedVector2d.lengthP2P(v.getPoint(), closest);
         // System.out.println("dis: " + dis);
         // dis=1;
         if (dis < freezeTh) {
-          edge = ExtendedVector2d.unitVector(vT.getPoint(), vT.getNext().getPoint());
+          edge = ExtendedVector2d.unitVector(vtmp.getPoint(), vtmp.getNext().getPoint());
           link = ExtendedVector2d.unitVector(v.getPoint(), closest);
           angle = Math.abs(ExtendedVector2d.angle(edge, link));
-          if (angle > Math.PI)
+          if (angle > Math.PI) {
             angle = angle - Math.PI; // if > 180, shift back around
-                                     // 180
-          angle = angle - 1.5708; // 90 degree shift to centre around
-                                  // zero
+          }
+          // 180
+          angle = angle - 1.5708; // 90 degree shift to centre around zero
           // System.out.println("angle:" + angle);
 
           if (angle < angleTh && angle > -angleTh) {
             v.frozen = true;
-            vT.frozen = true;
-            vT.getNext().frozen = true;
+            vtmp.frozen = true;
+            vtmp.getNext().frozen = true;
           }
 
         }
-        vT = vT.getNext();
-      } while (!vT.isHead());
+        vtmp = vtmp.getNext();
+      } while (!vtmp.isHead());
       // }
       v = v.getNext();
     } while (!v.isHead());
   }
 
   /**
-   * @return the o
+   * Outline getter.
+   * 
+   * @return the outline
    */
   public Outline getO() {
-    return o;
+    return outline;
   }
 
 }

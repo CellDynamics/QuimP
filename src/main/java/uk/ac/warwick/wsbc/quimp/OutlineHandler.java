@@ -31,48 +31,47 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
    */
   static final Logger LOGGER = LoggerFactory.getLogger(OutlineHandler.class.getName());
   /**
-   * Array of given cell outlines found for frames (<tt>startFrame</tt> and <tt>endFrame</tt>)
+   * Array of given cell outlines found for frames (<tt>startFrame</tt> and <tt>endFrame</tt>).
    */
   private Outline[] outlines;
-  transient private QParams qp;
+  private transient QParams qp;
   // all transient fields are rebuild in afterSerialzie findStatLimits()
-  transient private int size;
+  private transient int size;
 
   /**
    * The max coor.
    */
-  transient public ExtendedVector2d maxCoor;
+  public transient ExtendedVector2d maxCoor;
 
   /**
    * The min coor.
    */
-  transient public ExtendedVector2d minCoor;
+  public transient ExtendedVector2d minCoor;
 
   /**
    * The mig limits.
    */
   // min and max limits
-  transient public double[] migLimits;
+  public transient double[] migLimits;
 
   /**
    * The flu lims.
    */
-  transient public double[][] fluLims;
+  public transient double[][] fluLims;
 
   /**
    * The curv limits.
    */
-  // public double[] convLimits;
-  transient public double[] curvLimits;
+  public transient double[] curvLimits;
   /**
    * longest outline in outlines.
    */
-  transient public double maxLength = 0;
+  public transient double maxLength = 0;
 
   /**
    * The read success.
    */
-  transient public boolean readSuccess;
+  public transient boolean readSuccess;
 
   /**
    * Instantiates a new outline handler.
@@ -98,15 +97,16 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
   }
 
   /**
-   * Copy constructor
+   * Copy constructor.
    * 
    * @param src to copy from
    */
   public OutlineHandler(final OutlineHandler src) {
     super(src);
     this.outlines = new Outline[src.outlines.length];
-    for (int o = 0; o < this.outlines.length; o++)
+    for (int o = 0; o < this.outlines.length; o++) {
       this.outlines[o] = new Outline(src.outlines[o]);
+    }
     size = src.size;
     /*
      * // this is calculated by findStatLimits() maxCoor = src.maxCoor; minCoor = src.minCoor;
@@ -117,16 +117,18 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
      * new double[src.curvLimits.length]; System.arraycopy(src.curvLimits, 0, curvLimits, 0,
      * src.curvLimits.length);
      */
-    for (Outline o : outlines)
-      if (o.getLength() > maxLength)
+    for (Outline o : outlines) {
+      if (o.getLength() > maxLength) {
         maxLength = o.getLength();
+      }
+    }
     findStatLimits(); // fill maxCoor, minCoor, migLimits, fluLims, curvLimits
   }
 
   /**
    * Conversion constructor.
    * 
-   * Converts SnakeHandler to OutlineHandler. Converted are only Snakes and their range
+   * <p>Converts SnakeHandler to OutlineHandler. Converted are only Snakes and their range
    * 
    * @param snake source SnakeHandler
    */
@@ -134,8 +136,9 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     this(snake.startFrame, snake.endFrame); // create array and set ranges
     for (int f = startFrame; f <= endFrame; f++) { // copy all snakes
       Snake s = snake.getStoredSnake(f); // get original
-      if (s != null)
+      if (s != null) {
         setOutline(f, new Outline(s)); // convert to Outline
+      }
     }
     findStatLimits();
   }
@@ -193,14 +196,15 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
    * @return true, if is outline at
    */
   public boolean isOutlineAt(int f) {
-    if (f - startFrame < 0)
+    if (f - startFrame < 0) {
       return false;
-    else if (f - startFrame >= outlines.length)
+    } else if (f - startFrame >= outlines.length) {
       return false;
-    else if (outlines[f - startFrame] == null)
+    } else if (outlines[f - startFrame] == null) {
       return false;
-    else
+    } else {
       return true;
+    }
   }
 
   /**
@@ -234,9 +238,10 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
               + f.getAbsolutePath() + "'");
       return false;
     }
-    if (qp == null)
+    if (qp == null) {
       throw new InvalidParameterException(
               "QParams is null. This object has not been created (loaded) from QParams data");
+    }
 
     String thisLine;
 
@@ -328,8 +333,9 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
         Outline tmp = new Outline(head, N + 1); // dont forget the head node
         tmp.removeVert(head); // WARN potential incompatibility with old code.
-                              // old constructor made copy of this list and deleted
-                              // first dummy node. Now it just covers this list
+        // old constructor made copy of this list and deleted
+        // first dummy node. Now it just covers this list
+
         // make deep copy of this list
         outlines[s] = new Outline(tmp);
         outlines[s].updateNormales(true);
@@ -365,7 +371,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
    * Evaluate <tt>maxCoor</tt>, <tt>minCoor</tt>, <tt>migLimits</tt>, <tt>fluLims</tt>,
    * <tt>curvLimits</tt>.
    * 
-   * Initialize arrays as well
+   * <p>Initialise arrays as well
    */
   private void findStatLimits() {
     maxCoor = new ExtendedVector2d();
@@ -381,8 +387,9 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     Vert n;
     for (int i = 0; i < outlines.length; i++) {
       outline = outlines[i];
-      if (outline == null)
+      if (outline == null) {
         continue;
+      }
       n = outline.getHead();
       if (i == 0) {
         minCoor.setXY(n.getX(), n.getY());
@@ -411,19 +418,23 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
           minCoor.setY(n.getY());
         }
 
-        if (n.distance < migLimits[0])
+        if (n.distance < migLimits[0]) {
           migLimits[0] = n.distance;
-        if (n.distance > migLimits[1])
+        }
+        if (n.distance > migLimits[1]) {
           migLimits[1] = n.distance;
+        }
 
         // if(n.convexity < convLimits[0]) convLimits[0] = n.convexity;
         // if(n.convexity > convLimits[1]) convLimits[1] = n.convexity;
 
         for (int j = 0; j < n.fluores.length; j++) {
-          if (n.fluores[j].intensity < fluLims[j][0])
+          if (n.fluores[j].intensity < fluLims[j][0]) {
             fluLims[j][0] = n.fluores[j].intensity;
-          if (n.fluores[j].intensity > fluLims[j][1])
+          }
+          if (n.fluores[j].intensity > fluLims[j][1]) {
             fluLims[j][1] = n.fluores[j].intensity;
+          }
         }
 
         n = n.getNext();
@@ -482,8 +493,8 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
   /**
    * Write <b>this</b> outline to disk.
    * 
-   * @param outFile
-   * @param ECMMrun
+   * @param outFile file to save
+   * @param ECMMrun was ECMM run?
    */
   public void writeOutlines(File outFile, boolean ECMMrun) {
     LOGGER.debug("Write outline at: " + outFile);
@@ -531,8 +542,8 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     }
   }
 
-  static private void write(PrintWriter pw, int VERTS, Vert v) {
-    pw.print("\n" + VERTS);
+  private static void write(PrintWriter pw, int verts, Vert v) {
+    pw.print("\n" + verts);
     // !< off formatting tag
     do {
       pw.print("\n" + IJ.d2s(v.coord, 6) + "\t" // Perimeter coord
@@ -560,10 +571,11 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
    */
   @Override
   public void beforeSerialize() {
-    for (Outline o : outlines)
-      if (o != null)
+    for (Outline o : outlines) {
+      if (o != null) {
         o.beforeSerialize(); // convert outlines to array
-
+      }
+    }
   }
 
   /**
@@ -571,14 +583,18 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
    */
   @Override
   public void afterSerialize() throws Exception {
-    for (Outline o : outlines)
-      if (o != null)
+    for (Outline o : outlines) {
+      if (o != null) {
         o.afterSerialize(); // convert array to outlines
+      }
+    }
     // restore other fields
     size = outlines.length;
-    for (Outline o : outlines)
-      if (o.getLength() > maxLength)
+    for (Outline o : outlines) {
+      if (o.getLength() > maxLength) {
         maxLength = o.getLength();
+      }
+    }
     findStatLimits(); // fill maxCoor, minCoor, migLimits, fluLims, curvLimits
 
   }

@@ -375,7 +375,7 @@ public class Prot_Analysis implements IQuimpPlugin {
    * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin#showUI(boolean)
    */
   @Override
-  public int showUI(boolean val) {
+  public int showUi(boolean val) {
     gui.showUI(val);
     return 0;
   }
@@ -446,7 +446,7 @@ public class Prot_Analysis implements IQuimpPlugin {
       if (qconfLoader.getQp() == null)
         return; // not loaded
       gui.writeUI(); // set ui
-      showUI(true); // show it and wait for user action. Plugin is run from Apply button
+      showUi(true); // show it and wait for user action. Plugin is run from Apply button
       if (uiCancelled)
         return;
     } catch (QuimpException qe) { // catch QuimpPluginException and QuimpException

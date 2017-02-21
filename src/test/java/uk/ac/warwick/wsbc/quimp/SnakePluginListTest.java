@@ -2,7 +2,6 @@
  */
 package uk.ac.warwick.wsbc.quimp;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -29,11 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import uk.ac.warwick.wsbc.quimp.PluginFactory;
-import uk.ac.warwick.wsbc.quimp.Serializer;
-import uk.ac.warwick.wsbc.quimp.SnakePluginList;
-import uk.ac.warwick.wsbc.quimp.SnakePluginListInstanceCreator;
-import uk.ac.warwick.wsbc.quimp.ViewUpdater;
+import uk.ac.warwick.wsbc.quimp.filesystem.versions.Converter170202;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
@@ -82,7 +77,7 @@ public class SnakePluginListTest {
 
   private SnakePluginList snakePluginList;
   private ConfigContainer cc;
-  private String[] version;
+  private QuimpVersion version;
 
   /**
    * Creates three fake plugins and fourth that will replace one of them
@@ -92,10 +87,7 @@ public class SnakePluginListTest {
   @Before
   public void setUp() throws Exception {
     cc = new ConfigContainer();
-    version = new String[3];
-    version[0] = "0.0.1";
-    version[1] = "p.baniukiewicz";
-    version[2] = "QuimP";
+    version = new QuimpVersion("17.02.02", "p.baniukiewicz", "QuimP");
     snakePluginList = new SnakePluginList(3, pluginFactory, null);
     cc.activePluginList = snakePluginList;
     /**
@@ -104,7 +96,7 @@ public class SnakePluginListTest {
     Mockito.when(pluginFactory.getInstance("Test1")).thenReturn(new IQuimpCorePlugin() {
 
       @Override
-      public int showUI(boolean val) {
+      public int showUi(boolean val) {
         return 0;
       }
 
@@ -138,7 +130,7 @@ public class SnakePluginListTest {
     Mockito.when(pluginFactory.getInstance("Test2")).thenReturn(new IQuimpCorePlugin() {
 
       @Override
-      public int showUI(boolean val) {
+      public int showUi(boolean val) {
         return 0;
       }
 
@@ -182,7 +174,7 @@ public class SnakePluginListTest {
     Mockito.when(pluginFactory.getInstance("toDelete")).thenReturn(new IQuimpCorePlugin() {
 
       @Override
-      public int showUI(boolean val) {
+      public int showUi(boolean val) {
         return 0;
       }
 
@@ -217,7 +209,7 @@ public class SnakePluginListTest {
     Mockito.when(pluginFactory.getInstance("newInstance")).thenReturn(new IQuimpCorePlugin() {
 
       @Override
-      public int showUI(boolean val) {
+      public int showUi(boolean val) {
         return 0;
       }
 
@@ -496,7 +488,7 @@ public class SnakePluginListTest {
   public void testloadConfig_serializer() throws Exception {
     //!<
     String json = "{\"className\":\"SnakePluginList\","
-            + "\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],"
+            + "\"timeStamp\":{\"version\":\"17.02.02\",\"buildstamp\":\"p.baniukiewicz\",\"name\":\"QuimP\"},"
             + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\"," + "\"obj\":{\"sPluginList\":"
             + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
             + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
@@ -505,12 +497,12 @@ public class SnakePluginListTest {
     // */
 
     Serializer<SnakePluginList> out;
-    Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
+    Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class, version);
     s.registerInstanceCreator(SnakePluginList.class,
             new SnakePluginListInstanceCreator(3, pluginFactory, null));
     out = s.fromString(json);
 
-    assertArrayEquals(out.version, version);
+    assertEquals(new QuimpVersion("17.02.02", "p.baniukiewicz", "QuimP"), out.timeStamp);
 
     assertEquals(3, out.obj.getList().size());
     assertFalse(out.obj.isActive(0));
@@ -621,12 +613,13 @@ public class SnakePluginListTest {
     // */
 
     Serializer<SnakePluginList> out;
-    Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
+    Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class, QuimP.TOOL_VERSION);
     s.registerInstanceCreator(SnakePluginList.class,
             new SnakePluginListInstanceCreator(3, pluginFactory, null));
+    s.registerConverter(new Converter170202<>(version));
     out = s.fromString(json);
 
-    assertArrayEquals(out.version, version);
+    assertEquals(out.timeStamp, version);
 
     assertEquals(3, out.obj.getList().size());
     assertTrue(out.obj.isActive(0));
@@ -702,7 +695,7 @@ public class SnakePluginListTest {
             + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
 
     Serializer<SnakePluginList> out;
-    Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
+    Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class, QuimP.TOOL_VERSION);
     s.registerInstanceCreator(SnakePluginList.class,
             new SnakePluginListInstanceCreator(3, pluginFactory, null));
 
@@ -771,7 +764,7 @@ public class SnakePluginListTest {
             + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
 
     Serializer<SnakePluginList> out;
-    Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
+    Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class, QuimP.TOOL_VERSION);
     s.registerInstanceCreator(SnakePluginList.class,
             new SnakePluginListInstanceCreator(3, pluginFactory, null));
 
@@ -850,7 +843,7 @@ public class SnakePluginListTest {
             + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
 
     Serializer<SnakePluginList> out;
-    Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
+    Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class, QuimP.TOOL_VERSION);
     s.registerInstanceCreator(SnakePluginList.class,
             new SnakePluginListInstanceCreator(3, pluginFactory, null));
 

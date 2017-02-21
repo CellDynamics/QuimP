@@ -27,11 +27,8 @@ import uk.ac.warwick.wsbc.quimp.BOAState;
 import uk.ac.warwick.wsbc.quimp.QParams;
 import uk.ac.warwick.wsbc.quimp.QParamsQconf;
 import uk.ac.warwick.wsbc.quimp.QuimpException;
+import uk.ac.warwick.wsbc.quimp.QuimpVersion;
 import uk.ac.warwick.wsbc.quimp.Serializer;
-import uk.ac.warwick.wsbc.quimp.filesystem.ANAParamCollection;
-import uk.ac.warwick.wsbc.quimp.filesystem.DataContainer;
-import uk.ac.warwick.wsbc.quimp.filesystem.OutlinesCollection;
-import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
 
 // TODO: Auto-generated Javadoc
@@ -61,8 +58,7 @@ public class QconfLoaderTest {
   public static void setUpBeforeClass() throws Exception {
     DataContainer dt = new DataContainer();
     Serializer<DataContainer> serializer;
-    serializer = new Serializer<>(dt,
-            new uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection().getQuimPBuildInfo());
+    serializer = new Serializer<>(dt, new QuimpVersion("17.10.11", "p.baniukiewicz", "QuimP"));
     serializer.setPretty();
     serializer.save(tmpdir + "qconftestloader.QCONF");
 

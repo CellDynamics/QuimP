@@ -383,7 +383,7 @@ public class RandomWalkSegmentation {
   public RandomWalkSegmentation(ImageProcessor ip, Params params) {
     if (ip.getBitDepth() != 8 && ip.getBitDepth() != 16)
       throw new IllegalArgumentException("Only 8-bit or 16-bit images are supported");
-    image = RandomWalkSegmentation.imageProcessor2RealMatrix(ip);
+    image = RandomWalkSegmentation.ImageProcessor2RealMatrix(ip);
     this.params = params;
   }
 
@@ -432,7 +432,7 @@ public class RandomWalkSegmentation {
     else
       solved = solver(image, seeds, precomputed, meanseeds, params); // run solver
     RealMatrix result = compare(solved[FOREGROUND], solved[BACKGROUND]); // result as matrix
-    return realMatrix2ImageProcessor(result).convertToByteProcessor(true);
+    return RealMatrix2ImageProcessor(result).convertToByteProcessor(true);
   }
 
   /**
@@ -478,7 +478,7 @@ public class RandomWalkSegmentation {
    * @param ip input image
    * @return 2D matrix converted to Double
    */
-  static public RealMatrix imageProcessor2RealMatrix(ImageProcessor ip) {
+  static public RealMatrix ImageProcessor2RealMatrix(ImageProcessor ip) {
     if (ip == null)
       return null;
     RealMatrix out;
@@ -495,7 +495,7 @@ public class RandomWalkSegmentation {
    * @param rm input matrix
    * @return FloatProcessor
    */
-  static public FloatProcessor realMatrix2ImageProcessor(RealMatrix rm) {
+  static public FloatProcessor RealMatrix2ImageProcessor(RealMatrix rm) {
     double[][] rawData = rm.getData();
     return new FloatProcessor(QuimPArrayUtils.double2float(rawData));
   }

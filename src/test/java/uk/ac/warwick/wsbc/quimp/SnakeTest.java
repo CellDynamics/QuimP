@@ -20,13 +20,6 @@ import org.slf4j.LoggerFactory;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
-import uk.ac.warwick.wsbc.quimp.BOAState;
-import uk.ac.warwick.wsbc.quimp.BOA_;
-import uk.ac.warwick.wsbc.quimp.Node;
-import uk.ac.warwick.wsbc.quimp.Outline;
-import uk.ac.warwick.wsbc.quimp.Serializer;
-import uk.ac.warwick.wsbc.quimp.Snake;
-import uk.ac.warwick.wsbc.quimp.Vert;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 
 // TODO: Auto-generated Javadoc
@@ -46,7 +39,7 @@ public class SnakeTest {
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
-  private String[] info = { "QuimP", "verr", "ddd" };
+  private QuimpVersion info = new QuimpVersion("0.0.0", "verr", "ddd");
   private Snake snake1;
 
   /**
@@ -161,7 +154,7 @@ public class SnakeTest {
 
     // load it
     Snake loaded;
-    Serializer<Snake> loader = new Serializer<>(Snake.class);
+    Serializer<Snake> loader = new Serializer<>(Snake.class, QuimP.TOOL_VERSION);
     loaded = loader.load(tmpdir + "snake1.tmp").obj;
     LOGGER.debug(loaded.toString());
     assertEquals(snake1.getNumNodes(), loaded.getNumNodes());

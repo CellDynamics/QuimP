@@ -49,14 +49,14 @@ public class DICLIDReconstruction_Test {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.dic.DICLIDReconstruction_#showUI(boolean)}.
+   * {@link uk.ac.warwick.wsbc.quimp.plugin.dic.DICLIDReconstruction_#showUi(boolean)}.
    * 
    * @throws Exception
    */
   @Test
   @Ignore
   public void testShowDialog() throws Exception {
-    new DICLIDReconstruction_().showUI(true);
+    new DICLIDReconstruction_().showUi(true);
   }
 
   /**

@@ -92,7 +92,7 @@ public class HistoryLogger implements WindowListener {
       if (bs == null)
         return;
       LogEntry en = new LogEntry(id++, m, bs);
-      Serializer<LogEntry> s = new Serializer<>(en, BOA_.quimpInfo);
+      Serializer<LogEntry> s = new Serializer<>(en, QuimP.TOOL_VERSION);
 
       String jsontmp = s.toString();
       history.add(jsontmp); // store in array

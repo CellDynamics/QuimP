@@ -670,7 +670,7 @@ public class SnakePluginList implements IQuimpSerialize {
   public void closeAllWindows() {
     for (int i = 0; i < sPluginList.size(); i++)
       if (getInstance(i) != null)
-        getInstance(i).showUI(false);
+        getInstance(i).showUi(false);
   }
 
   /**

@@ -87,6 +87,7 @@ import uk.ac.warwick.wsbc.quimp.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.quimp.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.quimp.filesystem.StatsCollection;
+import uk.ac.warwick.wsbc.quimp.filesystem.versions.Converter170202;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
@@ -172,7 +173,7 @@ public class BOA_ implements PlugIn {
    * These information are used in About dialog, window title bar, logging, etc. Static because
    * window related staff is in another classes.
    */
-  public static String[] quimpInfo;
+  public static QuimpVersion quimpInfo;
   private static int logCount; // add counter to logged messages
   /**
    * Number of Snake plugins available.
@@ -220,7 +221,7 @@ public class BOA_ implements PlugIn {
     // assign current object to ViewUpdater
     viewUpdater = new ViewUpdater(this);
     // collect information about quimp version read from jar
-    quimpInfo = new QuimpToolsCollection().getQuimPBuildInfo();
+    quimpInfo = QuimP.TOOL_VERSION;
     // create history logger
     historyLogger = new HistoryLogger();
 
@@ -319,7 +320,7 @@ public class BOA_ implements PlugIn {
     canvas = new CustomCanvas(imageGroup.getOrgIpl());
     window = new CustomStackWindow(imageGroup.getOrgIpl(), canvas);
     window.buildWindow();
-    window.setTitle(window.getTitle() + " :QuimP: " + quimpInfo[0]);
+    window.setTitle(window.getTitle() + " :QuimP: " + quimpInfo.getVersion());
     // validate registered user
     new Registration(window, "QuimP Registration");
     // warn about scale
@@ -478,7 +479,7 @@ public class BOA_ implements PlugIn {
       BOA_.running = false; // set marker
       qState.snakePluginList.clear(); // close all opened plugin windows
       if (qState.binarySegmentationPlugin != null)
-        qState.binarySegmentationPlugin.showUI(false);
+        qState.binarySegmentationPlugin.showUi(false);
       canvas = null; // clear window data
       imageGroup = null;
       window = null;
@@ -1381,18 +1382,18 @@ public class BOA_ implements PlugIn {
       if (b == bFirstPluginGUI) {
         LOGGER.debug("First plugin GUI, state of BOAp is " + qState.snakePluginList.getInstance(0));
         if (qState.snakePluginList.getInstance(0) != null) // call 0 instance
-          qState.snakePluginList.getInstance(0).showUI(true);
+          qState.snakePluginList.getInstance(0).showUi(true);
       }
       if (b == bSecondPluginGUI) {
         LOGGER.debug(
                 "Second plugin GUI, state of BOAp is " + qState.snakePluginList.getInstance(1));
         if (qState.snakePluginList.getInstance(1) != null) // call 1 instance
-          qState.snakePluginList.getInstance(1).showUI(true);
+          qState.snakePluginList.getInstance(1).showUi(true);
       }
       if (b == bThirdPluginGUI) {
         LOGGER.debug("Third plugin GUI, state of BOAp is " + qState.snakePluginList.getInstance(2));
         if (qState.snakePluginList.getInstance(2) != null) // call 2 instance
-          qState.snakePluginList.getInstance(2).showUI(true);
+          qState.snakePluginList.getInstance(2).showUi(true);
       }
 
       // menu listeners
@@ -1443,7 +1444,9 @@ public class BOA_ implements PlugIn {
           try {
             Serializer<SnakePluginList> loaded; // loaded instance
             // create serializer
-            Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class);
+            Serializer<SnakePluginList> s =
+                    new Serializer<>(SnakePluginList.class, QuimP.TOOL_VERSION);
+            s.registerConverter(new Converter170202<>(QuimP.TOOL_VERSION));
             // pass data to constructor of serialized object. Those data are not
             // serialized and must be passed externally
             s.registerInstanceCreator(SnakePluginList.class,
@@ -1505,7 +1508,8 @@ public class BOA_ implements PlugIn {
           try {
             Serializer<DataContainer> loaded; // loaded instance
             // create serializer
-            Serializer<DataContainer> s = new Serializer<>(DataContainer.class);
+            Serializer<DataContainer> s = new Serializer<>(DataContainer.class, QuimP.TOOL_VERSION);
+            s.registerConverter(new Converter170202<>(QuimP.TOOL_VERSION));
             s.registerInstanceCreator(DataContainer.class,
                     new DataContainerInstanceCreator(pluginFactory, viewUpdater));
             loaded = s.load(od.getDirectory() + od.getFileName());
@@ -1603,7 +1607,7 @@ public class BOA_ implements PlugIn {
       if (b == menuSegmentationRun) {
         if (qState.binarySegmentationPlugin != null) {
           if (!qState.binarySegmentationPlugin.isWindowVisible())
-            qState.binarySegmentationPlugin.showUI(true);
+            qState.binarySegmentationPlugin.showUi(true);
         } else {
           qState.binarySegmentationPlugin = new BinarySegmentationPlugin(); // create
           // instance
@@ -1611,7 +1615,7 @@ public class BOA_ implements PlugIn {
           qState.binarySegmentationPlugin.attachContext(viewUpdater); // allow plugin to
                                                                       // update
                                                                       // screen
-          qState.binarySegmentationPlugin.showUI(true); // plugin is run internally
+          qState.binarySegmentationPlugin.showUi(true); // plugin is run internally
                                                         // after
                                                         // Apply
           // update screen is always on Apply button of plugin
@@ -1724,16 +1728,16 @@ public class BOA_ implements PlugIn {
       // Action on zoom selector
       if (source == sZoom) {
         LOGGER.trace("zoom val " + sZoom.getSelectedItem());
-        if (sZoom.getSelectedItem().equals(fullZoom)) { // user selected default position (no zoom)
+        if (sZoom.getSelectedItem().equals(fullZoom)) { // user selected default position
+                                                        // (no zoom)
           qState.boap.snakeToZoom = -1; // set negative value to indicate no zoom
           qState.boap.zoom = false; // important for other parts (legacy)
           imageGroup.unzoom(canvas); // unzoom view
-        } else { // zoom here
-          if (!qState.nest.isVacant()) { // any snakes present
-            qState.boap.snakeToZoom = Integer.parseInt(sZoom.getSelectedItem()); // get int
-            qState.boap.zoom = true; // legacy compatibility
-            imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
-          }
+        } else // zoom here
+        if (!qState.nest.isVacant()) { // any snakes present
+          qState.boap.snakeToZoom = Integer.parseInt(sZoom.getSelectedItem()); // get int
+          qState.boap.zoom = true; // legacy compatibility
+          imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
         }
       }
 
@@ -1742,7 +1746,7 @@ public class BOA_ implements PlugIn {
 
       try {
         if (run) {
-          if (qState.boap.supressStateChangeBOArun) { // when spinners are changed
+          if (qState.boap.supressStateChangeBOArun) {// when spinners are changed
             // programmatically they raise the
             // event. this is to block running
             // segmentation
@@ -1950,7 +1954,7 @@ public class BOA_ implements PlugIn {
         qState.snakePluginList.setInstance(slot, selectedPlugin, act); // build instance
       } else {
         if (qState.snakePluginList.getInstance(slot) != null)
-          qState.snakePluginList.getInstance(slot).showUI(false);
+          qState.snakePluginList.getInstance(slot).showUi(false);
         qState.snakePluginList.deletePlugin(slot);
       }
     } catch (QuimpPluginException e) {

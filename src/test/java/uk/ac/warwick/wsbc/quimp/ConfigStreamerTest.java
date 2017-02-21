@@ -20,8 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 
-import uk.ac.warwick.wsbc.quimp.BOAState;
-import uk.ac.warwick.wsbc.quimp.BOA_;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
@@ -71,7 +69,7 @@ public class ConfigStreamerTest {
     p.snakePluginList.get(0).ref = new IQuimpCorePlugin() {
 
       @Override
-      public int showUI(boolean val) {
+      public int showUi(boolean val) {
         return 0;
 
       }
@@ -114,7 +112,7 @@ public class ConfigStreamerTest {
     p.snakePluginList.get(1).ref = new IQuimpCorePlugin() {
 
       @Override
-      public int showUI(boolean val) {
+      public int showUi(boolean val) {
         return 0;
 
       }

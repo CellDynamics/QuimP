@@ -18,14 +18,12 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import uk.ac.warwick.wsbc.quimp.FormatConverter;
 import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
 
-// TODO: Auto-generated Javadoc
+// TODO Run all tests on directories in /tmp after copying relevant files
 /**
  * @author p.baniukiewicz
  * 
- *         TODO Run all tests on directories in /tmp after copying relevant files
  */
 public class FormatConverterTest {
 

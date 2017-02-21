@@ -35,17 +35,17 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
   private LidReconstructor dic;
   private ImagePlus imp;
   /**
-   * Filled by {@link #showUI(boolean)}.
+   * Filled by {@link #showUi(boolean)}.
    */
   private double angle, decay;
   /**
-   * Filled by {@link #showUI(boolean)}.
+   * Filled by {@link #showUi(boolean)}.
    */
   private int masksize;
   /**
    * Angle of filtering.
    * 
-   * Filled by {@link #showUI(boolean)} as {@link #angle}+90.
+   * Filled by {@link #showUi(boolean)} as {@link #angle}+90.
    */
   private String prefilterangle;
 
@@ -70,7 +70,7 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
     // validate registered user
     new Registration(IJ.getInstance(), "QuimP Registration");
     ImageProcessor ret;
-    if (showUI(true) == 0)
+    if (showUi(true) == 0)
       return; // if user clicked Cancel or data were not valid
     try {
       // create result as separate 16bit image
@@ -169,7 +169,7 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
    *         otherwise
    */
   @Override
-  public int showUI(boolean val) {
+  public int showUi(boolean val) {
     GenericDialog gd = new GenericDialog("DIC reconstruction");
     gd.addMessage("Reconstruction of DIC image by Line Integrals.\n");
     gd.addNumericField("Shear angle (measured counterclockwise)", 45.0, 0, 6, "[deg]");

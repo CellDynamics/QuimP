@@ -1,5 +1,7 @@
 package uk.ac.warwick.wsbc.quimp;
 
+import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
+
 /**
  * Static definitions.
  * 
@@ -15,6 +17,12 @@ public class QuimP {
    * Desired length of line in message box.
    */
   static public final int LINE_WRAP = 60;
+
+  /**
+   * Quimp package version taken from jar.
+   */
+  static public final QuimpVersion TOOL_VERSION = new QuimpToolsCollection().getQuimPBuildInfo();
+
   /**
    * Switch on/off additional debug.
    * 

@@ -1,12 +1,5 @@
 package uk.ac.warwick.wsbc.quimp.plugin.randomwalk;
 
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.gui.Roi;
-import ij.process.BinaryProcessor;
-import ij.process.ByteProcessor;
-import ij.process.ImageProcessor;
-
 import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
@@ -15,6 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.gui.Roi;
+import ij.process.BinaryProcessor;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Outline;
 import uk.ac.warwick.wsbc.quimp.QuimP;
 import uk.ac.warwick.wsbc.quimp.geom.OutlineProcessor;
@@ -24,7 +23,6 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
 import uk.ac.warwick.wsbc.quimp.utils.IJTools;
 import uk.ac.warwick.wsbc.quimp.utils.Pair;
 
-// TODO: Auto-generated Javadoc
 /**
  * Generate new seeds for n+1 frame in stack using previous results of segmentation.
  * 

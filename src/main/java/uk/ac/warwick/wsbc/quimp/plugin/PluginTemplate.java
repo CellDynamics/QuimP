@@ -53,7 +53,6 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
  * used for tests. Here is sequence of actions:<br>
  * <img src="doc-files/PluginTemplate_1_UML.png"/><br>
  * 
- * 
  * @author p.baniukiewicz
  *
  */
@@ -152,7 +151,7 @@ public abstract class PluginTemplate implements IQuimpPlugin {
    * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin#showUI(boolean)
    */
   @Override
-  public abstract int showUI(boolean val);
+  public abstract int showUi(boolean val);
 
   /*
    * (non-Javadoc)
@@ -202,7 +201,7 @@ public abstract class PluginTemplate implements IQuimpPlugin {
       options = arg; // options passed here - they must be in the same format as in macro
     }
     if (options == null || options.isEmpty()) { // nothing passed let user decide about defaults
-      showUI(true); // and in UI
+      showUi(true); // and in UI
     } else { // there is something, parse it
       runAsMacro = MessageSinkTypes.CONSOLE; // set errors to console, we are in macro mode
       parseOptions(options); // parse whatever it is

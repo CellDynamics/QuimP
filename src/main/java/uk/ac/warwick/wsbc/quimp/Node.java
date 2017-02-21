@@ -68,7 +68,7 @@ public class Node extends PointsList<Node> {
   /**
    * Copy constructor. Copy properties of Node
    * 
-   * Previous or next points are not copied
+   * <p>Previous or next points are not copied
    * 
    * @param src Source Node
    */
@@ -115,28 +115,37 @@ public class Node extends PointsList<Node> {
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (!super.equals(obj))
+    }
+    if (!super.equals(obj)) {
       return false;
-    if (!(obj instanceof Node))
+    }
+    if (!(obj instanceof Node)) {
       return false;
+    }
     Node other = (Node) obj;
     if (F_total == null) {
-      if (other.F_total != null)
+      if (other.F_total != null) {
         return false;
-    } else if (!F_total.equals(other.F_total))
+      }
+    } else if (!F_total.equals(other.F_total)) {
       return false;
+    }
     if (prelimPoint == null) {
-      if (other.prelimPoint != null)
+      if (other.prelimPoint != null) {
         return false;
-    } else if (!prelimPoint.equals(other.prelimPoint))
+      }
+    } else if (!prelimPoint.equals(other.prelimPoint)) {
       return false;
+    }
     if (vel == null) {
-      if (other.vel != null)
+      if (other.vel != null) {
         return false;
-    } else if (!vel.equals(other.vel))
+      }
+    } else if (!vel.equals(other.vel)) {
       return false;
+    }
     return true;
   }
 
@@ -163,7 +172,7 @@ public class Node extends PointsList<Node> {
   }
 
   /**
-   * Setter to \c frozen field
+   * Setter to frozen field.
    * 
    * @return frozen
    */
@@ -172,7 +181,7 @@ public class Node extends PointsList<Node> {
   }
 
   /**
-   * Setter to \c F_total field
+   * Setter to F_total field.
    * 
    * @return F_total
    */
@@ -181,7 +190,7 @@ public class Node extends PointsList<Node> {
   }
 
   /**
-   * Setter to \c vel field
+   * Setter to vel field.
    * 
    * @return vel
    */
@@ -190,7 +199,7 @@ public class Node extends PointsList<Node> {
   }
 
   /**
-   * Set total force for Node
+   * Set total force for Node.
    * 
    * @param f vector of force to assign to Node force
    */
@@ -200,7 +209,7 @@ public class Node extends PointsList<Node> {
   }
 
   /**
-   * Set velocity for Node
+   * Set velocity for Node.
    * 
    * @param v vector of velocity to assign to Node force
    */
@@ -210,7 +219,7 @@ public class Node extends PointsList<Node> {
   }
 
   /**
-   * Update total force for Node
+   * Update total force for Node.
    * 
    * @param f vector of force to add to Node force
    */
@@ -221,7 +230,7 @@ public class Node extends PointsList<Node> {
   }
 
   /**
-   * Update velocity for Node
+   * Update velocity for Node.
    * 
    * @param v vector of velocity to add to Node force
    */
@@ -232,7 +241,7 @@ public class Node extends PointsList<Node> {
   }
 
   /**
-   * Set preliminary point for Node
+   * Set preliminary point for Node.
    * 
    * @param v vector of preliminary point to assign to Node force
    */
@@ -253,11 +262,13 @@ public class Node extends PointsList<Node> {
 
     double angle = ExtendedVector2d.angle(edge1, edge2) * (180 / Math.PI);
 
-    if (angle > 360 || angle < -360)
+    if (angle > 360 || angle < -360) {
       LOGGER.warn("Warning-angle out of range (Vert l:320)");
+    }
 
-    if (angle < 0)
+    if (angle < 0) {
       angle = 360 + angle;
+    }
 
     double curvatureLocal = 0;
     if (angle == 180) {

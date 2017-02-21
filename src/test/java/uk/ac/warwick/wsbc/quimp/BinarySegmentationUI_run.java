@@ -38,7 +38,7 @@ public class BinarySegmentationUI_run {
             "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
     BinarySegmentationPlugin fp = new BinarySegmentationPlugin();
     fp.attachData(null);
-    fp.showUI(true);
+    fp.showUi(true);
 
   }
 

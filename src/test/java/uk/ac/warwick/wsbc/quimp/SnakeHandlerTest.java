@@ -17,12 +17,6 @@ import ij.IJ;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
-import uk.ac.warwick.wsbc.quimp.BOAState;
-import uk.ac.warwick.wsbc.quimp.BOA_;
-import uk.ac.warwick.wsbc.quimp.OutlineHandler;
-import uk.ac.warwick.wsbc.quimp.Serializer;
-import uk.ac.warwick.wsbc.quimp.Snake;
-import uk.ac.warwick.wsbc.quimp.SnakeHandler;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -42,7 +36,7 @@ public class SnakeHandlerTest {
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
   private SnakeHandler sH;
-  private String[] info = { "QuimP", "verr", "ddd" };
+  private QuimpVersion info = new QuimpVersion("0.0.0", "verr", "ddd");
 
   /**
    * @throws java.lang.Exception

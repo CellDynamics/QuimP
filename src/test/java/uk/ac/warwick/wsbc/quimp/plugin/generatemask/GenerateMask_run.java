@@ -1,7 +1,6 @@
 package uk.ac.warwick.wsbc.quimp.plugin.generatemask;
 
 import ij.ImageJ;
-import uk.ac.warwick.wsbc.quimp.plugin.generatemask.GenerateMask_;
 
 /**
  * @author p.baniukiewicz

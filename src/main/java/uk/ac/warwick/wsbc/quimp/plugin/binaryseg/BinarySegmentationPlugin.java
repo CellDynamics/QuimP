@@ -215,7 +215,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
    * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin#showUI(boolean)
    */
   @Override
-  public int showUI(boolean val) {
+  public int showUi(boolean val) {
     return toggleWindow(val) ? 1 : 0;
 
   }
@@ -280,8 +280,14 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   /*
    * (non-Javadoc)
    * 
+   * <<<<<<< HEAD
+   * 
    * @see
    * uk.ac.warwick.wsbc.quimp.plugin.IQuimpNestPlugin#attachData(uk.ac.warwick.wsbc.quimp.Nest)
+   * =======
+   * 
+   * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpNestPlugin#attachData(uk.ac.warwick.wsbc.quimp.Nest)
+   * >>>>>>> feature/task_220-GSon-versioning
    */
   @Override
   public void attachData(Nest data) {
