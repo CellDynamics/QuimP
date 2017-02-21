@@ -42,7 +42,7 @@ import uk.ac.warwick.wsbc.quimp.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.quimp.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
-import uk.ac.warwick.wsbc.quimp.geom.OutlineProcessor;
+import uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor;
 import uk.ac.warwick.wsbc.quimp.plugin.ecmm.ECMM_Mapping;
 import uk.ac.warwick.wsbc.quimp.plugin.ecmm.ECMp;
 import uk.ac.warwick.wsbc.quimp.registration.Registration;

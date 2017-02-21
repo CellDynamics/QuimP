@@ -48,7 +48,7 @@ public class ANAp {
    */
   transient final public double freezeTh = 1;
   /**
-   * @see uk.ac.warwick.wsbc.quimp.geom.OutlineProcessor#shrink(double, double, double, double)
+   * @see uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor#shrink(double, double, double, double)
    */
   transient final public double angleTh = 0.1;
   /**
