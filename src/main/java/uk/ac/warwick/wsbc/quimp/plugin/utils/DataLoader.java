@@ -40,77 +40,77 @@ import ij.process.FloatPolygon;
  */
 public class DataLoader {
 
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class.getName());
-    private List<Double> data;
-    /**
-     * 
-     */
-    public List<Point2d> Vert;
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class.getName());
+  private List<Double> data;
+  /**
+   * 
+   */
+  public List<Point2d> Vert;
 
-    /**
-     * Construct dataLoader object.
-     * 
-     * Open and read datafile
-     * 
-     * @param fileName file with data (with path)
-     * @throws FileNotFoundException on bad file
-     * @throws IllegalArgumentException when the number of lines in \c fileName is not power of 2
-     */
-    public DataLoader(String fileName) throws FileNotFoundException, IllegalArgumentException {
-        data = new ArrayList<Double>();
-        Vert = new ArrayList<Point2d>();
-        Scanner scanner = new Scanner(new File(fileName));
-        scanner.useLocale(Locale.US);
-        while (scanner.hasNextDouble())
-            data.add(scanner.nextDouble());
-        scanner.close();
-        convertToPoint2d();
-        LOGGER.debug("File: " + fileName + " loaded");
-    }
+  /**
+   * Construct dataLoader object.
+   * 
+   * Open and read datafile
+   * 
+   * @param fileName file with data (with path)
+   * @throws FileNotFoundException on bad file
+   * @throws IllegalArgumentException when the number of lines in \c fileName is not power of 2
+   */
+  public DataLoader(String fileName) throws FileNotFoundException, IllegalArgumentException {
+    data = new ArrayList<Double>();
+    Vert = new ArrayList<Point2d>();
+    Scanner scanner = new Scanner(new File(fileName));
+    scanner.useLocale(Locale.US);
+    while (scanner.hasNextDouble())
+      data.add(scanner.nextDouble());
+    scanner.close();
+    convertToPoint2d();
+    LOGGER.debug("File: " + fileName + " loaded");
+  }
 
-    /**
-     * Convert read List<Double> to List<Point2d>
-     * 
-     * @throws IllegalArgumentException
-     */
-    private void convertToPoint2d() throws IllegalArgumentException {
-        if (data.size() % 2 != 0)
-            throw new IllegalArgumentException("Data must be multiply of 2");
-        ListIterator<Double> it = data.listIterator();
-        while (it.hasNext()) {
-            Vert.add(new Point2d(it.next().doubleValue(), // x coord
-                    it.next().doubleValue())); // y coord from input file
-        }
+  /**
+   * Convert read List<Double> to List<Point2d>
+   * 
+   * @throws IllegalArgumentException
+   */
+  private void convertToPoint2d() throws IllegalArgumentException {
+    if (data.size() % 2 != 0)
+      throw new IllegalArgumentException("Data must be multiply of 2");
+    ListIterator<Double> it = data.listIterator();
+    while (it.hasNext()) {
+      Vert.add(new Point2d(it.next().doubleValue(), // x coord
+              it.next().doubleValue())); // y coord from input file
     }
+  }
 
-    /**
-     * Return loaded data
-     * 
-     * @return loaded polygon as List<Point2d>
-     */
-    public List<Point2d> getData() {
-        return Vert;
-    }
+  /**
+   * Return loaded data
+   * 
+   * @return loaded polygon as List<Point2d>
+   */
+  public List<Point2d> getData() {
+    return Vert;
+  }
 
-    /**
-     * Return loaded data as FloatPolygon
-     * 
-     * @return Loaded polygon as FloatPolygon
-     */
-    public FloatPolygon getFloatPolygon() {
-        QuimpDataConverter qd = new QuimpDataConverter(getData());
-        return new FloatPolygon(qd.getFloatX(), qd.getFloatY());
-    }
+  /**
+   * Return loaded data as FloatPolygon
+   * 
+   * @return Loaded polygon as FloatPolygon
+   */
+  public FloatPolygon getFloatPolygon() {
+    QuimpDataConverter qd = new QuimpDataConverter(getData());
+    return new FloatPolygon(qd.getFloatX(), qd.getFloatY());
+  }
 
-    /**
-     * Convert loaded data to string
-     * 
-     * @return String representation of loaded data
-     */
-    public String toString() {
-        return Vert.toString();
-    }
+  /**
+   * Convert loaded data to string
+   * 
+   * @return String representation of loaded data
+   */
+  public String toString() {
+    return Vert.toString();
+  }
 }

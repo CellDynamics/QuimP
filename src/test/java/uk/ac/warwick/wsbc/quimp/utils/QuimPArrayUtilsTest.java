@@ -24,90 +24,90 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
  *
  */
 public class QuimPArrayUtilsTest {
-    
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = LoggerFactory.getLogger(QuimPArrayUtilsTest.class.getName());
-    
-    /**
-     * The tmpdir.
-     */
-    static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-    }
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(QuimPArrayUtilsTest.class.getName());
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-    }
+  /**
+   * The tmpdir.
+   */
+  static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
-    /**
-     * Test method for
-     * {@link uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils#float2ddouble(float[][])}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testFloat2Ddouble() throws Exception {
-        float[][] in = { { 1.0f, 2.0f, 3.0f }, { 1.11f, 2.11f, 3.11f } };
-        double[][] out = QuimPArrayUtils.float2ddouble(in);
-        for (int r = 0; r < 2; r++)
-            for (int c = 0; c < 3; c++)
-                assertEquals(in[r][c], out[r][c], 1e-3);
-    }
+  /**
+   * @throws java.lang.Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+  }
 
-    /**
-     * Test method for
-     * {@link uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils#double2float(double[][])}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testDouble2Float() throws Exception {
-        double[][] in = { { 1.0, 2.0, 3.0 }, { 1.11, 2.11, 3.11 } };
-        float[][] out = QuimPArrayUtils.double2float(in);
-        for (int r = 0; r < 2; r++)
-            for (int c = 0; c < 3; c++)
-                assertEquals(in[r][c], out[r][c], 1e-3);
-    }
+  /**
+   * @throws java.lang.Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+  }
 
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void testMinListIndex() throws Exception {
-        ArrayList<Double> ar = new ArrayList<>();
-        ar.add(34.0);
-        ar.add(5.0);
-        ar.add(-5.0);
+  /**
+   * Test method for
+   * {@link uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils#float2ddouble(float[][])}.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testFloat2Ddouble() throws Exception {
+    float[][] in = { { 1.0f, 2.0f, 3.0f }, { 1.11f, 2.11f, 3.11f } };
+    double[][] out = QuimPArrayUtils.float2ddouble(in);
+    for (int r = 0; r < 2; r++)
+      for (int c = 0; c < 3; c++)
+        assertEquals(in[r][c], out[r][c], 1e-3);
+  }
 
-        assertThat(QuimPArrayUtils.minListIndex(ar), equalTo(2));
-    }
+  /**
+   * Test method for
+   * {@link uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils#double2float(double[][])}.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testDouble2Float() throws Exception {
+    double[][] in = { { 1.0, 2.0, 3.0 }, { 1.11, 2.11, 3.11 } };
+    float[][] out = QuimPArrayUtils.double2float(in);
+    for (int r = 0; r < 2; r++)
+      for (int c = 0; c < 3; c++)
+        assertEquals(in[r][c], out[r][c], 1e-3);
+  }
 
-    /**
-     * Test method for
-     * {@link uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils#file2Array(java.lang.String, java.io.File)}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testFile2Array() throws Exception {
-        double[][] expected =
-                { { 1, 2, 3, 4, 5 }, { 1.1, 2.2, 3.3, 4.4, 5.5 }, { 6, 7, 8, 9, Math.PI } };
-        QuimPArrayUtils.arrayToFile(expected, ",", new File(tmpdir + "testFile2Array.map"));
+  /**
+   * @throws Exception
+   */
+  @Test
+  public void testMinListIndex() throws Exception {
+    ArrayList<Double> ar = new ArrayList<>();
+    ar.add(34.0);
+    ar.add(5.0);
+    ar.add(-5.0);
 
-        double test[][] = QuimPArrayUtils.file2Array(",", new File(tmpdir + "testFile2Array.map"));
+    assertThat(QuimPArrayUtils.minListIndex(ar), equalTo(2));
+  }
 
-        assertThat(test, is(expected));
+  /**
+   * Test method for
+   * {@link uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils#file2Array(java.lang.String, java.io.File)}.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testFile2Array() throws Exception {
+    double[][] expected =
+            { { 1, 2, 3, 4, 5 }, { 1.1, 2.2, 3.3, 4.4, 5.5 }, { 6, 7, 8, 9, Math.PI } };
+    QuimPArrayUtils.arrayToFile(expected, ",", new File(tmpdir + "testFile2Array.map"));
 
-    }
+    double test[][] = QuimPArrayUtils.file2Array(",", new File(tmpdir + "testFile2Array.map"));
+
+    assertThat(test, is(expected));
+
+  }
 
 }

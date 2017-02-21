@@ -25,43 +25,43 @@ import uk.ac.warwick.wsbc.quimp.Vert;
  */
 public class QuimpToolsCollection {
 
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = LoggerFactory.getLogger(QuimpToolsCollection.class.getName());
-    /**
-     * Message returned by {@link #getQuimPBuildInfo()} if info is not found in jar.
-     */
-    public static final String defNote = "Not found";
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(QuimpToolsCollection.class.getName());
+  /**
+   * Message returned by {@link #getQuimPBuildInfo()} if info is not found in jar.
+   */
+  public static final String defNote = "Not found";
 
-    /**
-     * Prepare info plate for QuimP.
-     * 
-     * @return QuimP version
-     * 
-     * @see #getFormattedQuimPversion(String[])
-     */
-    public String getQuimPversion() {
-        String[] quimpBuildInfo = getQuimPBuildInfo();
-        return getFormattedQuimPversion(quimpBuildInfo);
-    }
+  /**
+   * Prepare info plate for QuimP.
+   * 
+   * @return QuimP version
+   * 
+   * @see #getFormattedQuimPversion(String[])
+   */
+  public String getQuimPversion() {
+    String[] quimpBuildInfo = getQuimPBuildInfo();
+    return getFormattedQuimPversion(quimpBuildInfo);
+  }
 
-    /**
-     * Prepare info plate for QuimP.
-     * 
-     * It contains version, names, etc. By general QuimpToolsCollection class is static. These
-     * methods can not be so they must be called:
-     * 
-     * <pre>
-     * <code>LOGGER.debug(new Tool().getQuimPversion());</code>
-     * </pre>
-     * 
-     * @param quimpBuildInfo info read from jar
-     * @return Formatted string with QuimP version and authors
-     * @see #getQuimPBuildInfo()
-     */
-    public static String getFormattedQuimPversion(String[] quimpBuildInfo) {
-        //!>
+  /**
+   * Prepare info plate for QuimP.
+   * 
+   * It contains version, names, etc. By general QuimpToolsCollection class is static. These
+   * methods can not be so they must be called:
+   * 
+   * <pre>
+   * <code>LOGGER.debug(new Tool().getQuimPversion());</code>
+   * </pre>
+   * 
+   * @param quimpBuildInfo info read from jar
+   * @return Formatted string with QuimP version and authors
+   * @see #getQuimPBuildInfo()
+   */
+  public static String getFormattedQuimPversion(String[] quimpBuildInfo) {
+    //!>
         String infoPlate = "---------------------------------------------------------\n"
                 + "| QuimP, by                                             |\n"
                 + "| Richard Tyson (richard.tyson@warwick.ac.uk)           |\n"
@@ -72,274 +72,272 @@ public class QuimpToolsCollection {
                 + "                     |\n"
                 + "---------------------------------------------------------\n";
         //!<
-        infoPlate = infoPlate.concat("\n");
-        infoPlate = infoPlate.concat("QuimP version: " + quimpBuildInfo[0]);
-        infoPlate = infoPlate.concat("\n");
-        infoPlate = infoPlate.concat("Build by: " + quimpBuildInfo[1]);
-        infoPlate = infoPlate.concat("\n");
-        infoPlate = infoPlate.concat("Internal name: " + quimpBuildInfo[2]);
-        infoPlate = infoPlate.concat("\n");
-        return infoPlate;
-    }
+    infoPlate = infoPlate.concat("\n");
+    infoPlate = infoPlate.concat("QuimP version: " + quimpBuildInfo[0]);
+    infoPlate = infoPlate.concat("\n");
+    infoPlate = infoPlate.concat("Build by: " + quimpBuildInfo[1]);
+    infoPlate = infoPlate.concat("\n");
+    infoPlate = infoPlate.concat("Internal name: " + quimpBuildInfo[2]);
+    infoPlate = infoPlate.concat("\n");
+    return infoPlate;
+  }
 
-    /**
-     * Get build info read from jar file.
-     * 
-     * @return Formatted strings with build info and version:
-     *         <ol>
-     *         <li>[0] - contains only version string read from MANIFEST.MF,
-     *         <li>[1] - contains formatted string with build time and name of builder read from
-     *         MANIFEST.MF
-     *         <li>[2] - contains software name read from MANIFEST.MF If those information are not
-     *         available in jar, the <b>defNote</b> string is returned
-     *         </ol>
-     */
-    public String[] getQuimPBuildInfo() {
-        String[] ret = new String[3];
+  /**
+   * Get build info read from jar file.
+   * 
+   * @return Formatted strings with build info and version:
+   *         <ol>
+   *         <li>[0] - contains only version string read from MANIFEST.MF,
+   *         <li>[1] - contains formatted string with build time and name of builder read from
+   *         MANIFEST.MF
+   *         <li>[2] - contains software name read from MANIFEST.MF If those information are not
+   *         available in jar, the <b>defNote</b> string is returned
+   *         </ol>
+   */
+  public String[] getQuimPBuildInfo() {
+    String[] ret = new String[3];
+    try {
+      Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+      // get internal name - jar name
+      String iname = new PropertyReader().readProperty("quimpconfig.properties", "internalName");
+      while (resources.hasMoreElements()) {
+        URL reselement = resources.nextElement();
+        if (!reselement.toString().contains("/" + iname))
+          continue;
+        Manifest manifest = new Manifest(reselement.openStream());
+        Attributes attributes = manifest.getMainAttributes();
         try {
-            Enumeration<URL> resources =
-                    getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
-            // get internal name - jar name
-            String iname =
-                    new PropertyReader().readProperty("quimpconfig.properties", "internalName");
-            while (resources.hasMoreElements()) {
-                URL reselement = resources.nextElement();
-                if (!reselement.toString().contains("/" + iname))
-                    continue;
-                Manifest manifest = new Manifest(reselement.openStream());
-                Attributes attributes = manifest.getMainAttributes();
-                try {
-                    ret[1] = attributes.getValue("Built-By") + " on: "
-                            + attributes.getValue("Implementation-Build");
-                    ret[0] = attributes.getValue("Implementation-Version");
-                    ret[2] = attributes.getValue("Implementation-Title");
-                    LOGGER.trace(Arrays.toString(ret));
-                } catch (Exception e) {
-                    ; // do not care about problems - just use defaults defined on beginning
-                }
-            }
-        } catch (IOException e) {
-            ; // do not care about problems - just use defaults defined on beginning
+          ret[1] = attributes.getValue("Built-By") + " on: "
+                  + attributes.getValue("Implementation-Build");
+          ret[0] = attributes.getValue("Implementation-Version");
+          ret[2] = attributes.getValue("Implementation-Title");
+          LOGGER.trace(Arrays.toString(ret));
+        } catch (Exception e) {
+          ; // do not care about problems - just use defaults defined on beginning
         }
-        // replace possible nulls with default text
-        ret[0] = ret[0] == null ? defNote : ret[0];
-        ret[1] = ret[1] == null ? defNote : ret[1];
-        ret[2] = ret[2] == null ? defNote : ret[2];
-        return ret;
+      }
+    } catch (IOException e) {
+      ; // do not care about problems - just use defaults defined on beginning
     }
+    // replace possible nulls with default text
+    ret[0] = ret[0] == null ? defNote : ret[0];
+    ret[1] = ret[1] == null ? defNote : ret[1];
+    ret[2] = ret[2] == null ? defNote : ret[2];
+    return ret;
+  }
 
-    /**
-     * S 2 d.
-     *
-     * @param s the s
-     * @return the double
-     */
-    public static double s2d(String s) {
-        Double d;
-        try {
-            d = new Double(s);
-        } catch (NumberFormatException e) {
-            d = null;
-        }
-        if (d != null) {
-            return (d.doubleValue());
-        } else {
-            return (0.0);
-        }
+  /**
+   * S 2 d.
+   *
+   * @param s the s
+   * @return the double
+   */
+  public static double s2d(String s) {
+    Double d;
+    try {
+      d = new Double(s);
+    } catch (NumberFormatException e) {
+      d = null;
     }
-
-    /**
-     * Get file name without extension.
-     * 
-     * @param filename name of the file
-     * @return file (with path) without extension
-     */
-    public static String removeExtension(String filename) {
-        // extract fileName without extension
-
-        int dotI = filename.lastIndexOf(".");
-        if (dotI > 0) {
-            filename = filename.substring(0, dotI);
-        }
-        return filename;
+    if (d != null) {
+      return (d.doubleValue());
+    } else {
+      return (0.0);
     }
+  }
 
-    /**
-     * Get file extension.
-     * 
-     * @param filename Name of file
-     * @return extension without dot
-     */
-    public static String getFileExtension(String filename) {
-        // extract fileName without extension
+  /**
+   * Get file name without extension.
+   * 
+   * @param filename name of the file
+   * @return file (with path) without extension
+   */
+  public static String removeExtension(String filename) {
+    // extract fileName without extension
 
-        int dotI = filename.lastIndexOf(".");
-        if (dotI > 0) {
-            filename = filename.substring(dotI + 1, filename.length());
-        }
-        return filename;
+    int dotI = filename.lastIndexOf(".");
+    if (dotI > 0) {
+      filename = filename.substring(0, dotI);
     }
+    return filename;
+  }
 
-    /**
-     * Closest floor.
-     *
-     * @param o the o
-     * @param target the target
-     * @return the vert
-     */
-    public static Vert closestFloor(Outline o, double target) {
-        // find the vert with coor closest (floored) to target coordinate
+  /**
+   * Get file extension.
+   * 
+   * @param filename Name of file
+   * @return extension without dot
+   */
+  public static String getFileExtension(String filename) {
+    // extract fileName without extension
 
-        Vert v = o.getHead();
-        double coordA, coordB;
-
-        do {
-            // coordA = v.fCoord;
-            // coordB = v.getNext().fCoord;
-            coordA = v.coord;
-            coordB = v.getNext().coord;
-            // System.out.println("A: " + coordA + ", B: "+ coordB);
-
-            if ((coordA > coordB)) {
-                if (coordA <= target && coordB + 1 > target) {
-                    break;
-                }
-
-                if (coordA - 1 <= target && coordB > target) {
-                    break;
-                }
-
-            } else {
-                if (coordA <= target && coordB > target) {
-                    break;
-                }
-            }
-            v = v.getNext();
-        } while (!v.isHead());
-
-        return v;
+    int dotI = filename.lastIndexOf(".");
+    if (dotI > 0) {
+      filename = filename.substring(dotI + 1, filename.length());
     }
+    return filename;
+  }
 
-    /**
-     * Distance to scale.
-     *
-     * @param value the value
-     * @param scale the scale
-     * @return the double
-     */
-    public static double distanceToScale(double value, double scale) {
-        // assums pixelwidth is in micro meters
-        return value * scale;
-    }
+  /**
+   * Closest floor.
+   *
+   * @param o the o
+   * @param target the target
+   * @return the vert
+   */
+  public static Vert closestFloor(Outline o, double target) {
+    // find the vert with coor closest (floored) to target coordinate
 
-    /**
-     * Area to scale.
-     *
-     * @param value the value
-     * @param scale the scale
-     * @return the double
-     */
-    public static double areaToScale(double value, double scale) {
-        // assums pixelwidth is in micro meters
-        return value * (scale * scale);
-    }
+    Vert v = o.getHead();
+    double coordA, coordB;
 
-    /**
-     * Speed to scale.
-     *
-     * @param value the value
-     * @param scale the scale
-     * @param frameInterval the frame interval
-     * @return the double
-     */
-    public static double speedToScale(double value, double scale, double frameInterval) {
-        return (value * scale) / frameInterval;
-    }
+    do {
+      // coordA = v.fCoord;
+      // coordB = v.getNext().fCoord;
+      coordA = v.coord;
+      coordB = v.getNext().coord;
+      // System.out.println("A: " + coordA + ", B: "+ coordB);
 
-    /**
-     * Distance to scale.
-     *
-     * @param value the value
-     * @param scale the scale
-     * @return the double
-     */
-    public static double distanceToScale(int value, double scale) {
-        return value * scale;
-    }
-
-    /**
-     * Distance from scale.
-     *
-     * @param value the value
-     * @param scale the scale
-     * @return the double
-     */
-    public static double distanceFromScale(double value, double scale) {
-        return value / scale;
-    }
-
-    /**
-     * Speed to scale.
-     *
-     * @param value the value
-     * @param scale the scale
-     * @param frameInterval the frame interval
-     * @return the double
-     */
-    public static double speedToScale(int value, double scale, double frameInterval) {
-        return (value * scale) / frameInterval;
-    }
-
-    /**
-     * Date as string.
-     *
-     * @return the string
-     */
-    public static String dateAsString() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date date = new Date();
-        return formatter.format(date);
-    }
-
-    /**
-     * Sets the limits equal.
-     *
-     * @param migLimits the mig limits
-     * @return the double[]
-     */
-    public static double[] setLimitsEqual(double[] migLimits) { // min and max
-        if (migLimits.length < 2) {
-            LOGGER.warn("Array to short. Needs a min and max");
-            return migLimits;
-        }
-        // Set limits to equal positive and negative
-        if (migLimits[1] < 0)
-            migLimits[1] = -migLimits[0];
-        if (migLimits[0] > 0)
-            migLimits[0] = -migLimits[1];
-
-        // Make min and max equal for mig and conv
-        if (migLimits[0] < -migLimits[1]) {
-            migLimits[1] = -migLimits[0];
-        } else {
-            migLimits[0] = -migLimits[1];
+      if ((coordA > coordB)) {
+        if (coordA <= target && coordB + 1 > target) {
+          break;
         }
 
-        return migLimits;
+        if (coordA - 1 <= target && coordB > target) {
+          break;
+        }
+
+      } else {
+        if (coordA <= target && coordB > target) {
+          break;
+        }
+      }
+      v = v.getNext();
+    } while (!v.isHead());
+
+    return v;
+  }
+
+  /**
+   * Distance to scale.
+   *
+   * @param value the value
+   * @param scale the scale
+   * @return the double
+   */
+  public static double distanceToScale(double value, double scale) {
+    // assums pixelwidth is in micro meters
+    return value * scale;
+  }
+
+  /**
+   * Area to scale.
+   *
+   * @param value the value
+   * @param scale the scale
+   * @return the double
+   */
+  public static double areaToScale(double value, double scale) {
+    // assums pixelwidth is in micro meters
+    return value * (scale * scale);
+  }
+
+  /**
+   * Speed to scale.
+   *
+   * @param value the value
+   * @param scale the scale
+   * @param frameInterval the frame interval
+   * @return the double
+   */
+  public static double speedToScale(double value, double scale, double frameInterval) {
+    return (value * scale) / frameInterval;
+  }
+
+  /**
+   * Distance to scale.
+   *
+   * @param value the value
+   * @param scale the scale
+   * @return the double
+   */
+  public static double distanceToScale(int value, double scale) {
+    return value * scale;
+  }
+
+  /**
+   * Distance from scale.
+   *
+   * @param value the value
+   * @param scale the scale
+   * @return the double
+   */
+  public static double distanceFromScale(double value, double scale) {
+    return value / scale;
+  }
+
+  /**
+   * Speed to scale.
+   *
+   * @param value the value
+   * @param scale the scale
+   * @param frameInterval the frame interval
+   * @return the double
+   */
+  public static double speedToScale(int value, double scale, double frameInterval) {
+    return (value * scale) / frameInterval;
+  }
+
+  /**
+   * Date as string.
+   *
+   * @return the string
+   */
+  public static String dateAsString() {
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    Date date = new Date();
+    return formatter.format(date);
+  }
+
+  /**
+   * Sets the limits equal.
+   *
+   * @param migLimits the mig limits
+   * @return the double[]
+   */
+  public static double[] setLimitsEqual(double[] migLimits) { // min and max
+    if (migLimits.length < 2) {
+      LOGGER.warn("Array to short. Needs a min and max");
+      return migLimits;
+    }
+    // Set limits to equal positive and negative
+    if (migLimits[1] < 0)
+      migLimits[1] = -migLimits[0];
+    if (migLimits[0] > 0)
+      migLimits[0] = -migLimits[1];
+
+    // Make min and max equal for mig and conv
+    if (migLimits[0] < -migLimits[1]) {
+      migLimits[1] = -migLimits[0];
+    } else {
+      migLimits[0] = -migLimits[1];
     }
 
-    /**
-     * Insert \n character after given number of chars keeping to not break words.
-     * 
-     * @param in Input string
-     * @param len line length
-     * @return Wrapped string
-     * @see <a href=
-     *      "link">http://stackoverflow.com/questions/8314566/splitting-a-string-on-to-several-different-lines-in-java</a>
-     */
-    public static String stringWrap(String in, int len) {
+    return migLimits;
+  }
 
-        return in.replaceAll("(.{" + len + ",}?)\\s+", "$1\n");
-    }
+  /**
+   * Insert \n character after given number of chars keeping to not break words.
+   * 
+   * @param in Input string
+   * @param len line length
+   * @return Wrapped string
+   * @see <a href=
+   *      "link">http://stackoverflow.com/questions/8314566/splitting-a-string-on-to-several-different-lines-in-java</a>
+   */
+  public static String stringWrap(String in, int len) {
+
+    return in.replaceAll("(.{" + len + ",}?)\\s+", "$1\n");
+  }
 
 }

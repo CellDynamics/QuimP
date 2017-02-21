@@ -12,30 +12,30 @@ import uk.ac.warwick.wsbc.quimp.plugin.ana.ANA_;
  * @author p.baniukiewicz
  */
 public class ANA_run {
-    static {
-        System.setProperty("logback.configurationFile", "quimp-logback.xml");
-    }
+  static {
+    System.setProperty("logback.configurationFile", "quimp-logback.xml");
+  }
 
-    /**
-     * 
-     */
-    public ANA_run() {
-        // TODO Auto-generated constructor stub
-    }
+  /**
+   * 
+   */
+  public ANA_run() {
+    // TODO Auto-generated constructor stub
+  }
 
-    /**
-     * @param args
-     */
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
-        ImageJ ij = new ImageJ();
-        ImagePlus im = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
-        im.show();
-        ANA_ ana = new ANA_();
-        ana.setup(new String(), im);
-        // load paQP and QCONF file related to tiff pointed above
-        ana.run(im.getProcessor());
+  /**
+   * @param args
+   */
+  @SuppressWarnings("unused")
+  public static void main(String[] args) {
+    ImageJ ij = new ImageJ();
+    ImagePlus im = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
+    im.show();
+    ANA_ ana = new ANA_();
+    ana.setup(new String(), im);
+    // load paQP and QCONF file related to tiff pointed above
+    ana.run(im.getProcessor());
 
-    }
+  }
 
 }

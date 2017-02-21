@@ -14,13 +14,13 @@ import uk.ac.warwick.wsbc.quimp.QuimpException;
 @SuppressWarnings("serial")
 public class DicException extends QuimpException {
 
-    /**
-     * Main constructor
-     * 
-     * @param arg0 Reason of exception
-     */
-    public DicException(final String arg0) {
-        super(arg0);
-    }
+  /**
+   * Main constructor
+   * 
+   * @param arg0 Reason of exception
+   */
+  public DicException(final String arg0) {
+    super(arg0);
+  }
 
 }
