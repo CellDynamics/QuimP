@@ -18,11 +18,11 @@ public interface IQuimpBOAPoint2dFilter extends IQuimpCorePlugin {
   /**
    * Runs filter and return filtered points in the same order as input points.
    * 
-   * Number of returned points can be different.
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * Plugin may be run without attached data. Plugin must deal with this
+   * <p>Number of returned points can be different.
+   * 
+   * <p><b>Warning</b>
+   * 
+   * <p>Plugin may be run without attached data. Plugin must deal with this
    * 
    * @return Filtered points
    * @throws QuimpPluginException on any problems during filter execution
@@ -32,14 +32,14 @@ public interface IQuimpBOAPoint2dFilter extends IQuimpCorePlugin {
   /**
    * Attach processed data to plugin.
    * 
-   * This method allows to process data by plugin without running it what is important e.g. for
+   * <p>This method allows to process data by plugin without running it what is important e.g. for
    * visualizing.
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * Plugin may be run without attached data. Plugin must deal with this
    * 
-   * @param data
+   * <p><b>Warning</b>
+   * 
+   * <p>Plugin may be run without attached data. Plugin must deal with this
+   * 
+   * @param data data to process
    */
   void attachData(final List<Point2d> data);
 }

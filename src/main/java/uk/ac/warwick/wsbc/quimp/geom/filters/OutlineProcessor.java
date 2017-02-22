@@ -1,11 +1,5 @@
 package uk.ac.warwick.wsbc.quimp.geom.filters;
 
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
-import java.util.List;
-
-import org.scijava.vecmath.Tuple2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -301,88 +295,4 @@ public class OutlineProcessor {
     return outline;
   }
 
-}
-
-/**
- * Helper class supporting scaling and fitting polygon to DrawWindow
- * 
- * <p>This class is strictly TreeSet related. equals method does not assure correct comparison
- * 
- * @author p.baniukiewicz
- *
- */
-class ExPolygon extends Polygon {
-  static final Logger LOGGER = LoggerFactory.getLogger(ExPolygon.class.getName());
-  private static final long serialVersionUID = 5870934217878285135L;
-  public Rectangle initbounds; // initial size of polygon, before scaling
-  public double scale; // current scale
-
-  /**
-   * Construct polygon from list of points.
-   * 
-   * @param data List of points
-   */
-  public ExPolygon(List<? extends Tuple2d> data) {
-    // convert to polygon
-    for (Tuple2d v : data) {
-      addPoint((int) Math.round(v.getX()), (int) Math.round(v.getY()));
-    }
-    initbounds = new Rectangle(getBounds()); // remember original size
-    scale = 1;
-  }
-
-  /**
-   * Scale polygon to fit in rectangular window of size. Method changes internal polygon
-   * representation. Fitting is done basing on bounding box area.
-   * 
-   * @param size Size of window to fit polygon
-   */
-  public void fitPolygon(double size) {
-    // set in 0,0
-    translate((int) Math.round(-initbounds.getCenterX()),
-            (int) Math.round(-initbounds.getCenterY()));
-    // get size of bounding box
-    Rectangle2D bounds = getBounds2D();
-    // set scale according to window size
-    if (bounds.getWidth() > bounds.getHeight()) {
-      scale = bounds.getWidth();
-    } else {
-      scale = bounds.getHeight();
-    }
-    scale = size / scale;
-    scale *= 0.95; // little smaller than window
-    for (int i = 0; i < npoints; i++) {
-      xpoints[i] = (int) Math.round(xpoints[i] * scale);
-      ypoints[i] = (int) Math.round(ypoints[i] * scale);
-    }
-    // center in window
-    LOGGER.debug("Scale is: " + scale + " BoundsCenters: " + bounds.getCenterX() + " "
-            + bounds.getCenterY());
-    translate((int) Math.round(bounds.getCenterX()) + (int) (size / 2),
-            (int) Math.round(bounds.getCenterY()) + (int) (size / 2));
-  }
-
-  /**
-   * Scale polygon to fit in rectangular window of size using pre-computed bounding box and scale
-   * 
-   * <p>Use for setting next polygon on base of previous, when next has different shape but must be
-   * centered with previous one.
-   * 
-   * @param size Size of window to fit polygon
-   * @param init Bounding box to fit new polygon
-   * @param scale Scale of new polygon
-   */
-  public void fitPolygon(double size, Rectangle2D init, double scale) {
-    // set in 0,0
-    this.scale = scale;
-    LOGGER.debug("fitPolygon: Scale is: " + scale + " BoundsCenters: " + init.getCenterX() + " "
-            + init.getCenterY());
-    translate((int) Math.round(-init.getCenterX()), (int) Math.round(-init.getCenterY()));
-
-    for (int i = 0; i < npoints; i++) {
-      xpoints[i] = (int) Math.round(xpoints[i] * scale);
-      ypoints[i] = (int) Math.round(ypoints[i] * scale);
-    }
-    translate((int) (size / 2), (int) (size / 2));
-  }
 }

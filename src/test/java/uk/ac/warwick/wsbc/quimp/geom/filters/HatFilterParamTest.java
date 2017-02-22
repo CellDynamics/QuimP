@@ -30,8 +30,8 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
  *
  */
 @RunWith(Parameterized.class)
-public class HatFilter_ParamTest {
-  static final Logger LOGGER = LoggerFactory.getLogger(HatFilter_ParamTest.class.getName());
+public class HatFilterParamTest {
+  static final Logger LOGGER = LoggerFactory.getLogger(HatFilterParamTest.class.getName());
   /**
    * The tmpdir.
    */
@@ -45,7 +45,7 @@ public class HatFilter_ParamTest {
   /**
    * Parameterised constructor.
    * 
-   * Each parameter should be placed as an argument here Every time runner triggers, it will pass
+   * <p>Each parameter should be placed as an argument here Every time runner triggers, it will pass
    * the arguments from parameters we defined to this method
    * 
    * @param testFileName test file name
@@ -55,7 +55,7 @@ public class HatFilter_ParamTest {
    * @see DataLoader
    * @see HatSnakeFilter
    */
-  public HatFilter_ParamTest(String testFileName, Integer window, Integer pnum, Double alev) {
+  public HatFilterParamTest(String testFileName, Integer window, Integer pnum, Double alev) {
     this.testfileName = Paths.get(testFileName);
     this.window = window;
     this.pnum = pnum;
@@ -63,9 +63,9 @@ public class HatFilter_ParamTest {
   }
 
   /**
-   * Called after construction but before tests
+   * Called after construction but before tests.
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Before
   public void setUp() throws Exception {
@@ -73,7 +73,7 @@ public class HatFilter_ParamTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception on error
    */
   @After
   public void tearDown() throws Exception {
@@ -87,24 +87,25 @@ public class HatFilter_ParamTest {
    */
   @Parameterized.Parameters
   public static Collection<Object[]> testFiles() {
-    return Arrays.asList(new Object[][] { { "src/test/resources/testData_137.dat", 23, 1, 0.0 },
-        { "src/test/resources/testData_1.dat", 23, 1, 0.0 },
-        { "src/test/resources/testData_125.dat", 23, 1, 0.0 },
-        { "src/test/resources/testData_75.dat", 23, 1, 0.0 },
-        { "src/test/resources/testData_137.dat", 23, 2, 0.0 },
-        { "src/test/resources/testData_1.dat", 23, 2, 0.0 },
-        { "src/test/resources/testData_125.dat", 23, 2, 0.0 },
-        { "src/test/resources/testData_75.dat", 23, 2, 0.0 } });
+    return Arrays.asList(
+            new Object[][] { { "src/test/resources/HatSnakeFilter/testData_137.dat", 23, 1, 0.0 },
+                { "src/test/resources/HatSnakeFilter/testData_1.dat", 23, 1, 0.0 },
+                { "src/test/resources/HatSnakeFilter/testData_125.dat", 23, 1, 0.0 },
+                { "src/test/resources/HatSnakeFilter/testData_75.dat", 23, 1, 0.0 },
+                { "src/test/resources/HatSnakeFilter/testData_137.dat", 23, 2, 0.0 },
+                { "src/test/resources/HatSnakeFilter/testData_1.dat", 23, 2, 0.0 },
+                { "src/test/resources/HatSnakeFilter/testData_125.dat", 23, 2, 0.0 },
+                { "src/test/resources/HatSnakeFilter/testData_75.dat", 23, 2, 0.0 } });
   }
 
   /**
    * Test of getInterpolationLoess method
    * 
-   * Pre: Real cases extracted from
+   * <p>Pre: Real cases extracted from
    * 
-   * Post: Save image test_HatFilter_* in /tmp/
+   * <p>Post: Save image test_HatFilter_* in /tmp/
    * 
-   * @throws QuimpPluginException
+   * @throws QuimpPluginException on error
    * @see <a
    *      href="verification of logs (ratios, indexes, etc)">QuimP-toolbox/Prototyping/59-Shape_filtering/HatFilter.m</a>
    * @see <a href="resorces">/src/test/resources/HatFilter.m</a>
@@ -124,7 +125,7 @@ public class HatFilter_ParamTest {
    * Simple test of RoiSaver class, create reference images without processing but with the same
    * name scheme as processed data.
    * 
-   * Post: Save image in /tmp
+   * <p>Post: Save image in /tmp
    * 
    * @see <a href="resorces">/src/test/resources/HatFilter.m</a>
    */

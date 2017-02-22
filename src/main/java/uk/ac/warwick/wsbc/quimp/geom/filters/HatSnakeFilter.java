@@ -35,8 +35,8 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.IPadArray;
  * </ol>
  * 
  * <p><h3>General description of algorithm:</h3> The window slides over the wrapped contour. Points
- * inside window for its position \a p are considered as candidates to removal from contour if they
- * meet the following criterion:
+ * inside window for its position <i>p</i> are considered as candidates to removal from contour if
+ * they meet the following criterion:
  * <ol>
  * <li>The window has achieved for position \a p circularity parameter <i>c</i> larger than
  * <i>alev</i>
@@ -89,12 +89,13 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.IPadArray;
  * candidate points are outside the original contour formed without these points.
  * <li>current <i>rank</i> (<i>circ</i>) is greater than <i>alev</i>
  * </ol>
- * If all above criterion are meet the window (l;u) is stored in <i>ind2rem</i>. Windows on end of
- * data are wrapped by dividing them for two sub-windows: (w;end) and (0;c) otherwise they may cover
- * the whole range (e.g. <10;3> does not stand for window from 10 wrapped to 3 but window from 3 to
- * 10).
+ * If all above criterion are meet the window (l;u) is stored in <i>ind2rem</i>. Windows on the end
+ * of data are wrapped by dividing them for two sub-windows: (w;end) and (0;c) otherwise they may
+ * cover the whole range (e.g. <10;3> does not stand for window from 10 wrapped to 3 but window from
+ * 3 to 10).
  * 
- * <p>The second step is repeated until \c pnum object will be found or end of candidates will be
+ * <p>The second step is repeated until <i>pnum</i> object will be found or end of candidates will
+ * be
  * reached.
  * 
  * <p><H2>Third step</H2> In third step every point from original contour is tested for including in

@@ -27,23 +27,23 @@ import uk.ac.warwick.wsbc.quimp.filesystem.versions.IQconfOlderConverter;
 /**
  * Support saving and loading wrapped class to/from JSON file or string.
  * 
- * The Serializer class wraps provided objects and converts it to Gson together with itself.
+ * <p>The Serializer class wraps provided objects and converts it to Gson together with itself.
  * Serializer adds fields like wrapped class name and versioning data (@link {@link QuimpVersion})
  * to JSON.
  * 
- * Restored object is constructed using its constructor. If JSON file does not contain variable
+ * <p>Restored object is constructed using its constructor. If JSON file does not contain variable
  * available in class being restored, it will have the value assigned in constructor or null. GSon
  * overrides variables after they have been created in normal process of object building. Check
  * {@link #fromReader(Reader)} for details.
  * 
- * This serializer accepts only classes derived from IQuimpSerialize interface. Saved class is
+ * <p>This serializer accepts only classes derived from IQuimpSerialize interface. Saved class is
  * packed in top level structure that contains version of software and wrapped class name. Exemplary
  * use case: {@link uk.ac.warwick.wsbc.quimp.SerializerTest#testLoad_1()}
  * 
- * There is option to skip call afterSerialzie() method on class restoring. To do so set
+ * <p>There is option to skip call afterSerialzie() method on class restoring. To do so set
  * {@link #doAfterSerialize} to false - derive new class and override this field.
  * 
- * Serializer supports <tt>Since, Until</tt> tags from GSon library. User can write his own
+ * <p>Serializer supports <tt>Since, Until</tt> tags from GSon library. User can write his own
  * converters executed if specified condition is met. Serializer compares version of callee tool
  * (provided in Serializer constructor) with trigger version returned by converter
  * {@link IQconfOlderConverter} and executes conversion provided by it.
@@ -54,7 +54,7 @@ import uk.ac.warwick.wsbc.quimp.filesystem.versions.IQconfOlderConverter;
  * </p>
  * 
  * @author p.baniukiewicz
- * @param <T>
+ * @param <T> class type to be serialised
  * @see <a href=
  *      "link">http://stackoverflow.com/questions/14139437/java-type-generic-as-argument-for-gson</a>
  * @see uk.ac.warwick.wsbc.quimp.Serializer#registerInstanceCreator(Class, Object)
@@ -71,7 +71,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
    * The gson builder.
    */
   public transient GsonBuilder gsonBuilder;
-  private transient Type t;
+  private transient Type type;
 
   /**
    * Indicates if afterSerialze should be called.
@@ -101,7 +101,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * Version stored in QCONF file loaded by Serialiser.
    * 
-   * If class is serialised (saved) it contains version provided with constructor. This version is
+   * <p>If class is serialised (saved) it contains version provided with constructor. This version
+   * is
    * provided to GSon on loading json
    */
   private transient Double qconfVersionToLoad;
@@ -109,7 +110,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * Version provided form callee.
    * 
-   * This version is provided to GSon on saving json.
+   * <p>This version is provided to GSon on saving json.
    */
   private transient Double qconfVersionToSave;
 
@@ -121,18 +122,18 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * Default constructor used for restoring object.
    * 
-   * Template T can not be restored during runtime thus the type of wrapped object is not known
+   * <p>Template T can not be restored during runtime thus the type of wrapped object is not known
    * for GSon. This is why this type must be passed explicitly to Serializer.
    * 
-   * @param t
+   * @param type class type
    * @param version Version of framework this class is called from.
    */
-  public Serializer(final Type t, final QuimpVersion version) {
+  public Serializer(final Type type, final QuimpVersion version) {
     doAfterSerialize = true; // by default use afterSerialize methods to restore object state
     gsonBuilder = new GsonBuilder();
     obj = null;
     this.timeStamp = version;
-    this.t = t;
+    this.type = type;
   }
 
   /**
@@ -144,7 +145,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   public Serializer(final T obj, final QuimpVersion version) {
     doAfterSerialize = true; // by default use afterSerialize methods to restore object state
     gsonBuilder = new GsonBuilder();
-    this.t = obj.getClass();
+    this.type = obj.getClass();
     this.obj = obj;
     className = obj.getClass().getSimpleName();
     this.timeStamp = version;
@@ -155,7 +156,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * Save wrapped object passed in constructor as JSON file.
    * 
-   * Calls {@link IQuimpSerialize#beforeSerialize()} before save.
+   * <p>Calls {@link IQuimpSerialize#beforeSerialize()} before save.
    * 
    * @param filename Name of file
    * @throws FileNotFoundException if problem with saving
@@ -174,12 +175,14 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   }
 
   /**
+   * Load GSon file.
+   * 
    * @param filename to load
    * @return Serializer object
-   * @throws IOException
-   * @throws JsonSyntaxException
-   * @throws JsonIOException
-   * @throws Exception
+   * @throws IOException when file can not be found
+   * @throws JsonSyntaxException on wrong syntax
+   * @throws JsonIOException on wrong syntax
+   * @throws Exception any other case
    * @see #load(File)
    */
   public Serializer<T> load(final String filename)
@@ -191,18 +194,18 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * Load wrapped object from JSON file.
    * 
-   * Calls {@link IQuimpSerialize#afterSerialize()} after load. The general steps taken on GSon
+   * <p>Calls {@link IQuimpSerialize#afterSerialize()} after load. The general steps taken on GSon
    * load are as follows:
-   * <p>
-   * <img src="doc-files/Serializer_1_UML.png"/>
+   * 
+   * <p><img src="doc-files/Serializer_1_UML.png"/>
    * </p>
    * 
-   * @param filename
+   * @param filename to load
    * @return Serialiser object
-   * @throws IOException
-   * @throws JsonSyntaxException
-   * @throws JsonIOException
-   * @throws Exception
+   * @throws IOException when file can not be found
+   * @throws JsonSyntaxException on wrong syntax
+   * @throws JsonIOException on wrong syntax
+   * @throws Exception any other case
    * @see #fromReader(Reader)
    */
   public Serializer<T> load(final File filename)
@@ -220,11 +223,11 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * Restore wrapped object from JSON string.
    * 
-   * @param json
+   * @param json string with json
    * @return Serialise object
-   * @throws JsonSyntaxException
-   * @throws JsonIOException
-   * @throws Exception
+   * @throws JsonSyntaxException on wrong syntax
+   * @throws JsonIOException on wrong syntax
+   * @throws Exception any other case
    * @see #fromReader(Reader)
    */
   public Serializer<T> fromString(final String json)
@@ -242,25 +245,27 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * Restore wrapped object from JSON string.
    * 
-   * @param reader
+   * @param reader reader that provides JSon string
    * @see #load(File)
+   * 
+   * @return New instance of loaded object packed in Serializer class. returned instance has
+   *         proper (no nulls or empty strings) fields: className, createdOn, version
+   *         (and its subfields, obj)
+   * @throws Exception from afterSerialize() method (specific to wrapped object)
    * @throws IOException when file can not be read
    * @throws JsonSyntaxException on bad file or when class has not been restored correctly
    * @throws JsonIOException This exception is raised when Gson was unable to read an input stream
    *         or write to on
-   * @throws Exception from afterSerialize() method (specific to wrapped object)
-   * @return New instance of loaded object packed in Serializer class. returned instance has
-   *         proper (no nulls or empty strings) fields: \a className, \a createdOn, \a version
-   *         (and its subfields, \a obj
    */
   public Serializer<T> fromReader(final Reader reader)
           throws JsonSyntaxException, JsonIOException, Exception {
 
     // warn user if newer config is load to older QuimP
-    if (qconfVersionToLoad > convertStringVersion(timeStamp.getVersion()))
+    if (qconfVersionToLoad > convertStringVersion(timeStamp.getVersion())) {
       LOGGER.warn("You are trying to load config file which is in newer version"
               + " than software you are using. (" + qconfVersionToLoad + " vs "
               + convertStringVersion(timeStamp.getVersion()) + ")");
+    }
 
     // set version to load (read from file)
     gsonBuilder.setVersion(qconfVersionToLoad);
@@ -270,15 +275,16 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     localref = gson.fromJson(reader, this);
     verify(localref); // verification of correctness and conversion to current format
 
-    if (doAfterSerialize)
+    if (doAfterSerialize) {
       localref.obj.afterSerialize();
+    }
     return localref;
   }
 
   /**
    * Perform basic verification of loaded file.
    * 
-   * It verifies rather on general level for fields added by Serializer itself. More detailed
+   * <p>It verifies rather on general level for fields added by Serializer itself. More detailed
    * verification related to serialized class should be performed after full restoration of
    * wrapped object.
    * 
@@ -288,8 +294,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   private void verify(Serializer<T> localref) throws JsonSyntaxException {
     // basic verification of loaded file, check whether some fields have reasonable values
     try {
-      if (localref.obj == null || localref.className.isEmpty() || localref.createdOn.isEmpty())
+      if (localref.obj == null || localref.className.isEmpty() || localref.createdOn.isEmpty()) {
         throw new JsonSyntaxException("Can not map loaded gson to class. Is it proper file?");
+      }
       convert(localref);
     } catch (NullPointerException | IllegalArgumentException | QuimpException np) {
       throw new JsonSyntaxException("Can not map loaded gson to class. Is it proper file?", np);
@@ -299,31 +306,33 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * This method is called on load and goes through registered converters executing them.
    * 
-   * Perform conversions from older version to current (newer).
+   * <p>Perform conversions from older version to current (newer).
    * 
-   * @param localref
+   * @param localref restored object
    * @throws QuimpException on problems with conversion
    * @see #registerConverter(IQconfOlderConverter)
    */
   private void convert(Serializer<T> localref) throws QuimpException {
-    if (converters.isEmpty())
+    if (converters.isEmpty()) {
       return; // no converters registered
+    }
 
     for (IQconfOlderConverter<T> converter : converters) {
       // compare version loaded from file. If read version from file is smaller than returned
       // by converter - execute conversion
-      if (converter.executeForLowerThan() > qconfVersionToLoad)
+      if (converter.executeForLowerThan() > qconfVersionToLoad) {
         converter.upgradeFromOld(localref);
+      }
     }
   }
 
   /**
    * This method register format converter on list of converters.
    * 
-   * Registered converters are called on every object deserialisation in order that they were
+   * <p>Registered converters are called on every object deserialisation in order that they were
    * registered. Converter is run when version of tool is higher than version of converter.
    * 
-   * @param converter
+   * @param converter converter
    * @see IQconfOlderConverter
    * @see #convert(Serializer)
    */
@@ -334,7 +343,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * Convert wrapped class to JSON representation together with Serializer wrapper
    * 
-   * Calls uk.ac.warwick.wsbc.quimp.IQuimpSerialize.beforeSerialize() before conversion
+   * <p>Calls uk.ac.warwick.wsbc.quimp.IQuimpSerialize.beforeSerialize() before conversion
    * 
    * @return JSON string
    * @see uk.ac.warwick.wsbc.quimp.Serializer#setPretty()
@@ -344,37 +353,38 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     gsonBuilder.setVersion(qconfVersionToSave);
     Gson gson = gsonBuilder.create();
     // fill date of creation
-    Date dNow = new Date();
+    Date dateNow = new Date();
     SimpleDateFormat df = new SimpleDateFormat("E yyyy.MM.dd 'at' HH:mm:ss a zzz");
-    createdOn = df.format(dNow);
-    if (obj != null)
+    createdOn = df.format(dateNow);
+    if (obj != null) {
       obj.beforeSerialize();
+    }
     return gson.toJson(this);
   }
 
   /**
-   * @param obj
-   * @param filename
-   * @param savePretty
-   * @throws FileNotFoundException
-   * @see #Dump(Object, String, boolean)
+   * Dump object.
+   *
+   * @param obj object to dump (must be packed in Serializer already)
+   * @param filename filename
+   * @param savePretty true if use pretty format
+   * @throws FileNotFoundException on saving problem
+   * @see #jsonDump(Object, String, boolean)
    * @deprecated It does not support GSon versioning
    */
   @Deprecated
-  static void Dump(final Object obj, final String filename, boolean savePretty)
+  static void jsonDump(final Object obj, final String filename, boolean savePretty)
           throws FileNotFoundException {
     File file = new File(filename);
-    Serializer.Dump(obj, file, savePretty);
+    Serializer.jsonDump(obj, file, savePretty);
   }
 
   /**
    * Performs pure dump of provided object without packing it into super class
    * 
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * This method does not call beforeSerialize(). It must be called explicitly before dumping
+   * <p><b>Warning</b>
    * 
+   * <p>This method does not call beforeSerialize(). It must be called explicitly before dumping.
    * Can be used for saving already packed objects
    * 
    * @param obj to dump
@@ -384,11 +394,12 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
    * @deprecated It does not support GSon versioning
    */
   @Deprecated
-  static void Dump(final Object obj, final File filename, boolean savePretty)
+  static void jsonDump(final Object obj, final File filename, boolean savePretty)
           throws FileNotFoundException {
     GsonBuilder gsonBuilder = new GsonBuilder();
-    if (savePretty)
+    if (savePretty) {
       gsonBuilder.setPrettyPrinting();
+    }
     Gson gson = gsonBuilder.create();
     if (obj != null) {
       String str = gson.toJson(obj);
@@ -412,16 +423,15 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * Read QuimP version from QCONF file.
    * 
-   * It does not deserialize JSON, just plain string reading from file.
+   * <p>It does not deserialize JSON, just plain string reading from file.
    * 
-   * @param reader
+   * @param reader reader that delivers string
    * @return Version string encoded as double. Any -SNAPSHOT suffix is removed. Return 0.0 on
    *         error.
    * @throws JsonSyntaxException on version read error
    */
   public Double getQconfVersion(Reader reader) {
     // key to look for
-    Double ret = null;
     final String versionKey = "\"version\"";
     char[] buf = new char[256];
     try {
@@ -432,12 +442,13 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     String sbuf = new String(buf);
     LOGGER.trace("Header: " + sbuf);
     int pos = sbuf.indexOf(versionKey);
-    if (pos < 0)
+    if (pos < 0) {
       throw new JsonSyntaxException("JSON file does not contain version tag");
+    }
     pos = sbuf.indexOf("\"", pos + versionKey.length());
     int pos2 = sbuf.indexOf("\"", pos + 1);
     String version = sbuf.substring(pos + 1, pos2);
-    ret = convertStringVersion(version);
+    Double ret = convertStringVersion(version);
     return ret;
   }
 
@@ -455,8 +466,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
       // remove "" and other stuff
       ret = ver.replaceAll("([ \",]|-SNAPSHOT)", "");
       int dotcount = ret.length() - ret.replace(".", "").length();
-      if (dotcount > 2)
+      if (dotcount > 2) {
         throw new JsonSyntaxException("Format of version string must follow rule major.minor.inc");
+      }
       if (dotcount == 2) {
         int seconddotpos = ret.lastIndexOf('.');
         ret = ret.substring(0, seconddotpos) + ret.substring(seconddotpos + 1);
@@ -470,29 +482,9 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
   /**
    * Register constructor for wrapped class.
    * 
-   * It may be necessary during loading JSON file if wrapped class needs some parameters to
+   * <p>It may be necessary during loading JSON file if wrapped class needs some parameters to
    * restore its state on uk.ac.warwick.wsbc.quimp.IQuimpSerialize.afterSerialize() call and those
    * parameters are passed in constructor.
-   * 
-   * Example of use:
-   * 
-   * <pre>
-   * <code>
-   * class SnakePluginListInstanceCreator implements InstanceCreator<SnakePluginList> {
-   *             private int size; private PluginFactory pf; private List<Point2d> dt; private
-   *             ViewUpdater vu;
-   *
-   *             public SnakePluginListInstanceCreator(int size, final PluginFactory pf, final
-   *             List<Point2d> dataToProcess, final ViewUpdater vu) { this.size = size; this.pf =
-   *             pf; this.dt = dataToProcess; this.vu = vu; }
-   *
-   *             Serializer<SnakePluginList> out; Serializer<SnakePluginList> s = new
-   *             Serializer<>(SnakePluginList.class);
-   *             s.registerInstanceCreator(SnakePluginList.class, new
-   *             SnakePluginListInstanceCreator(3, pluginFactory, null, null)); out =
-   *             s.fromString(json);
-   * </code>
-   * </pre>
    * 
    * @param type Type of class
    * @param typeAdapter Wrapped object builder that implements InstanceCreator interface.
@@ -511,7 +503,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
    */
   @Override
   public Type[] getActualTypeArguments() {
-    return new Type[] { t };
+    return new Type[] { type };
   }
 
   /*
