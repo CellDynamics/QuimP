@@ -228,10 +228,11 @@ public class BOA_ implements PlugIn {
     // Build plugin engine
     try {
       String path;
-      if (QuimP.PLUGIN_DIR == null)
+      if (QuimP.PLUGIN_DIR == null) {
         path = IJ.getDirectory("plugins");
-      else
+      } else {
         path = QuimP.PLUGIN_DIR;
+      }
       if (path == null) {
         IJ.log("BOA: Plugin directory not found");
         LOGGER.warn("BOA: Plugin directory not found, use provided with arg: " + arg);

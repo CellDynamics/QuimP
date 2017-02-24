@@ -3,6 +3,9 @@ package uk.ac.warwick.wsbc.quimp.utils;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
@@ -17,7 +20,6 @@ import uk.ac.warwick.wsbc.quimp.PropertyReader;
 import uk.ac.warwick.wsbc.quimp.QuimpVersion;
 import uk.ac.warwick.wsbc.quimp.Vert;
 
-// TODO: Auto-generated Javadoc
 /**
  * Collection of tools used across QuimP.
  * 
@@ -50,7 +52,7 @@ public class QuimpToolsCollection {
   /**
    * Prepare info plate for QuimP.
    * 
-   * It contains version, names, etc. By general QuimpToolsCollection class is static. These
+   * <p>It contains version, names, etc. By general QuimpToolsCollection class is static. These
    * methods can not be so they must be called:
    * 
    * <pre>
@@ -63,16 +65,16 @@ public class QuimpToolsCollection {
    */
   public static String getFormattedQuimPversion(QuimpVersion quimpBuildInfo) {
     //!>
-        String infoPlate = "---------------------------------------------------------\n"
-                + "| QuimP, by                                             |\n"
-                + "| Richard Tyson (richard.tyson@warwick.ac.uk)           |\n"
-                + "| Till Bretschneider (Till.Bretschneider@warwick.ac.uk) |\n"
-                + "| Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)     |\n"
-                + "| Web page: "
-                + new PropertyReader().readProperty("quimpconfig.properties", "webPage")
-                + "                     |\n"
-                + "---------------------------------------------------------\n";
-        //!<
+    String infoPlate = "---------------------------------------------------------\n"
+            + "| QuimP, by                                             |\n"
+            + "| Richard Tyson (richard.tyson@warwick.ac.uk)           |\n"
+            + "| Till Bretschneider (Till.Bretschneider@warwick.ac.uk) |\n"
+            + "| Piotr Baniukiewicz (P.Baniukiewicz@warwick.ac.uk)     |\n"
+            + "| Web page: "
+            + new PropertyReader().readProperty("quimpconfig.properties", "webPage")
+            + "                     |\n"
+            + "---------------------------------------------------------\n";
+    //!<
     infoPlate = infoPlate.concat("\n");
     infoPlate = infoPlate.concat("QuimP version: " + quimpBuildInfo.getVersion());
     infoPlate = infoPlate.concat("\n");
@@ -96,13 +98,15 @@ public class QuimpToolsCollection {
       String iname = new PropertyReader().readProperty("quimpconfig.properties", "internalName");
       while (resources.hasMoreElements()) {
         URL reselement = resources.nextElement();
-        if (!reselement.toString().contains("/" + iname))
+        if (!reselement.toString().contains("/" + iname)) {
           continue;
+        }
         Manifest manifest = new Manifest(reselement.openStream());
         Attributes attributes = manifest.getMainAttributes();
         try {
-          ret[1] = attributes.getValue("Built-By") + " on: "
-                  + attributes.getValue("Implementation-Build");
+          String date = attributes.getValue("Implementation-Date");
+
+          ret[1] = attributes.getValue("Built-By") + " on: " + implementationDateConverter(date);
           ret[0] = attributes.getValue("Implementation-Version");
           ret[2] = attributes.getValue("Implementation-Title");
           LOGGER.trace(Arrays.toString(ret));
@@ -120,6 +124,20 @@ public class QuimpToolsCollection {
     // prepare output
     QuimpVersion retmap = new QuimpVersion(ret[0], ret[1], ret[2]);
     return retmap;
+  }
+
+  /**
+   * Reformat date from jar (put there by Maven).
+   * 
+   * @param dateString string in format "2017-02-24T08:55:44+0000"
+   * @return String in format "yyyy-MM-dd hh:mm:ss"
+   */
+  public static String implementationDateConverter(String dateString) {
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+    TemporalAccessor accessor = timeFormatter.parse(dateString);
+    Date date = Date.from(Instant.from(accessor));
+    SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    return dt.format(date);
   }
 
   /**
@@ -185,7 +203,8 @@ public class QuimpToolsCollection {
     // find the vert with coor closest (floored) to target coordinate
 
     Vert v = o.getHead();
-    double coordA, coordB;
+    double coordA;
+    double coordB;
 
     do {
       // coordA = v.fCoord;
@@ -227,6 +246,17 @@ public class QuimpToolsCollection {
   }
 
   /**
+   * Distance to scale.
+   *
+   * @param value the value
+   * @param scale the scale
+   * @return the double
+   */
+  public static double distanceToScale(int value, double scale) {
+    return value * scale;
+  }
+
+  /**
    * Area to scale.
    *
    * @param value the value
@@ -251,14 +281,15 @@ public class QuimpToolsCollection {
   }
 
   /**
-   * Distance to scale.
+   * Speed to scale.
    *
    * @param value the value
    * @param scale the scale
+   * @param frameInterval the frame interval
    * @return the double
    */
-  public static double distanceToScale(int value, double scale) {
-    return value * scale;
+  public static double speedToScale(int value, double scale, double frameInterval) {
+    return (value * scale) / frameInterval;
   }
 
   /**
@@ -270,18 +301,6 @@ public class QuimpToolsCollection {
    */
   public static double distanceFromScale(double value, double scale) {
     return value / scale;
-  }
-
-  /**
-   * Speed to scale.
-   *
-   * @param value the value
-   * @param scale the scale
-   * @param frameInterval the frame interval
-   * @return the double
-   */
-  public static double speedToScale(int value, double scale, double frameInterval) {
-    return (value * scale) / frameInterval;
   }
 
   /**
@@ -307,10 +326,12 @@ public class QuimpToolsCollection {
       return migLimits;
     }
     // Set limits to equal positive and negative
-    if (migLimits[1] < 0)
+    if (migLimits[1] < 0) {
       migLimits[1] = -migLimits[0];
-    if (migLimits[0] > 0)
+    }
+    if (migLimits[0] > 0) {
       migLimits[0] = -migLimits[1];
+    }
 
     // Make min and max equal for mig and conv
     if (migLimits[0] < -migLimits[1]) {

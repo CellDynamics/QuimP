@@ -57,7 +57,6 @@ import uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.quimp.registration.Registration;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Create QuimP bar with icons to QuimP plugins.
  * 
@@ -73,13 +72,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
   /**
    * This field is used for sharing information between bar and other plugins.
    * 
-   * <<<<<<< HEAD
    * <p>It is read by {@link uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter} which is
-   * used
-   * =======
-   * It is read by {@link uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter} which is used
-   * >>>>>>> feature/task_220-GSon-versioning
-   * by {@link uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader} for serving
+   * used by {@link uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader} for serving
    * {@link uk.ac.warwick.wsbc.quimp.QParams} object for client.
    */
   public static boolean newFileFormat = true;
@@ -170,6 +164,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
    * 
    * @see ij.plugin.PlugIn#run(java.lang.String)
    */
+  @Override
   public void run(String s) {
     String title;
     QuimpVersion quimpInfo = QuimP.TOOL_VERSION; // get jar title
@@ -255,7 +250,8 @@ public class QuimP_Bar implements PlugIn, ActionListener {
   /**
    * Build QuimP panel and run macros.
    * 
-   * Macros are defined in plugins.conf file, where the name of the macro is related to class name
+   * <p>Macros are defined in plugins.conf file, where the name of the macro is related to class
+   * name
    * to run.
    */
   private void buildPanel() {
@@ -263,8 +259,6 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     toolBarUpper = new JToolBar(); // icons below it
     toolBarTitle2 = new JTextPane(); // second title bar
     toolBarBottom = new JToolBar(); // icons below it
-
-    GridBagConstraints c = new GridBagConstraints();
 
     // define atributes for title bars
     SimpleAttributeSet titlebaratr = new SimpleAttributeSet();
@@ -279,18 +273,19 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
     // second row - buttons and quimp icons
     JPanel panelButtons = new JPanel();
-    GridBagConstraints cons = new GridBagConstraints();
     panelButtons.setLayout(new GridBagLayout());
     JPanel firstRow = new JPanel();
     firstRow.setLayout(new FlowLayout(FlowLayout.LEADING));
 
+    GridBagConstraints constrains = new GridBagConstraints();
     button = makeNavigationButton("x.jpg", "open(\"\")", "Open a file", "OPEN IMAGE");
-    firstRow.add(button, c);
+    firstRow.add(button, constrains);
 
     button = makeNavigationButton("x.jpg", "run(\"ROI Manager...\");", "Open the ROI manager",
             "ROI");
     firstRow.add(button);
 
+    GridBagConstraints cons = new GridBagConstraints();
     cons.gridx = 0;
     cons.gridy = 0;
     cons.fill = GridBagConstraints.HORIZONTAL;
@@ -304,10 +299,11 @@ public class QuimP_Bar implements PlugIn, ActionListener {
 
       @Override
       public void itemStateChanged(ItemEvent e) {
-        if (e.getStateChange() == ItemEvent.SELECTED)
+        if (e.getStateChange() == ItemEvent.SELECTED) {
           QuimP_Bar.newFileFormat = true;
-        else
+        } else {
           QuimP_Bar.newFileFormat = false;
+        }
       }
     });
 
@@ -359,20 +355,20 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     toolBarUpper.setFloatable(false);
     toolBarBottom.setFloatable(false);
     // build window
-    c.gridx = 0;
-    c.gridy = 0;
-    c.fill = GridBagConstraints.HORIZONTAL;
-    frame.getContentPane().add(toolBarTitle1, c);
-    c.gridx = 0;
-    c.gridy = 1;
-    frame.getContentPane().add(toolBarUpper, c);
-    c.gridx = 0;
-    c.gridy = 2;
-    c.fill = GridBagConstraints.HORIZONTAL;
-    frame.getContentPane().add(toolBarTitle2, c);
-    c.gridx = 0;
-    c.gridy = 3;
-    frame.getContentPane().add(toolBarBottom, c);
+    constrains.gridx = 0;
+    constrains.gridy = 0;
+    constrains.fill = GridBagConstraints.HORIZONTAL;
+    frame.getContentPane().add(toolBarTitle1, constrains);
+    constrains.gridx = 0;
+    constrains.gridy = 1;
+    frame.getContentPane().add(toolBarUpper, constrains);
+    constrains.gridx = 0;
+    constrains.gridy = 2;
+    constrains.fill = GridBagConstraints.HORIZONTAL;
+    frame.getContentPane().add(toolBarTitle2, constrains);
+    constrains.gridx = 0;
+    constrains.gridy = 3;
+    frame.getContentPane().add(toolBarBottom, constrains);
   }
 
   /**
@@ -388,7 +384,6 @@ public class QuimP_Bar implements PlugIn, ActionListener {
           String altText) {
 
     String imgLocation = "icons/" + imageName;
-    URL imageURL = QuimP_Bar.class.getResource(imgLocation);
     JButton newbutton = new JButton();
     newbutton.setActionCommand(actionCommand);
     // newbutton.setMargin(new Insets(2, 2, 2, 2));
@@ -396,6 +391,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     newbutton.addActionListener(this);
     newbutton.setFocusable(true);
     newbutton.addKeyListener(IJ.getInstance());
+    URL imageURL = QuimP_Bar.class.getResource(imgLocation);
     if (imageURL != null) {
       newbutton.setIcon(new ImageIcon(imageURL, altText));
       newbutton.setToolTipText(toolTipText);
@@ -411,6 +407,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
    * 
    * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
    */
+  @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == menuVersion) { // menu version
       String quimpInfo = new QuimpToolsCollection().getQuimPversion(); // prepare info plate
@@ -464,8 +461,9 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         LOGGER.error("Can not find license file in jar: " + e1.getMessage());
       } finally {
         try {
-          if (in != null)
+          if (in != null) {
             in.close();
+          }
         } catch (IOException e1) {
           e1.printStackTrace();
         }
@@ -497,9 +495,9 @@ public class QuimP_Bar implements PlugIn, ActionListener {
       }
       try {
         // load config file but check if it is new format or old
-        FormatConverter fC = new FormatConverter(new File(od.getDirectory(), od.getFile()));
-        fC.showConversionCapabilities(frame);
-        fC.doConversion();
+        FormatConverter formatConv = new FormatConverter(new File(od.getDirectory(), od.getFile()));
+        formatConv.showConversionCapabilities(frame);
+        formatConv.doConversion();
       } catch (QuimpException qe) {
         qe.setMessageSinkType(MessageSinkTypes.GUI);
         qe.handleException(frame, "Error during conversion:");
