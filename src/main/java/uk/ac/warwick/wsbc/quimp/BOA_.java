@@ -103,7 +103,7 @@ import uk.ac.warwick.wsbc.quimp.utils.graphics.GraphicsElements;
 /**
  * Main class implementing BOA plugin.
  * 
- * Refreshing window scheme (depending on the use case, some parts can be refreshed twice. For
+ * <p>Refreshing window scheme (depending on the use case, some parts can be refreshed twice. For
  * example, loading QCONF causes that {@link CustomStackWindow#updateWindowState()} is called two
  * times. <br>
  * <img src="doc-files/BOA_1_UML.png"/><br>
@@ -161,16 +161,14 @@ public class BOA_ implements PlugIn {
   /**
    * Hold current BOA object and provide access to only selected methods from plugin.
    * 
-   * Reference to this field is passed to plugins and give them possibility to call selected
+   * <p>Reference to this field is passed to plugins and give them possibility to call selected
    * methods from BOA class
-   * 
-   * TODO Should not be static rather
    */
   public static ViewUpdater viewUpdater;
   /**
    * Keep data from getQuimPBuildInfo().
    * 
-   * These information are used in About dialog, window title bar, logging, etc. Static because
+   * <p>These information are used in About dialog, window title bar, logging, etc. Static because
    * window related staff is in another classes.
    */
   public static QuimpVersion quimpInfo;
@@ -183,15 +181,15 @@ public class BOA_ implements PlugIn {
   /**
    * Configuration object, available from all modules.
    * 
-   * Must be initialised here <b>AND</b> in constructor (to reset settings on next BOA call
+   * <p>Must be initialised here <b>AND</b> in constructor (to reset settings on next BOA call
    * without quitting Fiji) Keep data that will be serialized.
    */
-  static public BOAState qState; // current state of BOA module
+  public static BOAState qState; // current state of BOA module
 
   /**
    * Main constructor.
    * 
-   * All static resources should be re-initialized here, otherwise they persist in memory between
+   * <p>All static resources should be re-initialized here, otherwise they persist in memory between
    * subsequent BOA calls from Fiji.
    */
   public BOA_() {
@@ -359,16 +357,12 @@ public class BOA_ implements PlugIn {
   }
 
   /**
-   * Display about information in BOA window.
-   * 
-   * Called from menu bar. Reads also information from all found plugins.
+   * Display about information in BOA window. Called from menu bar. Reads also information from all
+   * found plugins.
    */
   void about() {
     AboutDialog ad = new AboutDialog(window); // create about dialog with parent 'window'
     ad.appendLine(QuimpToolsCollection.getFormattedQuimPversion(quimpInfo)); // display template
-                                                                             // filled by
-    // quimpInfo
-    // get list of found plugins
     ad.appendLine("List of found plugins:");
     ad.appendDistance(); // type ----
     Map<String, PluginProperties> mp = pluginFactory.getRegisterdPlugins();
@@ -381,13 +375,13 @@ public class BOA_ implements PlugIn {
       // about is not stored in PluginProperties class due to optimization of memory
       ad.appendLine("   About (returned by plugin):");
       IQuimpCorePlugin tmpinst = pluginFactory.getInstance(entry.getKey());
-      if (tmpinst != null) // can be null on problem with instance
-      {
+      if (tmpinst != null) {// can be null on problem with instance
         String about = tmpinst.about(); // may return null
-        if (about != null)
+        if (about != null) {
           ad.appendLine(about);
-        else
+        } else {
           ad.appendLine("Plugin does not provide about note");
+        }
       }
       ad.appendDistance();
     }
@@ -395,15 +389,16 @@ public class BOA_ implements PlugIn {
   }
 
   /**
-   * Append string to log window in BOA plugin
+   * Append string to log window in BOA plugin.
    * 
    * @param s String to display in BOA window
    */
   static void log(final String s) {
-    if (logArea == null)
+    if (logArea == null) {
       LOGGER.debug("[" + logCount++ + "] " + s + '\n');
-    else
+    } else {
       logArea.append("[" + logCount++ + "] " + s + '\n');
+    }
   }
 
   /**
@@ -421,17 +416,18 @@ public class BOA_ implements PlugIn {
     try {
       for (int s = 0; s < qState.nest.size(); s++) { // for each snake
         sH = qState.nest.getHandler(s);
-        if (qState.boap.frame < sH.getStartFrame()) // if snake does not exist on current
-                                                    // frame
+        if (qState.boap.frame < sH.getStartFrame()) {
           continue;
-        // but if one is on frame f+n and strtFrame is e.g. 1 it may happen that there is
+        }
+        // but if one is on frame iplStack+n and strtFrame is e.g. 1 it may happen that there is
         // no continuity of this snake between frames. In this case getBackupSnake
-        // returns null. In general QuimP assumes that if there is a cell on frame f, it
+        // returns null. In general QuimP assumes that if there is a cell on frame iplStack, it
         // will exist on all consecutive frames.
         Snake snake = sH.getBackupSnake(qState.boap.frame); // if exist get its backup copy
         // (segm)
-        if (snake == null || !snake.alive) // if not alive
+        if (snake == null || !snake.alive) {
           continue;
+        }
         try {
           Snake out = iterateOverSnakePlugins(snake); // apply all plugins to snake
           sH.storeThisSnake(out, qState.boap.frame); // set processed snake as final
@@ -457,10 +453,10 @@ public class BOA_ implements PlugIn {
    * Override action performed on window closing. Clear BOA._running static variable and prevent
    * to notify user that QuimP is running when it has been closed and called again.
    * 
-   * When user closes window by system button QuimP does not ask for saving current work. This is
+   * <p>When user closes window by system button QuimP does not ask for saving current work. This is
    * because by default QuimP window is managed by ImageJ and it probably only hides it on closing
    * 
-   * This class could be located directly in CustomStackWindow which is included in BOA_. But it
+   * <p>This class could be located directly in CustomStackWindow which is included in BOA_. But it
    * needs to have access to BOA field <tt>running</tt>.
    * 
    * @author p.baniukiewicz
@@ -479,8 +475,9 @@ public class BOA_ implements PlugIn {
       LOGGER.trace("CLOSED");
       BOA_.running = false; // set marker
       qState.snakePluginList.clear(); // close all opened plugin windows
-      if (qState.binarySegmentationPlugin != null)
+      if (qState.binarySegmentationPlugin != null) {
         qState.binarySegmentationPlugin.showUi(false);
+      }
       canvas = null; // clear window data
       imageGroup = null;
       window = null;
@@ -516,7 +513,7 @@ public class BOA_ implements PlugIn {
   }
 
   /**
-   * Supports mouse actions on image at QuimP window according to selected option
+   * Supports mouse actions on image at QuimP window according to selected option.
    * 
    * @author rtyson
    *
@@ -525,7 +522,7 @@ public class BOA_ implements PlugIn {
   class CustomCanvas extends ImageCanvas {
 
     /**
-     * Empty constructor
+     * Empty constructor.
      * 
      * @param imp Reference to image loaded by BOA
      */
@@ -534,7 +531,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * @deprecated Actually not used in this version of QuimP
+     * @deprecated Actually not used in this version of QuimP.
      */
     @Override
     public void paint(final Graphics g) {
@@ -580,7 +577,7 @@ public class BOA_ implements PlugIn {
   /**
    * Extends standard ImageJ StackWindow adding own GUI elements.
    * 
-   * This class stands for definition of main BOA plugin GUI window. Current state of BOA plugin
+   * <p>This class stands for definition of main BOA plugin GUI window. Current state of BOA plugin
    * is stored at {@link uk.ac.warwick.wsbc.quimp.BOAState.BOAp} class.
    * 
    * @author rtyson
@@ -593,48 +590,76 @@ public class BOA_ implements PlugIn {
     /**
      * The Constant DEFAULT_SPINNER_SIZE.
      */
-    final static int DEFAULT_SPINNER_SIZE = 5;
+    static final int DEFAULT_SPINNER_SIZE = 5;
 
     /**
-     * The Constant SNAKE_PLUGIN_NUM.
+     * Number of currently supported plugins.
      */
-    final static int SNAKE_PLUGIN_NUM = 3; /*!< number of currently supported plugins  */
-    private Button bFinish, bSeg, bLoad, bEdit, bDefault, bScale;
-    private Button bAdd, bDel, bDelSeg, bQuit;
-    private Checkbox cPrevSnake, cExpSnake, cPath;
-    private Choice sZoom;
+    static final int SNAKE_PLUGIN_NUM = 3;
+    private Button bnFinish;
+    private Button bnSeg;
+    private Button bnLoad;
+    private Button bnEdit;
+    private Button bnDefault;
+    private Button bnScale;
+
+    private Button bnAdd;
+    private Button bnDel;
+    private Button bnDelSeg;
+    private Button bnQuit;
+
+    private Checkbox cbPrevSnake;
+    private Checkbox cbExpSnake;
+    private Checkbox cbPath;
+    private Choice chZoom;
 
     /**
      * The log panel.
      */
     JScrollPane logPanel;
 
-    /**
-     * The frame label.
-     */
-    Label fpsLabel, pixelLabel, frameLabel;
+    private Label fpsLabel;
+    private Label pixelLabel;
+    private Label frameLabel;
 
-    /**
-     * The ds final shrink.
-     */
-    JSpinner dsNodeRes, dsVel_crit, dsF_image, dsF_central, dsF_contract, dsFinalShrink;
+    private JSpinner dsNodeRes;
+    private JSpinner dsVelCrit;
+    private JSpinner dsFImage;
+    private JSpinner dsFCentral;
+    private JSpinner dsFContract;
+    private JSpinner dsFinalShrink;
 
-    /**
-     * The is sample norm.
-     */
-    JSpinner isMaxIterations, isBlowup, isSample_tan, isSample_norm;
-    private Choice sFirstPluginName, sSecondPluginName, sThirdPluginName;
-    private Button bFirstPluginGUI, bSecondPluginGUI, bThirdPluginGUI;
-    private Checkbox cFirstPluginActiv, cSecondPluginActiv, cThirdPluginActiv;
+    private JSpinner isMaxIterations;
+    private JSpinner isBlowup;
+    private JSpinner isSampletan;
+    private JSpinner isSamplenorm;
+    private Choice chFirstPluginName;
+    private Choice chSecondPluginName;
+    private Choice chThirdPluginName;
+    private Button bnFirstPluginGUI;
+    private Button bnSecondPluginGUI;
+    private Button bnThirdPluginGUI;
+    private Checkbox cbFirstPluginActiv;
+    private Checkbox cbSecondPluginActiv;
+    private Checkbox cbThirdPluginActiv;
 
     private MenuBar quimpMenuBar;
-    private MenuItem menuAbout, menuOpenHelp, menuSaveConfig, menuLoadConfig, menuShowHistory,
-            menuLoad, menuDeletePlugin, menuApplyPlugin, menuSegmentationRun, menuSegmentationReset; // items
-    private CheckboxMenuItem cbMenuPlotOriginalSnakes, cbMenuPlotHead;
+    private MenuItem menuAbout;
+    private MenuItem menuOpenHelp;
+    private MenuItem menuSaveConfig;
+    private MenuItem menuLoadConfig;
+    private MenuItem menuShowHistory;
+    private MenuItem menuLoad;
+    private MenuItem menuDeletePlugin;
+    private MenuItem menuApplyPlugin;
+    private MenuItem menuSegmentationRun;
+    private MenuItem menuSegmentationReset; // items
+    private CheckboxMenuItem cbMenuPlotOriginalSnakes;
+    private CheckboxMenuItem cbMenuPlotHead;
     private Color defaultColor;
 
     /**
-     * Default constructor
+     * Default constructor.
      * 
      * @param imp Image loaded to plugin
      * @param ic Image canvas
@@ -647,7 +672,7 @@ public class BOA_ implements PlugIn {
     /**
      * Build user interface.
      * 
-     * This method is called as first. The interface is built in three steps: Left side of
+     * <p>This method is called as first. The interface is built in three steps: Left side of
      * window (configuration zone) and right side of main window (logs and other info and
      * buttons) and finally upper menubar
      * 
@@ -683,7 +708,7 @@ public class BOA_ implements PlugIn {
     /**
      * Build window menu.
      * 
-     * Menu is local for this window of QuimP and it is stored in \c quimpMenuBar variable. On
+     * <p>Menu is local for this window of QuimP and it is stored in \c quimpMenuBar variable. On
      * every time when QuimP is active, this menu is restored in
      * uk.ac.warwick.wsbc.quimp.BOA_.CustomWindowAdapter.windowActivated(WindowEvent) method
      * This is due to overwriting menu by IJ on Mac (all menus are on top screen bar)
@@ -696,7 +721,6 @@ public class BOA_ implements PlugIn {
       Menu menuConfig; // menu Config in menubar
       Menu menuFile; // menu File in menubar
       Menu menuPlugin; // menu Plugin in menubar
-      Menu menuSegmentation; // menu Segmentation in menubar
 
       menuBar = new MenuBar();
 
@@ -704,6 +728,7 @@ public class BOA_ implements PlugIn {
       menuHelp = new Menu("Help");
       menuFile = new Menu("File");
       menuPlugin = new Menu("Plugin");
+      Menu menuSegmentation; // menu Segmentation in menubar
       menuSegmentation = new Menu("Segmentation");
 
       // build main line
@@ -763,18 +788,15 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Build right side of main BOA window
+     * Build right side of main BOA window.
      * 
      * @return Reference to panel
      */
     final Panel buildSetupPanel() {
-      Panel setupPanel = new Panel(); // Main panel comprised from North, Centre and South
-                                      // subpanels
-      Panel northPanel = new Panel(); // Contains static info and four buttons (Scale,
-                                      // Truncate, Add, Delete)
+      Panel setupPanel = new Panel(); // Main panel comprised from North, Centre and South subpanels
+      Panel northPanel = new Panel(); // Contains static info and four buttons (Scale, Truncate, etc
       Panel southPanel = new Panel(); // Quit and Finish
       Panel centerPanel = new Panel();
-      Panel pluginPanel = new Panel();
 
       setupPanel.setLayout(new BorderLayout());
       northPanel.setLayout(new GridLayout(3, 2));
@@ -787,6 +809,7 @@ public class BOA_ implements PlugIn {
       c.weightx = 0.5;
       c.fill = GridBagConstraints.HORIZONTAL;
       c.anchor = GridBagConstraints.LINE_START;
+      Panel pluginPanel = new Panel();
       pluginPanel.setLayout(gridbag);
 
       fpsLabel = new Label("F Interval: " + IJ.d2s(qState.boap.getImageFrameInterval(), 3) + " s");
@@ -794,10 +817,10 @@ public class BOA_ implements PlugIn {
       pixelLabel = new Label("Scale: " + IJ.d2s(qState.boap.getImageScale(), 6) + " \u00B5m");
       northPanel.add(pixelLabel);
 
-      bScale = addButton("Set Scale", northPanel);
-      bDelSeg = addButton("Truncate Seg", northPanel);
-      bAdd = addButton("Add cell", northPanel);
-      bDel = addButton("Delete cell", northPanel);
+      bnScale = addButton("Set Scale", northPanel);
+      bnDelSeg = addButton("Truncate Seg", northPanel);
+      bnAdd = addButton("Add cell", northPanel);
+      bnDel = addButton("Delete cell", northPanel);
 
       // build subpanel with plugins
       // get plugins names collected by PluginFactory
@@ -812,50 +835,50 @@ public class BOA_ implements PlugIn {
       // not found getInstance return null which is stored in SnakePluginList and checked
       // during run
       // default values for plugin activity are stored in SnakePluginList
-      sFirstPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+      chFirstPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
       c.gridx = 0;
       c.gridy = 0;
-      pluginPanel.add(sFirstPluginName, c);
+      pluginPanel.add(chFirstPluginName, c);
 
-      bFirstPluginGUI = addButton("GUI", pluginPanel);
+      bnFirstPluginGUI = addButton("GUI", pluginPanel);
       c.gridx = 1;
       c.gridy = 0;
-      pluginPanel.add(bFirstPluginGUI, c);
+      pluginPanel.add(bnFirstPluginGUI, c);
 
-      cFirstPluginActiv = addCheckbox("A", pluginPanel, qState.snakePluginList.isActive(0));
+      cbFirstPluginActiv = addCheckbox("A", pluginPanel, qState.snakePluginList.isActive(0));
       c.gridx = 2;
       c.gridy = 0;
-      pluginPanel.add(cFirstPluginActiv, c);
+      pluginPanel.add(cbFirstPluginActiv, c);
 
-      sSecondPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+      chSecondPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
       c.gridx = 0;
       c.gridy = 1;
-      pluginPanel.add(sSecondPluginName, c);
+      pluginPanel.add(chSecondPluginName, c);
 
-      bSecondPluginGUI = addButton("GUI", pluginPanel);
+      bnSecondPluginGUI = addButton("GUI", pluginPanel);
       c.gridx = 1;
       c.gridy = 1;
-      pluginPanel.add(bSecondPluginGUI, c);
+      pluginPanel.add(bnSecondPluginGUI, c);
 
-      cSecondPluginActiv = addCheckbox("A", pluginPanel, qState.snakePluginList.isActive(1));
+      cbSecondPluginActiv = addCheckbox("A", pluginPanel, qState.snakePluginList.isActive(1));
       c.gridx = 2;
       c.gridy = 1;
-      pluginPanel.add(cSecondPluginActiv, c);
+      pluginPanel.add(cbSecondPluginActiv, c);
 
-      sThirdPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
+      chThirdPluginName = addComboBox(pluginList.toArray(new String[0]), pluginPanel);
       c.gridx = 0;
       c.gridy = 2;
-      pluginPanel.add(sThirdPluginName, c);
+      pluginPanel.add(chThirdPluginName, c);
 
-      bThirdPluginGUI = addButton("GUI", pluginPanel);
+      bnThirdPluginGUI = addButton("GUI", pluginPanel);
       c.gridx = 1;
       c.gridy = 2;
-      pluginPanel.add(bThirdPluginGUI, c);
+      pluginPanel.add(bnThirdPluginGUI, c);
 
-      cThirdPluginActiv = addCheckbox("A", pluginPanel, qState.snakePluginList.isActive(2));
+      cbThirdPluginActiv = addCheckbox("A", pluginPanel, qState.snakePluginList.isActive(2));
       c.gridx = 2;
       c.gridy = 2;
-      pluginPanel.add(cThirdPluginActiv, c);
+      pluginPanel.add(cbThirdPluginActiv, c);
 
       // --------build log---------
       Panel tp = new Panel(); // panel with text area
@@ -870,8 +893,8 @@ public class BOA_ implements PlugIn {
       // --------build south--------------
       southPanel.add(new Label("")); // blankes
       southPanel.add(new Label("")); // blankes
-      bQuit = addButton("Quit", southPanel);
-      bFinish = addButton("Save & Quit", southPanel);
+      bnQuit = addButton("Quit", southPanel);
+      bnFinish = addButton("Save & Quit", southPanel);
       // ------------------------------
 
       centerPanel.add(new Label("Snake Plugins:"));
@@ -882,10 +905,11 @@ public class BOA_ implements PlugIn {
       setupPanel.add(centerPanel, BorderLayout.CENTER);
       setupPanel.add(southPanel, BorderLayout.PAGE_END);
 
-      if (pluginList.isEmpty())
+      if (pluginList.isEmpty()) {
         BOA_.log("No plugins found");
-      else
+      } else {
         BOA_.log("Found " + (pluginList.size() - 1) + " plugins (see About)");
+      }
 
       return setupPanel;
     }
@@ -907,8 +931,8 @@ public class BOA_ implements PlugIn {
       bottomPanel.setLayout(new GridLayout(1, 2));
 
       // --------build topPanel--------
-      bLoad = addButton("Load", topPanel);
-      bDefault = addButton("Default", topPanel);
+      bnLoad = addButton("Load", topPanel);
+      bnDefault = addButton("Default", topPanel);
       // -----------------------
 
       // --------build paramPanel--------------
@@ -918,29 +942,29 @@ public class BOA_ implements PlugIn {
               100, 10000, 100, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       isBlowup = addIntSpinner("Blowup:", paramPanel, qState.segParam.blowup, 0, 200, 2,
               CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsVel_crit = addDoubleSpinner("Crit velocity:", paramPanel, qState.segParam.vel_crit, 0.0001,
+      dsVelCrit = addDoubleSpinner("Crit velocity:", paramPanel, qState.segParam.vel_crit, 0.0001,
               2., 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsF_image = addDoubleSpinner("Image F:", paramPanel, qState.segParam.f_image, 0.01, 10., 0.01,
+      dsFImage = addDoubleSpinner("Image F:", paramPanel, qState.segParam.f_image, 0.01, 10., 0.01,
               CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsF_central = addDoubleSpinner("Central F:", paramPanel, qState.segParam.f_central, 0.0005, 1,
+      dsFCentral = addDoubleSpinner("Central F:", paramPanel, qState.segParam.f_central, 0.0005, 1,
               0.002, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsF_contract = addDoubleSpinner("Contract F:", paramPanel, qState.segParam.f_contract, 0.001,
+      dsFContract = addDoubleSpinner("Contract F:", paramPanel, qState.segParam.f_contract, 0.001,
               1, 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       dsFinalShrink = addDoubleSpinner("Final Shrink:", paramPanel, qState.segParam.finalShrink,
               -100, 100, 0.5, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      isSample_tan = addIntSpinner("Sample tan:", paramPanel, qState.segParam.sample_tan, 1, 30, 1,
+      isSampletan = addIntSpinner("Sample tan:", paramPanel, qState.segParam.sample_tan, 1, 30, 1,
               CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      isSample_norm = addIntSpinner("Sample norm:", paramPanel, qState.segParam.sample_norm, 1, 60,
+      isSamplenorm = addIntSpinner("Sample norm:", paramPanel, qState.segParam.sample_norm, 1, 60,
               1, CustomStackWindow.DEFAULT_SPINNER_SIZE);
 
-      cPrevSnake =
+      cbPrevSnake =
               addCheckbox("Use Previouse Snake", paramPanel, qState.segParam.use_previous_snake);
-      cExpSnake = addCheckbox("Expanding Snake", paramPanel, qState.segParam.expandSnake);
+      cbExpSnake = addCheckbox("Expanding Snake", paramPanel, qState.segParam.expandSnake);
 
       Panel segEditPanel = new Panel();
       segEditPanel.setLayout(new GridLayout(1, 2));
-      bSeg = addButton("SEGMENT", segEditPanel);
-      bEdit = addButton("Edit", segEditPanel);
+      bnSeg = addButton("SEGMENT", segEditPanel);
+      bnEdit = addButton("Edit", segEditPanel);
       paramPanel.add(segEditPanel);
 
       // mini panel comprised from slice selector and frame number (if not single image)
@@ -959,10 +983,10 @@ public class BOA_ implements PlugIn {
       // ----------------------------------
 
       // -----build bottom panel---------
-      cPath = addCheckbox("Show paths", bottomPanel, qState.segParam.showPaths);
-      sZoom = addComboBox(new String[] { fullZoom }, bottomPanel);
+      cbPath = addCheckbox("Show paths", bottomPanel, qState.segParam.showPaths);
+      chZoom = addComboBox(new String[] { fullZoom }, bottomPanel);
       // add mouse listener to create menu dynamically on click
-      sZoom.addMouseListener(new MouseAdapter() {
+      chZoom.addMouseListener(new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent e) {
           LOGGER.trace("EVENT:mousePressed");
@@ -982,23 +1006,24 @@ public class BOA_ implements PlugIn {
     /**
      * Rebuild Zoom choice UI according to cells on current frame {@link BOAp#frame}.
      * 
-     * According to #193 if there is no cell left it creates empty entry and set it selected to
+     * <p>According to #193 if there is no cell left it creates empty entry and set it selected to
      * enforce user to set explicitly default unzoom value and fire itemStateChanged.
      */
     private void fillZoomChoice() {
-      String prev = sZoom.getSelectedItem();
+      String prev = chZoom.getSelectedItem();
       LOGGER.trace(prev);
-      sZoom.removeAll();
-      sZoom.add(fullZoom); // default word for full zoom (100% of view)
+      chZoom.removeAll();
+      chZoom.add(fullZoom); // default word for full zoom (100% of view)
       List<Integer> frames = qState.nest.getSnakesforFrame(qState.boap.frame);
-      for (Integer i : frames)
-        sZoom.add(i.toString());
-      if (sZoom.getItemCount() == 1) { // dirty trick to enforce triggering itemStateChanged
-                                       // if only default entry left (#193)
-        sZoom.add("");
-        sZoom.select("");
-      } else
-        sZoom.select(prev); // select last selected (if exists)
+      for (Integer i : frames) {
+        chZoom.add(i.toString());
+      }
+      if (chZoom.getItemCount() == 1) { // dirty trick to enforce triggering itemStateChanged (#193)
+        chZoom.add("");
+        chZoom.select("");
+      } else {
+        chZoom.select(prev); // select last selected (if exists)
+      }
     }
 
     /**
@@ -1016,7 +1041,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Helper method for creating checkbox in UI
+     * Helper method for creating checkbox in UI.
      * 
      * @param label Label of checkbox
      * @param p Reference to the panel where checkbox is located
@@ -1039,8 +1064,9 @@ public class BOA_ implements PlugIn {
      */
     private Choice addComboBox(final String[] s, final Container mp) {
       Choice c = new Choice();
-      for (String st : s)
+      for (String st : s) {
         c.add(st);
+      }
       c.select(0);
       c.addItemListener(this);
       mp.add(c);
@@ -1048,7 +1074,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Helper method for creating spinner in UI with real values
+     * Helper method for creating spinner in UI with real values.
      * 
      * @param s Label of spinner (added on its left side)
      * @param mp Reference of panel where spinner is located
@@ -1076,7 +1102,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Helper method for creating spinner in UI with integer values
+     * Helper method for creating spinner in UI with integer values.
      * 
      * @param s Label of spinner (added on its left side)
      * @param mp Reference of panel where spinner is located
@@ -1121,18 +1147,18 @@ public class BOA_ implements PlugIn {
      * @see BOAp
      */
     private void updateSpinnerValues() {
-      qState.boap.supressStateChangeBOArun = true; // block rerun of runBoa() that is called
-                                                   // on Spinner event
+      // block rerun of runBoa() that is called on Spinner event
+      qState.boap.supressStateChangeBOArun = true;
       dsNodeRes.setValue(qState.segParam.getNodeRes());
-      dsVel_crit.setValue(qState.segParam.vel_crit);
-      dsF_image.setValue(qState.segParam.f_image);
-      dsF_central.setValue(qState.segParam.f_central);
-      dsF_contract.setValue(qState.segParam.f_contract);
+      dsVelCrit.setValue(qState.segParam.vel_crit);
+      dsFImage.setValue(qState.segParam.f_image);
+      dsFCentral.setValue(qState.segParam.f_central);
+      dsFContract.setValue(qState.segParam.f_contract);
       dsFinalShrink.setValue(qState.segParam.finalShrink);
       isMaxIterations.setValue(qState.segParam.max_iterations);
       isBlowup.setValue(qState.segParam.blowup);
-      isSample_tan.setValue(qState.segParam.sample_tan);
-      isSample_norm.setValue(qState.segParam.sample_norm);
+      isSampletan.setValue(qState.segParam.sample_tan);
+      isSamplenorm.setValue(qState.segParam.sample_norm);
       qState.boap.supressStateChangeBOArun = false;
     }
 
@@ -1144,17 +1170,17 @@ public class BOA_ implements PlugIn {
      */
     private void updateCheckBoxes() {
       // first plugin activity
-      cFirstPluginActiv.setState(qState.snakePluginList.isActive(0));
+      cbFirstPluginActiv.setState(qState.snakePluginList.isActive(0));
       // second plugin activity
-      cSecondPluginActiv.setState(qState.snakePluginList.isActive(1));
+      cbSecondPluginActiv.setState(qState.snakePluginList.isActive(1));
       // third plugin activity
-      cThirdPluginActiv.setState(qState.snakePluginList.isActive(2));
+      cbThirdPluginActiv.setState(qState.snakePluginList.isActive(2));
     }
 
     /**
      * Update Choices.
      * 
-     * This method is called from CustomStackWindow.itemStateChanged(ItemEvent) to update colors
+     * <p>This method is called from CustomStackWindow.itemStateChanged(ItemEvent) to update colors
      * of Choices.
      * 
      * @see uk.ac.warwick.wsbc.quimp.SnakePluginList
@@ -1165,94 +1191,91 @@ public class BOA_ implements PlugIn {
       Color bad = new Color(255, 153, 153);
       // first slot snake plugin
       if (qState.snakePluginList.getName(0).isEmpty()) {
-        sFirstPluginName.select(NONE);
-        sFirstPluginName.setBackground(defaultColor);
+        chFirstPluginName.select(NONE);
+        chFirstPluginName.setBackground(defaultColor);
       } else {
-        sFirstPluginName.select(qState.snakePluginList.getName(0)); // try to select name
-                                                                    // from pluginList in
-                                                                    // choice
-        if (sFirstPluginName.getSelectedItem().equals(NONE)) {// tried selecting but still
-                                                              // on none - it means that
-                                                              // plugin name from
-                                                              // snkePluginList is not on
-                                                              // choice list. Tis may happen
-                                                              // when choice is propagated
-                                                              // from directory but
-                                                              // snakePluginList from
-                                                              // external QCONF
-          sFirstPluginName.add(qState.snakePluginList.getName(0)); // add to list
-          sFirstPluginName.setBackground(bad); // set as bad
-        } else if (qState.snakePluginList.getInstance(0) == null) // WARN does not check if
-                                                                  // instance(0) is the
-                                                                  // instance of getName(0)
-          sFirstPluginName.setBackground(bad);
-        else
-          sFirstPluginName.setBackground(ok);
+        // try to select name from pluginList in choice
+        chFirstPluginName.select(qState.snakePluginList.getName(0));
+        // tried selecting but still on none - it means that plugin name from snkePluginList is not
+        // on choice list. Tis may happen when choice is propagated from directory
+        // butsnakePluginList from external QCONF
+        if (chFirstPluginName.getSelectedItem().equals(NONE)) {
+          chFirstPluginName.add(qState.snakePluginList.getName(0)); // add to list
+          chFirstPluginName.setBackground(bad); // set as bad
+        } else if (qState.snakePluginList.getInstance(0) == null) {
+          // WARN does not check instance(0) is the instance of getName(0)
+          chFirstPluginName.setBackground(bad);
+        } else {
+          chFirstPluginName.setBackground(ok);
+        }
       }
       // second slot snake plugin
       if (qState.snakePluginList.getName(1).isEmpty()) {
-        sSecondPluginName.select(NONE);
-        sSecondPluginName.setBackground(defaultColor);
+        chSecondPluginName.select(NONE);
+        chSecondPluginName.setBackground(defaultColor);
       } else {
-        sSecondPluginName.select(qState.snakePluginList.getName(1));
-        if (sSecondPluginName.getSelectedItem().equals(NONE)) {
-          sSecondPluginName.add(qState.snakePluginList.getName(1)); // add to list
-          sSecondPluginName.setBackground(bad); // set as bad
-        } else if (qState.snakePluginList.getInstance(1) == null)
-          sSecondPluginName.setBackground(bad);
-        else
-          sSecondPluginName.setBackground(ok);
+        chSecondPluginName.select(qState.snakePluginList.getName(1));
+        if (chSecondPluginName.getSelectedItem().equals(NONE)) {
+          chSecondPluginName.add(qState.snakePluginList.getName(1)); // add to list
+          chSecondPluginName.setBackground(bad); // set as bad
+        } else if (qState.snakePluginList.getInstance(1) == null) {
+          chSecondPluginName.setBackground(bad);
+        } else {
+          chSecondPluginName.setBackground(ok);
+        }
       }
       // third slot snake plugin
       if (qState.snakePluginList.getName(2).isEmpty()) {
-        sThirdPluginName.select(NONE);
-        sThirdPluginName.setBackground(defaultColor);
+        chThirdPluginName.select(NONE);
+        chThirdPluginName.setBackground(defaultColor);
       } else {
-        sThirdPluginName.select(qState.snakePluginList.getName(2));
-        if (sThirdPluginName.getSelectedItem().equals(NONE)) {
-          sThirdPluginName.add(qState.snakePluginList.getName(2)); // add to list
-          sThirdPluginName.setBackground(bad); // set as bad
-        } else if (qState.snakePluginList.getInstance(2) == null)
-          sThirdPluginName.setBackground(bad);
-        else
-          sThirdPluginName.setBackground(ok);
+        chThirdPluginName.select(qState.snakePluginList.getName(2));
+        if (chThirdPluginName.getSelectedItem().equals(NONE)) {
+          chThirdPluginName.add(qState.snakePluginList.getName(2)); // add to list
+          chThirdPluginName.setBackground(bad); // set as bad
+        } else if (qState.snakePluginList.getInstance(2) == null) {
+          chThirdPluginName.setBackground(bad);
+        } else {
+          chThirdPluginName.setBackground(ok);
+        }
       }
       // zoom choice
-      if (qState.boap.snakeToZoom > -1)
-        sZoom.select(String.valueOf(qState.boap.snakeToZoom));
+      if (qState.boap.snakeToZoom > -1) {
+        chZoom.select(String.valueOf(qState.boap.snakeToZoom));
+      }
 
     }
 
     /**
      * Implement user interface logic.
      * 
-     * Do not refresh values, rather disable/enable controls.
+     * <p>Do not refresh values, rather disable/enable controls.
      */
     private void updateWindowState() {
       updateCheckBoxes(); // update checkboxes
       updateChoices(); // and choices
 
       // Rule 1 - NONE on any slot in filters disable GUI button and Active checkbox
-      if (sFirstPluginName.getSelectedItem() == NONE) {
-        cFirstPluginActiv.setEnabled(false);
-        bFirstPluginGUI.setEnabled(false);
+      if (chFirstPluginName.getSelectedItem() == NONE) {
+        cbFirstPluginActiv.setEnabled(false);
+        bnFirstPluginGUI.setEnabled(false);
       } else {
-        cFirstPluginActiv.setEnabled(true);
-        bFirstPluginGUI.setEnabled(true);
+        cbFirstPluginActiv.setEnabled(true);
+        bnFirstPluginGUI.setEnabled(true);
       }
-      if (sSecondPluginName.getSelectedItem() == NONE) {
-        cSecondPluginActiv.setEnabled(false);
-        bSecondPluginGUI.setEnabled(false);
+      if (chSecondPluginName.getSelectedItem() == NONE) {
+        cbSecondPluginActiv.setEnabled(false);
+        bnSecondPluginGUI.setEnabled(false);
       } else {
-        cSecondPluginActiv.setEnabled(true);
-        bSecondPluginGUI.setEnabled(true);
+        cbSecondPluginActiv.setEnabled(true);
+        bnSecondPluginGUI.setEnabled(true);
       }
-      if (sThirdPluginName.getSelectedItem() == NONE) {
-        cThirdPluginActiv.setEnabled(false);
-        bThirdPluginGUI.setEnabled(false);
+      if (chThirdPluginName.getSelectedItem() == NONE) {
+        cbThirdPluginActiv.setEnabled(false);
+        bnThirdPluginGUI.setEnabled(false);
       } else {
-        cThirdPluginActiv.setEnabled(true);
-        bThirdPluginGUI.setEnabled(true);
+        cbThirdPluginActiv.setEnabled(true);
+        bnThirdPluginGUI.setEnabled(true);
       }
 
     }
@@ -1260,7 +1283,7 @@ public class BOA_ implements PlugIn {
     /**
      * Main method that handles all actions performed on UI elements.
      * 
-     * Do not support mouse events, only UI elements like buttons, spinners and menus. Runs also
+     * <p>Do not support mouse events, only UI elements like buttons, spinners and menus. Runs also
      * main algorithm on specified input state and update screen on plugins operations.
      * 
      * @param e Type of event
@@ -1272,15 +1295,15 @@ public class BOA_ implements PlugIn {
       LOGGER.trace("EVENT:actionPerformed");
       boolean run = false; // some actions require to re-run segmentation. They set it to true
       Object b = e.getSource();
-      if (b == bDel && !qState.boap.editMode && !qState.boap.doDeleteSeg) {
+      if (b == bnDel && !qState.boap.editMode && !qState.boap.doDeleteSeg) {
         if (qState.boap.doDelete == false) {
-          bDel.setLabel("*STOP DEL*");
+          bnDel.setLabel("*STOP DEL*");
           qState.boap.doDelete = true;
           lastTool = IJ.getToolName();
           IJ.setTool(Toolbar.LINE);
         } else {
           qState.boap.doDelete = false;
-          bDel.setLabel("Delete cell");
+          bnDel.setLabel("Delete cell");
           IJ.setTool(lastTool);
         }
         return;
@@ -1289,15 +1312,15 @@ public class BOA_ implements PlugIn {
         BOA_.log("**DELETE IS ON**");
         return;
       }
-      if (b == bDelSeg && !qState.boap.editMode) {
+      if (b == bnDelSeg && !qState.boap.editMode) {
         if (!qState.boap.doDeleteSeg) {
-          bDelSeg.setLabel("*STOP TRUNCATE*");
+          bnDelSeg.setLabel("*STOP TRUNCATE*");
           qState.boap.doDeleteSeg = true;
           lastTool = IJ.getToolName();
           IJ.setTool(Toolbar.LINE);
         } else {
           qState.boap.doDeleteSeg = false;
-          bDelSeg.setLabel("Truncate Seg");
+          bnDelSeg.setLabel("Truncate Seg");
           IJ.setTool(lastTool);
         }
         return;
@@ -1306,15 +1329,16 @@ public class BOA_ implements PlugIn {
         BOA_.log("**TRUNCATE SEG IS ON**");
         return;
       }
-      if (b == bEdit) {
+      if (b == bnEdit) {
         if (qState.boap.editMode == false) {
-          bEdit.setLabel("*STOP EDIT*");
+          bnEdit.setLabel("*STOP EDIT*");
           BOA_.log("**EDIT IS ON**");
           qState.boap.editMode = true;
           lastTool = IJ.getToolName();
           IJ.setTool(Toolbar.LINE);
-          if (qState.nest.size() == 1)
+          if (qState.nest.size() == 1) {
             editSeg(0, 0, qState.boap.frame); // if only 1 snake go straight to edit, if
+          }
           // more user must pick one
           // remember that this frame is edited
           qState.storeOnlyEdited(qState.boap.frame);
@@ -1323,7 +1347,7 @@ public class BOA_ implements PlugIn {
           if (qState.boap.editingID != -1) {
             stopEdit();
           }
-          bEdit.setLabel("Edit");
+          bnEdit.setLabel("Edit");
           IJ.setTool(lastTool);
         }
         return;
@@ -1332,12 +1356,12 @@ public class BOA_ implements PlugIn {
         BOA_.log("**EDIT IS ON**");
         return;
       }
-      if (b == bDefault) {
+      if (b == bnDefault) {
         this.setDefualts();
         run = true;
-      } else if (b == bSeg) { // main segmentation procedure starts here
+      } else if (b == bnSeg) { // main segmentation procedure starts here
         IJ.showStatus("SEGMENTING...");
-        bSeg.setLabel("computing");
+        bnSeg.setLabel("computing");
         int framesCompleted;
         try {
           runBoa(qState.boap.frame, qState.boap.getFRAMES());
@@ -1349,8 +1373,8 @@ public class BOA_ implements PlugIn {
           IJ.showStatus("FAIL AT " + framesCompleted);
           BOA_.log("FAIL AT " + framesCompleted);
         }
-        bSeg.setLabel("SEGMENT");
-      } else if (b == bLoad) {
+        bnSeg.setLabel("SEGMENT");
+      } else if (b == bnLoad) {
         try {
           if (qState.readParams()) {
             updateSpinnerValues();
@@ -1361,40 +1385,43 @@ public class BOA_ implements PlugIn {
             }
 
           }
-        } catch (Exception IOe) {
+        } catch (Exception ex) {
           IJ.error("Exception when reading parameters from file...");
         }
 
-      } else if (b == bScale) {
+      } else if (b == bnScale) {
         setScales();
         pixelLabel.setText("Scale: " + IJ.d2s(qState.boap.getImageScale(), 6) + " \u00B5m");
         fpsLabel.setText("F Interval: " + IJ.d2s(qState.boap.getImageFrameInterval(), 3) + " s");
-      } else if (b == bAdd) {
+      } else if (b == bnAdd) {
         addCell(canvas.getImage().getRoi(), qState.boap.frame);
         canvas.getImage().killRoi();
-      } else if (b == bFinish) {
+      } else if (b == bnFinish) {
         BOA_.log("Finish: Exiting BOA...");
         fpsLabel.setName("moo");
         finish();
-      } else if (b == bQuit) {
+      } else if (b == bnQuit) {
         quit();
       }
       // process plugin GUI buttons
-      if (b == bFirstPluginGUI) {
+      if (b == bnFirstPluginGUI) {
         LOGGER.debug("First plugin GUI, state of BOAp is " + qState.snakePluginList.getInstance(0));
-        if (qState.snakePluginList.getInstance(0) != null) // call 0 instance
+        if (qState.snakePluginList.getInstance(0) != null) {
           qState.snakePluginList.getInstance(0).showUi(true);
+        }
       }
-      if (b == bSecondPluginGUI) {
+      if (b == bnSecondPluginGUI) {
         LOGGER.debug(
                 "Second plugin GUI, state of BOAp is " + qState.snakePluginList.getInstance(1));
-        if (qState.snakePluginList.getInstance(1) != null) // call 1 instance
+        if (qState.snakePluginList.getInstance(1) != null) {
           qState.snakePluginList.getInstance(1).showUi(true);
+        }
       }
-      if (b == bThirdPluginGUI) {
+      if (b == bnThirdPluginGUI) {
         LOGGER.debug("Third plugin GUI, state of BOAp is " + qState.snakePluginList.getInstance(2));
-        if (qState.snakePluginList.getInstance(2) != null) // call 2 instance
+        if (qState.snakePluginList.getInstance(2) != null) {
           qState.snakePluginList.getInstance(2).showUi(true);
+        }
       }
 
       // menu listeners
@@ -1523,8 +1550,9 @@ public class BOA_ implements PlugIn {
               YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Warning",
                       "Trying to load configuration that does not\nmath to"
                               + " opened image.\nAre you sure?");
-              if (!yncd.yesPressed())
+              if (!yncd.yesPressed()) {
                 return;
+              }
             }
             // replace orgFile with that already opened. It is possible as BOA can not
             // exist without image loaded so this field will always be true.
@@ -1538,19 +1566,21 @@ public class BOA_ implements PlugIn {
             imageGroup.updateNest(qState.nest); // reconnect nest to external class
             qState.restore(qState.boap.frame); // copy from snapshots to current object
             updateSpinnerValues(); // update segmentation gui
-            fillZoomChoice(); // refill frame zoom choice to make possible selection
-                              // last zoomed cell (called from updateChoice)
+            // refill frame zoom choice to make possible selection last zoomed cell (called from
+            // updateChoice)
+            fillZoomChoice();
             // do not recalculatePlugins here because pluginList is empty and this
             // method will update finalSnake overriding it by segSnake (because on
             // empty list they are just copied)
             // updateToFrame calls updateSliceSelector only if there is action of
             // changing frame. If loaded frame is the same as current one this event is
             // not called.
-            if (qState.boap.frame != imageGroup.getOrgIpl().getSlice())
-              imageGroup.updateToFrame(qState.boap.frame); // move to frame (will call
-                                                           // updateSliceSelector)
-            else
+            if (qState.boap.frame != imageGroup.getOrgIpl().getSlice()) {
+              // move to frame (will call updateSliceSelector)
+              imageGroup.updateToFrame(qState.boap.frame);
+            } else {
               updateSliceSelector(); // repaint window explicitly
+            }
           } catch (IOException e1) {
             LOGGER.error("Problem with loading plugin config. " + e1.getMessage());
             LOGGER.debug(e1.getMessage(), e1); // if debug enabled - get more info
@@ -1572,13 +1602,15 @@ public class BOA_ implements PlugIn {
       if (b == menuDeletePlugin) {
         // clear all plugins
         qState.snakePluginList.clear();
-        for (SnakePluginList sp : qState.snakePluginListSnapshots)
-          if (sp != null)
+        for (SnakePluginList sp : qState.snakePluginListSnapshots) {
+          if (sp != null) {
             sp.clear();
+          }
+        }
         // copy snakes to finals
         for (int i = 0; i < qState.nest.size(); i++) {
-          SnakeHandler sH = qState.nest.getHandler(i);
-          sH.copyFromSegToFinal();
+          SnakeHandler snakeHandler = qState.nest.getHandler(i);
+          snakeHandler.copyFromSegToFinal();
         }
         // update window
         imageGroup.updateOverlay(qState.boap.frame);
@@ -1597,8 +1629,8 @@ public class BOA_ implements PlugIn {
         for (SnakePluginList sp : qState.snakePluginListSnapshots) {
           sp.afterSerialize();
         }
-        qState.restore(qState.boap.frame); // copy snaphots for frame to current
-                                           // snakePluginList (and segParams)
+        // copy snaphots for frame to current snakePluginList (and segParams)
+        qState.restore(qState.boap.frame);
         recalculatePlugins(); // update screen
       }
 
@@ -1607,19 +1639,16 @@ public class BOA_ implements PlugIn {
        */
       if (b == menuSegmentationRun) {
         if (qState.binarySegmentationPlugin != null) {
-          if (!qState.binarySegmentationPlugin.isWindowVisible())
+          if (!qState.binarySegmentationPlugin.isWindowVisible()) {
             qState.binarySegmentationPlugin.showUi(true);
+          }
         } else {
-          qState.binarySegmentationPlugin = new BinarySegmentationPlugin(); // create
-          // instance
+          qState.binarySegmentationPlugin = new BinarySegmentationPlugin(); // create instance
           qState.binarySegmentationPlugin.attachData(qState.nest); // attach data
-          qState.binarySegmentationPlugin.attachContext(viewUpdater); // allow plugin to
-                                                                      // update
-                                                                      // screen
-          qState.binarySegmentationPlugin.showUi(true); // plugin is run internally
-                                                        // after
-                                                        // Apply
-          // update screen is always on Apply button of plugin
+          // allow plugin to update screen
+          qState.binarySegmentationPlugin.attachContext(viewUpdater);
+          // plugin is run internally after Apply update screen is always on Apply button of plugin
+          qState.binarySegmentationPlugin.showUi(true);
         }
         BOA_.log("Run segmentation from mask file");
       }
@@ -1631,10 +1660,11 @@ public class BOA_ implements PlugIn {
         qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
         qState.nest.cleanNest();
         updateSpinnerValues();
-        if (qState.boap.frame != imageGroup.getOrgIpl().getSlice())
+        if (qState.boap.frame != imageGroup.getOrgIpl().getSlice()) {
           imageGroup.updateToFrame(qState.boap.frame); // move to frame
-        else
+        } else {
           updateSliceSelector(); // repaint window explicitly
+        }
       }
 
       updateWindowState(); // window logic on any change and selectors
@@ -1655,7 +1685,7 @@ public class BOA_ implements PlugIn {
     /**
      * Detect changes in checkboxes and run segmentation for current frame if necessary.
      * 
-     * Transfer parameters from changed GUI element to
+     * <p>Transfer parameters from changed GUI element to
      * {@link uk.ac.warwick.wsbc.quimp.BOAState.BOAp} class
      * 
      * @param e Type of event
@@ -1667,11 +1697,10 @@ public class BOA_ implements PlugIn {
       if (qState.boap.doDelete) {
         BOA_.log("**WARNING:DELETE IS ON**");
       }
-      boolean run = false; // set to true if any of items changes require
-                           // to re-run segmentation
+      boolean run = false; // set to true if any of items changes require to re-run segmentation
       Object source = e.getItemSelectable();
-      if (source == cPath) {
-        qState.segParam.showPaths = cPath.getState();
+      if (source == cbPath) {
+        qState.segParam.showPaths = cbPath.getState();
         if (qState.segParam.showPaths) {
           this.setImage(imageGroup.getPathsIpl());
         } else {
@@ -1680,19 +1709,19 @@ public class BOA_ implements PlugIn {
         if (qState.boap.zoom && !qState.nest.isVacant()) { // set zoom
           imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
         }
-      } else if (source == cPrevSnake) {
-        qState.segParam.use_previous_snake = cPrevSnake.getState();
-      } else if (source == cExpSnake) {
-        qState.segParam.expandSnake = cExpSnake.getState();
+      } else if (source == cbPrevSnake) {
+        qState.segParam.use_previous_snake = cbPrevSnake.getState();
+      } else if (source == cbExpSnake) {
+        qState.segParam.expandSnake = cbExpSnake.getState();
         run = true;
-      } else if (source == cFirstPluginActiv) {
-        qState.snakePluginList.setActive(0, cFirstPluginActiv.getState());
+      } else if (source == cbFirstPluginActiv) {
+        qState.snakePluginList.setActive(0, cbFirstPluginActiv.getState());
         recalculatePlugins();
-      } else if (source == cSecondPluginActiv) {
-        qState.snakePluginList.setActive(1, cSecondPluginActiv.getState());
+      } else if (source == cbSecondPluginActiv) {
+        qState.snakePluginList.setActive(1, cbSecondPluginActiv.getState());
         recalculatePlugins();
-      } else if (source == cThirdPluginActiv) {
-        qState.snakePluginList.setActive(2, cThirdPluginActiv.getState());
+      } else if (source == cbThirdPluginActiv) {
+        qState.snakePluginList.setActive(2, cbThirdPluginActiv.getState());
         recalculatePlugins();
       }
 
@@ -1707,38 +1736,38 @@ public class BOA_ implements PlugIn {
       }
 
       // actions on Plugin selections
-      if (source == sFirstPluginName) {
-        LOGGER.debug("Used firstPluginName, val: " + sFirstPluginName.getSelectedItem());
-        instanceSnakePlugin((String) sFirstPluginName.getSelectedItem(), 0,
-                cFirstPluginActiv.getState());
+      if (source == chFirstPluginName) {
+        LOGGER.debug("Used firstPluginName, val: " + chFirstPluginName.getSelectedItem());
+        instanceSnakePlugin((String) chFirstPluginName.getSelectedItem(), 0,
+                cbFirstPluginActiv.getState());
         recalculatePlugins();
       }
-      if (source == sSecondPluginName) {
-        LOGGER.debug("Used secondPluginName, val: " + sSecondPluginName.getSelectedItem());
-        instanceSnakePlugin((String) sSecondPluginName.getSelectedItem(), 1,
-                cSecondPluginActiv.getState());
+      if (source == chSecondPluginName) {
+        LOGGER.debug("Used secondPluginName, val: " + chSecondPluginName.getSelectedItem());
+        instanceSnakePlugin((String) chSecondPluginName.getSelectedItem(), 1,
+                cbSecondPluginActiv.getState());
         recalculatePlugins();
       }
-      if (source == sThirdPluginName) {
-        LOGGER.debug("Used thirdPluginName, val: " + sThirdPluginName.getSelectedItem());
-        instanceSnakePlugin((String) sThirdPluginName.getSelectedItem(), 2,
-                cThirdPluginActiv.getState());
+      if (source == chThirdPluginName) {
+        LOGGER.debug("Used thirdPluginName, val: " + chThirdPluginName.getSelectedItem());
+        instanceSnakePlugin((String) chThirdPluginName.getSelectedItem(), 2,
+                cbThirdPluginActiv.getState());
         recalculatePlugins();
       }
 
       // Action on zoom selector
-      if (source == sZoom) {
-        LOGGER.trace("zoom val " + sZoom.getSelectedItem());
-        if (sZoom.getSelectedItem().equals(fullZoom)) { // user selected default position
-                                                        // (no zoom)
+      if (source == chZoom) {
+        LOGGER.trace("zoom val " + chZoom.getSelectedItem());
+        if (chZoom.getSelectedItem().equals(fullZoom)) { // user selected default position (no zoom)
           qState.boap.snakeToZoom = -1; // set negative value to indicate no zoom
           qState.boap.zoom = false; // important for other parts (legacy)
           imageGroup.unzoom(canvas); // unzoom view
-        } else // zoom here
-        if (!qState.nest.isVacant()) { // any snakes present
-          qState.boap.snakeToZoom = Integer.parseInt(sZoom.getSelectedItem()); // get int
-          qState.boap.zoom = true; // legacy compatibility
-          imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
+        } else { // zoom here
+          if (!qState.nest.isVacant()) { // any snakes present
+            qState.boap.snakeToZoom = Integer.parseInt(chZoom.getSelectedItem()); // get int
+            qState.boap.zoom = true; // legacy compatibility
+            imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
+          }
         }
       }
 
@@ -1747,7 +1776,7 @@ public class BOA_ implements PlugIn {
 
       try {
         if (run) {
-          if (qState.boap.supressStateChangeBOArun) {// when spinners are changed
+          if (qState.boap.supressStateChangeBOArun) { // when spinners are changed
             // programmatically they raise the
             // event. this is to block running
             // segmentation
@@ -1765,7 +1794,7 @@ public class BOA_ implements PlugIn {
     /**
      * Detect changes in spinners and run segmentation for current frame if necessary.
      * 
-     * Transfer parameters from changed GUI element to
+     * <p>Transfer parameters from changed GUI element to
      * {@link uk.ac.warwick.wsbc.quimp.BOAState.BOAp} class
      * 
      * @param ce Type of event
@@ -1777,27 +1806,26 @@ public class BOA_ implements PlugIn {
       if (qState.boap.doDelete) {
         BOA_.log("**WARNING:DELETE IS ON**");
       }
-      boolean run = false; // set to true if any of items changes require to re-run
-                           // segmentation
+      boolean run = false; // set to true if any of items changes require to re-run segmentation
       Object source = ce.getSource();
 
       if (source == dsNodeRes) {
         JSpinner spinner = (JSpinner) source;
         qState.segParam.setNodeRes((Double) spinner.getValue());
         run = true;
-      } else if (source == dsVel_crit) {
+      } else if (source == dsVelCrit) {
         JSpinner spinner = (JSpinner) source;
         qState.segParam.vel_crit = (Double) spinner.getValue();
         run = true;
-      } else if (source == dsF_image) {
+      } else if (source == dsFImage) {
         JSpinner spinner = (JSpinner) source;
         qState.segParam.f_image = (Double) spinner.getValue();
         run = true;
-      } else if (source == dsF_central) {
+      } else if (source == dsFCentral) {
         JSpinner spinner = (JSpinner) source;
         qState.segParam.f_central = (Double) spinner.getValue();
         run = true;
-      } else if (source == dsF_contract) {
+      } else if (source == dsFContract) {
         JSpinner spinner = (JSpinner) source;
         qState.segParam.f_contract = (Double) spinner.getValue();
         run = true;
@@ -1813,11 +1841,11 @@ public class BOA_ implements PlugIn {
         JSpinner spinner = (JSpinner) source;
         qState.segParam.blowup = (Integer) spinner.getValue();
         run = true;
-      } else if (source == isSample_tan) {
+      } else if (source == isSampletan) {
         JSpinner spinner = (JSpinner) source;
         qState.segParam.sample_tan = (Integer) spinner.getValue();
         run = true;
-      } else if (source == isSample_norm) {
+      } else if (source == isSamplenorm) {
         JSpinner spinner = (JSpinner) source;
         qState.segParam.sample_norm = (Integer) spinner.getValue();
         run = true;
@@ -1827,10 +1855,9 @@ public class BOA_ implements PlugIn {
 
       try {
         if (run) {
-          if (qState.boap.supressStateChangeBOArun) { // when spinners are changed
-                                                      // programmatically they raise the
-                                                      // event. this is to block running
-                                                      // segmentation
+          // when spinners are changed programmatically they raise the event. this is to block
+          // running segmentation
+          if (qState.boap.supressStateChangeBOArun) {
             LOGGER.debug("supressState");
             return;
           }
@@ -1850,12 +1877,10 @@ public class BOA_ implements PlugIn {
     public void updateSliceSelector() {
       super.updateSliceSelector();
       LOGGER.debug("EVENT:updateSliceSelector");
-      if (!qState.boap.singleImage)
+      if (!qState.boap.singleImage) {
         zSelector.setValue(imp.getCurrentSlice()); // this is delayed in
-      // super.updateSliceSelector force it now
-
-      // if in edit, save current edit and start edit of next frame if exists
-      boolean wasInEdit = qState.boap.editMode;
+        // super.updateSliceSelector force it now
+      }
       if (qState.boap.editMode) {
         // BOA_.log("next frame in edit mode");
         stopEdit();
@@ -1870,14 +1895,15 @@ public class BOA_ implements PlugIn {
 
       // zoom to snake zero
       if (qState.boap.zoom && !qState.nest.isVacant()) {
-        SnakeHandler sH = qState.nest.getHandler(0);
-        if (sH.isStoredAt(qState.boap.frame)) {
+        SnakeHandler snH = qState.nest.getHandler(0);
+        if (snH.isStoredAt(qState.boap.frame)) {
           imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
         }
       }
-
+      // if in edit, save current edit and start edit of next frame if exists
+      boolean wasInEdit = qState.boap.editMode;
       if (wasInEdit) {
-        bEdit.setLabel("*STOP EDIT*");
+        bnEdit.setLabel("*STOP EDIT*");
         BOA_.log("**EDIT IS ON**");
         qState.boap.editMode = true;
         lastTool = IJ.getToolName();
@@ -1886,9 +1912,9 @@ public class BOA_ implements PlugIn {
         IJ.setTool(lastTool);
       }
       LOGGER.trace("Snakes at this frame: " + qState.nest.getSnakesforFrame(qState.boap.frame));
-      if (!qState.boap.SEGrunning) { // do not update or restore state when we hit this
-                                     // event from runBoa() method (through
-                                     // setIpSliceAll(int))
+      if (!qState.boap.SEGrunning) {
+        // do not update or restore state when we hit this event from runBoa() method (through
+        // setIpSliceAll(int))
         qState.restore(qState.boap.frame);
         updateSpinnerValues();
         updateWindowState();
@@ -1901,7 +1927,7 @@ public class BOA_ implements PlugIn {
      */
     void switchOffDelete() {
       qState.boap.doDelete = false;
-      bDel.setLabel("Delete cell");
+      bnDel.setLabel("Delete cell");
     }
 
     /*
@@ -1924,7 +1950,7 @@ public class BOA_ implements PlugIn {
      */
     void switchOfftruncate() {
       qState.boap.doDeleteSeg = false;
-      bDelSeg.setLabel("Truncate Seg");
+      bnDelSeg.setLabel("Truncate Seg");
     }
 
     /**
@@ -1940,7 +1966,7 @@ public class BOA_ implements PlugIn {
   /**
    * Creates instance (through SnakePluginList) of plugin of given name on given UI slot.
    * 
-   * Decides if plugin will be created or destroyed basing on plugin name from Choice list
+   * <p>Decides if plugin will be created or destroyed basing on plugin name from Choice list
    * 
    * @param selectedPlugin Name of plugin returned from UI elements
    * @param slot Slot of plugin
@@ -1954,8 +1980,9 @@ public class BOA_ implements PlugIn {
       if (selectedPlugin != NONE) { // do no pass NONE to pluginFact
         qState.snakePluginList.setInstance(slot, selectedPlugin, act); // build instance
       } else {
-        if (qState.snakePluginList.getInstance(slot) != null)
+        if (qState.snakePluginList.getInstance(slot) != null) {
           qState.snakePluginList.getInstance(slot).showUi(false);
+        }
         qState.snakePluginList.deletePlugin(slot);
       }
     } catch (QuimpPluginException e) {
@@ -1967,7 +1994,8 @@ public class BOA_ implements PlugIn {
   /**
    * Start segmentation process on range of frames.
    * 
-   * This method is called for update only current view as well (<tt>startF</tt> == <tt>endF</tt>)
+   * <p>This method is called for update only current view as well (<tt>startF</tt> ==
+   * <tt>endF</tt>)
    * 
    * @param startF start frame
    * @param endF end frame
@@ -1989,15 +2017,13 @@ public class BOA_ implements PlugIn {
       // if(boap.expandSnake) boap.NMAX = 9990; // percent hack
 
       qState.nest.resetForFrame(startF);
-      if (!qState.segParam.expandSnake) { // blowup snake ready for contraction (only those
-                                          // not
-        // starting
-        // at or after the startF)
+      if (!qState.segParam.expandSnake) {
+        // blowup snake ready for contraction (only those not starting at or after the startF)
         constrictor.loosen(qState.nest, startF);
       } else {
         constrictor.implode(qState.nest, startF);
       }
-      SnakeHandler sH;
+      SnakeHandler snH;
 
       int s = 0;
       Snake snake;
@@ -2009,7 +2035,7 @@ public class BOA_ implements PlugIn {
         imageGroup.setIpSliceAll(qState.boap.frame);
 
         try {
-          if (qState.boap.frame != startF) {// expand snakes for next frame
+          if (qState.boap.frame != startF) { // expand snakes for next frame
             if (!qState.segParam.use_previous_snake) {
               qState.nest.resetForFrame(qState.boap.frame);
             } else {
@@ -2022,10 +2048,10 @@ public class BOA_ implements PlugIn {
           }
 
           for (s = 0; s < qState.nest.size(); s++) { // for each snake
-            sH = qState.nest.getHandler(s);
-            snake = sH.getLiveSnake();
+            snH = qState.nest.getHandler(s);
+            snake = snH.getLiveSnake();
             try {
-              if (!snake.alive || qState.boap.frame < sH.getStartFrame()) {
+              if (!snake.alive || qState.boap.frame < snH.getStartFrame()) {
                 continue;
               }
               imageGroup.drawPath(snake, qState.boap.frame); // pre tightned snake on
@@ -2033,24 +2059,24 @@ public class BOA_ implements PlugIn {
               tightenSnake(snake);
               imageGroup.drawPath(snake, qState.boap.frame); // post tightned snake on
               // path
-              sH.backupLiveSnake(qState.boap.frame);
+              snH.backupLiveSnake(qState.boap.frame);
               Snake out = iterateOverSnakePlugins(snake);
-              sH.storeThisSnake(out, qState.boap.frame); // store resulting snake as
+              snH.storeThisSnake(out, qState.boap.frame); // store resulting snake as
               // final
 
             } catch (QuimpPluginException qpe) {
               // must be rewritten with whole runBOA #65 #67
               BOA_.log("Error in filter module: " + qpe.getMessage());
               LOGGER.debug(qpe.getMessage(), qpe);
-              sH.storeLiveSnake(qState.boap.frame); // store segmented nonmodified
+              snH.storeLiveSnake(qState.boap.frame); // store segmented nonmodified
 
             } catch (BoaException be) {
               imageGroup.drawPath(snake, qState.boap.frame); // failed
               // position
               // sH.deleteStoreAt(frame);
-              sH.storeLiveSnake(qState.boap.frame);
-              sH.backupLiveSnake(qState.boap.frame);
-              qState.nest.kill(sH);
+              snH.storeLiveSnake(qState.boap.frame);
+              snH.backupLiveSnake(qState.boap.frame);
+              qState.nest.kill(snH);
               snake.unfreezeAll();
               BOA_.log("Snake " + snake.getSnakeID() + " died, frame " + qState.boap.frame);
               qState.boap.SEGrunning = false;
@@ -2094,14 +2120,14 @@ public class BOA_ implements PlugIn {
   /**
    * Process Snake by all active plugins.
    * 
-   * Processed Snake is returned as new Snake with the same ID. Input snake is not modified. For
+   * <p>Processed Snake is returned as new Snake with the same ID. Input snake is not modified. For
    * empty plugin list it just return input snake
    *
-   * This method supports two interfaces:
+   * <p>This method supports two interfaces:
    * {@link uk.ac.warwick.wsbc.quimp.plugin.snakes.IQuimpBOAPoint2dFilter},
    * {@link uk.ac.warwick.wsbc.quimp.plugin.snakes.IQuimpBOASnakeFilter}
    * 
-   * It uses smart method to detect which interface is used for every slot to avoid unnecessary
+   * <p>It uses smart method to detect which interface is used for every slot to avoid unnecessary
    * conversion between data. <tt>previousConversion</tt> keeps what interface was used on
    * previous slot in plugin stack. Then for every plugin data are converted if current plugin
    * differs from previous one. Converted data are kept in <tt>snakeToProcess</tt> and
@@ -2111,7 +2137,7 @@ public class BOA_ implements PlugIn {
    * @param snake snake to be processed
    * @return Processed snake or original input one when there is no plugin selected
    * @throws QuimpPluginException on plugin error
-   * @throws Exception
+   * @throws Exception on general error
    */
   private Snake iterateOverSnakePlugins(final Snake snake) throws QuimpPluginException, Exception {
     final int ipoint = 0; // define IQuimpPoint2dFilter interface
@@ -2121,31 +2147,32 @@ public class BOA_ implements PlugIn {
     Snake outsnake = snake; // if there is no plugin just return input snake
     Snake snakeToProcess = snake; // data to be processed, input snake on beginning
     // data to process in format of list
-    List<Point2d> dataToProcess = null; // null but it will be overwritten in loop because first
-                                        // "if" fires always (previousConversion is set to
-                                        // isnake) on beginning, if first plugin is ipoint type
+    // null but it will be overwritten in loop because first "if" fires always (previousConversion
+    // is set to isnake) on beginning, if first plugin is ipoint type
+    List<Point2d> dataToProcess = null;
     if (!qState.snakePluginList.isRefListEmpty()) {
       LOGGER.debug("sPluginList not empty");
-      for (Plugin qP : qState.snakePluginList.getList()) { // iterate over list
-        if (!qP.isExecutable())
+      for (Plugin qsP : qState.snakePluginList.getList()) { // iterate over list
+        if (!qsP.isExecutable()) {
           continue; // no plugin on this slot or not active
-        if (qP.getRef() instanceof IQuimpBOAPoint2dFilter) { // check interface type
+        }
+        if (qsP.getRef() instanceof IQuimpBOAPoint2dFilter) { // check interface type
           if (previousConversion == isnake) { // previous was IQuimpSnakeFilter
             dataToProcess = snakeToProcess.asList(); // and data needs to be converted
           }
-          IQuimpBOAPoint2dFilter qPcast = (IQuimpBOAPoint2dFilter) qP.getRef();
-          qPcast.attachData(dataToProcess);
-          dataToProcess = qPcast.runPlugin(); // store result in input variable
+          IQuimpBOAPoint2dFilter qsPcast = (IQuimpBOAPoint2dFilter) qsP.getRef();
+          qsPcast.attachData(dataToProcess);
+          dataToProcess = qsPcast.runPlugin(); // store result in input variable
           previousConversion = ipoint;
         }
-        if (qP.getRef() instanceof IQuimpBOASnakeFilter) { // check interface type
+        if (qsP.getRef() instanceof IQuimpBOASnakeFilter) { // check interface type
           if (previousConversion == ipoint) { // previous was IQuimpPoint2dFilter
             // and data must be converted to snake from dataToProcess
             snakeToProcess = new QuimpDataConverter(dataToProcess).getSnake(snake.getSnakeID());
           }
-          IQuimpBOASnakeFilter qPcast = (IQuimpBOASnakeFilter) qP.getRef();
-          qPcast.attachData(snakeToProcess);
-          snakeToProcess = qPcast.runPlugin(); // store result as snake for next plugin
+          IQuimpBOASnakeFilter qsPcast = (IQuimpBOASnakeFilter) qsP.getRef();
+          qsPcast.attachData(snakeToProcess);
+          snakeToProcess = qsPcast.runPlugin(); // store result as snake for next plugin
           previousConversion = isnake;
         }
       }
@@ -2159,9 +2186,12 @@ public class BOA_ implements PlugIn {
           outsnake = snakeToProcess;
           outsnake.setSnakeID(snake.getSnakeID()); // copy old id in case if user forgot
           break;
+        default:
+          throw new IllegalArgumentException("Unknown previousConversion");
       }
-    } else
+    } else {
       LOGGER.debug("sPluginList empty");
+    }
     return outsnake;
 
   }
@@ -2260,16 +2290,16 @@ public class BOA_ implements PlugIn {
       return false;
     }
 
-    OutlineHandler oH = new OutlineHandler(qState.boap.readQp);
-    if (!oH.readSuccess) {
+    OutlineHandler otlineH = new OutlineHandler(qState.boap.readQp);
+    if (!otlineH.readSuccess) {
       BOA_.log("Could not read in snakes");
       return false;
     }
     // convert to BOA snakes
 
-    qState.nest.addOutlinehandler(oH);
-    imageGroup.setProcessor(oH.getStartFrame());
-    imageGroup.updateOverlay(oH.getStartFrame());
+    qState.nest.addOutlinehandler(otlineH);
+    imageGroup.setProcessor(otlineH.getStartFrame());
+    imageGroup.updateOverlay(otlineH.getStartFrame());
     BOA_.log("Successfully read snakes");
     return true;
   }
@@ -2277,7 +2307,7 @@ public class BOA_ implements PlugIn {
   /**
    * Add ROI to Nest.
    * 
-   * This method is called on selection that should contain object to be segmented. Initialise
+   * <p>This method is called on selection that should contain object to be segmented. Initialise
    * Snake object in Nest and it performs also initial segmentation of selected cell.
    * 
    * @param r ROI object (IJ)
@@ -2286,28 +2316,28 @@ public class BOA_ implements PlugIn {
    */
   // @SuppressWarnings("unchecked")
   void addCell(final Roi r, int f) {
-    SnakeHandler sH = qState.nest.addHandler(r, f);
-    Snake snake = sH.getLiveSnake();
+    SnakeHandler snakeH = qState.nest.addHandler(r, f);
+    Snake snake = snakeH.getLiveSnake();
     imageGroup.setProcessor(f);
     try {
       imageGroup.drawPath(snake, f); // pre tightned snake on path
       tightenSnake(snake);
       imageGroup.drawPath(snake, f); // post tightned snake on path
-      sH.backupLiveSnake(f);
+      snakeH.backupLiveSnake(f);
       Snake out = iterateOverSnakePlugins(snake); // process segmented snake by plugins
-      sH.storeThisSnake(out, f); // store processed snake as final
+      snakeH.storeThisSnake(out, f); // store processed snake as final
 
       // if any problem with plugin or other, store snake without modification
       // because snake.asList() returns copy
     } catch (QuimpPluginException qpe) {
-      sH.storeLiveSnake(f);
+      snakeH.storeLiveSnake(f);
       BOA_.log("Error in filter module: " + qpe.getMessage());
       LOGGER.debug(qpe.getMessage(), qpe);
     } catch (BoaException be) {
-      sH.deleteStoreAt(f);
-      sH.kill();
-      sH.backupLiveSnake(f);
-      sH.storeLiveSnake(f);
+      snakeH.deleteStoreAt(f);
+      snakeH.kill();
+      snakeH.backupLiveSnake(f);
+      snakeH.storeLiveSnake(f);
       BOA_.log("New snake failed to converge: " + be.getMessage());
       LOGGER.debug(be.getMessage(), be);
     } catch (Exception e) {
@@ -2325,7 +2355,7 @@ public class BOA_ implements PlugIn {
   /**
    * Delete SnakeHandler using the snake clicked by user.
    * 
-   * Method searches the snake in Nest that is on current frame and its centroid is close enough
+   * <p>Method searches the snake in Nest that is on current frame and its centroid is close enough
    * to clicked point. If found, the whole SnakeHandler (all Snakes of the same ID across frames)
    * is deleted.
    * 
@@ -2339,18 +2369,18 @@ public class BOA_ implements PlugIn {
       return false;
     }
 
-    SnakeHandler sH;
+    SnakeHandler snakeH;
     Snake snake;
-    ExtendedVector2d sV;
-    ExtendedVector2d mV = new ExtendedVector2d(x, y);
+    ExtendedVector2d snakeV;
+    ExtendedVector2d mdV = new ExtendedVector2d(x, y);
     List<Double> distance = new ArrayList<Double>();
 
     for (int i = 0; i < qState.nest.size(); i++) { // calc all distances
-      sH = qState.nest.getHandler(i);
-      if (sH.isStoredAt(frame)) {
-        snake = sH.getStoredSnake(frame);
-        sV = snake.getCentroid();
-        distance.add(ExtendedVector2d.lengthP2P(mV, sV));
+      snakeH = qState.nest.getHandler(i);
+      if (snakeH.isStoredAt(frame)) {
+        snake = snakeH.getStoredSnake(frame);
+        snakeV = snake.getCentroid();
+        distance.add(ExtendedVector2d.lengthP2P(mdV, snakeV));
       }
     }
     int minIndex = QuimPArrayUtils.minListIndex(distance);
@@ -2374,19 +2404,19 @@ public class BOA_ implements PlugIn {
    * @param frame the frame
    */
   void deleteSegmentation(int x, int y, int frame) {
-    SnakeHandler sH;
+    SnakeHandler snakeH;
     Snake snake;
-    ExtendedVector2d sV;
-    ExtendedVector2d mV = new ExtendedVector2d(x, y);
+    ExtendedVector2d snakeV;
+    ExtendedVector2d mmV = new ExtendedVector2d(x, y);
     List<Double> distance = new ArrayList<Double>();
 
     for (int i = 0; i < qState.nest.size(); i++) { // calc all distances
-      sH = qState.nest.getHandler(i);
+      snakeH = qState.nest.getHandler(i);
 
-      if (sH.isStoredAt(frame)) {
-        snake = sH.getStoredSnake(frame);
-        sV = snake.getCentroid();
-        distance.add(ExtendedVector2d.lengthP2P(mV, sV));
+      if (snakeH.isStoredAt(frame)) {
+        snake = snakeH.getStoredSnake(frame);
+        snakeV = snake.getCentroid();
+        distance.add(ExtendedVector2d.lengthP2P(mmV, snakeV));
       } else {
         distance.add(9999.0);
       }
@@ -2398,8 +2428,8 @@ public class BOA_ implements PlugIn {
     if (distance.get(minIndex) < 10) { // if closest < 10, delete it
       BOA_.log("Deleted snake " + qState.nest.getHandler(minIndex).getID() + " from " + frame
               + " onwards");
-      sH = qState.nest.getHandler(minIndex);
-      sH.deleteStoreFrom(frame);
+      snakeH = qState.nest.getHandler(minIndex);
+      snakeH.deleteStoreFrom(frame);
       imageGroup.updateOverlay(frame);
       window.switchOfftruncate();
     } else {
@@ -2417,32 +2447,32 @@ public class BOA_ implements PlugIn {
    * @see uk.ac.warwick.wsbc.quimp.BOA_.CustomStackWindow#updateSliceSelector()
    */
   void editSeg(int x, int y, int frame) {
-    SnakeHandler sH;
+    SnakeHandler snakeH;
     Snake snake;
-    ExtendedVector2d sV;
-    ExtendedVector2d mV = new ExtendedVector2d(x, y);
+    ExtendedVector2d snakeV;
+    ExtendedVector2d mmV = new ExtendedVector2d(x, y);
     double[] distance = new double[qState.nest.size()];
 
     for (int i = 0; i < qState.nest.size(); i++) { // calc all distances
-      sH = qState.nest.getHandler(i);
-      if (sH.isStoredAt(frame)) {
-        snake = sH.getStoredSnake(frame);
-        sV = snake.getCentroid();
-        distance[i] = ExtendedVector2d.lengthP2P(mV, sV);
+      snakeH = qState.nest.getHandler(i);
+      if (snakeH.isStoredAt(frame)) {
+        snake = snakeH.getStoredSnake(frame);
+        snakeV = snake.getCentroid();
+        distance[i] = ExtendedVector2d.lengthP2P(mmV, snakeV);
       }
     }
     int minIndex = QuimPArrayUtils.minArrayIndex(distance);
     if (distance[minIndex] < 10 || qState.nest.size() == 1) { // if closest < 10, edit it
-      sH = qState.nest.getHandler(minIndex);
+      snakeH = qState.nest.getHandler(minIndex);
       qState.boap.editingID = minIndex; // sH.getID();
-      BOA_.log("Editing cell " + sH.getID());
+      BOA_.log("Editing cell " + snakeH.getID());
       imageGroup.clearOverlay();
 
       Roi r;
       if (qState.boap.useSubPixel == true) {
-        r = sH.getStoredSnake(frame).asPolyLine();
+        r = snakeH.getStoredSnake(frame).asPolyLine();
       } else {
-        r = sH.getStoredSnake(frame).asIntRoi();
+        r = snakeH.getStoredSnake(frame).asIntRoi();
       }
       // Roi r = sH.getStoredSnake(frame).asFloatRoi();
       Roi.setColor(Color.cyan);
@@ -2460,11 +2490,11 @@ public class BOA_ implements PlugIn {
   void stopEdit() {
     Roi r = canvas.getImage().getRoi();
     Roi.setColor(Color.yellow);
-    SnakeHandler sH = qState.nest.getHandler(qState.boap.editingID);
-    sH.storeRoi((PolygonRoi) r, qState.boap.frame); // store as final snake
+    SnakeHandler snakeH = qState.nest.getHandler(qState.boap.editingID);
+    snakeH.storeRoi((PolygonRoi) r, qState.boap.frame); // store as final snake
     // copy to segSnakes array
-    Snake stored = sH.getStoredSnake(qState.boap.frame);
-    sH.backupThisSnake(stored, qState.boap.frame);
+    Snake stored = snakeH.getStoredSnake(qState.boap.frame);
+    snakeH.backupThisSnake(stored, qState.boap.frame);
     canvas.getImage().killRoi();
     imageGroup.updateOverlay(qState.boap.frame);
     qState.boap.editingID = -1;
@@ -2511,8 +2541,9 @@ public class BOA_ implements PlugIn {
           ync = new YesNoCancelDialog(window, "Save Segmentation",
                   "You are about to override previous results. Is it ok?\nIf not,"
                           + " previous data must be moved to another directory");
-          if (!ync.yesPressed())
+          if (!ync.yesPressed()) {
             return;
+          }
         }
         // write operations
         // blocked by #263
@@ -2536,8 +2567,9 @@ public class BOA_ implements PlugIn {
             dt.Stats = new StatsCollection();
             dt.Stats.copyFromCellStat(ret); // StatsHandler is initialized here.
             n = new Serializer<>(dt, quimpInfo);
-            if (qState.boap.savePretty) // set pretty format if configured
+            if (qState.boap.savePretty) {
               n.setPretty();
+            }
             n.save(qState.boap.deductNewParamFileName());
             n = null;
           }
@@ -2594,27 +2626,32 @@ class ImageGroup {
   // contour - final snake drawn
   // org - original image, kept clean
 
-  private ImagePlus orgIpl, pathsIpl;// , contourIpl;
-  private ImageStack orgStack, pathsStack; // , contourStack;
-  private ImageProcessor orgIp, pathsIp; // , contourIp;
+  private ImagePlus orgIpl;
+  private ImagePlus pathsIpl; // , contourIpl;
+  private ImageStack orgStack;
+  private ImageStack pathsStack; // , contourStack;
+  private ImageProcessor orgIp;
+  private ImageProcessor pathsIp; // , contourIp;
   private Overlay overlay;
   private Nest nest;
-  int w, h, f;
+  private int iplWidth;
+  private int iplHeight;
+  private int iplStack;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageGroup.class.getName());
 
   /**
    * Constructor.
    * 
-   * @param oIpl current image opened in IJ
+   * @param ipl current image opened in IJ
    * @param n Nest object associated with BOA
    */
-  public ImageGroup(ImagePlus oIpl, Nest n) {
+  public ImageGroup(ImagePlus ipl, Nest n) {
     nest = n;
     // create two new stacks for drawing
 
     // image set up
-    orgIpl = oIpl;
+    orgIpl = ipl;
     orgIpl.setSlice(1);
     orgIpl.getCanvas().unzoom();
     orgIpl.getCanvas().getMagnification();
@@ -2622,12 +2659,13 @@ class ImageGroup {
     orgStack = orgIpl.getStack();
     orgIp = orgStack.getProcessor(1);
 
-    w = orgIp.getWidth();
-    h = orgIp.getHeight();
-    f = orgIpl.getStackSize();
+    iplWidth = orgIp.getWidth();
+    iplHeight = orgIp.getHeight();
+    iplStack = orgIpl.getStackSize();
 
     // set up blank path image
-    pathsIpl = NewImage.createByteImage("Node Paths", w, h, f, NewImage.FILL_BLACK);
+    pathsIpl = NewImage.createByteImage("Node Paths", iplWidth, iplHeight, iplStack,
+            NewImage.FILL_BLACK);
     pathsStack = pathsIpl.getStack();
     pathsIpl.setSlice(1);
     pathsIp = pathsStack.getProcessor(1);
@@ -2639,7 +2677,7 @@ class ImageGroup {
   /**
    * Sets new Nest object associated with displayed image.
    * 
-   * Used after loading new BOAState
+   * <p>Used after loading new BOAState
    * 
    * @param newNest new Nest
    */
@@ -2662,43 +2700,45 @@ class ImageGroup {
   /**
    * Plots snakes on current frame.
    * 
-   * Depending on configuration this method can plot:
+   * <p>Depending on configuration this method can plot:
    * <ol>
    * <li>Snake after segmentation, without processing by plugins
    * <li>Snake after segmentation and after processing by all active plugins
    * </ol>
    * It assign also last created Snake to ViewUpdater. This Snake can be accessed by plugin for
    * previewing purposes. If last Snake has been deleted, null is assigned or before last Snake
-   * <p>
-   * Used when there is a need of redrawing screen because of new data
+   * 
+   * <p>Used when there is a need of redrawing screen because of new data
    * 
    * @param frame Current frame
    */
   public void updateOverlay(int frame) {
     LOGGER.trace("Update overlay for frame " + frame);
-    SnakeHandler sH;
-    Snake snake, back;
-    int x, y;
+    SnakeHandler snakeH;
+    Snake snake;
+    Snake back;
+    int x;
+    int y;
     TextRoi text;
     Roi r;
     overlay = new Overlay();
     BOA_.viewUpdater.connectSnakeObject(null); //
     for (int i = 0; i < nest.size(); i++) {
-      sH = nest.getHandler(i);
-      if (sH.isStoredAt(frame)) { // is there a snake a;t f?
+      snakeH = nest.getHandler(i);
+      if (snakeH.isStoredAt(frame)) { // is there a snake a;t iplStack?
 
         // plot segmented snake
         if (BOA_.qState.boap.isProcessedSnakePlotted == true) {
-          back = sH.getBackupSnake(frame); // original unmodified snake
+          back = snakeH.getBackupSnake(frame); // original unmodified snake
           // Roi r = snake.asRoi();
           r = back.asFloatRoi();
           r.setStrokeColor(Color.RED);
           overlay.add(r);
         }
         // remember instance of segmented snake for plugins (last created)
-        BOA_.viewUpdater.connectSnakeObject(sH.getBackupSnake(frame));
+        BOA_.viewUpdater.connectSnakeObject(snakeH.getBackupSnake(frame));
         // plot segmented and filtered snake
-        snake = sH.getStoredSnake(frame); // processed by plugins
+        snake = snakeH.getStoredSnake(frame); // processed by plugins
         // Roi r = snake.asRoi();
         r = snake.asFloatRoi();
         r.setStrokeColor(Color.YELLOW);
@@ -2709,9 +2749,9 @@ class ImageGroup {
         overlay.add(text);
 
         // draw centre point
-        PointRoi pR =
+        PointRoi pointR =
                 new PointRoi((int) snake.getCentroid().getX(), (int) snake.getCentroid().getY());
-        overlay.add(pR);
+        overlay.add(pointR);
 
         // draw head node
         if (BOA_.qState.boap.isHeadPlotted == true) {
@@ -2723,22 +2763,23 @@ class ImageGroup {
                   new Vector2d(snake.getHead().getNext().getNext().getNext().getX() - bp.getX(),
                           snake.getHead().getNext().getNext().getNext().getY() - bp.getY());
           FloatPolygon fp = GraphicsElements.plotArrow(dir, bp, 12.0f, 0.3f);
-          PolygonRoi oR = new PolygonRoi(fp, Roi.POLYGON);
-          oR.setStrokeColor(Color.MAGENTA);
-          oR.setFillColor(Color.MAGENTA);
-          overlay.add(oR);
+          PolygonRoi polygonR = new PolygonRoi(fp, Roi.POLYGON);
+          polygonR.setStrokeColor(Color.MAGENTA);
+          polygonR.setFillColor(Color.MAGENTA);
+          overlay.add(polygonR);
 
           // plot circle on head
           FloatPolygon fp1 = GraphicsElements.getCircle(bp, 10);
-          PolygonRoi oR1 = new PolygonRoi(fp1, Roi.POLYGON);
-          oR1.setStrokeColor(Color.GREEN);
-          oR1.setFillColor(Color.GREEN);
-          overlay.add(oR1);
+          PolygonRoi polyginR1 = new PolygonRoi(fp1, Roi.POLYGON);
+          polyginR1.setStrokeColor(Color.GREEN);
+          polyginR1.setFillColor(Color.GREEN);
+          overlay.add(polyginR1);
         }
         // dump String to log
         LOGGER.trace(snake.toString());
-      } else
+      } else {
         BOA_.viewUpdater.connectSnakeObject(null);
+      }
     }
     orgIpl.setOverlay(overlay);
   }
@@ -2746,7 +2787,7 @@ class ImageGroup {
   /**
    * Updates IJ to current frame. Causes that updateSliceSelector() is called.
    * 
-   * USed when there is a need to move to other frame programmatically.
+   * <p>USed when there is a need to move to other frame programmatically.
    * 
    * @param frame current frame
    * 
@@ -2762,7 +2803,7 @@ class ImageGroup {
     orgIpl.setOverlay(null);
   }
 
-  final public void setProcessor(int i) {
+  public final void setProcessor(int i) {
     orgIp = orgStack.getProcessor(i);
     pathsIp = pathsStack.getProcessor(i);
     // System.out.println("\n1217 Proc set to : " + i);
@@ -2771,9 +2812,9 @@ class ImageGroup {
   /**
    * Calls updateSliceSelector callback only if i != current frame.
    * 
-   * @param i
+   * @param i slice number
    */
-  final public void setIpSliceAll(int i) {
+  public final void setIpSliceAll(int i) {
     // set slice on all images
     pathsIpl.setSlice(i);
     orgIpl.setSlice(i);
@@ -2795,7 +2836,8 @@ class ImageGroup {
 
   private void drawSnake(final ImageProcessor ip, final Snake snake, boolean contrast) {
     // draw snake
-    int x, y;
+    int x;
+    int y;
     int intensity;
 
     Node n = snake.getHead();
@@ -2840,7 +2882,8 @@ class ImageGroup {
   }
 
   void makeContourImage() {
-    ImagePlus contourIpl = NewImage.createByteImage("Contours", w, h, f, NewImage.FILL_BLACK);
+    ImagePlus contourIpl = NewImage.createByteImage("Contours", iplWidth, iplHeight, iplStack,
+            NewImage.FILL_BLACK);
     ImageStack contourStack = contourIpl.getStack();
     contourIpl.setSlice(1);
     ImageProcessor contourIp;
@@ -2859,7 +2902,7 @@ class ImageGroup {
   /**
    * Zoom current view to snake with snakeID.
    * 
-   * If snake is not found nothing happens.
+   * <p>If snake is not found nothing happens.
    * 
    * @param ic Current view
    * @param frame Frame the Snake is looked in
@@ -2870,13 +2913,13 @@ class ImageGroup {
     if (nest.isVacant() || snakeID < 0) {
       return; // negative id or empty nest
     }
-    SnakeHandler sH;
+    SnakeHandler snakeH;
     Snake snake;
 
     try {
-      sH = nest.getHandlerofId(snakeID);// snakeID, not index
-      if (sH != null && sH.isStoredAt(frame)) {
-        snake = sH.getStoredSnake(frame);
+      snakeH = nest.getHandlerofId(snakeID);// snakeID, not index
+      if (snakeH != null && snakeH.isStoredAt(frame)) {
+        snake = snakeH.getStoredSnake(frame);
       } else {
         return;
       }
@@ -2893,10 +2936,10 @@ class ImageGroup {
 
     // correct r's aspect ratio
     double icAspect = (double) ic.getWidth() / (double) ic.getHeight();
-    double rAspect = r.getWidth() / r.getHeight();
+    double rectAspect = r.getWidth() / r.getHeight();
     int newDim; // new dimenesion size
 
-    if (icAspect < rAspect) {
+    if (icAspect < rectAspect) {
       // too short
       newDim = (int) (r.getWidth() / icAspect);
       r.y = r.y - ((newDim - r.height) / 2); // move snake to center
@@ -2934,21 +2977,22 @@ class ImageGroup {
   /**
    * Produces final image with Snake outlines after finishing BOA.
    * 
-   * This is ImageJ image with flatten Snake contours.
+   * <p>This is ImageJ image with flatten Snake contours.
    * 
    * @param stack Stack to plot in
    */
   void drawCellRois(final ImageStack stack) {
     Snake snake;
-    SnakeHandler sH;
+    SnakeHandler snakeH;
     ImageProcessor ip;
 
-    int x, y;
+    int x;
+    int y;
     for (int s = 0; s < nest.size(); s++) {
-      sH = nest.getHandler(s);
+      snakeH = nest.getHandler(s);
       for (int i = 1; i <= BOA_.qState.boap.getFRAMES(); i++) {
-        if (sH.isStoredAt(i)) {
-          snake = sH.getStoredSnake(i);
+        if (snakeH.isStoredAt(i)) {
+          snake = snakeH.getStoredSnake(i);
           ip = stack.getProcessor(i);
           ip.setColor(255);
           ip.draw(snake.asFloatRoi());
@@ -2974,8 +3018,8 @@ class Constrictor {
 
   public boolean constrict(final Snake snake, final ImageProcessor ip) {
 
-    ExtendedVector2d F_temp; // temp vectors for forces
-    ExtendedVector2d V_temp = new ExtendedVector2d();
+    ExtendedVector2d tempF; // temp vectors for forces
+    ExtendedVector2d tempV = new ExtendedVector2d();
 
     Node n = snake.getHead();
     do { // compute F_total
@@ -2983,33 +3027,33 @@ class Constrictor {
       if (!n.isFrozen()) {
 
         // compute F_central
-        V_temp.setX(n.getNormal().getX() * BOA_.qState.segParam.f_central);
-        V_temp.setY(n.getNormal().getY() * BOA_.qState.segParam.f_central);
-        n.setF_total(V_temp);
+        tempV.setX(n.getNormal().getX() * BOA_.qState.segParam.f_central);
+        tempV.setY(n.getNormal().getY() * BOA_.qState.segParam.f_central);
+        n.setF_total(tempV);
 
         // compute F_contract
-        F_temp = contractionForce(n);
-        V_temp.setX(F_temp.getX() * BOA_.qState.segParam.f_contract);
-        V_temp.setY(F_temp.getY() * BOA_.qState.segParam.f_contract);
-        n.addF_total(V_temp);
+        tempF = contractionForce(n);
+        tempV.setX(tempF.getX() * BOA_.qState.segParam.f_contract);
+        tempV.setY(tempF.getY() * BOA_.qState.segParam.f_contract);
+        n.addF_total(tempV);
 
         // compute F_image and F_friction
-        F_temp = imageForce(n, ip);
-        V_temp.setX(F_temp.getX() * BOA_.qState.segParam.f_image);// - n.getVel().getX() *
+        tempF = imageForce(n, ip);
+        tempV.setX(tempF.getX() * BOA_.qState.segParam.f_image);// - n.getVel().getX() *
         // boap.f_friction);
-        V_temp.setY(F_temp.getY() * BOA_.qState.segParam.f_image);// - n.getVel().getY() *
+        tempV.setY(tempF.getY() * BOA_.qState.segParam.f_image);// - n.getVel().getY() *
         // boap.f_friction);
-        n.addF_total(V_temp);
+        n.addF_total(tempV);
 
         // compute new velocities of the node
-        V_temp.setX(BOA_.qState.boap.delta_t * n.getF_total().getX());
-        V_temp.setY(BOA_.qState.boap.delta_t * n.getF_total().getY());
-        n.addVel(V_temp);
+        tempV.setX(BOA_.qState.boap.delta_t * n.getF_total().getX());
+        tempV.setY(BOA_.qState.boap.delta_t * n.getF_total().getY());
+        n.addVel(tempV);
 
         // store the prelimanary point to move the node to
-        V_temp.setX(BOA_.qState.boap.delta_t * n.getVel().getX());
-        V_temp.setY(BOA_.qState.boap.delta_t * n.getVel().getY());
-        n.setPrelim(V_temp);
+        tempV.setX(BOA_.qState.boap.delta_t * n.getVel().getX());
+        tempV.setY(BOA_.qState.boap.delta_t * n.getVel().getY());
+        n.setPrelim(tempV);
 
         // add some friction
         n.getVel().multiply(BOA_.qState.boap.f_friction);
@@ -3035,8 +3079,10 @@ class Constrictor {
   }
 
   /**
-   * @param snake
-   * @param ip
+   * constrictWrite.
+   * 
+   * @param snake snake
+   * @param ip ip
    * @return true on success
    * @deprecated Strictly related to absolute paths on disk. Probably for testing purposes only.
    */
@@ -3044,10 +3090,9 @@ class Constrictor {
     // for writing forces at each frame
     try {
       PrintWriter pw = new PrintWriter(
-              new FileWriter("/Users/rtyson/Documents/phd/tmp/test/forcesWrite/forces.txt"), true); // auto
-                                                                                                    // flush
-      ExtendedVector2d F_temp; // temp vectors for forces
-      ExtendedVector2d V_temp = new ExtendedVector2d();
+              new FileWriter("/Users/rtyson/Documents/phd/tmp/test/forcesWrite/forces.txt"), true);
+      ExtendedVector2d tempF; // temp vectors for forces
+      ExtendedVector2d tempV = new ExtendedVector2d();
 
       Node n = snake.getHead();
       do { // compute F_total
@@ -3055,44 +3100,44 @@ class Constrictor {
         // if (!n.isFrozen()) {
 
         // compute F_central
-        V_temp.setX(n.getNormal().getX() * BOA_.qState.segParam.f_central);
-        V_temp.setY(n.getNormal().getY() * BOA_.qState.segParam.f_central);
-        pw.print("\n" + n.getTrackNum() + "," + V_temp.length() + ",");
-        n.setF_total(V_temp);
+        tempV.setX(n.getNormal().getX() * BOA_.qState.segParam.f_central);
+        tempV.setY(n.getNormal().getY() * BOA_.qState.segParam.f_central);
+        pw.print("\n" + n.getTrackNum() + "," + tempV.length() + ",");
+        n.setF_total(tempV);
 
         // compute F_contract
-        F_temp = contractionForce(n);
+        tempF = contractionForce(n);
         if (n.getCurvatureLocal() > 0) {
-          pw.print(F_temp.length() + ",");
+          pw.print(tempF.length() + ",");
         } else {
-          pw.print((F_temp.length() * -1) + ",");
+          pw.print((tempF.length() * -1) + ",");
         }
-        V_temp.setX(F_temp.getX() * BOA_.qState.segParam.f_contract);
-        V_temp.setY(F_temp.getY() * BOA_.qState.segParam.f_contract);
-        n.addF_total(V_temp);
+        tempV.setX(tempF.getX() * BOA_.qState.segParam.f_contract);
+        tempV.setY(tempF.getY() * BOA_.qState.segParam.f_contract);
+        n.addF_total(tempV);
 
         // compute F_image and F_friction
-        F_temp = imageForce(n, ip);
-        pw.print((F_temp.length() * -1) + ",");
-        V_temp.setX(F_temp.getX() * BOA_.qState.segParam.f_image);// - n.getVel().getX()*
+        tempF = imageForce(n, ip);
+        pw.print((tempF.length() * -1) + ",");
+        tempV.setX(tempF.getX() * BOA_.qState.segParam.f_image);// - n.getVel().getX()*
         // boap.f_friction);
-        V_temp.setY(F_temp.getY() * BOA_.qState.segParam.f_image);// - n.getVel().getY()*
+        tempV.setY(tempF.getY() * BOA_.qState.segParam.f_image);// - n.getVel().getY()*
         // boap.f_friction);
-        n.addF_total(V_temp);
+        n.addF_total(tempV);
         pw.print(n.getF_total().length() + "");
 
         // compute new velocities of the node
-        V_temp.setX(BOA_.qState.boap.delta_t * n.getF_total().getX());
-        V_temp.setY(BOA_.qState.boap.delta_t * n.getF_total().getY());
-        n.addVel(V_temp);
+        tempV.setX(BOA_.qState.boap.delta_t * n.getF_total().getX());
+        tempV.setY(BOA_.qState.boap.delta_t * n.getF_total().getY());
+        n.addVel(tempV);
 
         // add some friction
         n.getVel().multiply(BOA_.qState.boap.f_friction);
 
         // store the prelimanary point to move the node to
-        V_temp.setX(BOA_.qState.boap.delta_t * n.getVel().getX());
-        V_temp.setY(BOA_.qState.boap.delta_t * n.getVel().getY());
-        n.setPrelim(V_temp);
+        tempV.setX(BOA_.qState.boap.delta_t * n.getVel().getX());
+        tempV.setY(BOA_.qState.boap.delta_t * n.getVel().getY());
+        n.setPrelim(tempV);
 
         // freeze node if vel is below vel_crit
         if (n.getVel().length() < BOA_.qState.segParam.vel_crit) {
@@ -3120,155 +3165,46 @@ class Constrictor {
 
   public ExtendedVector2d contractionForce(final Node n) {
 
-    ExtendedVector2d R_result;
-    ExtendedVector2d L_result;
+    ExtendedVector2d resultR;
+    ExtendedVector2d resultL;
     ExtendedVector2d force = new ExtendedVector2d();
 
     // compute the unit vector pointing to the left neighbor (static
     // method)
-    L_result = ExtendedVector2d.unitVector(n.getPoint(), n.getPrev().getPoint());
+    resultL = ExtendedVector2d.unitVector(n.getPoint(), n.getPrev().getPoint());
 
     // compute the unit vector pointing to the right neighbor
-    R_result = ExtendedVector2d.unitVector(n.getPoint(), n.getNext().getPoint());
+    resultR = ExtendedVector2d.unitVector(n.getPoint(), n.getNext().getPoint());
 
-    force.setX((R_result.getX() + L_result.getX()) * 0.5); // combine vector to left and right
-    force.setY((R_result.getY() + L_result.getY()) * 0.5);
+    force.setX((resultR.getX() + resultL.getX()) * 0.5); // combine vector to left and right
+    force.setY((resultR.getY() + resultL.getY()) * 0.5);
 
     return (force);
   }
 
   /**
-   * @param n
-   * @param ip
-   * @return image force
-   * @deprecated Probably old version of contractionForce(Node n).
+   * Calculate image force.
+   * 
+   * @param n node
+   * @param ip image
+   * @return image force at node
    */
-  public ExtendedVector2d imageForceOLD(final Node n, final ImageProcessor ip) {
-    ExtendedVector2d result = new ExtendedVector2d();
-    ExtendedVector2d tan; // Tangent
-    int i, j;
-
-    double a = 0.75; // subsampling factor
-    double Delta_I; // intensity contrast
-    double x, y; // co-ordinates of the local neighborhood
-    double xt, yt; // co-ordinates of the tangent
-    int I_inside = 0, I_outside = 0; // Intensity of the local
-    // Neighborhood of a node (inside/outside of the chain)
-    int I_in = 0, I_out = 0; // number of pixels in the local
-    // Neighborhood of a node
-
-    // compute normalized tangent (unit vector between neighbors) via
-    // static method
-    tan = n.getTangent();
-
-    // determine local neighborhood: a rectangle with sample_tan x
-    // sample_norm
-    // tangent to the chain
-
-    for (i = 0; i <= 1. / a * BOA_.qState.segParam.sample_tan; ++i) {
-      // determine points on the tangent
-      xt = n.getPoint().getX() + (a * i - BOA_.qState.segParam.sample_tan / 2) * tan.getX();
-      yt = n.getPoint().getY() + (a * i - BOA_.qState.segParam.sample_tan / 2) * tan.getY();
-
-      for (j = 0; j <= 1. / a * BOA_.qState.segParam.sample_norm / 2; ++j) {
-        x = xt + a * j * n.getNormal().getX();
-        y = yt + a * j * n.getNormal().getY();
-
-        I_inside += ip.getPixel((int) x, (int) y);
-        ++I_in;
-
-        x = xt - a * j * n.getNormal().getX();
-        y = yt - a * j * n.getNormal().getY();
-
-        // check that pixel is inside frame
-        if (x > 0 && y > 0 && x <= BOA_.qState.boap.getWIDTH()
-                && y <= BOA_.qState.boap.getHEIGHT()) {
-          I_outside += ip.getPixel((int) x, (int) y);
-          ++I_out;
-        }
-      }
-    }
-
-    // if (I_out > boap.sample_norm / 2 * boap.sample_tan) //check that all
-    // I_out pixels are inside the frame
-    // {
-    Delta_I = ((double) I_inside / I_in - (double) I_outside / I_out) / 255.;
-    // }
-
-    I_inside = 0;
-    I_outside = 0; // Intensity of the local
-    // neighbourhood of a node (insde/outside of the chain)
-    I_in = 0;
-    I_out = 0; // number of pixels in the local
-
-    // rotate sample window and take the maximum contrast
-    for (i = 0; i <= 1. / a * BOA_.qState.segParam.sample_norm; ++i) {
-      // determine points on the tangent
-      xt = n.getPoint().getX() + (a * i - BOA_.qState.segParam.sample_tan / 2) * tan.getX();
-      yt = n.getPoint().getY() + (a * i - BOA_.qState.segParam.sample_tan / 2) * tan.getY();
-
-      for (j = 0; j <= 1. / a * BOA_.qState.segParam.sample_tan / 2; ++j) {
-        x = xt + a * j * n.getNormal().getX();
-        y = yt + a * j * n.getNormal().getY();
-
-        I_inside += ip.getPixel((int) x, (int) y);
-        ++I_in;
-
-        x = xt - a * j * n.getNormal().getX();
-        y = yt - a * j * n.getNormal().getY();
-        // check that pixel is inside frame
-        if (x > 0 && y > 0 && x <= BOA_.qState.boap.getWIDTH()
-                && y <= BOA_.qState.boap.getHEIGHT()) {
-          I_outside += ip.getPixel((int) x, (int) y);
-          ++I_out;
-        }
-      }
-    }
-
-    double Delta_I_r = ((double) I_inside / I_in - (double) I_outside / I_out) / 255.;
-    System.out.println("Delta_I=" + Delta_I + ", Delta_I_r =" + Delta_I_r);
-
-    if (I_out > BOA_.qState.segParam.sample_norm / 2 * BOA_.qState.segParam.sample_tan) // check
-    // that all
-    // I_out pixels are
-    // inside the frame
-    {
-      Delta_I = Math.max(Delta_I, ((double) I_inside / I_in - (double) I_outside / I_out) / 255.);
-    }
-
-    // !!!!!!!!!!!
-    // check if node erraneously got inside (pixel value > p.sensitivity)
-    // if so, push node outside
-    double check = (double) I_outside / I_out / 255.;
-
-    if (check > BOA_.qState.boap.sensitivity) // Delta_I += 0.5 * check;
-    {
-      Delta_I += 0.125 * check;
-    }
-    // if contrast is positive compute image force as square root of the
-    // contrast
-    if (Delta_I > 0.) { // else remains at zero
-      result.setX(-Math.sqrt(Delta_I) * n.getNormal().getX());
-      result.setY(-Math.sqrt(Delta_I) * n.getNormal().getY());
-    }
-
-    return (result);
-  }
-
   public ExtendedVector2d imageForce(final Node n, final ImageProcessor ip) {
     ExtendedVector2d result = new ExtendedVector2d();
     ExtendedVector2d tan = n.getTangent(); // Tangent at node
-    int i, j; // loop vars
+    int i;
+    int j; // loop vars
 
     double a = 0.75; // subsampling factor
-    double Delta_I; // intensity contrast
-    double x, y; // co-ordinates of the norm
-    double xt, yt; // co-ordinates of the tangent
-    int I_inside = 0;
-    int I_outside = 0; // Intensity of neighbourhood of a node
-                       // (insde/outside of the chain)
-    int I_in = 0, I_out = 0; // number of pixels in the neighbourhood of a
-                             // node
+    double deltaI; // intensity contrast
+    double x;
+    double y; // co-ordinates of the norm
+    double xt;
+    double yt; // co-ordinates of the tangent
+    int insideI = 0;
+    int outsideI = 0; // Intensity of neighbourhood of a node (insde/outside of the chain)
+    int inI = 0;
+    int outI = 0; // number of pixels in the neighbourhood of a node
 
     // determine num pixels and total intensity of
     // neighbourhood: a rectangle with sample_tan x sample_norm
@@ -3281,14 +3217,14 @@ class Constrictor {
         x = xt + a * j * n.getNormal().getX();
         y = yt + a * j * n.getNormal().getY();
 
-        I_inside += ip.getPixel((int) x, (int) y);
-        I_in++;
+        insideI += ip.getPixel((int) x, (int) y);
+        inI++;
 
         x = xt - a * j * n.getNormal().getX();
         y = yt - a * j * n.getNormal().getY();
 
-        I_outside += ip.getPixel((int) x, (int) y);
-        I_out++;
+        outsideI += ip.getPixel((int) x, (int) y);
+        outI++;
 
         // if (x <= 0 || y <= 0 || x > width || y > height){
         // System.out.println("outer pixel I = " + ip.getPixel((int) x,
@@ -3298,7 +3234,7 @@ class Constrictor {
       }
     }
 
-    Delta_I = ((double) I_inside / I_in - (double) I_outside / I_out) / 255.;
+    deltaI = ((double) insideI / inI - (double) outsideI / outI) / 255.;
 
     // check if node erraneously got inside (pixel value > p.sensitivity)
     // if so, push node outside
@@ -3310,9 +3246,9 @@ class Constrictor {
     // }
     // if contrast is positive compute image force as square root of the
     // contrast
-    if (Delta_I > 0.) { // else remains at zero
-      result.setX(-Math.sqrt(Delta_I) * n.getNormal().getX());
-      result.setY(-Math.sqrt(Delta_I) * n.getNormal().getY());
+    if (deltaI > 0.) { // else remains at zero
+      result.setX(-Math.sqrt(deltaI) * n.getNormal().getX());
+      result.setY(-Math.sqrt(deltaI) * n.getNormal().getY());
     }
 
     return (result);
@@ -3321,22 +3257,22 @@ class Constrictor {
   /**
    * Expand all snakes while preventing overlaps.
    * 
-   * Dead snakes are ignored. Count snakes on frame.
+   * <p>Dead snakes are ignored. Count snakes on frame.
    * 
-   * @param nest
-   * @param frame
-   * @throws Exception
+   * @param nest nest
+   * @param frame frame
+   * @throws Exception on error
    */
   public void loosen(final Nest nest, int frame) throws Exception {
-    int N = nest.size();
-    Snake snakeA, snakeB;
+    int nestSize = nest.size();
+    Snake snakeA;
+    Snake snakeB;
 
-    double[][] prox = new double[N][N]; // dist beween snake centroids,
-                                        // triangular
-    for (int si = 0; si < N; si++) {
+    double[][] prox = new double[nestSize][nestSize]; // dist between snake centroids, triangular
+    for (int si = 0; si < nestSize; si++) {
       snakeA = nest.getHandler(si).getLiveSnake();
       snakeA.calcCentroid();
-      for (int sj = si + 1; sj < N; sj++) {
+      for (int sj = si + 1; sj < nestSize; sj++) {
         snakeB = nest.getHandler(sj).getLiveSnake();
         snakeB.calcCentroid();
         prox[si][sj] = ExtendedVector2d.lengthP2P(snakeA.getCentroid(), snakeB.getCentroid());
@@ -3349,12 +3285,12 @@ class Constrictor {
     for (int i = 0; i < steps; i++) {
       // check for contacts, freeze nodes in contact.
       // Ignore snakes that begin after 'frame'
-      for (int si = 0; si < N; si++) {
+      for (int si = 0; si < nestSize; si++) {
         snakeA = nest.getHandler(si).getLiveSnake();
         if (!snakeA.alive || frame < nest.getHandler(si).getStartFrame()) {
           continue;
         }
-        for (int sj = si + 1; sj < N; sj++) {
+        for (int sj = si + 1; sj < nestSize; sj++) {
           snakeB = nest.getHandler(sj).getLiveSnake();
           if (!snakeB.alive || frame < nest.getHandler(si).getStartFrame()) {
             continue;
@@ -3369,7 +3305,7 @@ class Constrictor {
 
       // scale up all snakes by one step (if node not frozen, or dead)
       // unless they start at this frame or after
-      for (int s = 0; s < N; s++) {
+      for (int s = 0; s < nestSize; s++) {
         snakeA = nest.getHandler(s).getLiveSnake();
         if (snakeA.alive && frame > nest.getHandler(s).getStartFrame()) {
           snakeA.scale(stepSize, stepSize, true);
@@ -3377,10 +3313,6 @@ class Constrictor {
       }
 
     }
-
-    /*
-     * //defreeze snakes for (int s = 0; s < snakes.length; s++) { snakes[s].defreeze(); }
-     */
   }
 
   public void freezeProx(final Snake a, final Snake b) {
@@ -3416,12 +3348,12 @@ class Constrictor {
 
   public void implode(final Nest nest, int f) throws Exception {
     // System.out.println("imploding snake");
-    SnakeHandler sH;
+    SnakeHandler snakeH;
     Snake snake;
     for (int s = 0; s < nest.size(); s++) {
-      sH = nest.getHandler(s);
-      snake = sH.getLiveSnake();
-      if (snake.alive && f > sH.getStartFrame()) {
+      snakeH = nest.getHandler(s);
+      snake = snakeH.getLiveSnake();
+      if (snake.alive && f > snakeH.getStartFrame()) {
         snake.implode();
       }
     }
@@ -3431,7 +3363,7 @@ class Constrictor {
 /**
  * Extended exception class.
  * 
- * Contains additional information on frame and type
+ * <p>Contains additional information on frame and type
  * 
  * @author rtyson
  *
@@ -3461,6 +3393,7 @@ class BoaException extends QuimpException {
   }
 
   /**
+   * BoaException.
    * 
    */
   public BoaException() {
@@ -3468,10 +3401,12 @@ class BoaException extends QuimpException {
   }
 
   /**
-   * @param message
-   * @param cause
-   * @param enableSuppression
-   * @param writableStackTrace
+   * BoaException.
+   * 
+   * @param message message
+   * @param cause cause
+   * @param enableSuppression enableSuppression
+   * @param writableStackTrace writableStackTrace
    */
   public BoaException(String message, Throwable cause, boolean enableSuppression,
           boolean writableStackTrace) {
@@ -3480,26 +3415,30 @@ class BoaException extends QuimpException {
   }
 
   /**
-   * @param message
-   * @param cause
+   * BoaException.
+   * 
+   * @param message message
+   * @param cause cause
    */
   public BoaException(String message, Throwable cause) {
     super(message, cause);
   }
 
   /**
-   * @param cause
+   * BoaException.
+   * 
+   * @param cause cause
    */
   public BoaException(Throwable cause) {
     super(cause);
   }
-
 }
 
 /**
  * Object builder for GSon and DataContainer class.
  * 
- * This class is used on load JSon representation of DataContainer class. Rebuilds snakePluginList
+ * <p>This class is used on load JSon representation of DataContainer class. Rebuilds
+ * snakePluginList
  * field that is not serialized. This field keeps current state of plugins.
  * 
  * @author p.baniukiewicz
