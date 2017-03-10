@@ -14,16 +14,16 @@ import ij.process.FloatPolygon;
 import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 
-// TODO: Auto-generated Javadoc
 /**
- * Low level snake definition. Form snake from Node objects. Snake is defined by first \c head node.
+ * Low level snake definition. Form snake from Node objects. Snake is defined by first head node.
  * Remaining nodes are in bidirectional linked list.
  * 
- * Node list may be modified externally but then method such as findNode(), updateNormales(),
+ * <p>Node list may be modified externally but then method such as findNode(), updateNormales(),
  * calcCentroid() should be called to update internal fields of Snake. If number of nodes changes it
- * is recommended to create \b new object.
+ * is recommended to create new object.
  * 
  * @author rtyson
+ * @author baniuk
  *
  */
 public class Snake extends Shape<Node> implements IQuimpSerialize {
@@ -33,7 +33,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(Snake.class.getName());
   /**
-   * true if snake is alive Changed during segmentation and user interaction
+   * true if snake is alive Changed during segmentation and user interaction.
    */
   public boolean alive;
   /**
@@ -42,15 +42,15 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    */
   private int snakeID;
   /**
-   * how many nodes at start of segmentation
+   * how many nodes at start of segmentation.
    */
   public double startingNnodes;
   /**
-   * number of nodes frozen Changed during segmentation
+   * number of nodes frozen Changed during segmentation.
    */
-  private int FROZEN;
+  private int FROZEN; // name related to QCONF file do not change
   /**
-   * Snake bounds, updated only on use getBounds(). Even though this field is serialized it is
+   * Snake bounds, updated only on use getBounds(). Even though this field is serialised it is
    * recalculated in afterSerialzie() and beforeSerialzie()
    */
   private Rectangle bounds = new Rectangle();
@@ -58,16 +58,16 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   /**
    * Create a snake from existing linked list (at least one head node).
    * 
-   * List is referenced only not copied Behavior of this method was changed. Now it does not make
+   * <p>List is referenced only not copied Behaviour of this method was changed. Now it does not
+   * make
    * copy of Node. In old approach there was dummy node deleted in this constructor.
    * 
    * @param h Node of list
-   * @param N Number of nodes
+   * @param n Number of nodes
    * @param id Unique snake ID related to object being segmented.
-   * @throws BoaException
    */
-  public Snake(final Node h, int N, int id) throws BoaException {
-    super(h, N);
+  public Snake(final Node h, int n, int id) {
+    super(h, n);
     snakeID = id;
     centroid = new ExtendedVector2d(0d, 0d);
     calcCentroid();
@@ -82,7 +82,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Copy constructor wit new ID
+   * Copy constructor wit new ID.
    * 
    * @param src Snake to be duplicated
    * @param id New id
@@ -98,7 +98,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Copy constructor
+   * Copy constructor.
    * 
    * @param src to be duplicated
    */
@@ -109,28 +109,28 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   /**
    * Create snake from ROI
    * 
-   * @param R ROI with object to be segmented
+   * @param r ROI with object to be segmented
    * @param id Unique ID of snake related to object being segmented.
-   * @param direct
-   * @throws Exception
+   * @param direct direct
+   * @throws Exception on wrong number of polygon points
    */
-  public Snake(final Roi R, int id, boolean direct) throws Exception {
+  public Snake(final Roi r, int id, boolean direct) throws Exception {
     // place nodes in a circle
     snakeID = id;
-    if (R.getType() == Roi.RECTANGLE || R.getType() == Roi.POLYGON) {
+    if (r.getType() == Roi.RECTANGLE || r.getType() == Roi.POLYGON) {
       if (direct) {
-        intializePolygonDirect(R.getFloatPolygon());
+        intializePolygonDirect(r.getFloatPolygon());
       } else {
-        intializePolygon(R.getFloatPolygon());
+        intializePolygon(r.getFloatPolygon());
       }
     } else {
-      Rectangle Rect = R.getBounds();
-      int xc = Rect.x + Rect.width / 2;
-      int yc = Rect.y + Rect.height / 2;
-      int Rx = Rect.width / 2;
-      int Ry = Rect.height / 2;
+      Rectangle rect = r.getBounds();
+      int xc = rect.x + rect.width / 2;
+      int yc = rect.y + rect.height / 2;
+      int rx = rect.width / 2;
+      int ry = rect.height / 2;
 
-      intializeOval(0, xc, yc, Rx, Ry, BOA_.qState.segParam.getNodeRes() / 2);
+      intializeOval(0, xc, yc, rx, ry, BOA_.qState.segParam.getNodeRes() / 2);
     }
     startingNnodes = POINTS / 100.; // as 1%. limit to X%
     alive = true;
@@ -140,14 +140,16 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
+   * Initialises snake from PolyginRoi.
+   * 
    * @see #Snake(Roi, int, boolean)
-   * @param R
-   * @param id
-   * @throws BoaException
+   * @param r polygon to initialise Snake
+   * @param id id of Snake
+   * @throws BoaException on wrong number of polygon points
    */
-  public Snake(final PolygonRoi R, int id) throws BoaException {
+  public Snake(final PolygonRoi r, int id) throws BoaException {
     snakeID = id;
-    intializeFloat(R.getFloatPolygon());
+    intializeFloat(r.getFloatPolygon());
     startingNnodes = POINTS / 100.; // as 1%. limit to X%
     alive = true;
     // colour = QColor.lightColor();
@@ -156,11 +158,11 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Construct Snake object from list of nodes
+   * Construct Snake object from list of nodes.
    * 
    * @param list list of nodes as Vector2d
    * @param id id of Snake
-   * @throws BoaException
+   * @throws BoaException on wrong number of array points.
    */
   public Snake(final List<? extends Tuple2d> list, int id) throws BoaException {
     snakeID = id;
@@ -173,14 +175,14 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   /**
    * Construct Snake object from X and Y arrays
    * 
-   * @param X x coordinates of nodes
-   * @param Y y coordinates of nodes
+   * @param x x coordinates of nodes
+   * @param y y coordinates of nodes
    * @param id id of Snake
-   * @throws BoaException
+   * @throws BoaException on wrong number of array points.
    */
-  public Snake(final double X[], final double Y[], int id) throws BoaException {
+  public Snake(final double[] x, final double[] y, int id) throws BoaException {
     snakeID = id;
-    initializeArray(X, Y);
+    initializeArray(x, y);
     startingNnodes = POINTS / 100;
     alive = true;
     calcCentroid();
@@ -212,30 +214,41 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (!super.equals(obj))
+    }
+    if (!super.equals(obj)) {
       return false;
-    if (!(obj instanceof Snake))
+    }
+    if (!(obj instanceof Snake)) {
       return false;
+    }
     Snake other = (Snake) obj;
-    if (FROZEN != other.FROZEN)
+    if (FROZEN != other.FROZEN) {
       return false;
-    if (alive != other.alive)
+    }
+    if (alive != other.alive) {
       return false;
+    }
     if (bounds == null) {
-      if (other.bounds != null)
+      if (other.bounds != null) {
         return false;
-    } else if (!bounds.equals(other.bounds))
+      }
+    } else if (!bounds.equals(other.bounds)) {
       return false;
-    if (snakeID != other.snakeID)
+    }
+    if (snakeID != other.snakeID) {
       return false;
-    if (Double.doubleToLongBits(startingNnodes) != Double.doubleToLongBits(other.startingNnodes))
+    }
+    if (Double.doubleToLongBits(startingNnodes) != Double.doubleToLongBits(other.startingNnodes)) {
       return false;
+    }
     return true;
   }
 
   /**
+   * Get ID of Snake.
+   * 
    * @return the snakeID
    */
   public int getSnakeID() {
@@ -243,9 +256,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Change current snakeID.
-   * 
-   * Should be used carefully.
+   * Change current snakeID. Should be used carefully.
    * 
    * @param snakeID the snakeID to set
    */
@@ -254,21 +265,21 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Initializes \c Node list from ROIs other than polygons For non-polygon ROIs ellipse is used
+   * Initialises Node list from ROIs other than polygons For non-polygon ROIs ellipse is used
    * as first approximation of segmented shape. Parameters of ellipse are estimated usually using
-   * parameters of bounding box of user ROI This method differs from other \c initialize* methods
+   * parameters of bounding box of user ROI This method differs from other initialize* methods
    * by input data which do not contain nodes but the are defined analytically
    * 
    * @param t index of node
    * @param xc center of ellipse
    * @param yc center of ellipse
-   * @param Rx ellipse diameter
-   * @param Ry ellipse diameter
+   * @param rx ellipse diameter
+   * @param ry ellipse diameter
    * @param s number of nodes
    * 
-   * @throws Exception
+   * @throws Exception Exception if polygon contains too little nodes.
    */
-  private void intializeOval(int t, int xc, int yc, int Rx, int Ry, double s) throws Exception {
+  private void intializeOval(int t, int xc, int yc, int rx, int ry, double s) throws Exception {
     head = new Node(t); // make a dummy head node for list initialization
     POINTS = 1;
     FROZEN = 0;
@@ -276,15 +287,15 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     head.setNext(head);
     head.setHead(true);
 
-    double theta = 2.0 / (double) ((Rx + Ry) / 2);
+    double theta = 2.0 / (double) ((rx + ry) / 2);
 
     // nodes are added in behind the head node
     Node node;
     for (double a = 0.0; a < (2 * Math.PI); a += s * theta) {
       node = new Node(nextTrackNumber);
       nextTrackNumber++;
-      node.getPoint().setX((int) (xc + Rx * Math.cos(a)));
-      node.getPoint().setY((int) (yc + Ry * Math.sin(a)));
+      node.getPoint().setX((int) (xc + rx * Math.cos(a)));
+      node.getPoint().setY((int) (yc + ry * Math.sin(a)));
       addPoint(node);
     }
     removeNode(head); // remove dummy head node
@@ -293,11 +304,11 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Initializes \c Node list from polygon Each edge of input polygon is divided on
-   * uk.ac.warwick.wsbc.quimp.boap.nodeRes nodes
+   * Initialises Node list from polygon Each edge of input polygon is divided on
+   * {@link BOAState.SegParam#getNodeRes()}
    * 
    * @param p Polygon extracted from IJ ROI
-   * @throws Exception
+   * @throws Exception if polygon contains too little nodes.
    */
   private void intializePolygon(final FloatPolygon p) throws Exception {
     // System.out.println("poly with node distance");
@@ -309,14 +320,17 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     head.setHead(true);
 
     Node node;
-    int j, nn;
-    double x, y, spacing;
-    ExtendedVector2d a, b, u;
+    int j;
+    int nn;
+    double x;
+    double y;
+    double spacing;
+    ExtendedVector2d a;
+    ExtendedVector2d b;
+    ExtendedVector2d u;
     for (int i = 0; i < p.npoints; i++) {
-      j = ((i + 1) % (p.npoints)); // for last i point we turn for first
-                                   // one closing polygon
-      a = new ExtendedVector2d(p.xpoints[i], p.ypoints[i]);// vectors ab
-                                                           // define edge
+      j = ((i + 1) % (p.npoints)); // for last i point we turn for first one closing polygon
+      a = new ExtendedVector2d(p.xpoints[i], p.ypoints[i]);// vectors ab define edge
       b = new ExtendedVector2d(p.xpoints[j], p.ypoints[j]);
 
       nn = (int) Math.ceil(ExtendedVector2d.lengthP2P(a, b) / BOA_.qState.segParam.getNodeRes());
@@ -344,7 +358,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * polygon.
    * 
    * @param p Polygon extracted from IJ ROI
-   * @throws Exception
+   * @throws Exception if polygon contains too little nodes.
    * @see #intializePolygon(FloatPolygon)
    */
   private void intializePolygonDirect(final FloatPolygon p) throws Exception {
@@ -368,13 +382,14 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
+   * Create Snake from polygon.
    * 
+   * @param p polygon to initialise snake from
    * @see #intializePolygonDirect(FloatPolygon)
-   * @param p
-   * @throws BoaException
+   * @throws BoaException if polygon contains too little nodes.
    */
   private void intializeFloat(final FloatPolygon p) throws BoaException {
-    // TODO This method is the same as intializePolygonDirect(FloatPolygon)
+    // FIXME This method is the same as intializePolygonDirect(FloatPolygon)
     head = new Node(0); // make a dummy head node
     POINTS = 1;
     FROZEN = 0;
@@ -394,14 +409,15 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Initialize snake from List of Vector2d objects
+   * Initialize snake from List of Vector2d objects.
    * 
    * @param p List as initializer of Snake
-   * @throws BoaException
+   * @throws BoaException on insufficient number of points
    */
   private void initializeArrayList(final List<? extends Tuple2d> p) throws BoaException {
-    if (p.size() <= 3)
+    if (p.size() <= 3) {
       throw new BoaException("Not enough points provided");
+    }
     head = new Node(0);
     POINTS = 1;
     FROZEN = 0;
@@ -421,13 +437,13 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Initialize snake from X, Y arrays
+   * Initialize snake from X, Y arrays.
    * 
-   * @param X x coordinates of nodes
-   * @param Y y coordinates of nodes
-   * @throws BoaException
+   * @param x x coordinates of nodes
+   * @param y y coordinates of nodes
+   * @throws BoaException on wrong arrays sizes
    */
-  private void initializeArray(final double X[], final double Y[]) throws BoaException {
+  private void initializeArray(final double[] x, final double[] y) throws BoaException {
     head = new Node(0);
     POINTS = 1;
     FROZEN = 0;
@@ -435,12 +451,13 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     head.setNext(head);
     head.setHead(true);
 
-    if (X.length != Y.length)
+    if (x.length != y.length) {
       throw new BoaException("Lengths of X and Y arrays are not equal");
+    }
 
     Node node;
-    for (int i = 0; i < X.length; i++) {
-      node = new Node(X[i], Y[i], nextTrackNumber++);
+    for (int i = 0; i < x.length; i++) {
+      node = new Node(x[i], y[i], nextTrackNumber++);
       addPoint(node);
     }
 
@@ -470,29 +487,30 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Assign head to node \c nodeIndex.
-   * 
-   * Do not change \b head if \c nodeIndex is not found or there is no \b head in list
+   * Assign head to node nodeIndex. Do not change head if nodeIndex is not found or there is no head
+   * in list
    * 
    * @param nodeIndex Index of node of new head
    */
   public void setNewHead(int nodeIndex) {
-    if (!checkIsHead())
+    if (!checkIsHead()) {
       return;
+    }
     Node n = head;
     Node oldhead = n;
     do {
       n = n.getNext();
     } while (n.getTrackNum() != nodeIndex && !n.isHead());
     n.setHead(true);
-    if (oldhead != n)
+    if (oldhead != n) {
       oldhead.setHead(false);
+    }
     head = n;
     LOGGER.debug("New head is: " + getHead().toString());
   }
 
   /**
-   * Get number of nodes forming current Snake
+   * Get number of nodes forming current Snake.
    * 
    * @return number of nodes in current Snake
    */
@@ -501,7 +519,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Unfreeze all nodes
+   * Unfreeze all nodes.
    */
   public void unfreezeAll() {
     super.unfreezeAll();
@@ -509,22 +527,21 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Go through whole list and count Nodes that are frozen.
-   * 
-   * Set \c FREEZE variable
+   * Go through whole list and count Nodes that are frozen. Set FREEZE variable
    */
   private void countFrozen() {
     Node n = head;
     FROZEN = 0;
     do {
-      if (n.isFrozen())
+      if (n.isFrozen()) {
         FROZEN++;
+      }
       n = n.getNext();
     } while (!n.isHead());
   }
 
   /**
-   * Freeze a specific node
+   * Freeze a specific node.
    * 
    * @param n Node to freeze
    */
@@ -536,7 +553,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Unfreeze a specific node
+   * Unfreeze a specific node.
    * 
    * @param n Node to unfreeze
    */
@@ -548,9 +565,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Check if all nodes are frozen
+   * Check if all nodes are frozen.
    * 
-   * @return \c true if all nodes are frozen
+   * @return true if all nodes are frozen
    */
   public boolean isFrozen() {
     if (FROZEN == POINTS) {
@@ -563,14 +580,14 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   /**
    * Remove selected node from list.
    * 
-   * Perform check if removed node was head and if it was, the new head is randomly selected.
+   * <p>Perform check if removed node was head and if it was, the new head is randomly selected.
    * Neighbors are linked together
    * 
    * @param n Node to remove
    * 
    * @throws BoaException on insufficient number of nodes
    */
-  final public void removeNode(Node n) throws BoaException {
+  public final void removeNode(Node n) throws BoaException {
     if (POINTS <= 3) {
       throw new BoaException("removeNode: Did not remove node. " + POINTS + " nodes remaining.", 0,
               2);
@@ -627,13 +644,14 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * 
    * @param amount scale
    * @param stepSize increment
-   * @param correct
-   * @throws BoaException
+   * @param correct if true it corrects the node distance
+   * @throws BoaException if node distance correction failed
    * @see uk.ac.warwick.wsbc.quimp.Shape#scale(double, double)
    */
   public void scale(double amount, double stepSize, boolean correct) throws BoaException {
-    if (amount == 0)
+    if (amount == 0) {
       return;
+    }
     // make sure snake access is clockwise
     Node.setClockwise(true);
     // scale the snake by 'amount', in increments of 'stepsize'
@@ -665,45 +683,46 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * Cut out a loop Insert a new node at cut point.
    */
   public void cutLoops() {
-    int MAXINTERVAL = 12; // how far ahead do you check for a loop
-    int interval, state;
+    final int maxInterval = 12; // how far ahead do you check for a loop
+    int interval;
+    int state;
 
-    Node nA, nB;
+    Node nodeA;
+    Node nodeB;
     double[] intersect = new double[2];
     Node newN;
 
     boolean cutHead;
 
-    nA = head;
+    nodeA = head;
     do {
-      cutHead = (nA.getNext().isHead()) ? true : false;
-      nB = nA.getNext().getNext(); // don't check next edge as they can't
-                                   // cross, but do touch
+      cutHead = (nodeA.getNext().isHead()) ? true : false;
+      nodeB = nodeA.getNext().getNext(); // don't check next edge as they can't cross, but do touch
 
       // always leave 3 nodes, at least
-      interval = (POINTS > MAXINTERVAL + 3) ? MAXINTERVAL : (POINTS - 3);
+      interval = (POINTS > maxInterval + 3) ? maxInterval : (POINTS - 3);
 
       for (int i = 0; i < interval; i++) {
-        if (nB.isHead()) {
+        if (nodeB.isHead()) {
           cutHead = true;
         }
-        state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(),
-                nA.getNext().getY(), nB.getX(), nB.getY(), nB.getNext().getX(), nB.getNext().getY(),
-                intersect);
+        state = ExtendedVector2d.segmentIntersection(nodeA.getX(), nodeA.getY(),
+                nodeA.getNext().getX(), nodeA.getNext().getY(), nodeB.getX(), nodeB.getY(),
+                nodeB.getNext().getX(), nodeB.getNext().getY(), intersect);
         if (state == 1) {
           // System.out.println("CutLoops: cut out a loop");
-          newN = this.insertNode(nA);
+          newN = this.insertNode(nodeA);
           newN.setX(intersect[0]);
           newN.setY(intersect[1]);
 
-          newN.setNext(nB.getNext());
-          nB.getNext().setPrev(newN);
+          newN.setNext(nodeB.getNext());
+          nodeB.getNext().setPrev(newN);
 
           newN.updateNormale(BOA_.qState.segParam.expandSnake);
-          nB.getNext().updateNormale(BOA_.qState.segParam.expandSnake);
+          nodeB.getNext().updateNormale(BOA_.qState.segParam.expandSnake);
 
           // set velocity
-          newN.setVel(nB.getVel());
+          newN.setVel(nodeB.getVel());
           if (newN.getVel().length() < BOA_.qState.segParam.vel_crit) {
             newN.getVel().makeUnit();
             newN.getVel().multiply(BOA_.qState.segParam.vel_crit * 1.5);
@@ -717,10 +736,10 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
           POINTS -= (i + 2); // the one skipped and the current one
           break;
         }
-        nB = nB.getNext();
+        nodeB = nodeB.getNext();
       }
-      nA = nA.getNext();
-    } while (!nA.isHead());
+      nodeA = nodeA.getNext();
+    } while (!nodeA.isHead());
   }
 
   /**
@@ -733,39 +752,41 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    */
   public void cutIntersects() {
 
-    int interval, state;
+    int interval;
+    int state;
 
-    Node nA, nB;
+    Node nodeA;
+    Node nodeB;
     double[] intersect = new double[2];
     Node newN;
 
     boolean cutHead;
 
-    nA = head;
+    nodeA = head;
     do {
-      cutHead = (nA.getNext().isHead()) ? true : false;
-      nB = nA.getNext().getNext();// don't check next edge as they can't cross, but do touch
+      cutHead = (nodeA.getNext().isHead()) ? true : false;
+      nodeB = nodeA.getNext().getNext();// don't check next edge as they can't cross, but do touch
       interval = (POINTS > 6) ? POINTS / 2 : 2; // always leave 3 nodes, at least
 
       for (int i = 2; i < interval; i++) {
-        if (nB.isHead()) {
+        if (nodeB.isHead()) {
           cutHead = true;
         }
 
-        state = ExtendedVector2d.segmentIntersection(nA.getX(), nA.getY(), nA.getNext().getX(),
-                nA.getNext().getY(), nB.getX(), nB.getY(), nB.getNext().getX(), nB.getNext().getY(),
-                intersect);
+        state = ExtendedVector2d.segmentIntersection(nodeA.getX(), nodeA.getY(),
+                nodeA.getNext().getX(), nodeA.getNext().getY(), nodeB.getX(), nodeB.getY(),
+                nodeB.getNext().getX(), nodeB.getNext().getY(), intersect);
 
         if (state == 1) {
-          newN = this.insertNode(nA);
+          newN = this.insertNode(nodeA);
           newN.setX(intersect[0]);
           newN.setY(intersect[1]);
 
-          newN.setNext(nB.getNext());
-          nB.getNext().setPrev(newN);
+          newN.setNext(nodeB.getNext());
+          nodeB.getNext().setPrev(newN);
 
           newN.updateNormale(BOA_.qState.segParam.expandSnake);
-          nB.getNext().updateNormale(BOA_.qState.segParam.expandSnake);
+          nodeB.getNext().updateNormale(BOA_.qState.segParam.expandSnake);
 
           if (cutHead) {
             newN.setHead(true); // put a new head in
@@ -775,194 +796,126 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
           POINTS -= (i);
           break;
         }
-        nB = nB.getNext();
+        nodeB = nodeB.getNext();
       }
 
-      nA = nA.getNext();
-    } while (!nA.isHead());
-  }
-
-  /**
-   * @deprecated Old version of cutLoops()
-   */
-  public void cutLoopsOLD() {
-
-    int i;
-
-    double diffX, diffY, diffXp, diffYp;
-    Node node1, node2, right1, right2;
-    boolean ishead; // look for head node in section to be cut
-    // check the next INTERVALL nodes for cross-overs
-    int INTERVALL = 10; // 8 //20
-
-    node1 = head;
-    do {
-      ishead = false;
-      right1 = node1.getNext();
-      node2 = right1.getNext();
-      right2 = node2.getNext();
-
-      diffX = right1.getPoint().getX() - node1.getPoint().getX();
-      diffY = right1.getPoint().getY() - node1.getPoint().getY();
-
-      for (i = 1; i <= INTERVALL; ++i) {
-        // see if the head node will be cut out
-        if (node2.isHead() || right1.isHead()) {
-          ishead = true;
-        }
-        diffXp = right2.getPoint().getX() - node2.getPoint().getX();
-        diffYp = right2.getPoint().getY() - node2.getPoint().getY();
-
-        if ((POINTS - (i + 1)) < 4) {
-          break;
-        }
-        if (node1.getTrackNum() == right2.getTrackNum()) { // dont go
-                                                           // past node1
-          break;
-        } else if (((diffX * node2.getY() - diffY * node2.getX()) < (diffX * node1.getY()
-                - diffY * node1.getX())
-                ^ (diffX * right2.getY() - diffY * right2.getX()) < (diffX * node1.getY()
-                        - diffY * node1.getX()))
-                & ((diffXp * node1.getY() - diffYp * node1.getX()) < (diffXp * node2.getY()
-                        - diffYp * node2.getX())
-                        ^ (diffXp * right1.getY() - diffYp * right1.getX()) < (diffXp * node2.getY()
-                                - diffYp * node2.getX()))) {
-
-          // join node1 to right 2
-          // int node1index = Contour.getNodeIndex(node1); //debug
-          // int right2index = Contour.getNodeIndex(right2); //debug
-
-          // IJ.log("Cut Loop! cut from node1 " + node1index + " to
-          // right2 " + right2index + " interval " + i);
-          node1.setNext(right2);
-          right2.setPrev(node1);
-          node1.updateNormale(BOA_.qState.segParam.expandSnake);
-          right2.updateNormale(BOA_.qState.segParam.expandSnake);
-          POINTS -= i + 1; // set number of nodes
-
-          if (ishead) {
-            head = right2;
-            right2.setHead(true);
-          }
-          break;
-        }
-        node2 = node2.getNext();
-        right2 = right2.getNext();
-      }
-      node1 = node1.getNext(); // next node will be right2 if it cut
-
-    } while (!node1.isHead());
-    // if (NODES < 4) {
-    // // System.out.println("CutLoops. Nodes left after cuts: " + NODES);
-    // }
+      nodeA = nodeA.getNext();
+    } while (!nodeA.isHead());
   }
 
   /**
    * Ensure nodes are between maxDist and minDist apart, add remove nodes as required.
    * 
-   * @param shiftNewNode
-   * @throws BoaException
+   * @param shiftNewNode shiftNewNode
+   * @throws BoaException when there were too less nodes and one of them was removed
    */
   public void correctDistance(boolean shiftNewNode) throws BoaException {
     Node.randDirection(); // choose a random direction to process the chain
 
-    ExtendedVector2d tanL, tanR, tanLR, npos; //
-    double dL, dR, dLR, tmp;
+    ExtendedVector2d tanL;
+    ExtendedVector2d tanR;
+    ExtendedVector2d tanLR;
+    ExtendedVector2d npos;
+    double dl;
+    double dr;
+    double dlr;
+    double tmp;
 
-    Node nC = head;
-    Node nL, nR; // neighbours
+    Node nc = head;
+    Node nl;
+    Node nr; // neighbours
 
     do {
 
-      nL = nC.getPrev(); // left neighbour
-      nR = nC.getNext(); // left neighbour
+      nl = nc.getPrev(); // left neighbour
+      nr = nc.getNext(); // left neighbour
 
       // compute tangent
-      tanL = ExtendedVector2d.vecP2P(nL.getPoint(), nC.getPoint());
-      tanR = ExtendedVector2d.vecP2P(nC.getPoint(), nR.getPoint());
-      tanLR = ExtendedVector2d.vecP2P(nL.getPoint(), nR.getPoint());
-      dL = tanL.length();
-      dR = tanR.length();
-      dLR = tanLR.length();
+      tanL = ExtendedVector2d.vecP2P(nl.getPoint(), nc.getPoint());
+      tanR = ExtendedVector2d.vecP2P(nc.getPoint(), nr.getPoint());
+      tanLR = ExtendedVector2d.vecP2P(nl.getPoint(), nr.getPoint());
+      dl = tanL.length();
+      dr = tanR.length();
+      dlr = tanLR.length();
 
-      if (dL < BOA_.qState.segParam.getMin_dist() || dR < BOA_.qState.segParam.getMin_dist()) {
+      if (dl < BOA_.qState.segParam.getMin_dist() || dr < BOA_.qState.segParam.getMin_dist()) {
         // nC is to close to a neigbour
-        if (dLR > 2 * BOA_.qState.segParam.getMin_dist()) {
+        if (dlr > 2 * BOA_.qState.segParam.getMin_dist()) {
 
           // move nC to middle
           npos = new ExtendedVector2d(tanLR.getX(), tanLR.getY());
           npos.multiply(0.501); // half
-          npos.addVec(nL.getPoint());
+          npos.addVec(nl.getPoint());
 
-          nC.setX(npos.getX());
-          nC.setY(npos.getY());
+          nc.setX(npos.getX());
+          nc.setY(npos.getY());
 
           // tmp = Math.sqrt((dL*dL) - ((dLR/2.)*(dLR/2.)));
           // System.out.println("too close, move to middle, tmp:
           // "+tmp);
 
-          tmp = Math.sin(ExtendedVector2d.angle(tanL, tanLR)) * dL;
+          tmp = Math.sin(ExtendedVector2d.angle(tanL, tanLR)) * dl;
           // tmp = Vec2d.distPointToSegment(nC.getPoint(),
           // nL.getPoint(), nR.getPoint());
-          nC.getNormal().multiply(-tmp);
-          nC.getPoint().addVec(nC.getNormal());
+          nc.getNormal().multiply(-tmp);
+          nc.getPoint().addVec(nc.getNormal());
 
-          nC.updateNormale(BOA_.qState.segParam.expandSnake);
-          nL.updateNormale(BOA_.qState.segParam.expandSnake);
-          nR.updateNormale(BOA_.qState.segParam.expandSnake);
-          this.unfreezeNode(nC);
+          nc.updateNormale(BOA_.qState.segParam.expandSnake);
+          nl.updateNormale(BOA_.qState.segParam.expandSnake);
+          nr.updateNormale(BOA_.qState.segParam.expandSnake);
+          this.unfreezeNode(nc);
 
         } else {
           // delete nC
           // System.out.println("delete node");
-          removeNode(nC);
-          nL.updateNormale(BOA_.qState.segParam.expandSnake);
-          nR.updateNormale(BOA_.qState.segParam.expandSnake);
-          if (nR.isHead())
+          removeNode(nc);
+          nl.updateNormale(BOA_.qState.segParam.expandSnake);
+          nr.updateNormale(BOA_.qState.segParam.expandSnake);
+          if (nr.isHead()) {
             break;
-          nC = nR.getNext();
+          }
+          nc = nr.getNext();
           continue;
         }
       }
-      if (dL > BOA_.qState.segParam.getMax_dist()) {
+      if (dl > BOA_.qState.segParam.getMax_dist()) {
 
         // System.out.println("1357-insert node");
-        Node nIns = insertNode(nL);
-        nIns.setVel(nL.getVel());
-        nIns.getVel().addVec(nC.getVel());
-        nIns.getVel().multiply(0.5);
-        if (nIns.getVel().length() < BOA_.qState.segParam.vel_crit) {
-          nIns.getVel().makeUnit();
-          nIns.getVel().multiply(BOA_.qState.segParam.vel_crit * 1.5);
+        Node nins = insertNode(nl);
+        nins.setVel(nl.getVel());
+        nins.getVel().addVec(nc.getVel());
+        nins.getVel().multiply(0.5);
+        if (nins.getVel().length() < BOA_.qState.segParam.vel_crit) {
+          nins.getVel().makeUnit();
+          nins.getVel().multiply(BOA_.qState.segParam.vel_crit * 1.5);
         }
 
         npos = new ExtendedVector2d(tanL.getX(), tanL.getY());
         npos.multiply(0.51);
-        npos.addVec(nL.getPoint());
+        npos.addVec(nl.getPoint());
 
-        nIns.setX(npos.getX());
-        nIns.setY(npos.getY());
-        nIns.updateNormale(BOA_.qState.segParam.expandSnake);
+        nins.setX(npos.getX());
+        nins.setY(npos.getY());
+        nins.updateNormale(BOA_.qState.segParam.expandSnake);
         if (shiftNewNode) {
-          nIns.getNormal().multiply(-2); // move out a bit
-          nIns.getPoint().addVec(nIns.getNormal());
-          nIns.updateNormale(BOA_.qState.segParam.expandSnake);
+          nins.getNormal().multiply(-2); // move out a bit
+          nins.getPoint().addVec(nins.getNormal());
+          nins.updateNormale(BOA_.qState.segParam.expandSnake);
         }
-        nL.updateNormale(BOA_.qState.segParam.expandSnake);
-        nR.updateNormale(BOA_.qState.segParam.expandSnake);
-        nC.updateNormale(BOA_.qState.segParam.expandSnake);
+        nl.updateNormale(BOA_.qState.segParam.expandSnake);
+        nr.updateNormale(BOA_.qState.segParam.expandSnake);
+        nc.updateNormale(BOA_.qState.segParam.expandSnake);
 
       }
 
-      nC = nC.getNext();
-    } while (!nC.isHead());
+      nc = nc.getNext();
+    } while (!nc.isHead());
 
-    Node.setClockwise(true); // reset to clockwise (although shouldnt effect
-                             // things??)
+    Node.setClockwise(true); // reset to clockwise (although shouldnt effect things??)
   }
 
   /**
-   * Insert default Node after Node \c v
+   * Insert default Node after Node v.
    * 
    * @param n Node to insert new Node after
    * @return Inserted Node
@@ -992,7 +945,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Gets bounds of snake
+   * Gets bounds of snake.
    * 
    * @return Bounding box of current Snake object
    */
@@ -1006,12 +959,15 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Get bounds of snake
+   * Get bounds of snake.
    * 
    * @return Bounding box of current Snake object as Double
    */
   public Rectangle2D.Double getDoubleBounds() {
-    double minX, minY, maxX, maxY;
+    double minX;
+    double minY;
+    double maxX;
+    double maxY;
     Node n = head;
     minX = n.getX();
     maxX = n.getX();
@@ -1037,11 +993,11 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Check if there is a head node
+   * Check if there is a head node.
    * 
-   * Traverse along first 10000 Node elements and check if any of them is \b head
+   * <p>Traverse along first 10000 Node elements and check if any of them is \b head
    * 
-   * @return \c true if there is head of snake
+   * @return true if there is head of snake
    */
   public boolean checkIsHead() {
     Node n = head;
