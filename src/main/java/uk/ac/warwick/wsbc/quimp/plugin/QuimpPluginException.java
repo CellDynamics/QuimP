@@ -90,7 +90,9 @@ public class QuimpPluginException extends QuimpException {
    */
   public QuimpPluginException(Throwable cause) {
     super(cause);
-    // TODO Auto-generated constructor stub
+    if (cause instanceof QuimpException) {
+      setMessageSinkType(((QuimpException) cause).getMessageSinkType());
+    }
   }
 
 }

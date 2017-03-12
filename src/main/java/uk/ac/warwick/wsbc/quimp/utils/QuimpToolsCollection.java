@@ -354,7 +354,22 @@ public class QuimpToolsCollection {
    */
   public static String stringWrap(String in, int len) {
 
-    return in.replaceAll("(.{" + len + ",}?)\\s+", "$1\n");
+    return stringWrap(in, len, "\n");
+  }
+
+  /**
+   * Insert any symbol after given number of chars keeping to not break words.
+   * 
+   * @param in Input string
+   * @param len line length
+   * @param brek symbol to insert on line break
+   * @return Wrapped string
+   * @see <a href=
+   *      "link">http://stackoverflow.com/questions/8314566/splitting-a-string-on-to-several-different-lines-in-java</a>
+   */
+  public static String stringWrap(String in, int len, String brek) {
+
+    return in.replaceAll("(.{" + len + ",}?)\\s+", "$1" + brek);
   }
 
 }

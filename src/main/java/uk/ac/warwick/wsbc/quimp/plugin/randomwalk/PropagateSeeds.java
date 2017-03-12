@@ -11,7 +11,6 @@ import java.util.Map;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
-import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Outline;
@@ -19,9 +18,10 @@ import uk.ac.warwick.wsbc.quimp.QuimP;
 import uk.ac.warwick.wsbc.quimp.geom.TrackOutline;
 import uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor;
 import uk.ac.warwick.wsbc.quimp.plugin.ana.ANAp;
+import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.BinaryFilters.MorphoOperations;
+import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
 import uk.ac.warwick.wsbc.quimp.utils.IJTools;
-import uk.ac.warwick.wsbc.quimp.utils.Pair;
 
 /**
  * Generate new seeds for n+1 frame in stack using previous results of segmentation.
@@ -44,14 +44,31 @@ import uk.ac.warwick.wsbc.quimp.utils.Pair;
 public abstract class PropagateSeeds {
 
   /**
-   * The Constant ERODE.
+   * Seed propagators available in this class.
+   * 
+   * @author p.baniukiewicz
+   *
    */
-  static final int ERODE = 0;
+  public enum Propagators {
+    /**
+     * Just copy input as output.
+     */
+    NONE,
+    /**
+     * Use contour shrinking.
+     * 
+     * @see Contour
+     */
+    CONTOUR,
+    /**
+     * Use morphological operations.
+     * 
+     * @see Morphological
+     */
+    MORPHOLOGICAL
 
-  /**
-   * The Constant DILATE.
-   */
-  static final int DILATE = 1;
+  }
+
   /**
    * Default resolution used during outlining objects.
    * 
@@ -71,7 +88,7 @@ public abstract class PropagateSeeds {
    * @see #getCompositeSeed(ImagePlus)
    * @see PropagateSeeds#storeSeeds
    */
-  protected List<Pair<ImageProcessor, ImageProcessor>> seeds;
+  protected List<Map<Seeds, ImageProcessor>> seeds;
   /**
    * Scale color values in composite preview.
    * 
@@ -80,6 +97,61 @@ public abstract class PropagateSeeds {
    * @see #getCompositeSeed(ImagePlus)
    */
   public static final double colorScaling = 0.5;
+
+  /**
+   * Return demanded propagator.
+   * 
+   * @param prop propagator to create
+   * @param storeseeds true for storig seeds
+   * @return the propagator
+   */
+  public static PropagateSeeds getPropagator(Propagators prop, boolean storeseeds) {
+    switch (prop) {
+      case NONE:
+        return new PropagateSeeds.Dummy(storeseeds);
+      case CONTOUR:
+        return new PropagateSeeds.Contour(storeseeds);
+      case MORPHOLOGICAL:
+        return new PropagateSeeds.Dummy(storeseeds);
+      default:
+        throw new IllegalArgumentException("Unknown propagator");
+    }
+  }
+
+  /**
+   * Empty proagator. Do nothing.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  public static class Dummy extends PropagateSeeds {
+
+    PropagateSeeds binary;
+
+    /**
+     * Default constructor without storing seed history.
+     */
+    public Dummy() {
+      binary = new PropagateSeeds.Morphological();
+    }
+
+    /**
+     * Allow to store seed history that can be later presented in form of composite image.
+     * 
+     * @param storeSeeds <tt>true</tt> to store seeds.
+     * @see #getCompositeSeed(ImagePlus)
+     */
+    public Dummy(boolean storeSeeds) {
+      binary = new Morphological(storeSeeds);
+    }
+
+    @Override
+    Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
+            double expandPower) {
+      return binary.propagateSeed(previous, shrinkPower, expandPower);
+    }
+
+  }
 
   /**
    * Contain methods for propagating seeds to the next frame using contour shrinking operations.
@@ -136,7 +208,7 @@ public abstract class PropagateSeeds {
      * @see OutlineProcessor#shrink(double, double, double, double)
      */
     @Override
-    public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkPower,
+    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
             double expandPower) {
       ByteProcessor small = new ByteProcessor(previous.getWidth(), previous.getHeight());
       ByteProcessor big = new ByteProcessor(previous.getWidth(), previous.getHeight());
@@ -183,11 +255,14 @@ public abstract class PropagateSeeds {
       }
       big.invert();
       // store seeds if option ticked
+      Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
+      ret.put(Seeds.FOREGROUND, small);
+      ret.put(Seeds.BACKGROUND, big);
       if (storeSeeds) {
-        seeds.add(Pair.createPair(small, big));
+        seeds.add(ret);
       }
 
-      return convertToList(small, big);
+      return ret;
 
     }
 
@@ -246,20 +321,19 @@ public abstract class PropagateSeeds {
      * @return Map containing list of coordinates that belong to foreground and background. Map is
      *         addressed by two enums: <tt>FOREGROUND</tt> and <tt>BACKGROUND</tt>
      * @see RandomWalkSegmentation#decodeSeeds(ImagePlus, Color, Color)
-     * @see #convertToList(ImageProcessor, ImageProcessor)
      */
     @Override
-    public Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkPower,
+    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
             double expandPower) {
-      BinaryProcessor cp = new BinaryProcessor(previous.duplicate().convertToByteProcessor());
+      ImageProcessor cp = previous;
       // object smaller than on frame n
-      BinaryProcessor small = new BinaryProcessor(cp.duplicate().convertToByteProcessor());
+      ImageProcessor small = cp.duplicate();
       // object bigger than on frame n
-      BinaryProcessor big = new BinaryProcessor(cp.duplicate().convertToByteProcessor());
+      ImageProcessor big = cp.duplicate();
       // make objects smaller
-      iterateMorphological(small, PropagateSeeds.ERODE, shrinkPower);
+      small = BinaryFilters.iterateMorphological(small, MorphoOperations.ERODE, shrinkPower);
       // make background bigger
-      iterateMorphological(big, PropagateSeeds.DILATE, expandPower);
+      big = BinaryFilters.iterateMorphological(big, MorphoOperations.DILATE, expandPower);
 
       // apply big to old background making object bigger and prevent covering objects on
       // frame
@@ -275,59 +349,16 @@ public abstract class PropagateSeeds {
 
       big.invert(); // invert to have BG pixels white in seed. (required by convertToList)
       // store seeds if option ticked
+      Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
+      ret.put(Seeds.FOREGROUND, small);
+      ret.put(Seeds.BACKGROUND, big);
       if (storeSeeds) {
-        seeds.add(Pair.createPair(small, big));
+        seeds.add(ret);
       }
 
-      return convertToList(small, big);
+      return ret;
     }
 
-    private void iterateMorphological(BinaryProcessor ip, int oper, double iter) {
-      switch (oper) {
-        case ERODE:
-          for (int i = 0; i < iter; i++) {
-            ip.erode(1, 0); // first param influence precision, for large ,the shape is
-          }
-          // preserved and changes are very small?
-          break;
-        case DILATE:
-          for (int i = 0; i < iter; i++) {
-            ip.dilate(1, 0);
-          }
-          break;
-        default:
-          throw new IllegalArgumentException("Binary operation not supported");
-      }
-    }
-  }
-
-  /**
-   * Convert processors obtained for object and background to format accepted by RW.
-   * 
-   * @param fgmask object mask
-   * @param bgmask background mask
-   * @return List of point coordinates accepted by RW algorithm.
-   */
-  public Map<Integer, List<Point>> convertToList(ImageProcessor fgmask, ImageProcessor bgmask) {
-    // output map integrating two lists of points
-    HashMap<Integer, List<Point>> out = new HashMap<Integer, List<Point>>();
-    // output lists of points. Can be null if points not found
-    List<Point> foreground = new ArrayList<>();
-    List<Point> background = new ArrayList<>();
-    for (int x = 0; x < fgmask.getWidth(); x++) {
-      for (int y = 0; y < fgmask.getHeight(); y++) {
-        if (fgmask.get(x, y) > 0) {
-          foreground.add(new Point(y, x)); // remember foreground coords
-        }
-        if (bgmask.get(x, y) > 0) {
-          background.add(new Point(y, x)); // remember background coords
-        }
-      }
-    }
-    // pack outputs into map
-    out.put(RandomWalkSegmentation.FOREGROUND, foreground);
-    out.put(RandomWalkSegmentation.BACKGROUND, background);
-    return out;
   }
 
   /**
@@ -341,21 +372,18 @@ public abstract class PropagateSeeds {
    */
   public ImagePlus getCompositeSeed(ImagePlus org) throws RandomWalkException {
     ImagePlus ret;
-    if (seeds == null) {
-      throw new IllegalArgumentException("Seeds were not stored.");
-    }
-    if (seeds.size() == 0) {
+    if (seeds == null || seeds.size() == 0) {
       throw new RandomWalkException(
-              "Seeds were not stored. You need at least two iteration to collect one seed");
+              "Seeds were not stored. You need at least two time frames to collect one seed");
     }
-    ImageStack smallstack =
-            new ImageStack(seeds.get(0).first.getWidth(), seeds.get(0).first.getHeight());
-    ImageStack bigstack =
-            new ImageStack(seeds.get(0).first.getWidth(), seeds.get(0).first.getHeight());
-    for (Pair<ImageProcessor, ImageProcessor> p : seeds) {
+    ImageStack smallstack = new ImageStack(seeds.get(0).get(Seeds.FOREGROUND).getWidth(),
+            seeds.get(0).get(Seeds.FOREGROUND).getHeight());
+    ImageStack bigstack = new ImageStack(seeds.get(0).get(Seeds.FOREGROUND).getWidth(),
+            seeds.get(0).get(Seeds.FOREGROUND).getHeight());
+    for (Map<Seeds, ImageProcessor> p : seeds) {
       // just in case convert to byte
-      ImageProcessor fg = (ImageProcessor) p.first.convertToByte(true);
-      ImageProcessor bg = (ImageProcessor) p.second.convertToByte(true);
+      ImageProcessor fg = (ImageProcessor) p.get(Seeds.FOREGROUND).convertToByte(true);
+      ImageProcessor bg = (ImageProcessor) p.get(Seeds.BACKGROUND).convertToByte(true);
       // make colors transparent
       bg.multiply(colorScaling);
       fg.multiply(colorScaling);
@@ -384,7 +412,7 @@ public abstract class PropagateSeeds {
    * @param expandPower the expand power
    * @return the map
    */
-  abstract Map<Integer, List<Point>> propagateSeed(ImageProcessor previous, double shrinkPower,
+  abstract Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
           double expandPower);
 
 }

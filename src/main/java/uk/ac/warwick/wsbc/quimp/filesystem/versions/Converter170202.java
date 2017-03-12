@@ -8,7 +8,7 @@ import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 /**
  * Converts QCONF files saved in versions lower than 17.02.02.
  * 
- * Replaces version tag from String[3] to {@link QuimpVersion} - current version of QuimP.
+ * <p>Replaces version tag from String[3] to {@link QuimpVersion} - current version of QuimP.
  * 
  * @author p.baniukiewicz
  * @param <T> Type of serialised class
@@ -20,7 +20,7 @@ public class Converter170202<T extends IQuimpSerialize> implements IQconfOlderCo
   /**
    * Version below the {@link #upgradeFromOld(Serializer)} will be executed.
    */
-  final public Double trigger = new Double(17.0202);
+  public final Double trigger = new Double(17.0205);
   private QuimpVersion version;
 
   /**
@@ -32,8 +32,9 @@ public class Converter170202<T extends IQuimpSerialize> implements IQconfOlderCo
 
   @Override
   public void upgradeFromOld(Serializer<T> localref) throws QuimpException {
-    if (localref.timeStamp == null)
+    if (localref.timeStamp == null) {
       localref.timeStamp = version;
+    }
   }
 
   @Override

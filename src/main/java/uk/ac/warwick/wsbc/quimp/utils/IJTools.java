@@ -3,9 +3,9 @@ package uk.ac.warwick.wsbc.quimp.utils;
 import ij.ImagePlus;
 import ij.plugin.RGBStackMerge;
 import ij.process.ColorProcessor;
+import ij.process.ImageProcessor;
 import ij.process.LUT;
 
-// TODO: Auto-generated Javadoc
 /**
  * Contain IJ based procedures.
  * 
@@ -29,30 +29,49 @@ public class IJTools {
   }
 
   /**
-   * Return composite image created from background cell image and FG and BG pixels.
+   * Return RGB image created from R, G, B 8-bit images.
    * 
-   * @param org Original image
-   * @param small Foreground mask
-   * @param big Background mask
+   * <p>Slices can be also grayscale images serve as background.
+   * 
+   * @param red red slice
+   * @param green green slice
+   * @param blue blue slice
    * @return Composite image
    */
-  public static ColorProcessor getCompositeRGB(ImagePlus org, ImagePlus small, ImagePlus big) {
-    ColorProcessor ret = new ColorProcessor(org.getWidth(), org.getHeight());
+  public static ColorProcessor getRGB(ImagePlus red, ImagePlus green, ImagePlus blue) {
+    return getRGB(red.getProcessor(), green.getProcessor(), blue.getProcessor());
+  }
 
-    ret.setChannel(1, small.getProcessor().convertToByteProcessor());
-    ret.setChannel(2, big.getProcessor().convertToByteProcessor());
-    ret.setChannel(3, org.getProcessor().convertToByteProcessor());
+  /**
+   * Return RGB image created from R, G, B 8-bit images.
+   * 
+   * <p>Slices can be also grayscale images serve as background.
+   * 
+   * @param red red slice
+   * @param green green slice
+   * @param blue blue slice
+   * @return Composite image
+   */
+  public static ColorProcessor getRGB(ImageProcessor red, ImageProcessor green,
+          ImageProcessor blue) {
+    ColorProcessor ret = new ColorProcessor(red.getWidth(), red.getHeight());
+
+    ret.setChannel(1, red.convertToByteProcessor());
+    ret.setChannel(2, green.convertToByteProcessor());
+    ret.setChannel(3, blue.convertToByteProcessor());
     return ret;
   }
 
   /**
+   * Convert LUT to grayscale.
    * 
    * @return 8-bit grayscale LUT
    */
   public static LUT getGrayLut() {
-    byte l[] = new byte[256];
-    for (int i = 0; i < 256; i++)
+    byte[] l = new byte[256];
+    for (int i = 0; i < 256; i++) {
       l[i] = (byte) i;
+    }
     return new LUT(l, l, l);
   }
 

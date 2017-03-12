@@ -1,12 +1,9 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin.randomwalk;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -17,23 +14,16 @@ import org.junit.Test;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import ij.process.BinaryProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Outline;
-import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.Point;
-import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.PropagateSeeds;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
 @SuppressWarnings("unused")
 public class PropagateSeedsTest {
-  static {
-    System.setProperty("logback.configurationFile", "quimp-logback.xml");
-  }
 
   /**
    * The tmpdir.
@@ -90,7 +80,7 @@ public class PropagateSeedsTest {
   static ImagePlus testImage2;
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception on error
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -98,7 +88,7 @@ public class PropagateSeedsTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception on error
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
@@ -106,55 +96,23 @@ public class PropagateSeedsTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception on error
    */
   @Before
   public void setUp() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception on error
    */
   @After
   public void tearDown() throws Exception {
   }
 
   /**
-   * Test propagate seed.
-   *
-   * @throws Exception the exception
-   */
-  @Test
-  public void testPropagateSeed() throws Exception {
-    ImagePlus ip = testImage2.duplicate();
-    BinaryProcessor ret = new BinaryProcessor(ip.getProcessor().convertToByteProcessor());
-    Map<Integer, List<Point>> seed = new PropagateSeeds.Morphological().propagateSeed(ret, 20, 30);
-    // IJ.saveAsTiff(new ImagePlus("", ret), "/tmp/testPropagateSeed_20.tif");
-  }
-
-  /**
-   * @throws Exception
-   */
-  @Test
-  public void testIterateMorphological() throws Exception {
-    ImagePlus ip = testImage2.duplicate();
-    BinaryProcessor rete =
-            new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
-    BinaryProcessor retd =
-            new BinaryProcessor(ip.getProcessor().duplicate().convertToByteProcessor());
-    PropagateSeeds.Morphological obj = new PropagateSeeds.Morphological();
-    accessPrivate("iterateMorphological", obj, new Object[] { rete, PropagateSeeds.ERODE, 3 },
-            new Class[] { BinaryProcessor.class, int.class, double.class });
-    IJ.saveAsTiff(new ImagePlus("", rete), tmpdir + "testIterateMorphological_erode3.tif");
-
-    accessPrivate("iterateMorphological", obj, new Object[] { retd, PropagateSeeds.DILATE, 5 },
-            new Class[] { BinaryProcessor.class, int.class, double.class });
-    IJ.saveAsTiff(new ImagePlus("", retd), tmpdir + "testIterateMorphological_dilate5.tif");
-
-  }
-
-  /**
-   * @throws Exception
+   * Test getOutline.
+   * 
+   * @throws Exception on error
    */
   @SuppressWarnings("unchecked")
   @Test
@@ -163,13 +121,15 @@ public class PropagateSeedsTest {
     List<Outline> ret = (List<Outline>) accessPrivate("getOutline", cc,
             new Object[] { testImage2.getProcessor() }, new Class<?>[] { ImageProcessor.class });
 
-    RoiSaver.saveROI(tmpdir + "test0.tif", ret.get(0).asList());
-    RoiSaver.saveROI(tmpdir + "test1.tif", ret.get(1).asList());
-    RoiSaver.saveROI(tmpdir + "test2.tif", ret.get(2).asList());
+    RoiSaver.saveROI(tmpdir + "testGetOutline0_QuimP.tif", ret.get(0).asList());
+    RoiSaver.saveROI(tmpdir + "testGetOutline1_QuimP.tif", ret.get(1).asList());
+    RoiSaver.saveROI(tmpdir + "testGetOutline2_QuimP.tif", ret.get(2).asList());
   }
 
   /**
-   * @throws Exception
+   * Test propagate.
+   * 
+   * @throws Exception on error
    */
   @Test
   public void testPropagateSeedOutline() throws Exception {
@@ -181,7 +141,9 @@ public class PropagateSeedsTest {
   }
 
   /**
-   * @throws Exception
+   * testGetCompositeSeed_Contour.
+   * 
+   * @throws Exception on error
    */
   @Test
   public void testGetCompositeSeed_Contour() throws Exception {
@@ -193,11 +155,13 @@ public class PropagateSeedsTest {
 
     cc.propagateSeed(mask.getStack().getProcessor(1), 5, 10);
     ImagePlus ret = cc.getCompositeSeed(org);
-    IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeed.tif");
+    IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeed_QuimP.tif");
   }
 
   /**
-   * @throws Exception
+   * testGetCompositeSeed_Morphological.
+   * 
+   * @throws Exception on error
    */
   @Test
   public void testGetCompositeSeed_Morphological() throws Exception {
@@ -209,7 +173,7 @@ public class PropagateSeedsTest {
 
     cc.propagateSeed(mask.getStack().getProcessor(1), 20, 40);
     ImagePlus ret = cc.getCompositeSeed(org);
-    IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeedM.tif");
+    IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeedM_QuimP.tif");
   }
 
 }

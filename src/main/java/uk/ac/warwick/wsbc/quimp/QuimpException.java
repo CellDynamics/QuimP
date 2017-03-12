@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import java.awt.Frame;
@@ -9,6 +7,7 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ij.IJ;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
 // TODO: Auto-generated Javadoc
@@ -28,6 +27,7 @@ public class QuimpException extends Exception {
    * <ol>
    * <li>CONSOLE - default, message goes to console.
    * <li>GUI - message should be shown in GUI
+   * <li>IJERROR - use IJ error handling
    * </ol>
    * 
    * @author p.baniukiewicz
@@ -42,15 +42,23 @@ public class QuimpException extends Exception {
     /**
      * The gui.
      */
-    GUI
-  };
+    GUI,
+    /**
+     * IJ error.
+     */
+    IJERROR
+  }
 
   /**
+   * Message sinks - where they will appear.
+   * 
    * @see MessageSinkTypes
    */
   protected MessageSinkTypes messageSinkType;
 
   /**
+   * Set message sink.
+   * 
    * @param messageSinkType the messageSinkType to set
    */
   public void setMessageSinkType(MessageSinkTypes messageSinkType) {
@@ -58,6 +66,8 @@ public class QuimpException extends Exception {
   }
 
   /**
+   * Get message sink.
+   * 
    * @return the type
    */
   public MessageSinkTypes getMessageSinkType() {
@@ -65,7 +75,7 @@ public class QuimpException extends Exception {
   }
 
   /**
-   * 
+   * serialVersionUID.
    */
   private static final long serialVersionUID = -7943488580659917234L;
 
@@ -87,7 +97,9 @@ public class QuimpException extends Exception {
   }
 
   /**
-   * @param message
+   * Default exception with message. Will be shown in console.
+   * 
+   * @param message message
    */
   public QuimpException(String message) {
     super(message);
@@ -95,8 +107,10 @@ public class QuimpException extends Exception {
   }
 
   /**
-   * @param message
-   * @param type
+   * Exception with message.
+   * 
+   * @param message message
+   * @param type where to show message
    */
   public QuimpException(String message, MessageSinkTypes type) {
     super(message);
@@ -104,7 +118,9 @@ public class QuimpException extends Exception {
   }
 
   /**
-   * @param cause
+   * QuimpException.
+   * 
+   * @param cause cause
    */
   public QuimpException(Throwable cause) {
     super(cause);
@@ -112,8 +128,10 @@ public class QuimpException extends Exception {
   }
 
   /**
-   * @param cause
-   * @param type
+   * QuimpException.
+   * 
+   * @param cause cause
+   * @param type type
    */
   public QuimpException(Throwable cause, MessageSinkTypes type) {
     super(cause);
@@ -121,8 +139,10 @@ public class QuimpException extends Exception {
   }
 
   /**
-   * @param message
-   * @param cause
+   * QuimpException.
+   * 
+   * @param message message
+   * @param cause cause
    */
   public QuimpException(String message, Throwable cause) {
     super(message, cause);
@@ -130,10 +150,12 @@ public class QuimpException extends Exception {
   }
 
   /**
-   * @param message
-   * @param cause
-   * @param enableSuppression
-   * @param writableStackTrace
+   * QuimpException.
+   * 
+   * @param message message
+   * @param cause cause
+   * @param enableSuppression enableSuppression
+   * @param writableStackTrace writableStackTrace
    */
   public QuimpException(String message, Throwable cause, boolean enableSuppression,
           boolean writableStackTrace) {
@@ -142,10 +164,11 @@ public class QuimpException extends Exception {
   }
 
   /**
+   * QuimpException.
    * 
-   * @param message
-   * @param cause
-   * @param type
+   * @param message message
+   * @param cause cause
+   * @param type where to show message
    */
   public QuimpException(String message, Throwable cause, MessageSinkTypes type) {
     super(message, cause);
@@ -160,12 +183,20 @@ public class QuimpException extends Exception {
    */
   public void handleException(Frame frame, String appendMessage) {
     LOGGER.debug(getMessage(), this);
-    if (getMessageSinkType() == MessageSinkTypes.GUI) { // display message as GUI
-      JOptionPane.showMessageDialog(frame,
-              QuimpToolsCollection.stringWrap(appendMessage + " " + getMessage(), QuimP.LINE_WRAP),
-              "Error", JOptionPane.ERROR_MESSAGE);
-    } else { // or text as usual
-      LOGGER.error(appendMessage + " " + getMessage());
+    switch (getMessageSinkType()) {
+      case GUI:
+        JOptionPane.showMessageDialog(frame, QuimpToolsCollection
+                .stringWrap(appendMessage + " " + getMessage(), QuimP.LINE_WRAP), "Error",
+                JOptionPane.ERROR_MESSAGE);
+        break;
+      case CONSOLE:
+        LOGGER.debug(getMessage(), this);
+        LOGGER.error(appendMessage + " " + getMessage());
+        break;
+      case IJERROR:
+        IJ.error(appendMessage + " " + getMessage());
+        break;
+      default:
     }
   }
 

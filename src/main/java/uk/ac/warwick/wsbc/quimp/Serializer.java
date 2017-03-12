@@ -38,7 +38,7 @@ import uk.ac.warwick.wsbc.quimp.filesystem.versions.IQconfOlderConverter;
  * 
  * <p>This serializer accepts only classes derived from IQuimpSerialize interface. Saved class is
  * packed in top level structure that contains version of software and wrapped class name. Exemplary
- * use case: {@link uk.ac.warwick.wsbc.quimp.SerializerTest#testLoad_1()}
+ * use case: SerializerTest#testLoad_1()
  * 
  * <p>There is option to skip call afterSerialzie() method on class restoring. To do so set
  * {@link #doAfterSerialize} to false - derive new class and override this field.

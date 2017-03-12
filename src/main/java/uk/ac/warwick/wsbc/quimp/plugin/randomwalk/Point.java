@@ -1,8 +1,7 @@
 package uk.ac.warwick.wsbc.quimp.plugin.randomwalk;
 
-// TODO: Auto-generated Javadoc
 /**
- * Basic class for storing point in Cartesian system
+ * Basic class for storing point in Cartesian system.
  * 
  * @author p.baniukiewicz
  *
@@ -10,13 +9,19 @@ package uk.ac.warwick.wsbc.quimp.plugin.randomwalk;
 public class Point {
 
   /**
-   * The col.
+   * Column.
    */
-  int row, col;
+  int col;
+  /**
+   * Row.
+   */
+  int row;
 
   /**
-   * @param row
-   * @param col
+   * Declare point.
+   * 
+   * @param row row
+   * @param col col
    */
   public Point(int col, int row) {
     this.row = row;
@@ -24,7 +29,7 @@ public class Point {
   }
 
   /**
-   * Default constructor
+   * Default constructor. Declares Point(0,0)
    */
   Point() {
     row = 0;
@@ -52,17 +57,22 @@ public class Point {
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     Point other = (Point) obj;
-    if (col != other.col)
+    if (col != other.col) {
       return false;
-    if (row != other.row)
+    }
+    if (row != other.row) {
       return false;
+    }
     return true;
   }
 
