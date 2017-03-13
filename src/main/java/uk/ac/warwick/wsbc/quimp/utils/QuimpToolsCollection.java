@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.quimp.Outline;
 import uk.ac.warwick.wsbc.quimp.PropertyReader;
+import uk.ac.warwick.wsbc.quimp.QuimP;
 import uk.ac.warwick.wsbc.quimp.QuimpVersion;
 import uk.ac.warwick.wsbc.quimp.Vert;
 
@@ -353,8 +354,19 @@ public class QuimpToolsCollection {
    *      "link">http://stackoverflow.com/questions/8314566/splitting-a-string-on-to-several-different-lines-in-java</a>
    */
   public static String stringWrap(String in, int len) {
-
     return stringWrap(in, len, "\n");
+  }
+
+  /**
+   * Insert \n character after default number of chars keeping to not break words.
+   * 
+   * @param in Input string
+   * @return Wrapped string
+   * @see <a href=
+   *      "link">http://stackoverflow.com/questions/8314566/splitting-a-string-on-to-several-different-lines-in-java</a>
+   */
+  public static String stringWrap(String in) {
+    return stringWrap(in, QuimP.LINE_WRAP, "\n");
   }
 
   /**

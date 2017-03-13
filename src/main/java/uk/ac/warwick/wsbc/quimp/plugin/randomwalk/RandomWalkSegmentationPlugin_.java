@@ -9,6 +9,7 @@ import java.awt.event.WindowFocusListener;
 import java.nio.file.Paths;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.slf4j.Logger;
@@ -29,47 +30,24 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.quimp.plugin.generatemask.GenerateMask_;
 import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
 import uk.ac.warwick.wsbc.quimp.registration.Registration;
+import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
-/* TODO review umls
+/*
  * !>
- * 
- * @startuml doc-files/RandomWalkSegmentationPlugin_2_UML.png
- *   [*] --> Default
- *   Default : selectors empty
- *   Default : **Clone**, **BG** and **FG** //inactive//
- *   Default --> ImageSelected : when **Image** selector not empty
- *   ImageSelected : **Clone** //active//
- *   Default --> SeedSelected : when **Seed** selector not empty and image tthere is valid
- *   SeedSelected : **Clone**, **BG** and **FG** //active//
- *   SeedSelected --> SeedCreation
- *   ImageSelected --> SeedCreation : Clicked **Clone**
- *   SeedCreation : Original image cloned and converted to RGB
- *   SeedCreation : **BG** and **FG** //active//
- *   SeedCreation : **SeedImage** selector filled with name of cloned image
- *   SeedCreation --> Sketch : **BG** or **FG** clicked
- *   Sketch : Draw tool selected in IJ
- *   Sketch : **BG** or **FG** changed to notify
- *   Default -> Run
- *   Run : Verify all fields
- *   Run : Run algorithm
- *   Run : Maintain UI state
- *   Sketch --> Run
- *   Sketch --> [*]
- *   SeedCreation --> Run
- *   SeedCreation --> [*]
- *   ImageSelected --> Run
- *   ImageSelected --> [*]
- *   Run --> [*]
- *   Default --> [*]
- * @enduml
  * 
  * @startuml doc-files/RandomWalkSegmentationPlugin_3_UML.png
  * actor "IJ plugin runner"
  * actor User
+ * "IJ plugin runner" -> RandomWalkSegmentationPlugin_ : <<create>>
+ * activate RandomWalkSegmentationPlugin_
+ * RandomWalkSegmentationPlugin_ -> RandomWalkSegmentationPlugin_ : <<model>>
+ * RandomWalkSegmentationPlugin_ -> RandomWalkSegmentationPlugin_ : <<view>>
+ * RandomWalkSegmentationPlugin_ -> RandomWalkSegmentationPlugin_ : writeUI()
  * "IJ plugin runner" -> RandomWalkSegmentationPlugin_ : run()
  * RandomWalkSegmentationPlugin_ -> RandomWalkSegmentationPlugin_ :showUI(true)
  * ...
  * User -> Dialog : click Apply 
+ * Dialog -> Dialog : readUI()
  * Dialog -> RWWorker : <<create>>
  * activate RWWorker
  * RWWorker -> Dialog : enableUI(false)
@@ -391,9 +369,26 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
      */
     @Override
     public void actionPerformed(ActionEvent arg0) {
-      // TODO add query about duplicating one slice or at stack
       ImagePlus tmpImage = WindowManager.getImage(view.getCbOrginalImage());
-      ImagePlus duplicatedImage = tmpImage.duplicate();
+      Object[] options = { "Whole stack", "Current slice", "Cancel" };
+      int ret = JOptionPane.showOptionDialog(view.getWnd(),
+              QuimpToolsCollection
+                      .stringWrap("Do you want to duplicte the whole stack or only current slice?"),
+              "Duplicate stack", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+              null, options, null);
+      ImagePlus duplicatedImage;
+      switch (ret) {
+        case 0: // stack
+          duplicatedImage = tmpImage.duplicate();
+          break;
+        case 1: // slice
+          duplicatedImage = new ImagePlus("",
+                  tmpImage.getStack().getProcessor(tmpImage.getCurrentSlice()).duplicate());
+          break;
+        case 2: // cancel
+        default: // closed window
+          return;
+      }
       duplicatedImage.show();
       new Converter().run("RGB Color");
       duplicatedImage.setTitle("SEED_" + tmpImage.getTitle());

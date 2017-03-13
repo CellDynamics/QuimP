@@ -182,7 +182,7 @@ public class TrackOutlineTest {
     ShapeRoi sa1 = ret.get(1).and(new ShapeRoi(pr)); // make common part
     LOGGER.debug("Shape1 " + sa1);
     LOGGER.debug("ret.get(1) after " + ret.get(1));
-    RoiSaver.saveROI(tmpdir + "testIntersection_and.tif", sa1);
+    RoiSaver.saveRoi(tmpdir + "testIntersection_and.tif", sa1);
   }
 
   /**

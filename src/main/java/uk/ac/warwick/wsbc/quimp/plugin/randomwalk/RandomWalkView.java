@@ -45,29 +45,69 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
  *   Random Walk segmentation
  *   ~~
  *   {+
- *   Define images
- *   Open image:  |  ^Original image ^
- *   Open seed:   |  ^Seed image     ^
+ *   Image selection
+ *   ^cbOriginalImage  ^ 
  *   }
  *   {+
- *   or create it:
- *   [  Clone  ] | [   FG   ] | [   BG   ]
+ *   Generate seeds from
+ *   (X) rbRgbImage | () rbCreateImage
+ *   () rbMaskImage | () rbQcinfFile
  *   }
- *   ==
  *   {+
- *   Segmentation parameters
- *   alpha: | "400.0  "
- *   beta: | "50.0   "
- *   gamma 0: | "100.0  "
- *   gamma 1: | "300.0  "
- *   iterations: | "80     "
- *   shrink power: | "5      "
- *   shrink algorithm: | ^OUTLINE^
- *   [] Show Seeds | [] Preview
+ *   Seeds from RGB image
+ *   ^cbRgbSeedImage  ^
  *   }
- *   ~~
+ *   {+
+ *   Seed build
+ *   [bnClone] | [bnFore] | [bnBack]
+ *   ^cbCreatedSeedImage^
+ *   }
+ *   {+
+ *   Seeds from mask
+ *   ^cbMaskSeedImage  ^
+ *   }
+ *   {+
+ *   Seeds from QCONF
+ *   [bnQconfSeedImage]
+ *   lbQconfFile
+ *   }
+ *   {+
+ *   Segmentation options
+ *   Alpha | "srAlpha"
+ *   Beta | "srBeta"
+ *   Gamma 0 | "srGamma0"
+ *   Gamma 1 | "srGamma1"
+ *   Iterations | "srIter"
+ *   }
+ *   {+
+ *   Inter-process
+ *   Shrink method | ^cbShrinkMethod^
+ *   Shrink power | "srShrinkPower"
+ *   Expand power | "srExpandPower"
+ *   Binary filter | ^cbFilteringMethod^
+ *   {+
+ *   Use local mean
+ *   () chLocalMean
+ *   Window | "srLocalMeanWindow"
+ *   }
+ *   }
+ *   {+
+ *   Post-process
+ *   {+
+ *   Hat filter
+ *   () chHatFilter
+ *   Alev | "srAlev"
+ *   Num | "srNum"
+ *   Window | "srWindow"
+ *   }
+ *   Binary filter | ^cbFilteringPostMethod^
+ *   }
+ *   {+
+ *   Display options
+ *   () chShowSeed | () chShowPreview
+ *   }
  *   {
- *   [     OK     ] | [   Cancel   ]
+ *   [     OK     ] | [   Cancel   ] | [Help ]
  *   }
  *   }
  * @enduml
@@ -158,7 +198,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     Enumeration<AbstractButton> elements = seedSource.getElements();
     while (elements.hasMoreElements()) {
       AbstractButton button = (AbstractButton) elements.nextElement();
-      if (button.getActionCommand() == val.toString()) {
+      if (button.getActionCommand().equals(val.toString())) {
         button.setSelected(true);
       }
     }
@@ -672,7 +712,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
     rbCreateImage.addActionListener(this);
     rbCreateImage.setActionCommand(SeedSource.CreatedImage.toString());
     rbCreateImage.addItemListener(this);
-    setToolTip(rbCreateImage, "Create seeds as scribble image. Stack or single image");
+    setToolTip(rbCreateImage,
+            "Create copy of original image for scribbling. Stack or single image");
     rbMaskImage = new JRadioButton("Mask image");
     rbMaskImage.addActionListener(this);
     rbMaskImage.setActionCommand(SeedSource.MaskImage.toString());

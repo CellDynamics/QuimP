@@ -19,7 +19,6 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.QColor;
 import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 
-// TODO: Auto-generated Javadoc
 /**
  * Helper class to export shapes as \a *.tif images
  * 
@@ -34,7 +33,7 @@ public class RoiSaver {
   static final Logger LOGGER = LoggerFactory.getLogger(RoiSaver.class.getName());
 
   /**
-   * Dummy constructor
+   * Dummy constructor.
    */
   public RoiSaver() {
   }
@@ -42,7 +41,7 @@ public class RoiSaver {
   /**
    * Save ROI as image
    * 
-   * Get ListArray with vertices and create fileName.tif image with ROI For non-valid input list
+   * <p>Get ListArray with vertices and create fileName.tif image with ROI For non-valid input list
    * it creates red image of size 100 x 100
    * 
    * @param fileName file to save image with path
@@ -61,18 +60,15 @@ public class RoiSaver {
         l++;
       }
       bb = getBoundingBox(vert); // get size of output image
-      PolygonRoi pR = new PolygonRoi(x, y, Roi.POLYGON); // create polygon
-                                                         // object
+      PolygonRoi pp = new PolygonRoi(x, y, Roi.POLYGON); // create polygon object
       LOGGER.debug("Creating image of size [" + (int) Math.round(bb[0]) + ","
               + (int) Math.round(bb[1]) + "]");
       ImagePlus outputImage = IJ.createImage("", (int) Math.round(bb[0] + 0.2 * bb[0]),
               (int) Math.round(bb[1] + 0.2 * bb[1]), 1, 8); // output // margins
-      ImageProcessor ip = outputImage.getProcessor(); // get processor
-                                                      // required later
+      ImageProcessor ip = outputImage.getProcessor(); // get processor required later
       ip.setColor(Color.WHITE); // set pen
-      pR.setLocation(0.1 * bb[0], 0.1 * bb[1]); // move slightly ROI to
-                                                // center
-      pR.drawPixels(ip); // draw roi
+      pp.setLocation(0.1 * bb[0], 0.1 * bb[1]); // move slightly ROI to center
+      pp.drawPixels(ip); // draw roi
       IJ.saveAsTiff(outputImage, fileName); // save image
       LOGGER.debug("Saved as: " + fileName);
     } catch (Exception e) {
@@ -99,38 +95,39 @@ public class RoiSaver {
           ArrayList<ArrayList<SegmentedShapeRoi>> ret) {
     ImagePlus cp = image.duplicate();
     new ImageConverter(cp).convertToRGB();
-    for (ArrayList<? extends ShapeRoi> aL : ret) {
+    for (ArrayList<? extends ShapeRoi> al : ret) {
       QColor qcolor = QColor.lightColor();
       Color color = new Color(qcolor.getColorInt());
-      for (int i = 0; i < aL.size(); i++) {
+      for (int i = 0; i < al.size(); i++) {
         ImageProcessor currentP = cp.getImageStack().getProcessor(i + 1);
         currentP.setColor(color);
         currentP.setLineWidth(2);
-        aL.get(i).drawPixels(currentP); // TODO catch OutOfBounds exception here to skip
-                                        // missing slices
+        al.get(i).drawPixels(currentP); // TODO catch OutOfBounds exception to skip missing slices
       }
     }
     IJ.saveAsTiff(cp, fileName); // save image
   }
 
   /**
-   * Save ROI as image
+   * Save ROI as image.
    * 
-   * @param fileName
-   * @param roi
+   * @param fileName fileName
+   * @param roi roi
    * @see uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver#saveROIs(ImagePlus, String, ArrayList)
    */
-  public static void saveROI(String fileName, Roi roi) {
-    if (roi == null)
+  public static void saveRoi(String fileName, Roi roi) {
+    if (roi == null) {
       saveROI(fileName, (List<Point2d>) null);
+      return;
+    }
     FloatPolygon fp;
     fp = roi.getFloatPolygon(); // save common part
     saveROI(fileName, new QuimpDataConverter(fp.xpoints, fp.ypoints).getList());
   }
 
   /**
-   * Calculates \b width and \b height of bounding box for shape defined as List of Vector2d
-   * elements
+   * Calculates width and height of bounding box for shape defined as List of Vector2d
+   * elements.
    * 
    * @param vert List of vertexes of shape
    * @return two elements array where [width height]
@@ -142,14 +139,18 @@ public class RoiSaver {
     double maxy = miny;
     double[] out = new double[2];
     for (Point2d el : vert) {
-      if (el.getX() > maxx)
+      if (el.getX() > maxx) {
         maxx = el.getX();
-      if (el.getX() < minx)
+      }
+      if (el.getX() < minx) {
         minx = el.getX();
-      if (el.getY() > maxy)
+      }
+      if (el.getY() > maxy) {
         maxy = el.getY();
-      if (el.getY() < miny)
+      }
+      if (el.getY() < miny) {
         miny = el.getY();
+      }
     }
     out[0] = Math.abs(maxx - minx);
     out[1] = Math.abs(maxy - miny);

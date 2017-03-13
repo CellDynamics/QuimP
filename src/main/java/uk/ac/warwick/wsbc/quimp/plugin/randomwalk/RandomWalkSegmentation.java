@@ -890,7 +890,7 @@ public class RandomWalkSegmentation {
    * @author p.baniukiewicz
    *
    */
-  class MatrixDotSubDiv implements RealMatrixChangingVisitor {
+  static class MatrixDotSubDiv implements RealMatrixChangingVisitor {
 
     RealMatrix sub;
     RealMatrix div;
@@ -923,7 +923,7 @@ public class RandomWalkSegmentation {
    * 
    * @author p.baniukiewicz
    */
-  class MatrixElementMultiply implements RealMatrixChangingVisitor {
+  static class MatrixElementMultiply implements RealMatrixChangingVisitor {
 
     private double multiplier;
 
@@ -960,7 +960,7 @@ public class RandomWalkSegmentation {
    * 
    * @author p.baniukiewicz
    */
-  class MatrixElementDivide implements RealMatrixChangingVisitor {
+  static class MatrixElementDivide implements RealMatrixChangingVisitor {
 
     private double div;
 
@@ -997,7 +997,7 @@ public class RandomWalkSegmentation {
    * 
    * @author p.baniukiewicz
    */
-  class MatrixElementExp implements RealMatrixChangingVisitor {
+  static class MatrixElementExp implements RealMatrixChangingVisitor {
 
     @Override
     public double end() {
@@ -1021,7 +1021,7 @@ public class RandomWalkSegmentation {
    * 
    * @author p.baniukiewicz
    */
-  class MatrixElementPower implements RealMatrixChangingVisitor {
+  static class MatrixElementPower implements RealMatrixChangingVisitor {
 
     @Override
     public double end() {
@@ -1047,7 +1047,7 @@ public class RandomWalkSegmentation {
    * @author p.baniukiewicz
    *
    */
-  class MatrixDotProduct implements RealMatrixChangingVisitor {
+  static class MatrixDotProduct implements RealMatrixChangingVisitor {
 
     RealMatrix matrix;
 
@@ -1083,7 +1083,7 @@ public class RandomWalkSegmentation {
    * @author p.baniukiewicz
    *
    */
-  class MatrixDotDiv implements RealMatrixChangingVisitor {
+  static class MatrixDotDiv implements RealMatrixChangingVisitor {
 
     RealMatrix matrix;
 
@@ -1118,7 +1118,7 @@ public class RandomWalkSegmentation {
    * @author p.baniukiewicz
    *
    */
-  class MatrixCompareWeighted implements RealMatrixChangingVisitor {
+  static class MatrixCompareWeighted implements RealMatrixChangingVisitor {
 
     RealMatrix matrix;
     double weight;
@@ -1160,10 +1160,9 @@ public class RandomWalkSegmentation {
    */
   /**
    * @example src/test/resources/Matlab/rw_laplace4_java_base.m This is source file of segmentation
-   *          in
-   *          Matlab that was a base for RandomWalkSegmentation Implementation
+   *          in Matlab that was a base for RandomWalkSegmentation Implementation
    */
-  class MatrixDotAdd implements RealMatrixChangingVisitor {
+  static class MatrixDotAdd implements RealMatrixChangingVisitor {
 
     RealMatrix matrix;
 
@@ -1198,12 +1197,11 @@ public class RandomWalkSegmentation {
    * @author p.baniukiewicz
    *
    */
-  class MatrixDotSub implements RealMatrixChangingVisitor {
+  static class MatrixDotSub implements RealMatrixChangingVisitor {
 
     /**
-     * @example src/test/resources/Matlab/rw_laplace4_java_base.m This is source file of
-     *          segmentation in
-     *          Matlab that was a base for RandomWalkSegmentation Implementation
+     * Example src/test/resources/Matlab/rw_laplace4_java_base.m This is source file of
+     * segmentation in Matlab that was a base for RandomWalkSegmentation Implementation.
      */
     RealMatrix matrix;
 
@@ -1237,7 +1235,7 @@ public class RandomWalkSegmentation {
    * 
    * @author p.baniukiewicz
    */
-  class MatrixElementPowerDiv implements RealMatrixChangingVisitor {
+  static class MatrixElementPowerDiv implements RealMatrixChangingVisitor {
 
     double val;
 
