@@ -119,7 +119,12 @@ public class CellStatsEval implements Measurements {
    * <p>
    * <b>Warning</b>
    * <p>
-   * Number of calculated stats must be reflected in {@link #buildData(FrameStatistics[])}
+   * Number of calculated stats must be reflected in {@link #buildData(FrameStatistics[])}.
+   * 
+   * <p>Scales stored in processed image are used. Even if {@link BOAState.BOAp} stores scale of
+   * image, it is used scale from tiff (they are the same as user scale is copied to image in
+   * initialisation stage).
+   * 
    * 
    * @return Array with stats for every frame for one cell.
    */

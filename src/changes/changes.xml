@@ -8,7 +8,10 @@
   <body>
 	   <release version="17.02.05-SNAPSHOT" date="" description="Release">
           <action dev="baniuk" type="add" issue="">
-              QuimP: Reworked plugin interfaces to make them compatibile with IJ macro. Generate mask can be called from macro. Relevant documentation is in JavaDoc plugin package.
+              QuimP: Reworked plugin interfaces to make them compatible with IJ macro. Generate mask can be called from macro. Relevant documentation is in JavaDoc plugin package.
+          </action>
+          <action dev="baniuk" type="fix" issue="227">
+              QuimP-BOA: Fixed image scale and frame interval bug.
           </action>
       </release>	
       <release version="17.02.04" date="2017-02-16" description="Release">

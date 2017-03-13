@@ -17,7 +17,6 @@ import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.binaryseg.BinarySegmentationPlugin;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /*
  * //!>
  * @startuml doc-files/BOAState_UML.png
@@ -55,13 +54,13 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 /**
  * Hold current BOA state that can be serialized.
  * 
- * This class is composed from two inner classes:
+ * <p>This class is composed from two inner classes:
  * <ul>
  * <li>BOAp - holds internal state of BOA plugin, maintained mainly for compatibility reasons
  * <li>SegParam - holds segmentation parameters, exposed to UI
  * </ul>
  * 
- * Moreover there are several fields related to new features of QuimP like storing internal state
+ * <p>Moreover there are several fields related to new features of QuimP like storing internal state
  * for every frame separately or SnakePlugins.<br>
  * 
  * <img src="doc-files/BOAState_UML.png"/><br>
@@ -75,7 +74,7 @@ public class BOAState implements IQuimpSerialize {
   /**
    * Reference to segmentation parameters. Holds current parameters.
    * 
-   * On every change of BOA state it is stored as copy in segParamSnapshots for current frame.
+   * <p>On every change of BOA state it is stored as copy in segParamSnapshots for current frame.
    * This is why that field is transient
    * 
    * @see uk.ac.warwick.wsbc.quimp.BOA_#run(String)
@@ -90,14 +89,12 @@ public class BOAState implements IQuimpSerialize {
   /**
    * Instance of binary segmentation plugin that converts BW masks into snakes.
    * 
-   * This is regular plugin but handled separately from SnakePlugins and it is not provided as
+   * <p>This is regular plugin but handled separately from SnakePlugins and it is not provided as
    * external jar
    */
   public transient BinarySegmentationPlugin binarySegmentationPlugin;
   /**
-   * Configuration of BinarySegmentation plugin if it was used.
-   * 
-   * Used during saving boa state.
+   * Configuration of BinarySegmentation plugin if it was used. Used during saving boa state.
    */
   @SuppressWarnings("unused")
   private ParamList binarySegmentationParam;
@@ -108,16 +105,15 @@ public class BOAState implements IQuimpSerialize {
   /**
    * Keep snapshots of SnakePluginList objects for every frame separately.
    * 
-   * Plugin configurations are stored as well (but without plugin references)
+   * <p>Plugin configurations are stored as well (but without plugin references)
    */
   public ArrayList<SnakePluginList> snakePluginListSnapshots;
   /**
-   * List of plugins selected in plugin stack and information if they are active or not.
-   * 
-   * This field is not serializable because \a snakePluginListSnapshots keeps configurations for
+   * List of plugins selected in plugin stack and information if they are active or not. This field
+   * is not serializable because snakePluginListSnapshots keeps configurations for
    * every frame.
-   * <p>
-   * Holds current parameters as the main object not referenced in BOAp On every change of BOA
+   * 
+   * <p>Holds current parameters as the main object not referenced in BOAp On every change of BOA
    * state it is stored as copy in snakePluginListSnapshots for current frame. This is why that
    * field is transient
    * 
@@ -127,22 +123,20 @@ public class BOAState implements IQuimpSerialize {
    */
   public transient SnakePluginList snakePluginList;
   /**
-   * Reference to Nest, which is serializable as well.
-   * 
-   * This is main object not referenced in other parts of QuimP
+   * Reference to Nest, which is serializable as well. This is main object not referenced in other
+   * parts of QuimP
    */
   public Nest nest;
   /**
-   * Store information whether for current frame button <b>Edit</b> was used.
-   * 
-   * Do not indicate that any of Snakes was edited.
+   * Store information whether for current frame button <b>Edit</b> was used. Do not indicate that
+   * any of Snakes was edited.
    */
   public ArrayList<Boolean> isFrameEdited;
 
   /**
    * Hold user parameters for segmentation algorithm.
    * 
-   * Most of those parameters are available from BOA user menu. This class supports cloning and
+   * <p>Most of those parameters are available from BOA user menu. This class supports cloning and
    * comparing.
    * 
    * @author p.baniukiewicz
@@ -152,49 +146,49 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Number of nodes on ROI edge.
      * 
-     * Cell segmentation parameter. Check user manual or our publications for details.
+     * <p>Cell segmentation parameter. Check user manual or our publications for details.
      */
     private double nodeRes;
     /**
      * Distance to blow up chain.
      * 
-     * Check user manual or our publications for details.
+     * <p>Check user manual or our publications for details.
      */
     public int blowup;
     /**
      * Critical velocity.
      * 
-     * Cell segmentation parameter. Check user manual or our publications for details.
+     * <p>Cell segmentation parameter. Check user manual or our publications for details.
      */
     public double vel_crit;
     /**
      * Central force.
      * 
-     * Cell segmentation parameter. Check user manual or our publications for details.
+     * <p>Cell segmentation parameter. Check user manual or our publications for details.
      */
     public double f_central;
     /**
      * Image force.
      * 
-     * Cell segmentation parameter. Check user manual or our publications for details.
+     * <p>Cell segmentation parameter. Check user manual or our publications for details.
      */
     public double f_image;
     /**
      * Max iterations per contraction.
      * 
-     * Cell segmentation parameter. Check user manual or our publications for details.
+     * <p>Cell segmentation parameter. Check user manual or our publications for details.
      */
     public int max_iterations;
     /**
      * Sample tan.
      * 
-     * Cell segmentation parameter. Check user manual or our publications for details.
+     * <p>Cell segmentation parameter. Check user manual or our publications for details.
      */
     public int sample_tan;
     /**
      * Sample norm.
      * 
-     * Cell segmentation parameter. Check user manual or our publications for details.
+     * <p>Cell segmentation parameter. Check user manual or our publications for details.
      */
     public int sample_norm;
     /**
@@ -206,7 +200,7 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Final shrink.
      * 
-     * Cell segmentation parameter. Check user manual or our publications for details.
+     * <p>Cell segmentation parameter. Check user manual or our publications for details.
      */
     public double finalShrink;
     // Switch Params
@@ -223,19 +217,19 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Whether to act as an expanding snake.
      * 
-     * Visualisation option parameter. Check user manual or our publications for details.
+     * <p>Visualisation option parameter. Check user manual or our publications for details.
      */
     public boolean expandSnake;
     /**
      * Min distance between nodes.
      * 
-     * Cell segmentation parameter.
+     * <p>Cell segmentation parameter.
      */
     private double min_dist;
     /**
      * Max distance between nodes.
      * 
-     * Cell segmentation parameter.
+     * <p>Cell segmentation parameter.
      */
     private double max_dist;
 
@@ -317,43 +311,61 @@ public class BOAState implements IQuimpSerialize {
      */
     @Override
     public boolean equals(Object obj) {
-      if (this == obj)
+      if (this == obj) {
         return true;
-      if (obj == null)
+      }
+      if (obj == null) {
         return false;
-      if (!(obj instanceof SegParam))
+      }
+      if (!(obj instanceof SegParam)) {
         return false;
+      }
       SegParam other = (SegParam) obj;
-      if (blowup != other.blowup)
+      if (blowup != other.blowup) {
         return false;
-      if (expandSnake != other.expandSnake)
+      }
+      if (expandSnake != other.expandSnake) {
         return false;
-      if (Double.doubleToLongBits(f_central) != Double.doubleToLongBits(other.f_central))
+      }
+      if (Double.doubleToLongBits(f_central) != Double.doubleToLongBits(other.f_central)) {
         return false;
-      if (Double.doubleToLongBits(min_dist) != Double.doubleToLongBits(other.min_dist))
+      }
+      if (Double.doubleToLongBits(min_dist) != Double.doubleToLongBits(other.min_dist)) {
         return false;
-      if (Double.doubleToLongBits(max_dist) != Double.doubleToLongBits(other.max_dist))
+      }
+      if (Double.doubleToLongBits(max_dist) != Double.doubleToLongBits(other.max_dist)) {
         return false;
-      if (Double.doubleToLongBits(f_contract) != Double.doubleToLongBits(other.f_contract))
+      }
+      if (Double.doubleToLongBits(f_contract) != Double.doubleToLongBits(other.f_contract)) {
         return false;
-      if (Double.doubleToLongBits(f_image) != Double.doubleToLongBits(other.f_image))
+      }
+      if (Double.doubleToLongBits(f_image) != Double.doubleToLongBits(other.f_image)) {
         return false;
-      if (Double.doubleToLongBits(finalShrink) != Double.doubleToLongBits(other.finalShrink))
+      }
+      if (Double.doubleToLongBits(finalShrink) != Double.doubleToLongBits(other.finalShrink)) {
         return false;
-      if (max_iterations != other.max_iterations)
+      }
+      if (max_iterations != other.max_iterations) {
         return false;
-      if (Double.doubleToLongBits(nodeRes) != Double.doubleToLongBits(other.nodeRes))
+      }
+      if (Double.doubleToLongBits(nodeRes) != Double.doubleToLongBits(other.nodeRes)) {
         return false;
-      if (sample_norm != other.sample_norm)
+      }
+      if (sample_norm != other.sample_norm) {
         return false;
-      if (sample_tan != other.sample_tan)
+      }
+      if (sample_tan != other.sample_tan) {
         return false;
-      if (showPaths != other.showPaths)
+      }
+      if (showPaths != other.showPaths) {
         return false;
-      if (use_previous_snake != other.use_previous_snake)
+      }
+      if (use_previous_snake != other.use_previous_snake) {
         return false;
-      if (Double.doubleToLongBits(vel_crit) != Double.doubleToLongBits(other.vel_crit))
+      }
+      if (Double.doubleToLongBits(vel_crit) != Double.doubleToLongBits(other.vel_crit)) {
         return false;
+      }
       return true;
     }
 
@@ -369,7 +381,7 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Set nodeRes field and calculate <tt>min_dist</tt> and <tt>max_dist</tt>.
      * 
-     * @param d
+     * @param d resolution
      */
     public void setNodeRes(double d) {
       nodeRes = d;
@@ -385,7 +397,7 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Set default parameters for contour matching algorithm.
      * 
-     * These parameters are external - available for user to set in GUI.
+     * <p>These parameters are external - available for user to set in GUI.
      */
     public void setDefaults() {
       setNodeRes(6.0);
@@ -439,17 +451,18 @@ public class BOAState implements IQuimpSerialize {
   /**
    * Holds parameters defining snake and controlling contour matching algorithm.
    * 
-   * BOAp is static class contains internal as well as external parameters used to define snake
+   * <p>BOAp is static class contains internal as well as external parameters used to define snake
    * and to control contour matching algorithm. There are also several basic get/set methods for
    * accessing selected parameters, setting default
    * {@link uk.ac.warwick.wsbc.quimp.BOAState.SegParam#setDefaults() values} and writing/reading
    * these (external) parameters to/from disk. File format used for storing data in files is
    * defined at {@link QParams} class.
-   * <p>
-   * External parameters are those related to algorithm options whereas internal are those related
+   * 
+   * <p>External parameters are those related to algorithm options whereas internal are those
+   * related
    * to internal settings of algorithm, GUI and whole plugin
-   * <p>
-   * This class is shared among different QuimP components.
+   * 
+   * <p>This class is shared among different QuimP components.
    * 
    * @author rtyson
    * @see uk.ac.warwick.wsbc.quimp.QParams
@@ -458,14 +471,14 @@ public class BOAState implements IQuimpSerialize {
     /**
      * handle to original file obtained from IJ (usually image opened).
      * 
-     * This filed is serialised for further verification of QCONF and image matching but not
+     * <p>This filed is serialised for further verification of QCONF and image matching but not
      * restored on load to not overwrite currently opened image name.
      */
     private File orgFile;
     /**
      * Corename for output, initially contains path and name without extension from orgFile.
      * 
-     * Can be changed by user on save Change of this field causes change of the
+     * <p>Can be changed by user on save Change of this field causes change of the
      * <tt>fileName</tt>
      */
     private File outputFileCore;
@@ -507,7 +520,7 @@ public class BOAState implements IQuimpSerialize {
      */
     int cut_every;
     /**
-     * output old QuimP format?
+     * output old QuimP format.
      */
     boolean oldFormat;
     /**
@@ -567,7 +580,7 @@ public class BOAState implements IQuimpSerialize {
      */
     boolean doDeleteSeg;
     /**
-     * is select a cell for editing active?
+     * is select a cell for editing active.
      */
     boolean editMode;
     /**
@@ -582,17 +595,17 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Block rerun of runBoa() when spinners have been changed programmatically.
      * 
-     * Modification of spinners from code causes that stateChanged() event is called.
+     * <p>Modification of spinners from code causes that stateChanged() event is called.
      */
     boolean supressStateChangeBOArun = false;
     /**
-     * use to test how many times a method is called
+     * use to test how many times a method is called.
      */
     int callCount;
     /**
      * Indicate that {@link uk.ac.warwick.wsbc.quimp.BOA_#runBoa(int, int)} is active.
      * 
-     * This method calls {@link uk.ac.warwick.wsbc.quimp.ImageGroup#setIpSliceAll(int)} that
+     * <p>This method calls {@link uk.ac.warwick.wsbc.quimp.ImageGroup#setIpSliceAll(int)} that
      * raises event
      * {@link uk.ac.warwick.wsbc.quimp.BOA_.CustomStackWindow#updateSliceSelector()} which then
      * fire other methods.
@@ -602,6 +615,8 @@ public class BOAState implements IQuimpSerialize {
     private boolean scaleAdjusted = false; // true when adjusted in constructor
 
     /**
+     * Get scale of the image.
+     * 
      * @return the imageScale
      */
     public double getImageScale() {
@@ -609,6 +624,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Set scale of teh image.
+     * 
      * @param imageScale the imageScale to set
      */
     public void setImageScale(double imageScale) {
@@ -621,6 +638,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Get scaleAdjusted.
+     * 
      * @return the scaleAdjusted
      */
     public boolean isScaleAdjusted() {
@@ -631,6 +650,8 @@ public class BOAState implements IQuimpSerialize {
     private boolean fIAdjusted = false;
 
     /**
+     * Get imageFrameInterval.
+     * 
      * @return the imageFrameInterval
      */
     public double getImageFrameInterval() {
@@ -638,6 +659,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Set imageFrameInterval.
+     * 
      * @param imageFrameInterval the imageFrameInterval to set
      */
     public void setImageFrameInterval(double imageFrameInterval) {
@@ -650,6 +673,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Get fIAdjusted.
+     * 
      * @return the fIAdjusted
      */
     public boolean isfIAdjusted() {
@@ -686,7 +711,7 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Plot or not snakes after processing by plugins.
      * 
-     * If true both snakes, after segmentation and after filtering are plotted.
+     * <p>If true both snakes, after segmentation and after filtering are plotted.
      */
     boolean isProcessedSnakePlotted = true;
 
@@ -698,9 +723,8 @@ public class BOAState implements IQuimpSerialize {
     /**
      * When any plugin fails this field defines how QuimP should behave.
      * 
-     * When it is true QuimP breaks process of segmentation and do not store filtered snake in
+     * <p>When it is true QuimP breaks process of segmentation and do not store filtered snake in
      * SnakeHandler.
-     * <p>
      * TODO Implement this feature
      * 
      * @see <a href="http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/81">ticket#81</a>
@@ -710,7 +734,7 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Initialize internal parameters of BOA plugin from ImagePlus.
      * 
-     * Most of these parameters are related to state machine of BOA. There are also parameters
+     * <p>Most of these parameters are related to state machine of BOA. There are also parameters
      * related to internal state of Active Contour algorithm. Defaults for parameters available
      * for user are set in {@link uk.ac.warwick.wsbc.quimp.BOAState.SegParam#setDefaults()}
      * 
@@ -735,6 +759,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Get FRAMES.
+     * 
      * @return the fRAMES
      */
     public int getFRAMES() {
@@ -742,6 +768,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Get WIDTH.
+     * 
      * @return the wIDTH
      */
     public int getWIDTH() {
@@ -749,6 +777,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Get HEIGHT.
+     * 
      * @return the hEIGHT
      */
     public int getHEIGHT() {
@@ -756,6 +786,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Get orgFile.
+     * 
      * @return the orgFile
      */
     public File getOrgFile() {
@@ -763,6 +795,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Set orgFile.
+     * 
      * @param orgFile the orgFile to set
      */
     public void setOrgFile(File orgFile) {
@@ -770,6 +804,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Get outputFileCore.
+     * 
      * @return the outputFileCore
      */
     public File getOutputFileCore() {
@@ -777,6 +813,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Set outputFileCore.
+     * 
      * @param outputFileCore the outputFileCore to set
      */
     public void setOutputFileCore(File outputFileCore) {
@@ -785,6 +823,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Set setOutputFileCore.
+     * 
      * @param outputFileCore the outputFileCore to set
      */
     public void setOutputFileCore(String outputFileCore) {
@@ -792,6 +832,8 @@ public class BOAState implements IQuimpSerialize {
     }
 
     /**
+     * Get fileName.
+     * 
      * @return the fileName
      */
     public String getFileName() {
@@ -801,44 +843,44 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Generate Snake file name basing on ID.
      * 
-     * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+     * <p>Mainly to have this in one place. Use outputFileCore that is set by user choice of output
      * 
-     * @param ID of Snake
+     * @param id of Snake
      * @return Full path to file with extension
      */
-    public String deductSnakeFileName(int ID) {
+    public String deductSnakeFileName(int id) {
       LOGGER.trace(getOutputFileCore().getAbsoluteFile().toString());
-      return getOutputFileCore().getAbsoluteFile() + "_" + ID + FileExtensions.snakeFileExt;
+      return getOutputFileCore().getAbsoluteFile() + "_" + id + FileExtensions.snakeFileExt;
     }
 
     /**
      * Generate stats file name basing on ID.
      * 
-     * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+     * <p>Mainly to have this in one place. Use outputFileCore that is set by user choice of output
      * 
-     * @param ID of Snake
+     * @param id of Snake
      * @return Full path to file with extension
      */
-    public String deductStatsFileName(int ID) {
-      return getOutputFileCore().getAbsoluteFile() + "_" + ID + FileExtensions.statsFileExt;
+    public String deductStatsFileName(int id) {
+      return getOutputFileCore().getAbsoluteFile() + "_" + id + FileExtensions.statsFileExt;
     }
 
     /**
      * Generate main param file (old) name basing on ID.
      * 
-     * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+     * <p>Mainly to have this in one place. Use outputFileCore that is set by user choice of output
      * 
-     * @param ID of Snake
+     * @param id of Snake
      * @return Full path to file with extension
      */
-    public String deductParamFileName(int ID) {
-      return getOutputFileCore().getAbsoluteFile() + "_" + ID + FileExtensions.configFileExt;
+    public String deductParamFileName(int id) {
+      return getOutputFileCore().getAbsoluteFile() + "_" + id + FileExtensions.configFileExt;
     }
 
     /**
      * Generate main filter config file name.
      * 
-     * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+     * <p>Mainly to have this in one place. Use outputFileCore that is set by user choice of output
      * 
      * @return Full path to file with extension
      */
@@ -849,7 +891,7 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Generate main param file (new) name.
      * 
-     * Mainly to have this in one place. Use outputFileCore that is set by user choice of output
+     * <p>Mainly to have this in one place. Use outputFileCore that is set by user choice of output
      * 
      * @return Full path to file with extension
      */
@@ -925,9 +967,8 @@ public class BOAState implements IQuimpSerialize {
     LOGGER.debug(
             "Data stored at frame:" + frame + " size of segParams is " + segParamSnapshots.size());
     segParamSnapshots.set(frame - 1, new SegParam(segParam));
-    snakePluginListSnapshots.set(frame - 1, snakePluginList.getDeepCopy()); // download
-                                                                            // Plugin config
-                                                                            // as well
+    // download Plugin config as well
+    snakePluginListSnapshots.set(frame - 1, snakePluginList.getDeepCopy());
   }
 
   /**
@@ -939,15 +980,16 @@ public class BOAState implements IQuimpSerialize {
   public void restore(int frame) {
     LOGGER.trace("Data restored from frame:" + frame);
     SegParam tmp = segParamSnapshots.get(frame - 1);
-    if (tmp != null)
+    if (tmp != null) {
       segParam = tmp;
+    }
     snakePluginList = snakePluginListSnapshots.get(frame - 1);
   }
 
   /**
    * Store information whether frame was edited only.
    * 
-   * Can be called when global state does not change, e.g. user clicked \b Edit button so
+   * <p>Can be called when global state does not change, e.g. user clicked \b Edit button so
    * parameters and plugins have not been modified.
    * 
    * @param frame current frame numbered from 1
@@ -959,7 +1001,7 @@ public class BOAState implements IQuimpSerialize {
   /**
    * Reset BOAState class.
    * 
-   * This method does:
+   * <p>This method does:
    * <ol>
    * <li>Closes all windows from plugins
    * <li>Cleans all snapshots
@@ -972,12 +1014,16 @@ public class BOAState implements IQuimpSerialize {
    * @param vu ViewUpdater reference
    */
   public void reset(final ImagePlus ip, final PluginFactory pf, final ViewUpdater vu) {
-    if (snakePluginList != null)
+    if (snakePluginList != null) {
       snakePluginList.clear();
-    if (snakePluginListSnapshots != null)
-      for (SnakePluginList sp : snakePluginListSnapshots)
-        if (sp != null)
+    }
+    if (snakePluginListSnapshots != null) {
+      for (SnakePluginList sp : snakePluginListSnapshots) {
+        if (sp != null) {
           sp.clear();
+        }
+      }
+    }
     // boap = new BOAp(); // must be disabled becaue boap keeps some data related to loaded
     // image that never changes
     segParam = new SegParam(); // and SegParam
@@ -987,15 +1033,16 @@ public class BOAState implements IQuimpSerialize {
   /**
    * Should be called before serialization.
    * 
-   * Creates ArrayLists from Shape<T extends PointsList<T>>.
+   * <p>Creates ArrayLists from Shape.
    */
   @Override
   public void beforeSerialize() {
     nest.beforeSerialize(); // prepare snakes
-    if (binarySegmentationPlugin != null) // was used, store config
+    if (binarySegmentationPlugin != null) {
       binarySegmentationParam = binarySegmentationPlugin.getPluginConfig();
-    else
+    } else {
       binarySegmentationParam = new ParamList();
+    }
 
     // snakePluginListSnapshots and segParamSnapshots do not need beforeSerialize()
   }
@@ -1008,10 +1055,8 @@ public class BOAState implements IQuimpSerialize {
   @Override
   public void afterSerialize() throws Exception {
     LOGGER.trace("After serialize called");
-    nest.afterSerialize(); // rebuild Shape<T extends PointsList<T>> from ArrayList used for
-                           // storing
-    snakePluginList.afterSerialize(); // assumes that snakePluginList contains valid refs to
-                                      // pluginFactory
+    nest.afterSerialize(); // rebuild Shape<T extends PointsList<T>> from ArrayList used for storing
+    snakePluginList.afterSerialize(); // assumes that snakePluginList contains valid refs to Facory
 
     // recreate file objects. without these lines the File objects after serialization are
     // created but they do not keep information about root, e.g. getAbsolutePath() returns
@@ -1019,21 +1064,23 @@ public class BOAState implements IQuimpSerialize {
     boap.outputFileCore = new File(boap.outputFileCore.toString());
     boap.orgFile = new File(boap.orgFile.toString());
     // restore local segParam to be first from segParamSnapshots
-    if (segParamSnapshots.size() > 0)
-      if (segParamSnapshots.get(0) != null)
+    if (segParamSnapshots.size() > 0) {
+      if (segParamSnapshots.get(0) != null) {
         segParam = new SegParam(segParamSnapshots.get(0));
-    // otherwise segParam will be default owng to SegParam constructor
+        // otherwise segParam will be default owng to SegParam constructor
+      }
+    }
   }
 
   /**
    * Write set of snake parameters to disk.
    * 
-   * writeParams method creates <i>paQP</i> master file, referencing other associated files and
+   * <p>writeParams method creates <i>paQP</i> master file, referencing other associated files and
    * <i>csv</i> file with statistics.
-   * <p>
-   * Compatibility layer with old QuimP
    * 
-   * @param sID ID of cell. If many cells segmented in one time, QuimP produces separate parameter
+   * <p>Compatibility layer with old QuimP
+   * 
+   * @param sid ID of cell. If many cells segmented in one time, QuimP produces separate parameter
    *        file for every of them
    * @param startF Start frame (typically beginning of stack)
    * @param endF End frame (typically end of stack)
@@ -1041,14 +1088,14 @@ public class BOAState implements IQuimpSerialize {
    * @see <a href=
    *      "http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/176#comment:3">ticket/176</a>
    */
-  public void writeParams(int sID, int startF, int endF) {
+  public void writeParams(int sid, int startF, int endF) {
     try {
       if (boap.saveSnake) {
-        File paramFile = new File(boap.deductParamFileName(sID));
+        File paramFile = new File(boap.deductParamFileName(sid));
         QParams qp = new QParams(paramFile);
         qp.setSegImageFile(boap.orgFile);
-        qp.setSnakeQP(new File(boap.deductSnakeFileName(sID)));
-        qp.setStatsQP(new File(boap.deductStatsFileName(sID)));
+        qp.setSnakeQP(new File(boap.deductSnakeFileName(sid)));
+        qp.setStatsQP(new File(boap.deductStatsFileName(sid)));
         qp.setImageScale(BOA_.qState.boap.imageScale);
         qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
         qp.setStartFrame(startF);
@@ -1079,7 +1126,7 @@ public class BOAState implements IQuimpSerialize {
   /**
    * Read set of snake parameters from disk.
    * 
-   * readParams method reads <i>paQP</i> master file, referencing other associated files.
+   * <p>readParams method reads <i>paQP</i> master file, referencing other associated files.
    * 
    * @return Status of operation, true when file has been loaded successfully, false when file has
    *         not been opened correctly or {@link uk.ac.warwick.wsbc.quimp.QParams#readParams()}
@@ -1110,7 +1157,7 @@ public class BOAState implements IQuimpSerialize {
   /**
    * Build internal boa state from QParams object.
    * 
-   * @param readQp
+   * @param readQp QParams object
    */
   public void loadParams(QParams readQp) {
     boap.NMAX = readQp.NMAX;
@@ -1130,7 +1177,8 @@ public class BOAState implements IQuimpSerialize {
     }
     boap.readQp = readQp;
     // copy loaded data to snapshots
-    for (int f = readQp.getStartFrame(); f < readQp.getEndFrame(); f++)
+    for (int f = readQp.getStartFrame(); f < readQp.getEndFrame(); f++) {
       store(f);
+    }
   }
 }
