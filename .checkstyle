@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fileset-config file-format-version="1.2.0" simple-config="false" sync-formatter="false">
+  <local-check-config name="quimp-google-check" location="/home/baniuk/Documents/Repos/QuimP-env/QuimP/src/main/resources/quimp_google_checks.xml" type="external" description="">
+    <additional-data name="protect-config-file" value="true"/>
+  </local-check-config>
+  <fileset name="all" enabled="true" check-config-name="quimp-google-check" local="true">
+    <file-match-pattern match-pattern="." include-pattern="true"/>
+  </fileset>
+</fileset-config>
