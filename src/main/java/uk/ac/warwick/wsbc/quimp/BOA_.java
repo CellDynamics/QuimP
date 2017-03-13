@@ -246,7 +246,7 @@ public class BOA_ implements PlugIn {
     }
 
     ImagePlus ip = WindowManager.getCurrentImage();
-    // initialize arrays for plugins instances and give them initial values (GUI)
+    // Initialise arrays for plugins instances and give them initial values (GUI)
     qState = new BOAState(ip, pluginFactory, viewUpdater); // create BOA state machine
     if (IJ.getVersion().compareTo("1.46") < 0) {
       qState.boap.useSubPixel = false;
@@ -322,7 +322,7 @@ public class BOA_ implements PlugIn {
     window.setTitle(window.getTitle() + " :QuimP: " + quimpInfo.getVersion());
     // validate registered user
     new Registration(window, "QuimP Registration");
-    // warn about scale
+    // warn about scale - if it was adjusted in BOAState constructor
     if (qState.boap.isScaleAdjusted()) {
       BOA_.log("WARNING Scale was zero - set to 1");
     }
@@ -2246,6 +2246,11 @@ public class BOA_ implements PlugIn {
 
   /**
    * Sets the scales.
+   * 
+   * <p>Scale and interval fields are already initialised in {@link BOAState} constructor from
+   * loaded image. If image does not have proper scale or interval, defaults from
+   * {@link BOAState.BOAp#setImageScale(double)} and
+   * {@link BOAState.BOAp#setImageFrameInterval(double)} are taken.
    */
   void setScales() {
     GenericDialog gd = new GenericDialog("Set image scale", window);

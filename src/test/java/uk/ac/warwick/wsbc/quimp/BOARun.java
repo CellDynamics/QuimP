@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import java.awt.event.WindowAdapter;
@@ -10,23 +8,18 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Toolbar;
-import uk.ac.warwick.wsbc.quimp.BOA_;
 
-// TODO: Auto-generated Javadoc
 /**
  * Main runner for BOA_ plugin. Show main window and wait for its closing and then ends.
  * 
- * The window is run in separate thread therefore when control is returned to main thread (main)
+ * <p>The window is run in separate thread therefore when control is returned to main thread (main)
  * (immediately after the window has been created) then the main thread ends that results in closing
  * of the program To prevent this behaviour thread synchronization is used. Window listener is added
  * to BOA_ window. window is public field of BOA_ class representing CustomStackWindow internally
  * extending Frame class.
- * <p>
- * This process will not finish because \c window default behaviour is to conceal itself not quit.
- * Kill instances by
  * 
  * <pre>
- * <code>ps -aux | grep BOA__run | awk '{print $2}' | xargs kill</code>
+ * <code>ps -aux | grep Run | awk '{print $2}' | xargs kill</code>
  * </pre>
  * 
  * @see uk.ac.warwick.wsbc.quimp.BOA_
@@ -34,13 +27,15 @@ import uk.ac.warwick.wsbc.quimp.BOA_;
  * @author p.baniukiewicz
  */
 @SuppressWarnings("unused")
-public class BOA__run {
+public class BOARun {
   static {
     System.setProperty("logback.configurationFile", "quimp-logback.xml");
   }
 
   /**
-   * @param args
+   * Runner.
+   * 
+   * @param args args
    * @throws InterruptedException Runner for BOA plugin
    */
   public static void main(String[] args) throws InterruptedException {
@@ -50,16 +45,16 @@ public class BOA__run {
     CountDownLatch startSignal = new CountDownLatch(1);
     // img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");
     // img = IJ.openImage("src/test/resources/movie03_8bit.tif");
-    // img = IJ.openImage("src/test/resources/Composite-after-macro_cut.tif");
+    img = IJ.openImage("src/test/resources/Composite-after-macro_cut.tif");
     // img = IJ.openImage("src/test/resources/Stack_cut.tif");
-    img = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
+    // img = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
 
     img.show(); // this is necessary for plugin as it uses getcurrentimage to work
-    Toolbar t = new Toolbar(); // fake toolbar to allow calls to static fields of this class
-                               // inside boa
+    // fake toolbar to allow calls to static fields of this class inside boa
+    Toolbar t = new Toolbar();
     BOA_ ob = new BOA_();
 
-    ob.run("../../Fiji.app.test/plugins/"); // run BOA, control is immediately returned
+    ob.run("."); // run BOA, control is immediately returned
     // ob.run("../plugins_test/target/"); // run BOA, control is immediately returned
 
     // add window listener to BOA_ window window is \public field of BOA_ class

@@ -615,6 +615,8 @@ public class BOAState implements IQuimpSerialize {
       if (imageScale == 0) {
         this.imageScale = 1;
         this.scaleAdjusted = true;
+      } else {
+        this.imageScale = imageScale;
       }
     }
 
@@ -642,6 +644,8 @@ public class BOAState implements IQuimpSerialize {
       if (imageFrameInterval == 0) {
         this.imageFrameInterval = 1;
         this.fIAdjusted = true;
+      } else {
+        this.imageFrameInterval = imageFrameInterval;
       }
     }
 
@@ -887,11 +891,14 @@ public class BOAState implements IQuimpSerialize {
   public BOAState(final ImagePlus ip, final PluginFactory pf, final ViewUpdater vu) {
     this();
     snakePluginList = new SnakePluginList(BOA_.NUM_SNAKE_PLUGINS, pf, vu);
-    if (ip == null)
+    if (ip == null) {
       return;
+    }
 
     initializeSnapshots(ip, pf, vu);
+    // set scale read from image, set also scaleAdjusted if scale from image is wrong
     boap.setImageScale(ip.getCalibration().pixelWidth);
+    // set interval read from image, set also fIAdjusted if scale from image is wrong
     boap.setImageFrameInterval(ip.getCalibration().frameInterval);
     boap.setup(ip);
   }
