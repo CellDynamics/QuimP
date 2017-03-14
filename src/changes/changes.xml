@@ -6,12 +6,24 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
-	   <release version="17.02.05-SNAPSHOT" date="" description="Release">
+	   <release version="17.03.01" date="" description="Release">
           <action dev="baniuk" type="add" issue="">
               QuimP: Reworked plugin interfaces to make them compatible with IJ macro. Generate mask can be called from macro. Relevant documentation is in JavaDoc plugin package.
           </action>
           <action dev="baniuk" type="fix" issue="227">
               QuimP-BOA: Fixed image scale and frame interval bug.
+          </action>
+          <action dev="baniuk" type="add" issue="226">
+              QuimP-RandomWalk: Many major improvements in Random Walk plugin.
+          </action>
+          <action dev="baniuk" type="fix" issue="189">
+              QuimP: Fixed name of IJ tables. Several results can be now presented in native IJ tables.
+          </action>
+          <action dev="baniuk" type="add" issue="220">
+              QuimP: Added support for GSon versioning. Better handling older configurations.
+          </action>
+          <action dev="baniuk" type="add" issue="">
+              QuimP: Code improvements around plugins, changed package naming, cleaned code.
           </action>
       </release>	
       <release version="17.02.04" date="2017-02-16" description="Release">
