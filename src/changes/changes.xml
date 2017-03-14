@@ -6,7 +6,7 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
-	   <release version="17.03.01" date="" description="Release">
+	   <release version="17.03.01" date="2017-03-14" description="Release">
           <action dev="baniuk" type="add" issue="">
               QuimP: Reworked plugin interfaces to make them compatible with IJ macro. Generate mask can be called from macro. Relevant documentation is in JavaDoc plugin package.
           </action>
