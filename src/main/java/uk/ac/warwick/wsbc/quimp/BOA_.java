@@ -246,7 +246,7 @@ public class BOA_ implements PlugIn {
     }
 
     ImagePlus ip = WindowManager.getCurrentImage();
-    // initialize arrays for plugins instances and give them initial values (GUI)
+    // Initialise arrays for plugins instances and give them initial values (GUI)
     qState = new BOAState(ip, pluginFactory, viewUpdater); // create BOA state machine
     if (IJ.getVersion().compareTo("1.46") < 0) {
       qState.boap.useSubPixel = false;
@@ -322,7 +322,7 @@ public class BOA_ implements PlugIn {
     window.setTitle(window.getTitle() + " :QuimP: " + quimpInfo.getVersion());
     // validate registered user
     new Registration(window, "QuimP Registration");
-    // warn about scale
+    // warn about scale - if it was adjusted in BOAState constructor
     if (qState.boap.isScaleAdjusted()) {
       BOA_.log("WARNING Scale was zero - set to 1");
     }
@@ -333,7 +333,7 @@ public class BOA_ implements PlugIn {
     // adds window listener called on plugin closing
     window.addWindowListener(new CustomWindowAdapter());
 
-    setScales();
+    setScales(); // ask user for scales and set them
     updateImageScale();
     window.setScalesText();
 
@@ -375,7 +375,7 @@ public class BOA_ implements PlugIn {
       // about is not stored in PluginProperties class due to optimization of memory
       ad.appendLine("   About (returned by plugin):");
       IQuimpCorePlugin tmpinst = pluginFactory.getInstance(entry.getKey());
-      if (tmpinst != null) {// can be null on problem with instance
+      if (tmpinst != null) { // can be null on problem with instance
         String about = tmpinst.about(); // may return null
         if (about != null) {
           ad.appendLine(about);
@@ -407,7 +407,7 @@ public class BOA_ implements PlugIn {
    */
   public void recalculatePlugins() {
     LOGGER.trace("BOA: recalculatePlugins called");
-    SnakeHandler sH;
+    SnakeHandler sh;
     if (qState.nest.isVacant()) { // only update screen
       imageGroup.updateOverlay(qState.boap.frame);
       return;
@@ -415,28 +415,28 @@ public class BOA_ implements PlugIn {
     imageGroup.updateToFrame(qState.boap.frame);
     try {
       for (int s = 0; s < qState.nest.size(); s++) { // for each snake
-        sH = qState.nest.getHandler(s);
-        if (qState.boap.frame < sH.getStartFrame()) {
+        sh = qState.nest.getHandler(s);
+        if (qState.boap.frame < sh.getStartFrame()) {
           continue;
         }
         // but if one is on frame iplStack+n and strtFrame is e.g. 1 it may happen that there is
         // no continuity of this snake between frames. In this case getBackupSnake
         // returns null. In general QuimP assumes that if there is a cell on frame iplStack, it
         // will exist on all consecutive frames.
-        Snake snake = sH.getBackupSnake(qState.boap.frame); // if exist get its backup copy
+        Snake snake = sh.getBackupSnake(qState.boap.frame); // if exist get its backup copy
         // (segm)
         if (snake == null || !snake.alive) {
           continue;
         }
         try {
           Snake out = iterateOverSnakePlugins(snake); // apply all plugins to snake
-          sH.storeThisSnake(out, qState.boap.frame); // set processed snake as final
+          sh.storeThisSnake(out, qState.boap.frame); // set processed snake as final
         } catch (QuimpPluginException qpe) {
           // must be rewritten with whole runBOA #65 #67
           BOA_.log("Error in filter module: " + qpe.getMessage());
           LOGGER.error("Error in filter module: " + qpe.getMessage());
           LOGGER.debug(qpe.getMessage(), qpe);
-          sH.storeLiveSnake(qState.boap.frame); // so store only segmented snake as final
+          sh.storeLiveSnake(qState.boap.frame); // so store only segmented snake as final
         }
       }
     } catch (Exception e) {
@@ -2199,8 +2199,6 @@ public class BOA_ implements PlugIn {
   private void tightenSnake(final Snake snake) throws BoaException {
 
     int i;
-    // imageGroup.drawPath(snake, frame); //draw initial contour on path
-    // image
 
     for (i = 0; i < qState.segParam.max_iterations; i++) { // iter constrict snake
       if (i % qState.boap.cut_every == 0) {
@@ -2235,17 +2233,20 @@ public class BOA_ implements PlugIn {
     if (!qState.segParam.expandSnake) { // shrink a bit to get final outline
       snake.shrinkSnake();
     }
-    // System.out.println("finished tighten- cut loops and intersects");
     snake.cutLoops();
     snake.cutIntersects();
-    // System.out.println("finished tighten with loop cuts");
-
-    // snake.correctDistance();
-    // imageGroup.drawPath(snake, frame); //draw final contour on path image
   }
 
   /**
    * Sets the scales.
+   * 
+   * <p>Scale and interval fields are already initialised in {@link BOAState} constructor from
+   * loaded image. If image does not have proper scale or interval, defaults from
+   * {@link BOAState.BOAp#setImageScale(double)} and
+   * {@link BOAState.BOAp#setImageFrameInterval(double)} are taken.
+   * 
+   * <p>All stats are evaluated using scales stored in tiff file so those values put here by user
+   * are copied to image by {@link #updateImageScale()}.
    */
   void setScales() {
     GenericDialog gd = new GenericDialog("Set image scale", window);
