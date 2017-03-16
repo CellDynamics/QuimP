@@ -25,110 +25,110 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
  */
 @Deprecated
 public class QPluginConfigSerializer {
-    
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = LoggerFactory.getLogger(QPluginConfigSerializer.class.getName());
-    private transient GsonBuilder gsonbuilder;
-    // Definition of top layer data saved
-    @SuppressWarnings("unused")
-    private String[] version; /*!< Version of QuimP added to top layer */
-    
-    /**
-     * The software name.
-     */
-    public final String softwareName = "QuimP"; /*!< Name of the software */
-    
-    /**
-     * The active plugin list.
-     */
-    public SnakePluginList activePluginList; /*!< Plugin configurations */
 
-    /**
-     * Main constructor
-     * 
-     * @param version Any information that reference current version of software
-     * @param sp Data to save
-     */
-    public QPluginConfigSerializer(String[] version, SnakePluginList sp) {
-        this.version = version;
-        this.activePluginList = sp;
-        gsonbuilder = new GsonBuilder();
-    }
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(QPluginConfigSerializer.class.getName());
+  private transient GsonBuilder gsonbuilder;
+  // Definition of top layer data saved
+  @SuppressWarnings("unused")
+  private String[] version; /*!< Version of QuimP added to top layer */
 
-    /**
-     * Do everything before save
-     */
-    private void beforeSave() {
-        activePluginList.beforeSerialize();
-    }
+  /**
+   * The software name.
+   */
+  public final String softwareName = "QuimP"; /*!< Name of the software */
 
-    /**
-     * Do everything after load
-     * 
-     * @throws QuimpPluginException
-     */
-    private void afterLoad() throws QuimpPluginException {
-        activePluginList.afterSerialize();
-    }
+  /**
+   * The active plugin list.
+   */
+  public SnakePluginList activePluginList; /*!< Plugin configurations */
 
-    /**
-     * Saves configuration packed with QPluginConfig class
-     * 
-     * @param filename Name of the file to save configuration
-     * @throws FileNotFoundException
-     */
-    public void save(String filename) throws FileNotFoundException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        beforeSave();
-        LOGGER.debug("Saving at: " + filename);
-        LOGGER.debug(gson.toJson(this));
-        PrintWriter f;
-        f = new PrintWriter(new File(filename));
-        gson.toJson(this, f);
-        f.close();
-    }
+  /**
+   * Main constructor
+   * 
+   * @param version Any information that reference current version of software
+   * @param sp Data to save
+   */
+  public QPluginConfigSerializer(String[] version, SnakePluginList sp) {
+    this.version = version;
+    this.activePluginList = sp;
+    gsonbuilder = new GsonBuilder();
+  }
 
-    /**
-     * Loads QPluginConfigSerializer class instance from json file.
-     * 
-     * If any of underlying class requires special builder it should be provided before calling \c
-     * load method by getBuilder().
-     * 
-     * @param filename File to load
-     * @throws IOException
-     * @return New object of QPluginConfigSerializer with values read from file \c filename
-     * @throws QuimpPluginException
-     * @see #getBuilder()
-     */
-    public QPluginConfigSerializer load(String filename) throws IOException, QuimpPluginException {
-        Gson gson = gsonbuilder.create();
-        FileReader f = new FileReader(new File(filename));
-        QPluginConfigSerializer localref;
-        localref = gson.fromJson(f, QPluginConfigSerializer.class);
-        f.close();
-        localref.afterLoad(); // rebuild objects
-        return localref;
-    }
+  /**
+   * Do everything before save
+   */
+  private void beforeSave() {
+    activePluginList.beforeSerialize();
+  }
 
-    /**
-     * Get GsonBuilder for registering constructors if necessary
-     * 
-     * @return gsonbuilder
-     */
-    public GsonBuilder getBuilder() {
-        gsonbuilder = new GsonBuilder();
-        return gsonbuilder;
-    }
+  /**
+   * Do everything after load
+   * 
+   * @throws QuimpPluginException
+   */
+  private void afterLoad() throws QuimpPluginException {
+    activePluginList.afterSerialize();
+  }
 
-    /**
-     * Returns created object after loading
-     * 
-     * @return SnakePluginList
-     */
-    public SnakePluginList getSnakePluginList() {
-        return activePluginList;
-    }
+  /**
+   * Saves configuration packed with QPluginConfig class
+   * 
+   * @param filename Name of the file to save configuration
+   * @throws FileNotFoundException
+   */
+  public void save(String filename) throws FileNotFoundException {
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    beforeSave();
+    LOGGER.debug("Saving at: " + filename);
+    LOGGER.debug(gson.toJson(this));
+    PrintWriter f;
+    f = new PrintWriter(new File(filename));
+    gson.toJson(this, f);
+    f.close();
+  }
+
+  /**
+   * Loads QPluginConfigSerializer class instance from json file.
+   * 
+   * If any of underlying class requires special builder it should be provided before calling \c
+   * load method by getBuilder().
+   * 
+   * @param filename File to load
+   * @throws IOException
+   * @return New object of QPluginConfigSerializer with values read from file \c filename
+   * @throws QuimpPluginException
+   * @see #getBuilder()
+   */
+  public QPluginConfigSerializer load(String filename) throws IOException, QuimpPluginException {
+    Gson gson = gsonbuilder.create();
+    FileReader f = new FileReader(new File(filename));
+    QPluginConfigSerializer localref;
+    localref = gson.fromJson(f, QPluginConfigSerializer.class);
+    f.close();
+    localref.afterLoad(); // rebuild objects
+    return localref;
+  }
+
+  /**
+   * Get GsonBuilder for registering constructors if necessary
+   * 
+   * @return gsonbuilder
+   */
+  public GsonBuilder getBuilder() {
+    gsonbuilder = new GsonBuilder();
+    return gsonbuilder;
+  }
+
+  /**
+   * Returns created object after loading
+   * 
+   * @return SnakePluginList
+   */
+  public SnakePluginList getSnakePluginList() {
+    return activePluginList;
+  }
 
 }

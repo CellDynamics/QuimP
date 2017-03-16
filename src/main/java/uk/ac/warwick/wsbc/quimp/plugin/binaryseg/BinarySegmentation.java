@@ -91,126 +91,126 @@ import uk.ac.warwick.wsbc.quimp.geom.TrackOutline;
  */
 public class BinarySegmentation {
 
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentation.class.getName());
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentation.class.getName());
 
-    private int nextID = 0; // next free ID
-    private ImagePlus iP; // image to process (stack)
-    /**
-     * Predefined background color.
-     */
-    int backgroundColor = 0;
-    /**
-     * Array of segmented slices. One TrackOutline object can have some outlines, depending how many
-     * objects were on this slice
-     */
-    private TrackOutline[] trackers;
+  private int nextID = 0; // next free ID
+  private ImagePlus iP; // image to process (stack)
+  /**
+   * Predefined background color.
+   */
+  int backgroundColor = 0;
+  /**
+   * Array of segmented slices. One TrackOutline object can have some outlines, depending how many
+   * objects were on this slice
+   */
+  private TrackOutline[] trackers;
 
-    /**
-     * Constructor for segmentation of stack
-     * 
-     * @param iP stack of images to segment
-     * @throws IllegalArgumentException when wrong image is provided
-     */
-    public BinarySegmentation(final ImagePlus iP) {
-        if (iP == null) // can not create from null image
-            throw new IllegalArgumentException("The image was: null");
-        this.iP = iP.duplicate();
-        LOGGER.debug("Got " + iP.getImageStackSize() + " slices");
-        trackers = new TrackOutline[this.iP.getImageStackSize()];
-        ImageStack iPs = this.iP.getStack();
-        for (int i = 0; i < trackers.length; i++)
-            trackers[i] = new TrackOutline(iPs.getProcessor(i + 1), backgroundColor, i + 1); // slice
-                                                                                             // outlining
+  /**
+   * Constructor for segmentation of stack
+   * 
+   * @param iP stack of images to segment
+   * @throws IllegalArgumentException when wrong image is provided
+   */
+  public BinarySegmentation(final ImagePlus iP) {
+    if (iP == null) // can not create from null image
+      throw new IllegalArgumentException("The image was: null");
+    this.iP = iP.duplicate();
+    LOGGER.debug("Got " + iP.getImageStackSize() + " slices");
+    trackers = new TrackOutline[this.iP.getImageStackSize()];
+    ImageStack iPs = this.iP.getStack();
+    for (int i = 0; i < trackers.length; i++)
+      trackers[i] = new TrackOutline(iPs.getProcessor(i + 1), backgroundColor, i + 1); // slice
+                                                                                       // outlining
+  }
+
+  /**
+   * Test whether two ROIs overlap
+   * 
+   * Modify \a r1 parameter
+   * 
+   * @param r1 First ROI - it will be modified!
+   * @param r2 Seconf ROI
+   * @return \a true if \a r1 and \a r2 overlap
+   */
+  private boolean testIntersect(final ShapeRoi r1, final ShapeRoi r2) {
+    if (r1 == null || r2 == null)
+      return false;
+    ShapeRoi intersect = r1.and(r2);
+    if (intersect.getFloatWidth() == 0 || intersect.getFloatHeight() == 0) {
+      LOGGER.debug(r1 + " and " + r2 + " do not intersect");
+      return false;
+    } else {
+      LOGGER.debug(r1 + " and " + r2 + " do intersect");
+      return true;
     }
+  }
 
-    /**
-     * Test whether two ROIs overlap
-     * 
-     * Modify \a r1 parameter
-     * 
-     * @param r1 First ROI - it will be modified!
-     * @param r2 Seconf ROI
-     * @return \a true if \a r1 and \a r2 overlap
-     */
-    private boolean testIntersect(final ShapeRoi r1, final ShapeRoi r2) {
-        if (r1 == null || r2 == null)
-            return false;
-        ShapeRoi intersect = r1.and(r2);
-        if (intersect.getFloatWidth() == 0 || intersect.getFloatHeight() == 0) {
-            LOGGER.debug(r1 + " and " + r2 + " do not intersect");
-            return false;
-        } else {
-            LOGGER.debug(r1 + " and " + r2 + " do intersect");
-            return true;
-        }
+  /**
+   * Test whether given ROI overlap any of ROI in array and assign correct ID to ROIs
+   * 
+   * If any of \a sRa overlap \a sR, the roi from array gets the same ID as \a sR. If \a sR does
+   * not have ID it get the new one
+   * 
+   * @param sR ROI to test (not modified)
+   * @param sRa Array of ROIs to test
+   * 
+   */
+  private void testIntersect(final SegmentedShapeRoi sR, final ArrayList<SegmentedShapeRoi> sRa) {
+    if (sR.getId() == SegmentedShapeRoi.NOT_COUNTED) { // root - first outline
+      sR.setId(nextID++); // if not counted start new chain assigning new id
     }
+    for (SegmentedShapeRoi s : sRa)
+      if (testIntersect((ShapeRoi) sR.clone(), s) == true) {
+        s.setId(sR.getId()); // next outline has the same id
+        break; // do not look more on this set (this frame)
+      }
+  }
 
-    /**
-     * Test whether given ROI overlap any of ROI in array and assign correct ID to ROIs
-     * 
-     * If any of \a sRa overlap \a sR, the roi from array gets the same ID as \a sR. If \a sR does
-     * not have ID it get the new one
-     * 
-     * @param sR ROI to test (not modified)
-     * @param sRa Array of ROIs to test
-     * 
-     */
-    private void testIntersect(final SegmentedShapeRoi sR, final ArrayList<SegmentedShapeRoi> sRa) {
-        if (sR.getId() == SegmentedShapeRoi.NOT_COUNTED) { // root - first outline
-            sR.setId(nextID++); // if not counted start new chain assigning new id
-        }
-        for (SegmentedShapeRoi s : sRa)
-            if (testIntersect((ShapeRoi) sR.clone(), s) == true) {
-                s.setId(sR.getId()); // next outline has the same id
-                break; // do not look more on this set (this frame)
-            }
+  /**
+   * Main runner for tracking.
+   * 
+   * In result of this method the ROIs kept in TrackOutline objects will be modified by giving
+   * them IDs of their parent.
+   */
+  public void trackObjects() {
+    if (trackers.length == 1) { // only one slice, use the same reference for testIntersect
+      ArrayList<SegmentedShapeRoi> o1 = trackers[0].outlines; // get frame current
+      ArrayList<SegmentedShapeRoi> o2 = trackers[0].outlines; // and next
+      for (SegmentedShapeRoi sR : o1) { // iterate over all objects in current frame
+        testIntersect(sR, o2); // and find its child if any on next frame
+      }
+    } // loop below does not fire for one slice
+    for (int f = 0; f < trackers.length - 1; f++) { // iterate over frames
+      ArrayList<SegmentedShapeRoi> o1 = trackers[f].outlines; // get frame current
+      ArrayList<SegmentedShapeRoi> o2 = trackers[f + 1].outlines; // and next
+      for (SegmentedShapeRoi sR : o1) { // iterate over all objects in current frame
+        testIntersect(sR, o2); // and find its child if any on next frame
+      }
     }
+  }
 
-    /**
-     * Main runner for tracking.
-     * 
-     * In result of this method the ROIs kept in TrackOutline objects will be modified by giving
-     * them IDs of their parent.
-     */
-    public void trackObjects() {
-        if (trackers.length == 1) { // only one slice, use the same reference for testIntersect
-            ArrayList<SegmentedShapeRoi> o1 = trackers[0].outlines; // get frame current
-            ArrayList<SegmentedShapeRoi> o2 = trackers[0].outlines; // and next
-            for (SegmentedShapeRoi sR : o1) { // iterate over all objects in current frame
-                testIntersect(sR, o2); // and find its child if any on next frame
-            }
-        } // loop below does not fire for one slice
-        for (int f = 0; f < trackers.length - 1; f++) { // iterate over frames
-            ArrayList<SegmentedShapeRoi> o1 = trackers[f].outlines; // get frame current
-            ArrayList<SegmentedShapeRoi> o2 = trackers[f + 1].outlines; // and next
-            for (SegmentedShapeRoi sR : o1) { // iterate over all objects in current frame
-                testIntersect(sR, o2); // and find its child if any on next frame
-            }
-        }
+  /**
+   * Compose chains of object related to each others along frames.
+   * 
+   * Relation means that previous object and next one overlap, thus their segmentations will be
+   * assigned to the same group and they will be in correct order as they appeared in stack
+   * 
+   * @return List of Lists that contains outlines. First level of list is the chain (found related
+   *         objects), the second level are outlines for this chain. Every outline has coded frame
+   *         where it appeared.
+   */
+  public ArrayList<ArrayList<SegmentedShapeRoi>> getChains() {
+    ArrayList<ArrayList<SegmentedShapeRoi>> ret = new ArrayList<>(nextID);
+    for (int i = 0; i < nextID; i++)
+      ret.add(new ArrayList<>());
+    for (TrackOutline tO : trackers) { // go through all Outlines and sort them for ID
+      for (SegmentedShapeRoi sS : tO.outlines) {
+        ret.get(sS.getId()).add(sS);
+      }
     }
-
-    /**
-     * Compose chains of object related to each others along frames.
-     * 
-     * Relation means that previous object and next one overlap, thus their segmentations will be
-     * assigned to the same group and they will be in correct order as they appeared in stack
-     * 
-     * @return List of Lists that contains outlines. First level of list is the chain (found related
-     *         objects), the second level are outlines for this chain. Every outline has coded frame
-     *         where it appeared.
-     */
-    public ArrayList<ArrayList<SegmentedShapeRoi>> getChains() {
-        ArrayList<ArrayList<SegmentedShapeRoi>> ret = new ArrayList<>(nextID);
-        for (int i = 0; i < nextID; i++)
-            ret.add(new ArrayList<>());
-        for (TrackOutline tO : trackers) { // go through all Outlines and sort them for ID
-            for (SegmentedShapeRoi sS : tO.outlines) {
-                ret.get(sS.getId()).add(sS);
-            }
-        }
-        return ret;
-    }
+    return ret;
+  }
 }

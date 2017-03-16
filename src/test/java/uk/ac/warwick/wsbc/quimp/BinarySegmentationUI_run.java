@@ -14,32 +14,32 @@ import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentationPlugin_;
  */
 public class BinarySegmentationUI_run {
 
-    static {
-        System.setProperty("logback.configurationFile", "quimp-logback.xml");
-    }
+  static {
+    System.setProperty("logback.configurationFile", "quimp-logback.xml");
+  }
 
-    /**
-     * 
-     */
-    public BinarySegmentationUI_run() {
-    }
+  /**
+   * 
+   */
+  public BinarySegmentationUI_run() {
+  }
 
-    /**
-     * @param args
-     */
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
+  /**
+   * @param args
+   */
+  @SuppressWarnings("unused")
+  public static void main(String[] args) {
 
-        ImageJ ij = new ImageJ();
-        RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
-        IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
-                "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/BW_seg_5_slices.tif\")");
-        IJ.runMacro(
-                "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
-        BinarySegmentationPlugin fp = new BinarySegmentationPlugin();
-        fp.attachData(null);
-        fp.showUI(true);
+    ImageJ ij = new ImageJ();
+    RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
+    IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
+            "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/BW_seg_5_slices.tif\")");
+    IJ.runMacro(
+            "open(\"/home/p.baniukiewicz/Documents/Repos/QuimP/src/test/resources/segmented_color.tif\")");
+    BinarySegmentationPlugin fp = new BinarySegmentationPlugin();
+    fp.attachData(null);
+    fp.showUi(true);
 
-    }
+  }
 
 }

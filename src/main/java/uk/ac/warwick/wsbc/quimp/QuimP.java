@@ -1,5 +1,7 @@
 package uk.ac.warwick.wsbc.quimp;
 
+import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
+
 /**
  * Static definitions.
  * 
@@ -7,26 +9,32 @@ package uk.ac.warwick.wsbc.quimp;
  *
  */
 public class QuimP {
-    /**
-     * Suffix added to every preference entry.
-     */
-    static public final String QUIMP_PREFS_SUFFIX = "QUIMP";
-    /**
-     * Desired length of line in message box.
-     */
-    static public final int LINE_WRAP = 60;
-    /**
-     * Switch on/off additional debug.
-     * 
-     * This switch causes that additional debug information can be produced.
-     */
-    static public boolean SUPER_DEBUG =
-            Boolean.parseBoolean(System.getProperty("quimpconfig.superDebug"));
-    /**
-     * This field keeps localisation of -quimp plugins.
-     * 
-     * By default it is Fiji.app/plugins folder but it can be overwritten by setting system
-     * property.
-     */
-    static public String PLUGIN_DIR = System.getProperty("quimpconfig.pluginDirectory");
+  /**
+   * Suffix added to every preference entry.
+   */
+  public static final String QUIMP_PREFS_SUFFIX = "QUIMP";
+  /**
+   * Desired length of line in message box.
+   */
+  public static final int LINE_WRAP = 60;
+
+  /**
+   * Quimp package version taken from jar.
+   */
+  public static final QuimpVersion TOOL_VERSION = new QuimpToolsCollection().getQuimPBuildInfo();
+
+  /**
+   * Switch on/off additional debug.
+   * 
+   * <p>This switch causes that additional debug information can be produced.
+   */
+  public static boolean SUPER_DEBUG =
+          Boolean.parseBoolean(System.getProperty("quimpconfig.superDebug"));
+  /**
+   * This field keeps localisation of -quimp plugins.
+   * 
+   * <p>By default it is Fiji.app/plugins folder but it can be overwritten by setting system
+   * property.
+   */
+  public static String PLUGIN_DIR = System.getProperty("quimpconfig.pluginDirectory");
 }

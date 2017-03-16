@@ -51,379 +51,383 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
  *
  */
 public class ProtStat implements IQuimpSerialize {
-    
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = LoggerFactory.getLogger(ProtStat.class.getName());
-    /**
-     * Frame window used for computation. Should be uneven.
-     */
-    private final int framewindow = 3;
 
-    private CellStats cs;
-    private TrackCollection tc;
-    private MaximaFinder mf;
-    private STmap maps;
-    /**
-     * Number of frames.
-     */
-    private int frames;
-    /**
-     * Map resolution.
-     */
-    private int mapRes;
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(ProtStat.class.getName());
+  /**
+   * Frame window used for computation. Should be uneven.
+   */
+  private final int framewindow = 3;
+
+  private CellStats cs;
+  private TrackCollection tc;
+  private MaximaFinder mf;
+  private STmap maps;
+  /**
+   * Number of frames.
+   */
+  private int frames;
+  /**
+   * Map resolution.
+   */
+  private int mapRes;
+
+  /**
+   * Total number of protrusions.
+   */
+  private int protCount;
+
+  /**
+   * Hold cell shape based statistics.
+   */
+  public CellStatistics cellStatistics;
+  /**
+   * Hold protrusion statistics.
+   */
+  public ProtrusionStatistics protStatistics;
+
+  /**
+   * Construct the object using various data containers.
+   * 
+   * @param mf
+   * @param tc
+   * @param cs
+   * @param maps
+   */
+  public ProtStat(MaximaFinder mf, TrackCollection tc, CellStats cs, STmap maps) {
+    this.mf = mf;
+    this.tc = tc;
+    this.cs = cs;
+    this.maps = maps;
+    frames = maps.getT();
+    mapRes = maps.getRes();
+    protCount = mf.getMaximaNumber();
+
+    cellStatistics = new CellStatistics();
+    protStatistics = new ProtrusionStatistics();
+
+  }
+
+  /**
+   * Collection of methods for compute cell shape based statistics.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class CellStatistics {
 
     /**
-     * Total number of protrusions.
+     * The displacement.
      */
-    private int protCount;
+    // parameter vs. frames
+    double[] displacement;
 
     /**
-     * Hold cell shape based statistics.
+     * The distance.
      */
-    public CellStatistics cellStatistics;
-    /**
-     * Hold protrusion statistics.
-     */
-    public ProtrusionStatistics protStatistics;
+    double[] distance;
 
     /**
-     * Construct the object using various data containers.
+     * The area.
+     */
+    double[] area;
+
+    /**
+     * The circularity.
+     */
+    double[] circularity;
+    /**
+     * Mean of motility.
+     */
+    double[] motMean;
+    /**
+     * Variance of motility.
+     */
+    double[] motVar;
+    /**
+     * Mean of convexity.
+     */
+    double[] conMean;
+    /**
+     * Variance of convexity.
+     */
+    double[] conVar;
+    /**
+     * Number of protrusions in every frame.
+     */
+    double[] protcount;
+
+    /**
+     * Compute all cell statistics.
+     */
+    public CellStatistics() {
+      getFromCellStats(); // copy some stats from CellStats
+      // calculate basic stats for motility and convexity
+      motMean = QuimPArrayUtils.getMeanR(maps.motMap);
+      conMean = QuimPArrayUtils.getMeanR(maps.convMap);
+      motVar = QuimPArrayUtils.getVarR(maps.motMap);
+      conVar = QuimPArrayUtils.getVarR(maps.convMap);
+      protcount = countProtrusions();
+    }
+
+    /**
+     * Extract already calculated stats from CellStats.
      * 
-     * @param mf
-     * @param tc
-     * @param cs
-     * @param maps
+     * Fill internal fields of this class.
      */
-    public ProtStat(MaximaFinder mf, TrackCollection tc, CellStats cs, STmap maps) {
-        this.mf = mf;
-        this.tc = tc;
-        this.cs = cs;
-        this.maps = maps;
-        frames = maps.getT();
-        mapRes = maps.getRes();
-        protCount = mf.getMaximaNumber();
-
-        cellStatistics = new CellStatistics();
-        protStatistics = new ProtrusionStatistics();
-
+    private void getFromCellStats() {
+      displacement = new double[frames];
+      distance = new double[frames];
+      area = new double[frames];
+      circularity = new double[frames];
+      int l = 0;
+      for (FrameStatistics frameStat : cs.framestat) {
+        displacement[l] = frameStat.displacement;
+        distance[l] = frameStat.dist;
+        area[l] = frameStat.area;
+        circularity[l] = frameStat.circularity;
+        l++;
+      }
     }
 
     /**
-     * Collection of methods for compute cell shape based statistics.
+     * Count protrusions for every frame.
      * 
-     * @author p.baniukiewicz
-     *
+     * @return Number of protrusions found for every frame. TODO use framewindow
      */
-    class CellStatistics {
-
-        /**
-         * The displacement.
-         */
-        // parameter vs. frames
-        double[] displacement;
-        
-        /**
-         * The distance.
-         */
-        double[] distance;
-        
-        /**
-         * The area.
-         */
-        double[] area;
-        
-        /**
-         * The circularity.
-         */
-        double[] circularity;
-        /**
-         * Mean of motility.
-         */
-        double[] motMean;
-        /**
-         * Variance of motility.
-         */
-        double[] motVar;
-        /**
-         * Mean of convexity.
-         */
-        double[] conMean;
-        /**
-         * Variance of convexity.
-         */
-        double[] conVar;
-        /**
-         * Number of protrusions in every frame.
-         */
-        double[] protcount;
-
-        /**
-         * Compute all cell statistics.
-         */
-        public CellStatistics() {
-            getFromCellStats(); // copy some stats from CellStats
-            // calculate basic stats for motility and convexity
-            motMean = QuimPArrayUtils.getMeanR(maps.motMap);
-            conMean = QuimPArrayUtils.getMeanR(maps.convMap);
-            motVar = QuimPArrayUtils.getVarR(maps.motMap);
-            conVar = QuimPArrayUtils.getVarR(maps.convMap);
-            protcount = countProtrusions();
-        }
-
-        /**
-         * Extract already calculated stats from CellStats.
-         * 
-         * Fill internal fields of this class.
-         */
-        private void getFromCellStats() {
-            displacement = new double[frames];
-            distance = new double[frames];
-            area = new double[frames];
-            circularity = new double[frames];
-            int l = 0;
-            for (FrameStatistics frameStat : cs.framestat) {
-                displacement[l] = frameStat.displacement;
-                distance[l] = frameStat.dist;
-                area[l] = frameStat.area;
-                circularity[l] = frameStat.circularity;
-                l++;
-            }
-        }
-
-        /**
-         * Count protrusions for every frame.
-         * 
-         * @return Number of protrusions found for every frame. TODO use framewindow
-         */
-        private double[] countProtrusions() {
-            Polygon maxima = mf.getMaxima();
-            int[] _frames = maxima.xpoints; // frame numbers from maxima
-            double[] hist = new double[frames]; // bin count
-            for (int f = 0; f < _frames.length; f++)
-                hist[_frames[f]]++;
-            return hist;
-        }
-
-        /**
-         * Add header to common file before next cell.
-         * 
-         * @param bf
-         * @param cellno Number of cell.
-         */
-        private void writeCellHeader(PrintWriter bf, int cellno) {
-            //!<
-            String ret = "#Cell:" + cellno;
-            LOGGER.trace(ret);
-            String h = "#Frame," + "Displacement," + "Distance," + "Area," + "Circularity,"
-                    + "meanMot," + "varMot," + "meanConv," + "varConv," + "protCount";
-            /**/
-            LOGGER.trace(h);
-            bf.print(ret + '\n');
-            bf.print(h + '\n');
-            bf.flush();
-        }
-
-        /**
-         * Write one line for given frame for current cell.
-         * 
-         * @param bf
-         * @param frameno
-         */
-        private void writeCellRecord(PrintWriter bf, int frameno) {
-            String ret = Integer.toString(frameno + 1) + ',';
-            ret = ret.concat(Double.toString(displacement[frameno])) + ',';
-            ret = ret.concat(Double.toString(distance[frameno])) + ',';
-            ret = ret.concat(Double.toString(area[frameno])) + ',';
-            ret = ret.concat(Double.toString(circularity[frameno])) + ',';
-            ret = ret.concat(Double.toString(motMean[frameno])) + ',';
-            ret = ret.concat(Double.toString(motVar[frameno])) + ',';
-            ret = ret.concat(Double.toString(conMean[frameno])) + ',';
-            ret = ret.concat(Double.toString(conVar[frameno])) + ',';
-            ret = ret.concat(Double.toString(protcount[frameno]));
-
-            LOGGER.trace(ret);
-            bf.print(ret + '\n');
-            bf.flush();
-        }
-
-        /**
-         * Add cell statistic to given ResultsTable.
-         * 
-         * @param rt
-         * @see #writeCellRecord(PrintWriter, int)
-         * @see #writeCellHeader(PrintWriter, int)
-         */
-        public void addCellToCellTable(ResultsTable rt) {
-            // Those fields must be related to writeCellHeader and writeCellRecord
-            for (int i = 0; i < displacement.length; i++) {
-                rt.incrementCounter();
-                rt.addValue("frame", i + 1);
-                rt.addValue("displacement", displacement[i]);
-                rt.addValue("distance", distance[i]);
-                rt.addValue("area", area[i]);
-                rt.addValue("circularity", circularity[i]);
-                rt.addValue("motMean", motMean[i]);
-                rt.addValue("motVar", motVar[i]);
-                rt.addValue("conMean", conMean[i]);
-                rt.addValue("conVar", conVar[i]);
-                rt.addValue("protcount", protcount[i]);
-            }
-        }
-
+    private double[] countProtrusions() {
+      Polygon maxima = mf.getMaxima();
+      int[] _frames = maxima.xpoints; // frame numbers from maxima
+      double[] hist = new double[frames]; // bin count
+      for (int f = 0; f < _frames.length; f++)
+        hist[_frames[f]]++;
+      return hist;
     }
 
     /**
-     * Collection of methods for compute protrusion statistics.
+     * Add header to common file before next cell.
      * 
-     * @author p.baniukiewicz
-     *
+     * @param bf
+     * @param cellno Number of cell.
      */
-    class ProtrusionStatistics {
-        /**
-         * Indicate position of the tip on cell outline. Not normalised.
-         */
-        int[] tipPositionIndex;
-        /**
-         * Screen coordinate of the tip.
-         */
-        Point2D.Double[] tipCoordinate;
-        /**
-         * Tip frame.
-         */
-        int[] tipFrame;
-        /**
-         * First frame where tip appeared, within given criterion of motility drop.
-         */
-        int[] tipFirstFrame;
-        /**
-         * Last frame where tip appeared, within given criterion of motility drop.
-         */
-        int[] tipLastFrame;
-
-        /**
-         * Compute protrusion stats.
-         */
-        public ProtrusionStatistics() {
-            getFromTrackStats();
-        }
-
-        /**
-         * Extract statistic data from {@link TrackCollection}.
-         */
-        private void getFromTrackStats() {
-            if (tc.isInitialPointIncluded() == false)
-                throw new IllegalArgumentException(
-                        "This method assumes that initial point must be included in Track");
-            tipPositionIndex = new int[protCount];
-            tipCoordinate = new Point2D.Double[protCount];
-            tipFrame = new int[protCount];
-            tipFirstFrame = new int[protCount];
-            tipLastFrame = new int[protCount];
-            Iterator<Pair<Track, Track>> it = tc.iterator(); // over backward,forward pairs
-            int l = 0;
-            while (it.hasNext()) {
-                Pair<Track, Track> p = it.next();
-                Track t1 = p.first;
-                Track t2 = p.second;
-                tipPositionIndex[l] = t1.getOutline(0); // first point is maximum
-                tipCoordinate[l] = t1.getXY(0, maps.getxMap(), maps.getyMap());
-                tipFrame[l] = t1.getFrame(0);
-                if (t1.type == Type.BACKWARD && t2.type == Type.FORWARD) {
-                    tipFirstFrame[l] = t1.getFrame(t1.size() - 1);
-                    tipLastFrame[l] = t2.getFrame(t2.size() - 1);
-                } else if (t1.type == Type.FORWARD && t2.type == Type.BACKWARD) {
-                    tipFirstFrame[l] = t2.getFrame(t2.size() - 1);
-                    tipLastFrame[l] = t1.getFrame(t1.size() - 1);
-                }
-                l++;
-            }
-        }
-
-        /**
-         * Add header to common file before next cell.
-         * 
-         * @param bf
-         * @param cellno Number of cell.
-         */
-        private void writeProtHeader(PrintWriter bf, int cellno) {
-            //!<
-            String ret = "#Cell:" + cellno;
-            LOGGER.trace(ret);
-            String h = "#Id," + "Position," + "x-xoordinate," + "y-coordinate," + "Frame,"
-                    + "FirstFrame," + "LastFrame";
-            /**/
-            LOGGER.trace(h);
-            bf.print(ret + '\n');
-            bf.print(h + '\n');
-            bf.flush();
-        }
-
-        /**
-         * Write one line for given frame for current cell.
-         * 
-         * @param bf
-         * @param id
-         */
-        private void writeProtRecord(PrintWriter bf, int id) {
-            String ret = Integer.toString(id + 1) + ',';
-            ret = ret.concat(Integer.toString(tipPositionIndex[id])) + ',';
-            ret = ret.concat(Double.toString(tipCoordinate[id].x)) + ',';
-            ret = ret.concat(Double.toString(tipCoordinate[id].y)) + ',';
-            ret = ret.concat(Integer.toString(tipFrame[id])) + ',';
-            ret = ret.concat(Integer.toString(tipFirstFrame[id])) + ',';
-            ret = ret.concat(Integer.toString(tipLastFrame[id]));
-
-            LOGGER.trace(ret);
-            bf.print(ret + '\n');
-            bf.flush();
-        }
-
+    private void writeCellHeader(PrintWriter bf, int cellno) {
+      //!<
+      String ret = "#Cell:" + cellno;
+      LOGGER.trace(ret);
+      String h = "#Frame," + "Displacement," + "Distance," + "Area," + "Circularity," + "meanMot,"
+              + "varMot," + "meanConv," + "varConv," + "protCount";
+      /**/
+      LOGGER.trace(h);
+      bf.print(ret + '\n');
+      bf.print(h + '\n');
+      bf.flush();
     }
 
     /**
-     * Add stats for this cell to output.
+     * Write one line for given frame for current cell.
      * 
-     * @param bf place to write
-     * @param cellno Cell number
+     * @param bf
+     * @param frameno
      */
-    public void writeCell(PrintWriter bf, int cellno) {
-        LOGGER.debug("Writing cell stats at:" + bf.toString());
-        cellStatistics.writeCellHeader(bf, cellno);
-        for (int f = 0; f < frames; f++)
-            cellStatistics.writeCellRecord(bf, f);
+    private void writeCellRecord(PrintWriter bf, int frameno) {
+      String ret = Integer.toString(frameno + 1) + ',';
+      ret = ret.concat(Double.toString(displacement[frameno])) + ',';
+      ret = ret.concat(Double.toString(distance[frameno])) + ',';
+      ret = ret.concat(Double.toString(area[frameno])) + ',';
+      ret = ret.concat(Double.toString(circularity[frameno])) + ',';
+      ret = ret.concat(Double.toString(motMean[frameno])) + ',';
+      ret = ret.concat(Double.toString(motVar[frameno])) + ',';
+      ret = ret.concat(Double.toString(conMean[frameno])) + ',';
+      ret = ret.concat(Double.toString(conVar[frameno])) + ',';
+      ret = ret.concat(Double.toString(protcount[frameno]));
+
+      LOGGER.trace(ret);
+      bf.print(ret + '\n');
+      bf.flush();
     }
 
     /**
-     * Write stats for protrusions for this cell.
+     * Add cell statistic to given ResultsTable.
      * 
-     * @param bf place to write
-     * @param cellno Cell number.
+     * @param rt
+     * @see #writeCellRecord(PrintWriter, int)
+     * @see #writeCellHeader(PrintWriter, int)
      */
-    public void writeProtrusion(PrintWriter bf, int cellno) {
-        LOGGER.debug("Writing prot stats at:" + bf.toString());
-        protStatistics.writeProtHeader(bf, cellno);
-        for (int t = 0; t < tc.getBf().size(); t++) {
-            protStatistics.writeProtRecord(bf, t);
+    public void addCellToCellTable(ResultsTable rt) {
+      // Those fields must be related to writeCellHeader and writeCellRecord
+      for (int i = 0; i < displacement.length; i++) {
+        rt.incrementCounter();
+        rt.addValue("frame", i + 1);
+        rt.addValue("displacement", displacement[i]);
+        rt.addValue("distance", distance[i]);
+        rt.addValue("area", area[i]);
+        rt.addValue("circularity", circularity[i]);
+        rt.addValue("motMean", motMean[i]);
+        rt.addValue("motVar", motVar[i]);
+        rt.addValue("conMean", conMean[i]);
+        rt.addValue("conVar", conVar[i]);
+        rt.addValue("protcount", protcount[i]);
+      }
+    }
+
+  }
+
+  /**
+   * Collection of methods for compute protrusion statistics.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class ProtrusionStatistics {
+    /**
+     * Indicate position of the tip on cell outline. Not normalised.
+     */
+    int[] tipPositionIndex;
+    /**
+     * Screen coordinate of the tip.
+     */
+    Point2D.Double[] tipCoordinate;
+    /**
+     * Tip frame.
+     */
+    int[] tipFrame;
+    /**
+     * First frame where tip appeared, within given criterion of motility drop.
+     */
+    int[] tipFirstFrame;
+    /**
+     * Last frame where tip appeared, within given criterion of motility drop.
+     */
+    int[] tipLastFrame;
+
+    /**
+     * Compute protrusion stats.
+     */
+    public ProtrusionStatistics() {
+      getFromTrackStats();
+    }
+
+    /**
+     * Extract statistic data from {@link TrackCollection}.
+     */
+    private void getFromTrackStats() {
+      if (tc.isInitialPointIncluded() == false)
+        throw new IllegalArgumentException(
+                "This method assumes that initial point must be included in Track");
+      tipPositionIndex = new int[protCount];
+      tipCoordinate = new Point2D.Double[protCount];
+      tipFrame = new int[protCount];
+      tipFirstFrame = new int[protCount];
+      tipLastFrame = new int[protCount];
+      Iterator<Pair<Track, Track>> it = tc.iterator(); // over backward,forward pairs
+      int l = 0;
+      while (it.hasNext()) {
+        Pair<Track, Track> p = it.next();
+        Track t1 = p.first;
+        Track t2 = p.second;
+        tipPositionIndex[l] = t1.getOutline(0); // first point is maximum
+        tipCoordinate[l] = t1.getXY(0, maps.getxMap(), maps.getyMap());
+        tipFrame[l] = t1.getFrame(0);
+        if (t1.type == Type.BACKWARD && t2.type == Type.FORWARD) {
+          tipFirstFrame[l] = t1.getFrame(t1.size() - 1);
+          tipLastFrame[l] = t2.getFrame(t2.size() - 1);
+        } else if (t1.type == Type.FORWARD && t2.type == Type.BACKWARD) {
+          tipFirstFrame[l] = t2.getFrame(t2.size() - 1);
+          tipLastFrame[l] = t1.getFrame(t1.size() - 1);
         }
+        l++;
+      }
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+    /**
+     * Add header to common file before next cell.
+     * 
+     * @param bf
+     * @param cellno Number of cell.
      */
-    @Override
-    public void beforeSerialize() {
-        // TODO Auto-generated method stub
-
+    private void writeProtHeader(PrintWriter bf, int cellno) {
+      //!<
+      String ret = "#Cell:" + cellno;
+      LOGGER.trace(ret);
+      String h = "#Id," + "Position," + "x-xoordinate," + "y-coordinate," + "Frame," + "FirstFrame,"
+              + "LastFrame";
+      /**/
+      LOGGER.trace(h);
+      bf.print(ret + '\n');
+      bf.print(h + '\n');
+      bf.flush();
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize#afterSerialize()
+    /**
+     * Write one line for given frame for current cell.
+     * 
+     * @param bf
+     * @param id
      */
-    @Override
-    public void afterSerialize() throws Exception {
-        // TODO Auto-generated method stub
+    private void writeProtRecord(PrintWriter bf, int id) {
+      String ret = Integer.toString(id + 1) + ',';
+      ret = ret.concat(Integer.toString(tipPositionIndex[id])) + ',';
+      ret = ret.concat(Double.toString(tipCoordinate[id].x)) + ',';
+      ret = ret.concat(Double.toString(tipCoordinate[id].y)) + ',';
+      ret = ret.concat(Integer.toString(tipFrame[id])) + ',';
+      ret = ret.concat(Integer.toString(tipFirstFrame[id])) + ',';
+      ret = ret.concat(Integer.toString(tipLastFrame[id]));
 
+      LOGGER.trace(ret);
+      bf.print(ret + '\n');
+      bf.flush();
     }
+
+  }
+
+  /**
+   * Add stats for this cell to output.
+   * 
+   * @param bf place to write
+   * @param cellno Cell number
+   */
+  public void writeCell(PrintWriter bf, int cellno) {
+    LOGGER.debug("Writing cell stats at:" + bf.toString());
+    cellStatistics.writeCellHeader(bf, cellno);
+    for (int f = 0; f < frames; f++)
+      cellStatistics.writeCellRecord(bf, f);
+  }
+
+  /**
+   * Write stats for protrusions for this cell.
+   * 
+   * @param bf place to write
+   * @param cellno Cell number.
+   */
+  public void writeProtrusion(PrintWriter bf, int cellno) {
+    LOGGER.debug("Writing prot stats at:" + bf.toString());
+    protStatistics.writeProtHeader(bf, cellno);
+    for (int t = 0; t < tc.getBf().size(); t++) {
+      protStatistics.writeProtRecord(bf, t);
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+   */
+  @Override
+  public void beforeSerialize() {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize#afterSerialize()
+   */
+  @Override
+  public void afterSerialize() throws Exception {
+    // TODO Auto-generated method stub
+
+  }
 }

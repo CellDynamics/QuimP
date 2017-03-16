@@ -24,8 +24,14 @@
  * <p>
  * 
  * <pre>
- * {@code run("Generate mask","filename=[C:/Users/baniu/Google Drive/Warwick/Abstract/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine.QCONF]") }
+ * {@code run("Generate mask","filename=[C:/Users/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine.QCONF]") }
  * </pre>
+ * 
+ * Output file <b>will be</b> saved on disk as well.
+ * 
+ * <h2>API support</h2>
+ * 
+ * Supported. See test case.
  * 
  * @author p.baniukiewicz
  *

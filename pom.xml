@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.scijava</groupId>
-    <artifactId>pom-scijava</artifactId>
-    <version>12.0.0</version>
+    <groupId>uk.ac.warwick.wsbc</groupId>
+    <artifactId>pom-quimp-root</artifactId>
+    <version>1.0.0</version>
     <relativePath />
   </parent>
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
   <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
-  <version>17.02.05-SNAPSHOT</version>
+  <version>17.03.02-SNAPSHOT</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>www.warwick.ac.uk/quimp</url>
@@ -104,14 +104,10 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>2.6.8</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pl.pragmatists</groupId>
       <artifactId>JUnitParams</artifactId>
-      <version>1.0.6</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>net.imagej</groupId>
@@ -126,10 +122,8 @@
       <artifactId>commons-math3</artifactId>
     </dependency>
     <dependency>
-      <!-- not in pom-scijava -->
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.1</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -153,47 +147,15 @@
     </dependency>
   </dependencies>
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <!-- http://www.javacodegeeks.com/2012/10/maven-build-number-plugin-sample-usage.html -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <doCheck>false</doCheck>
-          <doUpdate>false</doUpdate>
-          <format>{0,date,yyyy-MM-dd HH:mm:ss}</format>
-          <items>
-            <item>timestamp</item>
-          </items>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-            </manifest>
-            <manifestEntries>
-              <Implementation-Build>${buildNumber}</Implementation-Build>
-            </manifestEntries>
-          </archive>
-        </configuration>
       </plugin>
       <plugin>
         <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-creating-simple-weather.html -->
@@ -203,50 +165,10 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.6.201602180812</version>
-        <configuration>
-          <dataFile>${jaCoCoExecutionDataFile}</dataFile>
-        </configuration>
-        <executions>
-          <execution>
-            <id>pre-unit-test</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-            <configuration>
-              <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-              <propertyName>surefireArgLine</propertyName>
-            </configuration>
-          </execution>
-          <execution>
-            <id>post-unit-test</id>
-            <phase>test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-            <configuration>
-              <!-- Sets the path to the file which contains the execution data. -->
-              <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-              <!-- Sets the output directory for the code coverage report. -->
-              <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <!-- https://www.petrikainulainen.net/programming/maven/creating-code-coverage-reports-for-unit-and-integration-tests-with-the-jacoco-maven-plugin/ -->
-        <configuration>
-          <!-- Sets the VM argument line used when unit tests are run. -->
-          <argLine>${surefireArgLine}</argLine>
-          <!-- Skips unit tests if the value of skip.unit.tests property is true -->
-          <skipTests>${skip.unit.tests}</skipTests>
-          <!-- Excludes integration tests when unit tests are run. -->
-          <excludes>
-            <exclude>**/IT*.java</exclude>
-          </excludes>
-        </configuration>
       </plugin>
       <plugin>
         <!-- Default PluginFactory - not mocked -->
@@ -301,6 +223,10 @@
           <releaseProfiles>installation</releaseProfiles>
           <goals>install</goals>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
@@ -362,75 +288,6 @@
       <properties>
         <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>copy-dependencies</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>copy-dependencies</goal>
-                </goals>
-                <configuration>
-                  <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
-                  <overWriteReleases>false</overWriteReleases>
-                  <overWriteSnapshots>false</overWriteSnapshots>
-                  <overWriteIfNewer>true</overWriteIfNewer>
-                  <excludeTransitive>true</excludeTransitive>
-                  <includeScope>runtime</includeScope>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>uber-release</id>
-      <!--Profile for building FAT jar with release documentation-->
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
-            <version>2.6</version>
-            <configuration>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-              <archive>
-                <manifest>
-                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                </manifest>
-                <manifestEntries>
-                  <Implementation-Build>${buildNumber}</Implementation-Build>
-                </manifestEntries>
-              </archive>
-            </configuration>
-            <executions>
-              <execution>
-                <!-- https://books.sonatype.com/mvnex-book/reference/customizing-sect-custom-packaged.html -->
-                <!-- https://maven.apache.org/guides/mini/guide-default-execution-ids.html -->
-                <id>simple-command</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
   </profiles>
   <reporting>
@@ -447,9 +304,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.17</version>
-        <configuration>
-          <configLocation>src/test/resources/quimp_google_checks.xml</configLocation>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -484,14 +338,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-changes-plugin</artifactId>
         <version>2.12</version>
-        <configuration>
-          <tracUser>baniuk</tracUser>
-          <query>status=closed&amp;component=QuimP-BOA&amp;or&amp;status=closed&amp;component=QuimP-ANA&amp;or&amp;status=closed&amp;component=QuimP-RandomW&amp;or&amp;status=closed&amp;component=QuimP-DIC&amp;or&amp;status=closed&amp;component=QuimP-ECMM&amp;or&amp;status=closed&amp;component=QuimP-Plugin&amp;or&amp;status=closed&amp;component=QuimP-Q&amp;order=changetime</query>
-        </configuration>
         <reportSets>
           <reportSet>
             <reports>
-              <!--<report>trac-report</report>-->
               <report>changes-report</report>
             </reports>
           </reportSet>

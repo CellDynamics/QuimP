@@ -63,4 +63,4 @@ hs_err_pid*
 build/
 
 target/
-
+.checkstyle

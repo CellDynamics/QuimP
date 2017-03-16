@@ -14,31 +14,31 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
  *
  */
 public class PluginFactoryFactory {
-    private static final PluginFactoryFactory instance = new PluginFactoryFactory();
+  private static final PluginFactoryFactory instance = new PluginFactoryFactory();
 
-    /**
-     * 
-     */
-    public PluginFactoryFactory() {
-        // TODO Auto-generated constructor stub
-    }
+  /**
+   * 
+   */
+  public PluginFactoryFactory() {
+    // TODO Auto-generated constructor stub
+  }
 
-    /**
-     * @return PluginFactory instance
-     */
-    public static PluginFactoryFactory getInstance() {
-        return instance;
-    }
+  /**
+   * @return PluginFactory instance
+   */
+  public static PluginFactoryFactory getInstance() {
+    return instance;
+  }
 
-    /**
-     * Provide mocked PluginFactory object that uses sources of plugins available on path
-     * 
-     * @param path
-     * @return mocked PluginFactory object
-     * @throws QuimpPluginException
-     */
-    public static PluginFactory getPluginFactory(String path) throws QuimpPluginException {
-        return new PluginFactory(Paths.get(path));
+  /**
+   * Provide mocked PluginFactory object that uses sources of plugins available on path
+   * 
+   * @param path
+   * @return mocked PluginFactory object
+   * @throws QuimpPluginException
+   */
+  public static PluginFactory getPluginFactory(String path) throws QuimpPluginException {
+    return new PluginFactory(Paths.get(path));
 
-    }
+  }
 }

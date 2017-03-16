@@ -12,18 +12,18 @@ import uk.ac.warwick.wsbc.quimp.plugin.ecmm.ECMM_Mapping;
  */
 public class ECMM_run {
 
-    static {
-        System.setProperty("logback.configurationFile", "quimp-logback.xml");
-    }
+  static {
+    System.setProperty("logback.configurationFile", "quimp-logback.xml");
+  }
 
-    /**
-     * @param args
-     */
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
-        ImageJ ij = new ImageJ();
-        new ECMM_Mapping();
+  /**
+   * @param args
+   */
+  @SuppressWarnings("unused")
+  public static void main(String[] args) {
+    ImageJ ij = new ImageJ();
+    new ECMM_Mapping();
 
-    }
+  }
 
 }
