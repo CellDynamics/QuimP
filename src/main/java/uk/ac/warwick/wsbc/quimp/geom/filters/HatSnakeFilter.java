@@ -154,7 +154,7 @@ public class HatSnakeFilter implements IPadArray {
   public List<Point2d> runPlugin(List<Point2d> data) throws QuimpPluginException {
     points = data;
     // internal parameters are not updated here but when user click apply
-    LOGGER.info(String.format("Run plugin with params: window %d, pnum %d, alev %f", window, pnum,
+    LOGGER.debug(String.format("Run plugin with params: window %d, pnum %d, alev %f", window, pnum,
             alev));
 
     BasicPolygons bp = new BasicPolygons(); // provides geometry processing
@@ -202,7 +202,7 @@ public class HatSnakeFilter implements IPadArray {
       LOGGER.trace("Wcirc " + tmpCirc);
       circ.add(tmpCirc); // store weighted circularity for shape without window
       // check if points of window are convex according to shape without these points
-      convex.add(bp.isanyPointInside(pointsnowindow, pointswindow)); // true if concave
+      convex.add(bp.arePointsInside(pointsnowindow, pointswindow)); // true if concave
       LOGGER.trace("con: " + convex.get(convex.size() - 1));
       // move window to next position
       // rotates by -1 what means that on first n positions
@@ -214,6 +214,7 @@ public class HatSnakeFilter implements IPadArray {
     }
     // normalize circularity to 1
     double maxCirc = Collections.max(circ);
+    LOGGER.trace("Max circ=" + maxCirc);
     for (int r = 0; r < circ.size(); r++) {
       circ.set(r, circ.get(r) / maxCirc);
     }
@@ -242,10 +243,11 @@ public class HatSnakeFilter implements IPadArray {
         LOGGER.warn("Can find next candidate. Use smaller window");
         break;
       }
+      if (circsorted.get(i) < alev) {
+        break; // stop searching because all i+n are smaller as well
+      }
       if (found > 0) {
-        if (circsorted.get(i) < alev) {
-          break; // stop searching because all i+n are smaller as well
-        }
+
         // find where it was before sorting and store in window positions
         int startpos = circ.indexOf(circsorted.get(i));
         // check if we already have this index in list indexes to remove
@@ -259,7 +261,7 @@ public class HatSnakeFilter implements IPadArray {
           contains = ind2rem.contains(indexTest);
         }
         // this window doesnt overlap with those found already and it is convex
-        if (!contains && !convex.get(startpos)) {
+        if (!contains && convex.get(startpos)) {
           // store range of indexes that belongs to window
           if (startpos + window - 1 >= points.size()) { // as prev split to two windows
             // if we are on the end of data
@@ -279,6 +281,10 @@ public class HatSnakeFilter implements IPadArray {
       } else { // first candidate always accepted
         // find where it was before sorting and store in window positions
         int startpos = circ.indexOf(circsorted.get(i));
+        if (convex.get(startpos) == false) {
+          i++;
+          continue;
+        }
         // store range of indexes that belongs to window
         if (startpos + window - 1 >= points.size()) { // as prev split to two windows
           // if we are on the end of data
@@ -288,8 +294,8 @@ public class HatSnakeFilter implements IPadArray {
         } else {
           ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
         }
-        LOGGER.trace("added win for i=" + i + " startpos=" + startpos + " coord:"
-                + points.get(startpos).toString());
+        LOGGER.info("added win for i=" + i + " startpos=" + startpos + " coord:"
+                + points.get(startpos).toString() + "alev=" + circsorted.get(i));
         i++;
         found++;
       }
@@ -304,6 +310,9 @@ public class HatSnakeFilter implements IPadArray {
       if (!ind2rem.contains(indexTest)) { // check if any window position (l and u bound)
         out.add(new Point2d(points.get(i)));
       } // include tested point. Copy it to new array if not
+      else {
+        LOGGER.trace("winpos: " + ind2rem.toString() + " " + points.get(i));
+      }
     }
     return out;
   }
@@ -375,8 +384,10 @@ public class HatSnakeFilter implements IPadArray {
     std /= points.size();
     std = Math.sqrt(std);
 
+    // max of len
+    // double maxLen = QuimPArrayUtils.arrayMax(len);
     LOGGER.debug("w " + std);
-    return std;
+    return std * std;
   }
 
   /**

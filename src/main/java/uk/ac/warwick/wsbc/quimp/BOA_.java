@@ -184,7 +184,7 @@ public class BOA_ implements PlugIn {
    * <p>Must be initialised here <b>AND</b> in constructor (to reset settings on next BOA call
    * without quitting Fiji) Keep data that will be serialized.
    */
-  public static BOAState qState; // current state of BOA module
+  public static BOAState qState = new BOAState(null); // current state of BOA module
 
   /**
    * Main constructor.
@@ -194,7 +194,6 @@ public class BOA_ implements PlugIn {
    */
   public BOA_() {
     LOGGER.trace("Constructor called");
-    qState = new BOAState(null);
     logCount = 1; // reset log count (it is also static)
     // log4j.configurationFile
   }
