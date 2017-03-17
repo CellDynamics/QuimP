@@ -103,13 +103,6 @@ import uk.ac.warwick.wsbc.quimp.utils.graphics.GraphicsElements;
 /**
  * Main class implementing BOA plugin.
  * 
- * <p>Refreshing window scheme (depending on the use case, some parts can be refreshed twice. For
- * example, loading QCONF causes that {@link CustomStackWindow#updateWindowState()} is called two
- * times. <br>
- * <img src="doc-files/BOA_1_UML.png"/><br>
- * <br>
- * <img src="doc-files/BOA_2_UML.png"/><br>
- * 
  * @author Richard Tyson
  * @author Till Bretschneider
  * @author Piotr Baniukiewicz

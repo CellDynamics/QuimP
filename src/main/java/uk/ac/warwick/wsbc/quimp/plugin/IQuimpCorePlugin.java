@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.quimp.plugin;
 
-// TODO: Auto-generated Javadoc
 /**
  * General definition of plugin interface for QuimP
  * 
