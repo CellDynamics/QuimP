@@ -91,6 +91,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
   private String lastTool; // tool selected in IJ
   private boolean isCanceled; // true if user click Cancel, false if clicked Apply
   private boolean isRun; // true if segmentation is running
+  private int startSlice = 1; // first slice to segment
 
   /**
    * Default constructor.
@@ -107,12 +108,13 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     view.addWindowController(new ActivateWindowController());
     view.addImageController(new ImageController());
     view.addSeedController(new SeedController());
-    view.addApplyController(new ApplyController());
-    view.addCancelController(new CancelController());
+    view.addRunController(new RunBtnController());
+    view.addCancelController(new CancelBtnController());
     view.addBgController(new BgController());
     view.addFgController(new FgController());
     view.addCloneController(new CloneController());
     view.addLoadQconfController(new LoadQconfController());
+    view.addRunActiveController(new RunActiveBtnController());
   }
 
   /**
@@ -312,18 +314,40 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
   }
 
   /**
-   * Handle Apply button.
+   * Handle Run button.
    * 
    * <p>Copy view status to model and start processing.
    * 
    * @author p.baniukiewicz
    *
    */
-  class ApplyController implements ActionListener {
+  class RunBtnController implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      startSlice = 1;// segment from first
+      readUI();
+      RWWorker rww = new RWWorker();
+      rww.execute();
+      LOGGER.trace("model: " + model.toString());
+
+    }
+  }
+
+  /**
+   * Handle Run button from active.
+   * 
+   * <p>Copy view status to model and start processing.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class RunActiveBtnController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
       readUI();
+      startSlice = model.originalImage.getCurrentSlice();
       RWWorker rww = new RWWorker();
       rww.execute();
       LOGGER.trace("model: " + model.toString());
@@ -337,7 +361,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
    * @author p.baniukiewicz
    *
    */
-  public class CancelController implements ActionListener {
+  public class CancelBtnController implements ActionListener {
 
     /*
      * (non-Javadoc)
@@ -535,7 +559,8 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
       propagateSeeds = PropagateSeeds.getPropagator(model.selectedShrinkMethod, model.showSeeds);
       ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
       // create segmentation engine
-      RandomWalkSegmentation obj = new RandomWalkSegmentation(is.getProcessor(1), model.params);
+      RandomWalkSegmentation obj =
+              new RandomWalkSegmentation(is.getProcessor(startSlice), model.params);
       // decode provided seeds depending on selected option
       switch (model.seedSource) {
         case RGBImage: // use seeds as they are
@@ -559,7 +584,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
           backColor = Color.BLACK;
           new ImageConverter(seedImage).convertToRGB(); // convert to rgb
           // first slice of mask
-          ImageProcessor seedSlice1 = seedImage.getStack().getProcessor(1);
+          ImageProcessor seedSlice1 = seedImage.getStack().getProcessor(startSlice);
           // get seeds split to FG and BG
           Map<Seeds, ImageProcessor> seedsTmp =
                   RandomWalkSegmentation.decodeSeeds(seedSlice1, foreColor, backColor);
@@ -582,8 +607,8 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
         prev.show();
         prev.updateAndDraw();
       }
-      // iterate over all slices after first (may not run for one image)
-      for (int s = 2; s <= is.getSize() && isCanceled == false; s++) {
+      // iterate over all slices after first (may not run for one image and for current image seg)
+      for (int s = 2; s <= is.getSize() && isCanceled == false && startSlice == 1; s++) {
         Map<Seeds, ImageProcessor> nextseed;
         obj = new RandomWalkSegmentation(is.getProcessor(s), model.params);
         // get seeds from previous result

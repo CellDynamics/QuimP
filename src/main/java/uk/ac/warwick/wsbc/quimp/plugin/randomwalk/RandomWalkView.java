@@ -680,9 +680,10 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chShowPreview.setSelected(chShowPreview);
   }
 
-  private JButton bnApply;
+  private JButton bnRun;
   private JButton bnCancel;
   private JButton bnHelp;
+  private JButton bnRunActive;
 
   /**
    * Build View but not show it.
@@ -857,10 +858,14 @@ public class RandomWalkView implements ActionListener, ItemListener {
     // cancel apply row
     JPanel caButtons = new JPanel();
     caButtons.setLayout(new FlowLayout(FlowLayout.CENTER));
-    bnApply = new JButton("Apply");
+    bnRun = new JButton("Run");
+    setToolTip(bnRun, "Run segmentation for all slices");
+    bnRunActive = new JButton("Run active");
+    setToolTip(bnRunActive, "Run segmentation for selected slice only");
     bnCancel = new JButton("Cancel");
     bnHelp = new JButton("Help");
-    caButtons.add(bnApply);
+    caButtons.add(bnRun);
+    caButtons.add(bnRunActive);
     caButtons.add(bnCancel);
     caButtons.add(bnHelp);
 
@@ -961,7 +966,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
     chShowPreview.setEnabled(status);
     chShowSeed.setEnabled(status);
     cbFilteringPostMethod.setEnabled(status);
-    bnApply.setEnabled(status);
+    bnRun.setEnabled(status);
+    bnRunActive.setEnabled(status);
     bnHelp.setEnabled(status);
 
     chHatFilter.setEnabled(false); // not implemented, remove after
@@ -1238,12 +1244,21 @@ public class RandomWalkView implements ActionListener, ItemListener {
   }
 
   /**
-   * Assign listener to Apply button.
+   * Assign listener to Run button.
    * 
    * @param list listener
    */
-  public void addApplyController(ActionListener list) {
-    bnApply.addActionListener(list);
+  public void addRunController(ActionListener list) {
+    bnRun.addActionListener(list);
+  }
+
+  /**
+   * Assign listener to Run selected slice button.
+   * 
+   * @param list listener
+   */
+  public void addRunActiveController(ActionListener list) {
+    bnRunActive.addActionListener(list);
   }
 
   /**
