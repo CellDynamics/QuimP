@@ -1888,10 +1888,7 @@ public class BOA_ implements PlugIn {
 
       // zoom to snake zero
       if (qState.boap.zoom && !qState.nest.isVacant()) {
-        SnakeHandler snH = qState.nest.getHandler(0);
-        if (snH.isStoredAt(qState.boap.frame)) {
-          imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
-        }
+        imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
       }
       // if in edit, save current edit and start edit of next frame if exists
       boolean wasInEdit = qState.boap.editMode;
@@ -2917,7 +2914,7 @@ class ImageGroup {
       } else {
         return;
       }
-    } catch (IndexOutOfBoundsException e) {
+    } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
       LOGGER.debug(e.getMessage(), e);
       return;
     }
