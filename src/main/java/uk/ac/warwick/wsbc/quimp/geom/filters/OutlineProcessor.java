@@ -33,7 +33,7 @@ public class OutlineProcessor {
   }
 
   /**
-   * Compute running mean on <tt>curvatureLocal</tt>.
+   * Compute running mean on <tt>Outline</tt>.
    * 
    * @param window Window size
    * @return array of filtered coefficients in order of vertexes.
@@ -130,15 +130,15 @@ public class OutlineProcessor {
     }
 
     if (outline.getNumVerts() < 3) {
-      System.out.println("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
+      LOGGER.info("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
     }
 
     if (outline.cutSelfIntersects()) {
-      System.out.println("ANA_(382)...fixed ana intersects");
+      LOGGER.debug("ANA_(382)...fixed ana intersects");
     }
 
     if (outline.getNumVerts() < 3) {
-      System.out.println("ANA 377_NODES LESS THAN 3");
+      LOGGER.info("ANA 377_NODES LESS THAN 3");
     }
 
     // LOGGER.debug("Shrank Verts: " + outline.getNumVerts());
@@ -190,15 +190,15 @@ public class OutlineProcessor {
     }
 
     if (outline.getNumVerts() < 3) {
-      System.out.println("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
+      LOGGER.info("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
     }
 
     if (outline.cutSelfIntersects()) {
-      System.out.println("ANA_(382)...fixed ana intersects");
+      LOGGER.debug("ANA_(382)...fixed ana intersects");
     }
 
     if (outline.getNumVerts() < 3) {
-      System.out.println("ANA 377_NODES LESS THAN 3");
+      LOGGER.info("ANA 377_NODES LESS THAN 3");
     }
   }
 

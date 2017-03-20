@@ -34,7 +34,7 @@ public class HatSnakeFilterRun {
    * Runner.
    * 
    * @param args args
-   * @throws Exception
+   * @throws Exception on error
    */
   public static void main(String[] args) throws Exception {
     String folder = "/home/baniuk/Documents/BioinformaticsPaper/" + "Piotr_test_data_src/TestSeg";
@@ -44,33 +44,37 @@ public class HatSnakeFilterRun {
 
     String filename = casename.substring(4);
     Path maskimage = Paths.get(folder, casename, filename + "_snakemask.tif");
+    Path orgimage = Paths.get(folder, casename, filename + ".tif");
 
-    int i = 56; // fram counted from 1
+    int pp = 58; // fram counted from 1
 
     ImageJ ij = new ImageJ();
     ImagePlus mask = IJ.openImage(maskimage.toString());
-    mask.setSlice(i);
+    ImagePlus orgim = IJ.openImage(orgimage.toString());
+    mask.setSlice(pp);
     mask.show();
+    orgim.setSlice(pp);
+    orgim.show();
 
     BinarySegmentation obj = new BinarySegmentation(mask);
     obj.trackObjects(); // run tracking
     ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains();
     for (ArrayList<SegmentedShapeRoi> asS : ret) {
-      for (SegmentedShapeRoi sS : asS) {
-        sS.setInterpolationParameters(step, false);
+      for (SegmentedShapeRoi ss : asS) {
+        ss.setInterpolationParameters(step, false);
       }
     }
 
     // filter
     final int window = 15;
     final int pnum = 1;
-    final double alev = 0.71;
+    final double alev = 0.97;
 
     ImagePlus filtered = NewImage.createByteImage("filt", mask.getWidth(), mask.getHeight(),
             mask.getStackSize(), NewImage.GRAY8);
     ImagePlus org = NewImage.createByteImage("org", mask.getWidth(), mask.getHeight(),
             mask.getStackSize(), NewImage.GRAY8);
-    for (i = 1; i <= 100; i++) {// !!
+    for (int i = 1; i <= 100; i++) { // !!
       LOGGER.info("--Frame " + i);
       SegmentedShapeRoi ssR = ret.get(0).get(i - 1);
       org.getStack().getProcessor(i).setColor(Color.WHITE);
@@ -78,7 +82,9 @@ public class HatSnakeFilterRun {
       org.getStack().getProcessor(i).invert();
 
       HatSnakeFilter hsf = new HatSnakeFilter(window, pnum, alev);
-      List<Point2d> retf = hsf.runPlugin(ssR.getOutlineasPoints());
+      hsf.setMode(HatSnakeFilter.CAVITIES);
+      List<Point2d> retf =
+              hsf.runPlugin(ssR.getOutlineasPoints(), orgim.getStack().getProcessor(i));
       Roi ssRF = new QuimpDataConverter(retf).getSnake(0).asFloatRoi();
 
       // plot test
@@ -89,9 +95,9 @@ public class HatSnakeFilterRun {
       IJ.showProgress(i, mask.getStackSize());
       LOGGER.info("------");
     }
-    filtered.setSlice(i);
+    filtered.setSlice(pp);
     filtered.show();
-    org.setSlice(i);
+    org.setSlice(pp);
     org.show();
     // both original and result image can be combined as composite to check what parts were removed.
     // By default program logs alev value computed for every frame for removed parts.

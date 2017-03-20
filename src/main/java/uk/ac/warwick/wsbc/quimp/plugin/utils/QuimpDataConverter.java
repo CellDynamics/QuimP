@@ -8,6 +8,8 @@ import org.scijava.vecmath.Tuple2d;
 
 import ij.util.Tools;
 import uk.ac.warwick.wsbc.quimp.BoaException;
+import uk.ac.warwick.wsbc.quimp.Outline;
+import uk.ac.warwick.wsbc.quimp.Shape;
 import uk.ac.warwick.wsbc.quimp.Snake;
 
 /**
@@ -84,11 +86,11 @@ public class QuimpDataConverter {
   /**
    * Default constructor if Node list is in form of Snake object.
    * 
-   * @param s Snake to be converted. If null xc and yc are set to 0 length arrays, List is
+   * @param s Shape to be converted. If null xc and yc are set to 0 length arrays, List is
    *        also 0
    *        length.
    */
-  public QuimpDataConverter(final Snake s) {
+  public QuimpDataConverter(final Shape<?> s) {
     this();
     if (s != null) {
       toArrays(s.asList());
@@ -205,6 +207,24 @@ public class QuimpDataConverter {
       return null;
     } else {
       return new Snake(xc, yc, id);
+    }
+  }
+
+  /**
+   * Return Outline created from stored data.
+   * 
+   * @param id Id of snake
+   * @return Outline object with Nodes in order of data given on input. Can be null
+   * @throws BoaException on Outline creation
+   * @see uk.ac.warwick.wsbc.quimp.Snake#Snake(double[], double[], int)
+   * @see uk.ac.warwick.wsbc.quimp.Snake#removeNode(uk.ac.warwick.wsbc.quimp.Node)
+   */
+  public Outline getOutline(int id) throws BoaException {
+    Snake stmp = getSnake(id);
+    if (stmp == null) {
+      return null;
+    } else {
+      return new Outline(stmp);
     }
   }
 

@@ -129,7 +129,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
   static final Logger LOGGER = LoggerFactory.getLogger(RandomWalkView.class.getName());
 
   /**
-   * Tootlti delay for this window in ms.
+   * Tootltip delay for this window in ms.
    */
   private static final int TOOLTIPDELAY = 3000;
 
@@ -823,13 +823,13 @@ public class RandomWalkView implements ActionListener, ItemListener {
     postprocesshatPanel.setBorder(BorderFactory.createTitledBorder("Hat filter"));
     chHatFilter = new JCheckBox("Hat Filter");
     chHatFilter.addItemListener(this);
-    setToolTip(chHatFilter, "Feature not implemented yet");
+    setToolTip(chHatFilter, "Try to remove small inclusions in contour");
     postprocesshatPanel.add(getControlwithLabel(chHatFilter, "", ""));
-    srAlev = getDoubleSpinner(0.1, 0, 1, 0.01, 5);
+    srAlev = getDoubleSpinner(0.9, 0, 1, 0.01, 5);
     postprocesshatPanel.add(getControlwithLabel(srAlev, "srAlev", ""));
     srNum = new JSpinner(new SpinnerNumberModel(1, 1, 500, 1));
     postprocesshatPanel.add(getControlwithLabel(srNum, "srNum", ""));
-    srWindow = new JSpinner(new SpinnerNumberModel(1, 1, 500, 1));
+    srWindow = new JSpinner(new SpinnerNumberModel(15, 1, 500, 1));
     postprocesshatPanel.add(getControlwithLabel(srWindow, "srWindow", ""));
     GridBagConstraints constrPost = new GridBagConstraints();
     constrPost.gridx = 0;
@@ -947,6 +947,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     srShrinkPower.setEnabled(status);
     srExpandPower.setEnabled(status);
     cbFilteringMethod.setEnabled(status);
+    chHatFilter.setEnabled(status);
     if (chHatFilter.isSelected()) {
       chHatFilter.setEnabled(status);
       srAlev.setEnabled(status);
@@ -956,7 +957,12 @@ public class RandomWalkView implements ActionListener, ItemListener {
       chHatFilter.setEnabled(status);
     }
     chLocalMean.setEnabled(status);
-    srLocalMeanWindow.setEnabled(status);
+    if (chLocalMean.isSelected()) {
+      chLocalMean.setEnabled(status);
+      srLocalMeanWindow.setEnabled(status);
+    } else {
+      chLocalMean.setEnabled(status);
+    }
     cbFilteringMethod.setEnabled(status);
     chShowPreview.setEnabled(status);
     chShowSeed.setEnabled(status);
@@ -964,7 +970,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     bnApply.setEnabled(status);
     bnHelp.setEnabled(status);
 
-    chHatFilter.setEnabled(false); // not implemented, remove after
+    // chHatFilter.setEnabled(status); // not implemented, remove after
   }
 
   /**
@@ -1043,7 +1049,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     srNum.setEnabled(false);
     srWindow.setEnabled(false);
     srLocalMeanWindow.setEnabled(false);
-    chHatFilter.setEnabled(false);
+    // chHatFilter.setEnabled(true);
   }
 
   /**
