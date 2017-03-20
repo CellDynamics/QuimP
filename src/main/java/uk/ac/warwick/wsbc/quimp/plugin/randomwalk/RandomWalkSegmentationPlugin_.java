@@ -7,11 +7,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,16 +22,23 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.WindowManager;
+import ij.gui.Roi;
 import ij.io.OpenDialog;
 import ij.plugin.Converter;
 import ij.plugin.tool.BrushTool;
+import ij.process.ByteProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.quimp.BoaException;
+import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
+import uk.ac.warwick.wsbc.quimp.geom.filters.HatSnakeFilter;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.quimp.plugin.binaryseg.BinarySegmentation;
 import uk.ac.warwick.wsbc.quimp.plugin.generatemask.GenerateMask_;
 import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
+import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
 import uk.ac.warwick.wsbc.quimp.registration.Registration;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
@@ -91,7 +101,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
   private String lastTool; // tool selected in IJ
   private boolean isCanceled; // true if user click Cancel, false if clicked Apply
   private boolean isRun; // true if segmentation is running
-  private int startSlice = 1; // first slice to segment
+  private int startSlice = 0; // first slice to segment (0 - use all)
 
   /**
    * Default constructor.
@@ -325,7 +335,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      startSlice = 1;// segment from first
+      startSlice = 0;// segment from first
       readUI();
       RWWorker rww = new RWWorker();
       rww.execute();
@@ -550,6 +560,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     try {
       if (seedImage.getStackSize() == 1) {
         useSeedStack = false; // use propagateSeed for generating next frame seed from prev
+        startSlice = 1;
       } else if (seedImage.getStackSize() == image.getStackSize()) {
         useSeedStack = true; // use slices as seeds
       } else {
@@ -600,6 +611,9 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
       // segment first slice (or image if it is not stack)
       ImageProcessor retIp = obj.run(seeds);
       model.params.useLocalMean = localMeanUserStatus; // restore status after 1st frame
+      if (model.hatFilter) {
+        retIp = applyHatSnakeFilter(retIp, is.getProcessor(startSlice));
+      }
       ret.addSlice(retIp.convertToByte(true)); // store output in new stack
       if (model.showPreview) { // display first slice
         prev.setProcessor(retIp);
@@ -608,7 +622,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
         prev.updateAndDraw();
       }
       // iterate over all slices after first (may not run for one image and for current image seg)
-      for (int s = 2; s <= is.getSize() && isCanceled == false && startSlice == 1; s++) {
+      for (int s = 2; s <= is.getSize() && isCanceled == false && startSlice == 0; s++) {
         Map<Seeds, ImageProcessor> nextseed;
         obj = new RandomWalkSegmentation(is.getProcessor(s), model.params);
         // get seeds from previous result
@@ -632,6 +646,9 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
         }
         // segmentation and results stored for next seeding
         retIp = obj.run(nextseed);
+        if (model.hatFilter) {
+          retIp = applyHatSnakeFilter(retIp, is.getProcessor(s));
+        }
         ret.addSlice(retIp); // add next slice
         if (model.showPreview) { // show preview remaining slices
           prev.setProcessor(retIp);
@@ -661,7 +678,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
           propagateSeeds.getCompositeSeed(image.duplicate()).show();
         }
       }
-    } catch (RandomWalkException rwe) {
+    } catch (BoaException | QuimpPluginException rwe) {
       rwe.handleException(view.getWnd(), "Segmentation problem:");
     } catch (Exception e) {
       LOGGER.debug(e.getMessage(), e);
@@ -675,6 +692,36 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
       model.params.useLocalMean = localMeanUserStatus; // restore status
     }
     return segmented;
+  }
+
+  /**
+   * Helper method, applies HSF.
+   * 
+   * @param retIp image to filter (mask)
+   * @param orIp original image
+   * @return Filtered processor
+   * @throws BoaException Thrown when HatSnakeFilter can not shrink contour
+   * @throws QuimpPluginException on problem with HatSnakeFilter
+   */
+  private ImageProcessor applyHatSnakeFilter(ImageProcessor retIp, ImageProcessor orIp)
+          throws QuimpPluginException, BoaException {
+    BinarySegmentation obj = new BinarySegmentation(new ImagePlus("", retIp));
+    obj.trackObjects(); // run tracking
+    ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains();
+    for (ArrayList<SegmentedShapeRoi> asS : ret) {
+      for (SegmentedShapeRoi ss : asS) {
+        ss.setInterpolationParameters(1, false);
+      }
+    }
+    SegmentedShapeRoi ssR = ret.get(0).get(0);
+    HatSnakeFilter hsf = new HatSnakeFilter(model.window, model.num, model.alev);
+    hsf.setMode(HatSnakeFilter.CAVITIES);
+    List<Point2d> retf = hsf.runPlugin(ssR.getOutlineasPoints(), orIp);
+    Roi ssRF = new QuimpDataConverter(retf).getSnake(0).asFloatRoi();
+    ImageProcessor retIptmp = new ByteProcessor(orIp.getWidth(), orIp.getHeight());
+    retIptmp.setColor(Color.WHITE);
+    retIptmp.fill(ssRF);
+    return retIptmp;
   }
 
   @Override

@@ -11,7 +11,7 @@ import ij.ImageJ;
  */
 public class RandomWalkSegmentationPluginRun {
   static {
-    System.setProperty("logback.configurationFile", "quimp-logback.xml");
+    // System.setProperty("logback.configurationFile", "quimp-logback.xml");
     System.setProperty("quimpconfig.superDebug", "false");
   }
 

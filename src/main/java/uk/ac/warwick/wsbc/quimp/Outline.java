@@ -173,12 +173,12 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   }
 
   /**
-   * Get number of Vert objects forming current Outline
+   * Get number of Vert objects forming current Outline.
    * 
    * @return number of Vert in current Outline
    */
   public int getNumVerts() {
-    return POINTS;
+    return super.getNumPoints();
   }
 
   /**

@@ -253,9 +253,9 @@ public class RandomWalkModel {
     expandPower = 15;
     selectedFilteringMethod = Filters.NONE;
     hatFilter = false;
-    alev = 0.1;
+    alev = 0.9;
     num = 1;
-    window = 4;
+    window = 15;
     selectedFilteringPostMethod = Filters.NONE;
     showSeeds = false;
     showPreview = false;
