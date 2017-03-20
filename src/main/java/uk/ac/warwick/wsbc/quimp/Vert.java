@@ -29,7 +29,7 @@ public class Vert extends PointsList<Vert> {
    */
   public final FluoMeasurement[] fluores = new FluoMeasurement[3];
   /**
-   * curvature local to a node. Updated by {@link Vert#calcCurvatureLocal()} called during
+   * curvature local to a node. Updated by {@link Vert#setCurvatureLocal()} called during
    * creation and serialization.
    */
   public double curvatureLocal;
@@ -78,7 +78,7 @@ public class Vert extends PointsList<Vert> {
    */
   public double gLandCoord;
   /**
-   * 
+   * tarLandingCoord.
    */
   public double tarLandingCoord;
   /**
@@ -88,13 +88,13 @@ public class Vert extends PointsList<Vert> {
   /**
    * Vert represents an intersect point and is temporary. Mark start end of sectors.
    */
-  transient private boolean intPoint;
+  private transient boolean intPoint;
   /**
    * The vert has been snapped to an edge.
    */
-  transient public boolean snapped;
+  public transient boolean snapped;
   /**
-   * 
+   * intsectID.
    */
   public int intsectID;
   /**
@@ -110,7 +110,7 @@ public class Vert extends PointsList<Vert> {
   public int intState;
 
   /**
-   * Default constructor, creates Vert element with ID=1
+   * Default constructor, creates Vert element with ID=1.
    */
   public Vert() {
     super();
@@ -118,7 +118,7 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * Create Vert element with given ID
+   * Create Vert element with given ID.
    * 
    * @param t ID of Vert
    */
@@ -128,7 +128,7 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * Create Vert from {x,y} coordinates
+   * Create Vert from {x,y} coordinates.
    * 
    * @param xx x-axis coordinate
    * @param yy y-axis coordinate
@@ -140,9 +140,7 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * Copy constructor. Copy properties of Vert
-   * 
-   * Previous or next points are not copied
+   * Copy constructor. Copy properties of Vert. Previous or next points are not copied
    * 
    * @param src Source Vert
    */
@@ -150,8 +148,9 @@ public class Vert extends PointsList<Vert> {
     super(src);
     charge = src.charge;
     distance = src.distance;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++) {
       fluores[i] = new FluoMeasurement(src.fluores[i]);
+    }
     curvatureLocal = src.curvatureLocal;
     curvatureSmoothed = src.curvatureSmoothed;
     curvatureSum = src.curvatureSum;
@@ -169,7 +168,7 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * Conversion constructor
+   * Conversion constructor.
    * 
    * @param src Node to convert to Vert
    */
@@ -179,7 +178,7 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * Initializers for Vert object
+   * Initializers for Vert object.
    */
   private void vertInitializer() {
     intPoint = false;
@@ -187,8 +186,9 @@ public class Vert extends PointsList<Vert> {
     fCoord = -1;
     gCoord = -1;
     color = new QColor(1, 0, 0);
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++) {
       fluores[i] = new FluoMeasurement(-2, -2, -2);
+    }
   }
 
   /**
@@ -232,71 +232,98 @@ public class Vert extends PointsList<Vert> {
     return result;
   }
 
-  /**
+  /*
    * (non-Javadoc)
    * 
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (!super.equals(obj))
+    }
+    if (!super.equals(obj)) {
       return false;
-    if (!(obj instanceof Vert))
+    }
+    if (!(obj instanceof Vert)) {
       return false;
+    }
     Vert other = (Vert) obj;
-    if (Double.doubleToLongBits(charge) != Double.doubleToLongBits(other.charge))
+    if (Double.doubleToLongBits(charge) != Double.doubleToLongBits(other.charge)) {
       return false;
+    }
     if (color == null) {
-      if (other.color != null)
+      if (other.color != null) {
         return false;
-    } else if (!color.equals(other.color))
+      }
+    } else if (!color.equals(other.color)) {
       return false;
-    if (Double.doubleToLongBits(coord) != Double.doubleToLongBits(other.coord))
+    }
+    if (Double.doubleToLongBits(coord) != Double.doubleToLongBits(other.coord)) {
       return false;
-    if (Double.doubleToLongBits(curvatureLocal) != Double.doubleToLongBits(other.curvatureLocal))
+    }
+    if (Double.doubleToLongBits(curvatureLocal) != Double.doubleToLongBits(other.curvatureLocal)) {
       return false;
+    }
     if (Double.doubleToLongBits(curvatureSmoothed) != Double
-            .doubleToLongBits(other.curvatureSmoothed))
+            .doubleToLongBits(other.curvatureSmoothed)) {
       return false;
-    if (Double.doubleToLongBits(curvatureSum) != Double.doubleToLongBits(other.curvatureSum))
+    }
+    if (Double.doubleToLongBits(curvatureSum) != Double.doubleToLongBits(other.curvatureSum)) {
       return false;
-    if (Double.doubleToLongBits(distance) != Double.doubleToLongBits(other.distance))
+    }
+    if (Double.doubleToLongBits(distance) != Double.doubleToLongBits(other.distance)) {
       return false;
-    if (Double.doubleToLongBits(fCoord) != Double.doubleToLongBits(other.fCoord))
+    }
+    if (Double.doubleToLongBits(fCoord) != Double.doubleToLongBits(other.fCoord)) {
       return false;
-    if (Double.doubleToLongBits(fLandCoord) != Double.doubleToLongBits(other.fLandCoord))
+    }
+    if (Double.doubleToLongBits(fLandCoord) != Double.doubleToLongBits(other.fLandCoord)) {
       return false;
-    if (!Arrays.equals(fluores, other.fluores))
+    }
+    if (!Arrays.equals(fluores, other.fluores)) {
       return false;
-    if (Double.doubleToLongBits(gCoord) != Double.doubleToLongBits(other.gCoord))
+    }
+    if (Double.doubleToLongBits(gCoord) != Double.doubleToLongBits(other.gCoord)) {
       return false;
-    if (Double.doubleToLongBits(gLandCoord) != Double.doubleToLongBits(other.gLandCoord))
+    }
+    if (Double.doubleToLongBits(gLandCoord) != Double.doubleToLongBits(other.gLandCoord)) {
       return false;
-    if (intPoint != other.intPoint)
+    }
+    if (intPoint != other.intPoint) {
       return false;
-    if (intState != other.intState)
+    }
+    if (intState != other.intState) {
       return false;
-    if (intsectID != other.intsectID)
+    }
+    if (intsectID != other.intsectID) {
       return false;
-    if (snapped != other.snapped)
+    }
+    if (snapped != other.snapped) {
       return false;
-    if (Double.doubleToLongBits(tarLandingCoord) != Double.doubleToLongBits(other.tarLandingCoord))
+    }
+    if (Double.doubleToLongBits(tarLandingCoord) != Double
+            .doubleToLongBits(other.tarLandingCoord)) {
       return false;
+    }
     return true;
   }
 
   /**
-   * @param s
+   * Old part of code.
+   * 
+   * @param s s
+   * @deprecated This is old part of code
    */
   public void print(String s) {
     System.out.print(s + "vert: " + tracknumber + ", x:" + getX() + ", y:" + getY() + ", coord: "
             + coord + ", fCoord: " + fCoord + ", gCoord: " + gCoord);
-    if (intPoint)
+    if (intPoint) {
       System.out.print(", isIntPoint (" + intsectID + ")");
-    if (head)
+    }
+    if (head) {
       System.out.print(", Head");
+    }
     System.out.println("");
   }
 
@@ -318,6 +345,8 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
+   * isIntPoint.
+   * 
    * @return intPoint
    */
   public boolean isIntPoint() {
@@ -325,8 +354,10 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * @param t
-   * @param i
+   * setIntPoint.
+   * 
+   * @param t t
+   * @param i i
    */
   public void setIntPoint(boolean t, int i) {
     intPoint = t;
@@ -335,8 +366,10 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * @param p
-   * @param edge
+   * setLandingCoord.
+   * 
+   * @param p p
+   * @param edge edge
    */
   public void setLandingCoord(ExtendedVector2d p, Vert edge) {
     Vert edge2 = edge.getNext(); // 'edge' is the 1st vert of an edge
@@ -403,45 +436,17 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * 
+   * Calculate and set local field {@link #curvatureLocal}.
    */
-  public void calcCurvatureLocal() {
-
-    ExtendedVector2d edge1 = ExtendedVector2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
-    ExtendedVector2d edge2 = ExtendedVector2d.vecP2P(this.getPoint(), this.getNext().getPoint());
-
-    double angle = ExtendedVector2d.angle(edge1, edge2) * (180 / Math.PI); // convert
-                                                                           // to
-                                                                           // degrees
-
-    if (angle > 360 || angle < -360) {
-      System.out.println("Warning-angle out of range (Vert l:320)");
-    }
-
-    if (angle < 0)
-      angle = 360 + angle;
-
-    if (angle == 180) {
-      curvatureLocal = 0;
-    } else if (angle < 180) {
-      curvatureLocal = -1 * (1 - (angle / 180));
-    } else {
-      curvatureLocal = (angle - 180) / 180;
-    }
-
+  public void setCurvatureLocal() {
+    curvatureLocal = getCurvatureLocal();
   }
 
-  // FluoMeasurement[] cloneFluo(){
-  // FluoMeasurement[] fluoNew = new FluoMeasurement[3];
-  // for(int i = 0; i < 3; i++){
-  // fluoNew[i] = fluores[i].copy();
-  // }
-  // return fluoNew;
-  // }
-
   /**
-   * @param m
-   * @param channel
+   * setFluoresChannel.
+   * 
+   * @param m Fluoro measurements
+   * @param channel channel to set
    */
   public void setFluoresChannel(FluoMeasurement m, int channel) {
     fluores[channel].intensity = m.intensity;
@@ -450,10 +455,12 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * @param x
-   * @param y
-   * @param i
-   * @param channel
+   * setFluoresChannel.
+   * 
+   * @param x coord
+   * @param y coord
+   * @param i fluoro intensity
+   * @param channel channel
    */
   public void setFluoresChannel(int x, int y, int i, int channel) {
     fluores[channel].intensity = i;
@@ -462,7 +469,9 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * @param m
+   * setFluores.
+   * 
+   * @param m all channels measurements
    */
   public void setFluores(FluoMeasurement[] m) {
 
@@ -481,12 +490,14 @@ public class Vert extends PointsList<Vert> {
    * @return the double
    */
   static double disCoord2Coord(double a, double b) {
-    if (a < b)
+    if (a < b) {
       return b - a;
-    if (b < a)
+    }
+    if (b < a) {
       return (1 - a) + b;
-    else
+    } else {
       return 0;
+    }
   }
 
   /**
@@ -498,8 +509,9 @@ public class Vert extends PointsList<Vert> {
    */
   static double addCoords(double a, double b) {
     double r = a + b;
-    if (r >= 1)
+    if (r >= 1) {
       r = r - 1;
+    }
     return r;
   }
 

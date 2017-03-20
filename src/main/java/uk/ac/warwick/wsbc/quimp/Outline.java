@@ -206,7 +206,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   public void updateCurvature() {
     Vert v = head;
     do {
-      v.calcCurvatureLocal();
+      v.setCurvatureLocal();
       v = v.getNext();
     } while (!v.isHead());
   }

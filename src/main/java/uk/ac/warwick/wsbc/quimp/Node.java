@@ -249,35 +249,4 @@ public class Node extends PointsList<Node> {
     prelimPoint.setX(v.getX());
     prelimPoint.setY(v.getY());
   }
-
-  /**
-   * Evaluate local curvature of Node related to previous, this and next Node.
-   * 
-   * @return Local curvature for \b this node in \a degrees TODO Move it to Shape as static maybe
-   *         and accepting Node as parameter
-   */
-  public double getCurvatureLocal() {
-    ExtendedVector2d edge1 = ExtendedVector2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
-    ExtendedVector2d edge2 = ExtendedVector2d.vecP2P(this.getPoint(), this.getNext().getPoint());
-
-    double angle = ExtendedVector2d.angle(edge1, edge2) * (180 / Math.PI);
-
-    if (angle > 360 || angle < -360) {
-      LOGGER.warn("Warning-angle out of range (Vert l:320)");
-    }
-
-    if (angle < 0) {
-      angle = 360 + angle;
-    }
-
-    double curvatureLocal = 0;
-    if (angle == 180) {
-      curvatureLocal = 0;
-    } else if (angle < 180) {
-      curvatureLocal = -1 * (1 - (angle / 180));
-    } else {
-      curvatureLocal = (angle - 180) / 180;
-    }
-    return curvatureLocal;
-  }
 }

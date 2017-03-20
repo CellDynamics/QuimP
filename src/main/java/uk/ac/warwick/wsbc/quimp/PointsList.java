@@ -1,12 +1,16 @@
 package uk.ac.warwick.wsbc.quimp;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 
 // TODO: Auto-generated Javadoc
 /**
  * Represents node of bidirectional list of points in Cartesian coordinates.
  * 
- * This abstract class contains basic properties of points and provides method for moving across the
+ * <p>This abstract class contains basic properties of points and provides method for moving across
+ * the
  * list. Points in list are numbered from <b>1</b> and list can be looped. There is one special node
  * called <b>head</b> that indicates beginning of the list (and its end if the list is looped)
  * 
@@ -15,6 +19,11 @@ import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
  * @param <T> Type of point, currently can be Node or Vert
  */
 public abstract class PointsList<T extends PointsList<T>> {
+
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(PointsList.class.getName());
 
   /**
    * The prev.
@@ -59,7 +68,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   /**
    * normalized position on list.
    * 
-   * 0 - beginning , 1 - end of the list according to Shape perimeter. Set by
+   * <p>0 - beginning , 1 - end of the list according to Shape perimeter. Set by
    * uk.ac.warwick.wsbc.quimp.Shape.setPositions() and called before and after serialise and on
    * Shape writing.
    */
@@ -148,36 +157,49 @@ public abstract class PointsList<T extends PointsList<T>> {
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (!(obj instanceof PointsList))
+    }
+    if (!(obj instanceof PointsList)) {
       return false;
+    }
     PointsList<?> other = (PointsList<?>) obj;
-    if (frozen != other.frozen)
+    if (frozen != other.frozen) {
       return false;
-    if (head != other.head)
+    }
+    if (head != other.head) {
       return false;
+    }
     if (normal == null) {
-      if (other.normal != null)
+      if (other.normal != null) {
         return false;
-    } else if (!normal.equals(other.normal))
+      }
+    } else if (!normal.equals(other.normal)) {
       return false;
+    }
     if (point == null) {
-      if (other.point != null)
+      if (other.point != null) {
         return false;
-    } else if (!point.equals(other.point))
+      }
+    } else if (!point.equals(other.point)) {
       return false;
-    if (Double.doubleToLongBits(position) != Double.doubleToLongBits(other.position))
+    }
+    if (Double.doubleToLongBits(position) != Double.doubleToLongBits(other.position)) {
       return false;
+    }
     if (tan == null) {
-      if (other.tan != null)
+      if (other.tan != null) {
         return false;
-    } else if (!tan.equals(other.tan))
+      }
+    } else if (!tan.equals(other.tan)) {
       return false;
-    if (tracknumber != other.tracknumber)
+    }
+    if (tracknumber != other.tracknumber) {
       return false;
+    }
     return true;
   }
 
@@ -294,10 +316,9 @@ public abstract class PointsList<T extends PointsList<T>> {
   /**
    * Set head marker to current node.
    * 
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * Only one Node in Snake can be head
+   * <p><b>Warning</b>
+   * 
+   * <p>Only one Node in Snake can be head
    * 
    * @param t true if current node is head, false otherwise
    * @see uk.ac.warwick.wsbc.quimp.Snake#setNewHead(int)
@@ -362,7 +383,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   /**
    * Updates the normal (must point inwards).
    * 
-   * @param inner
+   * @param inner inner
    */
   public void updateNormale(boolean inner) {
     boolean c = clockwise;
@@ -383,7 +404,8 @@ public abstract class PointsList<T extends PointsList<T>> {
   /**
    * Calculate tangent at current point (i.e. unit vector between neighbours).
    *
-   * Calculate a unit vector towards neighbouring nodes and then a unit vector between their ends.
+   * <p>Calculate a unit vector towards neighbouring nodes and then a unit vector between their
+   * ends.
    * direction important for normale calculation. Always calculate tan as if clockwise.
    *
    * @return Tangent at point
@@ -391,13 +413,12 @@ public abstract class PointsList<T extends PointsList<T>> {
   private ExtendedVector2d calcTan() {
 
     ExtendedVector2d unitVecLeft = ExtendedVector2d.unitVector(point, prev.getPoint());
-    ExtendedVector2d unitVecRight = ExtendedVector2d.unitVector(point, next.getPoint());
-
     ExtendedVector2d pointLeft = new ExtendedVector2d();
     pointLeft.setX(getX());
     pointLeft.setY(getY());
     pointLeft.addVec(unitVecLeft);
 
+    ExtendedVector2d unitVecRight = ExtendedVector2d.unitVector(point, next.getPoint());
     ExtendedVector2d pointRight = new ExtendedVector2d();
     pointRight.setX(getX());
     pointRight.setY(getY());
@@ -407,7 +428,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   }
 
   /**
-   * Set direction of <tt>this</tt> list
+   * Set direction of <tt>this</tt> list.
    */
   public static void randDirection() {
     if (Math.random() < 0.5) {
@@ -442,6 +463,36 @@ public abstract class PointsList<T extends PointsList<T>> {
    */
   public void unfreeze() {
     frozen = false;
+  }
+
+  /**
+   * Evaluate local curvature of T related to previous, this and next T.
+   * 
+   * @return Local curvature for this node in degrees
+   */
+  public double getCurvatureLocal() {
+    ExtendedVector2d edge1 = ExtendedVector2d.vecP2P(this.getPoint(), this.getPrev().getPoint());
+    ExtendedVector2d edge2 = ExtendedVector2d.vecP2P(this.getPoint(), this.getNext().getPoint());
+
+    double angle = ExtendedVector2d.angle(edge1, edge2) * (180 / Math.PI);
+
+    if (angle > 360 || angle < -360) {
+      LOGGER.warn("Warning-angle out of range (Vert l:320)");
+    }
+
+    if (angle < 0) {
+      angle = 360 + angle;
+    }
+
+    double curvatureLocal = 0;
+    if (angle == 180) {
+      curvatureLocal = 0;
+    } else if (angle < 180) {
+      curvatureLocal = -1 * (1 - (angle / 180));
+    } else {
+      curvatureLocal = (angle - 180) / 180;
+    }
+    return curvatureLocal;
   }
 
 }
