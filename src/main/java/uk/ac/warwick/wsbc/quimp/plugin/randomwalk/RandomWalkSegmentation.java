@@ -131,10 +131,11 @@ public class RandomWalkSegmentation {
    * 
    * @param ip image to segment
    * @param params parameters
+   * @throws RandomWalkException
    */
-  public RandomWalkSegmentation(ImageProcessor ip, Params params) {
+  public RandomWalkSegmentation(ImageProcessor ip, Params params) throws RandomWalkException {
     if (ip.getBitDepth() != 8 && ip.getBitDepth() != 16) {
-      throw new IllegalArgumentException("Only 8-bit or 16-bit images are supported");
+      throw new RandomWalkException("Only 8-bit or 16-bit images are supported");
     }
     this.ip = ip;
     this.image = RandomWalkSegmentation.imageProcessor2RealMatrix(ip);

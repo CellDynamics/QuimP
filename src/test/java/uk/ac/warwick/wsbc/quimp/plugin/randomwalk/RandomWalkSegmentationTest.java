@@ -50,8 +50,10 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
 
   /**
    * Instantiates a new random walk segmentation test.
+   * 
+   * @throws RandomWalkException on wrong image
    */
-  public RandomWalkSegmentationTest() {
+  public RandomWalkSegmentationTest() throws RandomWalkException {
     super(testImage1.getProcessor(), new Params());
   }
 

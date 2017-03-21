@@ -101,7 +101,8 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
   private String lastTool; // tool selected in IJ
   private boolean isCanceled; // true if user click Cancel, false if clicked Apply
   private boolean isRun; // true if segmentation is running
-  private int startSlice = 0; // first slice to segment (0 - use all)
+  private boolean oneSlice = false; // true if only current slice is segmented
+  private int startSlice = 1; // number of slice to segment If oneSlice == false, segment all from 1
 
   /**
    * Default constructor.
@@ -335,7 +336,8 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      startSlice = 0;// segment from first
+      startSlice = 1;// segment from first
+      oneSlice = false;
       readUI();
       RWWorker rww = new RWWorker();
       rww.execute();
@@ -358,6 +360,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     public void actionPerformed(ActionEvent e) {
       readUI();
       startSlice = model.originalImage.getCurrentSlice();
+      oneSlice = true;
       RWWorker rww = new RWWorker();
       rww.execute();
       LOGGER.trace("model: " + model.toString());
@@ -540,6 +543,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
   public ImagePlus runPlugin() {
     boolean useSeedStack; // true if seed has the same size as image, slices are seeds
     ImagePlus prev = null; // preview window, null if not opened
+    isCanceled = false; // erase any previous state
     Color foreColor; // color of seed image foreground pixels
     Color backColor; // color of seed image background pixels
     ImagePlus image = model.originalImage;
@@ -560,7 +564,6 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     try {
       if (seedImage.getStackSize() == 1) {
         useSeedStack = false; // use propagateSeed for generating next frame seed from prev
-        startSlice = 1;
       } else if (seedImage.getStackSize() == image.getStackSize()) {
         useSeedStack = true; // use slices as seeds
       } else {
@@ -578,8 +581,13 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
         case CreatedImage:
           foreColor = Color.RED;
           backColor = Color.GREEN;
-          seeds = RandomWalkSegmentation.decodeSeeds(seedImage.getStack().getProcessor(1),
-                  foreColor, backColor);
+          if (seedImage.getNSlices() >= startSlice) {
+            seeds = RandomWalkSegmentation.decodeSeeds(
+                    seedImage.getStack().getProcessor(startSlice), foreColor, backColor);
+          } else {
+            seeds = RandomWalkSegmentation.decodeSeeds(seedImage.getStack().getProcessor(1),
+                    foreColor, backColor);
+          }
           if (model.params.useLocalMean) {
             LOGGER.warn("LocalMean is not used for first frame when seeds are scribbled images");
           }
@@ -622,7 +630,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
         prev.updateAndDraw();
       }
       // iterate over all slices after first (may not run for one image and for current image seg)
-      for (int s = 2; s <= is.getSize() && isCanceled == false && startSlice == 0; s++) {
+      for (int s = 2; s <= is.getSize() && isCanceled == false && oneSlice == false; s++) {
         Map<Seeds, ImageProcessor> nextseed;
         obj = new RandomWalkSegmentation(is.getProcessor(s), model.params);
         // get seeds from previous result

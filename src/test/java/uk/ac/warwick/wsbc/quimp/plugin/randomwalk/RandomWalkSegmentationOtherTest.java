@@ -275,9 +275,11 @@ public class RandomWalkSegmentationOtherTest {
 
   /**
    * Test getMeanSeed.
+   * 
+   * @throws RandomWalkException one wrong image
    */
   @Test
-  public void testGetMeanSeed() {
+  public void testGetMeanSeed() throws RandomWalkException {
     RandomWalkSegmentation obj = new RandomWalkSegmentation(testImage2.getProcessor(), params);
     ImagePlus mask = IJ.openImage("src/test/resources/RW/mask.tif");
 

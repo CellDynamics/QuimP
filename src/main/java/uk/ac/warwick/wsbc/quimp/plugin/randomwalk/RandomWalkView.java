@@ -849,6 +849,9 @@ public class RandomWalkView implements ActionListener, ItemListener {
     displayPanel.setBorder(BorderFactory.createTitledBorder("Display options"));
     displayPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
     chShowSeed = new JCheckBox("Show seeds");
+    setToolTip(chShowSeed,
+            "Show generated seeds. Works only if seeds are polpulated from previous frame"
+                    + " to the next one");
     chShowSeed.setSelected(false);
     chShowPreview = new JCheckBox("Show preview");
     chShowPreview.setSelected(false);
