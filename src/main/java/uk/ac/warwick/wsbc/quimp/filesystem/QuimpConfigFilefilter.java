@@ -4,13 +4,12 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 
-import uk.ac.warwick.wsbc.quimp.plugin.bar.QuimP_Bar;
+import uk.ac.warwick.wsbc.quimp.QuimP;
 
-// TODO: Auto-generated Javadoc
 /**
  * Implement filter of FileDialog.
- * <p>
- * Define also default extensions for new and old file format.
+ * 
+ * <p>Define also default extensions for new and old file format.
  * 
  * @author p.baniukiewicz
  *
@@ -21,7 +20,7 @@ public class QuimpConfigFilefilter implements FilenameFilter {
   /**
    * Allow to provide list of accepted extensions with dot.
    * 
-   * @param ext
+   * @param ext list of extensions .ext, .ext
    */
   public QuimpConfigFilefilter(String... ext) {
     this.ext = ext;
@@ -29,16 +28,17 @@ public class QuimpConfigFilefilter implements FilenameFilter {
 
   /**
    * Default constructor.
-   * <p>
-   * Set active extension using choicebox in Quimp_Bar
+   * 
+   * <p>Set active extension using choicebox in Quimp_Bar
    * 
    */
   public QuimpConfigFilefilter() {
     ext = new String[1];
-    if (QuimP_Bar.newFileFormat == true)
+    if (QuimP.newFileFormat == true) {
       ext[0] = FileExtensions.newConfigFileExt;
-    else
+    } else {
       ext[0] = FileExtensions.configFileExt;
+    }
   }
 
   /*
@@ -49,13 +49,15 @@ public class QuimpConfigFilefilter implements FilenameFilter {
   @Override
   public boolean accept(File dir, String name) {
     boolean ret = false;
-    for (String e : ext)
-      ret = ret || (name.endsWith(e.toLowerCase()) || name.endsWith(e)); // any true will set
-                                                                         // flag
+    for (String e : ext) {
+      ret = ret || (name.endsWith(e.toLowerCase()) || name.endsWith(e)); // any true will set flag
+    }
     return ret;
   }
 
   /**
+   * Get stored extension.
+   * 
    * @return the extension
    */
   public String[] getExt() {
@@ -65,7 +67,7 @@ public class QuimpConfigFilefilter implements FilenameFilter {
   /**
    * Return defined extensions.
    * 
-   * Can be used for filling bar of file selectors.
+   * <p>Can be used for filling bar of file selectors.
    * 
    * @see java.lang.Object#toString()
    */

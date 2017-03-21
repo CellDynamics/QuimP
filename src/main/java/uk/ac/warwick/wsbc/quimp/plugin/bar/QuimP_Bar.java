@@ -69,14 +69,6 @@ public class QuimP_Bar implements PlugIn, ActionListener {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(QuimP_Bar.class.getName());
-  /**
-   * This field is used for sharing information between bar and other plugins.
-   * 
-   * <p>It is read by {@link uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter} which is
-   * used by {@link uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader} for serving
-   * {@link uk.ac.warwick.wsbc.quimp.QParams} object for client.
-   */
-  public static boolean newFileFormat = true;
 
   /**
    * The path.
@@ -294,15 +286,15 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     cbFileformat.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbFileformat
             .setToolTipText("Unselect to use old " + FileExtensions.configFileExt + "paQP files");
-    cbFileformat.setSelected(QuimP_Bar.newFileFormat); // default selection
+    cbFileformat.setSelected(QuimP.newFileFormat); // default selection
     cbFileformat.addItemListener(new ItemListener() { // set static field
 
       @Override
       public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
-          QuimP_Bar.newFileFormat = true;
+          QuimP.newFileFormat = true;
         } else {
-          QuimP_Bar.newFileFormat = false;
+          QuimP.newFileFormat = false;
         }
       }
     });

@@ -11,10 +11,12 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.gui.GenericDialog;
 import ij.gui.YesNoCancelDialog;
+import uk.ac.warwick.wsbc.quimp.FormatConverter;
 import uk.ac.warwick.wsbc.quimp.OutlineHandler;
 import uk.ac.warwick.wsbc.quimp.QColor;
 import uk.ac.warwick.wsbc.quimp.QParams;
 import uk.ac.warwick.wsbc.quimp.QParamsQconf;
+import uk.ac.warwick.wsbc.quimp.QuimP;
 import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
@@ -178,9 +180,11 @@ public class Q_Analysis {
     }
     qp.getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
     qp.writeParams(); // save global container
-    // generate additional OLD files, disabled #263
-    // FormatConverter fC = new FormatConverter(qconfLoader);
-    // fC.doConversion();
+    // generate additional OLD files, disabled #263, enabled 228
+    if (QuimP.newFileFormat == false) {
+      FormatConverter fC = new FormatConverter(qconfLoader);
+      fC.doConversion();
+    }
   }
 
   /**

@@ -37,4 +37,12 @@ public class QuimP {
    * property.
    */
   public static String PLUGIN_DIR = System.getProperty("quimpconfig.pluginDirectory");
+  /**
+   * This field is used for sharing information between bar and other plugins.
+   * 
+   * <p>It is read by {@link uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter} which is
+   * used by {@link uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader} for serving
+   * {@link uk.ac.warwick.wsbc.quimp.QParams} object for client.
+   */
+  public static boolean newFileFormat = true;
 }

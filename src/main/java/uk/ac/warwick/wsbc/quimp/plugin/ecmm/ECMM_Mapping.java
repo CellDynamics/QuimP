@@ -20,12 +20,14 @@ import ij.gui.NewImage;
 import ij.gui.YesNoCancelDialog;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
+import uk.ac.warwick.wsbc.quimp.FormatConverter;
 import uk.ac.warwick.wsbc.quimp.Nest;
 import uk.ac.warwick.wsbc.quimp.Outline;
 import uk.ac.warwick.wsbc.quimp.OutlineHandler;
 import uk.ac.warwick.wsbc.quimp.QColor;
 import uk.ac.warwick.wsbc.quimp.QParams;
 import uk.ac.warwick.wsbc.quimp.QParamsQconf;
+import uk.ac.warwick.wsbc.quimp.QuimP;
 import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.SnakeHandler;
 import uk.ac.warwick.wsbc.quimp.Vert;
@@ -240,9 +242,11 @@ public class ECMM_Mapping {
     DataContainer dc = ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer();
     dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
     qconfLoader.getQp().writeParams(); // save global container
-    // generate additional OLD files, disabled #263
-    // FormatConverter fC = new FormatConverter(qconfLoader);
-    // fC.doConversion();
+    // generate additional OLD files, disabled #263, enabled GH228
+    if (QuimP.newFileFormat == false) {
+      FormatConverter fC = new FormatConverter(qconfLoader);
+      fC.doConversion();
+    }
   }
 
   /**
