@@ -51,7 +51,6 @@ import uk.ac.warwick.wsbc.quimp.registration.Registration;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Main ANA class implementing IJ PlugInFilter.
  * 
@@ -66,7 +65,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
   private QconfLoader qconfLoader;
 
-  private OutlineHandler oH, outputH, ecmH;
+  private OutlineHandler oh;
+  private OutlineHandler outputH;
+  private OutlineHandler ecmH;
   private OutlinesCollection outputOutlineHandlers; // output for new data file
   private Outline frameOneClone;
   private ECMM_Mapping ecmMapping;
@@ -103,7 +104,6 @@ public class ANA_ implements PlugInFilter, DialogListener {
    */
   @Override
   public int setup(String arg, ImagePlus imp) {
-    int cap = DOES_8G + DOES_16 + NO_CHANGES;
     about();
     if (imp == null) {
       IJ.error("Image required to take fluoresence measurments.");
@@ -124,7 +124,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     overlay = new Overlay();
     orgIpl.setOverlay(overlay);
 
-    return cap;
+    return DOES_8G + DOES_16 + NO_CHANGES;
 
   }
 
@@ -134,10 +134,10 @@ public class ANA_ implements PlugInFilter, DialogListener {
    * @see ij.plugin.filter.PlugInFilter#run(ij.process.ImageProcessor)
    */
   @Override
-  public void run(ImageProcessor Ip) {
+  public void run(ImageProcessor imageProcessor) {
     // validate registered user
     new Registration(IJ.getInstance(), "QuimP Registration");
-    if (Ip == null) {
+    if (imageProcessor == null) {
       return;
     }
     IJ.showStatus("ANA Analysis");
@@ -151,7 +151,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         return; // failed to load exit
       }
       if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
-        runFromPAQP();
+        runFromPaqp();
       } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
         qconfLoader.getBOA(); // verify whether boa has been run (throws if not)
         qconfLoader.getECMM(); // verify whether ecmm has been run (throws if not)
@@ -165,7 +165,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
             return; // end}
           }
         }
-        runFromQCONF();
+        runFromQconf();
         IJ.log("The new data file " + qconfLoader.getQp().getParamFile().toString()
                 + " has been updated by results of ECMM analysis.");
       } else {
@@ -176,10 +176,11 @@ public class ANA_ implements PlugInFilter, DialogListener {
       orgIpl.setOverlay(overlay);
       for (int f = 1; f < orgIpl.getStackSize(); f++) {
         orgIpl.setSlice(f);
-        for (OutlineHandler oH : outputOutlineHandlers.oHs) {
-          Outline o = oH.getOutline(f);
-          if (o == null)
+        for (OutlineHandler ohTmp : outputOutlineHandlers.oHs) {
+          Outline o = ohTmp.getOutline(f);
+          if (o == null) {
             continue;
+          }
           drawSamplePointsFloat(o, f);
           orgIpl.draw();
         }
@@ -235,33 +236,34 @@ public class ANA_ implements PlugInFilter, DialogListener {
    * @throws QuimpException when OutlineHandler can not be read
    * @throws IOException when configuration can not be saved on disk
    */
-  private void runFromQCONF() throws IOException, QuimpException {
+  private void runFromQconf() throws IOException, QuimpException {
     LOGGER.debug("Processing from new file format");
     QParamsQconf qp = (QParamsQconf) qconfLoader.getQp();
     ANAParamCollection anaStates;
     OutlinesCollection ecmmState = qp.getLoadedDataContainer().ECMMState;
     outputOutlineHandlers = new OutlinesCollection(ecmmState.oHs.size());
-    if (qp.getLoadedDataContainer().getANAState() == null)
+    if (qp.getLoadedDataContainer().getANAState() == null) {
       // create ANA slots for all outlines
-      anaStates = new ANAParamCollection(ecmmState.oHs.size()); // store ANA options for every
-                                                                // cell
-    else
+      anaStates = new ANAParamCollection(ecmmState.oHs.size()); // store ANA options for every cell
+    } else {
       anaStates = qp.getLoadedDataContainer().getANAState(); // update old
+    }
     for (int i = 0; i < ecmmState.oHs.size(); i++) { // go over all outlines
-      qp.setActiveHandler(i); // set current handler number. For compatibility, all methods
-                              // have the same syntax (assumes that there is only one handler)
-      oH = ecmmState.oHs.get(i); // restore handler from ecmm
+      // For compatibility, all methods have the same syntax (assumes that there is only one
+      // handler)
+      qp.setActiveHandler(i); // set current handler number.
+      oh = ecmmState.oHs.get(i); // restore handler from ecmm
       anap = anaStates.aS.get(i); // get i-th ana parameters
       anap.setup(qconfLoader.getQp());
 
       // get stats stored in QCONF, they are extended by ANA (ChannelStat field)
       fluoStats = qconfLoader.getStats().sHs.get(i).framestat.toArray(new FrameStatistics[0]);
 
-      investigateChannels(oH.indexGetOutline(0));// find first empty channel
-      if (anap.noData && oH.getSize() == 1) {
+      investigateChannels(oh.indexGetOutline(0));// find first empty channel
+      if (anap.noData && oh.getSize() == 1) {
         // only one frame, so no ECMM. set outline res to 2
         System.out.println("Only one frame. set marker res to 2");
-        oH.indexGetOutline(0).setResolution(anap.oneFrameRes); // should be 2!!!
+        oh.indexGetOutline(0).setResolution(anap.oneFrameRes); // should be 2!!!
       }
       setImageScale();
       orgIpl.setSlice(qconfLoader.getQp().getStartFrame());
@@ -271,8 +273,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
       }
       anap.fluTiffs[anap.channel] = new File(orgIpl.getOriginalFileInfo().directory,
               orgIpl.getOriginalFileInfo().fileName);
-      outputH = new OutlineHandler(oH); // copy input to output (ana will add fields to it)
-      Ana(); // fills outputH and ChannelStat in FrameStatistics
+      outputH = new OutlineHandler(oh); // copy input to output (ana will add fields to it)
+      ana(); // fills outputH and ChannelStat in FrameStatistics
       FrameStatistics.write(fluoStats, anap.STATSFILE, anap); // save fluoro to statFile for comp.
       CellStats statH = qconfLoader.getStats().sHs.get(i); // store fluoro in QCONF
       statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(fluoStats)); // store stats
@@ -285,8 +287,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
     qp.writeParams(); // save global container
     // generate additional OLD files (stQP is generated in loop already), disabled #263, enabled 228
     if (QuimP.newFileFormat == false) {
-      FormatConverter fC = new FormatConverter(qconfLoader);
-      fC.doConversion();
+      FormatConverter foramtConv = new FormatConverter(qconfLoader);
+      foramtConv.doConversion();
     }
   }
 
@@ -296,23 +298,23 @@ public class ANA_ implements PlugInFilter, DialogListener {
    * @throws QuimpException when OutlineHandler can not be read
    * @throws IOException when configuration can not be saved on disk
    */
-  private void runFromPAQP() throws QuimpException, IOException {
+  private void runFromPaqp() throws QuimpException, IOException {
     outputOutlineHandlers = new OutlinesCollection(1);
-    oH = new OutlineHandler(qconfLoader.getQp());
+    oh = new OutlineHandler(qconfLoader.getQp());
 
     anap.setup(qconfLoader.getQp());
     fluoStats = FrameStatistics.read(anap.STATSFILE);
-    investigateChannels(oH.indexGetOutline(0));// find first empty channel
+    investigateChannels(oh.indexGetOutline(0));// find first empty channel
 
-    if (anap.noData && oH.getSize() == 1) {
+    if (anap.noData && oh.getSize() == 1) {
       // only one frame, so no ECMM. set outline res to 2
       System.out.println("Only one frame. set marker res to 2");
-      oH.indexGetOutline(0).setResolution(anap.oneFrameRes); // should be 2!!!
+      oh.indexGetOutline(0).setResolution(anap.oneFrameRes); // should be 2!!!
     }
 
     setImageScale();
     orgIpl.setSlice(qconfLoader.getQp().getStartFrame());
-    if (!oH.readSuccess) {
+    if (!oh.readSuccess) {
       throw new QuimpException("Could not read OutlineHandler");
     }
     if (!anaDialog()) {
@@ -324,8 +326,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
     anap.fluTiffs[anap.channel] =
             new File(orgIpl.getOriginalFileInfo().directory, orgIpl.getOriginalFileInfo().fileName);
 
-    outputH = new OutlineHandler(oH.getStartFrame(), oH.getEndFrame());
-    Ana(); // fills outputH and ChannelStat in FrameStatistics
+    outputH = new OutlineHandler(oh.getStartFrame(), oh.getEndFrame());
+    ana(); // fills outputH and ChannelStat in FrameStatistics
 
     anap.INFILE.delete();
     anap.STATSFILE.delete();
@@ -365,7 +367,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     pd.addCheckbox("Copy results to IJ Table?", anap.fluoResultTable);
     pd.addDialogListener(this);
 
-    frameOneClone = (Outline) oH.indexGetOutline(0).clone();
+    frameOneClone = (Outline) oh.indexGetOutline(0).clone();
     drawOutlineAsOverlay(frameOneClone, Color.RED);
     shrink(frameOneClone);
     drawOutlineAsOverlay(frameOneClone, Color.RED);
@@ -413,7 +415,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
       cb.setState(true);
     }
 
-    frameOneClone = (Outline) oH.indexGetOutline(0).clone();
+    frameOneClone = (Outline) oh.indexGetOutline(0).clone();
     overlay.clear();
     drawOutlineAsOverlay(frameOneClone, Color.RED);
     shrink(frameOneClone);
@@ -427,16 +429,16 @@ public class ANA_ implements PlugInFilter, DialogListener {
   void resetFluo() {
     // reset all fluo back to -2 and st res to 2 if only one frame
     Outline o;
-    for (int i = 0; i < oH.getSize(); i++) {
-      o = oH.indexGetOutline(i);
+    for (int i = 0; i < oh.getSize(); i++) {
+      o = oh.indexGetOutline(i);
       o.clearFluores();
       fluoStats[i].clearFluo();
     }
 
-    if (oH.getSize() == 1) {
+    if (oh.getSize() == 1) {
       // only one frame, so no ECMM. set outline res to 2
       System.out.println("Only one frame. set marker res to 2");
-      oH.indexGetOutline(0).setResolution(anap.oneFrameRes);
+      oh.indexGetOutline(0).setResolution(anap.oneFrameRes);
     }
 
     // clear frame stats
@@ -463,17 +465,20 @@ public class ANA_ implements PlugInFilter, DialogListener {
   /**
    * Main method for fluorescence measurements analysis. Adds also new stats to FrameStatistics.
    */
-  private void Ana() {
-    Roi outerROI, innerROI;
-    Outline o1, s1, s2;
+  private void ana() {
+    Roi outerRoi;
+    Roi innerRoi;
+    Outline o1;
+    Outline s1;
+    Outline s2;
 
-    IJ.showStatus("Running ANA (" + oH.getSize() + " frames)");
-    for (int f = oH.getStartFrame(); f <= oH.getEndFrame(); f++) { // change i to frames
+    IJ.showStatus("Running ANA (" + oh.getSize() + " frames)");
+    for (int f = oh.getStartFrame(); f <= oh.getEndFrame(); f++) { // change i to frames
       IJ.log("Frame " + f);
-      IJ.showProgress(f, oH.getEndFrame());
+      IJ.showProgress(f, oh.getEndFrame());
 
       orgIpl.setSlice(f);
-      o1 = oH.getOutline(f);
+      o1 = oh.getOutline(f);
 
       s1 = new Outline(o1);
       s2 = new Outline(o1);
@@ -486,19 +491,19 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
       overlay = new Overlay();
       orgIpl.setOverlay(overlay);
-      outerROI = o1.asFloatRoi();
-      innerROI = s2.asFloatRoi();
-      outerROI.setPosition(f);
-      outerROI.setStrokeColor(Color.BLUE);
-      innerROI.setPosition(f);
-      innerROI.setStrokeColor(Color.RED);
+      outerRoi = o1.asFloatRoi();
+      innerRoi = s2.asFloatRoi();
+      outerRoi.setPosition(f);
+      outerRoi.setStrokeColor(Color.BLUE);
+      innerRoi.setPosition(f);
+      innerRoi.setStrokeColor(Color.RED);
 
-      storedInnerROI.add(innerROI);
-      storedOuterROI.add(outerROI);
+      storedInnerROI.add(innerRoi);
+      storedOuterROI.add(outerRoi);
       // overlay.setStrokeColor(Color.BLUE);
-      overlay.add(outerROI);
+      overlay.add(outerRoi);
       // overlay.setStrokeColor(Color.RED);
-      overlay.add(innerROI);
+      overlay.add(innerRoi);
 
       Polygon polyS2 = s2.asPolygon();
       setFluoStats(s1.asPolygon(), polyS2, f);
@@ -529,20 +534,20 @@ public class ANA_ implements PlugInFilter, DialogListener {
           }
         }
 
-        int vStart;
+        int vertStart;
         do {
           v.setFluoresChannel(v2.fluores[0], anap.channel);
           v2 = v2.getNext();
           if (v2.isHead()) {
             break;
           }
-          vStart = v.getTrackNum();
+          vertStart = v.getTrackNum();
           // find next vert in o1 that matches v2
           do {
             v = v.getNext();
             v.setFluoresChannel((int) Math.round(v.getX()), (int) Math.round(v.getY()), -1,
                     anap.channel); // map fail if -1. fix by interpolation
-            if (vStart == v.getTrackNum()) {
+            if (vertStart == v.getTrackNum()) {
               System.out.println("ANA fail");
               return;
             }
@@ -601,12 +606,12 @@ public class ANA_ implements PlugInFilter, DialogListener {
   /**
    * Compute statistics.
    * 
-   * Update {@link uk.ac.warwick.wsbc.quimp.plugin.ana.ChannelStat} in
+   * <p>Update {@link uk.ac.warwick.wsbc.quimp.plugin.ana.ChannelStat} in
    * {@link uk.ac.warwick.wsbc.quimp.FrameStatistics}
    * 
-   * @param outerPoly
-   * @param innerPoly
-   * @param f
+   * @param outerPoly outerPoly
+   * @param innerPoly innerPoly
+   * @param frame frame
    */
   private void setFluoStats(Polygon outerPoly, Polygon innerPoly, int f) {
 
@@ -614,12 +619,11 @@ public class ANA_ implements PlugInFilter, DialogListener {
     // System.out.println("store: " + store);
     fluoStats[store].frame = f;
 
-    // orgIpl.setRoi(outerRoi);
     orgIpr.setRoi(outerPoly);
-    ImageStatistics is = ImageStatistics.getStatistics(orgIpr, m, null); // this does NOT scale to
-                                                                         // image
+    // this does NOT scale to image
+    ImageStatistics is = ImageStatistics.getStatistics(orgIpr, m, null);
     double outerAreaRaw = is.area;
-    fluoStats[store].channels[anap.channel].totalFluor = is.mean * is.area;
+    fluoStats[store].channels[anap.channel].totalFluor = is.mean * outerAreaRaw;
     fluoStats[store].channels[anap.channel].meanFluor = is.mean;
 
     orgIpr.setRoi(innerPoly);
@@ -658,10 +662,11 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
   private void drawOutlineAsOverlay(Outline o, Color c) {
     Roi r = o.asFloatRoi();
-    if (r.subPixelResolution())
+    if (r.subPixelResolution()) {
       System.out.println("is sub pixel");
-    else
+    } else {
       System.out.println("is not sub pixel");
+    }
     overlay.setStrokeColor(c);
     overlay.add(r);
     orgIpl.updateAndDraw();
@@ -693,8 +698,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
       }
     }
 
-    if (QuimPArrayUtils.sumArray(anap.presentData) == 3)
+    if (QuimPArrayUtils.sumArray(anap.presentData) == 3) {
       firstEmptyCh = 0;
+    }
 
     if (anap.noData) {
       anap.channel = 0;
@@ -707,17 +713,21 @@ public class ANA_ implements PlugInFilter, DialogListener {
     }
 
     v = o.getHead();
-    for (int i = 0; i < 3; i++)
-      if (v.fluores[i].intensity != -2)
+    for (int i = 0; i < 3; i++) {
+      if (v.fluores[i].intensity != -2) {
         anap.setCortextWidthScale(fluoStats[0].channels[i].cortexWidth);
+      }
+    }
   }
 
   private void interpolateFailures(Outline o) {
     Vert v = o.getHead();
-    Vert last, nex;
+    Vert last;
+    Vert nex;
     double disLtoN; // distance last to nex
     double disLtoV; // distance last to V
-    double ratio, intensityDiff;
+    double ratio;
+    double intensityDiff;
     boolean fail;
     int firstID;
     do {
@@ -782,7 +792,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
    */
 
   private void drawSamplePointsFloat(Outline o, int frame) {
-    float x, y;
+    float x;
+    float y;
     PointRoi pr;
     Vert v = o.getHead();
     do {
@@ -796,7 +807,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
   }
 
   private void useGivenSamplepoints(Outline o1) {
-    int x, y;
+    int x;
+    int y;
 
     Vert v = o1.getHead();
     do {

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
-
 package uk.ac.warwick.wsbc.quimp.plugin.qanalysis;
 
 import org.slf4j.Logger;
@@ -10,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.warwick.wsbc.quimp.QColor;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Hold fluorescence map for given channel together with indexed colors.
  * 
@@ -24,34 +19,35 @@ public class FluoMap {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(FluoMap.class.getName());
   /**
-   * Number of frames.
+   * Number of frames. Part of QCONF.
    */
   int T;
   /**
-   * Horizontal resolution (points of outline)
+   * Horizontal resolution (points of outline). Part of QCONF.
    */
   int res;
   /**
-   * Fluorescence channel kept in this object.
+   * Fluorescence channel kept in this object. Part of QCONF.
    */
   int channel;
   /**
-   * Fluorescence map [time points][outline points].
+   * Fluorescence map [time points][outline points]. Part of QCONF.
    */
   double[][] map;
   /**
    * Colors for intensities stored in map.
    * 
-   * 1D array is mapped to map[tt][p] as pN = (tt * res) + p;
+   * <p>1D array is mapped to map[tt][p] as pN = (tt * res) + p;
+   * Part of QCONF.
    */
   byte[] fluColor;
   /**
-   * If no data switch false.
+   * If no data switch false. Part of QCONF.
    */
   boolean enabled;
 
   /**
-   * Copy constructor
+   * Copy constructor.
    * 
    * @param src source object
    */
@@ -66,9 +62,11 @@ public class FluoMap {
   }
 
   /**
-   * @param t
-   * @param r
-   * @param i
+   * Constructor.
+   * 
+   * @param t number of time points
+   * @param r resolution
+   * @param i channel
    */
   public FluoMap(int t, int r, int i) {
     T = t;
@@ -80,13 +78,17 @@ public class FluoMap {
   }
 
   /**
-   * @param b
+   * Enables this map.
+   * 
+   * @param b status
    */
   public void setEnabled(boolean b) {
     enabled = b;
   }
 
   /**
+   * Check if enabled.
+   * 
    * @return true if enabled
    */
   public boolean isEnabled() {
@@ -98,14 +100,14 @@ public class FluoMap {
    * 
    * @param t time
    * @param p membrane pixel
-   * @param pN linear index for <tt>fluColor</tt>
+   * @param pn linear index for <tt>fluColor</tt>
    * @param intensity fluoroscence intensity to store at <tt>map</tt>
    * @param max value to scale to colors
    * @see #recalculateColorScale(double)
    */
-  public void fill(int t, int p, int pN, double intensity, double max) {
+  public void fill(int t, int p, int pn, double intensity, double max) {
     map[t][p] = intensity;
-    fluColor[pN] = (byte) QColor.bwScale(intensity, 256, max, 0); // don't bother scaling
+    fluColor[pn] = (byte) QColor.bwScale(intensity, 256, max, 0); // don't bother scaling
   }
 
   /**
@@ -116,20 +118,23 @@ public class FluoMap {
    */
   public void recalculateColorScale(double max) {
     LOGGER.debug("Recalculate fluColor, max=" + max + " enabled state:" + isEnabled());
-    if (!isEnabled())
+    if (!isEnabled()) {
       return; // do not if not enabled (e.g. not initialized)
-    int pN;
+    }
+    int pn;
     double intensity;
-    for (int r = 0; r < res; r++)
+    for (int r = 0; r < res; r++) {
       for (int t = 0; t < T; t++) {
-        pN = t * res + r;
+        pn = t * res + r;
         intensity = map[t][r];
-        fluColor[pN] = (byte) QColor.bwScale(intensity, 256, max, 0);
+        fluColor[pn] = (byte) QColor.bwScale(intensity, 256, max, 0);
       }
+    }
 
   }
 
   /**
+   * getColours.
    * 
    * @return fluColor
    */
@@ -138,6 +143,7 @@ public class FluoMap {
   }
 
   /**
+   * getMap.
    * 
    * @return map
    */
