@@ -33,11 +33,13 @@ public class QuimpConfigFilefilter implements FilenameFilter {
    * 
    */
   public QuimpConfigFilefilter() {
-    ext = new String[1];
     if (QuimP.newFileFormat == true) {
+      ext = new String[1];
       ext[0] = FileExtensions.newConfigFileExt;
     } else {
+      ext = new String[2];
       ext[0] = FileExtensions.configFileExt;
+      ext[1] = FileExtensions.newConfigFileExt;
     }
   }
 

@@ -611,7 +611,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
    * 
    * @param outerPoly outerPoly
    * @param innerPoly innerPoly
-   * @param frame frame
+   * @param f frame
    */
   private void setFluoStats(Polygon outerPoly, Polygon innerPoly, int f) {
 

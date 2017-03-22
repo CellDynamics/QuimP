@@ -32,6 +32,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
+import javax.swing.ToolTipManager;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -56,6 +57,7 @@ import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.quimp.registration.Registration;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
+import uk.ac.warwick.wsbc.quimp.utils.UiTools;
 
 /**
  * Create QuimP bar with icons to QuimP plugins.
@@ -158,6 +160,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
    */
   @Override
   public void run(String s) {
+    ToolTipManager.sharedInstance().setDismissDelay(UiTools.TOOLTIPDELAY);
     String title;
     QuimpVersion quimpInfo = QuimP.TOOL_VERSION; // get jar title
     title = quimpInfo.getName() + " " + quimpInfo.getVersion();
@@ -284,8 +287,10 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     panelButtons.add(firstRow, cons);
     cbFileformat = new JCheckBox("Use new file format");
     cbFileformat.setAlignmentX(Component.LEFT_ALIGNMENT);
-    cbFileformat
-            .setToolTipText("Unselect to use old " + FileExtensions.configFileExt + "paQP files");
+    UiTools.setToolTip(cbFileformat,
+            "Unselect to use (load and save) old " + FileExtensions.configFileExt + " files."
+                    + "New file is always produced. Do not mix workflows - use paQP or"
+                    + " QCONF but not" + " both in the same time.");
     cbFileformat.setSelected(QuimP.newFileFormat); // default selection
     cbFileformat.addItemListener(new ItemListener() { // set static field
 

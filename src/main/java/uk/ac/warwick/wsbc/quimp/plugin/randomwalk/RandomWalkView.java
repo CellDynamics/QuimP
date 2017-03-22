@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkModel.SeedSource;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
+import uk.ac.warwick.wsbc.quimp.utils.UiTools;
 
 /*
  * !>
@@ -127,11 +128,6 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(RandomWalkView.class.getName());
-
-  /**
-   * Tootltip delay for this window in ms.
-   */
-  private static final int TOOLTIPDELAY = 3000;
 
   /**
    * Reference to underlying Frame object.
@@ -689,7 +685,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * Build View but not show it.
    */
   public RandomWalkView() {
-    ToolTipManager.sharedInstance().setDismissDelay(TOOLTIPDELAY);
+    ToolTipManager.sharedInstance().setDismissDelay(UiTools.TOOLTIPDELAY);
     wnd = new JFrame("Random Walker Segmentation");
     wnd.setResizable(false);
 
@@ -708,23 +704,23 @@ public class RandomWalkView implements ActionListener, ItemListener {
     rbRgbImage.addActionListener(this);
     rbRgbImage.setActionCommand(SeedSource.RGBImage.toString());
     rbRgbImage.addItemListener(this);
-    setToolTip(rbRgbImage, "Load seeds as scribble image. Stack or single image");
+    UiTools.setToolTip(rbRgbImage, "Load seeds as scribble image. Stack or single image");
     rbCreateImage = new JRadioButton("Create image");
     rbCreateImage.addActionListener(this);
     rbCreateImage.setActionCommand(SeedSource.CreatedImage.toString());
     rbCreateImage.addItemListener(this);
-    setToolTip(rbCreateImage,
+    UiTools.setToolTip(rbCreateImage,
             "Create copy of original image for scribbling. Stack or single image");
     rbMaskImage = new JRadioButton("Mask image");
     rbMaskImage.addActionListener(this);
     rbMaskImage.setActionCommand(SeedSource.MaskImage.toString());
     rbMaskImage.addItemListener(this);
-    setToolTip(rbMaskImage, "Initial seed as binary mask.");
+    UiTools.setToolTip(rbMaskImage, "Initial seed as binary mask.");
     rbQcofFile = new JRadioButton("QCONF file");
     rbQcofFile.addActionListener(this);
     rbQcofFile.setActionCommand(SeedSource.QconfFile.toString());
     rbQcofFile.addItemListener(this);
-    setToolTip(rbQcofFile, "Get binary mask from QCONF file.");
+    UiTools.setToolTip(rbQcofFile, "Get binary mask from QCONF file.");
     seedSource = new ButtonGroup();
     seedSource.add(rbRgbImage);
     seedSource.add(rbCreateImage);
@@ -740,13 +736,13 @@ public class RandomWalkView implements ActionListener, ItemListener {
     cbMaskSeedImage = new JComboBox<String>();
     bnQconfSeedImage = new JButton("Open");
     bnClone = new JButton("Clone");
-    setToolTip(bnClone, "Clone selected original image and allow to seed it manually");
+    UiTools.setToolTip(bnClone, "Clone selected original image and allow to seed it manually");
     bnFore = new JToggleButton("FG");
-    setToolTip(bnFore, "Select Foreground pen");
+    UiTools.setToolTip(bnFore, "Select Foreground pen");
     bnFore.addActionListener(this);
     bnFore.setBackground(Color.ORANGE);
     bnBack = new JToggleButton("BG");
-    setToolTip(bnBack, "Select Background pen");
+    UiTools.setToolTip(bnBack, "Select Background pen");
     bnBack.addActionListener(this);
     bnBack.setBackground(Color.GREEN);
     lbQconfFile = new JLabel("");
@@ -824,7 +820,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     postprocesshatPanel.setBorder(BorderFactory.createTitledBorder("Hat filter"));
     chHatFilter = new JCheckBox("Hat Filter");
     chHatFilter.addItemListener(this);
-    setToolTip(chHatFilter, "Try to remove small inclusions in contour");
+    UiTools.setToolTip(chHatFilter, "Try to remove small inclusions in contour");
     postprocesshatPanel.add(getControlwithLabel(chHatFilter, "", ""));
     srAlev = getDoubleSpinner(0.9, 0, 1, 0.01, 5);
     postprocesshatPanel.add(getControlwithLabel(srAlev, "srAlev", ""));
@@ -849,7 +845,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     displayPanel.setBorder(BorderFactory.createTitledBorder("Display options"));
     displayPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
     chShowSeed = new JCheckBox("Show seeds");
-    setToolTip(chShowSeed,
+    UiTools.setToolTip(chShowSeed,
             "Show generated seeds. Works only if seeds are polpulated from previous frame"
                     + " to the next one");
     chShowSeed.setSelected(false);
@@ -862,9 +858,9 @@ public class RandomWalkView implements ActionListener, ItemListener {
     JPanel caButtons = new JPanel();
     caButtons.setLayout(new FlowLayout(FlowLayout.CENTER));
     bnRun = new JButton("Run");
-    setToolTip(bnRun, "Run segmentation for all slices");
+    UiTools.setToolTip(bnRun, "Run segmentation for all slices");
     bnRunActive = new JButton("Run active");
-    setToolTip(bnRunActive, "Run segmentation for selected slice only");
+    UiTools.setToolTip(bnRunActive, "Run segmentation for selected slice only");
     bnCancel = new JButton("Cancel");
     bnHelp = new JButton("Help");
     caButtons.add(bnRun);
@@ -996,22 +992,9 @@ public class RandomWalkView implements ActionListener, ItemListener {
     JLabel lab = new JLabel(label);
     panel.add(lab);
     panel.add(c);
-    setToolTip(c, toolTip);
-    setToolTip(lab, toolTip);
+    UiTools.setToolTip(c, toolTip);
+    UiTools.setToolTip(lab, toolTip);
     return panel;
-  }
-
-  /**
-   * Set tooltip to component with line breaking.
-   * 
-   * @param c component
-   * @param toolTip tooltip text
-   */
-  private void setToolTip(JComponent c, String toolTip) {
-    if (toolTip != null && !toolTip.isEmpty()) {
-      String text = "<html>" + QuimpToolsCollection.stringWrap(toolTip, 40, "<br>") + "</html>";
-      c.setToolTipText(text);
-    }
   }
 
   /**
