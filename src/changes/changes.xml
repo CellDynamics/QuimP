@@ -6,6 +6,23 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+       <release version="17.03.02" date="2017-03-23" description="Release">
+          <action dev="baniuk" type="update" issue="230">
+              QuimP-RandomWalk: Add option for segmenting current frame only.
+          </action>
+          <action dev="baniuk" type="fix" issue="197">
+              QuimP-BOA: Fixed bug when a cell was deleted when zoomed and then other cell was created.
+          </action>
+          <action dev="baniuk" type="update" issue="229">
+              QuimP-RandomWalk: Improved filtering vesicles located near the edge.
+          </action>
+          <action dev="baniuk" type="add" issue="228">
+              QuimP: Files in old format are automatically saved when "Use new format" is unchecked in QuimP Toolbar.
+          </action>
+          <action dev="baniuk" type="update" issue="">
+              QuimP: Code improvement and refactoring.
+          </action>
+     </release>  
 	   <release version="17.03.01" date="2017-03-14" description="Release">
           <action dev="baniuk" type="add" issue="">
               QuimP: Reworked plugin interfaces to make them compatible with IJ macro. Generate mask can be called from macro. Relevant documentation is in JavaDoc plugin package.
