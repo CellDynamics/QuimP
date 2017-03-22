@@ -2537,39 +2537,34 @@ public class BOA_ implements PlugIn {
           }
         }
         // write operations
-        // blocked by #263
+        // blocked by #263, enabled by 228
+        if (QuimP.newFileFormat == false) {
+          qState.nest.writeSnakes(); // write snPQ file (if any snake) and paQP
+        }
         // if (qState.nest.writeSnakes()) { // write snPQ file (if any snake) and paQP
-        {
-          // write stQP file and fill outFile used later
-          List<CellStatsEval> ret = qState.nest.analyse(imageGroup.getOrgIpl().duplicate(), true);
-          // auto save plugin config (but only if there is at least one snake)
-          if (!qState.nest.isVacant()) {
-            // Create Serialization object with extra info layer
-            Serializer<SnakePluginList> s;
-            s = new Serializer<>(qState.snakePluginList, quimpInfo);
-            s.setPretty(); // set pretty format
-            s.save(qState.boap.deductFilterFileName());
-            s = null; // remove
-            // Dump BOAState object in new format
-            Serializer<DataContainer> n;
-            DataContainer dt = new DataContainer(); // create container
-            dt.BOAState = qState; // assign boa state to correct field
-            // extract relevant data from CellStat
-            dt.Stats = new StatsCollection();
-            dt.Stats.copyFromCellStat(ret); // StatsHandler is initialized here.
-            n = new Serializer<>(dt, quimpInfo);
-            if (qState.boap.savePretty) {
-              n.setPretty();
-            }
-            n.save(qState.boap.deductNewParamFileName());
-            n = null;
+        // write stQP file and fill outFile used later
+        List<CellStatsEval> ret = qState.nest.analyse(imageGroup.getOrgIpl().duplicate(), true);
+        // auto save plugin config (but only if there is at least one snake)
+        if (!qState.nest.isVacant()) {
+          // Create Serialization object with extra info layer
+          Serializer<SnakePluginList> s;
+          s = new Serializer<>(qState.snakePluginList, quimpInfo);
+          s.setPretty(); // set pretty format
+          s.save(qState.boap.deductFilterFileName());
+          s = null; // remove
+          // Dump BOAState object in new format
+          Serializer<DataContainer> n;
+          DataContainer dt = new DataContainer(); // create container
+          dt.BOAState = qState; // assign boa state to correct field
+          // extract relevant data from CellStat
+          dt.Stats = new StatsCollection();
+          dt.Stats.copyFromCellStat(ret); // StatsHandler is initialized here.
+          n = new Serializer<>(dt, quimpInfo);
+          if (qState.boap.savePretty) {
+            n.setPretty();
           }
-          // } else {
-          // ync = new YesNoCancelDialog(window, "Save Segmentation",
-          // "Quit without saving?");
-          // if (!ync.yesPressed()) {
-          // return;
-          // }
+          n.save(qState.boap.deductNewParamFileName());
+          n = null;
         }
       } catch (IOException e) {
         IJ.error("Exception while saving");

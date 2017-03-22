@@ -20,11 +20,11 @@ import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Create spatial temporal maps from ECMM and ANA data.
- * <p>
- * This class can be serialized but only as container of maps. Data required for creation of those
+ * 
+ * <p>This class can be serialized but only as container of maps. Data required for creation of
+ * those
  * maps are not serialized, thus restored object is not fully functional. As this is last step in
  * QuimP workflow it may not be necessary to load this json anymore.
  * 
@@ -39,7 +39,7 @@ public class STmap implements IQuimpSerialize {
   /**
    * Coordinates map.
    * 
-   * Each node has an associated position. The co-ordinate map, rather than contain values
+   * <p>Each node has an associated position. The co-ordinate map, rather than contain values
    * regarding motility, fluorescence or convexity, instead contains the position values of nodes.
    * The main purpose of the co-ordinate map, along with the origin map, is for tracking positions
    * through time.
@@ -76,7 +76,7 @@ public class STmap implements IQuimpSerialize {
   /**
    * Motility map.
    * 
-   * Pixels are coloured according to node speed, as calculated by ECMM. Red shades represent
+   * <p>Pixels are coloured according to node speed, as calculated by ECMM. Red shades represent
    * expanding regions, blue shades contracting regions. Pixel values within the tiff image are
    * scaled to fill the colour spectrum. The map file extended _motilityMap.maPQ contains
    * un-scaled values, in microns per second.
@@ -112,24 +112,26 @@ public class STmap implements IQuimpSerialize {
   /**
    * The conv im P.
    */
-  transient ImagePlus migImP, fluImP, convImP;
+  transient ImagePlus migImP;
+  transient ImagePlus fluImP;
+  transient ImagePlus convImP;
   /**
-   * Contain OutlineHandler used for generating maps
-   * <p>
-   * <b>warning</b>
-   * <p>
-   * It is not serialized
+   * Contain OutlineHandler used for generating maps.
+   * 
+   * <p><b>warning</b>
+   * 
+   * <p>It is not serialized
    */
-  transient OutlineHandler oH;
+  transient OutlineHandler oh;
   /**
    * Resolution of maps.
-   * <p>
-   * This field together with <tt>T</tt> stands for the dimensions of 2D arrays for storing maps.
+   * 
+   * <p>This field together with <tt>T</tt> stands for the dimensions of 2D arrays for storing maps.
    * For this reason they are serialized.
    */
   private int res;
   /**
-   * Number of outlines.
+   * Number of timeframes.
    */
   private int T;
   private double mapPixelHeight = 1;
@@ -145,10 +147,10 @@ public class STmap implements IQuimpSerialize {
 
   /**
    * Copy constructor.
-   * <p>
-   * <b>warning</b>
-   * <p>
-   * Make a copy of serializable fields only
+   * 
+   * <p><b>warning</b>
+   * 
+   * <p>Make a copy of serializable fields only
    * 
    * @param src source object
    */
@@ -165,8 +167,9 @@ public class STmap implements IQuimpSerialize {
     this.mapPixelHeight = src.mapPixelHeight;
     this.mapPixelWidth = src.mapPixelWidth;
     this.fluoMaps = new FluoMap[src.fluoMaps.length];
-    for (int i = 0; i < src.fluoMaps.length; i++)
+    for (int i = 0; i < src.fluoMaps.length; i++) {
       this.fluoMaps[i] = new FluoMap(src.fluoMaps[i]);
+    }
 
   }
 
@@ -182,8 +185,8 @@ public class STmap implements IQuimpSerialize {
     mapPixelHeight = 1;
     mapPixelWidth = 1.0d / r;
     res = r;
-    oH = o;
-    T = oH.getSize();
+    oh = o;
+    T = oh.getSize();
 
     coordMap = new double[T][res];
     originMap = new double[T][res];
@@ -201,7 +204,7 @@ public class STmap implements IQuimpSerialize {
     convColor = new int[T * res];
 
     // flu maps
-    Vert v = oH.indexGetOutline(0).getHead();
+    Vert v = oh.indexGetOutline(0).getHead();
     for (int i = 0; i < 3; i++) {
       fluoMaps[i] = new FluoMap(T, res, i + 1);
       System.out.println("flou in v: " + v.fluores[i].intensity);
@@ -221,22 +224,29 @@ public class STmap implements IQuimpSerialize {
   private void generate() {
 
     this.calcCurvature();
-    Vert zeroVert, v;
+    Vert zeroVert;
+    Vert v;
     String migColorMap = "rwb";
 
-    double fraction, intMig, intFlu, intConv, target, actualTarget;
+    double fraction;
+    double intMig;
+    double intFlu;
+    double intConv;
+    double target;
+    double actualTarget;
     QColor color;
-    int pN;
-    Vert fHead, cHead;
+    int pn;
+    Vert fhead;
+    Vert chead;
 
     double step = 1.0d / res;
 
     // ------debug----
-    // System.out.println("210.in generate: min:"+ oH.migLimits[0]+",
-    // max"+oH.migLimits[1]);
-    // zeroVert = closestFloor(oH.getOutline(28), 0.9138373074502235, 'f');
-    // fHead = findFirstNode(oH.getOutline(28),'f');
-    // cHead = findFirstNode(oH.getOutline(28),'c');
+    // System.out.println("210.in generate: min:"+ oh.migLimits[0]+",
+    // max"+oh.migLimits[1]);
+    // zeroVert = closestFloor(oh.getOutline(28), 0.9138373074502235, 'f');
+    // fHead = findFirstNode(oh.getOutline(28),'f');
+    // cHead = findFirstNode(oh.getOutline(28),'c');
     // if(true)return;
     // -------------------------
 
@@ -245,44 +255,43 @@ public class STmap implements IQuimpSerialize {
 
     for (int tt = 0; tt < T; tt++) {
 
-      frame = tt + oH.getStartFrame();
+      frame = tt + oh.getStartFrame();
       // System.out.println("frame " + t);
-      pN = tt * res; // pixel index
+      pn = tt * res; // pixel index
 
       // find the first node in terms of coord and fcoord (not the head)
-      fHead = oH.getOutline(frame).findFirstNode('f');
-      cHead = oH.getOutline(frame).findFirstNode('c');
+      fhead = oh.getOutline(frame).findFirstNode('f');
+      chead = oh.getOutline(frame).findFirstNode('c');
       // fHead.print();
       // cHead.print();
 
       if (tt == 0) {
         // for the first time point the head coord node is our starting point
-        zeroVert = cHead;
+        zeroVert = chead;
         fraction = 0;
         origin = 0;
       } else {
         // vert closest below zero (zero being tracked over time from
         // frame 1!)
-        zeroVert = closestFloor(oH.getOutline(frame), origin, 'f', fHead);
+        zeroVert = closestFloor(oh.getOutline(frame), origin, 'f', fhead);
         // System.out.println("zerovert: " + zeroVert.fCoord +", origin:
         // " + origin + ", fHead: " + fHead.fCoord);
-        fraction = ffraction(zeroVert, origin, fHead); // position of origin between
-                                                       // zeroVert and zeroVert.getNext
+        // position of origin between zeroVert and zeroVert.getNext
+        fraction = ffraction(zeroVert, origin, fhead);
         // System.out.println("resulting fraction: " + fraction);
 
         // System.out.print("\nzeroVert.fCoord:"+zeroVert.coord+",
         // fraction:"+fraction +"\n");
-        origin = interpCoord(zeroVert, fraction, cHead); // the new
-                                                         // origin
+        origin = interpCoord(zeroVert, fraction, chead); // the new origin
         // System.out.println("new origin: " + origin);
       }
       target = origin; // coord to fill in map next
 
       intMig = interpolate(zeroVert.distance, zeroVert.getNext().distance, fraction);
       motMap[tt][0] = intMig;
-      color = QColor.ERColorMap2(migColorMap, intMig, oH.migLimits[0], oH.migLimits[1]);
-      migColor[pN] = color.getColorInt();
-      migPixels[pN] = (float) intMig;
+      color = QColor.ERColorMap2(migColorMap, intMig, oh.migLimits[0], oh.migLimits[1]);
+      migColor[pn] = color.getColorInt();
+      migPixels[pn] = (float) intMig;
 
       // fill fluo maps
       for (int i = 0; i < 3; i++) {
@@ -293,24 +302,24 @@ public class STmap implements IQuimpSerialize {
           }
           intFlu = interpolate(zeroVert.fluores[i].intensity,
                   zeroVert.getNext().fluores[i].intensity, fraction);
-          fluoMaps[i].fill(tt, 0, pN, intFlu, oH.fluLims[i][1]);
+          fluoMaps[i].fill(tt, 0, pn, intFlu, oh.fluLims[i][1]);
         }
       }
 
       /*
        * if (zeroVert.floures == -1) { fluMap[t][0] = 0; fluColor[pN] = (byte)
-       * QColor.bwScale(0, 256, oH.maxFlu, 0); } else { intFlu = interpolate(zeroVert.floures,
+       * QColor.bwScale(0, 256, oh.maxFlu, 0); } else { intFlu = interpolate(zeroVert.floures,
        * zeroVert.getNext().floures, fraction); fluMap[t][0] = intFlu; fluColor[pN] = (byte)
-       * QColor.bwScale(intFlu, 256, oH.maxFlu, 0); }
+       * QColor.bwScale(intFlu, 256, oh.maxFlu, 0); }
        */
 
       intConv = interpolate(zeroVert.curvatureSum, zeroVert.getNext().curvatureSum, fraction);
       convMap[tt][0] = intConv;
-      color = QColor.ERColorMap2("rbb", intConv, oH.curvLimits[0], oH.curvLimits[1]);
-      convColor[pN] = color.getColorInt();
+      color = QColor.ERColorMap2("rbb", intConv, oh.curvLimits[0], oh.curvLimits[1]);
+      convColor[pn] = color.getColorInt();
 
       coordMap[tt][0] = origin;
-      originMap[tt][0] = interpFCoord(zeroVert, fraction, fHead);
+      originMap[tt][0] = interpFCoord(zeroVert, fraction, fhead);
       xMap[tt][0] = interpolate(zeroVert.getX(), zeroVert.getNext().getX(), fraction);
       yMap[tt][0] = interpolate(zeroVert.getY(), zeroVert.getNext().getY(), fraction);
 
@@ -319,48 +328,43 @@ public class STmap implements IQuimpSerialize {
       }
 
       for (int p = 1; p < res; p++) {
-        pN = (tt * res) + p; // pixel index
+        pn = (tt * res) + p; // pixel index
         target += step;
-        actualTarget = (target >= 1) ? target - 1 : target; // wraps
-                                                            // around to
-                                                            // zero
+        actualTarget = (target >= 1) ? target - 1 : target; // wraps around to zero
         // System.out.println("\tactualtarget:"+actualTarget);
         coordMap[tt][p] = actualTarget;
 
-        v = closestFloor(oH.getOutline(frame), actualTarget, 'c', cHead); // should
-                                                                          // this
-                                                                          // be
-                                                                          // 'g'?
-        fraction = cfraction(v, actualTarget, cHead);
+        v = closestFloor(oh.getOutline(frame), actualTarget, 'c', chead); // should this be 'g'?
+        fraction = cfraction(v, actualTarget, chead);
 
-        originMap[tt][p] = interpFCoord(v, fraction, fHead);
+        originMap[tt][p] = interpFCoord(v, fraction, fhead);
         xMap[tt][p] = interpolate(v.getX(), v.getNext().getX(), fraction);
         yMap[tt][p] = interpolate(v.getY(), v.getNext().getY(), fraction);
 
         intMig = interpolate(v.distance, v.getNext().distance, fraction);
         motMap[tt][p] = intMig;
-        color = QColor.ERColorMap2(migColorMap, intMig, oH.migLimits[0], oH.migLimits[1]);
-        migColor[pN] = color.getColorInt();
-        migPixels[pN] = (float) intMig;
+        color = QColor.ERColorMap2(migColorMap, intMig, oh.migLimits[0], oh.migLimits[1]);
+        migColor[pn] = color.getColorInt();
+        migPixels[pn] = (float) intMig;
 
         for (int i = 0; i < 3; i++) {
           if (fluoMaps[i].isEnabled()) {
             intFlu = interpolate(v.fluores[i].intensity, v.getNext().fluores[i].intensity,
                     fraction);
-            fluoMaps[i].fill(tt, p, pN, intFlu, oH.fluLims[i][1]);
+            fluoMaps[i].fill(tt, p, pn, intFlu, oh.fluLims[i][1]);
           }
         }
         /*
          * if (zeroVert.floures == -1) { fluMap[t][p] = 0; fluColor[pN] = (byte)
-         * QColor.bwScale(0, 256, oH.maxFlu, 0); } else { intFlu = interpolate(v.floures,
+         * QColor.bwScale(0, 256, oh.maxFlu, 0); } else { intFlu = interpolate(v.floures,
          * v.getNext().floures, fraction); fluMap[t][p] = intFlu; fluColor[pN] = (byte)
-         * QColor.bwScale(intFlu, 256, oH.maxFlu, 0); }
+         * QColor.bwScale(intFlu, 256, oh.maxFlu, 0); }
          */
 
         intConv = interpolate(v.curvatureSum, v.getNext().curvatureSum, fraction);
         convMap[tt][p] = intConv;
-        color = QColor.ERColorMap2("rbb", intConv, oH.curvLimits[0], oH.curvLimits[1]);
-        convColor[pN] = color.getColorInt();
+        color = QColor.ERColorMap2("rbb", intConv, oh.curvLimits[0], oh.curvLimits[1]);
+        convColor[pn] = color.getColorInt();
 
       }
 
@@ -377,14 +381,14 @@ public class STmap implements IQuimpSerialize {
       // create 3D of motility
       STMap3D map3d = new STMap3D(xMap, yMap, migColor);
       map3d.build();
-      map3d.toOrigin(oH.indexGetOutline(0).getCentroid());
+      map3d.toOrigin(oh.indexGetOutline(0).getCentroid());
       map3d.scale(0.05f);
       map3d.write(new File("/tmp/cell_02.wrl"));
 
       // create 3D of curvature
       STMap3D map3dCur = new STMap3D(xMap, yMap, convColor);
       map3dCur.build();
-      map3dCur.toOrigin(oH.indexGetOutline(0).getCentroid());
+      map3dCur.toOrigin(oh.indexGetOutline(0).getCentroid());
       map3dCur.scale(0.05f);
       map3dCur.write(new File("/tmp/cell_02_cur.wrl"));
     }
@@ -404,9 +408,9 @@ public class STmap implements IQuimpSerialize {
       fluImP.show();
 
       try {
-        Thread.sleep(500); // needed to let imageJ set the right colour
-                           // maps
+        Thread.sleep(500); // needed to let imageJ set the right colour maps
       } catch (Exception e) {
+        ;
       }
 
       IJ.doCommand("Red"); // this don't always work. dun know why
@@ -464,14 +468,13 @@ public class STmap implements IQuimpSerialize {
 
   /**
    * Convert ImageProcessor created from Map to ImagePlus.
-   * <p>
-   * Usually maps are non-square and need to be rescaled for correct presentation, what this
+   * 
+   * <p>Usually maps are non-square and need to be rescaled for correct presentation, what this
    * method does.
    * 
-   * <p>
-   * <b>Note</b>
-   * <p>
-   * Take care about what <tt>ImageProcessor</tt> is used. The <tt>ColorProcessor</tt> is created
+   * <p><b>Note</b>
+   * 
+   * <p>Take care about what <tt>ImageProcessor</tt> is used. The <tt>ColorProcessor</tt> is created
    * from 1D array, whereas e.g. <tt>FloatProcessor</tt> from 2D arrays. This causes that the same
    * map will be displayed with different orientation. QuimP natively uses maps presented by
    * <tt>ColorProcessor</tt>, if one uses <tt>FloatProcessor</tt> it must be rotated and flip to
@@ -502,12 +505,10 @@ public class STmap implements IQuimpSerialize {
   /**
    * Convert raw map to colorscale.
    * 
-   * <p>
-   * <b>warning</b>
-   * <p>
-   * Assumes that input 2D array map is regular and not column. This method can be used with data
+   * <p><b>warning</b>
+   * 
+   * <p>Assumes that input 2D array map is regular and not column. This method can be used with data
    * restored from <i>QCONF</i> file in the following way:
-   * <p>
    * 
    * <pre>
    * {@code
@@ -529,23 +530,25 @@ public class STmap implements IQuimpSerialize {
   public ImagePlus map2ColorImagePlus(String name, String palette, double[][] map, double min,
           double max) {
     int[] migColor = new int[map.length * map[0].length];
-    int pN = 0;
-    int T = map.length;
+    int pn = 0;
+    int t = map.length;
     int res = map[0].length;
-    for (int r = 0; r < T; r++)
+    for (int r = 0; r < t; r++) {
       for (int c = 0; c < res; c++) {
         // pN = (c * mapCell.getT()) + r;
         QColor color = QColor.ERColorMap2(palette, map[r][c], min, max);
-        migColor[pN++] = color.getColorInt();
+        migColor[pn++] = color.getColorInt();
       }
-    return map2ImagePlus(name, new ColorProcessor(res, T, migColor));
+    }
+    return map2ImagePlus(name, new ColorProcessor(res, t, migColor));
   }
 
   private Vert closestFloor(Outline o, double target, char c, Vert head) {
     // find the vert with coor closest (floored) to target coordinate
 
     Vert v = head; // the fcoord or cCoord head
-    double coord, coordNext;
+    double coord;
+    double coordNext;
     do {
       coord = (c == 'f') ? v.fCoord : v.coord;
       coordNext = (c == 'f') ? v.getNext().fCoord : v.getNext().coord;
@@ -569,10 +572,7 @@ public class STmap implements IQuimpSerialize {
     double v2coord;
     if (v.getNext().getTrackNum() == head.getTrackNum()) { // passed zero
       v2coord = v.getNext().coord + 1;
-      target = (target > v.coord) ? target : target + 1; // not passed
-                                                         // zero as all
-                                                         // values are
-                                                         // passed zero!
+      target = (target > v.coord) ? target : target + 1; // not passed zero as all values are zero!
     } else {
       v2coord = v.getNext().coord;
     }
@@ -596,8 +596,7 @@ public class STmap implements IQuimpSerialize {
     if (v.getNext().getTrackNum() == head.getTrackNum()) { // passed zero
       // System.out.println("\tffraction: pass zero. wrap");
       v2coord = v.getNext().fCoord + 1;
-      target = (target > v.fCoord) ? target : target + 1; // not passed zero as all values are
-                                                          // passed zero!
+      target = (target > v.fCoord) ? target : target + 1; // not passed zero as all values are zero!
     } else {
       v2coord = v.getNext().fCoord;
     }
@@ -624,8 +623,7 @@ public class STmap implements IQuimpSerialize {
 
   private double interpCoord(Vert v, double frac, Vert head) {
     double v2Coord = (v.getNext().getTrackNum() == head.getTrackNum()) ? v.getNext().coord + 1
-            : v.getNext().coord; // pass
-                                 // zero
+            : v.getNext().coord; // pass zero
     double dis = v2Coord - v.coord;
     double targ = v.coord + (dis * frac);
 
@@ -662,17 +660,17 @@ public class STmap implements IQuimpSerialize {
   }
 
   /**
-   * Calculates convexity by smoothing or averaging across nodes
+   * Calculates convexity by smoothing or averaging across nodes.
    */
   private void calcCurvature() {
 
     Outline o;
     Vert v;
 
-    oH.curvLimits = new double[2];
+    oh.curvLimits = new double[2];
 
-    for (int f = oH.getStartFrame(); f <= oH.getEndFrame(); f++) {
-      o = oH.getOutline(f);
+    for (int f = oh.getStartFrame(); f <= oh.getEndFrame(); f++) {
+      o = oh.getOutline(f);
       if (o == null) {
         IJ.log("ERROR: Outline at frame " + f + " is empty");
         continue;
@@ -695,35 +693,37 @@ public class STmap implements IQuimpSerialize {
       // find min and max of sum curvature
 
       v = o.getHead();
-      if (f == oH.getStartFrame()) {
-        oH.curvLimits[1] = v.curvatureSum;
-        oH.curvLimits[0] = v.curvatureSum;
+      if (f == oh.getStartFrame()) {
+        oh.curvLimits[1] = v.curvatureSum;
+        oh.curvLimits[0] = v.curvatureSum;
       }
       do {
-        if (v.curvatureSum > oH.curvLimits[1]) {
-          oH.curvLimits[1] = v.curvatureSum;
+        if (v.curvatureSum > oh.curvLimits[1]) {
+          oh.curvLimits[1] = v.curvatureSum;
         }
-        if (v.curvatureSum < oH.curvLimits[0]) {
-          oH.curvLimits[0] = v.curvatureSum;
+        if (v.curvatureSum < oh.curvLimits[0]) {
+          oh.curvLimits[0] = v.curvatureSum;
         }
         v = v.getNext();
       } while (!v.isHead());
-      // System.out.println("Min curv: " + oH.curvLimits[0] + ", max curv:
-      // " + oH.curvLimits[1]);
+      // System.out.println("Min curv: " + oh.curvLimits[0] + ", max curv:
+      // " + oh.curvLimits[1]);
 
     }
 
-    // System.out.println("curve limits before: " + oH.curvLimits[0] + ", "
-    // + oH.curvLimits[1]);
-    oH.curvLimits = QuimpToolsCollection.setLimitsEqual(oH.curvLimits);
-    // System.out.println("curve limits after: " + oH.curvLimits[0] + ", " +
-    // oH.curvLimits[1]);
+    // System.out.println("curve limits before: " + oh.curvLimits[0] + ", "
+    // + oh.curvLimits[1]);
+    oh.curvLimits = QuimpToolsCollection.setLimitsEqual(oh.curvLimits);
+    // System.out.println("curve limits after: " + oh.curvLimits[0] + ", " +
+    // oh.curvLimits[1]);
   }
 
   private void averageCurvature(Outline o) {
 
-    Vert v, tmpV;
-    double totalCur, distance;
+    Vert v;
+    Vert tmpV;
+    double totalCur;
+    double distance;
     int count;
 
     // avertage over curvatures
@@ -764,15 +764,16 @@ public class STmap implements IQuimpSerialize {
   }
 
   /**
-   * Sum smoothed curavture over a region of the membrane
+   * Sum smoothed curavture over a region of the membrane.
    * 
    * @param o the outline
    */
   private void sumCurvature(Outline o) {
-    //
 
-    Vert v, tmpV;
-    double totalCur, distance;
+    Vert v;
+    Vert tmpV;
+    double totalCur;
+    double distance;
     // avertage over curvatures
     if (Qp.sumCov > 0) {
       LOGGER.trace("summing curv");
@@ -807,47 +808,11 @@ public class STmap implements IQuimpSerialize {
 
   }
 
-  @SuppressWarnings("unused")
-  @Deprecated
-  private Vert findFirstNodeX(Outline o, char c) {
-    // find the first node in terms of coord and fcoord
-    // ie closest to zero
-
-    Vert v = o.getHead();
-    Vert vFirst = v;
-
-    double coord, coordPrev;
-    double dis, disFirst = 0;
-
-    do {
-      coord = (c == 'f') ? v.fCoord : v.coord;
-      coordPrev = (c == 'f') ? v.getPrev().fCoord : v.getPrev().coord;
-
-      dis = Math.abs(coord - coordPrev);
-      // System.out.println("abs( " + coord + "-"+coordPrev+") = " + dis);
-
-      if (dis > disFirst) {
-        vFirst = v;
-        disFirst = dis;
-        // System.out.println("\tchoosen ");
-        // vFirst.print();
-      }
-
-      v = v.getNext();
-    } while (!v.isHead());
-
-    // System.out.println("First "+c+"Coord vert: ");
-    // vFirst.print();
-
-    return vFirst;
-
-  }
-
-  private void resize(ImagePlus ImP) {
+  private void resize(ImagePlus imp) {
     if (T >= res * 0.9) {
       return; // don't resize if its going to compress frames
     }
-    ImageProcessor ip = ImP.getProcessor();
+    ImageProcessor ip = imp.getProcessor();
 
     // if (Qp.singleImage) {
     ip.setInterpolationMethod(ImageProcessor.NONE);
@@ -856,28 +821,28 @@ public class STmap implements IQuimpSerialize {
     // }
 
     double vertRes = Math.ceil((double) res / (double) T);
-    // System.out.println("OH s: " + oH.getSize() + ",vertres: "+ vertRes);
+    // System.out.println("OH s: " + oh.getSize() + ",vertres: "+ vertRes);
     mapPixelHeight = 1.0d / vertRes;
     vertRes = T * vertRes;
 
-    // System.out.println("OH s: " + oH.getSize() + ",vertres: "+ vertRes);
+    // System.out.println("OH s: " + oh.getSize() + ",vertres: "+ vertRes);
 
     ip = ip.resize(res, (int) vertRes);
-    ImP.setProcessor(ip);
+    imp.setProcessor(ip);
 
   }
 
-  private void setCalibration(ImagePlus ImP) {
-    ImP.getCalibration().setUnit("frames");
-    ImP.getCalibration().pixelHeight = mapPixelHeight;
-    ImP.getCalibration().pixelWidth = mapPixelWidth;
+  private void setCalibration(ImagePlus imp) {
+    imp.getCalibration().setUnit("frames");
+    imp.getCalibration().pixelHeight = mapPixelHeight;
+    imp.getCalibration().pixelWidth = mapPixelWidth;
     LOGGER.debug("PixelWidth=" + mapPixelWidth + " PixelHeight=" + mapPixelHeight);
   }
 
   /**
    * Return resolution of the map.
-   * <p>
-   * This is value set by user in Q Analysis UI.
+   * 
+   * <p>This is value set by user in Q Analysis UI.
    * 
    * @return the res
    */
@@ -887,8 +852,8 @@ public class STmap implements IQuimpSerialize {
 
   /**
    * Return number of outline points.
-   * <p>
-   * This is value obtained after interpolation of Outlines.
+   * 
+   * <p>This is value obtained after interpolation of Outlines.
    * 
    * @return the T
    */
@@ -897,6 +862,8 @@ public class STmap implements IQuimpSerialize {
   }
 
   /**
+   * getxMap.
+   * 
    * @return the xMap
    */
   public double[][] getxMap() {
@@ -904,6 +871,8 @@ public class STmap implements IQuimpSerialize {
   }
 
   /**
+   * getyMap.
+   * 
    * @return the yMap
    */
   public double[][] getyMap() {
@@ -930,6 +899,8 @@ public class STmap implements IQuimpSerialize {
   }
 
   /**
+   * getMotMap.
+   * 
    * @return the motMap
    */
   public double[][] getMotMap() {
@@ -937,6 +908,8 @@ public class STmap implements IQuimpSerialize {
   }
 
   /**
+   * getConvMap.
+   * 
    * @return the convMap
    */
   public double[][] getConvMap() {

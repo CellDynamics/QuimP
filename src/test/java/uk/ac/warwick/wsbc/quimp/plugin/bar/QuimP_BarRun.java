@@ -1,9 +1,6 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin.bar;
 
 import ij.ImageJ;
-import uk.ac.warwick.wsbc.quimp.plugin.bar.QuimP_Bar;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -12,14 +9,16 @@ import uk.ac.warwick.wsbc.quimp.plugin.bar.QuimP_Bar;
  * @author p.baniukiewicz
  *
  */
-public class QuimP_Bar_run {
+public class QuimP_BarRun {
 
   static {
     System.setProperty("logback.configurationFile", "quimp-logback.xml");
   }
 
   /**
-   * @param args
+   * Runner.
+   * 
+   * @param args args
    */
   @SuppressWarnings("unused")
   public static void main(String[] args) {
