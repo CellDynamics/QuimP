@@ -1526,55 +1526,9 @@ public class BOA_ implements PlugIn {
       if (b == menuLoad) {
         OpenDialog od = new OpenDialog(
                 "Load global config data...(*" + FileExtensions.newConfigFileExt + ")", "");
-        if (od.getFileName() != null) {
+        if (od.getPath() != null) {
           try {
-            Serializer<DataContainer> loaded; // loaded instance
-            // create serializer
-            Serializer<DataContainer> s = new Serializer<>(DataContainer.class, QuimP.TOOL_VERSION);
-            s.registerConverter(new Converter170202<>(QuimP.TOOL_VERSION));
-            s.registerInstanceCreator(DataContainer.class,
-                    new DataContainerInstanceCreator(pluginFactory, viewUpdater));
-            loaded = s.load(od.getDirectory() + od.getFileName());
-            // check against image names
-            if (!loaded.obj.BOAState.boap.getOrgFile().getName()
-                    .equals(qState.boap.getOrgFile().getName())) {
-              LOGGER.warn("The image opened currently in BOA is different from those"
-                      + " pointed in configuration file");
-              log("Trying to apply configuration saved for other image");
-              YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Warning",
-                      "Trying to load configuration that does not\nmath to"
-                              + " opened image.\nAre you sure?");
-              if (!yncd.yesPressed()) {
-                return;
-              }
-            }
-            // replace orgFile with that already opened. It is possible as BOA can not
-            // exist without image loaded so this field will always be true.
-            loaded.obj.BOAState.boap.setOrgFile(qState.boap.getOrgFile());
-            // replace outputFileCore with current one
-            loaded.obj.BOAState.boap.setOutputFileCore(
-                    od.getDirectory() + QuimpToolsCollection.removeExtension(od.getFileName()));
-            // closes windows, etc
-            qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
-            qState = loaded.obj.BOAState;
-            imageGroup.updateNest(qState.nest); // reconnect nest to external class
-            qState.restore(qState.boap.frame); // copy from snapshots to current object
-            updateSpinnerValues(); // update segmentation gui
-            // refill frame zoom choice to make possible selection last zoomed cell (called from
-            // updateChoice)
-            fillZoomChoice();
-            // do not recalculatePlugins here because pluginList is empty and this
-            // method will update finalSnake overriding it by segSnake (because on
-            // empty list they are just copied)
-            // updateToFrame calls updateSliceSelector only if there is action of
-            // changing frame. If loaded frame is the same as current one this event is
-            // not called.
-            if (qState.boap.frame != imageGroup.getOrgIpl().getSlice()) {
-              // move to frame (will call updateSliceSelector)
-              imageGroup.updateToFrame(qState.boap.frame);
-            } else {
-              updateSliceSelector(); // repaint window explicitly
-            }
+            loadQconfConfiguration(Paths.get(od.getPath()));
           } catch (IOException e1) {
             LOGGER.error("Problem with loading plugin config. " + e1.getMessage());
             LOGGER.debug(e1.getMessage(), e1); // if debug enabled - get more info
@@ -1674,6 +1628,72 @@ public class BOA_ implements PlugIn {
         }
         // imageGroup.setSlice(1);
       }
+    }
+
+    /**
+     * Loader of QCONF file in BOA. Initialise all BOA structures and updates window.
+     * 
+     * <p>Assign also format converter.
+     * 
+     * @param configPath path to QCONF file
+     * @throws IOException on file problem
+     * @throws Exception various other problems like e.g json syntax
+     */
+    private void loadQconfConfiguration(Path configPath) throws IOException, Exception {
+      Serializer<DataContainer> loaded; // loaded instance
+      // create serializer
+      Serializer<DataContainer> s = new Serializer<>(DataContainer.class, QuimP.TOOL_VERSION);
+      s.registerConverter(new Converter170202<>(QuimP.TOOL_VERSION));
+      s.registerInstanceCreator(DataContainer.class,
+              new DataContainerInstanceCreator(pluginFactory, viewUpdater));
+      loaded = s.load(configPath.toString());
+      // check against image names
+      if (!loaded.obj.BOAState.boap.getOrgFile().getName()
+              .equals(qState.boap.getOrgFile().getName())) {
+        LOGGER.warn("The image opened currently in BOA is different from those"
+                + " pointed in configuration file");
+        log("Trying to apply configuration saved for other image");
+        YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Warning",
+                "Trying to load configuration that does not\nmath to"
+                        + " opened image.\nAre you sure?");
+        if (!yncd.yesPressed()) {
+          return;
+        }
+      }
+      // replace orgFile with that already opened. It is possible as BOA can not
+      // exist without image loaded so this field will always be true.
+      loaded.obj.BOAState.boap.setOrgFile(qState.boap.getOrgFile());
+      // replace outputFileCore with current one
+      String parent;
+      if (configPath.getParent() != null) {
+        parent = configPath.getParent().toString();
+      } else {
+        parent = "";
+      }
+      loaded.obj.BOAState.boap.setOutputFileCore(
+              parent + QuimpToolsCollection.removeExtension(configPath.getFileName().toString()));
+      // closes windows, etc
+      qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
+      qState = loaded.obj.BOAState;
+      imageGroup.updateNest(qState.nest); // reconnect nest to external class
+      qState.restore(qState.boap.frame); // copy from snapshots to current object
+      updateSpinnerValues(); // update segmentation gui
+      // refill frame zoom choice to make possible selection last zoomed cell (called from
+      // updateChoice)
+      fillZoomChoice();
+      // do not recalculatePlugins here because pluginList is empty and this
+      // method will update finalSnake overriding it by segSnake (because on
+      // empty list they are just copied)
+      // updateToFrame calls updateSliceSelector only if there is action of
+      // changing frame. If loaded frame is the same as current one this event is
+      // not called.
+      if (qState.boap.frame != imageGroup.getOrgIpl().getSlice()) {
+        // move to frame (will call updateSliceSelector)
+        imageGroup.updateToFrame(qState.boap.frame);
+      } else {
+        updateSliceSelector(); // repaint window explicitly
+      }
+      BOA_.log("Successfully read configuration");
     }
 
     /**
@@ -2274,7 +2294,7 @@ public class BOA_ implements PlugIn {
    *
    * @return true, if successful
    */
-  boolean loadSnakes() {
+  private boolean loadSnakes() {
 
     YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Load associated snakes?",
             "\tLoad associated snakes?\n");
