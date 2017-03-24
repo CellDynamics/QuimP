@@ -1157,9 +1157,15 @@ public class BOAState implements IQuimpSerialize {
   /**
    * Build internal boa state from QParams object.
    * 
+   * <p><b>Warning</b>
+   * 
+   * <p>frame interval and image scale are not loaded by this function due to compatibility with BOA
+   * workflow - user set scale on beginning and then use this method to load paQP files.
+   * 
    * @param readQp QParams object
    */
   public void loadParams(QParams readQp) {
+
     boap.NMAX = readQp.NMAX;
     segParam.blowup = readQp.getBlowup();
     segParam.max_iterations = readQp.max_iterations;

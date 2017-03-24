@@ -190,7 +190,9 @@ public class FormatConverter {
         }
         // assume that BOA params are taken from file 0_.paQP
         if (i == numofpaqp) {
-          dt.BOAState.loadParams(qcL.getQp()); // load parameters only once
+          dt.BOAState.loadParams(qcL.getQp()); // load parameters only once (but not frameinterval,)
+          dt.BOAState.boap.setImageFrameInterval(qcL.getQp().getFrameInterval());
+          dt.BOAState.boap.setImageScale(qcL.getQp().getImageScale());
         }
         // initialize snakes (from snQP files)
         oh = new OutlineHandler(qcL.getQp()); // restore OutlineHandler
@@ -203,31 +205,37 @@ public class FormatConverter {
           stMap.motMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getMotilityFile());
         } catch (IOException e) {
           LOGGER.warn(e.getMessage());
+          LOGGER.debug(e.getMessage(), e);
         }
         try {
           stMap.convMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getConvexFile());
         } catch (IOException e) {
           LOGGER.warn(e.getMessage());
+          LOGGER.debug(e.getMessage(), e);
         }
         try {
           stMap.coordMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getCoordFile());
         } catch (IOException e) {
           LOGGER.warn(e.getMessage());
+          LOGGER.debug(e.getMessage(), e);
         }
         try {
           stMap.originMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getOriginFile());
         } catch (IOException e) {
+          LOGGER.debug(e.getMessage(), e);
           LOGGER.warn(e.getMessage());
         }
         try {
           stMap.xMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getxFile());
         } catch (IOException e) {
           LOGGER.warn(e.getMessage());
+          LOGGER.debug(e.getMessage(), e);
         }
         try {
           stMap.yMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getyFile());
         } catch (IOException e) {
           LOGGER.warn(e.getMessage());
+          LOGGER.debug(e.getMessage(), e);
         }
         // Fluoromap
         // first check if there is any FluMap

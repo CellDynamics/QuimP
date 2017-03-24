@@ -1369,9 +1369,10 @@ public class BOA_ implements PlugIn {
         bnSeg.setLabel("SEGMENT");
       } else if (b == bnLoad) {
         try {
+          LOGGER.warn("Image scale and frame interval are not restored from loaded file");
           if (qState.readParams()) {
             updateSpinnerValues();
-            if (loadSnakes()) {
+            if (loadSnakes()) { // TODO load only parameters not snakes
               run = false;
             } else {
               run = true;
@@ -2269,7 +2270,7 @@ public class BOA_ implements PlugIn {
   }
 
   /**
-   * Load snakes.
+   * Load snakes from snQP file.
    *
    * @return true, if successful
    */
