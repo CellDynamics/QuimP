@@ -117,14 +117,14 @@ public class FormatConverter {
    */
   private void generateNewDataFile() throws QuimpException, FileNotFoundException {
     //!>
-    LOGGER.warn("\n----------------------------------------------------------\n"
+    LOGGER.info("\n----------------------------------------------------------\n"
                 + "Warning:\n"
                 + "    1. Stats file stQP is not read during conversion\n"
                 + "       and these data are not converted to QCONF.\n"
                 + "----------------------------------------------------------\n");
     //!<
     if (qcL.getConfVersion() == QParams.NEW_QUIMP) {
-      throw new IllegalArgumentException("Can not convert from new format to new");
+      throw new QuimpException("Can not convert from new format to new", MessageSinkTypes.GUI);
     }
     // create storage
     DataContainer dt = new DataContainer();
@@ -147,13 +147,12 @@ public class FormatConverter {
       numofpaqp = Integer
               .parseInt(filename.toString().substring(last + 1, filename.toString().length()));
       if (numofpaqp != 0) { // warn user if not first file selected
-        int ret =
-                JOptionPane.showConfirmDialog(IJ.getInstance(),
-                        QuimpToolsCollection.stringWrap(
-                                "Selected paQP file is not first (not a _0.paQP file)."
-                                        + "Is it ok? (No will end conversion process)",
-                                QuimP.LINE_WRAP),
-                        "Waring", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int ret = JOptionPane.showConfirmDialog(IJ.getInstance(),
+                QuimpToolsCollection.stringWrap(
+                        "Selected paQP file is not first (not a _0.paQP file)."
+                                + "Is it ok? (\"No\" will end conversion process)",
+                        QuimP.LINE_WRAP),
+                "Waring", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (ret != JOptionPane.YES_OPTION) {
           return;
         }
@@ -275,7 +274,8 @@ public class FormatConverter {
 
     } catch (Exception e) { // repack exception with proper message about defective file
       throw new QuimpException(
-              "File " + filetoload.toString() + " can not be processed: " + e.getMessage(), e);
+              "File " + filetoload.toString() + " can not be processed: " + e.getMessage(), e,
+              MessageSinkTypes.GUI);
     }
     // save DataContainer using Serializer
     dt.QState = maps.toArray(new STmap[0]); // convert to array
@@ -298,7 +298,7 @@ public class FormatConverter {
    */
   private void generateOldDataFile() throws IOException {
     //!>
-    LOGGER.warn("\n----------------------------------------------------------\n"
+    LOGGER.info("\n----------------------------------------------------------\n"
                 + "Warning:\n"
                 + "    1. Only paQP and snQP files are converted.\n"
                 + "----------------------------------------------------------\n");
