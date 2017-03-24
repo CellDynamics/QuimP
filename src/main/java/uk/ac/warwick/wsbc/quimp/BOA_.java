@@ -1357,8 +1357,8 @@ public class BOA_ implements PlugIn {
         bnSeg.setLabel("computing");
         int framesCompleted;
         try {
-          runBoa(qState.boap.frame, qState.boap.getFRAMES());
-          framesCompleted = qState.boap.getFRAMES();
+          runBoa(qState.boap.frame, qState.boap.getFrames());
+          framesCompleted = qState.boap.getFrames();
           IJ.showStatus("COMPLETE");
         } catch (BoaException be) {
           BOA_.log(be.getMessage());
@@ -2828,7 +2828,7 @@ class ImageGroup {
   }
 
   public void clearPaths(int fromFrame) {
-    for (int i = fromFrame; i <= BOA_.qState.boap.getFRAMES(); i++) {
+    for (int i = fromFrame; i <= BOA_.qState.boap.getFrames(); i++) {
       pathsIp = pathsStack.getProcessor(i);
       pathsIp.setValue(0);
       pathsIp.fill();
@@ -2865,7 +2865,7 @@ class ImageGroup {
       // for colour:
       // if(boap.drawColor) intensity = n.colour.getColorInt();
 
-      if (BOA_.qState.boap.getHEIGHT() > 800) {
+      if (BOA_.qState.boap.getHeight() > 800) {
         drawPixel(x, y, intensity, true, ip);
       } else {
         drawPixel(x, y, intensity, false, ip);
@@ -2895,7 +2895,7 @@ class ImageGroup {
     contourIpl.setSlice(1);
     ImageProcessor contourIp;
 
-    for (int i = 1; i <= BOA_.qState.boap.getFRAMES(); i++) { // copy original
+    for (int i = 1; i <= BOA_.qState.boap.getFrames(); i++) { // copy original
       orgIp = orgStack.getProcessor(i);
       contourIp = contourStack.getProcessor(i);
       contourIp.copyBits(orgIp, 0, 0, Blitter.COPY);
@@ -2997,7 +2997,7 @@ class ImageGroup {
     int y;
     for (int s = 0; s < nest.size(); s++) {
       snakeH = nest.getHandler(s);
-      for (int i = 1; i <= BOA_.qState.boap.getFRAMES(); i++) {
+      for (int i = 1; i <= BOA_.qState.boap.getFrames(); i++) {
         if (snakeH.isStoredAt(i)) {
           snake = snakeH.getStoredSnake(i);
           ip = stack.getProcessor(i);

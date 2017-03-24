@@ -118,7 +118,7 @@ public class QParamsExchangerTest {
     assertThat(s.countPoints(), is(s.POINTS));
 
     BOAp bp = qp.getLoadedDataContainer().BOAState.boap;
-    assertThat(bp.getWIDTH(), is(512));
+    assertThat(bp.getWidth(), is(512));
 
   }
 
