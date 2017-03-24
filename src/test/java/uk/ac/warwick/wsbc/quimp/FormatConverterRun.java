@@ -3,29 +3,28 @@ package uk.ac.warwick.wsbc.quimp;
 import java.io.File;
 
 import ij.ImageJ;
-import uk.ac.warwick.wsbc.quimp.FormatConverter;
-import uk.ac.warwick.wsbc.quimp.QuimpException;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
-public class FormatConverter_run {
+public class FormatConverterRun {
   static {
     System.setProperty("logback.configurationFile", "quimp-logback.xml");
   }
 
   /**
-   * @param args
-   * @throws QuimpException
+   * Test ruunner.
+   * 
+   * @param args args
+   * @throws QuimpException QuimpException
    */
   public static void main(String[] args) throws QuimpException {
     ImageJ ij = new ImageJ();
-    FormatConverter fC = new FormatConverter(
+    FormatConverter fc = new FormatConverter(
             new File("src/test/resources/formatconv/currenttest/fluoreszenz-test.QCONF"));
-    fC.showConversionCapabilities(ij);
-    fC.doConversion();
+    fc.showConversionCapabilities(ij);
+    fc.doConversion();
   }
 
 }
