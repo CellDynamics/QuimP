@@ -1171,6 +1171,13 @@ public class BOA_ implements PlugIn {
     }
 
     /**
+     * Update static fileds on window.
+     */
+    private void updateStatics() {
+      setScalesText();
+    }
+
+    /**
      * Update Choices.
      * 
      * <p>This method is called from CustomStackWindow.itemStateChanged(ItemEvent) to update colors
@@ -1247,6 +1254,7 @@ public class BOA_ implements PlugIn {
     private void updateWindowState() {
       updateCheckBoxes(); // update checkboxes
       updateChoices(); // and choices
+      updateStatics();
 
       // Rule 1 - NONE on any slot in filters disable GUI button and Active checkbox
       if (chFirstPluginName.getSelectedItem() == NONE) {
@@ -1633,11 +1641,13 @@ public class BOA_ implements PlugIn {
     /**
      * Loader of QCONF file in BOA. Initialise all BOA structures and updates window.
      * 
-     * <p>Assign also format converter.
+     * <p>Assign also format converter. This method partially updates UI but some other related
+     * methods are called from {@link #actionPerformed(ActionEvent)}.
      * 
      * @param configPath path to QCONF file
      * @throws IOException on file problem
      * @throws Exception various other problems like e.g json syntax
+     * @see #updateWindowState()
      */
     private void loadQconfConfiguration(Path configPath) throws IOException, Exception {
       Serializer<DataContainer> loaded; // loaded instance
@@ -1965,7 +1975,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Sets the scales text.
+     * Set frame interval and scale on BOA window..
      */
     void setScalesText() {
       pixelLabel.setText("Scale: " + IJ.d2s(qState.boap.getImageScale(), 6) + " \u00B5m");
