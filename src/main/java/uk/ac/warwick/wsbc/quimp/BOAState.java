@@ -194,7 +194,7 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Contraction force.
      * 
-     * Cell segmentation parameter. Check user manual or our publications for details.
+     * <p>Cell segmentation parameter. Check user manual or our publications for details.
      */
     public double f_contract;
     /**
@@ -211,7 +211,7 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Decide whether to show paths on screen.
      * 
-     * Cell segmentation parameter. Check user manual or our publications for details.
+     * <p>Cell segmentation parameter. Check user manual or our publications for details.
      */
     public boolean showPaths;
     /**
@@ -763,7 +763,7 @@ public class BOAState implements IQuimpSerialize {
      * 
      * @return the fRAMES
      */
-    public int getFRAMES() {
+    public int getFrames() {
       return FRAMES;
     }
 
@@ -772,7 +772,7 @@ public class BOAState implements IQuimpSerialize {
      * 
      * @return the wIDTH
      */
-    public int getWIDTH() {
+    public int getWidth() {
       return WIDTH;
     }
 
@@ -781,7 +781,7 @@ public class BOAState implements IQuimpSerialize {
      * 
      * @return the hEIGHT
      */
-    public int getHEIGHT() {
+    public int getHeight() {
       return HEIGHT;
     }
 
@@ -815,11 +815,13 @@ public class BOAState implements IQuimpSerialize {
     /**
      * Set outputFileCore.
      * 
-     * @param outputFileCore the outputFileCore to set
+     * <p>From compatibility reasons outputFileCore is File type.
+     * 
+     * @param outputFileCore the outputFileCore to set. should not contain extension
      */
-    public void setOutputFileCore(File outputFileCore) {
+    private void setOutputFileCore(File outputFileCore) {
       this.outputFileCore = outputFileCore;
-      fileName = QuimpToolsCollection.removeExtension(outputFileCore.getName());
+      fileName = outputFileCore.getName();
     }
 
     /**
@@ -828,7 +830,7 @@ public class BOAState implements IQuimpSerialize {
      * @param outputFileCore the outputFileCore to set
      */
     public void setOutputFileCore(String outputFileCore) {
-      setOutputFileCore(new File(outputFileCore));
+      setOutputFileCore(new File(QuimpToolsCollection.removeExtension(outputFileCore)));
     }
 
     /**
@@ -1157,9 +1159,15 @@ public class BOAState implements IQuimpSerialize {
   /**
    * Build internal boa state from QParams object.
    * 
+   * <p><b>Warning</b>
+   * 
+   * <p>frame interval and image scale are not loaded by this function due to compatibility with BOA
+   * workflow - user set scale on beginning and then use this method to load paQP files.
+   * 
    * @param readQp QParams object
    */
   public void loadParams(QParams readQp) {
+
     boap.NMAX = readQp.NMAX;
     segParam.blowup = readQp.getBlowup();
     segParam.max_iterations = readQp.max_iterations;

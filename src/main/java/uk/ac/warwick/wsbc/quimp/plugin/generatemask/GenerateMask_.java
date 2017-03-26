@@ -155,15 +155,15 @@ public class GenerateMask_ extends PluginTemplate {
     BOAState bs = qconfLoader.getBOA();
     Nest nest = bs.nest;
     // create output image
-    res = NewImage.createByteImage("test", bs.boap.getWIDTH(), bs.boap.getHEIGHT(),
-            bs.boap.getFRAMES(), NewImage.FILL_BLACK);
+    res = NewImage.createByteImage("test", bs.boap.getWidth(), bs.boap.getHeight(),
+            bs.boap.getFrames(), NewImage.FILL_BLACK);
     // get stacks reference
     ImageStack contourStack = res.getStack();
     res.setSlice(1); // set for first
     int frame; // frames counter (from 1)
     Snake snake;
     ImageProcessor contourIp; // processor taken from stack (ref)
-    for (frame = 1; frame <= bs.boap.getFRAMES(); frame++) { // iterate over frames
+    for (frame = 1; frame <= bs.boap.getFrames(); frame++) { // iterate over frames
       List<Integer> snakes = nest.getSnakesforFrame(frame); // find all SnakeHandlers on frame
       contourIp = contourStack.getProcessor(frame); // get processor from stack for frame
       contourIp.setColor(Color.WHITE); // set plotting color

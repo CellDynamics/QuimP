@@ -12,9 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -50,21 +48,7 @@ public class FormatConverterTest {
   }
 
   /**
-   * @throws java.lang.Exception
-   */
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -75,7 +59,7 @@ public class FormatConverterTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
@@ -84,15 +68,15 @@ public class FormatConverterTest {
   /**
    * Test method for FormatConverter#generatepaQP().
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   @Ignore
   public void testGeneratepaQP() throws Exception {
-    FormatConverter fC = new FormatConverter(
+    FormatConverter fc = new FormatConverter(
             new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
 
-    accessPrivate("generatepaQP", fC, new Object[] {}, new Class<?>[] {});
+    accessPrivate("generatepaQP", fc, new Object[] {}, new Class<?>[] {});
 
     Thread.sleep(1000);
     // compare paQP
@@ -122,14 +106,14 @@ public class FormatConverterTest {
   /**
    * Test method for private FormatConverter#generatesnQP.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   @Ignore
   public void testGeneratesnQP() throws Exception {
-    FormatConverter fC = new FormatConverter(
+    FormatConverter fc = new FormatConverter(
             new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
-    accessPrivate("generatesnQP", fC, new Object[] {}, new Class<?>[] {});
+    accessPrivate("generatesnQP", fc, new Object[] {}, new Class<?>[] {});
     Thread.sleep(1000);
     // compare paQP
     // manualy generated one
@@ -158,15 +142,15 @@ public class FormatConverterTest {
   /**
    * Test method for private FormatConverter#generateOldDataFile.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   @Ignore
   public void testFormatConverterQParamsQconfPath() throws Exception {
-    QconfLoader qC = new QconfLoader(Paths
+    QconfLoader qc = new QconfLoader(Paths
             .get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF").toFile());
-    FormatConverter fC = new FormatConverter(qC);
-    accessPrivate("generateOldDataFile", fC, new Object[] {}, new Class<?>[] {});
+    FormatConverter fc = new FormatConverter(qc);
+    accessPrivate("generateOldDataFile", fc, new Object[] {}, new Class<?>[] {});
     Thread.sleep(1000);
     // compare paQP
     // manualy generated one
@@ -195,28 +179,28 @@ public class FormatConverterTest {
   /**
    * Test method for private FormatConverter#generateNewDataFile().
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   @Ignore
   public void testGenerateNewDataFile() throws Exception {
-    QconfLoader qC = new QconfLoader(new File(
+    QconfLoader qc = new QconfLoader(new File(
             "src/test/resources/FormatConverter/res/fluoreszenz-test_eq_smooth_0_expected.paQP"));
-    FormatConverter fC = new FormatConverter(qC);
-    accessPrivate("generateNewDataFile", fC, new Object[] {}, new Class<?>[] {});
+    FormatConverter fc = new FormatConverter(qc);
+    accessPrivate("generateNewDataFile", fc, new Object[] {}, new Class<?>[] {});
   }
 
   /**
    * Test method for private FormatConverter#generateOldDataFile().
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGenerateOldDataFile() throws Exception {
-    QconfLoader qC = new QconfLoader(
+    QconfLoader qc = new QconfLoader(
             new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
-    FormatConverter fC = new FormatConverter(qC);
-    accessPrivate("generateOldDataFile", fC, new Object[] {}, new Class<?>[] {});
+    FormatConverter fc = new FormatConverter(qc);
+    accessPrivate("generateOldDataFile", fc, new Object[] {}, new Class<?>[] {});
   }
 
 }

@@ -75,12 +75,12 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   public SnakeHandler(final Roi r, int frame, int id) throws Exception {
     this();
     startFrame = frame;
-    endFrame = BOA_.qState.boap.getFRAMES();
+    endFrame = BOA_.qState.boap.getFrames();
     roi = r;
     // snakes array keeps snakes across frames from current to end. Current
     // is that one for which cell has been added
-    finalSnakes = new Snake[BOA_.qState.boap.getFRAMES() - startFrame + 1]; // stored snakes
-    segSnakes = new Snake[BOA_.qState.boap.getFRAMES() - startFrame + 1]; // stored snakes
+    finalSnakes = new Snake[BOA_.qState.boap.getFrames() - startFrame + 1]; // stored snakes
+    segSnakes = new Snake[BOA_.qState.boap.getFrames() - startFrame + 1]; // stored snakes
     ID = id;
     liveSnake = new Snake(r, ID, false);
     backupLiveSnake(frame);
@@ -101,9 +101,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   public SnakeHandler(List<SegmentedShapeRoi> snakes, int id) throws BoaException {
     this();
     startFrame = snakes.get(0).getFrame(); // get first frame from outline
-    endFrame = BOA_.qState.boap.getFRAMES();
-    finalSnakes = new Snake[BOA_.qState.boap.getFRAMES() - startFrame + 1]; // stored snakes
-    segSnakes = new Snake[BOA_.qState.boap.getFRAMES() - startFrame + 1]; // stored snakes
+    endFrame = BOA_.qState.boap.getFrames();
+    finalSnakes = new Snake[BOA_.qState.boap.getFrames() - startFrame + 1]; // stored snakes
+    segSnakes = new Snake[BOA_.qState.boap.getFrames() - startFrame + 1]; // stored snakes
     ID = id;
     roi = snakes.get(0); // set initial roi to first snake
     for (SegmentedShapeRoi sS : snakes) {
@@ -543,7 +543,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    * @param frame the frame
    */
   void deleteStoreFrom(int frame) {
-    for (int i = frame; i <= BOA_.qState.boap.getFRAMES(); i++) {
+    for (int i = frame; i <= BOA_.qState.boap.getFrames(); i++) {
       deleteStoreAt(i);
     }
   }
@@ -627,13 +627,13 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    * Find the first missing contour at series of frames and set end frame to the previous one
    */
   void findLastFrame() {
-    for (int i = startFrame; i <= BOA_.qState.boap.getFRAMES(); i++) {
+    for (int i = startFrame; i <= BOA_.qState.boap.getFrames(); i++) {
       if (!isStoredAt(i)) {
         endFrame = i - 1;
         return;
       }
     }
-    endFrame = BOA_.qState.boap.getFRAMES();
+    endFrame = BOA_.qState.boap.getFrames();
   }
 
   /*

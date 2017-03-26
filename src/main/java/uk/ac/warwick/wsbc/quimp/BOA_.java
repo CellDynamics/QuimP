@@ -1171,6 +1171,13 @@ public class BOA_ implements PlugIn {
     }
 
     /**
+     * Update static fileds on window.
+     */
+    private void updateStatics() {
+      setScalesText();
+    }
+
+    /**
      * Update Choices.
      * 
      * <p>This method is called from CustomStackWindow.itemStateChanged(ItemEvent) to update colors
@@ -1247,6 +1254,7 @@ public class BOA_ implements PlugIn {
     private void updateWindowState() {
       updateCheckBoxes(); // update checkboxes
       updateChoices(); // and choices
+      updateStatics();
 
       // Rule 1 - NONE on any slot in filters disable GUI button and Active checkbox
       if (chFirstPluginName.getSelectedItem() == NONE) {
@@ -1357,8 +1365,8 @@ public class BOA_ implements PlugIn {
         bnSeg.setLabel("computing");
         int framesCompleted;
         try {
-          runBoa(qState.boap.frame, qState.boap.getFRAMES());
-          framesCompleted = qState.boap.getFRAMES();
+          runBoa(qState.boap.frame, qState.boap.getFrames());
+          framesCompleted = qState.boap.getFrames();
           IJ.showStatus("COMPLETE");
         } catch (BoaException be) {
           BOA_.log(be.getMessage());
@@ -1369,9 +1377,10 @@ public class BOA_ implements PlugIn {
         bnSeg.setLabel("SEGMENT");
       } else if (b == bnLoad) {
         try {
+          LOGGER.warn("Image scale and frame interval are not restored from loaded file");
           if (qState.readParams()) {
             updateSpinnerValues();
-            if (loadSnakes()) {
+            if (loadSnakes()) { // TODO load only parameters not snakes
               run = false;
             } else {
               run = true;
@@ -1525,55 +1534,9 @@ public class BOA_ implements PlugIn {
       if (b == menuLoad) {
         OpenDialog od = new OpenDialog(
                 "Load global config data...(*" + FileExtensions.newConfigFileExt + ")", "");
-        if (od.getFileName() != null) {
+        if (od.getPath() != null) {
           try {
-            Serializer<DataContainer> loaded; // loaded instance
-            // create serializer
-            Serializer<DataContainer> s = new Serializer<>(DataContainer.class, QuimP.TOOL_VERSION);
-            s.registerConverter(new Converter170202<>(QuimP.TOOL_VERSION));
-            s.registerInstanceCreator(DataContainer.class,
-                    new DataContainerInstanceCreator(pluginFactory, viewUpdater));
-            loaded = s.load(od.getDirectory() + od.getFileName());
-            // check against image names
-            if (!loaded.obj.BOAState.boap.getOrgFile().getName()
-                    .equals(qState.boap.getOrgFile().getName())) {
-              LOGGER.warn("The image opened currently in BOA is different from those"
-                      + " pointed in configuration file");
-              log("Trying to apply configuration saved for other image");
-              YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Warning",
-                      "Trying to load configuration that does not\nmath to"
-                              + " opened image.\nAre you sure?");
-              if (!yncd.yesPressed()) {
-                return;
-              }
-            }
-            // replace orgFile with that already opened. It is possible as BOA can not
-            // exist without image loaded so this field will always be true.
-            loaded.obj.BOAState.boap.setOrgFile(qState.boap.getOrgFile());
-            // replace outputFileCore with current one
-            loaded.obj.BOAState.boap.setOutputFileCore(
-                    od.getDirectory() + QuimpToolsCollection.removeExtension(od.getFileName()));
-            // closes windows, etc
-            qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
-            qState = loaded.obj.BOAState;
-            imageGroup.updateNest(qState.nest); // reconnect nest to external class
-            qState.restore(qState.boap.frame); // copy from snapshots to current object
-            updateSpinnerValues(); // update segmentation gui
-            // refill frame zoom choice to make possible selection last zoomed cell (called from
-            // updateChoice)
-            fillZoomChoice();
-            // do not recalculatePlugins here because pluginList is empty and this
-            // method will update finalSnake overriding it by segSnake (because on
-            // empty list they are just copied)
-            // updateToFrame calls updateSliceSelector only if there is action of
-            // changing frame. If loaded frame is the same as current one this event is
-            // not called.
-            if (qState.boap.frame != imageGroup.getOrgIpl().getSlice()) {
-              // move to frame (will call updateSliceSelector)
-              imageGroup.updateToFrame(qState.boap.frame);
-            } else {
-              updateSliceSelector(); // repaint window explicitly
-            }
+            loadQconfConfiguration(Paths.get(od.getPath()));
           } catch (IOException e1) {
             LOGGER.error("Problem with loading plugin config. " + e1.getMessage());
             LOGGER.debug(e1.getMessage(), e1); // if debug enabled - get more info
@@ -1673,6 +1636,74 @@ public class BOA_ implements PlugIn {
         }
         // imageGroup.setSlice(1);
       }
+    }
+
+    /**
+     * Loader of QCONF file in BOA. Initialise all BOA structures and updates window.
+     * 
+     * <p>Assign also format converter. This method partially updates UI but some other related
+     * methods are called from {@link #actionPerformed(ActionEvent)}.
+     * 
+     * @param configPath path to QCONF file
+     * @throws IOException on file problem
+     * @throws Exception various other problems like e.g json syntax
+     * @see #updateWindowState()
+     */
+    private void loadQconfConfiguration(Path configPath) throws IOException, Exception {
+      Serializer<DataContainer> loaded; // loaded instance
+      // create serializer
+      Serializer<DataContainer> s = new Serializer<>(DataContainer.class, QuimP.TOOL_VERSION);
+      s.registerConverter(new Converter170202<>(QuimP.TOOL_VERSION));
+      s.registerInstanceCreator(DataContainer.class,
+              new DataContainerInstanceCreator(pluginFactory, viewUpdater));
+      loaded = s.load(configPath.toString());
+      // check against image names
+      if (!loaded.obj.BOAState.boap.getOrgFile().getName()
+              .equals(qState.boap.getOrgFile().getName())) {
+        LOGGER.warn("The image opened currently in BOA is different from those"
+                + " pointed in configuration file");
+        log("Trying to apply configuration saved for other image");
+        YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Warning",
+                "Trying to load configuration that does not\nmath to"
+                        + " opened image.\nAre you sure?");
+        if (!yncd.yesPressed()) {
+          return;
+        }
+      }
+      // replace orgFile with that already opened. It is possible as BOA can not
+      // exist without image loaded so this field will always be true.
+      loaded.obj.BOAState.boap.setOrgFile(qState.boap.getOrgFile());
+      // replace outputFileCore with current one
+      String parent;
+      if (configPath.getParent() != null) {
+        parent = configPath.getParent().toString();
+      } else {
+        parent = "";
+      }
+      loaded.obj.BOAState.boap.setOutputFileCore(
+              parent + QuimpToolsCollection.removeExtension(configPath.getFileName().toString()));
+      // closes windows, etc
+      qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
+      qState = loaded.obj.BOAState;
+      imageGroup.updateNest(qState.nest); // reconnect nest to external class
+      qState.restore(qState.boap.frame); // copy from snapshots to current object
+      updateSpinnerValues(); // update segmentation gui
+      // refill frame zoom choice to make possible selection last zoomed cell (called from
+      // updateChoice)
+      fillZoomChoice();
+      // do not recalculatePlugins here because pluginList is empty and this
+      // method will update finalSnake overriding it by segSnake (because on
+      // empty list they are just copied)
+      // updateToFrame calls updateSliceSelector only if there is action of
+      // changing frame. If loaded frame is the same as current one this event is
+      // not called.
+      if (qState.boap.frame != imageGroup.getOrgIpl().getSlice()) {
+        // move to frame (will call updateSliceSelector)
+        imageGroup.updateToFrame(qState.boap.frame);
+      } else {
+        updateSliceSelector(); // repaint window explicitly
+      }
+      BOA_.log("Successfully read configuration");
     }
 
     /**
@@ -1944,7 +1975,7 @@ public class BOA_ implements PlugIn {
     }
 
     /**
-     * Sets the scales text.
+     * Set frame interval and scale on BOA window..
      */
     void setScalesText() {
       pixelLabel.setText("Scale: " + IJ.d2s(qState.boap.getImageScale(), 6) + " \u00B5m");
@@ -2269,11 +2300,11 @@ public class BOA_ implements PlugIn {
   }
 
   /**
-   * Load snakes.
+   * Load snakes from snQP file.
    *
    * @return true, if successful
    */
-  boolean loadSnakes() {
+  private boolean loadSnakes() {
 
     YesNoCancelDialog yncd = new YesNoCancelDialog(IJ.getInstance(), "Load associated snakes?",
             "\tLoad associated snakes?\n");
@@ -2807,7 +2838,7 @@ class ImageGroup {
   }
 
   public void clearPaths(int fromFrame) {
-    for (int i = fromFrame; i <= BOA_.qState.boap.getFRAMES(); i++) {
+    for (int i = fromFrame; i <= BOA_.qState.boap.getFrames(); i++) {
       pathsIp = pathsStack.getProcessor(i);
       pathsIp.setValue(0);
       pathsIp.fill();
@@ -2844,7 +2875,7 @@ class ImageGroup {
       // for colour:
       // if(boap.drawColor) intensity = n.colour.getColorInt();
 
-      if (BOA_.qState.boap.getHEIGHT() > 800) {
+      if (BOA_.qState.boap.getHeight() > 800) {
         drawPixel(x, y, intensity, true, ip);
       } else {
         drawPixel(x, y, intensity, false, ip);
@@ -2874,7 +2905,7 @@ class ImageGroup {
     contourIpl.setSlice(1);
     ImageProcessor contourIp;
 
-    for (int i = 1; i <= BOA_.qState.boap.getFRAMES(); i++) { // copy original
+    for (int i = 1; i <= BOA_.qState.boap.getFrames(); i++) { // copy original
       orgIp = orgStack.getProcessor(i);
       contourIp = contourStack.getProcessor(i);
       contourIp.copyBits(orgIp, 0, 0, Blitter.COPY);
@@ -2976,7 +3007,7 @@ class ImageGroup {
     int y;
     for (int s = 0; s < nest.size(); s++) {
       snakeH = nest.getHandler(s);
-      for (int i = 1; i <= BOA_.qState.boap.getFRAMES(); i++) {
+      for (int i = 1; i <= BOA_.qState.boap.getFrames(); i++) {
         if (snakeH.isStoredAt(i)) {
           snake = snakeH.getStoredSnake(i);
           ip = stack.getProcessor(i);

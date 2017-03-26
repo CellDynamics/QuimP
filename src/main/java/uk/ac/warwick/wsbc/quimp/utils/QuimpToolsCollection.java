@@ -171,7 +171,7 @@ public class QuimpToolsCollection {
     // extract fileName without extension
 
     int dotI = filename.lastIndexOf(".");
-    if (dotI > 0) {
+    if (dotI > 0 && filename.length() - dotI <= 6) { // assume extension of length max 5+dot
       filename = filename.substring(0, dotI);
     }
     return filename;
