@@ -335,7 +335,7 @@ public class QconfLoader {
    */
   public OutlinesCollection getECMM() throws QuimpException {
     if (isECMMPresent())
-      return ((QParamsQconf) getQp()).getLoadedDataContainer().getECMMState();
+      return ((QParamsQconf) getQp()).getLoadedDataContainer().getEcmmState();
     else
       throw new QuimpException("ECMM data not found in QCONF file. Run ECMM first.");
   }

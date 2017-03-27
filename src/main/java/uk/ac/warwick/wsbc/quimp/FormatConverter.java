@@ -42,8 +42,29 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
  * {@link #generateNewDataFile()}.
  * 
  * <p>This method is related to fields that are non-transient and any change there should be
- * reflected
- * here.
+ * reflected here.
+ * 
+ * <p>Due to randomness during creating Snakes or Outlines (head node is picked randomly on
+ * {@link Shape#removePoint(PointsList, boolean)} these objects stored in QCONF may differ from snQP
+ * representation. There are the following rules:
+ * <ol>
+ * <li>snQP--QCONF conversion</li>
+ * <ol>
+ * <li>nest:liveSnake is filled but <b>should not be used</b></li>
+ * <li>nest:finalSnake: is filled and it is a converted snQP. Starting node may be different than in
+ * snQP
+ * <li>ECMMState:outlines contains copied finalSnakes but due to conversion starting nodes can be
+ * different than in nest:liveSnake
+ * </ol>
+ * <li>QCONF--paQP</li>
+ * <ol>
+ * <li>Snakes in snQP are in the same order like:
+ * <ol>
+ * <li>nest:finalSnakes if there is no ECCM data
+ * <li>ECMMState:outlines if there is ECMM data
+ * </ol>
+ * </ol>
+ * </ol>
  * 
  * @author p.baniukiewicz
  *
@@ -315,7 +336,7 @@ public class FormatConverter {
       throw new IllegalArgumentException("Can not convert from old format to old");
     }
     DataContainer dt = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
-    if (dt.getECMMState() == null) {
+    if (dt.getEcmmState() == null) {
       generatepaQP(); // no ecmm data write snakes only
     } else {
       generatesnQP(); // write ecmm data
@@ -356,7 +377,7 @@ public class FormatConverter {
     // replace location to location of QCONF
     DataContainer dt = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
     dt.BOAState.boap.setOutputFileCore(path + File.separator + filename.toString());
-    Iterator<OutlineHandler> ohi = dt.getECMMState().oHs.iterator();
+    Iterator<OutlineHandler> ohi = dt.getEcmmState().oHs.iterator();
     do {
       ((QParamsQconf) qcL.getQp()).setActiveHandler(activeHandler++);
       OutlineHandler oh = ohi.next();

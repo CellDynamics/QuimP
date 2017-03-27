@@ -236,11 +236,11 @@ public class QParamsQconf extends QParams {
               .getStartFrame());
       super.setEndFrame(
               getLoadedDataContainer().getBOAState().nest.getHandler(currentHandler).getEndFrame());
-      if (getLoadedDataContainer().getECMMState() != null) {
+      if (getLoadedDataContainer().getEcmmState() != null) {
         super.setStartFrame(
-                getLoadedDataContainer().getECMMState().oHs.get(currentHandler).getStartFrame());
+                getLoadedDataContainer().getEcmmState().oHs.get(currentHandler).getStartFrame());
         super.setEndFrame(
-                getLoadedDataContainer().getECMMState().oHs.get(currentHandler).getEndFrame());
+                getLoadedDataContainer().getEcmmState().oHs.get(currentHandler).getEndFrame());
       }
       // fill only if ANA has been run
       if (getLoadedDataContainer().getANAState() != null) {

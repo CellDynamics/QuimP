@@ -24,7 +24,7 @@ public class FormatConverterRun {
     // FormatConverter fc = new FormatConverter(
     // new File("src/test/resources/formatconv/currenttest/fluoreszenz-test.QCONF"));
     FormatConverter fc = new FormatConverter(new File("/home/baniuk/Desktop/Tests/146/"
-            + "saveAsPAQPtoQCONF/July14ABD_GFP_actin_twoCells_0.paQP"));
+            + "saveAsQCONF (copy)/July14ABD_GFP_actin_twoCells.QCONF"));
     fc.showConversionCapabilities(ij);
     fc.doConversion();
   }
