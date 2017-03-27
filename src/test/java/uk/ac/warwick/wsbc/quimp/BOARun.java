@@ -39,7 +39,7 @@ public class BOARun {
    * @throws InterruptedException Runner for BOA plugin
    */
   public static void main(String[] args) throws InterruptedException {
-    QuimP.newFileFormat = true;
+    QuimP.newFileFormat = false;
     ImagePlus img;
     ImageJ ij = new ImageJ();
     // create synchronization latch

@@ -8,6 +8,7 @@ import java.awt.Choice;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -86,6 +87,7 @@ import uk.ac.warwick.wsbc.quimp.BOAState.BOAp;
 import uk.ac.warwick.wsbc.quimp.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.quimp.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
+import uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.quimp.filesystem.StatsCollection;
 import uk.ac.warwick.wsbc.quimp.filesystem.versions.Converter170202;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
@@ -1516,23 +1518,32 @@ public class BOA_ implements PlugIn {
        * loading.
        */
       if (b == menuLoad || b == bnLoad) {
+        QuimpConfigFilefilter fileFilter;
+
+        FileDialog od = new FileDialog(IJ.getInstance());
+        od.setDirectory(OpenDialog.getLastDirectory());
+        od.setMultipleMode(false);
+        od.setMode(FileDialog.LOAD);
         try {
-          String loadStr = "";
           if (QuimP.newFileFormat == true) { // load QCONF
-            loadStr = "Load global config data...(*" + FileExtensions.newConfigFileExt + ")";
-            OpenDialog od = new OpenDialog(loadStr, "");
-            if (od.getPath() == null) {
+            fileFilter = new QuimpConfigFilefilter(FileExtensions.newConfigFileExt);
+            od.setTitle("Open paramater file " + fileFilter.toString());
+            od.setFilenameFilter(fileFilter);
+            od.setVisible(true);
+            if (od.getFile() == null) {
               return;
             }
-            loadQconfConfiguration(Paths.get(od.getPath()));
+            loadQconfConfiguration(Paths.get(od.getDirectory(), od.getFile()));
           }
           if (QuimP.newFileFormat == false) { // old paQP and snQP
-            loadStr = "Load global config data...(*" + FileExtensions.configFileExt + ")";
-            OpenDialog od = new OpenDialog(loadStr, "");
-            if (od.getPath() == null) {
+            fileFilter = new QuimpConfigFilefilter(FileExtensions.configFileExt);
+            od.setTitle("Open paramater file " + fileFilter.toString());
+            od.setFilenameFilter(fileFilter);
+            od.setVisible(true);
+            if (od.getFile() == null) {
               return;
             }
-            if (qState.readParams(new File(od.getDirectory(), od.getFileName()))) {
+            if (qState.readParams(new File(od.getDirectory(), od.getFile()))) {
               updateSpinnerValues();
               if (loadSnakes()) {
                 run = false;
