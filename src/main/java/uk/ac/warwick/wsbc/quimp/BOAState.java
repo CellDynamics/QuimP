@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import ij.ImagePlus;
 import ij.io.FileInfo;
-import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
@@ -1130,6 +1129,8 @@ public class BOAState implements IQuimpSerialize {
    * 
    * <p>readParams method reads <i>paQP</i> master file, referencing other associated files.
    * 
+   * @param paramFile paQP configuration file
+   * 
    * @return Status of operation, true when file has been loaded successfully, false when file has
    *         not been opened correctly or {@link uk.ac.warwick.wsbc.quimp.QParams#readParams()}
    *         returned false
@@ -1137,13 +1138,8 @@ public class BOAState implements IQuimpSerialize {
    * @see <a href=
    *      "http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/176#comment:3">ticket/176</a>
    */
-  public boolean readParams() {
-    OpenDialog od =
-            new OpenDialog("Open paramater file (" + FileExtensions.configFileExt + ")...", "");
-    if (od.getFileName() == null) {
-      return false;
-    }
-    boap.readQp = new QParams(new File(od.getDirectory(), od.getFileName()));
+  public boolean readParams(File paramFile) {
+    boap.readQp = new QParams(paramFile);
 
     try {
       boap.readQp.readParams();

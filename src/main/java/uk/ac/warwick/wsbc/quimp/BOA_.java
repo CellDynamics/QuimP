@@ -8,6 +8,7 @@ import java.awt.Choice;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -86,6 +87,7 @@ import uk.ac.warwick.wsbc.quimp.BOAState.BOAp;
 import uk.ac.warwick.wsbc.quimp.SnakePluginList.Plugin;
 import uk.ac.warwick.wsbc.quimp.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
+import uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.quimp.filesystem.StatsCollection;
 import uk.ac.warwick.wsbc.quimp.filesystem.versions.Converter170202;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
@@ -1375,22 +1377,6 @@ public class BOA_ implements PlugIn {
           BOA_.log("FAIL AT " + framesCompleted);
         }
         bnSeg.setLabel("SEGMENT");
-      } else if (b == bnLoad) {
-        try {
-          LOGGER.warn("Image scale and frame interval are not restored from loaded file");
-          if (qState.readParams()) {
-            updateSpinnerValues();
-            if (loadSnakes()) { // TODO load only parameters not snakes
-              run = false;
-            } else {
-              run = true;
-            }
-
-          }
-        } catch (Exception ex) {
-          IJ.error("Exception when reading parameters from file...");
-        }
-
       } else if (b == bnScale) {
         setScales();
         pixelLabel.setText("Scale: " + IJ.d2s(qState.boap.getImageScale(), 6) + " \u00B5m");
@@ -1525,28 +1511,57 @@ public class BOA_ implements PlugIn {
       }
 
       /**
-       * Load global config - QCONF file.
+       * Load global config - QCONF file or paQP file. It depends on QuimP.newFileFormat
        * 
        * Checks also whether the name of the image sealed in config file is the same as those
        * opened currently. If not user has an option to break the procedure or continue
        * loading.
        */
-      if (b == menuLoad) {
-        OpenDialog od = new OpenDialog(
-                "Load global config data...(*" + FileExtensions.newConfigFileExt + ")", "");
-        if (od.getPath() != null) {
-          try {
-            loadQconfConfiguration(Paths.get(od.getPath()));
-          } catch (IOException e1) {
-            LOGGER.error("Problem with loading plugin config. " + e1.getMessage());
-            LOGGER.debug(e1.getMessage(), e1); // if debug enabled - get more info
-          } catch (JsonSyntaxException e1) {
-            LOGGER.error("Problem with configuration file: " + e1.getMessage());
-            LOGGER.debug(e1.getMessage(), e1);
-          } catch (Exception e1) {
-            LOGGER.error(e1.getMessage(), e1); // something serious
+      if (b == menuLoad || b == bnLoad) {
+        QuimpConfigFilefilter fileFilter;
+
+        FileDialog od = new FileDialog(IJ.getInstance());
+        od.setDirectory(OpenDialog.getLastDirectory());
+        od.setMultipleMode(false);
+        od.setMode(FileDialog.LOAD);
+        try {
+          if (QuimP.newFileFormat == true) { // load QCONF
+            fileFilter = new QuimpConfigFilefilter(FileExtensions.newConfigFileExt);
+            od.setTitle("Open paramater file " + fileFilter.toString());
+            od.setFilenameFilter(fileFilter);
+            od.setVisible(true);
+            if (od.getFile() == null) {
+              return;
+            }
+            loadQconfConfiguration(Paths.get(od.getDirectory(), od.getFile()));
           }
+          if (QuimP.newFileFormat == false) { // old paQP and snQP
+            fileFilter = new QuimpConfigFilefilter(FileExtensions.configFileExt);
+            od.setTitle("Open paramater file " + fileFilter.toString());
+            od.setFilenameFilter(fileFilter);
+            od.setVisible(true);
+            if (od.getFile() == null) {
+              return;
+            }
+            if (qState.readParams(new File(od.getDirectory(), od.getFile()))) {
+              updateSpinnerValues();
+              if (loadSnakes()) {
+                run = false;
+              } else {
+                run = true;
+              }
+            }
+          }
+        } catch (IOException e1) {
+          LOGGER.error("Problem with loading plugin config. " + e1.getMessage());
+          LOGGER.debug(e1.getMessage(), e1); // if debug enabled - get more info
+        } catch (JsonSyntaxException e1) {
+          LOGGER.error("Problem with configuration file: " + e1.getMessage());
+          LOGGER.debug(e1.getMessage(), e1);
+        } catch (Exception e1) {
+          LOGGER.error(e1.getMessage(), e1); // something serious
         }
+
       }
 
       /**
