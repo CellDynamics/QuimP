@@ -511,7 +511,7 @@ public class QParams {
       NMAX = (int) QuimpToolsCollection.s2d(d.readLine());
       delta_t = QuimpToolsCollection.s2d(d.readLine());
       max_iterations = (int) QuimpToolsCollection.s2d(d.readLine());
-      nodeRes = (int) QuimpToolsCollection.s2d(d.readLine());
+      nodeRes = QuimpToolsCollection.s2d(d.readLine());
       blowup = (int) QuimpToolsCollection.s2d(d.readLine());
       sample_tan = (int) QuimpToolsCollection.s2d(d.readLine());
       sample_norm = (int) QuimpToolsCollection.s2d(d.readLine());
