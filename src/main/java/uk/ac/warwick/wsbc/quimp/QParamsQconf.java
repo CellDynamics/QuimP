@@ -125,8 +125,8 @@ public class QParamsQconf extends QParams {
                                                             // methods still need it
       // update path and file core name
       if (getLoadedDataContainer().getBOAState() != null)
-        getLoadedDataContainer().getBOAState().boap.setOutputFileCore(
-                QuimpToolsCollection.removeExtension(newParamFile.getAbsolutePath()));
+        getLoadedDataContainer().getBOAState().boap
+                .setOutputFileCore(newParamFile.getAbsolutePath());
     } catch (Exception e) { // stop on fail (file or json error)
       LOGGER.error(e.getMessage());
       LOGGER.debug(e.getMessage(), e);
