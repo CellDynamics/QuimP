@@ -60,8 +60,8 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
  * <ol>
  * <li>Snakes in snQP are in the same order like:
  * <ol>
- * <li>nest:finalSnakes if there is no ECCM data
- * <li>ECMMState:outlines if there is ECMM data
+ * <li>nest:finalSnakes if there is no ECCM data (position is used)
+ * <li>ECMMState:outlines if there is ECMM data (coord is used)
  * </ol>
  * </ol>
  * </ol>

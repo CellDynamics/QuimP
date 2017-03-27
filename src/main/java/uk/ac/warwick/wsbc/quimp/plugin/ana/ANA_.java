@@ -367,7 +367,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     pd.addCheckbox("Copy results to IJ Table?", anap.fluoResultTable);
     pd.addDialogListener(this);
 
-    frameOneClone = (Outline) oh.indexGetOutline(0).clone();
+    frameOneClone = (Outline) oh.indexGetOutline(0).clone(); // FIXME Change to copy constructor
     drawOutlineAsOverlay(frameOneClone, Color.RED);
     shrink(frameOneClone);
     drawOutlineAsOverlay(frameOneClone, Color.RED);
@@ -415,7 +415,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
       cb.setState(true);
     }
 
-    frameOneClone = (Outline) oh.indexGetOutline(0).clone();
+    frameOneClone = (Outline) oh.indexGetOutline(0).clone(); // FIXME Change to copy constructor
     overlay.clear();
     drawOutlineAsOverlay(frameOneClone, Color.RED);
     shrink(frameOneClone);
