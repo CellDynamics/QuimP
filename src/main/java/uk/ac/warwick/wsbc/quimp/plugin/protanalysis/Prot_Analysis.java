@@ -44,7 +44,6 @@ import uk.ac.warwick.wsbc.quimp.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.quimp.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
-import uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpPlugin;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
@@ -152,8 +151,7 @@ public class Prot_Analysis implements IQuimpPlugin {
   private void loadFile(File paramFile) throws QuimpException {
     if (qconfLoader == null || qconfLoader.getQp() == null) {
       // load new file
-      qconfLoader = new QconfLoader(paramFile,
-              new QuimpConfigFilefilter(FileExtensions.newConfigFileExt));
+      qconfLoader = new QconfLoader(paramFile, FileExtensions.newConfigFileExt);
       if (qconfLoader.getQp() == null)
         return; // not loaded
       if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path

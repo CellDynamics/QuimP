@@ -12,7 +12,6 @@ import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
-import uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.quimp.registration.Registration;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
@@ -149,8 +148,7 @@ public abstract class PluginTemplate implements IQuimpPlugin {
   private void loadFile(File paramFile) throws QuimpException {
     if (qconfLoader == null || qconfLoader.getQp() == null) {
       // load new file
-      qconfLoader = new QconfLoader(paramFile,
-              new QuimpConfigFilefilter(FileExtensions.newConfigFileExt));
+      qconfLoader = new QconfLoader(paramFile, FileExtensions.newConfigFileExt);
       if (qconfLoader.getQp() == null) {
         return; // not loaded
       }

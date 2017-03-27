@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.quimp.filesystem;
 
-import java.awt.FileDialog;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,10 +15,10 @@ import ij.WindowManager;
 import ij.io.FileInfo;
 import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.quimp.BOAState;
+import uk.ac.warwick.wsbc.quimp.BOAState.BOAp;
 import uk.ac.warwick.wsbc.quimp.QParams;
 import uk.ac.warwick.wsbc.quimp.QParamsQconf;
 import uk.ac.warwick.wsbc.quimp.QuimpException;
-import uk.ac.warwick.wsbc.quimp.BOAState.BOAp;
 import uk.ac.warwick.wsbc.quimp.plugin.bar.QuimP_Bar;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
 
@@ -64,11 +63,11 @@ public class QconfLoader {
    * Parametrised constructor. Allow to choose file selector filter.
    * 
    * @param file File *.paQP/QCONF. If <tt>null</tt> user is asked for this file.
-   * @param fileFilter pre-selection filter or <tt>null</tt> to use default selected in QuimP_Bar.
+   * @param fileExt pre-selection extension or <tt>null</tt> to use default selected in QuimP_Bar.
    * @throws QuimpException when file can not be loaded
    */
-  public QconfLoader(File file, QuimpConfigFilefilter fileFilter) throws QuimpException {
-    loader(file, fileFilter);
+  public QconfLoader(File file, String fileExt) throws QuimpException {
+    loader(file, fileExt);
 
   }
 
@@ -88,25 +87,18 @@ public class QconfLoader {
    * File loaded and initialiser for this class.
    * 
    * @param file File *.paQP/QCONF. If <tt>null</tt> user is asked for this file.
-   * @param fileFilter pre-selection filter or null to use default selected in QuimP_Bar.
+   * @param fileExt pre-selection extension or null to use default selected in QuimP_Bar.
    * @throws QuimpException when file can not be loaded
    * @see QuimP_Bar
    */
-  private void loader(File file, QuimpConfigFilefilter fileFilter) throws QuimpException {
+  private void loader(File file, String fileExt) throws QuimpException {
     String directory; // directory with paQP
     String filename; // file name of paQP
 
     if (file == null) { // no file provided, ask user
-      if (fileFilter == null)
-        fileFilter = new QuimpConfigFilefilter(); // use default engine for finding ext.
-      FileDialog od =
-              new FileDialog(IJ.getInstance(), "Open paramater file " + fileFilter.toString());
-      od.setFilenameFilter(fileFilter);
+      FileDialogEx od = new FileDialogEx(IJ.getInstance(), fileExt);
       od.setDirectory(OpenDialog.getLastDirectory());
-      od.setMultipleMode(false);
-      od.setMode(FileDialog.LOAD);
-      od.setVisible(true);
-      if (od.getFile() == null) {
+      if (od.showOpenDialog() == null) {
         IJ.log("Cancelled - exiting...");
         return;
       }

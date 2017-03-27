@@ -2,7 +2,6 @@ package uk.ac.warwick.wsbc.quimp.plugin.bar;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -18,7 +17,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -53,8 +51,8 @@ import uk.ac.warwick.wsbc.quimp.QuimP;
 import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.quimp.QuimpVersion;
+import uk.ac.warwick.wsbc.quimp.filesystem.FileDialogEx;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
-import uk.ac.warwick.wsbc.quimp.filesystem.QuimpConfigFilefilter;
 import uk.ac.warwick.wsbc.quimp.registration.Registration;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 import uk.ac.warwick.wsbc.quimp.utils.UiTools;
@@ -477,22 +475,16 @@ public class QuimP_Bar implements PlugIn, ActionListener {
       return;
     }
     if (e.getSource() == menuFormatConverter) { // convert between file formats
-      QuimpConfigFilefilter fileFilter = new QuimpConfigFilefilter(FileExtensions.newConfigFileExt,
+      FileDialogEx od = new FileDialogEx(IJ.getInstance(), FileExtensions.newConfigFileExt,
               FileExtensions.configFileExt);
-      FileDialog od =
-              new FileDialog(IJ.getInstance(), "Open paramater file " + fileFilter.toString());
-      od.setFilenameFilter(fileFilter);
       od.setDirectory(OpenDialog.getLastDirectory());
-      od.setMultipleMode(false);
-      od.setMode(FileDialog.LOAD);
-      od.setVisible(true);
-      if (od.getFile() == null) {
+      if (od.showOpenDialog() == null) {
         IJ.log("Cancelled - exiting...");
         return;
       }
       try {
         // load config file but check if it is new format or old
-        FormatConverter formatConv = new FormatConverter(new File(od.getDirectory(), od.getFile()));
+        FormatConverter formatConv = new FormatConverter(od.getPath().toFile());
         formatConv.showConversionCapabilities(frame);
         formatConv.doConversion();
       } catch (QuimpException qe) {
