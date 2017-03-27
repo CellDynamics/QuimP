@@ -167,7 +167,7 @@ public class Q_Analysis {
   private void runFromQconf() throws QuimpException, IOException {
     int i = 0;
     QParamsQconf qp = (QParamsQconf) qconfLoader.getQp();
-    Iterator<OutlineHandler> oi = qp.getLoadedDataContainer().getECMMState().oHs.iterator();
+    Iterator<OutlineHandler> oi = qp.getLoadedDataContainer().getEcmmState().oHs.iterator();
     ArrayList<STmap> tmp = new ArrayList<>();
     while (oi.hasNext()) {
       qp.setActiveHandler(i++); // set current handler number.

@@ -184,7 +184,7 @@ public class Prot_Analysis implements IQuimpPlugin {
   private void runFromQCONF() throws QuimpException, IOException {
     STmap[] stMap = ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getQState();
     OutlinesCollection oHs =
-            ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getECMMState();
+            ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getEcmmState();
     TrackVisualisation.Stack visStackDynamic = null;
     TrackVisualisation.Image visStackStatic = null;
     TrackVisualisation.Stack visStackOutline = null;

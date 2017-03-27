@@ -400,8 +400,11 @@ public class Nest implements IQuimpSerialize {
   /**
    * Store OutlineHandler as finalSnake.
    * 
-   * Use {@link uk.ac.warwick.wsbc.quimp.SnakeHandler#copyFromFinalToSeg()} to populate snake over
+   * <p>Use {@link uk.ac.warwick.wsbc.quimp.SnakeHandler#copyFromFinalToSeg()} to populate snake
+   * over
    * segSnakes.
+   * 
+   * <p>Conversion to Snakes is through Rois
    * 
    * @param oH
    */

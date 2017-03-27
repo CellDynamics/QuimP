@@ -630,6 +630,42 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
   }
 
   /**
+   * Convert coordinate of Shape to array.
+   * 
+   * @return x-coordinates of Outline as array
+   */
+  public double[] xtoArr() {
+    double[] arry = new double[POINTS];
+
+    T v = head;
+    int i = 0;
+    do {
+      arry[i] = v.getX();
+      i++;
+      v = v.getNext();
+    } while (!v.isHead());
+    return arry;
+  }
+
+  /**
+   * Convert coordinate of Shape to array.
+   * 
+   * @return y-coordinates of Outline as array
+   */
+  public double[] ytoArr() {
+    double[] arry = new double[POINTS];
+
+    T v = head;
+    int i = 0;
+    do {
+      arry[i] = v.getY();
+      i++;
+      v = v.getNext();
+    } while (!v.isHead());
+    return arry;
+  }
+
+  /**
    * Converts list of Elements (Node, Snake) to ArrayList. Fill <tt>Elements</tt> field.
    * 
    * @see uk.ac.warwick.wsbc.quimp.Shape#clearElements()

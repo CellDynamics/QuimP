@@ -17,7 +17,6 @@ import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Collection of outlines for subsequent frames (<it>f1</it> and <it>f2</it>) for one cell.
  * 
@@ -247,10 +246,12 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
     maxLength = 0;
     // maxFlu = 0.;
-    int N;
+    int nn;
     int index;
     double length;
-    Vert head, n, prevn;
+    Vert head;
+    Vert n;
+    Vert prevn;
     size = 0;
 
     try {
@@ -260,8 +261,8 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         if (thisLine.startsWith("#")) {
           continue;
         }
-        N = (int) QuimpToolsCollection.s2d(thisLine);
-        for (int i = 0; i < N; i++) {
+        nn = (int) QuimpToolsCollection.s2d(thisLine);
+        for (int i = 0; i < nn; i++) {
           // System.out.println(br.readLine() + ", " + );
           br.readLine();
           // br.readLine();
@@ -288,9 +289,9 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         prevn = head;
         index++;
 
-        N = (int) QuimpToolsCollection.s2d(thisLine);
+        nn = (int) QuimpToolsCollection.s2d(thisLine);
 
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < nn; i++) {
           thisLine = br.readLine();
           String[] split = thisLine.split("\t");
           n = new Vert(index);
@@ -331,7 +332,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         prevn.setNext(head);
         head.setPrev(prevn);
 
-        Outline tmp = new Outline(head, N + 1); // dont forget the head node
+        Outline tmp = new Outline(head, nn + 1); // dont forget the head node
         tmp.removeVert(head); // WARN potential incompatibility with old code.
         // old constructor made copy of this list and deleted
         // first dummy node. Now it just covers this list
@@ -340,6 +341,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         outlines[s] = new Outline(tmp);
         outlines[s].updateNormales(true);
         outlines[s].makeAntiClockwise();
+        outlines[s].coordReset(); // there is no cord data in snQP file this set it as Position.
         length = outlines[s].getLength();
         if (length > maxLength) {
           maxLength = length;
@@ -494,14 +496,14 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
    * Write <b>this</b> outline to disk.
    * 
    * @param outFile file to save
-   * @param ECMMrun was ECMM run?
+   * @param isEccmRun was ECMM run?
    */
-  public void writeOutlines(File outFile, boolean ECMMrun) {
+  public void writeOutlines(File outFile, boolean isEccmRun) {
     LOGGER.debug("Write outline at: " + outFile);
     try {
       PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
       pw.write("#QuimP11 node data");
-      if (ECMMrun) {
+      if (isEccmRun) {
         pw.print("-ECMM");
       }
       pw.write("\n#Node Position\tX-coord\tY-coord\tOrigin\tG-Origin\tSpeed");
@@ -520,31 +522,9 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     }
   }
 
-  /**
-   * @param f
-   * @param o
-   */
-  @Deprecated
-  static public void writeSingle(String f, Outline o) {
-    try {
-      File outFile = new File("/Users/rtyson/Documents/phd/tmp/" + f);
-      if (outFile.exists()) {
-        outFile.delete();
-      }
-      PrintWriter pw = new PrintWriter(new FileWriter(outFile), true); // auto flush
-      pw.print("#");
-      OutlineHandler.write(pw, o.getNumVerts(), o.getHead());
-      pw.close();
-
-    } catch (Exception e) {
-      IJ.log("could not open out file " + f);
-      return;
-    }
-  }
-
   private static void write(PrintWriter pw, int verts, Vert v) {
     pw.print("\n" + verts);
-    // !< off formatting tag
+    //!>
     do {
       pw.print("\n" + IJ.d2s(v.coord, 6) + "\t" // Perimeter coord
               + IJ.d2s(v.getX(), 2) + "\t" // X coord
@@ -561,7 +541,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
               + IJ.d2s(v.fluores[2].intensity, 6) + "\t" // Fluor_CH3
               + IJ.d2s(v.fluores[2].x, 0) + "\t" // CH3_x
               + IJ.d2s(v.fluores[2].y, 0)); // CH3_y
-      // on formatting */
+      //!<
       v = v.getNext();
     } while (!v.isHead());
   }

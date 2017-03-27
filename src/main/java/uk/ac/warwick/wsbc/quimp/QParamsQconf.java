@@ -125,8 +125,8 @@ public class QParamsQconf extends QParams {
                                                             // methods still need it
       // update path and file core name
       if (getLoadedDataContainer().getBOAState() != null)
-        getLoadedDataContainer().getBOAState().boap.setOutputFileCore(
-                QuimpToolsCollection.removeExtension(newParamFile.getAbsolutePath()));
+        getLoadedDataContainer().getBOAState().boap
+                .setOutputFileCore(newParamFile.getAbsolutePath());
     } catch (Exception e) { // stop on fail (file or json error)
       LOGGER.error(e.getMessage());
       LOGGER.debug(e.getMessage(), e);
@@ -236,11 +236,11 @@ public class QParamsQconf extends QParams {
               .getStartFrame());
       super.setEndFrame(
               getLoadedDataContainer().getBOAState().nest.getHandler(currentHandler).getEndFrame());
-      if (getLoadedDataContainer().getECMMState() != null) {
+      if (getLoadedDataContainer().getEcmmState() != null) {
         super.setStartFrame(
-                getLoadedDataContainer().getECMMState().oHs.get(currentHandler).getStartFrame());
+                getLoadedDataContainer().getEcmmState().oHs.get(currentHandler).getStartFrame());
         super.setEndFrame(
-                getLoadedDataContainer().getECMMState().oHs.get(currentHandler).getEndFrame());
+                getLoadedDataContainer().getEcmmState().oHs.get(currentHandler).getEndFrame());
       }
       // fill only if ANA has been run
       if (getLoadedDataContainer().getANAState() != null) {

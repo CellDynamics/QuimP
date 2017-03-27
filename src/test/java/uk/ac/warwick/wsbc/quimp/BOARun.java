@@ -39,6 +39,7 @@ public class BOARun {
    * @throws InterruptedException Runner for BOA plugin
    */
   public static void main(String[] args) throws InterruptedException {
+    QuimP.newFileFormat = false;
     ImagePlus img;
     ImageJ ij = new ImageJ();
     // create synchronization latch
@@ -46,7 +47,7 @@ public class BOARun {
     // img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");
     // img = IJ.openImage("src/test/resources/movie03_8bit.tif");
     img = IJ.openImage(
-            "/home/baniuk/Desktop/Tests/146/saveAsQCONF/July14ABD_GFP_actin_twoCells.tif");
+            "/home/baniuk/Desktop/Tests/146/saveAsQCONF (copy)/July14ABD_GFP_actin_twoCells.tif");
     // img = IJ.openImage("src/test/resources/Stack_cut.tif");
     // img = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
 

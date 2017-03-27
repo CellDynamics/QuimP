@@ -1680,8 +1680,7 @@ public class BOA_ implements PlugIn {
       } else {
         parent = "";
       }
-      loaded.obj.BOAState.boap.setOutputFileCore(
-              parent + QuimpToolsCollection.removeExtension(configPath.getFileName().toString()));
+      loaded.obj.BOAState.boap.setOutputFileCore(parent + configPath.getFileName().toString());
       // closes windows, etc
       qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
       qState = loaded.obj.BOAState;
@@ -2550,9 +2549,8 @@ public class BOA_ implements PlugIn {
           BOA_.log("Save canceled");
           return;
         }
-        // This initialize various filenames that can be accessed by other modules
-        BOA_.qState.boap.setOutputFileCore(
-                sd.getDirectory() + QuimpToolsCollection.removeExtension(sd.getFileName()));
+        // This initialize various filenames that can be accessed by other modules (also qconf)
+        BOA_.qState.boap.setOutputFileCore(sd.getDirectory() + sd.getFileName());
 
         // check whether there is case saved and warn user
         // there is no option to solve this problem here. User can only agree or cancel
