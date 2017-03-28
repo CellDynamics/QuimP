@@ -240,7 +240,7 @@ public class ECMM_Mapping {
     dc.ECMMState = outputOutlineHandlers; // assign ECMM container to global output
     qconfLoader.getQp().writeParams(); // save global container
     // generate additional OLD files, disabled #263, enabled GH228
-    if (QuimP.newFileFormat == false) {
+    if (QuimP.newFileFormat.get() == false) {
       FormatConverter foramtConvrter = new FormatConverter(qconfLoader);
       foramtConvrter.doConversion();
     }

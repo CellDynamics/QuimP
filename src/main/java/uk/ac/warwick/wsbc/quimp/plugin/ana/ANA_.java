@@ -286,7 +286,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     dc.ANAState = anaStates;
     qp.writeParams(); // save global container
     // generate additional OLD files (stQP is generated in loop already), disabled #263, enabled 228
-    if (QuimP.newFileFormat == false) {
+    if (QuimP.newFileFormat.get() == false) {
       FormatConverter foramtConv = new FormatConverter(qconfLoader);
       foramtConv.doConversion();
     }

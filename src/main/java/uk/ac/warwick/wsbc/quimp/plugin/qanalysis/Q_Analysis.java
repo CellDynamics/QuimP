@@ -179,7 +179,7 @@ public class Q_Analysis {
     qp.getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
     qp.writeParams(); // save global container
     // generate additional OLD files, disabled #263, enabled 228
-    if (QuimP.newFileFormat == false) {
+    if (QuimP.newFileFormat.get() == false) {
       FormatConverter formatConverter = new FormatConverter(qconfLoader);
       formatConverter.doConversion();
     }

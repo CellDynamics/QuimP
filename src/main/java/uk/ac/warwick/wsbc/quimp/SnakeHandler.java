@@ -21,7 +21,6 @@ import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Store all the snakes computed for one cell across frames and it is responsible for writing them
  * to file.
@@ -37,23 +36,23 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    */
   static final Logger LOGGER = LoggerFactory.getLogger(SnakeHandler.class.getName());
   /**
-   * initial ROI, not stored but rebuilt from snake on load
+   * initial ROI, not stored but rebuilt from snake on load.
    */
   private transient Roi roi;
   /**
-   * initial snake being currently processed
+   * initial snake being currently processed.
    */
   private Snake liveSnake;
   /**
-   * series of snakes, result of cell segm. and plugin processing
+   * series of snakes, result of cell segm. and plugin processing.
    */
   private Snake[] finalSnakes;
   /**
-   * series of snakes, result of cell segmentation only
+   * series of snakes, result of cell segmentation only.
    */
   private Snake[] segSnakes;
   /**
-   * ID of Snakes stored in this SnakeHandler
+   * ID of Snakes stored in this SnakeHandler.
    */
   private int ID;
 
@@ -61,7 +60,6 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    * Instantiates a new snake handler.
    */
   public SnakeHandler() {
-    // endFrame = BOA_.qState.boap.FRAMES;
   }
 
   /**
@@ -70,9 +68,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    * @param r ROI with selected object
    * @param frame Current frame for which the ROI is taken
    * @param id Unique Snake ID controlled by Nest object
-   * @throws Exception
+   * @throws BoaException on problem with Snake creation
    */
-  public SnakeHandler(final Roi r, int frame, int id) throws Exception {
+  public SnakeHandler(final Roi r, int frame, int id) throws BoaException {
     this();
     startFrame = frame;
     endFrame = BOA_.qState.boap.getFrames();
@@ -89,13 +87,13 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   /**
    * Copy constructor. Create SnakeHandler from list of already prepared outlines.
    * 
-   * For every frame it copies provided snake to all three arrays: finalSnakes, segSnakes,
+   * <p>For every frame it copies provided snake to all three arrays: finalSnakes, segSnakes,
    * liveSnake and sets first and last frame using data from SegmentedShapeRoi object
    * 
    * @param snakes List of outlines that will be propagated from first frame. First frame is wrote
    *        down in first element of this list
    * @param id Unique Snake ID controlled by Nest object
-   * @throws BoaException
+   * @throws BoaException on problem with Snake creation
    * @see uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi
    */
   public SnakeHandler(List<SegmentedShapeRoi> snakes, int id) throws BoaException {
@@ -106,26 +104,22 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     segSnakes = new Snake[BOA_.qState.boap.getFrames() - startFrame + 1]; // stored snakes
     ID = id;
     roi = snakes.get(0); // set initial roi to first snake
-    for (SegmentedShapeRoi sS : snakes) {
-      liveSnake = new Snake(sS.getOutlineasPoints(), ID); // tmp for next two methods
-      backupLiveSnake(sS.getFrame()); // fill segSnakes for frame
-      storeLiveSnake(sS.getFrame()); // fill finalSnakes for frame
+    for (SegmentedShapeRoi ss : snakes) {
+      liveSnake = new Snake(ss.getOutlineasPoints(), ID); // tmp for next two methods
+      backupLiveSnake(ss.getFrame()); // fill segSnakes for frame
+      storeLiveSnake(ss.getFrame()); // fill finalSnakes for frame
     }
-    liveSnake = new Snake(snakes.get(0).getOutlineasPoints(), ID); // set live again for current
-                                                                   // frame
-    endFrame = snakes.get(snakes.size() - 1).getFrame(); // SegmentedShapeRoi contains number of
-                                                         // frame that it came from. The are
-                                                         // sorted as frames so last originates
-                                                         // from last frame
-    // LOGGER.trace("Added SnakeHandler: ID=" + id + " startFrame=" + startFrame + " endFrame="
-    // + endFrame); // try toString
+    liveSnake = new Snake(snakes.get(0).getOutlineasPoints(), ID); // set live again for frame
+    // SegmentedShapeRoi contains number of frame that it came from. The are sorted as frames so
+    // last originates from last frame
+    endFrame = snakes.get(snakes.size() - 1).getFrame();
     LOGGER.debug("Added" + this.toString()); // try toString
   }
 
   /**
-   * Make copy of \c liveSnake into \c final \c snakes array
+   * Make copy of liveSnake into final snakes array.
    * 
-   * @param frame Frame for which \c liveSnake will be copied to
+   * @param frame Frame for which liveSnake will be copied to
    */
   public void storeLiveSnake(int frame) {
     finalSnakes[frame - startFrame] = null; // delete at current frame
@@ -133,9 +127,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Stores \c liveSnake (currently processed) in \c segSnakes array.
+   * Stores liveSnake (currently processed) in segSnakes array.
    * 
-   * For one SnakeHandler there is only one \c liveSnake which is processed "in place" by
+   * <p>For one SnakeHandler there is only one liveSnake which is processed "in place" by
    * segmentation methods. It is virtually moved from frame to frame and copied to final snakes
    * after segmentation on current frame and processing by plugins. It must be backed up for every
    * frame to make possible restoring original snakes when active plugin has been deselected.
@@ -151,90 +145,62 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Makes copy of \c snake and store it as final snake.
+   * Makes copy of snake and store it as final snake.
    * 
    * @param snake Snake to store
-   * @param frame Frame for which \c liveSnake will be copied to
-   * @throws BoaException
+   * @param frame Frame for which liveSnake will be copied to
+   * @throws BoaException on Snake creation
    */
   public void storeThisSnake(Snake snake, int frame) throws BoaException {
-    // BOA_.log("Store snake " + ID + " at frame " + frame);
     finalSnakes[frame - startFrame] = null; // delete at current frame
-
     finalSnakes[frame - startFrame] = new Snake(snake, ID);
   }
 
   /**
-   * Makes copy of \c snake and store it as segmented snake.
+   * Makes copy of snake and store it as segmented snake.
    * 
    * @param snake Snake to store
-   * @param frame Frame for which \c liveSnake will be copied to
+   * @param frame Frame for which liveSnake will be copied to
    */
   public void backupThisSnake(final Snake snake, int frame) {
-    // BOA_.log("Store snake " + ID + " at frame " + frame);
     segSnakes[frame - startFrame] = null; // delete at current frame
-
     segSnakes[frame - startFrame] = new Snake(snake, ID);
   }
 
   /**
-   * Copy all segSnakes to finalSnakes
+   * Copy all segSnakes to finalSnakes.
    */
   public void copyFromSegToFinal() {
     for (int i = 0; i < segSnakes.length; i++) {
-      if (segSnakes[i] == null)
+      if (segSnakes[i] == null) {
         finalSnakes[i] = null;
-      else
+      } else {
         finalSnakes[i] = new Snake(segSnakes[i]);
+      }
     }
   }
 
   /**
-   * Copy all finalSnakes to segSnakes
+   * Copy all finalSnakes to segSnakes.
    */
   public void copyFromFinalToSeg() {
     for (int i = 0; i < finalSnakes.length; i++) {
-      if (finalSnakes[i] == null)
+      if (finalSnakes[i] == null) {
         segSnakes[i] = null;
-      else
+      } else {
         segSnakes[i] = new Snake(finalSnakes[i]);
+      }
     }
   }
 
   /**
-   * Write Snakes from this handler to \a *.snPQ file
+   * Write Snakes from this handler to *.snPQ file. Display also user interface
    * 
-   * Display also user interface
-   * 
-   * @return \c true if save has been successful or \c false if user canceled it
+   * @return true if save has been successful or false if user cancelled it
    * @throws IOException when the file exists but is a directory rather than a regular file, does
    *         not exist but cannot be created, or cannot be opened for any other reason
    */
   public boolean writeSnakes() throws IOException {
-    // String saveIn = BOA_.qState.boap.getOrgFile().getParent();
-    // System.out.println(boap.orgFile.getParent());
-    // if (!boap.orgFile.exists()) {
-    // BOA_.log("image is not saved to disk!");
-    // saveIn = OpenDialog.getLastDirectory();
-    // }
-
-    // if (!BOA_.qState.boap.savedOne) {
-    //
-    // SaveDialog sd = new SaveDialog("Save segmentation data...", saveIn,
-    // BOA_.qState.boap.fileName, "");
-    //
-    // if (sd.getFileName() == null) {
-    // BOA_.log("Save canceled");
-    // return false;
-    // }
-    // BOA_.qState.boap.outFile =
-    // new File(sd.getDirectory(), sd.getFileName() + "_" + ID + ".snQP");
-    // BOA_.qState.boap.fileName = sd.getFileName();
-    // BOA_.qState.boap.savedOne = true;
-    // } else {
-    // BOA_.qState.boap.outFile = new File(BOA_.qState.boap.outFile.getParent(),
-    // BOA_.qState.boap.fileName + "_" + ID + ".snQP");
-    // }
     String snakeOutFile = BOA_.qState.boap.deductSnakeFileName(ID);
     LOGGER.debug("Write " + FileExtensions.snakeFileExt + " at: " + snakeOutFile);
     PrintWriter pw = new PrintWriter(new FileWriter(snakeOutFile), true); // auto flush
@@ -259,15 +225,15 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Write one Node to disk (one line in \a snPQ file)
+   * Write one Node to disk (one line in snPQ file).
    * 
-   * @param pw
-   * @param frame
-   * @param NODES
-   * @param n
+   * @param pw print writer
+   * @param frame frame number
+   * @param nodes number of nodes
+   * @param n node to write
    */
-  private void write(final PrintWriter pw, int frame, int NODES, Node n) {
-    pw.print("\n" + NODES);
+  private void write(final PrintWriter pw, int frame, int nodes, Node n) {
+    pw.print("\n" + nodes);
 
     do {
       // fluo values (x,y, itensity)
@@ -278,12 +244,16 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
 
   }
 
+  /**
+   * Format before QuimP11.
+   * 
+   * @throws IOException on file problem
+   */
   private void writeOldFormats() throws IOException {
     // create file to outpurt old format
-    File OLD = new File(BOA_.qState.boap.getOutputFileCore().getParent(),
+    File old = new File(BOA_.qState.boap.getOutputFileCore().getParent(),
             BOA_.qState.boap.getFileName() + ".dat");
-    PrintWriter pw = new PrintWriter(new FileWriter(OLD), true); // auto
-                                                                 // flush
+    PrintWriter pw = new PrintWriter(new FileWriter(old), true); // auto flush
 
     for (int i = 0; i < finalSnakes.length; i++) {
       if (finalSnakes[i] == null) {
@@ -303,9 +273,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     }
     pw.close();
 
-    OLD = new File(BOA_.qState.boap.getOutputFileCore().getParent(),
+    old = new File(BOA_.qState.boap.getOutputFileCore().getParent(),
             BOA_.qState.boap.getFileName() + ".dat_tn");
-    pw = new PrintWriter(new FileWriter(OLD), true); // auto flush
+    pw = new PrintWriter(new FileWriter(old), true); // auto flush
 
     for (int i = 0; i < finalSnakes.length; i++) {
       if (finalSnakes[i] == null) {
@@ -326,9 +296,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     }
     pw.close();
 
-    OLD = new File(BOA_.qState.boap.getOutputFileCore().getParent(),
+    old = new File(BOA_.qState.boap.getOutputFileCore().getParent(),
             BOA_.qState.boap.getFileName() + ".dat1");
-    pw = new PrintWriter(new FileWriter(OLD), true); // auto flush
+    pw = new PrintWriter(new FileWriter(old), true); // auto flush
 
     pw.print(IJ.d2s(BOA_.qState.boap.NMAX, 6) + "\n");
     pw.print(IJ.d2s(BOA_.qState.boap.delta_t, 6) + "\n");
@@ -376,10 +346,10 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Return final Snake (after plugins) stored for frame \c f
+   * Return final Snake (after plugins) stored for frame f.
    * 
    * @param f frame
-   * @return Snake at frame \c f or \c null
+   * @return Snake at frame f or null
    */
   public Snake getStoredSnake(int f) {
     if (f - startFrame < 0) {
@@ -390,40 +360,44 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Validate whether there is any Snake at frame \c f
+   * Validate whether there is any Snake at frame f.
    * 
    * @param f frame to validate
-   * @return \c true if \c finalSnakes array contains valid Snake at frame \c f
+   * @return true if finalSnakes array contains valid Snake at frame f
    */
   boolean isStoredAt(int f) {
-    if (f - startFrame < 0)
+    if (f - startFrame < 0) {
       return false;
-    else if (f - startFrame >= finalSnakes.length)
+    } else if (f - startFrame >= finalSnakes.length) {
       return false;
-    else if (finalSnakes[f - startFrame] == null)
+    } else if (finalSnakes[f - startFrame] == null) {
       return false;
-    else
+    } else {
       return true;
+    }
 
   }
 
   /**
-   * Read Snake from file
+   * Read Snake from file.
    *
-   * May not be compatible wit old version due to changes in Snake constructor.
+   * <p>May not be compatible wit old version due to changes in Snake constructor.
    *
-   * @param inFile
+   * @param inFile file to read
    * @return value of 1
-   * @throws Exception
+   * @throws Exception on problem
    * @see <a href="link">uk.ac.warwick.wsbc.quimp.OutlineHandler.readOutlines(File)</a>
    */
   @Deprecated
   public int snakeReader(final File inFile) throws Exception {
     String thisLine;
-    int N;
+    int nn;
     int index;
-    double x, y;
-    Node head, n, prevn;
+    double x;
+    double y;
+    Node head;
+    Node n;
+    Node prevn;
     int s = 0;
     BufferedReader br = null;
 
@@ -437,9 +411,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         prevn = head;
         index++;
 
-        N = (int) QuimpToolsCollection.s2d(thisLine);
+        nn = (int) QuimpToolsCollection.s2d(thisLine);
 
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < nn; i++) {
           x = QuimpToolsCollection.s2d(br.readLine());
           y = QuimpToolsCollection.s2d(br.readLine());
 
@@ -458,24 +432,23 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
         prevn.setNext(head);
         head.setPrev(prevn);
 
-        finalSnakes[s] = new Snake(head, N + 1, ID); // dont forget the head
-        finalSnakes[s].removeNode(head); // due to compatibility with code above.
-                                         // old versions made copies of list
-                                         // WARN potential uncompatibility with old code.
-                                         // old constructor made copy of this list and
-                                         // deleted first dummy node. Now it just covers
-                                         // this list
+        finalSnakes[s] = new Snake(head, nn + 1, ID); // dont forget the head
+        // due to compatibility with code above. old versions made copies of list WARN potential
+        // uncompatibility with old code. old constructor made copy of this list and deleted first
+        // dummy node. Now it just covers this list
+        finalSnakes[s].removeNode(head);
         s++;
       } // end while
     } catch (IOException e) {
       System.err.println("Error: " + e);
     } finally {
-      if (br != null)
+      if (br != null) {
         try {
           br.close();
         } catch (Exception e) {
           e.printStackTrace();
         }
+      }
     }
 
     return 1;
@@ -496,17 +469,16 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Reset.
+   * Reset snakes in handler. Recreate them using stored ROI.
    *
-   * @throws Exception the exception
+   * @throws BoaException on snake creation problem
    */
-  public void reset() throws Exception {
+  public void reset() throws BoaException {
     liveSnake = new Snake(roi, ID, false);
-    // snakes = new Snake[boap.FRAMES - startFrame + 1]; // stored snakes
   }
 
   /**
-   * Gets the id.
+   * Gets the id of handler.
    *
    * @return the id
    */
@@ -515,7 +487,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Checks if is live.
+   * Checks if is live snake is live.
    *
    * @return true, if is live
    */
@@ -524,9 +496,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Delete store at.
+   * Delete snake stored at at frame.
    *
-   * @param frame the frame
+   * @param frame the frame to delete snake from
    */
   void deleteStoreAt(int frame) {
     if (frame - startFrame < 0) {
@@ -538,9 +510,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Delete store from.
+   * Delete snakes from frame to end.
    *
-   * @param frame the frame
+   * @param frame the start frame to delete from
    */
   void deleteStoreFrom(int frame) {
     for (int i = frame; i <= BOA_.qState.boap.getFrames(); i++) {
@@ -549,17 +521,16 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Store at.
+   * Store snake at frame.
    *
-   * @param s the s
-   * @param frame the frame
+   * @param s snake to store
+   * @param frame the frame to store snake
    */
   void storeAt(final Snake s, int frame) {
     s.calcCentroid();
     if (frame - startFrame < 0) {
       BOA_.log("Tried to store at negative frame\n\tframe:" + frame + "\n\tsnakeID:" + ID);
     } else {
-      // BOA_.log("Storing snake " + ID + " frame " + frame);
       finalSnakes[frame - startFrame] = s;
     }
   }
@@ -583,9 +554,9 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Prepare current frame \c for segmentation
+   * Prepare current frame for segmentation.
    * 
-   * Create \c liveSnake using final snake stored in previous frame or use original ROI for
+   * <p>Create liveSnake using final snake stored in previous frame or use original ROI for
    * creating new Snake
    * 
    * @param f Current segmented frame
@@ -607,15 +578,15 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   /**
    * Store ROI as snake in finalSnakes.
    * 
-   * @param r
-   * @param f
+   * @param r roi to create Snake from
+   * @param frame frame
    */
-  void storeRoi(final PolygonRoi r, int f) {
+  void storeRoi(final PolygonRoi r, int frame) {
     try {
       Snake snake = new Snake(r, ID);
       snake.calcCentroid();
-      this.deleteStoreAt(f);
-      storeAt(snake, f);
+      this.deleteStoreAt(frame);
+      storeAt(snake, frame);
       // BOA_.log("Storing ROI snake " + ID + " frame " + f);
     } catch (Exception e) {
       BOA_.log("Could not store ROI");
@@ -624,7 +595,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   }
 
   /**
-   * Find the first missing contour at series of frames and set end frame to the previous one
+   * Find the first missing contour at series of frames and set end frame to the previous one.
    */
   void findLastFrame() {
     for (int i = startFrame; i <= BOA_.qState.boap.getFrames(); i++) {
@@ -652,14 +623,19 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    */
   @Override
   public void beforeSerialize() {
-    if (liveSnake != null)
+    if (liveSnake != null) {
       liveSnake.beforeSerialize(); // convert liveSnake to array
-    for (Snake s : finalSnakes)
-      if (s != null)
+    }
+    for (Snake s : finalSnakes) {
+      if (s != null) {
         s.beforeSerialize(); // convert finalSnakes to array
-    for (Snake s : segSnakes)
-      if (s != null)
+      }
+    }
+    for (Snake s : segSnakes) {
+      if (s != null) {
         s.beforeSerialize(); // convert segSnakes to array
+      }
+    }
   }
 
   /**
@@ -667,30 +643,28 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    */
   @Override
   public void afterSerialize() throws Exception {
-    if (liveSnake != null)
+    if (liveSnake != null) {
       liveSnake.afterSerialize();
+    }
     for (Snake s : finalSnakes) {
-      if (s != null)
+      if (s != null) {
         s.afterSerialize();
+      }
     }
     for (Snake s : segSnakes) {
-      if (s != null)
+      if (s != null) {
         s.afterSerialize();
+      }
     }
     // restore roi as first snake from segmented snakes
-    if (segSnakes != null && segSnakes.length > 0) {
+    if (segSnakes.length > 0) {
       int i = 0;
-      while (i < segSnakes.length && segSnakes[i++] == null)
+      while (i < segSnakes.length && segSnakes[i++] == null) {
         ; // find first not null snake
-      QuimpDataConverter dC = new QuimpDataConverter(segSnakes[--i]);
+      }
+      QuimpDataConverter dc = new QuimpDataConverter(segSnakes[--i]);
       // rebuild roi from snake
-      roi = new PolygonRoi(dC.getFloatX(), dC.getFloatY(), Roi.FREEROI);
+      roi = new PolygonRoi(dc.getFloatX(), dc.getFloatY(), Roi.FREEROI);
     }
-
-    /*
-     * segSnakes = new Snake[finalSnakes.length]; for (int i = 0; i < segSnakes.length; i++) if
-     * (finalSnakes[i] != null) segSnakes[i] = new Snake(finalSnakes[i],
-     * finalSnakes[i].getSnakeID());
-     */
   }
 }

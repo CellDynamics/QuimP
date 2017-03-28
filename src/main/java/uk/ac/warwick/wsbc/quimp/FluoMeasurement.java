@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.quimp;
 
-// TODO: Auto-generated Javadoc
 /**
  * Hold fluorescence value for pixel.
  * 
@@ -9,22 +8,24 @@ package uk.ac.warwick.wsbc.quimp;
 public class FluoMeasurement {
 
   /**
-   * 
+   * Pixel x coordinate.
    */
   public double x;
   /**
-   * 
+   * Pixel y coordinate.
    */
   public double y;
   /**
-   * 
+   * Pixel intensity.
    */
   public double intensity;
 
   /**
-   * @param xx
-   * @param yy
-   * @param i
+   * Constructor of the fluoro pixel.
+   * 
+   * @param xx x coordinate
+   * @param yy y coordinate
+   * @param i intensity
    */
   public FluoMeasurement(double xx, double yy, double i) {
     x = xx;
@@ -33,7 +34,7 @@ public class FluoMeasurement {
   }
 
   /**
-   * Copy constructor
+   * Copy constructor.
    * 
    * @param src source object
    */
@@ -69,19 +70,25 @@ public class FluoMeasurement {
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (!(obj instanceof FluoMeasurement))
+    }
+    if (!(obj instanceof FluoMeasurement)) {
       return false;
+    }
     FluoMeasurement other = (FluoMeasurement) obj;
-    if (Double.doubleToLongBits(intensity) != Double.doubleToLongBits(other.intensity))
+    if (Double.doubleToLongBits(intensity) != Double.doubleToLongBits(other.intensity)) {
       return false;
-    if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+    }
+    if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x)) {
       return false;
-    if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+    }
+    if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y)) {
       return false;
+    }
     return true;
   }
 

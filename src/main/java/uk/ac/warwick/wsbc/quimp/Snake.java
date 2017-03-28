@@ -112,9 +112,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * @param r ROI with object to be segmented
    * @param id Unique ID of snake related to object being segmented.
    * @param direct direct
-   * @throws Exception on wrong number of polygon points
+   * @throws BoaException on wrong number of polygon points
    */
-  public Snake(final Roi r, int id, boolean direct) throws Exception {
+  public Snake(final Roi r, int id, boolean direct) throws BoaException {
     // place nodes in a circle
     snakeID = id;
     if (r.getType() == Roi.RECTANGLE || r.getType() == Roi.POLYGON) {
@@ -277,9 +277,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * @param ry ellipse diameter
    * @param s number of nodes
    * 
-   * @throws Exception Exception if polygon contains too little nodes.
+   * @throws BoaException Exception if polygon contains too little nodes.
    */
-  private void intializeOval(int t, int xc, int yc, int rx, int ry, double s) throws Exception {
+  private void intializeOval(int t, int xc, int yc, int rx, int ry, double s) throws BoaException {
     head = new Node(t); // make a dummy head node for list initialization
     POINTS = 1;
     FROZEN = 0;
@@ -308,9 +308,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * {@link BOAState.SegParam#getNodeRes()}
    * 
    * @param p Polygon extracted from IJ ROI
-   * @throws Exception if polygon contains too little nodes.
+   * @throws BoaException if polygon contains too little nodes.
    */
-  private void intializePolygon(final FloatPolygon p) throws Exception {
+  private void intializePolygon(final FloatPolygon p) throws BoaException {
     // System.out.println("poly with node distance");
     head = new Node(0); // make a dummy head node for list initialization
     POINTS = 1;
@@ -358,10 +358,10 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * polygon.
    * 
    * @param p Polygon extracted from IJ ROI
-   * @throws Exception if polygon contains too little nodes.
+   * @throws BoaException if polygon contains too little nodes.
    * @see #intializePolygon(FloatPolygon)
    */
-  private void intializePolygonDirect(final FloatPolygon p) throws Exception {
+  private void intializePolygonDirect(final FloatPolygon p) throws BoaException {
     // System.out.println("poly direct");
     head = new Node(0); // make a dummy head node for list initialization
     POINTS = 1;

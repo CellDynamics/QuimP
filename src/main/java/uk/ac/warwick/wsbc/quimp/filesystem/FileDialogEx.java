@@ -14,7 +14,7 @@ import uk.ac.warwick.wsbc.quimp.QuimP;
 /**
  * Implements file dialog with file filtering.
  * 
- * <p>If not stated otherwise, all constructors use dafult file config extension given by state of
+ * <p>If not stated otherwise, all constructors use default file config extension given by state of
  * QuimP ToolBar checkbox (of {@link QuimP#newFileFormat}.
  * 
  * @author p.baniukiewicz
@@ -150,7 +150,7 @@ public class FileDialogEx extends FileDialog {
    * @author p.baniukiewicz
    *
    */
-  public class QuimpConfigFilefilter implements FilenameFilter {
+  class QuimpConfigFilefilter implements FilenameFilter {
     private String[] ext;
 
     /**
@@ -169,7 +169,7 @@ public class FileDialogEx extends FileDialog {
      * 
      */
     public QuimpConfigFilefilter() {
-      if (QuimP.newFileFormat == true) {
+      if (QuimP.newFileFormat.get() == true) {
         ext = new String[1];
         ext[0] = FileExtensions.newConfigFileExt;
       } else {

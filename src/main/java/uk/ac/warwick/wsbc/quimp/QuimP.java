@@ -1,5 +1,7 @@
 package uk.ac.warwick.wsbc.quimp;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
 /**
@@ -28,7 +30,7 @@ public class QuimP {
    * 
    * <p>This switch causes that additional debug information can be produced.
    */
-  public static boolean SUPER_DEBUG =
+  public static final boolean SUPER_DEBUG =
           Boolean.parseBoolean(System.getProperty("quimpconfig.superDebug"));
   /**
    * This field keeps localisation of -quimp plugins.
@@ -36,7 +38,7 @@ public class QuimP {
    * <p>By default it is Fiji.app/plugins folder but it can be overwritten by setting system
    * property.
    */
-  public static String PLUGIN_DIR = System.getProperty("quimpconfig.pluginDirectory");
+  public static final String PLUGIN_DIR = System.getProperty("quimpconfig.pluginDirectory");
   /**
    * This field is used for sharing information between bar and other plugins.
    * 
@@ -44,5 +46,5 @@ public class QuimP {
    * used by {@link uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader} for serving
    * {@link uk.ac.warwick.wsbc.quimp.QParams} object for client.
    */
-  public static boolean newFileFormat = true;
+  public static final AtomicBoolean newFileFormat = new AtomicBoolean(true);
 }

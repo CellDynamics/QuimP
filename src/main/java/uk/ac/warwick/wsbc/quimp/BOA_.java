@@ -1520,14 +1520,14 @@ public class BOA_ implements PlugIn {
         FileDialogEx od = new FileDialogEx(IJ.getInstance());
         od.setDirectory(OpenDialog.getLastDirectory());
         try {
-          if (QuimP.newFileFormat == true) { // load QCONF
+          if (QuimP.newFileFormat.get() == true) { // load QCONF
             od.setExtension(FileExtensions.newConfigFileExt);
             if (od.showOpenDialog() == null) {
               return;
             }
             loadQconfConfiguration(Paths.get(od.getDirectory(), od.getFile()));
           }
-          if (QuimP.newFileFormat == false) { // old paQP and snQP
+          if (QuimP.newFileFormat.get() == false) { // old paQP and snQP
             od.setExtension(FileExtensions.configFileExt);
             if (od.showOpenDialog() == null) {
               return;
@@ -2571,7 +2571,7 @@ public class BOA_ implements PlugIn {
         }
         // write operations
         // blocked by #263, enabled by 228
-        if (QuimP.newFileFormat == false) {
+        if (QuimP.newFileFormat.get() == false) {
           qState.nest.writeSnakes(); // write snPQ file (if any snake) and paQP
         }
         // if (qState.nest.writeSnakes()) { // write snPQ file (if any snake) and paQP

@@ -289,15 +289,15 @@ public class QuimP_Bar implements PlugIn, ActionListener {
             "Unselect to use (load and save) old " + FileExtensions.configFileExt + " files."
                     + "New file is always produced. Do not mix workflows - use paQP or"
                     + " QCONF but not" + " both in the same time.");
-    cbFileformat.setSelected(QuimP.newFileFormat); // default selection
+    cbFileformat.setSelected(QuimP.newFileFormat.get()); // default selection
     cbFileformat.addItemListener(new ItemListener() { // set static field
 
       @Override
       public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
-          QuimP.newFileFormat = true;
+          QuimP.newFileFormat.set(true);
         } else {
-          QuimP.newFileFormat = false;
+          QuimP.newFileFormat.set(false);
         }
       }
     });
