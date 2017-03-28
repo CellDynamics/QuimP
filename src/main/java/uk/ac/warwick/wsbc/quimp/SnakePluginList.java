@@ -17,7 +17,6 @@ import uk.ac.warwick.wsbc.quimp.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
 
-// TODO: Auto-generated Javadoc
 /*
  * //!>
  * @startuml doc-files/SnakePluginList_1_UML.png
@@ -167,19 +166,19 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
 /**
  * Ordered list of plugins related to snake processing.
  * 
- * Related to GUI, first plugin is at index 0, etc. Keeps also UI settings activating or
+ * <p>Related to GUI, first plugin is at index 0, etc. Keeps also UI settings activating or
  * deactivating plugins. Produces plugins from their names using provided
  * {@link uk.ac.warwick.wsbc.quimp.PluginFactory} The sPluginList is serialized (saved as JSON
  * object). Because serialization does not touch plugins (understood as jars) directly, their
  * configuration and state must be copied locally to Plugin objects. This is done during preparation
  * to serialization and then after deserialization.
  * 
- * This class is serializable and it is part of QuimP config.
+ * <p>This class is serializable and it is part of QuimP config.
  * 
- * The most important use cases are:<br>
+ * <p>The most important use cases are:<br>
  * <img src="doc-files/SnakePluginList_1_UML.png"/><br>
  * 
- * During initialization basic structures are created. Note that plugins are kept in intermediate
+ * <p>During initialization basic structures are created. Note that plugins are kept in intermediate
  * class Plugin that holds current state of plugin:
  * <ol>
  * <li>reference to jar (obtained from PluginFactory)
@@ -191,10 +190,10 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
  * <br>
  * <img src="doc-files/SnakePluginList_2_UML.png"/><br>
  * 
- * During setInstance the instance of plugin is created and assign to Plugin object <br>
+ * <p>During setInstance the instance of plugin is created and assign to Plugin object <br>
  * <img src="doc-files/SnakePluginList_3_UML.png"/><br>
  * 
- * During Serialize plugins are prepared for serialization what means saving current state of
+ * <p>During Serialize plugins are prepared for serialization what means saving current state of
  * plugins like:
  * <ol>
  * <li>Loaded plugins (those kept in SnakePluginList only, selected by user in UI)
@@ -203,10 +202,10 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
  * <br>
  * <img src="doc-files/SnakePluginList_4_UML.png"/><br>
  * 
- * During Deletion of plugin the new empty plugin is created in place of old one <br>
+ * <p>During Deletion of plugin the new empty plugin is created in place of old one <br>
  * <img src="doc-files/SnakePluginList_5_UML.png"/><br>
  * 
- * During Set Active state, the internal state of plugin is set to active. This is important for
+ * <p>During Set Active state, the internal state of plugin is set to active. This is important for
  * method {@link uk.ac.warwick.wsbc.quimp.SnakePluginList.Plugin#isExecutable()}. <br>
  * <img src="doc-files/SnakePluginList_6_UML.png"/><br>
  * 
@@ -226,7 +225,7 @@ public class SnakePluginList implements IQuimpSerialize {
   /**
    * Keeps all Plugin related information and produces plugin instance using PluginFactory.
    * 
-   * Fields like config and ver are used during saving so they are initialized in this time only
+   * <p>Fields like config and ver are used during saving so they are initialized in this time only
    * and they are not valid during object lifetime.
    * 
    * @author p.baniukiewicz
@@ -234,28 +233,28 @@ public class SnakePluginList implements IQuimpSerialize {
    */
   class Plugin {
     /**
-     * Reference to plugin instance
+     * Reference to plugin instance.
      */
     private transient IQuimpCorePlugin ref;
     /**
-     * Is activate in GUI?
+     * Is activate in GUI?.
      */
     private boolean isActive;
     /**
-     * Name of plugin delivered from PluginFactory
+     * Name of plugin delivered from PluginFactory.
      */
     private String name;
     /**
-     * Configuration read from plugin on save operation
+     * Configuration read from plugin on save operation.
      */
     private ParamList config;
     /**
-     * Version read from plugin on save operation
+     * Version read from plugin on save operation.
      */
     private String ver;
 
     /**
-     * Initializes empty default plugin
+     * Initializes empty default plugin.
      */
     public Plugin() {
       ref = null;
@@ -269,21 +268,22 @@ public class SnakePluginList implements IQuimpSerialize {
      * Main constructor. Creates instance of plugin name if name is known to provided
      * PluginFactory.
      * 
-     * If name is not found in registered names of plugins in provided PluginFactory pf, the
+     * <p>If name is not found in registered names of plugins in provided PluginFactory pf, the
      * reference ref will be null
      * 
      * @param name Name of plugin to be instanced
-     * @param isActive
+     * @param isActive is plugin active?
      * @param pf PluginFactory that provides plugin objects
-     * @throws QuimpPluginException
+     * @throws QuimpPluginException if plugin can not be instanced
      */
     public Plugin(final String name, boolean isActive, final PluginFactory pf)
             throws QuimpPluginException {
       this.isActive = isActive;
       ref = pf.getInstance(name); // create instance of plugin
-      if (ref == null)
+      if (ref == null) {
         throw new QuimpPluginException(
                 "Plugin initialization failed. Plugin " + name + " can not be loaded or instanced");
+      }
       this.name = name;
     }
 
@@ -304,9 +304,9 @@ public class SnakePluginList implements IQuimpSerialize {
     }
 
     /**
-     * Copy method
+     * Copy method.
      * 
-     * Returns copy of current object with some limitations. It does not copy loaded plugin
+     * <p>Returns copy of current object with some limitations. It does not copy loaded plugin
      * (ref). Should be called after {@link #downloadPluginConfig()} to make sure that config,
      * ver are filled correctly
      * 
@@ -324,7 +324,7 @@ public class SnakePluginList implements IQuimpSerialize {
     /**
      * Copy method.
      * 
-     * Returns copy of current object. It does copy loaded plugin (ref). Should be called after
+     * <p>Returns copy of current object. It does copy loaded plugin (ref). Should be called after
      * {@link #downloadPluginConfig()} to make sure that config, ver are filled correctly
      * 
      * @return Copy of current object
@@ -338,21 +338,22 @@ public class SnakePluginList implements IQuimpSerialize {
     /**
      * Check if all execution conditions are met.
      * 
-     * These conditions are: 1) Plugin exist 2) Plugin is activated in UI
+     * <p>These conditions are: 1) Plugin exist 2) Plugin is activated in UI
      * 
      * @return true if plugin can be executed
      */
     public boolean isExecutable() {
-      if (ref == null)
+      if (ref == null) {
         return false;
-      else
+      } else {
         return isActive;
+      }
     }
 
     /**
      * Copies plugin configuration to local object.
      * 
-     * Local copy of configuration is necessary for saving/loading. Should be called before
+     * <p>Local copy of configuration is necessary for saving/loading. Should be called before
      * saving to make sure that latest settings are stored.
      */
     public void downloadPluginConfig() {
@@ -369,8 +370,9 @@ public class SnakePluginList implements IQuimpSerialize {
      * @throws QuimpPluginException when config can not be uploaded to plugin
      */
     public void uploadPluginConfig(final ParamList config) throws QuimpPluginException {
-      if (ref != null)
+      if (ref != null) {
         ref.setPluginConfig(config);
+      }
     }
 
     /**
@@ -386,7 +388,7 @@ public class SnakePluginList implements IQuimpSerialize {
   /**
    * Holds list of plugins up to max allowed.
    * 
-   * This list always contains valid \c Plugin objects but they can point to null reference (
+   * <p>This list always contains valid \c Plugin objects but they can point to null reference (
    * Plugin.ref) when there is no plugin on i-th slot
    */
   private ArrayList<Plugin> sPluginList;
@@ -394,7 +396,7 @@ public class SnakePluginList implements IQuimpSerialize {
   /**
    * Default constructor.
    * 
-   * Create empty Plugin object that refers to nothing
+   * <p>Create empty Plugin object that refers to nothing
    */
   public SnakePluginList() {
     sPluginList = new ArrayList<Plugin>();
@@ -410,16 +412,17 @@ public class SnakePluginList implements IQuimpSerialize {
    */
   public SnakePluginList(int s, final PluginFactory pf, final ViewUpdater vu) {
     this(); // initialize structures
-    for (int i = 0; i < s; i++)
+    for (int i = 0; i < s; i++) {
       sPluginList.add(new Plugin()); // fill list with empty Plugins
+    }
     // store plugin deliverer and external data that may be important for plugins
     updateRefs(pf, vu);
   }
 
   /**
-   * Copy method
+   * Copy method.
    * 
-   * Returns copy of current object with some limitations. It does copy loaded plugin (ref).
+   * <p>Returns copy of current object with some limitations. It does copy loaded plugin (ref).
    * Should be called after {@link SnakePluginList.Plugin#downloadPluginConfig()} to make sure
    * that config, ver are filled correctly
    * 
@@ -430,15 +433,16 @@ public class SnakePluginList implements IQuimpSerialize {
     SnakePluginList ret = new SnakePluginList();
     ret.updateRefs(pluginFactory, viewUpdater); // assign current external data
     // make deep copy of the list
-    for (Plugin p : this.sPluginList)
+    for (Plugin p : this.sPluginList) {
       ret.sPluginList.add(p.getShallowCopy());
+    }
     return ret;
   }
 
   /**
-   * Copy method
+   * Copy method.
    * 
-   * Returns copy of current object.It does copy loaded plugin (ref). Should be called after
+   * <p>Returns copy of current object.It does copy loaded plugin (ref). Should be called after
    * {@link SnakePluginList.Plugin#downloadPluginConfig()} to make sure that config, ver are
    * filled correctly
    * 
@@ -449,15 +453,16 @@ public class SnakePluginList implements IQuimpSerialize {
     SnakePluginList ret = new SnakePluginList();
     ret.updateRefs(pluginFactory, viewUpdater); // assign current external data
     // make deep copy of the list
-    for (Plugin p : this.sPluginList)
+    for (Plugin p : this.sPluginList) {
       ret.sPluginList.add(p.getDeepCopy());
+    }
     return ret;
   }
 
   /**
    * Updates references of external object connected in constructor.
    * 
-   * External references are not copied by {@link #getShallowCopy()} thus they should be
+   * <p>External references are not copied by {@link #getShallowCopy()} thus they should be
    * reinitialized after that operation
    * 
    * @param pf new PluginFactory
@@ -471,7 +476,7 @@ public class SnakePluginList implements IQuimpSerialize {
   /**
    * Returns unmodifiable list of plugins.
    * 
-   * Particular fields in Plugin may not be valid unless beforeSerialize() is called.
+   * <p>Particular fields in Plugin may not be valid unless beforeSerialize() is called.
    * 
    * @return unmodifiable list of plugins
    */
@@ -516,13 +521,15 @@ public class SnakePluginList implements IQuimpSerialize {
    * @return Copy of configuration of plugin
    */
   public ParamList getConfig(int i) {
-    if (sPluginList.get(i).config != null)
+    if (sPluginList.get(i).config != null) {
       return new ParamList(sPluginList.get(i).config); // makes copy of plugin configuration
-    else
+    } else {
       return null;
+    }
   }
 
   /**
+   * Check if plugin is active.
    * 
    * @param i Number of plugin to check
    * @return bool if i-th plugin is active or not
@@ -534,7 +541,7 @@ public class SnakePluginList implements IQuimpSerialize {
   /**
    * Sets instance of plugin on slot i.
    * 
-   * If there is other plugin there, it replaces instance keeping its selection state. Connects
+   * <p>If there is other plugin there, it replaces instance keeping its selection state. Connects
    * also ViewUpdater and data to plugin if necessary.
    * 
    * @param i Slot to be set
@@ -548,21 +555,21 @@ public class SnakePluginList implements IQuimpSerialize {
       sPluginList.set(i, new Plugin()); // just create new empty plugin with no instance
       return;
     }
-    sPluginList.set(i, new Plugin(name, act, pluginFactory)); // create new Plugin using
-                                                              // name and PluginFactory
+    sPluginList.set(i, new Plugin(name, act, pluginFactory)); // create new Plugin
 
     IQuimpCorePlugin ref = getInstance(i);
     // connects all goods to created plugin
     if (ref != null) {
-      if (ref instanceof IQuimpPluginSynchro) // if it support backward synchronization
+      if (ref instanceof IQuimpPluginSynchro) { // if it supports backward synchronization
         ((IQuimpPluginSynchro) ref).attachContext(viewUpdater); // attach BOA context
+      }
     }
   }
 
   /**
    * Sets instance of plugin on slot i.
    * 
-   * If there is other plugin there, it replaces instance keeping its selection. Connects also
+   * <p>If there is other plugin there, it replaces instance keeping its selection. Connects also
    * ViewUpdater and data to plugin if necessary.
    * 
    * @param i Slot to be set
@@ -613,9 +620,11 @@ public class SnakePluginList implements IQuimpSerialize {
    * @return true if list does not contain any valid plugin, false otherwise
    */
   public boolean isRefListEmpty() {
-    for (Plugin i : sPluginList)
-      if (i.ref != null)
+    for (Plugin i : sPluginList) {
+      if (i.ref != null) {
         return false;
+      }
+    }
     return true;
   }
 
@@ -623,21 +632,22 @@ public class SnakePluginList implements IQuimpSerialize {
    * Fills fields in Plugin class related to configuration and version. These fields are
    * serialized then.
    * 
-   * This method should be called directly before saving to have most recent options.
+   * <p>This method should be called directly before saving to have most recent options.
    */
   @Override
   public void beforeSerialize() {
-    for (Plugin i : sPluginList)
+    for (Plugin i : sPluginList) {
       i.downloadPluginConfig();
+    }
   }
 
   /**
    * Restore plugins instances after deserialization.
    * 
-   * On load all fields of Plugin object are restored from JSON file except plugin instance. In
+   * <p>On load all fields of Plugin object are restored from JSON file except plugin instance. In
    * this step this instance is created using those fields loaded from disk.
    * 
-   * This method masks all QuimpPluginException exceptions that allows to skim defective plugin
+   * <p>This method masks all QuimpPluginException exceptions that allows to skim defective plugin
    * and load all next plugins.
    */
   @Override
@@ -656,10 +666,11 @@ public class SnakePluginList implements IQuimpSerialize {
       }
       // check version compatibility - only inform user
       if (getInstance(i) != null) {
-        if (!ver.equals(sPluginList.get(i).ref.getVersion()))
+        if (!ver.equals(sPluginList.get(i).ref.getVersion())) {
           LOGGER.warn("Loaded plugin (" + sPluginList.get(i).name
                   + ") is in different version than saved (" + sPluginList.get(i).ref.getVersion()
                   + " vs. " + ver + ")");
+        }
       }
     }
   }
@@ -668,16 +679,18 @@ public class SnakePluginList implements IQuimpSerialize {
    * Close all opened plugins windows.
    */
   public void closeAllWindows() {
-    for (int i = 0; i < sPluginList.size(); i++)
-      if (getInstance(i) != null)
+    for (int i = 0; i < sPluginList.size(); i++) {
+      if (getInstance(i) != null) {
         getInstance(i).showUi(false);
+      }
+    }
   }
 
   /**
    * Return names of plugins of given type registered in PluginFactory associated with this
    * object.
    * 
-   * @param type
+   * @param type requested plugin type {@link PluginFactory}
    * @return list of plugin names
    * 
    * @see uk.ac.warwick.wsbc.quimp.PluginFactory#getPluginNames(int)
@@ -690,7 +703,7 @@ public class SnakePluginList implements IQuimpSerialize {
 /**
  * Object builder for GSon and SnakePluginList class.
  * 
- * This class is used on load JSon representation of SnakePluginList class.
+ * <p>This class is used on load JSon representation of SnakePluginList class.
  * 
  * @author p.baniukiewicz
  * @see Gson documentation

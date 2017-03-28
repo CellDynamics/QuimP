@@ -113,7 +113,7 @@ public class Test_QuimP implements PlugIn {
     QParams p =
             new QParams(new File("/Users/rtyson/Documents/phd/tmp/smallStack/SmallStack_0.paQP"));
     p.readParams();
-    System.out.println("" + p.NMAX);
+    System.out.println("" + p.nmax);
     System.out.println("" + p.getPath());
     System.out.println("" + p.getFileName());
     System.out.println("" + p.getConvexFile());

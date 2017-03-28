@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.quimp;
 
-// TODO: Auto-generated Javadoc
 /**
  * Base class for Shape holders.
  * 
@@ -12,12 +11,12 @@ public abstract class ShapeHandler<T extends Shape<?>> {
   /**
    * First frame of Outline.
    * 
-   * Start and End frame fields are filled on Snake/Outline creation in handler. If segmentation
+   * <p>Start and End frame fields are filled on Snake/Outline creation in handler. If segmentation
    * is Successful the {@link Snake}/{@link Outline} is created from current frame to last one in
    * stack. Therefore {@link Snake}/{@link Outline} exist between <tt>startFrame</tt> and
    * <tt>endFrame</tt>.
    * 
-   * If {@link Snake}/{@link Outline} is deleted {@link SnakeHandler#deleteStoreAt(int)} the
+   * <p>If {@link Snake}/{@link Outline} is deleted {@link SnakeHandler#deleteStoreAt(int)} the
    * fields <tt>startFrame</tt> and <tt>endFrame</tt> are not updated (user can delete middle
    * Snake breaking continuity). This is why {@link SnakeHandler#isStoredAt(int)} should be used
    * to verify whether there is valid object on frame.

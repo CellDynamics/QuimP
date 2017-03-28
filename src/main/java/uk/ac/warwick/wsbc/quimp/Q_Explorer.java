@@ -254,8 +254,8 @@ class ImageManager {
     nbMaps = 1;
     mapsIpl = new ImagePlus[1];
 
-    xMap = openMap(EXp.qp.getxFile(), "xMap");
-    yMap = openMap(EXp.qp.getxFile(), "yMap");
+    xMap = openMap(EXp.qp.getxmapFile(), "xMap");
+    yMap = openMap(EXp.qp.getxmapFile(), "yMap");
 
     mapsIpl[0] = openMap(EXp.qp.getMotilityFile(), "Motility Map");
 

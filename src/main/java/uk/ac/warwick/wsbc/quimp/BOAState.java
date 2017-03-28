@@ -33,7 +33,7 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
  * BOAState : +store()
  * BOAState : +storeOnlyEdited()
  * SegParam : +nodeList
- * SegParam : +f_image
+ * SegParam : +imageForce
  * SegParam : +equals()
  * SegParam : +hashCode()
  * SegParam : +setDefaults()
@@ -436,10 +436,10 @@ public class BOAState implements IQuimpSerialize {
      */
     @Override
     public String toString() {
-      return "SegParam [nodeRes=" + nodeRes + ", blowup=" + blowup + ", vel_crit=" + vel_crit
-              + ", f_central=" + f_central + ", f_image=" + f_image + ", max_iterations="
-              + max_iterations + ", sample_tan=" + sample_tan + ", sample_norm=" + sample_norm
-              + ", f_contract=" + f_contract + ", finalShrink=" + finalShrink
+      return "SegParam [nodeRes=" + nodeRes + ", blowup=" + blowup + ", velCrit=" + vel_crit
+              + ", centralForce=" + f_central + ", imageForce=" + f_image + ", maxIterations="
+              + max_iterations + ", sampleTan=" + sample_tan + ", sampleNorm=" + sample_norm
+              + ", contractForce=" + f_contract + ", finalShrink=" + finalShrink
               + ", use_previous_snake=" + use_previous_snake + ", showPaths=" + showPaths
               + ", expandSnake=" + expandSnake + ", min_dist=" + min_dist + ", max_dist=" + max_dist
               + "]";
@@ -1101,18 +1101,18 @@ public class BOAState implements IQuimpSerialize {
         qp.setFrameInterval(BOA_.qState.boap.imageFrameInterval);
         qp.setStartFrame(startF);
         qp.setEndFrame(endF);
-        qp.NMAX = boap.NMAX;
+        qp.nmax = boap.NMAX;
         qp.setBlowup(segParam.blowup);
-        qp.max_iterations = segParam.max_iterations;
-        qp.sample_tan = segParam.sample_tan;
-        qp.sample_norm = segParam.sample_norm;
-        qp.delta_t = boap.delta_t;
+        qp.maxIterations = segParam.max_iterations;
+        qp.sampleTan = segParam.sample_tan;
+        qp.sampleNorm = segParam.sample_norm;
+        qp.deltaT = boap.delta_t;
         qp.setNodeRes(segParam.nodeRes);
-        qp.vel_crit = segParam.vel_crit;
-        qp.f_central = segParam.f_central;
-        qp.f_contract = segParam.f_contract;
-        qp.f_image = segParam.f_image;
-        qp.f_friction = boap.f_friction;
+        qp.velCrit = segParam.vel_crit;
+        qp.centralForce = segParam.f_central;
+        qp.contractForce = segParam.f_contract;
+        qp.imageForce = segParam.f_image;
+        qp.frictionForce = boap.f_friction;
         qp.finalShrink = segParam.finalShrink;
         qp.sensitivity = boap.sensitivity;
 
@@ -1164,17 +1164,17 @@ public class BOAState implements IQuimpSerialize {
    */
   public void loadParams(QParams readQp) {
 
-    boap.NMAX = readQp.NMAX;
+    boap.NMAX = readQp.nmax;
     segParam.blowup = readQp.getBlowup();
-    segParam.max_iterations = readQp.max_iterations;
-    segParam.sample_tan = readQp.sample_tan;
-    segParam.sample_norm = readQp.sample_norm;
-    boap.delta_t = readQp.delta_t;
+    segParam.max_iterations = readQp.maxIterations;
+    segParam.sample_tan = readQp.sampleTan;
+    segParam.sample_norm = readQp.sampleNorm;
+    boap.delta_t = readQp.deltaT;
     segParam.nodeRes = readQp.getNodeRes();
-    segParam.vel_crit = readQp.vel_crit;
-    segParam.f_central = readQp.f_central;
-    segParam.f_contract = readQp.f_contract;
-    segParam.f_image = readQp.f_image;
+    segParam.vel_crit = readQp.velCrit;
+    segParam.f_central = readQp.centralForce;
+    segParam.f_contract = readQp.contractForce;
+    segParam.f_image = readQp.imageForce;
 
     if (readQp.paramFormat == QParams.QUIMP_11) {
       segParam.finalShrink = readQp.finalShrink;

@@ -217,18 +217,18 @@ public class QParamsQconf extends QParams {
       super.setSegImageFile(getLoadedDataContainer().getBOAState().boap.getOrgFile());
       super.setImageScale(getLoadedDataContainer().getBOAState().boap.getImageScale());
       super.setFrameInterval(getLoadedDataContainer().getBOAState().boap.getImageFrameInterval());
-      super.NMAX = getLoadedDataContainer().getBOAState().boap.NMAX;
-      super.delta_t = getLoadedDataContainer().getBOAState().boap.delta_t;
-      super.max_iterations = getLoadedDataContainer().getBOAState().segParam.max_iterations;
+      super.nmax = getLoadedDataContainer().getBOAState().boap.NMAX;
+      super.deltaT = getLoadedDataContainer().getBOAState().boap.delta_t;
+      super.maxIterations = getLoadedDataContainer().getBOAState().segParam.max_iterations;
       super.setNodeRes(getLoadedDataContainer().getBOAState().segParam.getNodeRes());
       super.setBlowup(getLoadedDataContainer().getBOAState().segParam.blowup);
-      super.sample_tan = getLoadedDataContainer().getBOAState().segParam.sample_tan;
-      super.sample_norm = getLoadedDataContainer().getBOAState().segParam.sample_norm;
-      super.vel_crit = getLoadedDataContainer().getBOAState().segParam.vel_crit;
-      super.f_central = getLoadedDataContainer().getBOAState().segParam.f_central;
-      super.f_contract = getLoadedDataContainer().getBOAState().segParam.f_contract;
-      super.f_friction = getLoadedDataContainer().getBOAState().boap.f_friction;
-      super.f_image = getLoadedDataContainer().getBOAState().segParam.f_image;
+      super.sampleTan = getLoadedDataContainer().getBOAState().segParam.sample_tan;
+      super.sampleNorm = getLoadedDataContainer().getBOAState().segParam.sample_norm;
+      super.velCrit = getLoadedDataContainer().getBOAState().segParam.vel_crit;
+      super.centralForce = getLoadedDataContainer().getBOAState().segParam.f_central;
+      super.contractForce = getLoadedDataContainer().getBOAState().segParam.f_contract;
+      super.frictionForce = getLoadedDataContainer().getBOAState().boap.f_friction;
+      super.imageForce = getLoadedDataContainer().getBOAState().segParam.f_image;
       super.sensitivity = getLoadedDataContainer().getBOAState().boap.sensitivity;
       super.finalShrink = getLoadedDataContainer().getBOAState().segParam.finalShrink;
       // set frames from snakes

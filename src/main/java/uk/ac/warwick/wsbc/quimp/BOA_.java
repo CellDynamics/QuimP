@@ -3077,7 +3077,7 @@ class Constrictor {
         // add some friction
         n.getVel().multiply(BOA_.qState.boap.f_friction);
 
-        // freeze node if vel is below vel_crit
+        // freeze node if vel is below velCrit
         if (n.getVel().length() < BOA_.qState.segParam.vel_crit) {
           snake.freezeNode(n);
         }
@@ -3158,7 +3158,7 @@ class Constrictor {
         tempV.setY(BOA_.qState.boap.delta_t * n.getVel().getY());
         n.setPrelim(tempV);
 
-        // freeze node if vel is below vel_crit
+        // freeze node if vel is below velCrit
         if (n.getVel().length() < BOA_.qState.segParam.vel_crit) {
           snake.freezeNode(n);
         }
@@ -3226,7 +3226,7 @@ class Constrictor {
     int outI = 0; // number of pixels in the neighbourhood of a node
 
     // determine num pixels and total intensity of
-    // neighbourhood: a rectangle with sample_tan x sample_norm
+    // neighbourhood: a rectangle with sampleTan x sampleNorm
     for (i = 0; i <= 1. / a * BOA_.qState.segParam.sample_tan; i++) {
       // determine points on the tangent
       xt = n.getPoint().getX() + (a * i - BOA_.qState.segParam.sample_tan / 2) * tan.getX();

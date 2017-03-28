@@ -16,7 +16,6 @@ import ij.gui.Roi;
 import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represent collection of SnakeHandlers.
  * 
@@ -30,12 +29,12 @@ public class Nest implements IQuimpSerialize {
   /**
    * List of SnakeHandlers.
    * 
-   * SnakeHandlers get subsequent IDs therefore index in this array matches SnakeHandler's ID.
+   * <p>SnakeHandlers get subsequent IDs therefore index in this array matches SnakeHandler's ID.
    * This relation can be broken when any cell is deleted using
    * {@link #removeHandler(SnakeHandler)} method that simply removes it from array shifting other
    * objects down.
    * 
-   * This array should be accessed by {@link #getHandler(int)} when one needs access handler on
+   * <p>This array should be accessed by {@link #getHandler(int)} when one needs access handler on
    * certain index but does not care about its ID or {@link #getHandlerofId(int)} when ID is
    * crucial.
    */
@@ -54,7 +53,7 @@ public class Nest implements IQuimpSerialize {
   private int nextID;
 
   /**
-   * 
+   * Default constructor.
    */
   public Nest() {
     NSNAKES = 0;
@@ -66,7 +65,7 @@ public class Nest implements IQuimpSerialize {
   /**
    * Convert array of SegmentedShapeRoi to SnakeHandlers.
    * 
-   * Conversion within one SnakeHandler is stopped when there is defective Snake.
+   * <p>Conversion within one SnakeHandler is stopped when there is defective Snake.
    * 
    * @param roiArray First level stands for objects (SnakeHandlers(, second for Snakes within one
    *        chain
@@ -87,8 +86,10 @@ public class Nest implements IQuimpSerialize {
   }
 
   /**
-   * @param roiArray
-   * @param startFrame
+   * Add rois to Nest - convert them to Snake and store in SnakeHandler.
+   * 
+   * @param roiArray roiArray
+   * @param startFrame start frame, rois from roiArray are added to subsequent frames.
    */
   public void addHandlers(Roi[] roiArray, int startFrame) {
     int i = 0;
@@ -107,18 +108,17 @@ public class Nest implements IQuimpSerialize {
   }
 
   /**
-   * Add ROI objects in Nest Snakes are stored in Nest object in form of SnakeHandler objects kept
-   * in \c ArrayList<SnakeHandler> \c sHs field.
+   * Add roi to Nest - convert them to Snake and store in SnakeHandler.
    * 
    * @param r ROI object that contain image object to be segmented
    * @param startFrame Current frame
    * @return SnakeHandler object that is also stored in Nest
    */
   public SnakeHandler addHandler(final Roi r, int startFrame) {
-    SnakeHandler sH;
+    SnakeHandler sh;
     try {
-      sH = new SnakeHandler(r, startFrame, nextID);
-      sHs.add(sH);
+      sh = new SnakeHandler(r, startFrame, nextID);
+      sHs.add(sh);
       nextID++;
       NSNAKES++;
       ALIVE++;
@@ -129,10 +129,11 @@ public class Nest implements IQuimpSerialize {
       return null;
     }
     BOA_.log("Cells being tracked: " + NSNAKES);
-    return sH;
+    return sh;
   }
 
   /**
+   * Gets SnakeHandler.
    * 
    * @param s Index of SnakeHandler to get.
    * @return SnakeHandler stored on index s. It may refer to SnakeHandler ID but may break when
@@ -144,6 +145,7 @@ public class Nest implements IQuimpSerialize {
   }
 
   /**
+   * Get SnakeHandler of given id.
    * 
    * @param id ID of SnakeHandler to find in Nest.
    * @return SnakeHandler with demanded ID. Throw exception if not found.
@@ -151,69 +153,76 @@ public class Nest implements IQuimpSerialize {
    */
   public SnakeHandler getHandlerofId(int id) {
     int ret = -1;
-    for (int i = 0; i < sHs.size(); i++)
+    for (int i = 0; i < sHs.size(); i++) {
       if (sHs.get(i) != null && sHs.get(i).getID() == id) {
         ret = i;
         break;
       }
-    if (ret < 0)
+    }
+    if (ret < 0) {
       throw new IllegalArgumentException("SnakeHandler of index " + id + " not found in nest");
-    else
+    } else {
       return getHandler(ret);
+    }
   }
 
   /**
    * Write all Snakes to file.
    * 
-   * File names are deducted in called functions.
+   * <p>File names are deducted in called functions.
    * 
    * @return true if write operation has been successful
    * @throws IOException when the file exists but is a directory rather than a regular file, does
    *         not exist but cannot be created, or cannot be opened for any other reason
    */
   public boolean writeSnakes() throws IOException {
-    Iterator<SnakeHandler> sHitr = sHs.iterator();
+    Iterator<SnakeHandler> shitr = sHs.iterator();
     ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
-    SnakeHandler sH;
-    while (sHitr.hasNext()) {
-      sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
-      sH.findLastFrame(); // find its last frame (frame with valid contour)
-      if (sH.getStartFrame() > sH.getEndFrame()) {
-        IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
-        toRemove.add(sH);
+    SnakeHandler sh;
+    while (shitr.hasNext()) {
+      sh = (SnakeHandler) shitr.next(); // get SnakeHandler from Nest
+      sh.findLastFrame(); // find its last frame (frame with valid contour)
+      if (sh.getStartFrame() > sh.getEndFrame()) {
+        IJ.error("Snake " + sh.getID() + " not written as its empty. Deleting it.");
+        toRemove.add(sh);
         continue;
       }
-      if (!sH.writeSnakes()) {
+      if (!sh.writeSnakes()) {
         return false;
       }
     }
     // removing from list (after iterator based loop)
-    for (int i = 0; i < toRemove.size(); i++)
+    for (int i = 0; i < toRemove.size(); i++) {
       removeHandler(toRemove.get(i));
+    }
     return true;
   }
 
   /**
-   * @param sH
+   * Remove SnakeHandler from Nest.
+   * 
+   * @param sh handler to remove.
    */
-  public void kill(final SnakeHandler sH) {
-    sH.kill();
+  public void kill(final SnakeHandler sh) {
+    sh.kill();
     ALIVE--;
   }
 
   /**
-   * 
+   * Make all Snakes live in nest.
    */
   public void reviveNest() {
-    Iterator<SnakeHandler> sHitr = sHs.iterator();
-    while (sHitr.hasNext()) {
-      SnakeHandler sH = (SnakeHandler) sHitr.next();
-      sH.revive();
+    Iterator<SnakeHandler> shitr = sHs.iterator();
+    while (shitr.hasNext()) {
+      SnakeHandler sh = (SnakeHandler) shitr.next();
+      sh.revive();
     }
     ALIVE = NSNAKES;
   }
 
   /**
+   * Check if Nest is empty.
+   * 
    * @return true if Nest is empty
    */
   public boolean isVacant() {
@@ -224,6 +233,8 @@ public class Nest implements IQuimpSerialize {
   }
 
   /**
+   * Check if there is live Snake in Nest.
+   * 
    * @return true if all snakes in Nest are dead
    */
   public boolean allDead() {
@@ -236,10 +247,9 @@ public class Nest implements IQuimpSerialize {
   /**
    * Write <i>stQP</i> file using current Snakes
    * 
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * It can set current slice in ImagePlus (modifies the object state).
+   * <p><b>Warning</b>
+   * 
+   * <p>It can set current slice in ImagePlus (modifies the object state).
    * 
    * @param oi instance of current ImagePlus (required by CellStat that extends
    *        ij.measure.Measurements
@@ -249,19 +259,19 @@ public class Nest implements IQuimpSerialize {
    */
   public List<CellStatsEval> analyse(final ImagePlus oi, boolean saveFile) {
     OutlineHandler outputH;
-    SnakeHandler sH;
+    SnakeHandler sh;
     ArrayList<CellStatsEval> ret = new ArrayList<>();
-    Iterator<SnakeHandler> sHitr = sHs.iterator();
-    while (sHitr.hasNext()) {
-      sH = (SnakeHandler) sHitr.next();
+    Iterator<SnakeHandler> shitr = sHs.iterator();
+    while (shitr.hasNext()) {
+      sh = (SnakeHandler) shitr.next();
 
       File statsFile;
       if (saveFile == true) { // compatibility with old (#263), reread snakes from snQP
-        outputH = new OutlineHandler(sH);
-        statsFile = new File(BOA_.qState.boap.deductStatsFileName(sH.getID()));
+        outputH = new OutlineHandler(sh);
+        statsFile = new File(BOA_.qState.boap.deductStatsFileName(sh.getID()));
       } else { // new approach use conversion constructor
         statsFile = null;
-        outputH = new OutlineHandler(sH);
+        outputH = new OutlineHandler(sh);
       }
       CellStatsEval tmp = new CellStatsEval(outputH, oi, statsFile,
               BOA_.qState.boap.getImageScale(), BOA_.qState.boap.getImageFrameInterval());
@@ -275,41 +285,42 @@ public class Nest implements IQuimpSerialize {
    */
   public void resetNest() {
     reviveNest();
-    Iterator<SnakeHandler> sHitr = sHs.iterator();
+    Iterator<SnakeHandler> shitr = sHs.iterator();
     ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
-    while (sHitr.hasNext()) {
-      SnakeHandler sH = (SnakeHandler) sHitr.next();
+    while (shitr.hasNext()) {
+      SnakeHandler sh = (SnakeHandler) shitr.next();
       try {
-        sH.reset();
+        sh.reset();
       } catch (Exception e) {
         LOGGER.error("Could not reset snake " + e.getMessage(), e);
-        BOA_.log("Could not reset snake " + sH.getID());
-        BOA_.log("Removing snake " + sH.getID());
+        BOA_.log("Could not reset snake " + sh.getID());
+        BOA_.log("Removing snake " + sh.getID());
         // collect handler to remove. It will be removed later to avoid list modification in
         // iterator (#186)
-        toRemove.add(sH);
+        toRemove.add(sh);
       }
     }
     // removing from list (after iterator based loop)
-    for (int i = 0; i < toRemove.size(); i++)
+    for (int i = 0; i < toRemove.size(); i++) {
       removeHandler(toRemove.get(i));
+    }
   }
 
   /**
    * Remove {@link SnakeHandler} from Nest.
    * 
-   * @param sH SnakeHandler to remove.
+   * @param sh SnakeHandler to remove.
    */
-  public void removeHandler(final SnakeHandler sH) {
-    if (sH.isLive()) {
+  public void removeHandler(final SnakeHandler sh) {
+    if (sh.isLive()) {
       ALIVE--;
     }
-    sHs.remove(sH);
+    sHs.remove(sh);
     NSNAKES--;
   }
 
   /**
-   * Remove all handlers from Nest. Make Nest empty
+   * Remove all handlers from Nest. Make Nest empty.
    */
   public void cleanNest() {
     sHs.clear();
@@ -319,6 +330,8 @@ public class Nest implements IQuimpSerialize {
   }
 
   /**
+   * Get NEst size.
+   * 
    * @return Get number of SnakeHandlers (snakes) in nest
    */
   public int size() {
@@ -332,49 +345,51 @@ public class Nest implements IQuimpSerialize {
    */
   void resetForFrame(int f) {
     reviveNest();
-    Iterator<SnakeHandler> sHitr = sHs.iterator();
+    Iterator<SnakeHandler> shitr = sHs.iterator();
     ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
-    while (sHitr.hasNext()) {
-      SnakeHandler sH = (SnakeHandler) sHitr.next();
+    while (shitr.hasNext()) {
+      SnakeHandler sh = (SnakeHandler) shitr.next();
       try {
-        if (f <= sH.getStartFrame()) {
+        if (f <= sh.getStartFrame()) {
           // BOA_.log("Reset snake " + sH.getID() + " as Roi");
-          sH.reset();
+          sh.reset();
         } else {
           // BOA_.log("Reset snake " + sH.getID() + " as prev snake");
-          sH.resetForFrame(f);
+          sh.resetForFrame(f);
         }
       } catch (Exception e) {
         LOGGER.debug("Could not reset snake " + e.getMessage(), e);
-        BOA_.log("Could not reset snake " + sH.getID());
-        BOA_.log("Removing snake " + sH.getID());
+        BOA_.log("Could not reset snake " + sh.getID());
+        BOA_.log("Removing snake " + sh.getID());
         // collect handler to remove. It will be removed later to avoid list modification in
         // iterator (#186)
-        toRemove.add(sH);
+        toRemove.add(sh);
       }
     }
     // removing from list (after iterator based loop)
-    for (int i = 0; i < toRemove.size(); i++)
+    for (int i = 0; i < toRemove.size(); i++) {
       removeHandler(toRemove.get(i));
+    }
   }
 
   /**
    * Get list of snakes (its IDs) that are on frame frame.
    * 
    * @param frame Frame find snakes in
-   * @return List of Snake id on \c frame
+   * @return List of Snake id on frame
    */
   public List<Integer> getSnakesforFrame(int frame) {
     ArrayList<Integer> ret = new ArrayList<Integer>();
-    Iterator<SnakeHandler> sHiter = sHs.iterator();
-    while (sHiter.hasNext()) { // over whole nest
-      SnakeHandler sH = sHiter.next(); // for every SnakeHandler
-      if (sH.getStartFrame() > frame || sH.getEndFrame() < frame) // check its limits
+    Iterator<SnakeHandler> shiter = sHs.iterator();
+    while (shiter.hasNext()) { // over whole nest
+      SnakeHandler sh = shiter.next(); // for every SnakeHandler
+      if (sh.getStartFrame() > frame || sh.getEndFrame() < frame) {
         continue; // no snake in frame
-      if (sH.isStoredAt(frame)) { // if limits are ok check if this particular snake exist
+      }
+      if (sh.isStoredAt(frame)) { // if limits are ok check if this particular snake exist
         // it is not deleted by user on this particular frame after successful creating as
         // series of Snakes
-        Snake s = sH.getStoredSnake(frame);
+        Snake s = sh.getStoredSnake(frame);
         ret.add(s.getSnakeID()); // if yes get its id
       }
     }
@@ -384,7 +399,7 @@ public class Nest implements IQuimpSerialize {
   /**
    * Count the snakes that exist at, or after, frame.
    * 
-   * @param frame
+   * @param frame frame
    * @return number of snakes
    */
   int nbSnakesAt(int frame) {
@@ -406,17 +421,17 @@ public class Nest implements IQuimpSerialize {
    * 
    * <p>Conversion to Snakes is through Rois
    * 
-   * @param oH
+   * @param oh OutlineHandler to convert from.
    */
-  void addOutlinehandler(final OutlineHandler oH) {
-    SnakeHandler sH = addHandler(oH.indexGetOutline(0).asFloatRoi(), oH.getStartFrame());
+  void addOutlinehandler(final OutlineHandler oh) {
+    SnakeHandler sh = addHandler(oh.indexGetOutline(0).asFloatRoi(), oh.getStartFrame());
 
     Outline o;
-    for (int i = oH.getStartFrame(); i <= oH.getEndFrame(); i++) {
-      o = oH.getOutline(i);
-      sH.storeRoi((PolygonRoi) o.asFloatRoi(), i);
+    for (int i = oh.getStartFrame(); i <= oh.getEndFrame(); i++) {
+      o = oh.getOutline(i);
+      sh.storeRoi((PolygonRoi) o.asFloatRoi(), i);
     }
-    sH.copyFromFinalToSeg();
+    sh.copyFromFinalToSeg();
   }
 
   /*
@@ -426,23 +441,24 @@ public class Nest implements IQuimpSerialize {
    */
   @Override
   public void beforeSerialize() {
-    Iterator<SnakeHandler> sHitr = sHs.iterator();
+    Iterator<SnakeHandler> shitr = sHs.iterator();
     ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
-    SnakeHandler sH;
+    SnakeHandler sh;
     // sanity operation - delete defective snakes
-    while (sHitr.hasNext()) {
-      sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
-      sH.findLastFrame(); // find its last frame (frame with valid contour)
-      if (sH.getStartFrame() > sH.getEndFrame()) {
-        IJ.error("Snake " + sH.getID() + " not written as its empty. Deleting it.");
-        toRemove.add(sH);
+    while (shitr.hasNext()) {
+      sh = (SnakeHandler) shitr.next(); // get SnakeHandler from Nest
+      sh.findLastFrame(); // find its last frame (frame with valid contour)
+      if (sh.getStartFrame() > sh.getEndFrame()) {
+        IJ.error("Snake " + sh.getID() + " not written as its empty. Deleting it.");
+        toRemove.add(sh);
         continue;
       }
-      sH.beforeSerialize();
+      sh.beforeSerialize();
     }
     // removing from list (after iterator based loop)
-    for (int i = 0; i < toRemove.size(); i++)
+    for (int i = 0; i < toRemove.size(); i++) {
       removeHandler(toRemove.get(i));
+    }
   }
 
   /*
@@ -452,11 +468,11 @@ public class Nest implements IQuimpSerialize {
    */
   @Override
   public void afterSerialize() throws Exception {
-    Iterator<SnakeHandler> sHitr = sHs.iterator();
-    SnakeHandler sH;
-    while (sHitr.hasNext()) {
-      sH = (SnakeHandler) sHitr.next(); // get SnakeHandler from Nest
-      sH.afterSerialize();
+    Iterator<SnakeHandler> shitr = sHs.iterator();
+    SnakeHandler sh;
+    while (shitr.hasNext()) {
+      sh = (SnakeHandler) shitr.next(); // get SnakeHandler from Nest
+      sh.afterSerialize();
     }
 
   }

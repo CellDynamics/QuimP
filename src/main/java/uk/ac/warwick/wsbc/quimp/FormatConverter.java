@@ -247,7 +247,7 @@ public class FormatConverter {
           LOGGER.warn(e.getMessage());
         }
         try {
-          stMap.xMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getxFile());
+          stMap.xMap = QuimPArrayUtils.file2Array(",", qcL.getQp().getxmapFile());
         } catch (IOException e) {
           LOGGER.warn(e.getMessage());
           LOGGER.debug(e.getMessage(), e);

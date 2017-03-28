@@ -1,6 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import java.io.BufferedReader;
@@ -22,7 +19,6 @@ import uk.ac.warwick.wsbc.quimp.BOAState.BOAp;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Container class for parameters defining the whole process of analysis in QuimP. Stores parameters
  * read from configuration files and provide them to different modules. Supports writing and reading
@@ -37,8 +33,9 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
  * <li>.stQP - basic shape statistics for every frame</li>
  * <li>.mapQP - maps described in documentation</li>
  * </ul>
- * <p>
- * This class exists for compatibility purposes. Allows reading old files. There is also child class
+ * 
+ * <p>This class exists for compatibility purposes. Allows reading old files. There is also child
+ * class
  * QParamsEsxhanger that is based on new file format. Because QParams is strongly integrated with
  * QuimP it has been left.
  * 
@@ -54,17 +51,17 @@ public class QParams {
   static final Logger LOGGER = LoggerFactory.getLogger(QParams.class.getName());
 
   /**
-   * The Constant OLD_QUIMP.
+   * The Constant OLD_QUIMP. Denotes version of QuimP < Q11
    */
   public static final int OLD_QUIMP = 1;
 
   /**
-   * The Constant QUIMP_11.
+   * The Constant QUIMP_11. Denotes version Q11
    */
   public static final int QUIMP_11 = 2;
 
   /**
-   * The Constant NEW_QUIMP.
+   * The Constant NEW_QUIMP. Denotes version > Q11
    */
   public static final int NEW_QUIMP = 3;
   /**
@@ -89,7 +86,8 @@ public class QParams {
    * @see uk.ac.warwick.wsbc.quimp.BOAState.BOAp
    */
   private String path;
-  private File segImageFile, snakeQP;
+  private File segImageFile;
+  private File snakeQP;
 
   /**
    * The stats QP.
@@ -101,28 +99,36 @@ public class QParams {
    */
   public File[] fluTiffs;
 
-  private File convexFile, coordFile, motilityFile, originFile, xFile, yFile;
+  private File convexFile;
+  private File coordFile;
+  private File motilityFile;
+  private File originFile;
+  private File xmapFile;
+  private File ymapFile;
   private File[] fluFiles;
 
   private double imageScale;
   private double frameInterval;
-  private int startFrame, endFrame;
+  private int startFrame;
+  private int endFrame;
 
   private int blowup;
   private double nodeRes;
 
-  /**
-   * The sample norm.
-   */
-  int NMAX, max_iterations, sample_tan, sample_norm;
+  int nmax;
+  int maxIterations;
+  int sampleTan;
+  int sampleNorm;
+
+  double deltaT;
+  double velCrit;
+  double centralForce;
+  double contractForce;
+  double imageForce;
+  double frictionForce;
 
   /**
-   * The f friction.
-   */
-  double delta_t, vel_crit, f_central, f_contract, f_image, f_friction;
-
-  /**
-   * Shrink value
+   * Shrink value.
    */
   public double finalShrink;
   /**
@@ -145,6 +151,8 @@ public class QParams {
   private boolean ecmmHasRun = false;
 
   /**
+   * Check if ECMM was run.
+   * 
    * @return the ecmmHasRun
    */
   public boolean isEcmmHasRun() {
@@ -181,18 +189,18 @@ public class QParams {
     frameInterval = -1;
     startFrame = -1;
     endFrame = -1;
-    NMAX = -1;
+    nmax = -1;
     blowup = -1;
-    max_iterations = -1;
-    sample_tan = -1;
-    sample_norm = -1;
-    delta_t = -1;
+    maxIterations = -1;
+    sampleTan = -1;
+    sampleNorm = -1;
+    deltaT = -1;
     nodeRes = -1;
-    vel_crit = -1;
-    f_central = -1;
-    f_contract = -1;
-    f_image = -1;
-    f_friction = -1;
+    velCrit = -1;
+    centralForce = -1;
+    contractForce = -1;
+    imageForce = -1;
+    frictionForce = -1;
     finalShrink = -1;
     cortexWidth = 0.7;
     key = -1;
@@ -200,6 +208,8 @@ public class QParams {
   }
 
   /**
+   * Get name of parameter file (paQP).
+   * 
    * @return the paramFile
    */
   public File getParamFile() {
@@ -207,7 +217,9 @@ public class QParams {
   }
 
   /**
-   * @param paramFile the paramFile to set.
+   * Set name of parameter file.
+   * 
+   * @param paramFile the paramFile to set. Extension will be removed.
    */
   public void setParamFile(File paramFile) {
     fileName = QuimpToolsCollection.removeExtension(paramFile.getName());
@@ -216,6 +228,8 @@ public class QParams {
   }
 
   /**
+   * Get the name of parameter file but without extension.
+   * 
    * @return the prefix. This name probably contains also underscored cell number. It is added
    *         when object of this is created from {@link QParamsQconf} and should be added when
    *         creating only this object QParams(File).
@@ -225,6 +239,8 @@ public class QParams {
   }
 
   /**
+   * getPath.
+   * 
    * @return the path of param file
    */
   public String getPath() {
@@ -232,6 +248,7 @@ public class QParams {
   }
 
   /**
+   * getPathasPath.
    * 
    * @return the path of param file as Path
    */
@@ -240,6 +257,8 @@ public class QParams {
   }
 
   /**
+   * getNodeRes.
+   * 
    * @return the nodeRes
    */
   public double getNodeRes() {
@@ -247,6 +266,8 @@ public class QParams {
   }
 
   /**
+   * setNodeRes.
+   * 
    * @param nodeRes the nodeRes to set
    */
   public void setNodeRes(double nodeRes) {
@@ -254,6 +275,8 @@ public class QParams {
   }
 
   /**
+   * getBlowup.
+   * 
    * @return the blowup
    */
   public int getBlowup() {
@@ -261,6 +284,8 @@ public class QParams {
   }
 
   /**
+   * setBlowup.
+   * 
    * @param blowup the blowup to set
    */
   public void setBlowup(int blowup) {
@@ -268,6 +293,8 @@ public class QParams {
   }
 
   /**
+   * getImageScale.
+   * 
    * @return the imageScale
    */
   public double getImageScale() {
@@ -275,6 +302,8 @@ public class QParams {
   }
 
   /**
+   * setImageScale.
+   * 
    * @param imageScale the imageScale to set
    */
   public void setImageScale(double imageScale) {
@@ -282,6 +311,8 @@ public class QParams {
   }
 
   /**
+   * getFrameInterval.
+   * 
    * @return the frameInterval
    */
   public double getFrameInterval() {
@@ -289,6 +320,8 @@ public class QParams {
   }
 
   /**
+   * setFrameInterval.
+   * 
    * @param frameInterval the frameInterval to set
    */
   public void setFrameInterval(double frameInterval) {
@@ -296,6 +329,8 @@ public class QParams {
   }
 
   /**
+   * getStartFrame.
+   * 
    * @return the startFrame
    */
   public int getStartFrame() {
@@ -303,6 +338,8 @@ public class QParams {
   }
 
   /**
+   * setStartFrame.
+   * 
    * @param startFrame the startFrame to set
    */
   public void setStartFrame(int startFrame) {
@@ -310,6 +347,8 @@ public class QParams {
   }
 
   /**
+   * getEndFrame.
+   * 
    * @return the endFrame
    */
   public int getEndFrame() {
@@ -317,6 +356,8 @@ public class QParams {
   }
 
   /**
+   * setEndFrame.
+   * 
    * @param endFrame the endFrame to set
    */
   public void setEndFrame(int endFrame) {
@@ -324,6 +365,8 @@ public class QParams {
   }
 
   /**
+   * Get snQP file name.
+   * 
    * @return the snakeQP
    */
   public File getSnakeQP() {
@@ -331,6 +374,8 @@ public class QParams {
   }
 
   /**
+   * Set snQP file name.
+   * 
    * @param snakeQP the snakeQP to set
    */
   public void setSnakeQP(File snakeQP) {
@@ -338,6 +383,8 @@ public class QParams {
   }
 
   /**
+   * Get stats file name.
+   * 
    * @return the statsQP
    */
   public File getStatsQP() {
@@ -345,6 +392,8 @@ public class QParams {
   }
 
   /**
+   * Get names of flu files.
+   * 
    * @return the fluFiles
    */
   public File[] getFluFiles() {
@@ -352,6 +401,8 @@ public class QParams {
   }
 
   /**
+   * Set stats file name.
+   * 
    * @param statsQP the statsQP to set
    */
   public void setStatsQP(File statsQP) {
@@ -359,6 +410,8 @@ public class QParams {
   }
 
   /**
+   * Get name of BOA loaded image.
+   * 
    * @return the segImageFile
    */
   public File getSegImageFile() {
@@ -366,6 +419,8 @@ public class QParams {
   }
 
   /**
+   * Set name of BOA loaded image.
+   * 
    * @param segImageFile the segImageFile to set
    */
   public void setSegImageFile(File segImageFile) {
@@ -373,6 +428,8 @@ public class QParams {
   }
 
   /**
+   * getConvexFile name.
+   * 
    * @return the convexFile
    */
   public File getConvexFile() {
@@ -380,6 +437,8 @@ public class QParams {
   }
 
   /**
+   * setConvexFile name.
+   * 
    * @param convexFile the convexFile to set
    */
   public void setConvexFile(File convexFile) {
@@ -387,6 +446,8 @@ public class QParams {
   }
 
   /**
+   * getCoordFile name.
+   * 
    * @return the coordFile
    */
   public File getCoordFile() {
@@ -394,6 +455,8 @@ public class QParams {
   }
 
   /**
+   * setCoordFile name.
+   * 
    * @param coordFile the coordFile to set
    */
   public void setCoordFile(File coordFile) {
@@ -401,6 +464,8 @@ public class QParams {
   }
 
   /**
+   * getMotilityFile name.
+   * 
    * @return the motilityFile
    */
   public File getMotilityFile() {
@@ -408,6 +473,8 @@ public class QParams {
   }
 
   /**
+   * setMotilityFile name.
+   * 
    * @param motilityFile the motilityFile to set
    */
   public void setMotilityFile(File motilityFile) {
@@ -415,6 +482,8 @@ public class QParams {
   }
 
   /**
+   * getOriginFile name.
+   * 
    * @return the originFile
    */
   public File getOriginFile() {
@@ -422,6 +491,8 @@ public class QParams {
   }
 
   /**
+   * setOriginFile name.
+   * 
    * @param originFile the originFile to set
    */
   public void setOriginFile(File originFile) {
@@ -429,40 +500,48 @@ public class QParams {
   }
 
   /**
-   * @return the xFile
+   * Get x coord map file.
+   * 
+   * @return the xmapFile
    */
-  public File getxFile() {
-    return xFile;
+  public File getxmapFile() {
+    return xmapFile;
   }
 
   /**
-   * @param xFile the xFile to set
+   * Set x coord map file.
+   * 
+   * @param xmapFile the xmapFile to set
    */
-  public void setxFile(File xFile) {
-    this.xFile = xFile;
+  public void setxmapFile(File xmapFile) {
+    this.xmapFile = xmapFile;
   }
 
   /**
-   * @return the yFile
+   * Get y coord map file.
+   * 
+   * @return the ymapFile
    */
   public File getyFile() {
-    return yFile;
+    return ymapFile;
   }
 
   /**
-   * @param yFile the yFile to set
+   * Set y coord map file.
+   * 
+   * @param ymapFile the ymapFile to set
    */
-  public void setyFile(File yFile) {
-    this.yFile = yFile;
+  public void setymapFile(File ymapFile) {
+    this.ymapFile = ymapFile;
   }
 
   /**
-   * Read the \a paQP file specified by paramFile (see
-   * uk.ac.warwick.wsbc.quimp.QParams.QParams(File))
+   * Read the paQP file specified by paramFile
    * 
-   * Create handles to files stored as names in <i>paQP</i>. Read segmentation parameters.
+   * <p>See {@link #QParams(File)}. Create handles to files stored as names in <i>paQP</i>. Read
+   * segmentation parameters.
    * 
-   * @throws QuimpException
+   * @throws QuimpException on wrong file that can not be interpreted or read.
    */
   public void readParams() throws QuimpException {
     paramFormat = QParams.OLD_QUIMP;
@@ -508,26 +587,27 @@ public class QParams {
       frameInterval = QuimpToolsCollection.s2d(d.readLine());
 
       d.readLine(); // skip #segmentation parameters
-      NMAX = (int) QuimpToolsCollection.s2d(d.readLine());
-      delta_t = QuimpToolsCollection.s2d(d.readLine());
-      max_iterations = (int) QuimpToolsCollection.s2d(d.readLine());
+      nmax = (int) QuimpToolsCollection.s2d(d.readLine());
+      deltaT = QuimpToolsCollection.s2d(d.readLine());
+      maxIterations = (int) QuimpToolsCollection.s2d(d.readLine());
       nodeRes = QuimpToolsCollection.s2d(d.readLine());
       blowup = (int) QuimpToolsCollection.s2d(d.readLine());
-      sample_tan = (int) QuimpToolsCollection.s2d(d.readLine());
-      sample_norm = (int) QuimpToolsCollection.s2d(d.readLine());
-      vel_crit = QuimpToolsCollection.s2d(d.readLine());
+      sampleTan = (int) QuimpToolsCollection.s2d(d.readLine());
+      sampleNorm = (int) QuimpToolsCollection.s2d(d.readLine());
+      velCrit = QuimpToolsCollection.s2d(d.readLine());
 
-      f_central = QuimpToolsCollection.s2d(d.readLine());
-      f_contract = QuimpToolsCollection.s2d(d.readLine());
-      f_friction = QuimpToolsCollection.s2d(d.readLine());
-      f_image = QuimpToolsCollection.s2d(d.readLine());
+      centralForce = QuimpToolsCollection.s2d(d.readLine());
+      contractForce = QuimpToolsCollection.s2d(d.readLine());
+      frictionForce = QuimpToolsCollection.s2d(d.readLine());
+      imageForce = QuimpToolsCollection.s2d(d.readLine());
       sensitivity = QuimpToolsCollection.s2d(d.readLine());
 
       if (l.substring(0, 3).equals("#p2")) { // new format
         paramFormat = QParams.QUIMP_11;
         // new params
-        d.readLine(); // # - new parameters (cortext width, start frame,
-                      // end frame, final shrink, statsQP, fluImage)
+        // # - new parameters (cortext width, start frame, end frame, final shrink, statsQP,
+        // fluImage)
+        d.readLine();
         cortexWidth = QuimpToolsCollection.s2d(d.readLine());
         startFrame = (int) QuimpToolsCollection.s2d(d.readLine());
         endFrame = (int) QuimpToolsCollection.s2d(d.readLine());
@@ -542,7 +622,7 @@ public class QParams {
       d.close();
       this.guessOtherFileNames(); // generate handles of other files that will be created here
       checkECMMrun(); // check if snQP file is already processed by ECMM. Set ecmmHasRun
-    } catch (Exception e) {
+    } catch (IOException e) {
       throw new QuimpException(e);
     }
   }
@@ -559,67 +639,65 @@ public class QParams {
     }
 
     Random generator = new Random();
-    double d = generator.nextDouble() * 1000000; // 6 digit key to ID
-                                                 // job
+    double d = generator.nextDouble() * 1000000; // 6 digit key to ID job
     key = Math.round(d);
 
-    PrintWriter pPW = new PrintWriter(new FileWriter(paramFile), true);
+    PrintWriter ppW = new PrintWriter(new FileWriter(paramFile), true);
 
-    pPW.print("#p2 - QuimP parameter file (QuimP11). Created " + QuimpToolsCollection.dateAsString()
+    ppW.print("#p2 - QuimP parameter file (QuimP11). Created " + QuimpToolsCollection.dateAsString()
             + "\n");
-    pPW.print(IJ.d2s(key, 0) + "\n");
-    pPW.print(segImageFile.getAbsolutePath() + "\n");
-    pPW.print(File.separator + snakeQP.getName() + "\n");
+    ppW.print(IJ.d2s(key, 0) + "\n");
+    ppW.print(segImageFile.getAbsolutePath() + "\n");
+    ppW.print(File.separator + snakeQP.getName() + "\n");
     // pPW.print(outFile.getAbsolutePath() + "\n");
 
-    pPW.print("#Image calibration (scale, frame interval)\n");
-    pPW.print(IJ.d2s(imageScale, 6) + "\n");
-    pPW.print(IJ.d2s(frameInterval, 3) + "\n");
+    ppW.print("#Image calibration (scale, frame interval)\n");
+    ppW.print(IJ.d2s(imageScale, 6) + "\n");
+    ppW.print(IJ.d2s(frameInterval, 3) + "\n");
 
     // according to BOAState and /trac/QuimP/wiki/QuimpQp
-    pPW.print("#segmentation parameters (" + "Maximum number of nodes, " + "ND, "
+    ppW.print("#segmentation parameters (" + "Maximum number of nodes, " + "ND, "
             + "Max iterations, " + "Node spacing, " + "Blowup, " + "Sample tan, " + "Sample norm, "
             + "Crit velocity, " + "Central F, " + "Contract F, " + "ND, " + "Image force, "
             + "ND)\n");
-    pPW.print(IJ.d2s(NMAX, 0) + "\n");
-    pPW.print(IJ.d2s(delta_t, 6) + "\n");
-    pPW.print(IJ.d2s(max_iterations, 6) + "\n");
-    pPW.print(IJ.d2s(nodeRes, 6) + "\n");
-    pPW.print(IJ.d2s(blowup, 6) + "\n");
-    pPW.print(IJ.d2s(sample_tan, 0) + "\n");
-    pPW.print(IJ.d2s(sample_norm, 0) + "\n");
-    pPW.print(IJ.d2s(vel_crit, 6) + "\n");
-    pPW.print(IJ.d2s(f_central, 6) + "\n");
-    pPW.print(IJ.d2s(f_contract, 6) + "\n");
-    pPW.print(IJ.d2s(f_friction, 6) + "\n");
-    pPW.print(IJ.d2s(f_image, 6) + "\n");
-    pPW.print(IJ.d2s(sensitivity, 6) + "\n");
+    ppW.print(IJ.d2s(nmax, 0) + "\n");
+    ppW.print(IJ.d2s(deltaT, 6) + "\n");
+    ppW.print(IJ.d2s(maxIterations, 6) + "\n");
+    ppW.print(IJ.d2s(nodeRes, 6) + "\n");
+    ppW.print(IJ.d2s(blowup, 6) + "\n");
+    ppW.print(IJ.d2s(sampleTan, 0) + "\n");
+    ppW.print(IJ.d2s(sampleNorm, 0) + "\n");
+    ppW.print(IJ.d2s(velCrit, 6) + "\n");
+    ppW.print(IJ.d2s(centralForce, 6) + "\n");
+    ppW.print(IJ.d2s(contractForce, 6) + "\n");
+    ppW.print(IJ.d2s(frictionForce, 6) + "\n");
+    ppW.print(IJ.d2s(imageForce, 6) + "\n");
+    ppW.print(IJ.d2s(sensitivity, 6) + "\n");
 
-    pPW.print("# - new parameters (cortex width, start frame, end frame,"
+    ppW.print("# - new parameters (cortex width, start frame, end frame,"
             + " final shrink, statsQP, fluImage)\n");
-    pPW.print(IJ.d2s(cortexWidth, 2) + "\n");
-    pPW.print(IJ.d2s(startFrame, 0) + "\n");
-    pPW.print(IJ.d2s(endFrame, 0) + "\n");
-    pPW.print(IJ.d2s(finalShrink, 2) + "\n");
-    pPW.print(File.separator + statsQP.getName() + "\n");
+    ppW.print(IJ.d2s(cortexWidth, 2) + "\n");
+    ppW.print(IJ.d2s(startFrame, 0) + "\n");
+    ppW.print(IJ.d2s(endFrame, 0) + "\n");
+    ppW.print(IJ.d2s(finalShrink, 2) + "\n");
+    ppW.print(File.separator + statsQP.getName() + "\n");
 
-    pPW.print("# - Fluorescence channel tiff's\n");
-    pPW.print(fluTiffs[0].getAbsolutePath() + "\n");
-    pPW.print(fluTiffs[1].getAbsolutePath() + "\n");
-    pPW.print(fluTiffs[2].getAbsolutePath() + "\n");
+    ppW.print("# - Fluorescence channel tiff's\n");
+    ppW.print(fluTiffs[0].getAbsolutePath() + "\n");
+    ppW.print(fluTiffs[1].getAbsolutePath() + "\n");
+    ppW.print(fluTiffs[2].getAbsolutePath() + "\n");
 
-    pPW.print("#END");
+    ppW.print("#END");
 
-    pPW.close();
+    ppW.close();
   }
 
   /**
    * Traverse through current directory and sub-directories looking for <i>paQP</i> files.
    * 
-   * <p>
-   * <b>Remarks</b>
-   * <p>
-   * Current <i>paQP</i> file (that passed to QParams(File)) is not counted.
+   * <p><b>Remarks</b>
+   * 
+   * <p>Current <i>paQP</i> file (that passed to QParams(File)) is not counted.
    * 
    * @return Array of file handlers or empty array if there is no <i>paQP</i> files (except
    *         paramFile)
@@ -669,8 +747,8 @@ public class QParams {
     coordFile = new File(path + File.separator + fileName + FileExtensions.coordmapFileExt);
     motilityFile = new File(path + File.separator + fileName + FileExtensions.motmapFileExt);
     originFile = new File(path + File.separator + fileName + FileExtensions.originmapFileExt);
-    xFile = new File(path + File.separator + fileName + FileExtensions.xmapFileExt);
-    yFile = new File(path + File.separator + fileName + FileExtensions.ymapFileExt);
+    xmapFile = new File(path + File.separator + fileName + FileExtensions.xmapFileExt);
+    ymapFile = new File(path + File.separator + fileName + FileExtensions.ymapFileExt);
 
     fluFiles = new File[3];
     fluFiles[0] = new File(
@@ -685,11 +763,11 @@ public class QParams {
   /**
    * Verify if <i>snQP</i> file has been already processed by ECMM.
    * 
-   * Processed files have <b>-ECMM</b> suffix on first line.
+   * <p>Processed files have <b>-ECMM</b> suffix on first line.
    * 
-   * @throws Exception
+   * @throws IOException on file reading problem
    */
-  private void checkECMMrun() throws Exception {
+  private void checkECMMrun() throws IOException {
     BufferedReader br = null;
     try {
       br = new BufferedReader(new FileReader(snakeQP));
@@ -702,16 +780,14 @@ public class QParams {
       } else {
         ecmmHasRun = false;
       }
-    } catch (Exception e) {
-      LOGGER.debug("Can not find " + snakeQP.toString());
-      throw e;
     } finally {
-      if (br != null)
+      if (br != null) {
         try {
           br.close();
         } catch (IOException e) {
           e.printStackTrace();
         }
+      }
     }
   }
 
