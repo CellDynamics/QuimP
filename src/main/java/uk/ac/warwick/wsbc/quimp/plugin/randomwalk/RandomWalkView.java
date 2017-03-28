@@ -919,7 +919,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     wnd.add(panel);
 
     wnd.pack();
-    wnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    wnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     setInitial();
 
   }
