@@ -44,10 +44,10 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
  * inside window for its position <i>p</i> are considered as candidates to removal from contour if
  * they meet the following criterion:
  * <ol>
- * <li>The window has achieved for position \a p circularity parameter <i>c</i> larger than
+ * <li>The window has achieved for position p circularity parameter <i>c</i> larger than
  * <i>alev</i>
  * <li>The window on position <i>p</i> does not touch any other previously found window.
- * <li>Points of window <i>p</i> are convex.
+ * <li>Points of window <i>p</i> are convex/concave (can be configured by {@link #setMode(int)}).
  * </ol>
  * 
  * <p>Every window <i>p</i> has assigned a <i>rank</i>. Bigger <i>rank</i> stands for better
@@ -66,19 +66,24 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
  * </ol>
  * 
  * <p><H2>First step</H2> The window of size <i>window</i> slides over looped data. Looping is
- * performed by java.util.Collections.rotate method that shift data left copying falling out indexes
+ * // * performed by {@link Collections#rotate(List, int)} method that shift data left copying
+ * falling out indexes
  * to end of the set (finally the window is settled in constant position between indexes
  * <0;window-1>). For each its position <i>r</i> the candidate points are deleted from original
  * contour and circularity is computed (see {@link #getCircularity(List)}). Then candidate points
  * are passed to {@link #getWeighting(List)} method where weight is evaluated. The role of weight is
  * to promote in <i>rank</i> candidate points that are cumulated in small area over distributed
  * sets. Thus weight should give larger values for that latter distribution than for cumulated one.
- * Currently weights are calculated as standard deviation of distances of all candidate points to
+ * Currently weights are calculated as squared standard deviation of distances of all candidate
+ * points to
  * center of mass of these points (or mean point if polygon is invalid). There is also mean
  * intensity calculated here. It is sampled along shrunk outline produced from input points. Finally
  * circularity(r) is divided by weight (<i>r</i>) and intensity and stored in <i>circ</i> array.
- * Additionally in this step the convex is checked. All candidate points are tested for inclusion in
- * contour without these points. This behaviour can be modified by {@link #setMode(int)}
+ * Additionally in this step the convex/concave is checked. All candidate points are tested whether
+ * <b>all</b> they are inside the contour made without them (for concave option) or whether
+ * <b>any</b> of
+ * them is inside the modified contour (for convex option). Convex.concave sensitivity option can be
+ * modified by {@link #setMode(int)}
  * This information is stored in <i>convex</i> array. Finally rank array <i>circ</i> is normalised
  * to maximum element.
  * Mean contour intensity can be switched off using {@link #runPlugin(List)} method.
@@ -94,8 +99,7 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
  * WindowIndRange with overwritten {@link WindowIndRange#compareTo(Object)} method that defines
  * rules of equality and non relations between ranges. Basically any overlapping range or included
  * is considered as equal and rejected from storing in <i>ind2rem</i> array.
- * <li>candidate points must be convex. As mentioned before <i>convex</i> means that <b>all</b>
- * candidate points are outside the original contour formed without these points.
+ * <li>candidate points must be convex/concave.
  * <li>current <i>rank</i> (<i>circ</i>) is greater than <i>alev</i>
  * </ol>
  * If all above criterion are meet the window (l;u) is stored in <i>ind2rem</i>. Windows on the end
