@@ -1,20 +1,20 @@
 package uk.ac.warwick.wsbc.quimp.plugin.protanalysis;
 
 import ij.ImageJ;
-import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.Prot_Analysis;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
-public class Prot_Analysis_run {
+public class ProtAnalysisRun {
   static {
     System.setProperty("logback.configurationFile", "quimp-logback.xml");
   }
 
   /**
-   * @param args
+   * Runner.
+   * 
+   * @param args args
    */
   @SuppressWarnings("unused")
   public static void main(String[] args) {

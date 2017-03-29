@@ -12,12 +12,11 @@ import ij.measure.ResultsTable;
 import uk.ac.warwick.wsbc.quimp.CellStats;
 import uk.ac.warwick.wsbc.quimp.FrameStatistics;
 import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
-import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.Track.Type;
+import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.Track.TrackType;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.quimp.utils.Pair;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 
-// TODO: Auto-generated Javadoc
 /*
  * !>
  * @startuml doc-files/ProtStat_1_UML.png 
@@ -91,10 +90,10 @@ public class ProtStat implements IQuimpSerialize {
   /**
    * Construct the object using various data containers.
    * 
-   * @param mf
-   * @param tc
-   * @param cs
-   * @param maps
+   * @param mf MaximaFinder
+   * @param tc TrackCollection
+   * @param cs CellStats
+   * @param maps STmap
    */
   public ProtStat(MaximaFinder mf, TrackCollection tc, CellStats cs, STmap maps) {
     this.mf = mf;
@@ -175,7 +174,7 @@ public class ProtStat implements IQuimpSerialize {
     /**
      * Extract already calculated stats from CellStats.
      * 
-     * Fill internal fields of this class.
+     * <p>Fill internal fields of this class.
      */
     private void getFromCellStats() {
       displacement = new double[frames];
@@ -199,26 +198,27 @@ public class ProtStat implements IQuimpSerialize {
      */
     private double[] countProtrusions() {
       Polygon maxima = mf.getMaxima();
-      int[] _frames = maxima.xpoints; // frame numbers from maxima
+      int[] tmpframes = maxima.xpoints; // frame numbers from maxima
       double[] hist = new double[frames]; // bin count
-      for (int f = 0; f < _frames.length; f++)
-        hist[_frames[f]]++;
+      for (int f = 0; f < tmpframes.length; f++) {
+        hist[tmpframes[f]]++;
+      }
       return hist;
     }
 
     /**
      * Add header to common file before next cell.
      * 
-     * @param bf
+     * @param bf writer
      * @param cellno Number of cell.
      */
     private void writeCellHeader(PrintWriter bf, int cellno) {
-      //!<
+      //!>
       String ret = "#Cell:" + cellno;
       LOGGER.trace(ret);
       String h = "#Frame," + "Displacement," + "Distance," + "Area," + "Circularity," + "meanMot,"
               + "varMot," + "meanConv," + "varConv," + "protCount";
-      /**/
+      //!<
       LOGGER.trace(h);
       bf.print(ret + '\n');
       bf.print(h + '\n');
@@ -228,8 +228,8 @@ public class ProtStat implements IQuimpSerialize {
     /**
      * Write one line for given frame for current cell.
      * 
-     * @param bf
-     * @param frameno
+     * @param bf writer
+     * @param frameno frame
      */
     private void writeCellRecord(PrintWriter bf, int frameno) {
       String ret = Integer.toString(frameno + 1) + ',';
@@ -251,7 +251,7 @@ public class ProtStat implements IQuimpSerialize {
     /**
      * Add cell statistic to given ResultsTable.
      * 
-     * @param rt
+     * @param rt table
      * @see #writeCellRecord(PrintWriter, int)
      * @see #writeCellHeader(PrintWriter, int)
      */
@@ -313,9 +313,10 @@ public class ProtStat implements IQuimpSerialize {
      * Extract statistic data from {@link TrackCollection}.
      */
     private void getFromTrackStats() {
-      if (tc.isInitialPointIncluded() == false)
+      if (tc.isInitialPointIncluded() == false) {
         throw new IllegalArgumentException(
                 "This method assumes that initial point must be included in Track");
+      }
       tipPositionIndex = new int[protCount];
       tipCoordinate = new Point2D.Double[protCount];
       tipFrame = new int[protCount];
@@ -330,10 +331,10 @@ public class ProtStat implements IQuimpSerialize {
         tipPositionIndex[l] = t1.getOutline(0); // first point is maximum
         tipCoordinate[l] = t1.getXY(0, maps.getxMap(), maps.getyMap());
         tipFrame[l] = t1.getFrame(0);
-        if (t1.type == Type.BACKWARD && t2.type == Type.FORWARD) {
+        if (t1.type == TrackType.BACKWARD && t2.type == TrackType.FORWARD) {
           tipFirstFrame[l] = t1.getFrame(t1.size() - 1);
           tipLastFrame[l] = t2.getFrame(t2.size() - 1);
-        } else if (t1.type == Type.FORWARD && t2.type == Type.BACKWARD) {
+        } else if (t1.type == TrackType.FORWARD && t2.type == TrackType.BACKWARD) {
           tipFirstFrame[l] = t2.getFrame(t2.size() - 1);
           tipLastFrame[l] = t1.getFrame(t1.size() - 1);
         }
@@ -344,7 +345,7 @@ public class ProtStat implements IQuimpSerialize {
     /**
      * Add header to common file before next cell.
      * 
-     * @param bf
+     * @param bf writer
      * @param cellno Number of cell.
      */
     private void writeProtHeader(PrintWriter bf, int cellno) {
@@ -363,8 +364,8 @@ public class ProtStat implements IQuimpSerialize {
     /**
      * Write one line for given frame for current cell.
      * 
-     * @param bf
-     * @param id
+     * @param bf writer
+     * @param id protrusion id
      */
     private void writeProtRecord(PrintWriter bf, int id) {
       String ret = Integer.toString(id + 1) + ',';
@@ -391,8 +392,9 @@ public class ProtStat implements IQuimpSerialize {
   public void writeCell(PrintWriter bf, int cellno) {
     LOGGER.debug("Writing cell stats at:" + bf.toString());
     cellStatistics.writeCellHeader(bf, cellno);
-    for (int f = 0; f < frames; f++)
+    for (int f = 0; f < frames; f++) {
       cellStatistics.writeCellRecord(bf, f);
+    }
   }
 
   /**

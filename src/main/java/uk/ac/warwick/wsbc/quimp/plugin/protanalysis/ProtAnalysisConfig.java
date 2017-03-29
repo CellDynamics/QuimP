@@ -5,8 +5,8 @@ import java.awt.Color;
 import org.scijava.vecmath.Point2d;
 
 import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
+import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
 
-// TODO: Auto-generated Javadoc
 /**
  * Hold all configuration for Protrusion Analysis Module.
  * 
@@ -51,7 +51,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
 
   /**
    * Plot types supported by
-   * {@link TrackVisualisation.Stack#addOutlinesToImage(uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap, ProtAnalysisConfig)}.
+   * {@link TrackVisualisation.Stack#addOutlinesToImage(STmap, ProtAnalysisConfig)}.
    * <ol>
    * <li>MOTILITY - only motility based outline.
    * <li>CONVEXITY - only convexity based outline.
@@ -63,29 +63,29 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
    * @author p.baniukiewicz
    *
    */
-  public enum outlinePlotTypes {
+  public enum OutlinePlotTypes {
 
     /**
-     * The motility.
+     * The motility only.
      */
     MOTILITY,
     /**
-     * The convexity.
+     * The convexity only.
      */
     CONVEXITY,
     /**
-     * The convandexp.
+     * Convex and expanding parts.
      */
     CONVANDEXP,
     /**
-     * The concandretr.
+     * Concave and retracting parts.
      */
     CONCANDRETR,
     /**
-     * The both.
+     * CONCANDRETR + CONVANDEXP.
      */
     BOTH
-  };
+  }
 
   /**
    * Types of gradient points.
@@ -98,21 +98,21 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
    * @author p.baniukiewicz
    *
    */
-  public enum gradientType {
+  public enum GradientType {
 
     /**
-     * The screenpoint.
+     * Point picked from screen.
      */
     SCREENPOINT,
     /**
-     * The outlinepoint.
+     * Point on the outline.
      */
     OUTLINEPOINT,
     /**
      * The notdefined.
      */
     NOTDEFINED
-  };
+  }
 
   /**
    * Keep position of gradient, a point on image or a point on outline.
@@ -126,15 +126,15 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
      */
     public boolean useGradient = false;
     /**
-     * Indicate whether to plot polar plots
+     * Indicate whether to plot polar plots.
      */
     public boolean plotpolar = false;
     /**
      * Type of gradient point.
      * 
-     * @see gradientType
+     * @see GradientType
      */
-    public gradientType type = gradientType.SCREENPOINT;
+    public GradientType type = GradientType.SCREENPOINT;
     /**
      * Coordinates of gradient point if type is SCREENPOINT.
      */
@@ -187,8 +187,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
    * Configuration of plotting outlines of cells on stack of images.
    * 
    * @author p.baniukiewicz
-   * @see TrackVisualisation.Stack#addOutlinesToImage(uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap,
-   *      ProtAnalysisConfig)
+   * @see TrackVisualisation.Stack#addOutlinesToImage(STmap,ProtAnalysisConfig)
    */
   class OutlinesToImage {
     /**
@@ -214,7 +213,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
     /**
      * Define type of plot of outline.
      */
-    public outlinePlotTypes plotType;
+    public OutlinePlotTypes plotType;
 
     /**
      * Set default values.
@@ -222,7 +221,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
     public OutlinesToImage() {
       motThreshold = 0;
       convThreshold = 0;
-      plotType = outlinePlotTypes.MOTILITY;
+      plotType = OutlinePlotTypes.MOTILITY;
     }
   }
 

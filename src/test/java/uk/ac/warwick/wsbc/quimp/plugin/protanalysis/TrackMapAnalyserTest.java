@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.Track;
 import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackCollection;
 import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser;
 import uk.ac.warwick.wsbc.quimp.utils.Pair;
@@ -83,7 +82,7 @@ public class TrackMapAnalyserTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser#Polygon2Point2i(List)}.
+   * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser#polygon2Point2i(List)}.
    * 
    * @throws Exception
    */
@@ -102,7 +101,7 @@ public class TrackMapAnalyserTest {
     p.add(new Polygon(x2, y2, x2.length));
 
     TrackMapAnalyser.INCLUDE_INITIAL = true;
-    List<Point> ret = TrackMapAnalyser.Polygon2Point2i(p);
+    List<Point> ret = TrackMapAnalyser.polygon2Point2i(p);
     List<Point> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
     assertThat(result, is(expected));
   }
