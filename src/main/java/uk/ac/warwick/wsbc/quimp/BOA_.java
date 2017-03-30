@@ -93,6 +93,8 @@ import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.quimp.plugin.binaryseg.BinarySegmentationPlugin;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginProperties;
 import uk.ac.warwick.wsbc.quimp.plugin.snakes.IQuimpBOAPoint2dFilter;
 import uk.ac.warwick.wsbc.quimp.plugin.snakes.IQuimpBOASnakeFilter;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
@@ -397,9 +399,11 @@ public class BOA_ implements PlugIn {
 
   /**
    * Redraw current view. Process outlines by all active plugins. Do not run segmentation again
-   * Updates \c liveSnake.
+   * Updates liveSnake.
+   * 
+   * <p>Strictly related to current view {@link BOAState.BOAp#frame}.
    */
-  public void recalculatePlugins() {
+  void recalculatePlugins() {
     LOGGER.trace("BOA: recalculatePlugins called");
     SnakeHandler sh;
     if (qState.nest.isVacant()) { // only update screen
@@ -652,6 +656,8 @@ public class BOA_ implements PlugIn {
     private CheckboxMenuItem cbMenuPlotHead;
     private Color defaultColor;
 
+    private MenuItem menuPopulatePlugin;
+
     /**
      * Default constructor.
      * 
@@ -770,6 +776,9 @@ public class BOA_ implements PlugIn {
       menuApplyPlugin = new MenuItem("Re-apply all");
       menuApplyPlugin.addActionListener(this);
       menuPlugin.add(menuApplyPlugin);
+      menuPopulatePlugin = new MenuItem("Populate plugins");
+      menuPopulatePlugin.addActionListener(this);
+      menuPlugin.add(menuPopulatePlugin);
 
       menuSegmentationRun = new MenuItem("Binary segmentation");
       menuSegmentationRun.addActionListener(this);
@@ -1447,11 +1456,12 @@ public class BOA_ implements PlugIn {
         }
       }
 
-      /**
+      /*
        * Loads configuration of current filter stack.
        * 
        * @see <a href=
-       *      "http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/155">http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/155</a>
+       * "http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/155">http://www.trac-wsbc.linkpc.
+       * net:8080/trac/QuimP/ticket/155</a>
        */
       if (b == menuLoadConfig) {
         OpenDialog od = new OpenDialog("Load plugin config data...", "");
@@ -1494,7 +1504,7 @@ public class BOA_ implements PlugIn {
         }
       }
 
-      /**
+      /*
        * Shows history window.
        * 
        * When showed all actions are notified there. This may slow down the program
@@ -1553,7 +1563,7 @@ public class BOA_ implements PlugIn {
 
       }
 
-      /**
+      /*
        * Discard all plugins.
        * 
        * In general it does: reset current snakePluginList and snakePluginListSnapshots,
@@ -1576,7 +1586,7 @@ public class BOA_ implements PlugIn {
         imageGroup.updateOverlay(qState.boap.frame);
       }
 
-      /**
+      /*
        * Reload and re-apply all plugins stored in snakePluginListSnapshot.
        * 
        * qState.snakePluginList.clear(); can not be called here because
@@ -1594,7 +1604,29 @@ public class BOA_ implements PlugIn {
         recalculatePlugins(); // update screen
       }
 
-      /**
+      /*
+       * Copy current plugin tree to all frames and applies plugins.
+       */
+      if (b == menuPopulatePlugin) {
+        SnakePluginList tmp = qState.snakePluginList.getDeepCopy();
+        for (int i = 0; i < qState.snakePluginListSnapshots.size(); i++) {
+          // make a deep copy
+          qState.snakePluginListSnapshots.set(i, tmp.getDeepCopy());
+          // instance separate copy of jar for this plugin
+          qState.snakePluginListSnapshots.get(i).afterSerialize();
+        }
+        int cf = qState.boap.frame;
+        // iterate over frames and applies plugins
+        for (qState.boap.frame =
+                1; qState.boap.frame <= qState.boap.getFrames(); qState.boap.frame++) {
+          imageGroup.updateToFrame(qState.boap.frame);
+          recalculatePlugins();
+        }
+        qState.boap.frame = cf;
+        imageGroup.updateToFrame(qState.boap.frame);
+      }
+
+      /*
        * Run segmentation from mask file.
        */
       if (b == menuSegmentationRun) {
@@ -1613,7 +1645,7 @@ public class BOA_ implements PlugIn {
         BOA_.log("Run segmentation from mask file");
       }
 
-      /**
+      /*
        * Clean all bOA state.
        */
       if (b == menuSegmentationReset) {
@@ -2078,15 +2110,12 @@ public class BOA_ implements PlugIn {
               if (!snake.alive || qState.boap.frame < snH.getStartFrame()) {
                 continue;
               }
-              imageGroup.drawPath(snake, qState.boap.frame); // pre tightned snake on
-              // path
+              imageGroup.drawPath(snake, qState.boap.frame); // pre tightned snake on path
               tightenSnake(snake);
-              imageGroup.drawPath(snake, qState.boap.frame); // post tightned snake on
-              // path
+              imageGroup.drawPath(snake, qState.boap.frame); // post tightned snake on path
               snH.backupLiveSnake(qState.boap.frame);
               Snake out = iterateOverSnakePlugins(snake);
-              snH.storeThisSnake(out, qState.boap.frame); // store resulting snake as
-              // final
+              snH.storeThisSnake(out, qState.boap.frame); // store resulting snake as final
 
             } catch (QuimpPluginException qpe) {
               // must be rewritten with whole runBOA #65 #67

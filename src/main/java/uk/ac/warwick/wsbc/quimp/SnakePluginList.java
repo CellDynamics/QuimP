@@ -16,6 +16,7 @@ import uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpPluginSynchro;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
 
 /*
  * //!>
@@ -168,7 +169,7 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
  * 
  * <p>Related to GUI, first plugin is at index 0, etc. Keeps also UI settings activating or
  * deactivating plugins. Produces plugins from their names using provided
- * {@link uk.ac.warwick.wsbc.quimp.PluginFactory} The sPluginList is serialized (saved as JSON
+ * {@link uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory} The sPluginList is serialized (saved as JSON
  * object). Because serialization does not touch plugins (understood as jars) directly, their
  * configuration and state must be copied locally to Plugin objects. This is done during preparation
  * to serialization and then after deserialization.
@@ -422,7 +423,7 @@ public class SnakePluginList implements IQuimpSerialize {
   /**
    * Copy method.
    * 
-   * <p>Returns copy of current object with some limitations. It does copy loaded plugin (ref).
+   * <p>Returns copy of current object with some limitations. It does not copy loaded plugin (ref).
    * Should be called after {@link SnakePluginList.Plugin#downloadPluginConfig()} to make sure
    * that config, ver are filled correctly
    * 
@@ -445,6 +446,30 @@ public class SnakePluginList implements IQuimpSerialize {
    * <p>Returns copy of current object.It does copy loaded plugin (ref). Should be called after
    * {@link SnakePluginList.Plugin#downloadPluginConfig()} to make sure that config, ver are
    * filled correctly
+   * 
+   * <p>All copied plugin will refer to the same jar thus they will share e.g. configuration
+   * parameters. To have independent copies {@link #afterSerialize()} should be called on the list.
+   * Refer to this code making full independent copies of plugins from current frame over all
+   * frames:
+   * 
+   * <pre>
+   * <code>
+   * SnakePluginList tmp = qState.snakePluginList.getDeepCopy();
+   *  for (int i = 0; i < qState.snakePluginListSnapshots.size(); i++) {
+   *    // make a deep copy
+   *    qState.snakePluginListSnapshots.set(i, tmp.getDeepCopy());
+   *    // instance separate copy of jar for this plugin
+   *    qState.snakePluginListSnapshots.get(i).afterSerialize();
+   *  }
+   *  int cf = qState.boap.frame;
+   *  for (boap.frame = 1; boap.frame <= boap.getFrames(); qState.boap.frame++) {
+   *    imageGroup.updateToFrame(boap.frame);
+   *    recalculatePlugins();
+   *  }
+   *  qState.boap.frame = cf;
+   *  imageGroup.updateToFrame(qState.boap.frame);
+   * </code>
+   * </pre>
    * 
    * @return Copy of current object
    */
@@ -693,7 +718,7 @@ public class SnakePluginList implements IQuimpSerialize {
    * @param type requested plugin type {@link PluginFactory}
    * @return list of plugin names
    * 
-   * @see uk.ac.warwick.wsbc.quimp.PluginFactory#getPluginNames(int)
+   * @see uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory#getPluginNames(int)
    */
   public ArrayList<String> getPluginNames(int type) {
     return pluginFactory.getPluginNames(type);

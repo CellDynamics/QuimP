@@ -3,11 +3,11 @@ package uk.ac.warwick.wsbc.quimp.filesystem;
 import uk.ac.warwick.wsbc.quimp.BOAState;
 import uk.ac.warwick.wsbc.quimp.BOA_;
 import uk.ac.warwick.wsbc.quimp.FormatConverter;
-import uk.ac.warwick.wsbc.quimp.PluginFactory;
 import uk.ac.warwick.wsbc.quimp.QParams;
 import uk.ac.warwick.wsbc.quimp.QParamsQconf;
 import uk.ac.warwick.wsbc.quimp.SnakePluginList;
 import uk.ac.warwick.wsbc.quimp.ViewUpdater;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
 
 /**

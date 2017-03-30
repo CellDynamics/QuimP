@@ -6,7 +6,7 @@ package uk.ac.warwick.wsbc.quimp.plugin;
  * <p>Contain also flags understood by plugins
  * 
  * @author p.baniukiewicz
- * @see uk.ac.warwick.wsbc.quimp.PluginFactory
+ * @see uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory
  */
 public interface IQuimpCorePlugin {
 

@@ -11,7 +11,7 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
  * General interface that defines filter run on points in euclidean space.
  * 
  * @author p.baniukiewicz
- * @see uk.ac.warwick.wsbc.quimp.PluginFactory
+ * @see uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory
  */
 public interface IQuimpBOAPoint2dFilter extends IQuimpCorePlugin {
 

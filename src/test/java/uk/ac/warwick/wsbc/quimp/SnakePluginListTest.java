@@ -32,6 +32,7 @@ import uk.ac.warwick.wsbc.quimp.filesystem.versions.Converter170202;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
 
 // TODO: Auto-generated Javadoc
 /**

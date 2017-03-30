@@ -22,11 +22,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.wsbc.quimp.PluginFactory;
-import uk.ac.warwick.wsbc.quimp.PluginProperties;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginProperties;
 import uk.ac.warwick.wsbc.quimp.plugin.snakes.IQuimpBOAPoint2dFilter;
 
 // TODO: Auto-generated Javadoc
@@ -112,7 +112,7 @@ public class PluginFactory_Test {
   }
 
   /**
-   * Test method for {@link uk.ac.warwick.wsbc.quimp.PluginFactory#getInstance(String)} This test
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory#getInstance(String)} This test
    * creates instances of plugins and calls methods from them storing and reading data from
    * created object for plugin2
    * 
@@ -140,7 +140,7 @@ public class PluginFactory_Test {
   }
 
   /**
-   * Test method for {@link uk.ac.warwick.wsbc.quimp.PluginFactory#getInstance(String)} This test
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory#getInstance(String)} This test
    * try to call plugin that does not exist.
    * 
    * Pre: Empty directory but existing

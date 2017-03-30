@@ -46,8 +46,7 @@ public class BOARun {
     CountDownLatch startSignal = new CountDownLatch(1);
     // img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");
     // img = IJ.openImage("src/test/resources/movie03_8bit.tif");
-    img = IJ.openImage(
-            "/home/baniuk/Desktop/Tests/146/saveAsQCONF (copy)/July14ABD_GFP_actin_twoCells.tif");
+    img = IJ.openImage("/home/baniuk/Desktop/Tests/184/July14ABD_GFP_actin_twoCells.tif");
     // img = IJ.openImage("src/test/resources/Stack_cut.tif");
     // img = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
 
@@ -56,7 +55,7 @@ public class BOARun {
     Toolbar t = new Toolbar();
     BOA_ ob = new BOA_();
 
-    ob.run("."); // run BOA, control is immediately returned
+    ob.run("/home/baniuk/Desktop/Tests/184/plugins"); // run BOA, control is immediately returned
     // ob.run("../plugins_test/target/"); // run BOA, control is immediately returned
 
     // add window listener to BOA_ window window is \public field of BOA_ class
