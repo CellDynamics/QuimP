@@ -422,7 +422,7 @@ public class SnakePluginList implements IQuimpSerialize {
   /**
    * Copy method.
    * 
-   * <p>Returns copy of current object with some limitations. It does copy loaded plugin (ref).
+   * <p>Returns copy of current object with some limitations. It does not copy loaded plugin (ref).
    * Should be called after {@link SnakePluginList.Plugin#downloadPluginConfig()} to make sure
    * that config, ver are filled correctly
    * 
@@ -445,6 +445,30 @@ public class SnakePluginList implements IQuimpSerialize {
    * <p>Returns copy of current object.It does copy loaded plugin (ref). Should be called after
    * {@link SnakePluginList.Plugin#downloadPluginConfig()} to make sure that config, ver are
    * filled correctly
+   * 
+   * <p>All copied plugin will refer to the same jar thus they will share e.g. configuration
+   * parameters. To have independent copies {@link #afterSerialize()} should be called on the list.
+   * Refer to this code making full independent copies of plugins from current frame over all
+   * frames:
+   * 
+   * <pre>
+   * <code>
+   * SnakePluginList tmp = qState.snakePluginList.getDeepCopy();
+   *  for (int i = 0; i < qState.snakePluginListSnapshots.size(); i++) {
+   *    // make a deep copy
+   *    qState.snakePluginListSnapshots.set(i, tmp.getDeepCopy());
+   *    // instance separate copy of jar for this plugin
+   *    qState.snakePluginListSnapshots.get(i).afterSerialize();
+   *  }
+   *  int cf = qState.boap.frame;
+   *  for (boap.frame = 1; boap.frame <= boap.getFrames(); qState.boap.frame++) {
+   *    imageGroup.updateToFrame(boap.frame);
+   *    recalculatePlugins();
+   *  }
+   *  qState.boap.frame = cf;
+   *  imageGroup.updateToFrame(qState.boap.frame);
+   * </code>
+   * </pre>
    * 
    * @return Copy of current object
    */
