@@ -14,6 +14,7 @@ import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.binaryseg.BinarySegmentationPlugin;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
 /*

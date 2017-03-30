@@ -4,8 +4,8 @@ package uk.ac.warwick.wsbc.quimp;
 
 import java.nio.file.Paths;
 
-import uk.ac.warwick.wsbc.quimp.PluginFactory;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
 
 /**
  * This class create instance of PluginFactory

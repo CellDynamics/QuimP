@@ -93,6 +93,8 @@ import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.quimp.plugin.binaryseg.BinarySegmentationPlugin;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
+import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginProperties;
 import uk.ac.warwick.wsbc.quimp.plugin.snakes.IQuimpBOAPoint2dFilter;
 import uk.ac.warwick.wsbc.quimp.plugin.snakes.IQuimpBOASnakeFilter;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;

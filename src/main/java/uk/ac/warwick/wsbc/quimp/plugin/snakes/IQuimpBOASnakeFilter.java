@@ -12,7 +12,7 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
  * for Snake
  * 
  * @author p.baniukiewicz
- * @see uk.ac.warwick.wsbc.quimp.PluginFactory
+ * @see uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory
  * @see uk.ac.warwick.wsbc.quimp.Snake
  */
 public interface IQuimpBOASnakeFilter extends IQuimpCorePlugin {
