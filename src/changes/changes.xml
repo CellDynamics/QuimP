@@ -6,6 +6,26 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+       <release version="17.04.01" date="2017-03-31" description="Release">
+          <action dev="baniuk" type="fix" issue="234">
+              QuimP-RandomWalk: Closing RW window by system button on window bar caused that IJ quited as well.
+          </action>
+          <action dev="baniuk" type="fix" issue="233">
+              QuimP-BOA: Image scale was not updated after loading QCONF at static elements of the UI.
+          </action>
+          <action dev="baniuk" type="fix" issue="146">
+              QuimP-FormatConverter: Fixed many bugs during paQP-QCONF conversion, especially: image scale, image frame interval were wrong, output file core contained extension, node resolution was wrong, creating snQP from ECMM data failed.
+          </action>
+          <action dev="baniuk" type="add" issue="232">
+              QuimP-BOA: Button Load works the same as Load from menu. Additionally one can load old data files with it. 
+          </action>
+          <action dev="baniuk" type="add" issue="184">
+              QuimP-BOA: There is possible to copy current filter stack to all other frames.
+          </action>
+          <action dev="baniuk" type="update" issue="">
+              QuimP: Code refactoring to meet CodeStyle standards, optimizations within file dialog.
+          </action>
+       </release>  
        <release version="17.03.02" date="2017-03-23" description="Release">
           <action dev="baniuk" type="update" issue="230">
               QuimP-RandomWalk: Add option for segmenting current frame only.
