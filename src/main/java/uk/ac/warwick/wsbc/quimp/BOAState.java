@@ -1182,7 +1182,7 @@ public class BOAState implements IQuimpSerialize {
     }
     boap.readQp = readQp;
     // copy loaded data to snapshots
-    for (int f = readQp.getStartFrame(); f < readQp.getEndFrame(); f++) {
+    for (int f = readQp.getStartFrame(); f <= readQp.getEndFrame(); f++) {
       store(f);
     }
   }
