@@ -18,11 +18,10 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.IPadArray;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 import uk.ac.warwick.wsbc.quimp.utils.graphics.svg.SVGwritter;
 
-// TODO: Auto-generated Javadoc
 /**
  * Generate polar plots of motility speed along cell perimeter.
  * 
- * Use basic mapping - location of point on polar plot depends on its position on cell outline.
+ * <p>Use basic mapping - location of point on polar plot depends on its position on cell outline.
  * 
  * @author p.baniukiewicz
  *
@@ -43,16 +42,16 @@ public class PolarPlot {
   /**
    * Distance of polar plot from 0. Rescaling factor.
    */
-  public double k;
+  public double kscale;
   /**
    * Distance of plot from edge. Rescaling factor.
    */
-  public double u;
+  public double uscale;
 
   /**
    * Create PolarPlot object with default plot size.
    * 
-   * @param mapCell
+   * @param mapCell mapCell
    * @param gradientcoord coordinates of gradient point. Gradient is a feeding of cell put into
    *        cell environment.
    */
@@ -60,8 +59,8 @@ public class PolarPlot {
     this.mapCell = mapCell;
     this.gradientcoord = gradientcoord;
     plotArea = new Rectangle(-3, -3, 6, 6);
-    k = 0.1;
-    u = 0.05;
+    kscale = 0.1;
+    uscale = 0.05;
   }
 
   /**
@@ -72,11 +71,10 @@ public class PolarPlot {
    */
   int[] getShift() {
     int[] ret = new int[mapCell.getT()]; // shift for every frame
-    for (int f = 0; f < mapCell.getT(); f++) {// along frames
+    for (int f = 0; f < mapCell.getT(); f++) { // along frames
       double dist = Double.MAX_VALUE; // closest point for current frame
-      for (int i = 0; i < mapCell.getRes(); i++) {// along points
-        Point2d p = new Point2d(mapCell.getxMap()[f][i], mapCell.getyMap()[f][i]); // outline
-                                                                                   // point
+      for (int i = 0; i < mapCell.getRes(); i++) { // along points
+        Point2d p = new Point2d(mapCell.getxMap()[f][i], mapCell.getyMap()[f][i]); // outline point
         double disttmp = p.distance(gradientcoord); // distance from gradinet point
         if (disttmp < dist) { // we have closer point
           dist = disttmp;
@@ -94,10 +92,11 @@ public class PolarPlot {
    */
   Point2d[] getMassCentre() {
     Point2d[] ret = new Point2d[mapCell.getT()];
-    double xmeans[] = QuimPArrayUtils.getMeanR(mapCell.getxMap());
-    double ymeans[] = QuimPArrayUtils.getMeanR(mapCell.getyMap());
-    for (int f = 0; f < mapCell.getT(); f++)
+    double[] xmeans = QuimPArrayUtils.getMeanR(mapCell.getxMap());
+    double[] ymeans = QuimPArrayUtils.getMeanR(mapCell.getyMap());
+    for (int f = 0; f < mapCell.getT(); f++) {
       ret[f] = new Point2d(xmeans[f], ymeans[f]);
+    }
     return ret;
   }
 
@@ -168,21 +167,22 @@ public class PolarPlot {
   /**
    * Polar plot of one frame.
    * 
-   * @param filename
-   * @param frame
-   * @throws IOException
+   * @param filename filename
+   * @param frame frame
+   * @throws IOException on file error
    * @see #generatePlot
    */
   public void generatePlotFrame(String filename, int frame) throws IOException {
     int[] shifts = getShift(); // calculate shifts of points according to gradientcoord
     // shift motility
-    double magn[] = getRadius(frame, shifts[frame], mapCell.getMotMap());
+    double[] magn = getRadius(frame, shifts[frame], mapCell.getMotMap());
     // generate vector of arguments
     double[] angles = getUniformAngles(magn.length);
     // remove negative values (shift)
     double min = QuimPArrayUtils.arrayMin(magn);
-    for (int i = 0; i < magn.length; i++)
-      magn[i] -= (min + k * min); // k*min - distance from 0
+    for (int i = 0; i < magn.length; i++) {
+      magn[i] -= (min + kscale * min); // k*min - distance from 0
+    }
 
     polarPlotPoints(filename, angles, magn); // generate plot
 
@@ -191,18 +191,18 @@ public class PolarPlot {
   /**
    * Polar plot of mean of motility along frames.
    * 
-   * The position of point on polar plot depends on its position on cell outline, but not on real
-   * angle it is. First point after shifting is that closest to selected gradient. It is plotted
+   * <p>The position of point on polar plot depends on its position on cell outline, First point
+   * after shifting is that closest to selected gradient. It is plotted
    * on angle 0.
    * 
    * @param filename Name of the svg file.
-   * @throws IOException
+   * @throws IOException on file save
    */
   public void generatePlot(String filename) throws IOException {
     int[] shifts = getShift(); // calculate shifts of points according to gradientcoord
     // contains magnitudes of polar plot (e.g. motility) shifted, so first point is that
     // related to gradientcoord, for every frame [frames][outline points]
-    double magnF[][] = new double[mapCell.getT()][];
+    double[][] magnF = new double[mapCell.getT()][];
     for (int f = 0; f < mapCell.getT(); f++) {
       // shift motility for every frame to have gradientcoord related point on 0 index
       magnF[f] = getRadius(f, shifts[f], mapCell.getMotMap());
@@ -210,11 +210,12 @@ public class PolarPlot {
     // generate vector of arguments
     double[] angles = getUniformAngles(magnF[0].length);
 
-    double magn[] = QuimPArrayUtils.getMeanC(magnF); // compute mean for map on frames
+    double[] magn = QuimPArrayUtils.getMeanC(magnF); // compute mean for map on frames
     // rescale to remove negative values and make distance from 0 point
     double min = QuimPArrayUtils.arrayMin(magn);
-    for (int i = 0; i < magn.length; i++)
-      magn[i] -= (min + k * min); // k*min - distance from 0
+    for (int i = 0; i < magn.length; i++) {
+      magn[i] -= (min + kscale * min); // k*min - distance from 0
+    }
     polarPlotPoints(filename, angles, magn); // generate plot
     LOGGER.debug("Polar plot saved: " + filename);
 
@@ -226,12 +227,12 @@ public class PolarPlot {
    * @param filename name of svg file
    * @param angles vector of arguments (angles) generated {@link #getUniformAngles(int)}
    * @param magn vector of values related to <tt>angles</tt>
-   * @throws IOException
+   * @throws IOException on file save
    */
   private void polarPlotPoints(String filename, double[] angles, double[] magn) throws IOException {
     // scale for plotting (6/2) - half of plot area size as plotted from centre)
     double plotscale = plotArea.getWidth() / 2 / QuimPArrayUtils.arrayMax(magn);
-    plotscale -= plotscale * u; // move a little from edge
+    plotscale -= plotscale * uscale; // move a little from edge
     // generate svg
     BufferedOutputStream out;
     out = new BufferedOutputStream(new FileOutputStream(filename));
@@ -266,7 +267,7 @@ public class PolarPlot {
   /**
    * Generate uniformly distributed angles for given resolution.
    * 
-   * Generate angles for polar plot (related to plot, not for position of outline points) assume
+   * <p>Generate angles for polar plot (related to plot, not for position of outline points) assume
    * basic mapping - first outline point at angle 0, second at angle delta, etc CCW system is
    * used, but angles are counted in CW. IV and III quarter are negative, then II and I are
    * positive.
@@ -276,12 +277,13 @@ public class PolarPlot {
    *         is positive, e.g. -1,-2,...-90,...-180,179,178...,90,....0
    */
   private double[] getUniformAngles(int res) {
-    double angles[] = new double[res];
+    double[] angles = new double[res];
     double delta = (2 * Math.PI - 0) / (res - 1);
     for (int i = 0; i < angles.length; i++) {
       angles[i] = -(0 + delta * i);
-      if (angles[i] < -Math.PI)
+      if (angles[i] < -Math.PI) {
         angles[i] = Math.PI + Math.PI + angles[i]; // negative in II q is changed to positv
+      }
     }
     return angles;
   }
@@ -289,11 +291,11 @@ public class PolarPlot {
   /**
    * http://www.java2s.com/Code/Java/Collections-Data-Structure/LinearInterpolation.htm
    * 
-   * @param x
-   * @param y
-   * @param xi
+   * @param x coordinates
+   * @param y coordinates
+   * @param xi value to interpolate yi
    * @return linear interpolation of y=f(xi)
-   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException wrong input arrays size
    */
   public static double[] interpLinear(double[] x, double[] y, double[] xi)
           throws IllegalArgumentException {

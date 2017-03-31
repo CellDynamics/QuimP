@@ -1,16 +1,13 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin.utils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-// TODO: Auto-generated Javadoc
 /**
  * Extension of LinkedHashMap that assumes that Key is String and it is case insensitive.
  * 
- * All keys are converted to lower case.
+ * <p>All keys are converted to lower case.
  * 
  * @author p.baniukiewicz
  * @param <V>
@@ -21,40 +18,18 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
   private static final long serialVersionUID = -8577387803055420569L;
 
   /**
-   * 
+   * Default constructor.
    */
   public LinkedStringMap() {
   }
 
   /**
-   * @param initialCapacity
+   * LinkedStringMap.
+   * 
+   * @param initialCapacity initialCapacity
    */
   public LinkedStringMap(int initialCapacity) {
     super(initialCapacity);
-  }
-
-  /**
-   * @param m
-   */
-  public LinkedStringMap(Map<? extends String, ? extends V> m) {
-    throw new UnsupportedOperationException("not supported");
-  }
-
-  /**
-   * @param initialCapacity
-   * @param loadFactor
-   */
-  public LinkedStringMap(int initialCapacity, float loadFactor) {
-    super(initialCapacity, loadFactor);
-  }
-
-  /**
-   * @param initialCapacity
-   * @param loadFactor
-   * @param accessOrder
-   */
-  public LinkedStringMap(int initialCapacity, float loadFactor, boolean accessOrder) {
-    super(initialCapacity, loadFactor, accessOrder);
   }
 
   /*
@@ -68,8 +43,9 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
   }
 
   /**
+   * Get the value of key.
    * 
-   * @param key
+   * @param key key
    * @return value for key
    * @see java.util.HashMap#get(java.lang.Object)
    */
@@ -78,8 +54,9 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
   }
 
   /**
+   * containsKey.
    * 
-   * @param key
+   * @param key key
    * @return true if contains key
    * @see java.util.HashMap#containsKey(java.lang.Object)
    */
@@ -100,13 +77,26 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
   }
 
   /**
+   * Remove key.
    * 
-   * @param key
+   * @param key key
    * @return value removed
    * @see java.util.HashMap#remove(java.lang.Object)
    */
   public V remove(String key) {
     return super.remove(key.toLowerCase());
+  }
+
+  /**
+   * Remove key.
+   * 
+   * @param key key
+   * @param value value
+   * @return true if removed
+   * @see java.util.HashMap#remove(java.lang.Object, java.lang.Object)
+   */
+  public boolean remove(String key, Object value) {
+    return super.remove(key.toLowerCase(), value);
   }
 
   /*
@@ -117,17 +107,6 @@ public class LinkedStringMap<V> extends LinkedHashMap<String, V> {
   @Override
   public V putIfAbsent(String key, V value) {
     return super.putIfAbsent(key.toLowerCase(), value);
-  }
-
-  /**
-   * 
-   * @param key
-   * @param value
-   * @return true if removed
-   * @see java.util.HashMap#remove(java.lang.Object, java.lang.Object)
-   */
-  public boolean remove(String key, Object value) {
-    return super.remove(key.toLowerCase(), value);
   }
 
   /*

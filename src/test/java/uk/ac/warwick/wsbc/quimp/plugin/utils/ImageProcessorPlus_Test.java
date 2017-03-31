@@ -17,7 +17,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.ImageProcessorPlus;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.RectangleBox;
 
 // TODO: Auto-generated Javadoc
 /**

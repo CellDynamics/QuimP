@@ -1,22 +1,22 @@
 package uk.ac.warwick.wsbc.quimp.plugin.qanalysis;
 
 import ij.ImageJ;
-import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.Q_Analysis;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test runner for Q_Analysis
  * 
  * @author p.baniukiewicz
  *
  */
-public class Q_Analysis_run {
+public class QAnalysisRun {
   static {
     System.setProperty("logback.configurationFile", "quimp-logback.xml");
   }
 
   /**
-   * @param args
+   * Runner.
+   * 
+   * @param args args
    */
   @SuppressWarnings("unused")
   public static void main(String[] args) {

@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin;
 
 import java.util.Map;
@@ -7,9 +5,8 @@ import java.util.Map;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.LinkedStringMap;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.StringParser;
 
-// TODO: Auto-generated Javadoc
 /**
- * List of parameters in <key,value> HashList, where both key and value are java.lang.String and key
+ * List of parameters in [key,value] HashList, where both key and value are java.lang.String and key
  * is case insensitive.
  * 
  * @author p.baniukiewicz
@@ -33,7 +30,7 @@ public class ParamList extends LinkedStringMap<String> {
   }
 
   /**
-   * Default constructor
+   * Default constructor.
    */
   public ParamList() {
     super();
@@ -82,7 +79,7 @@ public class ParamList extends LinkedStringMap<String> {
   /**
    * Get Integer value from list associated with \c key. Key is not case sensitive.
    * 
-   * For safety it take double and then converts it to integer. It helps with dealing with type
+   * <p>For safety it take double and then converts it to integer. It helps with dealing with type
    * changing in QWindowBuilder. By default it keeps all in double and passed data returns in
    * double as well
    * 
@@ -126,7 +123,7 @@ public class ParamList extends LinkedStringMap<String> {
   /**
    * Get string associated with key and parse it to split according to delimiter.
    * 
-   * May be used only when val under key can be parsed
+   * <p>May be used only when val under key can be parsed
    * 
    * @param key to be read
    * @return Split substrings or empty array in case of any error

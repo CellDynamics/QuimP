@@ -4,10 +4,10 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import ij.IJ;
 import uk.ac.warwick.wsbc.quimp.QColor;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 
-// TODO: Auto-generated Javadoc
 /**
  * Plot shapes on SVG image.
  * 
@@ -19,9 +19,9 @@ public abstract class SVGwritter {
   /**
    * Generate typical header.
    * 
-   * @param osw
-   * @param d
-   * @throws IOException
+   * @param osw file to write
+   * @param d bounding box
+   * @throws IOException on file error
    */
   public static void writeHeader(OutputStreamWriter osw, Rectangle d) throws IOException {
     Rectangle d1 = new Rectangle(d);
@@ -39,12 +39,20 @@ public abstract class SVGwritter {
   }
 
   /**
+   * Write to file svg definition of frawn object.
+   * 
+   * @param osw file to write
+   * @throws IOException on file error
+   */
+  public abstract void draw(OutputStreamWriter osw) throws IOException;
+
+  /**
    * Represent circle on SVG image.
    * 
    * @author p.baniukiewicz
    *
    */
-  static public class Qcircle extends SVGwritter {
+  public static class Qcircle extends SVGwritter {
 
     /**
      * x coordinate of center.
@@ -61,9 +69,7 @@ public abstract class SVGwritter {
     public double radius;
 
     /**
-     * The colour.
-     * 
-     * if null object has no filling
+     * The colour. If null object has no filling
      */
     public QColor colour;
 
@@ -93,23 +99,24 @@ public abstract class SVGwritter {
       thickness = 0.0;
     }
 
-    /**
-     * Draw.
-     *
-     * @param osw the osw
-     * @throws IOException Signals that an I/O exception has occurred.
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
+    @Override
     public void draw(OutputStreamWriter osw) throws IOException {
       String col; // fill colour
-      if (colour == null)
+      if (colour == null) {
         col = "none";
-      else
+      } else {
         col = colour.getColorSVG();
-      //!<
-      osw.write("<circle cx=\"" + x1 + "\"" + " cy=\"" + y1 + "\"" + " r=\"" + radius + "\""
+      }
+      //!>
+      osw.write("<circle cx=\"" + x1 + "\"" + " cy=\"" + y1 + "\"" + " rect=\"" + radius + "\""
               + " fill=\"" + col + "\"" + " stroke=\"" + strokecolour.getColorSVG() + "\""
               + " stroke-width=\"" + thickness + "\"/>\n");
-      /**/
+      //!<
     }
   }
 
@@ -175,12 +182,12 @@ public abstract class SVGwritter {
       return Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
     }
 
-    /**
-     * Draw.
-     *
-     * @param osw the osw
-     * @throws IOException Signals that an I/O exception has occurred.
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
+    @Override
     public void draw(OutputStreamWriter osw) throws IOException {
       osw.write("<line x1=\"" + x1 + "\" y1=\"" + y1 + "\" x2=\"" + x2 + "\" y2=\"" + y2 + "\" ");
       osw.write("style=\"stroke:" + colour.getColorSVG() + ";stroke-width:" + thickness + "\"/>\n");
@@ -216,16 +223,23 @@ public abstract class SVGwritter {
     public String font;
 
     /**
+     * Position of text.
+     */
+    public ExtendedVector2d pos;
+
+    /**
      * Instantiates a new qtext.
      *
      * @param t the t
      * @param s the s
      * @param f the f
+     * @param pos position
      */
-    public Qtext(String t, double s, String f) {
+    public Qtext(String t, double s, String f, ExtendedVector2d pos) {
       text = t;
       size = s;
       font = f;
+      this.pos = pos;
       colour = new QColor(0, 0, 0);
     }
 
@@ -238,27 +252,28 @@ public abstract class SVGwritter {
       return text.length();
     }
 
-    /**
-     * Draw.
-     *
-     * @param osw the osw
-     * @param l the l
-     * @throws IOException Signals that an I/O exception has occurred.
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
-    public void draw(OutputStreamWriter osw, ExtendedVector2d l) throws IOException {
-      osw.write("\n<text x=\"" + l.getX() + "\" y=\"" + l.getY() + "\" " + "style=\"font-family: "
-              + font + ";font-size: " + size + ";fill: " + colour.getColorSVG() + "\">" + text
-              + "</text>");
+    @Override
+    public void draw(OutputStreamWriter osw) throws IOException {
+      osw.write("\n<text x=\"" + pos.getX() + "\" y=\"" + pos.getY() + "\" "
+              + "style=\"font-family: " + font + ";font-size: " + size + ";fill: "
+              + colour.getColorSVG() + "\">" + text + "</text>");
+
     }
   }
 
   /**
+   * Create axes in polar coordinates.
    * 
    * @author p.baniukiewicz
    *
    */
   public static class QPolarAxes extends SVGwritter {
-    private Rectangle r;
+    private Rectangle rect;
 
     /**
      * The colour.
@@ -271,26 +286,27 @@ public abstract class SVGwritter {
     public double thickness;
 
     /**
+     * Create polar axes.
      * 
-     * @param r
+     * @param rect boundaries
      */
-    public QPolarAxes(Rectangle r) {
-      this.r = r;
+    public QPolarAxes(Rectangle rect) {
+      this.rect = rect;
       colour = new QColor(0.5, 0.5, 0.5);
       thickness = 0.01;
     }
 
-    /**
-     * Draw.
-     *
-     * @param osw the osw
-     * @throws IOException Signals that an I/O exception has occurred.
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
+    @Override
     public void draw(OutputStreamWriter osw) throws IOException {
       // plot parameters
-      double x0 = r.getLocation().getX() + r.getWidth() / 2;
-      double y0 = r.getLocation().getY() + r.getHeight() / 2;
-      double radius = r.getHeight() / 2;
+      double x0 = rect.getLocation().getX() + rect.getWidth() / 2;
+      double y0 = rect.getLocation().getY() + rect.getHeight() / 2;
+      double radius = rect.getHeight() / 2;
       // main circle
       Qcircle qcmain = new Qcircle(x0, y0, radius);
       qcmain.colour = new QColor(1, 1, 1);
@@ -322,11 +338,103 @@ public abstract class SVGwritter {
       } while (++i < n);
 
       // middle
-      Qcircle qcm = new Qcircle(r.getLocation().getX() + r.getWidth() / 2,
-              r.getLocation().getY() + r.getHeight() / 2, thickness * 4);
+      Qcircle qcm = new Qcircle(rect.getLocation().getX() + rect.getWidth() / 2,
+              rect.getLocation().getY() + rect.getHeight() / 2, thickness * 4);
       qcm.colour = colour;
       qcm.draw(osw);
 
     }
+  }
+
+  /**
+   * Plot scale bar on svg.
+   * 
+   * @author rtyson
+   *
+   */
+  public static class QScaleBar extends SVGwritter {
+
+    private double length;
+    private String units;
+    private int value;
+    /**
+     * Line thickness.
+     */
+    public double thickness;
+    /**
+     * Text colour.
+     */
+    public QColor colour;
+    private ExtendedVector2d location;
+    private SVGwritter.Qtext text;
+
+    /**
+     * Constructor.
+     * 
+     * @param l position of text
+     * @param u units
+     * @param v value
+     * @param s scale
+     */
+    public QScaleBar(ExtendedVector2d l, String u, int v, double s) {
+      location = l;
+      units = u;
+      value = v;
+      thickness = 1;
+      colour = new QColor(1, 1, 1);
+      this.setScale(s);
+      text = new SVGwritter.Qtext(IJ.d2s(value, 0) + units, 6, "Courier", l);
+      text.colour = colour;
+    }
+
+    /**
+     * Set scale.
+     * 
+     * @param s scale
+     */
+    public void setScale(double s) {
+      length = value / s;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
+     */
+    @Override
+    public void draw(OutputStreamWriter osw) throws IOException {
+      SVGwritter.Qline body;
+
+      double tickSize = 2 * thickness;
+
+      ExtendedVector2d end = new ExtendedVector2d(location.getX(), location.getY());
+      end.addVec(new ExtendedVector2d(length, 0));
+      body = new SVGwritter.Qline(location.getX(), location.getY(), end.getX(), end.getY());
+      body.thickness = thickness;
+      body.colour = colour;
+
+      SVGwritter.Qline ltick;
+      SVGwritter.Qline rtick;
+      ltick = new SVGwritter.Qline(location.getX(), location.getY() + tickSize, location.getX(),
+              location.getY() - tickSize);
+      rtick = new SVGwritter.Qline(end.getX(), end.getY() + tickSize, end.getX(),
+              end.getY() - tickSize);
+      ltick.thickness = thickness;
+      ltick.colour = colour;
+      rtick.thickness = thickness;
+      rtick.colour = colour;
+
+      ltick.draw(osw);
+      rtick.draw(osw);
+      body.draw(osw);
+
+      // centre the text
+      int textLength = 2 + Integer.toString(value).length();
+      textLength = textLength * 4;
+      double textDis = (body.length() - textLength) / 2;
+      text.pos = new ExtendedVector2d(location.getX() + textDis, location.getY() - 2);
+      text.draw(osw);
+    }
+
   }
 }

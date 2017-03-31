@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import ij.Prefs;
 import uk.ac.warwick.wsbc.quimp.QuimP;
 
-// TODO: Auto-generated Javadoc
 /*
  * !>
  * @startuml doc-files/Registration_1_UML.png
@@ -129,10 +128,11 @@ import uk.ac.warwick.wsbc.quimp.QuimP;
 /**
  * Support registration checking.
  * 
- * Registration component is self running. It should be located at very beginning of Module code. It
+ * <p>Registration component is self running. It should be located at very beginning of Module code.
+ * It
  * blocks Module from execution until driving from Registration is returned to it.
  * 
- * Registration process follows the scheme for cancel action: <br>
+ * <p>Registration process follows the scheme for cancel action: <br>
  * <img src="doc-files/Registration_1_UML.png"/><br>
  * And for register action: <br>
  * <img src="doc-files/Registration_2_UML.png"/><br>
@@ -151,7 +151,8 @@ public class Registration extends JDialog implements ActionListener {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(Registration.class.getName());
 
-  private JButton bOk, bCancel;
+  private JButton bnOk;
+  private JButton bnCancel;
   /**
    * Flag that indicates that user has waited already.
    */
@@ -160,7 +161,8 @@ public class Registration extends JDialog implements ActionListener {
    * How long to wait in sec.
    */
   private final int secondsToWait = 5;
-  private JTextField tEmail, tKey;
+  private JTextField tfEmail;
+  private JTextField tfKey;
   private Window owner;
 
   private JPopupMenu popup;
@@ -171,8 +173,8 @@ public class Registration extends JDialog implements ActionListener {
   /**
    * Create and display registration window if necessary.
    * 
-   * @param owner
-   * @param title
+   * @param owner owner
+   * @param title title
    */
   public Registration(Window owner, String title) {
     super(owner, title, ModalityType.APPLICATION_MODAL);
@@ -186,9 +188,9 @@ public class Registration extends JDialog implements ActionListener {
   /**
    * Construct object but does not display window.
    * 
-   * Allow to set some parameters before window construction.
+   * <p>Allow to set some parameters before window construction.
    * 
-   * @param owner
+   * @param owner owner
    */
   public Registration(Window owner) {
     this.owner = owner;
@@ -197,7 +199,7 @@ public class Registration extends JDialog implements ActionListener {
   /**
    * Construct and display window.
    * 
-   * @param title
+   * @param title title
    * @param show indicate whether show window on screen
    */
   public void build(String title, boolean show) {
@@ -211,10 +213,10 @@ public class Registration extends JDialog implements ActionListener {
    */
   private void buildMenu() {
     popup = new JPopupMenu();
-    JMenuItem selectall = new JMenuItem("Select All"); // changing the name must follow with
-                                                       // actionPerformed
-    JMenuItem copy = new JMenuItem("Copy"); // changing the name must follow with
-                                            // actionPerformed
+    // changing the name must follow with actionPerformed
+    JMenuItem selectall = new JMenuItem("Select All");
+    // changing the name must follow with actionPerformed
+    JMenuItem copy = new JMenuItem("Copy");
     selectall.addActionListener(this);
     copy.addActionListener(this);
     popup.add(selectall);
@@ -232,12 +234,12 @@ public class Registration extends JDialog implements ActionListener {
     // ok, cancel row
     JPanel caButtons = new JPanel();
     caButtons.setLayout(new FlowLayout(FlowLayout.CENTER));
-    bOk = new JButton("Apply");
-    bOk.addActionListener(this);
-    bCancel = new JButton("Cancel");
-    bCancel.addActionListener(this);
-    caButtons.add(bOk);
-    caButtons.add(bCancel);
+    bnOk = new JButton("Apply");
+    bnOk.addActionListener(this);
+    bnCancel = new JButton("Cancel");
+    bnCancel.addActionListener(this);
+    caButtons.add(bnOk);
+    caButtons.add(bnCancel);
     wndpanel.add(caButtons, BorderLayout.SOUTH);
     // registration area and key and email
     JPanel centerarea = new JPanel();
@@ -294,20 +296,21 @@ public class Registration extends JDialog implements ActionListener {
     ((GridLayout) regarea.getLayout()).setHgap(10);
     ((GridLayout) regarea.getLayout()).setVgap(2);
     centerarea.add(regarea, BorderLayout.SOUTH);
-    tEmail = new JTextField(16);
-    tKey = new JTextField(16);
+    tfEmail = new JTextField(16);
+    tfKey = new JTextField(16);
     regarea.add(new JLabel(""));
     regarea.add(new JLabel(""));
 
-    regarea.add(tEmail);
+    regarea.add(tfEmail);
     regarea.add(new JLabel("Registration email"));
 
-    regarea.add(tKey);
+    regarea.add(tfKey);
     regarea.add(new JLabel("Your key"));
 
     add(wndpanel);
-    if (owner != null)
+    if (owner != null) {
       setLocation(owner.getLocation());
+    }
     setAlwaysOnTop(true);
     pack();
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -321,28 +324,29 @@ public class Registration extends JDialog implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     // clicked Cancel and user has not not waited yet
-    if (e.getSource() == bCancel && waited == false) {
-      bOk.setEnabled(false);
-      bCancel.setEnabled(false);
+    if (e.getSource() == bnCancel && waited == false) {
+      bnOk.setEnabled(false);
+      bnCancel.setEnabled(false);
       Worker w = new Worker(secondsToWait); // will change button text
       w.execute();
     }
     // Cancel and waited already - quit
-    if (e.getSource() == bCancel && waited == true) {
+    if (e.getSource() == bnCancel && waited == true) {
       dispose();
     }
     // apply - get code, say thank you and exit
-    if (e.getSource() == bOk) {
-      boolean ret = validateRegInfo(tEmail.getText(), tKey.getText());
+    if (e.getSource() == bnOk) {
+      boolean ret = validateRegInfo(tfEmail.getText(), tfKey.getText());
       if (ret) {
         waited = true;
-        registerUser(tEmail.getText(), tKey.getText());
+        registerUser(tfEmail.getText(), tfKey.getText());
         JOptionPane.showMessageDialog(this, "Thank you for registering our product.", "OK!",
                 JOptionPane.INFORMATION_MESSAGE);
         dispose();
-      } else // not ok - message and do nothing
+      } else {
         JOptionPane.showMessageDialog(this, "The key you provided does not match to the email.",
                 "Error", JOptionPane.WARNING_MESSAGE);
+      }
     }
     // support for action events
     switch (e.getActionCommand()) {
@@ -352,6 +356,8 @@ public class Registration extends JDialog implements ActionListener {
       case "Select All":
         helpArea.selectAll();
         break;
+      default:
+        throw new IllegalArgumentException("Unknown action.");
     }
 
   }
@@ -359,8 +365,8 @@ public class Registration extends JDialog implements ActionListener {
   /**
    * Add registration info to the IJ configuration.
    * 
-   * @param email
-   * @param key
+   * @param email email
+   * @param key key
    */
   private void registerUser(final String email, final String key) {
     Prefs.set("registration" + QuimP.QUIMP_PREFS_SUFFIX + ".mail", email);
@@ -369,7 +375,7 @@ public class Registration extends JDialog implements ActionListener {
   }
 
   /**
-   * Read info from IJ container
+   * Read info from IJ container.
    * 
    * @return Array of [0] reg email, [1] key
    */
@@ -385,8 +391,8 @@ public class Registration extends JDialog implements ActionListener {
    */
   public void fillRegForm() {
     String[] reg = readRegInfo();
-    tEmail.setText(reg[0]);
-    tKey.setText(reg[1]);
+    tfEmail.setText(reg[0]);
+    tfKey.setText(reg[1]);
   }
 
   /**
@@ -403,20 +409,22 @@ public class Registration extends JDialog implements ActionListener {
   /**
    * Validate whether key matches to email.
    * 
-   * @param email
-   * @param key
+   * @param email email
+   * @param key key
    * @return <tt>true</tt> is key matches to email.
    */
   private boolean validateRegInfo(final String email, final String key) {
-    if (email == null || key == null)
+    if (email == null || key == null) {
       return false;
+    }
     String emails = email.toLowerCase();
     String keys = key.toLowerCase();
     // remove all white chars
     emails = emails.replaceAll("\\s+", "");
     keys = keys.replaceAll("\\s+", "");
-    if (email.isEmpty() || key.isEmpty())
+    if (email.isEmpty() || key.isEmpty()) {
       return false;
+    }
 
     String salt = "secret"; // :)
     // add secret word
@@ -433,8 +441,9 @@ public class Registration extends JDialog implements ActionListener {
       }
       String digest = sb.toString().toLowerCase();
       LOGGER.trace("email: " + email + " Digest: " + digest);
-      if (digest.equals(keys)) // compare both
+      if (digest.equals(keys)) {
         return true;
+      }
     } catch (NoSuchAlgorithmException e) {
       e.printStackTrace();
     }
@@ -468,7 +477,7 @@ public class Registration extends JDialog implements ActionListener {
      */
     @Override
     protected String doInBackground() throws Exception {
-      dc = bCancel.getSize(); // remember size of button
+      dc = bnCancel.getSize(); // remember size of button
       // This is what's called in the .execute method
       for (int i = 0; i < wait; i++) {
         // This sends the results to the .process method
@@ -477,9 +486,9 @@ public class Registration extends JDialog implements ActionListener {
       }
       // at the end of job reenable everything
       waited = true; // set flag on the end of wait
-      bOk.setEnabled(true);
-      bCancel.setEnabled(true);
-      bCancel.setText("Cancel");
+      bnOk.setEnabled(true);
+      bnCancel.setEnabled(true);
+      bnCancel.setText("Cancel");
       return null;
     }
 
@@ -490,8 +499,8 @@ public class Registration extends JDialog implements ActionListener {
      */
     protected void process(List<String> item) {
       // This updates the UI
-      bCancel.setText(item.get(0));
-      bCancel.setPreferredSize(dc); // keep size as original
+      bnCancel.setText(item.get(0));
+      bnCancel.setPreferredSize(dc); // keep size as original
     }
   }
 

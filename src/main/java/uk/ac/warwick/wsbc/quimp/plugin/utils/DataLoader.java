@@ -14,24 +14,31 @@ import org.slf4j.LoggerFactory;
 
 import ij.process.FloatPolygon;
 
-// TODO: Auto-generated Javadoc
 /**
  * Simple data loader for test.
  * 
- * Load contours saved as one-column list with interleaving coordinates of vertices:
+ * <p>Load contours saved as one-column list with interleaving coordinates of vertices:
  * 
- * The file must contain even number of data. Exemplary code in Matlab to create such file:
+ * <p>The file must contain even number of data. Exemplary code in Matlab to create such file:
  * 
  * <pre>
  * <code>
  * X1 Y1 X2 Y2 ... Xn Yn
  * 
- * addpath('/home/p.baniukiewicz/Documents/QuimP11_MATLAB/') qCells =
- *           readQanalysis('Resources/after-macro'); testFrames = [75 125 137 1]; clear coords; for
- *           i=1:length(testFrames) coords{i} = qCells.outlines{testFrames(i)}(:,2:3); end for
- *           i=1:length(testFrames) fid = fopen(['testData_' num2str(testFrames(i)) '.dat'], 'w');
- *           xy = coords{i}; xyr = reshape(xy',[],1); % x first fprintf(fid,'%.4f\n',xyr);
- *           fclose(fid); end
+ * addpath('/home/p.baniukiewicz/Documents/QuimP11_MATLAB/')
+ * qCells = readQanalysis('Resources/after-macro');
+ * testFrames = [75 125 137 1];
+ * clear coords;
+ * for i=1:length(testFrames)
+ *     coords{i} = qCells.outlines{testFrames(i)}(:,2:3);
+ * end
+ * for i=1:length(testFrames)
+ *     fid = fopen(['testData_' num2str(testFrames(i)) '.dat'], 'w');
+ *     xy = coords{i};
+ *     xyr = reshape(xy',[],1); % x first
+ *     fprintf(fid,'%.4f\n',xyr);
+ *     fclose(fid);
+ * end
  * </code>
  * </pre>
  * 
@@ -46,14 +53,14 @@ public class DataLoader {
   static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class.getName());
   private List<Double> data;
   /**
-   * 
+   * Data loaded on constructor call.
    */
-  public List<Point2d> Vert;
+  public List<Point2d> vert;
 
   /**
    * Construct dataLoader object.
    * 
-   * Open and read datafile
+   * <p>Open and read datafile
    * 
    * @param fileName file with data (with path)
    * @throws FileNotFoundException on bad file
@@ -61,42 +68,44 @@ public class DataLoader {
    */
   public DataLoader(String fileName) throws FileNotFoundException, IllegalArgumentException {
     data = new ArrayList<Double>();
-    Vert = new ArrayList<Point2d>();
+    vert = new ArrayList<Point2d>();
     Scanner scanner = new Scanner(new File(fileName));
     scanner.useLocale(Locale.US);
-    while (scanner.hasNextDouble())
+    while (scanner.hasNextDouble()) {
       data.add(scanner.nextDouble());
+    }
     scanner.close();
     convertToPoint2d();
     LOGGER.debug("File: " + fileName + " loaded");
   }
 
   /**
-   * Convert read List<Double> to List<Point2d>
+   * Convert read List/<Double/> to List/<Point2d/>.
    * 
-   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException on wrong number of data in file
    */
   private void convertToPoint2d() throws IllegalArgumentException {
-    if (data.size() % 2 != 0)
+    if (data.size() % 2 != 0) {
       throw new IllegalArgumentException("Data must be multiply of 2");
+    }
     ListIterator<Double> it = data.listIterator();
     while (it.hasNext()) {
-      Vert.add(new Point2d(it.next().doubleValue(), // x coord
+      vert.add(new Point2d(it.next().doubleValue(), // x coord
               it.next().doubleValue())); // y coord from input file
     }
   }
 
   /**
-   * Return loaded data
+   * Return loaded data.
    * 
-   * @return loaded polygon as List<Point2d>
+   * @return loaded polygon as List/<Point2d/>
    */
   public List<Point2d> getData() {
-    return Vert;
+    return vert;
   }
 
   /**
-   * Return loaded data as FloatPolygon
+   * Return loaded data as FloatPolygon.
    * 
    * @return Loaded polygon as FloatPolygon
    */
@@ -106,11 +115,11 @@ public class DataLoader {
   }
 
   /**
-   * Convert loaded data to string
+   * Convert loaded data to string.
    * 
    * @return String representation of loaded data
    */
   public String toString() {
-    return Vert.toString();
+    return vert.toString();
   }
 }

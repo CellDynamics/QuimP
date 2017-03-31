@@ -12,7 +12,6 @@ import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class contains static methods for creating simple graphics elements.
  * 
@@ -23,9 +22,8 @@ public class GraphicsElements {
 
   /**
    * Create an arrow.
-   * <p>
-   * <p>
-   * <b>Warning</b><br>
+   * 
+   * <p><b>Warning</b><br>
    * input parameters can be modified
    * 
    * @param direction Directional vector
@@ -54,9 +52,10 @@ public class GraphicsElements {
   }
 
   /**
+   * Return circle.
    * 
-   * @param base
-   * @param radius
+   * @param base center
+   * @param radius radius
    * @return FloatPolygon
    */
   public static FloatPolygon getCircle(Point2d base, float radius) {
@@ -69,51 +68,52 @@ public class GraphicsElements {
   /**
    * Generate filled circle.
    * 
-   * @param x
-   * @param y
-   * @param color
-   * @param radius
+   * @param x x coordinate of center
+   * @param y y coordinate of center
+   * @param color color
+   * @param radius radius
    * @return PolygonRoi
    */
   public static PolygonRoi getCircle(double x, double y, Color color, double radius) {
     // create ROI
-    PolygonRoi oR = new PolygonRoi(GraphicsElements.getCircle(new Point2d(x, y), (float) radius),
+    PolygonRoi or = new PolygonRoi(GraphicsElements.getCircle(new Point2d(x, y), (float) radius),
             Roi.POLYGON);
-    oR.setStrokeColor(color);
-    oR.setFillColor(color);
-    return oR;
+    or.setStrokeColor(color);
+    or.setFillColor(color);
+    return or;
   }
 
   /**
    * Generate point roi.
    * 
-   * @param x
-   * @param y
-   * @param color
+   * @param x coordinate
+   * @param y coordinate
+   * @param color color
    * @return PointRoi
    */
   public static PointRoi getPoint(double x, double y, Color color) {
-    PointRoi pR = new PointRoi(x, y);
-    pR.setStrokeColor(color);
-    pR.setFillColor(color);
-    return pR;
+    PointRoi pr = new PointRoi(x, y);
+    pr.setStrokeColor(color);
+    pr.setFillColor(color);
+    return pr;
   }
 
   /**
    * Generate points roi.
    * 
-   * @param x
-   * @param y
-   * @param color
+   * @param x coordinate
+   * @param y coordinate
+   * @param color color
    * @return PointRoi
    */
-  public static PointRoi getPoint(int x[], int y[], Color color) {
-    if (x.length != y.length)
+  public static PointRoi getPoint(int[] x, int[] y, Color color) {
+    if (x.length != y.length) {
       throw new IllegalArgumentException("Arras of different sizes");
-    PointRoi pR = new PointRoi(x, y, x.length);
-    pR.setStrokeColor(color);
-    pR.setFillColor(color);
-    return pR;
+    }
+    PointRoi pr = new PointRoi(x, y, x.length);
+    pr.setStrokeColor(color);
+    pr.setFillColor(color);
+    return pr;
   }
 
   /**
@@ -125,10 +125,10 @@ public class GraphicsElements {
    * @return PolygonRoi
    */
   public static PolygonRoi getLine(Polygon points, int npoints, Color color) {
-    PolygonRoi pR = new PolygonRoi(points, Roi.FREELINE);
-    pR.setStrokeColor(color);
-    pR.setFillColor(color);
-    return pR;
+    PolygonRoi pr = new PolygonRoi(points, Roi.FREELINE);
+    pr.setStrokeColor(color);
+    pr.setFillColor(color);
+    return pr;
   }
 
   /**
@@ -151,9 +151,9 @@ public class GraphicsElements {
    * @return PolygonRoi
    */
   public static PolygonRoi getLine(Polygon points, Color color, int frame) {
-    PolygonRoi pR = GraphicsElements.getLine(points, points.npoints, color);
-    pR.setPosition(frame);
-    return pR;
+    PolygonRoi pr = GraphicsElements.getLine(points, points.npoints, color);
+    pr.setPosition(frame);
+    return pr;
   }
 
   /**
@@ -162,16 +162,17 @@ public class GraphicsElements {
    * @param x Array with x coordinates
    * @param y Array wit y coordinates.
    * @param npoints Number of points to consider
-   * @param color
+   * @param color color
    * @return PolygonRoi
    */
   public static PolygonRoi getLine(float[] x, float[] y, int npoints, Color color) {
-    if (x.length != y.length)
+    if (x.length != y.length) {
       throw new IllegalArgumentException("Arras of different sizes");
-    PolygonRoi pRoi = new PolygonRoi(x, y, npoints, Roi.FREELINE);
-    pRoi.setStrokeColor(color);
-    pRoi.setFillColor(color);
-    return pRoi;
+    }
+    PolygonRoi proi = new PolygonRoi(x, y, npoints, Roi.FREELINE);
+    proi.setStrokeColor(color);
+    proi.setFillColor(color);
+    return proi;
   }
 
 }

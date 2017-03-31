@@ -131,7 +131,7 @@ public class RandomWalkSegmentation {
    * 
    * @param ip image to segment
    * @param params parameters
-   * @throws RandomWalkException
+   * @throws RandomWalkException on wrong image format
    */
   public RandomWalkSegmentation(ImageProcessor ip, Params params) throws RandomWalkException {
     if (ip.getBitDepth() != 8 && ip.getBitDepth() != 16) {
@@ -1156,12 +1156,11 @@ public class RandomWalkSegmentation {
   /**
    * Add in-place this matrix to another.
    * 
+   * <p>src/test/resources/Matlab/rw_laplace4_java_base.m This is source file of segmentation
+   * in Matlab that was a base for RandomWalkSegmentation Implementation
+   * 
    * @author p.baniukiewicz
    *
-   */
-  /**
-   * @example src/test/resources/Matlab/rw_laplace4_java_base.m This is source file of segmentation
-   *          in Matlab that was a base for RandomWalkSegmentation Implementation
    */
   static class MatrixDotAdd implements RealMatrixChangingVisitor {
 
@@ -1245,11 +1244,6 @@ public class RandomWalkSegmentation {
     }
 
     @Override
-    /**
-     * @example src/test/resources/Matlab/rw_laplace4_java_base.m This is source file of
-     *          segmentation in
-     *          Matlab that was a base for RandomWalkSegmentation Implementation
-     */
     public double end() {
       return 0;
     }
