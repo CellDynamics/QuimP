@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+       <release version="17.04.03-SNAPSHOT" date="" description="Release">
+          <action dev="baniuk" type="fix" issue="237">
+              QuimP-BOA: Lack of file separator.
+          </action>
+       </release>
        <release version="17.04.02" date="2017-04-03" description="Release">
           <action dev="baniuk" type="fix" issue="235">
               QuimP-FormatConverter: Conversion paQP-QCONF gave wrong segmentation parameters at last frame.

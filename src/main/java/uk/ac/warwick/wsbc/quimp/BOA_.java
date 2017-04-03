@@ -1716,7 +1716,8 @@ public class BOA_ implements PlugIn {
       } else {
         parent = "";
       }
-      loaded.obj.BOAState.boap.setOutputFileCore(parent + configPath.getFileName().toString());
+      loaded.obj.BOAState.boap
+              .setOutputFileCore(parent + File.separator + configPath.getFileName().toString());
       // closes windows, etc
       qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
       qState = loaded.obj.BOAState;
