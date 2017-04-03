@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+       <release version="17.04.02" date="2017-04-03" description="Release">
+          <action dev="baniuk" type="fix" issue="235">
+              QuimP-FormatConverter: Conversion paQP-QCONF gave wrong segmentation parameters at last frame.
+          </action>
+       </release>
        <release version="17.04.01" date="2017-03-31" description="Release">
           <action dev="baniuk" type="fix" issue="234">
               QuimP-RandomWalk: Closing RW window by system button on window bar caused that IJ quited as well.
@@ -20,7 +25,7 @@
               QuimP-BOA: Button Load works the same as Load from menu. Additionally one can load old data files with it. 
           </action>
           <action dev="baniuk" type="add" issue="184">
-              QuimP-BOA: There is possible to copy current filter stack to all other frames.
+              QuimP-BOA: Now, it is possible to copy current filter stack to all other frames.
           </action>
           <action dev="baniuk" type="update" issue="">
               QuimP: Code refactoring to meet CodeStyle standards, optimizations within file dialog.
