@@ -96,7 +96,8 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
  * <li><i>rank</i> must be greater than <i>alev</i>
  * <li>lower and upper index of window (index means here number of polygon vertex in array) must not
  * be included in any previously found window. This checking is done by deriving own class
- * WindowIndRange with overwritten {@link WindowIndRange#compareTo(Object)} method that defines
+ * WindowIndRange with overwritten {@link HatSnakeFilter.WindowIndRange#compareTo(Object)} method
+ * that defines
  * rules of equality and non relations between ranges. Basically any overlapping range or included
  * is considered as equal and rejected from storing in <i>ind2rem</i> array.
  * <li>candidate points must be convex/concave.

@@ -93,7 +93,8 @@ public class FileDialogEx extends FileDialog {
    * Construct object with given file extension filtering.
    * 
    * @param parent parent
-   * @param ext list of extensions (.ext). Can be null to use default {@link QuimpConfigFilefilter}
+   * @param ext list of extensions (.ext). Can be null to use default
+   *        {@link FileDialogEx.QuimpConfigFilefilter}
    */
   public FileDialogEx(Frame parent, String... ext) {
     super(parent);
@@ -107,7 +108,8 @@ public class FileDialogEx extends FileDialog {
    * 
    * <p>Should be called before {@link #showOpenDialog()}.
    * 
-   * @param ext list of extensions (.ext). Can be null to use default {@link QuimpConfigFilefilter}
+   * @param ext list of extensions (.ext). Can be null to use default
+   *        {@link FileDialogEx.QuimpConfigFilefilter}
    */
   public void setExtension(String... ext) {
     qcf = new QuimpConfigFilefilter(ext);

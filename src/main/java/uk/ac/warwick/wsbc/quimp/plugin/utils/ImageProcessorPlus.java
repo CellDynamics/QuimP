@@ -141,7 +141,7 @@ public class ImageProcessorPlus {
    * @param ip ImageProcessor
    * @param prefilterangle angle as k*45
    * @param masksize odd size, 0 will skip processing
-   * @see GenerateKernel
+   * @see ImageProcessorPlus.GenerateKernel
    */
   public void runningMean(ImageProcessor ip, String prefilterangle, int masksize) {
     LOGGER.debug("Convolving: " + prefilterangle + " " + masksize);
