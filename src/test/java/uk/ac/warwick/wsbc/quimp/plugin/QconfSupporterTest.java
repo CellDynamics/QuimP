@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin;
 
 import java.nio.file.Path;

@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import ij.IJ;
@@ -32,9 +30,9 @@ public class BinarySegmentationUI_run {
 
     ImageJ ij = new ImageJ();
     RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
-    IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
-            "open(\"/home/p.baniukiewicz/Documents/"
-                    + "Repos/QuimP/src/test/Resources-static/BW_seg_5_slices.tif\")");
+    // load images that are called from RandomWalkSegmentationPlugin
+    IJ.runMacro("open(\"/home/p.baniukiewicz/Documents/"
+            + "Repos/QuimP/src/test/Resources-static/BW_seg_5_slices.tif\")");
     IJ.runMacro("open(\"/home/p.baniukiewicz/Documents/Repos/"
             + "QuimP/src/test/Resources-static/segmented_color.tif\")");
     BinarySegmentationPlugin fp = new BinarySegmentationPlugin();

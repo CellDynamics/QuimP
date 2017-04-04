@@ -272,8 +272,9 @@ class tSnakePluginList {
     // initialize list with null pointers - this is how QuimP detect that
     // there is plugin selected
     snakePluginList = new ArrayList<Plugin>(s);
-    for (int i = 0; i < s; i++)
+    for (int i = 0; i < s; i++) {
       snakePluginList.add(new Plugin(null, true));
+    }
   }
 }
 

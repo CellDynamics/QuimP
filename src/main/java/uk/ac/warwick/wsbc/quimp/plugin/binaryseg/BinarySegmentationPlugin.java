@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin.binaryseg;
 
 import java.awt.Choice;
@@ -71,19 +69,28 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     // define window controls
     String str[] = WindowManager.getImageTitles(); // get opened windows
     String list = BOA_.NONE; // default nonselected
-    for (String s : str)
-      list = list + ',' + s; // form list of params for QWindowBuilder:Choice
+    for (String s : str) {
+      list = list + ',' + s;
+    } // form list of params for QWindowBuilder:Choice
     uiDefinition = new ParamList(); // will hold ui definitions
     uiDefinition.put("name", "BinarySegmentation"); // name of window
     uiDefinition.put("load mask", "button, Load_mask");
     uiDefinition.put("get opened", "choice," + list);
-    uiDefinition.put("step", "spinner, 1, 10001, 1," + Integer.toString(step)); // start, end,
-                                                                                // step, default
-    uiDefinition.put("smoothing", "checkbox, interpolation," + Boolean.toString(smoothing)); // name,
+    // start, end, step, default
+    uiDefinition.put("step", "spinner, 1, 10001, 1," + Integer.toString(step));
+    // name
+    uiDefinition.put("smoothing", "checkbox, interpolation," + Boolean.toString(smoothing));
     // use http://www.freeformatter.com/java-dotnet-escape.html#ad-output for escaping
     //!<
-    uiDefinition.put("help",
-            "<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. It should be 8-bit image of size of original stack with <span style=\"color: #ffffff; background-color: #000000;\">black background</span> and white objects.</p>\r\n<p><strong>Get Opened</strong> - Select mask already opened in ImageJ. Alternative to <em>Load Mask</em>, will override loaded file.</p>\r\n<p><strong>step</strong> - stand for discretisation density, 1.0 means that every pixel of the outline will be mapped to Snake node.</p>\r\n<p><strong>smoothing</strong>&nbsp;- add extra Spline interpolation to the shape</p></font>");
+    uiDefinition.put("help", "<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. "
+            + "It should be 8-bit image of size of original stack with <span style=\"color:"
+            + " #ffffff; background-color: #000000;\">black background</span> and white"
+            + " objects." + "</p>\r\n<p><strong>Get Opened</strong> - Select mask already opened in"
+            + " ImageJ."
+            + " Alternative to <em>Load Mask</em>, will override loaded file.</p>\r\n<p>"
+            + "<strong>step</strong> - stand for discretisation density, 1.0 means that every"
+            + " pixel of the outline will be mapped to Snake node.</p>\r\n<p><strong>smoothing"
+            + "</strong>&nbsp;- add extra Spline interpolation to the shape</p></font>");
     /**/
     buildWindow(uiDefinition);
     params = new ParamList();
@@ -140,19 +147,20 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     String selectedMask = "";
     if (b == ui.get("load mask")) { // read file with mask
       OpenDialog od = new OpenDialog("Load mask file", "");
-      if (od.getPath() != null) {// not canceled
+      if (od.getPath() != null) { // not canceled
         maskFile = IJ.openImage(od.getPath()); // try open image
         selectedMask = od.getFileName();
       }
     }
     // here verify whether mask is ok
-    if (maskFile == null) {// not loaded
+    if (maskFile == null) { // not loaded
       JOptionPane.showMessageDialog(pluginWnd,
               "Provided mask file: " + selectedMask + " could not be opened", "Mask loading error",
               JOptionPane.ERROR_MESSAGE);
       maskFilename = "";
-    } else
+    } else {
       maskFilename = selectedMask; // Remember full patch for configuration
+    }
 
     if (b == applyB) { // on apply read config and run
       step = getIntegerFromUI("step");
@@ -250,9 +258,10 @@ public class BinarySegmentationPlugin extends QWindowBuilder
    */
   @Override
   public void runPlugin() throws QuimpPluginException {
-    if (nest == null) // protection against null input
+    if (nest == null) {
       return;
-    if (maskFile == null) {// failed load
+    }
+    if (maskFile == null) { // failed load
       LOGGER.warn("Load mask file first");
       return;
     }
@@ -264,9 +273,11 @@ public class BinarySegmentationPlugin extends QWindowBuilder
       // set interpolation params for every tracker. They are used when converting from
       // SegmentedShapeRoi to points in SnakeHandler
       LOGGER.debug("step: " + step + " smooth: " + smoothing);
-      for (ArrayList<SegmentedShapeRoi> asS : ret)
-        for (SegmentedShapeRoi sS : asS)
+      for (ArrayList<SegmentedShapeRoi> asS : ret) {
+        for (SegmentedShapeRoi sS : asS) {
           sS.setInterpolationParameters(step, smoothing);
+        }
+      }
       nest.cleanNest(); // remove old stuff
       nest.addHandlers(ret); // convert from array of SegmentedShapeRoi to SnakeHandlers
       vu.updateView(); // update view
@@ -304,10 +315,11 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     String selectedMask;
     if (e.getItemSelectable() == ui.get("get opened")) { // import opened image
       selectedMask = ((Choice) ui.get("get opened")).getSelectedItem(); // selected item
-      if (!selectedMask.equals(BOA_.NONE)) // process only if NOT NONE
+      if (!selectedMask.equals(BOA_.NONE)) {
         maskFile = WindowManager.getImage(selectedMask);
-      else
+      } else {
         maskFile = null;
+      }
       LOGGER.debug("Choice action - mask: " + maskFile != null ? maskFile.toString() : "null");
     }
   }

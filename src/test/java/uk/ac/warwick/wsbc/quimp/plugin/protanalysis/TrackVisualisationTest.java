@@ -78,7 +78,7 @@ public class TrackVisualisationTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackVisualisation.Stack#addMaximaToImage(STmap, MaximaFinder)}.
+   * {@link TrackVisualisation.Stack#addMaximaToImage(STmap, MaximaFinder)}.
    * 
    * @throws Exception
    */
@@ -108,7 +108,7 @@ public class TrackVisualisationTest {
 
   // /**
   // * Test method for {@link
-  // uk.ac.warwick.wsbc.quimp.plugin.Prot_Analysis.ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.quimp.STmap,
+  // ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.quimp.STmap,
   // java.util.List)}.
   // */
   // @Test
@@ -136,7 +136,7 @@ public class TrackVisualisationTest {
   //
   // /**
   // * Test method for {@link
-  // uk.ac.warwick.wsbc.quimp.plugin.Prot_Analysis.ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.quimp.STmap,
+  // Prot_Analysis.ProtrusionVis#addTrackingLinesToImage(uk.ac.warwick.wsbc.quimp.STmap,
   // java.util.List)}.
   // * Case with empty tracking line
   // */

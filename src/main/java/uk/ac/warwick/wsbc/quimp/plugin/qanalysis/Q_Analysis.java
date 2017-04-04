@@ -131,8 +131,7 @@ public class Q_Analysis {
           YesNoCancelDialog ync;
           ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
                   "You are about to override previous Q results. Is it ok?");
-          if (!ync.yesPressed()) // if no or cancel
-          {
+          if (!ync.yesPressed()) { // if no or cancel
             IJ.log("No changes done in input file.");
             return; // end}
           }

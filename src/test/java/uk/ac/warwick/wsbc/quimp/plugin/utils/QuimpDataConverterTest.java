@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin.utils;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -18,7 +16,6 @@ import uk.ac.warwick.wsbc.quimp.BOAState;
 import uk.ac.warwick.wsbc.quimp.BOA_;
 import uk.ac.warwick.wsbc.quimp.Node;
 import uk.ac.warwick.wsbc.quimp.Snake;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
 
 /**
  * @author p.baniukiewicz
@@ -31,7 +28,8 @@ public class QuimpDataConverterTest {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(QuimpDataConverterTest.class.getName());
 
-  private double X[], Y[];
+  private double[] X;
+  private double[] Y;
   private ArrayList<Point2d> list;
   private Snake snake;
 

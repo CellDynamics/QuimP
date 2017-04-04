@@ -111,9 +111,10 @@ public class VRMLobject {
       // write coords
       for (int i = 0; i < coords.length; i++) {
         pw.print("\n\t\t\t\t" + coords[i].x + " " + coords[i].y + " " + coords[i].z);
-        if (i != coords.length - 1)
+        if (i != coords.length - 1) {
           pw.print(",");
-        // break;
+          // break;
+        }
       }
       pw.print("\n\t\t\t]\n\t\t}");
 
@@ -121,9 +122,10 @@ public class VRMLobject {
       // write colors
       for (int i = 0; i < colorsF.length; i++) {
         pw.print("\n\t\t\t\t" + colorsF[i].x + " " + colorsF[i].y + " " + colorsF[i].z);
-        if (i != colorsF.length - 1)
+        if (i != colorsF.length - 1) {
           pw.print(",");
-        // break;
+          // break;
+        }
       }
       pw.print("\n\t\t\t]\n\t\t}");
 
@@ -132,9 +134,10 @@ public class VRMLobject {
       for (int i = 0; i < coordIndices.length; i += 4) {
         pw.print("\n\t\t\t" + coordIndices[i] + ", " + coordIndices[i + 1] + ", "
                 + coordIndices[i + 2] + ", " + coordIndices[i + 3] + ", -1");
-        if (i != coordIndices.length - 4)
+        if (i != coordIndices.length - 4) {
           pw.print(",");
-        // break;
+          // break;
+        }
       }
       pw.print("\n\t\t]");
 

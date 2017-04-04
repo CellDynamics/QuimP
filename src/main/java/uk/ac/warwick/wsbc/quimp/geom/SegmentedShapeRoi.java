@@ -26,13 +26,17 @@ public class SegmentedShapeRoi extends ShapeRoi {
 
   /**
    * The Constant NOT_COUNTED.
+   * 
+   * <p>Code for not counted yet shape.
    */
-  public static final int NOT_COUNTED = -1; //!< Code for not counted yet shape
+  public static final int NOT_COUNTED = -1;
 
   /**
-   * The id.
+   * The id
+   * 
+   * <p>positive if has any id assigned (thus it has been counted already)
    */
-  protected int id = NOT_COUNTED; //!< positive if has any id assigned (thus it has been counted already)
+  protected int id = NOT_COUNTED;
 
   /**
    * The frame.

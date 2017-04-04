@@ -169,8 +169,9 @@ import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
  * 
  * <p>Related to GUI, first plugin is at index 0, etc. Keeps also UI settings activating or
  * deactivating plugins. Produces plugins from their names using provided
- * {@link uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory} The sPluginList is serialized (saved as JSON
- * object). Because serialization does not touch plugins (understood as jars) directly, their
+ * {@link uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory} The sPluginList is serialized
+ * (saved as JSON * object). Because serialization does not touch plugins (understood as jars)
+ * directly, their
  * configuration and state must be copied locally to Plugin objects. This is done during preparation
  * to serialization and then after deserialization.
  * 
@@ -212,6 +213,10 @@ import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
  * 
  * @see uk.ac.warwick.wsbc.quimp.BOA_#run(String)
  * @author p.baniukiewicz
+ */
+/**
+ * @author p.baniukiewicz
+ *
  */
 public class SnakePluginList implements IQuimpSerialize {
 

@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.geom;
 
 import java.util.ArrayList;
@@ -113,8 +111,9 @@ public class TrackOutline {
    * @throws IllegalArgumentException when wrong image format is provided
    */
   public TrackOutline(ImageProcessor imp, int background, int frame) {
-    if (imp.getBitDepth() != 8 && imp.getBitDepth() != 16)
+    if (imp.getBitDepth() != 8 && imp.getBitDepth() != 16) {
       throw new IllegalArgumentException("Only 8-bit or 16-bit images are supported");
+    }
     outlines = new ArrayList<>();
     this.imp = imp;
     this.background = background;
@@ -199,19 +198,21 @@ public class TrackOutline {
    */
   private void getOutlines() {
     // go through the image and look for non \a background pixels
-    outer: for (int r = 0; r < prepared.getHeight(); r++)
+    outer: for (int r = 0; r < prepared.getHeight(); r++) {
       for (int c = 0; c < prepared.getWidth(); c++) {
         if (prepared.getPixel(c, r) != background) { // non background pixel
           outlines.add(getOutline(c, r, prepared.getPixel(c, r))); // remember outline and
                                                                    // delete it from input
                                                                    // image
-          if (MAX > -1) // not all
+          if (MAX > -1) {
             if (outlines.size() >= MAX) {
               LOGGER.warn("Reached maximal number of outlines");
               break outer;
             }
+          }
         }
       }
+    }
   }
 
   /**
@@ -273,8 +274,9 @@ public class TrackOutline {
    */
   public List<SegmentedShapeRoi> getCopyofShapes() {
     ArrayList<SegmentedShapeRoi> clon = new ArrayList<>();
-    for (SegmentedShapeRoi sR : outlines)
+    for (SegmentedShapeRoi sR : outlines) {
       clon.add((SegmentedShapeRoi) sR.clone());
+    }
     return clon;
   }
 

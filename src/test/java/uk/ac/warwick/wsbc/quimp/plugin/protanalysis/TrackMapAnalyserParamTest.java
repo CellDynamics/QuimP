@@ -23,7 +23,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser;
 import uk.ac.warwick.wsbc.quimp.utils.Pair;
 
 // TODO: Auto-generated Javadoc
@@ -56,7 +55,7 @@ public class TrackMapAnalyserParamTest {
      * The enumerate.
      */
     ENUMERATE
-  };
+  }
 
   private TrackMapAnalyser trackMapAnalyser;
   private ArrayList<Polygon> track;
@@ -65,7 +64,6 @@ public class TrackMapAnalyserParamTest {
   private Type type;
   private int selfCrossing;
 
-  //!<
   /**
    * @return test set
    */
@@ -455,10 +453,8 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
-      Polygon expIntersectionPoints = new Polygon(new int[] { 10 }, new int[] { 10 }, 1); // expected
-                                                                                          // index
-                                                                                          // at
-                                                                                          // x[0]
+      // expected index at x[0]
+      Polygon expIntersectionPoints = new Polygon(new int[] { 10 }, new int[] { 10 }, 1);
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
@@ -499,10 +495,8 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
-      Polygon expIntersectionPoints = new Polygon(new int[] { 11 }, new int[] { 11 }, 1); // expected
-                                                                                          // index
-                                                                                          // at
-                                                                                          // x[0]
+      // expected index at x[0]
+      Polygon expIntersectionPoints = new Polygon(new int[] { 11 }, new int[] { 11 }, 1);
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
@@ -587,10 +581,8 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
-      Polygon expIntersectionPoints = new Polygon(new int[] { -1 }, new int[] { -1 }, 1); // expected
-                                                                                          // index
-                                                                                          // at
-                                                                                          // x[0]
+      // expected index at x[0]
+      Polygon expIntersectionPoints = new Polygon(new int[] { -1 }, new int[] { -1 }, 1);
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
@@ -699,7 +691,7 @@ public class TrackMapAnalyserParamTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser#getIntersectionPoints(java.util.List)}.
+   * {@link TrackMapAnalyser#getIntersectionPoints(java.util.List)}.
    * 
    * @throws Exception
    */
@@ -716,7 +708,7 @@ public class TrackMapAnalyserParamTest {
   }
 
   /**
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser#removeSelfRepeatings(List, List)}.
+   * {@link TrackMapAnalyser#removeSelfRepeatings(List, List)}.
    * 
    * @throws Exception
    */
@@ -733,7 +725,7 @@ public class TrackMapAnalyserParamTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
+   * {@link TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
    * 
    * Assume that tested point is first pair left in expIntersectionPairs Result is in
    * expIntersectionPoints as x[0] coord. Use selfCrossing to decide whether use INCLUDE_INITIAL
@@ -746,8 +738,9 @@ public class TrackMapAnalyserParamTest {
     Assume.assumeTrue(type == Type.ENUMERATE);
     if (selfCrossing > 65535) {
       TrackMapAnalyser.INCLUDE_INITIAL = false; // count all
-    } else
+    } else {
       TrackMapAnalyser.INCLUDE_INITIAL = true; // count maximum one
+    }
     int ret1 = TrackMapAnalyser.enumeratePoint(track.get(0), track.get(1),
             expIntersectionPairs.get(0).first);
     assertThat(ret1, is(expIntersectionPoints.xpoints[0]));
@@ -769,7 +762,7 @@ public class TrackMapAnalyserParamTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser#removeSelfRepeatings(List, List)}.
+   * {@link TrackMapAnalyser#removeSelfRepeatings(List, List)}.
    * 
    * No selfcrossing, B1 B2 intersection
    * 

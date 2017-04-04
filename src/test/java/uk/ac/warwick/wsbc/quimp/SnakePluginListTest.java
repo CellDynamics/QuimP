@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import static org.junit.Assert.assertEquals;
@@ -254,7 +252,7 @@ public class SnakePluginListTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.SnakePluginList#SnakePluginList(int, PluginFactory, ViewUpdater)}
+   * {@link SnakePluginList#SnakePluginList(int, PluginFactory, ViewUpdater)}
    * 
    * @throws Exception
    */
@@ -487,15 +485,16 @@ public class SnakePluginListTest {
    */
   @Test
   public void testloadConfig_serializer() throws Exception {
-    //!<
+    //!>
     String json = "{\"className\":\"SnakePluginList\","
-            + "\"timeStamp\":{\"version\":\"17.02.02\",\"buildstamp\":\"p.baniukiewicz\",\"name\":\"QuimP\"},"
+            + "\"timeStamp\""
+            + ":{\"version\":\"17.02.02\",\"buildstamp\":\"p.baniukiewicz\",\"name\":\"QuimP\"},"
             + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\"," + "\"obj\":{\"sPluginList\":"
             + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
             + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
             + "{\"window\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"2.3.4\"},"
             + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
-    // */
+    //!<
 
     Serializer<SnakePluginList> out;
     Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class, version);
@@ -897,7 +896,9 @@ public class SnakePluginListTest {
   /**
    * Test of loading incompatible config - empty slot
    * 
-   * pre: Empty slot
+   * <p>see testSaveConfig_gap
+   * 
+   * <p>pre: Empty slot
    * 
    * post: Correct order of plugins
    * 
@@ -908,8 +909,7 @@ public class SnakePluginListTest {
   public void testloadConfig_bad4() throws IOException, QuimpPluginException {
     String json = "{ \"version\": \"3.0.0\"," + "\"softwareName\": \"QuimP::BOA\","
             + " \"activePluginList\": {" + "\"sPluginList\": [" + "{" + "\"isActive\": false,"
-            + "\"name\": \"Test1\"," + "\"ver\": \"1.2.3\"" + "}," + "{" + "\"isActive\": true," // see
-                                                                                                 // testSaveConfig_gap
+            + "\"name\": \"Test1\"," + "\"ver\": \"1.2.3\"" + "}," + "{" + "\"isActive\": true,"
             + "\"name\": \"\"," + "\"ver\": \"\"}," + "{" + "\"isActive\": true,"
             + "\"name\": \"toDelete\"," + "\"ver\": \"2.3.4\"" + "}]}}";
 

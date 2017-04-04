@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.geom;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -19,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.quimp.QParamsQconf;
 import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
-import uk.ac.warwick.wsbc.quimp.geom.MapTracker;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -70,12 +67,13 @@ public class TrackMapTest {
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    qL1 = new QconfLoader(
-            Paths.get("src/test/Resources-static/TrackMapTests/Stack_cut_10frames_trackMapTest.QCONF")
+    qL1 = new QconfLoader(Paths
+            .get("src/test/Resources-static/TrackMapTests/Stack_cut_10frames_trackMapTest.QCONF")
+            .toFile());
+    qL2 = new QconfLoader(
+            Paths.get("src/test/Resources-static/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF")
                     .toFile());
-    qL2 = new QconfLoader(Paths
-            .get("src/test/Resources-static/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF").toFile());
-  }// throw new UnsupportedOperationException("Not implemented here");
+  } // throw new UnsupportedOperationException("Not implemented here");
 
   /**
    * @throws java.lang.Exception
@@ -231,10 +229,10 @@ public class TrackMapTest {
   @SuppressWarnings({ "deprecation", "javadoc" })
   @Test
   public void testGetForwardFrames() throws Exception {
-    //!<
+    //!>
     int[] expected =
             { 91 - 1, 92 - 1, 93 - 1, 94 - 1, 95 - 1, 96 - 1, 97 - 1, 98 - 1, 99 - 1, 100 - 1 };
-    /**/
+    //!<
     MapTracker tM = new MapTracker(originMap2, coordMap2);
     int[] ret = tM.getForwardFrames(90 - 1, 10);
     assertThat(ret, is(expected));

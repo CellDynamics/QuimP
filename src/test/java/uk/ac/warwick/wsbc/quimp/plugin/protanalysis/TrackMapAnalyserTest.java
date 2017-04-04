@@ -1,6 +1,3 @@
-/**
- * 
- */
 package uk.ac.warwick.wsbc.quimp.plugin.protanalysis;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,8 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackCollection;
-import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser;
 import uk.ac.warwick.wsbc.quimp.utils.Pair;
 
 // TODO: Auto-generated Javadoc
@@ -125,7 +120,7 @@ public class TrackMapAnalyserTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
+   * {@link TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
    * 
    * @throws Exception
    */

@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import java.awt.Color;
@@ -155,8 +153,9 @@ public class AboutDialog implements ActionListener {
     dst.setText(src.getText());
     dst.setToolTipText(src.getToolTipText());
     dst.setMnemonic(src.getMnemonic());
-    for (ActionListener a : src.getActionListeners())
+    for (ActionListener a : src.getActionListeners()) {
       dst.addActionListener(a);
+    }
     return dst;
   }
 

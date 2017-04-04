@@ -514,7 +514,8 @@ public class BOAState implements IQuimpSerialize {
      * Number of frames in stack.
      */
     private int FRAMES; // name related to QCONF file do not change
-    private int WIDTH, HEIGHT; // name related to QCONF file do not change
+    private int WIDTH; // name related to QCONF file do not change
+    private int HEIGHT; // name related to QCONF file do not change
     /**
      * Cut loops in chain every X frames.
      */

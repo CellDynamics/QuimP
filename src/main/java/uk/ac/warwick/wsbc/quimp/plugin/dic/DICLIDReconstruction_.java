@@ -37,7 +37,11 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
   /**
    * Filled by {@link #showUi(boolean)}.
    */
-  private double angle, decay;
+  private double angle;
+  /**
+   * Filled by {@link #showUi(boolean)}.
+   */
+  private double decay;
   /**
    * Filled by {@link #showUi(boolean)}.
    */
@@ -70,15 +74,15 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
     // validate registered user
     new Registration(IJ.getInstance(), "QuimP Registration");
     ImageProcessor ret;
-    if (showUi(true) == 0)
+    if (showUi(true) == 0) {
       return; // if user clicked Cancel or data were not valid
+    }
     try {
       // create result as separate 16bit image
       ImagePlus result = new ImagePlus("DIC_" + imp.getTitle(),
               new ShortProcessor(ip.getWidth(), ip.getHeight()));
       dic = new LidReconstructor(imp.getProcessor(), decay, angle, prefilterangle, masksize);
-      if (imp.getStack().getSize() == 1) {// if there is no stack we can avoid additional
-                                          // rotation
+      if (imp.getStack().getSize() == 1) { // if there is no stack we can avoid additional rotation
         // here (see DICReconstruction documentation)
         IJ.showProgress(0.0);
         ret = dic.reconstructionDicLid();
@@ -116,8 +120,9 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
    */
   String roundtofull(double angle) {
     int anglei = (int) angle; // cut fractions
-    if (anglei >= 180)
+    if (anglei >= 180) {
       anglei -= 180;
+    }
     // calculate distances between 0, 45, 90, 135, 180
     Integer d[] = new Integer[5];
     d[0] = Math.abs(0 - anglei);
@@ -180,13 +185,15 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
 
     gd.setResizable(false);
     gd.showDialog();
-    if (gd.wasCanceled()) // check if user clicked OK or CANCEL
+    if (gd.wasCanceled()) {
       return 0;
+    }
     // read GUI elements and store results in private fields order as these
     // methods are called should match to GUI build order
     angle = Math.abs(gd.getNextNumber());
-    if (angle >= 360)
+    if (angle >= 360) {
       angle -= 360;
+    }
     decay = gd.getNextNumber();
     prefilterangle = roundtofull(angle + 90); // filtering angle
     masksize = (int) gd.getNextNumber();

@@ -94,10 +94,11 @@ public class CellStatsEval implements Measurements {
     FrameStatistics[] stats = record();
     iPlus.setSlice(1);
     iPlus.killRoi();
-    if (f == null)
+    if (f == null) {
       buildData(stats);
-    else
+    } else {
       write(stats, outputH.getStartFrame()); // also call buildData
+    }
   }
 
   /**
@@ -199,8 +200,8 @@ public class CellStatsEval implements Measurements {
       PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
       // IJ.log("Writing to file");
       pw.print("#p2\n#QuimP output - " + OUTFILE.getAbsolutePath() + "\n");
-      pw.print(
-              "# Centroids are given in pixels.  Distance & speed & area measurements are scaled to micro meters\n");
+      pw.print("# Centroids are given in pixels.  Distance & speed & area measurements are"
+              + " scaled to micro meters\n");
       pw.print("# Scale: " + scale + " micro meter per pixel | Frame interval: " + frameInterval
               + " sec\n");
       pw.print("# Frame,X-Centroid,Y-Centroid,Displacement,Dist. Traveled,"
@@ -251,7 +252,8 @@ public class CellStatsEval implements Measurements {
   private void writeDummyFluo(PrintWriter pw, int channel, int startFrame, int size)
           throws Exception {
     pw.print("\n#\n# Channel " + channel
-            + ";Frame, Total Fluo.,Mean Fluo.,Cortex Width, Cyto. Area,Total Cyto. Fluo., Mean Cyto. Fluo.,"
+            + ";Frame, Total Fluo.,Mean Fluo.,Cortex Width, Cyto. Area,Total Cyto. Fluo.,"
+            + " Mean Cyto. Fluo.,"
             + "Cortex Area,Total Cortex Fluo., Mean Cortex Fluo., %age Cortex Fluo.");
     for (int i = 0; i < size; i++) {
       pw.print("\n" + (i + startFrame) + ",-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");

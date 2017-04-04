@@ -20,7 +20,6 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.QParamsQconf;
 import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
-import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.MaximaFinder;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 
@@ -50,8 +49,9 @@ public class MaximaFinderTest {
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    qL1 = new QconfLoader(Paths
-            .get("src/test/Resources-static/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF").toFile());
+    qL1 = new QconfLoader(
+            Paths.get("src/test/Resources-static/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF")
+                    .toFile());
   }
 
   /**
@@ -82,7 +82,7 @@ public class MaximaFinderTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.MaximaFinder#MaximaFinder(ij.process.ImageProcessor)}.
+   * {@link MaximaFinder#MaximaFinder(ij.process.ImageProcessor)}.
    * 
    * Results compared with those generated in IJ from
    * src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test_eq_smooth_0_motilityMap.maQP when
@@ -92,9 +92,9 @@ public class MaximaFinderTest {
    */
   @Test
   public void testMaximaFinder() throws Exception {
-    int expectedX[] = { 160, 110, 134, 266, 40, 359, 79, 236, 288, 273, 212, 127, 73, 8, 331, 70,
+    int[] expectedX = { 160, 110, 134, 266, 40, 359, 79, 236, 288, 273, 212, 127, 73, 8, 331, 70,
         270, 147, 368, 13 };
-    int expectedY[] =
+    int[] expectedY =
             { 20, 89, 129, 62, 63, 97, 50, 77, 31, 126, 80, 132, 57, 42, 58, 15, 102, 31, 103, 40 };
     // these values have been read from matlab using above points
     double[] expectedVal = { 21.00, 15.15, 15.06, 15.05, 14.58, 14.52, 14.48, 14.34, 14.14, 13.28,

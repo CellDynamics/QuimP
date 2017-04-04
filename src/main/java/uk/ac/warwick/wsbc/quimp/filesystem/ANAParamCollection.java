@@ -35,8 +35,9 @@ public class ANAParamCollection implements IQuimpSerialize {
    */
   public ANAParamCollection(int size) {
     aS = new ArrayList<ANAp>(size);
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; i++) {
       aS.add(new ANAp());
+    }
   }
 
   /*

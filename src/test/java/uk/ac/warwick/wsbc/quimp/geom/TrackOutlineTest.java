@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.geom;
 
 import java.io.File;
@@ -23,8 +21,6 @@ import ij.gui.ShapeRoi;
 import ij.plugin.RoiRotator;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Outline;
-import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
-import uk.ac.warwick.wsbc.quimp.geom.TrackOutline;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
 
 // TODO: Auto-generated Javadoc

@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import ij.IJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.ImageProcessorPlus;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.ImageProcessorPlus.GenerateKernel;
 
 // TODO: Auto-generated Javadoc
@@ -65,51 +64,51 @@ public class ImageProcessorPlusTest {
    */
   @Test
   public void test_GenerateKernel() throws Exception {
-    {//!>
-            float[] exp = {
-                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                    0.2f, 0.2f, 0.2f, 0.2f, 0.2f,
-                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f
-                    };
-         //!<   
+    { //!>
+      float[] exp = {
+          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+          0.2f, 0.2f, 0.2f, 0.2f, 0.2f,
+          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+          0.0f, 0.0f, 0.0f, 0.0f, 0.0f
+          };
+      //!<   
       GenerateKernel gk = new ImageProcessorPlus().new GenerateKernel(5);
       assertThat(gk.generateKernel("0"), is(exp));
     }
-    {//!>
-            float[] exp = {
-                    0.2f, 0.0f, 0.0f, 0.0f, 0.0f,
-                    0.0f, 0.2f, 0.0f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.0f, 0.2f, 0.0f,
-                    0.0f, 0.0f, 0.0f, 0.0f, 0.2f
-                    };
-         //!<   
+    { //!>
+      float[] exp = {
+          0.2f, 0.0f, 0.0f, 0.0f, 0.0f,
+          0.0f, 0.2f, 0.0f, 0.0f, 0.0f,
+          0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+          0.0f, 0.0f, 0.0f, 0.2f, 0.0f,
+          0.0f, 0.0f, 0.0f, 0.0f, 0.2f
+          };
+      //!<   
       GenerateKernel gk = new ImageProcessorPlus().new GenerateKernel(5);
       assertThat(gk.generateKernel("135"), is(exp));
     }
-    {//!>
-            float[] exp = {
-                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f
-                    };
-         //!<   
+    { //!>
+      float[] exp = {
+          0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+          0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+          0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+          0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+          0.0f, 0.0f, 0.2f, 0.0f, 0.0f
+          };
+      //!<   
       GenerateKernel gk = new ImageProcessorPlus().new GenerateKernel(5);
       assertThat(gk.generateKernel("90"), is(exp));
     }
-    {//!>
-            float[] exp = {
-                    0.0f, 0.0f, 0.0f, 0.0f, 0.2f,
-                    0.0f, 0.0f, 0.0f, 0.2f, 0.0f,
-                    0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
-                    0.0f, 0.2f, 0.0f, 0.0f, 0.0f,
-                    0.2f, 0.0f, 0.0f, 0.0f, 0.0f
-                    };
-         //!<   
+    { //!>
+      float[] exp = {
+          0.0f, 0.0f, 0.0f, 0.0f, 0.2f,
+          0.0f, 0.0f, 0.0f, 0.2f, 0.0f,
+          0.0f, 0.0f, 0.2f, 0.0f, 0.0f,
+          0.0f, 0.2f, 0.0f, 0.0f, 0.0f,
+          0.2f, 0.0f, 0.0f, 0.0f, 0.0f
+          };
+      //!<   
       GenerateKernel gk = new ImageProcessorPlus().new GenerateKernel(5);
       assertThat(gk.generateKernel("45"), is(exp));
     }
@@ -117,7 +116,7 @@ public class ImageProcessorPlusTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.utils.ImageProcessorPlus#runningMean(ij.process.ImageProcessor, java.lang.String, int)}.
+   * {@link ImageProcessorPlus#runningMean(ij.process.ImageProcessor, java.lang.String, int)}.
    * 
    * @throws Exception
    */

@@ -56,9 +56,11 @@ public class OutlinesCollection implements IQuimpSerialize {
    */
   @Override
   public void beforeSerialize() {
-    if (oHs != null)
-      for (OutlineHandler oH : oHs)
+    if (oHs != null) {
+      for (OutlineHandler oH : oHs) {
         oH.beforeSerialize();
+      }
+    }
   }
 
   /**
@@ -66,8 +68,10 @@ public class OutlinesCollection implements IQuimpSerialize {
    */
   @Override
   public void afterSerialize() throws Exception {
-    if (oHs != null)
-      for (OutlineHandler oH : oHs)
+    if (oHs != null) {
+      for (OutlineHandler oH : oHs) {
         oH.afterSerialize();
+      }
+    }
   }
 }

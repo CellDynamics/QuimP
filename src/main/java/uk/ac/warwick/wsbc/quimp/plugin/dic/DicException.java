@@ -1,6 +1,3 @@
-/**
- * 
- */
 package uk.ac.warwick.wsbc.quimp.plugin.dic;
 
 import uk.ac.warwick.wsbc.quimp.QuimpException;

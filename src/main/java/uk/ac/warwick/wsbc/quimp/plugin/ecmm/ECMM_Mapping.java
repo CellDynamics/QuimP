@@ -177,8 +177,7 @@ public class ECMM_Mapping {
           YesNoCancelDialog ync;
           ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",
                   "You are about to override previous ECMM results. Is it ok?");
-          if (!ync.yesPressed()) // if no or cancel
-          {
+          if (!ync.yesPressed()) { // if no or cancel
             IJ.log("No changes done in input file.");
             return; // end}
           }

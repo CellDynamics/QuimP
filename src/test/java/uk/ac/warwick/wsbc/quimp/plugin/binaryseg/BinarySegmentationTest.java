@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin.binaryseg;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,7 +24,6 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.quimp.geom.TrackOutline;
-import uk.ac.warwick.wsbc.quimp.plugin.binaryseg.BinarySegmentation;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
 
 // TODO: Auto-generated Javadoc

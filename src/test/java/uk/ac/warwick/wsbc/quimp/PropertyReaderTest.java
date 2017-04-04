@@ -1,13 +1,8 @@
-/**
- * 
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import uk.ac.warwick.wsbc.quimp.PropertyReader;
 
 // TODO: Auto-generated Javadoc
 /**

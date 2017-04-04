@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.geom;
 
 import static org.junit.Assert.assertEquals;
@@ -12,8 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
-
-import uk.ac.warwick.wsbc.quimp.geom.BasicPolygons;
 
 // TODO: Auto-generated Javadoc
 /**

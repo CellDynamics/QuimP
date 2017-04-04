@@ -3,7 +3,6 @@ package uk.ac.warwick.wsbc.quimp.plugin.dic;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.quimp.plugin.dic.DICLIDReconstruction_;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -23,8 +22,8 @@ public class DICLIDReconstruction_run {
   @SuppressWarnings("unused")
   public static void main(String[] args) throws InterruptedException {
     ImageJ ij = new ImageJ();
-    ImagePlus i = IJ.openImage( // load images #272
-            "src/test/Resources-static/C2-bleb_Image4.tif");
+    // load images #272
+    ImagePlus i = IJ.openImage("src/test/Resources-static/C2-bleb_Image4.tif");
     i.show();
     DICLIDReconstruction_ dic = new DICLIDReconstruction_();
     dic.setup("", i);

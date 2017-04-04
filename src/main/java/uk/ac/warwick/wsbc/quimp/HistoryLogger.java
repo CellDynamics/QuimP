@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import java.awt.Color;
@@ -89,8 +87,9 @@ public class HistoryLogger implements WindowListener {
   public void addEntry(String m, BOAState bs) {
     // TODO This method should accept more detailed BOA state (e.g. all segm. params)
     if (historyWnd.isVisible()) {
-      if (bs == null)
+      if (bs == null) {
         return;
+      }
       LogEntry en = new LogEntry(id++, m, bs);
       Serializer<LogEntry> s = new Serializer<>(en, QuimP.TOOL_VERSION);
 

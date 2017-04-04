@@ -198,8 +198,8 @@ public class ExtendedVector2d extends Vector2d {
     ExtendedVector2d cp = null;
     double dA2, dA1, eA1, eA2, dB2, dB1, eB1, eB2;
 
-    cp = new ExtendedVector2d((bA * cB - bB * cA) / denom, (aB * cA - aA * cB) / denom); // intersection
-                                                                                         // point
+    // intersection point
+    cp = new ExtendedVector2d((bA * cB - bB * cA) / denom, (aB * cA - aA * cB) / denom);
 
     // System.out.println("Pos Intersect at x:" + cp.getX() + ", y:" +
     // cp.getY());
@@ -262,9 +262,8 @@ public class ExtendedVector2d extends Vector2d {
       cB = nB2.getX() * nB1.getY() - nB1.getX() * nB2.getY();
 
       ExtendedVector2d cp = null;
-
-      cp = new ExtendedVector2d((bA * cB - bB * cA) / denom, (aB * cA - aA * cB) / denom); // intersection
-                                                                                           // point
+      // intersection point
+      cp = new ExtendedVector2d((bA * cB - bB * cA) / denom, (aB * cA - aA * cB) / denom);
 
       // cp.print("Intersect at: ");
 
@@ -365,45 +364,49 @@ public class ExtendedVector2d extends Vector2d {
     // Then check if intersection is within line segments
     double distanceFrom1;
     if (equals(x0, x1, LIMIT)) {
-      if (y0 < y1)
+      if (y0 < y1) {
         distanceFrom1 = y < y0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0))
                 : y > y1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1))
                         : 0.0;
-      else
+      } else {
         distanceFrom1 = y < y1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1))
                 : y > y0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0))
                         : 0.0;
+      }
     } else {
-      if (x0 < x1)
+      if (x0 < x1) {
         distanceFrom1 = x < x0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0))
                 : x > x1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1))
                         : 0.0;
-      else
+      } else {
         distanceFrom1 = x < x1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1))
                 : x > x0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0))
                         : 0.0;
+      }
     }
 
     double distanceFrom2;
     if (equals(x2, x3, LIMIT)) {
 
-      if (y2 < y3)
+      if (y2 < y3) {
         distanceFrom2 = y < y2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2))
                 : y > y3 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x3, y3))
                         : 0.0;
-      else
+      } else {
         distanceFrom2 = y < y3 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x3, y3))
                 : y > y2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2))
                         : 0.0;
+      }
     } else {
-      if (x2 < x3)
+      if (x2 < x3) {
         distanceFrom2 = x < x2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2))
                 : x > x3 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x3, y3))
                         : 0.0;
-      else
+      } else {
         distanceFrom2 = x < x3 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x3, y3))
                 : x > x2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2))
                         : 0.0;
+      }
     }
 
     return equals(distanceFrom1, 0.0, LIMIT) && equals(distanceFrom2, 0.0, LIMIT) ? 1 : 0;

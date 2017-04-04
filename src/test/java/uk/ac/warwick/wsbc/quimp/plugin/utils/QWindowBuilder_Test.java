@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin.utils;
 
 import static org.junit.Assert.assertEquals;
@@ -13,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.QWindowBuilder;
 
 // TODO: Auto-generated Javadoc
 /**

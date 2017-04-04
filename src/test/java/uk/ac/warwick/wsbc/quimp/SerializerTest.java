@@ -107,8 +107,8 @@ public class SerializerTest {
    */
   @Test(expected = JsonSyntaxException.class)
   public void testFromString() throws Exception {
-    String json =
-            "{\"className\":\"DataContainer\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
+    String json = "{\"className\":\"DataContainer\",\"version\":[\"0.0.1\",\"p.baniukiewicz\","
+            + "\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
     Serializer<TestClass> out;
     TestClass obj;
     Serializer<TestClass> s =
@@ -127,8 +127,8 @@ public class SerializerTest {
    */
   @Test
   public void testFromString_1() throws Exception {
-    String json =
-            "{\"className\":\"DataContainer\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
+    String json = "{\"className\":\"DataContainer\",\"createdOn\":\"1 2 3\",\"version\":"
+            + "[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
     Serializer<TestClass> out;
     TestClass obj;
     Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
@@ -151,8 +151,9 @@ public class SerializerTest {
    */
   @Test
   public void testFromString_3() throws Exception {
-    String json =
-            "{\"className\":\"DataContainer\",\"createdOn\":\"1 2 3\",\"timeStamp\":{\"version\":\"17.09.02-SNAPSHOT\",\"buildstamp\":\"p.baniukiewicz\",\"name\":\"QuimP\"},\"obj\":{\"a\":15,\"al\":[4,56]}}";
+    String json = "{\"className\":\"DataContainer\",\"createdOn\":\"1 2 3\",\"timeStamp\""
+            + ":{\"version\":\"17.09.02-SNAPSHOT\",\"buildstamp\":\"p.baniukiewicz\",\"name\":"
+            + "\"QuimP\"},\"obj\":{\"a\":15,\"al\":[4,56]}}";
     Serializer<TestClass> out;
     TestClass obj;
     Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
@@ -176,8 +177,8 @@ public class SerializerTest {
   @Test(expected = JsonSyntaxException.class)
   public void testFromString_2() throws Exception {
     QuimpVersion version = new QuimpVersion("17.02.02", "baniuk", "QuimP");
-    String json =
-            "{\"className\":\"DataContainer\",\"createdOn\":\"1 2 3\",\"versionn\":[\"0.0.1\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
+    String json = "{\"className\":\"DataContainer\",\"createdOn\":\"1 2 3\",\"versionn\""
+            + ":[\"0.0.1\",\"QuimP\"],\"obj\":{\"a\":15,\"al\":[4,56]}}";
     Serializer<TestClass> out;
     TestClass obj;
     Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
@@ -243,8 +244,8 @@ public class SerializerTest {
    */
   @Test
   public void testFromString1() throws Exception {
-    String json =
-            "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"a\":15,\"b\":15,\"al\":[4,56]}}";
+    String json = "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":"
+            + "[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"a\":15,\"b\":15,\"al\":[4,56]}}";
     Serializer<TestClass> out;
     TestClass obj;
     Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
@@ -267,8 +268,8 @@ public class SerializerTest {
    */
   @Test
   public void testFromString2() throws Exception {
-    String json =
-            "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"al\":[4,56]}}";
+    String json = "{\"className\":\"TestClass\",\"createdOn\":\"1 2 3\",\"version\":"
+            + "[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],\"obj\":{\"al\":[4,56]}}";
     Serializer<TestClass> out;
     TestClass obj;
     Serializer<TestClass> s = new Serializer<>(TestClass.class, version);
@@ -395,7 +396,7 @@ public class SerializerTest {
   public void testGson_1() throws Exception {
     version = new QuimpVersion("1.0.0", "p.baniukiewicz", "QuimP");
     //!>
-        String json ="{"
+    String json = "{"
                 + "\"className\":\"TestClass_1\","
                 + "\"timeStamp\":{"
                     + "\"version\":\"1.0.0\","
@@ -437,7 +438,7 @@ public class SerializerTest {
   public void testGson_2() throws Exception {
     version = new QuimpVersion("1.0.0", "p.baniukiewicz", "QuimP");
     //!>
-        String json ="{"
+    String json = "{"
                 + "\"className\":\"TestClass_1\","
                 + "\"timeStamp\":{"
                     + "\"version\":\"1.0.0\","
@@ -478,7 +479,7 @@ public class SerializerTest {
   public void testGson_3() throws Exception {
     version = new QuimpVersion("1.0.0", "p.baniukiewicz", "QuimP");
     //!>
-        String json ="{"
+    String json = "{"
                 + "\"className\":\"TestClass_1\","
                 + "\"timeStamp\":{"
                     + "\"version\":\"1.0.0\","
@@ -521,7 +522,7 @@ public class SerializerTest {
   public void testGson_4() throws Exception {
     version = new QuimpVersion("1.0.0", "p.baniukiewicz", "QuimP");
     //!>
-        String json ="{"
+    String json = "{"
                 + "\"className\":\"TestClass_2\","
                 + "\"timeStamp\":{"
                     + "\"version\":\"1.0.0\","
@@ -566,7 +567,7 @@ public class SerializerTest {
   public void testGson_5() throws Exception {
     version = new QuimpVersion("1.2.0", "p.baniukiewicz", "QuimP");
     //!>
-        String json ="{"
+    String json = "{"
                 + "\"className\":\"TestClass_2\","
                 + "\"timeStamp\":{"
                     + "\"version\":\"1.2.0\","

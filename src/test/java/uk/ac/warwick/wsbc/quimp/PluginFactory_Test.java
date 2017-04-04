@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import static org.junit.Assert.assertEquals;
@@ -112,7 +110,8 @@ public class PluginFactory_Test {
   }
 
   /**
-   * Test method for {@link uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory#getInstance(String)} This test
+   * Test method for
+   * {@link uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory#getInstance(String)} This test
    * creates instances of plugins and calls methods from them storing and reading data from
    * created object for plugin2
    * 
@@ -140,7 +139,7 @@ public class PluginFactory_Test {
   }
 
   /**
-   * Test method for {@link uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory#getInstance(String)} This test
+   * Test method for {@link PluginFactory#getInstance(String)} This test
    * try to call plugin that does not exist.
    * 
    * Pre: Empty directory but existing
@@ -186,8 +185,9 @@ public class PluginFactory_Test {
     }
     assertTrue(ret != null && ret.length > 0);
     HashSet<String> r = new HashSet<String>();
-    for (File f : ret)
+    for (File f : ret) {
       r.add(f.getName());
+    }
     assertTrue(r.contains("plugin2-quimp.jar"));
     assertTrue(r.contains("plugin1-quimp.jar"));
   }

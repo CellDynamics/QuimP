@@ -130,7 +130,7 @@ public class PolarPlotTest {
     Vector2d[] expected = { new Vector2d(0.5, 1), new Vector2d(1.5, 0), new Vector2d(0.5, -1),
         new Vector2d(-0.5, -1), new Vector2d(-1.5, 0), new Vector2d(-0.5, 1) };
     /**/
-    Vector2d ret[] = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
+    Vector2d[] ret = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
     assertThat(ret, is(expected));
   }
 
@@ -148,10 +148,11 @@ public class PolarPlotTest {
     double[] expected = { 0, // rounded, assume that polygin is given in anticlock dir
         63, 127, 180, -117, -53 };
     /**/
-    Vector2d v[] = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
+    Vector2d[] v = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
     double ret[] = polarPlot.getAngles(v, v[0]);
-    for (int i = 0; i < ret.length; i++)
+    for (int i = 0; i < ret.length; i++) {
       ret[i] = Math.round(ret[i] * 180 / Math.PI);
+    }
     assertThat(ret, is(expected));
 
   }
@@ -166,7 +167,7 @@ public class PolarPlotTest {
   public void testGetRadius() throws Exception {
     int f = 0;
     double[][] motmap = { { 0, 1, 2, 3, 4, 5 }, { 20, 21, 22, 23, 24, 25 } };
-    double expected[] = { 2, 3, 4, 5, 0, 1 }; // shifted by 2
+    double[] expected = { 2, 3, 4, 5, 0, 1 }; // shifted by 2
     int c[] = polarPlot.getShift();
     double[] ret = polarPlot.getRadius(0, c[f], motmap);
     assertThat(ret, is(expected));

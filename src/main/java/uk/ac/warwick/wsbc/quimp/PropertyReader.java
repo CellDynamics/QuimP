@@ -1,6 +1,3 @@
-/**
- * 
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import java.io.BufferedReader;
@@ -87,7 +84,7 @@ public class PropertyReader {
    * @param propKey
    * @return Value of property for <tt>propKey</tt>
    */
-  static public String readProperty(Class<?> c, String partofFilename, String propFileName,
+  public static String readProperty(Class<?> c, String partofFilename, String propFileName,
           String propKey) {
     String result = "";
     Properties prop;
@@ -113,8 +110,9 @@ public class PropertyReader {
       LOGGER.error(e.getMessage(), e);
     } finally {
       try {
-        if (in != null)
+        if (in != null) {
           in.close();
+        }
       } catch (IOException e) {
         LOGGER.error(e.getMessage(), e);
       }

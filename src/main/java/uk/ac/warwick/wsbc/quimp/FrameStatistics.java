@@ -133,8 +133,8 @@ public class FrameStatistics {
     PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
     IJ.log("Writing to file");
     pw.print("#p2\n#QuimP ouput - " + OUTFILE.getAbsolutePath() + "\n");
-    pw.print(
-            "# Centroids are given in pixels.  Distance & speed & area measurements are scaled to micro meters\n");
+    pw.print("# Centroids are given in pixels.  Distance & speed & area measurements are scaled"
+            + " to micro meters\n");
     pw.print("# Scale: " + anap.scale + " micro meter per pixel | Frame interval: "
             + anap.frameInterval + " sec\n");
     pw.print("# Frame,X-Centroid,Y-Centroid,Displacement,Dist. Traveled,"
@@ -156,7 +156,8 @@ public class FrameStatistics {
 
   private static void writeFluo(FrameStatistics[] s, PrintWriter pw, int c) {
     pw.print("\n#\n# Channel " + (c + 1)
-            + ";Frame, Total Fluo.,Mean Fluo.,Cortex Width, Cyto. Area,Total Cyto. Fluo., Mean Cyto. Fluo.,"
+            + ";Frame, Total Fluo.,Mean Fluo.,Cortex Width, Cyto. Area,Total Cyto. Fluo.,"
+            + " Mean Cyto. Fluo.,"
             + "Cortex Area,Total Cortex Fluo., Mean Cortex Fluo., %age Cortex Fluo.");
     for (int i = 0; i < s.length; i++) {
       pw.print("\n" + s[i].frame + "," + IJ.d2s(s[i].channels[c].totalFluor) + ","

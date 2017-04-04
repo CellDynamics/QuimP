@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.geom;
 
 import java.awt.Point;
@@ -84,7 +82,7 @@ public class MapTracker {
     double[] minV = new double[3];
     double[] minI = new double[3];
     // backward map
-    for (int i = 1; i < rowsFrames; i++)
+    for (int i = 1; i < rowsFrames; i++) {
       for (int j = 0; j < colsIndexes; j++) {
         double p = originMap[i][j];
         double[] diffA = rowDiff(p, coordMap[i - 1]);
@@ -106,9 +104,10 @@ public class MapTracker {
         backwardMap[i][j] = (int) minI[(int) minMinV[1]]; // copy index of smallest among
                                                           // A,B,C
       }
+    }
 
     // forward map
-    for (int i = 0; i < rowsFrames - 1; i++)
+    for (int i = 0; i < rowsFrames - 1; i++) {
       for (int j = 0; j < colsIndexes; j++) {
         double p = coordMap[i][j];
         double[] diffA = rowDiff(p, originMap[i + 1]);
@@ -130,6 +129,7 @@ public class MapTracker {
         forwardMap[i][j] = (int) minI[(int) minMinV[1]]; // copy index of smallest among
                                                          // A,B,C
       }
+    }
   }
 
   /**
@@ -143,8 +143,9 @@ public class MapTracker {
    */
   private double[] rowDiff(double p, double[] row) {
     double[] cpy = new double[row.length];
-    for (int i = 0; i < cpy.length; i++)
+    for (int i = 0; i < cpy.length; i++) {
       cpy[i] = Math.abs(p - row[i]);
+    }
     return cpy;
   }
 
@@ -160,8 +161,9 @@ public class MapTracker {
   private double[] rowAdd(double val, double[] row) {
     double[] cpy = new double[row.length];
     System.arraycopy(row, 0, cpy, 0, row.length);
-    for (int i = 0; i < cpy.length; i++)
+    for (int i = 0; i < cpy.length; i++) {
       cpy[i] += val;
+    }
     return cpy;
   }
 
@@ -174,8 +176,9 @@ public class MapTracker {
    *         index.
    */
   public int getNext(int frame, int membraneIndex) {
-    if (frame >= rowsFrames || membraneIndex >= colsIndexes || frame < 0 || membraneIndex < 0)
+    if (frame >= rowsFrames || membraneIndex >= colsIndexes || frame < 0 || membraneIndex < 0) {
       return BAD_INDEX;
+    }
     return forwardMap[frame][membraneIndex]; // membrane index on frame
   }
 
@@ -189,8 +192,9 @@ public class MapTracker {
    */
   public int getPrev(int currentFrame, int membraneIndex) {
     if (currentFrame >= rowsFrames || membraneIndex >= colsIndexes || currentFrame < 0
-            || membraneIndex < 0)
+            || membraneIndex < 0) {
       return BAD_INDEX;
+    }
     return backwardMap[currentFrame][membraneIndex];
   }
 
@@ -207,15 +211,18 @@ public class MapTracker {
    */
   @Deprecated
   public int[] trackForward(int currentFrame, int membraneIndex, int timeSpan) {
-    if (includeFirst)
+    if (includeFirst) {
       timeSpan++;
+    }
     int[] ret = new int[timeSpan];
-    if (includeFirst)
+    if (includeFirst) {
       ret[0] = membraneIndex;
-    else
+    } else {
       ret[0] = getNext(currentFrame, membraneIndex);
-    for (int t = 1; t < timeSpan; t++)
+    }
+    for (int t = 1; t < timeSpan; t++) {
       ret[t] = getNext(currentFrame + t, (int) ret[t - 1]);
+    }
     return ret;
   }
 
@@ -231,15 +238,18 @@ public class MapTracker {
    *         return empty array. Keep order [frame,index]
    */
   public List<Point> trackForwardValid(int currentFrame, int membraneIndex, int timeSpan) {
-    if (includeFirst)
+    if (includeFirst) {
       timeSpan++;
+    }
     ArrayList<Point> ret = new ArrayList<>();
-    if (includeFirst)
+    if (includeFirst) {
       ret.add(new Point(currentFrame, membraneIndex));
-    else
+    } else {
       ret.add(new Point(currentFrame + 1, getNext(currentFrame, membraneIndex)));
-    for (int t = 1; t < timeSpan; t++)
+    }
+    for (int t = 1; t < timeSpan; t++) {
       ret.add(new Point(ret.get(t - 1).x + 1, getNext(currentFrame + t, (int) ret.get(t - 1).y)));
+    }
 
     ret.removeIf(new PredicateBadIndex());
 
@@ -259,15 +269,18 @@ public class MapTracker {
    */
   @Deprecated
   public int[] trackBackward(int currentFrame, int membraneIndex, int timeSpan) {
-    if (includeFirst)
+    if (includeFirst) {
       timeSpan++;
+    }
     int[] ret = new int[timeSpan];
-    if (includeFirst)
+    if (includeFirst) {
       ret[timeSpan - 1] = membraneIndex;
-    else
+    } else {
       ret[timeSpan - 1] = getPrev(currentFrame, membraneIndex);
-    for (int t = timeSpan - 2; t >= 0; t--)
+    }
+    for (int t = timeSpan - 2; t >= 0; t--) {
       ret[t] = getPrev(currentFrame - (timeSpan - t - 1), (int) ret[t + 1]);
+    }
     return ret;
   }
 
@@ -283,15 +296,18 @@ public class MapTracker {
    *         return empty array. Keep order [frame,index]
    */
   public List<Point> trackBackwardValid(int currentFrame, int membraneIndex, int timeSpan) {
-    if (includeFirst)
+    if (includeFirst) {
       timeSpan++;
+    }
     ArrayList<Point> ret = new ArrayList<>();
-    if (includeFirst)
+    if (includeFirst) {
       ret.add(new Point(currentFrame, membraneIndex));
-    else
+    } else {
       ret.add(new Point(currentFrame - 1, getPrev(currentFrame, membraneIndex)));
-    for (int t = 1; t < timeSpan; t++)
+    }
+    for (int t = 1; t < timeSpan; t++) {
       ret.add(new Point(ret.get(t - 1).x - 1, getPrev(currentFrame - t, (int) ret.get(t - 1).y)));
+    }
 
     Collections.reverse(ret);
     ret.removeIf(new PredicateBadIndex());
@@ -313,13 +329,15 @@ public class MapTracker {
   @Deprecated
   public int[] getForwardFrames(int currentFrame, int timeSpan) {
     int f;
-    if (includeFirst)
+    if (includeFirst) {
       timeSpan++;
+    }
     int[] ret = new int[timeSpan];
-    if (includeFirst)
+    if (includeFirst) {
       f = currentFrame;
-    else
+    } else {
       f = currentFrame + 1;
+    }
     int l = 0;
     do {
       ret[l++] = f++;
@@ -341,13 +359,15 @@ public class MapTracker {
   @Deprecated
   public int[] getBackwardFrames(int currentFrame, int timeSpan) {
     int f;
-    if (includeFirst)
+    if (includeFirst) {
       timeSpan++;
+    }
     int[] ret = new int[timeSpan];
-    if (includeFirst)
+    if (includeFirst) {
       f = currentFrame;
-    else
+    } else {
       f = currentFrame - 1;
+    }
     int l = timeSpan - 1;
     do {
       ret[l--] = f--;
@@ -367,9 +387,10 @@ class PredicateBadIndex implements Predicate<Point> {
 
   @Override
   public boolean test(Point t) {
-    if (t.y == MapTracker.BAD_INDEX)
+    if (t.y == MapTracker.BAD_INDEX) {
       return true;
-    else
+    } else {
       return false;
+    }
   }
 }

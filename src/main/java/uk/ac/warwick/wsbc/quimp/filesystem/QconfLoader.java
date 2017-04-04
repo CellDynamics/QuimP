@@ -41,7 +41,7 @@ public class QconfLoader {
   /**
    * Stand for bad QCONF file that can not be loaded.
    */
-  public final static int QCONF_INVALID = 0;
+  public static final int QCONF_INVALID = 0;
   /**
    * Main object holding loaded configuration file. It can be either traditional QParams or
    * QParamsQconf for newer format.
@@ -104,8 +104,7 @@ public class QconfLoader {
       }
       directory = od.getDirectory();
       filename = od.getFile();
-    } else // use name provided in constructor
-    {
+    } else { // use name provided in constructor
       Path path = file.toPath();
       // getParent can return null
       directory = path.getParent() == null ? "" : path.getParent().toString();
@@ -114,11 +113,12 @@ public class QconfLoader {
     }
     // detect old/new file format
     File paramFile = new File(directory, filename); // config file (copy of input)
-    if (paramFile.getName().toLowerCase().endsWith(FileExtensions.newConfigFileExt.toLowerCase())) // TODO
-                                                                                                   // #152
+    // TODO #152
+    if (paramFile.getName().toLowerCase().endsWith(FileExtensions.newConfigFileExt.toLowerCase())) {
       qp = new QParamsQconf(paramFile);
-    else
+    } else {
       qp = new QParams(paramFile); // initialize general param storage
+    }
     qp.readParams(); // create associated files included in paQP and read params
   }
 
@@ -131,8 +131,9 @@ public class QconfLoader {
    * @return Loaded image from QCONF or that pointed by user. <tt>null</tt> if user cancelled.
    */
   public ImagePlus getImage() {
-    if (getQp() == null)
+    if (getQp() == null) {
       return null;
+    }
     ImagePlus im;
     File imagepath = null;
     switch (getQp().paramFormat) {
@@ -154,10 +155,11 @@ public class QconfLoader {
 
     if (im == null) { // if failed ask user
       String imagename;
-      if (imagepath != null) // get name of the image without path
+      if (imagepath != null) {
         imagename = imagepath.getName();
-      else
+      } else {
         imagename = "";
+      }
       Object[] options = { "Load from disk", "Load from IJ", "Cancel" };
       int n = JOptionPane.showOptionDialog(IJ.getInstance(),
               "The image " + imagename + " pointed in loaded configuration file can not be found.\n"
@@ -193,8 +195,9 @@ public class QconfLoader {
           orgFile = Paths.get(fileinfo.directory, fileinfo.fileName);
         }
         try {
-          if (isBOAPresent())
+          if (isBOAPresent()) {
             getBOA().boap.setOrgFile(orgFile.toFile());
+          }
         } catch (QuimpException e) {
           throw new Error(); // should never be here, we know that there is BOA and ew are
                              // on new path
@@ -221,8 +224,9 @@ public class QconfLoader {
     if (getQp() == null) {
       return QconfLoader.QCONF_INVALID;
     }
-    if (getQp().paramFormat != QParams.NEW_QUIMP) // do not check if old format
+    if (getQp().paramFormat != QParams.NEW_QUIMP) {
       return QParams.QUIMP_11;
+    }
     return ((QParamsQconf) getQp()).getLoadedDataContainer().validateDataContainer();
   }
 
@@ -234,12 +238,14 @@ public class QconfLoader {
    */
   public boolean isBOAPresent() {
     int ret = validateQconf();
-    if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11)
+    if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11) {
       return false;
-    if ((ret & DataContainer.BOA_RUN) == DataContainer.BOA_RUN)
+    }
+    if ((ret & DataContainer.BOA_RUN) == DataContainer.BOA_RUN) {
       return true;
-    else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -250,12 +256,14 @@ public class QconfLoader {
    */
   public boolean isECMMPresent() {
     int ret = validateQconf();
-    if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11)
+    if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11) {
       return false;
-    if ((ret & DataContainer.ECMM_RUN) == DataContainer.ECMM_RUN)
+    }
+    if ((ret & DataContainer.ECMM_RUN) == DataContainer.ECMM_RUN) {
       return true;
-    else
+    } else {
       return false;
+    }
 
   }
 
@@ -267,12 +275,14 @@ public class QconfLoader {
    */
   public boolean isANAPresent() {
     int ret = validateQconf();
-    if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11)
+    if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11) {
       return false;
-    if ((ret & DataContainer.ANA_RUN) == DataContainer.ANA_RUN)
+    }
+    if ((ret & DataContainer.ANA_RUN) == DataContainer.ANA_RUN) {
       return true;
-    else
+    } else {
       return false;
+    }
 
   }
 
@@ -284,12 +294,14 @@ public class QconfLoader {
    */
   public boolean isQPresent() {
     int ret = validateQconf();
-    if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11)
+    if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11) {
       return false;
-    if ((ret & DataContainer.Q_RUN) == DataContainer.Q_RUN)
+    }
+    if ((ret & DataContainer.Q_RUN) == DataContainer.Q_RUN) {
       return true;
-    else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -300,12 +312,14 @@ public class QconfLoader {
    */
   private boolean isStatsPresent() {
     int ret = validateQconf();
-    if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11)
+    if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11) {
       return false;
-    if ((ret & DataContainer.STATS_AVAIL) == DataContainer.STATS_AVAIL)
+    }
+    if ((ret & DataContainer.STATS_AVAIL) == DataContainer.STATS_AVAIL) {
       return true;
-    else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -314,10 +328,11 @@ public class QconfLoader {
    * @throws QuimpException when there is no such object in file or old format is used.
    */
   public BOAState getBOA() throws QuimpException {
-    if (isBOAPresent())
+    if (isBOAPresent()) {
       return ((QParamsQconf) getQp()).getLoadedDataContainer().getBOAState();
-    else
+    } else {
       throw new QuimpException("BOA data not found in QCONF file. Run BOA first.");
+    }
   }
 
   /**
@@ -326,10 +341,11 @@ public class QconfLoader {
    * @throws QuimpException when there is no such object in file or old format is used.
    */
   public OutlinesCollection getECMM() throws QuimpException {
-    if (isECMMPresent())
+    if (isECMMPresent()) {
       return ((QParamsQconf) getQp()).getLoadedDataContainer().getEcmmState();
-    else
+    } else {
       throw new QuimpException("ECMM data not found in QCONF file. Run ECMM first.");
+    }
   }
 
   /**
@@ -338,10 +354,11 @@ public class QconfLoader {
    * @throws QuimpException when there is no such object in file or old format is used.
    */
   public ANAParamCollection getANA() throws QuimpException {
-    if (isANAPresent())
+    if (isANAPresent()) {
       return ((QParamsQconf) getQp()).getLoadedDataContainer().getANAState();
-    else
+    } else {
       throw new QuimpException("ANA data not found in QCONF file. Run ANA first.");
+    }
   }
 
   /**
@@ -350,10 +367,11 @@ public class QconfLoader {
    * @throws QuimpException when there is no such object in file or old format is used.
    */
   public STmap[] getQ() throws QuimpException {
-    if (isQPresent())
+    if (isQPresent()) {
       return ((QParamsQconf) getQp()).getLoadedDataContainer().getQState();
-    else
+    } else {
       throw new QuimpException("Q data not found in QCONF file. Run Q Analysis first.");
+    }
   }
 
   /**
@@ -362,10 +380,11 @@ public class QconfLoader {
    * @throws QuimpException when there is no such object in file or old format is used.
    */
   public StatsCollection getStats() throws QuimpException {
-    if (isStatsPresent())
+    if (isStatsPresent()) {
       return ((QParamsQconf) getQp()).getLoadedDataContainer().getStats();
-    else
+    } else {
       throw new QuimpException("Stats not found in QCONF file. Run BOA Analysis first.");
+    }
   }
 
   /**

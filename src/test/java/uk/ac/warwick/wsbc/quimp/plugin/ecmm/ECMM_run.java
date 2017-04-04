@@ -1,9 +1,6 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin.ecmm;
 
 import ij.ImageJ;
-import uk.ac.warwick.wsbc.quimp.plugin.ecmm.ECMM_Mapping;
 
 // TODO: Auto-generated Javadoc
 /**

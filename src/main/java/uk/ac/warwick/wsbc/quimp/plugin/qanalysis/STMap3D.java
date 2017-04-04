@@ -1,6 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
 package uk.ac.warwick.wsbc.quimp.plugin.qanalysis;
 
 import java.io.File;
@@ -26,9 +23,13 @@ import uk.ac.warwick.wsbc.quimp.utils.graphics.vrml.VRMLobject;
 public class STMap3D {
 
   /**
+   * The x map.
+   */
+  double[][] xMap;
+  /**
    * The y map.
    */
-  double[][] xMap, yMap;
+  double[][] yMap;
 
   /**
    * The colors.

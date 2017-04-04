@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.filesystem;
 
 // TODO: Auto-generated Javadoc

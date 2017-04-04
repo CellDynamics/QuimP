@@ -241,11 +241,13 @@ public class LidReconstructor {
       // to not process whole line, detect where starts and ends pixels of
       // image (reject background added during rotation)
       for (firstpixel = 0; firstpixel < newWidth
-              && srcImageCopyProcessor.get(firstpixel, r) == 0; firstpixel++)
+              && srcImageCopyProcessor.get(firstpixel, r) == 0; firstpixel++) {
         ;
+      }
       for (lastpixel = newWidth - 1; lastpixel >= 0
-              && srcImageCopyProcessor.get(lastpixel, r) == 0; lastpixel--)
+              && srcImageCopyProcessor.get(lastpixel, r) == 0; lastpixel--) {
         ;
+      }
       // if empty row, reject it all. reconstructionDicLid process pixels in ranges. such
       // borders reject processing at all
       if (firstpixel >= newWidth) {
@@ -345,8 +347,9 @@ public class LidReconstructor {
    */
   private void generateDeacy(double decay, int length) {
     decays = new double[length];
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < length; i++) {
       decays[i] = Math.exp(-decay * i);
+    }
   }
 
 }

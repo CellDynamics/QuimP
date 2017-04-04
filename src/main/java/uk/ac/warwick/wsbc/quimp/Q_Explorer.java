@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import java.awt.event.ActionListener;
@@ -244,7 +240,8 @@ class ImageManager {
 
   ImagePlus[] mapsIpl;
   ImagePlus movieIpl;
-  ImagePlus xMap, yMap;
+  ImagePlus xMap;
+  ImagePlus yMap;
   Overlay[] movOverlay;
   ExtendedVector2d mapCoord;
   ExtendedVector2d movCoord;

@@ -89,19 +89,25 @@ public class QColor {
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (!(obj instanceof QColor))
+    }
+    if (!(obj instanceof QColor)) {
       return false;
+    }
     QColor other = (QColor) obj;
-    if (Double.doubleToLongBits(blue) != Double.doubleToLongBits(other.blue))
+    if (Double.doubleToLongBits(blue) != Double.doubleToLongBits(other.blue)) {
       return false;
-    if (Double.doubleToLongBits(green) != Double.doubleToLongBits(other.green))
+    }
+    if (Double.doubleToLongBits(green) != Double.doubleToLongBits(other.green)) {
       return false;
-    if (Double.doubleToLongBits(red) != Double.doubleToLongBits(other.red))
+    }
+    if (Double.doubleToLongBits(red) != Double.doubleToLongBits(other.red)) {
       return false;
+    }
     return true;
   }
 
@@ -415,7 +421,9 @@ public class QColor {
    */
   public static QColor[] colourMap(String c, int size) {
     QColor[] map = new QColor[size];
-    double r, b, g;
+    double r;
+    double b;
+    double g;
 
     if (c.equals("Summer")) {
       r = 0.;
@@ -457,22 +465,27 @@ public class QColor {
       for (int i = 0; i < size; i++) {
 
         r = (i + 1) / n;
-        if (r > 1)
+        if (r > 1) {
           r = 1d;
+        }
 
-        if (i < n)
+        if (i < n) {
           g = 0d;
-        else
+        } else {
           g = (i - n + 1) / n;
-        if (g > 1)
+        }
+        if (g > 1) {
           g = 1d;
+        }
 
-        if (i < 2 * n)
+        if (i < 2 * n) {
           b = 0d;
-        else
+        } else {
           b = (1 + i - 2 * n) / (size - (2 * n));
-        if (b > 1)
+        }
+        if (b > 1) {
           b = 1d;
+        }
         map[i] = new QColor(r, g, b);
       }
 

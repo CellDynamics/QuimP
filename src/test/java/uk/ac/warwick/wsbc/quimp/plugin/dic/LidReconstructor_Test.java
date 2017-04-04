@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin.dic;
 
 import static org.junit.Assert.assertEquals;
@@ -17,8 +15,6 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.quimp.plugin.dic.DicException;
-import uk.ac.warwick.wsbc.quimp.plugin.dic.LidReconstructor;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -48,7 +44,7 @@ public class LidReconstructor_Test {
   @Before
   public void setUp() throws Exception {
     image = IJ.openImage("src/test/Resources-static/testObject.tif"); // opens test
-                                                               // image
+    // image
 
     // opens test image
     stack = IJ.openImage("src/test/Resources-static/testObject_4slices.tif");

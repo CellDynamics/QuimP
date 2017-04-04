@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -13,8 +11,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.wsbc.quimp.Node;
-import uk.ac.warwick.wsbc.quimp.Vert;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 
 // TODO: Auto-generated Javadoc

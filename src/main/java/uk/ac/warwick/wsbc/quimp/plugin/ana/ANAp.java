@@ -4,6 +4,7 @@ import java.io.File;
 
 import uk.ac.warwick.wsbc.quimp.FormatConverter;
 import uk.ac.warwick.wsbc.quimp.QParams;
+import uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
 // TODO: Auto-generated Javadoc
@@ -28,57 +29,57 @@ public class ANAp {
    * 
    * snQP file if run from paQP.
    */
-  transient public File INFILE;
+  public transient File INFILE;
   /**
    * Output snQP file reference (the same as {@link #INFILE}
    */
-  transient public File OUTFILE;
+  public transient File OUTFILE;
   /**
    * Reference to Stats file.
    * 
    * USed in QCONF/paQP.
    */
-  transient public File STATSFILE;
+  public transient File STATSFILE;
   /**
    * Atomic step during contour shrinking.
    */
-  transient final public double stepRes = 0.04; // step size in pixels
+  public final transient double stepRes = 0.04; // step size in pixels
   /**
    * Angle to freeze neighbouring vertexes.
    */
-  transient final public double freezeTh = 1;
+  public final transient double freezeTh = 1;
   /**
-   * @see uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor#shrink(double, double, double, double)
+   * @see OutlineProcessor#shrink(double, double, double, double)
    */
-  transient final public double angleTh = 0.1;
+  public final transient double angleTh = 0.1;
   /**
    * @see uk.ac.warwick.wsbc.quimp.Outline#setResolution(double)
    */
-  transient final public double oneFrameRes = 1;
+  public final transient double oneFrameRes = 1;
   /**
    * Image scale.
    * 
    * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
    */
-  transient public double scale = 1.0;
+  public transient double scale = 1.0;
   /**
    * Frame interval.
    * 
    * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
    */
-  transient public double frameInterval;
+  public transient double frameInterval;
   /**
    * Frame range.
    * 
    * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
    */
-  transient public int startFrame;
+  public transient int startFrame;
   /**
    * Frame range.
    * 
    * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
    */
-  transient public int endFrame;
+  public transient int endFrame;
 
   /**
    * The normalise. UI setting
@@ -165,8 +166,9 @@ public class ANAp {
     this.plotOutlines = src.plotOutlines;
 
     this.fluTiffs = new File[src.fluTiffs.length];
-    for (int i = 0; i < fluTiffs.length; i++)
+    for (int i = 0; i < fluTiffs.length; i++) {
       fluTiffs[i] = new File(src.fluTiffs[i].getPath());
+    }
 
   }
 

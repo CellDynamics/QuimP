@@ -137,7 +137,7 @@ class ODEsolver {
     ExtendedVector2d result = fieldAt(p, s);
     result.multiply(ECMp.mobileQ);
 
-    if (true) {// Math.abs(result.length()) > ECMp.maxVertF) {
+    if (true) { // Math.abs(result.length()) > ECMp.maxVertF) {
       // IJ.log("!WARNING-max force exceeded: " +
       // Math.abs(result.length()));
       result.makeUnit();

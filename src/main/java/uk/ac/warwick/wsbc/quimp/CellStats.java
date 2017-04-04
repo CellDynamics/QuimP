@@ -84,8 +84,9 @@ public class CellStats {
    * @see FrameStatistics#addFluoToResultTable(ResultsTable, int)
    */
   public void addFluosToResultTable(ResultsTable rt, int channelno) {
-    for (FrameStatistics fs : framestat)
+    for (FrameStatistics fs : framestat) {
       fs.addFluoToResultTable(rt, channelno);
+    }
 
   }
 }

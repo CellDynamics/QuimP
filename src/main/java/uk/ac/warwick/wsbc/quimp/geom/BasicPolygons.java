@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.geom;
 
 import java.util.ArrayList;
@@ -79,8 +77,9 @@ public class BasicPolygons {
       Vector2d tmp = new Vector2d(second.getX() - first.getX(), second.getY() - first.getY());
       V.add(tmp);
     }
-    for (Vector2d v : V)
+    for (Vector2d v : V) {
       len += v.length();
+    }
     return len;
   }
 
@@ -114,10 +113,12 @@ public class BasicPolygons {
    */
   private double angle2D(Point2d p1, Point2d p2) {
     double dtheta = Math.atan2(p2.y, p2.x) - Math.atan2(p1.y, p1.x);
-    while (dtheta > Math.PI)
+    while (dtheta > Math.PI) {
       dtheta -= 2.0 * Math.PI;
-    while (dtheta < -1.0 * Math.PI)
+    }
+    while (dtheta < -1.0 * Math.PI) {
       dtheta += 2.0 * Math.PI;
+    }
     return dtheta;
   }
 
@@ -177,13 +178,15 @@ public class BasicPolygons {
     int N = P.size();
     Point2d[] polygon = new Point2d[N];
 
-    for (int q = 0; q < N; q++)
+    for (int q = 0; q < N; q++) {
       polygon[q] = new Point2d(P.get(q));
+    }
 
     double cx = 0, cy = 0;
     double A = getPolyArea(P);
-    if (A == 0) // defective polygon
+    if (A == 0) {
       throw new IllegalArgumentException("Defective polygon, area is 0");
+    }
     int i, j;
 
     double factor = 0;

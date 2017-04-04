@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -8,8 +6,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import uk.ac.warwick.wsbc.quimp.QColor;
 
 // TODO: Auto-generated Javadoc
 /**

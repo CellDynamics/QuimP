@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin;
 
 import uk.ac.warwick.wsbc.quimp.ViewUpdater;

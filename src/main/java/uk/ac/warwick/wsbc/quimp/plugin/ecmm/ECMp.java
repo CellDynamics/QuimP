@@ -17,135 +17,135 @@ public class ECMp {
   /**
    * 
    */
-  static public File INFILE; // snQP file
+  public static File INFILE; // snQP file
   /**
    * 
    */
-  static public File OUTFILE;
+  public static File OUTFILE;
   /**
    * 
    */
-  static public double scale;
+  public static double scale;
   /**
    * 
    */
-  static public double frameInterval;
+  public static double frameInterval;
   /**
    * 
    */
-  static public int startFrame;
+  public static int startFrame;
   /**
    * 
    */
-  static public int endFrame;
+  public static int endFrame;
   /**
    * 
    */
-  static public ImageProcessor image;
+  public static ImageProcessor image;
   /**
    * 
    */
-  static public int numINTS;
+  public static int numINTS;
   /**
    * 
    */
-  static public boolean ANA;
+  public static boolean ANA;
   /**
    * 
    */
-  static public boolean plot;
+  public static boolean plot;
   /**
    * 
    */
-  static public boolean lineCharges;
+  public static boolean lineCharges;
   /**
    * resolution of outlines
    */
-  static public double markerRes;
+  public static double markerRes;
   /**
    * field complexity (set to -1 to leave as marker density)
    */
-  static public double chargeDensity;
+  public static double chargeDensity;
   /**
    * max force allowed on a marker (0.06)
    */
-  static public double maxVertF;
+  public static double maxVertF;
   /**
    * 
    */
-  static public double migPower;
+  public static double migPower;
   /**
    * 
    */
-  static public double tarPower;
+  public static double tarPower;
   /**
    * 
    */
-  static public double migQ; // was 0.4E-6
+  public static double migQ; // was 0.4E-6
   /**
    * 
    */
-  static public double tarQ;
+  public static double tarQ;
   /**
    * 
    */
-  static public double mobileQ;
+  public static double mobileQ;
   /**
    * threshold distance to stop
    */
-  static public double d;
+  public static double d;
   /**
    * size of displacment of mig edge charges
    */
-  static public double w;
+  public static double w;
   /**
    * Euler time step, was 0.6
    */
-  static public double h;
+  public static double h;
   /**
    * 
    */
-  static public int maxIter;
+  public static int maxIter;
   /**
    * 
    */
-  static public double k;
+  public static double k;
   /**
    * 
    */
-  static public double anaMigDist;
+  public static double anaMigDist;
   /**
    * 
    */
-  static public boolean forceNoSectors;
+  public static boolean forceNoSectors;
   /**
    * 
    */
-  static public boolean forceForwardMapping;
+  public static boolean forceForwardMapping;
   /**
    * 
    */
-  static public boolean forceBackwardMapping;
+  public static boolean forceBackwardMapping;
   /**
    * 
    */
-  static public boolean disableDensityCorrections;
+  public static boolean disableDensityCorrections;
   /**
    * total euler iterations
    */
-  static public int its;
+  public static int its;
   /**
    * number of nodes that failed to snap
    */
-  static public int unSnapped;
+  public static int unSnapped;
   /**
    * 
    */
-  static public int visualRes;
+  public static int visualRes;
   /**
    * 
    */
-  static public double maxCellSize;
+  public static double maxCellSize;
 
   /**
    * The draw intersects.

@@ -12,8 +12,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.warwick.wsbc.quimp.utils.graphics.svg.SVGwritter;
-
 // TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
@@ -56,7 +54,7 @@ public class SVGwritterTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.utils.graphics.svg.SVGwritter#writeHeader(OutputStreamWriter, Rectangle)}.
+   * {@link SVGwritter#writeHeader(OutputStreamWriter, Rectangle)}.
    * 
    * @throws Exception
    */

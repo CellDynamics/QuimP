@@ -90,6 +90,7 @@ public class QParamsQconf extends QParams {
   }
 
   /**
+   * 
    * @return the prefix. Without any cell number in contrary to super.getFileName(). Only filename
    *         without path and extension.
    */
@@ -124,9 +125,10 @@ public class QParamsQconf extends QParams {
       BOA_.qState = getLoadedDataContainer().getBOAState(); // restore qstate because some
                                                             // methods still need it
       // update path and file core name
-      if (getLoadedDataContainer().getBOAState() != null)
+      if (getLoadedDataContainer().getBOAState() != null) {
         getLoadedDataContainer().getBOAState().boap
                 .setOutputFileCore(newParamFile.getAbsolutePath());
+      }
     } catch (Exception e) { // stop on fail (file or json error)
       LOGGER.error(e.getMessage());
       LOGGER.debug(e.getMessage(), e);
@@ -185,9 +187,10 @@ public class QParamsQconf extends QParams {
       Serializer<DataContainer> n;
       n = new Serializer<>(getLoadedDataContainer(),
               new QuimpToolsCollection().getQuimPBuildInfo());
-      if (getLoadedDataContainer().BOAState.boap.savePretty) // set pretty format if
-                                                             // configured
+      if (getLoadedDataContainer().BOAState.boap.savePretty) {
+        // configured
         n.setPretty();
+      }
       n.save(getParamFile().getAbsolutePath());
       n = null;
     } catch (FileNotFoundException e) {
@@ -372,10 +375,11 @@ public class QParamsQconf extends QParams {
    * @return {@link Nest} object from loaded dataset.
    */
   public Nest getNest() {
-    if (getLoadedDataContainer() != null)
+    if (getLoadedDataContainer() != null) {
       return getLoadedDataContainer().getBOAState().nest;
-    else
+    } else {
       return null;
+    }
   }
 
   /*

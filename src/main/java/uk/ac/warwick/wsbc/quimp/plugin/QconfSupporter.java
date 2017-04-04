@@ -1,5 +1,3 @@
-/**
- */
 package uk.ac.warwick.wsbc.quimp.plugin;
 
 import java.io.File;
@@ -84,8 +82,7 @@ public abstract class QconfSupporter {
         }
         directory = od.getDirectory();
         filename = od.getFileName();
-      } else // use name provided in constructor
-      {
+      } else { // use name provided in constructor
         // getParent can return null
         directory = path.getParent() == null ? "" : path.getParent().toString();
         filename = path.getFileName() == null ? "" : path.getFileName().toString();
@@ -93,15 +90,17 @@ public abstract class QconfSupporter {
       }
       // detect old/new file format
       File paramFile = new File(directory, filename); // config file
-      if (paramFile.getName().endsWith(FileExtensions.newConfigFileExt)) // new file format
-                                                                         // TODO #152
+      if (paramFile.getName().endsWith(FileExtensions.newConfigFileExt)) {
+        // TODO #152
         qp = new QParamsQconf(paramFile);
-      else
+      } else {
         qp = new QParams(paramFile); // initialize general param storage
+      }
       qp.readParams(); // create associated files included in paQP and read params
       // check conditions
-      if (!validateQconf())
+      if (!validateQconf()) {
         return;
+      }
       // show dialog
       if (!showDialog()) { // if user cancelled dialog
         return; // do nothing
@@ -176,8 +175,9 @@ public abstract class QconfSupporter {
       }
     }
     LOGGER.debug("Opened image: " + im);
-    if (im == null)
+    if (im == null) {
       throw new QuimpException("No valid image provided");
+    }
     return im;
   }
 
@@ -201,8 +201,9 @@ public abstract class QconfSupporter {
     if (qp == null) {
       throw new QuimpException("QCONF file not loaded");
     }
-    if (qp.paramFormat != QParams.NEW_QUIMP) // do not check if old format
+    if (qp.paramFormat != QParams.NEW_QUIMP) {
       return true;
+    }
     if (((QParamsQconf) qp).getLoadedDataContainer().ECMMState == null) {
       throw new QuimpException("ECMM data not found in QCONF file. Run ECMM first.");
     }
