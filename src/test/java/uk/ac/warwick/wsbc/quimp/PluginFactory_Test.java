@@ -69,7 +69,7 @@ public class PluginFactory_Test {
   @Ignore("Test plugins must be recompiled")
   public void test_GetPluginNames() throws Exception {
     PluginFactory pluginFactory;
-    pluginFactory = new PluginFactory(Paths.get("src/test/resources/"));
+    pluginFactory = new PluginFactory(Paths.get("src/test/Resources-static/"));
     ArrayList<String> ar;
     ar = pluginFactory.getPluginNames(IQuimpCorePlugin.DOES_SNAKES);
     HashSet<String> hs = new HashSet<>(ar);
@@ -124,7 +124,7 @@ public class PluginFactory_Test {
   @Ignore("Test plugins must be recompiled")
   public void test_GetInstance() throws Exception {
     PluginFactory pluginFactory;
-    pluginFactory = new PluginFactory(Paths.get("src/test/resources/"));
+    pluginFactory = new PluginFactory(Paths.get("src/test/Resources-static/"));
     ParamList test = new ParamList();
     ParamList ret;
     test.put("window", "0.02");
@@ -177,7 +177,7 @@ public class PluginFactory_Test {
           throws NoSuchMethodException, SecurityException, IllegalAccessException,
           IllegalArgumentException, InvocationTargetException, QuimpPluginException {
     PluginFactory pluginFactory;
-    pluginFactory = new PluginFactory(Paths.get("src/test/resources/"));
+    pluginFactory = new PluginFactory(Paths.get("src/test/Resources-static/"));
     Method m = pluginFactory.getClass().getDeclaredMethod("scanDirectory");
     m.setAccessible(true);
     File[] ret = (File[]) m.invoke(pluginFactory);
@@ -212,12 +212,12 @@ public class PluginFactory_Test {
           throws NoSuchMethodException, SecurityException, IllegalAccessException,
           IllegalArgumentException, InvocationTargetException, QuimpPluginException {
     PluginFactory pluginFactory;
-    pluginFactory = new PluginFactory(Paths.get("src/test/resources/"));
+    pluginFactory = new PluginFactory(Paths.get("src/test/Resources-static/"));
     Class<?>[] args = new Class<?>[1];
     args[0] = File.class;
     Method m = pluginFactory.getClass().getDeclaredMethod("getClassName", args);
     m.setAccessible(true);
-    File file = new File("src/test/resources/plugin2-quimp.jar");
+    File file = new File("src/test/Resources-static/plugin2-quimp.jar");
     String ret = (String) m.invoke(pluginFactory, file);
     assertEquals("uk.ac.warwick.wsbc.Plugin2_", ret);
 
@@ -236,7 +236,7 @@ public class PluginFactory_Test {
   @Ignore("Test plugins must be recompiled")
   public void test_getAllPlugins() throws QuimpPluginException {
     PluginFactory pluginFactory;
-    pluginFactory = new PluginFactory(Paths.get("src/test/resources/"));
+    pluginFactory = new PluginFactory(Paths.get("src/test/Resources-static/"));
     Map<String, PluginProperties> pp = pluginFactory.getRegisterdPlugins();
     PluginProperties p1 = pp.get("Plugin1");
     assertEquals(IQuimpCorePlugin.DOES_SNAKES, p1.getType());

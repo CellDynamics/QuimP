@@ -111,11 +111,11 @@ public class BinarySegmentationTest {
    */
   @Before
   public void setUp() throws Exception {
-    test1 = IJ.openImage("src/test/resources/BW_seg_5_slices.tif");
-    test2 = IJ.openImage("src/test/resources/BW_seg_5_slices_no_last.tif");
-    test3 = IJ.openImage("src/test/resources/BW_seg_5_slices_no_middle_last.tif");
-    test4 = IJ.openImage("src/test/resources/BW_seg_5_slices_no_first.tif");
-    test5 = IJ.openImage("src/test/resources/BW_seg_1_slice.tif");
+    test1 = IJ.openImage("src/test/Resources-static/BW_seg_5_slices.tif");
+    test2 = IJ.openImage("src/test/Resources-static/BW_seg_5_slices_no_last.tif");
+    test3 = IJ.openImage("src/test/Resources-static/BW_seg_5_slices_no_middle_last.tif");
+    test4 = IJ.openImage("src/test/Resources-static/BW_seg_5_slices_no_first.tif");
+    test5 = IJ.openImage("src/test/Resources-static/BW_seg_1_slice.tif");
   }
 
   /**

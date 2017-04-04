@@ -22,8 +22,8 @@ public class GenerateMaskRun {
   public static void main(String[] args) {
     ImageJ ij = new ImageJ();
     try {
-      GenerateMask_ pa = new GenerateMask_(
-              "filename=[src/test/resources/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine.QCONF]");
+      GenerateMask_ pa = new GenerateMask_("filename=[src/test/Resources-static/RW/"
+              + "C1-talA_mNeon_bleb_0pt7%agar_FLU_fine.QCONF]");
       ImagePlus ret = pa.getRes();
       if (ret != null) {
         ret.show();

@@ -27,11 +27,12 @@ public class RandomWalkSegmentationPluginRun {
     ImageJ ij = new ImageJ();
     RandomWalkSegmentationPlugin_ obj = new RandomWalkSegmentationPlugin_();
     // IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
-    // "open(\"src/test/resources/ticket209gh/fluoreszenz-test.tif\")");
-    // IJ.runMacro("open(\"src/test/resources/ticket209gh/segmented_color.tif\")");
-    IJ.openImage("src/test/resources/RW/" + "C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18.tif").show();
+    // "open(\"src/test/Resources-static/ticket209gh/fluoreszenz-test.tif\")");
+    // IJ.runMacro("open(\"src/test/Resources-static/ticket209gh/segmented_color.tif\")");
+    IJ.openImage("src/test/Resources-static/RW/" + "C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18.tif")
+            .show();
     IJ.openImage(
-            "src/test/resources/RW/" + "C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_manualseed.png")
+            "src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_manualseed.png")
             .show();
     obj.showUi(true);
 

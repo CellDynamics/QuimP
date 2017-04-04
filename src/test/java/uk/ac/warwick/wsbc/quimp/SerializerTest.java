@@ -228,7 +228,7 @@ public class SerializerTest {
     // now define border trigger for this converter. Start it if version in json is lower than
     // defined in class
     s.registerConverter(new Converter170202<>(toolversion));
-    out = s.load("src/test/resources/ticket199/fluoreszenz-test.QCONF");
+    out = s.load("src/test/Resources-static/ticket199/fluoreszenz-test.QCONF");
     assertEquals(toolversion, out.timeStamp);
   }
 
@@ -300,7 +300,7 @@ public class SerializerTest {
     Serializer<TestClass> s = new Serializer<>(testClass, version);
     assertEquals(
             s.getQconfVersion(new BufferedReader(
-                    new FileReader("src/test/resources/ticket199/fluoreszenz-test.QCONF"))),
+                    new FileReader("src/test/Resources-static/ticket199/fluoreszenz-test.QCONF"))),
             17.0103, 1e-5);
 
     Reader ret;

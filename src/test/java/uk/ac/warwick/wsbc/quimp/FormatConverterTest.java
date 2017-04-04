@@ -53,9 +53,9 @@ public class FormatConverterTest {
   @Before
   public void setUp() throws Exception {
     Files.deleteIfExists(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString()
-            + "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.snQP"));
+            + "src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth_0.snQP"));
     Files.deleteIfExists(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString()
-            + "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
+            + "src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
   }
 
   /**
@@ -74,18 +74,19 @@ public class FormatConverterTest {
   @Ignore
   public void testGeneratepaQP() throws Exception {
     FormatConverter fc = new FormatConverter(
-            new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
+            new File("src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
 
     accessPrivate("generatepaQP", fc, new Object[] {}, new Class<?>[] {});
 
     Thread.sleep(1000);
     // compare paQP
     // manualy generated one
-    BufferedReader readerexpected = new BufferedReader(new FileReader(
-            "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0_expected.paQP"));
+    BufferedReader readerexpected =
+            new BufferedReader(new FileReader("src/test/Resources-static/FormatConverter/"
+                    + "fluoreszenz-test_eq_smooth_0_expected.paQP"));
     // expected
-    BufferedReader readertest = new BufferedReader(
-            new FileReader("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
+    BufferedReader readertest = new BufferedReader(new FileReader(
+            "src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
 
     readerexpected.readLine(); // skip header with random controlsum
     readertest.readLine();
@@ -112,16 +113,17 @@ public class FormatConverterTest {
   @Ignore
   public void testGeneratesnQP() throws Exception {
     FormatConverter fc = new FormatConverter(
-            new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
+            new File("src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
     accessPrivate("generatesnQP", fc, new Object[] {}, new Class<?>[] {});
     Thread.sleep(1000);
     // compare paQP
     // manualy generated one
-    BufferedReader readerexpected = new BufferedReader(new FileReader(
-            "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0_expected.paQP"));
+    BufferedReader readerexpected =
+            new BufferedReader(new FileReader("src/test/Resources-static/FormatConverter/"
+                    + "fluoreszenz-test_eq_smooth_0_expected.paQP"));
     // expected
-    BufferedReader readertest = new BufferedReader(
-            new FileReader("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
+    BufferedReader readertest = new BufferedReader(new FileReader(
+            "src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
 
     readerexpected.readLine(); // skip header with random controlsum
     readertest.readLine();
@@ -147,18 +149,20 @@ public class FormatConverterTest {
   @Test
   @Ignore
   public void testFormatConverterQParamsQconfPath() throws Exception {
-    QconfLoader qc = new QconfLoader(Paths
-            .get("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF").toFile());
+    QconfLoader qc = new QconfLoader(
+            Paths.get("src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth.QCONF")
+                    .toFile());
     FormatConverter fc = new FormatConverter(qc);
     accessPrivate("generateOldDataFile", fc, new Object[] {}, new Class<?>[] {});
     Thread.sleep(1000);
     // compare paQP
     // manualy generated one
-    BufferedReader readerexpected = new BufferedReader(new FileReader(
-            "src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0_expected.paQP"));
+    BufferedReader readerexpected =
+            new BufferedReader(new FileReader("src/test/Resources-static/FormatConverter/"
+                    + "fluoreszenz-test_eq_smooth_0_expected.paQP"));
     // expected
-    BufferedReader readertest = new BufferedReader(
-            new FileReader("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
+    BufferedReader readertest = new BufferedReader(new FileReader(
+            "src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth_0.paQP"));
 
     readerexpected.readLine(); // skip header with random controlsum
     readertest.readLine();
@@ -184,8 +188,8 @@ public class FormatConverterTest {
   @Test
   @Ignore
   public void testGenerateNewDataFile() throws Exception {
-    QconfLoader qc = new QconfLoader(new File(
-            "src/test/resources/FormatConverter/res/fluoreszenz-test_eq_smooth_0_expected.paQP"));
+    QconfLoader qc = new QconfLoader(new File("src/test/Resources-static/FormatConverter/res/"
+            + "fluoreszenz-test_eq_smooth_0_expected.paQP"));
     FormatConverter fc = new FormatConverter(qc);
     accessPrivate("generateNewDataFile", fc, new Object[] {}, new Class<?>[] {});
   }
@@ -198,7 +202,7 @@ public class FormatConverterTest {
   @Test
   public void testGenerateOldDataFile() throws Exception {
     QconfLoader qc = new QconfLoader(
-            new File("src/test/resources/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
+            new File("src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
     FormatConverter fc = new FormatConverter(qc);
     accessPrivate("generateOldDataFile", fc, new Object[] {}, new Class<?>[] {});
   }

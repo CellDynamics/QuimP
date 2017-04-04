@@ -17,11 +17,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.wsbc.quimp.Nest;
-import uk.ac.warwick.wsbc.quimp.QParamsQconf;
-import uk.ac.warwick.wsbc.quimp.QuimpException;
-import uk.ac.warwick.wsbc.quimp.Snake;
-import uk.ac.warwick.wsbc.quimp.SnakeHandler;
 import uk.ac.warwick.wsbc.quimp.BOAState.BOAp;
 
 // TODO: Auto-generated Javadoc
@@ -73,7 +68,7 @@ public class QParamsExchangerTest {
    */
   @Before
   public void setUp() throws Exception {
-    test1 = new File("src/test/resources/test2/Stack_cut.QCONF");
+    test1 = new File("src/test/Resources-static/test2/Stack_cut.QCONF");
   }
 
   /**
@@ -90,7 +85,7 @@ public class QParamsExchangerTest {
   public void testQParamsExchanger() throws Exception {
     QParamsQconf qp = new QParamsQconf(test1);
     assertThat(qp.getFileName(), is("Stack_cut"));
-    assertThat(qp.getPath(), is(Paths.get("src", "test", "resources", "test2").toString()));
+    assertThat(qp.getPath(), is(Paths.get("src", "test", "Resources-static", "test2").toString()));
   }
 
   /**

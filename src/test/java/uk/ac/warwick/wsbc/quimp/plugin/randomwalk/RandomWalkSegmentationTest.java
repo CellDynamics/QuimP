@@ -34,7 +34,7 @@ import ij.process.ImageProcessor;
 /**
  * Test protected methods.
  * 
- * <p>See: src/test/resources/Matlab/RW_java_tests.m
+ * <p>See: src/test/Resources-static/Matlab/RW_java_tests.m
  * 
  * <p>See: Abstract/main.m
  * 
@@ -77,8 +77,8 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    testImage1rgb = IJ.openImage("src/test/resources/segtest_small_rgb_test.tif");
-    testImage1 = IJ.openImage("src/test/resources/segtest_small.tif");
+    testImage1rgb = IJ.openImage("src/test/Resources-static/segtest_small_rgb_test.tif");
+    testImage1 = IJ.openImage("src/test/Resources-static/segtest_small.tif");
   }
 
   /**
@@ -268,7 +268,7 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     expectedBackground.add(new Point(238, 81));
     expectedBackground.add(new Point(319, 246));
 
-    ImagePlus testImage = IJ.openImage("src/test/resources/GMask.tif");
+    ImagePlus testImage = IJ.openImage("src/test/Resources-static/GMask.tif");
     new ImageConverter(testImage).convertToRGB(); // convert to rgb
 
     Map<Seeds, ImageProcessor> ret = decodeSeeds(testImage, Color.WHITE, Color.BLACK);

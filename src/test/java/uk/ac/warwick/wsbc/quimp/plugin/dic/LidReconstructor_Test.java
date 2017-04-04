@@ -47,11 +47,11 @@ public class LidReconstructor_Test {
    */
   @Before
   public void setUp() throws Exception {
-    image = IJ.openImage("src/test/resources/testObject.tif"); // opens test
+    image = IJ.openImage("src/test/Resources-static/testObject.tif"); // opens test
                                                                // image
 
     // opens test image
-    stack = IJ.openImage("src/test/resources/testObject_4slices.tif");
+    stack = IJ.openImage("src/test/Resources-static/testObject_4slices.tif");
   }
 
   /**

@@ -32,7 +32,7 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 /**
  * This is implementation of Matlab version of Random Walk segmentation algorithm.
  * 
- * <p>See: src/test/resources/Matlab/rw_laplace4.m
+ * <p>See: src/test/Resources-static/Matlab/rw_laplace4.m
  * 
  * @author p.baniukiewicz
  */
@@ -1156,7 +1156,7 @@ public class RandomWalkSegmentation {
   /**
    * Add in-place this matrix to another.
    * 
-   * <p>src/test/resources/Matlab/rw_laplace4_java_base.m This is source file of segmentation
+   * <p>src/test/Resources-static/Matlab/rw_laplace4_java_base.m This is source file of segmentation
    * in Matlab that was a base for RandomWalkSegmentation Implementation
    * 
    * @author p.baniukiewicz
@@ -1200,7 +1200,7 @@ public class RandomWalkSegmentation {
   static class MatrixDotSub implements RealMatrixChangingVisitor {
 
     /**
-     * Example src/test/resources/Matlab/rw_laplace4_java_base.m This is source file of
+     * Example src/test/Resources-static/Matlab/rw_laplace4_java_base.m This is source file of
      * segmentation in Matlab that was a base for RandomWalkSegmentation Implementation.
      */
     RealMatrix matrix;

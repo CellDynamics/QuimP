@@ -49,7 +49,7 @@ public class ImageProcessorPlusTest {
    */
   @Before
   public void setUp() throws Exception {
-    image = IJ.openImage("src/test/resources/AX3 stack1_slice_1.tif");
+    image = IJ.openImage("src/test/Resources-static/AX3 stack1_slice_1.tif");
   }
 
   /**

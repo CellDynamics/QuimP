@@ -83,7 +83,7 @@ public class TrackOutlineTest {
    */
   @Before
   public void setUp() throws Exception {
-    image = IJ.openImage("src/test/resources/outline_track_1.tif");
+    image = IJ.openImage("src/test/Resources-static/outline_track_1.tif");
     obj = new TrackOutline(image, 0);
   }
 

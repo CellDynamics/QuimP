@@ -23,8 +23,8 @@ public class GenerateMaskTest {
     GenerateMask_ mask;
     try {
       // to solve exception handling API call must start from parametrised constructor.
-      mask = new GenerateMask_(
-              "filename=[src/test/resources/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine.QCONF]");
+      mask = new GenerateMask_("filename=[src/test/Resources-static/RW/"
+              + "C1-talA_mNeon_bleb_0pt7%agar_FLU_fine.QCONF]");
       ImagePlus ret = mask.getRes();
       if (ret != null) {
         ret.show();

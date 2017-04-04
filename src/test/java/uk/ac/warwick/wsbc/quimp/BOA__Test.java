@@ -44,7 +44,7 @@ public class BOA__Test {
    */
   @Before
   public void setUp() throws Exception {
-    img = IJ.openImage("src/test/resources/movie03.tif");
+    img = IJ.openImage("src/test/Resources-static/movie03.tif");
   }
 
   /**

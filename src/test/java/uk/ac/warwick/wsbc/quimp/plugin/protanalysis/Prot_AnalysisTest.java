@@ -46,7 +46,7 @@ public class Prot_AnalysisTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     qL1 = new QconfLoader(Paths
-            .get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF").toFile());
+            .get("src/test/Resources-static/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF").toFile());
   }
 
   /**
@@ -78,7 +78,7 @@ public class Prot_AnalysisTest {
   /**
    * Check tracking for found maxima.
    * 
-   * See: src/test/resources/ProtAnalysisTest/main.m
+   * See: src/test/Resources-static/ProtAnalysisTest/main.m
    * 
    * @throws Exception
    */

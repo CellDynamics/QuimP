@@ -84,7 +84,7 @@ public class PropagateSeedsTest {
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    testImage2 = IJ.openImage("src/test/resources/binary_1.tif");
+    testImage2 = IJ.openImage("src/test/Resources-static/binary_1.tif");
   }
 
   /**
@@ -150,8 +150,8 @@ public class PropagateSeedsTest {
     ImageJ ij = new ImageJ();
     ImagePlus ip = testImage2.duplicate();
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour(true);
-    ImagePlus org = IJ.openImage("src/test/resources/G.tif");
-    ImagePlus mask = IJ.openImage("src/test/resources/GMask.tif");
+    ImagePlus org = IJ.openImage("src/test/Resources-static/G.tif");
+    ImagePlus mask = IJ.openImage("src/test/Resources-static/GMask.tif");
 
     cc.propagateSeed(mask.getStack().getProcessor(1), 5, 10);
     ImagePlus ret = cc.getCompositeSeed(org);
@@ -168,8 +168,8 @@ public class PropagateSeedsTest {
     ImageJ ij = new ImageJ();
     ImagePlus ip = testImage2.duplicate();
     PropagateSeeds.Morphological cc = new PropagateSeeds.Morphological(true);
-    ImagePlus org = IJ.openImage("src/test/resources/G.tif");
-    ImagePlus mask = IJ.openImage("src/test/resources/GMask.tif");
+    ImagePlus org = IJ.openImage("src/test/Resources-static/G.tif");
+    ImagePlus mask = IJ.openImage("src/test/Resources-static/GMask.tif");
 
     cc.propagateSeed(mask.getStack().getProcessor(1), 20, 40);
     ImagePlus ret = cc.getCompositeSeed(org);

@@ -106,13 +106,14 @@ public class QconfLoaderTest {
   @Ignore("Use GUI for testing. Not for automated run")
   public void testGetImage() throws Exception {
     ImageJ ij = new ImageJ();
-    ImagePlus i1 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frames_1-5.tif");
+    ImagePlus i1 =
+            IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frames_1-5.tif");
     i1.show();
-    ImagePlus i2 = IJ.openImage("src/test/resources/Stack_cut.tif");
+    ImagePlus i2 = IJ.openImage("src/test/Resources-static/Stack_cut.tif");
     i2.show();
     Files.copy(
-            Paths.get(
-                    "src/test/resources/ProtAnalysisTest/KZ4-220214-cAR1-GFP-devel5noimage.QCONF"),
+            Paths.get("src/test/Resources-static/ProtAnalysisTest/"
+                    + "KZ4-220214-cAR1-GFP-devel5noimage.QCONF"),
             Paths.get(tmpdir + "KZ4-220214-cAR1-GFP-devel5noimage_cp.QCONF"),
             StandardCopyOption.REPLACE_EXISTING);
     QconfLoader o = new QconfLoader(

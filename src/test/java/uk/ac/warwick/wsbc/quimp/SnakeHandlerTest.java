@@ -44,7 +44,7 @@ public class SnakeHandlerTest {
   @SuppressWarnings("unused")
   @Before
   public void setUp() throws Exception {
-    BOA_.qState = new BOAState(IJ.openImage("src/test/resources/Stack_cut.tif"));
+    BOA_.qState = new BOAState(IJ.openImage("src/test/Resources-static/Stack_cut.tif"));
     float x[] = new float[4];
     float y[] = new float[4];
     x[0] = 0;

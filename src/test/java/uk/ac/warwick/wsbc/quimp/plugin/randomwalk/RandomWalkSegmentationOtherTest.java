@@ -21,14 +21,15 @@ import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
 /**
  * Run time tests of segmentation.
  * 
- * <p>See: src/test/resources/Matlab/RW_java_tests.m This is source of good cases for segmentation
+ * <p>See: src/test/Resources-static/Matlab/RW_java_tests.m This is source of good cases for
+ * segmentation
  * 
  * <p>See: Abstract/main.m
  * 
  * <p>Comparator for results from debug from
  * uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentationTest
  * 
- * <p>See: src/test/resources/Matlab/java_output_ver.m
+ * <p>See: src/test/Resources-static/Matlab/java_output_ver.m
  *
  * 
  * @author p.baniukiewicz
@@ -85,16 +86,16 @@ public class RandomWalkSegmentationOtherTest {
    */
   @Before
   public void setUp() throws Exception {
-    testImage1seed = IJ.openImage("src/test/resources/segtest_small_seed.tif");
-    testImage1 = IJ.openImage("src/test/resources/segtest_small.tif");
-    testImage2seed = IJ.openImage("src/test/resources/segmented_color.tif");
-    testImage2 = IJ.openImage("src/test/resources/segmented_frame_1.tif");
-    IJ.openImage("src/test/resources/segmented_frame_2.tif");
+    testImage1seed = IJ.openImage("src/test/Resources-static/segtest_small_seed.tif");
+    testImage1 = IJ.openImage("src/test/Resources-static/segtest_small.tif");
+    testImage2seed = IJ.openImage("src/test/Resources-static/segmented_color.tif");
+    testImage2 = IJ.openImage("src/test/Resources-static/segmented_frame_1.tif");
+    IJ.openImage("src/test/Resources-static/segmented_frame_2.tif");
 
-    fluoreszenz1 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frame_1.tif");
-    fluoreszenz2 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frame_2.tif");
+    fluoreszenz1 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_1.tif");
+    fluoreszenz2 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_2.tif");
 
-    testImage1rgb = IJ.openImage("src/test/resources/segtest_small_rgb_test.tif");
+    testImage1rgb = IJ.openImage("src/test/Resources-static/segtest_small_rgb_test.tif");
     params = new Params(400, 50, 100, 300, 80, 0.1, 8e-3, false, 25);
     params.intermediateFilter = new BinaryFilters.EmptyMorpho();
   }
@@ -197,15 +198,15 @@ public class RandomWalkSegmentationOtherTest {
     params.intermediateFilter = new BinaryFilters.SimpleMorpho();
     params.finalFilter = new BinaryFilters.MedianMorpho();
 
-    ImagePlus seed =
-            IJ.openImage("src/test/resources/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_seed.tif");
-    ImagePlus org =
-            IJ.openImage("src/test/resources/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18.tif");
+    ImagePlus seed = IJ.openImage(
+            "src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_seed.tif");
+    ImagePlus org = IJ.openImage(
+            "src/test/Resources-static/" + "RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18.tif");
     RandomWalkSegmentation obj = new RandomWalkSegmentation(org.getProcessor(), params);
     Map<Seeds, ImageProcessor> seeds =
             RandomWalkSegmentation.decodeSeeds(seed, Color.RED, Color.GREEN);
-    ImagePlus rough = IJ.openImage(
-            "src/test/resources/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_rough_snakemask.tif");
+    ImagePlus rough = IJ.openImage("src/test/Resources-static/RW/"
+            + "C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_rough_snakemask.tif");
     seeds.put(Seeds.ROUGHMASK, rough.getProcessor());
     // number of seed correct with matlab file
     ImageProcessor ret = obj.run(seeds);
@@ -281,7 +282,7 @@ public class RandomWalkSegmentationOtherTest {
   @Test
   public void testGetMeanSeed() throws RandomWalkException {
     RandomWalkSegmentation obj = new RandomWalkSegmentation(testImage2.getProcessor(), params);
-    ImagePlus mask = IJ.openImage("src/test/resources/RW/mask.tif");
+    ImagePlus mask = IJ.openImage("src/test/Resources-static/RW/mask.tif");
 
     obj.getMeanSeedLocal(mask.getProcessor(), 3);
 

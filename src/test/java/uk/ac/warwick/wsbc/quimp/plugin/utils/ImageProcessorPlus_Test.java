@@ -63,7 +63,7 @@ public class ImageProcessorPlus_Test {
    */
   @Before
   public void setUp() throws Exception {
-    image = IJ.openImage("src/test/resources/testObject.tif"); // opens test
+    image = IJ.openImage("src/test/Resources-static/testObject.tif"); // opens test
                                                                // image
     ipp = new ImageProcessorPlus();
   }

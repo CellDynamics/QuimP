@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
-import uk.ac.warwick.wsbc.quimp.utils.graphics.PolarPlot;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -194,8 +193,8 @@ public class PolarPlotTest {
    */
   @Test
   public void testGeneratePlot_1() throws Exception {
-    QconfLoader qconfLoader = new QconfLoader(
-            new File("src/test/resources/ProtAnalysisTest/KZ4/KZ4-220214-cAR1-GFP-devel5.QCONF"));
+    QconfLoader qconfLoader = new QconfLoader(new File("src/test/Resources-static/"
+            + "ProtAnalysisTest/KZ4/KZ4-220214-cAR1-GFP-devel5.QCONF"));
     PolarPlot pp = new PolarPlot(qconfLoader.getQ()[0], new Point2d(512, 512));
     pp.generatePlot(tmpdir + "test_1.svg");
     pp.generatePlotFrame(tmpdir + "test_1f2.svg", 1);

@@ -36,8 +36,8 @@ public class BinaryFiltersTest {
    */
   @Before
   public void setUp() throws Exception {
-    im = IJ.openImage("src/test/resources/RW/bg_test1.tif").getProcessor();
-    im1 = IJ.openImage("src/test/resources/binary_1.tif").getProcessor();
+    im = IJ.openImage("src/test/Resources-static/RW/bg_test1.tif").getProcessor();
+    im1 = IJ.openImage("src/test/Resources-static/binary_1.tif").getProcessor();
   }
 
   /**

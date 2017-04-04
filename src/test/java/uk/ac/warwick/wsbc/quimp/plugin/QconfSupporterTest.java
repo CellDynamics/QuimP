@@ -15,7 +15,6 @@ import org.junit.Test;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.quimp.plugin.QconfSupporter;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -63,12 +62,14 @@ public class QconfSupporterTest {
   @Ignore("Use GUI for testing. Not for automated run")
   public void testGetImage() throws Exception {
     ImageJ ij = new ImageJ();
-    ImagePlus i1 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frames_1-5.tif");
+    ImagePlus i1 =
+            IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frames_1-5.tif");
     i1.show();
-    ImagePlus i2 = IJ.openImage("src/test/resources/Stack_cut.tif");
+    ImagePlus i2 = IJ.openImage("src/test/Resources-static/Stack_cut.tif");
     i2.show();
-    QuimpPluginCoreRef o = new QuimpPluginCoreRef(Paths
-            .get("src/test/resources/ProtAnalysisTest/KZ4-220214-cAR1-GFP-devel5noimage.QCONF"));
+    QuimpPluginCoreRef o =
+            new QuimpPluginCoreRef(Paths.get("src/test/Resources-static/ProtAnalysisTest/"
+                    + "KZ4-220214-cAR1-GFP-devel5noimage.QCONF"));
 
     o.getImage();
   }

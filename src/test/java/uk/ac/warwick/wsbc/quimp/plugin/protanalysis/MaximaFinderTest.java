@@ -51,7 +51,7 @@ public class MaximaFinderTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     qL1 = new QconfLoader(Paths
-            .get("src/test/resources/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF").toFile());
+            .get("src/test/Resources-static/TrackMapTests/fluoreszenz-test_eq_smooth.QCONF").toFile());
   }
 
   /**
@@ -85,7 +85,7 @@ public class MaximaFinderTest {
    * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.MaximaFinder#MaximaFinder(ij.process.ImageProcessor)}.
    * 
    * Results compared with those generated in IJ from
-   * src/test/resources/ProtAnalysisTest/fluoreszenz-test_eq_smooth_0_motilityMap.maQP when
+   * src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test_eq_smooth_0_motilityMap.maQP when
    * imported as text image.
    * 
    * @throws Exception

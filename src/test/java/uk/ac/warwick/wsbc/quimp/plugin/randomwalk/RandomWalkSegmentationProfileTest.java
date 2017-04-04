@@ -72,10 +72,10 @@ public class RandomWalkSegmentationProfileTest {
    */
   @Before
   public void setUp() throws Exception {
-    testImage2seed = IJ.openImage("src/test/resources/segmented_color.tif");
+    testImage2seed = IJ.openImage("src/test/Resources-static/segmented_color.tif");
 
-    fluoreszenz1 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frame_1.tif");
-    fluoreszenz2 = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frame_2.tif");
+    fluoreszenz1 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_1.tif");
+    fluoreszenz2 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_2.tif");
 
     params = new Params(400, 50, 100, 300, 80, 0.1, 8e-3, false, 25);
     // Thread.sleep(10000);

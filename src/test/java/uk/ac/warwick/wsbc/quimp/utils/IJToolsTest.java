@@ -26,9 +26,9 @@ public class IJToolsTest {
    */
   @Test
   public void testGetComposite() throws Exception {
-    ImagePlus org = IJ.openImage("src/test/resources/G.tif");
-    ImagePlus small = IJ.openImage("src/test/resources/R.tif");
-    ImagePlus big = IJ.openImage("src/test/resources/B.tif");
+    ImagePlus org = IJ.openImage("src/test/Resources-static/G.tif");
+    ImagePlus small = IJ.openImage("src/test/Resources-static/R.tif");
+    ImagePlus big = IJ.openImage("src/test/Resources-static/B.tif");
 
     ImagePlus ret = IJTools.getComposite(org, small, big);
     IJ.saveAsTiff(ret, tmpdir + "composite_QuimP.tif");
@@ -42,9 +42,9 @@ public class IJToolsTest {
    */
   @Test
   public void testGetRGB() throws Exception {
-    ImagePlus org = IJ.openImage("src/test/resources/G.tif");
-    ImagePlus small = IJ.openImage("src/test/resources/R.tif");
-    ImagePlus big = IJ.openImage("src/test/resources/B.tif");
+    ImagePlus org = IJ.openImage("src/test/Resources-static/G.tif");
+    ImagePlus small = IJ.openImage("src/test/Resources-static/R.tif");
+    ImagePlus big = IJ.openImage("src/test/Resources-static/B.tif");
 
     ColorProcessor ret = IJTools.getRGB(org, small, big);
     IJ.saveAsTiff(new ImagePlus("", ret), tmpdir + "testGetRGB_QuimP.tif");
@@ -58,9 +58,9 @@ public class IJToolsTest {
    */
   @Test
   public void testGetComposite_stack() throws Exception {
-    ImagePlus org = IJ.openImage("src/test/resources/G1.tif");
-    ImagePlus small = IJ.openImage("src/test/resources/R1.tif");
-    ImagePlus big = IJ.openImage("src/test/resources/B1.tif");
+    ImagePlus org = IJ.openImage("src/test/Resources-static/G1.tif");
+    ImagePlus small = IJ.openImage("src/test/Resources-static/R1.tif");
+    ImagePlus big = IJ.openImage("src/test/Resources-static/B1.tif");
 
     ImagePlus ret = IJTools.getComposite(org, small, big);
     IJ.saveAsTiff(ret, tmpdir + "compositestack_QuimP.tif");

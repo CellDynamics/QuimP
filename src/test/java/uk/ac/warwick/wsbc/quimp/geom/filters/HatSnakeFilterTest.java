@@ -38,11 +38,11 @@ public class HatSnakeFilterTest {
 
   private List<Point2d> input;
   private List<Point2d> lininput; // line at 45 deg
-  private List<Point2d> circ; // circular object <EM>../src/test/resources/HatFilter.m</EM>
+  private List<Point2d> circ; // circular object <EM>../src/test/Resources-static/HatFilter.m</EM>
   /**
    * simulated protrusions
    * 
-   * <p>protrusions - generate test data from ../src/test/resources/HatFilter.m
+   * <p>protrusions - generate test data from ../src/test/Resources-static/HatFilter.m
    */
   private List<Point2d> prot;
 
@@ -56,7 +56,7 @@ public class HatSnakeFilterTest {
    * Load all data
    * 
    * @throws Exception on error
-   * @see <a href="../src/test/resources/HatFilter.m">../src/test/resources/HatFilter.m</a>
+   * @see <a href="../src/test/Resources-static/HatFilter.m">../src/test/Resources-static/HatFilter.m</a>
    */
   @Before
   public void setUp() throws Exception {
@@ -74,8 +74,8 @@ public class HatSnakeFilterTest {
       lininput.add(new Point2d(i, i));
     }
 
-    circ = new DataLoader("src/test/resources/HatSnakeFilter/testData_circle.dat").getData();
-    prot = new DataLoader("src/test/resources/HatSnakeFilter/testData_prot.dat").getData();
+    circ = new DataLoader("src/test/Resources-static/HatSnakeFilter/testData_circle.dat").getData();
+    prot = new DataLoader("src/test/Resources-static/HatSnakeFilter/testData_prot.dat").getData();
   }
 
   /**
@@ -98,7 +98,7 @@ public class HatSnakeFilterTest {
    * Test of HatSnakeFilter_.runPlugin().
    * 
    * <p>Pre: Simulated protrusions post Logs are comparable with script
-   * ../src/test/resources/HatFilter.m After run go to folder mentioned above and run %%
+   * ../src/test/Resources-static/HatFilter.m After run go to folder mentioned above and run %%
    * protrusions - load java results and compare with matlab to verify results
    * 
    * <p>This matlab code is not fully compatible with java. Some results differ Matlab dont accept

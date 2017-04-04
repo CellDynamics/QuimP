@@ -23,7 +23,7 @@ public class ProtAnalysisRun {
     // new Prot_Analysis(
     // Paths.get("/home/p.baniukiewicz/Desktop/Tests/ticket150/fluoreszenz-test_eq_smooth.QCONF"));
     Prot_Analysis pa =
-            new Prot_Analysis("src/test/resources/280/July14ABD_GFP_actin_twoCells.QCONF");
+            new Prot_Analysis("src/test/Resources-static/280/July14ABD_GFP_actin_twoCells.QCONF");
     // new Prot_Analysis();
 
   }

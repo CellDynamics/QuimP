@@ -22,7 +22,7 @@ public class FormatConverterRun {
   public static void main(String[] args) throws QuimpException {
     ImageJ ij = new ImageJ();
     // FormatConverter fc = new FormatConverter(
-    // new File("src/test/resources/formatconv/currenttest/fluoreszenz-test.QCONF"));
+    // new File("src/test/Resources-static/formatconv/currenttest/fluoreszenz-test.QCONF"));
     FormatConverter fc = new FormatConverter(new File("/home/baniuk/Desktop/Tests/146/"
             + "saveAsQCONF (copy)/July14ABD_GFP_actin_twoCells.QCONF"));
     fc.showConversionCapabilities(ij);

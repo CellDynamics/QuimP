@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.MaximaFinder;
-import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackVisualisation;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
 
 // TODO: Auto-generated Javadoc
@@ -66,7 +64,8 @@ public class TrackVisualisationTest {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this); // must be as we create mocked classes in mocked already
     // QParams
-    originalImage = IJ.openImage("src/test/resources/fluoreszenz-test_eq_smooth_frames_1-5.tif");
+    originalImage = IJ
+            .openImage("src/test/Resources-static/" + "fluoreszenz-test_eq_smooth_frames_1-5.tif");
     protrusionVis = new TrackVisualisation.Stack(originalImage);
   }
 

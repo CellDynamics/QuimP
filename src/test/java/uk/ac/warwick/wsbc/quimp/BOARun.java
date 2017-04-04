@@ -44,10 +44,10 @@ public class BOARun {
     ImageJ ij = new ImageJ();
     // create synchronization latch
     CountDownLatch startSignal = new CountDownLatch(1);
-    // img = IJ.openImage("src/test/resources/movie03_8bit_10slices.tif");
-    // img = IJ.openImage("src/test/resources/movie03_8bit.tif");
+    // img = IJ.openImage("src/test/Resources-static/movie03_8bit_10slices.tif");
+    // img = IJ.openImage("src/test/Resources-static/movie03_8bit.tif");
     img = IJ.openImage("/home/baniuk/Desktop/Tests/184/July14ABD_GFP_actin_twoCells.tif");
-    // img = IJ.openImage("src/test/resources/Stack_cut.tif");
+    // img = IJ.openImage("src/test/Resources-static/Stack_cut.tif");
     // img = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
 
     img.show(); // this is necessary for plugin as it uses getcurrentimage to work

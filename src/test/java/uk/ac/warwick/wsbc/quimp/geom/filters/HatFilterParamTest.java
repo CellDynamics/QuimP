@@ -24,7 +24,7 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
  * Parameterised test for HatFilter.
  * 
  * <p>Generates images of processed data as well as images of original data. Those can be viewed in
- * <EM>../src/test/resources/HatFilter.m</EM>
+ * <EM>../src/test/Resources-static/HatFilter.m</EM>
  * 
  * @author p.baniukiewicz
  *
@@ -87,15 +87,15 @@ public class HatFilterParamTest {
    */
   @Parameterized.Parameters
   public static Collection<Object[]> testFiles() {
-    return Arrays.asList(
-            new Object[][] { { "src/test/resources/HatSnakeFilter/testData_137.dat", 23, 1, 0.0 },
-                { "src/test/resources/HatSnakeFilter/testData_1.dat", 23, 1, 0.0 },
-                { "src/test/resources/HatSnakeFilter/testData_125.dat", 23, 1, 0.0 },
-                { "src/test/resources/HatSnakeFilter/testData_75.dat", 23, 1, 0.0 },
-                { "src/test/resources/HatSnakeFilter/testData_137.dat", 23, 2, 0.0 },
-                { "src/test/resources/HatSnakeFilter/testData_1.dat", 23, 2, 0.0 },
-                { "src/test/resources/HatSnakeFilter/testData_125.dat", 23, 2, 0.0 },
-                { "src/test/resources/HatSnakeFilter/testData_75.dat", 23, 2, 0.0 } });
+    return Arrays.asList(new Object[][] {
+        { "src/test/Resources-static/" + "HatSnakeFilter/testData_137.dat", 23, 1, 0.0 },
+        { "src/test/Resources-static/HatSnakeFilter/testData_1.dat", 23, 1, 0.0 },
+        { "src/test/Resources-static/HatSnakeFilter/testData_125.dat", 23, 1, 0.0 },
+        { "src/test/Resources-static/HatSnakeFilter/testData_75.dat", 23, 1, 0.0 },
+        { "src/test/Resources-static/HatSnakeFilter/testData_137.dat", 23, 2, 0.0 },
+        { "src/test/Resources-static/HatSnakeFilter/testData_1.dat", 23, 2, 0.0 },
+        { "src/test/Resources-static/HatSnakeFilter/testData_125.dat", 23, 2, 0.0 },
+        { "src/test/Resources-static/HatSnakeFilter/testData_75.dat", 23, 2, 0.0 } });
   }
 
   /**
@@ -108,7 +108,7 @@ public class HatFilterParamTest {
    * @throws QuimpPluginException on error
    * @see <a
    *      href="verification of logs (ratios, indexes, etc)">QuimP-toolbox/Prototyping/59-Shape_filtering/HatFilter.m</a>
-   * @see <a href="resorces">/src/test/resources/HatFilter.m</a>
+   * @see <a href="resorces">/src/test/Resources-static/HatFilter.m</a>
    * @see <a href="creating *.dat files">QuimP-toolbox/Prototyping/59-Shape_filtering/main.m</a>
    */
   @Test
@@ -127,7 +127,7 @@ public class HatFilterParamTest {
    * 
    * <p>Post: Save image in /tmp
    * 
-   * @see <a href="resorces">/src/test/resources/HatFilter.m</a>
+   * @see <a href="resorces">/src/test/Resources-static/HatFilter.m</a>
    */
   @Test
   public void test_roiSaver() {
