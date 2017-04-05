@@ -49,40 +49,37 @@ class Track extends ArrayList<Point> {
   public Track() {
     super();
     id = -1;
-    parents = new Point(-1, -1);
+    parents = null;
   }
 
   public Track(int id, Point parents) {
     this();
     this.id = id;
-    if (parents != null) {
-      this.parents = parents;
-    }
+    this.parents = parents;
   }
 
   public Track(Collection<? extends Point> c) {
     super(c);
     id = -1;
-    parents = new Point(-1, -1);
+    parents = null;
   }
 
   public Track(Collection<? extends Point> c, int id, Point parents) {
     this(c);
     this.id = id;
-    if (parents != null) {
-      parents = new Point(-1, -1);
-    }
+    this.parents = parents;
   }
 
   /**
-   * Not use due to similar structure as Track(int, Point).
+   * Not in use due to similar structure as Track(int, Point).
    * 
    * @param initialCapacity initialCapacity
    */
+  @SuppressWarnings("unused")
   private Track(int initialCapacity) {
     super(initialCapacity);
     id = -1;
-    parents = new Point(-1, -1);
+    parents = null;
   }
 
   /**
