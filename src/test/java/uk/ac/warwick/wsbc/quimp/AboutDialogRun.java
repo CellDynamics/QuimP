@@ -5,21 +5,22 @@ import java.awt.Panel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-// TODO: Auto-generated Javadoc
 /**
  * Runner for AboutDialog
  * 
  * @author p.baniukiewicz
  *
  */
-public class AboutDialog_run {
+public class AboutDialogRun {
 
   static {
     System.setProperty("log4j.configurationFile", "qlog4j2.xml");
   }
 
   /**
-   * @param args
+   * Main runner.
+   * 
+   * @param args args
    */
   public static void main(String[] args) {
     Frame window = new Frame("Base");

@@ -23,7 +23,6 @@ import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Test class for {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.MaximaFinder}
  * 
@@ -45,7 +44,7 @@ public class MaximaFinderTest {
   private ImageProcessor imp;
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -55,14 +54,14 @@ public class MaximaFinderTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -74,7 +73,7 @@ public class MaximaFinderTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
@@ -84,11 +83,11 @@ public class MaximaFinderTest {
    * Test method for
    * {@link MaximaFinder#MaximaFinder(ij.process.ImageProcessor)}.
    * 
-   * Results compared with those generated in IJ from
+   * <p>Results compared with those generated in IJ from
    * src/test/Resources-static/ProtAnalysisTest/fluoreszenz-test_eq_smooth_0_motilityMap.maQP when
    * imported as text image.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testMaximaFinder() throws Exception {
@@ -99,10 +98,10 @@ public class MaximaFinderTest {
     // these values have been read from matlab using above points
     double[] expectedVal = { 21.00, 15.15, 15.06, 15.05, 14.58, 14.52, 14.48, 14.34, 14.14, 13.28,
         13.03, 12.44, 11.83, 11.75, 11.55, 11.08, 11.07, 10.90, 10.64, 10.43 };
-    MaximaFinder mF = new MaximaFinder(imp);
-    mF.computeMaximaIJ(10);
-    Polygon ret = mF.getMaxima();
-    double[] val = mF.getMaxValues();
+    MaximaFinder mf = new MaximaFinder(imp);
+    mf.computeMaximaIJ(10);
+    Polygon ret = mf.getMaxima();
+    double[] val = mf.getMaxValues();
     LOGGER.debug(Arrays.toString(val));
     assertThat(ret.xpoints, is(expectedX));
     assertThat(ret.ypoints, is(expectedY));

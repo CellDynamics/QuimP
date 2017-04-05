@@ -26,7 +26,6 @@ import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.quimp.geom.TrackOutline;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -44,10 +43,10 @@ public class BinarySegmentationTest {
    * @param name Name of private field
    * @param obj Reference to object
    * @return of private method
-   * @throws NoSuchFieldException
-   * @throws SecurityException
-   * @throws IllegalArgumentException
-   * @throws IllegalAccessException
+   * @throws NoSuchFieldException NoSuchFieldException
+   * @throws SecurityException SecurityException
+   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws IllegalAccessException IllegalAccessException
    */
   static Object accessPrivateField(String name, BinarySegmentation obj) throws NoSuchFieldException,
           SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -90,21 +89,21 @@ public class BinarySegmentationTest {
   private ImagePlus test5;
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -116,7 +115,7 @@ public class BinarySegmentationTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
@@ -128,9 +127,9 @@ public class BinarySegmentationTest {
   }
 
   /**
-   * Check outline generation
+   * Check outline generation.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testBinarySegmentation() throws Exception {
@@ -140,11 +139,11 @@ public class BinarySegmentationTest {
   }
 
   /**
-   * Check intersection
+   * Check intersection.
    * 
-   * pre: Slices do not overlap
+   * <p>pre: Slices do not overlap
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testTestIntersect_1() throws Exception {
@@ -159,11 +158,11 @@ public class BinarySegmentationTest {
   }
 
   /**
-   * Check intersection
+   * Check intersection.
    * 
-   * pre: Slices do overlap
+   * <p>pre: Slices do overlap
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testTestIntersect_2() throws Exception {
@@ -178,11 +177,11 @@ public class BinarySegmentationTest {
   }
 
   /**
-   * Check intersection for one Roi and Array of ROIs
+   * Check intersection for one Roi and Array of ROIs.
    * 
-   * pre: One slice does overlap
+   * <p>pre: One slice does overlap
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testTestIntersect_3() throws Exception {
@@ -199,19 +198,18 @@ public class BinarySegmentationTest {
 
     assertThat(r1.getId(), is(0)); // first outline
     assertThat(r3.getId(), is(0)); // second outline has ID of first if they overlap
-    assertThat(r2.getId(), is(SegmentedShapeRoi.NOT_COUNTED)); // this not overlap and has not
-                                                               // id yet
+    assertThat(r2.getId(), is(SegmentedShapeRoi.NOT_COUNTED)); // this not overlap and has no id yet
 
   }
 
   /**
-   * Check intersection for one Roi and Array of ROIs
+   * Check intersection for one Roi and Array of ROIs.
    * 
-   * pre: The same slice as on input (referenced)
+   * <p>pre: The same slice as on input (referenced)
    * 
-   * post: this slice correctly labelled
+   * <p>post: this slice correctly labelled
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testTestIntersect_Same() throws Exception {
@@ -227,11 +225,11 @@ public class BinarySegmentationTest {
   }
 
   /**
-   * Check intersection for one Roi and Array of ROIs
+   * Check intersection for one Roi and Array of ROIs.
    * 
-   * pre: Slices do not overlap
+   * <p>pre: Slices do not overlap
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testTestIntersect_4() throws Exception {
@@ -256,11 +254,11 @@ public class BinarySegmentationTest {
   }
 
   /**
-   * Check generated chains
+   * Check generated chains.
    * 
-   * pre: Three objects on 5 frames
+   * <p>pre: Three objects on 5 frames
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetChains() throws Exception {
@@ -268,13 +266,13 @@ public class BinarySegmentationTest {
     obj.trackObjects(); // run tracking
     ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
     assertThat(ret.size(), is(3)); // check number of objects
-    for (ArrayList<SegmentedShapeRoi> aL : ret) { // iterate over objects and get subsequent
+    for (ArrayList<SegmentedShapeRoi> al : ret) { // iterate over objects and get subsequent
       // segmentations
-      assertThat(aL.size(), is(5)); // all objects are on all frames
+      assertThat(al.size(), is(5)); // all objects are on all frames
       for (int i = 0; i < 5; i++) {
-        SegmentedShapeRoi oF = (SegmentedShapeRoi) aL.get(i); // cast to SegmentedShapeRoi
-        assertThat(oF.getFrame(), is(i + 1)); // and check if every next outline for given
-                                              // cell has increasing frame number
+        SegmentedShapeRoi of = (SegmentedShapeRoi) al.get(i); // cast to SegmentedShapeRoi
+        assertThat(of.getFrame(), is(i + 1)); // and check if every next outline for given
+        // cell has increasing frame number
       }
     }
 
@@ -282,13 +280,13 @@ public class BinarySegmentationTest {
   }
 
   /**
-   * Check generated chains
+   * Check generated chains.
    * 
-   * pre: Three objects on 1-4 frames, 2 objects on 5th
+   * <p>pre: Three objects on 1-4 frames, 2 objects on 5th
    * 
-   * post: Three objects detected but one has shorter chain (frames 1-4)
+   * <p>post: Three objects detected but one has shorter chain (frames 1-4)
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetChains_no_last() throws Exception {
@@ -302,31 +300,31 @@ public class BinarySegmentationTest {
     assertThat(ret.get(2).size(), is(5));
 
     for (int i = 0; i < 4; i++) {
-      SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(0).get(i);
-      assertThat(oF.getFrame(), is(i + 1));
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(0).get(i);
+      assertThat(of.getFrame(), is(i + 1));
     }
 
     for (int i = 0; i < 5; i++) {
-      SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(1).get(i);
-      assertThat(oF.getFrame(), is(i + 1));
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(1).get(i);
+      assertThat(of.getFrame(), is(i + 1));
     }
 
     for (int i = 0; i < 5; i++) {
-      SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(2).get(i);
-      assertThat(oF.getFrame(), is(i + 1));
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(2).get(i);
+      assertThat(of.getFrame(), is(i + 1));
     }
 
     RoiSaver.saveROIs(test2, tmpdir + "testGetChains_no_last.tif", ret);
   }
 
   /**
-   * Check generated chains
+   * Check generated chains.
    * 
-   * pre: Three objects on 2-5 frames, 2 objects on 1st
+   * <p>pre: Three objects on 2-5 frames, 2 objects on 1st
    * 
-   * post: Three objects detected but one has shorter chain (frames 2-5)
+   * <p>post: Three objects detected but one has shorter chain (frames 2-5)
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetChains_no_first() throws Exception {
@@ -340,33 +338,32 @@ public class BinarySegmentationTest {
     assertThat(ret.get(2).size(), is(4)); // missing on 1st frame
 
     for (int i = 0; i < 4; i++) {
-      SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(0).get(i);
-      assertThat(oF.getFrame(), is(i + 1));
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(0).get(i);
+      assertThat(of.getFrame(), is(i + 1));
     }
 
     for (int i = 0; i < 5; i++) {
-      SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(1).get(i);
-      assertThat(oF.getFrame(), is(i + 1));
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(1).get(i);
+      assertThat(of.getFrame(), is(i + 1));
     }
 
     for (int i = 0; i < 4; i++) {
-      SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(2).get(i);
-      assertThat(oF.getFrame(), is(i + 2)); // starts from 2nd frame
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(2).get(i);
+      assertThat(of.getFrame(), is(i + 2)); // starts from 2nd frame
     }
 
     RoiSaver.saveROIs(test4, tmpdir + "testGetChains_no_first.tif", ret); // wrong image because
-                                                                          // of
-                                                                          // saveROIs
+    // of saveROIs
   }
 
   /**
-   * Check generated chains
+   * Check generated chains.
    * 
-   * pre: Three objects on frames 1,2,4 and 2 objects on 3,5
+   * <p>pre: Three objects on frames 1,2,4 and 2 objects on 3,5
    * 
-   * post: 4 chains detected. Missing object breaks the chain
+   * <p>post: 4 chains detected. Missing object breaks the chain
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetChains_no_middle_last() throws Exception {
@@ -381,38 +378,37 @@ public class BinarySegmentationTest {
     assertThat(ret.get(3).size(), is(2)); // new chain after break
 
     for (int i = 0; i < 4; i++) {
-      SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(0).get(i);
-      assertThat(oF.getFrame(), is(i + 1));
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(0).get(i);
+      assertThat(of.getFrame(), is(i + 1));
     }
 
     for (int i = 0; i < 2; i++) {
-      SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(1).get(i);
-      assertThat(oF.getFrame(), is(i + 1));
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(1).get(i);
+      assertThat(of.getFrame(), is(i + 1));
     }
 
     for (int i = 0; i < 5; i++) {
-      SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(2).get(i);
-      assertThat(oF.getFrame(), is(i + 1));
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(2).get(i);
+      assertThat(of.getFrame(), is(i + 1));
     }
 
     for (int i = 0; i < 2; i++) {
-      SegmentedShapeRoi oF = (SegmentedShapeRoi) ret.get(3).get(i);
-      assertThat(oF.getFrame(), is(i + 4)); // new chain from 4th frame
+      SegmentedShapeRoi of = (SegmentedShapeRoi) ret.get(3).get(i);
+      assertThat(of.getFrame(), is(i + 4)); // new chain from 4th frame
     }
 
     RoiSaver.saveROIs(test3, tmpdir + "testGetChains_no_middle_last.tif", ret); // wrong image
-                                                                                // because of
-                                                                                // saveROIs
+    // because of saveROIs
   }
 
   /**
-   * Check generated chains
+   * Check generated chains.
    * 
-   * pre: only one slice on input
+   * <p>pre: only one slice on input
    * 
-   * post: Correct segmentation
+   * <p>post: Correct segmentation
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetChains_oneSlice() throws Exception {
@@ -421,8 +417,7 @@ public class BinarySegmentationTest {
     ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
 
     RoiSaver.saveROIs(test5, tmpdir + "testGetChains_oneSlice.tif", ret); // wrong image
-                                                                          // because of
-                                                                          // saveROIs
+    // because of saveROIs
   }
 
 }

@@ -10,18 +10,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
-
-// TODO: Auto-generated Javadoc
 /**
  * Test class for ParamList
  * 
  * @author p.baniukiewicz
  *
  */
-public class ParamList_Test {
+public class ParamListTest {
 
-  private ParamList l;
+  private ParamList list;
 
   /**
    * Sets the up.
@@ -30,7 +27,7 @@ public class ParamList_Test {
    */
   @Before
   public void setUp() throws Exception {
-    l = new ParamList();
+    list = new ParamList();
   }
 
   /**
@@ -40,7 +37,7 @@ public class ParamList_Test {
    */
   @After
   public void tearDown() throws Exception {
-    l = null;
+    list = null;
   }
 
   /**
@@ -50,8 +47,8 @@ public class ParamList_Test {
    */
   @Test
   public void testSetIntValue() throws Exception {
-    l.setIntValue("KEY", 10);
-    assertEquals(10, l.getIntValue("key"));
+    list.setIntValue("KEY", 10);
+    assertEquals(10, list.getIntValue("key"));
   }
 
   /**
@@ -61,8 +58,8 @@ public class ParamList_Test {
    */
   @Test
   public void testSetDoubleValue() throws Exception {
-    l.setDoubleValue("KEY", 10.1);
-    assertEquals(10.1, l.getDoubleValue("key"), 1e-5);
+    list.setDoubleValue("KEY", 10.1);
+    assertEquals(10.1, list.getDoubleValue("key"), 1e-5);
   }
 
   /**
@@ -72,8 +69,8 @@ public class ParamList_Test {
    */
   @Test
   public void testSetStringValue() throws Exception {
-    l.setStringValue("key", "v");
-    assertEquals("v", l.getStringValue("Key"));
+    list.setStringValue("key", "v");
+    assertEquals("v", list.getStringValue("Key"));
   }
 
   /**
@@ -83,8 +80,8 @@ public class ParamList_Test {
    */
   @Test
   public void testSetBooleanValue() throws Exception {
-    l.setBooleanValue("key", true);
-    assertTrue(l.getBooleanValue("KEY"));
+    list.setBooleanValue("key", true);
+    assertTrue(list.getBooleanValue("KEY"));
   }
 
   /**
@@ -94,8 +91,8 @@ public class ParamList_Test {
    */
   @Test
   public void testPut() throws Exception {
-    l.put("key", "v");
-    assertEquals("v", l.get("Key"));
+    list.put("key", "v");
+    assertEquals("v", list.get("Key"));
   }
 
   /**
@@ -105,8 +102,8 @@ public class ParamList_Test {
    */
   @Test
   public void testContainsKey() throws Exception {
-    l.put("Key", "1.1");
-    assertTrue(l.containsKey("KEY"));
+    list.put("Key", "1.1");
+    assertTrue(list.containsKey("KEY"));
 
   }
 
@@ -120,8 +117,8 @@ public class ParamList_Test {
     HashMap<String, String> s = new HashMap<>();
     s.put("key1", "1");
     s.put("key2", "2");
-    l.putAll(s);
-    assertTrue(l.containsKey("KEY1") && l.containsKey("KEY2"));
+    list.putAll(s);
+    assertTrue(list.containsKey("KEY1") && list.containsKey("KEY2"));
   }
 
   /**
@@ -131,10 +128,10 @@ public class ParamList_Test {
    */
   @Test
   public void testRemoveObject() throws Exception {
-    l.put("Key", "1.1");
-    l.put("rem", "2");
-    l.remove("REM");
-    assertFalse(l.containsKey("rem"));
+    list.put("Key", "1.1");
+    list.put("rem", "2");
+    list.remove("REM");
+    assertFalse(list.containsKey("rem"));
   }
 
   /**
@@ -144,10 +141,10 @@ public class ParamList_Test {
    */
   @Test
   public void testRemoveObjectObject() throws Exception {
-    l.put("Key", "1.1");
-    l.put("rem", "2");
-    l.remove("REM", "2");
-    assertFalse(l.containsKey("rem"));
+    list.put("Key", "1.1");
+    list.put("rem", "2");
+    list.remove("REM", "2");
+    assertFalse(list.containsKey("rem"));
   }
 
   /**
@@ -158,10 +155,10 @@ public class ParamList_Test {
     HashMap<String, String> s = new HashMap<>();
     s.put("key1", "df");
     s.put("key2", "BH");
-    l.putAll(s);
-    assertTrue(l.containsKey("KEY1") && l.containsKey("KEY2"));
+    list.putAll(s);
+    assertTrue(list.containsKey("KEY1") && list.containsKey("KEY2"));
 
-    ParamList copy = new ParamList(l); // make shallow copy
+    ParamList copy = new ParamList(list); // make shallow copy
     assertTrue(copy.containsKey("KEY1") && copy.containsKey("KEY2"));
     assertEquals("df", copy.get("KEY1"));
     assertEquals("BH", copy.get("KEY2"));
