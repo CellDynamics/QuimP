@@ -15,6 +15,9 @@
           <action dev="baniuk" type="fix" issue="235">
               QuimP-FormatConverter: Conversion paQP-QCONF gave wrong segmentation parameters at last frame.
           </action>
+          <action dev="baniuk" type="add" issue="236">
+              QuimP-RandomWalk: Number of inclusions to find can be set to 0 (Hat filtering) promoting threshold limit over number of inclusions.  
+          </action>
        </release>
        <release version="17.04.01" date="2017-03-31" description="Release">
           <action dev="baniuk" type="fix" issue="234">

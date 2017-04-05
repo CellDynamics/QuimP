@@ -28,16 +28,16 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
  * <ol>
  * <li><i>window</i> - Size of window in pixels. It is responsible for sensitivity to protrusions of
  * given size. Larger window can eliminate small and large protrusions whereas smaller window is
- * sensitive only to small protrusions.
- * <li>window should be from 3 to number of outline points.
- * <li><i>pnum</i> - Number of protrusions that will be found in outline. If not limited by
- * <i>alev</i> parameter the algorithm will eliminate <i>pnum</i> objects from outline without
- * considering if they are protrusions or not.
- * <li><i>pnum</i> should be from 1 to any value. Algorithm stops searching when there is no
- * candidates to remove.
+ * sensitive only to small protrusions. Window size should be from 3 to number of outline points.
+ * <li><i>pnum</i> - Number of protrusions/cavities that will be removed from outline. If not
+ * limited by <i>alev</i> parameter the algorithm will eliminate <i>pnum</i> features
+ * (convex/concave parts) from outline. Feature is removed if its rank is bigger than <i>alev</i>
+ * threshold. If <i>pnum</i> is set to 0 algorithm will remove all candidates with rank higher than
+ * <i>alev</i> regardless their number. <i>pnum</i> should be from 0 to any value. Algorithm stops
+ * searching when there is no candidates to remove.
  * <li><i>alev</i> - Threshold value, if circularity computed for given window position is lower
  * than threshold this window is not eliminated regarding <i>pnum</i> or its rank in circularities.
- * <li><i>alev</i> should be in range form 0 to 1, where 0 stands for accepting every candidate
+ * <i>alev</i> should be in range form 0 to 1, where 0 stands for accepting every candidate
  * </ol>
  * 
  * <p><h3>General description of algorithm:</h3> The window slides over the wrapped contour. Points
@@ -53,7 +53,7 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
  * <p>Every window <i>p</i> has assigned a <i>rank</i>. Bigger <i>rank</i> stands for better
  * candidate
  * to remove. Algorithm tries to remove first <i>pnum</i> windows (those with biggest ranks) that
- * meet above rules.
+ * meet above rules. If <i>pnum</i> is set to 0 all protrusions with rank > <i>alev</i> are deleted.
  * 
  * <p><H3>Detailed description of algorithm</H3> The algorithm comprises of three main steps:
  * <ol>
@@ -61,7 +61,7 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
  * <li>Iterating over <i>rank</i> table to find <i>pnum</i> such candidates who meet rules and store
  * their coordinates in <i>ind2rem</i> array. By candidates it is understood sets of polygon indexes
  * that is covered by window on given position. For simplification those vertexes are identified by
- * lover and upper index of window in outline array (input).
+ * lover and upper index of window in outline array (input). <i>pnum</i> can be 0, see note above.
  * <li>Forming output table without protrusions.
  * </ol>
  * 
@@ -246,7 +246,7 @@ public class HatSnakeFilter implements IPadArray {
     if (window < 3) {
       throw new QuimpPluginException("Window should be larger than 2");
     }
-    if (pnum <= 0) {
+    if (pnum < 0) {
       throw new QuimpPluginException("Number of protrusions should be larger than 0");
     }
     if (alev < 0) {
@@ -334,7 +334,9 @@ public class HatSnakeFilter implements IPadArray {
     // from 0 for most left point of window
     int i = 0;
     boolean contains; // temporary result of test if current window is included in any prev
-    while (found < pnum) { // do as long as we find pnum protrusions (or to end of candidates)
+    // do as long as we find pnum protrusions (or to end of candidates, does not apply if pnum==0
+    // when pnum is ignored)
+    while (found < pnum || pnum == 0) {
       if (i >= circsorted.size()) { // no more data to check, probably we have less prot. pnum
         LOGGER.warn("Can find next candidate. Use smaller window");
         break;
@@ -367,7 +369,7 @@ public class HatSnakeFilter implements IPadArray {
             ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
           }
           LOGGER.trace("added win for i=" + i + " startpos=" + startpos + " coord:"
-                  + points.get(startpos).toString());
+                  + points.get(startpos).toString() + "alev=" + circsorted.get(i));
           found++;
           i++;
         } else { // go to next candidate in sorted circularities
@@ -396,6 +398,7 @@ public class HatSnakeFilter implements IPadArray {
       }
     }
     LOGGER.trace("winpos: " + ind2rem.toString());
+    LOGGER.trace("Found :" + found + " accepted windows");
     // Step 3 - remove selected windows from input data
     // array will be copied to new one skipping points to remove
     for (i = 0; i < points.size(); i++) {

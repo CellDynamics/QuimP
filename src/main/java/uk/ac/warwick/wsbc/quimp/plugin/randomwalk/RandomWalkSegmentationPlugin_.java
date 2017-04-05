@@ -598,6 +598,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
           if (seedImage == null) {
             throw new RandomWalkException("Mask image is not loaded");
           }
+          // and continue to the next case
         case MaskImage:
           foreColor = Color.WHITE;
           backColor = Color.BLACK;
@@ -721,7 +722,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
         ss.setInterpolationParameters(1, false);
       }
     }
-    SegmentedShapeRoi ssR = ret.get(0).get(0);
+    SegmentedShapeRoi ssR = ret.get(0).get(0); // FIXME possible trap for multi object images
     HatSnakeFilter hsf = new HatSnakeFilter(model.window, model.num, model.alev);
     hsf.setMode(HatSnakeFilter.CAVITIES);
     List<Point2d> retf = hsf.runPlugin(ssR.getOutlineasPoints(), orIp);

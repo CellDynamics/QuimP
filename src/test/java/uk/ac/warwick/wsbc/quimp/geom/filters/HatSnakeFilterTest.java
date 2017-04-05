@@ -56,7 +56,8 @@ public class HatSnakeFilterTest {
    * Load all data
    * 
    * @throws Exception on error
-   * @see <a href="../src/test/Resources-static/HatFilter.m">../src/test/Resources-static/HatFilter.m</a>
+   * @see <a
+   *      href="../src/test/Resources-static/HatFilter.m">../src/test/Resources-static/HatFilter.m</a>
    */
   @Before
   public void setUp() throws Exception {
@@ -112,6 +113,22 @@ public class HatSnakeFilterTest {
     HatSnakeFilter hf = new HatSnakeFilter(9, 3, 0);
     List<Point2d> out = hf.runPlugin(prot);
     RoiSaver.saveROI(tmpdir + "test_HatFilter_run_2.tif", out);
+  }
+
+  /**
+   * Test of HatSnakeFilter_.runPlugin()
+   * 
+   * <p>Test of removing protrusions limited by alev not by pnum. Result should be the same as
+   * test_HatFilter_run_2
+   * 
+   * @throws QuimpPluginException on error
+   */
+  @Test
+  public void test_HatFilter_run_3() throws QuimpPluginException {
+    LOGGER.debug("input: " + prot.toString());
+    HatSnakeFilter hf = new HatSnakeFilter(9, 0, 0.16);
+    List<Point2d> out = hf.runPlugin(prot);
+    RoiSaver.saveROI(tmpdir + "test_HatFilter_run_3.tif", out);
   }
 
   /**
@@ -173,7 +190,7 @@ public class HatSnakeFilterTest {
       LOGGER.debug(e.getMessage());
     }
     try {
-      HatSnakeFilter hf = new HatSnakeFilter(5, 0, 1); // bad protrusions
+      HatSnakeFilter hf = new HatSnakeFilter(5, -1, 1); // bad protrusions
       hf.runPlugin(input);
       fail("Exception not thrown");
     } catch (QuimpPluginException e) {

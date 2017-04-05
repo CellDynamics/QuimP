@@ -824,8 +824,9 @@ public class RandomWalkView implements ActionListener, ItemListener {
     postprocesshatPanel.add(getControlwithLabel(chHatFilter, "", ""));
     srAlev = getDoubleSpinner(0.9, 0, 1, 0.01, 5);
     postprocesshatPanel.add(getControlwithLabel(srAlev, "srAlev", ""));
-    srNum = new JSpinner(new SpinnerNumberModel(1, 1, 500, 1));
-    postprocesshatPanel.add(getControlwithLabel(srNum, "srNum", ""));
+    srNum = new JSpinner(new SpinnerNumberModel(1, 0, 500, 1));
+    postprocesshatPanel.add(getControlwithLabel(srNum, "srNum",
+            "If set to 0 all features with rank > srAlew will be removed"));
     srWindow = new JSpinner(new SpinnerNumberModel(15, 1, 500, 1));
     postprocesshatPanel.add(getControlwithLabel(srWindow, "srWindow", ""));
     GridBagConstraints constrPost = new GridBagConstraints();
