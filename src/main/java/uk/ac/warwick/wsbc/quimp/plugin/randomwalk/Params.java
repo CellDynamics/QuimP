@@ -85,7 +85,7 @@ public class Params {
     gamma[1] = 300;
     iter = 10000;
     dt = 0.1;
-    relim = new double[] { 8e-3, 1e-3 };
+    relim = new double[] { 8e-3, 0 }; // FIXME Temporarily disabled error on second sweep
     intermediateFilter = null;
     finalFilter = null;
     useLocalMean = false;
