@@ -810,15 +810,32 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * compute relative error between current foreground and foreground from last iteration.
+   * Compute relative error between current foreground and foreground from last iteration.
+   * 
+   * <p>Assumes that both matrixes have the same size and they are regular arrays.
    * 
    * @param fglast foreground matrix from last iteration
    * @param fg current foreground
    * @return relative error
    */
   double computeRelErr(double[][] fglast, double[][] fg) {
+    int rows = fglast.length;
+    int cols = fglast[0].length;
+    double rel = 0; // result to sum up
+    double tmp = 0; // temporary - calculated element
+    for (int r = 0; r < rows; r++) {
+      for (int c = 0; c < cols; c++) {
+        double denominator = fg[r][c] + fglast[r][c];
+        if (denominator == 0.0) { // not divide by 0
+          tmp = 0.0;
+        } else {
+          tmp = 2 * Math.abs(fg[r][c] - fglast[r][c]) / denominator;
+        }
+        rel += tmp;
+      }
+    }
 
-    return 0;
+    return rel / (rows * cols);
   }
 
   /**

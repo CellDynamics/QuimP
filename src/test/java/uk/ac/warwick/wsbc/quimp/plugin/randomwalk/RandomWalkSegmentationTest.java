@@ -436,4 +436,32 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
 
   }
 
+  /**
+   * Test method for
+   * {@link RandomWalkSegmentation#computeRelErr(double[][], double[][])}.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testComputeRelErr() throws Exception {
+    //!>
+    double[][] fg = new double[][] {
+      {8,1,6},
+      {3,5,7},
+      {4,9,2}
+    };
+    double[][] fglast = new double[][] {
+      {8,3,4},
+      {1,5,9},
+      {6,7,2}
+    };
+    double expected = 0.36666666666666664;
+    //!<
+
+    RandomWalkSegmentation rws =
+            new RandomWalkSegmentation(testImage1.getProcessor(), new Params());
+    double ret = rws.computeRelErr(fglast, fg);
+    assertThat(ret, is(expected));
+  }
+
 }
