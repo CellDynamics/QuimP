@@ -96,7 +96,7 @@ public class RandomWalkSegmentationOtherTest {
     fluoreszenz2 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_2.tif");
 
     testImage1rgb = IJ.openImage("src/test/Resources-static/segtest_small_rgb_test.tif");
-    params = new Params(400, 50, 100, 300, 80, 0.1, 8e-3, false, 25);
+    params = new Params(400, 50, 100, 300, 80, 0.1, new double[] { 8e-3, 1e-3 }, false, 25);
     params.intermediateFilter = new BinaryFilters.EmptyMorpho();
   }
 

@@ -45,7 +45,22 @@ public class RandomWalkSegmentation {
    *
    */
   private enum StoppedBy {
-    ITERATIONS, NANS, INFS
+    /**
+     * Maximum number of iterations reached.
+     */
+    ITERATIONS,
+    /**
+     * Found NaN in solution.
+     */
+    NANS,
+    /**
+     * Found Inf in solution.
+     */
+    INFS,
+    /**
+     * Relative error smaller than limit.
+     */
+    RELERR
   }
 
   /**
@@ -773,7 +788,7 @@ public class RandomWalkSegmentation {
       }
       // stop iteration if there is NaN or Inf. Iterations are stopped after full looping through fg
       // and bg
-      if (stoppedReason != StoppedBy.ITERATIONS) {
+      if (stoppedReason == StoppedBy.NANS || stoppedReason == StoppedBy.INFS) {
         break outerloop;
       }
       QuimPArrayUtils.copy2darray(fg2d, fglast2d);
