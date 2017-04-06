@@ -146,10 +146,10 @@ public class Params {
   @Override
   public String toString() {
     return "Params [alpha=" + alpha + ", beta=" + beta + ", gamma=" + Arrays.toString(gamma)
-            + ", iter=" + iter + ", dt=" + dt + ", relim=" + relim + ", gammaSwapped="
-            + gammaSwapped + ", useLocalMean=" + useLocalMean + ", localMeanMaskSize="
-            + localMeanMaskSize + ", intermediateFilter=" + intermediateFilter + ", finalFilter="
-            + finalFilter + "]";
+            + ", iter=" + iter + ", dt=" + dt + ", relim=" + Arrays.toString(relim)
+            + ", gammaSwapped=" + gammaSwapped + ", useLocalMean=" + useLocalMean
+            + ", localMeanMaskSize=" + localMeanMaskSize + ", intermediateFilter="
+            + intermediateFilter + ", finalFilter=" + finalFilter + "]";
   }
 
   /*

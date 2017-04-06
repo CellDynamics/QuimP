@@ -213,6 +213,26 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
   }
 
   /**
+   * Test of
+   * {@link uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentation.MatrixDotDivN}.
+   * 
+   * @throws Exception on Error
+   */
+  @Test
+  public void testMatrixDotDivN() throws Exception {
+    RealMatrix a = MatrixUtils.createRealMatrix(new double[][] { { 6, 2 }, { 8, 12 } });
+
+    RealMatrix b = MatrixUtils.createRealMatrix(new double[][] { { 3, 0 }, { 4, 2 } });
+
+    RealMatrix expected = MatrixUtils.createRealMatrix(new double[][] { { 2, 0 }, { 2, 6 } });
+
+    a.walkInOptimizedOrder(new MatrixDotDivN(b));
+
+    assertThat(a, is(expected));
+
+  }
+
+  /**
    * Test of decodeSeeds(ImagePlus, Color, Color).
    * 
    * <p>Pre: Image with green/red seed with known positions (segtest_small.rgb.tif)

@@ -39,6 +39,11 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 public class RandomWalkSegmentation {
 
   /**
+   * How often we will compute relative error.
+   */
+  final int relErrStep = 20;
+
+  /**
    * Reasons of stopping diffusion process.
    * 
    * @author p.baniukiewicz
@@ -805,6 +810,18 @@ public class RandomWalkSegmentation {
   }
 
   /**
+   * compute relative error between current foreground and foreground from last iteration.
+   * 
+   * @param fglast foreground matrix from last iteration
+   * @param fg current foreground
+   * @return relative error
+   */
+  double computeRelErr(double[][] fglast, double[][] fg) {
+
+    return 0;
+  }
+
+  /**
    * 
    * @param diffI normalized squared differences to mean seed intensities
    * @param grad2 normalized the squared gradients by the maximum gradient
@@ -1126,6 +1143,40 @@ public class RandomWalkSegmentation {
       return arg2 / matrix.getEntry(arg0, arg1);
     }
 
+  }
+
+  /**
+   * Divide matrix by matrix (element by element) setting 0 to result if divider is 0. Prevent NaNs.
+   * 
+   * <p>It performs the operation:
+   * 
+   * <pre>
+   * <code>
+   * A = [....];
+   * B = [....];
+   * R = A./B;
+   * R(isnan(R)) = 0;
+   * </code>
+   * </pre>
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  static class MatrixDotDivN extends MatrixDotDiv {
+
+    public MatrixDotDivN(RealMatrix m) {
+      super(m);
+    }
+
+    @Override
+    public double visit(int arg0, int arg1, double arg2) {
+      double entry = matrix.getEntry(arg0, arg1);
+      if (entry != 0.0) {
+        return arg2 / matrix.getEntry(arg0, arg1);
+      } else {
+        return 0.0;
+      }
+    }
   }
 
   /**
