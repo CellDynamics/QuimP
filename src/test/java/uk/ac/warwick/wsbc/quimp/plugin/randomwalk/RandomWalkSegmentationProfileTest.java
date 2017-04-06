@@ -77,7 +77,7 @@ public class RandomWalkSegmentationProfileTest {
     fluoreszenz1 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_1.tif");
     fluoreszenz2 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_2.tif");
 
-    params = new Params(400, 50, 100, 300, 80, 0.1, 8e-3, false, 25);
+    params = new Params(400, 50, 100, 300, 80, 0.1, new double[] { 8e-3, 1e-3 }, false, 25);
     // Thread.sleep(10000);
   }
 

@@ -213,6 +213,26 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
   }
 
   /**
+   * Test of
+   * {@link uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentation.MatrixDotDivN}.
+   * 
+   * @throws Exception on Error
+   */
+  @Test
+  public void testMatrixDotDivN() throws Exception {
+    RealMatrix a = MatrixUtils.createRealMatrix(new double[][] { { 6, 2 }, { 8, 12 } });
+
+    RealMatrix b = MatrixUtils.createRealMatrix(new double[][] { { 3, 0 }, { 4, 2 } });
+
+    RealMatrix expected = MatrixUtils.createRealMatrix(new double[][] { { 2, 0 }, { 2, 6 } });
+
+    a.walkInOptimizedOrder(new MatrixDotDivN(b));
+
+    assertThat(a, is(expected));
+
+  }
+
+  /**
    * Test of decodeSeeds(ImagePlus, Color, Color).
    * 
    * <p>Pre: Image with green/red seed with known positions (segtest_small.rgb.tif)
@@ -414,6 +434,34 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     assertThat(out.getEntry(3, 7), is(50.0));
     assertThat(out.getEntry(6, 19), is(25.0)); // row column
 
+  }
+
+  /**
+   * Test method for
+   * {@link RandomWalkSegmentation#computeRelErr(double[][], double[][])}.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testComputeRelErr() throws Exception {
+    //!>
+    double[][] fg = new double[][] {
+      {8,1,6},
+      {3,5,7},
+      {4,9,2}
+    };
+    double[][] fglast = new double[][] {
+      {8,3,4},
+      {1,5,9},
+      {6,7,2}
+    };
+    double expected = 0.36666666666666664;
+    //!<
+
+    RandomWalkSegmentation rws =
+            new RandomWalkSegmentation(testImage1.getProcessor(), new Params());
+    double ret = rws.computeRelErr(fglast, fg);
+    assertThat(ret, is(expected));
   }
 
 }

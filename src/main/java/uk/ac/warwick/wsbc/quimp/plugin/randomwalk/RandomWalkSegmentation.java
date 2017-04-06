@@ -39,13 +39,42 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 public class RandomWalkSegmentation {
 
   /**
+   * How often we will compute relative error.
+   */
+  final int relErrStep = 20;
+
+  /**
+   * Keep information about current sweep that {@link #solver(Map, RealMatrix[])} is doing.
+   * 
+   * <p>Affect indexing parameters arrays that keep different params for different sweeps.
+   * 
+   * @see Params
+   */
+  private int currentSweep = 0;
+
+  /**
    * Reasons of stopping diffusion process.
    * 
    * @author p.baniukiewicz
    *
    */
   private enum StoppedBy {
-    ITERATIONS, NANS, INFS
+    /**
+     * Maximum number of iterations reached.
+     */
+    ITERATIONS,
+    /**
+     * Found NaN in solution.
+     */
+    NANS,
+    /**
+     * Found Inf in solution.
+     */
+    INFS,
+    /**
+     * Relative error smaller than limit.
+     */
+    RELERR
   }
 
   /**
@@ -162,6 +191,7 @@ public class RandomWalkSegmentation {
    * @throws RandomWalkException On wrong seeds
    */
   public ImageProcessor run(Map<Seeds, ImageProcessor> seeds) throws RandomWalkException {
+    // TODO change behaviour of gamma[1]==0. Maybe it should do second sweep but with gamma==0
     Map<Seeds, RealMatrix> solved;
     RealMatrix[] precomputed = precomputeGradients(); // precompute gradients
     solved = solver(seeds, precomputed);
@@ -172,7 +202,6 @@ public class RandomWalkSegmentation {
         seedsNext.put(Seeds.ROUGHMASK, seeds.get(Seeds.ROUGHMASK));
       }
       solved = solver(seedsNext, precomputed);
-      params.swapGamma();
     }
     RealMatrix result = compare(solved); // result as matrix
     // do final filtering
@@ -223,7 +252,7 @@ public class RandomWalkSegmentation {
     bg1 = params.intermediateFilter.filter(bg1);
     bg1.invert();
     // prepare second sweep seeds from previous
-    params.swapGamma(); // to have second sweep gamma in [0]
+    currentSweep++;
 
     Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
     ret.put(Seeds.FOREGROUND, fg1);
@@ -734,7 +763,7 @@ public class RandomWalkSegmentation {
                           - (fg2d[r][c] - fgcircleft2d[r][c]) / wlfg2d[r][c])
                           + ((fgcirctop2d[r][c] - fg2d[r][c]) / wtfg2d[r][c]
                                   - (fg2d[r][c] - fgcircbottom2d[r][c]) / wbfg2d[r][c]))
-                  - params.gamma[0] * fg2d[r][c] * bg2d[r][c]);
+                  - params.gamma[currentSweep] * fg2d[r][c] * bg2d[r][c]);
           if (Double.isNaN(fg2d[r][c])) {
             stoppedReason = StoppedBy.NANS;
           }
@@ -762,7 +791,7 @@ public class RandomWalkSegmentation {
                           - (bg2d[r][c] - bgcircleft2d[r][c]) / wlbg2d[r][c])
                           + ((bgcirctop2d[r][c] - bg2d[r][c]) / wtbg2d[r][c]
                                   - (bg2d[r][c] - bgcircbottom2d[r][c]) / wbbg2d[r][c]))
-                  - params.gamma[0] * fglast2d[r][c] * bg2d[r][c]);
+                  - params.gamma[currentSweep] * fglast2d[r][c] * bg2d[r][c]);
           if (Double.isNaN(fg2d[r][c])) {
             stoppedReason = StoppedBy.NANS;
           }
@@ -773,20 +802,57 @@ public class RandomWalkSegmentation {
       }
       // stop iteration if there is NaN or Inf. Iterations are stopped after full looping through fg
       // and bg
-      if (stoppedReason != StoppedBy.ITERATIONS) {
+      if (stoppedReason == StoppedBy.NANS || stoppedReason == StoppedBy.INFS) {
         break outerloop;
       }
+      // check error every relErrStep number of iterations
+      if (i % relErrStep == 0 && computeRelErr(fglast2d, fg2d) < params.relim[currentSweep]) {
+        stoppedReason = StoppedBy.RELERR;
+        break outerloop;
+      }
+
       QuimPArrayUtils.copy2darray(fg2d, fglast2d);
       fg = new Array2DRowRealMatrix(fg2d, false); // not copy of FG2d, just replace old FG
       bg = new Array2DRowRealMatrix(bg2d, false);
     }
 
-    LOGGER.debug("Stopped by " + stoppedReason);
+    LOGGER.info(
+            "Sweep " + currentSweep + " Stopped by " + stoppedReason + " at " + i + " iteration");
     Map<Seeds, RealMatrix> ret = new HashMap<Seeds, RealMatrix>(2);
     ret.put(Seeds.FOREGROUND, fg);
     ret.put(Seeds.BACKGROUND, bg);
 
     return ret;
+  }
+
+  /**
+   * Compute relative error between current foreground and foreground from previous iteration.
+   * 
+   * <p>Assumes that both matrixes have the same size and they are regular arrays.
+   * 
+   * @param fglast foreground matrix from previous iteration
+   * @param fg current foreground
+   * @return relative mean error
+   */
+  double computeRelErr(double[][] fglast, double[][] fg) {
+    int rows = fglast.length;
+    int cols = fglast[0].length;
+    double rel = 0; // result to sum up
+    double tmp = 0; // temporary - current element
+    for (int r = 0; r < rows; r++) { // iterate over every element
+      for (int c = 0; c < cols; c++) {
+        double denominator = fg[r][c] + fglast[r][c]; // compute denominator
+        if (denominator == 0.0) { // not divide by 0
+          tmp = 0.0;
+        } else { // get relative error
+          tmp = 2 * Math.abs(fg[r][c] - fglast[r][c]) / denominator;
+        }
+        rel += tmp; // sum it up to get mean at end
+      }
+    }
+    double rele = rel / (rows * cols);
+    LOGGER.debug("Relative error = " + rele);
+    return rele; // return mean error
   }
 
   /**
@@ -1111,6 +1177,40 @@ public class RandomWalkSegmentation {
       return arg2 / matrix.getEntry(arg0, arg1);
     }
 
+  }
+
+  /**
+   * Divide matrix by matrix (element by element) setting 0 to result if divider is 0. Prevent NaNs.
+   * 
+   * <p>It performs the operation:
+   * 
+   * <pre>
+   * <code>
+   * A = [....];
+   * B = [....];
+   * R = A./B;
+   * R(isnan(R)) = 0;
+   * </code>
+   * </pre>
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  static class MatrixDotDivN extends MatrixDotDiv {
+
+    public MatrixDotDivN(RealMatrix m) {
+      super(m);
+    }
+
+    @Override
+    public double visit(int arg0, int arg1, double arg2) {
+      double entry = matrix.getEntry(arg0, arg1);
+      if (entry != 0.0) {
+        return arg2 / matrix.getEntry(arg0, arg1);
+      } else {
+        return 0.0;
+      }
+    }
   }
 
   /**

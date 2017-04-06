@@ -11,43 +11,40 @@ import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
  *
  */
 public class Params {
-  // TODO add params meaning
   /**
-   * The alpha.
+   * Alpha penalises pixels whose intensities are far away from the mean seed intensity.
    */
   public double alpha;
 
   /**
-   * The beta.
+   * Beta penalises pixels located at an edge, i.e. where there is a large gradient in intensity.
+   * Diffusion will be reduced.
    */
   public double beta;
 
   /**
-   * The gamma.
+   * Gamma is the strength of competition between foreground and background.
    * 
    * <p>gamma[1]==0 disables second sweep.
    */
   public double[] gamma;
 
   /**
-   * The iter.
+   * Maximum number of Euler iterations.
    */
   public int iter;
 
   /**
-   * The dt.
+   * Timestep, if dt=1 we are at the limit of CFL stability.
    */
   public double dt;
 
   /**
-   * The relim.
+   * Upper relative error limit used as stopping criterion.
+   * 
+   * <p>Contains errors rot two steps.
    */
-  public double relim;
-
-  /**
-   * true if method {@link #swapGamma()} was used. Means that order is different that given by user.
-   */
-  public boolean gammaSwapped;
+  public double[] relim;
 
   /**
    * true if local mean algorithm is used. false if global mean for seeds is computed.
@@ -88,10 +85,9 @@ public class Params {
     gamma[1] = 300;
     iter = 10000;
     dt = 0.1;
-    relim = 8e-3;
+    relim = new double[] { 8e-3, 0 }; // FIXME Temporarily disabled error on second sweep
     intermediateFilter = null;
     finalFilter = null;
-    gammaSwapped = false;
     useLocalMean = false;
     localMeanMaskSize = 25;
   }
@@ -105,12 +101,12 @@ public class Params {
    * @param gamma2 gamma2
    * @param iter iter
    * @param dt dt
-   * @param relim relim
+   * @param relim relim (will be copied)
    * @param useLocalMean useLocalMean
    * @param localMeanMaskSize localMeanMaskSize
    */
   public Params(double alpha, double beta, double gamma1, double gamma2, int iter, double dt,
-          double relim, boolean useLocalMean, int localMeanMaskSize) {
+          double[] relim, boolean useLocalMean, int localMeanMaskSize) {
     this();
     this.alpha = alpha;
     this.beta = beta;
@@ -118,22 +114,9 @@ public class Params {
     this.gamma[1] = gamma2;
     this.iter = iter;
     this.dt = dt;
-    this.relim = relim;
+    this.relim = Arrays.copyOf(relim, this.relim.length);
     this.useLocalMean = useLocalMean;
     this.localMeanMaskSize = localMeanMaskSize;
-  }
-
-  /**
-   * Helper method that simply swap order of gammas.
-   * 
-   * <p><tt>Solver</tt> takes only gamma[0] so if there is second sweep those values should be
-   * swapped.
-   */
-  void swapGamma() {
-    gammaSwapped = !gammaSwapped;
-    double tmp = gamma[0];
-    gamma[0] = gamma[1];
-    gamma[1] = tmp;
   }
 
   /*
@@ -144,10 +127,9 @@ public class Params {
   @Override
   public String toString() {
     return "Params [alpha=" + alpha + ", beta=" + beta + ", gamma=" + Arrays.toString(gamma)
-            + ", iter=" + iter + ", dt=" + dt + ", relim=" + relim + ", gammaSwapped="
-            + gammaSwapped + ", useLocalMean=" + useLocalMean + ", localMeanMaskSize="
-            + localMeanMaskSize + ", intermediateFilter=" + intermediateFilter + ", finalFilter="
-            + finalFilter + "]";
+            + ", iter=" + iter + ", dt=" + dt + ", relim=" + Arrays.toString(relim)
+            + ", useLocalMean=" + useLocalMean + ", localMeanMaskSize=" + localMeanMaskSize
+            + ", intermediateFilter=" + intermediateFilter + ", finalFilter=" + finalFilter + "]";
   }
 
   /*
@@ -166,12 +148,11 @@ public class Params {
     result = prime * result + (int) (temp ^ (temp >>> 32));
     temp = Double.doubleToLongBits(dt);
     result = prime * result + (int) (temp ^ (temp >>> 32));
+    result = prime * result + ((finalFilter == null) ? 0 : finalFilter.hashCode());
     result = prime * result + Arrays.hashCode(gamma);
-    result = prime * result + (gammaSwapped ? 1231 : 1237);
     result = prime * result + iter;
     result = prime * result + localMeanMaskSize;
-    temp = Double.doubleToLongBits(relim);
-    result = prime * result + (int) (temp ^ (temp >>> 32));
+    result = prime * result + Arrays.hashCode(relim);
     result = prime * result + (useLocalMean ? 1231 : 1237);
     return result;
   }
@@ -205,16 +186,13 @@ public class Params {
     if (!Arrays.equals(gamma, other.gamma)) {
       return false;
     }
-    if (gammaSwapped != other.gammaSwapped) {
-      return false;
-    }
     if (iter != other.iter) {
       return false;
     }
     if (localMeanMaskSize != other.localMeanMaskSize) {
       return false;
     }
-    if (Double.doubleToLongBits(relim) != Double.doubleToLongBits(other.relim)) {
+    if (!Arrays.equals(relim, other.relim)) {
       return false;
     }
     if (useLocalMean != other.useLocalMean) {
