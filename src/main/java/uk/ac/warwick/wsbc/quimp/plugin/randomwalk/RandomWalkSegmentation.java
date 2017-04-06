@@ -44,6 +44,15 @@ public class RandomWalkSegmentation {
   final int relErrStep = 20;
 
   /**
+   * Keep information about current sweep that {@link #solver(Map, RealMatrix[])} is doing.
+   * 
+   * <p>Affect indexing parameters arrays that keep different params for different sweeps.
+   * 
+   * @see Params
+   */
+  private int currentSweep = 0;
+
+  /**
    * Reasons of stopping diffusion process.
    * 
    * @author p.baniukiewicz
@@ -796,6 +805,12 @@ public class RandomWalkSegmentation {
       if (stoppedReason == StoppedBy.NANS || stoppedReason == StoppedBy.INFS) {
         break outerloop;
       }
+      // check error every relErrStep number of iterations
+      if (i % relErrStep == 0 && computeRelErr(fglast2d, fg2d) < params.relim[currentSweep]) {
+        stoppedReason = StoppedBy.RELERR;
+        break outerloop;
+      }
+
       QuimPArrayUtils.copy2darray(fg2d, fglast2d);
       fg = new Array2DRowRealMatrix(fg2d, false); // not copy of FG2d, just replace old FG
       bg = new Array2DRowRealMatrix(bg2d, false);
@@ -810,32 +825,32 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * Compute relative error between current foreground and foreground from last iteration.
+   * Compute relative error between current foreground and foreground from previous iteration.
    * 
    * <p>Assumes that both matrixes have the same size and they are regular arrays.
    * 
-   * @param fglast foreground matrix from last iteration
+   * @param fglast foreground matrix from previous iteration
    * @param fg current foreground
-   * @return relative error
+   * @return relative mean error
    */
   double computeRelErr(double[][] fglast, double[][] fg) {
     int rows = fglast.length;
     int cols = fglast[0].length;
     double rel = 0; // result to sum up
-    double tmp = 0; // temporary - calculated element
-    for (int r = 0; r < rows; r++) {
+    double tmp = 0; // temporary - current element
+    for (int r = 0; r < rows; r++) { // iterate over every element
       for (int c = 0; c < cols; c++) {
-        double denominator = fg[r][c] + fglast[r][c];
+        double denominator = fg[r][c] + fglast[r][c]; // compute denominator
         if (denominator == 0.0) { // not divide by 0
           tmp = 0.0;
-        } else {
+        } else { // get relative error
           tmp = 2 * Math.abs(fg[r][c] - fglast[r][c]) / denominator;
         }
-        rel += tmp;
+        rel += tmp; // sum it up to get mean at end
       }
     }
 
-    return rel / (rows * cols);
+    return rel / (rows * cols); // return mean error
   }
 
   /**
