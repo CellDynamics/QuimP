@@ -191,6 +191,7 @@ public class RandomWalkSegmentation {
    * @throws RandomWalkException On wrong seeds
    */
   public ImageProcessor run(Map<Seeds, ImageProcessor> seeds) throws RandomWalkException {
+    // TODO change behaviour of gamma[1]==0. Maybe it should do second sweep but with gamma==0
     Map<Seeds, RealMatrix> solved;
     RealMatrix[] precomputed = precomputeGradients(); // precompute gradients
     solved = solver(seeds, precomputed);
@@ -201,7 +202,6 @@ public class RandomWalkSegmentation {
         seedsNext.put(Seeds.ROUGHMASK, seeds.get(Seeds.ROUGHMASK));
       }
       solved = solver(seedsNext, precomputed);
-      params.swapGamma();
     }
     RealMatrix result = compare(solved); // result as matrix
     // do final filtering
@@ -252,7 +252,7 @@ public class RandomWalkSegmentation {
     bg1 = params.intermediateFilter.filter(bg1);
     bg1.invert();
     // prepare second sweep seeds from previous
-    params.swapGamma(); // to have second sweep gamma in [0]
+    currentSweep++;
 
     Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
     ret.put(Seeds.FOREGROUND, fg1);
@@ -763,7 +763,7 @@ public class RandomWalkSegmentation {
                           - (fg2d[r][c] - fgcircleft2d[r][c]) / wlfg2d[r][c])
                           + ((fgcirctop2d[r][c] - fg2d[r][c]) / wtfg2d[r][c]
                                   - (fg2d[r][c] - fgcircbottom2d[r][c]) / wbfg2d[r][c]))
-                  - params.gamma[0] * fg2d[r][c] * bg2d[r][c]);
+                  - params.gamma[currentSweep] * fg2d[r][c] * bg2d[r][c]);
           if (Double.isNaN(fg2d[r][c])) {
             stoppedReason = StoppedBy.NANS;
           }
@@ -791,7 +791,7 @@ public class RandomWalkSegmentation {
                           - (bg2d[r][c] - bgcircleft2d[r][c]) / wlbg2d[r][c])
                           + ((bgcirctop2d[r][c] - bg2d[r][c]) / wtbg2d[r][c]
                                   - (bg2d[r][c] - bgcircbottom2d[r][c]) / wbbg2d[r][c]))
-                  - params.gamma[0] * fglast2d[r][c] * bg2d[r][c]);
+                  - params.gamma[currentSweep] * fglast2d[r][c] * bg2d[r][c]);
           if (Double.isNaN(fg2d[r][c])) {
             stoppedReason = StoppedBy.NANS;
           }
@@ -816,7 +816,8 @@ public class RandomWalkSegmentation {
       bg = new Array2DRowRealMatrix(bg2d, false);
     }
 
-    LOGGER.debug("Stopped by " + stoppedReason);
+    LOGGER.info(
+            "Sweep " + currentSweep + " Stopped by " + stoppedReason + " at " + i + " iteration");
     Map<Seeds, RealMatrix> ret = new HashMap<Seeds, RealMatrix>(2);
     ret.put(Seeds.FOREGROUND, fg);
     ret.put(Seeds.BACKGROUND, bg);
@@ -849,8 +850,9 @@ public class RandomWalkSegmentation {
         rel += tmp; // sum it up to get mean at end
       }
     }
-
-    return rel / (rows * cols); // return mean error
+    double rele = rel / (rows * cols);
+    LOGGER.debug("Relative error = " + rele);
+    return rele; // return mean error
   }
 
   /**

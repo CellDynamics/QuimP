@@ -47,11 +47,6 @@ public class Params {
   public double[] relim;
 
   /**
-   * true if method {@link #swapGamma()} was used. Means that order is different that given by user.
-   */
-  public boolean gammaSwapped;
-
-  /**
    * true if local mean algorithm is used. false if global mean for seeds is computed.
    * 
    * <p>If localMean is used, the seeds provided to
@@ -93,7 +88,6 @@ public class Params {
     relim = new double[] { 8e-3, 1e-3 };
     intermediateFilter = null;
     finalFilter = null;
-    gammaSwapped = false;
     useLocalMean = false;
     localMeanMaskSize = 25;
   }
@@ -125,19 +119,6 @@ public class Params {
     this.localMeanMaskSize = localMeanMaskSize;
   }
 
-  /**
-   * Helper method that simply swap order of gammas.
-   * 
-   * <p><tt>Solver</tt> takes only gamma[0] so if there is second sweep those values should be
-   * swapped.
-   */
-  void swapGamma() {
-    gammaSwapped = !gammaSwapped;
-    double tmp = gamma[0];
-    gamma[0] = gamma[1];
-    gamma[1] = tmp;
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -147,9 +128,8 @@ public class Params {
   public String toString() {
     return "Params [alpha=" + alpha + ", beta=" + beta + ", gamma=" + Arrays.toString(gamma)
             + ", iter=" + iter + ", dt=" + dt + ", relim=" + Arrays.toString(relim)
-            + ", gammaSwapped=" + gammaSwapped + ", useLocalMean=" + useLocalMean
-            + ", localMeanMaskSize=" + localMeanMaskSize + ", intermediateFilter="
-            + intermediateFilter + ", finalFilter=" + finalFilter + "]";
+            + ", useLocalMean=" + useLocalMean + ", localMeanMaskSize=" + localMeanMaskSize
+            + ", intermediateFilter=" + intermediateFilter + ", finalFilter=" + finalFilter + "]";
   }
 
   /*
@@ -170,7 +150,6 @@ public class Params {
     result = prime * result + (int) (temp ^ (temp >>> 32));
     result = prime * result + ((finalFilter == null) ? 0 : finalFilter.hashCode());
     result = prime * result + Arrays.hashCode(gamma);
-    result = prime * result + (gammaSwapped ? 1231 : 1237);
     result = prime * result + iter;
     result = prime * result + localMeanMaskSize;
     result = prime * result + Arrays.hashCode(relim);
@@ -205,9 +184,6 @@ public class Params {
       return false;
     }
     if (!Arrays.equals(gamma, other.gamma)) {
-      return false;
-    }
-    if (gammaSwapped != other.gammaSwapped) {
       return false;
     }
     if (iter != other.iter) {
