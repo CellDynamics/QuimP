@@ -29,8 +29,216 @@ import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.QuimP;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 
+/*
+ * //!>
+ * @startuml doc-files/RandomWalkSegmentation_1_UML.png
+ * usecase IN as "Initialisation
+ * --
+ * Apply when main object is initialised.
+ * Object is always connected to the image
+ * that will be segmented."
+ * 
+ * usecase RUN as "Run
+ * --
+ * Related to running segmentation on
+ * the object. The result is segmented
+ * image"
+ * 
+ * usecase CON as "Convert
+ * --
+ * Related to various conversions
+ * that are available as static
+ * methods. They allow to change
+ * representation of objects among
+ * dataformat used by this object.
+ * "
+ * 
+ * usecase PAR as "Parameters
+ * --
+ * Related to creating object
+ * representing parameters
+ * of the segmentation process.
+ * "
+ * Dev -> IN
+ * Dev -> RUN
+ * Dev --> CON
+ * Dev --> PAR
+ * 
+ * RUN ..> IN : <<include>>
+ * PAR -- IN
+ * CON -- RUN
+ * @enduml
+ * //!<
+ */
+/*
+ * //!>
+ * @startuml doc-files/RandomWalkSegmentation_2_UML.png
+ * start
+ * :Assign inputs
+ * to internal fields;
+ * note right
+ * Inputs are **referenced**
+ * end note
+ * :Validate input
+ * image;
+ * :Convert image to
+ * ""Matrix"";
+ * note right
+ * Or Matrix to image
+ * depending on constructor
+ * end note
+ * stop
+ * @enduml
+ * //!<
+ */
+/*
+ * //!>
+ * @startuml doc-files/RandomWalkSegmentation_3_UML.png
+ * start
+ * :Compute gradients;
+ * note left
+ * Gradients depend
+ * on image structure
+ * and they are tabelarised
+ * for speed
+ * end note
+ * :solve problem;
+ * -> //Result of segmentation, FG and BG probability maps//;
+ * note right
+ * Main procedure for
+ * RW segmentation.
+ * Return segmented image.
+ * end note
+ * if (next sweep?) then (yes)
+ * :Run
+ * intermediate
+ * filter;
+ * note left
+ * Optional, run on
+ * previous results
+ * end note
+ * :Prepare to
+ * next sweep;
+ * note left
+ * Convert previous result
+ * into seed, increment
+ * ""currentSweep""
+ * end note
+ * :solve problem;
+ * endif
+ * :Compare FG and BG;
+ * note left
+ * Foreground and 
+ * background probabilities
+ * are compared to get 
+ * unique result
+ * end note
+ * -> //Binary image//;
+ * :Run
+ * post-filtering;
+ * note right 
+ * Optional
+ * end note
+ * stop
+ * @enduml
+ * //!<
+ */
+/*
+ * //!>
+ * @startuml doc-files/RandomWalkSegmentation_4_UML.png
+ * actor User as user
+ * participant RandomWalkSegmentation as rw
+ * user -> rw : run(..)
+ * activate rw
+ * rw -> rw : precomputeGradients()
+ *  activate rw
+ *  rw --> rw : RealMatrix[]
+ *  deactivate rw
+ * rw -> rw : solver(..) 
+ *  note right: Solver always return\nprobability maps for\nforeground AND background
+ *  activate rw
+ *  rw --> rw : Map<Seeds, RealMatrix> solved
+ *  deactivate rw
+ * alt next sweep?
+ *  rw -> rw :  rollNextSweep(solved)
+ *   activate rw
+ *   rw --> rw : Map<Seeds, ImageProcessor> seedsNext
+ *   deactivate rw
+ *  rw -> rw : solver(seedsNext) 
+ *   activate rw
+ *   rw --> rw : Map<Seeds, RealMatrix> solved
+ *   deactivate rw
+ * end 
+ * rw -> rw : compare(solved)
+ *  note right: Compare FG and BG maps\nto get segmentation result
+ *  activate rw
+ *  rw --> rw : RealMatrix result
+ *  deactivate rw
+ * alt final filtering == yes
+ *  rw -> Converter : RealMatrix
+ *   activate Converter
+ *   Converter --> rw : ImageProcessor
+ *   deactivate Converter
+ *  rw -> BinaryFilters : filter(ImageProcessor) 
+ *   activate BinaryFilters
+ *   BinaryFilters --> rw : filtered ImageProcessor
+ *   deactivate BinaryFilters
+ * else No final filtering
+ *  rw -> Converter : RealMatrix
+ *   activate Converter
+ *   Converter --> rw : ImageProcessor
+ *   deactivate Converter  
+ * end 
+ * rw --> user : ImageProcessor
+ * deactivate rw
+ * @enduml
+ * //!<
+ */
 /**
  * This is implementation of Matlab version of Random Walk segmentation algorithm.
+ * 
+ * <p>Available use cases are: <br>
+ * <img src="doc-files/RandomWalkSegmentation_1_UML.png"/><br>
+ * 
+ * <h1>Parameters</h1>
+ * In this Use Case user create a set of segmentation parameters. They are hold in {@link Params}
+ * class. This class also contains some pre- and post-processing settings used by
+ * {@link RandomWalkSegmentation} object. Default constructor sets recommended values to all numeric
+ * options skipping those related to pre- post-processing objects.
+ * 
+ * <h1>Initialisation</h1>
+ * In this step the image that is supposed to be segmented is assigned to the object as well as
+ * parameters of the process. There are two constructors available accepting <tt>ImageProcessor</tt>
+ * and <tt>RelaMatrix</tt> image. These formats can be converted to each other using static
+ * {@link #imageProcessor2RealMatrix(ImageProcessor)} and
+ * {@link #realMatrix2ImageProcessor(RealMatrix)}.
+ * <img src="doc-files/RandomWalkSegmentation_2_UML.png"/><br>
+ * 
+ * <h1>Convert</h1>
+ * This Use Case contains preparatory static methods used for converting data into required format.
+ * Those are:
+ * <ol>
+ * <li>ImageProcessor &lt;-&gt; RealMatrix converters
+ * <li> RGB image -&gt; Seed converter
+ * </ol>
+ * The latter ones convert an RGB image that contain pixels labelled with different colors to binary
+ * images. Each binary image will have only those pixels set which correspond to color of the
+ * particular label. Seed colors should be unique across image, i.e. the object itself should be in
+ * grey scale.
+ * 
+ * <h1>Run</h1>
+ * In this USe Case the image assigned in <b>Initialisation</b> step is segmented and processed
+ * according to parameters set in <b>Parameters</b>. The process is started by calling
+ * {@link #run(Map)} method. The input <tt>Map</tt> contains seeds pixels converted to binary images
+ * formed into {@link java.util.Map}. This structure is produced from RGB images by static
+ * {@link #decodeSeeds(ImagePlus, Color, Color)} or
+ * {@link #decodeSeeds(ImageProcessor, Color, Color)}.
+ * 
+ * <p>Here is brief look for {@link #run(Map)} method activity:
+ * <img src="doc-files/RandomWalkSegmentation_3_UML.png"/><br>
+ * 
+ * <p>Sequence diagram of {@link #run(Map)} giving the order of called methods:
+ * <img src="doc-files/RandomWalkSegmentation_4_UML.png"/><br>
  * 
  * <p>See: src/test/Resources-static/Matlab/rw_laplace4.m
  * 
@@ -78,7 +286,7 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * Define foreground and background indexes.
+   * Define foreground and background indexes enums with numerical indexes.
    * 
    * @author p.baniukiewicz
    *
@@ -214,7 +422,7 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * Prepare seeds from results of previous solver. It swaps gammas.
+   * Prepare seeds from results of previous solver.
    * 
    * @param solved results from {@link #solver(Map, RealMatrix[])}
    * @return new seed taken from previous solution.
@@ -292,11 +500,15 @@ public class RandomWalkSegmentation {
    * Find <b>BACKGROUND</b> and <b>FOREGROUND</b> labelled pixels on seed image and return their
    * positions.
    * 
+   * <p>Seeded RGB image is decomposed to separated binary images that contain only seeds.
+   * E.g. <b>FOREGROUND</b> image will have only pixels that were labelled as foreground.
+   * Decomposition is performed with respect to provided label colours.
+   * 
    * @param rgb RGB seed image
    * @param fseed color of marker for foreground pixels
    * @param bseed color of marker for background pixels
-   * @return Map containing list of coordinates that belong to foreground and background. Map is
-   *         addressed by two enums: <i>FOREGROUND</i> and <i>BACKGROUND</i>
+   * @return Map containing extracted seed pixels from input RGB image that belong to foreground and
+   *         background. Map is addressed by two enums: <i>FOREGROUND</i> and <i>BACKGROUND</i>
    * @throws RandomWalkException When image other that RGB provided
    */
   public static Map<Seeds, ImageProcessor> decodeSeeds(final ImagePlus rgb, final Color fseed,
@@ -379,31 +591,34 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * Compute image circularly shifted by one pixel towards selected direction.
+   * Shift image in given direction with step of one and circular boundary conditions.
    *
    * @param input Image to be shifted
-   * @param direction Shift direction. This method is adjusted to work as MAtlab code and to keep
-   *        Matlab naming (rw_laplace4.m) thus the shift direction names are not adequate to shift
-   *        direction.
-   * @return Copy of input shifted by one pixel in \a direction.
+   * @param direction Shift direction. This method is adjusted to be compatible with Matlab code
+   *        and to keep Matlab naming (rw_laplace4.m) thus the shift direction names are not
+   *        adequate to shift direction.
+   * @return Copy of input shifted by one pixel in direction.
    */
   RealMatrix circshift(RealMatrix input, int direction) {
-    double[][] sub; // part of matrix that does no change put is shifted
+    // Routine cuts part of matrix that does not change, paste it into new matrix shifting in given
+    // direction and then add missing looped row/column (last or first depending on shift
+    // direction).
+    double[][] sub; // part of matrix that does no change but is shifted
     int rows = input.getRowDimension(); // cache sizes
     int cols = input.getColumnDimension();
     Array2DRowRealMatrix out = new Array2DRowRealMatrix(rows, cols); // output matrix, shifted
     switch (direction) {
-      case BOTTOM: // b
+      case BOTTOM:
         // rotated right - last column become first
         // cut submatrix from first column to before last
         sub = new double[rows][cols - 1];
-        input.copySubMatrix(0, rows - 1, 0, cols - 2, sub); // cols-2 because last is not
+        input.copySubMatrix(0, rows - 1, 0, cols - 2, sub); // cols-2 - cols is size not last ind
         // create new matrix - paste submatrix but shifted right
         out.setSubMatrix(sub, 0, 1);
         // copy last column to first
         out.setColumnVector(0, input.getColumnVector(cols - 1));
         break;
-      case TOP: // top
+      case TOP:
         // rotated left - first column become last
         // cut submatrix from second column to last
         sub = new double[rows][cols - 1];
@@ -413,7 +628,7 @@ public class RandomWalkSegmentation {
         // copy first column to last
         out.setColumnVector(cols - 1, input.getColumnVector(0));
         break;
-      case RIGHT: // right
+      case RIGHT:
         // rotated top - first row become last
         // cut submatrix from second row to last
         sub = new double[rows - 1][cols];
@@ -423,7 +638,7 @@ public class RandomWalkSegmentation {
         // copy first row to last
         out.setRowVector(rows - 1, input.getRowVector(0));
         break;
-      case LEFT: // left (JBOTTM)
+      case LEFT:
         // rotated bottom - last row become first
         // cut submatrix from first row to before last
         sub = new double[rows - 1][cols];
@@ -453,31 +668,36 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * Pre-compute gradient matrices.
+   * Pre-compute normalised gradient matrices.
    * 
-   * @return Array of precomputed data in the following order: -# [0] - gRight2 -# [1] - gTop2 -#
-   *         [2] - gLeft2 -# [3] - gBottom2
+   * <p>This computes squared intensity differences.These correspond to horizontal and vertical
+   * gradients assuming distance of one between pixels.
+   * 
+   * @return Array of precomputed data in the following order: [0] - gRight2 [1] - gTop2 [2] -
+   *         gLeft2 [3] - gBottom2
    */
   private RealMatrix[] precomputeGradients() {
-    // setup shifted images
+    // setup shifted images assuming shift of one pixel and periodic boundary conditions.
     RealMatrix right = circshift(image, RIGHT);
     RealMatrix top = circshift(image, TOP);
-    // compute squared intensity differences
+    // compute squared intensity differences (a-b).^2
     RealMatrix gradRight2 = getSqrdDiffIntensity(image, right);
     RealMatrix gradTop2 = getSqrdDiffIntensity(image, top);
-    // compute maximum of horizontal and vertical intensity gradients
+    // compute maximum of horizontal and vertical intensity gradients (for normalization)
     double maxGright2 = QuimPArrayUtils.getMax(gradRight2);
     LOGGER.debug("maxGright2 " + maxGright2);
     double maxGtop2 = QuimPArrayUtils.getMax(gradTop2);
     LOGGER.debug("maxGtop2 " + maxGtop2);
+    // find maximum of horizontal and vertical maxima
     double maxGrad2 = maxGright2 > maxGtop2 ? maxGright2 : maxGtop2;
-
     LOGGER.debug("maxGrad2max " + maxGrad2);
+
     // Normalize squared gradients to maxGrad
     gradRight2.walkInOptimizedOrder(new MatrixElementDivide(maxGrad2));
     gradTop2.walkInOptimizedOrder(new MatrixElementDivide(maxGrad2));
     // assign outputs
     RealMatrix[] out = new RealMatrix[4];
+    // get remaining directions - use already normalized squared gradients
     RealMatrix gradLeft2 = circshift(gradRight2, LEFT);
     out[2] = gradLeft2;
     RealMatrix gradBottom2 = circshift(gradTop2, BOTTOM);
@@ -489,10 +709,10 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * Compute mean value from image only for selected seed pixels.
+   * Compute mean value from image only seeded pixels.
    * 
-   * @param seeds seeds list of points
-   * @return mean value for selected seeds
+   * @param seeds coordinates of points used to calculate their mean intensity
+   * @return mean value for points
    * @see #convertToList(Map)
    */
   protected double getMeanSeedGlobal(List<Point> seeds) {
@@ -500,18 +720,33 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * Calculate mean intensity for FG and BG seeds for stored image.
+   * Calculate local mean intensity for input image but only for areas masked by provided mask.
    * 
-   * @param mask Binary mask of object
+   * <p>The mean over segmented image intensity is evaluated within square window of configurable
+   * size and only for those pixels that are masked by binary mask given to this method. Mean is
+   * calculated respectfully to the number of masked pixels within window. Window is moved over the
+   * whole image.
+   * 
+   * <p>This method works similarly to the convolution with the difference that the kernel is
+   * normalised for each position of the window to the number of masked pixels (within it). If for
+   * any position of the window there is no masked pixels inside, 0.0 is set as result.
+   * 
+   * @param mask Binary mask of segmented image. Mask must contain only pixels with intensity 0 or
+   *        255 (according to definition of binary image in IJ)
    * @param localMeanMaskSize Odd size of kernel
-   * @return Averaged image. Average is computed for every pixel of image
-   *         {@link #RandomWalkSegmentation(ImageProcessor, Params)} for <tt>localMeanMaskSize</tt>
-   *         neighbours, within pixels masked by <tt>mask</tt>.
+   * @return Averaged image. Average is computed for every pixel of segmented image. For not masked
+   *         pixels mean is set to 0.0
    */
   protected RealMatrix getMeanSeedLocal(ImageProcessor mask, int localMeanMaskSize) {
+    // IJ convolution is utilised. Computations are done twice, first time only on mask to get the
+    // number of masked pixels covered by it for each image pixel
+    // second time for segmented image to get sum of intensities within the kernel.
+    // in both cases kernels are normalised (default behaviour of ImageProcessor.convolve) but then
+    // "denormalised" by multiplying by their size. Kernels are 1-filled.
     if (localMeanMaskSize % 2 == 0) {
       throw new IllegalArgumentException("Kernel sie must be odd");
     }
+    // must be binary as we later assume that mx intensity is 255 (like in IJ binary images)
     if (!mask.isBinary()) {
       throw new IllegalArgumentException("Mask must be binary");
     }
@@ -519,33 +754,37 @@ public class RandomWalkSegmentation {
       throw new IllegalArgumentException("Mask must have size of processed image");
     }
     ImageProcessor maskc = mask.duplicate(); // local copy of mask to not modify it
-    maskc.subtract(254); // if it is IJ binary it contains [0,255], scale to 1.0
-    ImageProcessor numofpix = maskc.duplicate(); // number of neighbouring pixels
-    // fg
-    // meanseed[FOREGROUND] = StatUtils.mean(getValues(image, seeds.get(FOREGROUND)).getDataRef());
-    // generate kernel
+    maskc.subtract(254); // if it is IJ binary it contains [0,255], scale to 0 - 1.0
+    // make mask copy for getting number of pixels in mask for each position of kernel
+    ImageProcessor numofpix = maskc.duplicate();
+
+    // generate 1-filled kernel of given size
     float[] kernel = new float[localMeanMaskSize * localMeanMaskSize];
     Arrays.fill(kernel, 1.0f);
+    // get number of mask pixesl for ach position of kernel
     numofpix = maskc.convertToFloat(); // must convert here
     numofpix.convolve(kernel, localMeanMaskSize, localMeanMaskSize);
     numofpix.multiply(kernel.length); // convolution normalises kernel - revert it 1)
-    // cut to mask - mulitply by 1.0 mask
+    // cut to mask - mulitply by 1.0 mask - reject pixels that are not masked
     numofpix = new ImageCalculator()
             .run("mul create", new ImagePlus("", numofpix), new ImagePlus("", maskc))
             .getProcessor();
-    // cut image to input mask
+
+    // get sum of intensities within the kernel for segmented image
+    // cut image to input mask - set all other pixels to 0. Must be done here to not count nonmasked
+    // pixels
     ImageProcessor cutImage = new ImageCalculator()
             .run("mul create float", new ImagePlus("", ip), new ImagePlus("", maskc))
             .getProcessor();
     // convolve cut image
     cutImage.setCalibrationTable(null);
     cutImage.convolve(kernel, localMeanMaskSize, localMeanMaskSize);
-    cutImage.multiply(kernel.length);
-    // deal with edges of image after convolution - cut them
+    cutImage.multiply(kernel.length); // denormalise result
+    // deal with edges of image after convolution - remove them
     cutImage = new ImageCalculator()
             .run("mul create float", new ImagePlus("", cutImage), new ImagePlus("", maskc))
             .getProcessor();
-    // rounding floats to integer values
+    // rounding floats to integer values - convolution works for float images only
     float[] cutImageRaw = (float[]) cutImage.getPixels();
     for (int i = 0; i < cutImage.getPixelCount(); i++) {
       cutImageRaw[i] = Math.round(cutImageRaw[i]);
@@ -554,29 +793,19 @@ public class RandomWalkSegmentation {
     for (int i = 0; i < numofpix.getPixelCount(); i++) {
       numofpixRaw[i] = Math.round(numofpixRaw[i]);
     }
-    // proper mean - use only pixels inside mask
+    // proper mean - use only pixels inside mask. we use cutImageRaw that contains sums of
+    // intensities for each location of kernel and numofpixRaw that contains number of masked pixels
     RealMatrix meanseedFg = new Array2DRowRealMatrix(cutImage.getHeight(), cutImage.getWidth());
     int count = 0;
     for (int r = 0; r < cutImage.getHeight(); r++) {
       for (int c = 0; c < cutImage.getWidth(); c++) {
-        if (numofpix.getPixelValue(c, r) != 0) {
-          // meanseedFg.setEntry(r, c,
-          // ((double) cutImage.getPixelValue(c, r) / numofpix.getPixelValue(c, r)));
+        if (numofpix.getPixelValue(c, r) != 0) { // skip 0 pixels to not divide by 0
           meanseedFg.setEntry(r, c, ((double) cutImageRaw[count] / numofpixRaw[count]));
         } else {
-          meanseedFg.setEntry(r, c, 0.0);
+          meanseedFg.setEntry(r, c, 0.0); // if no pixels in mask for current r,c - set mean to 0
         }
         count++;
       }
-      // ImageProcessor meanseedFg = new ImageCalculator()
-      // .run("div create float", new ImagePlus("", cutImage), new ImagePlus("", numofpix))
-      // .getProcessor();
-      // float[] raw = (float[]) meanseedFg.getPixels();
-      // for (int i = 0; i < meanseedFg.getPixelCount(); i++) {
-      // if (Double.isNaN(raw[i])) {
-      // raw[i] = 0;
-      // }
-      // }
     }
 
     if (QuimP.SUPER_DEBUG) { // save intermediate results
@@ -594,10 +823,13 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * Convert processors obtained for object and background to format accepted by RW.
+   * Convert binary maps representing foreground and background seeds to lists of coordinates
+   * (format accepted by {@link #solver(Map, RealMatrix[])}).
    * 
    * @param seeds foreground and background seeds
    * @return List of point coordinates accepted by RW algorithm.
+   * @see #decodeSeeds(ImagePlus, Color, Color)
+   * @see #decodeSeeds(ImageProcessor, Color, Color)
    */
   public static Map<Seeds, List<Point>> convertToList(Map<Seeds, ImageProcessor> seeds) {
     ImageProcessor fgmask = seeds.get(Seeds.FOREGROUND);
@@ -623,39 +855,75 @@ public class RandomWalkSegmentation {
     return out;
   }
 
+  /*
+   *
+   * //!>
+   * @startuml doc-files/RandomWalkSegmentation_5_UML.png
+   * start
+   * :Convert seeds to coordinates;
+   * if (local mean?) then (yes)
+   *  :compute **local** mean for **FG**;
+   *  :compute **global** mean for **BG**;
+   *  :subtract FG and BG means\nfrom image;
+   * else (no)
+   *  :compute **global** mean for **FG**;
+   *  :compute **global** mean for **BG**;
+   *  :subtract FG and BG means\nfrom image;
+   * endif
+   * :compute normalised\n""(Image-meanseed).^2"";
+   * :compute weights;
+   * :compute average of weights;
+   * :compute diffusion constant;
+   * :compute averaged weights;
+   * :compute FG;
+   * note left
+   * loop
+   * end note
+   * :compute BG;
+   * note right
+   * loop
+   * end note
+   * stop
+   * @enduml
+   * //!<
+   */
   /**
-   * Do main computations.
+   * Run Random Walk segmentation.
+   * 
+   * <p>The activity diagram for solver is as follows:
+   * <img src="doc-files/RandomWalkSegmentation_5_UML.png"/><br>
    * 
    * @param seeds seed array returned from {@link #decodeSeeds(ImagePlus, Color, Color)}
-   * @param gradients precomputed gradients returned from {@link #precomputeGradients()}
-   * @return Computed probabilities for background and foreground, RealMatrix[2],
+   * @param gradients pre-computed gradients returned from {@link #precomputeGradients()}
+   * @return Computed probabilities for background and foreground, RealMatrix[2]=
    *         RealMatrix[FOREGROUND] and RealMatrix[BACKGROUND]
    */
   protected Map<Seeds, RealMatrix> solver(Map<Seeds, ImageProcessor> seeds,
           RealMatrix[] gradients) {
-
-    RealMatrix diffIfg = null;
-    RealMatrix diffIbg = null;
-    Map<Seeds, List<Point>> seedsP = convertToList(seeds);
+    RealMatrix diffIfg = null; // normalised squared differences to mean seed intensities for FG
+    RealMatrix diffIbg = null; // normalised squared differences to mean seed intensities for BG
+    Map<Seeds, List<Point>> seedsP = convertToList(seeds); // seed images as seed points coordinates
+    // decide whether to use local mean or global mean. Local mean is computed within square mask
+    // of configurable size whereas the global mean is a mean intensity of all seeded pixels. Both
+    // evaluated separately for BG and FG
     if (params.useLocalMean && seeds.get(Seeds.ROUGHMASK) != null) {
-      if (seeds.get(Seeds.ROUGHMASK) == null) {
-        throw new IllegalArgumentException("No rough mask provided");
-      }
       RealMatrix localMeanFg =
               getMeanSeedLocal(seeds.get(Seeds.ROUGHMASK), params.localMeanMaskSize);
       diffIfg = image.subtract(localMeanFg);
       double meanseedBkg = getMeanSeedGlobal(seedsP.get(Seeds.BACKGROUND));
       LOGGER.trace("meanseedBkg: " + meanseedBkg);
       diffIbg = image.scalarAdd(meanseedBkg);
-    } else { // localmean for whole seeds
-      double[] meanseed = new double[2];
+    } else { // global for whole seeds
+      double[] meanseed = new double[2]; // will keep means for FG and BG
+      // compute intensity means for image points labelled by seeds
       meanseed[Seeds.FOREGROUND.getIndex()] = getMeanSeedGlobal(seedsP.get(Seeds.FOREGROUND));
       meanseed[Seeds.BACKGROUND.getIndex()] = getMeanSeedGlobal(seedsP.get(Seeds.BACKGROUND));
       LOGGER.debug("meanseed_fg=" + meanseed[0] + " meanseed_bg=" + meanseed[1]);
-      // compute normalised squared differences to mean seed intensities
+      // compute normalised squared differences to mean seed intensities (Image-meanseed).^2
       diffIfg = image.scalarAdd(-meanseed[Seeds.FOREGROUND.getIndex()]);
       diffIbg = image.scalarAdd(-meanseed[Seeds.BACKGROUND.getIndex()]);
     }
+    // normalize (Image-meanseed).^2 to maximal (theoretical) value which is 255^2 got 8-bit images
     diffIfg.walkInOptimizedOrder(new MatrixElementPowerDiv(65025));
     diffIbg.walkInOptimizedOrder(new MatrixElementPowerDiv(65025));
     LOGGER.trace("fseeds size: " + seedsP.get(Seeds.FOREGROUND).size());
@@ -663,7 +931,7 @@ public class RandomWalkSegmentation {
     LOGGER.trace("getValfseed: " + getValues(image, seedsP.get(Seeds.FOREGROUND)));
 
     // compute weights for diffusion in all four directions, dependent on local gradients and
-    // differences to mean intensities of seeds
+    // differences to mean intensities of seeds, for FG and BG
     Array2DRowRealMatrix wrfg = (Array2DRowRealMatrix) computeweights(diffIfg, gradients[0]);
     Array2DRowRealMatrix wlfg = (Array2DRowRealMatrix) computeweights(diffIfg, gradients[2]);
     Array2DRowRealMatrix wtfg = (Array2DRowRealMatrix) computeweights(diffIfg, gradients[1]);
@@ -674,116 +942,125 @@ public class RandomWalkSegmentation {
     Array2DRowRealMatrix wtbg = (Array2DRowRealMatrix) computeweights(diffIbg, gradients[1]);
     Array2DRowRealMatrix wbbg = (Array2DRowRealMatrix) computeweights(diffIbg, gradients[3]);
 
-    // compute averaged weights, left/right and top/bottom
-    // used when computing second spatial derivate from first one
-    RealMatrix avgwxfg = wlfg.add(wrfg);
-    avgwxfg.walkInOptimizedOrder(new MatrixElementMultiply(0.5)); // correct
-    RealMatrix avgwyfg = wtfg.add(wbfg);
-    avgwyfg.walkInOptimizedOrder(new MatrixElementMultiply(0.5));
-    RealMatrix avgwxbg = wlbg.add(wrbg);
-    avgwxbg.walkInOptimizedOrder(new MatrixElementMultiply(0.5));
-    RealMatrix avgwybg = wtbg.add(wbbg);
-    avgwybg.walkInOptimizedOrder(new MatrixElementMultiply(0.5));
-    // d is the diffusion constant times the timestep of the Euler scheme obey CFL stability
-    // criterion. D*dt/(dx^2) should be <<1/4
-    // WARN See differences between matlab and java in definition up,down,etx. In matlab it seems to
-    // be wrong according to names
-    double tmp1 = getStabilityCriterion(wrfg, avgwxfg);
-    double tmp2 = getStabilityCriterion(wlfg, avgwxfg);
-    double drl2 = tmp1 < tmp2 ? tmp1 : tmp2;
-    tmp1 = getStabilityCriterion(wtfg, avgwyfg);
-    tmp2 = getStabilityCriterion(wbfg, avgwyfg);
-    double dtb2 = tmp1 < tmp2 ? tmp1 : tmp2;
-    double diffusion = drl2 < dtb2 ? drl2 : dtb2; // D=0.25*min(drl2,dtb2)
-    diffusion *= 0.25; // correct
-    LOGGER.debug("drl2=" + drl2 + " dtb2=" + dtb2); // ok
-    LOGGER.debug("D=" + diffusion); // ok
+    // compute averaged weights, left/right and top/bottom used when computing second spatial
+    // derivative from first one
+    // avgwx_fg = 0.5*(wl_fg+wr_fg) - for FG
+    RealMatrix avgwxfg = wlfg.add(wrfg); // wl_fg+wr_fg - (left+right)
+    avgwxfg.walkInOptimizedOrder(new MatrixElementMultiply(0.5)); // 0.5*(wl_fg+wr_fg)
+    RealMatrix avgwyfg = wtfg.add(wbfg); // wt_fg+wb_fg - (top+bottom)
+    avgwyfg.walkInOptimizedOrder(new MatrixElementMultiply(0.5)); // 0.5*(wt_fg+wb_fg)
+    // avgwx_bg = 0.5*(wl_bg+wr_bg) - for BG
+    RealMatrix avgwxbg = wlbg.add(wrbg); // wl_bg+wr_bg - (left+right)
+    avgwxbg.walkInOptimizedOrder(new MatrixElementMultiply(0.5)); // 0.5*(wl_bg+wr_bg)
+    RealMatrix avgwybg = wtbg.add(wbbg); // wt_bg+wb_bg - (top+bottom)
+    avgwybg.walkInOptimizedOrder(new MatrixElementMultiply(0.5)); // 0.5*(wt_bg+wb_bg)
 
-    Array2DRowRealMatrix fg =
-            new Array2DRowRealMatrix(image.getRowDimension(), image.getColumnDimension());
-    double[][] fglast2d = new double[image.getRowDimension()][image.getColumnDimension()];
-    Array2DRowRealMatrix bg =
-            new Array2DRowRealMatrix(image.getRowDimension(), image.getColumnDimension());
+    // Compute diffusion coefficient that will obey stability criterion
+    double diffusion = getDiffusionConst(wrfg, wlfg, wtfg, wbfg, avgwxfg, avgwyfg);
+    LOGGER.debug("D=" + diffusion);
 
-    if (!params.useLocalMean) {
-      // precompute terms for loop disabled rw_mod_1
+    // get average "distance" between weights multiplying w = w.*avgw, this is only for optimisation
+    // purposes.
+    if (params.useLocalMean == false) { // does not apply if we use local mean FIXME why?
       wrfg.walkInOptimizedOrder(new MatrixDotProduct(avgwxfg));
       wlfg.walkInOptimizedOrder(new MatrixDotProduct(avgwxfg));
       wtfg.walkInOptimizedOrder(new MatrixDotProduct(avgwyfg));
       wbfg.walkInOptimizedOrder(new MatrixDotProduct(avgwyfg));
     }
-
     wrbg.walkInOptimizedOrder(new MatrixDotProduct(avgwxbg));
     wlbg.walkInOptimizedOrder(new MatrixDotProduct(avgwxbg));
     wtbg.walkInOptimizedOrder(new MatrixDotProduct(avgwybg));
     wbbg.walkInOptimizedOrder(new MatrixDotProduct(avgwybg));
 
-    double[][] wrfg2d = wrfg.getDataRef();
-    double[][] wlfg2d = wlfg.getDataRef();
-    double[][] wtfg2d = wtfg.getDataRef();
-    double[][] wbfg2d = wbfg.getDataRef();
+    // initialize FG and BG probability maps, they are outputs from this routine
+    Array2DRowRealMatrix fg =
+            new Array2DRowRealMatrix(image.getRowDimension(), image.getColumnDimension());
+    Array2DRowRealMatrix bg =
+            new Array2DRowRealMatrix(image.getRowDimension(), image.getColumnDimension());
+    // this temporary array will keep solution from n-1 iteration used for computing relative error
+    double[][] tmpFglast2d = new double[image.getRowDimension()][image.getColumnDimension()];
 
-    double[][] wrbg2d = wrbg.getDataRef();
-    double[][] wlbg2d = wlbg.getDataRef();
-    double[][] wtbg2d = wtbg.getDataRef();
-    double[][] wbbg2d = wbbg.getDataRef();
+    // dereferencing arrays, all computations are done on underlying [][] arrays but not on
+    // RelaMatrix objects, optimisation again
+    double[][] wrfg2d = wrfg.getDataRef(); // weight to right for FG
+    double[][] wlfg2d = wlfg.getDataRef(); // weight to left for FG
+    double[][] wtfg2d = wtfg.getDataRef(); // weight to top for FG
+    double[][] wbfg2d = wbfg.getDataRef(); // weight to bottom for FG
+
+    double[][] wrbg2d = wrbg.getDataRef(); // weight to right for BG
+    double[][] wlbg2d = wlbg.getDataRef(); // weight to left for BG
+    double[][] wtbg2d = wtbg.getDataRef(); // weight to top for BG
+    double[][] wbbg2d = wbbg.getDataRef(); // weight to bottom for BG
+
+    double[][] fg2d = fg.getDataRef(); // reference to FG probabilities
+    double[][] bg2d = bg.getDataRef(); // reference to BG probabilities
 
     StoppedBy stoppedReason = StoppedBy.ITERATIONS; // default assumption
     int i; // iteration counter
-    // main loop
+    // main loop here we simulate diffusion process in time
     outerloop: for (i = 0; i < params.iter; i++) {
       LOGGER.trace("Iter: " + i);
-      // optimisation
-      ArrayRealVector tmp = new ArrayRealVector(1); // filled with 0
-      double[] tmpref = tmp.getDataRef();
+      // fill seed pixels explicitly with probability 1 for FG and BG
+      ArrayRealVector tmp = new ArrayRealVector(1); // filled with 0, setValues() needs that input
+      double[] tmpref = tmp.getDataRef(); // just get reference to underlying array
+      // set probability to 0 of being FG for BG seeds and vice versa
       setValues(fg, seedsP.get(Seeds.BACKGROUND), tmp); // set 0
       setValues(bg, seedsP.get(Seeds.FOREGROUND), tmp);
+      // set probability to 1 for of being FG for FG seeds and vice versa
       tmpref[0] = 1;
       setValues(fg, seedsP.get(Seeds.FOREGROUND), tmp); // set 1
       setValues(bg, seedsP.get(Seeds.BACKGROUND), tmp);
       tmp = null;
 
-      // groups for long term for FG
+      // ------------------- Computation of FG map ------------------------------------------------
+      // groups for long term for FG. Get all four neighbours to current pixel
       Array2DRowRealMatrix fgcircright = (Array2DRowRealMatrix) circshift(fg, RIGHT);
       Array2DRowRealMatrix fgcircleft = (Array2DRowRealMatrix) circshift(fg, LEFT);
       Array2DRowRealMatrix fgcirctop = (Array2DRowRealMatrix) circshift(fg, TOP);
       Array2DRowRealMatrix fgcircbottom = (Array2DRowRealMatrix) circshift(fg, BOTTOM);
 
-      double[][] fgcircright2d = fgcircright.getDataRef();
-      double[][] fg2d = fg.getDataRef();
-      double[][] bg2d = bg.getDataRef();
-      double[][] fgcircleft2d = fgcircleft.getDataRef();
-      double[][] fgcirctop2d = fgcirctop.getDataRef();
-      double[][] fgcircbottom2d = fgcircbottom.getDataRef();
+      // extract required references from RealMatrix objects.
+      double[][] fgcircright2d = fgcircright.getDataRef(); // reference to FG probab. shifted right
+      double[][] fgcircleft2d = fgcircleft.getDataRef(); // reference to FG probab. shifted left
+      double[][] fgcirctop2d = fgcirctop.getDataRef(); // reference to FG probab. shifted top
+      double[][] fgcircbottom2d = fgcircbottom.getDataRef(); // reference to FG probab. shifted bot
 
-      for (int r = 0; r < fg.getRowDimension(); r++) {
-        for (int c = 0; c < fg.getColumnDimension(); c++) {
+      // Traverse all pixels in FG map and update them according to diffusion from 4 neighbours of
+      // each pixel
+      for (int r = 0; r < fg.getRowDimension(); r++) { // rows
+        for (int c = 0; c < fg.getColumnDimension(); c++) { // columns
           fg2d[r][c] += params.dt * (diffusion
                   * (((fgcircright2d[r][c] - fg2d[r][c]) / wrfg2d[r][c]
                           - (fg2d[r][c] - fgcircleft2d[r][c]) / wlfg2d[r][c])
                           + ((fgcirctop2d[r][c] - fg2d[r][c]) / wtfg2d[r][c]
                                   - (fg2d[r][c] - fgcircbottom2d[r][c]) / wbfg2d[r][c]))
                   - params.gamma[currentSweep] * fg2d[r][c] * bg2d[r][c]);
-          if (Double.isNaN(fg2d[r][c])) {
+          // validate numerical quality. This flags will stop iterations (break outerloop) but after
+          // updating all pixels in FG and BG maps
+          if (Double.isNaN(fg2d[r][c])) { // if at least one NaN in solution
             stoppedReason = StoppedBy.NANS;
           }
-          if (Double.isInfinite(fg2d[r][c])) {
+          if (Double.isInfinite(fg2d[r][c])) { // or Inf (will overwrite previous flag of course)
             stoppedReason = StoppedBy.INFS;
           }
         }
       }
 
-      // groups for long term for BG
+      // ------------------- Computation of BG map ------------------------------------------------
+      // groups for long term for BG. Get all four neighbours to current pixel
       Array2DRowRealMatrix bgcircright = (Array2DRowRealMatrix) circshift(bg, RIGHT);
       Array2DRowRealMatrix bgcircleft = (Array2DRowRealMatrix) circshift(bg, LEFT);
       Array2DRowRealMatrix bgcirctop = (Array2DRowRealMatrix) circshift(bg, TOP);
       Array2DRowRealMatrix bgcircbottom = (Array2DRowRealMatrix) circshift(bg, BOTTOM);
 
-      double[][] bgcircright2d = bgcircright.getDataRef();
-      double[][] bgcircleft2d = bgcircleft.getDataRef();
-      double[][] bgcirctop2d = bgcirctop.getDataRef();
-      double[][] bgcircbottom2d = bgcircbottom.getDataRef();
+      // extract required references from RealMatrix objects.
+      double[][] bgcircright2d = bgcircright.getDataRef(); // reference to BG probab. shifted right
+      double[][] bgcircleft2d = bgcircleft.getDataRef(); // reference to BG probab. shifted left
+      double[][] bgcirctop2d = bgcirctop.getDataRef(); // reference to BG probab. shifted top
+      double[][] bgcircbottom2d = bgcircbottom.getDataRef(); // reference to BG probab. shifted bot
 
+      // Traverse all pixels in BG map and update them according to diffusion from 4 neighbours of
+      // each pixel
       for (int r = 0; r < bg.getRowDimension(); r++) {
         for (int c = 0; c < bg.getColumnDimension(); c++) {
           bg2d[r][c] += params.dt * (diffusion
@@ -791,7 +1068,9 @@ public class RandomWalkSegmentation {
                           - (bg2d[r][c] - bgcircleft2d[r][c]) / wlbg2d[r][c])
                           + ((bgcirctop2d[r][c] - bg2d[r][c]) / wtbg2d[r][c]
                                   - (bg2d[r][c] - bgcircbottom2d[r][c]) / wbbg2d[r][c]))
-                  - params.gamma[currentSweep] * fglast2d[r][c] * bg2d[r][c]);
+                  - params.gamma[currentSweep] * tmpFglast2d[r][c] * bg2d[r][c]);
+          // validate numerical quality. This flags will stop iterations (break outerloop) but after
+          // updating all pixels in FG and BG maps. (will overwrite previous state of the flag)
           if (Double.isNaN(fg2d[r][c])) {
             stoppedReason = StoppedBy.NANS;
           }
@@ -800,20 +1079,19 @@ public class RandomWalkSegmentation {
           }
         }
       }
-      // stop iteration if there is NaN or Inf. Iterations are stopped after full looping through fg
-      // and bg
+      // Test state of the flag. Stop iteration if there is NaN or Inf. Iterations are stopped after
+      // full looping through FG and BG maps.
       if (stoppedReason == StoppedBy.NANS || stoppedReason == StoppedBy.INFS) {
         break outerloop;
       }
       // check error every relErrStep number of iterations
-      if (i % relErrStep == 0 && computeRelErr(fglast2d, fg2d) < params.relim[currentSweep]) {
+      if (i % relErrStep == 0 && computeRelErr(tmpFglast2d, fg2d) < params.relim[currentSweep]) {
         stoppedReason = StoppedBy.RELERR;
         break outerloop;
       }
 
-      QuimPArrayUtils.copy2darray(fg2d, fglast2d);
-      fg = new Array2DRowRealMatrix(fg2d, false); // not copy of FG2d, just replace old FG
-      bg = new Array2DRowRealMatrix(bg2d, false);
+      // remember FG map for this iteration to use it to compute relative error in next iteration
+      QuimPArrayUtils.copy2darray(fg2d, tmpFglast2d);
     }
 
     LOGGER.info(
@@ -856,16 +1134,18 @@ public class RandomWalkSegmentation {
   }
 
   /**
+   * Compute diffusion weights using difference to mean intensity and gradient.
    * 
    * @param diffI normalized squared differences to mean seed intensities
    * @param grad2 normalized the squared gradients by the maximum gradient
    * @return wr_fg = exp(P.alpha*diffI_fg+P.beta*G.gradright2);
    */
   private RealMatrix computeweights(RealMatrix diffI, RealMatrix grad2) {
-    double alpha = params.alpha;
-    double beta = params.beta;
-    double[][] diffI2d;
-    double[][] grad22d;
+    double alpha = params.alpha; // user provided segmentation parameter
+    double beta = params.beta; // user provided segmentation parameter
+    double[][] diffI2d; // temporary references to intensity to mean values
+    double[][] grad22d; // and gradient
+    // convert RealMatrix to 2D array, approach depends on the RealMatrix type (see RealMatrix doc)
     if (diffI instanceof Array2DRowRealMatrix) {
       diffI2d = ((Array2DRowRealMatrix) diffI).getDataRef();
     } else {
@@ -877,8 +1157,9 @@ public class RandomWalkSegmentation {
       grad22d = grad2.getData();
     }
     Array2DRowRealMatrix w =
-            new Array2DRowRealMatrix(diffI.getRowDimension(), diffI.getColumnDimension());
-    double[][] w2d = w.getDataRef(); // reference of w
+            new Array2DRowRealMatrix(diffI.getRowDimension(), diffI.getColumnDimension()); // output
+    double[][] w2d = w.getDataRef(); // reference of w to skip get/set element from RealMatrix
+    // calculate weights
     for (int r = 0; r < diffI.getRowDimension(); r++) {
       for (int c = 0; c < diffI.getColumnDimension(); c++) {
         w2d[r][c] = Math.exp(diffI2d[r][c] * alpha + grad22d[r][c] * beta);
@@ -889,25 +1170,57 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * Compute part of stability criterion for stopping iterations.
+   * Multiply two matrices (element by element) and return minimum value from result.
    * 
-   * <p>Only in-place multiplication and minimu of result is done here
+   * @param a left operand (matrix)
+   * @param b right operand (matrix of size of left operand)
+   * @return min(a.*b)
+   * @see #getDiffusionConst(RealMatrix, RealMatrix, RealMatrix, RealMatrix, RealMatrix, RealMatrix)
+   */
+  private double getMinofDotProduct(RealMatrix a, RealMatrix b) {
+    RealMatrix cp = a.copy();
+    cp.walkInOptimizedOrder(new MatrixDotProduct(b));
+    return QuimPArrayUtils.getMin(cp);
+  }
+
+  /**
+   * Compute diffusion constant that obeys stability criterion.
+   * 
+   * <p>Diffusion constant that meets CFL stability criterion (when solving Euler scheme):
+   * D*dt/(dx^2) should be <<1/4
+   * It is computed in the following way:
    * 
    * <pre>
    * <code>
-   * drl2 = min ( min(min (wr_fg.*avgwx_fg)) , min(min (wl_fg.*avgwx_fg)) ); dtb2 = min (
-   *       min(min (wt_fg.*avgwy_fg)) , min(min (wb_fg.*avgwy_fg)) ); D=0.25*min(drl2,dtb2);
+   * drl2 = min ( min(min (wr_fg.*avgwx_fg)) , min(min (wl_fg.*avgwx_fg)) );
+   * dtb2 = min ( min(min (wt_fg.*avgwy_fg)) , min(min (wb_fg.*avgwy_fg)) );
+   * 
+   * D=0.25*min(drl2,dtb2);
    * </code>
    * </pre>
    * 
-   * @param wfg wfg
-   * @param avgwfg avgwfg
-   * @return min(min (wfg.*avgwfg))
+   * @param wrfg weights for diffusion in right direction
+   * @param wlfg weights for diffusion in left direction
+   * @param wtfg weights for diffusion in top direction
+   * @param wbfg weights for diffusion in bottom direction
+   * @param avgwxfg averaged left -- right weights
+   * @param avgwyfg averaged bottom -- top weights
+   * @return diffusion constant that obeys stability criterion
    */
-  private double getStabilityCriterion(RealMatrix wfg, RealMatrix avgwfg) {
-    RealMatrix cp = wfg.copy();
-    cp.walkInOptimizedOrder(new MatrixDotProduct(avgwfg));
-    return QuimPArrayUtils.getMin(cp);
+  private double getDiffusionConst(RealMatrix wrfg, RealMatrix wlfg, RealMatrix wtfg,
+          RealMatrix wbfg, RealMatrix avgwxfg, RealMatrix avgwyfg) {
+    // diffusion constant along x
+    double tmp1 = getMinofDotProduct(wrfg, avgwxfg); // min(wrfg .* avgwxfg)
+    double tmp2 = getMinofDotProduct(wlfg, avgwxfg); // min(wlfg .* avgwxfg)
+    double drl2 = tmp1 < tmp2 ? tmp1 : tmp2; // min(tmp1,tmp2)
+    // diffusion constant along y
+    tmp1 = getMinofDotProduct(wtfg, avgwyfg); // min(wtfg .* avgwyfg)
+    tmp2 = getMinofDotProduct(wbfg, avgwyfg); // min(wbfg .* avgwyfg)
+    double dtb2 = tmp1 < tmp2 ? tmp1 : tmp2; // min(tmp1,tmp2)
+    double diffusion = drl2 < dtb2 ? drl2 : dtb2; // D = min(drl2,dtb2)
+    diffusion *= 0.25; // D = 0.25*min(drl2,dtb2)
+    LOGGER.debug("drl2=" + drl2 + " dtb2=" + dtb2);
+    return diffusion;
   }
 
   /**
@@ -915,7 +1228,7 @@ public class RandomWalkSegmentation {
    * 
    * @param in Input matrix 2D
    * @param ind List of indexes
-   * @return Values that are on indexes \a ind
+   * @return Values that are on indexes ind
    */
   ArrayRealVector getValues(RealMatrix in, List<Point> ind) {
     ArrayRealVector out = new ArrayRealVector(ind.size());
@@ -931,23 +1244,23 @@ public class RandomWalkSegmentation {
    * 
    * @param in Input matrix. Will be modified
    * @param ind List of indexes
-   * @param val List of values, length must be the same as \a ind or 1
+   * @param val List of values, length must be the same as ind or 1
    */
-  protected void setValues(RealMatrix in, List<Point> ind, ArrayRealVector val) {
+  void setValues(RealMatrix in, List<Point> ind, ArrayRealVector val) {
     if (ind.size() != val.getDimension() && val.getDimension() != 1) {
       throw new InvalidParameterException(
               "Vector with data must contain 1 element or the same as indexes");
     }
-    int delta;
-    int l = 0;
+    int delta; // step we move in val across elements, can be 1 or 0
+    int l = 0; // will point current element in val
     if (val.getDimension() == 1) {
-      delta = 0;
+      delta = 0; // still point to the same element (because it is only one)
     } else {
-      delta = 1;
+      delta = 1; // move to the next one
     }
-    for (Point p : ind) {
+    for (Point p : ind) { // interate over points to fill with values val
       in.setEntry(p.row, p.col, val.getDataRef()[l]);
-      l += delta;
+      l += delta; // skip to next value (points are iterated in for)
     }
   }
 
