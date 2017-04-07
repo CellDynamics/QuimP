@@ -148,7 +148,6 @@ public class Params {
     result = prime * result + (int) (temp ^ (temp >>> 32));
     temp = Double.doubleToLongBits(dt);
     result = prime * result + (int) (temp ^ (temp >>> 32));
-    result = prime * result + ((finalFilter == null) ? 0 : finalFilter.hashCode());
     result = prime * result + Arrays.hashCode(gamma);
     result = prime * result + iter;
     result = prime * result + localMeanMaskSize;
