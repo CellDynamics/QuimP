@@ -2,9 +2,8 @@ package uk.ac.warwick.wsbc.quimp.plugin.dic;
 
 import uk.ac.warwick.wsbc.quimp.QuimpException;
 
-// TODO: Auto-generated Javadoc
 /**
- * Basic class derived from Exception for purposes of DICReconstruction module
+ * Basic class derived from Exception for purposes of DICReconstruction module.
  * 
  * @author p.baniukiewicz
  */
@@ -12,7 +11,7 @@ import uk.ac.warwick.wsbc.quimp.QuimpException;
 public class DicException extends QuimpException {
 
   /**
-   * Main constructor
+   * Main constructor.
    * 
    * @param arg0 Reason of exception
    */

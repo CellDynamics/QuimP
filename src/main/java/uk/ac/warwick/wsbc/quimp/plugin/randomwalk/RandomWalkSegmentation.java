@@ -261,6 +261,13 @@ public class RandomWalkSegmentation {
   private int currentSweep = 0;
 
   /**
+   * Squared maximal theoretical intensity value.
+   * 
+   * <p>For 8-bit images it is 255^2, for 16-bit 65535^2. Set in constructor.
+   */
+  private int maxTheoreticalIntSqr;
+
+  /**
    * Reasons of stopping diffusion process.
    * 
    * @author p.baniukiewicz
@@ -377,10 +384,17 @@ public class RandomWalkSegmentation {
     this.ip = ip;
     this.image = RandomWalkSegmentation.imageProcessor2RealMatrix(ip);
     this.params = params;
+    setMaxTheoreticalIntSqr(ip);
   }
 
   /**
    * Construct segmentation object from 2D RealMatrix representing image.
+   * 
+   * <p>It is assumed that this input image is 8-bit. Use
+   * {@link #RandomWalkSegmentation(ImageProcessor, Params)} for support 8 and 16-bit images.
+   * Passing wrong image can have effect to results as {@link #solver(Map, RealMatrix[])} normalises
+   * image intensities to maximal theoretical intensity. See
+   * {@link #setMaxTheoreticalIntSqr(ImageProcessor)} and {@link #solver(Map, RealMatrix[])}
    * 
    * @param image image to segment
    * @param params parameters
@@ -389,6 +403,7 @@ public class RandomWalkSegmentation {
     this.image = image;
     this.ip = realMatrix2ImageProcessor(image);
     this.params = params;
+    setMaxTheoreticalIntSqr(ip);
   }
 
   /**
@@ -454,12 +469,12 @@ public class RandomWalkSegmentation {
       IJ.saveAsTiff(new ImagePlus("", fg1), tmpdir + "fg1_QuimP.tif");
       IJ.saveAsTiff(new ImagePlus("", bg1), tmpdir + "bg1_QuimP.tif");
     }
-    // filter them (if weare here intermediate filter cant be null)
+    // filter them (if we are here intermediate filter can't be null)
     fg1 = params.intermediateFilter.filter(fg1);
     bg1.invert();
     bg1 = params.intermediateFilter.filter(bg1);
     bg1.invert();
-    // prepare second sweep seeds from previous
+    // increment sweep pointer to point correct parameters (if they are different for next sweep)
     currentSweep++;
 
     Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
@@ -729,13 +744,13 @@ public class RandomWalkSegmentation {
    * 
    * <p>This method works similarly to the convolution with the difference that the kernel is
    * normalised for each position of the window to the number of masked pixels (within it). If for
-   * any position of the window there is no masked pixels inside, 0.0 is set as result.
+   * any position of the window there are no masked pixels inside, value 0.0 is set as result.
    * 
    * @param mask Binary mask of segmented image. Mask must contain only pixels with intensity 0 or
    *        255 (according to definition of binary image in IJ)
    * @param localMeanMaskSize Odd size of kernel
-   * @return Averaged image. Average is computed for every pixel of segmented image. For not masked
-   *         pixels mean is set to 0.0
+   * @return Averaged image. Average is computed for every location of the kernel for its center
+   *         utlising only masked pixels. For not masked pixels the mean is set to 0.0
    */
   protected RealMatrix getMeanSeedLocal(ImageProcessor mask, int localMeanMaskSize) {
     // IJ convolution is utilised. Computations are done twice, first time only on mask to get the
@@ -856,32 +871,63 @@ public class RandomWalkSegmentation {
   }
 
   /*
-   *
    * //!>
    * @startuml doc-files/RandomWalkSegmentation_5_UML.png
    * start
    * :Convert seeds to coordinates;
    * if (local mean?) then (yes)
    *  :compute **local** mean for **FG**;
+   *  note left
+   *  Result is an image
+   *  end note
    *  :compute **global** mean for **BG**;
+   *  note left
+   *  Result is a number
+   *  end note
    *  :subtract FG and BG means\nfrom image;
    * else (no)
    *  :compute **global** mean for **FG**;
    *  :compute **global** mean for **BG**;
    *  :subtract FG and BG means\nfrom image;
    * endif
+   * -> Here we have Image-meanseed;
    * :compute normalised\n""(Image-meanseed).^2"";
+   * note left
+   * Square ""Image-meanseed"" and
+   * normalise to maximal theoretical
+   * intensity value
+   * end note
    * :compute weights;
+   * note right
+   * Based on intensity of
+   * pixels in stencil and 
+   * intensity gradient
+   * end note
    * :compute average of weights;
+   * note left
+   * Separately for horizontal
+   * and vertical differences.
+   * Used later for equalising
+   * grid
+   * end note
    * :compute diffusion constant;
+   * note left
+   * To obey stability
+   * criterion
+   * end note
    * :compute averaged weights;
+   * note right
+   * Equalising differentiation
+   * grid.
+   * end note
    * :compute FG;
    * note left
-   * loop
+   * Solving Laplace equation
+   * by Euler method (loop)
    * end note
    * :compute BG;
    * note right
-   * loop
+   * The same loop like FG
    * end note
    * stop
    * @enduml
@@ -912,7 +958,7 @@ public class RandomWalkSegmentation {
       diffIfg = image.subtract(localMeanFg);
       double meanseedBkg = getMeanSeedGlobal(seedsP.get(Seeds.BACKGROUND));
       LOGGER.trace("meanseedBkg: " + meanseedBkg);
-      diffIbg = image.scalarAdd(meanseedBkg);
+      diffIbg = image.scalarAdd(-meanseedBkg);
     } else { // global for whole seeds
       double[] meanseed = new double[2]; // will keep means for FG and BG
       // compute intensity means for image points labelled by seeds
@@ -923,9 +969,10 @@ public class RandomWalkSegmentation {
       diffIfg = image.scalarAdd(-meanseed[Seeds.FOREGROUND.getIndex()]);
       diffIbg = image.scalarAdd(-meanseed[Seeds.BACKGROUND.getIndex()]);
     }
-    // normalize (Image-meanseed).^2 to maximal (theoretical) value which is 255^2 got 8-bit images
-    diffIfg.walkInOptimizedOrder(new MatrixElementPowerDiv(65025));
-    diffIbg.walkInOptimizedOrder(new MatrixElementPowerDiv(65025));
+    // normalize (Image-meanseed).^2 to maximal (theoretical) value which is 255^2 for 8-bit images
+    // have it as private field as we support 16 images as well
+    diffIfg.walkInOptimizedOrder(new MatrixElementPowerDiv(maxTheoreticalIntSqr));
+    diffIbg.walkInOptimizedOrder(new MatrixElementPowerDiv(maxTheoreticalIntSqr));
     LOGGER.trace("fseeds size: " + seedsP.get(Seeds.FOREGROUND).size());
     LOGGER.trace("bseeds size: " + seedsP.get(Seeds.BACKGROUND).size());
     LOGGER.trace("getValfseed: " + getValues(image, seedsP.get(Seeds.FOREGROUND)));
@@ -1110,7 +1157,7 @@ public class RandomWalkSegmentation {
    * 
    * @param fglast foreground matrix from previous iteration
    * @param fg current foreground
-   * @return relative mean error
+   * @return relative mean error sum[2* |fg - fglast|/(fg + fglast)]/numofel
    */
   double computeRelErr(double[][] fglast, double[][] fg) {
     int rows = fglast.length;
@@ -1125,7 +1172,7 @@ public class RandomWalkSegmentation {
         } else { // get relative error
           tmp = 2 * Math.abs(fg[r][c] - fglast[r][c]) / denominator;
         }
-        rel += tmp; // sum it up to get mean at end
+        rel += tmp; // sum it up to get mean at the end
       }
     }
     double rele = rel / (rows * cols);
@@ -1136,20 +1183,20 @@ public class RandomWalkSegmentation {
   /**
    * Compute diffusion weights using difference to mean intensity and gradient.
    * 
-   * @param diffI normalized squared differences to mean seed intensities
+   * @param diffI2 normalized squared differences to mean seed intensities
    * @param grad2 normalized the squared gradients by the maximum gradient
-   * @return wr_fg = exp(P.alpha*diffI_fg+P.beta*G.gradright2);
+   * @return wr_fg = exp(alpha*diffI2 + beta*grad2);
    */
-  private RealMatrix computeweights(RealMatrix diffI, RealMatrix grad2) {
+  private RealMatrix computeweights(RealMatrix diffI2, RealMatrix grad2) {
     double alpha = params.alpha; // user provided segmentation parameter
     double beta = params.beta; // user provided segmentation parameter
     double[][] diffI2d; // temporary references to intensity to mean values
     double[][] grad22d; // and gradient
     // convert RealMatrix to 2D array, approach depends on the RealMatrix type (see RealMatrix doc)
-    if (diffI instanceof Array2DRowRealMatrix) {
-      diffI2d = ((Array2DRowRealMatrix) diffI).getDataRef();
+    if (diffI2 instanceof Array2DRowRealMatrix) {
+      diffI2d = ((Array2DRowRealMatrix) diffI2).getDataRef();
     } else {
-      diffI2d = diffI.getData();
+      diffI2d = diffI2.getData();
     }
     if (grad2 instanceof Array2DRowRealMatrix) {
       grad22d = ((Array2DRowRealMatrix) grad2).getDataRef();
@@ -1157,11 +1204,11 @@ public class RandomWalkSegmentation {
       grad22d = grad2.getData();
     }
     Array2DRowRealMatrix w =
-            new Array2DRowRealMatrix(diffI.getRowDimension(), diffI.getColumnDimension()); // output
+            new Array2DRowRealMatrix(diffI2.getRowDimension(), diffI2.getColumnDimension()); // out
     double[][] w2d = w.getDataRef(); // reference of w to skip get/set element from RealMatrix
     // calculate weights
-    for (int r = 0; r < diffI.getRowDimension(); r++) {
-      for (int c = 0; c < diffI.getColumnDimension(); c++) {
+    for (int r = 0; r < diffI2.getRowDimension(); r++) {
+      for (int c = 0; c < diffI2.getColumnDimension(); c++) {
         w2d[r][c] = Math.exp(diffI2d[r][c] * alpha + grad22d[r][c] * beta);
       }
     }
@@ -1221,6 +1268,22 @@ public class RandomWalkSegmentation {
     diffusion *= 0.25; // D = 0.25*min(drl2,dtb2)
     LOGGER.debug("drl2=" + drl2 + " dtb2=" + dtb2);
     return diffusion;
+  }
+
+  /**
+   * Set maximum theoretical squared intensity depending on image type.
+   * 
+   * @param ip segmented image.
+   */
+  private void setMaxTheoreticalIntSqr(ImageProcessor ip) {
+    switch (ip.getBitDepth()) {
+      case 16:
+        maxTheoreticalIntSqr = 65535 * 65535;
+        break;
+      case 8:
+      default:
+        maxTheoreticalIntSqr = 255 * 255; // default in case of RealMatrix on input
+    }
   }
 
   /**

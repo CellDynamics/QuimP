@@ -17,11 +17,10 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.quimp.registration.Registration;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Main implementation of ImageJ plugin.
  * 
- * Currently supports only 8bit images and stacks.
+ * <p>Currently supports only 8bit images and stacks.
  * 
  * @author p.baniukiewicz
  * @see LidReconstructor
@@ -49,7 +48,7 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
   /**
    * Angle of filtering.
    * 
-   * Filled by {@link #showUi(boolean)} as {@link #angle}+90.
+   * <p>Filled by {@link #showUi(boolean)} as {@link #angle}+90.
    */
   private String prefilterangle;
 
@@ -62,6 +61,16 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
   public int setup(String arg, ImagePlus imp) {
     this.imp = imp;
     return DOES_8G + NO_CHANGES;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin#setup()
+   */
+  @Override
+  public int setup() {
+    return 0;
   }
 
   /**
@@ -124,7 +133,7 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
       anglei -= 180;
     }
     // calculate distances between 0, 45, 90, 135, 180
-    Integer d[] = new Integer[5];
+    Integer[] d = new Integer[5];
     d[0] = Math.abs(0 - anglei);
     d[1] = Math.abs(45 - anglei);
     d[2] = Math.abs(90 - anglei);
@@ -134,16 +143,6 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
     int i = QuimPArrayUtils.minListIndex(Arrays.asList(d));
     i = i > 3 ? 0 : i; // deal with 180 that should be 0
     return Integer.toString(i * 45);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin#setup()
-   */
-  @Override
-  public int setup() {
-    return 0;
   }
 
   /*

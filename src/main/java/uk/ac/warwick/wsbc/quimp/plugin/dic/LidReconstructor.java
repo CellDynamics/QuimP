@@ -11,15 +11,14 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.ImageProcessorPlus;
 
 /**
  * Implementation of Line Integration and Deconvolution algorithm proposed by Kam.
- * <p>
- * <h1>Principles</h1>
- * <p>
+ * 
+ * <p><h1>Principles</h1>
  * This algorithm uses corrected line integration that runs in both directions from current point of
  * image (<i>x_n,y_n</i>) to <i>r_1</i> and end <i>r_2</i>. Vector <i>dr</i> is set to be parallel
  * to 0X axis. Final formula for reconstruction of pixel (<i>x_n,y_n</i>) is given by:<br>
  * <img src="doc-files/eq.png"/><br>
- * <h1>Algorithm</h1>
- * <p>
+ * 
+ * <p><h1>Algorithm</h1>
  * The algorithm perform the following steps to reconstruct the whole image:
  * <ol>
  * <li>Input is converted to 16bit and stored in private field ExtraImageProcessor
@@ -44,8 +43,8 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.ImageProcessorPlus;
  * geometry. ranges are filled only once on DICReconstruction constructing thus images connected by
  * setIp(ImageProcessor) are not rotated. This situation is detected in
  * {@link #reconstructionDicLid()} by <tt>isRotated</tt> flag.
- * <p>
- * Privates:
+ * 
+ * <p>Privates:
  * <ul>
  * <li><i>ranges</i> - true pixels begin and end on x axis. Set by getRanges(). [r][0] - x of first
  * pixel of line r of image, [r][1] - x of last pixel of image of line r
@@ -56,17 +55,17 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.ImageProcessorPlus;
  * <li><i>isRotated</i> - It is set by getRanges() that rotates object to get true pixels position
  * and cancelled by setIP
  * </ul>
- * <p>
- * <b>Warning</b>
- * <p>
+ * 
+ * <p><b>Warning</b>
  * Currently this class supports only 8bit images. It can support also 16bit input but in this case
- * algorithm used for detection of \b true pixels may not work correctly for certain cases - when
- * maximum intensity will be \f$\mathrm{max}(\mathrm{int})-shift\f$
- * <p>
- * The input image can be prefitlered before processing. This is running mean filter of given mask
+ * algorithm used for detection of true pixels may not work correctly for certain cases - when
+ * maximum intensity will be max-shift
+ * 
+ * <p>The input image can be prefitlered before processing. This is running mean filter of given
+ * mask
  * size applied at angle perpendicular to the shear (this angle is given by caller).
- * <h1>References</h1>
- * <p>
+ * 
+ * <p><h1>References</h1>
  * <ul>
  * <li>Z. Kam, "Microscopic differential interference contrast image processing by line integration
  * (LID) and deconvolution," Bioimaging, vol. 6, no. 4, pp. 166–176, 1998.
@@ -101,10 +100,10 @@ public class LidReconstructor {
   /**
    * Default constructor that accepts ImagePlus. It does not support stacks.
    * 
-   * Input srcImage is not modified
+   * <p>Input srcImage is not modified
    * 
    * @param srcImage Image to process
-   * @param decay
+   * @param decay algorithm constant
    * @param angle DIC angle
    * 
    * @throws DicException Throws exception after generateRanges()
@@ -115,12 +114,12 @@ public class LidReconstructor {
   }
 
   /**
-   * Default constructor that accepts ImageProcessor
+   * Default constructor that accepts ImageProcessor.
    * 
-   * Input ip is not modified
+   * <p>Input ip is not modified
    * 
    * @param ip ImageProcessor to process
-   * @param decay
+   * @param decay algorithm constant
    * @param angle DIC angle
    * 
    * @throws DicException Throws exception after generateRanges()
@@ -132,12 +131,12 @@ public class LidReconstructor {
   /**
    * Default constructor.
    * 
-   * @param ip
-   * @param decay
-   * @param angle
+   * @param ip image to process
+   * @param decay algorithm constant
+   * @param angle DIC angle
    * @param prefilterangle Supported angle of prefiltering
    * @param masksize uneven mask size, 0 switches off filtering
-   * @throws DicException
+   * @throws DicException wrong image
    */
   public LidReconstructor(final ImageProcessor ip, double decay, double angle,
           String prefilterangle, int masksize) throws DicException {
@@ -154,10 +153,10 @@ public class LidReconstructor {
   }
 
   /**
-   * Sets new reconstruction parameters for current object
+   * Sets new reconstruction parameters for current object.
    * 
-   * @param decay
-   * @param angle
+   * @param decay algorithm constant
+   * @param angle DIC angle
    * @throws DicException Throws exception after generateRanges()
    */
   public void setParams(double decay, double angle) throws DicException {
@@ -169,11 +168,11 @@ public class LidReconstructor {
   /**
    * Assigns ImageProcessor for reconstruction to current object. Releases previous one.
    * 
-   * This method can be used for changing image connected to DICReconstruction object. New image
+   * <p>This method can be used for changing image connected to DICReconstruction object. New image
    * should have the same architecture as image passed in constructor. Typically this method is
    * used for passing next slice from stack.
    * 
-   * Input ip is not modified
+   * <p>Input ip is not modified
    * 
    * @param ip New ImageProcessor containing image for reconstruction.
    */
@@ -182,8 +181,9 @@ public class LidReconstructor {
     // make copy of original image to not modify it - converting to 16bit
     this.srcImageCopyProcessor = srcIp.convertToShort(true);
     new ImageProcessorPlus().runningMean(srcImageCopyProcessor, prefilterangle, masksize);
-    srcImageCopyProcessor.resetMinAndMax(); // ensure that minmax will be recalculated (usually
-                                            // they are stored in class field) set interpolation
+    // ensure that minmax will be recalculated (usually they are stored in class field) set
+    // interpolation
+    srcImageCopyProcessor.resetMinAndMax();
     srcImageCopyProcessor.setInterpolationMethod(ImageProcessor.BICUBIC);
     // Rotating image - set 0 background
     srcImageCopyProcessor.setBackgroundValue(0.0);
@@ -196,15 +196,15 @@ public class LidReconstructor {
    * Recalculates true pixels range and new size of image after rotation. Setup private class
    * fields.
    * 
-   * Modifies private class fields: <tt>maxWidth</tt>, <tt>ranges</tt>,
+   * <p>Modifies private class fields: <tt>maxWidth</tt>, <tt>ranges</tt>,
    * <tt>srcImageCopyProcessor</tt>
    * 
-   * <tt>maxWidth</tt> holds width of image after rotation
+   * <p><tt>maxWidth</tt> holds width of image after rotation
    * 
-   * <tt>ranges</tt> table holds first and last x position of image line (first and last pixel of
+   * <p><tt>ranges</tt> table holds first and last x position of image line (first and last pixel of
    * image on background after rotation)
    * 
-   * <tt>srcImageCopyProcessor</tt> is rotated and shifted.
+   * <p><tt>srcImageCopyProcessor</tt> is rotated and shifted.
    * 
    * @throws DicException when input image is close to saturation e.g. has values of 65536-shift.
    *         This is due to applied algorithm of detection image pixels after rotation.
@@ -212,9 +212,8 @@ public class LidReconstructor {
    */
   private void getRanges() throws DicException {
     double maxpixel; // minimal pixel value
-    int r; // loop indexes
-    int firstpixel, lastpixel; // first and last pixel of image in line
-
+    int lastpixel; // first and last pixel of image in line
+    int firstpixel;
     // check condition for removing 0 value from image
     maxpixel = srcImageCopyProcessor.getMax();
     if (maxpixel > 65535 - shift) {
@@ -237,7 +236,7 @@ public class LidReconstructor {
     maxWidth = newWidth;
     ranges = new int[newHeight][2];
     // get true pixels positions for every row
-    for (r = 0; r < newHeight; r++) {
+    for (int r = 0; r < newHeight; r++) {
       // to not process whole line, detect where starts and ends pixels of
       // image (reject background added during rotation)
       for (firstpixel = 0; firstpixel < newWidth
@@ -276,24 +275,26 @@ public class LidReconstructor {
    * Reconstruct DIC image by LID method. This is main method used to reconstruct passed ip
    * object.
    * 
-   * The reconstruction algorithm assumes that input image bas-reliefs are oriented horizontally,
+   * <p>The reconstruction algorithm assumes that input image bas-reliefs are oriented horizontally,
    * thus correct angle should be provided.
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * Used optimization with detecting of image pixels based on their value may not be accurate
+   * 
+   * <p><b>Warning</b>
+   * 
+   * <p>Used optimization with detecting of image pixels based on their value may not be accurate
    * when input image will be 16-bit and it will contain saturated pixels
    * 
    * @return Return reconstruction of srcImage as 16-bit image
    */
   public ImageProcessor reconstructionDicLid() {
-    double cumsumup, cumsumdown;
-    int c, u, d, r; // loop indexes
+    double cumsumup;
+    double cumsumdown;
+    int c;
+    int u;
+    int d;
+    int r; // loop indexes
     int linindex = 0; // output table linear index
-    if (!isRotated) { // rotate if not rotated in getRanges - e.g. we have
-                      // new Processor added by setIp
-      srcImageCopyProcessor.add(shift); // we use different IP so shift
-                                        // must be added
+    if (!isRotated) { // rotate if not rotated in getRanges
+      srcImageCopyProcessor.add(shift); // we use different IP so shift must be added
       srcImageCopyProcessor = ipp.rotate(srcImageCopyProcessor, angle, true);
     }
     // dereferencing for optimization purposes
@@ -316,8 +317,7 @@ public class LidReconstructor {
           cumsumup += (srcImageCopyProcessor.get(u, r) - shift - is.mean) * decays[Math.abs(u - c)];
         }
         // down
-        cumsumdown = 0; // cumulative sum from point r to the end of
-                        // column
+        cumsumdown = 0; // cumulative sum from point r to the end of column
         for (d = c; d <= ranges[r][1]; d++) {
           cumsumdown +=
                   (srcImageCopyProcessor.get(d, r) - shift - is.mean) * decays[Math.abs(d - c)];
@@ -340,7 +340,7 @@ public class LidReconstructor {
 
   /**
    * Generates decay table with exponential distances between pixels multiplied by decay
-   * coefficient
+   * coefficient.
    * 
    * @param decay The value of decay coefficient
    * @param length Length of table, usually equals to longest processed line on image

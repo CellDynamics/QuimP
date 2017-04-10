@@ -679,7 +679,7 @@ public class QuimPArrayUtils {
     if (input instanceof Array2DRowRealMatrix) {
       data = ((Array2DRowRealMatrix) input).getDataRef(); // only available for non cache-friendly
     } else {
-      data = input.getData(); // optimize using visitors because this is copy
+      data = input.getData(); // TODO Optimise using visitors because this is copy
     }
     double[] maxs = new double[input.getRowDimension()];
     for (int r = 0; r < input.getRowDimension(); r++) {
