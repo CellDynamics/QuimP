@@ -68,9 +68,9 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.ImageProcessorPlus;
  * <h1>References</h1>
  * <p>
  * <ul>
- * <li>Z. Kam, “Microscopic differential interference contrast image processing by line integration
- * (LID) and deconvolution,” Bioimaging, vol. 6, no. 4, pp. 166–176, 1998.
- * <li>B. Heise, A. Sonnleitner, and E. P. Klement, “DIC image reconstruction on large cell scans.,”
+ * <li>Z. Kam, "Microscopic differential interference contrast image processing by line integration
+ * (LID) and deconvolution," Bioimaging, vol. 6, no. 4, pp. 166–176, 1998.
+ * <li>B. Heise, A. Sonnleitner, and E. P. Klement, "DIC image reconstruction on large cell scans.,"
  * Microsc. Res. Tech., vol. 66, no. 6, pp. 312–320, 2005.
  * </ul>
  * 

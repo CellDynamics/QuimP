@@ -4,7 +4,7 @@
     <groupId>uk.ac.warwick.wsbc</groupId>
     <artifactId>pom-quimp-root</artifactId>
     <version>1.0.0</version>
-    <relativePath />
+    <relativePath/>
   </parent>
   <!-- Project's coordinates -->
   <groupId>uk.ac.warwick.wsbc</groupId>
@@ -227,6 +227,49 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>com.github.jeluard</groupId>
+        <artifactId>plantuml-maven-plugin</artifactId>
+        <version>1.2</version>
+        <configuration>
+          <sourceFiles>
+            <directory>${basedir}/src/main/java</directory>
+            <includes>
+              <include>**/*.java</include>
+            </includes>
+          </sourceFiles>
+          <outputDirectory>${basedir}/target/apidocs</outputDirectory>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>8059</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>plantuml-javadoc-site</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <phase>pre-site</phase>
+            <configuration>
+              <outputDirectory>${basedir}/target/site/apidocs</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>plantuml-javadoc</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <outputDirectory>${basedir}/target/apidocs</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

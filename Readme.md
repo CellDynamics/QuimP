@@ -18,6 +18,46 @@ officially supported by the main QuimP development team (contact Leonard Bosgraa
 QuimP3 is currently under have development. It will support user plugins, other segmentation 
 algorithms, image pre-processing and many other features.
 
+# Build
+
+Clone the repository and update submodules which are required to run tests:
+
+```bash
+git clone https://github.com/CellDynamics/QuimP.git
+git submodule init
+git submodule update
+```
+
+Then, use standard Maven approach, e.g.:
+
+```bash
+mvn package
+```
+
+This will produce `QuimP_xxx.jar` with program as well as separate jars with source and tests. Note that tests depend on git submodule repository which checks out to nonstandard resource folder.
+
+## Javadoc
+
+JavaDoc jar is not built by default. To get it use:
+
+```bash
+mvn clean com.github.jeluard:plantuml-maven-plugin:generate javadoc:jar 
+```
+
+One can also use the profile `build-javadoc` provided by *pom-scijava-base* that lays under the basis of IJ. That profile builds full Java doc with all direct dependencies attached:
+
+```bash
+mvn clean package -P build-javadoc -Dproject.build.sourceEncoding=cp1252
+# QuimP uses UTF-8 encoding by default but some dependencies use other and build fails. Setting cp1252 partially solves the problem.  
+```
+
+## Maven profiles
+
+There are the following profiles defined in QuimP pom and closely related parent poms:
+
+1. *installation* - default profile, sets location of manual to `master` branch
+2. *development* - sets location of manual to `develop` branch. Use also mocked BOA filters.
+3. *dev-collectdeps* - copies all project dependencies to `target/dependencies`
  
 
  
