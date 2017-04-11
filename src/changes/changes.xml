@@ -6,9 +6,21 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
-       <release version="17.04.03-SNAPSHOT" date="" description="Release">
+       <release version="17.04.03" date="2017-04-12" description="Release">
           <action dev="baniuk" type="fix" issue="237">
-              QuimP-BOA: Lack of file separator.
+              QuimP-BOA: Lack of file separator if QCONF file was opened and then saved.
+          </action>
+          <action dev="baniuk" type="add" issue="236">
+              QuimP-RandomWalk: Hat filter can now remove any number of protrusion as long as their rank is larger than alev. This behavior is triggered by setting pnum to 0.
+          </action>
+          <action dev="baniuk" type="update" issue="238">
+              QuimP-RandomWalk: Added stopping criterion based on relative error. This is rather internal update as relative error can not be set from the user interface (yet).
+          </action>
+          <action dev="baniuk" type="update" issue="">
+              QuimP: Improved code documentation, especially for RandomWalk. Added plantuml to pom.xml to simplify Java doc building. 
+          </action>
+          <action dev="baniuk" type="fix" issue="">
+              QuimP-RandomWalk: Fixed very small bug in RW. It did not influence results.
           </action>
        </release>
        <release version="17.04.02" date="2017-04-03" description="Release">
