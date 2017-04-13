@@ -76,9 +76,7 @@ public class StatsCollection implements IQuimpSerialize {
    * @param in List of CellStat objects - size of this list equals to number of cells.
    */
   public void copyFromCellStat(List<CellStatsEval> in) {
-    for (CellStatsEval cl : in) {
-      sHs.add(cl.getStatH());
-    }
+    in.forEach(cl -> sHs.add(cl.getStatH()));
   }
 
   /**
