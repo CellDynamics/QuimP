@@ -438,7 +438,7 @@ class Mapping {
   /**
    * Migrate outlines.
    * 
-   * @return mapped outline
+   * @return mapped outline. Compute also intensities in {@link Vert#fluores}
    */
   public Outline migrate() {
     Vert newVert; // placed at the marker

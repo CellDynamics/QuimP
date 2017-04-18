@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.quimp.plugin.ecmm;
 
 import ij.IJ;
+import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Vert;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
@@ -11,13 +12,23 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
  * @author rtyson
  *
  */
-class ODEsolver {
+public class ODEsolver {
 
   private static boolean inside;
 
+  /**
+   * Default constructor.
+   */
   public ODEsolver() {
   }
 
+  /**
+   * Euler solver.
+   * 
+   * @param v vertex
+   * @param s sector
+   * @return ?
+   */
   public static ExtendedVector2d euler(Vert v, Sector s) {
     // Vect2d[] history = new Vect2d[ECMp.maxIter];
     int x;
@@ -38,7 +49,7 @@ class ODEsolver {
       y = (int) Math.round(p.getY());
       lastSampleX = x;
       lastSampleY = y;
-      tempFlu = ODEsolver.sampleFluo(x, y);
+      tempFlu = ODEsolver.sampleFluo(ECMp.image, x, y);
       v.fluores[0].intensity = tempFlu;
       v.fluores[0].x = x; // store in first slot
       v.fluores[0].y = y;
@@ -106,7 +117,7 @@ class ODEsolver {
         if (!(x == lastSampleX && y == lastSampleY)) { // on sample new locations
           lastSampleX = x;
           lastSampleY = y;
-          tempFlu = ODEsolver.sampleFluo(x, y);
+          tempFlu = ODEsolver.sampleFluo(ECMp.image, x, y);
 
           if (tempFlu > v.fluores[0].intensity) { // store first one
             // if((tempFlu / v.fluores[0].intensity)<1.1){
@@ -133,6 +144,13 @@ class ODEsolver {
     return p;
   }
 
+  /**
+   * Get first derivative.
+   * 
+   * @param p ExtendedVector2d
+   * @param s Sector
+   * @return dy/dt
+   */
   public static ExtendedVector2d dydt(ExtendedVector2d p, Sector s) {
     ExtendedVector2d result = fieldAt(p, s);
     result.multiply(ECMp.mobileQ);
@@ -146,6 +164,13 @@ class ODEsolver {
     return result;
   }
 
+  /**
+   * Proximity.
+   * 
+   * @param p ExtendedVector2d
+   * @param s Sector
+   * @return ?
+   */
   public static boolean proximity(ExtendedVector2d p, Sector s) {
     // could test against the chrages or the actual contour.
     // if using polar lines can use actual contour
@@ -168,12 +193,10 @@ class ODEsolver {
     // snap p to the closest segment of target contour
     ExtendedVector2d current;
     Vert closestEdge;
-    double distance;// = ECMp.d + 1; // must be closer then d+1, good
-                    // starting value
+    double distance;// = ECMp.d + 1; // must be closer then d+1, good starting value
     double tempDis;
 
-    Vert v = s.getTarStart().getPrev(); // include the edge to the starting
-                                        // intersect pount
+    Vert v = s.getTarStart().getPrev(); // include the edge to the starting intersect pount
     distance = ExtendedVector2d.distPointToSegment(p, v.getPoint(), v.getNext().getPoint());
     v = v.getNext();
     closestEdge = v;
@@ -229,9 +252,9 @@ class ODEsolver {
     return totalF;
   }
 
-  private static void forceP(ExtendedVector2d force, ExtendedVector2d p, ExtendedVector2d pQ,
+  private static void forceP(ExtendedVector2d force, ExtendedVector2d p, ExtendedVector2d pq,
           double q, double power) {
-    double r = ExtendedVector2d.lengthP2P(pQ, p);
+    double r = ExtendedVector2d.lengthP2P(pq, p);
     // System.out.println("\t r = " + r);
     if (r == 0) {
       force.setX(250);
@@ -240,7 +263,7 @@ class ODEsolver {
       return;
     }
     r = Math.abs(Math.pow(r, power));
-    ExtendedVector2d unitV = ExtendedVector2d.unitVector(pQ, p);
+    ExtendedVector2d unitV = ExtendedVector2d.unitVector(pq, p);
     double multiplier = (ECMp.k * (q / r));
     force.setX(unitV.getX() * multiplier);
     force.setY(unitV.getY() * multiplier);
@@ -306,27 +329,34 @@ class ODEsolver {
 
   private static void forceLpolar(ExtendedVector2d force, ExtendedVector2d p, ExtendedVector2d s1,
           ExtendedVector2d s2, double q, double power, double orientation) {
-    double L = ExtendedVector2d.lengthP2P(s1, s2);
-    ExtendedVector2d rU = ExtendedVector2d.unitVector(s2, p);
+    double l = ExtendedVector2d.lengthP2P(s1, s2);
+    ExtendedVector2d ru = ExtendedVector2d.unitVector(s2, p);
     double r = ExtendedVector2d.lengthP2P(s2, p);
     ExtendedVector2d rpU = ExtendedVector2d.unitVector(s1, p);
     double rp = ExtendedVector2d.lengthP2P(s1, p);
 
-    double d = (((rp + r) * (rp + r)) - (L * L)) / (2 * L);
+    double d = (((rp + r) * (rp + r)) - (l * l)) / (2 * l);
     // double d = ( Math.pow((rp + r), power) - (L * L)) / (2 * L);
     double multiplier = ((ECMp.k * q) / d);
-    rpU.addVec(rU);
+    rpU.addVec(ru);
 
     force.setX(rpU.getX() * multiplier * orientation);
     force.setY(rpU.getY() * multiplier * orientation);
   }
 
-  private static double sampleFluo(int x, int y) {
-    double tempFlu = ECMp.image.getPixelValue(x, y) + ECMp.image.getPixelValue(x - 1, y)
-            + ECMp.image.getPixelValue(x + 1, y) + ECMp.image.getPixelValue(x, y - 1)
-            + ECMp.image.getPixelValue(x, y + 1) + ECMp.image.getPixelValue(x - 1, y - 1)
-            + ECMp.image.getPixelValue(x + 1, y + 1) + ECMp.image.getPixelValue(x + 1, y - 1)
-            + ECMp.image.getPixelValue(x - 1, y + 1);
+  /**
+   * Get intensity value for given coordinates.
+   * 
+   * @param ip image to sample intensities
+   * @param x screen coordinate
+   * @param y screen coordinate
+   * @return mean intensity within 9-point stencil located at x,y
+   */
+  public static double sampleFluo(ImageProcessor ip, int x, int y) {
+    double tempFlu = ip.getPixelValue(x, y) + ip.getPixelValue(x - 1, y)
+            + ip.getPixelValue(x + 1, y) + ip.getPixelValue(x, y - 1) + ip.getPixelValue(x, y + 1)
+            + ip.getPixelValue(x - 1, y - 1) + ip.getPixelValue(x + 1, y + 1)
+            + ip.getPixelValue(x + 1, y - 1) + ip.getPixelValue(x - 1, y + 1);
     tempFlu = tempFlu / 9d;
     return tempFlu;
   }

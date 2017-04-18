@@ -3,7 +3,6 @@ package uk.ac.warwick.wsbc.quimp.plugin.ana;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import uk.ac.warwick.wsbc.quimp.plugin.ana.ANA_;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -29,7 +28,7 @@ public class ANA_run {
   @SuppressWarnings("unused")
   public static void main(String[] args) {
     ImageJ ij = new ImageJ();
-    ImagePlus im = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
+    ImagePlus im = IJ.openImage("/home/baniuk/Desktop/Tests/Pabloemail/test.tif");
     im.show();
     ANA_ ana = new ANA_();
     ana.setup(new String(), im);
