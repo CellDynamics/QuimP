@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+       <release version="17.04.04" date="" description="Release">
+          <action dev="baniuk" type="fix" issue="">
+              QuimP-RandomWalk: Removed FG/BG competition for better investigation. Gamma parameters remain in UI but they are inactive. 
+          </action>
+       </release>
        <release version="17.04.03" date="2017-04-12" description="Release">
           <action dev="baniuk" type="fix" issue="237">
               QuimP-BOA: Lack of file separator if QCONF file was opened and then saved.

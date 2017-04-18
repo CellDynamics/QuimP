@@ -761,14 +761,14 @@ public class RandomWalkView implements ActionListener, ItemListener {
     optionsPanel.add(getControlwithLabel(srGamma0, "Gamma 0",
             "gamma is the strength of competition between foreground and background."
                     + " gamma 0 is for preliminary segmentation whereas gamma 1 for fine"
-                    + " segmentation. If gamma1==0 second step is skipped"));
+                    + " segmentation. Temporally disabled"));
+    srGamma0.setEnabled(false); // Temporally disabled, see enableUI as well
     srGamma1 = getDoubleSpinner(300, 0, 1e5, 1, 5);
     optionsPanel.add(getControlwithLabel(srGamma1, "Gamma 1",
-            "gamma is the strength of competition between foreground and background."
-                    + " gamma 0 is for preliminary segmentation whereas gamma 1 for fine"
-                    + " segmentation. If gamma1==0 second step is skipped"));
-    srIter = new JSpinner(new SpinnerNumberModel(300, 1, 1000, 1));
-    optionsPanel.add(getControlwithLabel(srIter, "Iterations", "Maximum number of iterations."));
+            "Set to 0 to skip second sweep. Any other value is currently ignored."));
+    srIter = new JSpinner(new SpinnerNumberModel(300, 1, 10000, 1));
+    optionsPanel.add(getControlwithLabel(srIter, "Iterations",
+            "Maximum number of iterations." + "Second sweep uses half of this value"));
 
     JPanel processPanel = new JPanel();
     processPanel.setBorder(BorderFactory.createTitledBorder("Inter-process"));
@@ -977,6 +977,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     bnHelp.setEnabled(status);
 
     // chHatFilter.setEnabled(status); // not implemented, remove after
+    srGamma0.setEnabled(false); // feature currently disabled, see constructor as well
   }
 
   /**

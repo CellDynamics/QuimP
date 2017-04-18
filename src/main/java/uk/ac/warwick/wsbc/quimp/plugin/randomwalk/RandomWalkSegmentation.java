@@ -254,7 +254,9 @@ public class RandomWalkSegmentation {
   /**
    * Keep information about current sweep that {@link #solver(Map, RealMatrix[])} is doing.
    * 
-   * <p>Affect indexing parameters arrays that keep different params for different sweeps.
+   * <p>Affect indexing parameters arrays that keep different params for different sweeps. Used also
+   * in {@link #solver(Map, RealMatrix[]) for computing actual number of iterations (second sweep
+   * uses half of defined)}
    * 
    * @see Params
    */
@@ -441,7 +443,7 @@ public class RandomWalkSegmentation {
    * 
    * @param solved results from {@link #solver(Map, RealMatrix[])}
    * @return new seed taken from previous solution.
-   * @throws RandomWalkException o unsupported image or empty seed list after decoding
+   * @throws RandomWalkException on unsupported image or empty seed list after decoding
    */
   private Map<Seeds, ImageProcessor> rollNextSweep(Map<Seeds, RealMatrix> solved)
           throws RandomWalkException {
@@ -923,7 +925,8 @@ public class RandomWalkSegmentation {
    * :compute FG;
    * note left
    * Solving Laplace equation
-   * by Euler method (loop)
+   * by Euler method (loop, number of iter
+   * depends on sweep number)
    * end note
    * :compute BG;
    * note right
@@ -1044,8 +1047,10 @@ public class RandomWalkSegmentation {
 
     StoppedBy stoppedReason = StoppedBy.ITERATIONS; // default assumption
     int i; // iteration counter
+    // compute correct number of iterations. Second sweep uses 0.5*user
+    int iter = params.iter / (currentSweep + 1);
     // main loop here we simulate diffusion process in time
-    outerloop: for (i = 0; i < params.iter; i++) {
+    outerloop: for (i = 0; i < iter; i++) {
       LOGGER.trace("Iter: " + i);
       // fill seed pixels explicitly with probability 1 for FG and BG
       ArrayRealVector tmp = new ArrayRealVector(1); // filled with 0, setValues() needs that input
@@ -1076,12 +1081,11 @@ public class RandomWalkSegmentation {
       // each pixel
       for (int r = 0; r < fg.getRowDimension(); r++) { // rows
         for (int c = 0; c < fg.getColumnDimension(); c++) { // columns
-          fg2d[r][c] += params.dt * (diffusion
-                  * (((fgcircright2d[r][c] - fg2d[r][c]) / wrfg2d[r][c]
-                          - (fg2d[r][c] - fgcircleft2d[r][c]) / wlfg2d[r][c])
-                          + ((fgcirctop2d[r][c] - fg2d[r][c]) / wtfg2d[r][c]
-                                  - (fg2d[r][c] - fgcircbottom2d[r][c]) / wbfg2d[r][c]))
-                  - params.gamma[currentSweep] * fg2d[r][c] * bg2d[r][c]);
+          fg2d[r][c] += params.dt * (diffusion * (((fgcircright2d[r][c] - fg2d[r][c]) / wrfg2d[r][c]
+                  - (fg2d[r][c] - fgcircleft2d[r][c]) / wlfg2d[r][c])
+                  + ((fgcirctop2d[r][c] - fg2d[r][c]) / wtfg2d[r][c]
+                          - (fg2d[r][c] - fgcircbottom2d[r][c]) / wbfg2d[r][c])));
+          // - params.gamma[currentSweep] * fg2d[r][c] * bg2d[r][c] - disabled
           // validate numerical quality. This flags will stop iterations (break outerloop) but after
           // updating all pixels in FG and BG maps
           if (Double.isNaN(fg2d[r][c])) { // if at least one NaN in solution
@@ -1110,12 +1114,11 @@ public class RandomWalkSegmentation {
       // each pixel
       for (int r = 0; r < bg.getRowDimension(); r++) {
         for (int c = 0; c < bg.getColumnDimension(); c++) {
-          bg2d[r][c] += params.dt * (diffusion
-                  * (((bgcircright2d[r][c] - bg2d[r][c]) / wrbg2d[r][c]
-                          - (bg2d[r][c] - bgcircleft2d[r][c]) / wlbg2d[r][c])
-                          + ((bgcirctop2d[r][c] - bg2d[r][c]) / wtbg2d[r][c]
-                                  - (bg2d[r][c] - bgcircbottom2d[r][c]) / wbbg2d[r][c]))
-                  - params.gamma[currentSweep] * tmpFglast2d[r][c] * bg2d[r][c]);
+          bg2d[r][c] += params.dt * (diffusion * (((bgcircright2d[r][c] - bg2d[r][c]) / wrbg2d[r][c]
+                  - (bg2d[r][c] - bgcircleft2d[r][c]) / wlbg2d[r][c])
+                  + ((bgcirctop2d[r][c] - bg2d[r][c]) / wtbg2d[r][c]
+                          - (bg2d[r][c] - bgcircbottom2d[r][c]) / wbbg2d[r][c])));
+          // - params.gamma[currentSweep] * tmpFglast2d[r][c] * bg2d[r][c] - disabled
           // validate numerical quality. This flags will stop iterations (break outerloop) but after
           // updating all pixels in FG and BG maps. (will overwrite previous state of the flag)
           if (Double.isNaN(fg2d[r][c])) {
@@ -1141,8 +1144,8 @@ public class RandomWalkSegmentation {
       QuimPArrayUtils.copy2darray(fg2d, tmpFglast2d);
     }
 
-    LOGGER.info(
-            "Sweep " + currentSweep + " Stopped by " + stoppedReason + " at " + i + " iteration");
+    LOGGER.info("Sweep " + currentSweep + " Stopped by " + stoppedReason + " at " + i
+            + " iteration from " + iter);
     Map<Seeds, RealMatrix> ret = new HashMap<Seeds, RealMatrix>(2);
     ret.put(Seeds.FOREGROUND, fg);
     ret.put(Seeds.BACKGROUND, bg);
