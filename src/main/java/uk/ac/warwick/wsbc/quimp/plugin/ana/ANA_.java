@@ -366,6 +366,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     pd.addCheckbox("Clear stored measurements", false);
     pd.addCheckbox("New image with outlines? ", anap.plotOutlines);
     pd.addCheckbox("Copy results to IJ Table?", anap.fluoResultTable);
+    pd.addCheckbox("Append results to IJ Table?", anap.fluoResultTableAppend);
     pd.addDialogListener(this);
 
     frameOneClone = (Outline) oh.indexGetOutline(0).clone(); // FIXME Change to copy constructor
@@ -391,6 +392,21 @@ public class ANA_ implements PlugInFilter, DialogListener {
     if (gd.wasOKed()) {
       return true;
     }
+    // add and append results can not be both active
+    {
+      Checkbox cb4 = (Checkbox) gd.getCheckboxes().elementAt(4); // move results to table
+      Checkbox cb5 = (Checkbox) gd.getCheckboxes().elementAt(5); // append results to table
+      if (e.getSource() == cb4) {
+        if (cb4.getState()) {
+          cb5.setState(false);
+        }
+      }
+      if (e.getSource() == cb5) {
+        if (cb5.getState()) {
+          cb4.setState(false);
+        }
+      }
+    }
 
     Checkbox cb = (Checkbox) gd.getCheckboxes().elementAt(2); // clear measurements
     Choice iob = (Choice) gd.getChoices().elementAt(0);
@@ -410,6 +426,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     anap.sampleAtSame = gd.getNextBoolean();
     anap.plotOutlines = ((Checkbox) gd.getCheckboxes().elementAt(3)).getState();
     anap.fluoResultTable = ((Checkbox) gd.getCheckboxes().elementAt(4)).getState();
+    anap.fluoResultTableAppend = ((Checkbox) gd.getCheckboxes().elementAt(5)).getState();
     double scale = gd.getNextNumber();
     anap.setCortextWidthScale(scale);
     if (anap.cleared) { // can't deselect
