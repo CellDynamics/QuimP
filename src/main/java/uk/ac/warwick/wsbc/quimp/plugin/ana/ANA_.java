@@ -276,7 +276,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
               orgIpl.getOriginalFileInfo().fileName);
       outputH = new OutlineHandler(oh); // copy input to output (ana will add fields to it)
       ana(); // fills outputH and ChannelStat in FrameStatistics
-      FrameStatistics.write(fluoStats, anap.STATSFILE, anap); // save fluoro to statFile for comp.
+      FrameStatistics.write(fluoStats, anap.statFile, anap); // save fluoro to statFile for comp.
       CellStats statH = qconfLoader.getStats().sHs.get(i); // store fluoro in QCONF
       statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(fluoStats)); // store stats
       outputOutlineHandlers.oHs.add(i, new OutlineHandler(outputH)); // store actual result in cont
@@ -304,7 +304,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     oh = new OutlineHandler(qconfLoader.getQp());
 
     anap.setup(qconfLoader.getQp());
-    fluoStats = FrameStatistics.read(anap.STATSFILE);
+    fluoStats = FrameStatistics.read(anap.statFile);
     investigateChannels(oh.indexGetOutline(0));// find first empty channel
 
     if (anap.noData && oh.getSize() == 1) {
@@ -330,16 +330,16 @@ public class ANA_ implements PlugInFilter, DialogListener {
     outputH = new OutlineHandler(oh.getStartFrame(), oh.getEndFrame());
     ana(); // fills outputH and ChannelStat in FrameStatistics
 
-    anap.INFILE.delete();
-    anap.STATSFILE.delete();
-    outputH.writeOutlines(anap.OUTFILE, qconfLoader.getQp().isEcmmHasRun());
-    FrameStatistics.write(fluoStats, anap.STATSFILE, anap);
+    anap.inFile.delete();
+    anap.statFile.delete();
+    outputH.writeOutlines(anap.outFile, qconfLoader.getQp().isEcmmHasRun());
+    FrameStatistics.write(fluoStats, anap.statFile, anap);
 
     // ----Write temp files-------
-    // File tempFile = new File(ANAp.OUTFILE.getAbsolutePath() +
+    // File tempFile = new File(ANAp.outFile.getAbsolutePath() +
     // ".tempANA.txt");
     // outputH.writeOutlines(tempFile);
-    // File tempStats = new File(ANAp.STATSFILE.getAbsolutePath() +
+    // File tempStats = new File(ANAp.statFile.getAbsolutePath() +
     // ".tempStats.csv");
     // FluoStats.write(fluoStats, tempStats);
     // IJ.log("ECMM:137, saving to a temp file instead");

@@ -7,11 +7,11 @@ import uk.ac.warwick.wsbc.quimp.QParams;
 import uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Container class for parameters concerned with ANA analysis.
  * 
- * This class is serialized through {@link uk.ac.warwick.wsbc.quimp.filesystem.ANAParamCollection}.
+ * <p>This class is serialized through
+ * {@link uk.ac.warwick.wsbc.quimp.filesystem.ANAParamCollection}.
  * The structure of transient and non-transient fields must be reflected in FormatConverter.
  * 
  * @author rtyson
@@ -27,19 +27,19 @@ public class ANAp {
   /**
    * Input file reference.
    * 
-   * snQP file if run from paQP.
+   * <p>snQP file if run from paQP.
    */
-  public transient File INFILE;
+  public transient File inFile;
   /**
-   * Output snQP file reference (the same as {@link #INFILE}
+   * Output snQP file reference (the same as {@link #inFile}.
    */
-  public transient File OUTFILE;
+  public transient File outFile;
   /**
    * Reference to Stats file.
    * 
-   * USed in QCONF/paQP.
+   * <p>Used in QCONF/paQP.
    */
-  public transient File STATSFILE;
+  public transient File statFile;
   /**
    * Atomic step during contour shrinking.
    */
@@ -49,6 +49,8 @@ public class ANAp {
    */
   public final transient double freezeTh = 1;
   /**
+   * Angle threshold.
+   * 
    * @see OutlineProcessor#shrink(double, double, double, double)
    */
   public final transient double angleTh = 0.1;
@@ -59,25 +61,25 @@ public class ANAp {
   /**
    * Image scale.
    * 
-   * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
+   * <p>Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
    */
   public transient double scale = 1.0;
   /**
    * Frame interval.
    * 
-   * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
+   * <p>Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
    */
   public transient double frameInterval;
   /**
    * Frame range.
    * 
-   * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
+   * <p>Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
    */
   public transient int startFrame;
   /**
    * Frame range.
    * 
-   * Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
+   * <p>Initialised by {@link #setup(QParams)} from loaded QCONF/paQP.
    */
   public transient int endFrame;
 
@@ -143,12 +145,12 @@ public class ANAp {
   /**
    * Copy constructor.
    * 
-   * @param src
+   * @param src source to copy from
    */
   public ANAp(ANAp src) {
-    this.INFILE = new File(src.INFILE.getAbsolutePath());
-    this.OUTFILE = new File(src.OUTFILE.getAbsolutePath());
-    this.STATSFILE = new File(src.STATSFILE.getAbsolutePath());
+    this.inFile = new File(src.inFile.getAbsolutePath());
+    this.outFile = new File(src.outFile.getAbsolutePath());
+    this.statFile = new File(src.statFile.getAbsolutePath());
     this.cortexWidthPixel = src.cortexWidthPixel;
     this.cortexWidthScale = src.cortexWidthScale;
     this.scale = src.scale;
@@ -173,15 +175,15 @@ public class ANAp {
   }
 
   /**
-   * Initiates ANAp class with parameters copied from BOA analysis
+   * Initiates ANAp class with parameters copied from BOA analysis.
    * 
    * @param qp reference to QParams container (master file and BOA params)
    */
   void setup(QParams qp) {
     channel = 0;
-    INFILE = qp.getSnakeQP();
-    OUTFILE = new File(INFILE.getAbsolutePath()); // output file (.snQP) file
-    STATSFILE = new File(qp.getStatsQP().getAbsolutePath()); // output file
+    inFile = qp.getSnakeQP();
+    outFile = new File(inFile.getAbsolutePath()); // output file (.snQP) file
+    statFile = new File(qp.getStatsQP().getAbsolutePath()); // output file
     // (.stQP.csv) file
     scale = qp.getImageScale();
     frameInterval = qp.getFrameInterval();
@@ -193,6 +195,7 @@ public class ANAp {
   }
 
   /**
+   * Set cortex scale.
    * 
    * @param c the scale
    */
@@ -202,6 +205,8 @@ public class ANAp {
   }
 
   /**
+   * Get cortex width in pixels.
+   * 
    * @return the cortexWidthPixel
    */
   public double getCortexWidthPixel() {
@@ -209,6 +214,7 @@ public class ANAp {
   }
 
   /**
+   * Get cortex scale.
    * 
    * @return cortexWidthScale
    */
@@ -217,6 +223,8 @@ public class ANAp {
   }
 
   /**
+   * Set cortex widh in pixels.
+   * 
    * @param cortexWidthPixel the cortexWidthPixel to set
    */
   public void setCortexWidthPixel(double cortexWidthPixel) {
