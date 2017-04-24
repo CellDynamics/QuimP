@@ -537,7 +537,7 @@ public class RandomWalkSegmentation {
   }
 
   /**
-   * Decode image seed to lists of points.
+   * Decode RGB seed images to separate binary images.
    * 
    * @param rgb original image
    * @param fseed foreground seed image

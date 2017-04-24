@@ -603,16 +603,15 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
           foreColor = Color.WHITE;
           backColor = Color.BLACK;
           new ImageConverter(seedImage).convertToRGB(); // convert to rgb
-          // first slice of mask
-          ImageProcessor seedSlice1 = seedImage.getStack().getProcessor(startSlice);
           // get seeds split to FG and BG
-          Map<Seeds, ImageProcessor> seedsTmp =
-                  RandomWalkSegmentation.decodeSeeds(seedSlice1, foreColor, backColor);
-          // this is mask (bigger) so produce seeds
+          Map<Seeds, ImageProcessor> seedsTmp = RandomWalkSegmentation
+                  .decodeSeeds(seedImage.getStack().getProcessor(startSlice), foreColor, backColor);
+          // this is mask (bigger) so produce seeds, overwrite seeds
           seeds = propagateSeeds.propagateSeed(seedsTmp.get(Seeds.FOREGROUND), model.shrinkPower,
                   model.expandPower);
           // mask to local mean
-          seeds.put(Seeds.ROUGHMASK, seedSlice1.convertToByte(false));
+          seeds.put(Seeds.ROUGHMASK,
+                  seedImage.getStack().getProcessor(startSlice).convertToByte(false));
           break;
         default:
           throw new IllegalArgumentException("Unsupported seed source");
@@ -638,13 +637,13 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
         if (useSeedStack) { // true - use slices
           nextseed = RandomWalkSegmentation.decodeSeeds(seedImage.getStack().getProcessor(s),
                   foreColor, backColor);
-          nextseed.put(Seeds.ROUGHMASK, seedImage.getStack().getProcessor(s));
           switch (model.seedSource) {
             case QconfFile:
             case MaskImage:
               nextseed = propagateSeeds.propagateSeed(nextseed.get(Seeds.FOREGROUND),
                       model.shrinkPower, model.expandPower);
-
+              nextseed.put(Seeds.ROUGHMASK,
+                      seedImage.getStack().getProcessor(s).convertToByte(false));
               break;
             default:
           }
