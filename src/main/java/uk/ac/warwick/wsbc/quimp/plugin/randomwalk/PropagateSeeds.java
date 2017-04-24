@@ -164,10 +164,28 @@ public abstract class PropagateSeeds {
       binary = new PropagateSeeds.Morphological(storeSeeds);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.quimp.plugin.randomwalk.PropagateSeeds#propagateSeed(ij.process.
+     * ImageProcessor, double, double)
+     * 
+     */
     @Override
     Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
             double expandPower) {
       return binary.propagateSeed(previous, 0, 0);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see uk.ac.warwick.wsbc.quimp.plugin.randomwalk.PropagateSeeds#getCompositeSeed(ij.ImagePlus)
+     */
+    @Override
+    public ImagePlus getCompositeSeed(ImagePlus org) throws RandomWalkException {
+      // Need override as we have different object here (binary, not this).
+      return binary.getCompositeSeed(org);
     }
 
   }

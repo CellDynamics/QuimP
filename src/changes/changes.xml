@@ -16,6 +16,9 @@
           <action dev="baniuk" type="fix" issue="">
               QuimP-RandomWalk: Fixed issue with displaying seed stack for Morphological seed processing. 
           </action>
+          <action dev="baniuk" type="fix" issue="">
+              QuimP-RandomWalk: Fixed issue with displaying seed stack for NONE seed processing. 
+          </action>
        </release>
        <release version="17.04.03" date="2017-04-12" description="Release">
           <action dev="baniuk" type="fix" issue="237">
