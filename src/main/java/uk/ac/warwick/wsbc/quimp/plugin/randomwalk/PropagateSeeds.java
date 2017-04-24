@@ -70,6 +70,25 @@ public abstract class PropagateSeeds {
   }
 
   /**
+   * Default constructor.
+   */
+  public PropagateSeeds() {
+  }
+
+  /**
+   * Allow to store seed history that can be later presented in form of composite image.
+   * 
+   * @param storeSeeds <tt>true</tt> to store seeds.
+   * @see #getCompositeSeed(ImagePlus)
+   */
+  public PropagateSeeds(boolean storeSeeds) {
+    this.storeSeeds = storeSeeds;
+    if (storeSeeds) {
+      this.seeds = new ArrayList<>();
+    }
+  }
+
+  /**
    * Default resolution used during outlining objects.
    * 
    * @see Contour#getOutline(ImageProcessor)
@@ -112,14 +131,14 @@ public abstract class PropagateSeeds {
       case CONTOUR:
         return new PropagateSeeds.Contour(storeseeds);
       case MORPHOLOGICAL:
-        return new PropagateSeeds.Dummy(storeseeds);
+        return new PropagateSeeds.Morphological(storeseeds);
       default:
         throw new IllegalArgumentException("Unknown propagator");
     }
   }
 
   /**
-   * Empty proagator. Do nothing.
+   * Empty propagator. Do nothing.
    * 
    * @author p.baniukiewicz
    *
@@ -142,13 +161,13 @@ public abstract class PropagateSeeds {
      * @see #getCompositeSeed(ImagePlus)
      */
     public Dummy(boolean storeSeeds) {
-      binary = new Morphological(storeSeeds);
+      binary = new PropagateSeeds.Morphological(storeSeeds);
     }
 
     @Override
     Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
             double expandPower) {
-      return binary.propagateSeed(previous, shrinkPower, expandPower);
+      return binary.propagateSeed(previous, 0, 0);
     }
 
   }
@@ -183,10 +202,7 @@ public abstract class PropagateSeeds {
      * @see #getCompositeSeed(ImagePlus)
      */
     public Contour(boolean storeSeeds) {
-      this.storeSeeds = storeSeeds;
-      if (storeSeeds) {
-        seeds = new ArrayList<>();
-      }
+      super(storeSeeds);
     }
 
     /**
@@ -302,10 +318,7 @@ public abstract class PropagateSeeds {
      * @see #getCompositeSeed(ImagePlus)
      */
     public Morphological(boolean storeSeeds) {
-      this.storeSeeds = storeSeeds;
-      if (storeSeeds) {
-        seeds = new ArrayList<>();
-      }
+      super(storeSeeds);
     }
 
     /**
