@@ -676,14 +676,18 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
           switch (model.seedSource) {
             case QconfFile:
             case MaskImage:
-              propagateSeeds.getCompositeSeed(image.duplicate()).show();
+              if (oneSlice) { // have stack but want only one slice
+                propagateSeeds.getCompositeSeed(image.duplicate(), startSlice).show();
+              } else { // have stack and segmented stack
+                propagateSeeds.getCompositeSeed(image.duplicate(), 0).show();
+              }
               break;
             default:
               LOGGER.warn("Effective seeds are not displayed if"
                       + " initial seeds are provided as stack");
           }
         } else {
-          propagateSeeds.getCompositeSeed(image.duplicate()).show();
+          propagateSeeds.getCompositeSeed(image.duplicate(), 0).show();
         }
       }
     } catch (BoaException | QuimpPluginException rwe) {

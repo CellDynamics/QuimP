@@ -7,6 +7,9 @@
   </properties>
   <body>
        <release version="17.04.04" date="" description="Release">
+         <action dev="baniuk" type="fix" issue="243">
+              QuimP-RandomWalk: Fixed displaying composite seed image if active frame was segmented. 
+          </action>
           <action dev="baniuk" type="add" issue="240">
               QuimP-ANA: Added new option for appending results to IJ table. Renamed table to default Results as well. 
           </action>

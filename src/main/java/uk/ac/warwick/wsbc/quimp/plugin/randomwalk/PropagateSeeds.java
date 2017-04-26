@@ -79,7 +79,7 @@ public abstract class PropagateSeeds {
    * Allow to store seed history that can be later presented in form of composite image.
    * 
    * @param storeSeeds <tt>true</tt> to store seeds.
-   * @see #getCompositeSeed(ImagePlus)
+   * @see #getCompositeSeed(ImagePlus, int)
    */
   public PropagateSeeds(boolean storeSeeds) {
     this.storeSeeds = storeSeeds;
@@ -104,7 +104,7 @@ public abstract class PropagateSeeds {
    * <p>Every imageProcessor in pair contains important bits set to WHITE. For example BG pixels are
    * white here as well as FG pixels.
    * 
-   * @see #getCompositeSeed(ImagePlus)
+   * @see #getCompositeSeed(ImagePlus, int)
    * @see PropagateSeeds#storeSeeds
    */
   protected List<Map<Seeds, ImageProcessor>> seeds;
@@ -113,7 +113,7 @@ public abstract class PropagateSeeds {
    * 
    * <p>1.0 stand for opaque colors.
    * 
-   * @see #getCompositeSeed(ImagePlus)
+   * @see #getCompositeSeed(ImagePlus, int)
    */
   public static final double colorScaling = 0.5;
 
@@ -158,7 +158,7 @@ public abstract class PropagateSeeds {
      * Allow to store seed history that can be later presented in form of composite image.
      * 
      * @param storeSeeds <tt>true</tt> to store seeds.
-     * @see #getCompositeSeed(ImagePlus)
+     * @see #getCompositeSeed(ImagePlus, int)
      */
     public Dummy(boolean storeSeeds) {
       binary = new PropagateSeeds.Morphological(storeSeeds);
@@ -183,9 +183,9 @@ public abstract class PropagateSeeds {
      * @see uk.ac.warwick.wsbc.quimp.plugin.randomwalk.PropagateSeeds#getCompositeSeed(ij.ImagePlus)
      */
     @Override
-    public ImagePlus getCompositeSeed(ImagePlus org) throws RandomWalkException {
+    public ImagePlus getCompositeSeed(ImagePlus org, int offset) throws RandomWalkException {
       // Need override as we have different object here (binary, not this).
-      return binary.getCompositeSeed(org);
+      return binary.getCompositeSeed(org, offset);
     }
 
   }
@@ -217,7 +217,7 @@ public abstract class PropagateSeeds {
      * Allow to store seed history that can be later presented in form of composite image.
      * 
      * @param storeSeeds <tt>true</tt> to store seeds.
-     * @see #getCompositeSeed(ImagePlus)
+     * @see #getCompositeSeed(ImagePlus, int)
      */
     public Contour(boolean storeSeeds) {
       super(storeSeeds);
@@ -333,7 +333,7 @@ public abstract class PropagateSeeds {
      * Allow to store seed history that can be later presented in form of composite image.
      * 
      * @param storeSeeds <tt>true</tt> to store seeds.
-     * @see #getCompositeSeed(ImagePlus)
+     * @see #getCompositeSeed(ImagePlus, int)
      */
     public Morphological(boolean storeSeeds) {
       super(storeSeeds);
@@ -398,10 +398,12 @@ public abstract class PropagateSeeds {
    * <p>To have this method working, the Contour object must be created with storeSeeds==true.
    * 
    * @param org Original image (or stack) where composite layer will be added to.
+   * @param offset Slice number to display in composite if there is stack provided. Ignored if org
+   *        is single image. Set it to 0 to dispplay whole stack.
    * @return Composite image with marked foreground and background.
    * @throws RandomWalkException When seeds were not collected.
    */
-  public ImagePlus getCompositeSeed(ImagePlus org) throws RandomWalkException {
+  public ImagePlus getCompositeSeed(ImagePlus org, int offset) throws RandomWalkException {
     ImagePlus ret;
     if (seeds == null || seeds.size() == 0) {
       throw new RandomWalkException(
@@ -411,6 +413,7 @@ public abstract class PropagateSeeds {
             seeds.get(0).get(Seeds.FOREGROUND).getHeight());
     ImageStack bigstack = new ImageStack(seeds.get(0).get(Seeds.FOREGROUND).getWidth(),
             seeds.get(0).get(Seeds.FOREGROUND).getHeight());
+
     for (Map<Seeds, ImageProcessor> p : seeds) {
       // just in case convert to byte
       ImageProcessor fg = (ImageProcessor) p.get(Seeds.FOREGROUND).convertToByte(true);
@@ -425,12 +428,18 @@ public abstract class PropagateSeeds {
       bigstack.addSlice((ImageProcessor) bg);
     }
     // check if stack or not. getComposite requires the same type
-    if (org.getStack().getSize() == 1) {
+    if (org.getStack().getSize() == 1) { // single image
       ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack.getProcessor(1)),
               new ImagePlus("", bigstack.getProcessor(1)));
     } else {
-      ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack),
-              new ImagePlus("", bigstack));
+      if (offset > 0) { // stack but show only one image
+        ImageProcessor tmp = org.getStack().getProcessor(offset).duplicate();
+        ret = IJTools.getComposite(new ImagePlus("", tmp), new ImagePlus("", smallstack),
+                new ImagePlus("", bigstack));
+      } else { // stack
+        ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack),
+                new ImagePlus("", bigstack));
+      }
     }
     return ret;
   }
