@@ -154,7 +154,7 @@ public class PropagateSeedsTest {
     ImagePlus mask = IJ.openImage("src/test/Resources-static/GMask.tif");
 
     cc.propagateSeed(mask.getStack().getProcessor(1), 5, 10);
-    ImagePlus ret = cc.getCompositeSeed(org);
+    ImagePlus ret = cc.getCompositeSeed(org, 0);
     IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeed_QuimP.tif");
   }
 
@@ -172,7 +172,7 @@ public class PropagateSeedsTest {
     ImagePlus mask = IJ.openImage("src/test/Resources-static/GMask.tif");
 
     cc.propagateSeed(mask.getStack().getProcessor(1), 20, 40);
-    ImagePlus ret = cc.getCompositeSeed(org);
+    ImagePlus ret = cc.getCompositeSeed(org, 0);
     IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeedM_QuimP.tif");
   }
 
