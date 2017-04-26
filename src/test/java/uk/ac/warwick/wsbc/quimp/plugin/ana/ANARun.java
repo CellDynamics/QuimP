@@ -4,26 +4,27 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 
-// TODO: Auto-generated Javadoc
 /**
  * Plugin runner for in-place tests.
  * 
  * @author p.baniukiewicz
  */
-public class ANA_run {
+public class ANARun {
   static {
     System.setProperty("logback.configurationFile", "quimp-logback.xml");
   }
 
   /**
-   * 
+   * Runner.
    */
-  public ANA_run() {
+  public ANARun() {
     // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param args
+   * Main.
+   * 
+   * @param args args
    */
   @SuppressWarnings("unused")
   public static void main(String[] args) {
