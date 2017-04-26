@@ -125,14 +125,6 @@ public class ANAp {
 
   private double cortexWidthPixel; // in pixels
   private double cortexWidthScale; // at scale
-  /**
-   * UI setting. Show results in IJ table at the end
-   */
-  transient boolean fluoResultTable = false;
-  /**
-   * UI setting. Append result to IJ table.
-   */
-  transient boolean fluoResultTableAppend = false;
 
   /**
    * Default constructor.
