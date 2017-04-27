@@ -51,6 +51,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   private ParamList uiDefinition; // window definition
   private int step; // discretization step
   private boolean smoothing; // use smoothing?
+  private boolean clearnest; // clear nest before adding next outline
   private ImagePlus maskFile; // mask file
   private String maskFilename; // mask file name
   private ViewUpdater vu; // BOA context for updating it
@@ -65,6 +66,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     // defaults
     step = 1;
     smoothing = false;
+    clearnest = true;
     maskFilename = "";
     // define window controls (selecter filled in buildWindow
     uiDefinition = new ParamList(); // will hold ui definitions
@@ -75,6 +77,8 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     uiDefinition.put("step", "spinner, 1, 10001, 1," + Integer.toString(step));
     // name
     uiDefinition.put("smoothing", "checkbox, interpolation," + Boolean.toString(smoothing));
+    // clear nest
+    uiDefinition.put("Clear nest", "checkbox, clear," + Boolean.toString(clearnest));
     // use http://www.freeformatter.com/java-dotnet-escape.html#ad-output for escaping
     //!>
     uiDefinition.put("help", "<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. "
@@ -84,8 +88,12 @@ public class BinarySegmentationPlugin extends QWindowBuilder
             + " ImageJ."
             + " Alternative to <em>Load Mask</em>, will override loaded file.</p>\r\n<p>"
             + "<strong>step</strong> - stand for discretisation density, 1.0 means that every"
-            + " pixel of the outline will be mapped to Snake node.</p>\r\n<p><strong>smoothing"
-            + "</strong>&nbsp;- add extra Spline interpolation to the shape</p></font>");
+            + " pixel of the outline will be mapped to Snake node.</p>"
+            + "\r\n<p><strong>smoothing</strong>&nbsp;"
+            + "- add extra Spline interpolation to the shape</p>"
+            + "\r\n<p><strong>Clear nest</strong>&nbsp;"
+            + "- Delete all other snakes from view. If disabled, each use of <i>Apply</i> "
+            + "will create new snake</p></font>");
     //!<
     buildWindow(uiDefinition);
     params = new ParamList();
@@ -132,7 +140,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
       public void windowGainedFocus(WindowEvent e) {
         String[] str = WindowManager.getImageTitles(); // get opened windows
         getImage.removeAll();
-        getImage.add(BOA_.NONE);
+        getImage.add(BOA_.NONE); // add default position
         for (String s : str) {
           getImage.add(s);
         }
@@ -164,7 +172,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     // here verify whether mask is ok
     if (maskFile == null) { // not loaded
       JOptionPane.showMessageDialog(pluginWnd,
-              "Provided mask file: " + selectedMask + " could not be opened", "Mask loading error",
+              "Mask file: " + selectedMask + " could not be opened", "Mask loading error",
               JOptionPane.ERROR_MESSAGE);
       maskFilename = "";
     } else {
@@ -174,6 +182,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     if (b == applyB) { // on apply read config and run
       step = getIntegerFromUI("step");
       smoothing = getBooleanFromUI("smoothing");
+      clearnest = getBooleanFromUI("clear nest");
       try {
         runPlugin();
       } catch (QuimpPluginException e1) {
@@ -287,7 +296,9 @@ public class BinarySegmentationPlugin extends QWindowBuilder
           ss.setInterpolationParameters(step, smoothing);
         }
       }
-      nest.cleanNest(); // remove old stuff
+      if (clearnest) {
+        nest.cleanNest(); // remove old stuff
+      }
       nest.addHandlers(ret); // convert from array of SegmentedShapeRoi to SnakeHandlers
       vu.updateView(); // update view
     } catch (IllegalArgumentException e) { // thrown by BinarySegmentation
