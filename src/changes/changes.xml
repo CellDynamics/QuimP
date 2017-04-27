@@ -7,6 +7,9 @@
   </properties>
   <body>
        <release version="17.04.04" date="" description="Release">
+         <action dev="baniuk" type="fix" issue="242">
+              QuimP-ConvertMask: Added option for merging newly created snakes with those in BOA window. Window selector refreshes correctly. 
+         </action>
          <action dev="baniuk" type="fix" issue="243">
               QuimP-RandomWalk: Fixed displaying composite seed image if active frame was segmented. 
           </action>
