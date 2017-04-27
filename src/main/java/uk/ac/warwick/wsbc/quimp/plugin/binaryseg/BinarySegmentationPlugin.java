@@ -30,11 +30,10 @@ import uk.ac.warwick.wsbc.quimp.plugin.ParamList;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.QWindowBuilder;
 
-// TODO: Auto-generated Javadoc
 /**
  * Show UI for segmentation from masks and run it.
  * 
- * Modifies provided Nest reference on Apply. Update BOA screen on Apply button
+ * <p>Modifies provided Nest reference on Apply. Update BOA screen on Apply button
  * 
  * @author p.baniukiewicz
  * @see uk.ac.warwick.wsbc.quimp.plugin.utils.QWindowBuilder
@@ -47,14 +46,14 @@ public class BinarySegmentationPlugin extends QWindowBuilder
    */
   static final Logger LOGGER = LoggerFactory.getLogger(BinarySegmentationPlugin.class.getName());
 
-  private Nest nest; //!< reference to Nest object
-  private ParamList uiDefinition; //!< window definition
-  private int step; //!< discretization step
-  private boolean smoothing; //!< use smoothing?
-  private ImagePlus maskFile; //!< mask file
-  private String maskFilename; //!< mask file name
-  private ViewUpdater vu; //!< BOA context for updating it
-  private ParamList params; //!< holds current configuration of plugin. Updated on plugin run
+  private Nest nest; // reference to Nest object
+  private ParamList uiDefinition; // window definition
+  private int step; // discretization step
+  private boolean smoothing; // use smoothing?
+  private ImagePlus maskFile; // mask file
+  private String maskFilename; // mask file name
+  private ViewUpdater vu; // BOA context for updating it
+  private ParamList params; // holds current configuration of plugin. Updated on plugin run
 
   /**
    * Construct object
@@ -67,7 +66,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     smoothing = false;
     maskFilename = "";
     // define window controls
-    String str[] = WindowManager.getImageTitles(); // get opened windows
+    String[] str = WindowManager.getImageTitles(); // get opened windows
     String list = BOA_.NONE; // default nonselected
     for (String s : str) {
       list = list + ',' + s;
@@ -81,7 +80,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     // name
     uiDefinition.put("smoothing", "checkbox, interpolation," + Boolean.toString(smoothing));
     // use http://www.freeformatter.com/java-dotnet-escape.html#ad-output for escaping
-    //!<
+    //!>
     uiDefinition.put("help", "<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. "
             + "It should be 8-bit image of size of original stack with <span style=\"color:"
             + " #ffffff; background-color: #000000;\">black background</span> and white"
@@ -91,29 +90,9 @@ public class BinarySegmentationPlugin extends QWindowBuilder
             + "<strong>step</strong> - stand for discretisation density, 1.0 means that every"
             + " pixel of the outline will be mapped to Snake node.</p>\r\n<p><strong>smoothing"
             + "</strong>&nbsp;- add extra Spline interpolation to the shape</p></font>");
-    /**/
+    //!<
     buildWindow(uiDefinition);
     params = new ParamList();
-  }
-
-  /**
-   * Destroy window on exit
-   * 
-   * @author p.baniukiewicz
-   *
-   */
-  class myWindowAdapter extends WindowAdapter {
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
-     */
-    @Override
-    public void windowClosing(WindowEvent we) {
-      LOGGER.debug("Window closed");
-      pluginWnd.dispose();
-    }
   }
 
   /*
@@ -130,16 +109,28 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     pluginWnd.setPreferredSize(new Dimension(300, 450));
     pluginWnd.pack();
     pluginWnd.setVisible(true);
-    pluginWnd.addWindowListener(new myWindowAdapter()); // close not hide
+    // Destroy window on exit
+    pluginWnd.addWindowListener(new WindowAdapter() {
+      /*
+       * (non-Javadoc)
+       * 
+       * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
+       */
+      @Override
+      public void windowClosing(WindowEvent we) {
+        LOGGER.debug("Window closed");
+        pluginWnd.dispose();
+      }
+    }); // close not hide
     ((JButton) ui.get("load mask")).addActionListener(this);
     ((Choice) ui.get("get opened")).addItemListener(this);
     applyB.addActionListener(this);
   }
 
   /**
-   * Implement UI logic, reaction on buttons
+   * Implement UI logic, reaction on buttons.
    * 
-   * Run segmentation. Favor mask selected by Choice over button
+   * <p>Run segmentation. Favour mask selected by Choice over button
    */
   @Override
   public void actionPerformed(ActionEvent e) {
@@ -177,7 +168,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   }
 
   /**
-   * Pass ViewUpdater to plugin
+   * Pass ViewUpdater to plugin.
    */
   @Override
   public void attachContext(ViewUpdater b) {
@@ -185,9 +176,9 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   }
 
   /**
-   * Transfer plugin configuration to QuimP
+   * Transfer plugin configuration to QuimP.
    * 
-   * Only parameters mapped to UI by QWindowBuilder are supported directly by getValues() Any
+   * <p>Only parameters mapped to UI by QWindowBuilder are supported directly by getValues() Any
    * other parameters created outside QWindowBuilder should be added here manually.
    */
   public ParamList getPluginConfig() {
@@ -195,21 +186,21 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     // QWindowBuilder, the list is created always on plugin run, not here
   }
 
-  /**
-   * Not used here.
+  /*
+   * (non-Javadoc)
    * 
-   * @return Success code.
+   * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin#setup()
    */
   @Override
   public int setup() {
     return 0;
   }
 
-  /**
-   * Not used here.
+  /*
+   * (non-Javadoc)
    * 
-   * @param par
-   * @throws QuimpPluginException
+   * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpCorePlugin#setPluginConfig(uk.ac.warwick.wsbc.quimp.
+   * plugin.ParamList)
    */
   @Override
   public void setPluginConfig(ParamList par) throws QuimpPluginException {
@@ -245,12 +236,12 @@ public class BinarySegmentationPlugin extends QWindowBuilder
    */
   @Override
   public String about() {
-    return "Convert masks int oSnakes\n" + "Author: Piotr Baniukiewicz\n"
+    return "Convert binary masks into Snakes\n" + "Author: Piotr Baniukiewicz\n"
             + "mail: p.baniukiewicz@warwick.ac.uk";
   }
 
   /**
-   * Perform segmentation and modify Nest reference passed to this object
+   * Perform segmentation and modify Nest reference passed to this object.
    * 
    * @see uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi
    * @see <a href=
@@ -274,8 +265,8 @@ public class BinarySegmentationPlugin extends QWindowBuilder
       // SegmentedShapeRoi to points in SnakeHandler
       LOGGER.debug("step: " + step + " smooth: " + smoothing);
       for (ArrayList<SegmentedShapeRoi> asS : ret) {
-        for (SegmentedShapeRoi sS : asS) {
-          sS.setInterpolationParameters(step, smoothing);
+        for (SegmentedShapeRoi ss : asS) {
+          ss.setInterpolationParameters(step, smoothing);
         }
       }
       nest.cleanNest(); // remove old stuff
@@ -291,14 +282,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   /*
    * (non-Javadoc)
    * 
-   * <<<<<<< HEAD
-   * 
-   * @see
-   * uk.ac.warwick.wsbc.quimp.plugin.IQuimpNestPlugin#attachData(uk.ac.warwick.wsbc.quimp.Nest)
-   * =======
-   * 
    * @see uk.ac.warwick.wsbc.quimp.plugin.IQuimpNestPlugin#attachData(uk.ac.warwick.wsbc.quimp.Nest)
-   * >>>>>>> feature/task_220-GSon-versioning
    */
   @Override
   public void attachData(Nest data) {
