@@ -8,6 +8,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -65,16 +66,11 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     step = 1;
     smoothing = false;
     maskFilename = "";
-    // define window controls
-    String[] str = WindowManager.getImageTitles(); // get opened windows
-    String list = BOA_.NONE; // default nonselected
-    for (String s : str) {
-      list = list + ',' + s;
-    } // form list of params for QWindowBuilder:Choice
+    // define window controls (selecter filled in buildWindow
     uiDefinition = new ParamList(); // will hold ui definitions
     uiDefinition.put("name", "BinarySegmentation"); // name of window
     uiDefinition.put("load mask", "button, Load_mask");
-    uiDefinition.put("get opened", "choice," + list);
+    uiDefinition.put("get opened", "choice," + BOA_.NONE);
     // start, end, step, default
     uiDefinition.put("step", "spinner, 1, 10001, 1," + Integer.toString(step));
     // name
@@ -122,6 +118,28 @@ public class BinarySegmentationPlugin extends QWindowBuilder
         pluginWnd.dispose();
       }
     }); // close not hide
+    // update selector
+    pluginWnd.addWindowFocusListener(new WindowFocusListener() {
+      private Choice getImage = (Choice) ui.get("get opened");
+      private String lastSelected = "";
+
+      @Override
+      public void windowLostFocus(WindowEvent e) {
+        lastSelected = getImage.getSelectedItem(); // remember on defocus. Will be restored on focus
+      }
+
+      @Override
+      public void windowGainedFocus(WindowEvent e) {
+        String[] str = WindowManager.getImageTitles(); // get opened windows
+        getImage.removeAll();
+        getImage.add(BOA_.NONE);
+        for (String s : str) {
+          getImage.add(s);
+        }
+        getImage.select(lastSelected); // restore previous. If not available already, 0 position is
+        // selected
+      }
+    });
     ((JButton) ui.get("load mask")).addActionListener(this);
     ((Choice) ui.get("get opened")).addItemListener(this);
     applyB.addActionListener(this);
@@ -272,7 +290,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
       nest.cleanNest(); // remove old stuff
       nest.addHandlers(ret); // convert from array of SegmentedShapeRoi to SnakeHandlers
       vu.updateView(); // update view
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) { // thrown by BinarySegmentation
       JOptionPane.showMessageDialog(pluginWnd, "Error during execution: " + e.getMessage(),
               "Processing error", JOptionPane.ERROR_MESSAGE);
       LOGGER.error(e.getMessage(), e);
