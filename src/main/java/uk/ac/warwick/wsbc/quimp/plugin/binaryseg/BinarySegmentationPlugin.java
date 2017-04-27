@@ -12,7 +12,6 @@ import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +22,7 @@ import ij.WindowManager;
 import ij.io.OpenDialog;
 import uk.ac.warwick.wsbc.quimp.BOA_;
 import uk.ac.warwick.wsbc.quimp.Nest;
+import uk.ac.warwick.wsbc.quimp.QuimpException.MessageSinkTypes;
 import uk.ac.warwick.wsbc.quimp.ViewUpdater;
 import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpNestPlugin;
@@ -161,24 +161,14 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   @Override
   public void actionPerformed(ActionEvent e) {
     Object b = e.getSource();
-    String selectedMask = "";
     if (b == ui.get("load mask")) { // read file with mask
       OpenDialog od = new OpenDialog("Load mask file", "");
       if (od.getPath() != null) { // not canceled
         maskFile = IJ.openImage(od.getPath()); // try open image
-        selectedMask = od.getFileName();
+        maskFilename = od.getFileName();
       }
     }
-    // here verify whether mask is ok
-    if (maskFile == null) { // not loaded
-      JOptionPane.showMessageDialog(pluginWnd,
-              "Mask file: " + selectedMask + " could not be opened", "Mask loading error",
-              JOptionPane.ERROR_MESSAGE);
-      maskFilename = "";
-    } else {
-      maskFilename = selectedMask; // Remember full patch for configuration
-    }
-
+    // maskFilename can be null but it is handled by BinarySegmentation
     if (b == applyB) { // on apply read config and run
       step = getIntegerFromUI("step");
       smoothing = getBooleanFromUI("smoothing");
@@ -279,12 +269,9 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     if (nest == null) {
       return;
     }
-    if (maskFile == null) { // failed load
-      LOGGER.warn("Load mask file first");
-      return;
-    }
     try {
-      LOGGER.info("Segmentation: " + maskFile.toString() + " params: " + params.toString());
+      LOGGER.info("Segmentation: " + (maskFile != null ? maskFile.toString() : "null") + " params: "
+              + params.toString());
       BinarySegmentation obj = new BinarySegmentation(maskFile); // create segmentation object
       obj.trackObjects(); // run tracking
       ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
@@ -301,10 +288,9 @@ public class BinarySegmentationPlugin extends QWindowBuilder
       }
       nest.addHandlers(ret); // convert from array of SegmentedShapeRoi to SnakeHandlers
       vu.updateView(); // update view
-    } catch (IllegalArgumentException e) { // thrown by BinarySegmentation
-      JOptionPane.showMessageDialog(pluginWnd, "Error during execution: " + e.getMessage(),
-              "Processing error", JOptionPane.ERROR_MESSAGE);
-      LOGGER.error(e.getMessage(), e);
+    } catch (QuimpPluginException e) { // thrown by BinarySegmentation
+      e.setMessageSinkType(MessageSinkTypes.GUI);
+      e.handleException(pluginWnd, "Mask tracking problem:");
     }
   }
 
@@ -330,6 +316,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
       selectedMask = ((Choice) ui.get("get opened")).getSelectedItem(); // selected item
       if (!selectedMask.equals(BOA_.NONE)) {
         maskFile = WindowManager.getImage(selectedMask);
+        maskFilename = maskFile.getTitle();
       } else {
         maskFile = null;
       }

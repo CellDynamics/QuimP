@@ -10,6 +10,7 @@ import ij.ImageStack;
 import ij.gui.ShapeRoi;
 import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.quimp.geom.TrackOutline;
+import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
 
 /*
  * //!>
@@ -109,12 +110,16 @@ public class BinarySegmentation {
    * Constructor for segmentation of stack.
    * 
    * @param ip stack of images to segment
-   * @throws IllegalArgumentException when wrong image is provided
+   * @throws QuimpPluginException when image is null or wrong type
    */
-  public BinarySegmentation(final ImagePlus ip) {
+  public BinarySegmentation(final ImagePlus ip) throws QuimpPluginException {
     if (ip == null) {
-      throw new IllegalArgumentException("The image was: null");
+      throw new QuimpPluginException("The image was null");
     }
+    if (!ip.getProcessor().isBinary()) {
+      throw new QuimpPluginException("Input image must be binary");
+    }
+
     this.ip = ip.duplicate();
     LOGGER.debug("Got " + ip.getImageStackSize() + " slices");
     trackers = new TrackOutline[this.ip.getImageStackSize()];
