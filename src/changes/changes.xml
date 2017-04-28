@@ -6,7 +6,9 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
-       <release version="17.04.04" date="" description="Release">
+       <release version="17.05.01" date="xxxxxxxxx" description="Release">
+       </release>
+       <release version="17.04.04" date="2017-04-28" description="Release">
          <action dev="baniuk" type="fix" issue="242">
               QuimP-ConvertMask: Added option for merging newly created snakes with those in BOA window. Window selector refreshes correctly. 
          </action>
