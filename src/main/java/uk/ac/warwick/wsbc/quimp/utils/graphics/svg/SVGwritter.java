@@ -113,7 +113,7 @@ public abstract class SVGwritter {
         col = colour.getColorSVG();
       }
       //!>
-      osw.write("<circle cx=\"" + x1 + "\"" + " cy=\"" + y1 + "\"" + " rect=\"" + radius + "\""
+      osw.write("<circle cx=\"" + x1 + "\"" + " cy=\"" + y1 + "\"" + " r=\"" + radius + "\""
               + " fill=\"" + col + "\"" + " stroke=\"" + strokecolour.getColorSVG() + "\""
               + " stroke-width=\"" + thickness + "\"/>\n");
       //!<
