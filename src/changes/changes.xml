@@ -16,7 +16,7 @@
           <action dev="baniuk" type="add" issue="240">
               QuimP-ANA: Added new option for appending results to IJ table. Renamed table to default Results as well. 
           </action>
-          <action dev="baniuk" type="fix" issue="">
+          <action dev="baniuk" type="fix" issue="241">
               QuimP-RandomWalk: Removed FG/BG competition for better investigation. Gamma parameters remain in UI but they are inactive. 
           </action>
           <action dev="baniuk" type="fix" issue="">
