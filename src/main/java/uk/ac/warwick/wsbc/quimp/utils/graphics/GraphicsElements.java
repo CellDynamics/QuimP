@@ -13,7 +13,7 @@ import ij.gui.Roi;
 import ij.process.FloatPolygon;
 
 /**
- * This class contains static methods for creating simple graphics elements.
+ * This class contains static methods for creating simple graphics elements using IJ Roi API.
  * 
  * @author p.baniukiewicz
  *

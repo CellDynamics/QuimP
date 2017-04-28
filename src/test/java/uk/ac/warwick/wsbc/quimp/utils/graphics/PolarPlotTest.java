@@ -5,10 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -47,23 +43,9 @@ public class PolarPlotTest {
   private PolarPlot polarPlot = new PolarPlot(new STmap(), new Point2d(10, 10));
 
   /**
-   * @throws java.lang.Exception
-   */
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-  }
-
-  /**
    * Define two frames composed from 5-points outline.
    * 
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception on error
    * @see <a href=
    *      "link">http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/wiki/DataforPolarPlotTest</a>
    */
@@ -81,16 +63,9 @@ public class PolarPlotTest {
   }
 
   /**
-   * @throws java.lang.Exception
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /**
    * Test method for {@link uk.ac.warwick.wsbc.quimp.utils.graphics.PolarPlot#getShift()}.
    * 
-   * Mocked outline from 6 points, 2 frames. Gradient coord at {10,10}. Outline point at index 2
+   * <p>Mocked outline from 6 points, 2 frames. Gradient coord at {10,10}. Outline point at index 2
    * closest for first frame.
    * 
    * @throws Exception
@@ -99,19 +74,19 @@ public class PolarPlotTest {
   @Test
   public void testGetShift() throws Exception {
 
-    int expectedindex[] = { 2, 0 }; // only 2 frames
-    int c[] = polarPlot.getShift();
+    int[] expectedindex = { 2, 0 }; // only 2 frames
+    int[] c = polarPlot.getShift();
     assertThat(c, is(expectedindex));
   }
 
   /**
    * Test method for {@link uk.ac.warwick.wsbc.quimp.utils.graphics.PolarPlot#getMassCentre()}.
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test
   public void testGetMassCentre() throws Exception {
-    Point2d expected[] = { new Point2d(1.5, 0), new Point2d(21.5, 0) };
+    Point2d[] expected = { new Point2d(1.5, 0), new Point2d(21.5, 0) };
     Point2d[] ret = polarPlot.getMassCentre();
     assertThat(ret, is(expected));
   }
@@ -120,7 +95,7 @@ public class PolarPlotTest {
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.utils.graphics.PolarPlot#getVectors(int, Point2d[], int[])}.
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test
   public void testGetVectors() throws Exception {
@@ -138,18 +113,18 @@ public class PolarPlotTest {
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.utils.graphics.PolarPlot#getAngles(Vector2d[], Vector2d)}.
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test
   public void testGetAngles() throws Exception {
 
     int f = 0;
-    //!<
-    double[] expected = { 0, // rounded, assume that polygin is given in anticlock dir
+    //!>
+    double[] expected = { 0, // rounded, assume that polygon is given in anticlock dir
         63, 127, 180, -117, -53 };
-    /**/
+    //!<
     Vector2d[] v = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
-    double ret[] = polarPlot.getAngles(v, v[0]);
+    double[] ret = polarPlot.getAngles(v, v[0]);
     for (int i = 0; i < ret.length; i++) {
       ret[i] = Math.round(ret[i] * 180 / Math.PI);
     }
@@ -161,14 +136,14 @@ public class PolarPlotTest {
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.utils.graphics.PolarPlot#getRadius(int, int, double[][])}.
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test
   public void testGetRadius() throws Exception {
     int f = 0;
     double[][] motmap = { { 0, 1, 2, 3, 4, 5 }, { 20, 21, 22, 23, 24, 25 } };
     double[] expected = { 2, 3, 4, 5, 0, 1 }; // shifted by 2
-    int c[] = polarPlot.getShift();
+    int[] c = polarPlot.getShift();
     double[] ret = polarPlot.getRadius(0, c[f], motmap);
     assertThat(ret, is(expected));
   }
@@ -177,7 +152,7 @@ public class PolarPlotTest {
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.utils.graphics.PolarPlot#generatePlot(String)}.
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test
   public void testGeneratePlot() throws Exception {
@@ -188,9 +163,9 @@ public class PolarPlotTest {
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.utils.graphics.PolarPlot#generatePlot(String)}.
    * 
-   * Compared with matlab
+   * <p>Compared with matlab
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test
   public void testGeneratePlot_1() throws Exception {

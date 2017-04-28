@@ -13,9 +13,10 @@ import uk.ac.warwick.wsbc.quimp.Vert;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 
-// TODO: Auto-generated Javadoc
 /**
  * SVG plotter used in QuimP. Left in this form for compatibility reason.
+ * 
+ * <P>TODO This whole class should end up at SVGwritter
  * 
  * @author rtyson
  *

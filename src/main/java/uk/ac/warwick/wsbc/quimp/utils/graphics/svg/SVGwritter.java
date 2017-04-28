@@ -9,7 +9,7 @@ import uk.ac.warwick.wsbc.quimp.QColor;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 
 /**
- * Plot shapes on SVG image.
+ * Plot primitives on SVG image.
  * 
  * @author p.baniukiewicz
  *
