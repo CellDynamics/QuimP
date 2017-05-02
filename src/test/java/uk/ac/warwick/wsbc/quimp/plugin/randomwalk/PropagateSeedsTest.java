@@ -16,7 +16,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Outline;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
+import uk.ac.warwick.wsbc.quimp.utils.test.RoiSaver;
 
 /**
  * @author p.baniukiewicz

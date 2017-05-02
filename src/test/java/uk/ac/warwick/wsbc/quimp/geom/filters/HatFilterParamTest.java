@@ -17,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.DataLoader;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
+import uk.ac.warwick.wsbc.quimp.utils.test.DataLoader;
+import uk.ac.warwick.wsbc.quimp.utils.test.RoiSaver;
 
 /**
  * Parameterised test for HatFilter.

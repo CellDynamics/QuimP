@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.quimp.plugin.utils;
+package uk.ac.warwick.wsbc.quimp.utils.test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ij.process.FloatPolygon;
+import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
 
 /**
  * Simple data loader for test.

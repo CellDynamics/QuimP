@@ -71,8 +71,8 @@ public class MapTracker {
    */
   public MapTracker(double[][] originMap, double[][] coordMap) {
 
-    forwardMap = QuimPArrayUtils.initIntegerArray(originMap.length, originMap[0].length);
-    backwardMap = QuimPArrayUtils.initIntegerArray(forwardMap.length, forwardMap[0].length);
+    forwardMap = QuimPArrayUtils.initInteger2dArray(originMap.length, originMap[0].length);
+    backwardMap = QuimPArrayUtils.initInteger2dArray(forwardMap.length, forwardMap[0].length);
 
     QuimPArrayUtils.fill2Darray(forwardMap, -1);
     QuimPArrayUtils.fill2Darray(backwardMap, -1);

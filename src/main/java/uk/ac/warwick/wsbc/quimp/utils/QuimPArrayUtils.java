@@ -12,16 +12,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.stat.StatUtils;
 
-// TODO: Auto-generated Javadoc
+import ij.process.ImageProcessor;
+
 /**
  * Deliver simple methods operating on arrays.
  * 
@@ -29,6 +31,42 @@ import org.apache.commons.math3.stat.StatUtils;
  *
  */
 public class QuimPArrayUtils {
+
+  /**
+   * Convert 1d float array to double.
+   * 
+   * @param input array to convert
+   * @return Input array converted to double
+   */
+  public static double[] float2double(float[] input) {
+    final double[] result = new double[input.length];
+    IntStream.range(0, input.length).forEach(index -> result[index] = input[index]);
+    return result;
+  }
+
+  /**
+   * Convert 1d double array to float.
+   * 
+   * @param input array to convert
+   * @return Input array converted to float
+   */
+  public static float[] double2float(double[] input) {
+    final float[] result = new float[input.length];
+    IntStream.range(0, input.length).forEach(index -> result[index] = (float) input[index]);
+    return result;
+  }
+
+  /**
+   * Convert 1d double array to Double.
+   * 
+   * @param input array to convert
+   * @return Input array converted to Double
+   */
+  public static Double[] object2double(Number[] input) {
+    final Double[] result = new Double[input.length];
+    IntStream.range(0, input.length).forEach(index -> result[index] = input[index].doubleValue());
+    return result;
+  }
 
   /**
    * Convert 2D float array to double.
@@ -42,16 +80,23 @@ public class QuimPArrayUtils {
     }
     int rows = input.length;
     double[][] out = new double[rows][];
-    // iterate over rows with conversion
-    for (int r = 0; r < rows; r++) {
-      float[] row = input[r];
-      int cols = row.length;
-      out[r] = new double[cols];
-      // iterate over columns
-      for (int c = 0; c < cols; c++) {
-        out[r][c] = input[r][c];
-      }
+    IntStream.range(0, input.length).forEach(index -> out[index] = float2double(input[index]));
+    return out;
+  }
+
+  /**
+   * Convert 2D double array to float.
+   * 
+   * @param input Array to convert
+   * @return converted one
+   */
+  public static float[][] double2dfloat(double[][] input) {
+    if (input == null) {
+      return null;
     }
+    int rows = input.length;
+    float[][] out = new float[rows][];
+    IntStream.range(0, input.length).forEach(index -> out[index] = double2float(input[index]));
     return out;
   }
 
@@ -63,18 +108,13 @@ public class QuimPArrayUtils {
    */
   public static double[] getMeanR(double[][] map) {
     double[] ret = new double[map.length];
-    for (int f = 0; f < map.length; f++) { // for every frame
-      double mean = 0;
-      for (int r = 0; r < map[f].length; r++) {
-        mean += map[f][r];
-      }
-      ret[f] = mean / map[f].length;
-    }
+    IntStream.range(0, map.length)
+            .forEach(index -> ret[index] = Arrays.stream(map[index]).sum() / map[index].length);
     return ret;
   }
 
   /**
-   * Calculate mean of map for every column.
+   * Calculate mean of map for every column. Assumes regular array.
    * 
    * @param map map
    * @return Mean of map for every row as list.
@@ -143,31 +183,6 @@ public class QuimPArrayUtils {
   }
 
   /**
-   * Convert 2D double array to float.
-   * 
-   * @param input Array to convert
-   * @return converted one
-   */
-  public static float[][] double2float(double[][] input) {
-    if (input == null) {
-      return null;
-    }
-    int rows = input.length;
-    float[][] out = new float[rows][];
-    // iterate over rows with conversion
-    for (int r = 0; r < rows; r++) {
-      double[] row = input[r];
-      int cols = row.length;
-      out[r] = new float[cols];
-      // iterate over columns
-      for (int c = 0; c < cols; c++) {
-        out[r][c] = Double.valueOf((input[r][c])).floatValue();
-      }
-    }
-    return out;
-  }
-
-  /**
    * Convert integer array to short.
    * 
    * @param input input
@@ -191,7 +206,7 @@ public class QuimPArrayUtils {
    * @param cols Number of columns
    * @return rows x cols array
    */
-  public static double[][] initDoubleArray(int rows, int cols) {
+  public static double[][] initDouble2dArray(int rows, int cols) {
     double[][] ret;
     ret = new double[rows][];
     for (int r = 0; r < rows; r++) {
@@ -207,7 +222,7 @@ public class QuimPArrayUtils {
    * @param cols Number of columns
    * @return rows x cols array
    */
-  public static int[][] initIntegerArray(int rows, int cols) {
+  public static int[][] initInteger2dArray(int rows, int cols) {
     int[][] ret;
     ret = new int[rows][];
     for (int r = 0; r < rows; r++) {
@@ -217,39 +232,9 @@ public class QuimPArrayUtils {
   }
 
   /**
-   * Convert List of Integers to primitive type.
-   * 
-   * @param input input
-   * @return array of ints converted from List
-   */
-  public static int[] listToPrimitive(List<Integer> input) {
-    Iterator<Integer> it = input.iterator();
-    int[] ret = new int[input.size()];
-    int l = 0;
-    while (it.hasNext()) {
-      ret[l++] = it.next().intValue();
-    }
-    return ret;
-  }
-
-  /**
-   * Convert primitive integer to Integer.
-   * 
-   * @param input input
-   * @return array of Integers converted from array of ints
-   */
-  public static Integer[] primitiveToClass(int[] input) {
-    Integer[] ret = new Integer[input.length];
-    for (int i = 0; i < input.length; i++) {
-      ret[i] = input[i];
-    }
-    return ret;
-  }
-
-  /**
    * Make deep copy of 2D array.
    * 
-   * <p>If destination matrix i already initialized it must have correct size.
+   * <p>If destination matrix is already initialized it must have correct size.
    * 
    * @param source source matrix
    * @param dest destination matrix, if <tt>dest</tt> is <tt>null</tt> the matrix is initialized
@@ -258,11 +243,10 @@ public class QuimPArrayUtils {
    */
   public static double[][] copy2darray(double[][] source, double[][] dest) {
     double[][] ret;
+    int rows = source.length;
+    int cols = source[0].length;
     if (dest == null) {
-      ret = new double[source.length][];
-      for (int i = 0; i < source.length; i++) {
-        ret[i] = new double[source[i].length];
-      }
+      ret = initDouble2dArray(rows, cols);
     } else {
       ret = dest;
     }
@@ -409,17 +393,7 @@ public class QuimPArrayUtils {
    * @return the int
    */
   public static int arrayMax(int[] a) {
-    int max = a[0];
-    if (a.length == 1) {
-      return max;
-    }
-
-    for (int i = 1; i < a.length; i++) {
-      if (max < a[i]) {
-        max = a[i];
-      }
-    }
-    return max;
+    return Arrays.stream(a).max().getAsInt();
   }
 
   /**
@@ -448,7 +422,7 @@ public class QuimPArrayUtils {
    * @param a the a
    * @return the double
    */
-  public static double arrayMax(double[][] a) {
+  public static double array2dMax(double[][] a) {
     double max = arrayMax(a[0]);
     if (a.length == 1) {
       return max;
@@ -539,7 +513,7 @@ public class QuimPArrayUtils {
    * @param a the a
    * @return the double
    */
-  public static double arrayMin(double[][] a) {
+  public static double array2dMin(double[][] a) {
     double min = arrayMin(a[0]);
     if (a.length == 1) {
       return min;
@@ -560,12 +534,7 @@ public class QuimPArrayUtils {
    * @return the int
    */
   public static int sumArray(int[] a) {
-    int sum = 0;
-    for (int i = 0; i < a.length; i++) {
-      sum += a[i];
-    }
-
-    return sum;
+    return Arrays.stream(a).sum();
   }
 
   /**
@@ -686,5 +655,28 @@ public class QuimPArrayUtils {
       maxs[r] = StatUtils.min(data[r]);
     }
     return StatUtils.min(maxs);
+  }
+
+  /**
+   * Convert ImageProcessor pixel data to array of objects.
+   * 
+   * @param input ImageProcessor
+   * @return array of objects converted from primitives
+   */
+  public static Number[] castToNumber(ImageProcessor input) {
+    Object pixels = input.getPixels();
+    if (pixels == null) {
+      return null;
+    } else if (pixels instanceof byte[]) {
+      return ArrayUtils.toObject((byte[]) pixels);
+    } else if (pixels instanceof short[]) {
+      return ArrayUtils.toObject((short[]) pixels);
+    } else if (pixels instanceof int[]) {
+      return ArrayUtils.toObject((int[]) pixels);
+    } else if (pixels instanceof float[]) {
+      return ArrayUtils.toObject((float[]) pixels);
+    } else {
+      throw new IllegalArgumentException("Unknown bit depth");
+    }
   }
 }

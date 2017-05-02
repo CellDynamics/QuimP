@@ -510,7 +510,7 @@ public class RandomWalkSegmentation {
    */
   public static FloatProcessor realMatrix2ImageProcessor(RealMatrix rm) {
     double[][] rawData = rm.transpose().getData();
-    return new FloatProcessor(QuimPArrayUtils.double2float(rawData));
+    return new FloatProcessor(QuimPArrayUtils.double2dfloat(rawData));
   }
 
   /**

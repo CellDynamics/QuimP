@@ -193,7 +193,7 @@ public class Prot_Analysis implements IQuimpPlugin {
     for (STmap mapCell : stMap) { // iterate through cells
       // convert binary 2D array to ImageJ
       TrackVisualisation.Map visSingle = new TrackVisualisation.Map("motility_map_cell_" + h,
-              QuimPArrayUtils.double2float(mapCell.motMap));
+              QuimPArrayUtils.double2dfloat(mapCell.motMap));
       // compute maxima
       MaximaFinder mf = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
       mf.computeMaximaIJ(config.noiseTolerance); // 1.5
@@ -261,9 +261,9 @@ public class Prot_Analysis implements IQuimpPlugin {
       // update static fields in gui
       gui.lbMaxnum.setText(Integer.toString(mf.getMaximaNumber()));
       gui.lbMaxval
-              .setText(String.format("%1$.3f", QuimPArrayUtils.arrayMax(mapCell.getMotMap())));
+              .setText(String.format("%1$.3f", QuimPArrayUtils.array2dMax(mapCell.getMotMap())));
       gui.lbMinval
-              .setText(String.format("%1$.3f", QuimPArrayUtils.arrayMin(mapCell.getMotMap())));
+              .setText(String.format("%1$.3f", QuimPArrayUtils.array2dMin(mapCell.getMotMap())));
       h++;
     }
 

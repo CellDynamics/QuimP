@@ -24,7 +24,7 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.quimp.geom.TrackOutline;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
+import uk.ac.warwick.wsbc.quimp.utils.test.RoiSaver;
 
 /**
  * @author p.baniukiewicz

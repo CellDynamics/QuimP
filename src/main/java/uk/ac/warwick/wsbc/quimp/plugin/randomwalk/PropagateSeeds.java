@@ -20,8 +20,8 @@ import uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor;
 import uk.ac.warwick.wsbc.quimp.plugin.ana.ANAp;
 import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.BinaryFilters.MorphoOperations;
 import uk.ac.warwick.wsbc.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
 import uk.ac.warwick.wsbc.quimp.utils.IJTools;
+import uk.ac.warwick.wsbc.quimp.utils.test.RoiSaver;
 
 /**
  * Generate new seeds for n+1 frame in stack using previous results of segmentation.

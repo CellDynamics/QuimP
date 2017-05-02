@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.quimp.plugin.utils;
+package uk.ac.warwick.wsbc.quimp.utils.test;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -18,9 +18,10 @@ import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.QColor;
 import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
+import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
 
 /**
- * Helper class to export shapes as \a *.tif images
+ * Helper class to export shapes as *.tif images
  * 
  * @author p.baniukiewicz
  *
@@ -113,7 +114,7 @@ public class RoiSaver {
    * 
    * @param fileName fileName
    * @param roi roi
-   * @see uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver#saveROIs(ImagePlus, String, ArrayList)
+   * @see uk.ac.warwick.wsbc.quimp.utils.test.RoiSaver#saveROIs(ImagePlus, String, ArrayList)
    */
   public static void saveRoi(String fileName, Roi roi) {
     if (roi == null) {

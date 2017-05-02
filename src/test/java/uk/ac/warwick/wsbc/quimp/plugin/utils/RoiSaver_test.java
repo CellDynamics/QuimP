@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
-import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
+import uk.ac.warwick.wsbc.quimp.utils.test.RoiSaver;
 
 // TODO: Auto-generated Javadoc
 /**

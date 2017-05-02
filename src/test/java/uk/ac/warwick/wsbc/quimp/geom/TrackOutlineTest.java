@@ -21,7 +21,7 @@ import ij.gui.ShapeRoi;
 import ij.plugin.RoiRotator;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Outline;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.RoiSaver;
+import uk.ac.warwick.wsbc.quimp.utils.test.RoiSaver;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -63,7 +63,7 @@ public class Prot_AnalysisTest {
   @Before
   public void setUp() throws Exception {
     stMap = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState;
-    float[][] motMap = QuimPArrayUtils.double2float(stMap[0].motMap);
+    float[][] motMap = QuimPArrayUtils.double2dfloat(stMap[0].motMap);
     // rotate and flip to match orientation of ColorProcessor (QuimP default)
     imp = new FloatProcessor(motMap).rotateRight();
     imp.flipHorizontal();

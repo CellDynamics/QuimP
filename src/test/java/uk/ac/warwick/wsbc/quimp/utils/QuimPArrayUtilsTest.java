@@ -68,14 +68,14 @@ public class QuimPArrayUtilsTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils#double2float(double[][])}.
+   * {@link uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils#double2dfloat(double[][])}.
    * 
    * @throws Exception on error
    */
   @Test
   public void testDouble2Float() throws Exception {
     double[][] in = { { 1.0, 2.0, 3.0 }, { 1.11, 2.11, 3.11 } };
-    float[][] out = QuimPArrayUtils.double2float(in);
+    float[][] out = QuimPArrayUtils.double2dfloat(in);
     for (int r = 0; r < 2; r++) {
       for (int c = 0; c < 3; c++) {
         assertEquals(in[r][c], out[r][c], 1e-3);
@@ -141,6 +141,17 @@ public class QuimPArrayUtilsTest {
   }
 
   /**
+   * Test of getMax(RealMatrix).
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testGetMax() throws Exception {
+    double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
+    assertThat(QuimPArrayUtils.getMax(MatrixUtils.createRealMatrix(test)), is(40.0));
+  }
+
+  /**
    * Test of getMin(RealMatrix).
    * 
    * @throws Exception on error
@@ -148,7 +159,68 @@ public class QuimPArrayUtilsTest {
   @Test
   public void testGetMin() throws Exception {
     double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
-    assertThat(QuimPArrayUtils.getMax(MatrixUtils.createRealMatrix(test)), is(40.0));
+    assertThat(QuimPArrayUtils.getMin(MatrixUtils.createRealMatrix(test)), is(1.0));
+  }
+
+  /**
+   * Test of getMeanR.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testGetMeanR() throws Exception {
+    double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
+    assertThat(QuimPArrayUtils.getMeanR(test), is(new double[] { 2.5, 12.5, 7.5 }));
+  }
+
+  /**
+   * Test of getMeanC.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testGetMeanC() throws Exception {
+    double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
+    assertThat(QuimPArrayUtils.getMeanC(test), is(new double[] { 3, 4, 17, 6 }));
+  }
+
+  /**
+   * Test of testCopy2darray.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testCopy2darray() throws Exception {
+    double[][] test = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
+    double[][] ret = null;
+    double[][] exp = { { 1, 2, 3, 4 }, { 2, 3, 40, 5 }, { 6, 7, 8, 9 } };
+
+    assertThat(QuimPArrayUtils.copy2darray(test, ret), is(exp));
+
+    ret = QuimPArrayUtils.initDouble2dArray(3, 4);
+    assertThat(QuimPArrayUtils.copy2darray(test, ret), is(exp));
+  }
+
+  /**
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils#arrayMax(int[])}.
+   * 
+   * @throws Exception omn error
+   */
+  @Test
+  public void testArray2dMaxIntArray() throws Exception {
+    int[] test = new int[] { 2, 4, 5, 6, 7, 8, 1, 76 };
+    assertThat(QuimPArrayUtils.arrayMax(test), is(76));
+  }
+
+  /**
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils#sumArray(int[])}.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSumArray() throws Exception {
+    int[] test = new int[] { 2, 4, 5, 6, 7, 8, 1, 76 };
+    assertThat(QuimPArrayUtils.sumArray(test), is(109));
   }
 
 }

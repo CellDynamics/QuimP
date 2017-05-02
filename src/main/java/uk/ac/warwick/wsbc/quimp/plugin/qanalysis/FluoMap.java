@@ -158,7 +158,7 @@ public class FluoMap {
    */
   public void setMap(double[][] map) {
     this.map = map;
-    recalculateColorScale(QuimPArrayUtils.arrayMax(map));
+    recalculateColorScale(QuimPArrayUtils.array2dMax(map));
     setEnabled(true);
   }
 }

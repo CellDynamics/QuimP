@@ -11,6 +11,8 @@ import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 /**
  * Plot primitives on SVG image.
  * 
+ * <p>Written svg object must be close by /svg tag manually.
+ * 
  * @author p.baniukiewicz
  *
  */
