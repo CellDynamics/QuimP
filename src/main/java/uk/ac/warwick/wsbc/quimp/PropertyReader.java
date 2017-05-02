@@ -35,7 +35,8 @@ public class PropertyReader {
   /**
    * Read property from property file for QuimP package.
    * 
-   * not static because of getClass().Property file should be in the same package as this class or
+   * <p>not static because of getClass().Property file should be in the same package as this class
+   * or
    * full path should be provided otherwise.
    * 
    * @param propFileName property file name
@@ -76,7 +77,7 @@ public class PropertyReader {
   /**
    * Read property from jar file.
    * 
-   * Used when there is many the same properties in many jars.
+   * <p>Used when there is many the same properties in many jars.
    * 
    * @param c
    * @param partofFilename A part of expected jar name where property is located.

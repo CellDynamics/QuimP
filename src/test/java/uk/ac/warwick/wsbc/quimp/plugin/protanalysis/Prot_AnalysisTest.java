@@ -79,7 +79,7 @@ public class Prot_AnalysisTest {
   /**
    * Check tracking for found maxima.
    * 
-   * See: src/test/Resources-static/ProtAnalysisTest/main.m
+   * <p>See: src/test/Resources-static/ProtAnalysisTest/main.m
    * 
    * @throws Exception
    */

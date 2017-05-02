@@ -103,8 +103,8 @@ public class TrackMapTest {
 
   /**
    * Test method for {@link uk.ac.warwick.wsbc.quimp.geom.MapTracker}.
-   * <p>
-   * Output results generated in Matlab by TrackMapTests/main.m
+   * 
+   * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
    * @throws Exception
    */
@@ -130,8 +130,8 @@ public class TrackMapTest {
 
   /**
    * Test method for {@link uk.ac.warwick.wsbc.quimp.geom.MapTracker#trackForward(int, int, int)}.
-   * <p>
-   * Output results generated in Matlab by TrackMapTests/main.m
+   * 
+   * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
    * @throws Exception
    */
@@ -174,8 +174,8 @@ public class TrackMapTest {
 
   /**
    * Test method for {@link uk.ac.warwick.wsbc.quimp.geom.MapTracker#trackForward(int, int, int)}.
-   * <p>
-   * Output results generated in Matlab by TrackMapTests/main.m
+   * 
+   * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
    * @throws Exception
    */
@@ -194,8 +194,8 @@ public class TrackMapTest {
   /**
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.geom.MapTracker#trackForwardValid(int, int, int)}.
-   * <p>
-   * Output results generated in Matlab by TrackMapTests/main.m
+   * 
+   * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
    * @throws Exception
    */
@@ -241,8 +241,8 @@ public class TrackMapTest {
   /**
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.geom.MapTracker#trackBackward(int, int, int)}.
-   * <p>
-   * Output results generated in Matlab by TrackMapTests/main.m
+   * 
+   * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
    * @throws Exception
    */
@@ -258,8 +258,8 @@ public class TrackMapTest {
   /**
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.geom.MapTracker#trackBackwardValid(int, int, int)}.
-   * <p>
-   * Output results generated in Matlab by TrackMapTests/main.m
+   * 
+   * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
    * @throws Exception
    */
@@ -283,8 +283,8 @@ public class TrackMapTest {
   /**
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.geom.MapTracker#trackBackward(int, int, int)}.
-   * <p>
-   * Output results generated in Matlab by TrackMapTests/main.m
+   * 
+   * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
    * @throws Exception
    */
@@ -303,8 +303,8 @@ public class TrackMapTest {
   /**
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.geom.MapTracker#trackBackwardValid(int, int, int)}.
-   * <p>
-   * Output results generated in Matlab by TrackMapTests/main.m
+   * 
+   * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
    * @throws Exception
    */

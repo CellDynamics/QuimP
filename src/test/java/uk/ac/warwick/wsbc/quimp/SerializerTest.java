@@ -99,9 +99,9 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.fromString(final String).
    * 
-   * pre: missing variable in json
+   * <p>pre: missing variable in json
    * 
-   * post: exception thrown
+   * <p>post: exception thrown
    * 
    * @throws Exception
    */
@@ -143,9 +143,9 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.fromString(final String).
    * 
-   * pre: Correct json in format >17.02.02
+   * <p>pre: Correct json in format >17.02.02
    * 
-   * post: Conversion class is not run
+   * <p>post: Conversion class is not run
    * 
    * @throws Exception
    */
@@ -168,9 +168,9 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.fromString(final String).
    * 
-   * pre: empty fields in version
+   * <p>pre: empty fields in version
    * 
-   * post: exception
+   * <p>post: exception
    * 
    * @throws Exception
    */
@@ -214,9 +214,9 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.load(final String)
    * 
-   * Pre: Load file in older version
+   * <p>Pre: Load file in older version
    * 
-   * Post the same file converted to current version
+   * <p>Post the same file converted to current version
    * 
    * @throws Exception
    */
@@ -236,9 +236,9 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.fromString(final String).
    * 
-   * pre: Extra data in json
+   * <p>pre: Extra data in json
    * 
-   * post: It is ignored
+   * <p>post: It is ignored
    * 
    * @throws Exception
    */
@@ -260,9 +260,9 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.fromString(final String).
    * 
-   * pre: Lack of data
+   * <p>pre: Lack of data
    * 
-   * post: it is not initialized and has value from constructor
+   * <p>post: it is not initialized and has value from constructor
    * 
    * @throws Exception
    */
@@ -384,11 +384,11 @@ public class SerializerTest {
   }
 
   /**
-   * Gson behaviour
+   * Gson behaviour.
    * 
-   * Pre: Json contains all fields
+   * <p>Pre: Json contains all fields
    * 
-   * Post: All fields are loaded
+   * <p>Post: All fields are loaded
    * 
    * @throws Exception
    */
@@ -426,11 +426,11 @@ public class SerializerTest {
   }
 
   /**
-   * Gson behaviour
+   * Gson behaviour.
    * 
-   * Pre: Json lack of b field
+   * <p>Pre: Json lack of b field
    * 
-   * Post: b filed has vale from constructor, no error
+   * <p>Post: b filed has vale from constructor, no error
    * 
    * @throws Exception
    */
@@ -467,11 +467,11 @@ public class SerializerTest {
   }
 
   /**
-   * Gson behaviour
+   * Gson behaviour.
    * 
-   * Pre: Json contains field f not available in object
+   * <p>Pre: Json contains field f not available in object
    * 
-   * Post: Class is restored normally, f is skipped
+   * <p>Post: Class is restored normally, f is skipped
    * 
    * @throws Exception
    */
@@ -510,11 +510,11 @@ public class SerializerTest {
   }
 
   /**
-   * Gson behaviour
+   * Gson behaviour.
    * 
-   * Pre: Json contains field f since 1.1 but calee is in 1.0
+   * <p>Pre: Json contains field f since 1.1 but calee is in 1.0
    * 
-   * Post: Class is restored normally, f has default value from constructor
+   * <p>Post: Class is restored normally, f has default value from constructor
    * 
    * @throws Exception
    */
@@ -554,12 +554,12 @@ public class SerializerTest {
   }
 
   /**
-   * Gson behaviour
+   * Gson behaviour.
    * 
-   * Pre: Json contains field f since 1.1 but calee is in 1.2 and saved json is in the same
+   * <p>Pre: Json contains field f since 1.1 but calee is in 1.2 and saved json is in the same
    * version
    * 
-   * Post: Class is restored normally, f has value from json
+   * <p>Post: Class is restored normally, f has value from json
    * 
    * @throws Exception
    */

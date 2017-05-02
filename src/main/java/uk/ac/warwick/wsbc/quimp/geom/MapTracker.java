@@ -12,7 +12,8 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 /**
  * Compute forward and backward tracking maps from origin and coordinates maps.
  * 
- * Origin and coordinates maps are stored in both <i>QCONF</i> and <i>paQP</i> data files. Allow to
+ * <p>Origin and coordinates maps are stored in both <i>QCONF</i> and <i>paQP</i> data files. Allow
+ * to
  * track given outline point forward in backward using these maps.
  * 
  * @author p.baniukiewicz
@@ -53,14 +54,13 @@ public class MapTracker {
   /**
    * Construct tracking maps.
    * 
-   * Prepare tracking maps that are not stored by default in
+   * <p>Prepare tracking maps that are not stored by default in
    * {@link uk.ac.warwick.wsbc.quimp.filesystem.DataContainer}. This code is based on Matlab
    * routine buildTrackMaps.m.
    * 
-   * <p>
-   * <b>Note</b>
-   * <p>
-   * All frames are numbered from 0 as well as outline indexes. Nonexisting indexes are marked as
+   * <p><b>Note</b>
+   * 
+   * <p>All frames are numbered from 0 as well as outline indexes. Nonexisting indexes are marked as
    * -1.
    * 
    * @param originMap originMap stored in
@@ -134,8 +134,8 @@ public class MapTracker {
 
   /**
    * Compute <tt>p</tt>-<tt>row</tt>.
-   * <p>
-   * Based on Matlab routine buildTrackMaps.m
+   * 
+   * <p>Based on Matlab routine buildTrackMaps.m
    * 
    * @param p
    * @param row
@@ -151,8 +151,8 @@ public class MapTracker {
 
   /**
    * Add value <tt>val</tt> to vector <tt>row</tt>
-   * <p>
-   * Based on Matlab routine buildTrackMaps.m
+   * 
+   * <p>Based on Matlab routine buildTrackMaps.m
    * 
    * @param val Value to add
    * @param row Input matrix
@@ -318,7 +318,7 @@ public class MapTracker {
   /**
    * Helper that generates range of frames for given input parameters.
    * 
-   * These are frames that {@link #trackForward(int, int, int)} returns indexes for. Input
+   * <p>These are frames that {@link #trackForward(int, int, int)} returns indexes for. Input
    * parameters must be the same as for {@link #trackForward(int, int, int)}.
    * 
    * @param currentFrame Starting frame (not included in results)
@@ -348,7 +348,7 @@ public class MapTracker {
   /**
    * Helper that generates range of frames for given input parameters.
    * 
-   * These are frames that {@link #trackBackward(int, int, int)} returns indexes for. Input
+   * <p>These are frames that {@link #trackBackward(int, int, int)} returns indexes for. Input
    * parameters must be the same as for {@link #trackBackward(int, int, int)}.
    * 
    * @param currentFrame Starting frame (not included in results)

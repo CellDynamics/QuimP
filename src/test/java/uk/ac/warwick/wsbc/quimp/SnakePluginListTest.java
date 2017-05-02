@@ -394,7 +394,7 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of serialization
+   * Test of serialization.
    * 
    * @throws FileNotFoundException
    */
@@ -407,9 +407,9 @@ public class SnakePluginListTest {
   /**
    * Test of saving.
    * 
-   * Pre: There is gap in plugin list
+   * <p>Pre: There is gap in plugin list
    * 
-   * Post: Empty slot is saved with empty name.
+   * <p>Post: Empty slot is saved with empty name.
    * 
    * @throws IOException
    * @throws InvocationTargetException
@@ -438,7 +438,7 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of loading
+   * Test of loading.
    * 
    * @throws IOException
    * @throws NoSuchMethodException
@@ -632,11 +632,11 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of loading not complete file
+   * Test of loading not complete file.
    * 
-   * Pre: Wrong name of plugin in config
+   * <p>Pre: Wrong name of plugin in config
    * 
-   * Post: This slot is null
+   * <p>Post: This slot is null
    * 
    * @throws IOException
    * @throws QuimpPluginException
@@ -676,11 +676,11 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of loading not bad field in file
+   * Test of loading not bad field in file.
    * 
-   * Pre: Wrong name of plugin in config
+   * <p>Pre: Wrong name of plugin in config
    * 
-   * Post: This slot is null
+   * <p>Post: This slot is null
    * 
    * @throws Exception
    */
@@ -707,11 +707,11 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of loading plugin config with wrong version
+   * Test of loading plugin config with wrong version.
    * 
-   * pre: Incorrect version
+   * <p>pre: Incorrect version
    * 
-   * post: Plugin loaded with message
+   * <p>post: Plugin loaded with message
    * 
    * @throws IOException
    * @throws QuimpPluginException
@@ -745,11 +745,11 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of loading plugin config with wrong version
+   * Test of loading plugin config with wrong version.
    * 
-   * pre: Incorrect version
+   * <p>pre: Incorrect version
    * 
-   * post: Plugin loaded with message
+   * <p>post: Plugin loaded with message
    * 
    * @throws Exception
    */
@@ -776,14 +776,14 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of loading incompatibile config
+   * Test of loading incompatibile config.
    * 
-   * This depends on plugin configuration. Wrong config is detected by exception thrown from
+   * <p>This depends on plugin configuration. Wrong config is detected by exception thrown from
    * setPluginConfig() from IQuimpPlugin
    * 
-   * pre: Incompatibile config
+   * <p>pre: Incompatibile config
    * 
-   * post: Plugin loaded but config not restored
+   * <p>post: Plugin loaded but config not restored
    * 
    * @throws IOException
    * @throws QuimpPluginException
@@ -823,12 +823,12 @@ public class SnakePluginListTest {
   /**
    * Test of loading incompatibile config.
    * 
-   * This depends on plugin configuration. Wrong config is detected by exception thrown from
+   * <p>This depends on plugin configuration. Wrong config is detected by exception thrown from
    * setPluginConfig() from IQuimpPlugin.
    * 
-   * Pre: Incompatibile config
+   * <p>Pre: Incompatibile config
    * 
-   * Post: Plugin loaded but config not restored
+   * <p>Post: Plugin loaded but config not restored
    * 
    * @throws Exception
    */
@@ -856,13 +856,13 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of loading incompatible config for plugin numbers
+   * Test of loading incompatible config for plugin numbers.
    * 
-   * This situation must be detected on load and reported
+   * <p>This situation must be detected on load and reported
    * 
-   * pre: Less plugins
+   * <p>pre: Less plugins
    * 
-   * post: List is adjusted
+   * <p>post: List is adjusted
    * 
    * @throws IOException
    * @throws QuimpPluginException
@@ -894,13 +894,13 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of loading incompatible config - empty slot
+   * Test of loading incompatible config - empty slot.
    * 
    * <p>see testSaveConfig_gap
    * 
    * <p>pre: Empty slot
    * 
-   * post: Correct order of plugins
+   * <p>post: Correct order of plugins
    * 
    * @throws IOException
    * @throws QuimpPluginException

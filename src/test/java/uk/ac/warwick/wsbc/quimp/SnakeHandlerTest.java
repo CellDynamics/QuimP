@@ -43,8 +43,8 @@ public class SnakeHandlerTest {
   @Before
   public void setUp() throws Exception {
     BOA_.qState = new BOAState(IJ.openImage("src/test/Resources-static/Stack_cut.tif"));
-    float x[] = new float[4];
-    float y[] = new float[4];
+    float[] x = new float[4];
+    float[] y = new float[4];
     x[0] = 0;
     y[0] = 0;
     x[1] = 10;

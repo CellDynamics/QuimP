@@ -81,11 +81,11 @@ public class QWindowBuilder_Test {
   }
 
   /**
-   * getValues Get default values from window
+   * getValues Get default values from window.
    * 
-   * pre: def1 config string
+   * <p>pre: def1 config string
    * 
-   * post: default values are lower bounds for defined ui controls
+   * <p>post: default values are lower bounds for defined ui controls
    */
   @Test
   public void test_getValues() {
@@ -98,11 +98,11 @@ public class QWindowBuilder_Test {
   }
 
   /**
-   * setgetValues Get previously set values from window
+   * setgetValues Get previously set values from window.
    * 
-   * pre: values for two ui are set
+   * <p>pre: values for two ui are set
    * 
-   * post: set values are received
+   * <p>post: set values are received
    */
   @Test
   public void test_setgetValues() {

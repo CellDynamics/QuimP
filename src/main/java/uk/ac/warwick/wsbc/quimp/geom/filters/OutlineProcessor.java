@@ -11,13 +11,11 @@ import uk.ac.warwick.wsbc.quimp.plugin.ana.ANA_;
 /**
  * Support algorithms for processing outlines.
  * 
- * TODO Use generic types here to process snakes and outlines
- * 
  * @author p.baniukiewicz
  * @see ANA_
  */
 public class OutlineProcessor {
-
+  // TODO Use generic types here to process snakes and outlines
   /**
    * The Constant LOGGER.
    */

@@ -26,11 +26,11 @@ public class RoiSaver_test {
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
   /**
-   * Test method for tools.images.filters.RoiSaver.saveROI(String, List<Vector2d>)
+   * Test method for tools.images.filters.RoiSaver.saveROI(String, List&lt;Vector2d&gt;).
    * 
-   * pre: Simple polygon
+   * <p>pre: Simple polygon
    * 
-   * post: Image /tmp/test_SaveROI_case1.tif
+   * <p>post: Image /tmp/test_SaveROI_case1.tif
    */
   @Test
   public void test_SaveROI_case1() {
@@ -42,11 +42,11 @@ public class RoiSaver_test {
   }
 
   /**
-   * Test method for tools.images.filters.RoiSaver.saveROI(String,List<Vector2d>)
+   * Test method for tools.images.filters.RoiSaver.saveROI(String,List&lt;Vector2d&gt;)
    * 
-   * pre: Empty list
+   * <p>pre: Empty list
    * 
-   * post: Uniform \b red Image /tmp/test_SaveROI_case2.tif
+   * <p>post: Uniform \b red Image /tmp/test_SaveROI_case2.tif
    */
   @Test
   public void test_SaveROI_case2() {
@@ -56,11 +56,11 @@ public class RoiSaver_test {
 
   /**
    * Test method for uk.ac.warwick.wsbc.tools.images.filters.RoiSaver.saveROI(String,
-   * List<Vector2d>)
+   * List&lt;Vector2d&gt;)
    * 
-   * pre: null pointer
+   * <p>pre: null pointer
    * 
-   * post: Uniform \b red Image /tmp/test_SaveROI_case3.tif
+   * <p>post: Uniform \b red Image /tmp/test_SaveROI_case3.tif
    */
   @Test
   public void test_SaveROI_case3() {

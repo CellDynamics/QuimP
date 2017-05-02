@@ -4,7 +4,7 @@ package uk.ac.warwick.wsbc.quimp.filesystem;
 /**
  * Interface that is required by Serializer class.
  * 
- * Serializer class calls methods from this interface before and after serialization. The main
+ * <p>Serializer class calls methods from this interface before and after serialization. The main
  * purpose of these method is to allow to rebuild objects after restoration or to prepare them
  * before saving.
  * 

@@ -9,9 +9,10 @@ import org.junit.Test;
 
 // TODO: Auto-generated Javadoc
 /**
- * Test of QColor class
+ * Test of QColor class.
  * 
- * Test if it is necessary to override equals() method. It is because by default equals only compare
+ * <p>Test if it is necessary to override equals() method. It is because by default equals only
+ * compare
  * objects references.
  * 
  * @author p.baniukiewicz
@@ -34,9 +35,9 @@ public class QColorTest {
   }
 
   /**
-   * Test of equals()
+   * Test of equals().
    * 
-   * Post: Both objects are the same
+   * <p>Post: Both objects are the same
    */
   @Test
   public void qColorTest() {

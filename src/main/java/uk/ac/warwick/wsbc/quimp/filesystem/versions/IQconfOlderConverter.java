@@ -8,7 +8,7 @@ import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
  * This interface provides method that is run on loaded class reference when current tool version is
  * higher than version of loaded object.
  * 
- * Class implementing this object should extends {@link IQuimpSerialize}
+ * <p>Class implementing this object should extends {@link IQuimpSerialize}
  * 
  * @author p.baniukiewicz
  * @param <T> Type of serialised object
@@ -27,7 +27,7 @@ public interface IQconfOlderConverter<T extends IQuimpSerialize> {
   /**
    * Threshold to execture converter.
    * 
-   * Converter is executed if version returned by this method is lower than that provided in
+   * <p>Converter is executed if version returned by this method is lower than that provided in
    * {@link Serializer#Serializer(IQuimpSerialize, uk.ac.warwick.wsbc.quimp.QuimpVersion)}
    * constructor.
    * 

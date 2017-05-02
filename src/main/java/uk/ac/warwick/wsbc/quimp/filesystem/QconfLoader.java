@@ -25,8 +25,9 @@ import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
 // TODO: Auto-generated Javadoc
 /**
  * Load QCONF or paQP file and initiate proper instance of {@link QParams} class.
- * <p>
- * Provide also methods for QCONF verification and loading image file associated with it with user
+ * 
+ * <p>Provide also methods for QCONF verification and loading image file associated with it with
+ * user
  * assistance.
  * 
  * @author p.baniukiewicz
@@ -51,7 +52,7 @@ public class QconfLoader {
   /**
    * Default constructor.
    * 
-   * Bring file dialog to load QCONF.
+   * <p>Bring file dialog to load QCONF.
    * 
    * @throws QuimpException when QCONF can not be loaded
    */
@@ -125,7 +126,7 @@ public class QconfLoader {
   /**
    * Try to load image associated with QCONF or paQP file.
    * 
-   * If image has not been found, user is being asked to point relevant file. If file is loaded
+   * <p>If image has not been found, user is being asked to point relevant file. If file is loaded
    * from disk it updates <tt>orgFile</tt> in {@link BOAp}
    * 
    * @return Loaded image from QCONF or that pointed by user. <tt>null</tt> if user cancelled.

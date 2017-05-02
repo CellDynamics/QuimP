@@ -13,7 +13,7 @@ import uk.ac.warwick.wsbc.quimp.CellStatsEval;
 /**
  * Keep statistics for cells.
  * 
- * This class is used as storage of frame statistics in
+ * <p>This class is used as storage of frame statistics in
  * {@link uk.ac.warwick.wsbc.quimp.filesystem.DataContainer}.
  * 
  * @author p.baniukiewicz
@@ -34,7 +34,7 @@ public class StatsCollection implements IQuimpSerialize {
   /**
    * Create <tt>size</tt> elements in store for {@link CellStats} objects.
    * 
-   * Size of the store usually equals to the number of cells in the image.
+   * <p>Size of the store usually equals to the number of cells in the image.
    * 
    * @param size Number of cells
    */
@@ -45,7 +45,7 @@ public class StatsCollection implements IQuimpSerialize {
   /**
    * Default constructor.
    * 
-   * Create empty store for {@link CellStats} objects.
+   * <p>Create empty store for {@link CellStats} objects.
    */
   public StatsCollection() {
     sHs = new ArrayList<>();

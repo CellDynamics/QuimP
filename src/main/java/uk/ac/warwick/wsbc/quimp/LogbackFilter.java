@@ -8,7 +8,7 @@ import ch.qos.logback.core.spi.FilterReply;
 /**
  * Filter that filters out packages that not belong to QuimP.
  * 
- * Used for limiting log output when log is set globally for the whole IJ.
+ * <p>Used for limiting log output when log is set globally for the whole IJ.
  * 
  * @author p.baniukiewicz
  *

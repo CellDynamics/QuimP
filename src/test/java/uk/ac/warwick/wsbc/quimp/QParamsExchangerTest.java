@@ -26,7 +26,7 @@ public class QParamsExchangerTest {
   /**
    * Accessor to private fields.
    * 
-   * Example of use:
+   * <p>Example of use:
    * 
    * <pre>
    * <code>
@@ -87,9 +87,9 @@ public class QParamsExchangerTest {
   }
 
   /**
-   * Compare read parameters from Stack_cut.QCONF
+   * Compare read parameters from Stack_cut.QCONF.
    * 
-   * pre: Two snakes from 1 to 30 frame, on 10th frame changed segmentation parameters, on 20th
+   * <p>pre: Two snakes from 1 to 30 frame, on 10th frame changed segmentation parameters, on 20th
    * selected filter
    * 
    * @throws Exception
@@ -116,11 +116,11 @@ public class QParamsExchangerTest {
   }
 
   /**
-   * no file
+   * no file.
    * 
-   * pre: there is no file
+   * <p>pre: there is no file
    * 
-   * post: QuimpException
+   * <p>post: QuimpException
    * 
    * @throws Exception
    */

@@ -65,7 +65,7 @@ public class NodeTest {
    * Test method for uk.ac.warwick.wsbc.quimp.Node.Node(final Node). Test copy constructor and
    * equals methods.
    * 
-   * Pre: Copied method is modified
+   * <p>Pre: Copied method is modified
    * 
    * @throws Exception
    */
@@ -85,7 +85,7 @@ public class NodeTest {
    * Test method for uk.ac.warwick.wsbc.quimp.Node.Node(final Node). Test copy constructor and
    * equals methods.
    * 
-   * Pre: Copied method is modified - underlying class method
+   * <p>Pre: Copied method is modified - underlying class method
    * 
    * @throws Exception
    */

@@ -15,8 +15,6 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Since;
 import com.google.gson.annotations.Until;
 
-import uk.ac.warwick.wsbc.quimp.QuimpVersion;
-import uk.ac.warwick.wsbc.quimp.Serializer;
 import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 
 /**
@@ -45,13 +43,13 @@ public class SerializerVersioning {
   }
 
   /**
-   * Load older QCONF to newer QuimP
+   * Load older QCONF to newer QuimP.
    * 
-   * Older version written in 0.8 without annotations. Loaded to 1.2.
+   * <p>Older version written in 0.8 without annotations. Loaded to 1.2.
    * 
-   * Pre: Old version contains all fields
+   * <p>Pre: Old version contains all fields
    * 
-   * Post: Loaded class contains vales of old fields and new (not available in json) initialized
+   * <p>Post: Loaded class contains vales of old fields and new (not available in json) initialized
    * in cnew class constructor. If no initialisation given - empty or default value.
    * 
    * @throws Exception
@@ -87,9 +85,10 @@ public class SerializerVersioning {
   /**
    * Save newer in 1.0 version. It contains annotations.
    * 
-   * Pre saved json does not contains f filed neither d field (due to since and until)
+   * <p>Pre saved json does not contains f filed neither d field (due to since and until)
    * 
-   * Post Load 1.0 version to 1.2 version - d and f fields are default as the same tags are active
+   * <p>Post Load 1.0 version to 1.2 version - d and f fields are default as the same tags are
+   * active
    * because GSon version is read from json file.
    * 
    * @throws Exception
@@ -127,11 +126,11 @@ public class SerializerVersioning {
 
   /**
    * Loaded class contains field ff not available in current one and not versioned and does not
-   * contain c field
+   * contain c field.
    * 
-   * Pre saved json contains ff field and no c
+   * <p>Pre saved json contains ff field and no c
    * 
-   * d field is default as it is not loaded due to Until tag, c is default because not available
+   * <p>d field is default as it is not loaded due to Until tag, c is default because not available
    * in json as well as f
    * 
    * @throws Exception
@@ -169,7 +168,7 @@ public class SerializerVersioning {
 /**
  * Dummy test class with support GSon annotations.
  * 
- * Contain five fields.
+ * <p>Contain five fields.
  * 
  * @author p.baniukiewicz
  *
@@ -206,7 +205,7 @@ class TestClass_older implements IQuimpSerialize {
 /**
  * Dummy test class with support GSon annotations.
  * 
- * Contain five fields.
+ * <p>Contain five fields.
  * 
  * @author p.baniukiewicz
  *
@@ -243,7 +242,7 @@ class TestClass_other implements IQuimpSerialize {
 /**
  * Dummy test class with support GSon annotations.
  * 
- * Newer to TestClass_older, one extra filed and one deprecated.
+ * <p>Newer to TestClass_older, one extra filed and one deprecated.
  * 
  * @author p.baniukiewicz
  *

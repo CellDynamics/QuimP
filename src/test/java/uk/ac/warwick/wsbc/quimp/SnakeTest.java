@@ -46,8 +46,8 @@ public class SnakeTest {
   @Before
   public void setUp() throws Exception {
     BOA_.qState = new BOAState(null);
-    float x[] = new float[4];
-    float y[] = new float[4];
+    float[] x = new float[4];
+    float[] y = new float[4];
     x[0] = 0;
     y[0] = 0;
     x[1] = 10;
@@ -76,16 +76,16 @@ public class SnakeTest {
    * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#setNewHead(int)}. Set head for non
    * existing node.
    * 
-   * Pre: valid snake with 4 nodes
+   * <p>Pre: valid snake with 4 nodes
    * 
-   * Post: the same snake with head in the same position
+   * <p>Post: the same snake with head in the same position
    * 
    * @throws Exception
    */
   @Test
   public void testSetNewHead() throws Exception {
-    float x[] = new float[4];
-    float y[] = new float[4];
+    float[] x = new float[4];
+    float[] y = new float[4];
     x[0] = 0;
     y[0] = 0;
     x[1] = 10;
@@ -107,16 +107,16 @@ public class SnakeTest {
    * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#setNewHead(int)}. Set head for second
    * node.
    * 
-   * Pre: valid snake with 4 nodes
+   * <p>Pre: valid snake with 4 nodes
    * 
-   * Post: the same snake with head in on second position
+   * <p>Post: the same snake with head in on second position
    * 
    * @throws Exception
    */
   @Test
   public void testSetNewHead_1() throws Exception {
-    float x[] = new float[4];
-    float y[] = new float[4];
+    float[] x = new float[4];
+    float[] y = new float[4];
     x[0] = 0;
     y[0] = 0;
     x[1] = 10;
@@ -133,11 +133,11 @@ public class SnakeTest {
   }
 
   /**
-   * Test of Snake Serializer
+   * Test of Snake Serializer.
    * 
-   * Pre: Snake is saved to disk
+   * <p>Pre: Snake is saved to disk
    * 
-   * Post: Snake is loaded and restored
+   * <p>Post: Snake is loaded and restored
    * 
    * @throws IOException
    * @throws Exception
@@ -180,7 +180,7 @@ public class SnakeTest {
   }
 
   /**
-   * Test of copy constructor
+   * Test of copy constructor.
    * 
    * @throws Exception
    */
@@ -200,9 +200,9 @@ public class SnakeTest {
   }
 
   /**
-   * Test of copy constructor
+   * Test of copy constructor.
    * 
-   * Pre: One node differs
+   * <p>Pre: One node differs
    * 
    * @throws Exception
    */

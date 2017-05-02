@@ -11,7 +11,7 @@ import org.scijava.vecmath.Vector2f;
 /**
  * Defines 2D vector and performs operations on vectors and lines.
  *
- * This definition of vector is often used in QuimP for expressing points as well
+ * <p>This definition of vector is often used in QuimP for expressing points as well
  *
  * @author Richard
  */
@@ -62,7 +62,7 @@ public class ExtendedVector2d extends Vector2d {
   /**
    * Simple constructor.
    * 
-   * Creates vector mounted at (0,0).
+   * <p>Creates vector mounted at (0,0).
    * 
    * @param xx \c x coordinate of vector
    * @param yy \c y coordinate of vector

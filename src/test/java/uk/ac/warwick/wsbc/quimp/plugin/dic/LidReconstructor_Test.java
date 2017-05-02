@@ -71,10 +71,10 @@ public class LidReconstructor_Test {
   }
 
   /**
-   * Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves output
+   * Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid(). Saves output
    * image at /tmp/testDicReconstructionLidMatrix.tif
    * 
-   * Input image is square Output image should be properly reconstructed and have correct size of
+   * <p>Input image is square Output image should be properly reconstructed and have correct size of
    * input image
    */
   @Test
@@ -123,10 +123,10 @@ public class LidReconstructor_Test {
   }
 
   /**
-   * Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid() Saves output
+   * Test method for wsbc.QuimP.plugin.dic.LidReconstructor.reconstructionDicLid(). Saves output
    * image at /tmp/testDicReconstructionLidMatrix_sat.tif
    * 
-   * Input image is square and saturated Throws exception DicException because of saturated image
+   * <p>Input image is square and saturated Throws exception DicException because of saturated image
    * 
    * @throws DicException
    */
@@ -155,10 +155,10 @@ public class LidReconstructor_Test {
   }
 
   /**
-   * Test method for warwick.wsbc.QuimP.plugin.dic.LidReconstructor.setIp(ImageProcessor) Saves
+   * Test method for warwick.wsbc.QuimP.plugin.dic.LidReconstructor.setIp(ImageProcessor). Saves
    * output image at /tmp/testDicReconstructionLidMatrix_Stack.tif
    * 
-   * Input stack is square Reconstructed stack
+   * <p>Input stack is square Reconstructed stack
    */
   @Test()
   public void test_ReconstructionDicLid_stack() {

@@ -100,9 +100,9 @@ public class TrackOutlineTest {
   }
 
   /**
-   * testPrepare
+   * testPrepare.
    * 
-   * post: Generate filtered image
+   * <p>post: Generate filtered image
    * 
    * @throws Exception
    */
@@ -115,9 +115,9 @@ public class TrackOutlineTest {
   }
 
   /**
-   * testGetOutlines
+   * testGetOutlines.
    * 
-   * post: Finds all outlines in image and saves them to separate files
+   * <p>post: Finds all outlines in image and saves them to separate files
    * 
    * @throws Exception
    */
@@ -134,9 +134,9 @@ public class TrackOutlineTest {
   }
 
   /**
-   * testGetOutlines_1
+   * testGetOutlines_1.
    * 
-   * post: Finds all outlines in image with smoothing
+   * <p>post: Finds all outlines in image with smoothing
    * 
    * @throws Exception
    */
@@ -148,9 +148,9 @@ public class TrackOutlineTest {
   }
 
   /**
-   * testGetOutlines_2
+   * testGetOutlines_2.
    * 
-   * post: Finds all outlines in image with smoothing and step 6
+   * <p>post: Finds all outlines in image with smoothing and step 6
    * 
    * @throws Exception
    */
@@ -164,7 +164,7 @@ public class TrackOutlineTest {
   /**
    * Validates what is returned from ShapeRoi.and
    * 
-   * post: operation ret.get(1).and(new ShapeRoi(pr)); modifies ret.get(1) If there is no
+   * <p>post: operation ret.get(1).and(new ShapeRoi(pr)); modifies ret.get(1) If there is no
    * intersection it return shape wit 0 width/height
    */
   @Test

@@ -8,8 +8,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.wsbc.quimp.plugin.utils.StringParser;
-
 // TODO: Auto-generated Javadoc
 /**
  * Test class for StringParser
@@ -36,11 +34,11 @@ public class StringParserTest {
   }
 
   /**
-   * Test method for GetNumofParam
+   * Test method for GetNumofParam.
    * 
-   * Pre: valid list of parameters, more spaces
+   * <p>Pre: valid list of parameters, more spaces
    * 
-   * Post: number of parameters in list
+   * <p>Post: number of parameters in list
    * 
    * @throws Exception
    */
@@ -51,11 +49,11 @@ public class StringParserTest {
   }
 
   /**
-   * Test method for GetNumofParam
+   * Test method for GetNumofParam.
    * 
-   * Pre: valid list of parameters, one element
+   * <p>Pre: valid list of parameters, one element
    * 
-   * Post: number of parameters in list
+   * <p>Post: number of parameters in list
    * 
    * @throws Exception
    */
@@ -66,11 +64,11 @@ public class StringParserTest {
   }
 
   /**
-   * Test method for GetNumofParam
+   * Test method for GetNumofParam.
    * 
-   * Pre: pre invalid list of parameters
+   * <p>Pre: pre invalid list of parameters
    * 
-   * Post: 0
+   * <p>Post: 0
    * 
    * @throws Exception
    */
@@ -81,27 +79,27 @@ public class StringParserTest {
   }
 
   /**
-   * Test method for GetParams
+   * Test method for GetParams.
    * 
-   * Pre:pre invalid list of parameters
+   * <p>Pre:pre invalid list of parameters
    * 
-   * Post: empty array
+   * <p>Post: empty array
    * 
    * @throws Exception
    */
   @Test
   public void testGetParams() throws Exception {
     String s = "";
-    String ret[] = StringParser.getParams(s);
+    String[] ret = StringParser.getParams(s);
     assertTrue(ret.length == 0);
   }
 
   /**
-   * Test method for GetParams
+   * Test method for GetParams.
    * 
-   * Pre: valid list of parameters
+   * <p>Pre: valid list of parameters
    * 
-   * Post: array of substrings
+   * <p>Post: array of substrings
    * 
    * @throws Exception
    */
@@ -114,11 +112,11 @@ public class StringParserTest {
   }
 
   /**
-   * Test method for GetParams
+   * Test method for GetParams.
    * 
-   * Pre: invalid list of parameters
+   * <p>Pre: invalid list of parameters
    * 
-   * Post: print of array, one field is empty
+   * <p>Post: print of array, one field is empty
    * 
    * @throws Exception
    */

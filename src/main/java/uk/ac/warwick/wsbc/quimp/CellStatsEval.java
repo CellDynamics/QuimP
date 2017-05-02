@@ -22,7 +22,7 @@ import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 /**
  * Calculate statistics for whole stack (all cells).
  * 
- * Stats are written on disk after calling constructor. Additionally there is separate list
+ * <p>Stats are written on disk after calling constructor. Additionally there is separate list
  * maintained with the same data. They can be collected calling {@link #getStatH()}. This is due to
  * compatibility with old QuimP.
  * 
@@ -73,7 +73,7 @@ public class CellStatsEval implements Measurements {
   /**
    * Create and run the object.
    * 
-   * After creating the object, file with stats is written and stats are available by calling
+   * <p>After creating the object, file with stats is written and stats are available by calling
    * {@link #getStatH()} method.
    * 
    * @param oH
@@ -117,10 +117,9 @@ public class CellStatsEval implements Measurements {
   /**
    * Calculate stats.
    * 
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * Number of calculated stats must be reflected in {@link #buildData(FrameStatistics[])}.
+   * <p><b>Warning</b>
+   * 
+   * <p>Number of calculated stats must be reflected in {@link #buildData(FrameStatistics[])}.
    * 
    * <p>Scales stored in processed image are used. Even if {@link BOAState.BOAp} stores scale of
    * image, it is used scale from tiff (they are the same as user scale is copied to image in

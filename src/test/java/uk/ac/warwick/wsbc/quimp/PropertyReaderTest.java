@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**
- * Test class for PropertyReader
+ * Test class for PropertyReader.
  * 
  * @author baniu
  *
@@ -19,9 +19,9 @@ public class PropertyReaderTest {
   static final Logger LOGGER = LoggerFactory.getLogger(PropertyReaderTest.class.getName());
 
   /**
-   * read property and display it
+   * read property and display it.
    * 
-   * Post: value of key displayed
+   * <p>Post: value of key displayed
    * 
    * @throws Exception
    */

@@ -20,7 +20,7 @@ public class ANAParamCollection implements IQuimpSerialize {
   /**
    * Default constructor.
    * 
-   * Create empty store for {@link ANAp} configurations.
+   * <p>Create empty store for {@link ANAp} configurations.
    */
   public ANAParamCollection() {
     aS = new ArrayList<>();
@@ -29,7 +29,7 @@ public class ANAParamCollection implements IQuimpSerialize {
   /**
    * Create <tt>size</tt> elements in store for {@link ANAp} configurations.
    * 
-   * Size of the store usually equals to the number of cells in the image.
+   * <p>Size of the store usually equals to the number of cells in the image.
    * 
    * @param size
    */

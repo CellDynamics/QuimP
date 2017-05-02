@@ -13,9 +13,10 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
 
 // TODO: Auto-generated Javadoc
 /**
- * Add some fields indicating that this Shape has been included already in any Snake chain
+ * Add some fields indicating that this Shape has been included already in any Snake chain.
  * 
- * Shapes among one chain have the same id. Chain id is set when following shape overlap current one
+ * <p>Shapes among one chain have the same id. Chain id is set when following shape overlap current
+ * one
  * 
  * @author p.baniukiewicz
  * @see uk.ac.warwick.wsbc.quimp.geom.TrackOutline
@@ -115,9 +116,9 @@ public class SegmentedShapeRoi extends ShapeRoi {
   }
 
   /**
-   * Convert this ROI to list of points using smoothing and step
+   * Convert this ROI to list of points using smoothing and step.
    * 
-   * Use object parameters \a step, \a smooth that should be set before call this method
+   * <p>Use object parameters \a step, \a smooth that should be set before call this method
    * 
    * @return List of List of ROIs
    */
@@ -140,7 +141,7 @@ public class SegmentedShapeRoi extends ShapeRoi {
 
   /**
    * Allow to set non-standard parameters used during conversion from outline (ROI) to list of
-   * points
+   * points.
    * 
    * @param step
    * @param smooth

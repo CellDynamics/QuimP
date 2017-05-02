@@ -6,7 +6,7 @@ import ij.ImagePlus;
 
 // TODO: Auto-generated Javadoc
 /**
- * Gui checker for DICLIDReconstruction
+ * Gui checker for DICLIDReconstruction.
  */
 public class DICLIDReconstruction_run {
 

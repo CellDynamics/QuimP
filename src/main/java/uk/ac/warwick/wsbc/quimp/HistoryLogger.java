@@ -18,9 +18,9 @@ import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 
 // TODO: Auto-generated Javadoc
 /**
- * Builds history logger window and logs
+ * Builds history logger window and logs.
  * 
- * Logs are supposed to be JSon objects that hold current BOA state. Logger is updated only when
+ * <p>Logs are supposed to be JSon objects that hold current BOA state. Logger is updated only when
  * window is visible. Closing and then opening window causes erasing its content. Method
  * addEntry(String, SnakePluginList) should be used after every activity in QuimP, where first
  * parameter is description of this activity and next parameters define QuimP state.
@@ -37,7 +37,7 @@ public class HistoryLogger implements WindowListener {
   private int id; //!< message counter
 
   /**
-   * Construct main window
+   * Construct main window.
    */
   public HistoryLogger() {
     id = 1;
@@ -62,14 +62,14 @@ public class HistoryLogger implements WindowListener {
   }
 
   /**
-   * Make window visible
+   * Make window visible.
    */
   public void openHistory() {
     historyWnd.setVisible(true);
   }
 
   /**
-   * Close window and call windowClosing() and windowClosed() methods
+   * Close window and call windowClosing() and windowClosed() methods.
    */
   public void closeHistory() {
     historyWnd.setVisible(false);
@@ -78,7 +78,7 @@ public class HistoryLogger implements WindowListener {
   /**
    * Add entry to log.
    * 
-   * Gather all BOA state and include in log. Uses \c Entry class to pack these information to
+   * <p>Gather all BOA state and include in log. Uses \c Entry class to pack these information to
    * JSon object. Particular entries can be null if they may not be logged
    * 
    * @param m General message to be included in log
@@ -103,9 +103,9 @@ public class HistoryLogger implements WindowListener {
   }
 
   /**
-   * Check if window is opened
+   * Check if window is opened.
    * 
-   * @return \c true is window is visible
+   * @return true is window is visible
    */
   public boolean isOpened() {
     return historyWnd.isVisible();
@@ -208,9 +208,9 @@ class LogEntry implements IQuimpSerialize {
   public SnakePluginList snakePluginList; //!< Plugin config
 
   /**
-   * Main constructor
+   * Main constructor.
    * 
-   * Object of this class is created temporarily only for logging purposes.
+   * <p>Object of this class is created temporarily only for logging purposes.
    * 
    * @param counter number of log entry
    * @param action description of action

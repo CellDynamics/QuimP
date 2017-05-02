@@ -727,7 +727,7 @@ public class TrackMapAnalyserParamTest {
    * Test method for
    * {@link TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
    * 
-   * Assume that tested point is first pair left in expIntersectionPairs Result is in
+   * <p>Assume that tested point is first pair left in expIntersectionPairs Result is in
    * expIntersectionPoints as x[0] coord. Use selfCrossing to decide whether use INCLUDE_INITIAL
    * 
    * @throws Exception
@@ -764,7 +764,7 @@ public class TrackMapAnalyserParamTest {
    * Test method for
    * {@link TrackMapAnalyser#removeSelfRepeatings(List, List)}.
    * 
-   * No selfcrossing, B1 B2 intersection
+   * <p>No selfcrossing, B1 B2 intersection
    * 
    * @throws Exception
    */

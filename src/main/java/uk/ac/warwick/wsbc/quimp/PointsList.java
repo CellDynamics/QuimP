@@ -90,7 +90,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   /**
    * Create point with given ID. New point is not linked to any other yet.
    * 
-   * Caller should care about correct numbering of points
+   * <p>Caller should care about correct numbering of points
    * 
    * @param t ID of point
    */
@@ -102,7 +102,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   /**
    * Copy constructor. Make copy of properties of passed point.
    * 
-   * Previous or next points are not copied
+   * <p>Previous or next points are not copied
    * 
    * @param src Source Point
    */
@@ -118,7 +118,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   /**
    * Creates point with given ID and coordinates. New point is not linked to any other yet.
    * 
-   * Caller should care about correct numbering of points
+   * <p>Caller should care about correct numbering of points
    * 
    * @param xx x coordinate of point
    * @param yy y coordinate of point

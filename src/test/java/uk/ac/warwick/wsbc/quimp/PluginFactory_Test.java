@@ -57,9 +57,9 @@ public class PluginFactory_Test {
   /**
    * Test method for {@link PluginFactory#getPluginNames(int)}.
    * 
-   * Pre: Two dummy plugins in directory
+   * <p>Pre: Two dummy plugins in directory
    * 
-   * Post: Two plugins names Plugin1 and Plugin2
+   * <p>Post: Two plugins names Plugin1 and Plugin2
    * 
    * @throws Exception
    */
@@ -78,9 +78,9 @@ public class PluginFactory_Test {
   /**
    * Test method for {@link PluginFactory#getPluginNames(int)}.
    * 
-   * Pre: None plugins in directory
+   * <p>Pre: None plugins in directory
    * 
-   * Post: empty list
+   * <p>Post: empty list
    * 
    * @throws Exception
    */
@@ -96,9 +96,9 @@ public class PluginFactory_Test {
   /**
    * Test method for {@link PluginFactory#getPluginNames(int)}.
    * 
-   * Pre: Directory does not exist
+   * <p>Pre: Directory does not exist
    * 
-   * Post: empty list
+   * <p>Post: empty list
    * 
    */
   public void test_GetPluginNames_nodir() {
@@ -115,7 +115,7 @@ public class PluginFactory_Test {
    * creates instances of plugins and calls methods from them storing and reading data from
    * created object for plugin2
    * 
-   * Pre: wo dummy plugins in ../Test-Plugins/target/ directory of type DOES_SNAKES
+   * <p>Pre: wo dummy plugins in ../Test-Plugins/target/ directory of type DOES_SNAKES
    * 
    * @throws Exception
    */
@@ -139,10 +139,10 @@ public class PluginFactory_Test {
   }
 
   /**
-   * Test method for {@link PluginFactory#getInstance(String)} This test
+   * Test method for {@link PluginFactory#getInstance(String)}. This test
    * try to call plugin that does not exist.
    * 
-   * Pre: Empty directory but existing
+   * <p>Pre: Empty directory but existing
    * 
    * @throws Exception
    */
@@ -158,9 +158,9 @@ public class PluginFactory_Test {
   /**
    * Test method for private PluginFactory#scanDirectory().
    * 
-   * Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
+   * <p>Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
    * 
-   * Post: Return list of files that according to hardcoded criterion. For more files they may be
+   * <p>Post: Return list of files that according to hardcoded criterion. For more files they may be
    * returned in random order.
    * 
    * @throws NoSuchMethodException
@@ -193,11 +193,11 @@ public class PluginFactory_Test {
   }
 
   /**
-   * Test method for uk.ac.warwick.wsbc.quimp.PluginFactory#getClassName()
+   * Test method for uk.ac.warwick.wsbc.quimp.PluginFactory#getClassName().
    * 
-   * Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
+   * <p>Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
    * 
-   * Post: Qualified name of class in plugin 2 must be correct
+   * <p>Post: Qualified name of class in plugin 2 must be correct
    * 
    * @throws NoSuchMethodException
    * @throws SecurityException
@@ -224,11 +224,11 @@ public class PluginFactory_Test {
   }
 
   /**
-   * Test of reading type and version from plugins
+   * Test of reading type and version from plugins.
    * 
-   * Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
+   * <p>Pre: Two jars plugin2_quimp-0.0.1.jar and plugin1_quimp-0.0.1.jar in test directory
    * 
-   * Post: proper versions, types and qnames
+   * <p>Post: proper versions, types and qnames
    * 
    * @throws QuimpPluginException
    */

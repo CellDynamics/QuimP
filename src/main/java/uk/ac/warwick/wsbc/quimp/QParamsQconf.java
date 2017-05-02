@@ -26,12 +26,12 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
  * {@link uk.ac.warwick.wsbc.quimp.plugin.qanalysis.Q_Analysis},
  * {@link uk.ac.warwick.wsbc.quimp.plugin.ana.ANAp}. QuimP supports two independent file formats:
  * <ol>
- * <li>based on separate files (old QuimP) such as \a case_cellno.paQP
- * <li>compound <i>case.QCONF<i/> that contains data for all cells
+ * <li>based on separate files (old QuimP) such as case_cellno.paQP
+ * <li>compound <i>case.QCONF</i> that contains data for all cells
  * </ol>
  * Many of parameters in underlying class QParams are set to be private and they are accessible by
  * setters and getters. Many setter/getter are overridden in this class and contains simple logic to
- * provide requested and expected data even if the source file was <i>QCONF<i/>. There is also
+ * provide requested and expected data even if the source file was <i>QCONF</i>. There is also
  * method that convert parameters read from QCONF and fills underlying fields in QParams.
  * Appropriate object either QParam or QParamsQconf is created upon configuration file type. Owing
  * to Java late binding, always correct method is called even if the object is casted to QParams
@@ -50,7 +50,7 @@ public class QParamsQconf extends QParams {
   /**
    * Currently processed handler.
    * 
-   * This is compatibility parameter. Old QuimP uses separated files for every snake thus QParams
+   * <p>This is compatibility parameter. Old QuimP uses separated files for every snake thus QParams
    * contained always correct values as given snake has been loaded. New QuimP uses composed file
    * and this field points to currently processed Handler and it must be controlled from outside.
    * For compatibility reasons all setters and getters assumes that there is only one Handler (as
@@ -68,7 +68,7 @@ public class QParamsQconf extends QParams {
   /**
    * Set default values for superclass, also prefix and path for files.
    * 
-   * @param p <i>QCONF<i/> file with extension
+   * @param p <i>QCONF</i> file with extension
    */
   public QParamsQconf(File p) {
     super(p);
@@ -90,7 +90,6 @@ public class QParamsQconf extends QParams {
   }
 
   /**
-   * 
    * @return the prefix. Without any cell number in contrary to super.getFileName(). Only filename
    *         without path and extension.
    */
@@ -100,7 +99,7 @@ public class QParamsQconf extends QParams {
   }
 
   /**
-   * Extract DataContainer from Serializer super class
+   * Extract DataContainer from Serializer super class.
    * 
    * @return the loadedDataContainer
    */
@@ -109,9 +108,9 @@ public class QParamsQconf extends QParams {
   }
 
   /**
-   * Read composite <i>QCONF<i/> file.
+   * Read composite <i>QCONF</i> file.
    * 
-   * Update <tt>outputFileCore</tt> in {@link BOAp} to current QCONF.
+   * <p>Update <tt>outputFileCore</tt> in {@link BOAp} to current QCONF.
    * 
    * @throws QuimpException when problem with loading/parsing JSON
    */
@@ -168,7 +167,7 @@ public class QParamsQconf extends QParams {
   /**
    * Write all parameters in new format.
    * 
-   * Makes pure dump what means that object is already packed with QuimP format. Used when
+   * <p>Makes pure dump what means that object is already packed with QuimP format. Used when
    * original data has been loaded, modified and then they must be saved again under the same
    * name.
    * 
@@ -202,10 +201,11 @@ public class QParamsQconf extends QParams {
 
   /**
    * Fill some underlying fields to assure compatibility between new and old formats.
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * Some data depend on status of <tt>currentHandler</tt> that points to current outline. This is
+   * 
+   * <p><b>Warning</b>
+   * 
+   * <p>Some data depend on status of <tt>currentHandler</tt> that points to current outline. This
+   * is
    * due to differences in file handling between old format (separate paQP for every cell) and new
    * (one file).
    */
@@ -427,7 +427,7 @@ public class QParamsQconf extends QParams {
   /**
    * For new file format it redirects call to super class searching for old files (paQP).
    * 
-   * Finally old files can be processed together with new one.
+   * <p>Finally old files can be processed together with new one.
    * 
    * @return Array of found files.
    * @see uk.ac.warwick.wsbc.quimp.QParams#findParamFiles()
@@ -472,10 +472,11 @@ public class QParamsQconf extends QParams {
 /**
  * Block execution of afterSerialize() in Serializer.
  * 
- * This method is not necessary now because one does not want to restore full plugin state. Other
+ * <p>This method is not necessary now because one does not want to restore full plugin state. Other
  * data do not need any additional operations. (
  * 
- * Currently not used as loaded BOAState must be deserialized to restore Snakes from Elements arrays
+ * <p>Currently not used as loaded BOAState must be deserialized to restore Snakes from Elements
+ * arrays
  * 
  * @author p.baniukiewicz
  *

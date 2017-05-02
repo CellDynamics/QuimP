@@ -8,7 +8,8 @@ import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
 /**
  * General interface that defines filter run on Snakes directly.
  * 
- * Modification of Node object that form Snake should be done with carefulness. Read documentation
+ * <p>Modification of Node object that form Snake should be done with carefulness. Read
+ * documentation
  * for Snake
  * 
  * @author p.baniukiewicz
@@ -20,11 +21,11 @@ public interface IQuimpBOASnakeFilter extends IQuimpCorePlugin {
   /**
    * Runs filter and return filtered points in the same order as input points.
    * 
-   * Number of returned points can be different.
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * Plugin may be run without attached data. Plugin must deal with this
+   * <p>Number of returned points can be different.
+   * 
+   * <p><b>Warning</b>
+   * 
+   * <p>Plugin may be run without attached data. Plugin must deal with this
    * 
    * @return Filtered points
    * @throws QuimpPluginException on any problems during filter execution
@@ -34,12 +35,12 @@ public interface IQuimpBOASnakeFilter extends IQuimpCorePlugin {
   /**
    * Attach processed data to plugin.
    * 
-   * This method allows to process data by plugin without running it what is important e.g. for
+   * <p>This method allows to process data by plugin without running it what is important e.g. for
    * visualizing.
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * Plugin may be run without attached data. Plugin must deal with this
+   * 
+   * <p><b>Warning</b>
+   * 
+   * <p>Plugin may be run without attached data. Plugin must deal with this
    * 
    * @param data
    */

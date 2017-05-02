@@ -7,11 +7,9 @@ import org.scijava.vecmath.Vector2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
-
 // TODO: Auto-generated Javadoc
 /**
- * Simple testing class for ExtendedVector2d class
+ * Simple testing class for ExtendedVector2d class.
  * 
  * @author p.baniukiewicz
  *
@@ -25,9 +23,9 @@ public class ExtendedVector2d_Test {
   static final Logger LOGGER = LoggerFactory.getLogger(ExtendedVector2d_Test.class.getName());
 
   /**
-   * test toString() method
+   * test toString() method.
    * 
-   * post: Content of List in log file
+   * <p>post: Content of List in log file
    */
   @Test
   public void test_ToString() {

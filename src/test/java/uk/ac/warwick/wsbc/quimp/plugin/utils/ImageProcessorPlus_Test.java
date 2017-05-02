@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.quimp.plugin.utils.ImageProcessorPlus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -64,7 +63,7 @@ public class ImageProcessorPlus_Test {
   @Before
   public void setUp() throws Exception {
     image = IJ.openImage("src/test/Resources-static/testObject.tif"); // opens test
-                                                               // image
+    // image
     ipp = new ImageProcessorPlus();
   }
 
@@ -87,7 +86,7 @@ public class ImageProcessorPlus_Test {
   /**
    * Test method for utils.ImageProcessorPlus#rotate(ImageProcessor,double, boolean).
    * 
-   * Post: Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to
+   * <p>Post: Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to
    * /tmp/testrotateImage.tif.
    */
   @Test
@@ -102,7 +101,7 @@ public class ImageProcessorPlus_Test {
    * Test method for utils.ImageProcessorPlus.rotate(ImageProcessor,double, boolean) with
    * background settings.
    * 
-   * Post:Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to
+   * <p>Post:Rotated image should have bas-reliefs oriented horizontally. Saves rotated image to
    * /tmp/testrotateImage.tif. There should be 0 background
    */
   @Test
@@ -117,7 +116,7 @@ public class ImageProcessorPlus_Test {
   /**
    * Test method for extendImageBeforeRotation(ImageProcessor,double).
    * 
-   * Post: Saves extended image to /tmp/testextendImage_0s.tif.
+   * <p>Post: Saves extended image to /tmp/testextendImage_0s.tif.
    */
   @Test
   public void test_ExtendImageToRotation_0s() {
@@ -133,7 +132,7 @@ public class ImageProcessorPlus_Test {
   /**
    * Test method for extendImageBeforeRotation(ImageProcessor,double).
    * 
-   * Post: Saves extended image to /tmp/testextendImage_45s.tif.
+   * <p>Post: Saves extended image to /tmp/testextendImage_45s.tif.
    */
   @Test
   public void test_ExtendImageToRotation_45s() {

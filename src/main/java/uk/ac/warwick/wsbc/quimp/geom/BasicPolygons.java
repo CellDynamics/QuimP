@@ -34,11 +34,11 @@ public class BasicPolygons {
   /**
    * Calculates area of polygon.
    * 
-   * Supports triangles, regular and irregular polygons, convex or concave polygons
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * Polygon can not intersect itself.
+   * <p>Supports triangles, regular and irregular polygons, convex or concave polygons
+   * 
+   * <p><b>Warning</b>
+   * 
+   * <p>Polygon can not intersect itself.
    * 
    * @param P Vertices of polygon in specified order
    * @return Area
@@ -162,10 +162,10 @@ public class BasicPolygons {
 
   /**
    * Get center of mass of polygon.
-   * <p>
-   * <b>Warning</b>
-   * <p>
-   * Require correct polygon with non crossing edges.
+   * 
+   * <p><b>Warning</b>
+   * 
+   * <p>Require correct polygon with non crossing edges.
    * 
    * @param P Vertices of polygon in specified order
    * @return Point of center of mass

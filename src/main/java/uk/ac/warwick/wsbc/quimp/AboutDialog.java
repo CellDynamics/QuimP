@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Build About dialog with support of mouse operations.
  * 
- * It can be used as universal text displayer.
+ * <p>It can be used as universal text displayer.
  * 
  * @author p.baniukiewicz
  *
@@ -70,7 +70,7 @@ public class AboutDialog implements ActionListener {
   /**
    * Main constructor.
    * 
-   * Builds window and menus.
+   * <p>Builds window and menus.
    * 
    * @param owner Owner of Dialog
    */
@@ -117,7 +117,7 @@ public class AboutDialog implements ActionListener {
   /**
    * Create simple menu bar with entries and popup.
    * 
-   * Fills private fields of this class.
+   * <p>Fills private fields of this class.
    */
   private void buildMenu() {
     mbar = new JMenuBar();
@@ -142,7 +142,7 @@ public class AboutDialog implements ActionListener {
   /**
    * Make copy of MenuItem.
    * 
-   * Components can not be shared among containers. This method copies basic properties of
+   * <p>Components can not be shared among containers. This method copies basic properties of
    * component to its new instance (shallow copy of selected properties)
    * 
    * @param src source MenuItem
@@ -180,8 +180,7 @@ public class AboutDialog implements ActionListener {
   /**
    * Show or hide main window.
    * 
-   * <p>
-   * <b>Warning</b><br>
+   * <p><b>Warning</b><br>
    * When window is visible append(final String) does not work.
    * 
    * @param state \c true to show window
