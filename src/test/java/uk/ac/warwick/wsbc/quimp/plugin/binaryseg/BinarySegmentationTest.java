@@ -276,7 +276,7 @@ public class BinarySegmentationTest {
       }
     }
 
-    RoiSaver.saveROIs(test1, tmpdir + "testGetChains.tif", ret);
+    RoiSaver.saveRois(test1, tmpdir + "testGetChains.tif", ret);
   }
 
   /**
@@ -314,7 +314,7 @@ public class BinarySegmentationTest {
       assertThat(of.getFrame(), is(i + 1));
     }
 
-    RoiSaver.saveROIs(test2, tmpdir + "testGetChains_no_last.tif", ret);
+    RoiSaver.saveRois(test2, tmpdir + "testGetChains_no_last.tif", ret);
   }
 
   /**
@@ -352,7 +352,7 @@ public class BinarySegmentationTest {
       assertThat(of.getFrame(), is(i + 2)); // starts from 2nd frame
     }
 
-    RoiSaver.saveROIs(test4, tmpdir + "testGetChains_no_first.tif", ret); // wrong image because
+    RoiSaver.saveRois(test4, tmpdir + "testGetChains_no_first.tif", ret); // wrong image because
     // of saveROIs
   }
 
@@ -397,7 +397,7 @@ public class BinarySegmentationTest {
       assertThat(of.getFrame(), is(i + 4)); // new chain from 4th frame
     }
 
-    RoiSaver.saveROIs(test3, tmpdir + "testGetChains_no_middle_last.tif", ret); // wrong image
+    RoiSaver.saveRois(test3, tmpdir + "testGetChains_no_middle_last.tif", ret); // wrong image
     // because of saveROIs
   }
 
@@ -416,7 +416,7 @@ public class BinarySegmentationTest {
     obj.trackObjects(); // run tracking
     ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains(); // get results
 
-    RoiSaver.saveROIs(test5, tmpdir + "testGetChains_oneSlice.tif", ret); // wrong image
+    RoiSaver.saveRois(test5, tmpdir + "testGetChains_oneSlice.tif", ret); // wrong image
     // because of saveROIs
   }
 

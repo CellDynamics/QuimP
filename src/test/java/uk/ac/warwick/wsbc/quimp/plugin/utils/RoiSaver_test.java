@@ -38,7 +38,7 @@ public class RoiSaver_test {
     testcase.add(new Point2d(0, 0));
     testcase.add(new Point2d(50, 100));
     testcase.add(new Point2d(100, 0));
-    RoiSaver.saveROI(tmpdir + "test_SaveROI_case1.tif", testcase);
+    RoiSaver.saveRoi(tmpdir + "test_SaveROI_case1.tif", testcase);
   }
 
   /**
@@ -51,7 +51,7 @@ public class RoiSaver_test {
   @Test
   public void test_SaveROI_case2() {
     ArrayList<Point2d> testcase = new ArrayList<>();
-    RoiSaver.saveROI(tmpdir + "test_SaveROI_case2.tif", testcase);
+    RoiSaver.saveRoi(tmpdir + "test_SaveROI_case2.tif", testcase);
   }
 
   /**
@@ -64,7 +64,7 @@ public class RoiSaver_test {
    */
   @Test
   public void test_SaveROI_case3() {
-    RoiSaver.saveROI(tmpdir + "test_SaveROI_case3.tif", (List<Point2d>) null);
+    RoiSaver.saveRoi(tmpdir + "test_SaveROI_case3.tif", (List<Point2d>) null);
   }
 
 }

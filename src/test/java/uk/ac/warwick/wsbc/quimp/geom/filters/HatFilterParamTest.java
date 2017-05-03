@@ -116,7 +116,7 @@ public class HatFilterParamTest {
     List<Point2d> out;
     HatSnakeFilter hf = new HatSnakeFilter(window, pnum, alev);
     out = hf.runPlugin(testcase);
-    RoiSaver.saveROI(tmpdir + "test_HatFilter_" + testfileName.getFileName() + "_"
+    RoiSaver.saveRoi(tmpdir + "test_HatFilter_" + testfileName.getFileName() + "_"
             + window.toString() + "_" + pnum.toString() + "_" + alev.toString() + ".tif", out);
     LOGGER.debug("setUp: " + testcase.toString());
   }
@@ -131,7 +131,7 @@ public class HatFilterParamTest {
    */
   @Test
   public void test_roiSaver() {
-    RoiSaver.saveROI(tmpdir + "ref_HatFilter_" + testfileName.getFileName() + "_"
+    RoiSaver.saveRoi(tmpdir + "ref_HatFilter_" + testfileName.getFileName() + "_"
             + window.toString() + "_" + pnum.toString() + "_" + alev.toString() + ".tif", testcase);
   }
 }

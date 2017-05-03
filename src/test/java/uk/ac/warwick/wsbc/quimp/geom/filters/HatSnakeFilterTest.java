@@ -112,7 +112,7 @@ public class HatSnakeFilterTest {
     LOGGER.debug("input: " + prot.toString());
     HatSnakeFilter hf = new HatSnakeFilter(9, 3, 0);
     List<Point2d> out = hf.runPlugin(prot);
-    RoiSaver.saveROI(tmpdir + "test_HatFilter_run_2.tif", out);
+    RoiSaver.saveRoi(tmpdir + "test_HatFilter_run_2.tif", out);
   }
 
   /**
@@ -128,7 +128,7 @@ public class HatSnakeFilterTest {
     LOGGER.debug("input: " + prot.toString());
     HatSnakeFilter hf = new HatSnakeFilter(9, 0, 0.16);
     List<Point2d> out = hf.runPlugin(prot);
-    RoiSaver.saveROI(tmpdir + "test_HatFilter_run_3.tif", out);
+    RoiSaver.saveRoi(tmpdir + "test_HatFilter_run_3.tif", out);
   }
 
   /**

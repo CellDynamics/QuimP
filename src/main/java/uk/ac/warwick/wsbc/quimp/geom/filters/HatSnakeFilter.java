@@ -143,7 +143,7 @@ public class HatSnakeFilter implements IPadArray {
   /**
    * Number of steps used for outline shrinking for intensity sampling.
    */
-  public int shrinkSteps = 30;
+  public int shrinkSteps = 35;
 
   /**
    * Set it to 1 to look for inclusions, 2 for protrusions, 3 for all.
@@ -224,8 +224,8 @@ public class HatSnakeFilter implements IPadArray {
     List<Point2d> shCont = new ArrayList<>();
     Outline outline = null;
     if (orgIp != null) {
-      // create shrunk outline to sample intensity
-      outline = new QuimpDataConverter(data).getOutline(0);
+      // create shrunk outline to sample intensity - one of the parameters used for candidate rank
+      outline = new QuimpDataConverter(data).getOutline(0); // FIXME What if more contours?
       new OutlineProcessor(outline).shrink(shrinkSteps, 0.04, 0.1, 0.01);
       outline.unfreezeAll();
       shCont = new QuimpDataConverter(outline).getList();
@@ -276,7 +276,7 @@ public class HatSnakeFilter implements IPadArray {
       LOGGER.trace("circ " + tmpCirc);
       // calculate weighting for circularity
       List<Point2d> pointswindow = points.subList(0, window); // get points for window only
-      List<Point2d> shContnowindow = points.subList(0, window);
+      List<Point2d> shContnowindow = shCont.subList(0, window);
       LOGGER.trace("win         : " + pointswindow.toString());
       LOGGER.trace("windowshCont: " + shContnowindow.toString());
       tmpInt = getIntensity(shContnowindow, orgIp);
