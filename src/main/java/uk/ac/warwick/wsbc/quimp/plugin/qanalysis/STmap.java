@@ -289,7 +289,7 @@ public class STmap implements IQuimpSerialize {
 
       intMig = interpolate(zeroVert.distance, zeroVert.getNext().distance, fraction);
       motMap[tt][0] = intMig;
-      color = QColor.ERColorMap2(migColorMap, intMig, oh.migLimits[0], oh.migLimits[1]);
+      color = QColor.erColorMap2(migColorMap, intMig, oh.migLimits[0], oh.migLimits[1]);
       migColor[pn] = color.getColorInt();
       migPixels[pn] = (float) intMig;
 
@@ -315,7 +315,7 @@ public class STmap implements IQuimpSerialize {
 
       intConv = interpolate(zeroVert.curvatureSum, zeroVert.getNext().curvatureSum, fraction);
       convMap[tt][0] = intConv;
-      color = QColor.ERColorMap2("rbb", intConv, oh.curvLimits[0], oh.curvLimits[1]);
+      color = QColor.erColorMap2("rbb", intConv, oh.curvLimits[0], oh.curvLimits[1]);
       convColor[pn] = color.getColorInt();
 
       coordMap[tt][0] = origin;
@@ -343,7 +343,7 @@ public class STmap implements IQuimpSerialize {
 
         intMig = interpolate(v.distance, v.getNext().distance, fraction);
         motMap[tt][p] = intMig;
-        color = QColor.ERColorMap2(migColorMap, intMig, oh.migLimits[0], oh.migLimits[1]);
+        color = QColor.erColorMap2(migColorMap, intMig, oh.migLimits[0], oh.migLimits[1]);
         migColor[pn] = color.getColorInt();
         migPixels[pn] = (float) intMig;
 
@@ -363,7 +363,7 @@ public class STmap implements IQuimpSerialize {
 
         intConv = interpolate(v.curvatureSum, v.getNext().curvatureSum, fraction);
         convMap[tt][p] = intConv;
-        color = QColor.ERColorMap2("rbb", intConv, oh.curvLimits[0], oh.curvLimits[1]);
+        color = QColor.erColorMap2("rbb", intConv, oh.curvLimits[0], oh.curvLimits[1]);
         convColor[pn] = color.getColorInt();
 
       }
@@ -525,7 +525,7 @@ public class STmap implements IQuimpSerialize {
    * @param max Maximum value in Outline that was used for creation of this map
    * @return Created ImagePlus object
    * @see #map2ImagePlus(String, ImageProcessor)
-   * @see QColor#ERColorMap2(String, double, double, double) for palettes
+   * @see QColor#erColorMap2(String, double, double, double) for palettes
    */
   public ImagePlus map2ColorImagePlus(String name, String palette, double[][] map, double min,
           double max) {
@@ -536,7 +536,7 @@ public class STmap implements IQuimpSerialize {
     for (int r = 0; r < t; r++) {
       for (int c = 0; c < res; c++) {
         // pN = (c * mapCell.getT()) + r;
-        QColor color = QColor.ERColorMap2(palette, map[r][c], min, max);
+        QColor color = QColor.erColorMap2(palette, map[r][c], min, max);
         migColor[pn++] = color.getColorInt();
       }
     }
@@ -612,7 +612,7 @@ public class STmap implements IQuimpSerialize {
       LOGGER.warn("WARNING, frac out of range:" + frac);
     }
 
-    if (Double.isNaN(frac) || Double.isNaN(frac)) {
+    if (Double.isNaN(frac)) {
       LOGGER.warn("WARNING, frac is nan:" + frac);
       System.out.println("\tffraction: |v:" + v.fCoord + "|v2:" + v2coord + "|tar:" + target
               + "|frac:" + frac);

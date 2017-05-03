@@ -1,20 +1,20 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
-
 package uk.ac.warwick.wsbc.quimp;
 
 import org.scijava.vecmath.Color3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: Auto-generated Javadoc
 /**
- * Just a class for colors, that does not use stupid floats represented as RGB in the range 0->1
+ * Just a class for colors, that does not use stupid floats represented as RGB in the range 0->1.
  *
  * @author tyson
  */
 public class QColor {
+
+  /**
+   * The colour maps.
+   */
+  public static final String[] colourMaps = { "Summer", "Cool", "Hot", "Grey" };
 
   /**
    * Color component.
@@ -35,7 +35,7 @@ public class QColor {
   static final Logger LOGGER = LoggerFactory.getLogger(QColor.class.getName());
 
   /**
-   * Copy constructor
+   * Copy constructor.
    * 
    * @param src object to copy
    */
@@ -63,7 +63,7 @@ public class QColor {
     System.out.println("R:" + red + " G: " + green + " B: " + blue);
   }
 
-  /**
+  /*
    * (non-Javadoc)
    * 
    * @see java.lang.Object#hashCode()
@@ -82,7 +82,7 @@ public class QColor {
     return result;
   }
 
-  /**
+  /*
    * (non-Javadoc)
    * 
    * @see java.lang.Object#equals(java.lang.Object)
@@ -156,12 +156,32 @@ public class QColor {
   }
 
   /**
+   * Gets the red.
+   *
+   * @param bits the bits
+   * @return the red - returns the color with a color space of size 'bits'
+   */
+  public int getRed(int bits) {
+    return (int) Math.round(red * bits);
+  }
+
+  /**
    * Gets the green.
    *
    * @return the green
    */
   public double getGreen() {
     return green;
+  }
+
+  /**
+   * Gets the green.
+   *
+   * @param bits the bits
+   * @return the green - returns the color with a color space of size 'bits'
+   */
+  public int getGreen(int bits) {
+    return (int) Math.round(green * bits);
   }
 
   /**
@@ -174,35 +194,12 @@ public class QColor {
   }
 
   /**
-   * Gets the red.
-   *
-   * @param bits the bits
-   * @return the red
-   */
-  public int getRed(int bits) {
-    // returns the color with a color space of size 'bits'
-    return (int) Math.round(red * bits);
-  }
-
-  /**
-   * Gets the green.
-   *
-   * @param bits the bits
-   * @return the green
-   */
-  public int getGreen(int bits) {
-    // returns the color with a color space of size 'bits'
-    return (int) Math.round(green * bits);
-  }
-
-  /**
    * Gets the blue.
    *
    * @param bits the bits
-   * @return the blue
+   * @return the blue - returns the color with a color space of size 'bits'
    */
   public int getBlue(int bits) {
-    // returns the color with a color space of size 'bits'
     return (int) Math.round(blue * bits);
   }
 
@@ -245,13 +242,6 @@ public class QColor {
     return (int) Math.round(((red + green + blue) / 3) * bits);
   }
 
-  // static methods *************
-
-  /**
-   * The colour maps.
-   */
-  public static String[] colourMaps = { "Summer", "Cool", "Hot", "Grey" };
-
   /**
    * ER color map 2.
    *
@@ -261,25 +251,25 @@ public class QColor {
    * @param max the max
    * @return the q color
    */
-  public static QColor ERColorMap2(String c, double d, double min, double max) {
+  public static QColor erColorMap2(String c, double d, double min, double max) {
     if (c.equals("rwb")) {
-      return RWBmap(d, max, min);
+      return rwbMap(d, max, min);
     } else if (c.equals("rbb")) {
-      return RBBmap(d, max, min);
+      return rbbMap(d, max, min);
     } else {
-      return RWBmap(d, max, min);
+      return rwbMap(d, max, min);
     }
   }
 
   /**
-   * RW bmap.
+   * RWB map.
    *
-   * @param d the d
+   * @param d the value
    * @param max the max
    * @param min the min
-   * @return the q color
+   * @return the q color for d
    */
-  public static QColor RWBmap(double d, double max, double min) {
+  public static QColor rwbMap(double d, double max, double min) {
     double r = 1;
     double g = 1;
     double b = 1;
@@ -322,7 +312,7 @@ public class QColor {
 
   }
 
-  private static QColor RBBmap(double d, double max, double min) {
+  private static QColor rbbMap(double d, double max, double min) {
     double r = 0;
     double g = 0;
     double b = 0;

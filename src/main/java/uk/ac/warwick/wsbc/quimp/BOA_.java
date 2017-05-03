@@ -1436,11 +1436,9 @@ public class BOA_ implements PlugIn {
       }
       if (b == menuSaveConfig) {
         String saveIn = qState.boap.getOutputFileCore().getParent();
-        // get extension from deduced output name
-        Path p = Paths.get(qState.boap.deductFilterFileName()).getFileName();
-        SaveDialog sd =
-                new SaveDialog("Save plugin config data...", saveIn, qState.boap.getFileName(),
-                        "." + QuimpToolsCollection.getFileExtension(p.toString()));
+        saveIn = (saveIn == null) ? System.getProperty("user.dir") : saveIn;
+        SaveDialog sd = new SaveDialog("Save plugin config data...", saveIn,
+                qState.boap.getFileName(), FileExtensions.pluginFileExt);
         if (sd.getFileName() != null) {
           try {
             // Create Serialization object with extra info layer
@@ -1686,6 +1684,10 @@ public class BOA_ implements PlugIn {
      * @see #updateWindowState()
      */
     private void loadQconfConfiguration(Path configPath) throws IOException, Exception {
+      Path filename = configPath.getFileName();
+      if (filename == null) {
+        throw new IllegalAccessException("Input path is not file");
+      }
       Serializer<DataContainer> loaded; // loaded instance
       // create serializer
       Serializer<DataContainer> s = new Serializer<>(DataContainer.class, QuimP.TOOL_VERSION);
@@ -1716,8 +1718,7 @@ public class BOA_ implements PlugIn {
       } else {
         parent = "";
       }
-      loaded.obj.BOAState.boap
-              .setOutputFileCore(parent + File.separator + configPath.getFileName().toString());
+      loaded.obj.BOAState.boap.setOutputFileCore(parent + File.separator + filename.toString());
       // closes windows, etc
       qState.reset(WindowManager.getCurrentImage(), pluginFactory, viewUpdater);
       qState = loaded.obj.BOAState;

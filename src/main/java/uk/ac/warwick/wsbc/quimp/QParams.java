@@ -68,7 +68,6 @@ public class QParams {
    * Name of the case. Used to set <i>fileName</i> and <i>path</i>
    */
   private File paramFile;
-  private File[] otherPaFiles;
   /**
    * Indicates format of data file.
    */
@@ -169,7 +168,7 @@ public class QParams {
   /**
    * Read basic information from <i>paQP</i> file such as its name and path. Initialise structures
    * 
-   * @param p <i>paQP</i> file, should contain underscored cell number.
+   * @param p <i>paQP</i> file, should contain underscored cell number and absolute path.
    */
   public QParams(File p) {
     setParamFile(p);
@@ -225,6 +224,12 @@ public class QParams {
     fileName = QuimpToolsCollection.removeExtension(paramFile.getName());
     this.paramFile = paramFile;
     path = paramFile.getParent();
+    // path is used for producing other file names in directory where paramFile. This is in case
+    // if paramFile does not contain path (should not happen)
+    if (path == null) {
+      throw new IllegalArgumentException("Input file: " + paramFile
+              + " must contain path as other files will be created in its folder");
+    }
   }
 
   /**
@@ -542,24 +547,28 @@ public class QParams {
    * segmentation parameters.
    * 
    * @throws QuimpException on wrong file that can not be interpreted or read.
+   * @throws IllegalStateException if input file is empty
    */
   public void readParams() throws QuimpException {
     paramFormat = QParams.OLD_QUIMP;
+    BufferedReader d = null;
     try {
-      BufferedReader d = new BufferedReader(new FileReader(paramFile));
+      d = new BufferedReader(new FileReader(paramFile));
 
       String l = d.readLine();
+      if (l == null) {
+        throw new IllegalStateException(
+                "File " + paramFile.getAbsolutePath() + " seems to be empty");
+      }
       if (!(l.length() < 2)) {
         String fileID = l.substring(0, 2);
         if (!fileID.equals("#p")) {
           IJ.error("Not compatible paramater file");
-          d.close();
-          throw new QuimpException("QParams::Not compatible paramater file");
+          throw new QuimpException("Not compatible paramater file");
         }
       } else {
         IJ.error("Not compatible paramater file");
-        d.close();
-        throw new QuimpException("QParams::Not compatible paramater file");
+        throw new QuimpException("Not compatible paramater file");
       }
       key = (long) QuimpToolsCollection.s2d(d.readLine()); // key
       segImageFile = new File(d.readLine()); // image file name
@@ -619,11 +628,18 @@ public class QParams {
         fluTiffs[1] = new File(d.readLine());
         fluTiffs[2] = new File(d.readLine());
       }
-      d.close();
       this.guessOtherFileNames(); // generate handles of other files that will be created here
       checkECMMrun(); // check if snQP file is already processed by ECMM. Set ecmmHasRun
     } catch (IOException e) {
       throw new QuimpException(e);
+    } finally {
+      try {
+        if (d != null) {
+          d.close();
+        }
+      } catch (IOException e) {
+        LOGGER.error("Can not close file " + e);
+      }
     }
   }
 
@@ -693,7 +709,7 @@ public class QParams {
   }
 
   /**
-   * Traverse through current directory and sub-directories looking for <i>paQP</i> files.
+   * Traverse through current directory looking for <i>paQP</i> files.
    * 
    * <p><b>Remarks</b>
    * 
@@ -703,7 +719,8 @@ public class QParams {
    *         paramFile)
    */
   public File[] findParamFiles() {
-    File directory = new File(paramFile.getParent());
+    File[] otherPaFiles;
+    File directory = new File(path);
     ArrayList<String> paFiles = new ArrayList<String>();
 
     if (directory.isDirectory()) {
@@ -711,14 +728,14 @@ public class QParams {
       String extension;
 
       for (int i = 0; i < filenames.length; i++) {
-        if (filenames[i].matches(".") || filenames[i].matches("..")
+        if (filenames[i].matches("\\.") || filenames[i].matches("\\.\\.")
                 || filenames[i].matches(paramFile.getName())) {
           continue;
         }
         extension = QuimpToolsCollection.getFileExtension(filenames[i]);
         if (extension.matches(FileExtensions.configFileExt.substring(1))) {
           paFiles.add(filenames[i]);
-          System.out.println("paFile: " + filenames[i]);
+          LOGGER.info("paFile: " + filenames[i]);
         }
       }
     }
@@ -766,13 +783,16 @@ public class QParams {
    * <p>Processed files have <b>-ECMM</b> suffix on first line.
    * 
    * @throws IOException on file reading problem
+   * @throws IllegalStateException if file is empty
    */
   private void checkECMMrun() throws IOException {
     BufferedReader br = null;
     try {
       br = new BufferedReader(new FileReader(snakeQP));
       String line = br.readLine(); // read first line
-
+      if (line == null) {
+        throw new IllegalStateException("File " + snakeQP.getAbsolutePath() + " seems to be empty");
+      }
       String sub = line.substring(line.length() - 4, line.length());
       if (sub.matches("ECMM")) {
         LOGGER.info("ECMM has been run on this paFile data");
@@ -781,12 +801,12 @@ public class QParams {
         ecmmHasRun = false;
       }
     } finally {
-      if (br != null) {
-        try {
+      try {
+        if (br != null) {
           br.close();
-        } catch (IOException e) {
-          e.printStackTrace();
         }
+      } catch (IOException e) {
+        LOGGER.error("Can not close file " + e);
       }
     }
   }

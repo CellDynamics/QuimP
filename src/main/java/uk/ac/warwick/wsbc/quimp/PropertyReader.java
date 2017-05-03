@@ -65,7 +65,9 @@ public class PropertyReader {
       LOGGER.error(e.getMessage(), e);
     } finally {
       try {
-        inputStream.close();
+        if (inputStream != null) {
+          inputStream.close();
+        }
       } catch (IOException e) {
         LOGGER.error(e.getMessage(), e);
       }

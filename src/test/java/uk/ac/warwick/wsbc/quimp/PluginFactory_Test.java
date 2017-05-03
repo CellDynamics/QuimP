@@ -183,7 +183,7 @@ public class PluginFactory_Test {
     for (File f : ret) {
       LOGGER.debug(f.getName());
     }
-    assertTrue(ret != null && ret.length > 0);
+    assertTrue(ret.length > 0);
     HashSet<String> r = new HashSet<String>();
     for (File f : ret) {
       r.add(f.getName());

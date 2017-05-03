@@ -283,11 +283,11 @@ public class SVGplotter {
 
   private QColor getERcolor(Vert v) {
     if (colorWith.matches("Speed")) {
-      return QColor.ERColorMap2("rwb", v.distance, oh.migLimits[0], oh.migLimits[1]);
+      return QColor.erColorMap2("rwb", v.distance, oh.migLimits[0], oh.migLimits[1]);
     } else if (colorWith.matches("Fluorescence")) {
-      return QColor.RWBmap(v.fluores[channel].intensity, 255, 0);
+      return QColor.rwbMap(v.fluores[channel].intensity, 255, 0);
     } else if (colorWith.matches("Convexity")) {
-      return QColor.ERColorMap2("rwb", v.curvatureSum, oh.curvLimits[0], oh.curvLimits[1]);
+      return QColor.erColorMap2("rwb", v.curvatureSum, oh.curvLimits[0], oh.curvLimits[1]);
     } else {
       System.out.println("unknown color map: SVGplotter l:221");
       return new QColor(1, 1, 1);
