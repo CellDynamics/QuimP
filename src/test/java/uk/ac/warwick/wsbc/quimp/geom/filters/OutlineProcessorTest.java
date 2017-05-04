@@ -83,10 +83,11 @@ public class OutlineProcessorTest {
     // nc - not changing on run
     SegmentedShapeRoi ssR = ret.get(0).get(0);// nc
     RoiSaver.saveRoi("/tmp/fgf", ssR);
-    List<Point2d> points = ssR.getOutlineasPoints();
-    RoiSaver.saveRoi("/tmp/fgfs", new QuimpDataConverter(points).getOutline(0).asFloatRoi()); // nc
+    List<Point2d> points = ssR.getOutlineasRawPoints();
+    RoiSaver.saveRoi("/tmp/fgfs", points); // nc
     Outline outline = new QuimpDataConverter(points).getOutline(0);
-    new OutlineProcessor(outline).shrink(35, 0.04, 0.1, 0.01);
+    new OutlineProcessor(outline).shrink(10, 0.3, 0.1, 0.01); // modified outline differs in number
+    // of points. Not related to conversion.
     outline.unfreezeAll();
     RoiSaver.saveRoi("/tmp/conv", outline.asFloatRoi()); // every time slightly different
   }
