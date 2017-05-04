@@ -55,9 +55,10 @@ mvn clean package -P build-javadoc -Dproject.build.sourceEncoding=cp1252
 
 There are the following profiles defined in QuimP pom and closely related parent poms:
 
-1. *installation* - default profile, sets location of manual to `master` branch
-2. *development* - sets location of manual to `develop` branch. Use also mocked BOA filters.
-3. *dev-collectdeps* - copies all project dependencies to `target/dependencies`
+1. *installation* - **default** profile, sets location of manual to `master` branch
+2. *testing* - block registration window
+3. *development* - sets location of manual to `develop` branch. Use also mocked BOA filters.
+4. *dev-collectdeps* - copies all project dependencies to `target/dependencies`
  
 
  
