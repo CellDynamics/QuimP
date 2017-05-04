@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ij.Prefs;
+import uk.ac.warwick.wsbc.quimp.PropertyReader;
 import uk.ac.warwick.wsbc.quimp.QuimP;
 
 /*
@@ -179,6 +180,12 @@ public class Registration extends JDialog implements ActionListener {
   public Registration(Window owner, String title) {
     super(owner, title, ModalityType.APPLICATION_MODAL);
     this.owner = owner;
+    // skip if debug mode
+    String skipReg = new PropertyReader().readProperty("quimpconfig.properties", "noRegWindow");
+    if (Boolean.parseBoolean(skipReg) == true) {
+      LOGGER.info("Skipping reg window. Hope ony for tests... ");
+      return;
+    }
     // display reg window if not registered
     if (checkRegistration() == false) {
       build(title, true);
