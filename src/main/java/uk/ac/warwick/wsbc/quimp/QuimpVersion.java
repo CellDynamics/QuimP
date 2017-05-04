@@ -13,6 +13,15 @@ public class QuimpVersion {
   private String name;
 
   /**
+   * Default constructor. Set everything to zero.
+   */
+  public QuimpVersion() {
+    this.version = "0.0.0";
+    this.buildstamp = "0.0.0";
+    this.name = "0.0.0";
+  }
+
+  /**
    * Set version data.
    * 
    * @param version
