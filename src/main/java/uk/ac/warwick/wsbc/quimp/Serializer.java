@@ -134,6 +134,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     obj = null;
     this.timeStamp = version;
     this.type = type;
+    // fill date of creation
+    createdOn = getCurrentDate();
   }
 
   /**
@@ -151,6 +153,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     this.timeStamp = version;
     // set it as callee version if we will save json (json version is read on load only)
     this.qconfVersionToSave = convertStringVersion(version.getVersion());
+    // fill date of creation
+    createdOn = getCurrentDate();
   }
 
   /**
@@ -352,14 +356,21 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     // set version to save (read from calee)
     gsonBuilder.setVersion(qconfVersionToSave);
     Gson gson = gsonBuilder.create();
-    // fill date of creation
-    Date dateNow = new Date();
-    SimpleDateFormat df = new SimpleDateFormat("E yyyy.MM.dd 'at' HH:mm:ss a zzz");
-    createdOn = df.format(dateNow);
     if (obj != null) {
       obj.beforeSerialize();
     }
     return gson.toJson(this);
+  }
+
+  /**
+   * Get current date included in saved file.
+   * 
+   * @return Formatted string with date.
+   */
+  public String getCurrentDate() {
+    Date dateNow = new Date();
+    SimpleDateFormat df = new SimpleDateFormat("E yyyy.MM.dd 'at' HH:mm:ss a zzz");
+    return df.format(dateNow);
   }
 
   /**
