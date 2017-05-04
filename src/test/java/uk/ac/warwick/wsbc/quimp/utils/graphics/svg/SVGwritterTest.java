@@ -2,7 +2,7 @@ package uk.ac.warwick.wsbc.quimp.utils.graphics.svg;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static uk.ac.warwick.wsbc.quimp.utils.test.matchers.file.FileMatcher.containsExactText;
+import static uk.ac.warwick.wsbc.quimp.utils.test.matchers.file.FileMatchers.containsExactText;
 
 import java.awt.Rectangle;
 import java.io.BufferedOutputStream;

@@ -3,11 +3,15 @@ package uk.ac.warwick.wsbc.quimp.utils.test.matchers.file;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static uk.ac.warwick.wsbc.quimp.utils.test.matchers.file.FileMatcher.containsExactText;
+import static uk.ac.warwick.wsbc.quimp.utils.test.matchers.file.FileMatchers.containsExactText;
+import static uk.ac.warwick.wsbc.quimp.utils.test.matchers.file.FileMatchers.givesSameJson;
 
 import java.io.File;
 
 import org.junit.Test;
+
+import uk.ac.warwick.wsbc.quimp.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.quimp.filesystem.OutlinesCollection;
 
 /**
  * Test class for FileMatcher.
@@ -111,6 +115,33 @@ public class FileMatcherTest {
     File orginal = new File("src/test/Resources-static/FileMatcherTest/orginallll.ijm");
     File test = new File("src/test/Resources-static/FileMatcherTest/empty.ijm");
     assertThat(test, is(not(containsExactText(orginal))));
+  }
+
+  /**
+   * Test of json matching, same objects.
+   * 
+   * @throws Exception the exception
+   */
+  @Test
+  public void testGivesSameJson_same() throws Exception {
+    DataContainer dt = new DataContainer();
+    DataContainer dt1 = new DataContainer();
+
+    assertThat(dt, givesSameJson(dt1));
+  }
+
+  /**
+   * Test of json matching, other objects.
+   * 
+   * @throws Exception the exception
+   */
+  @Test
+  public void testGivesSameJson_other() throws Exception {
+    DataContainer dt = new DataContainer();
+    dt.ECMMState = new OutlinesCollection();
+    DataContainer dt1 = new DataContainer();
+
+    assertThat(dt, is(not(givesSameJson(dt1))));
   }
 
 }

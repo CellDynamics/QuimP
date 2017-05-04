@@ -35,22 +35,6 @@ public class FileMatcher extends TypeSafeDiagnosingMatcher<File> {
     this.expected = expected;
   }
 
-  /**
-   * Deliver instance of this class.
-   * 
-   * <pre>
-   * <code>
-   * assertThat(compared, containsExactText(expected);
-   * </code>
-   * </pre>
-   * 
-   * @param expected expected file
-   * @return instance
-   */
-  public static FileMatcher containsExactText(File expected) {
-    return new FileMatcher(expected);
-  }
-
   @Override
   public void describeTo(Description arg0) {
     arg0.appendText("Same content of file");
