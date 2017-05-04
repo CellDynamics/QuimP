@@ -289,6 +289,7 @@
       <id>development</id>
       <properties>
         <manual.location>${manual.rootlocation}develop/QuimP_Guide.html</manual.location>
+        <test.mode>true</test.mode>
       </properties>
       <activation>
         <activeByDefault>false</activeByDefault>
@@ -297,7 +298,7 @@
         <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-core</artifactId>
-          <version>2.1.0-RC.1</version>
+          <version>2.7.22</version>
           <scope>compile</scope>
         </dependency>
       </dependencies>
@@ -330,14 +331,26 @@
       </build>
     </profile>
     <profile>
-      <id>installation</id>
-      <!--Default profile for building pure jar-->
-      <!--Save dependencies in separate folder-->
+      <id>testing</id>
+      <!-- Default profile for testing and building pure jar-->
+      <!-- Disables Reg Window -->
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
+        <manual.location>${manual.rootlocation}develop/QuimP_Guide.html</manual.location>
+        <test.mode>true</test.mode>
+      </properties>
+    </profile>
+    <profile>
+      <id>installation</id>
+      <!--Default profile for building pure jar-->
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
         <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
+        <test.mode>false</test.mode>
       </properties>
     </profile>
   </profiles>
