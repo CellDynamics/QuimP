@@ -143,7 +143,7 @@ public class HatSnakeFilter implements IPadArray {
   /**
    * Number of steps used for outline shrinking for intensity sampling.
    */
-  public int shrinkSteps = 35;
+  public int shrinkSteps = 10;
 
   /**
    * Set it to 1 to look for inclusions, 2 for protrusions, 3 for all.
@@ -226,9 +226,9 @@ public class HatSnakeFilter implements IPadArray {
     if (orgIp != null) {
       // create shrunk outline to sample intensity - one of the parameters used for candidate rank
       outline = new QuimpDataConverter(data).getOutline(0); // FIXME What if more contours?
-      new OutlineProcessor(outline).shrink(shrinkSteps, 0.04, 0.1, 0.01);
+      new OutlineProcessor(outline).shrink(shrinkSteps, 0.3, 0.1, 0.01);
       outline.unfreezeAll();
-      shCont = new QuimpDataConverter(outline).getList();
+      shCont = outline.asList();
     }
     // internal parameters are not updated here but when user click apply
     LOGGER.debug(String.format("Run plugin with params: window %d, pnum %d, alev %f", window, pnum,
@@ -324,7 +324,7 @@ public class HatSnakeFilter implements IPadArray {
     LOGGER.trace("circ: " + circ.toString());
 
     if (circsorted.get(0) < alev) {
-      return points; // just return non-modified data;
+      return points; // just return non-modified data; TODO does it matter if circ is normalised?
     }
 
     int found = 0; // how many protrusions we have found already

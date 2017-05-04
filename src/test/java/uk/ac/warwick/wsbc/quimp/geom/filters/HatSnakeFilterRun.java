@@ -47,7 +47,7 @@ public class HatSnakeFilterRun {
     Path maskimage = Paths.get(folder, filename + "_snakemaskO.tif");
     Path orgimage = Paths.get(folder, filename + ".tif");
 
-    int pp = 59; // fram counted from 1
+    int pp = 58; // fram counted from 1
 
     ImageJ ij = new ImageJ();
     ImagePlus mask = IJ.openImage(maskimage.toString());
@@ -69,13 +69,13 @@ public class HatSnakeFilterRun {
     // filter
     final int window = 17;
     final int pnum = 1;
-    final double alev = 0.89;
+    final double alev = 0.5;
 
     ImagePlus filtered = NewImage.createByteImage("filt", mask.getWidth(), mask.getHeight(),
             mask.getStackSize(), NewImage.GRAY8);
     ImagePlus org = NewImage.createByteImage("org", mask.getWidth(), mask.getHeight(),
             mask.getStackSize(), NewImage.GRAY8);
-    for (int i = 59; i <= 59; i++) { // !!
+    for (int i = 1; i <= 100; i++) { // !!
       LOGGER.info("--Frame " + i);
       SegmentedShapeRoi ssR = ret.get(0).get(i - 1);
       org.getStack().getProcessor(i).setColor(Color.WHITE);

@@ -87,8 +87,7 @@ public class QuimpDataConverter {
    * Default constructor if Node list is in form of Snake object.
    * 
    * @param s Shape to be converted. If null xc and yc are set to 0 length arrays, List is
-   *        also 0
-   *        length.
+   *        also 0 length.
    */
   public QuimpDataConverter(final Shape<?> s) {
     this();
@@ -143,6 +142,8 @@ public class QuimpDataConverter {
    * <p><b>Warning</b>
    * 
    * <p>If user modifies this list this object loses its consistency
+   * 
+   * <p>To convert {@link Shape} to list use {@link Shape#asList()}.
    * 
    * @return List of Point2d from stored objects
    */
