@@ -1,8 +1,8 @@
 package uk.ac.warwick.wsbc.quimp.plugin.ecmm;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static uk.ac.warwick.wsbc.quimp.utils.test.matchers.file.FileMatchers.givesSameJson;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -17,8 +17,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.wsbc.quimp.QuimpVersion;
-import uk.ac.warwick.wsbc.quimp.Serializer;
 import uk.ac.warwick.wsbc.quimp.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.quimp.utils.graphics.PolarPlotTest;
@@ -104,21 +102,10 @@ public class EcmmMappingTest {
     // load reference and updated and compare
 
     OutlinesCollection ecmmTest = new QconfLoader(boa).getECMM();
-    // ecmmTest.oHs.get(0).indexGetOutline(0).freezeAll(); test of test
+    // ecmmTest.oHs.get(0).indexGetOutline(0).freezeAll(); // test of test
     OutlinesCollection ecmmRef = new QconfLoader(ecmmn.toFile()).getECMM();
 
-    // save tmp only compared objects - most objects do not have equals() and transient objects are
-    // not restored on load of reference so comparison must be on json level.
-    Serializer<OutlinesCollection> ecmmTestSer =
-            new Serializer<OutlinesCollection>(ecmmTest, new QuimpVersion());
-    ecmmTestSer.createdOn = ""; // erase
-    String test = ecmmTestSer.toString();
-    Serializer<OutlinesCollection> ecmmTestRefSer =
-            new Serializer<OutlinesCollection>(ecmmRef, new QuimpVersion());
-    ecmmTestRefSer.createdOn = "";
-    String ref = ecmmTestRefSer.toString();
-
-    assertThat(test, is(ref));
+    assertThat(ecmmTest, givesSameJson(ecmmRef));
 
   }
 
