@@ -214,7 +214,8 @@ public class QuimpDataConverter {
    * Return Outline created from stored data.
    * 
    * @param id Id of snake
-   * @return Outline object with Nodes in order of data given on input. Can be null
+   * @return Outline object with Nodes in order of data given on input. Can be null. Normalse are
+   *         set outwards.
    * @throws BoaException on Outline creation
    * @see uk.ac.warwick.wsbc.quimp.Snake#Snake(double[], double[], int)
    * @see uk.ac.warwick.wsbc.quimp.Snake#removeNode(uk.ac.warwick.wsbc.quimp.Node)

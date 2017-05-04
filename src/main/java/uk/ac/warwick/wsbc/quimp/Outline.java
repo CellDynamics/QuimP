@@ -75,7 +75,10 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
    * Conversion constructor.
    * 
    * <p>Convert only basic properties. Do not forget that many of Vert properties are set during
-   * ECMM or Q Analysis
+   * ECMM or Q Analysis.
+   * 
+   * <p>Set normales outwards. This can be changed by calling {@link #updateNormales(boolean)}
+   * afterwards.
    * 
    * @param src Snake to be converted to Outline
    */
@@ -83,6 +86,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   public Outline(final Snake src) {
     super((Shape) src, new Vert());
     this.updateCurvature();
+    this.updateNormales(false);
   }
 
   /**

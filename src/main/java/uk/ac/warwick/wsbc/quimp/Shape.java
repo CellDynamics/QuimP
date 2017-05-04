@@ -367,7 +367,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
   /**
    * Update all node normales. Called after modification of Shape nodes.
    * 
-   * @param inner Direction of the Shape
+   * @param inner Direction of normales. If <tt>false</tt> they are set outwards the shape.
    */
   public void updateNormales(boolean inner) {
     T v = head;
