@@ -335,7 +335,7 @@
       <!-- Default profile for testing and building pure jar-->
       <!-- Disables Reg Window -->
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
         <manual.location>${manual.rootlocation}develop/QuimP_Guide.html</manual.location>
@@ -346,7 +346,7 @@
       <id>installation</id>
       <!--Default profile for building pure jar-->
       <activation>
-        <activeByDefault>false</activeByDefault>
+        <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
         <manual.location>${manual.rootlocation}master/QuimP_Guide.html</manual.location>
