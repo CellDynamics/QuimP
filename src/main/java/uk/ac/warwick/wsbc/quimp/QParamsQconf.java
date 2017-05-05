@@ -185,7 +185,7 @@ public class QParamsQconf extends QParams {
       // Serializer
       Serializer<DataContainer> n;
       n = new Serializer<>(getLoadedDataContainer(),
-              new QuimpToolsCollection().getQuimPBuildInfo());
+              new QuimpToolsCollection().getQuimPBuildInfo()); // TODO use QuimP.
       if (getLoadedDataContainer().BOAState.boap.savePretty) {
         // configured
         n.setPretty();
