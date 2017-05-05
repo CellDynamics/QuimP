@@ -82,7 +82,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Copy constructor wit new ID.
+   * Copy constructor with new ID.
    * 
    * @param src Snake to be duplicated
    * @param id New id
