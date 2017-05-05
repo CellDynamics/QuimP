@@ -102,36 +102,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
    * @param src source Shape to copy from
    * @throws RuntimeException when T does no have copy constructor
    */
-  @SuppressWarnings("unchecked")
   public Shape(final Shape<T> src) {
-    T tmpHead = src.getHead(); // get head as representative object
-    Class<?> temlateClass = tmpHead.getClass(); // get class under Shape (T)
-    try {
-      // Constructor of T as type can not be called directly, use reflection
-      // get Constructor of T with one parameter of Type T (copy constructor)
-      Constructor<?> ctor = tmpHead.getClass().getDeclaredConstructor(temlateClass);
-      // create copy of head
-      head = (T) ctor.newInstance(src.getHead());
-      T srcn = src.getHead();
-      T n = head;
-      // iterate over whole list making copies of T elements
-      for (srcn = srcn.getNext(); !srcn.isHead(); srcn = srcn.getNext()) {
-        T next = (T) ctor.newInstance(srcn);
-        n.setNext(next);
-        next.setPrev(n);
-        n = next;
-      }
-      // loop list
-      n.setNext(head);
-      head.setPrev(n);
-    } catch (SecurityException | NoSuchMethodException | InstantiationException
-            | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      throw new RuntimeException(e); // change to unchecked exception
-    }
-    // copy rest of params
-    POINTS = src.POINTS;
-    nextTrackNumber = src.nextTrackNumber;
-    calcCentroid();
+    this(src, src.getHead());
   }
 
   /**
@@ -142,11 +114,12 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
    * PointsList) Typical approach is to convert Snake to Outline ({@link Node} to
    * {@link Vert}).
    * 
+   * <p>Can be used as copy constructor.
+   * 
    * @param src input Shape to convert.
    * @param destType object of base node that PointsList is composed from
    * @throws RuntimeException when T does no have copy constructor
    * 
-   * @see #Shape(Shape)
    */
   @SuppressWarnings("unchecked")
   public Shape(final Shape<T> src, T destType) {
