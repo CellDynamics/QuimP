@@ -113,6 +113,7 @@ public abstract class PointsList<T extends PointsList<T>> {
     this.head = src.head;
     this.tracknumber = src.tracknumber;
     this.position = src.position;
+    this.frozen = src.frozen;
   }
 
   /**

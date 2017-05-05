@@ -111,6 +111,16 @@ public class QColor {
     return true;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "QColor [red=" + red + ", green=" + green + ", blue=" + blue + "]";
+  }
+
   /**
    * Sets the RGB.
    *
@@ -505,7 +515,7 @@ public class QColor {
   }
 
   /**
-   * Get a random light color
+   * Get a random light color.
    * 
    * @return random color
    */
