@@ -86,7 +86,7 @@ public class NodeTest {
     // for local curvature, no looping
     org.setNext(eh.nextObject(Node.class));
     org.setPrev(eh.nextObject(Node.class));
-    org.updateNormale(true); // update notmale, in test will be set to false
+    org.updateNormale(true); // update normale, in test will be set to false
     org.update();
 
     return org;

@@ -1,5 +1,6 @@
 package uk.ac.warwick.wsbc.quimp;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -35,6 +36,7 @@ public class OutlineTest {
     assertThat(outline.POINTS, is(snake.POINTS));
     assertThat(outline.getCentroid(), is(snake.getCentroid()));
     assertThat(outline.nextTrackNumber, is(snake.nextTrackNumber));
+    assertThat(outline.getHead(), instanceOf(Vert.class));
     Node n = snake.getHead();
     Vert v = outline.getHead();
     do {
