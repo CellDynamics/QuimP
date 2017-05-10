@@ -47,7 +47,7 @@ public class SerializerTest {
   private QuimpVersion version;
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -56,7 +56,7 @@ public class SerializerTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
@@ -65,7 +65,7 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.save(String).
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testSave() throws Exception {
@@ -76,7 +76,7 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.toString().
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testToString() throws Exception {
@@ -88,7 +88,7 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.toString().
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testToString_1() throws Exception {
@@ -103,7 +103,7 @@ public class SerializerTest {
    * 
    * <p>post: exception thrown
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test(expected = JsonSyntaxException.class)
   public void testFromString() throws Exception {
@@ -123,7 +123,7 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.fromString(final String).
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testFromString_1() throws Exception {
@@ -147,7 +147,7 @@ public class SerializerTest {
    * 
    * <p>post: Conversion class is not run
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testFromString_3() throws Exception {
@@ -172,7 +172,7 @@ public class SerializerTest {
    * 
    * <p>post: exception
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test(expected = JsonSyntaxException.class)
   public void testFromString_2() throws Exception {
@@ -193,7 +193,7 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.load(final String)
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testLoad() throws Exception {
@@ -218,7 +218,7 @@ public class SerializerTest {
    * 
    * <p>Post the same file converted to current version
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testLoad_1() throws Exception {
@@ -240,7 +240,7 @@ public class SerializerTest {
    * 
    * <p>post: It is ignored
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testFromString1() throws Exception {
@@ -264,7 +264,7 @@ public class SerializerTest {
    * 
    * <p>post: it is not initialized and has value from constructor
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testFromString2() throws Exception {
@@ -282,7 +282,9 @@ public class SerializerTest {
   }
 
   /**
-   * @throws FileNotFoundException
+   * testDumpStatic.
+   * 
+   * @throws FileNotFoundException FileNotFoundException
    */
   @SuppressWarnings("deprecation")
   @Test
@@ -294,7 +296,7 @@ public class SerializerTest {
   /**
    * Test method for {@link uk.ac.warwick.wsbc.quimp.Serializer#getQconfVersion(Reader)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetQconfVersion() throws Exception {
@@ -328,7 +330,9 @@ public class SerializerTest {
   }
 
   /**
-   * @throws Exception
+   * testGetQconfVersion_bad.
+   * 
+   * @throws Exception Exception
    */
   @Test(expected = Exception.class)
   public void testGetQconfVersion_bad() throws Exception {
@@ -342,7 +346,9 @@ public class SerializerTest {
   }
 
   /**
-   * @throws Exception
+   * testGetQconfVersion_bad1.
+   * 
+   * @throws Exception Exception
    */
   @Test(expected = Exception.class)
   public void testGetQconfVersion_bad1() throws Exception {
@@ -360,7 +366,7 @@ public class SerializerTest {
    * 
    * @param ver Version to inject
    * @return Path to created file
-   * @throws IOException
+   * @throws IOException Exception
    */
   private Reader giveDummyFile(String ver) throws IOException {
     String qconf = "{" + "\"className\":\"DataContainer\"," + "\"version\": [" + "\"" + ver + "\","
@@ -373,7 +379,7 @@ public class SerializerTest {
   /**
    * Test method for uk.ac.warwick.wsbc.quimp.Serializer.save(String).
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testSave_gson() throws Exception {
@@ -390,7 +396,7 @@ public class SerializerTest {
    * 
    * <p>Post: All fields are loaded
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGson_1() throws Exception {
@@ -412,7 +418,7 @@ public class SerializerTest {
                     + "\"e\":40"
                     + "}"
                 + "}";
-        //!<
+    //!<
     Serializer<TestClass_1> out;
     TestClass_1 obj;
     Serializer<TestClass_1> s = new Serializer<>(TestClass_1.class, version);
@@ -432,7 +438,7 @@ public class SerializerTest {
    * 
    * <p>Post: b filed has vale from constructor, no error
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGson_2() throws Exception {
@@ -453,7 +459,7 @@ public class SerializerTest {
                     + "\"e\":40"
                     + "}"
                 + "}";
-        //!<
+    //!<
     Serializer<TestClass_1> out;
     TestClass_1 obj;
     Serializer<TestClass_1> s = new Serializer<>(TestClass_1.class, version);
@@ -473,7 +479,7 @@ public class SerializerTest {
    * 
    * <p>Post: Class is restored normally, f is skipped
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGson_3() throws Exception {
@@ -496,7 +502,7 @@ public class SerializerTest {
                     + "\"f\":40"
                     + "}"
                 + "}";
-        //!<
+    //!<
     Serializer<TestClass_1> out;
     TestClass_1 obj;
     Serializer<TestClass_1> s = new Serializer<>(TestClass_1.class, version);
@@ -516,7 +522,7 @@ public class SerializerTest {
    * 
    * <p>Post: Class is restored normally, f has default value from constructor
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGson_4() throws Exception {
@@ -539,7 +545,7 @@ public class SerializerTest {
                     + "\"f\":40"
                     + "}"
                 + "}";
-        //!<
+    //!<
     Serializer<TestClass_2> out;
     TestClass_2 obj;
     Serializer<TestClass_2> s = new Serializer<>(TestClass_2.class, version);
@@ -561,7 +567,7 @@ public class SerializerTest {
    * 
    * <p>Post: Class is restored normally, f has value from json
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGson_5() throws Exception {
@@ -584,7 +590,7 @@ public class SerializerTest {
                     + "\"f\":40"
                     + "}"
                 + "}";
-        //!<
+    //!<
     Serializer<TestClass_2> out;
     TestClass_2 obj;
     Serializer<TestClass_2> s = new Serializer<>(TestClass_2.class, version);

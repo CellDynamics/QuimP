@@ -3,7 +3,6 @@ package uk.ac.warwick.wsbc.quimp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +10,9 @@ import org.slf4j.LoggerFactory;
 import uk.ac.warwick.wsbc.quimp.BOAState.BOAp;
 import uk.ac.warwick.wsbc.quimp.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.quimp.filesystem.FileExtensions;
-import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.quimp.filesystem.versions.Converter170202;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class override most of methods from super class QParams. The goal of this class is rather
  * not to extend QParams but to use polymorphism to provide requested data to callers keeping
@@ -82,6 +79,8 @@ public class QParamsQconf extends QParams {
   }
 
   /**
+   * Get configuration file.
+   * 
    * @return the newParamFile
    */
   @Override
@@ -90,6 +89,8 @@ public class QParamsQconf extends QParams {
   }
 
   /**
+   * Get name of configuration file.
+   * 
    * @return the prefix. Without any cell number in contrary to super.getFileName(). Only filename
    *         without path and extension.
    */
@@ -121,8 +122,8 @@ public class QParamsQconf extends QParams {
     try {
       // load file and make first check of correctness
       loaded = s.load(getParamFile()); // try to load
-      BOA_.qState = getLoadedDataContainer().getBOAState(); // restore qstate because some
-                                                            // methods still need it
+      // restore qstate because some methods still need it
+      BOA_.qState = getLoadedDataContainer().getBOAState();
       // update path and file core name
       if (getLoadedDataContainer().getBOAState() != null) {
         getLoadedDataContainer().getBOAState().boap
@@ -184,8 +185,7 @@ public class QParamsQconf extends QParams {
       // packed by
       // Serializer
       Serializer<DataContainer> n;
-      n = new Serializer<>(getLoadedDataContainer(),
-              new QuimpToolsCollection().getQuimPBuildInfo()); // TODO use QuimP.
+      n = new Serializer<>(getLoadedDataContainer(), QuimP.TOOL_VERSION);
       if (getLoadedDataContainer().BOAState.boap.savePretty) {
         // configured
         n.setPretty();
@@ -252,11 +252,11 @@ public class QParamsQconf extends QParams {
 
         // copy here is due to #204 - when new tiff is added to old loaded fluTiffs,
         // previous absolute paths / are extended to full: /xxx/yyy/Quimp
-        File[] lF = getLoadedDataContainer().getANAState().aS.get(currentHandler).fluTiffs;
-        this.fluTiffs = new File[lF.length];
-        fluTiffs[0] = new File(lF[0].getPath());
-        fluTiffs[1] = new File(lF[1].getPath());
-        fluTiffs[2] = new File(lF[2].getPath());
+        File[] lf = getLoadedDataContainer().getANAState().aS.get(currentHandler).fluTiffs;
+        this.fluTiffs = new File[lf.length];
+        fluTiffs[0] = new File(lf[0].getPath());
+        fluTiffs[1] = new File(lf[1].getPath());
+        fluTiffs[2] = new File(lf[2].getPath());
       }
 
     }
@@ -465,42 +465,6 @@ public class QParamsQconf extends QParams {
     String file = QuimpToolsCollection.removeExtension(getParamFile().getName());
     return new File(
             path + File.separator + file + "_" + currentHandler + FileExtensions.statsFileExt);
-  }
-
-}
-
-/**
- * Block execution of afterSerialize() in Serializer.
- * 
- * <p>This method is not necessary now because one does not want to restore full plugin state. Other
- * data do not need any additional operations. (
- * 
- * <p>Currently not used as loaded BOAState must be deserialized to restore Snakes from Elements
- * arrays
- * 
- * @author p.baniukiewicz
- *
- * @param <T>
- * @deprecated But left here as example how to tackle the problem
- */
-@Deprecated
-class SerializerNoPluginSupport<T extends IQuimpSerialize> extends Serializer<T> {
-
-  /**
-   * @param obj
-   * @param version
-   */
-  public SerializerNoPluginSupport(T obj, QuimpVersion version) {
-    super(obj, version);
-    doAfterSerialize = true; // false blocks afterSerialzie()
-  }
-
-  /**
-   * @param t
-   */
-  public SerializerNoPluginSupport(Type t) {
-    super(t, QuimP.TOOL_VERSION);
-    doAfterSerialize = true; // false blocks afterSerialzie()
   }
 
 }
