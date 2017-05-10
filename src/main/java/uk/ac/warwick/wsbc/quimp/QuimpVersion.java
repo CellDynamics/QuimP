@@ -8,6 +8,8 @@ package uk.ac.warwick.wsbc.quimp;
  */
 public class QuimpVersion {
 
+  // This class is used in Serializer, so changing naming may affect serialization and
+  // deserialization.
   private String version;
   private String buildstamp;
   private String name;
@@ -24,9 +26,9 @@ public class QuimpVersion {
   /**
    * Set version data.
    * 
-   * @param version
-   * @param buildstamp
-   * @param name
+   * @param version version like 1.2.3
+   * @param buildstamp Date and time
+   * @param name Software name (QuimP)
    */
   public QuimpVersion(String version, String buildstamp, String name) {
     super();
@@ -36,6 +38,8 @@ public class QuimpVersion {
   }
 
   /**
+   * Get Version.
+   * 
    * @return the version
    */
   public String getVersion() {
@@ -43,6 +47,8 @@ public class QuimpVersion {
   }
 
   /**
+   * Get time and date.
+   * 
    * @return the buildstamp
    */
   public String getBuildstamp() {
@@ -50,6 +56,8 @@ public class QuimpVersion {
   }
 
   /**
+   * Get software name.
+   * 
    * @return the name
    */
   public String getName() {

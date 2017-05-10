@@ -1,5 +1,7 @@
 package uk.ac.warwick.wsbc.quimp;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -351,6 +353,25 @@ public class SerializerTest {
     // bad cases
     ret = giveDummyFile("not found");
     assertEquals(s.getQconfVersion(ret), 0.0, 1e-5);
+    ret.close();
+
+  }
+
+  /**
+   * Saves and then loads QconF to test for low-level version reading.
+   * 
+   * <p>pre: Qconf saved
+   * 
+   * <p>post: This Qconf should have version tag that is hard-coded in getQconfVersion
+   * 
+   * @throws Exception Exception
+   */
+  public void testCheckRequiredTag() throws Exception {
+    Serializer<TestClass> s = new Serializer<>(testClass, version);
+    String retString = s.toString();// convert to json
+
+    Reader ret = new StringReader(retString); // get reader from String
+    assertThat(s.getQconfVersion(ret), instanceOf(Double.class)); // no exception here
     ret.close();
 
   }
