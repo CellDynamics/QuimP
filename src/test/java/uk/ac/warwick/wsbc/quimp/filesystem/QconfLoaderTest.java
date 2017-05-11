@@ -147,7 +147,7 @@ public class QconfLoaderTest {
     assertThat(q.getBOA(), is(dC.BOAState));
     dC.ECMMState = new OutlinesCollection();
     assertThat(q.validateQconf(), is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN));
-    assertThat(q.getECMM(), is(dC.ECMMState));
+    assertThat(q.getEcmm(), is(dC.ECMMState));
     dC.ANAState = new ANAParamCollection();
     assertThat(q.validateQconf(),
             is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN + DataContainer.ANA_RUN));
@@ -318,20 +318,20 @@ public class QconfLoaderTest {
   }
 
   /**
-   * @throws Exception
-   */
-  @Test(expected = QuimpException.class)
-  public void testGetECMM() throws Exception {
-    QconfLoader q =
-            Mockito.spy(new QconfLoader(Paths.get(tmpdir + "qconftestloader.QCONF").toFile()));
-
-    QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
-    ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
-    DataContainer dC = new DataContainer();
-
-    Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
-    Mockito.when(q.getQp()).thenReturn(qPc);
-    q.getECMM();
-  }
+     * @throws Exception
+     */
+    @Test(expected = QuimpException.class)
+    public void testGetEcmm() throws Exception {
+      QconfLoader q =
+              Mockito.spy(new QconfLoader(Paths.get(tmpdir + "qconftestloader.QCONF").toFile()));
+  
+      QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
+      ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
+      DataContainer dC = new DataContainer();
+  
+      Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
+      Mockito.when(q.getQp()).thenReturn(qPc);
+      q.getEcmm();
+    }
 
 }

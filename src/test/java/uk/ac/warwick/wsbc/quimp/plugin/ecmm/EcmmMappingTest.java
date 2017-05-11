@@ -126,9 +126,9 @@ public class EcmmMappingTest {
 
     // load reference and updated and compare
 
-    OutlinesCollection ecmmTest = new QconfLoader(boa).getECMM();
+    OutlinesCollection ecmmTest = new QconfLoader(boa).getEcmm();
     // ecmmTest.oHs.get(0).indexGetOutline(0).freezeAll(); // test of test
-    OutlinesCollection ecmmRef = new QconfLoader(ecmmn.toFile()).getECMM();
+    OutlinesCollection ecmmRef = new QconfLoader(ecmmn.toFile()).getEcmm();
 
     assertThat(ecmmTest, givesSameJson(ecmmRef));
 

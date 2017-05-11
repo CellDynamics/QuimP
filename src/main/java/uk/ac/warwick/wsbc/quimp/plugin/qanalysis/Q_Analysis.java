@@ -126,7 +126,7 @@ public class Q_Analysis {
       } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
         // verification for components run
         qconfLoader.getBOA(); // will throw exception if not present
-        qconfLoader.getECMM(); // will throw exception if not present
+        qconfLoader.getEcmm(); // will throw exception if not present
         if (qconfLoader.isQPresent()) {
           YesNoCancelDialog ync;
           ync = new YesNoCancelDialog(IJ.getInstance(), "Overwrite",

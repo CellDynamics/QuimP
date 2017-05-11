@@ -132,7 +132,7 @@ public class Prot_Analysis implements IQuimpPlugin {
       if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
         // validate in case new format
         qconfLoader.getBOA(); // will throw exception if not present
-        qconfLoader.getECMM();
+        qconfLoader.getEcmm();
         qconfLoader.getQ();
       } else {
         qconfLoader = null; // failed load or checking
