@@ -59,7 +59,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   /**
    * The clockwise. access clockwise if true.
    */
-  protected static boolean clockwise = true;
+  private static boolean clockwise = true;
   /**
    * ID number of point, unique across list. Given during adding point to list, controlled by
    * Shape
@@ -429,7 +429,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   }
 
   /**
-   * Set direction of <tt>this</tt> list.
+   * Set direction of list.
    */
   public static void randDirection() {
     if (Math.random() < 0.5) {

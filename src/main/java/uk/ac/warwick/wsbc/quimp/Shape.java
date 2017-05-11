@@ -426,8 +426,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     // if removing head randomly assign a neighbour as new head
     if (n.isHead()) {
       if (Math.random() > 0.5) {
+        LOGGER.trace("removePoint - getNext");
         head = n.getNext();
       } else {
+        LOGGER.trace("removePoint - getNext");
         head = n.getPrev();
       }
       head.setHead(true);

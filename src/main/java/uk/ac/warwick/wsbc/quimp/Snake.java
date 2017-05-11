@@ -649,6 +649,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * @see uk.ac.warwick.wsbc.quimp.Shape#scale(double, double)
    */
   public void scale(double amount, double stepSize, boolean correct) throws BoaException {
+    // TODO use outlineprocesor (but does not convert)
     if (amount == 0) {
       return;
     }
