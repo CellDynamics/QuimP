@@ -26,14 +26,14 @@ public abstract class PointsList<T extends PointsList<T>> {
   static final Logger LOGGER = LoggerFactory.getLogger(PointsList.class.getName());
 
   /**
-   * The prev.
+   * Previous point in list, \c null if no other point.
    */
-  protected transient T prev; /*!< previous point in list, \c null if no other point */
+  protected transient T prev;
 
   /**
-   * The next.
+   * Next point in list, null if no other point.
    */
-  protected transient T next; /*!< next point in list, \c null if no other point */
+  protected transient T next;
   /**
    * x,y co-ordinates of the point.
    */
@@ -52,21 +52,21 @@ public abstract class PointsList<T extends PointsList<T>> {
   protected ExtendedVector2d tan;
 
   /**
-   * The head.
+   * Indicate if this point is head.
    */
-  protected boolean head = false; /*!< Indicate if this point is \b head */
+  protected boolean head = false;
 
   /**
-   * The clockwise.
+   * The clockwise. access clockwise if true.
    */
-  protected static boolean clockwise = true; /*!< access clockwise if true */
+  private static boolean clockwise = true;
   /**
    * ID number of point, unique across list. Given during adding point to list, controlled by
    * Shape
    */
   protected int tracknumber = 1;
   /**
-   * normalized position on list.
+   * Normalized position on list.
    * 
    * <p>0 - beginning , 1 - end of the list according to Shape perimeter. Set by
    * uk.ac.warwick.wsbc.quimp.Shape.setPositions() and called before and after serialise and on
@@ -113,6 +113,7 @@ public abstract class PointsList<T extends PointsList<T>> {
     this.head = src.head;
     this.tracknumber = src.tracknumber;
     this.position = src.position;
+    this.frozen = src.frozen;
   }
 
   /**
@@ -321,7 +322,7 @@ public abstract class PointsList<T extends PointsList<T>> {
    * <p>Only one Node in Snake can be head
    * 
    * @param t true if current node is head, false otherwise
-   * @see uk.ac.warwick.wsbc.quimp.Snake#setNewHead(int)
+   * @see uk.ac.warwick.wsbc.quimp.Snake#setHead(int)
    * @see uk.ac.warwick.wsbc.quimp.Snake
    */
   public void setHead(boolean t) {
@@ -428,7 +429,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   }
 
   /**
-   * Set direction of <tt>this</tt> list.
+   * Set direction of list.
    */
   public static void randDirection() {
     if (Math.random() < 0.5) {

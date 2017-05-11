@@ -341,7 +341,7 @@ public class QconfLoader {
    * @return ECMM object from loaded configuration
    * @throws QuimpException when there is no such object in file or old format is used.
    */
-  public OutlinesCollection getECMM() throws QuimpException {
+  public OutlinesCollection getEcmm() throws QuimpException {
     if (isECMMPresent()) {
       return ((QParamsQconf) getQp()).getLoadedDataContainer().getEcmmState();
     } else {

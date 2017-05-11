@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represents a node in the snake - its basic component In fact this class stands for bidirectional
  * list containing Nodes. Every node has assigned 2D position and several additional properties such
@@ -27,18 +26,18 @@ public class Node extends PointsList<Node> {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(Node.class.getName());
   /**
-   * Velocity of the nodes, initialized in uk.ac.warwick.wsbc.quimp.Constrictor.constrict(Snake,
-   * ImageProcessor)
+   * Velocity of the nodes, initialised in
+   * {@link Constrictor#constrict(Snake, ij.process.ImageProcessor)}
    */
   private ExtendedVector2d vel;
   /**
-   * Total force at node, initialized in uk.ac.warwick.wsbc.quimp.Constrictor.constrict(Snake,
-   * ImageProcessor)
+   * Total force at node, initialized in
+   * {@link Constrictor#constrict(Snake, ij.process.ImageProcessor)}
    */
   private ExtendedVector2d F_total;
   /**
    * Point to move node to after all new node positions have been calc initialized in
-   * uk.ac.warwick.wsbc.quimp.Constrictor.constrict(Snake, ImageProcessor)
+   * {@link Constrictor#constrict(Snake, ij.process.ImageProcessor)}
    */
   private ExtendedVector2d prelimPoint;
 

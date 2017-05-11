@@ -340,7 +340,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
   /**
    * Update all node normales. Called after modification of Shape nodes.
    * 
-   * @param inner Direction of the Shape
+   * @param inner Direction of normales. If <tt>false</tt> they are set outwards the shape.
    */
   public void updateNormales(boolean inner) {
     T v = head;
@@ -357,6 +357,112 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
    */
   public T getHead() {
     return head;
+  }
+
+  /**
+   * Set head of the shape to given element of the list.
+   * 
+   * <p>Element must be referenced on list.
+   * 
+   * @param newHead reference of new head.
+   */
+  public void setHead(T newHead) {
+    T oldHead = getHead();
+    T tmp;
+    T v = oldHead;
+    boolean status = false;
+    if (oldHead == newHead) {
+      return;
+    }
+    do {
+      tmp = v.getNext();
+      if (tmp == newHead) {
+        tmp.setHead(true);
+        head = tmp;
+        oldHead.setHead(false);
+        status = true;
+        break;
+      }
+      v = v.getNext();
+    } while (!v.isHead());
+
+    if (!status) {
+      throw new IllegalArgumentException("Given element has not been found on list");
+    }
+
+  }
+
+  /**
+   * Assign head to node nodeIndex. Do not change head if nodeIndex is not found or there is no head
+   * in list.
+   * 
+   * @param nodeIndex Index of node of new head
+   */
+  public void setHead(int nodeIndex) {
+    if (!checkIsHead()) {
+      return;
+    }
+    T n = head;
+    T oldhead = n;
+    do {
+      n = n.getNext();
+    } while (n.getTrackNum() != nodeIndex && !n.isHead());
+    n.setHead(true);
+    if (oldhead != n) {
+      oldhead.setHead(false);
+    }
+    head = n;
+    LOGGER.debug("New head is: " + getHead().toString());
+  }
+
+  /**
+   * Set head to element closest to given coordinates.
+   * 
+   * @param phead point to set head closest
+   */
+  public void setHeadClosestTo(ExtendedVector2d phead) {
+    double dis;
+    double curDis;
+    T v = head;
+    T closestV = head;
+    curDis = ExtendedVector2d.lengthP2P(phead, v.getPoint());
+
+    do {
+      dis = ExtendedVector2d.lengthP2P(phead, v.getPoint());
+      if (dis < curDis) {
+        curDis = dis;
+        closestV = v;
+      }
+      v = v.getNext();
+    } while (!v.isHead());
+
+    if (closestV.isHead()) {
+      return;
+    }
+
+    head.setHead(false);
+    closestV.setHead(true);
+    head = closestV;
+  }
+
+  /**
+   * Check if there is a head node.
+   * 
+   * <p>Traverse along first 10000 Node elements and check if any of them is head.
+   * 
+   * @return true if there is head of snake
+   */
+  public boolean checkIsHead() {
+    T n = head;
+    int count = 0;
+    do {
+      if (count++ > MAX_NODES) {
+        LOGGER.debug("Head lost!!!!");
+        return false;
+      }
+      n = n.getNext();
+    } while (!n.isHead());
+    return true;
   }
 
   /**
@@ -426,8 +532,10 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     // if removing head randomly assign a neighbour as new head
     if (n.isHead()) {
       if (Math.random() > 0.5) {
+        LOGGER.trace("removePoint - getNext");
         head = n.getNext();
       } else {
+        LOGGER.trace("removePoint - getPrev");
         head = n.getPrev();
       }
       head.setHead(true);

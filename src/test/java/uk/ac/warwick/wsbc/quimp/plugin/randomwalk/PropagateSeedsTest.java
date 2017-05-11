@@ -121,9 +121,9 @@ public class PropagateSeedsTest {
     List<Outline> ret = (List<Outline>) accessPrivate("getOutline", cc,
             new Object[] { testImage2.getProcessor() }, new Class<?>[] { ImageProcessor.class });
 
-    RoiSaver.saveROI(tmpdir + "testGetOutline0_QuimP.tif", ret.get(0).asList());
-    RoiSaver.saveROI(tmpdir + "testGetOutline1_QuimP.tif", ret.get(1).asList());
-    RoiSaver.saveROI(tmpdir + "testGetOutline2_QuimP.tif", ret.get(2).asList());
+    RoiSaver.saveRoi(tmpdir + "testGetOutline0_QuimP.tif", ret.get(0).asList());
+    RoiSaver.saveRoi(tmpdir + "testGetOutline1_QuimP.tif", ret.get(1).asList());
+    RoiSaver.saveRoi(tmpdir + "testGetOutline2_QuimP.tif", ret.get(2).asList());
   }
 
   /**

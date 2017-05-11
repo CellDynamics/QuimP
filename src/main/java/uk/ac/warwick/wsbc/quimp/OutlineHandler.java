@@ -332,13 +332,17 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         prevn.setNext(head);
         head.setPrev(prevn);
 
-        Outline tmp = new Outline(head, nn + 1); // dont forget the head node
-        tmp.removeVert(head); // WARN potential incompatibility with old code.
-        // old constructor made copy of this list and deleted
-        // first dummy node. Now it just covers this list
+        // head is dummy element that will be removed. To deal with random selection of new head we
+        // remember next element to it (which is first element from snQP)
+        Vert newHead = head.getNext(); // this will be new head
 
-        // make deep copy of this list
-        outlines[s] = new Outline(tmp);
+        Outline tmp = new Outline(head, nn + 1); // dont forget the head node
+        // WARN potential incompatibility with old code. see
+        // 3784b9f1afb1dd317bd4740e17f02627fa89bc41 for original Outline and OutlineHandler
+        tmp.removeVert(head); // new head is randomly selected
+        tmp.setHead(newHead); // be sure to set head to first node on snQP list.
+
+        outlines[s] = tmp;
         outlines[s].updateNormales(true);
         outlines[s].makeAntiClockwise();
         outlines[s].coordReset(); // there is no cord data in snQP file this set it as Position.
@@ -352,7 +356,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
       } // end while
       br.close();
 
-      if (qp.paramFormat == QParams.OLD_QUIMP) { // TODO is this always true?
+      if (qp.paramFormat == QParams.OLD_QUIMP) {
         qp.setStartFrame(1);
         qp.setEndFrame(size);
         this.endFrame = size;
@@ -365,6 +369,10 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     } catch (IOException e) {
       LOGGER.debug(e.getMessage(), e);
       LOGGER.error("Could not read outlines", e.getMessage());
+      return false;
+    } catch (NullPointerException e1) {
+      LOGGER.debug(e1.getMessage(), e1);
+      LOGGER.error("Damaged snQP file", e1.getMessage());
       return false;
     }
   }

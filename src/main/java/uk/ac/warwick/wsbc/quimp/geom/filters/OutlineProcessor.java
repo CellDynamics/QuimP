@@ -159,6 +159,10 @@ public class OutlineProcessor {
   /**
    * Shrink the outline linearly.
    * 
+   * <p>Shape is constricted in given number of <tt>steps</tt>. Method updates shape normales
+   * setting them in inner direction. Results can differ (slightly) on each run due to random
+   * selection of head on point remove.
+   * 
    * @param steps Number of steps
    * @param stepRes shift done in one step
    * @param angleTh angle threshold
@@ -168,6 +172,7 @@ public class OutlineProcessor {
     Vert n;
     int j;
     int max = 10000;
+    outline.updateNormales(true);
     for (j = 0; j < steps; j++) {
       if (outline.getNumVerts() <= 3) {
         break;

@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.quimp;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -20,7 +19,6 @@ import ij.gui.Roi;
 import ij.process.FloatPolygon;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -41,7 +39,9 @@ public class SnakeTest {
   private Snake snake1;
 
   /**
-   * @throws java.lang.Exception
+   * Setup.
+   * 
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -65,7 +65,9 @@ public class SnakeTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * tearDown.
+   * 
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
@@ -73,14 +75,14 @@ public class SnakeTest {
   }
 
   /**
-   * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#setNewHead(int)}. Set head for non
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#setHead(int)}. Set head for non
    * existing node.
    * 
    * <p>Pre: valid snake with 4 nodes
    * 
    * <p>Post: the same snake with head in the same position
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testSetNewHead() throws Exception {
@@ -98,20 +100,20 @@ public class SnakeTest {
     PolygonRoi pr = new PolygonRoi(new FloatPolygon(x, y), Roi.POLYGON);
     Snake s = new Snake(pr, 1);
     Node head = s.getHead();
-    s.setNewHead(10);
+    s.setHead(10);
     assertEquals(head, s.getHead());
     assertEquals(head.getTrackNum(), s.getHead().getTrackNum());
   }
 
   /**
-   * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#setNewHead(int)}. Set head for second
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#setHead(int)}. Set head for second
    * node.
    * 
    * <p>Pre: valid snake with 4 nodes
    * 
    * <p>Post: the same snake with head in on second position
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testSetNewHead_1() throws Exception {
@@ -128,7 +130,7 @@ public class SnakeTest {
 
     PolygonRoi pr = new PolygonRoi(new FloatPolygon(x, y), Roi.POLYGON);
     Snake s = new Snake(pr, 1);
-    s.setNewHead(2);
+    s.setHead(2);
     assertEquals(2, s.getHead().getTrackNum());
   }
 
@@ -139,12 +141,12 @@ public class SnakeTest {
    * 
    * <p>Post: Snake is loaded and restored
    * 
-   * @throws IOException
-   * @throws Exception
+   * @throws IOException IOException
+   * @throws Exception Exception
    */
   @Test
   public void testSerializeSnake_1() throws IOException, Exception {
-    snake1.setNewHead(2);
+    snake1.setHead(2);
     Serializer<Snake> serializer;
     serializer = new Serializer<>(snake1, info);
     serializer.setPretty();
@@ -182,19 +184,17 @@ public class SnakeTest {
   /**
    * Test of copy constructor.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testSnakeSnakeInt() throws Exception {
     Snake copy = new Snake(snake1, snake1.getSnakeID());
-    Snake c = snake1;
     LOGGER.debug(snake1.toString());
     LOGGER.debug(copy.toString());
-    assertEquals(copy, snake1);
+    assertThat(copy, is(snake1));
     LOGGER.debug(Integer.toString(snake1.hashCode()));
     LOGGER.debug(Integer.toString(copy.hashCode()));
     assertEquals(copy.hashCode(), snake1.hashCode());
-    assertThat(c, is(snake1));
     LOGGER.debug(copy.toString());
     LOGGER.debug(snake1.toString());
   }
@@ -204,7 +204,7 @@ public class SnakeTest {
    * 
    * <p>Pre: One node differs
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testSnakeSnakeInt_2() throws Exception {
@@ -215,20 +215,6 @@ public class SnakeTest {
     LOGGER.debug(Integer.toString(snake1.hashCode()));
     LOGGER.debug(Integer.toString(copy.hashCode()));
     assertThat(copy.hashCode(), is(not(snake1.hashCode())));
-  }
-
-  /**
-   * 
-   */
-  @Test
-  public void testSnakeToOutline() {
-    Outline o = new Outline(snake1);
-    LOGGER.debug(snake1.toString());
-    LOGGER.debug(o.toString());
-    assertThat(o.head, instanceOf(Vert.class));
-    assertThat(o.POINTS, is(snake1.POINTS));
-    assertThat(o.getCentroid(), is(snake1.getCentroid()));
-    assertThat(o.nextTrackNumber, is(snake1.nextTrackNumber));
   }
 
 }

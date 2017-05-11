@@ -33,11 +33,12 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
    * there was dummy node deleted in this constructor.
    * 
    * <pre>
-   * {
-   *     {@code
-   *     index = 0; head = new Vert(index); // dummy head node head.setHead(true); 
-   *     prevn = head; index++; // insert next nodes here
-   * }
+   * <code>
+   * index = 0;
+   * head = new Vert(index); // dummy head node head.setHead(true); 
+   * prevn = head;
+   * index++; // insert next nodes here
+   * </code>
    * </pre>
    * 
    * @param h head node of linked list
@@ -75,7 +76,10 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
    * Conversion constructor.
    * 
    * <p>Convert only basic properties. Do not forget that many of Vert properties are set during
-   * ECMM or Q Analysis
+   * ECMM or Q Analysis.
+   * 
+   * <p>Set normales outwards. This can be changed by calling {@link #updateNormales(boolean)}
+   * afterwards.
    * 
    * @param src Snake to be converted to Outline
    */
@@ -83,6 +87,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   public Outline(final Snake src) {
     super((Shape) src, new Vert());
     this.updateCurvature();
+    this.updateNormales(false);
   }
 
   /**
@@ -875,36 +880,6 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
       v.setFluoresChannel(-2, -2, -2, 2);
       v = v.getNext();
     } while (!v.isHead());
-  }
-
-  /**
-   * setHeadclosest.
-   * 
-   * @param phead point to set head closest
-   */
-  public void setHeadclosest(ExtendedVector2d phead) {
-    double dis;
-    double curDis;
-    Vert v = head;
-    Vert closestV = head;
-    curDis = ExtendedVector2d.lengthP2P(phead, v.getPoint());
-
-    do {
-      dis = ExtendedVector2d.lengthP2P(phead, v.getPoint());
-      if (dis < curDis) {
-        curDis = dis;
-        closestV = v;
-      }
-      v = v.getNext();
-    } while (!v.isHead());
-
-    if (closestV.isHead()) {
-      return;
-    }
-
-    head.setHead(false);
-    closestV.setHead(true);
-    head = closestV;
   }
 
   /**

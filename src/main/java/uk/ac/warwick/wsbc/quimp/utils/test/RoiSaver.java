@@ -48,7 +48,7 @@ public class RoiSaver {
    * @param fileName file to save image with path
    * @param vert list of vertices
    */
-  public static void saveROI(String fileName, List<Point2d> vert) {
+  public static void saveRoi(String fileName, List<Point2d> vert) {
     try {
       double[] bb;
       float[] x = new float[vert.size()];
@@ -84,6 +84,23 @@ public class RoiSaver {
   }
 
   /**
+   * Save ROI as image.
+   * 
+   * @param fileName fileName
+   * @param roi roi
+   * @see uk.ac.warwick.wsbc.quimp.utils.test.RoiSaver#saveRois(ImagePlus, String, ArrayList)
+   */
+  public static void saveRoi(String fileName, Roi roi) {
+    if (roi == null) {
+      saveRoi(fileName, (List<Point2d>) null);
+      return;
+    }
+    FloatPolygon fp;
+    fp = roi.getFloatPolygon(); // save common part
+    saveRoi(fileName, new QuimpDataConverter(fp.xpoints, fp.ypoints).getList());
+  }
+
+  /**
    * Create stack from List of Rois
    * 
    * @param image Image where rois will be plotted. Number of slices must be equal to rois.size();
@@ -92,7 +109,7 @@ public class RoiSaver {
    *        rois to plot. Rois along second level are plotted with the same color across slices
    *        e.g. First roi in second level in red, second roi in second level ble etc
    */
-  public static void saveROIs(ImagePlus image, String fileName,
+  public static void saveRois(ImagePlus image, String fileName,
           ArrayList<ArrayList<SegmentedShapeRoi>> ret) {
     ImagePlus cp = image.duplicate();
     new ImageConverter(cp).convertToRGB();
@@ -107,23 +124,6 @@ public class RoiSaver {
       }
     }
     IJ.saveAsTiff(cp, fileName); // save image
-  }
-
-  /**
-   * Save ROI as image.
-   * 
-   * @param fileName fileName
-   * @param roi roi
-   * @see uk.ac.warwick.wsbc.quimp.utils.test.RoiSaver#saveROIs(ImagePlus, String, ArrayList)
-   */
-  public static void saveRoi(String fileName, Roi roi) {
-    if (roi == null) {
-      saveROI(fileName, (List<Point2d>) null);
-      return;
-    }
-    FloatPolygon fp;
-    fp = roi.getFloatPolygon(); // save common part
-    saveROI(fileName, new QuimpDataConverter(fp.xpoints, fp.ypoints).getList());
   }
 
   /**

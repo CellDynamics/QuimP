@@ -260,7 +260,7 @@ public abstract class PropagateSeeds {
         String tmp = System.getProperty("java.io.tmpdir");
         for (Outline o : outlines) {
           long time = new Date().getTime();
-          RoiSaver.saveROI(
+          RoiSaver.saveRoi(
                   tmp + File.separator + "propagateSeed_" + time + "_" + outlines.hashCode(),
                   o.asList());
         }

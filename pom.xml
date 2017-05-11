@@ -96,6 +96,13 @@
     <system>None</system>
   </ciManagement>
   <dependencies>
+    <!-- https://mvnrepository.com/artifact/io.github.benas/random-beans -->
+    <dependency>
+      <groupId>io.github.benas</groupId>
+      <artifactId>random-beans</artifactId>
+      <version>3.6.0</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

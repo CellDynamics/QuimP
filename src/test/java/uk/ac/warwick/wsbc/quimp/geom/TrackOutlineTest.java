@@ -128,9 +128,9 @@ public class TrackOutlineTest {
     ImagePlus r = image.duplicate();
     r.setProcessor((ImageProcessor) accessPrivateField("prepared", obj));
     IJ.saveAsTiff(r, tmpdir + "testGetOutlines.tif");
-    RoiSaver.saveROI(tmpdir + "testGetOutlines_roi0.tif", ret.get(0));
-    RoiSaver.saveROI(tmpdir + "testGetOutlines_roi1.tif", ret.get(1));
-    RoiSaver.saveROI(tmpdir + "testGetOutlines_roi2.tif", ret.get(2));
+    RoiSaver.saveRoi(tmpdir + "testGetOutlines_roi0.tif", ret.get(0));
+    RoiSaver.saveRoi(tmpdir + "testGetOutlines_roi1.tif", ret.get(1));
+    RoiSaver.saveRoi(tmpdir + "testGetOutlines_roi2.tif", ret.get(2));
   }
 
   /**
@@ -144,7 +144,7 @@ public class TrackOutlineTest {
   public void testGetOutlines_1() throws Exception {
     List<List<Point2d>> ret = obj.getOutlinesasPoints(1, true);
     LOGGER.debug("Found " + ret.size());
-    RoiSaver.saveROI(tmpdir + "testGetOutlines_roi_s.tif", ret.get(0));
+    RoiSaver.saveRoi(tmpdir + "testGetOutlines_roi_s.tif", ret.get(0));
   }
 
   /**
@@ -158,7 +158,7 @@ public class TrackOutlineTest {
   public void testGetOutlines_6() throws Exception {
     List<List<Point2d>> ret = obj.getOutlinesasPoints(6, true);
     LOGGER.debug("Found " + ret.size());
-    RoiSaver.saveROI(tmpdir + "testGetOutlines_roi_s6.tif", ret.get(0));
+    RoiSaver.saveRoi(tmpdir + "testGetOutlines_roi_s6.tif", ret.get(0));
   }
 
   /**
@@ -187,9 +187,9 @@ public class TrackOutlineTest {
   @Test
   public void testGetOutlinesDoubleBoolean() throws Exception {
     List<Outline> ret = obj.getOutlines(4, false);
-    RoiSaver.saveROI(tmpdir + "test0.tif", ret.get(0).asList());
-    RoiSaver.saveROI(tmpdir + "test1.tif", ret.get(1).asList());
-    RoiSaver.saveROI(tmpdir + "test2.tif", ret.get(2).asList());
+    RoiSaver.saveRoi(tmpdir + "test0.tif", ret.get(0).asList());
+    RoiSaver.saveRoi(tmpdir + "test1.tif", ret.get(1).asList());
+    RoiSaver.saveRoi(tmpdir + "test2.tif", ret.get(2).asList());
   }
 
 }

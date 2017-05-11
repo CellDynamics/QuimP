@@ -37,6 +37,7 @@ public class QuimPArrayUtils {
    * 
    * @param input array to convert
    * @return Input array converted to double
+   * @deprecated Use ij.Tools.toDouble
    */
   public static double[] float2double(float[] input) {
     final double[] result = new double[input.length];

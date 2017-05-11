@@ -37,14 +37,15 @@ public class HatSnakeFilterRun {
    * @throws Exception on error
    */
   public static void main(String[] args) throws Exception {
-    String folder = "/home/baniuk/Documents/BioinformaticsPaper/" + "Piotr_test_data_src/TestSeg";
-    String casename = "RW1_C1-talA_GFP_rnd_motility_FLU";
+    String folder =
+            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.geom.filters.HatSnakeFilter/";
+    String casename = "test_C1-talA_GFP_rnd_motility_FLU";
 
     final int step = 1;
 
-    String filename = casename.substring(4);
-    Path maskimage = Paths.get(folder, casename, filename + "_snakemask.tif");
-    Path orgimage = Paths.get(folder, casename, filename + ".tif");
+    String filename = casename.substring(5);
+    Path maskimage = Paths.get(folder, filename + "_snakemaskO.tif");
+    Path orgimage = Paths.get(folder, filename + ".tif");
 
     int pp = 58; // fram counted from 1
 
@@ -66,9 +67,9 @@ public class HatSnakeFilterRun {
     }
 
     // filter
-    final int window = 15;
+    final int window = 17;
     final int pnum = 1;
-    final double alev = 0.97;
+    final double alev = 0.5;
 
     ImagePlus filtered = NewImage.createByteImage("filt", mask.getWidth(), mask.getHeight(),
             mask.getStackSize(), NewImage.GRAY8);
@@ -83,6 +84,12 @@ public class HatSnakeFilterRun {
 
       HatSnakeFilter hsf = new HatSnakeFilter(window, pnum, alev);
       hsf.setMode(HatSnakeFilter.CAVITIES);
+
+      // List<Point2d> rr = ssR.getOutlineasPoints();
+      // FileOutputStream fos = new FileOutputStream("/tmp/examplaryContour.tmp");
+      // ObjectOutputStream oos = new ObjectOutputStream(fos);
+      // oos.writeObject(rr);
+
       List<Point2d> retf =
               hsf.runPlugin(ssR.getOutlineasPoints(), orgim.getStack().getProcessor(i));
       Roi ssRF = new QuimpDataConverter(retf).getSnake(0).asFloatRoi();

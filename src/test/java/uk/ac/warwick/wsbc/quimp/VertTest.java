@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.quimp;
 
 import static io.github.benas.randombeans.FieldDefinitionBuilder.field;
+import static io.github.benas.randombeans.api.EnhancedRandom.random;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -14,39 +15,43 @@ import org.slf4j.LoggerFactory;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
-public class NodeTest {
+// @RunWith(MockitoJUnitRunner.class)
+public class VertTest {
+  static final Logger LOGGER = LoggerFactory.getLogger(VertTest.class.getName());
+
+  private Vert org;
+  private Vert copy;
 
   /**
-   * The Constant LOGGER.
-   */
-  static final Logger LOGGER = LoggerFactory.getLogger(NodeTest.class.getName());
-  private Node org;
-  private Node copy;
-
-  /**
-   * Setup.
-   * 
    * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
-    org = getRandomNode();
-    copy = new Node(org); // make copy
+    org = getRandomVert();
+    copy = new Vert(org); // make copy
   }
 
   /**
-   * Test method for uk.ac.warwick.wsbc.quimp.Node.Node(final Node). Test copy constructor and
-   * equals methods.
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Vert#hashCode()}.
    * 
-   * @throws Exception on error
+   * @throws Exception Exception
    */
   @Test
-  public void testNodeNode() throws Exception {
+  public void testHashCode() throws Exception {
+    assertThat(copy.hashCode(), is(org.hashCode()));
+  }
+
+  /**
+   * Test of clone constructor.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testVertVert() throws Exception {
     assertThat(copy, is(org));
     // copy constructor copies only current object. next and previous are transient so do not check
     // them
@@ -59,35 +64,24 @@ public class NodeTest {
   }
 
   /**
-   * Test conversion constructor between Node and Vert.
-   */
-  @Test
-  public void testNode2Vert() {
-    Node def = new Node(1, 2, 3); // default node, initialises superclass and child class
-    Vert cmp = new Vert(def); // superclass should be the same as def, child class (extended to
-    // Node) set to defaults.
-    Vert v = new Vert(1, 2, 3); // should be same as cmp
-
-    assertThat(v, is(cmp));
-  }
-
-  /**
-   * Produces random node, all filed filled with random data. Has previous and next but not
+   * Produces random vertex, all filed filled with random data. Has previous and next but not
    * looped.
    * 
-   * @return random node.
+   * @return random vertex.
    */
-  public static Node getRandomNode() {
-    Node org;
+  public static Vert getRandomVert() {
+    Vert org;
     EnhancedRandom eh = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
             .exclude(field().named("prev").get()).exclude(field().named("next").get())
-            .overrideDefaultInitialization(true).build();
-    org = eh.nextObject(Node.class);
+            .exclude(field().named("fluores").get()).overrideDefaultInitialization(true).build();
+    org = eh.nextObject(Vert.class);
+    org.setFluores(new FluoMeasurement[] { random(FluoMeasurement.class),
+        random(FluoMeasurement.class), random(FluoMeasurement.class) });
     // for local curvature, no looping
-    org.setNext(eh.nextObject(Node.class));
-    org.setPrev(eh.nextObject(Node.class));
-    org.updateNormale(true); // update normale, in test will be set to false
-    org.update();
+    org.setNext(eh.nextObject(Vert.class));
+    org.setPrev(eh.nextObject(Vert.class));
+    org.updateNormale(true); // update notmale, in test will be set to false
+    org.setCurvatureLocal(); // compute curvature
 
     return org;
 

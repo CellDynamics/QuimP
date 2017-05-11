@@ -158,7 +158,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         runFromPaqp();
       } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
         qconfLoader.getBOA(); // verify whether boa has been run (throws if not)
-        qconfLoader.getECMM(); // verify whether ecmm has been run (throws if not)
+        qconfLoader.getEcmm(); // verify whether ecmm has been run (throws if not)
         qconfLoader.getStats(); // verify whether file contains stats
         if (qconfLoader.isANAPresent()) {
           YesNoCancelDialog ync;
