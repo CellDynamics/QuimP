@@ -360,6 +360,39 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
   }
 
   /**
+   * Set head of the shape to given element of the list.
+   * 
+   * <p>Element must be referenced on list.
+   * 
+   * @param newHead reference of new head.
+   */
+  public void setHead(T newHead) {
+    T oldHead = getHead();
+    T tmp;
+    T v = oldHead;
+    boolean status = false;
+    if (oldHead == newHead) {
+      return;
+    }
+    do {
+      tmp = v.getNext();
+      if (tmp == newHead) {
+        tmp.setHead(true);
+        head = tmp;
+        oldHead.setHead(false);
+        status = true;
+        break;
+      }
+      v = v.getNext();
+    } while (!v.isHead());
+
+    if (!status) {
+      throw new IllegalArgumentException("Given element has not been found on list");
+    }
+
+  }
+
+  /**
    * Add node before head node assuring that list has closed loop.
    * 
    * <p>If initial list condition is defined in such way:
@@ -429,7 +462,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
         LOGGER.trace("removePoint - getNext");
         head = n.getNext();
       } else {
-        LOGGER.trace("removePoint - getNext");
+        LOGGER.trace("removePoint - getPrev");
         head = n.getPrev();
       }
       head.setHead(true);

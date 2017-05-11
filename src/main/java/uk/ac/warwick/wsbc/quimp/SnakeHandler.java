@@ -25,6 +25,8 @@ import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
  * Store all the snakes computed for one cell across frames and it is responsible for writing them
  * to file.
  * 
+ * <p>For any further processing outside QuimP <tt>finalSnakes</tt> should be used.
+ * 
  * @author rtyson
  * @author p.baniukiewicz
  *
@@ -44,7 +46,8 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    */
   private Snake liveSnake;
   /**
-   * series of snakes, result of cell segm. and plugin processing.
+   * Series of snakes, result of cell segm. and plugin processing. These are the same as stored in
+   * <i>snQP</i> file.
    */
   private Snake[] finalSnakes;
   /**

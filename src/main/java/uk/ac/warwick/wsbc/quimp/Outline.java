@@ -33,11 +33,12 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
    * there was dummy node deleted in this constructor.
    * 
    * <pre>
-   * {
-   *     {@code
-   *     index = 0; head = new Vert(index); // dummy head node head.setHead(true); 
-   *     prevn = head; index++; // insert next nodes here
-   * }
+   * <code>
+   * index = 0;
+   * head = new Vert(index); // dummy head node head.setHead(true); 
+   * prevn = head;
+   * index++; // insert next nodes here
+   * </code>
    * </pre>
    * 
    * @param h head node of linked list
@@ -882,11 +883,12 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   }
 
   /**
-   * setHeadclosest.
+   * Set head to element closest to given coordinates.
    * 
    * @param phead point to set head closest
    */
-  public void setHeadclosest(ExtendedVector2d phead) {
+  public void setHeadClosestTo(ExtendedVector2d phead) {
+    // TODO move to Shape
     double dis;
     double curDis;
     Vert v = head;
