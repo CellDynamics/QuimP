@@ -883,37 +883,6 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   }
 
   /**
-   * Set head to element closest to given coordinates.
-   * 
-   * @param phead point to set head closest
-   */
-  public void setHeadClosestTo(ExtendedVector2d phead) {
-    // TODO move to Shape
-    double dis;
-    double curDis;
-    Vert v = head;
-    Vert closestV = head;
-    curDis = ExtendedVector2d.lengthP2P(phead, v.getPoint());
-
-    do {
-      dis = ExtendedVector2d.lengthP2P(phead, v.getPoint());
-      if (dis < curDis) {
-        curDis = dis;
-        closestV = v;
-      }
-      v = v.getNext();
-    } while (!v.isHead());
-
-    if (closestV.isHead()) {
-      return;
-    }
-
-    head.setHead(false);
-    closestV.setHead(true);
-    head = closestV;
-  }
-
-  /**
    * findCoordEdge.
    * 
    * @param a a

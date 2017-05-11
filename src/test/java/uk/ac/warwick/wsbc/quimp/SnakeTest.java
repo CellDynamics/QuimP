@@ -75,7 +75,7 @@ public class SnakeTest {
   }
 
   /**
-   * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#setNewHead(int)}. Set head for non
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#setHead(int)}. Set head for non
    * existing node.
    * 
    * <p>Pre: valid snake with 4 nodes
@@ -100,13 +100,13 @@ public class SnakeTest {
     PolygonRoi pr = new PolygonRoi(new FloatPolygon(x, y), Roi.POLYGON);
     Snake s = new Snake(pr, 1);
     Node head = s.getHead();
-    s.setNewHead(10);
+    s.setHead(10);
     assertEquals(head, s.getHead());
     assertEquals(head.getTrackNum(), s.getHead().getTrackNum());
   }
 
   /**
-   * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#setNewHead(int)}. Set head for second
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#setHead(int)}. Set head for second
    * node.
    * 
    * <p>Pre: valid snake with 4 nodes
@@ -130,7 +130,7 @@ public class SnakeTest {
 
     PolygonRoi pr = new PolygonRoi(new FloatPolygon(x, y), Roi.POLYGON);
     Snake s = new Snake(pr, 1);
-    s.setNewHead(2);
+    s.setHead(2);
     assertEquals(2, s.getHead().getTrackNum());
   }
 
@@ -146,7 +146,7 @@ public class SnakeTest {
    */
   @Test
   public void testSerializeSnake_1() throws IOException, Exception {
-    snake1.setNewHead(2);
+    snake1.setHead(2);
     Serializer<Snake> serializer;
     serializer = new Serializer<>(snake1, info);
     serializer.setPretty();

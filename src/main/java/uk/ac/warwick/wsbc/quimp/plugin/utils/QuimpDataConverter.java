@@ -193,9 +193,7 @@ public class QuimpDataConverter {
   /**
    * Return Snake created from stored data.
    * 
-   * <p>On snake creation first node is removed and head is randomly picked among neighbours so
-   * snake
-   * nodes can be shifted by 1 position comparing to input arrays.
+   * <p>Head node is first point from list.
    * 
    * @param id Id of snake
    * @return Snake object with Nodes in order of data given on input. Can be null
@@ -204,10 +202,12 @@ public class QuimpDataConverter {
    * @see uk.ac.warwick.wsbc.quimp.Snake#removeNode(uk.ac.warwick.wsbc.quimp.Node)
    */
   public Snake getSnake(int id) throws BoaException {
+    Snake ret = null;
     if (xc.length == 0 || yc.length == 0) {
-      return null;
+      return ret;
     } else {
-      return new Snake(xc, yc, id);
+      ret = new Snake(xc, yc, id);
+      return ret;
     }
   }
 
@@ -215,8 +215,8 @@ public class QuimpDataConverter {
    * Return Outline created from stored data.
    * 
    * @param id Id of snake
-   * @return Outline object with Nodes in order of data given on input. Can be null. Normalse are
-   *         set outwards.
+   * @return Outline object with Nodes in order of data given on input. Can be null. Normales are
+   *         set outwards. Head node is first point from list.
    * @throws BoaException on Outline creation
    * @see uk.ac.warwick.wsbc.quimp.Snake#Snake(double[], double[], int)
    * @see uk.ac.warwick.wsbc.quimp.Snake#removeNode(uk.ac.warwick.wsbc.quimp.Node)

@@ -86,6 +86,7 @@ public class OutlineProcessorTest {
     List<Point2d> points = ssR.getOutlineasRawPoints();
     RoiSaver.saveRoi("/tmp/fgfs", points); // nc
     Outline outline = new QuimpDataConverter(points).getOutline(0);
+    RoiSaver.saveRoi("/tmp/outline", outline.asList()); // nc
     new OutlineProcessor(outline).shrink(10, 0.3, 0.1, 0.01); // modified outline differs in number
     // of points. Not related to conversion.
     outline.unfreezeAll();

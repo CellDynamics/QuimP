@@ -160,7 +160,8 @@ public class OutlineProcessor {
    * Shrink the outline linearly.
    * 
    * <p>Shape is constricted in given number of <tt>steps</tt>. Method updates shape normales
-   * setting them in inner direction.
+   * setting them in inner direction. Results can differ (slightly) on each run due to random
+   * selection of head on point remove.
    * 
    * @param steps Number of steps
    * @param stepRes shift done in one step

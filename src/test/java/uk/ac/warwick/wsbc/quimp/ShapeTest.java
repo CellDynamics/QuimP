@@ -24,11 +24,11 @@ public class ShapeTest {
    */
   @Before
   public void setUp() throws Exception {
-    head = new Vert();
+    head = new Vert(1);
     head.setHead(true);
-    v1 = new Vert();
-    v2 = new Vert();
-    v3 = new Vert();
+    v1 = new Vert(2);
+    v2 = new Vert(3);
+    v3 = new Vert(4);
 
     head.setNext(v1);
     v1.setPrev(head);
@@ -114,6 +114,34 @@ public class ShapeTest {
   }
 
   /**
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Shape#checkIsHead()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testCheckIsHead() throws Exception {
+    assertThat(test.checkIsHead(), is(true));
+    head.setHead(false); // accidently remove head marker from wrapped list
+    assertThat(test.checkIsHead(), is(false));
+  }
+
+  /**
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Shape#setHead(int)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testSetNewHead() throws Exception {
+    assertThat(test.getHead(), is(head));
+    test.setHead(23569856); // non existing
+    assertThat(test.getHead(), is(head));
+
+    test.setHead(3); // set to id=3
+    assertThat(test.getHead(), is(v2));
+    assertThat(head.isHead(), is(false));
+  }
+
+  /**
    * Test class.
    * 
    * @author p.baniukiewicz
@@ -135,4 +163,5 @@ public class ShapeTest {
       super(h);
     }
   }
+
 }

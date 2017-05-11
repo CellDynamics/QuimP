@@ -158,7 +158,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Construct Snake object from list of nodes.
+   * Construct Snake object from list of nodes. Head node is always first element from array.
    * 
    * @param list list of nodes as Vector2d
    * @param id id of Snake
@@ -173,7 +173,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Construct Snake object from X and Y arrays
+   * Construct Snake object from X and Y arrays. Head node is always first element from array.
    * 
    * @param x x coordinates of nodes
    * @param y y coordinates of nodes
@@ -432,6 +432,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     removeNode(head);
+    setHeadClosestTo(new ExtendedVector2d(p.get(0))); // be sure that first point from list is head
     this.makeAntiClockwise();
     updateNormales(BOA_.qState.segParam.expandSnake);
   }
@@ -462,6 +463,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     removeNode(head);
+    setHeadClosestTo(new ExtendedVector2d(x[0], y[0])); // sure that first point from list is head
     this.makeAntiClockwise();
     updateNormales(BOA_.qState.segParam.expandSnake);
   }
@@ -484,29 +486,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     if (i != POINTS) {
       System.out.println("NODES and linked list dont tally!!");
     }
-  }
-
-  /**
-   * Assign head to node nodeIndex. Do not change head if nodeIndex is not found or there is no head
-   * in list
-   * 
-   * @param nodeIndex Index of node of new head
-   */
-  public void setNewHead(int nodeIndex) {
-    if (!checkIsHead()) {
-      return;
-    }
-    Node n = head;
-    Node oldhead = n;
-    do {
-      n = n.getNext();
-    } while (n.getTrackNum() != nodeIndex && !n.isHead());
-    n.setHead(true);
-    if (oldhead != n) {
-      oldhead.setHead(false);
-    }
-    head = n;
-    LOGGER.debug("New head is: " + getHead().toString());
   }
 
   /**
@@ -991,26 +970,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
       n = n.getNext();
     } while (!n.isHead());
     return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
-  }
-
-  /**
-   * Check if there is a head node.
-   * 
-   * <p>Traverse along first 10000 Node elements and check if any of them is \b head
-   * 
-   * @return true if there is head of snake
-   */
-  public boolean checkIsHead() {
-    Node n = head;
-    int count = 0;
-    do {
-      if (count++ > MAX_NODES) {
-        LOGGER.error("Head lost!!!!");
-        return false;
-      }
-      n = n.getNext();
-    } while (!n.isHead());
-    return true;
   }
 
   /**
