@@ -41,4 +41,36 @@ public class FileMatchers {
   public static <T extends IQuimpSerialize> QuimpObjectMatcher<T> givesSameJson(T expected) {
     return new QuimpObjectMatcher<T>(expected);
   }
+
+  /**
+   * Compare two serializable objects through their JSon keys. Strictly related to QuimP.
+   * 
+   * <pre>
+   * <code>
+   * assertThat(compared, haveSameKeys(expected);
+   * </code>
+   * </pre>
+   * 
+   * @param expected QuimP object that gives expected keys in json
+   * @return instance
+   */
+  public static <T extends IQuimpSerialize> QuimpKeysMatcherObject<T> haveSameKeys(T expected) {
+    return new QuimpKeysMatcherObject<T>(expected);
+  }
+
+  /**
+   * Compare two serializable objects through their JSon keys. Strictly related to QuimP.
+   * 
+   * <pre>
+   * <code>
+   * assertThat(compared, haveSameKeys(expected);
+   * </code>
+   * </pre>
+   * 
+   * @param expected json string that gives expected keys in json
+   * @return instance
+   */
+  public static QuimpKeysMatcherJson haveSameKeys(String expected) {
+    return new QuimpKeysMatcherJson(expected);
+  }
 }

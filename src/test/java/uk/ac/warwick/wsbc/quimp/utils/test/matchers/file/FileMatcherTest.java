@@ -5,12 +5,16 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.ac.warwick.wsbc.quimp.utils.test.matchers.file.FileMatchers.containsExactText;
 import static uk.ac.warwick.wsbc.quimp.utils.test.matchers.file.FileMatchers.givesSameJson;
+import static uk.ac.warwick.wsbc.quimp.utils.test.matchers.file.FileMatchers.haveSameKeys;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
 import uk.ac.warwick.wsbc.quimp.filesystem.DataContainer;
+import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.quimp.filesystem.OutlinesCollection;
 
 /**
@@ -117,6 +121,8 @@ public class FileMatcherTest {
     assertThat(test, is(not(containsExactText(orginal))));
   }
 
+  // ------------------------- GivesSameJson
+
   /**
    * Test of json matching, same objects.
    * 
@@ -144,4 +150,83 @@ public class FileMatcherTest {
     assertThat(dt, is(not(givesSameJson(dt1))));
   }
 
+  // ------------------------- HaveSameKeys
+
+  /**
+   * Test of keys matching.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testHaveSameKeys_same() throws Exception {
+    TestClass test = new TestClass();
+    TestClass ref = new TestClass();
+    ref.alpha = 13; // val difference
+    assertThat(test, haveSameKeys(ref)); // but keys remain the same
+    // but different json
+    assertThat(test, is(not(givesSameJson(ref))));
+    ref.alpha = 0; // set the same value
+    assertThat(test, is(givesSameJson(ref))); // and have the same json
+  }
+
+  /**
+   * Test of keys matching.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testHaveSameKeys_different() throws Exception {
+    TestClass test = new TestClass();
+    TestClass1 ref = new TestClass1(); // one letter different
+    ref.alpha = 13; // val difference
+    assertThat(test, is(not(haveSameKeys(ref))));
+  }
+
+  class TestClass implements IQuimpSerialize {
+
+    int alpha;
+    int beta = 10;
+    Nested nest;
+
+    public TestClass() {
+      nest = new Nested();
+    }
+
+    @Override
+    public void beforeSerialize() {
+    }
+
+    @Override
+    public void afterSerialize() throws Exception {
+    }
+
+    class Nested {
+      List<String> list = new ArrayList<>();
+      double bravo = 3.14;
+    }
+  }
+
+  class TestClass1 implements IQuimpSerialize {
+
+    int alpha;
+    int beta = 10;
+    Nested nest;
+
+    public TestClass1() {
+      nest = new Nested();
+    }
+
+    @Override
+    public void beforeSerialize() {
+    }
+
+    @Override
+    public void afterSerialize() throws Exception {
+    }
+
+    class Nested {
+      List<String> list = new ArrayList<>();
+      double bravO = 3.14; // here
+    }
+  }
 }
