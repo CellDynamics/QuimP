@@ -9,7 +9,7 @@ import org.junit.Test;
 
 /**
  * @author p.baniukiewicz
- *
+ * @see uk.ac.warwick.wsbc.quimp.SnakeTest
  */
 public class ShapeTest {
 

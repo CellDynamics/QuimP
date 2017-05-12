@@ -83,6 +83,7 @@ public class SnakeTest {
    * <p>Post: the same snake with head in the same position
    * 
    * @throws Exception Exception
+   * @see uk.ac.warwick.wsbc.quimp.ShapeTest
    */
   @Test
   public void testSetNewHead() throws Exception {

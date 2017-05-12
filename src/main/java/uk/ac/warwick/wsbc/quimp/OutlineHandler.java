@@ -145,8 +145,8 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
   /**
    * Instantiates a new outline handler.
    *
-   * @param s the s
-   * @param e the e
+   * @param s start frame
+   * @param e end frame
    */
   public OutlineHandler(int s, int e) {
     size = e - s + 1;

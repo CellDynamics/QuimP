@@ -184,10 +184,12 @@ public class SegmentedShapeRoi extends ShapeRoi {
    * </code>
    * </pre>
    * 
-   * @param step interpolation step
+   * @param step interpolation step. Step = 1 does not stand for no interpolation. Use
+   *        {@link #getOutlineasRawPoints()} instead.
    * @param smooth true to use smoothing
    * 
    * @see #getOutlineasPoints()
+   * @see #getOutlineasRawPoints()
    */
   public void setInterpolationParameters(double step, boolean smooth) {
     this.step = step;

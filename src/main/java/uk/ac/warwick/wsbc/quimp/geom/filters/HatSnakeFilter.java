@@ -220,15 +220,16 @@ public class HatSnakeFilter implements IPadArray {
   public List<Point2d> runPlugin(List<Point2d> data, ImageProcessor orgIp)
           throws QuimpPluginException, BoaException {
     points = data;
-
     List<Point2d> shCont = new ArrayList<>();
-    Outline outline = null;
-    if (orgIp != null) {
-      // create shrunk outline to sample intensity - one of the parameters used for candidate rank
-      outline = new QuimpDataConverter(data).getOutline(0); // FIXME What if more contours?
+    // create shrunk outline to sample intensity - one of the parameters used for candidate rank
+    // this is unnecessary if there is no image provided but kept here for code simplicity
+    Outline outline = new QuimpDataConverter(data).getOutline(0); // FIXME What if more contours?
+    if (outline != null) {
       new OutlineProcessor(outline).shrink(shrinkSteps, 0.3, 0.1, 0.01);
       outline.unfreezeAll();
       shCont = outline.asList();
+    } else {
+      throw new QuimpPluginException("Conversion error");
     }
     // internal parameters are not updated here but when user click apply
     LOGGER.debug(String.format("Run plugin with params: window %d, pnum %d, alev %f", window, pnum,
@@ -279,6 +280,7 @@ public class HatSnakeFilter implements IPadArray {
       List<Point2d> shContnowindow = shCont.subList(0, window);
       LOGGER.trace("win         : " + pointswindow.toString());
       LOGGER.trace("windowshCont: " + shContnowindow.toString());
+      // will return 1.0 if there is no image provided
       tmpInt = getIntensity(shContnowindow, orgIp);
       LOGGER.trace("mInt  :" + tmpInt);
       tmpCirc /= (getWeighting(pointswindow) * tmpInt); // calculate weighting for window content

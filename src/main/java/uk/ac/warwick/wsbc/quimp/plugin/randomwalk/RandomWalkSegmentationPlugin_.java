@@ -728,6 +728,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     SegmentedShapeRoi ssR = ret.get(0).get(0); // FIXME possible trap for multi object images
     HatSnakeFilter hsf = new HatSnakeFilter(model.window, model.num, model.alev);
     hsf.setMode(HatSnakeFilter.CAVITIES);
+    // dont use interpolation - provide list of points as they are on image
     List<Point2d> retf = hsf.runPlugin(ssR.getOutlineasRawPoints(), orIp);
     Roi ssRF = new QuimpDataConverter(retf).getSnake(0).asFloatRoi();
     ImageProcessor retIptmp = new ByteProcessor(orIp.getWidth(), orIp.getHeight());

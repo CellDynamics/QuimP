@@ -126,7 +126,7 @@ public class HatSnakeFilterTest {
   @Test
   public void test_HatFilter_run_3() throws QuimpPluginException {
     LOGGER.debug("input: " + prot.toString());
-    HatSnakeFilter hf = new HatSnakeFilter(9, 0, 0.16);
+    HatSnakeFilter hf = new HatSnakeFilter(9, 0, 0.2);
     List<Point2d> out = hf.runPlugin(prot);
     RoiSaver.saveRoi(tmpdir + "test_HatFilter_run_3.tif", out);
   }

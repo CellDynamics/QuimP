@@ -912,6 +912,7 @@ public class BOAState implements IQuimpSerialize {
     segParam = new SegParam(); // and SegParam
     snakePluginList = new SnakePluginList();
     binarySegmentationParam = new ParamList(); // save empty list even if plugin not used
+    nest = new Nest();
   }
 
   /**
