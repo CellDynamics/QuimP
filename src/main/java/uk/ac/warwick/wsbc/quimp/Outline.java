@@ -27,6 +27,13 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   static final Logger LOGGER = LoggerFactory.getLogger(Outline.class.getName());
 
   /**
+   * Default constructor. Create empty outline.
+   */
+  public Outline() {
+    super();
+  }
+
+  /**
    * Create a Outline from existing linked list
    * 
    * <p>Behaviour of this method was changed. Now it does not make copy of Vert. In old approach

@@ -60,7 +60,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   private int ID;
 
   /**
-   * Instantiates a new snake handler.
+   * Instantiates a new snake handler. Do not initialize anything.
    */
   public SnakeHandler() {
   }

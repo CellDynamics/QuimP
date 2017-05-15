@@ -1,4 +1,4 @@
-package uk.ac.warwick.wsbc.quimp.filesystem;
+package uk.ac.warwick.wsbc.quimp.plugin.protanalysis;
 
 import uk.ac.warwick.wsbc.quimp.JsonKeyMatchTemplate;
 
@@ -8,7 +8,7 @@ import uk.ac.warwick.wsbc.quimp.JsonKeyMatchTemplate;
  * @author p.baniukiewicz
  *
  */
-public class DataContainerTest extends JsonKeyMatchTemplate<DataContainer> {
+public class ProtAnalysisConfigTest extends JsonKeyMatchTemplate<ProtAnalysisConfig> {
 
   /*
    * (non-Javadoc)
@@ -17,7 +17,7 @@ public class DataContainerTest extends JsonKeyMatchTemplate<DataContainer> {
    */
   @Override
   public void setUp() throws Exception {
-    obj = new DataContainer();
-    indir = "uk.ac.warwick.wsbc.quimp.filesystem.DataContainer";
+    obj = new ProtAnalysisConfig();
+    indir = "uk.ac.warwick.wsbc.quimp.filesystem.ProtAnalysisConfig";
   }
 }

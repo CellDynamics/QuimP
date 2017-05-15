@@ -49,7 +49,7 @@ public class OutlineProcessorTest {
   @Before
   public void setUp() throws Exception {
     mask = IJ.openImage(
-            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessorTest/"
+            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor/"
                     + "C1-talA_GFP_rnd_motility_FLU_frame59.tif");
     BinarySegmentation obj = new BinarySegmentation(mask);
     obj.trackObjects(); // run tracking

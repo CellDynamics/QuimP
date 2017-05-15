@@ -31,6 +31,8 @@ public abstract class ShapeHandler<T extends Shape<?>> {
    * Instantiates a new shape handler.
    */
   ShapeHandler() {
+    startFrame = 0;
+    endFrame = 0;
   }
 
   /**

@@ -97,7 +97,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
   }
 
   /**
-   * Copy constructor.
+   * Copy constructor. Calculates centroid as well.
    * 
    * @param src source Shape to copy from
    * @throws RuntimeException when T does no have copy constructor
@@ -114,7 +114,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
    * PointsList) Typical approach is to convert Snake to Outline ({@link Node} to
    * {@link Vert}).
    * 
-   * <p>Can be used as copy constructor.
+   * <p>Can be used as copy constructor. Calculates centroid as well.
    * 
    * @param src input Shape to convert.
    * @param destType object of base node that PointsList is composed from

@@ -70,15 +70,15 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     super(h, n);
     snakeID = id;
     centroid = new ExtendedVector2d(0d, 0d);
-    calcCentroid();
 
     // removeNode(head);
-    this.makeAntiClockwise();
+    this.makeAntiClockwise(); // can affect centroid on last positions, so calculate it afterwards
     this.updateNormales(BOA_.qState.segParam.expandSnake);
     alive = true;
     startingNnodes = POINTS / 100.; // as 1%. limit to X%
     countFrozen(); // set FROZEN
     // calcOrientation();
+    calcCentroid();
   }
 
   /**
@@ -94,7 +94,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     startingNnodes = src.startingNnodes;
     countFrozen();
     bounds = new Rectangle(src.bounds);
-    calcCentroid();
+    // calcCentroid(); done in super(src)
   }
 
   /**
@@ -186,6 +186,16 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     startingNnodes = POINTS / 100;
     alive = true;
     calcCentroid();
+  }
+
+  /**
+   * Construct empty Snake object.
+   * 
+   * @throws BoaException on wrong number of array points.
+   */
+  public Snake() throws BoaException {
+    super();
+    alive = false;
   }
 
   /*

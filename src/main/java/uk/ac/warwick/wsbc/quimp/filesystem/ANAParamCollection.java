@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import uk.ac.warwick.wsbc.quimp.plugin.ana.ANAp;
 
-// TODO: Auto-generated Javadoc
 /**
  * Serialization container for {@link uk.ac.warwick.wsbc.quimp.plugin.ana.ANAp}.
  * 
@@ -31,7 +30,7 @@ public class ANAParamCollection implements IQuimpSerialize {
    * 
    * <p>Size of the store usually equals to the number of cells in the image.
    * 
-   * @param size
+   * @param size size of the collection
    */
   public ANAParamCollection(int size) {
     aS = new ArrayList<ANAp>(size);

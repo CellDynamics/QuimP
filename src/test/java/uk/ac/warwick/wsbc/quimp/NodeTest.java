@@ -5,6 +5,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +38,7 @@ public class NodeTest {
    */
   @Before
   public void setUp() throws Exception {
-    org = getRandomNode();
+    org = getRandomNode(1);
     copy = new Node(org); // make copy
   }
 
@@ -75,9 +78,11 @@ public class NodeTest {
    * Produces random node, all filed filled with random data. Has previous and next but not
    * looped.
    * 
+   * @param id Node id
+   * 
    * @return random node.
    */
-  public static Node getRandomNode() {
+  public static Node getRandomNode(int id) {
     Node org;
     EnhancedRandom eh = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
             .exclude(field().named("prev").get()).exclude(field().named("next").get())
@@ -88,9 +93,44 @@ public class NodeTest {
     org.setPrev(eh.nextObject(Node.class));
     org.updateNormale(true); // update normale, in test will be set to false
     org.update();
+    org.setTrackNum(id);
 
     return org;
+  }
 
+  /**
+   * Produces four element list of random nodes.
+   * 
+   * @return random node (head) is first on list
+   */
+  public static List<Node> getRandomNodePointList() {
+
+    Node head = getRandomNode(1);
+    head.setHead(true);
+    Node v1 = getRandomNode(2);
+    v1.setHead(false);
+    Node v2 = getRandomNode(3);
+    v2.setHead(false);
+    Node v3 = getRandomNode(4);
+    v3.setHead(false);
+
+    head.setNext(v1);
+    v1.setPrev(head);
+    v1.setNext(v2);
+
+    v2.setPrev(v1);
+    v2.setNext(v3);
+
+    v3.setPrev(v2);
+    v3.setNext(head);
+    head.setPrev(v3);
+
+    ArrayList<Node> ret = new ArrayList<>();
+    ret.add(head);
+    ret.add(v1);
+    ret.add(v2);
+    ret.add(v3);
+    return ret;
   }
 
 }

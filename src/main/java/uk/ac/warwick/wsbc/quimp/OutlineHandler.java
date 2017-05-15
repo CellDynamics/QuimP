@@ -153,7 +153,13 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
     outlines = new Outline[size];
     startFrame = s;
     endFrame = e;
+  }
 
+  /**
+   * Default constructor. Initialises one frame.
+   */
+  public OutlineHandler() {
+    this(0, 0);
   }
 
   /**

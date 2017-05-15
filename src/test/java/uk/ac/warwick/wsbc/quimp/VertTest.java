@@ -6,6 +6,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +22,11 @@ import io.github.benas.randombeans.api.EnhancedRandom;
  * @author p.baniukiewicz
  *
  */
-// @RunWith(MockitoJUnitRunner.class)
 public class VertTest {
+
+  /**
+   * The Constant LOGGER.
+   */
   static final Logger LOGGER = LoggerFactory.getLogger(VertTest.class.getName());
 
   private Vert org;
@@ -31,7 +37,7 @@ public class VertTest {
    */
   @Before
   public void setUp() throws Exception {
-    org = getRandomVert();
+    org = getRandomVert(1);
     copy = new Vert(org); // make copy
   }
 
@@ -64,12 +70,14 @@ public class VertTest {
   }
 
   /**
-   * Produces random vertex, all filed filled with random data. Has previous and next but not
-   * looped.
+   * Produces random vertex, all filed filled with random data. Contains nex and previous neighbours
+   * but not looped.
    * 
-   * @return random vertex.
+   * @param id vertex id
+   * 
+   * @return random vertex
    */
-  public static Vert getRandomVert() {
+  public static Vert getRandomVert(int id) {
     Vert org;
     EnhancedRandom eh = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
             .exclude(field().named("prev").get()).exclude(field().named("next").get())
@@ -80,11 +88,45 @@ public class VertTest {
     // for local curvature, no looping
     org.setNext(eh.nextObject(Vert.class));
     org.setPrev(eh.nextObject(Vert.class));
-    org.updateNormale(true); // update notmale, in test will be set to false
+    org.updateNormale(true); // update normale, in test will be set to false
     org.setCurvatureLocal(); // compute curvature
-
+    org.setTrackNum(id);
     return org;
+  }
 
+  /**
+   * Produces four element list of random vertexes.
+   * 
+   * @return random vertex (head) is first on list
+   */
+  public static List<Vert> getRandomVertPointList() {
+
+    Vert head = getRandomVert(1);
+    head.setHead(true);
+    Vert v1 = getRandomVert(2);
+    v1.setHead(false);
+    Vert v2 = getRandomVert(3);
+    v2.setHead(false);
+    Vert v3 = getRandomVert(4);
+    v3.setHead(false);
+
+    head.setNext(v1);
+    v1.setPrev(head);
+    v1.setNext(v2);
+
+    v2.setPrev(v1);
+    v2.setNext(v3);
+
+    v3.setPrev(v2);
+    v3.setNext(head);
+    head.setPrev(v3);
+
+    ArrayList<Vert> ret = new ArrayList<>();
+    ret.add(head);
+    ret.add(v1);
+    ret.add(v2);
+    ret.add(v3);
+    return ret;
   }
 
 }

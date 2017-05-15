@@ -8,7 +8,14 @@ import uk.ac.warwick.wsbc.quimp.JsonKeyMatchTemplate;
  * @author p.baniukiewicz
  *
  */
-public class DataContainerTest extends JsonKeyMatchTemplate<DataContainer> {
+public class StatsCollectionTest extends JsonKeyMatchTemplate<StatsCollection> {
+
+  /**
+   * Just call parametrised constructor from test default.
+   */
+  public StatsCollectionTest() {
+    super(2, false); // go deeper than usually
+  }
 
   /*
    * (non-Javadoc)
@@ -17,7 +24,7 @@ public class DataContainerTest extends JsonKeyMatchTemplate<DataContainer> {
    */
   @Override
   public void setUp() throws Exception {
-    obj = new DataContainer();
-    indir = "uk.ac.warwick.wsbc.quimp.filesystem.DataContainer";
+    obj = new StatsCollection();
+    indir = "uk.ac.warwick.wsbc.quimp.filesystem.StatsCollection";
   }
 }

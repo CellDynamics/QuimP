@@ -40,7 +40,7 @@ import uk.ac.warwick.wsbc.quimp.plugin.engine.PluginFactory;
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SnakePluginListTest {
+public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
 
   /**
    * The tmpdir.
@@ -52,12 +52,12 @@ public class SnakePluginListTest {
    * 
    * @param name Name of private method
    * @param ref Object
-   * @param obj
-   * @throws SecurityException
-   * @throws NoSuchMethodException
-   * @throws InvocationTargetException
-   * @throws IllegalArgumentException
-   * @throws IllegalAccessException
+   * @param obj obj
+   * @throws SecurityException SecurityException
+   * @throws NoSuchMethodException NoSuchMethodException
+   * @throws InvocationTargetException InvocationTargetException
+   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws IllegalAccessException IllegalAccessException
    */
   static void accessPrivate(String name, Class<SnakePluginList> ref, SnakePluginList obj)
           throws NoSuchMethodException, SecurityException, IllegalAccessException,
@@ -81,10 +81,13 @@ public class SnakePluginListTest {
   /**
    * Creates three fake plugins and fourth that will replace one of them
    * 
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
+    obj = new SnakePluginList();
+    indir = "uk.ac.warwick.wsbc.quimp.SnakePluginList";
+
     cc = new ConfigContainer();
     version = new QuimpVersion("17.02.02", "p.baniukiewicz", "QuimP");
     snakePluginList = new SnakePluginList(3, pluginFactory, null);
@@ -243,7 +246,7 @@ public class SnakePluginListTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
@@ -252,9 +255,9 @@ public class SnakePluginListTest {
 
   /**
    * Test method for
-   * {@link SnakePluginList#SnakePluginList(int, PluginFactory, ViewUpdater)}
+   * {@link SnakePluginList#SnakePluginList(int, PluginFactory, ViewUpdater)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testSnakePluginListIntPluginFactory() throws Exception {
@@ -279,7 +282,7 @@ public class SnakePluginListTest {
   /**
    * Test method for {@link uk.ac.warwick.wsbc.quimp.SnakePluginList#isActive(int)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testIsActive() throws Exception {
@@ -290,7 +293,7 @@ public class SnakePluginListTest {
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.SnakePluginList#setInstance(int, String, boolean)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testSetInstance() throws Exception {
@@ -305,7 +308,7 @@ public class SnakePluginListTest {
   /**
    * Test method for {@link uk.ac.warwick.wsbc.quimp.SnakePluginList#setActive(int, boolean)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testSetActive() throws Exception {
@@ -318,7 +321,7 @@ public class SnakePluginListTest {
   /**
    * Test method for {@link uk.ac.warwick.wsbc.quimp.SnakePluginList#deletePlugin(int)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testDeletePlugin() throws Exception {
@@ -330,7 +333,7 @@ public class SnakePluginListTest {
   /**
    * Test method for {@link uk.ac.warwick.wsbc.quimp.SnakePluginList#isRefListEmpty()}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testIsRefListEmpty() throws Exception {
@@ -345,9 +348,9 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of serialization
+   * Test of serialization.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testBeforeSerialize() throws Exception {
@@ -362,12 +365,12 @@ public class SnakePluginListTest {
   /**
    * Test of saving.
    * 
-   * @throws IOException
-   * @throws NoSuchMethodException
-   * @throws SecurityException
-   * @throws IllegalAccessException
-   * @throws IllegalArgumentException
-   * @throws InvocationTargetException
+   * @throws IOException IOException
+   * @throws NoSuchMethodException NoSuchMethodException
+   * @throws SecurityException SecurityException
+   * @throws IllegalAccessException IllegalAccessException
+   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws InvocationTargetException InvocationTargetException
    */
   @Test
   public void testSaveConfig() throws IOException, NoSuchMethodException, SecurityException,
@@ -381,9 +384,9 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of serialization
+   * Test of serialization.
    * 
-   * @throws FileNotFoundException
+   * @throws FileNotFoundException FileNotFoundException
    */
   @Test
   public void testSaveConfig_serializer() throws FileNotFoundException {
@@ -396,7 +399,7 @@ public class SnakePluginListTest {
   /**
    * Test of serialization.
    * 
-   * @throws FileNotFoundException
+   * @throws FileNotFoundException FileNotFoundException
    */
   @Test
   public void testSaveConfig_serializer1() throws FileNotFoundException {
@@ -411,13 +414,13 @@ public class SnakePluginListTest {
    * 
    * <p>Post: Empty slot is saved with empty name.
    * 
-   * @throws IOException
-   * @throws InvocationTargetException
-   * @throws IllegalArgumentException
-   * @throws IllegalAccessException
-   * @throws SecurityException
-   * @throws NoSuchMethodException
-   * @throws QuimpPluginException
+   * @throws IOException IOException
+   * @throws InvocationTargetException InvocationTargetException
+   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws IllegalAccessException IllegalAccessException
+   * @throws SecurityException SecurityException
+   * @throws NoSuchMethodException NoSuchMethodException
+   * @throws QuimpPluginException QuimpPluginException
    */
   @Test
   public void testSaveConfig_gap()
@@ -440,13 +443,13 @@ public class SnakePluginListTest {
   /**
    * Test of loading.
    * 
-   * @throws IOException
-   * @throws NoSuchMethodException
-   * @throws SecurityException
-   * @throws IllegalAccessException
-   * @throws IllegalArgumentException
-   * @throws InvocationTargetException
-   * @throws QuimpPluginException
+   * @throws IOException IOException
+   * @throws NoSuchMethodException NoSuchMethodException
+   * @throws SecurityException SecurityException
+   * @throws IllegalAccessException IllegalAccessException
+   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws InvocationTargetException InvocationTargetException
+   * @throws QuimpPluginException QuimpPluginException
    */
   @Test
   public void testloadConfig()
@@ -479,22 +482,19 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Test of serialization
+   * Test of serialization.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testloadConfig_serializer() throws Exception {
-    //!>
-    String json = "{\"className\":\"SnakePluginList\","
-            + "\"timeStamp\""
+    String json = "{\"className\":\"SnakePluginList\"," + "\"timeStamp\""
             + ":{\"version\":\"17.02.02\",\"buildstamp\":\"p.baniukiewicz\",\"name\":\"QuimP\"},"
             + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\"," + "\"obj\":{\"sPluginList\":"
             + "[{\"isActive\":false,\"name\":\"Test1\",\"ver\":\"1.2.3\"},"
             + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
             + "{\"window\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"2.3.4\"},"
             + "{\"isActive\":true,\"name\":\"toDelete\",\"ver\":\"2.3.4\"}]}}";
-    //!<
 
     Serializer<SnakePluginList> out;
     Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class, version);
@@ -516,21 +516,19 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Try to load config where is more than one json structure
+   * Try to load config where is more than one json structure.
    * 
-   * @throws QuimpPluginException
+   * @throws QuimpPluginException QuimpPluginException
    */
   @Test
   @Ignore("Does not work - two json in one file")
   public void testloadConfig_1() throws QuimpPluginException {
-    //!<
     String json = "{}" + "{ \"version\": \"3.0.0\"," + "\"softwareName\": \"QuimP::BOA\","
             + " \"activePluginList\": {" + "\"sPluginList\": [" + "{" + "\"isActive\": false,"
             + "\"name\": \"Test1\"," + "\"ver\": \"1.2.3\"" + "}," + "{" + "\"isActive\": true,"
             + "\"name\": \"Test2\"," + "\"config\":" + " {" + "\"window\": \"10\""
             + ",\"alpha\": \"-0.45\"" + "}," + "\"ver\": \"2.3.4\"}," + "{" + "\"isActive\": true,"
             + "\"name\": \"toDelete\"," + "\"ver\": \"2.3.4\"" + "}]}}";
-    // */
 
     GsonBuilder gsonbuilder = new GsonBuilder();
     // http: //
@@ -557,20 +555,18 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Only one plugin in middle
+   * Only one plugin in middle.
    * 
-   * @throws QuimpPluginException
+   * @throws QuimpPluginException QuimpPluginException
    */
   @Test
   public void testloadConfig_2() throws QuimpPluginException {
-    //!<
     String json = "{ \"version\": \"3.0.0\"," + "\"softwareName\": \"QuimP::BOA\","
             + " \"activePluginList\": {" + "\"sPluginList\": [" + "{" + "\"isActive\": false,"
             + "\"name\": \"\"," + "\"ver\": \"\"" + "}," + "{" + "\"isActive\": true,"
             + "\"name\": \"Test2\"," + "\"config\":" + " {" + "\"window\": \"10\""
             + ",\"alpha\": \"-0.45\"" + "}," + "\"ver\": \"2.3.4\"}," + "{" + "\"isActive\": true,"
             + "\"name\": \"\"," + "\"ver\": \"\"" + "}]}}";
-    // */
 
     GsonBuilder gsonbuilder = new GsonBuilder();
     // http: //
@@ -596,13 +592,13 @@ public class SnakePluginListTest {
   }
 
   /**
-   * Only one plugin in middle
+   * Only one plugin in middle.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testloadConfig_serializer_2() throws Exception {
-    //!<
+    //!>
     String json = "{\"className\":\"SnakePluginList\","
             + "\"version\":[\"0.0.1\",\"p.baniukiewicz\",\"QuimP\"],"
             + "\"createdOn\": \"Wed 2016.06.15 at 09:30:48 AM BST\"," + "\"obj\":{\"sPluginList\":"
@@ -610,7 +606,7 @@ public class SnakePluginListTest {
             + "{\"isActive\":true,\"name\":\"Test2\",\"config\":"
             + "{\"window\":\"10\",\"alpha\":\"-0.45\"},\"ver\":\"2.3.4\"},"
             + "{\"isActive\":true,\"name\":\"\",\"ver\":\"\"}]}}";
-    // */
+    //!<
 
     Serializer<SnakePluginList> out;
     Serializer<SnakePluginList> s = new Serializer<>(SnakePluginList.class, QuimP.TOOL_VERSION);
@@ -638,12 +634,11 @@ public class SnakePluginListTest {
    * 
    * <p>Post: This slot is null
    * 
-   * @throws IOException
-   * @throws QuimpPluginException
+   * @throws IOException IOException
+   * @throws QuimpPluginException QuimpPluginException
    */
   @Test
   public void testloadConfig_bad() throws IOException, QuimpPluginException {
-    //!<
     String json = "{ \"version\": \"3.0.0\"," + "\"softwareName\": \"QuimP::BOA\","
             + " \"activePluginList\": {" + "\"sPluginList\": [" + "{" + "\"isActive\": false,"
             + "\"name\": \"Test10\"," // here wrong name
@@ -651,7 +646,6 @@ public class SnakePluginListTest {
             + "\"config\":" + " {" + "\"window\": \"10\"" + ",\"alpha\": \"-0.45\"" + "},"
             + "\"ver\": \"2.3.4\"}," + "{" + "\"isActive\": true," + "\"name\": \"toDelete\","
             + "\"ver\": \"2.3.4\"" + "}]}}";
-    // */
 
     GsonBuilder gsonbuilder = new GsonBuilder();
     // http: //
@@ -682,7 +676,7 @@ public class SnakePluginListTest {
    * 
    * <p>Post: This slot is null
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testloadConfig_serializer_bad() throws Exception {
@@ -713,8 +707,8 @@ public class SnakePluginListTest {
    * 
    * <p>post: Plugin loaded with message
    * 
-   * @throws IOException
-   * @throws QuimpPluginException
+   * @throws IOException IOException
+   * @throws QuimpPluginException QuimpPluginException
    */
   @Test
   public void testloadConfig_bad1() throws IOException, QuimpPluginException {
@@ -751,7 +745,7 @@ public class SnakePluginListTest {
    * 
    * <p>post: Plugin loaded with message
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testloadConfig_serializer_bad1() throws Exception {
@@ -785,17 +779,15 @@ public class SnakePluginListTest {
    * 
    * <p>post: Plugin loaded but config not restored
    * 
-   * @throws IOException
-   * @throws QuimpPluginException
+   * @throws IOException IOException
+   * @throws QuimpPluginException QuimpPluginException
    */
   @Test
   public void testloadConfig_bad2() throws IOException, QuimpPluginException {
     String json = "{ \"version\": \"3.0.0\"," + "\"softwareName\": \"QuimP::BOA\","
             + " \"activePluginList\": {" + "\"sPluginList\": [" + "{" + "\"isActive\": false,"
             + "\"name\": \"Test1\"," + "\"ver\": \"1.2.3\"" + "}," + "{" + "\"isActive\": true,"
-            + "\"name\": \"Test2\"," + "\"config\":" + " {" + "\"window10\": \"5\"" // here
-                                                                                    // wrong
-                                                                                    // name
+            + "\"name\": \"Test2\"," + "\"config\":" + " {" + "\"window10\": \"5\"" // wrong
             + ",\"alpha\": \"-0.45\"" + "}," + "\"ver\": \"2.3.4\"}," + "{" + "\"isActive\": true,"
             + "\"name\": \"toDelete\"," + "\"ver\": \"2.3.4\"" + "}]}}";
 
@@ -830,7 +822,7 @@ public class SnakePluginListTest {
    * 
    * <p>Post: Plugin loaded but config not restored
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testloadConfig_serializer_bad2() throws Exception {
@@ -864,8 +856,8 @@ public class SnakePluginListTest {
    * 
    * <p>post: List is adjusted
    * 
-   * @throws IOException
-   * @throws QuimpPluginException
+   * @throws IOException IOException
+   * @throws QuimpPluginException QuimpPluginException
    */
   @Test
   public void testloadConfig_bad3() throws IOException, QuimpPluginException {
@@ -902,8 +894,8 @@ public class SnakePluginListTest {
    * 
    * <p>post: Correct order of plugins
    * 
-   * @throws IOException
-   * @throws QuimpPluginException
+   * @throws IOException IOException
+   * @throws QuimpPluginException QuimpPluginException
    */
   @Test
   public void testloadConfig_bad4() throws IOException, QuimpPluginException {
@@ -933,10 +925,9 @@ public class SnakePluginListTest {
     assertEquals("2.3.4", local.getInstance(2).getVersion());
   }
 
-}
-
-class ConfigContainer {
-  public String version = "3.0.0";
-  public String softwareName = "QuimP::BOA";
-  public SnakePluginList activePluginList;
+  class ConfigContainer {
+    public String version = "3.0.0";
+    public String softwareName = "QuimP::BOA";
+    public SnakePluginList activePluginList;
+  }
 }

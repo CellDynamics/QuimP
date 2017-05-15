@@ -40,8 +40,8 @@ import uk.ac.warwick.wsbc.quimp.filesystem.versions.IQconfOlderConverter;
  * packed in top level structure that contains version of software and wrapped class name. Exemplary
  * use case: SerializerTest#testLoad_1()
  * 
- * <p>There is option to skip call afterSerialzie() method on class restoring. To do so set
- * {@link #doAfterSerialize} to false - derive new class and override this field.
+ * <p>There is option to skip call afterSerialzie() or beforeSerialzie() method on class restoring
+ * or saving To do so set {@link #doAfterSerialize} to false or {@link #doBeforeSerialize}
  * 
  * <p>Serializer supports <tt>Since, Until</tt> tags from GSon library. User can write his own
  * converters executed if specified condition is met. Serializer compares version of callee tool
@@ -77,6 +77,12 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
    * Indicates if afterSerialze should be called.
    */
   protected transient boolean doAfterSerialize;
+  /**
+   * Indicates if {@link IQuimpSerialize#beforeSerialize()} should be called.
+   * 
+   * <p>Rather for tests as {@link IQuimpSerialize#beforeSerialize()} is always required.
+   */
+  protected transient boolean doBeforeSerialize;
 
   /**
    * Name of wrapped class, decoded from object.
@@ -130,6 +136,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
    */
   public Serializer(final Type type, final QuimpVersion version) {
     doAfterSerialize = true; // by default use afterSerialize methods to restore object state
+    doBeforeSerialize = true;
     gsonBuilder = new GsonBuilder();
     obj = null;
     this.timeStamp = version;
@@ -146,6 +153,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
    */
   public Serializer(final T obj, final QuimpVersion version) {
     doAfterSerialize = true; // by default use afterSerialize methods to restore object state
+    doBeforeSerialize = true;
     gsonBuilder = new GsonBuilder();
     this.type = obj.getClass();
     this.obj = obj;
@@ -356,7 +364,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
     // set version to save (read from calee)
     gsonBuilder.setVersion(qconfVersionToSave);
     Gson gson = gsonBuilder.create();
-    if (obj != null) {
+    if (obj != null && doBeforeSerialize == true) {
       obj.beforeSerialize();
     }
     return gson.toJson(this);

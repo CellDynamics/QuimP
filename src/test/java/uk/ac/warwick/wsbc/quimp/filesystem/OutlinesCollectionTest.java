@@ -8,7 +8,7 @@ import uk.ac.warwick.wsbc.quimp.JsonKeyMatchTemplate;
  * @author p.baniukiewicz
  *
  */
-public class DataContainerTest extends JsonKeyMatchTemplate<DataContainer> {
+public class OutlinesCollectionTest extends JsonKeyMatchTemplate<OutlinesCollection> {
 
   /*
    * (non-Javadoc)
@@ -17,7 +17,7 @@ public class DataContainerTest extends JsonKeyMatchTemplate<DataContainer> {
    */
   @Override
   public void setUp() throws Exception {
-    obj = new DataContainer();
-    indir = "uk.ac.warwick.wsbc.quimp.filesystem.DataContainer";
+    obj = new OutlinesCollection();
+    indir = "uk.ac.warwick.wsbc.quimp.filesystem.OutlinesCollection";
   }
 }

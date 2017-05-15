@@ -14,7 +14,50 @@ import org.scijava.vecmath.Point2d;
  * @author p.baniukiewicz
  *
  */
-public class OutlineTest {
+public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
+
+  /**
+   * Configure test.
+   * 
+   * <p>do not use randomizer in JsonKeyMatchTemplate (we build object already.
+   */
+  public OutlineTest() {
+    super(1, true);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see uk.ac.warwick.wsbc.quimp.JsonKeyMatchTemplate#setUp()
+   */
+  @Override
+  public void setUp() throws Exception {
+    List<Vert> list = VertTest.getRandomVertPointList(); // get list of random vertexes
+    Vert head = list.get(0); // get head of list
+
+    obj = new Outline(head, list.size()); // build outline
+    indir = "uk.ac.warwick.wsbc.quimp.Outline";
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see uk.ac.warwick.wsbc.quimp.JsonKeyMatchTemplate#prepare()
+   */
+  @Override
+  protected void prepare() throws Exception {
+    super.prepare();
+  }
+
+  /**
+   * Test of {@link uk.ac.warwick.wsbc.quimp.Outline#Outline(uk.ac.warwick.wsbc.quimp.Outline)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testOutline() throws Exception {
+    // TODO add copy constructor
+  }
 
   /**
    * Test method for

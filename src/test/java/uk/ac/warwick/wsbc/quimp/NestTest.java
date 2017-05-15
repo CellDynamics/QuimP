@@ -6,7 +6,7 @@ package uk.ac.warwick.wsbc.quimp;
  * @author p.baniukiewicz
  *
  */
-public class SnakeHandlerTest extends JsonKeyMatchTemplate<SnakeHandler> {
+public class NestTest extends JsonKeyMatchTemplate<Nest> {
 
   /*
    * (non-Javadoc)
@@ -15,8 +15,8 @@ public class SnakeHandlerTest extends JsonKeyMatchTemplate<SnakeHandler> {
    */
   @Override
   public void setUp() throws Exception {
-    obj = new SnakeHandler();
-    indir = "uk.ac.warwick.wsbc.quimp.SnakeHandler";
+    obj = new Nest();
+    indir = "uk.ac.warwick.wsbc.quimp.Nest";
   }
 
   /*

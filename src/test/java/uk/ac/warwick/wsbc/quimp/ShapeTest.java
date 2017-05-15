@@ -3,6 +3,8 @@ package uk.ac.warwick.wsbc.quimp;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,22 +26,12 @@ public class ShapeTest {
    */
   @Before
   public void setUp() throws Exception {
-    head = new Vert(1);
-    head.setHead(true);
-    v1 = new Vert(2);
-    v2 = new Vert(3);
-    v3 = new Vert(4);
+    List<Vert> ret = uk.ac.warwick.wsbc.quimp.VertTest.getRandomVertPointList();
 
-    head.setNext(v1);
-    v1.setPrev(head);
-    v1.setNext(v2);
-
-    v2.setPrev(v1);
-    v2.setNext(v3);
-
-    v3.setPrev(v2);
-    v3.setNext(head);
-    head.setPrev(v3);
+    head = ret.get(0);
+    v1 = ret.get(1);
+    v2 = ret.get(2);
+    v3 = ret.get(3);
 
     test = new TestShape(head, 4);
   }

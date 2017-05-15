@@ -60,9 +60,9 @@ public class EcmmMappingTest {
   @Ignore
   public void testGetReferences() throws Exception {
     // only segmentation from BOA
-    Path boan = Paths.get(
-            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMappingTest",
-            "fluoreszenz-test_eq_smooth_frames_1-5_BOA.QCONF");
+    Path boan =
+            Paths.get("src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMapping",
+                    "fluoreszenz-test_eq_smooth_frames_1-5_BOA.QCONF");
     // copy segmentation to tmp
     Files.copy(boan, tmp.resolve(boan.getFileName()), REPLACE_EXISTING);
     // this is file to process - full path
@@ -75,12 +75,12 @@ public class EcmmMappingTest {
             + " and update submodule");
 
     // only segmentation from BOA
-    Path boapa = Paths.get(
-            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMappingTest",
-            "fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.paQP");
-    Path boasn = Paths.get(
-            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMappingTest",
-            "fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.snQP");
+    Path boapa =
+            Paths.get("src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMapping",
+                    "fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.paQP");
+    Path boasn =
+            Paths.get("src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMapping",
+                    "fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.snQP");
     // copy segmentation to tmp
     Files.copy(boapa, tmp.resolve(boapa.getFileName()), REPLACE_EXISTING);
     // copy segmentation to tmp
@@ -110,13 +110,13 @@ public class EcmmMappingTest {
   @Test
   public void testECMM_MappingFile() throws Exception {
     // only segmentation
-    Path boan = Paths.get(
-            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMappingTest",
-            "fluoreszenz-test_eq_smooth_frames_1-5_BOA.QCONF");
+    Path boan =
+            Paths.get("src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMapping",
+                    "fluoreszenz-test_eq_smooth_frames_1-5_BOA.QCONF");
     // reference file
-    Path ecmmn = Paths.get(
-            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMappingTest",
-            "ref_fluoreszenz-test_eq_smooth_frames_1-5_BOA.QCONF");
+    Path ecmmn =
+            Paths.get("src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMapping",
+                    "ref_fluoreszenz-test_eq_smooth_frames_1-5_BOA.QCONF");
     // copy segmentation to tmp
     Files.copy(boan, tmp.resolve(boan.getFileName()), REPLACE_EXISTING);
     // this is file to process
@@ -145,19 +145,19 @@ public class EcmmMappingTest {
   @Test
   public void testECMM_MappingFile_paQP() throws Exception {
     // only segmentation
-    Path boapa = Paths.get(
-            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMappingTest",
-            "fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.paQP");
-    Path boasn = Paths.get(
-            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMappingTest",
-            "fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.snQP");
+    Path boapa =
+            Paths.get("src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMapping",
+                    "fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.paQP");
+    Path boasn =
+            Paths.get("src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMapping",
+                    "fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.snQP");
     // reference file
-    Path boasnRef = Paths.get(
-            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMappingTest",
-            "ref_fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.snQP");
-    Path boapaRef = Paths.get(
-            "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMappingTest",
-            "ref_fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.paQP");
+    Path boasnRef =
+            Paths.get("src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMapping",
+                    "ref_fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.snQP");
+    Path boapaRef =
+            Paths.get("src/test/Resources-static/uk.ac.warwick.wsbc.quimp.plugin.ecmm.EcmmMapping",
+                    "ref_fluoreszenz-test_eq_smooth_frames_1-5_BOA_0.paQP");
     // copy segmentation to tmp
     // copy to random dir to prevent doing other paQP files in folder
     Path tmpRandom = Files.createTempDirectory(tmp, "quimp", new FileAttribute<?>[] {});
