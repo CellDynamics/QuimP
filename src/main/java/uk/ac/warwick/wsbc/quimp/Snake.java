@@ -499,15 +499,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Get number of nodes forming current Snake.
-   * 
-   * @return number of nodes in current Snake
-   */
-  public int getNumNodes() {
-    return POINTS;
-  }
-
-  /**
    * Unfreeze all nodes.
    */
   public void unfreezeAll() {

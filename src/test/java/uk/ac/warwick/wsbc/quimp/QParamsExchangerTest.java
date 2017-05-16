@@ -107,8 +107,8 @@ public class QParamsExchangerTest {
     assertThat(sH.getStartFrame(), is(1));
     assertThat(sH.getEndFrame(), is(30));
     Snake s = sH.getStoredSnake(10);
-    assertThat(s.POINTS, is(20));
-    assertThat(s.countPoints(), is(s.POINTS));
+    assertThat(s.getNumPoints(), is(20));
+    assertThat(s.countPoints(), is(s.getNumPoints()));
 
     BOAp bp = qp.getLoadedDataContainer().BOAState.boap;
     assertThat(bp.getWidth(), is(512));

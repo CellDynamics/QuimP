@@ -527,7 +527,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
       for (int i = startFrame; i <= endFrame; i++) {
         o = getOutline(i);
         pw.write("\n#Frame " + i);
-        write(pw, o.getNumVerts(), o.getHead());
+        write(pw, o.getNumPoints(), o.getHead());
       }
       pw.close();
     } catch (Exception e) {

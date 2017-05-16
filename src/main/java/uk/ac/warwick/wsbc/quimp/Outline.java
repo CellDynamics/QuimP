@@ -174,15 +174,6 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   }
 
   /**
-   * Get number of Vert objects forming current Outline.
-   * 
-   * @return number of Vert in current Outline
-   */
-  public int getNumVerts() {
-    return super.getNumPoints();
-  }
-
-  /**
    * Remove selected Vert from list.
    * 
    * <p>Perform check if removed Vert was head and if it was, the new head is randomly selected.
@@ -614,7 +605,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
       }
       n++;
       // prevent to skipping getNext() due to adding and removing vert
-    } while (!(v.isHead() && n != 0) && n <= getNumVerts() + 1);
+    } while (!(v.isHead() && n != 0) && n <= getNumPoints() + 1);
   }
 
   /**
@@ -938,7 +929,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     updateNormales(true);
     double steps = Math.abs(amount / stepRes);
     for (j = 0; j < steps; j++) {
-      if (getNumVerts() <= 3) {
+      if (getNumPoints() <= 3) {
         break;
       }
       scale(stepRes);
@@ -951,7 +942,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
       }
     }
 
-    if (getNumVerts() < 3) {
+    if (getNumPoints() < 3) {
       LOGGER.info("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
     }
 
@@ -959,7 +950,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
       LOGGER.debug("ANA_(382)...fixed ana intersects");
     }
 
-    if (getNumVerts() < 3) {
+    if (getNumPoints() < 3) {
       LOGGER.info("ANA 377_NODES LESS THAN 3");
     }
     calcCentroid();
@@ -977,7 +968,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
    * @param d2th distance threshold between current and next
    */
   public void removeProx(double d1th, double d2th) {
-    if (getNumVerts() <= 3) {
+    if (getNumPoints() <= 3) {
       return;
     }
     Vert v;

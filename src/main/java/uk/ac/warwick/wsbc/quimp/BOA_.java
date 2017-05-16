@@ -2269,13 +2269,13 @@ public class BOA_ implements PlugIn {
         imageGroup.drawPath(snake, qState.boap.frame); // draw current snake
       }
 
-      if ((snake.getNumNodes() / snake.startingNnodes) > qState.boap.NMAX) {
+      if ((snake.getNumPoints() / snake.startingNnodes) > qState.boap.NMAX) {
         // if max nodes reached (as % starting) prompt for reset
         if (qState.segParam.use_previous_snake) {
           // imageGroup.drawContour(snake, frame);
           // imageGroup.updateAndDraw();
           throw new BoaException(
-                  "Frame " + qState.boap.frame + "-max nodes reached " + snake.getNumNodes(),
+                  "Frame " + qState.boap.frame + "-max nodes reached " + snake.getNumPoints(),
                   qState.boap.frame, 1);
         } else {
           BOA_.log("Frame " + qState.boap.frame + "-max nodes reached..continue");

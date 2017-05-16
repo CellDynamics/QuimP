@@ -1,8 +1,14 @@
 package uk.ac.warwick.wsbc.quimp.geom.filters;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static uk.ac.warwick.wsbc.quimp.utils.test.matchers.arrays.ArrayMatchers.arrayCloseTo;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -91,6 +97,62 @@ public class OutlineProcessorTest {
     // of points. Not related to conversion.
     outline.unfreezeAll();
     RoiSaver.saveRoi("/tmp/conv", outline.asFloatRoi()); // every time slightly different
+  }
+
+  /**
+   * Test method for
+   * {@link uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor#runningMean(double[], int)}.
+   * 
+   * <pre>
+   * <code>
+   * x=1:10
+   * xx=padarray(x',1,'circular')'
+   * ret=movmean(xx,3)
+   * ret(2:end-1)
+   * </code>
+   * </pre>
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testRunningMean() throws Exception {
+    double[] data = new double[10];
+    IntStream.range(0, 10).forEach(i -> data[i] = i + 1);
+    OutlineProcessor.runningMean(data, 3);
+    double[] expected =
+            { 4.3333, 2.0000, 3.0000, 4.0000, 5.0000, 6.0000, 7.0000, 8.0000, 9.0000, 6.6667 };
+    assertThat(ArrayUtils.toObject(data), arrayCloseTo(expected, 1e-4));
+
+    // table size == window
+    double[] data1 = new double[3];
+    IntStream.range(0, 3).forEach(i -> data1[i] = i + 1);
+    OutlineProcessor.runningMean(data1, 3);
+    double[] expected1 = { 2, 2, 2 };
+    assertThat(ArrayUtils.toObject(data1), arrayCloseTo(expected1, 1e-4));
+
+    // table size < window
+    double[] data2 = new double[1];
+    IntStream.range(0, 1).forEach(i -> data2[i] = i + 1);
+    OutlineProcessor.runningMean(data2, 3);
+    double[] expected2 = { 1 };
+    assertThat(ArrayUtils.toObject(data2), arrayCloseTo(expected2, 1e-4));
+
+    // empty input
+    double[] data3 = new double[0];
+    OutlineProcessor.runningMean(data3, 3);
+    assertThat(data3.length, is(0));
+  }
+
+  /**
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor#smooth(int)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testSmooth() throws Exception {
+    throw new RuntimeException("not yet implemented");
+
+    // TODO for one node as well
   }
 
 }
