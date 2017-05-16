@@ -30,6 +30,7 @@ import ij.process.ByteProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.BoaException;
+import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.quimp.geom.filters.HatSnakeFilter;
 import uk.ac.warwick.wsbc.quimp.plugin.IQuimpPlugin;
@@ -712,11 +713,11 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
    * @param retIp image to filter (mask)
    * @param orIp original image
    * @return Filtered processor
-   * @throws BoaException Thrown when HatSnakeFilter can not shrink contour
+   * @throws QuimpException Thrown when HatSnakeFilter can not shrink contour
    * @throws QuimpPluginException on problem with HatSnakeFilter
    */
   private ImageProcessor applyHatSnakeFilter(ImageProcessor retIp, ImageProcessor orIp)
-          throws QuimpPluginException, BoaException {
+          throws QuimpPluginException, QuimpException {
     BinarySegmentation obj = new BinarySegmentation(new ImagePlus("", retIp));
     obj.trackObjects(); // run tracking
     ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains();

@@ -13,9 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ij.process.ImageProcessor;
-import uk.ac.warwick.wsbc.quimp.BoaException;
 import uk.ac.warwick.wsbc.quimp.Outline;
 import uk.ac.warwick.wsbc.quimp.QuimP;
+import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.geom.BasicPolygons;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.IPadArray;
@@ -195,7 +195,7 @@ public class HatSnakeFilter implements IPadArray {
     List<Point2d> ret = new ArrayList<>();
     try {
       ret = runPlugin(data, null);
-    } catch (BoaException e) {
+    } catch (QuimpException e) {
       // for null==orgIp will be newer thrown, but in case
       throw new IllegalStateException(e);
     }
@@ -215,10 +215,10 @@ public class HatSnakeFilter implements IPadArray {
    * @return Processed input list, size of output list may be different than input. Empty output
    *         is also allowed.
    * @throws QuimpPluginException on wrong input data
-   * @throws BoaException on problem with creating outline from points
+   * @throws QuimpException on problem with creating outline from points
    */
   public List<Point2d> runPlugin(List<Point2d> data, ImageProcessor orgIp)
-          throws QuimpPluginException, BoaException {
+          throws QuimpPluginException, QuimpException {
     points = data;
     List<Point2d> shCont = new ArrayList<>();
     // create shrunk outline to sample intensity - one of the parameters used for candidate rank

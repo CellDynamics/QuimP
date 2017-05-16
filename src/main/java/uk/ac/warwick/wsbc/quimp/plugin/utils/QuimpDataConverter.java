@@ -7,8 +7,8 @@ import org.scijava.vecmath.Point2d;
 import org.scijava.vecmath.Tuple2d;
 
 import ij.util.Tools;
-import uk.ac.warwick.wsbc.quimp.BoaException;
 import uk.ac.warwick.wsbc.quimp.Outline;
+import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.Shape;
 import uk.ac.warwick.wsbc.quimp.Snake;
 
@@ -197,11 +197,11 @@ public class QuimpDataConverter {
    * 
    * @param id Id of snake
    * @return Snake object with Nodes in order of data given on input. Can be null
-   * @throws BoaException on Snake creation
+   * @throws QuimpException on Snake creation
    * @see uk.ac.warwick.wsbc.quimp.Snake#Snake(double[], double[], int)
    * @see uk.ac.warwick.wsbc.quimp.Snake#removeNode(uk.ac.warwick.wsbc.quimp.Node)
    */
-  public Snake getSnake(int id) throws BoaException {
+  public Snake getSnake(int id) throws QuimpException {
     Snake ret = null;
     if (xc.length == 0 || yc.length == 0) {
       return ret;
@@ -217,11 +217,11 @@ public class QuimpDataConverter {
    * @param id Id of snake
    * @return Outline object with Nodes in order of data given on input. Can be null. Normales are
    *         set outwards. Head node is first point from list.
-   * @throws BoaException on Outline creation
+   * @throws QuimpException on Outline creation
    * @see uk.ac.warwick.wsbc.quimp.Snake#Snake(double[], double[], int)
    * @see uk.ac.warwick.wsbc.quimp.Snake#removeNode(uk.ac.warwick.wsbc.quimp.Node)
    */
-  public Outline getOutline(int id) throws BoaException {
+  public Outline getOutline(int id) throws QuimpException {
     Snake stmp = getSnake(id);
     if (stmp == null) {
       return null;
