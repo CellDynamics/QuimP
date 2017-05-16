@@ -56,7 +56,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     super(h, nn);
     // removeVert(head);
     this.updateCurvature();
-    // calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
+    calcCentroid(); // It was introduced after 6819719a but apparently it causes wrong ECMM
   }
 
   /**
@@ -67,7 +67,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   public Outline(final Vert h) {
     super(h);
     this.updateCurvature();
-    // calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
+    calcCentroid(); // It was introduced after 6819719a but apparently it causes wrong ECMM
   }
 
   /**

@@ -159,7 +159,7 @@ public class OutlineProcessor {
   }
 
   /**
-   * Shrink the outline linearly.
+   * Shrink the outline proportionally.
    * 
    * <p>Shape is constricted in given number of <tt>steps</tt>. Method updates shape normales
    * setting them in inner direction. Results can differ (slightly) on each run due to random
@@ -173,7 +173,6 @@ public class OutlineProcessor {
    * @param freezeTh freeze threshold
    */
   public void shrink(double steps, double stepRes, double angleTh, double freezeTh) {
-    Vert n;
     int j;
     int max = 10000;
     outline.updateNormales(true);
@@ -190,8 +189,6 @@ public class OutlineProcessor {
         break;
       }
     }
-    outline.calcCentroid();
-    outline.setPositions();
 
     if (outline.getNumVerts() < 3) {
       LOGGER.info("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
@@ -204,6 +201,8 @@ public class OutlineProcessor {
     if (outline.getNumVerts() < 3) {
       LOGGER.info("ANA 377_NODES LESS THAN 3");
     }
+    outline.calcCentroid();
+    outline.setPositions();
   }
 
   /**

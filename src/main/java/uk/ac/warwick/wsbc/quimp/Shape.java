@@ -274,13 +274,9 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
   }
 
   /**
-   * Calculate centroid of Snake.
+   * Calculate centroid of Shape.
    * 
-   * <p>This method modifies internal field \c centroid. In two classes that use this template
-   * (Snake
-   * and Outline) its application is different. In Snake it is called in constructor and on any
-   * change of Snake, so this field every time holds correct value. In Outline it is called on
-   * demand and putting this method in constructor leads to unpredictable errors in ECMM
+   * <p>This method modifies internal field centroid.
    */
   public void calcCentroid() {
     centroid = new ExtendedVector2d(0, 0);

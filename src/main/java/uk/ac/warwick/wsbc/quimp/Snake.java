@@ -13,6 +13,7 @@ import ij.gui.Roi;
 import ij.process.FloatPolygon;
 import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor;
 
 /**
  * Low level snake definition. Form snake from Node objects. Snake is defined by first head node.
@@ -638,6 +639,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * @param correct if true it corrects the node distance
    * @throws BoaException if node distance correction failed
    * @see uk.ac.warwick.wsbc.quimp.Shape#scale(double)
+   * @see OutlineProcessor#shrink(double, double, double, double)
    */
   public void scale(double amount, double stepSize, boolean correct) throws BoaException {
     if (amount == 0) {
