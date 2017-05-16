@@ -44,7 +44,6 @@ import uk.ac.warwick.wsbc.quimp.filesystem.DataContainer;
 import uk.ac.warwick.wsbc.quimp.filesystem.OutlinesCollection;
 import uk.ac.warwick.wsbc.quimp.filesystem.QconfLoader;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
-import uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor;
 import uk.ac.warwick.wsbc.quimp.plugin.ecmm.ECMM_Mapping;
 import uk.ac.warwick.wsbc.quimp.plugin.ecmm.ECMp;
 import uk.ac.warwick.wsbc.quimp.plugin.ecmm.ODEsolver;
@@ -595,10 +594,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
   }
 
   private void shrink(Outline o) {
-    double steps = anap.getCortexWidthPixel() / anap.stepRes;
-
     // shrink outline
-    new OutlineProcessor(o).shrink(steps, anap.stepRes, anap.angleTh, anap.freezeTh);
+    o.scale(anap.getCortexWidthPixel(), anap.stepRes, anap.angleTh, anap.freezeTh);
 
     this.markFrozenNodesNormal(frameOneClone);
     orgIpl.draw();

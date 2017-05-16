@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.quimp.Outline;
 import uk.ac.warwick.wsbc.quimp.Vert;
-import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 import uk.ac.warwick.wsbc.quimp.plugin.ana.ANA_;
 
 /**
@@ -85,7 +84,7 @@ public class OutlineProcessor {
    * @param stepRes length of the step
    * @param angleTh angle threshold
    * @param freezeTh freeze threshold
-   * @see #shrink(double, double, double, double)
+   * @see Outline#scale(double, double, double, double)
    */
   public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh) {
     LOGGER.debug("Steps: " + steps);
@@ -112,8 +111,8 @@ public class OutlineProcessor {
         n = n.getNext();
       } while (!n.isHead());
 
-      removeProx();
-      freezeProx(angleTh, freezeTh);
+      outline.removeProx(1.5, 1.5);
+      outline.freezeProx(angleTh, freezeTh);
       // double d = outline.getLength() / outline.getNumVerts();
       outline.correctDensity(d, d / 2);
       outline.updateNormales(true);
@@ -156,137 +155,6 @@ public class OutlineProcessor {
       ret = 1 + 10 * (Math.exp(-curv * 0.5) / Math.exp(0.5));
     }
     return ret;
-  }
-
-  /**
-   * Shrink the outline proportionally.
-   * 
-   * <p>Shape is constricted in given number of <tt>steps</tt>. Method updates shape normales
-   * setting them in inner direction. Results can differ (slightly) on each run due to random
-   * selection of head on point remove.
-   * 
-   * <p>Updates centroid and normalised <tt>position</tt>.
-   * 
-   * @param steps Number of steps
-   * @param stepRes shift done in one step
-   * @param angleTh angle threshold
-   * @param freezeTh freeze threshold
-   */
-  public void shrink(double steps, double stepRes, double angleTh, double freezeTh) {
-    int j;
-    int max = 10000;
-    outline.updateNormales(true);
-    for (j = 0; j < steps; j++) {
-      if (outline.getNumVerts() <= 3) {
-        break;
-      }
-      outline.scale(stepRes);
-      outline.updateNormales(true);
-      removeProx();
-      freezeProx(angleTh, freezeTh);
-      if (j > max) {
-        LOGGER.warn("shrink (336) hit max iterations!");
-        break;
-      }
-    }
-
-    if (outline.getNumVerts() < 3) {
-      LOGGER.info("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
-    }
-
-    if (outline.cutSelfIntersects()) {
-      LOGGER.debug("ANA_(382)...fixed ana intersects");
-    }
-
-    if (outline.getNumVerts() < 3) {
-      LOGGER.info("ANA 377_NODES LESS THAN 3");
-    }
-    outline.calcCentroid();
-    outline.setPositions();
-  }
-
-  /**
-   * Remove close vertexes.
-   */
-  private void removeProx() {
-    if (outline.getNumVerts() <= 3) {
-      return;
-    }
-    Vert v;
-    Vert vl;
-    Vert vr;
-    double d1;
-    double d2;
-    v = outline.getHead();
-    vl = v.getPrev();
-    vr = v.getNext();
-    do {
-      d1 = ExtendedVector2d.lengthP2P(v.getPoint(), vl.getPoint());
-      d2 = ExtendedVector2d.lengthP2P(v.getPoint(), vr.getPoint());
-
-      if ((d1 < 1.5 || d2 < 1.5) && !v.isFrozen()) { // don't remove frozen. May alter angles
-        outline.removeVert(v);
-      }
-      v = v.getNext().getNext();
-      vl = v.getPrev();
-      vr = v.getNext();
-    } while (!v.isHead() && !vl.isHead());
-
-  }
-
-  /**
-   * Freeze a node and corresponding edge if its to close && close to paralel.
-   * 
-   * @param angleTh angle threshold
-   * @param freezeTh freeze threshold
-   */
-  private void freezeProx(double angleTh, double freezeTh) {
-    Vert v;
-    Vert vtmp;
-    ExtendedVector2d closest;
-    ExtendedVector2d edge;
-    ExtendedVector2d link;
-    double dis;
-    double angle;
-
-    v = outline.getHead();
-    do {
-      // if (!v.frozen) {
-      vtmp = outline.getHead();
-      do {
-        if (vtmp.getTrackNum() == v.getTrackNum()
-                || vtmp.getNext().getTrackNum() == v.getTrackNum()) {
-          vtmp = vtmp.getNext();
-          continue;
-        }
-        closest = ExtendedVector2d.PointToSegment(v.getPoint(), vtmp.getPoint(),
-                vtmp.getNext().getPoint());
-        dis = ExtendedVector2d.lengthP2P(v.getPoint(), closest);
-        // System.out.println("dis: " + dis);
-        // dis=1;
-        if (dis < freezeTh) {
-          edge = ExtendedVector2d.unitVector(vtmp.getPoint(), vtmp.getNext().getPoint());
-          link = ExtendedVector2d.unitVector(v.getPoint(), closest);
-          angle = Math.abs(ExtendedVector2d.angle(edge, link));
-          if (angle > Math.PI) {
-            angle = angle - Math.PI; // if > 180, shift back around
-          }
-          // 180
-          angle = angle - 1.5708; // 90 degree shift to centre around zero
-          // System.out.println("angle:" + angle);
-
-          if (angle < angleTh && angle > -angleTh) {
-            v.freeze();
-            vtmp.freeze();
-            vtmp.getNext().freeze();
-          }
-
-        }
-        vtmp = vtmp.getNext();
-      } while (!vtmp.isHead());
-      // }
-      v = v.getNext();
-    } while (!v.isHead());
   }
 
   /**

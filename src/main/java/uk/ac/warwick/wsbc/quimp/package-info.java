@@ -116,7 +116,7 @@
  * {@link uk.ac.warwick.wsbc.quimp.Vert} or {@link uk.ac.warwick.wsbc.quimp.Node} object) is
  * removed, new head is chosen randomly between next and previous element. This affects end result
  * making it nondeterministic, especially for iterative shrinking like e.g.
- * {@link uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor#shrink(double, double, double, double)}
+ * {@link uk.ac.warwick.wsbc.quimp.Outline#scale(double, double, double, double)}
  * or scaling in {@link uk.ac.warwick.wsbc.quimp.Snake}. To make testing possible, threshold level
  * defined in {@link uk.ac.warwick.wsbc.quimp.Shape} is static and private to avoid accidental
  * modification.

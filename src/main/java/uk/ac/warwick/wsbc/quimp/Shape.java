@@ -709,7 +709,11 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
   /**
    * Scale current Shape by <tt>stepSize</tt>. Centroid and normales need to be updated afterwards.
    * 
+   * <p>Direction of scaling depends on direction of normales.
+   * 
    * @param stepSize increment
+   * @see PointsList#updateNormale(boolean)
+   * @see PointsList#setClockwise(boolean)
    */
   public void scale(double stepSize) {
     T n;

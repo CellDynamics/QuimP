@@ -3,8 +3,8 @@ package uk.ac.warwick.wsbc.quimp.plugin.ana;
 import java.io.File;
 
 import uk.ac.warwick.wsbc.quimp.FormatConverter;
+import uk.ac.warwick.wsbc.quimp.Outline;
 import uk.ac.warwick.wsbc.quimp.QParams;
-import uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor;
 import uk.ac.warwick.wsbc.quimp.utils.QuimpToolsCollection;
 
 /**
@@ -51,7 +51,7 @@ public class ANAp {
   /**
    * Angle threshold.
    * 
-   * @see OutlineProcessor#shrink(double, double, double, double)
+   * @see Outline#scale(double, double, double, double)
    */
   public final transient double angleTh = 0.1;
   /**

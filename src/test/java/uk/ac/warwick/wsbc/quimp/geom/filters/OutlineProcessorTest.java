@@ -72,7 +72,7 @@ public class OutlineProcessorTest {
 
   /**
    * Test method for
-   * {@link OutlineProcessor#shrink(double, double, double, double)}.
+   * {@link Outline#scale(double, double, double, double)}. - linear shrinking
    * 
    * <p>Saves processed outline for comparison
    * 
@@ -87,7 +87,7 @@ public class OutlineProcessorTest {
     RoiSaver.saveRoi("/tmp/fgfs", points); // nc
     Outline outline = new QuimpDataConverter(points).getOutline(0);
     RoiSaver.saveRoi("/tmp/outline", outline.asList()); // nc
-    new OutlineProcessor(outline).shrink(10, 0.3, 0.1, 0.01); // modified outline differs in number
+    outline.scale(3, 0.3, 0.1, 0.01); // modified outline differs in number
     // of points. Not related to conversion.
     outline.unfreezeAll();
     RoiSaver.saveRoi("/tmp/conv", outline.asFloatRoi()); // every time slightly different

@@ -143,7 +143,7 @@ public class HatSnakeFilter implements IPadArray {
   /**
    * Number of steps used for outline shrinking for intensity sampling.
    */
-  public int shrinkSteps = 10;
+  public int shrinkAmount = 3;
 
   /**
    * Set it to 1 to look for inclusions, 2 for protrusions, 3 for all.
@@ -225,7 +225,7 @@ public class HatSnakeFilter implements IPadArray {
     // this is unnecessary if there is no image provided but kept here for code simplicity
     Outline outline = new QuimpDataConverter(data).getOutline(0); // FIXME What if more contours?
     if (outline != null) {
-      new OutlineProcessor(outline).shrink(shrinkSteps, 0.3, 0.1, 0.01);
+      outline.scale(shrinkAmount, 0.3, 0.1, 0.01);
       outline.unfreezeAll();
       shCont = outline.asList();
     } else {

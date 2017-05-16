@@ -13,7 +13,6 @@ import ij.gui.Roi;
 import ij.process.FloatPolygon;
 import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
-import uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor;
 
 /**
  * Low level snake definition. Form snake from Node objects. Snake is defined by first head node.
@@ -589,24 +588,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Blowup.
-   *
-   * @throws Exception the exception
-   */
-  public void blowup() throws Exception {
-    scale(BOA_.qState.segParam.blowup, 4, true);
-  }
-
-  /**
-   * Shrink snake.
-   *
-   * @throws BoaException the boa exception
-   */
-  public void shrinkSnake() throws BoaException {
-    scale(-BOA_.qState.segParam.finalShrink, 0.5, false);
-  }
-
-  /**
    * Implode.
    *
    * @throws Exception the exception
@@ -630,18 +611,28 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
+   * Blowup.
+   *
+   * @throws Exception the exception
+   */
+  @Deprecated
+  public void blowup() throws Exception {
+    scale(BOA_.qState.segParam.blowup, 4, true);
+  }
+
+  /**
    * Scale current Snake by amount in increments of stepSize.
    * 
    * <p>Updates centroid and normalised <tt>position</tt>.
    * 
    * @param amount scale
-   * @param stepSize increment
+   * @param stepRes increment
    * @param correct if true it corrects the node distance
    * @throws BoaException if node distance correction failed
    * @see uk.ac.warwick.wsbc.quimp.Shape#scale(double)
-   * @see OutlineProcessor#shrink(double, double, double, double)
+   * @see Outline#scale(double, double, double, double)
    */
-  public void scale(double amount, double stepSize, boolean correct) throws BoaException {
+  public void scale(double amount, double stepRes, boolean correct) throws BoaException {
     if (amount == 0) {
       return;
     }
@@ -649,13 +640,13 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     Node.setClockwise(true);
     // scale the snake by 'amount', in increments of 'stepsize'
     if (amount > 0) {
-      stepSize *= -1; // scale down if amount negative
+      stepRes *= -1; // scale down if amount negative
     }
-    double steps = Math.abs(amount / stepSize);
+    double steps = Math.abs(amount / stepRes);
     // IJ.log(""+steps);
     int j;
     for (j = 0; j < steps; j++) {
-      super.scale(stepSize);
+      super.scale(stepRes);
       if (correct) {
         correctDistance(false);
       }

@@ -2286,7 +2286,7 @@ public class BOA_ implements PlugIn {
     snake.unfreezeAll(); // set freeze tag back to false
 
     if (!qState.segParam.expandSnake) { // shrink a bit to get final outline
-      snake.shrinkSnake();
+      snake.scale(-BOA_.qState.segParam.finalShrink, 0.5, false);
     }
     snake.cutLoops();
     snake.cutIntersects();

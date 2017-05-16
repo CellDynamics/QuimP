@@ -918,6 +918,145 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     return head;
   }
 
+  /**
+   * Scale the outline proportionally.
+   * 
+   * <p>Shape is constricted in given number of <tt>steps</tt>. Method updates shape normales
+   * setting them in inner direction. Results can differ (slightly) on each run due to random
+   * selection of head on point remove.
+   * 
+   * <p>Updates centroid and normalised <tt>position</tt>.
+   * 
+   * @param amount scale
+   * @param stepRes shift done in one step
+   * @param angleTh angle threshold
+   * @param freezeTh freeze threshold
+   */
+  public void scale(double amount, double stepRes, double angleTh, double freezeTh) {
+    int j;
+    int max = 10000;
+    updateNormales(true);
+    double steps = Math.abs(amount / stepRes);
+    for (j = 0; j < steps; j++) {
+      if (getNumVerts() <= 3) {
+        break;
+      }
+      scale(stepRes);
+      updateNormales(true);
+      removeProx(1.5, 1.5);
+      freezeProx(angleTh, freezeTh);
+      if (j > max) {
+        LOGGER.warn("shrink (336) hit max iterations!");
+        break;
+      }
+    }
+
+    if (getNumVerts() < 3) {
+      LOGGER.info("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
+    }
+
+    if (cutSelfIntersects()) {
+      LOGGER.debug("ANA_(382)...fixed ana intersects");
+    }
+
+    if (getNumVerts() < 3) {
+      LOGGER.info("ANA 377_NODES LESS THAN 3");
+    }
+    calcCentroid();
+    setPositions();
+  }
+
+  /**
+   * Remove close vertexes.
+   * 
+   * <p>For each element distances are calculated to next and previous elements. If any of distances
+   * is
+   * smaller than given threshold, element is removed (if not frozen).
+   * 
+   * @param d1th distance threshold between previous and current
+   * @param d2th distance threshold between current and next
+   */
+  public void removeProx(double d1th, double d2th) {
+    if (getNumVerts() <= 3) {
+      return;
+    }
+    Vert v;
+    Vert vl;
+    Vert vr;
+    double d1;
+    double d2;
+    v = getHead();
+    vl = v.getPrev();
+    vr = v.getNext();
+    do {
+      d1 = ExtendedVector2d.lengthP2P(v.getPoint(), vl.getPoint());
+      d2 = ExtendedVector2d.lengthP2P(v.getPoint(), vr.getPoint());
+
+      if ((d1 < d1th || d2 < d2th) && !v.isFrozen()) { // don't remove frozen. May alter angles
+        removeVert(v);
+      }
+      v = v.getNext().getNext();
+      vl = v.getPrev();
+      vr = v.getNext();
+    } while (!v.isHead() && !vl.isHead());
+
+  }
+
+  /**
+   * Freeze a node and corresponding edge if its to close && close to parallel.
+   * 
+   * @param angleTh angle threshold
+   * @param freezeTh freeze threshold
+   */
+  public void freezeProx(double angleTh, double freezeTh) {
+    Vert v;
+    Vert vtmp;
+    ExtendedVector2d closest;
+    ExtendedVector2d edge;
+    ExtendedVector2d link;
+    double dis;
+    double angle;
+
+    v = getHead();
+    do {
+      // if (!v.frozen) {
+      vtmp = getHead();
+      do {
+        if (vtmp.getTrackNum() == v.getTrackNum()
+                || vtmp.getNext().getTrackNum() == v.getTrackNum()) {
+          vtmp = vtmp.getNext();
+          continue;
+        }
+        closest = ExtendedVector2d.PointToSegment(v.getPoint(), vtmp.getPoint(),
+                vtmp.getNext().getPoint());
+        dis = ExtendedVector2d.lengthP2P(v.getPoint(), closest);
+        // System.out.println("dis: " + dis);
+        // dis=1;
+        if (dis < freezeTh) {
+          edge = ExtendedVector2d.unitVector(vtmp.getPoint(), vtmp.getNext().getPoint());
+          link = ExtendedVector2d.unitVector(v.getPoint(), closest);
+          angle = Math.abs(ExtendedVector2d.angle(edge, link));
+          if (angle > Math.PI) {
+            angle = angle - Math.PI; // if > 180, shift back around
+          }
+          // 180
+          angle = angle - 1.5708; // 90 degree shift to centre around zero
+          // System.out.println("angle:" + angle);
+
+          if (angle < angleTh && angle > -angleTh) {
+            v.freeze();
+            vtmp.freeze();
+            vtmp.getNext().freeze();
+          }
+
+        }
+        vtmp = vtmp.getNext();
+      } while (!vtmp.isHead());
+      // }
+      v = v.getNext();
+    } while (!v.isHead());
+  }
+
   /*
    * (non-Javadoc)
    * 

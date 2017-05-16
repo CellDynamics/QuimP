@@ -201,7 +201,7 @@ public abstract class PropagateSeeds {
     /**
      * Step size during object outline shrinking.
      * 
-     * @see OutlineProcessor#shrink(double, double, double, double)
+     * @see Outline#scale(double, double, double, double)
      * @see ANAp
      */
     public static final double stepSize = 0.04;
@@ -239,7 +239,7 @@ public abstract class PropagateSeeds {
      *        subtracted from background)
      * @return List of background and foreground coordinates.
      * @see PropagateSeeds.Morphological#propagateSeed(ImageProcessor, double, double)
-     * @see OutlineProcessor#shrink(double, double, double, double)
+     * @see Outline#scale(double, double, double, double)
      */
     @Override
     public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,

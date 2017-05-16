@@ -12,7 +12,7 @@ import org.scijava.vecmath.Point2d;
 
 /**
  * @author p.baniukiewicz
- *
+ * @see uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessorTest#testShrink()
  */
 public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
 
