@@ -88,7 +88,7 @@ public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
     for (int i = 0; i < obj.getNumNodes(); i++) {
       Node s1 = obj.getHead();
       Node s2 = loaded.getHead();
-      assertEquals(s1.frozen, s2.frozen);
+      assertEquals(s1.isFrozen(), s2.isFrozen());
       assertEquals(s1.getF_total(), s2.getF_total());
       assertEquals(s1.getVel(), s2.getVel());
       assertEquals(s1.point, s2.point);

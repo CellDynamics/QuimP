@@ -327,7 +327,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
             n.fluores[2].y = QuimpToolsCollection.s2d(split[14]);
           }
 
-          n.frozen = false;
+          n.unfreeze();
           index++;
           prevn.setNext(n);
           n.setPrev(prevn);

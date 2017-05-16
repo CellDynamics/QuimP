@@ -79,6 +79,8 @@ public class OutlineProcessor {
   /**
    * Shrink the outline nonlinearly.
    * 
+   * <p>TODO Nonlinearlity not implemented.
+   * 
    * @param steps number of steps - integer
    * @param stepRes length of the step
    * @param angleTh angle threshold
@@ -103,7 +105,7 @@ public class OutlineProcessor {
       }
       n = outline.getHead();
       do {
-        if (!n.frozen) {
+        if (!n.isFrozen()) {
           n.setX(n.getX() - stepRes * 1.0 * n.getNormal().getX());
           n.setY(n.getY() - stepRes * 1.0 * n.getNormal().getY());
         }
@@ -163,6 +165,8 @@ public class OutlineProcessor {
    * setting them in inner direction. Results can differ (slightly) on each run due to random
    * selection of head on point remove.
    * 
+   * <p>Updates centroid and normalised <tt>position</tt>.
+   * 
    * @param steps Number of steps
    * @param stepRes shift done in one step
    * @param angleTh angle threshold
@@ -177,14 +181,7 @@ public class OutlineProcessor {
       if (outline.getNumVerts() <= 3) {
         break;
       }
-      n = outline.getHead();
-      do {
-        if (!n.frozen) {
-          n.setX(n.getX() - stepRes * n.getNormal().getX());
-          n.setY(n.getY() - stepRes * n.getNormal().getY());
-        }
-        n = n.getNext();
-      } while (!n.isHead());
+      outline.scale(stepRes);
       outline.updateNormales(true);
       removeProx();
       freezeProx(angleTh, freezeTh);
@@ -193,6 +190,8 @@ public class OutlineProcessor {
         break;
       }
     }
+    outline.calcCentroid();
+    outline.setPositions();
 
     if (outline.getNumVerts() < 3) {
       LOGGER.info("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
@@ -226,7 +225,7 @@ public class OutlineProcessor {
       d1 = ExtendedVector2d.lengthP2P(v.getPoint(), vl.getPoint());
       d2 = ExtendedVector2d.lengthP2P(v.getPoint(), vr.getPoint());
 
-      if ((d1 < 1.5 || d2 < 1.5) && !v.frozen) { // don't remove frozen. May alter angles
+      if ((d1 < 1.5 || d2 < 1.5) && !v.isFrozen()) { // don't remove frozen. May alter angles
         outline.removeVert(v);
       }
       v = v.getNext().getNext();
@@ -278,9 +277,9 @@ public class OutlineProcessor {
           // System.out.println("angle:" + angle);
 
           if (angle < angleTh && angle > -angleTh) {
-            v.frozen = true;
-            vtmp.frozen = true;
-            vtmp.getNext().frozen = true;
+            v.freeze();
+            vtmp.freeze();
+            vtmp.getNext().freeze();
           }
 
         }

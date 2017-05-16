@@ -597,7 +597,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
   private void shrink(Outline o) {
     double steps = anap.getCortexWidthPixel() / anap.stepRes;
 
-    // shrink provided object
+    // shrink outline
     new OutlineProcessor(o).shrink(steps, anap.stepRes, anap.angleTh, anap.freezeTh);
 
     this.markFrozenNodesNormal(frameOneClone);
@@ -612,7 +612,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
     PolygonRoi pr;
     Vert v = o.getHead();
     do {
-      if (v.frozen) {
+      if (v.isFrozen()) {
         overlay.setStrokeColor(Color.RED);
         norm = new ExtendedVector2d(v.getX(), v.getY());
         norm.addVec(v.getNormal());

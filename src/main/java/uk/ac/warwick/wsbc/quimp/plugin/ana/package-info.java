@@ -30,7 +30,7 @@
  * and outer contours are used to set ROIs within statistics are computed.
  * 
  * Check {@link uk.ac.warwick.wsbc.quimp.plugin.ana.ChannelStat} for details on computed statistics.
- * Moreover, some parmaeters of Outline are filled by ANA: {@link uk.ac.warwick.wsbc.quimp.Outline}
+ * Moreover, some parameters of Outline are filled by ANA: {@link uk.ac.warwick.wsbc.quimp.Outline}
  * is supplemented with intensity data stored at
  * {@link uk.ac.warwick.wsbc.quimp.Vert#fluores}. Depending on UI settings
  * <tt>anap.sampleAtSame</tt>, intensity is sampled for coordinates from other channel or for inner

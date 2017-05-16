@@ -29,6 +29,23 @@ import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
 public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
 
   /**
+   * Threshold value for choosing new head as next or previous element on list if old head is
+   * deleted.
+   * 
+   * <p>This should be used for determining the new head node only in tests, accessed by reflection.
+   * 
+   * <pre>
+   * <code>
+   * Field f = Shape.class.getDeclaredField("threshold");
+   * f.setAccessible(true);
+   * f.setDouble(Shape.class, 1.0);
+   * </code>
+   * </pre>
+   * 
+   * @see #removePoint(PointsList, boolean)
+   */
+  private static double threshold = 0.5;
+  /**
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(Shape.class.getName());
@@ -531,7 +548,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
 
     // if removing head randomly assign a neighbour as new head
     if (n.isHead()) {
-      if (Math.random() > 0.5) {
+      if (Math.random() > threshold) {
         LOGGER.trace("removePoint - getNext");
         head = n.getNext();
       } else {
@@ -694,33 +711,20 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
   }
 
   /**
-   * Scale current Shape by <tt>amount</tt> in increments of <tt>stepSize</tt>.
+   * Scale current Shape by <tt>stepSize</tt>. Centroid and normales need to be updated afterwards.
    * 
-   * @param amount scale
    * @param stepSize increment
    */
-  public void scale(double amount, double stepSize) {
-    // make sure snake access is clockwise
-    PointsList.setClockwise(true);
-    if (amount > 0) {
-      stepSize *= -1; // scale down if amount negative
-    }
-    double steps = Math.abs(amount / stepSize);
-    // IJ.log(""+steps);
+  public void scale(double stepSize) {
     T n;
-    int j;
-    for (j = 0; j < steps; j++) {
-      n = head;
-      do {
-
+    n = head;
+    do {
+      if (!n.isFrozen()) {
         n.setX(n.getX() + stepSize * n.getNormal().getX());
         n.setY(n.getY() + stepSize * n.getNormal().getY());
         n = n.getNext();
-      } while (!n.isHead());
-      // cutSelfIntersects();
-      updateNormales(false);
-      calcCentroid();
-    }
+      }
+    } while (!n.isHead());
   }
 
   /**

@@ -62,6 +62,7 @@
  * 
  * //!<
  */
+
 /**
  * This is the main package.
  * 
@@ -105,5 +106,29 @@
  * </pre>
  *
  * <h1>Code rules</h1>
+ * 
+ * <h1>Other</h1>
+ * <h2>Nondeterministic results</h2>
+ * 
+ * Many algorithms implemented in QuimP related to either Snake or Outline perform node removing
+ * from {@link uk.ac.warwick.wsbc.quimp.PointsList} wrapped by
+ * {@link uk.ac.warwick.wsbc.quimp.Shape}. If head node (can be
+ * {@link uk.ac.warwick.wsbc.quimp.Vert} or {@link uk.ac.warwick.wsbc.quimp.Node} object) is
+ * removed, new head is chosen randomly between next and previous element. This affects end result
+ * making it nondeterministic, especially for iterative shrinking like e.g.
+ * {@link uk.ac.warwick.wsbc.quimp.geom.filters.OutlineProcessor#shrink(double, double, double, double)}
+ * or scaling in {@link uk.ac.warwick.wsbc.quimp.Snake}. To make testing possible, threshold level
+ * defined in {@link uk.ac.warwick.wsbc.quimp.Shape} is static and private to avoid accidental
+ * modification.
+ * 
+ * <p>This filed can be overridden in setUp and restored in after:
+ * 
+ * <pre>
+ * <code>
+ * Field f = Shape.class.getDeclaredField("threshold");
+ * f.setAccessible(true);
+ * f.setDouble(Shape.class, 1.0);
+ * </code>
+ * </pre>
  */
 package uk.ac.warwick.wsbc.quimp;

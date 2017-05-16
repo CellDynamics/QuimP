@@ -629,16 +629,17 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Scale current Snake by \c amount in increments of \c stepSize
+   * Scale current Snake by amount in increments of stepSize.
+   * 
+   * <p>Updates centroid and normalised <tt>position</tt>.
    * 
    * @param amount scale
    * @param stepSize increment
    * @param correct if true it corrects the node distance
    * @throws BoaException if node distance correction failed
-   * @see uk.ac.warwick.wsbc.quimp.Shape#scale(double, double)
+   * @see uk.ac.warwick.wsbc.quimp.Shape#scale(double)
    */
   public void scale(double amount, double stepSize, boolean correct) throws BoaException {
-    // TODO use outlineprocesor (but does not convert)
     if (amount == 0) {
       return;
     }
@@ -650,23 +651,17 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
     double steps = Math.abs(amount / stepSize);
     // IJ.log(""+steps);
-    Node n;
     int j;
     for (j = 0; j < steps; j++) {
-      n = head;
-      do {
-        if (!n.isFrozen()) {
-          n.setX(n.getX() + stepSize * n.getNormal().getX());
-          n.setY(n.getY() + stepSize * n.getNormal().getY());
-        }
-        n = n.getNext();
-      } while (!n.isHead());
+      super.scale(stepSize);
       if (correct) {
         correctDistance(false);
       }
       cutLoops();
       updateNormales(BOA_.qState.segParam.expandSnake);
     }
+    calcCentroid();
+    setPositions();
   }
 
   /**

@@ -167,16 +167,7 @@ public class Node extends PointsList<Node> {
   public String toString() {
     return "Node [vel=" + vel + ", F_total=" + F_total + ", prelimPoint=" + prelimPoint + ", point="
             + point + ", normal=" + normal + ", tan=" + tan + ", head=" + head + ", tracknumber="
-            + tracknumber + ", position=" + position + ", frozen=" + frozen + "]";
-  }
-
-  /**
-   * Setter to frozen field.
-   * 
-   * @return frozen
-   */
-  public boolean isFrozen() {
-    return frozen;
+            + tracknumber + ", position=" + position + ", frozen=" + isFrozen() + "]";
   }
 
   /**
