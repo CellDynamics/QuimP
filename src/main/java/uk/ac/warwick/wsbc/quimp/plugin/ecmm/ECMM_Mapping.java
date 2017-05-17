@@ -387,6 +387,8 @@ public class ECMM_Mapping {
 
       if (ECMp.plot) {
         plot.setDrawingFrame(f);
+        o1.calcCentroid(); // calc it again as it is broken in loop by migrate() where Outline is
+        // initialzied from one vertex
         plot.centre = o1.getCentroid();
 
         if (ECMp.drawInitialOutlines) {

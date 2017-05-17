@@ -293,7 +293,13 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
       v = v.getNext();
     } while (!v.isHead());
 
-    centroid.multiply(1d / (6 * this.calcArea()));
+    double area = this.calcArea();
+    if (area != 0) {
+      centroid.multiply(1d / (6 * this.calcArea()));
+    } else {
+      centroid.setX(0);
+      centroid.setY(0);
+    }
   }
 
   /**

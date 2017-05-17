@@ -195,9 +195,8 @@ public class HatSnakeFilter implements IPadArray {
     List<Point2d> ret = new ArrayList<>();
     try {
       ret = runPlugin(data, null);
-    } catch (QuimpException e) {
-      // for null==orgIp will be newer thrown, but in case
-      throw new IllegalStateException(e);
+    } catch (Exception e) {
+      throw new QuimpPluginException(e);
     }
     return ret;
   }
@@ -214,11 +213,9 @@ public class HatSnakeFilter implements IPadArray {
    * 
    * @return Processed input list, size of output list may be different than input. Empty output
    *         is also allowed.
-   * @throws QuimpPluginException on wrong input data
-   * @throws QuimpException on problem with creating outline from points
+   * @throws QuimpException on problem with creating outline from points, on wrong input data
    */
-  public List<Point2d> runPlugin(List<Point2d> data, ImageProcessor orgIp)
-          throws QuimpPluginException, QuimpException {
+  public List<Point2d> runPlugin(List<Point2d> data, ImageProcessor orgIp) throws QuimpException {
     points = data;
     List<Point2d> shCont = new ArrayList<>();
     // create shrunk outline to sample intensity - one of the parameters used for candidate rank
