@@ -269,7 +269,7 @@ public abstract class PropagateSeeds {
       for (Outline o : outlines) {
         // shrink outline - copy as we want to expand it later
         Outline copy = new Outline(o);
-        new OutlineProcessor(copy).shrinknl(stepsshrink, stepSize, 0.1, 1); // taken from anap
+        new OutlineProcessor<Outline>(copy).shrinknl(stepsshrink, stepSize, 0.1, 1); // from anap
         copy.unfreezeAll();
         Roi fr = copy.asFloatRoi();
         fr.setFillColor(Color.WHITE);
@@ -280,7 +280,7 @@ public abstract class PropagateSeeds {
       for (Outline o : outlines) {
         // frezeTh influences artifacts that appear when concave regions are expanded
         // 0 prevent a liitle
-        new OutlineProcessor(o).shrinknl(stepsexp, -stepSize, 0.1, 0); // taken from anap
+        new OutlineProcessor<Outline>(o).shrinknl(stepsexp, -stepSize, 0.1, 0); // taken from anap
         o.unfreezeAll();
         Roi fr = o.asFloatRoi();
         fr.setFillColor(Color.WHITE);

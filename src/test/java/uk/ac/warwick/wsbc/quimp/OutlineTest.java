@@ -76,7 +76,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     Snake snake = new Snake(list, 10);
     Outline outline = new Outline(snake);
 
-    assertThat(outline.POINTS, is(snake.POINTS));
+    assertThat(outline.getNumPoints(), is(snake.getNumPoints()));
     assertThat(outline.getCentroid(), is(snake.getCentroid()));
     assertThat(outline.nextTrackNumber, is(snake.nextTrackNumber));
     assertThat(outline.getHead(), instanceOf(Vert.class));

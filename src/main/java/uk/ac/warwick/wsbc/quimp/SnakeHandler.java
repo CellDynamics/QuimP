@@ -216,7 +216,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
       s = getStoredSnake(i);
       s.setPositions(); // calculate position field
       pw.write("\n#Frame " + i);
-      write(pw, i + 1, s.getNumNodes(), s.getHead());
+      write(pw, i + 1, s.getNumPoints(), s.getHead());
     }
     pw.close();
     BOA_.qState.writeParams(ID, startFrame, endFrame);
@@ -265,7 +265,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
       if (i != 0) {
         pw.print("\n");
       } // no new line at top
-      pw.print(finalSnakes[i].getNumNodes());
+      pw.print(finalSnakes[i].getNumPoints());
 
       Node n = finalSnakes[i].getHead();
       do {
@@ -287,7 +287,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
       if (i != 0) {
         pw.print("\n");
       } // no new line at top
-      pw.print(finalSnakes[i].getNumNodes());
+      pw.print(finalSnakes[i].getNumPoints());
 
       Node n = finalSnakes[i].getHead();
       do {

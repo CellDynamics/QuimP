@@ -84,8 +84,8 @@ public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
     Serializer<Snake> loader = new Serializer<>(Snake.class, QuimP.TOOL_VERSION);
     loaded = loader.load(tmpdir + "snake1.tmp").obj;
     LOGGER.debug(loaded.toString());
-    assertEquals(obj.getNumNodes(), loaded.getNumNodes());
-    for (int i = 0; i < obj.getNumNodes(); i++) {
+    assertEquals(obj.getNumPoints(), loaded.getNumPoints());
+    for (int i = 0; i < obj.getNumPoints(); i++) {
       Node s1 = obj.getHead();
       Node s2 = loaded.getHead();
       assertEquals(s1.isFrozen(), s2.isFrozen());

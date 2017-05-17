@@ -320,8 +320,8 @@ class Sector {
   }
 
   private FloatPolygon ioPolygons(Outline charges) { // in and out polygons
-    float[] x = new float[charges.getNumVerts()];
-    float[] y = new float[charges.getNumVerts()];
+    float[] x = new float[charges.getNumPoints()];
+    float[] y = new float[charges.getNumPoints()];
 
     int i = 0;
     Vert v = charges.getHead();
