@@ -95,22 +95,36 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
    */
   public Shape(T h, int n) {
     head = h;
+    T he = checkIsHead(); // can override head
+    if (he == null) {
+      LOGGER.info("No head in list. Selecting " + h + "as head");
+      h.setHead(true);
+      head = h;
+    } else {
+      if (he != h) {
+        LOGGER.info("Head at different position than given initial element. Selecting " + he
+                + "as head");
+      }
+      head = he;
+    }
+
     POINTS = n;
     nextTrackNumber = n + 1;
   }
 
   /**
-   * Create Shape from one point, created Shape is looped. If <tt>h</tt> is a list, only
+   * Create Shape from one point, created Shape will be looped. If <tt>h</tt> is a list, only
    * <tt>h</tt> will be maintained and list will be unlinked.
    * 
    * @param h head point of the list
    */
   public Shape(final T h) {
-    this(h, 1);
+    head = h;
     head.setHead(true);
     head.setNext(head);
     head.setPrev(head);
     nextTrackNumber = head.getTrackNum() + 1;
+    POINTS = 1;
   }
 
   /**
@@ -412,7 +426,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
    * @param nodeIndex Index of node of new head
    */
   public void setHead(int nodeIndex) {
-    if (!checkIsHead()) {
+    if (checkIsHead() == null) {
       return;
     }
     T n = head;
@@ -463,19 +477,23 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
    * 
    * <p>Traverse along first 10000 Node elements and check if any of them is head.
    * 
-   * @return true if there is head of snake
+   * @return found head or null if not found
    */
-  public boolean checkIsHead() {
+  public T checkIsHead() {
     T n = head;
     int count = 0;
     do {
       if (count++ > MAX_NODES) {
-        LOGGER.debug("Head lost!!!!");
-        return false;
+        LOGGER.warn("Head lost!!!!");
+        return null; // list looped but no head node
       }
-      n = n.getNext();
+      T p = n.getPrev(); // prev to current
+      n = n.getNext(); // next to current
+      if (n == null || p == null) { // each curent must have next and previous
+        throw new IllegalArgumentException("List is not looped");
+      }
     } while (!n.isHead());
-    return true;
+    return n;
   }
 
   /**

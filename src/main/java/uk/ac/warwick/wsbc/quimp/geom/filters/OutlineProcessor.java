@@ -15,11 +15,10 @@ import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
  * Support algorithms for processing outlines.
  * 
  * @author p.baniukiewicz
- * @param <T>
+ * @param <T> Outline or Snake class
  * @see ANA_
  */
 public class OutlineProcessor<T extends Shape<?>> {
-  // TODO Use generic types here to process snakes and outlines
   /**
    * The Constant LOGGER.
    */
@@ -40,47 +39,25 @@ public class OutlineProcessor<T extends Shape<?>> {
    * Compute running mean on <tt>Outline</tt>.
    * 
    * @param window Window size
-   * @return array of filtered coefficients in order of vertexes.
+   * @deprecated Will not be used after implementeing HatSnakeFilter for getting weights.
    */
-  public double[] runningmeanfilter(int window) {
-    // FIXME There is no looping, first and last vertexes are skipped.
-    // FIXME It is very specific according to use curvature - move to class of use
+  private void runningmeanfilter(int window) {
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
-    int half = window / 2;
-    // copy to array
-    double[] curv = new double[outline.getNumPoints()];
-    double[] curvf = new double[outline.getNumPoints()];
-    int l = 0;
-    Vert n = (Vert) outline.getHead();
-    do {
-      curv[l] = n.curvatureLocal;
-      n = n.getNext();
-      l++;
-    } while (!n.isHead());
-    // LOGGER.debug(
-    // "Min=" + QuimPArrayUtils.arrayMin(curv) + " Max=" + QuimPArrayUtils.arrayMax(curv));
-
-    for (int i = half; i < curv.length - 1 - half; i++) {
-      double min = 0;
-      for (int inner = i - half; inner <= i + half; inner++) {
-        // if (curv[inner] < min)
-        min += curv[inner];
-      }
-      curvf[i] = min / window;
-    }
-
+    double[] curv;
+    int l;
+    Vert n;
+    curv = getCurvatureLocal();
+    runningMean(curv, window);
+    // copy back to outline
     n = (Vert) outline.getHead();
     l = 0;
     do {
-      n.curvatureLocal = curvf[l];
+      n.curvatureLocal = curv[l];
       n = n.getNext();
       l++;
     } while (!n.isHead());
-
-    return curvf;
-
   }
 
   /**
@@ -95,6 +72,8 @@ public class OutlineProcessor<T extends Shape<?>> {
    * @see Outline#scale(double, double, double, double)
    */
   public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh) {
+    // later drop any local feature like curvature and use rather snakehatfileter to get proper
+    // weighting
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
@@ -177,6 +156,7 @@ public class OutlineProcessor<T extends Shape<?>> {
       n.setX(xcoords[count]);
       n.setY(ycoords[count]);
       n = n.getNext();
+      count++;
     } while (!n.isHead());
     outline.calcCentroid();
     outline.setPositions();
@@ -207,6 +187,27 @@ public class OutlineProcessor<T extends Shape<?>> {
     }
     // replace input array
     System.arraycopy(ret, 0, data, 0, data.length);
+  }
+
+  /**
+   * Return local curvature as array. Applies to Outline.class, returns array of zeros for other
+   * classes.
+   * 
+   * @return local curvature values or aray of zeros
+   * @see Vert#curvatureLocal
+   */
+  public double[] getCurvatureLocal() {
+    double[] ret = new double[outline.getNumPoints()];
+    if (outline instanceof Outline) {
+      int l = 0;
+      Vert n = (Vert) outline.getHead();
+      do {
+        ret[l] = n.curvatureLocal;
+        n = n.getNext();
+        l++;
+      } while (!n.isHead());
+    }
+    return ret;
   }
 
   private double fcn(double curv) {

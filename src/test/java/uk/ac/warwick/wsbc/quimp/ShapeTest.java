@@ -1,7 +1,9 @@
 package uk.ac.warwick.wsbc.quimp;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.List;
 
@@ -112,9 +114,10 @@ public class ShapeTest {
    */
   @Test
   public void testCheckIsHead() throws Exception {
-    assertThat(test.checkIsHead(), is(true));
+    assertThat(test.checkIsHead(), is(not(nullValue())));
+    assertThat(test.checkIsHead(), is(head));
     head.setHead(false); // accidently remove head marker from wrapped list
-    assertThat(test.checkIsHead(), is(false));
+    assertThat(test.checkIsHead(), is(nullValue()));
   }
 
   /**
@@ -131,6 +134,42 @@ public class ShapeTest {
     test.setHead(3); // set to id=3
     assertThat(test.getHead(), is(v2));
     assertThat(head.isHead(), is(false));
+  }
+
+  /**
+   * Test of Shape constructor.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testShape() throws Exception {
+    // looped list with head
+    TestShape ts = new TestShape(head, 4);
+    assertThat(ts.getHead(), is(head));
+
+    // looped list with head but given other vertex
+    TestShape ts1 = new TestShape(v1, 4);
+    assertThat(ts1.getHead(), is(head)); // original head is discovered
+
+    // looped list no head
+    head.setHead(false);
+    TestShape ts2 = new TestShape(v1, 4);
+    assertThat(ts2.getHead(), is(v1)); // head is set to current
+
+  }
+
+  /**
+   * Test of Shape constructor.
+   * 
+   * @throws Exception
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testShape_1() throws Exception {
+    // not looped list no head
+    head.setHead(false);
+    head.setPrev(null);
+    v3.setNext(null);
+    TestShape ts2 = new TestShape(v1, 4);
   }
 
   /**

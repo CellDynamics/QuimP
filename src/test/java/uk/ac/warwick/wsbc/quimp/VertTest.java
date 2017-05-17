@@ -95,7 +95,7 @@ public class VertTest {
   }
 
   /**
-   * Produces four element list of random vertexes.
+   * Produces four element list of random vertexes. List is looped
    * 
    * @return random vertex (head) is first on list
    */

@@ -18,7 +18,9 @@ import org.scijava.vecmath.Point2d;
 
 import ij.IJ;
 import ij.ImagePlus;
+import uk.ac.warwick.wsbc.quimp.Node;
 import uk.ac.warwick.wsbc.quimp.Outline;
+import uk.ac.warwick.wsbc.quimp.Snake;
 import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.quimp.plugin.binaryseg.BinarySegmentation;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
@@ -150,9 +152,30 @@ public class OutlineProcessorTest {
    */
   @Test
   public void testSmooth() throws Exception {
-    throw new RuntimeException("not yet implemented");
+    double[] x = { 0, 5, 10, 10, 10, 5, 0, 0 };
+    double[] y = { 0, 0, 0, 5, 10, 10, 10, 5 };
+    Outline o = new QuimpDataConverter(x, y).getOutline(0);
 
-    // TODO for one node as well
+    double[] xe = { 1.6667, 5.0000, 8.3333, 10.0000, 8.3333, 5.0000, 1.6667, 0 };
+    double[] ye = { 1.6667, 0, 1.6667, 5.0000, 8.3333, 10.0000, 8.3333, 5.0000 };
+
+    new OutlineProcessor<Outline>(o).smooth(3);
+    assertThat(ArrayUtils.toObject(o.xtoArr()), arrayCloseTo(xe, 1e-4));
+    assertThat(ArrayUtils.toObject(o.ytoArr()), arrayCloseTo(ye, 1e-4));
+
+    // one vertex
+    Node v = new Node(5, 3, 0);
+    v.setNext(v);
+    v.setPrev(v);
+    Snake o1 = new Snake(v, 1, 0);
+
+    double[] xe1 = { 5 };
+    double[] ye1 = { 3 };
+
+    new OutlineProcessor<Snake>(o1).smooth(3);
+    assertThat(ArrayUtils.toObject(o1.xtoArr()), arrayCloseTo(xe1, 1e-4));
+    assertThat(ArrayUtils.toObject(o1.ytoArr()), arrayCloseTo(ye1, 1e-4));
+
   }
 
 }
