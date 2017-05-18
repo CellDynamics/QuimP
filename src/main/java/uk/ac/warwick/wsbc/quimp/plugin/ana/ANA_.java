@@ -595,7 +595,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
   private void shrink(Outline o) {
     // shrink outline
-    o.scale(anap.getCortexWidthPixel(), anap.stepRes, anap.angleTh, anap.freezeTh);
+    o.scale(anap.getCortexWidthPixel(), -anap.stepRes, anap.angleTh, anap.freezeTh);
 
     this.markFrozenNodesNormal(frameOneClone);
     orgIpl.draw();

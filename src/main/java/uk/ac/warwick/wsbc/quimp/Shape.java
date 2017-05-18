@@ -746,8 +746,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
       if (!n.isFrozen()) {
         n.setX(n.getX() + stepSize * n.getNormal().getX());
         n.setY(n.getY() + stepSize * n.getNormal().getY());
-        n = n.getNext();
       }
+      n = n.getNext();
     } while (!n.isHead());
   }
 
