@@ -34,16 +34,13 @@
  * is supplemented with intensity data stored at
  * {@link uk.ac.warwick.wsbc.quimp.Vert#fluores}. Depending on UI settings
  * <tt>anap.sampleAtSame</tt>, intensity is sampled for coordinates from other channel or for inner
- * contour nodes resulting from ECMM mapping between outer contour and inner contour.
- * 
- * <p>For the first
+ * contour nodes resulting from ECMM mapping between outer contour and inner contour. For the first
  * case fluorescence is computed as mean of 9-point stencil located at {x,y} position (taken from
- * other channel).
- * 
- * <p>For the second case fluorescence data are computed by ECMM
+ * other channel). For the second case fluorescence data are computed by ECMM
  * {@link uk.ac.warwick.wsbc.quimp.plugin.ecmm.ECMM_Mapping#runByANA(uk.ac.warwick.wsbc.quimp.OutlineHandler, ij.process.ImageProcessor, double)}
  * by <tt>ODEsolver#euler</tt> from {@link uk.ac.warwick.wsbc.quimp.plugin.ecmm} package. As
- * previously 9-point stencil is used.
+ * previously 9-point stencil is used. (see
+ * {@link uk.ac.warwick.wsbc.quimp.plugin.ecmm.ODEsolver#sampleFluo(ij.process.ImageProcessor, int, int)}
  * 
  * @author r.tyson
  * @author p.baniukiewicz

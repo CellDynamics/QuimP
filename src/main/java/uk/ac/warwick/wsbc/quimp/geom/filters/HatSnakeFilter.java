@@ -18,6 +18,7 @@ import uk.ac.warwick.wsbc.quimp.QuimP;
 import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.geom.BasicPolygons;
 import uk.ac.warwick.wsbc.quimp.plugin.QuimpPluginException;
+import uk.ac.warwick.wsbc.quimp.plugin.ecmm.ODEsolver;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.IPadArray;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
 
@@ -274,11 +275,11 @@ public class HatSnakeFilter implements IPadArray {
       LOGGER.trace("circ " + tmpCirc);
       // calculate weighting for circularity
       List<Point2d> pointswindow = points.subList(0, window); // get points for window only
-      List<Point2d> shContnowindow = shCont.subList(0, window);
+      List<Point2d> shpointswindow = shCont.subList(0, window); // window points for shrank contour
       LOGGER.trace("win         : " + pointswindow.toString());
-      LOGGER.trace("windowshCont: " + shContnowindow.toString());
       // will return 1.0 if there is no image provided
-      tmpInt = getIntensity(shContnowindow, orgIp);
+      tmpInt = getIntensity(shpointswindow, orgIp); // mean intensity for window points
+      tmpInt = tmpInt == 0.0 ? 1.0 : tmpInt; // remove 0 as we divide weight later
       LOGGER.trace("mInt  :" + tmpInt);
       tmpCirc /= (getWeighting(pointswindow) * tmpInt); // calculate weighting for window content
       LOGGER.trace("Wcirc :" + tmpCirc);
@@ -423,18 +424,22 @@ public class HatSnakeFilter implements IPadArray {
     lookForb = (lookFor == CAVITIES ? true : false);
   }
 
-  double getIntensity(List<Point2d> shContnowindow, ImageProcessor orgIp) {
+  /**
+   * Compute mean intensity for list of points. 3x3 stencil is used for each point.
+   * 
+   * @param points
+   * @param orgIp
+   * @return 1.0 if input image is null. mean otherwise
+   */
+  double getIntensity(List<Point2d> points, ImageProcessor orgIp) {
     double meanI = 0.0;
     if (orgIp == null) {
       return 1.0; // case where intensity is not used
     }
-    for (Point2d p : shContnowindow) {
-      meanI += orgIp.getPixelValue((int) p.x, (int) p.y);
+    for (Point2d p : points) {
+      meanI += ODEsolver.sampleFluo(orgIp, (int) Math.round(p.getX()), (int) Math.round(p.getY()));
     }
-    meanI /= shContnowindow.size();
-    if (meanI == 0.0) {
-      meanI = 1;
-    }
+    meanI /= points.size();
     return meanI;
   }
 

@@ -69,7 +69,7 @@ public class HatSnakeFilterRun {
     // filter
     final int window = 17;
     final int pnum = 1;
-    final double alev = 0.5;
+    final double alev = 0.7;
 
     ImagePlus filtered = NewImage.createByteImage("filt", mask.getWidth(), mask.getHeight(),
             mask.getStackSize(), NewImage.GRAY8);
@@ -90,8 +90,8 @@ public class HatSnakeFilterRun {
       // ObjectOutputStream oos = new ObjectOutputStream(fos);
       // oos.writeObject(rr);
 
-      List<Point2d> retf =
-              hsf.runPlugin(ssR.getOutlineasPoints(), orgim.getStack().getProcessor(i));
+      List<Point2d> cc = ssR.getOutlineasPoints();
+      List<Point2d> retf = hsf.runPlugin(cc, orgim.getStack().getProcessor(i));
       Roi ssRF = new QuimpDataConverter(retf).getSnake(0).asFloatRoi();
 
       // plot test
