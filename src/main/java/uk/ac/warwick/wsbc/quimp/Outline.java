@@ -584,34 +584,42 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   }
 
   /**
-   * correctDensity.
+   * Insert or remove nodes according to criteria.
    * 
-   * @param max max distance
-   * @param min min distance
+   * <p>It does not redistribute nodes equally. Removing has priority over inserting, inserted
+   * vertex can be next removed if it is too close. Does not work vice-versa as inserting does not
+   * push current node forward (to next in list) but removing does. And removing condition is
+   * checked first
+   * 
+   * @param max max allowed distance
+   * @param min min allowed distance
    */
   public void correctDensity(double max, double min) {
     double dist;
     Vert v = head;
-    int n = -1;
+    boolean canEnd = true;
     do {
       dist = ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
-
+      canEnd = true;
       if (dist < min) {
         if (!v.getNext().isHead()) {
           removeVert(v.getNext()); // just remove
-          v = v.getNext();
+          v = v.getNext(); // and go to next
         } else {
           removeVert(v.getNext()); // remove, do not know where is new head, can be current or next
+          break; // end loop - next was head so we circulated all
         }
       } else if (dist > max) {
         this.insertInterpolatedVert(v); // insert after v
-        v = v.getNext(); // and point to it
+        // if head do not end, this is linear approx, inserted can be still farer than max. We check
+        // this in next iter (current node des not change)
+        if (v.isHead()) {
+          canEnd = false;
+        }
       } else {
         v = v.getNext();
       }
-      n++;
-      // prevent to skipping getNext() due to adding and removing vert
-    } while (!(v.isHead() && n != 0) && n <= getNumPoints() + 1);
+    } while (!(v.isHead() && canEnd));
   }
 
   /**

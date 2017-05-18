@@ -143,7 +143,6 @@ public class EcmmMappingTest {
    * @throws Exception Exception
    */
   @Test
-  @Ignore
   public void testECMM_MappingFile_paQP() throws Exception {
     // only segmentation
     Path boapa =
