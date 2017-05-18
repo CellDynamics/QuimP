@@ -1,6 +1,11 @@
 package uk.ac.warwick.wsbc.quimp.geom.filters;
 
 import java.awt.Color;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +17,7 @@ import org.scijava.vecmath.Vector2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ij.IJ;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Outline;
 import uk.ac.warwick.wsbc.quimp.QuimP;
@@ -217,13 +223,14 @@ public class HatSnakeFilter implements IPadArray {
    * @throws QuimpException on problem with creating outline from points, on wrong input data
    */
   public List<Point2d> runPlugin(List<Point2d> data, ImageProcessor orgIp) throws QuimpException {
+    Path tmpDebug;
     points = data;
     List<Point2d> shCont = new ArrayList<>();
     // create shrunk outline to sample intensity - one of the parameters used for candidate rank
     // this is unnecessary if there is no image provided but kept here for code simplicity
     Outline outline = new QuimpDataConverter(data).getOutline(0); // FIXME What if more contours?
     if (outline != null) {
-      outline.scale(shrinkAmount, 0.3, 0.1, 0.01);
+      outline.scale(shrinkAmount, -0.3, 0.1, 0.01);
       outline.unfreezeAll();
       shCont = outline.asList();
     } else {
@@ -232,6 +239,14 @@ public class HatSnakeFilter implements IPadArray {
     // internal parameters are not updated here but when user click apply
     LOGGER.debug(String.format("Run plugin with params: window %d, pnum %d, alev %f", window, pnum,
             alev));
+
+    if (QuimP.SUPER_DEBUG) {
+      tmpDebug = Paths.get(System.getProperty("java.io.tmpdir"), "HatSnakeFilter_debug");
+      Path shContDebug = Paths.get(System.getProperty("java.io.tmpdir"), "shCont_debug");
+      Path pointsDebug = Paths.get(System.getProperty("java.io.tmpdir"), "points_debug");
+      debugSaveList(shContDebug, shCont);
+      debugSaveList(pointsDebug, points);
+    }
 
     BasicPolygons bp = new BasicPolygons(); // provides geometry processing
     List<Point2d> out = new ArrayList<Point2d>(); // output table for plotting temporary results
@@ -415,6 +430,27 @@ public class HatSnakeFilter implements IPadArray {
   }
 
   /**
+   * Debug - saves list as tab separated coordinates.
+   * 
+   * @param name name and path
+   * @param list list to save
+   */
+  private void debugSaveList(Path name, List<Point2d> list) {
+    try {
+      PrintWriter pw = new PrintWriter(new FileWriter(name.toFile()), true);
+      int l = 0;
+      pw.print(list.size() + "\n");
+      for (Point2d p : list) {
+        pw.print(l + "\t" + IJ.d2s(p.getX(), 2) + "\t" + IJ.d2s(p.getY(), 2) + "\n");
+        l++;
+      }
+      pw.close();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
    * Set detection mode.
    * 
    * @param mode can be CAVITIES, PROTRUSIONS, BOTH
@@ -427,8 +463,8 @@ public class HatSnakeFilter implements IPadArray {
   /**
    * Compute mean intensity for list of points. 3x3 stencil is used for each point.
    * 
-   * @param points
-   * @param orgIp
+   * @param points image coordinates
+   * @param orgIp image
    * @return 1.0 if input image is null. mean otherwise
    */
   double getIntensity(List<Point2d> points, ImageProcessor orgIp) {
