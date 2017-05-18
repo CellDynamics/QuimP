@@ -1,5 +1,7 @@
 package uk.ac.warwick.wsbc.quimp.utils.test.matchers.file;
 
+import java.io.File;
+
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -62,6 +64,18 @@ public class QuimpObjectMatcher<T extends IQuimpSerialize> extends TypeSafeDiagn
     Matcher<?> equalsMatcher = CoreMatchers.equalTo(ref);
     if (!equalsMatcher.matches(test)) {
       mismatchDescription.appendText("was: ").appendDescriptionOf(equalsMatcher);
+      try {
+        String tmpfile = File.createTempFile("QuimpObjectMatcher_cmp", "", null).toString();
+        comparedSer.setPretty();
+        comparedSer.save(tmpfile);
+
+        String expfile = File.createTempFile("QuimpObjectMatcher_exp", "", null).toString();
+        expectedSer.setPretty();
+        expectedSer.save(expfile);
+        mismatchDescription.appendText("Saved in " + tmpfile + " and " + expfile);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       return false;
     } else {
       return true;

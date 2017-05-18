@@ -29,6 +29,8 @@ public class FileMatchers {
   /**
    * Compare two serializable objects through their JSon output. Strictly related to QuimP.
    * 
+   * <p>Dump both jsons to tmp if test failed.
+   * 
    * <pre>
    * <code>
    * assertThat(compared, givesSameJson(expected);

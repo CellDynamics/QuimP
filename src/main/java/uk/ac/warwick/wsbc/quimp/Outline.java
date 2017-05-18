@@ -597,9 +597,15 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
       dist = ExtendedVector2d.lengthP2P(v.getPoint(), v.getNext().getPoint());
 
       if (dist < min) {
-        removeVert(v.getNext());
+        if (!v.getNext().isHead()) {
+          removeVert(v.getNext()); // just remove
+          v = v.getNext();
+        } else {
+          removeVert(v.getNext()); // remove, do not know where is new head, can be current or next
+        }
       } else if (dist > max) {
-        this.insertInterpolatedVert(v);
+        this.insertInterpolatedVert(v); // insert after v
+        v = v.getNext(); // and point to it
       } else {
         v = v.getNext();
       }

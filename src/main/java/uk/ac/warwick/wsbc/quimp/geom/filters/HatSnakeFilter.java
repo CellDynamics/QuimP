@@ -1,6 +1,5 @@
 package uk.ac.warwick.wsbc.quimp.geom.filters;
 
-import java.awt.Color;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -224,14 +223,18 @@ public class HatSnakeFilter implements IPadArray {
    */
   public List<Point2d> runPlugin(List<Point2d> data, ImageProcessor orgIp) throws QuimpException {
     Path tmpDebug;
+    PrintWriter pw = null;
     points = data;
     List<Point2d> shCont = new ArrayList<>();
     // create shrunk outline to sample intensity - one of the parameters used for candidate rank
     // this is unnecessary if there is no image provided but kept here for code simplicity
     Outline outline = new QuimpDataConverter(data).getOutline(0); // FIXME What if more contours?
     if (outline != null) {
+      // shrink original to samle intensities close cortex - used for detecting vesicles that are
+      // holes in cortex area.
       outline.scale(shrinkAmount, -0.3, 0.1, 0.01);
       outline.unfreezeAll();
+      outline.correctDensity(1, 0.5); // dense shape, shrank has different number of verts than org
       shCont = outline.asList();
     } else {
       throw new QuimpPluginException("Conversion error");
@@ -242,6 +245,11 @@ public class HatSnakeFilter implements IPadArray {
 
     if (QuimP.SUPER_DEBUG) {
       tmpDebug = Paths.get(System.getProperty("java.io.tmpdir"), "HatSnakeFilter_debug");
+      try {
+        pw = new PrintWriter(new FileWriter(tmpDebug.toFile()), true);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
       Path shContDebug = Paths.get(System.getProperty("java.io.tmpdir"), "shCont_debug");
       Path pointsDebug = Paths.get(System.getProperty("java.io.tmpdir"), "points_debug");
       debugSaveList(shContDebug, shCont);
@@ -280,49 +288,41 @@ public class HatSnakeFilter implements IPadArray {
     double tmpCirc;
     double tmpInt; // mean intensity along contour in window
     for (int r = 0; r < points.size(); r++) {
-      LOGGER.trace("------- Iter: " + r + "-------");
-      LOGGER.trace("points: " + points.toString());
-      LOGGER.trace("shCont: " + shCont.toString());
       // get all points except window. Window has constant position 0 - (window-1)
       List<Point2d> pointsnowindow = points.subList(window, points.size());
-      LOGGER.trace("windowPoints: " + pointsnowindow.toString());
       tmpCirc = getCircularity(pointsnowindow);
-      LOGGER.trace("circ " + tmpCirc);
       // calculate weighting for circularity
       List<Point2d> pointswindow = points.subList(0, window); // get points for window only
-      List<Point2d> shpointswindow = shCont.subList(0, window); // window points for shrank contour
-      LOGGER.trace("win         : " + pointswindow.toString());
       // will return 1.0 if there is no image provided
-      tmpInt = getIntensity(shpointswindow, orgIp); // mean intensity for window points
+      tmpInt = getIntensity(shCont, pointswindow, orgIp); // mean intensity for window points
       tmpInt = tmpInt == 0.0 ? 1.0 : tmpInt; // remove 0 as we divide weight later
-      LOGGER.trace("mInt  :" + tmpInt);
-      tmpCirc /= (getWeighting(pointswindow) * tmpInt); // calculate weighting for window content
-      LOGGER.trace("Wcirc :" + tmpCirc);
-      circ.add(tmpCirc); // store weighted circularity for shape without window
+      double rank = tmpCirc;
+      rank /= (getWeighting(pointswindow) * tmpInt); // calculate weighting for window content
+      circ.add(rank); // store weighted circularity for shape without window
       // check if points of window are convex according to shape without these points
       if (lookForb == true) {
         convex.add(bp.arePointsInside(pointsnowindow, pointswindow)); // true if concave
       } else {
         convex.add(bp.isanyPointInside(pointsnowindow, pointswindow)); // old code
       }
-      LOGGER.trace("con: " + convex.get(convex.size() - 1));
-      // move window to next position
-      // rotates by -1 what means that on first n positions
+      // move window to next position rotates by -1 what means that on first n positions
       // of points there are different values simulate window
       // first iter 0 1 2 3 4 5... (w=[0 1 2])
       // second itr 1 2 3 4 5 0... (w=[1 2 3])
       // last itera 5 0 1 2 3 4... (w=[5 0 1])
       Collections.rotate(points, -1);
       Collections.rotate(shCont, -1);
-    }
-
-    if (QuimP.SUPER_DEBUG && orgIp != null) {
-      // add contour to input original image
-      orgIp.setColor(Color.WHITE);
-      if (outline != null) {
-        outline.asFloatRoi().drawPixels(orgIp);
+      // dump to file
+      if (QuimP.SUPER_DEBUG) {
+        pw.print(r + "\t");
+        pw.print(IJ.d2s(tmpCirc, 15) + "\t");
+        pw.print(IJ.d2s(tmpInt, 15) + "\t");
+        pw.print(IJ.d2s(rank, 15) + "\t");
+        pw.print(pointswindow + "\t");
+        pw.println();
       }
     }
+
     // normalize circularity to 1
     double maxCirc = Collections.max(circ);
     LOGGER.trace("Max circ=" + maxCirc);
@@ -357,6 +357,7 @@ public class HatSnakeFilter implements IPadArray {
         break;
       }
       if (circsorted.get(i) < alev) {
+        LOGGER.info("break - alev=" + circsorted.get(i));
         break; // stop searching because all i+n are smaller as well
       }
       if (found > 0) {
@@ -426,6 +427,10 @@ public class HatSnakeFilter implements IPadArray {
         LOGGER.trace("winpos: " + ind2rem.toString() + " " + points.get(i));
       }
     }
+
+    if (QuimP.SUPER_DEBUG) {
+      pw.close();
+    }
     return out;
   }
 
@@ -446,7 +451,7 @@ public class HatSnakeFilter implements IPadArray {
       }
       pw.close();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      e.printStackTrace();
     }
   }
 
@@ -463,20 +468,41 @@ public class HatSnakeFilter implements IPadArray {
   /**
    * Compute mean intensity for list of points. 3x3 stencil is used for each point.
    * 
-   * @param points image coordinates
+   * <p>Shrink contour and original contour have different number of points so direct mapping is not
+   * possible. For each point in window the method finds closest point in shrank contour and sample
+   * 3x3 stencil around. All stencils for all window points are averaged then.
+   * 
+   * @param shpoints shrink contour used for sampling intensities
+   * @param pointswindow coordinates of window in original outline
    * @param orgIp image
    * @return 1.0 if input image is null. mean otherwise
    */
-  double getIntensity(List<Point2d> points, ImageProcessor orgIp) {
+  double getIntensity(List<Point2d> shpoints, List<Point2d> pointswindow, ImageProcessor orgIp) {
     double meanI = 0.0;
     if (orgIp == null) {
       return 1.0; // case where intensity is not used
     }
-    for (Point2d p : points) {
-      meanI += ODEsolver.sampleFluo(orgIp, (int) Math.round(p.getX()), (int) Math.round(p.getY()));
+    for (Point2d p : pointswindow) {
+      Point2d closest = findClosest(shpoints, p);
+      meanI += ODEsolver.sampleFluo(orgIp, (int) Math.round(closest.getX()),
+              (int) Math.round(closest.getY()));
     }
-    meanI /= points.size();
+    meanI /= pointswindow.size();
     return meanI;
+  }
+
+  private Point2d findClosest(List<Point2d> shpoints, Point2d p) {
+    double dist = Double.MAX_VALUE;
+    int minDistIndex = 0;
+    for (int i = 0; i < shpoints.size(); i++) {
+      Point2d loc = shpoints.get(i);
+      double d = Math.sqrt((loc.x - p.x) * (loc.x - p.x) + (loc.y - p.y) * (loc.y - p.y));
+      if (d < dist) {
+        dist = d;
+        minDistIndex = i;
+      }
+    }
+    return shpoints.get(minDistIndex);
   }
 
   /**
