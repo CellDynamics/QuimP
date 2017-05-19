@@ -5,9 +5,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
@@ -21,6 +19,7 @@ import ij.gui.ShapeRoi;
 import ij.plugin.RoiRotator;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Outline;
+import uk.ac.warwick.wsbc.quimp.plugin.binaryseg.BinarySegmentation;
 import uk.ac.warwick.wsbc.quimp.utils.test.RoiSaver;
 
 // TODO: Auto-generated Javadoc
@@ -41,10 +40,10 @@ public class TrackOutlineTest {
    * @param name Name of private field
    * @param obj Reference to object
    * @return of private method
-   * @throws NoSuchFieldException
-   * @throws SecurityException
-   * @throws IllegalArgumentException
-   * @throws IllegalAccessException
+   * @throws NoSuchFieldException NoSuchFieldException
+   * @throws SecurityException SecurityException
+   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws IllegalAccessException IllegalAccessException
    */
   static Object accessPrivateField(String name, TrackOutline obj) throws NoSuchFieldException,
           SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -61,21 +60,7 @@ public class TrackOutlineTest {
   private TrackOutline obj;
 
   /**
-   * @throws java.lang.Exception
-   */
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -84,16 +69,14 @@ public class TrackOutlineTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
     if (image.changes) { // check if source was modified
       image.changes = false; // set flag to false to prevent save dialog
       image.close(); // close image
-      throw new Exception("Image has been modified"); // throw exception
-                                                      // if source image
-                                                      // was modified
+      throw new Exception("Image has been modified"); // throw exception if source image modified
     }
     image.close();
     obj = null;
@@ -104,7 +87,7 @@ public class TrackOutlineTest {
    * 
    * <p>post: Generate filtered image
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testPrepare() throws Exception {
@@ -119,11 +102,11 @@ public class TrackOutlineTest {
    * 
    * <p>post: Finds all outlines in image and saves them to separate files
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetOutlines() throws Exception {
-    List<List<Point2d>> ret = obj.getOutlinesasPoints(1, false);
+    List<List<Point2d>> ret = obj.getOutlinesasPoints(2, false);
     LOGGER.debug("Found " + ret.size());
     ImagePlus r = image.duplicate();
     r.setProcessor((ImageProcessor) accessPrivateField("prepared", obj));
@@ -134,11 +117,26 @@ public class TrackOutlineTest {
   }
 
   /**
+   * testGetOutlines.
+   * 
+   * <p>post: Finds all outlines in image and saves them to separate files
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetRawOutlines() throws Exception {
+    List<List<Point2d>> ret = obj.getOutlineasRawPoints();
+    RoiSaver.saveRoi(tmpdir + "testGetOutlinesRaw_roi0.tif", ret.get(0));
+    RoiSaver.saveRoi(tmpdir + "testGetOutlinesRaw_roi1.tif", ret.get(1));
+    RoiSaver.saveRoi(tmpdir + "testGetOutlinesRaw_roi2.tif", ret.get(2));
+  }
+
+  /**
    * testGetOutlines_1.
    * 
    * <p>post: Finds all outlines in image with smoothing
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetOutlines_1() throws Exception {
@@ -152,7 +150,7 @@ public class TrackOutlineTest {
    * 
    * <p>post: Finds all outlines in image with smoothing and step 6
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetOutlines_6() throws Exception {
@@ -162,10 +160,12 @@ public class TrackOutlineTest {
   }
 
   /**
-   * Validates what is returned from ShapeRoi.and
+   * Validates what is returned from {@link ShapeRoi#and(ShapeRoi)}.
    * 
    * <p>post: operation ret.get(1).and(new ShapeRoi(pr)); modifies ret.get(1) If there is no
-   * intersection it return shape wit 0 width/height
+   * intersection it return shape with 0 width/height
+   * 
+   * @see BinarySegmentation
    */
   @Test
   public void testIntersection() {
@@ -182,7 +182,9 @@ public class TrackOutlineTest {
   }
 
   /**
-   * @throws Exception
+   * testGetOutlinesDoubleBoolean.
+   * 
+   * @throws Exception Exception
    */
   @Test
   public void testGetOutlinesDoubleBoolean() throws Exception {

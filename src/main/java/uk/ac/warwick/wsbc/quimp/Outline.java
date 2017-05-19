@@ -120,7 +120,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     removeVert(head); // remove dummy head node
     updateNormales(false);
     this.updateCurvature();
-    // calcCentroid(); It was introduced after 6819719a but apparently it causes wrong ECMM
+    calcCentroid();
   }
 
   /*
@@ -939,7 +939,6 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
    */
   public void scale(double amount, double stepRes, double angleTh, double freezeTh) {
     int j;
-    int max = 10000;
     updateNormales(true);
     double steps = Math.abs(amount / stepRes);
     for (j = 0; j < steps; j++) {
@@ -948,9 +947,9 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
       }
       scale(stepRes);
       updateNormales(true);
-      removeProx(1.5, 1.5);
+      removeProx(1.5, 1.5); // constants taken from old removeProx were they were hardcoded
       freezeProx(angleTh, freezeTh);
-      if (j > max) {
+      if (j > MAX_NODES) {
         LOGGER.warn("shrink (336) hit max iterations!");
         break;
       }

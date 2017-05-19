@@ -134,7 +134,7 @@ public class BinarySegmentation {
    * 
    * @param r1 First ROI - it will be modified!
    * @param r2 Seconf ROI
-   * @return \a true if \a r1 and \a r2 overlap
+   * @return true if r1 and r2 overlap
    */
   private boolean testIntersect(final ShapeRoi r1, final ShapeRoi r2) {
     if (r1 == null || r2 == null) {

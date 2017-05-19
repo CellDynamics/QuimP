@@ -11,9 +11,9 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.Wand;
-import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Outline;
+import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
 
 /*
@@ -226,7 +226,7 @@ public class TrackOutline {
    * Convert found Oulines to Outline.
    * 
    * @param step resolution step
-   * @param smooth true to use IJ polygon smoothing.
+   * @param smooth true to use IJ polygon smoothing (running average).
    * @return List of Outline object that represents all
    * @see SegmentedShapeRoi#getOutlineasPoints()
    * @see #getOutlinesasPoints(double, boolean)
@@ -237,9 +237,16 @@ public class TrackOutline {
     ArrayList<Outline> outlines = new ArrayList<>();
     for (SegmentedShapeRoi sr : rois) {
       // interpolate and reduce number of points
-      FloatPolygon pr = sr.getInterpolatedPolygon(step, smooth);
-      Outline o = new Outline(new PolygonRoi(pr, PolygonRoi.FREEROI));
-      outlines.add(o);
+      sr.setInterpolationParameters(step, false, smooth);
+      Outline o;
+      try {
+        o = new QuimpDataConverter(sr.getOutlineasPoints()).getOutline(1);
+        outlines.add(o);
+      } catch (QuimpException e) {
+        // TODO Remove this after introducing outline constructor
+        e.printStackTrace();
+      }
+
     }
     return outlines;
   }
@@ -260,16 +267,30 @@ public class TrackOutline {
    * 
    * @param step step - step during conversion outline to points. For 1 every point from outline
    *        is included in output list
-   * @param smooth true for using smoothing during interpolation
+   * @param smooth true for using running average during interpolation
    * @return List of List of ROIs
    * @see SegmentedShapeRoi#getOutlineasPoints()
    */
   public List<List<Point2d>> getOutlinesasPoints(double step, boolean smooth) {
     List<List<Point2d>> ret = new ArrayList<>();
-    FloatPolygon fp;
     for (SegmentedShapeRoi sr : outlines) {
-      fp = sr.getInterpolatedPolygon(step, smooth);
-      ret.add(new QuimpDataConverter(fp.xpoints, fp.ypoints).getList());
+      sr.setInterpolationParameters(step, false, smooth);
+      ret.add(sr.getOutlineasPoints());
+    }
+    return ret;
+  }
+
+  /**
+   * Convert found outlines to List without any interpolation.
+   * 
+   * @return List of List of ROIs
+   * 
+   * @see SegmentedShapeRoi#getOutlineasPoints()
+   */
+  public List<List<Point2d>> getOutlineasRawPoints() {
+    List<List<Point2d>> ret = new ArrayList<>();
+    for (SegmentedShapeRoi sr : outlines) {
+      ret.add(sr.getOutlineasRawPoints());
     }
     return ret;
   }

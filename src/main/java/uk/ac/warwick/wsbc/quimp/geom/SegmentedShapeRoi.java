@@ -48,9 +48,13 @@ public class SegmentedShapeRoi extends ShapeRoi {
    */
   protected double step = 1;
   /**
-   * true for using smoothing during interpolation.
+   * true for using spline smoothing during interpolation.
    */
-  protected boolean smooth = false;
+  protected boolean splineSmooth = false;
+  /**
+   * true for using running average for smoothing. Will apply before {@link #splineSmooth}
+   */
+  protected boolean runningAverageSmooth = false;
   /**
    * serialVersionUID.
    */
@@ -97,6 +101,8 @@ public class SegmentedShapeRoi extends ShapeRoi {
   }
 
   /**
+   * Get id.
+   * 
    * @return the id
    */
   public int getId() {
@@ -133,18 +139,27 @@ public class SegmentedShapeRoi extends ShapeRoi {
   /**
    * Convert this ROI to list of points using smoothing and step.
    * 
-   * <p>Use object parameters step, smooth that should be set before call this method.
+   * <p>First this method converts shape to {@link PolygonRoi} using step and running average
+   * smoothing set up by
+   * {@link SegmentedShapeRoi#setInterpolationParameters(double, boolean, boolean)}. Then if
+   * {@link #splineSmooth} was set, spline is fitted to ROI and result is converted to list. By
+   * default step is set to 1 and without smoothing.
+   * 
+   * <p>Step of 1 does not mean one point resolution. Still interpolation can apply. Use
+   * {@link #getOutlineasRawPoints()} for obtaining pure coordinates without smoothing nor
+   * interpolation. Depending on interpolation step, last point in list can overlap with first.
    * 
    * @return List of List of ROIs
    * @see #getOutlineasRawPoints()
+   * @see #setInterpolationParameters(double, boolean, boolean)
    */
   public List<Point2d> getOutlineasPoints() {
     List<Point2d> ret;
     FloatPolygon fp;
     PolygonRoi pr;
     // convert to PolygonRoi as it supports spline fitting
-    pr = new PolygonRoi(getInterpolatedPolygon(step, false), Roi.FREEROI);
-    if (smooth == true) { // fit spline
+    pr = new PolygonRoi(getInterpolatedPolygon(step, runningAverageSmooth), Roi.FREEROI);
+    if (splineSmooth == true) { // fit spline
       pr.fitSpline();
       fp = pr.getFloatPolygon(); // get FloatPolygon to have access to x[],y[]
       ret = new QuimpDataConverter(fp.xpoints, fp.ypoints).getList(); // x[],y[] are fitted
@@ -172,7 +187,7 @@ public class SegmentedShapeRoi extends ShapeRoi {
 
   /**
    * Allow to set non-standard parameters used during conversion from outline (ROI) to list of
-   * points.
+   * points. Do not use runing average smoothing.
    * 
    * <pre>
    * <code>
@@ -186,14 +201,45 @@ public class SegmentedShapeRoi extends ShapeRoi {
    * 
    * @param step interpolation step. Step = 1 does not stand for no interpolation. Use
    *        {@link #getOutlineasRawPoints()} instead.
-   * @param smooth true to use smoothing
+   * @param splineSmooth true to use Spline smoothing
    * 
    * @see #getOutlineasPoints()
    * @see #getOutlineasRawPoints()
    */
-  public void setInterpolationParameters(double step, boolean smooth) {
+  public void setInterpolationParameters(double step, boolean splineSmooth) {
     this.step = step;
-    this.smooth = smooth;
+    this.splineSmooth = splineSmooth;
+    this.runningAverageSmooth = false;
+  }
+
+  /**
+   * Allow to set non-standard parameters used during conversion from outline (ROI) to list of
+   * points.
+   * 
+   * <pre>
+   * <code>
+   * for (ArrayList&lt;SegmentedShapeRoi&gt; asS : ret) {
+   *  for (SegmentedShapeRoi ss : asS) {
+   *    ss.setInterpolationParameters(1, false,true);
+   *  }
+   * }
+   * </code>
+   * </pre>
+   * 
+   * @param step interpolation step. Step = 1 does not stand for no interpolation. Use
+   *        {@link #getOutlineasRawPoints()} instead.
+   * @param splineSmooth true to use Spline smoothing
+   * @param runningAverageSmooth true for using 3 point running average smoothing. This will apply
+   *        before spline smoothing.
+   * 
+   * @see #getOutlineasPoints()
+   * @see #getOutlineasRawPoints()
+   */
+  public void setInterpolationParameters(double step, boolean splineSmooth,
+          boolean runningAverageSmooth) {
+    this.step = step;
+    this.splineSmooth = splineSmooth;
+    this.runningAverageSmooth = runningAverageSmooth;
   }
 
 }
