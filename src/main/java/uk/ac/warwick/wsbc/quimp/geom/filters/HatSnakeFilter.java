@@ -228,7 +228,7 @@ public class HatSnakeFilter implements IPadArray {
     List<Point2d> shCont = new ArrayList<>();
     // create shrunk outline to sample intensity - one of the parameters used for candidate rank
     // this is unnecessary if there is no image provided but kept here for code simplicity
-    Outline outline = new QuimpDataConverter(data).getOutline(0); // FIXME What if more contours?
+    Outline outline = new QuimpDataConverter(data).getOutline(); // FIXME What if more contours?
     if (outline != null) {
       // shrink original to samle intensities close cortex - used for detecting vesicles that are
       // holes in cortex area.

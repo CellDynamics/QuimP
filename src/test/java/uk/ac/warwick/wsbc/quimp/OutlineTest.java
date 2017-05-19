@@ -114,7 +114,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     list.add(new Point2d(2, 1));
     list.add(new Point2d(1, 1));
     Outline outline;
-    outline = new QuimpDataConverter(list).getOutline(0);
+    outline = new QuimpDataConverter(list).getOutline();
     outline.correctDensity(1.9, 0.9);
 
     List<Point2d> expList = new ArrayList<>();
@@ -128,7 +128,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     expList.add(new Point2d(3, 1));
     expList.add(new Point2d(2, 1));
     expList.add(new Point2d(1, 1));
-    Outline outlineExp = new QuimpDataConverter(expList).getOutline(0);
+    Outline outlineExp = new QuimpDataConverter(expList).getOutline();
 
     assertThat(outline.asList(), is(outlineExp.asList()));
   }
@@ -154,7 +154,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     list.add(new Point2d(2, 1));
     list.add(new Point2d(1, 1));
     Outline outline;
-    outline = new QuimpDataConverter(list).getOutline(0);
+    outline = new QuimpDataConverter(list).getOutline();
     outline.correctDensity(1.9, 0.9);
 
     List<Point2d> expList = new ArrayList<>();
@@ -168,7 +168,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     expList.add(new Point2d(3, 1));
     expList.add(new Point2d(2, 1));
     expList.add(new Point2d(1, 1));
-    Outline outlineExp = new QuimpDataConverter(expList).getOutline(0);
+    Outline outlineExp = new QuimpDataConverter(expList).getOutline();
 
     assertThat(outline.asList(), is(outlineExp.asList()));
   }
@@ -194,7 +194,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     // list.add(new Point2d(2, 1));
     list.add(new Point2d(1, 1));
     Outline outline;
-    outline = new QuimpDataConverter(list).getOutline(0);
+    outline = new QuimpDataConverter(list).getOutline();
     outline.correctDensity(1.9, 0.9);
 
     List<Point2d> expList = new ArrayList<>();
@@ -208,7 +208,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     expList.add(new Point2d(3, 1));
     expList.add(new Point2d(2, 1));
     expList.add(new Point2d(1, 1));
-    Outline outlineExp = new QuimpDataConverter(expList).getOutline(0);
+    Outline outlineExp = new QuimpDataConverter(expList).getOutline();
 
     assertThat(outline.asList(), is(outlineExp.asList()));
   }
@@ -234,7 +234,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     list.add(new Point2d(2, 1));
     list.add(new Point2d(1, 1));
     Outline outline;
-    outline = new QuimpDataConverter(list).getOutline(0);
+    outline = new QuimpDataConverter(list).getOutline();
     outline.correctDensity(1.9, 1.1);
 
     List<Point2d> expList = new ArrayList<>();
@@ -248,7 +248,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     // expList.add(new Point2d(3, 1));
     expList.add(new Point2d(2, 1));
     // expList.add(new Point2d(1, 1));
-    Outline outlineExp = new QuimpDataConverter(expList).getOutline(0);
+    Outline outlineExp = new QuimpDataConverter(expList).getOutline();
 
     assertThat(outline.asList(), is(outlineExp.asList()));
   }
@@ -278,7 +278,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     list.add(new Point2d(1, 1));
     list.add(new Point2d(1, 0.1));
     Outline outline;
-    outline = new QuimpDataConverter(list).getOutline(0);
+    outline = new QuimpDataConverter(list).getOutline();
     outline.correctDensity(1.9, 0.2);
 
     List<Point2d> expList = new ArrayList<>();
@@ -293,7 +293,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     expList.add(new Point2d(2, 1));
     expList.add(new Point2d(1, 1));
     expList.add(new Point2d(1, 0.1));
-    Outline outlineExp = new QuimpDataConverter(expList).getOutline(0);
+    Outline outlineExp = new QuimpDataConverter(expList).getOutline();
 
     assertThat(outline.asList(), is(outlineExp.asList()));
 
@@ -310,11 +310,10 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     list.add(new Point2d(2, 1));
     list.add(new Point2d(1, 1));
     list.add(new Point2d(1, 0.1));
-    outline = new QuimpDataConverter(list).getOutline(0);
+    outline = new QuimpDataConverter(list).getOutline();
     outline.correctDensity(1.9, 0.2);
 
     expList.clear();
-    ;
     // expList.add(new Point2d(1, 0));
     expList.add(new Point2d(2, 0));
     expList.add(new Point2d(3, 0));
@@ -326,7 +325,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     expList.add(new Point2d(2, 1));
     expList.add(new Point2d(1, 1));
     expList.add(new Point2d(1, 0.1));
-    outlineExp = new QuimpDataConverter(expList).getOutline(0);
+    outlineExp = new QuimpDataConverter(expList).getOutline();
 
     f.setDouble(Shape.class, 0.5);
     assertThat(outline.asList(), is(outlineExp.asList()));
@@ -359,7 +358,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     list.add(new Point2d(1, 1));
     list.add(new Point2d(1, 0.1));
     Outline outline;
-    outline = new QuimpDataConverter(list).getOutline(0);
+    outline = new QuimpDataConverter(list).getOutline();
     outline.correctDensity(0.8, 0.7);
 
     List<Point2d> expList = new ArrayList<>();
@@ -374,7 +373,47 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     expList.add(new Point2d(2, 1));
     expList.add(new Point2d(1, 1));
     expList.add(new Point2d(1, 0.1));
-    Outline outlineExp = new QuimpDataConverter(expList).getOutline(0);
+    Outline outlineExp = new QuimpDataConverter(expList).getOutline();
+    f.setDouble(Shape.class, 0.5); // restore
+    assertThat(outline.asList(), is(outlineExp.asList()));
+  }
+
+  /**
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Outline#Outline(List)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testOutlineDoubleArrayDoubleArray() throws Exception {
+    // retrieve arrays from random 4 element snake
+    double[] x = new QuimpDataConverter(obj).getX();
+    double[] y = new QuimpDataConverter(obj).getY();
+
+    // cant compare using equal as obj is completely random
+    Outline newOutline = new Outline(x, y);
+    assertThat(newOutline.getNumPoints(), is(obj.getNumPoints()));
+    assertThat(newOutline.xtoArr(), is(x));
+    assertThat(newOutline.ytoArr(), is(y));
+    assertThat(newOutline.getHead().getPoint(), is(obj.getHead().getPoint()));
+
+  }
+
+  /**
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Outline#Outline(double[], double[])}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testOutlineList() throws Exception {
+    // retrieve list from random 4 element snake
+    List<Point2d> list = new QuimpDataConverter(obj).getList();
+
+    // cant compare using equal as obj is completely random
+    Outline newOutline = new Outline(list);
+    assertThat(newOutline.getNumPoints(), is(obj.getNumPoints()));
+    assertThat(newOutline.asList(), is(obj.asList()));
+    assertThat(newOutline.getHead().getPoint(), is(obj.getHead().getPoint()));
+
   }
 
 }

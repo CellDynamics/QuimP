@@ -6,14 +6,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.quimp.geom.ExtendedVector2d;
+import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
 
 /**
  * @author p.baniukiewicz
@@ -134,6 +137,46 @@ public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
     n.addVel(new ExtendedVector2d(3, 3));
     assertThat(copy, is(not(obj)));
     assertThat(copy.hashCode(), is(not(obj.hashCode())));
+  }
+
+  /**
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#Snake(double[], double[], int)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testSnakeDoubleArrayDoubleArrayInt() throws Exception {
+    // retrieve arrays from random 4 element snake
+    double[] x = new QuimpDataConverter(obj).getX();
+    double[] y = new QuimpDataConverter(obj).getY();
+
+    // cant compare using equal as obj is completely random
+    Snake newSnake = new Snake(x, y, obj.getSnakeID());
+    assertThat(newSnake.getNumPoints(), is(obj.getNumPoints()));
+    assertThat(newSnake.getSnakeID(), is(obj.getSnakeID()));
+    assertThat(newSnake.xtoArr(), is(x));
+    assertThat(newSnake.ytoArr(), is(y));
+    assertThat(newSnake.getHead().getPoint(), is(obj.getHead().getPoint()));
+
+  }
+
+  /**
+   * Test method for {@link uk.ac.warwick.wsbc.quimp.Snake#Snake(java.util.List, int)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testSnakeListInt() throws Exception {
+    // retrieve list from random 4 element snake
+    List<Point2d> list = new QuimpDataConverter(obj).getList();
+
+    // cant compare using equal as obj is completely random
+    Snake newSnake = new Snake(list, obj.getSnakeID());
+    assertThat(newSnake.getNumPoints(), is(obj.getNumPoints()));
+    assertThat(newSnake.getSnakeID(), is(obj.getSnakeID()));
+    assertThat(newSnake.asList(), is(obj.asList()));
+    assertThat(newSnake.getHead().getPoint(), is(obj.getHead().getPoint()));
+
   }
 
 }

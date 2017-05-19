@@ -79,6 +79,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     countFrozen(); // set FROZEN
     // calcOrientation();
     calcCentroid();
+    getBounds();
   }
 
   /**
@@ -137,6 +138,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     // colour = QColor.lightColor();
     // calcOrientation();
     calcCentroid();
+    getBounds();
   }
 
   /**
@@ -155,6 +157,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     // colour = QColor.lightColor();
     // calcOrientation();
     calcCentroid();
+    getBounds();
   }
 
   /**
@@ -165,11 +168,17 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * @throws BoaException on wrong number of array points.
    */
   public Snake(final List<? extends Tuple2d> list, int id) throws BoaException {
+    super(list, new Node(0), BOA_.qState.segParam.expandSnake);
+    if (list.size() <= 3) { // compatibility
+      throw new BoaException("Not enough points provided");
+    }
     snakeID = id;
-    initializeArrayList(list);
+    this.makeAntiClockwise(); // specific to snake can affect updateNormales
+    updateNormales(BOA_.qState.segParam.expandSnake); // called in super, here just in case
     startingNnodes = POINTS / 100;
     alive = true;
     calcCentroid();
+    getBounds();
   }
 
   /**
@@ -181,11 +190,17 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * @throws BoaException on wrong number of array points.
    */
   public Snake(final double[] x, final double[] y, int id) throws BoaException {
+    super(x, y, new Node(0), BOA_.qState.segParam.expandSnake);
+    if ((x.length != y.length) || x.length <= 3) {
+      throw new BoaException("Lengths of X and Y arrays are not equal");
+    }
     snakeID = id;
-    initializeArray(x, y);
+    this.makeAntiClockwise(); // specific to snake can affect updateNormales
+    updateNormales(BOA_.qState.segParam.expandSnake); // called in super, here just in case
     startingNnodes = POINTS / 100;
     alive = true;
     calcCentroid();
+    getBounds();
   }
 
   /**
@@ -414,66 +429,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     removeNode(head); // remove dummy head node
-    this.makeAntiClockwise();
-    updateNormales(BOA_.qState.segParam.expandSnake);
-  }
-
-  /**
-   * Initialize snake from List of Vector2d objects.
-   * 
-   * @param p List as initializer of Snake
-   * @throws BoaException on insufficient number of points
-   */
-  private void initializeArrayList(final List<? extends Tuple2d> p) throws BoaException {
-    if (p.size() <= 3) {
-      throw new BoaException("Not enough points provided");
-    }
-    head = new Node(0);
-    POINTS = 1;
-    FROZEN = 0;
-    head.setPrev(head);
-    head.setNext(head);
-    head.setHead(true);
-
-    Node node;
-    for (Tuple2d el : p) {
-      node = new Node(el.getX(), el.getY(), nextTrackNumber++);
-      addPoint(node);
-    }
-
-    removeNode(head);
-    setHeadClosestTo(new ExtendedVector2d(p.get(0))); // be sure that first point from list is head
-    this.makeAntiClockwise();
-    updateNormales(BOA_.qState.segParam.expandSnake);
-  }
-
-  /**
-   * Initialize snake from X, Y arrays.
-   * 
-   * @param x x coordinates of nodes
-   * @param y y coordinates of nodes
-   * @throws BoaException on wrong arrays sizes
-   */
-  private void initializeArray(final double[] x, final double[] y) throws BoaException {
-    head = new Node(0);
-    POINTS = 1;
-    FROZEN = 0;
-    head.setPrev(head);
-    head.setNext(head);
-    head.setHead(true);
-
-    if (x.length != y.length) {
-      throw new BoaException("Lengths of X and Y arrays are not equal");
-    }
-
-    Node node;
-    for (int i = 0; i < x.length; i++) {
-      node = new Node(x[i], y[i], nextTrackNumber++);
-      addPoint(node);
-    }
-
-    removeNode(head);
-    setHeadClosestTo(new ExtendedVector2d(x[0], y[0])); // sure that first point from list is head
     this.makeAntiClockwise();
     updateNormales(BOA_.qState.segParam.expandSnake);
   }

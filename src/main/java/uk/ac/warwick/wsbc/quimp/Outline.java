@@ -1,7 +1,9 @@
 package uk.ac.warwick.wsbc.quimp;
 
 import java.awt.Polygon;
+import java.util.List;
 
+import org.scijava.vecmath.Tuple2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,6 +123,25 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     updateNormales(false);
     this.updateCurvature();
     calcCentroid();
+  }
+
+  /**
+   * Construct Outline object from list of nodes. Head node is always first element from array.
+   * 
+   * @param list list of nodes as Vector2d
+   */
+  public Outline(final List<? extends Tuple2d> list) {
+    super(list, new Vert(0), true);
+  }
+
+  /**
+   * Construct Outline object from X and Y arrays. Head node is always first element from array.
+   * 
+   * @param x x coordinates of nodes
+   * @param y y coordinates of nodes
+   */
+  public Outline(final double[] x, final double[] y) {
+    super(x, y, new Vert(0), true);
   }
 
   /*

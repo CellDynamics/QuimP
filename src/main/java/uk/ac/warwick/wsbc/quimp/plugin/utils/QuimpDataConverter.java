@@ -196,7 +196,8 @@ public class QuimpDataConverter {
    * <p>Head node is first point from list.
    * 
    * @param id Id of snake
-   * @return Snake object with Nodes in order of data given on input. Can be null
+   * @return Snake object with Nodes in order of data given on input. Can be null. Normales depend
+   *         on BOA_.qState.segParam.expandSnake
    * @throws QuimpException on Snake creation
    * @see uk.ac.warwick.wsbc.quimp.Snake#Snake(double[], double[], int)
    * @see uk.ac.warwick.wsbc.quimp.Snake#removeNode(uk.ac.warwick.wsbc.quimp.Node)
@@ -214,19 +215,19 @@ public class QuimpDataConverter {
   /**
    * Return Outline created from stored data.
    * 
-   * @param id Id of snake
    * @return Outline object with Nodes in order of data given on input. Can be null. Normales are
    *         set outwards. Head node is first point from list.
    * @throws QuimpException on Outline creation
    * @see uk.ac.warwick.wsbc.quimp.Snake#Snake(double[], double[], int)
    * @see uk.ac.warwick.wsbc.quimp.Snake#removeNode(uk.ac.warwick.wsbc.quimp.Node)
    */
-  public Outline getOutline(int id) throws QuimpException {
-    Snake stmp = getSnake(id);
-    if (stmp == null) {
-      return null;
+  public Outline getOutline() throws QuimpException {
+    Outline ret = null;
+    if (xc.length == 0 || yc.length == 0) {
+      return ret;
     } else {
-      return new Outline(stmp);
+      ret = new Outline(xc, yc);
+      return ret;
     }
   }
 

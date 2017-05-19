@@ -240,7 +240,7 @@ public class TrackOutline {
       sr.setInterpolationParameters(step, false, smooth);
       Outline o;
       try {
-        o = new QuimpDataConverter(sr.getOutlineasPoints()).getOutline(1);
+        o = new QuimpDataConverter(sr.getOutlineasPoints()).getOutline();
         outlines.add(o);
       } catch (QuimpException e) {
         // TODO Remove this after introducing outline constructor

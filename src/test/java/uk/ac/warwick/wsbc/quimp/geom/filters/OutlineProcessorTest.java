@@ -93,7 +93,7 @@ public class OutlineProcessorTest {
     RoiSaver.saveRoi("/tmp/fgf", ssR);
     List<Point2d> points = ssR.getOutlineasRawPoints();
     RoiSaver.saveRoi("/tmp/fgfs", points); // nc
-    Outline outline = new QuimpDataConverter(points).getOutline(0);
+    Outline outline = new QuimpDataConverter(points).getOutline();
     RoiSaver.saveRoi("/tmp/outline", outline.asList()); // nc
     outline.scale(3, 0.3, 0.1, 0.01); // modified outline differs in number
     // of points. Not related to conversion.
@@ -154,7 +154,7 @@ public class OutlineProcessorTest {
   public void testSmooth() throws Exception {
     double[] x = { 0, 5, 10, 10, 10, 5, 0, 0 };
     double[] y = { 0, 0, 0, 5, 10, 10, 10, 5 };
-    Outline o = new QuimpDataConverter(x, y).getOutline(0);
+    Outline o = new QuimpDataConverter(x, y).getOutline();
 
     double[] xe = { 1.6667, 5.0000, 8.3333, 10.0000, 8.3333, 5.0000, 1.6667, 0 };
     double[] ye = { 1.6667, 0, 1.6667, 5.0000, 8.3333, 10.0000, 8.3333, 5.0000 };

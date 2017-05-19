@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.scijava.vecmath.Point2d;
+import org.scijava.vecmath.Tuple2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,6 +183,77 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     // copy rest of params
     POINTS = src.POINTS;
     nextTrackNumber = src.nextTrackNumber;
+    calcCentroid();
+  }
+
+  /**
+   * Create Shape of elements <tt>elInst</tt> with coordinates <tt>p</tt>.
+   * 
+   * @param p list of coordinates
+   * @param elInst instance of requested element type
+   * @param inner direction of normales. For Outlines set to true, for snakes to
+   *        BOA_.qState.segParam.expandSnake
+   */
+  @SuppressWarnings("unchecked")
+  public Shape(final List<? extends Tuple2d> p, T elInst, boolean inner) {
+    try {
+      Constructor<?> ctor = elInst.getClass().getDeclaredConstructor(int.class);
+      Constructor<?> ctorPoint =
+              elInst.getClass().getDeclaredConstructor(double.class, double.class, int.class);
+      head = (T) ctor.newInstance(0);
+      POINTS = 1;
+      head.setPrev(head);
+      head.setNext(head);
+      head.setHead(true);
+      T node;
+      for (Tuple2d el : p) {
+        node = (T) ctorPoint.newInstance(el.getX(), el.getY(), nextTrackNumber++);
+        addPoint(node);
+      }
+      removePoint(head, inner);
+      setHeadClosestTo(new ExtendedVector2d(p.get(0))); // first point from list is head
+
+    } catch (SecurityException | NoSuchMethodException | InstantiationException
+            | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      throw new RuntimeException(e); // change to unchecked exception
+    }
+    updateNormales(inner);
+    calcCentroid();
+  }
+
+  /**
+   * Create Shape of elements <tt>elInst</tt> with coordinates <tt>x</tt> and <tt>y</tt>.
+   * 
+   * @param x coordinates
+   * @param y coordinates
+   * @param elInst instance of requested element type
+   * @param inner direction of normales. For Outlines set to true, for snakes to
+   *        BOA_.qState.segParam.expandSnake
+   */
+  @SuppressWarnings("unchecked")
+  public Shape(final double[] x, final double[] y, T elInst, boolean inner) {
+    try {
+      Constructor<?> ctor = elInst.getClass().getDeclaredConstructor(int.class);
+      Constructor<?> ctorPoint =
+              elInst.getClass().getDeclaredConstructor(double.class, double.class, int.class);
+      head = (T) ctor.newInstance(0);
+      POINTS = 1;
+      head.setPrev(head);
+      head.setNext(head);
+      head.setHead(true);
+      T node;
+      for (int i = 0; i < x.length; i++) {
+        node = (T) ctorPoint.newInstance(x[i], y[i], nextTrackNumber++);
+        addPoint(node);
+      }
+      removePoint(head, inner);
+      setHeadClosestTo(new ExtendedVector2d(x[0], y[0])); // first point from list is head
+
+    } catch (SecurityException | NoSuchMethodException | InstantiationException
+            | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      throw new RuntimeException(e); // change to unchecked exception
+    }
+    updateNormales(inner);
     calcCentroid();
   }
 
@@ -561,6 +633,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
    * 
    * @param n point to remove
    * @param inner direction of normal vectors of Shape
+   * @see #Shape(List, PointsList, boolean)
    */
   public void removePoint(final T n, boolean inner) {
     n.getPrev().setNext(n.getNext());

@@ -186,7 +186,7 @@ public class QuimpDataConverterTest {
 
   /**
    * Test method for
-   * {@link uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter#getOutline(int)}.
+   * {@link uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter#getOutline()}.
    * 
    * <p>Check correct order of nodes.
    * 
@@ -196,7 +196,7 @@ public class QuimpDataConverterTest {
   public void testGetOutline() throws Exception {
     QuimpDataConverter dc = new QuimpDataConverter(list);
     Snake s = dc.getSnake(0);
-    Outline o = dc.getOutline(0);
+    Outline o = dc.getOutline();
     assertEquals(s.getHead().getX(), o.getHead().getX(), 1e-5);
     assertEquals(s.getHead().getY(), o.getHead().getY(), 1e-5);
 
