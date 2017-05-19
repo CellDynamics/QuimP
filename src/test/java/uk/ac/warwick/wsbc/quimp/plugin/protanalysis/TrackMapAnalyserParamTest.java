@@ -5,16 +5,14 @@ import static org.junit.Assert.assertThat;
 
 import java.awt.Point;
 import java.awt.Polygon;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,6 +63,8 @@ public class TrackMapAnalyserParamTest {
   private int selfCrossing;
 
   /**
+   * Test cases defined.
+   * 
    * @return test set
    */
   @Parameters(name = "{index}: ({0})")
@@ -431,10 +431,8 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
-      Polygon expIntersectionPoints = new Polygon(new int[] { 2 }, new int[] { 2 }, 1); // expected
-                                                                                        // index
-                                                                                        // at
-                                                                                        // x[0]
+      // expected index at x[0]
+      Polygon expIntersectionPoints = new Polygon(new int[] { 2 }, new int[] { 2 }, 1);
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
@@ -473,10 +471,8 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
-      Polygon expIntersectionPoints = new Polygon(new int[] { 9 }, new int[] { 9 }, 1); // expected
-                                                                                        // index
-                                                                                        // at
-                                                                                        // x[0]
+      // expected index at x[0]
+      Polygon expIntersectionPoints = new Polygon(new int[] { 9 }, new int[] { 9 }, 1);
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
@@ -515,10 +511,8 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = {};
 
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
-      Polygon expIntersectionPoints = new Polygon(new int[] { 9 }, new int[] { 9 }, 1); // expected
-                                                                                        // index
-                                                                                        // at
-                                                                                        // x[0]
+      // expected index at x[0]
+      Polygon expIntersectionPoints = new Polygon(new int[] { 9 }, new int[] { 9 }, 1);
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
@@ -537,10 +531,8 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = {};
 
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
-      Polygon expIntersectionPoints = new Polygon(new int[] { 8 }, new int[] { 8 }, 1); // expected
-                                                                                        // index
-                                                                                        // at
-                                                                                        // x[0]
+      // expected index at x[0]
+      Polygon expIntersectionPoints = new Polygon(new int[] { 8 }, new int[] { 8 }, 1);
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
@@ -559,10 +551,8 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
-      Polygon expIntersectionPoints = new Polygon(new int[] { 1 }, new int[] { 1 }, 1); // expected
-                                                                                        // index
-                                                                                        // at
-                                                                                        // x[0]
+      // expected index at x[0]
+      Polygon expIntersectionPoints = new Polygon(new int[] { 1 }, new int[] { 1 }, 1);
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
@@ -601,10 +591,8 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = {};
 
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
-      Polygon expIntersectionPoints = new Polygon(new int[] { 9 }, new int[] { 9 }, 1); // expected
-                                                                                        // index
-                                                                                        // at
-                                                                                        // x[0]
+      // expected index at x[0]
+      Polygon expIntersectionPoints = new Polygon(new int[] { 9 }, new int[] { 9 }, 1);
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
@@ -623,10 +611,8 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
-      Polygon expIntersectionPoints = new Polygon(new int[] { 1 }, new int[] { 1 }, 1); // expected
-                                                                                        // index
-                                                                                        // at
-                                                                                        // x[0]
+      // expected index at x[0]
+      Polygon expIntersectionPoints = new Polygon(new int[] { 1 }, new int[] { 1 }, 1);
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
@@ -640,34 +626,14 @@ public class TrackMapAnalyserParamTest {
     return ret;
   }
 
-  /**/
   /**
-   * @throws java.lang.Exception
-   */
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
+   * setUp.
+   * 
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
     trackMapAnalyser = new TrackMapAnalyser();
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @After
-  public void tearDown() throws Exception {
   }
 
   /**
@@ -693,7 +659,7 @@ public class TrackMapAnalyserParamTest {
    * Test method for
    * {@link TrackMapAnalyser#getIntersectionPoints(java.util.List)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetIntersectionPointsParam() throws Exception {
@@ -710,7 +676,7 @@ public class TrackMapAnalyserParamTest {
   /**
    * {@link TrackMapAnalyser#removeSelfRepeatings(List, List)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testRemoveSelfRepeatingsParam() throws Exception {
@@ -730,26 +696,28 @@ public class TrackMapAnalyserParamTest {
    * <p>Assume that tested point is first pair left in expIntersectionPairs Result is in
    * expIntersectionPoints as x[0] coord. Use selfCrossing to decide whether use INCLUDE_INITIAL
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testEnumeratePoint() throws Exception {
-
+    Field includeinitial = TrackMapAnalyser.class.getDeclaredField("INCLUDE_INITIAL");
+    includeinitial.setAccessible(true);
     Assume.assumeTrue(type == Type.ENUMERATE);
     if (selfCrossing > 65535) {
-      TrackMapAnalyser.INCLUDE_INITIAL = false; // count all
+      includeinitial.setBoolean(null, false); // count all
     } else {
-      TrackMapAnalyser.INCLUDE_INITIAL = true; // count maximum one
+      includeinitial.setBoolean(null, true); // count maximum one
     }
     int ret1 = TrackMapAnalyser.enumeratePoint(track.get(0), track.get(1),
             expIntersectionPairs.get(0).first);
+    includeinitial.setBoolean(null, true); // count maximum one
     assertThat(ret1, is(expIntersectionPoints.xpoints[0]));
   }
 
   /**
    * Helper method for build list of polygons using {x[],y[]} pairs.
    * 
-   * @param obj
+   * @param obj obj
    * @return array of polygons from input arrays
    */
   static ArrayList<Polygon> test(Object[]... obj) {
@@ -766,7 +734,7 @@ public class TrackMapAnalyserParamTest {
    * 
    * <p>No selfcrossing, B1 B2 intersection
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   @Ignore

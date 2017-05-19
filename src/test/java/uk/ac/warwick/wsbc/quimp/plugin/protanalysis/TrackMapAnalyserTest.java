@@ -5,14 +5,12 @@ import static org.junit.Assert.assertThat;
 
 import java.awt.Point;
 import java.awt.Polygon;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,7 +24,6 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import uk.ac.warwick.wsbc.quimp.utils.Pair;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -46,21 +43,9 @@ public class TrackMapAnalyserTest {
   private TrackMapAnalyser trackMapAnalyser;
 
   /**
-   * @throws java.lang.Exception
-   */
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
+   * setUp.
+   * 
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -69,20 +54,15 @@ public class TrackMapAnalyserTest {
   }
 
   /**
-   * @throws java.lang.Exception
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /**
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser#polygon2Point2i(List)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testPolygon2Map() throws Exception {
+    Field includeinitial = TrackMapAnalyser.class.getDeclaredField("INCLUDE_INITIAL");
+    includeinitial.setAccessible(true);
     List<Point> expected = new ArrayList<>();
     expected.add(new Point(1, 11));
     expected.add(new Point(1, 44));
@@ -95,7 +75,7 @@ public class TrackMapAnalyserTest {
     p.add(new Polygon(x1, y1, x1.length));
     p.add(new Polygon(x2, y2, x2.length));
 
-    TrackMapAnalyser.INCLUDE_INITIAL = true;
+    includeinitial.setBoolean(null, true);
     List<Point> ret = TrackMapAnalyser.polygon2Point2i(p);
     List<Point> result = ret.stream().filter(e -> e.getX() == 1).collect(Collectors.toList());
     assertThat(result, is(expected));
@@ -122,10 +102,12 @@ public class TrackMapAnalyserTest {
    * Test method for
    * {@link TrackMapAnalyser#enumeratePoint(java.awt.Polygon, java.awt.Polygon, java.awt.Point)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testEnumeratePoint() throws Exception {
+    Field includeinitial = TrackMapAnalyser.class.getDeclaredField("INCLUDE_INITIAL");
+    includeinitial.setAccessible(true);
     int[] x1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     int[] y1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
@@ -136,19 +118,20 @@ public class TrackMapAnalyserTest {
     test.add(new Polygon(x1, y1, 10));
     test.add(new Polygon(x2, y2, 10));
 
-    TrackMapAnalyser.INCLUDE_INITIAL = true;
+    includeinitial.setBoolean(null, true);
     Point testPoint1 = new Point(3, 3);
     int ret1 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint1);
     assertThat(ret1, is(2));
 
-    TrackMapAnalyser.INCLUDE_INITIAL = true;
+    includeinitial.setBoolean(null, true);
     Point testPoint2 = new Point(11, 11);
     int ret2 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint2);
     assertThat(ret2, is(10));
 
-    TrackMapAnalyser.INCLUDE_INITIAL = false; // count all
+    includeinitial.setBoolean(null, false); // count all
     Point testPoint3 = new Point(11, 11);
     int ret3 = TrackMapAnalyser.enumeratePoint(test.get(0), test.get(1), testPoint3);
+    includeinitial.setBoolean(null, true);
     assertThat(ret3, is(11));
   }
 
@@ -156,9 +139,9 @@ public class TrackMapAnalyserTest {
    * Test method for
    * {@link uk.ac.warwick.wsbc.quimp.plugin.protanalysis.TrackMapAnalyser#getCommonPoints()}.
    * 
-   * @param tracks
-   * @param expected
-   * @throws Exception
+   * @param tracks tracks
+   * @param expected expected
+   * @throws Exception Exception
    */
   @Test
   @Parameters(method = "valuesCommonPoints")

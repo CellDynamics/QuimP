@@ -54,7 +54,7 @@ public class TrackMapAnalyser {
    * <p>It should be changed carefully as many other procedures can assume that first point is
    * included in Tracks.
    */
-  public static boolean INCLUDE_INITIAL = true;
+  private static boolean INCLUDE_INITIAL = true;
 
   /**
    * Hold result of Map generation and analysis.
@@ -71,7 +71,10 @@ public class TrackMapAnalyser {
   }
 
   /**
-   * Instantiates a new track map analyser.
+   * Instantiates a new track map analyser. Assumes that Maximum point (source of tracks) is
+   * included in tracks.
+   * 
+   * @see #INCLUDE_INITIAL
    */
   public TrackMapAnalyser() {
     trackCollection = new TrackCollection(INCLUDE_INITIAL);

@@ -725,6 +725,10 @@ public class QParams {
 
     if (directory.isDirectory()) {
       String[] filenames = directory.list();
+      if (filenames == null) {
+        otherPaFiles = new File[0];
+        return otherPaFiles;
+      }
       String extension;
 
       for (int i = 0; i < filenames.length; i++) {
