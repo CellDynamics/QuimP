@@ -7,7 +7,6 @@ import org.scijava.vecmath.Point2d;
 import org.scijava.vecmath.Tuple2d;
 
 import com.github.celldynamics.quimp.Outline;
-import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.Shape;
 import com.github.celldynamics.quimp.Snake;
 
@@ -199,11 +198,10 @@ public class QuimpDataConverter {
    * @param id Id of snake
    * @return Snake object with Nodes in order of data given on input. Can be null. Normales depend
    *         on BOA_.qState.segParam.expandSnake
-   * @throws QuimpException on Snake creation
    * @see com.github.celldynamics.quimp.Snake#Snake(double[], double[], int)
    * @see com.github.celldynamics.quimp.Snake#removeNode(com.github.celldynamics.quimp.Node)
    */
-  public Snake getSnake(int id) throws QuimpException {
+  public Snake getSnake(int id) {
     Snake ret = null;
     if (xc.length == 0 || yc.length == 0) {
       return ret;
@@ -218,11 +216,10 @@ public class QuimpDataConverter {
    * 
    * @return Outline object with Nodes in order of data given on input. Can be null. Normales are
    *         set outwards. Head node is first point from list.
-   * @throws QuimpException on Outline creation
    * @see com.github.celldynamics.quimp.Snake#Snake(double[], double[], int)
    * @see com.github.celldynamics.quimp.Snake#removeNode(com.github.celldynamics.quimp.Node)
    */
-  public Outline getOutline() throws QuimpException {
+  public Outline getOutline() {
     Outline ret = null;
     if (xc.length == 0 || yc.length == 0) {
       return ret;

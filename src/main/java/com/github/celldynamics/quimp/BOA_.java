@@ -2192,9 +2192,8 @@ public class BOA_ implements PlugIn {
    * @param snake snake to be processed
    * @return Processed snake or original input one when there is no plugin selected
    * @throws QuimpPluginException on plugin error
-   * @throws Exception on general error
    */
-  private Snake iterateOverSnakePlugins(final Snake snake) throws QuimpPluginException, Exception {
+  private Snake iterateOverSnakePlugins(final Snake snake) throws QuimpPluginException {
     final int ipoint = 0; // define IQuimpPoint2dFilter interface
     final int isnake = 1; // define IQuimpPoint2dFilter interface
     // type of previous plugin. Define if data should be converted for current plugin

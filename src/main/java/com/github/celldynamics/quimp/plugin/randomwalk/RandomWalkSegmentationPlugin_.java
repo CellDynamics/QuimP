@@ -18,8 +18,6 @@ import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.BoaException;
-import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
 import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter;
 import com.github.celldynamics.quimp.plugin.IQuimpPlugin;
@@ -692,7 +690,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
           propagateSeeds.getCompositeSeed(image.duplicate(), 0).show();
         }
       }
-    } catch (BoaException | QuimpPluginException rwe) {
+    } catch (QuimpPluginException rwe) {
       rwe.handleException(view.getWnd(), "Segmentation problem:");
     } catch (Exception e) {
       LOGGER.debug(e.getMessage(), e);
@@ -714,11 +712,10 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
    * @param retIp image to filter (mask)
    * @param orIp original image
    * @return Filtered processor
-   * @throws QuimpException Thrown when HatSnakeFilter can not shrink contour
    * @throws QuimpPluginException on problem with HatSnakeFilter
    */
   private ImageProcessor applyHatSnakeFilter(ImageProcessor retIp, ImageProcessor orIp)
-          throws QuimpPluginException, QuimpException {
+          throws QuimpPluginException {
     BinarySegmentation obj = new BinarySegmentation(new ImagePlus("", retIp));
     obj.trackObjects(); // run tracking
     ArrayList<ArrayList<SegmentedShapeRoi>> ret = obj.getChains();

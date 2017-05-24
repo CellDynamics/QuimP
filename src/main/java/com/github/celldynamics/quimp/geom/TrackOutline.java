@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.Outline;
-import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
 import ij.ImagePlus;
@@ -240,13 +239,8 @@ public class TrackOutline {
       // interpolate and reduce number of points
       sr.setInterpolationParameters(step, false, smooth);
       Outline o;
-      try {
-        o = new QuimpDataConverter(sr.getOutlineasPoints()).getOutline();
-        outlines.add(o);
-      } catch (QuimpException e) {
-        // TODO Remove this after introducing outline constructor
-        e.printStackTrace();
-      }
+      o = new QuimpDataConverter(sr.getOutlineasPoints()).getOutline();
+      outlines.add(o);
 
     }
     return outlines;

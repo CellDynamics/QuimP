@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.scijava.vecmath.Point2d;
 import org.scijava.vecmath.Tuple2d;
 import org.scijava.vecmath.Vector2d;
@@ -18,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.QuimP;
-import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.geom.BasicPolygons;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.ecmm.ODEsolver;
@@ -161,7 +162,7 @@ public class HatSnakeFilter implements IPadArray {
   private int window; // filter's window size
   private int pnum; // how many protrusions to remove
   private double alev; // minimal acceptance level
-  private List<Point2d> points; // original contour passed from QuimP
+  // private List<Point2d> points; // original contour passed from QuimP
 
   /**
    * Construct HatFilter Input array with data is virtually circularly padded.
@@ -189,23 +190,35 @@ public class HatSnakeFilter implements IPadArray {
   }
 
   /**
-   * In contrary to {@link #runPlugin(List, ImageProcessor)} this method does not use intensity
-   * weighting.
+   * In contrary to {@link #runPlugin(List, ImageProcessor, Pair)} this method does not use
+   * intensity weighting nor externally calculated ranks.
    * 
    * @param data contour to process
    * @return Processed input list, size of output list may be different than input. Empty output
    *         is also allowed.
    * @throws QuimpPluginException on wrong input data
+   * @see #runPlugin(List, ImageProcessor, Pair)
    * @see #runPlugin(List, ImageProcessor)
    */
   public List<Point2d> runPlugin(List<Point2d> data) throws QuimpPluginException {
-    List<Point2d> ret = new ArrayList<>();
-    try {
-      ret = runPlugin(data, null);
-    } catch (Exception e) {
-      throw new QuimpPluginException(e);
-    }
-    return ret;
+    return runPlugin(data, null);
+  }
+
+  /**
+   * In contrary to {@link #runPlugin(List, ImageProcessor, Pair)} this method does not use
+   * externally calculated ranks.
+   * 
+   * @param data contour to process
+   * @param orgIp Original image used for sampling intensity, can be <tt>null</tt>
+   * @return Processed input list, size of output list may be different than input. Empty output
+   *         is also allowed.
+   * @throws QuimpPluginException on wrong input data
+   * @see #runPlugin(List)
+   * @see #runPlugin(List, ImageProcessor, Pair)
+   */
+  public List<Point2d> runPlugin(List<Point2d> data, ImageProcessor orgIp)
+          throws QuimpPluginException {
+    return runPlugin(data, orgIp, null);
   }
 
   /**
@@ -215,50 +228,22 @@ public class HatSnakeFilter implements IPadArray {
    * any other ui element. User can expect that points will be always valid but they optionally may
    * have 0 length.
    * 
-   * @param data contour to process
-   * @param orgIp Original image used for sampling intensity
+   * @param points contour to process
+   * @param orgIp Original image used for sampling intensity, can be <tt>null</tt>
+   * @param ranks ranks calculated by {@link #calculateRank(List, ImageProcessor)} or <tt>null</tt>
+   *        to let them be evaluated by this method. In that latter case circularity is normalised
+   *        before use. Method expects normalised ranks to comply with alev parameter
    * 
    * @return Processed input list, size of output list may be different than input. Empty output
    *         is also allowed.
-   * @throws QuimpException on problem with creating outline from points, on wrong input data
+   * @throws QuimpPluginException on problem with input data
    */
-  public List<Point2d> runPlugin(List<Point2d> data, ImageProcessor orgIp) throws QuimpException {
-    Path tmpDebug;
-    PrintWriter pw = null;
-    points = data;
-    List<Point2d> shCont = new ArrayList<>();
-    // create shrunk outline to sample intensity - one of the parameters used for candidate rank
-    // this is unnecessary if there is no image provided but kept here for code simplicity
-    Outline outline = new QuimpDataConverter(data).getOutline(); // FIXME What if more contours?
-    if (outline != null) {
-      // shrink original to samle intensities close cortex - used for detecting vesicles that are
-      // holes in cortex area.
-      outline.scale(shrinkAmount, -0.3, 0.1, 0.01);
-      outline.unfreezeAll();
-      outline.correctDensity(1, 0.5); // dense shape, shrank has different number of verts than org
-      shCont = outline.asList();
-    } else {
-      throw new QuimpPluginException("Conversion error");
-    }
+  public List<Point2d> runPlugin(List<Point2d> points, ImageProcessor orgIp,
+          Pair<ArrayList<Double>, ArrayList<Boolean>> ranks) throws QuimpPluginException {
+
     // internal parameters are not updated here but when user click apply
     LOGGER.debug(String.format("Run plugin with params: window %d, pnum %d, alev %f", window, pnum,
             alev));
-
-    if (QuimP.SUPER_DEBUG) {
-      tmpDebug = Paths.get(System.getProperty("java.io.tmpdir"), "HatSnakeFilter_debug");
-      try {
-        pw = new PrintWriter(new FileWriter(tmpDebug.toFile()), true);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-      Path shContDebug = Paths.get(System.getProperty("java.io.tmpdir"), "shCont_debug");
-      Path pointsDebug = Paths.get(System.getProperty("java.io.tmpdir"), "points_debug");
-      debugSaveList(shContDebug, shCont);
-      debugSaveList(pointsDebug, points);
-    }
-
-    BasicPolygons bp = new BasicPolygons(); // provides geometry processing
-    List<Point2d> out = new ArrayList<Point2d>(); // output table for plotting temporary results
     // check input conditions
     if (window % 2 == 0 || window < 0) {
       throw new QuimpPluginException("Window must be uneven, positive and larger than 0");
@@ -276,60 +261,17 @@ public class HatSnakeFilter implements IPadArray {
       throw new QuimpPluginException("Acceptacne level should be positive");
     }
 
-    // temporary variable for keeping window currently tested for containing in ind2rem
-    WindowIndRange indexTest = new WindowIndRange();
-    // Step 1 - Build circularity table
-    // array to store circularity for window positions. Index is related to window position
-    // (negative shift in rotate)
-    ArrayList<Double> circ = new ArrayList<Double>();
-    // store information if points for window at r position are convex compared to shape without
-    // these points
-    ArrayList<Boolean> convex = new ArrayList<Boolean>();
-
-    double tmpCirc;
-    double tmpInt; // mean intensity along contour in window
-    for (int r = 0; r < points.size(); r++) {
-      // get all points except window. Window has constant position 0 - (window-1)
-      List<Point2d> pointsnowindow = points.subList(window, points.size());
-      tmpCirc = getCircularity(pointsnowindow);
-      // calculate weighting for circularity
-      List<Point2d> pointswindow = points.subList(0, window); // get points for window only
-      // will return 1.0 if there is no image provided
-      tmpInt = getIntensity(shCont, pointswindow, orgIp); // mean intensity for window points
-      tmpInt = tmpInt == 0.0 ? 1.0 : tmpInt; // remove 0 as we divide weight later
-      double rank = tmpCirc;
-      rank /= (getWeighting(pointswindow) * tmpInt); // calculate weighting for window content
-      circ.add(rank); // store weighted circularity for shape without window
-      // check if points of window are convex according to shape without these points
-      if (lookForb == true) {
-        convex.add(bp.arePointsInside(pointsnowindow, pointswindow)); // true if concave
-      } else {
-        convex.add(bp.isanyPointInside(pointsnowindow, pointswindow)); // old code
-      }
-      // move window to next position rotates by -1 what means that on first n positions
-      // of points there are different values simulate window
-      // first iter 0 1 2 3 4 5... (w=[0 1 2])
-      // second itr 1 2 3 4 5 0... (w=[1 2 3])
-      // last itera 5 0 1 2 3 4... (w=[5 0 1])
-      Collections.rotate(points, -1);
-      Collections.rotate(shCont, -1);
-      // dump to file
-      if (QuimP.SUPER_DEBUG) {
-        pw.print(r + "\t");
-        pw.print(IJ.d2s(tmpCirc, 15) + "\t");
-        pw.print(IJ.d2s(tmpInt, 15) + "\t");
-        pw.print(IJ.d2s(rank, 15) + "\t");
-        pw.print(pointswindow + "\t");
-        pw.println();
+    if (ranks == null) {
+      ranks = calculateRank(points, orgIp);
+      // normalize circularity to 1
+      double maxCirc = Collections.max(ranks.getLeft());
+      LOGGER.trace("Max circ=" + maxCirc);
+      for (int r = 0; r < ranks.getLeft().size(); r++) {
+        ranks.getLeft().set(r, ranks.getLeft().get(r) / maxCirc);
       }
     }
-
-    // normalize circularity to 1
-    double maxCirc = Collections.max(circ);
-    LOGGER.trace("Max circ=" + maxCirc);
-    for (int r = 0; r < circ.size(); r++) {
-      circ.set(r, circ.get(r) / maxCirc);
-    }
+    ArrayList<Double> circ = ranks.getLeft(); // circularity based weight
+    ArrayList<Boolean> convex = ranks.getRight(); // convexity
 
     // Step 2 - Check criterion for all windows
     TreeSet<WindowIndRange> ind2rem = new TreeSet<>(); // <l;u> range of indexes to remove
@@ -350,6 +292,8 @@ public class HatSnakeFilter implements IPadArray {
     // from 0 for most left point of window
     int i = 0;
     boolean contains; // temporary result of test if current window is included in any prev
+    // temporary variable for keeping window currently tested for containing in ind2rem
+    WindowIndRange indexTest = new WindowIndRange();
     // do as long as we find pnum protrusions (or to end of candidates, does not apply if pnum==0
     // when pnum is ignored)
     while (found < pnum || pnum == 0) {
@@ -418,6 +362,7 @@ public class HatSnakeFilter implements IPadArray {
     LOGGER.trace("Found :" + found + " accepted windows");
     // Step 3 - remove selected windows from input data
     // array will be copied to new one skipping points to remove
+    List<Point2d> out = new ArrayList<Point2d>(); // output table for plotting temporary results
     for (i = 0; i < points.size(); i++) {
       // set upper and lower index to the same value - allows to test particular index for its
       // presence in any defined range
@@ -428,11 +373,101 @@ public class HatSnakeFilter implements IPadArray {
         LOGGER.trace("winpos: " + ind2rem.toString() + " " + points.get(i));
       }
     }
+    return out;
+  }
 
+  /**
+   * Evaluate rank for given outline. Return raw unnormalised values.
+   * 
+   * <p>Rank is evaluated for each position of window (defined in
+   * {@link #HatSnakeFilter(int, int, double)} and it takes under account shape and local image
+   * intensity. If image is <tt>null</tt> only shape features are considered.
+   * 
+   * @param points Outline as list of points
+   * @param orgIp Image for sampling intensity along constricted outline. Can be null
+   * @return Ranks (left) and convexity flag (right). Indexes in these arrays correlate with indexes
+   *         in input array. E.g. rank[i] stand for rank evaluated for window at position input[i]
+   *         (points input[i] - input[i+window-1])
+   */
+  public Pair<ArrayList<Double>, ArrayList<Boolean>> calculateRank(List<Point2d> points,
+          ImageProcessor orgIp) {
+    Path tmpDebug;
+    PrintWriter pw = null;
+    List<Point2d> shCont = new ArrayList<>();
+    // create shrunk outline to sample intensity - one of the parameters used for candidate rank
+    // this is unnecessary if there is no image provided but kept here for code simplicity
+    Outline outline = new QuimpDataConverter(points).getOutline(); // FIXME What if more contours?
+    // shrink original to sample intensities close cortex - used for detecting vesicles that are
+    // holes in cortex area.
+    outline.scale(shrinkAmount, -0.3, 0.1, 0.01);
+    outline.unfreezeAll();
+    outline.correctDensity(1, 0.5); // dense shape, shrank has different number of verts than org
+    shCont = outline.asList();
+
+    if (QuimP.SUPER_DEBUG) {
+      tmpDebug = Paths.get(System.getProperty("java.io.tmpdir"), "HatSnakeFilter_debug");
+      try {
+        pw = new PrintWriter(new FileWriter(tmpDebug.toFile()), true);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      Path shContDebug = Paths.get(System.getProperty("java.io.tmpdir"), "shCont_debug");
+      Path pointsDebug = Paths.get(System.getProperty("java.io.tmpdir"), "points_debug");
+      debugSaveList(shContDebug, shCont);
+      debugSaveList(pointsDebug, points);
+    }
+
+    BasicPolygons bp = new BasicPolygons(); // provides geometry processing
+    // Step 1 - Build circularity table
+    // array to store circularity for window positions. Index is related to window position
+    // (negative shift in rotate)
+    ArrayList<Double> circ = new ArrayList<Double>();
+    // store information if points for window at r position are convex compared to shape without
+    // these points
+    ArrayList<Boolean> convex = new ArrayList<Boolean>();
+
+    double tmpCirc;
+    double tmpInt; // mean intensity along contour in window
+    for (int r = 0; r < points.size(); r++) {
+      // get all points except window. Window has constant position 0 - (window-1)
+      List<Point2d> pointsnowindow = points.subList(window, points.size());
+      tmpCirc = getCircularity(pointsnowindow);
+      // calculate weighting for circularity
+      List<Point2d> pointswindow = points.subList(0, window); // get points for window only
+      // will return 1.0 if there is no image provided
+      tmpInt = getIntensity(shCont, pointswindow, orgIp); // mean intensity for window points
+      tmpInt = tmpInt == 0.0 ? 1.0 : tmpInt; // remove 0 as we divide weight later
+      double rank = tmpCirc;
+      rank /= (getWeighting(pointswindow) * tmpInt); // calculate weighting for window content
+      circ.add(rank); // store weighted circularity for shape without window
+      // check if points of window are convex according to shape without these points
+      if (lookForb == true) {
+        convex.add(bp.arePointsInside(pointsnowindow, pointswindow)); // true if concave
+      } else {
+        convex.add(bp.isanyPointInside(pointsnowindow, pointswindow)); // old code
+      }
+      // move window to next position rotates by -1 what means that on first n positions
+      // of points there are different values simulate window
+      // first iter 0 1 2 3 4 5... (w=[0 1 2])
+      // second itr 1 2 3 4 5 0... (w=[1 2 3])
+      // last itera 5 0 1 2 3 4... (w=[5 0 1])
+      Collections.rotate(points, -1);
+      Collections.rotate(shCont, -1);
+      // dump to file
+      if (QuimP.SUPER_DEBUG) {
+        pw.print(r + "\t");
+        pw.print(IJ.d2s(tmpCirc, 15) + "\t");
+        pw.print(IJ.d2s(tmpInt, 15) + "\t");
+        pw.print(IJ.d2s(rank, 15) + "\t");
+        pw.print(pointswindow + "\t");
+        pw.println();
+      }
+    }
     if (QuimP.SUPER_DEBUG) {
       pw.close();
     }
-    return out;
+    Pair<ArrayList<Double>, ArrayList<Boolean>> ret = new MutablePair<>(circ, convex);
+    return ret;
   }
 
   /**
@@ -570,12 +605,12 @@ public class HatSnakeFilter implements IPadArray {
     for (double d : len) {
       std += Math.pow(d - mean, 2.0);
     }
-    std /= points.size();
+    std /= p.size();
     std = Math.sqrt(std);
 
     // max of len
     // double maxLen = QuimPArrayUtils.arrayMax(len);
-    LOGGER.debug("w " + std);
+    LOGGER.debug("getWeighting= " + std);
     return std * std;
   }
 

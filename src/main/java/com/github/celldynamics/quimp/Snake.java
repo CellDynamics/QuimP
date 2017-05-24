@@ -188,12 +188,11 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * @param x x coordinates of nodes
    * @param y y coordinates of nodes
    * @param id id of Snake
-   * @throws BoaException on wrong number of array points.
    */
-  public Snake(final double[] x, final double[] y, int id) throws BoaException {
+  public Snake(final double[] x, final double[] y, int id) {
     super(x, y, new Node(0), BOA_.qState.segParam.expandSnake);
     if ((x.length != y.length) || x.length <= 3) {
-      throw new BoaException("Lengths of X and Y arrays are not equal");
+      throw new IllegalArgumentException("Lengths of X and Y arrays are not equal");
     }
     snakeID = id;
     this.makeAntiClockwise(); // specific to snake can affect updateNormales
