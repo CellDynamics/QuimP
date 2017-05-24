@@ -6,7 +6,34 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
-       <release version="17.05.01" date="xxxxxxxxx" description="Release">
+       <release version="17.05.01" date="2017-05-24" description="Release">
+         <action dev="baniuk" type="update" issue="245">
+              QuimP-RandomWalk: HatSnakeFilter uses now intensity sampled on 3x3 lattice. This should make results more deterministic (see #244)
+         </action>
+         <action dev="baniuk" type="update" issue="244">
+              QuimP-RandomWalk: Changed internal parameters for HatSnakeFilter.
+         </action>
+         <action dev="baniuk" type="fix" issue="246">
+              QuimP-API: Fixed running mean filter in OutlineProcessor. Unified APIs across Snake and Outline. Better handling broken linked lists if passed to Shape
+         </action>
+         <action dev="baniuk" type="update" issue="247">
+              QuimP-API: Refactored conversion from Shape to list of points. Added option for spline or mean smoothing.
+         </action>
+         <action dev="baniuk" type="fix" issue="251">
+              QuimP-API: Fixed bug in plotting SVG circles that was introduced after earlier code refactoring. 
+         </action>
+         <action dev="baniuk" type="fix" issue="250">
+              QuimP-API: Added forgotten frozen field to PointList copy constructor. 
+         </action>
+         <action dev="baniuk" type="fix" issue="249">
+              QuimP-API: Fixed bug in HatSnakeFilter causing exception if no image was provided. 
+         </action>
+         <action dev="baniuk" type="fix" issue="248">
+              QuimP-API: Fixed correctDensity method for border cases. 
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-API: Many changes: Hamcrest matchers for easier testing of QuimP specific structures, JavaDoc fixes, Findbug warnings, high-level API tests, data conversion (head node is properly maintained now), refactored Shape and child classes. Added calculations of node parameters in constructors
+         </action>
        </release>
        <release version="17.04.04" date="2017-04-28" description="Release">
          <action dev="baniuk" type="fix" issue="242">
