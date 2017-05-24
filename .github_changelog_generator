@@ -1,0 +1,3 @@
+enhancement-labels=enhancement,Enhancement,feature
+include-labels=bug,enhancement,feature
+issue-line-labels=true
