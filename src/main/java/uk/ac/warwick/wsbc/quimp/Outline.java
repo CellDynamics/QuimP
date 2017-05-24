@@ -463,7 +463,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
 
         } else {
           if (v2.isHead()) {
-            break; // stop it douplicating the head node if it also an intpoint
+            break; // stop it duplicating the head node if it also an intpoint
           }
           if (v2.isIntPoint()) {
             temp = insertVert(newV);

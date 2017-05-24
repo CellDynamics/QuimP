@@ -13,7 +13,6 @@ import ij.gui.Roi;
 import ij.gui.Wand;
 import ij.process.ImageProcessor;
 import uk.ac.warwick.wsbc.quimp.Outline;
-import uk.ac.warwick.wsbc.quimp.QuimpException;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
 
 /*
@@ -239,13 +238,8 @@ public class TrackOutline {
       // interpolate and reduce number of points
       sr.setInterpolationParameters(step, false, smooth);
       Outline o;
-      try {
-        o = new QuimpDataConverter(sr.getOutlineasPoints()).getOutline();
-        outlines.add(o);
-      } catch (QuimpException e) {
-        // TODO Remove this after introducing outline constructor
-        e.printStackTrace();
-      }
+      o = new QuimpDataConverter(sr.getOutlineasPoints()).getOutline();
+      outlines.add(o);
 
     }
     return outlines;
