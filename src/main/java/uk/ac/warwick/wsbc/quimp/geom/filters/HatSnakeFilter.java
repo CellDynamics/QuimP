@@ -303,6 +303,8 @@ public class HatSnakeFilter implements IPadArray {
     WindowIndRange indexTest = new WindowIndRange();
     // do as long as we find pnum protrusions (or to end of candidates, does not apply if pnum==0
     // when pnum is ignored)
+
+    // TODO change to normal checking values, no pnum rather rank focused only
     while (found < pnum || pnum == 0) {
       if (i >= circ.size()) { // no more data to check, probably we have less prot. pnum
         LOGGER.warn("Can find next candidate. Use smaller window");
