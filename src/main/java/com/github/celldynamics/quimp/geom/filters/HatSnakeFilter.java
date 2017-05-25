@@ -307,7 +307,7 @@ public class HatSnakeFilter implements IPadArray {
       }
       if (found > 0) {
         // find where it was before sorting and store in window positions
-        int startpos = circ.indexOf(circsorted.get(i));
+        int startpos = circ.indexOf(circsorted.get(i)); // FIXME What if same values in circ?
         // check if we already have this index in list indexes to remove
         if (startpos + window - 1 >= points.size()) { // if at end, we must turn to begin
           indexTest.setRange(startpos, points.size() - 1); // to end
@@ -405,7 +405,7 @@ public class HatSnakeFilter implements IPadArray {
     shCont = outline.asList();
 
     if (QuimP.SUPER_DEBUG) {
-      tmpDebug = Paths.get(System.getProperty("java.io.tmpdir"), "HatSnakeFilter_debug");
+      tmpDebug = Paths.get(System.getProperty("java.io.tmpdir"), "HatSnakeFilter_debug.csv");
       try {
         pw = new PrintWriter(new FileWriter(tmpDebug.toFile()), true);
       } catch (IOException e) {
@@ -428,6 +428,7 @@ public class HatSnakeFilter implements IPadArray {
 
     double tmpCirc;
     double tmpInt; // mean intensity along contour in window
+    double tmpWei; // weighting based on local shape disturbation
     for (int r = 0; r < points.size(); r++) {
       // get all points except window. Window has constant position 0 - (window-1)
       List<Point2d> pointsnowindow = points.subList(window, points.size());
@@ -437,15 +438,17 @@ public class HatSnakeFilter implements IPadArray {
       // will return 1.0 if there is no image provided
       tmpInt = getIntensity(shCont, pointswindow, orgIp); // mean intensity for window points
       tmpInt = tmpInt == 0.0 ? 1.0 : tmpInt; // remove 0 as we divide weight later
-      double rank = tmpCirc;
-      rank /= (getWeighting(pointswindow) * tmpInt); // calculate weighting for window content
+      tmpWei = getWeighting(pointswindow);
+      double rank = tmpCirc / (tmpWei * tmpInt); // calculate rank for window content
       circ.add(rank); // store weighted circularity for shape without window
       // check if points of window are convex according to shape without these points
+      boolean tmpCon;
       if (lookForb == true) {
-        convex.add(bp.arePointsInside(pointsnowindow, pointswindow)); // true if concave
+        tmpCon = bp.arePointsInside(pointsnowindow, pointswindow); // true if concave
       } else {
-        convex.add(bp.isanyPointInside(pointsnowindow, pointswindow)); // old code
+        tmpCon = bp.isanyPointInside(pointsnowindow, pointswindow); // old code
       }
+      convex.add(tmpCon);
       // move window to next position rotates by -1 what means that on first n positions
       // of points there are different values simulate window
       // first iter 0 1 2 3 4 5... (w=[0 1 2])
@@ -455,11 +458,14 @@ public class HatSnakeFilter implements IPadArray {
       Collections.rotate(shCont, -1);
       // dump to file
       if (QuimP.SUPER_DEBUG) {
-        pw.print(r + "\t");
-        pw.print(IJ.d2s(tmpCirc, 15) + "\t");
-        pw.print(IJ.d2s(tmpInt, 15) + "\t");
-        pw.print(IJ.d2s(rank, 15) + "\t");
-        pw.print(pointswindow + "\t");
+        pw.print(r + ",");
+        pw.print(IJ.d2s(tmpCirc, 15) + ","); // circularity only
+        pw.print(IJ.d2s(tmpInt, 15) + ","); // intensity
+        pw.print(IJ.d2s(tmpWei, 15) + ","); // shape distribution weight
+        pw.print(IJ.d2s(rank, 15) + ","); // final rank unscaled
+        pw.print(tmpCon + ","); // boolean concavity
+        pw.print(lookForb + ","); // boolean type of algorithm used
+        pw.print(pointswindow); // coordinates of points in window
         pw.println();
       }
     }
