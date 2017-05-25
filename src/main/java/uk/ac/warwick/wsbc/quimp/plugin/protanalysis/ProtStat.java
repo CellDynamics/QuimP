@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,6 @@ import uk.ac.warwick.wsbc.quimp.FrameStatistics;
 import uk.ac.warwick.wsbc.quimp.filesystem.IQuimpSerialize;
 import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.Track.TrackType;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
-import uk.ac.warwick.wsbc.quimp.utils.Pair;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 
 /*
@@ -326,8 +326,8 @@ public class ProtStat implements IQuimpSerialize {
       int l = 0;
       while (it.hasNext()) {
         Pair<Track, Track> p = it.next();
-        Track t1 = p.first;
-        Track t2 = p.second;
+        Track t1 = p.getLeft();
+        Track t2 = p.getRight();
         tipPositionIndex[l] = t1.getOutline(0); // first point is maximum
         tipCoordinate[l] = t1.getXY(0, maps.getxMap(), maps.getyMap());
         tipFrame[l] = t1.getFrame(0);

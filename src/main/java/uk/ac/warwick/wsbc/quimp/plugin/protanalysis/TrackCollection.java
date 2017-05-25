@@ -7,7 +7,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import uk.ac.warwick.wsbc.quimp.utils.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Represent collection of tracks.
@@ -65,7 +66,7 @@ public class TrackCollection {
     for (int i = 0; i < forward.npoints; i++) {
       tmpF.add(new Point(forward.xpoints[i], forward.ypoints[i]));
     }
-    bf.add(new Pair<Track, Track>(tmpB, tmpF));
+    bf.add(new ImmutablePair<Track, Track>(tmpB, tmpF));
   }
 
   /**
@@ -80,7 +81,7 @@ public class TrackCollection {
     b.type = Track.TrackType.BACKWARD;
     Track f = new Track(forward, nextId++, null);
     f.type = Track.TrackType.FORWARD;
-    bf.add(new Pair<Track, Track>(b, f));
+    bf.add(new ImmutablePair<Track, Track>(b, f));
 
   }
 
@@ -101,8 +102,8 @@ public class TrackCollection {
   public Iterator<Track> iteratorTrack() {
     List<Track> ret = new ArrayList<>();
     for (Pair<Track, Track> p : bf) {
-      ret.add(p.first);
-      ret.add(p.second);
+      ret.add(p.getLeft());
+      ret.add(p.getRight());
     }
     return ret.iterator();
   }

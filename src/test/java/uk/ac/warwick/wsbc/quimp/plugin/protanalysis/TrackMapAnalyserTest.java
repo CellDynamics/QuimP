@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import uk.ac.warwick.wsbc.quimp.utils.Pair;
 
 /**
  * @author p.baniukiewicz
@@ -186,7 +187,7 @@ public class TrackMapAnalyserTest {
       };
       List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {
         {
-          add(new Pair<Track, Track>(b1, f1));
+          add(new ImmutablePair<Track, Track>(b1, f1));
         }
       };
       Polygon exp = new Polygon(new int[] {}, new int[] {}, 0);
@@ -230,8 +231,8 @@ public class TrackMapAnalyserTest {
       };
       List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {
         {
-          add(new Pair<Track, Track>(b1, f1));
-          add(new Pair<Track, Track>(b2, f2));
+          add(new ImmutablePair<Track, Track>(b1, f1));
+          add(new ImmutablePair<Track, Track>(b2, f2));
         }
       };
       Polygon exp = new Polygon(new int[] {}, new int[] {}, 0);
@@ -275,8 +276,8 @@ public class TrackMapAnalyserTest {
       };
       List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {
         {
-          add(new Pair<Track, Track>(b1, f1));
-          add(new Pair<Track, Track>(b2, f2));
+          add(new ImmutablePair<Track, Track>(b1, f1));
+          add(new ImmutablePair<Track, Track>(b2, f2));
         }
       };
       Polygon exp = new Polygon(new int[] { 5 }, new int[] { 5 }, 1);
@@ -326,8 +327,8 @@ public class TrackMapAnalyserTest {
       };
       List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {
         {
-          add(new Pair<Track, Track>(b1, f1));
-          add(new Pair<Track, Track>(b2, f2));
+          add(new ImmutablePair<Track, Track>(b1, f1));
+          add(new ImmutablePair<Track, Track>(b2, f2));
         }
       };
       Polygon exp = new Polygon(new int[] { 5 }, new int[] { 5 }, 1);
@@ -377,8 +378,8 @@ public class TrackMapAnalyserTest {
       };
       List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {
         {
-          add(new Pair<Track, Track>(b1, f1));
-          add(new Pair<Track, Track>(b2, f2));
+          add(new ImmutablePair<Track, Track>(b1, f1));
+          add(new ImmutablePair<Track, Track>(b2, f2));
         }
       };
       Polygon exp = new Polygon(new int[] { 5, 7 }, new int[] { 5, 7 }, 2);
@@ -428,8 +429,8 @@ public class TrackMapAnalyserTest {
       };
       List<Pair<Track, Track>> tracks = new ArrayList<Pair<Track, Track>>() {
         {
-          add(new Pair<Track, Track>(b1, f1));
-          add(new Pair<Track, Track>(b2, f2));
+          add(new ImmutablePair<Track, Track>(b1, f1));
+          add(new ImmutablePair<Track, Track>(b2, f2));
         }
       };
       Polygon exp = new Polygon(new int[] { 1, 2, 7, 10 }, new int[] { 1, 2, 7, 10 }, 4);

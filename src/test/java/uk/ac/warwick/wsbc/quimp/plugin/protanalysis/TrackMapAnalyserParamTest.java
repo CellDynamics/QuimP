@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -20,8 +22,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import uk.ac.warwick.wsbc.quimp.utils.Pair;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -79,7 +79,7 @@ public class TrackMapAnalyserParamTest {
       int[] y2 = { 10, 9, 8, 7, 5, 5, 4, 3, 2, 1 };
       ArrayList<Polygon> track = test(new Object[] { x1, y1 }, new Object[] { x2, y2 });
       Polygon expIntersectionPoints = new Polygon(new int[] { 5 }, new int[] { 5 }, 1);
-      Pair<Point, Point> p = new Pair<Point, Point>(new Point(0, 1), new Point(5, 5));
+      Pair<Point, Point> p = new ImmutablePair<Point, Point>(new Point(0, 1), new Point(5, 5));
       List<Pair<Point, Point>> expIntersectionPairs =
               new ArrayList<Pair<Point, Point>>(Arrays.asList(p));
       ret.add(new Object[] { Type.INTERSECTION, track, expIntersectionPoints, expIntersectionPairs,
@@ -111,8 +111,8 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(5, 5)));
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(9, 9)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(5, 5)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(9, 9)));
         }
       };
       ret.add(new Object[] { Type.INTERSECTION, track, expIntersectionPoints, expIntersectionPairs,
@@ -131,16 +131,16 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(1, 1)));
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(2, 2)));
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(3, 3)));
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(4, 4)));
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(5, 5)));
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(6, 6)));
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(7, 7)));
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(8, 8)));
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(9, 9)));
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(10, 10)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(1, 1)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(2, 2)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(3, 3)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(4, 4)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(5, 5)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(6, 6)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(7, 7)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(8, 8)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(9, 9)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(10, 10)));
         }
       };
       ret.add(new Object[] { Type.INTERSECTION, track, expIntersectionPoints, expIntersectionPairs,
@@ -162,9 +162,9 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(5, 5)));
-          add(new Pair<Point, Point>(new Point(0, 2), new Point(9, 9)));
-          add(new Pair<Point, Point>(new Point(1, 2), new Point(6, 5)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(5, 5)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 2), new Point(9, 9)));
+          add(new ImmutablePair<Point, Point>(new Point(1, 2), new Point(6, 5)));
         }
       };
       ret.add(new Object[] { Type.INTERSECTION, track, expIntersectionPoints, expIntersectionPairs,
@@ -188,9 +188,9 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(17, 70)));
-          add(new Pair<Point, Point>(new Point(0, 2), new Point(17, 70)));
-          add(new Pair<Point, Point>(new Point(1, 2), new Point(17, 70)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(17, 70)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 2), new Point(17, 70)));
+          add(new ImmutablePair<Point, Point>(new Point(1, 2), new Point(17, 70)));
         }
       };
       ret.add(new Object[] { Type.INTERSECTION, track, expIntersectionPoints, expIntersectionPairs,
@@ -264,7 +264,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(0, 2), new Point(400, 7)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 2), new Point(400, 7)));
         }
       };
       ret.add(new Object[] { Type.INTERSECTION, track, expIntersectionPoints, expIntersectionPairs,
@@ -290,8 +290,8 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(1, 2), new Point(400, 7)));
-          add(new Pair<Point, Point>(new Point(1, 2), new Point(200, 5)));
+          add(new ImmutablePair<Point, Point>(new Point(1, 2), new Point(400, 7)));
+          add(new ImmutablePair<Point, Point>(new Point(1, 2), new Point(200, 5)));
         }
       };
       ret.add(new Object[] { Type.INTERSECTION, track, expIntersectionPoints, expIntersectionPairs,
@@ -317,9 +317,9 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(1, 2), new Point(400, 7)));
-          add(new Pair<Point, Point>(new Point(1, 2), new Point(200, 5)));
-          add(new Pair<Point, Point>(new Point(2, 3), new Point(100, 100)));
+          add(new ImmutablePair<Point, Point>(new Point(1, 2), new Point(400, 7)));
+          add(new ImmutablePair<Point, Point>(new Point(1, 2), new Point(200, 5)));
+          add(new ImmutablePair<Point, Point>(new Point(2, 3), new Point(100, 100)));
         }
       };
       ret.add(new Object[] { Type.INTERSECTION, track, expIntersectionPoints, expIntersectionPairs,
@@ -345,8 +345,8 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(0, 2), new Point(200, 5)));
-          add(new Pair<Point, Point>(new Point(0, 2), new Point(400, 7)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 2), new Point(200, 5)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 2), new Point(400, 7)));
         }
       };
       ret.add(new Object[] { Type.INTERSECTION, track, expIntersectionPoints, expIntersectionPairs,
@@ -372,9 +372,9 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(0, 2), new Point(200, 5)));
-          add(new Pair<Point, Point>(new Point(0, 2), new Point(400, 7)));
-          add(new Pair<Point, Point>(new Point(2, 3), new Point(100, 100)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 2), new Point(200, 5)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 2), new Point(400, 7)));
+          add(new ImmutablePair<Point, Point>(new Point(2, 3), new Point(100, 100)));
         }
       };
       ret.add(new Object[] { Type.INTERSECTION, track, expIntersectionPoints, expIntersectionPairs,
@@ -396,7 +396,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(0, 1), new Point(6, 6)));
+          add(new ImmutablePair<Point, Point>(new Point(0, 1), new Point(6, 6)));
         }
       };
       ret.add(new Object[] { Type.REPEATING, track, expIntersectionPoints, expIntersectionPairs,
@@ -436,7 +436,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(3, 3), new Point())); // tested point
+          add(new ImmutablePair<Point, Point>(new Point(3, 3), new Point())); // tested point
         }
       };
       ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
@@ -456,7 +456,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(11, 11), new Point())); // tested point
+          add(new ImmutablePair<Point, Point>(new Point(11, 11), new Point())); // tested point
         }
       };
       ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
@@ -476,7 +476,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(10, 10), new Point())); // tested point
+          add(new ImmutablePair<Point, Point>(new Point(10, 10), new Point())); // tested point
         }
       };
       ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
@@ -496,7 +496,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(11, 11), new Point())); // tested point
+          add(new ImmutablePair<Point, Point>(new Point(11, 11), new Point())); // tested point
         }
       };
       ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
@@ -516,7 +516,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(10, 10), new Point())); // tested point
+          add(new ImmutablePair<Point, Point>(new Point(10, 10), new Point())); // tested point
         }
       };
       ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
@@ -536,7 +536,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(9, 9), new Point())); // tested point
+          add(new ImmutablePair<Point, Point>(new Point(9, 9), new Point())); // tested point
         }
       };
       ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
@@ -556,7 +556,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(11, 11), new Point())); // tested point
+          add(new ImmutablePair<Point, Point>(new Point(11, 11), new Point())); // tested point
         }
       };
       ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
@@ -576,7 +576,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(110, 110), new Point())); // tested point
+          add(new ImmutablePair<Point, Point>(new Point(110, 110), new Point())); // tested point
         }
       };
       ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
@@ -596,7 +596,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(10, 10), new Point())); // tested point
+          add(new ImmutablePair<Point, Point>(new Point(10, 10), new Point())); // tested point
         }
       };
       ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
@@ -616,7 +616,7 @@ public class TrackMapAnalyserParamTest {
       @SuppressWarnings("serial")
       List<Pair<Point, Point>> expIntersectionPairs = new ArrayList<Pair<Point, Point>>() {
         {
-          add(new Pair<Point, Point>(new Point(11, 11), new Point())); // tested point
+          add(new ImmutablePair<Point, Point>(new Point(11, 11), new Point())); // tested point
         }
       };
       ret.add(new Object[] { Type.ENUMERATE, track, expIntersectionPoints, expIntersectionPairs,
@@ -709,7 +709,7 @@ public class TrackMapAnalyserParamTest {
       includeinitial.setBoolean(null, true); // count maximum one
     }
     int ret1 = TrackMapAnalyser.enumeratePoint(track.get(0), track.get(1),
-            expIntersectionPairs.get(0).first);
+            expIntersectionPairs.get(0).getLeft());
     includeinitial.setBoolean(null, true); // count maximum one
     assertThat(ret1, is(expIntersectionPoints.xpoints[0]));
   }

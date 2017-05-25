@@ -10,12 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.wsbc.quimp.geom.MapTracker;
 import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.STmap;
-import uk.ac.warwick.wsbc.quimp.utils.Pair;
 import uk.ac.warwick.wsbc.quimp.utils.QuimPArrayUtils;
 
 /**
@@ -156,10 +157,10 @@ public class TrackMapAnalyser {
     List<Pair<Track, Track>> tracks = trackCollection.getBf();
     for (int i = 0; i < tracks.size() - 1; i++) {
       for (int j = i + 1; j < tracks.size(); j++) {
-        Track b1 = tracks.get(i).first;
-        Track b2 = tracks.get(j).first;
-        Track f1 = tracks.get(i).second;
-        Track f2 = tracks.get(j).second;
+        Track b1 = tracks.get(i).getLeft();
+        Track b2 = tracks.get(j).getLeft();
+        Track f1 = tracks.get(i).getRight();
+        Track f2 = tracks.get(j).getRight();
         // check b1-b2, b1-f2, b2-f1, f1-f2
         // b1-b2
         {
@@ -259,7 +260,7 @@ public class TrackMapAnalyser {
       for (int j = i + 1; j < tracks.size(); j++) {
         Polygon retPol = getIntersectionPoints(tracks.get(i), tracks.get(j));
         for (int n = 0; n < retPol.npoints; n++) {
-          Pair<Point, Point> pairTmp = new Pair<Point, Point>(new Point(i, j),
+          Pair<Point, Point> pairTmp = new ImmutablePair<Point, Point>(new Point(i, j),
                   new Point(retPol.xpoints[n], retPol.ypoints[n]));
           retTmp.add(pairTmp);
         }
@@ -285,7 +286,7 @@ public class TrackMapAnalyser {
     List<Pair<Point, Point>> ret = new ArrayList<>();
     // collect all intersections into separate maps according to parent (left only considered)
     for (Pair<Point, Point> p : intersections) {
-      Integer parentleft = p.first.x;
+      Integer parentleft = p.getLeft().x;
       if (map.get(parentleft) == null) {
         map.put(parentleft, new ArrayList<>()); // if no create
       }
@@ -305,14 +306,14 @@ public class TrackMapAnalyser {
         // This is strictly related to trackMaxima return order
         int back;
         int forw;
-        if (p.first.x % 2 == 0) { // if index is even it is back and forward is next one
-          back = p.first.x;
+        if (p.getLeft().x % 2 == 0) { // if index is even it is back and forward is next one
+          back = p.getLeft().x;
           forw = back + 1;
         } else { // if index is uneven this is forward and back is previous
-          forw = p.first.x;
+          forw = p.getLeft().x;
           back = forw - 1;
         }
-        int ind = enumeratePoint(tracks.get(back), tracks.get(forw), p.second);
+        int ind = enumeratePoint(tracks.get(back), tracks.get(forw), p.getRight());
         if (ind < 0) {
           throw new IllegalArgumentException("Point does not exist in track");
         }
@@ -350,7 +351,7 @@ public class TrackMapAnalyser {
       Pair<Point, Point> element = it.next();
       // remove because first parent is even and second is next track. <even,uneven> are
       // <backward,forward> according to trackMaxima.
-      if (element.first.x % 2 == 0 && element.first.x + 1 == element.first.y) {
+      if (element.getLeft().x % 2 == 0 && element.getLeft().x + 1 == element.getLeft().y) {
         it.remove();
       }
     }
