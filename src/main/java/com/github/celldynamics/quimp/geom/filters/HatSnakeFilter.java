@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -276,12 +278,18 @@ public class HatSnakeFilter implements IPadArray {
     // Step 2 - Check criterion for all windows
     TreeSet<WindowIndRange> ind2rem = new TreeSet<>(); // <l;u> range of indexes to remove
     // need sorted but the old one as well to identify windows positions
-    ArrayList<Double> circsorted = new ArrayList<>(circ);
-    circsorted.sort(Collections.reverseOrder()); // sort in descending order
-    LOGGER.trace("cirs: " + circsorted.toString());
+    // we do not touch circ itself but rater get list of indexes that refer to sorted element in
+    // original array. This is sort in ascending order
+    IntStream tmpStr = IntStream.range(0, circ.size()).boxed()
+            .sorted((i, j) -> circ.get(i).compareTo(circ.get(j))).mapToInt(el -> el);
+    List<Integer> sortedIndexes = tmpStr.boxed().collect(Collectors.toList());
+    Collections.reverse(sortedIndexes); // to have in descending orer - first index in this array
+    // point to index in sorted aray where largest element sits
+
+    LOGGER.trace("cirs: " + sortedIndexes.toString());
     LOGGER.trace("circ: " + circ.toString());
 
-    if (circsorted.get(0) < alev) {
+    if (circ.get(sortedIndexes.get(0)) < alev) {
       return points; // just return non-modified data; TODO does it matter if circ is normalised?
     }
 
@@ -297,17 +305,17 @@ public class HatSnakeFilter implements IPadArray {
     // do as long as we find pnum protrusions (or to end of candidates, does not apply if pnum==0
     // when pnum is ignored)
     while (found < pnum || pnum == 0) {
-      if (i >= circsorted.size()) { // no more data to check, probably we have less prot. pnum
+      if (i >= circ.size()) { // no more data to check, probably we have less prot. pnum
         LOGGER.warn("Can find next candidate. Use smaller window");
         break;
       }
-      if (circsorted.get(i) < alev) {
-        LOGGER.info("break - alev=" + circsorted.get(i));
+      if (circ.get(sortedIndexes.get(i)) < alev) {
+        LOGGER.info("break - alev=" + circ.get(sortedIndexes.get(i)));
         break; // stop searching because all i+n are smaller as well
       }
       if (found > 0) {
         // find where it was before sorting and store in window positions
-        int startpos = circ.indexOf(circsorted.get(i)); // FIXME What if same values in circ?
+        int startpos = sortedIndexes.get(i);
         // check if we already have this index in list indexes to remove
         if (startpos + window - 1 >= points.size()) { // if at end, we must turn to begin
           indexTest.setRange(startpos, points.size() - 1); // to end
@@ -330,7 +338,7 @@ public class HatSnakeFilter implements IPadArray {
             ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
           }
           LOGGER.trace("added win for i=" + i + " startpos=" + startpos + " coord:"
-                  + points.get(startpos).toString() + "alev=" + circsorted.get(i));
+                  + points.get(startpos).toString() + "alev=" + circ.get(sortedIndexes.get(i)));
           found++;
           i++;
         } else { // go to next candidate in sorted circularities
@@ -338,7 +346,7 @@ public class HatSnakeFilter implements IPadArray {
         }
       } else { // first candidate always accepted
         // find where it was before sorting and store in window positions
-        int startpos = circ.indexOf(circsorted.get(i));
+        int startpos = sortedIndexes.get(i);
         if (lookFor != ALL && convex.get(startpos) == !lookForb) { // do not check for mode 3
           i++;
           continue;
@@ -353,7 +361,7 @@ public class HatSnakeFilter implements IPadArray {
           ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
         }
         LOGGER.info("added win for i=" + i + " startpos=" + startpos + " coord:"
-                + points.get(startpos).toString() + "alev=" + circsorted.get(i));
+                + points.get(startpos).toString() + "alev=" + circ.get(sortedIndexes.get(i)));
         i++;
         found++;
       }
