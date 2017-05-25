@@ -1,6 +1,7 @@
 package uk.ac.warwick.wsbc.quimp.geom.filters;
 
 import java.awt.Color;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.gui.Roi;
+import uk.ac.warwick.wsbc.quimp.Shape;
 import uk.ac.warwick.wsbc.quimp.geom.SegmentedShapeRoi;
 import uk.ac.warwick.wsbc.quimp.plugin.binaryseg.BinarySegmentation;
 import uk.ac.warwick.wsbc.quimp.plugin.utils.QuimpDataConverter;
@@ -41,6 +43,9 @@ public class HatSnakeFilterRun {
     String folder =
             "src/test/Resources-static/uk.ac.warwick.wsbc.quimp.geom.filters.HatSnakeFilter/";
     String casename = "test_C1-talA_GFP_rnd_motility_FLU";
+    Field f = Shape.class.getDeclaredField("threshold");
+    f.setAccessible(true);
+    f.setDouble(Shape.class, 0.0); // head next
 
     final int step = 1;
 
@@ -109,6 +114,7 @@ public class HatSnakeFilterRun {
     filtered.show();
     org.setSlice(pp);
     org.show();
+    f.setDouble(Shape.class, 0.5); // restore
     // both original and result image can be combined as composite to check what parts were removed.
     // By default program logs alev value computed for every frame for removed parts.
 
