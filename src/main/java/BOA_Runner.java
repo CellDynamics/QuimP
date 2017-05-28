@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.quimp.BOA_;
+import com.github.celldynamics.quimp.BOA_;
 
 /**
  * Compatibility layer for ImageJ.

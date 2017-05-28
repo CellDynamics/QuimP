@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.quimp.plugin.ana.ANA_;
+import com.github.celldynamics.quimp.plugin.ana.ANA_;
 
 /**
  * Compatibility layer for ImageJ.

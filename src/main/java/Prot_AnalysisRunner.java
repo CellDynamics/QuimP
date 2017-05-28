@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.quimp.plugin.protanalysis.Prot_Analysis;
+import com.github.celldynamics.quimp.plugin.protanalysis.Prot_Analysis;
 
 /**
  * Compatibility layer for ImageJ.

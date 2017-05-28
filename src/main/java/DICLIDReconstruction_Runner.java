@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.quimp.plugin.dic.DICLIDReconstruction_;
+import com.github.celldynamics.quimp.plugin.dic.DICLIDReconstruction_;
 
 /**
  * Compatibility layer for ImageJ.
