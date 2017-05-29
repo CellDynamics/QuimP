@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.quimp.plugin.ecmm.ECMM_Mapping;
+import com.github.celldynamics.quimp.plugin.ecmm.ECMM_Mapping;
 
 /**
  * Compatibility layer for ImageJ.

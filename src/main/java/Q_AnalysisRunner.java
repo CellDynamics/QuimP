@@ -1,4 +1,4 @@
-import uk.ac.warwick.wsbc.quimp.plugin.qanalysis.Q_Analysis;
+import com.github.celldynamics.quimp.plugin.qanalysis.Q_Analysis;
 
 /**
  * Compatibility layer for ImageJ.
