@@ -448,7 +448,7 @@ public class PluginFactory {
   /**
    * Return list of plugins of given types.
    * 
-   * @param type Type defined in uk.ac.warwick.wsbc.plugin.IQuimpPlugin
+   * @param type Type defined in com.github.celldynamics.plugin.IQuimpPlugin
    * @return List of names of plugins of type type. If there is no plugins in directory (this type
    *         or any) returned list has length 0
    */

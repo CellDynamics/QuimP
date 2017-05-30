@@ -55,7 +55,7 @@ public class RoiSaver_test {
   }
 
   /**
-   * Test method for uk.ac.warwick.wsbc.tools.images.filters.RoiSaver.saveROI(String,
+   * Test method for com.github.celldynamics.tools.images.filters.RoiSaver.saveROI(String,
    * List&lt;Vector2d&gt;)
    * 
    * <p>pre: null pointer
