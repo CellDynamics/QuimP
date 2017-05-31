@@ -160,7 +160,6 @@ public class HatSnakeFilter implements IPadArray {
    */
   private int lookFor = PROTRUSIONS; // default for compatibility with old code
 
-  private boolean lookForb;
   private int window; // filter's window size
   private int pnum; // how many protrusions to remove
   private double alev; // minimal acceptance level
@@ -266,29 +265,31 @@ public class HatSnakeFilter implements IPadArray {
 
     if (ranks == null) {
       ranks = calculateRank(points, orgIp);
-      // normalize circularity to 1
-      double maxCirc = Collections.max(ranks.getLeft());
+      double maxCirc;
+      // compute max circularity but only among candidates
+      if (lookFor == ALL) {
+        maxCirc = Collections.max(ranks.getLeft());
+      } else {
+        ArrayList<Double> tmpCirc = new ArrayList<>();
+        for (int i = 0; i < ranks.getRight().size(); i++) {
+          if (ranks.getRight().get(i) == true) { // copy those right to new table
+            tmpCirc.add(ranks.getLeft().get(i));
+          }
+        }
+        // get max only for those values that matches selected mode
+        maxCirc = Collections.max(tmpCirc);
+      }
+
+      // double maxCirc = Collections.max(ranks.getLeft());
       LOGGER.trace("Max circ=" + maxCirc);
+      // some vals can be >1 but they are skipped in main while loop
       for (int r = 0; r < ranks.getLeft().size(); r++) {
         ranks.getLeft().set(r, ranks.getLeft().get(r) / maxCirc);
       }
     }
+
     ArrayList<Double> circ = ranks.getLeft();
-    ;
     ArrayList<Boolean> cavprot = ranks.getRight(); // shape flag
-    // // depending on selected mode we are interested at particular indexes only, those that convex
-    // is
-    // // false (for concaves or protrusions - this is solved by calculateRank). For ALL we take all
-    // if (lookFor == ALL) {
-    // circ = ranks.getLeft(); // take whole list
-    // } else { // remove those where cavprot flag is false
-    // circ = new ArrayList<>();
-    // for (int i = 0; i < cavprot.size(); i++) {
-    // if (cavprot.get(i) == true) { // copy those right to new table
-    // circ.add(ranks.getLeft().get(i));
-    // }
-    // }
-    // }
     if (circ == null || circ.isEmpty()) {
       LOGGER.info("No candidates found for selected mode: " + lookFor);
       return points; // just return non-modified data;
@@ -305,10 +306,12 @@ public class HatSnakeFilter implements IPadArray {
     Collections.reverse(sortedIndexes); // to have in descending orer - first index in this array
     // point to index in sorted aray where largest element sits
 
-    LOGGER.trace("cirs: " + sortedIndexes.toString());
+    LOGGER.trace("cirI: " + sortedIndexes.toString());
     LOGGER.trace("circ: " + circ.toString());
+    LOGGER.trace("circM: " + circ.get(sortedIndexes.get(0)).toString());
 
     if (circ.get(sortedIndexes.get(0)) < alev) {
+      LOGGER.info("Skipped this frame due to rank[0]=" + circ.get(sortedIndexes.get(0)));
       return points; // just return non-modified data; TODO does it matter if circ is normalised?
     }
 
@@ -325,12 +328,17 @@ public class HatSnakeFilter implements IPadArray {
     // do as long as we can find candidates with rank higher than level and we found less than
     // defined number of candidates. Latter criterion can be switched off by setting pnum to 0
     while (circ.get(sortedIndexes.get(i)) > alev && (found < pnum || pnum == 0)) {
+      // find where it was before sorting and store in window positions
+      int startpos = sortedIndexes.get(i);
       if (i >= sortedIndexes.size()) { // no more data to check, probably we have less prot. pnum
         LOGGER.info("Can find next candidate. You can use smaller window");
         break;
       }
-      // find where it was before sorting and store in window positions
-      int startpos = sortedIndexes.get(i);
+      if (cavprot.get(startpos) == false || lookFor == ALL) { // not valid, skip unless ALL mode
+        i++;
+        continue;
+      }
+
       // check if we already have this index in list indexes to remove
       if (startpos + window - 1 >= points.size()) { // if at end, we must turn to begin
         indexTest.setRange(startpos, points.size() - 1); // to end
@@ -345,21 +353,21 @@ public class HatSnakeFilter implements IPadArray {
         i++;
         continue;
       }
-      if (cavprot.get(startpos) == true || lookFor == ALL) {
-        // store range of indexes that belongs to window
-        if (startpos + window - 1 >= points.size()) { // as prev split to two windows
-          // if we are on the end of data
-          ind2rem.add(new WindowIndRange(startpos, points.size() - 1));
-          // turn window to beginning
-          ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
-        } else {
-          ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
-        }
-        LOGGER.info("added win for i=" + i + " startpos=" + startpos + " coord:"
-                + points.get(startpos).toString() + "alev=" + circ.get(sortedIndexes.get(i)));
-        i++;
-        found++;
+      // if (cavprot.get(startpos) == true || lookFor == ALL) {
+      // store range of indexes that belongs to window
+      if (startpos + window - 1 >= points.size()) { // as prev split to two windows
+        // if we are on the end of data
+        ind2rem.add(new WindowIndRange(startpos, points.size() - 1));
+        // turn window to beginning
+        ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
+      } else {
+        ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
       }
+      LOGGER.info("added win for i=" + i + " startpos=" + startpos + " coord:"
+              + points.get(startpos).toString() + "alev=" + circ.get(sortedIndexes.get(i)));
+      found++;
+      // }
+      i++;
     }
     LOGGER.trace("[indexRange;Point]: " + ind2rem.toString());
     LOGGER.trace("Found :" + found + " accepted windows");
@@ -474,7 +482,7 @@ public class HatSnakeFilter implements IPadArray {
         pw.print(IJ.d2s(tmpWei, 15) + ","); // shape distribution weight
         pw.print(IJ.d2s(rank, 15) + ","); // final rank unscaled
         pw.print(tmpCon + ","); // boolean concavity
-        pw.print(lookForb + ","); // boolean type of algorithm used
+        pw.print(lookFor + ","); // boolean type of algorithm used
         pw.print(pointswindow); // coordinates of points in window
         pw.println();
       }
@@ -514,7 +522,6 @@ public class HatSnakeFilter implements IPadArray {
    */
   public void setMode(int mode) {
     lookFor = mode;
-    lookForb = (lookFor == CAVITIES ? true : false);
   }
 
   /**

@@ -11,8 +11,8 @@ import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.Shape;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
-import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter;
 import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
@@ -21,7 +21,6 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.gui.Roi;
-import com.github.celldynamics.quimp.Shape;
 
 /**
  * @author p.baniukiewicz
@@ -76,8 +75,8 @@ public class HatSnakeFilterRun {
 
     // filter
     final int window = 17;
-    final int pnum = 1;
-    final double alev = 0.8;
+    final int pnum = 0;
+    final double alev = 4.646660780596318E-4;
 
     ImagePlus filtered = NewImage.createByteImage("filt", mask.getWidth(), mask.getHeight(),
             mask.getStackSize(), NewImage.GRAY8);
