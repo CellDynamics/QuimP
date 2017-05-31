@@ -47,7 +47,7 @@ import ij.process.ImageProcessor;
  * searching when there is no candidates to remove.
  * <li><i>alev</i> - Threshold value, if circularity computed for given window position is lower
  * than threshold this window is not eliminated regarding <i>pnum</i> or its rank in circularities.
- * <i>alev</i> should be in range form 0 to 1, where 0 stands for accepting every candidate
+ * <i>alev</i> should be in range form 0 to ?, where 0 stands for accepting every candidate
  * </ol>
  * 
  * <p><h3>General description of algorithm:</h3> The window slides over the wrapped contour. Points
@@ -76,7 +76,7 @@ import ij.process.ImageProcessor;
  * </ol>
  * 
  * <p><H2>First step</H2> The window of size <i>window</i> slides over looped data. Looping is
- * // * performed by {@link Collections#rotate(List, int)} method that shift data left copying
+ * performed by {@link Collections#rotate(List, int)} method that shift data left copying
  * falling out indexes
  * to end of the set (finally the window is settled in constant position between indexes
  * <0;window-1>). For each its position <i>r</i> the candidate points are deleted from original
@@ -87,16 +87,17 @@ import ij.process.ImageProcessor;
  * Currently weights are calculated as squared standard deviation of distances of all candidate
  * points to
  * center of mass of these points (or mean point if polygon is invalid). There is also mean
- * intensity calculated here. It is sampled along shrunk outline produced from input points. Finally
+ * intensity calculated by {@link #getIntensity(List, List, ImageProcessor)} (not obligatory, it can
+ * be switched off using {@link #runPlugin(List)} method.). It is sampled along
+ * shrunk outline produced from input points. Finally
  * circularity(r) is divided by weight (<i>r</i>) and intensity and stored in <i>circ</i> array.
  * Additionally in this step the convex/concave is checked. All candidate points are tested whether
  * <b>all</b> they are inside the contour made without them (for concave option) or whether
  * <b>any</b> of
- * them is inside the modified contour (for convex option). Convex.concave sensitivity option can be
+ * them is inside the modified contour (for convex option). Convex/concave sensitivity option can be
  * modified by {@link #setMode(int)}
- * This information is stored in <i>convex</i> array. Finally rank array <i>circ</i> is normalised
- * to maximum element.
- * Mean contour intensity can be switched off using {@link #runPlugin(List)} method.
+ * This information is stored in <i>convex</i> array. Finally rank array <i>circ</i> is NOT
+ * normalised.
  * 
  * <p><H2>Second step</H2> In second step array of ranks <i>circ</i> is sorted in descending order.
  * For every rank in sorted table the real position of window is retrieved (that gave this rank).
@@ -110,8 +111,7 @@ import ij.process.ImageProcessor;
  * that defines
  * rules of equality and non relations between ranges. Basically any overlapping range or included
  * is considered as equal and rejected from storing in <i>ind2rem</i> array.
- * <li>candidate points must be convex/concave.
- * <li>current <i>rank</i> (<i>circ</i>) is greater than <i>alev</i>
+ * <li>candidate points must be convex or concave or any.
  * </ol>
  * If all above criterion are meet the window (l;u) is stored in <i>ind2rem</i>. Windows on the end
  * of data are wrapped by dividing them for two sub-windows: (w;end) and (0;c) otherwise they may
@@ -119,8 +119,7 @@ import ij.process.ImageProcessor;
  * 3 to 10).
  * 
  * <p>The second step is repeated until <i>pnum</i> object will be found or end of candidates will
- * be
- * reached.
+ * be reached. If <tt>pnum</tt> is 0 all objects that meet above criteria will be found.
  * 
  * <p><H2>Third step</H2> In third step every point from original contour is tested for including in
  * array <i>ind2rem</i> that contains ranges of indexes to remove. Points on index that is not
@@ -160,11 +159,10 @@ public class HatSnakeFilter implements IPadArray {
    */
   private int lookFor = PROTRUSIONS; // default for compatibility with old code
 
-  private boolean lookForb;
   private int window; // filter's window size
   private int pnum; // how many protrusions to remove
   private double alev; // minimal acceptance level
-  // private List<Point2d> points; // original contour passed from QuimP
+  private int debugCounter = 0; // for naming of debug files
 
   /**
    * Construct HatFilter Input array with data is virtually circularly padded.
@@ -233,8 +231,8 @@ public class HatSnakeFilter implements IPadArray {
    * @param points contour to process
    * @param orgIp Original image used for sampling intensity, can be <tt>null</tt>
    * @param ranks ranks calculated by {@link #calculateRank(List, ImageProcessor)} or <tt>null</tt>
-   *        to let them be evaluated by this method. In that latter case circularity is normalised
-   *        before use. Method expects normalised ranks to comply with alev parameter
+   *        to let them be evaluated by this method. Ranks values must comply with <tt>alev</tt>
+   *        value
    * 
    * @return Processed input list, size of output list may be different than input. Empty output
    *         is also allowed.
@@ -264,37 +262,19 @@ public class HatSnakeFilter implements IPadArray {
       throw new QuimpPluginException("Acceptacne level should be positive");
     }
 
+    // Step 1 - Calculate ranks and normalise it - Give up - see tag:LocalAveraging
     if (ranks == null) {
       ranks = calculateRank(points, orgIp);
-      // normalize circularity to 1
-      double maxCirc = Collections.max(ranks.getLeft());
-      LOGGER.trace("Max circ=" + maxCirc);
-      for (int r = 0; r < ranks.getLeft().size(); r++) {
-        ranks.getLeft().set(r, ranks.getLeft().get(r) / maxCirc);
-      }
     }
-    ArrayList<Double> circ = ranks.getLeft();
-    ;
+
+    ArrayList<Double> circ = ranks.getLeft(); // out ranks
     ArrayList<Boolean> cavprot = ranks.getRight(); // shape flag
-    // // depending on selected mode we are interested at particular indexes only, those that convex
-    // is
-    // // false (for concaves or protrusions - this is solved by calculateRank). For ALL we take all
-    // if (lookFor == ALL) {
-    // circ = ranks.getLeft(); // take whole list
-    // } else { // remove those where cavprot flag is false
-    // circ = new ArrayList<>();
-    // for (int i = 0; i < cavprot.size(); i++) {
-    // if (cavprot.get(i) == true) { // copy those right to new table
-    // circ.add(ranks.getLeft().get(i));
-    // }
-    // }
-    // }
+
+    // Step 2 - Check criterion for all windows
     if (circ == null || circ.isEmpty()) {
       LOGGER.info("No candidates found for selected mode: " + lookFor);
       return points; // just return non-modified data;
     }
-
-    // Step 2 - Check criterion for all windows
     TreeSet<WindowIndRange> ind2rem = new TreeSet<>(); // <l;u> range of indexes to remove
     // need sorted but the old one as well to identify windows positions
     // we do not touch circ itself but rater get list of indexes that refer to sorted element in
@@ -305,10 +285,19 @@ public class HatSnakeFilter implements IPadArray {
     Collections.reverse(sortedIndexes); // to have in descending orer - first index in this array
     // point to index in sorted aray where largest element sits
 
-    LOGGER.trace("cirs: " + sortedIndexes.toString());
+    LOGGER.trace("cirI: " + sortedIndexes.toString());
     LOGGER.trace("circ: " + circ.toString());
+    LOGGER.trace("circM: " + circ.get(sortedIndexes.get(0)).toString() + " (among ALL)");
+    for (int i = 0; i < sortedIndexes.size(); i++) { // for debug only
+      if (cavprot.get(sortedIndexes.get(i)) == true) {
+        LOGGER.trace(
+                "circMacc: " + circ.get(sortedIndexes.get(i)).toString() + " (max requested type)");
+        break;
+      }
+    }
 
     if (circ.get(sortedIndexes.get(0)) < alev) {
+      LOGGER.info("Skipped this frame due to rank[0]=" + circ.get(sortedIndexes.get(0)));
       return points; // just return non-modified data; TODO does it matter if circ is normalised?
     }
 
@@ -324,13 +313,17 @@ public class HatSnakeFilter implements IPadArray {
 
     // do as long as we can find candidates with rank higher than level and we found less than
     // defined number of candidates. Latter criterion can be switched off by setting pnum to 0
-    while (circ.get(sortedIndexes.get(i)) > alev && (found < pnum || pnum == 0)) {
-      if (i >= sortedIndexes.size()) { // no more data to check, probably we have less prot. pnum
-        LOGGER.info("Can find next candidate. You can use smaller window");
-        break;
-      }
+    // note that rank list contains all candidates and those with unwanted curvature type are
+    // filtered out in loop
+    while (i < sortedIndexes.size() && circ.get(sortedIndexes.get(i)) > alev
+            && (found < pnum || pnum == 0)) {
       // find where it was before sorting and store in window positions
       int startpos = sortedIndexes.get(i);
+      if (cavprot.get(startpos) == false || lookFor == ALL) { // not valid, skip unless ALL mode
+        i++;
+        continue;
+      }
+
       // check if we already have this index in list indexes to remove
       if (startpos + window - 1 >= points.size()) { // if at end, we must turn to begin
         indexTest.setRange(startpos, points.size() - 1); // to end
@@ -345,24 +338,31 @@ public class HatSnakeFilter implements IPadArray {
         i++;
         continue;
       }
-      if (cavprot.get(startpos) == true || lookFor == ALL) {
-        // store range of indexes that belongs to window
-        if (startpos + window - 1 >= points.size()) { // as prev split to two windows
-          // if we are on the end of data
-          ind2rem.add(new WindowIndRange(startpos, points.size() - 1));
-          // turn window to beginning
-          ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
-        } else {
-          ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
-        }
-        LOGGER.info("added win for i=" + i + " startpos=" + startpos + " coord:"
-                + points.get(startpos).toString() + "alev=" + circ.get(sortedIndexes.get(i)));
-        i++;
-        found++;
+      // if (cavprot.get(startpos) == true || lookFor == ALL) {
+      // store range of indexes that belongs to window
+      if (startpos + window - 1 >= points.size()) { // as prev split to two windows
+        // if we are on the end of data
+        ind2rem.add(new WindowIndRange(startpos, points.size() - 1));
+        // turn window to beginning
+        ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
+      } else {
+        ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
       }
+      LOGGER.info("added win for i=" + i + " startpos=" + startpos + " coord:"
+              + points.get(startpos).toString() + "alev=" + circ.get(sortedIndexes.get(i)));
+      found++;
+      // }
+      i++;
+    }
+    if (i >= sortedIndexes.size()) { // no more data to check, probably we have less prot. pnum
+      LOGGER.info("Can find next candidate. You can use smaller window");
+    }
+    if (found == 0) {
+      LOGGER.info("No acceptable candidates found, having desired rank AND being requested type");
     }
     LOGGER.trace("[indexRange;Point]: " + ind2rem.toString());
     LOGGER.trace("Found :" + found + " accepted windows");
+
     // Step 3 - remove selected windows from input data
     // array will be copied to new one skipping points to remove
     List<Point2d> out = new ArrayList<Point2d>(); // output table for plotting temporary results
@@ -409,16 +409,20 @@ public class HatSnakeFilter implements IPadArray {
     shCont = outline.asList();
 
     if (QuimP.SUPER_DEBUG) {
-      tmpDebug = Paths.get(System.getProperty("java.io.tmpdir"), "HatSnakeFilter_debug.csv");
+      tmpDebug = Paths.get(System.getProperty("java.io.tmpdir"),
+              "HatSnakeFilter_debug" + debugCounter + ".csv");
       try {
         pw = new PrintWriter(new FileWriter(tmpDebug.toFile()), true);
       } catch (IOException e) {
         e.printStackTrace();
       }
-      Path shContDebug = Paths.get(System.getProperty("java.io.tmpdir"), "shCont_debug");
-      Path pointsDebug = Paths.get(System.getProperty("java.io.tmpdir"), "points_debug");
+      Path shContDebug =
+              Paths.get(System.getProperty("java.io.tmpdir"), "shCont_debug" + debugCounter);
+      Path pointsDebug =
+              Paths.get(System.getProperty("java.io.tmpdir"), "points_debug" + debugCounter);
       debugSaveList(shContDebug, shCont);
       debugSaveList(pointsDebug, points);
+      debugCounter++;
     }
 
     BasicPolygons bp = new BasicPolygons(); // provides geometry processing
@@ -474,7 +478,7 @@ public class HatSnakeFilter implements IPadArray {
         pw.print(IJ.d2s(tmpWei, 15) + ","); // shape distribution weight
         pw.print(IJ.d2s(rank, 15) + ","); // final rank unscaled
         pw.print(tmpCon + ","); // boolean concavity
-        pw.print(lookForb + ","); // boolean type of algorithm used
+        pw.print(lookFor + ","); // boolean type of algorithm used
         pw.print(pointswindow); // coordinates of points in window
         pw.println();
       }
@@ -514,13 +518,12 @@ public class HatSnakeFilter implements IPadArray {
    */
   public void setMode(int mode) {
     lookFor = mode;
-    lookForb = (lookFor == CAVITIES ? true : false);
   }
 
   /**
    * Compute mean intensity for list of points. 3x3 stencil is used for each point.
    * 
-   * <p>Shrink contour and original contour have different number of points so direct mapping is not
+   * <p>Shrank contour and original contour have different number of points so direct mapping is not
    * possible. For each point in window the method finds closest point in shrank contour and sample
    * 3x3 stencil around. All stencils for all window points are averaged then.
    * 
@@ -543,6 +546,13 @@ public class HatSnakeFilter implements IPadArray {
     return meanI;
   }
 
+  /**
+   * Find point in list that is closest to given reference point.
+   * 
+   * @param shpoints List of points to search in
+   * @param p Reference point
+   * @return Point from list that is closes to reference point
+   */
   private Point2d findClosest(List<Point2d> shpoints, Point2d p) {
     double dist = Double.MAX_VALUE;
     int minDistIndex = 0;

@@ -8,15 +8,15 @@ import com.github.celldynamics.quimp.PointsList;
 import com.github.celldynamics.quimp.Shape;
 import com.github.celldynamics.quimp.Vert;
 import com.github.celldynamics.quimp.plugin.ana.ANA_;
-import com.github.celldynamics.quimp.plugin.utils.IPadArray;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
 /**
- * Support algorithms for processing outlines.
+ * Support algorithms for processing outlines using their specific properties.
  * 
  * @author p.baniukiewicz
  * @param <T> Outline or Snake class
  * @see ANA_
+ * @see PointListProcessor
  */
 public class OutlineProcessor<T extends Shape<?>> {
   /**
@@ -49,7 +49,7 @@ public class OutlineProcessor<T extends Shape<?>> {
     int l;
     Vert n;
     curv = getCurvatureLocal();
-    runningMean(curv, window);
+    PointListProcessor.runningMean(curv, window);
     // copy back to outline
     n = (Vert) outline.getHead();
     l = 0;
@@ -141,14 +141,16 @@ public class OutlineProcessor<T extends Shape<?>> {
    * Apply mean filter to Shape. Recalculate centroid and normalised coords. Set normales inwards.
    * 
    * @param window size of mean window
-   * @see OutlineProcessor#runningMean(double[], int)
+   * @param iters number of iterations
    */
-  public void smooth(int window) {
+  public void smooth(int window, int iters) {
     QuimpDataConverter dt = new QuimpDataConverter(outline);
     double[] xcoords = dt.getX();
     double[] ycoords = dt.getY();
-    runningMean(xcoords, window);
-    runningMean(ycoords, window);
+    for (int i = 0; i < iters; i++) {
+      PointListProcessor.runningMean(xcoords, window);
+      PointListProcessor.runningMean(ycoords, window);
+    }
     PointsList<?> n = outline.getHead();
     int count = 0;
     // do not create new object, just replace coords
@@ -164,37 +166,12 @@ public class OutlineProcessor<T extends Shape<?>> {
   }
 
   /**
-   * Running mean on input array.
-   * 
-   * @param data data to filter, can be empty
-   * @param windowSize odd window size
-   */
-  public static void runningMean(double[] data, int windowSize) {
-    if (windowSize % 2 == 0) {
-      throw new IllegalArgumentException("Window must be odd");
-    }
-    double[] ret = new double[data.length];
-    int cp = windowSize / 2; // left and right range of window
-
-    for (int c = 0; c < data.length; c++) { // for every point in data
-      double mean = 0;
-      for (int cc = c - cp; cc <= c + cp; cc++) { // points in range c-2 - c+2 (for window=5)
-        int indexTmp = IPadArray.getIndex(data.length, cc, IPadArray.CIRCULARPAD);
-        mean += data[indexTmp];
-      }
-      mean = mean / windowSize;
-      ret[c] = mean; // remember result
-    }
-    // replace input array
-    System.arraycopy(ret, 0, data, 0, data.length);
-  }
-
-  /**
    * Return local curvature as array. Applies to Outline.class, returns array of zeros for other
    * classes.
    * 
    * @return local curvature values or aray of zeros
    * @see Vert#curvatureLocal
+   * @deprecated Will be removed after implementing nonproportional shrinking based on HSF
    */
   public double[] getCurvatureLocal() {
     double[] ret = new double[outline.getNumPoints()];
