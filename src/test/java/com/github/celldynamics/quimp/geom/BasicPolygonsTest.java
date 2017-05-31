@@ -6,14 +6,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
-import com.github.celldynamics.quimp.geom.BasicPolygons;
-
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -26,7 +22,9 @@ public class BasicPolygonsTest {
   private ArrayList<Point2d> inpoints;
 
   /**
-   * @throws java.lang.Exception
+   * Setup.
+   * 
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -46,13 +44,6 @@ public class BasicPolygonsTest {
     inpoints = new ArrayList<Point2d>();
     inpoints.add(new Point2d(5, 4));
     inpoints.add(new Point2d(6, 5));
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @After
-  public void tearDown() throws Exception {
   }
 
   /**
@@ -79,7 +70,7 @@ public class BasicPolygonsTest {
    * 
    * <p>Post: Perimeter equals 0
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetPolyPerim_1() throws Exception {
@@ -95,7 +86,7 @@ public class BasicPolygonsTest {
    * 
    * <p>Post: Area
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetPolyArea() throws Exception {
@@ -111,7 +102,7 @@ public class BasicPolygonsTest {
    * 
    * <p>Post: Area equals 0
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetPolyArea_1() throws Exception {
@@ -127,7 +118,7 @@ public class BasicPolygonsTest {
    * 
    * <p>Post:Area equals 0
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetPolyArea_2() throws Exception {
@@ -143,7 +134,7 @@ public class BasicPolygonsTest {
    * 
    * <p>Post: Return true
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testIsPointInside() throws Exception {
@@ -159,7 +150,7 @@ public class BasicPolygonsTest {
    * 
    * <p>Post: Return true
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testIsPointInside_1() throws Exception {
@@ -175,7 +166,7 @@ public class BasicPolygonsTest {
    * 
    * <p>Post: Return false
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testIsPointInside_2() throws Exception {
@@ -192,12 +183,12 @@ public class BasicPolygonsTest {
    * 
    * <p>Post: Return true
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testarePointsInside() throws Exception {
     BasicPolygons b = new BasicPolygons();
-    boolean p = b.arePointsInside(points, inpoints);
+    boolean p = b.areAllPointsInside(points, inpoints);
     assertTrue(p);
   }
 
@@ -209,14 +200,14 @@ public class BasicPolygonsTest {
    * 
    * <p>Post: Return false
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testarePointsInside_1() throws Exception {
     BasicPolygons b = new BasicPolygons();
     ArrayList<Point2d> c = new ArrayList<>(inpoints);
     c.add(new Point2d(10, 10));
-    boolean p = b.arePointsInside(points, c);
+    boolean p = b.areAllPointsInside(points, c);
     assertFalse(p);
   }
 
@@ -226,17 +217,17 @@ public class BasicPolygonsTest {
    * 
    * <p>Pre: Points inside and one outside
    * 
-   * <p>Post: Return true
+   * <p>Post: Return false
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testisanyPointInside() throws Exception {
     BasicPolygons b = new BasicPolygons();
     ArrayList<Point2d> c = new ArrayList<>(inpoints);
     c.add(new Point2d(10, 10));
-    boolean p = b.isanyPointInside(points, c);
-    assertTrue(p);
+    boolean p = b.areAllPointOutside(points, c);
+    assertFalse(p);
   }
 
   /**
@@ -247,7 +238,7 @@ public class BasicPolygonsTest {
    * 
    * <p>Post: Return true
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testisanyPointInside_1() throws Exception {
@@ -255,8 +246,8 @@ public class BasicPolygonsTest {
     ArrayList<Point2d> c = new ArrayList<>();
     c.add(new Point2d(10, 10));
     c.add(new Point2d(40, 40));
-    boolean p = b.isanyPointInside(points, c);
-    assertFalse(p);
+    boolean p = b.areAllPointOutside(points, c);
+    assertTrue(p);
   }
 
 }

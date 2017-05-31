@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.QuimP;
-import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.geom.BasicPolygons;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.ecmm.ODEsolver;
@@ -240,6 +239,7 @@ public class HatSnakeFilter implements IPadArray {
    * @return Processed input list, size of output list may be different than input. Empty output
    *         is also allowed.
    * @throws QuimpPluginException on problem with input data
+   * @see #calculateRank(List, ImageProcessor)
    */
   public List<Point2d> runPlugin(List<Point2d> points, ImageProcessor orgIp,
           Pair<ArrayList<Double>, ArrayList<Boolean>> ranks) throws QuimpPluginException {
@@ -273,8 +273,26 @@ public class HatSnakeFilter implements IPadArray {
         ranks.getLeft().set(r, ranks.getLeft().get(r) / maxCirc);
       }
     }
-    ArrayList<Double> circ = ranks.getLeft(); // circularity based weight
-    ArrayList<Boolean> convex = ranks.getRight(); // convexity
+    ArrayList<Double> circ = ranks.getLeft();
+    ;
+    ArrayList<Boolean> cavprot = ranks.getRight(); // shape flag
+    // // depending on selected mode we are interested at particular indexes only, those that convex
+    // is
+    // // false (for concaves or protrusions - this is solved by calculateRank). For ALL we take all
+    // if (lookFor == ALL) {
+    // circ = ranks.getLeft(); // take whole list
+    // } else { // remove those where cavprot flag is false
+    // circ = new ArrayList<>();
+    // for (int i = 0; i < cavprot.size(); i++) {
+    // if (cavprot.get(i) == true) { // copy those right to new table
+    // circ.add(ranks.getLeft().get(i));
+    // }
+    // }
+    // }
+    if (circ == null || circ.isEmpty()) {
+      LOGGER.info("No candidates found for selected mode: " + lookFor);
+      return points; // just return non-modified data;
+    }
 
     // Step 2 - Check criterion for all windows
     TreeSet<WindowIndRange> ind2rem = new TreeSet<>(); // <l;u> range of indexes to remove
@@ -299,61 +317,35 @@ public class HatSnakeFilter implements IPadArray {
     // window on data can be retrieved by finding value from sorted array circularity
     // in non sorted, where order of data is related to window position starting
     // from 0 for most left point of window
-    int i = 0;
+    int i = 0; // position where window begins (linear index of sortedIndexes)
     boolean contains; // temporary result of test if current window is included in any prev
     // temporary variable for keeping window currently tested for containing in ind2rem
     WindowIndRange indexTest = new WindowIndRange();
-    // do as long as we find pnum protrusions (or to end of candidates, does not apply if pnum==0
-    // when pnum is ignored)
 
-    // TODO change to normal checking values, no pnum rather rank focused only
-    while (found < pnum || pnum == 0) {
-      if (i >= circ.size()) { // no more data to check, probably we have less prot. pnum
-        LOGGER.warn("Can find next candidate. Use smaller window");
+    // do as long as we can find candidates with rank higher than level and we found less than
+    // defined number of candidates. Latter criterion can be switched off by setting pnum to 0
+    while (circ.get(sortedIndexes.get(i)) > alev && (found < pnum || pnum == 0)) {
+      if (i >= sortedIndexes.size()) { // no more data to check, probably we have less prot. pnum
+        LOGGER.info("Can find next candidate. You can use smaller window");
         break;
       }
-      if (circ.get(sortedIndexes.get(i)) < alev) {
-        LOGGER.info("break - alev=" + circ.get(sortedIndexes.get(i)));
-        break; // stop searching because all i+n are smaller as well
+      // find where it was before sorting and store in window positions
+      int startpos = sortedIndexes.get(i);
+      // check if we already have this index in list indexes to remove
+      if (startpos + window - 1 >= points.size()) { // if at end, we must turn to begin
+        indexTest.setRange(startpos, points.size() - 1); // to end
+        contains = ind2rem.contains(indexTest); // beginning of window at the end of dat
+        indexTest.setRange(0, window - (points.size() - startpos) - 1); // turn to start
+        contains &= ind2rem.contains(indexTest); // check rotated part at beginning
+      } else {
+        indexTest.setRange(startpos, startpos + window - 1);
+        contains = ind2rem.contains(indexTest);
       }
-      if (found > 0) {
-        // find where it was before sorting and store in window positions
-        int startpos = sortedIndexes.get(i);
-        // check if we already have this index in list indexes to remove
-        if (startpos + window - 1 >= points.size()) { // if at end, we must turn to begin
-          indexTest.setRange(startpos, points.size() - 1); // to end
-          contains = ind2rem.contains(indexTest); // beginning of window at the end of dat
-          indexTest.setRange(0, window - (points.size() - startpos) - 1); // turn to start
-          contains &= ind2rem.contains(indexTest); // check rotated part at beginning
-        } else {
-          indexTest.setRange(startpos, startpos + window - 1);
-          contains = ind2rem.contains(indexTest);
-        }
-        // this window doesn't overlap with those found already and it is convex
-        if (!contains && (convex.get(startpos) == lookForb || lookFor == ALL)) {
-          // store range of indexes that belongs to window
-          if (startpos + window - 1 >= points.size()) { // as prev split to two windows
-            // if we are on the end of data
-            ind2rem.add(new WindowIndRange(startpos, points.size() - 1));
-            // turn window to beginning
-            ind2rem.add(new WindowIndRange(0, window - (points.size() - startpos) - 1));
-          } else {
-            ind2rem.add(new WindowIndRange(startpos, startpos + window - 1));
-          }
-          LOGGER.trace("added win for i=" + i + " startpos=" + startpos + " coord:"
-                  + points.get(startpos).toString() + "alev=" + circ.get(sortedIndexes.get(i)));
-          found++;
-          i++;
-        } else { // go to next candidate in sorted circularities
-          i++;
-        }
-      } else { // first candidate always accepted
-        // find where it was before sorting and store in window positions
-        int startpos = sortedIndexes.get(i);
-        if (lookFor != ALL && convex.get(startpos) == !lookForb) { // do not check for mode 3
-          i++;
-          continue;
-        }
+      if (contains == true) { // if contains go to next candidate
+        i++;
+        continue;
+      }
+      if (cavprot.get(startpos) == true || lookFor == ALL) {
         // store range of indexes that belongs to window
         if (startpos + window - 1 >= points.size()) { // as prev split to two windows
           // if we are on the end of data
@@ -369,7 +361,7 @@ public class HatSnakeFilter implements IPadArray {
         found++;
       }
     }
-    LOGGER.trace("winpos: " + ind2rem.toString());
+    LOGGER.trace("[indexRange;Point]: " + ind2rem.toString());
     LOGGER.trace("Found :" + found + " accepted windows");
     // Step 3 - remove selected windows from input data
     // array will be copied to new one skipping points to remove
@@ -396,9 +388,10 @@ public class HatSnakeFilter implements IPadArray {
    * 
    * @param points Outline as list of points
    * @param orgIp Image for sampling intensity along constricted outline. Can be null
-   * @return Ranks (left) and convexity flag (right). Indexes in these arrays correlate with indexes
+   * @return Ranks (left) and cavprot flag (right). Indexes in these arrays correlate with indexes
    *         in input array. E.g. rank[i] stand for rank evaluated for window at position input[i]
-   *         (points input[i] - input[i+window-1])
+   *         (points input[i] - input[i+window-1]). Shape flag is always true for selected type
+   *         (CAVITIES or PROTRUSIONS). For ALL it is ignored.
    */
   public Pair<ArrayList<Double>, ArrayList<Boolean>> calculateRank(List<Point2d> points,
           ImageProcessor orgIp) {
@@ -435,7 +428,7 @@ public class HatSnakeFilter implements IPadArray {
     ArrayList<Double> circ = new ArrayList<Double>();
     // store information if points for window at r position are convex compared to shape without
     // these points
-    ArrayList<Boolean> convex = new ArrayList<Boolean>();
+    ArrayList<Boolean> cavprot = new ArrayList<Boolean>();
 
     double tmpCirc;
     double tmpInt; // mean intensity along contour in window
@@ -454,12 +447,18 @@ public class HatSnakeFilter implements IPadArray {
       circ.add(rank); // store weighted circularity for shape without window
       // check if points of window are convex according to shape without these points
       boolean tmpCon;
-      if (lookForb == true) {
-        tmpCon = bp.arePointsInside(pointsnowindow, pointswindow); // true if concave
-      } else {
-        tmpCon = bp.isanyPointInside(pointsnowindow, pointswindow); // old code
+      switch (lookFor) {
+        case CAVITIES:
+          tmpCon = bp.areAllPointsInside(pointsnowindow, pointswindow); // true if concave
+          break;
+        case PROTRUSIONS:
+        case ALL:
+        default:
+          tmpCon = bp.areAllPointOutside(pointsnowindow, pointswindow); // true if protrusions
       }
-      convex.add(tmpCon);
+      // true values are those that interest us (either concave or protrusions)
+      // for ALL yhis list is ignored
+      cavprot.add(tmpCon);
       // move window to next position rotates by -1 what means that on first n positions
       // of points there are different values simulate window
       // first iter 0 1 2 3 4 5... (w=[0 1 2])
@@ -483,7 +482,7 @@ public class HatSnakeFilter implements IPadArray {
     if (QuimP.SUPER_DEBUG) {
       pw.close();
     }
-    Pair<ArrayList<Double>, ArrayList<Boolean>> ret = new MutablePair<>(circ, convex);
+    Pair<ArrayList<Double>, ArrayList<Boolean>> ret = new MutablePair<>(circ, cavprot);
     return ret;
   }
 
