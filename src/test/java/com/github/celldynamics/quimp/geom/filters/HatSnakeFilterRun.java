@@ -28,8 +28,8 @@ import ij.gui.Roi;
  */
 public class HatSnakeFilterRun {
   static {
-    System.setProperty("logback.configurationFile", "quimp-logback.xml");
-    System.setProperty("quimpconfig.superDebug", "true");
+    // System.setProperty("logback.configurationFile", "quimp-logback.xml");
+    // System.setProperty("quimpconfig.superDebug", "true");
   }
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HatSnakeFilterRun.class.getName());
@@ -76,13 +76,13 @@ public class HatSnakeFilterRun {
     // filter
     final int window = 17;
     final int pnum = 0;
-    final double alev = 4.646660780596318E-4;
+    final double alev = 0.008;
 
     ImagePlus filtered = NewImage.createByteImage("filt", mask.getWidth(), mask.getHeight(),
             mask.getStackSize(), NewImage.GRAY8);
     ImagePlus org = NewImage.createByteImage("org", mask.getWidth(), mask.getHeight(),
             mask.getStackSize(), NewImage.GRAY8);
-    for (int i = pp; i <= pp; i++) { // !!
+    for (int i = 1; i <= 100; i++) { // !!
       LOGGER.info("--Frame " + i);
       SegmentedShapeRoi ssR = ret.get(0).get(i - 1);
       org.getStack().getProcessor(i).setColor(Color.WHITE);

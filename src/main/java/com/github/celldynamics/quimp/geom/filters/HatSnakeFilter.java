@@ -163,7 +163,7 @@ public class HatSnakeFilter implements IPadArray {
   private int window; // filter's window size
   private int pnum; // how many protrusions to remove
   private double alev; // minimal acceptance level
-  // private List<Point2d> points; // original contour passed from QuimP
+  private int debugCounter = 0; // for naming of debug files
 
   /**
    * Construct HatFilter Input array with data is virtually circularly padded.
@@ -233,7 +233,7 @@ public class HatSnakeFilter implements IPadArray {
    * @param orgIp Original image used for sampling intensity, can be <tt>null</tt>
    * @param ranks ranks calculated by {@link #calculateRank(List, ImageProcessor)} or <tt>null</tt>
    *        to let them be evaluated by this method. In that latter case circularity is normalised
-   *        before use. Method expects normalised ranks to comply with alev parameter
+   *        before use. Ranks values must comply with <tt>alev</tt>
    * 
    * @return Processed input list, size of output list may be different than input. Empty output
    *         is also allowed.
@@ -263,39 +263,43 @@ public class HatSnakeFilter implements IPadArray {
       throw new QuimpPluginException("Acceptacne level should be positive");
     }
 
+    // Step 1 - Calculate ranks and normalise it
     if (ranks == null) {
       ranks = calculateRank(points, orgIp);
+      // the same ranks but for smoothed shape
+      Pair<ArrayList<Double>, ArrayList<Boolean>> rankss =
+              calculateRank(new PointListProcessor(points).smooth(window, 2).getList(), orgIp);
       double maxCirc;
-      // compute max circularity but only among candidates
+      // compute max circularity but only among candidates, use maximum taken from smoothed ranks
       if (lookFor == ALL) {
-        maxCirc = Collections.max(ranks.getLeft());
+        maxCirc = Collections.max(rankss.getLeft());
       } else {
-        ArrayList<Double> tmpCirc = new ArrayList<>();
+        ArrayList<Double> tmpCirc = new ArrayList<>(); // new array with proper ranks (cav==true)
         for (int i = 0; i < ranks.getRight().size(); i++) {
-          if (ranks.getRight().get(i) == true) { // copy those right to new table
-            tmpCirc.add(ranks.getLeft().get(i));
+          if (ranks.getRight().get(i) == true) {
+            tmpCirc.add(rankss.getLeft().get(i)); // copy those right (smoothed) to new table
           }
         }
         // get max only for those values that matches selected mode
         maxCirc = Collections.max(tmpCirc);
       }
-
       // double maxCirc = Collections.max(ranks.getLeft());
-      LOGGER.trace("Max circ=" + maxCirc);
-      // some vals can be >1 but they are skipped in main while loop
+      LOGGER.trace("Max circ=" + maxCirc + " (for scaling, among requested)");
+      // some vals can be >1 as scaling value is not maximum for data set but max for smoothed set
       for (int r = 0; r < ranks.getLeft().size(); r++) {
-        ranks.getLeft().set(r, ranks.getLeft().get(r) / maxCirc);
+        double rs = Math.abs((ranks.getLeft().get(r) - rankss.getLeft().get(r))) / maxCirc;
+        // double rs = ranks.getLeft().get(r);
+        ranks.getLeft().set(r, rs);
       }
     }
-
     ArrayList<Double> circ = ranks.getLeft();
     ArrayList<Boolean> cavprot = ranks.getRight(); // shape flag
+
+    // Step 2 - Check criterion for all windows
     if (circ == null || circ.isEmpty()) {
       LOGGER.info("No candidates found for selected mode: " + lookFor);
       return points; // just return non-modified data;
     }
-
-    // Step 2 - Check criterion for all windows
     TreeSet<WindowIndRange> ind2rem = new TreeSet<>(); // <l;u> range of indexes to remove
     // need sorted but the old one as well to identify windows positions
     // we do not touch circ itself but rater get list of indexes that refer to sorted element in
@@ -308,7 +312,14 @@ public class HatSnakeFilter implements IPadArray {
 
     LOGGER.trace("cirI: " + sortedIndexes.toString());
     LOGGER.trace("circ: " + circ.toString());
-    LOGGER.trace("circM: " + circ.get(sortedIndexes.get(0)).toString());
+    LOGGER.trace("circM: " + circ.get(sortedIndexes.get(0)).toString() + " (among ALL)");
+    for (int i = 0; i < sortedIndexes.size(); i++) { // for debug only
+      if (cavprot.get(sortedIndexes.get(i)) == true) {
+        LOGGER.trace(
+                "circMacc: " + circ.get(sortedIndexes.get(i)).toString() + " (max requested type)");
+        break;
+      }
+    }
 
     if (circ.get(sortedIndexes.get(0)) < alev) {
       LOGGER.info("Skipped this frame due to rank[0]=" + circ.get(sortedIndexes.get(0)));
@@ -327,13 +338,12 @@ public class HatSnakeFilter implements IPadArray {
 
     // do as long as we can find candidates with rank higher than level and we found less than
     // defined number of candidates. Latter criterion can be switched off by setting pnum to 0
-    while (circ.get(sortedIndexes.get(i)) > alev && (found < pnum || pnum == 0)) {
+    // note that rank list contains all candidates and those with unwanted curvature type are
+    // filtered out in loop
+    while (i < sortedIndexes.size() && circ.get(sortedIndexes.get(i)) > alev
+            && (found < pnum || pnum == 0)) {
       // find where it was before sorting and store in window positions
       int startpos = sortedIndexes.get(i);
-      if (i >= sortedIndexes.size()) { // no more data to check, probably we have less prot. pnum
-        LOGGER.info("Can find next candidate. You can use smaller window");
-        break;
-      }
       if (cavprot.get(startpos) == false || lookFor == ALL) { // not valid, skip unless ALL mode
         i++;
         continue;
@@ -369,8 +379,15 @@ public class HatSnakeFilter implements IPadArray {
       // }
       i++;
     }
+    if (i >= sortedIndexes.size()) { // no more data to check, probably we have less prot. pnum
+      LOGGER.info("Can find next candidate. You can use smaller window");
+    }
+    if (found == 0) {
+      LOGGER.info("No acceptable candidates found, having desired rank AND being requested type");
+    }
     LOGGER.trace("[indexRange;Point]: " + ind2rem.toString());
     LOGGER.trace("Found :" + found + " accepted windows");
+
     // Step 3 - remove selected windows from input data
     // array will be copied to new one skipping points to remove
     List<Point2d> out = new ArrayList<Point2d>(); // output table for plotting temporary results
@@ -417,16 +434,20 @@ public class HatSnakeFilter implements IPadArray {
     shCont = outline.asList();
 
     if (QuimP.SUPER_DEBUG) {
-      tmpDebug = Paths.get(System.getProperty("java.io.tmpdir"), "HatSnakeFilter_debug.csv");
+      tmpDebug = Paths.get(System.getProperty("java.io.tmpdir"),
+              "HatSnakeFilter_debug" + debugCounter + ".csv");
       try {
         pw = new PrintWriter(new FileWriter(tmpDebug.toFile()), true);
       } catch (IOException e) {
         e.printStackTrace();
       }
-      Path shContDebug = Paths.get(System.getProperty("java.io.tmpdir"), "shCont_debug");
-      Path pointsDebug = Paths.get(System.getProperty("java.io.tmpdir"), "points_debug");
+      Path shContDebug =
+              Paths.get(System.getProperty("java.io.tmpdir"), "shCont_debug" + debugCounter);
+      Path pointsDebug =
+              Paths.get(System.getProperty("java.io.tmpdir"), "points_debug" + debugCounter);
       debugSaveList(shContDebug, shCont);
       debugSaveList(pointsDebug, points);
+      debugCounter++;
     }
 
     BasicPolygons bp = new BasicPolygons(); // provides geometry processing
@@ -527,7 +548,7 @@ public class HatSnakeFilter implements IPadArray {
   /**
    * Compute mean intensity for list of points. 3x3 stencil is used for each point.
    * 
-   * <p>Shrink contour and original contour have different number of points so direct mapping is not
+   * <p>Shrank contour and original contour have different number of points so direct mapping is not
    * possible. For each point in window the method finds closest point in shrank contour and sample
    * 3x3 stencil around. All stencils for all window points are averaged then.
    * 
@@ -550,6 +571,13 @@ public class HatSnakeFilter implements IPadArray {
     return meanI;
   }
 
+  /**
+   * Find point in list that is closest to given reference point.
+   * 
+   * @param shpoints List of points to search in
+   * @param p Reference point
+   * @return Point from list that is closes to reference point
+   */
   private Point2d findClosest(List<Point2d> shpoints, Point2d p) {
     double dist = Double.MAX_VALUE;
     int minDistIndex = 0;
