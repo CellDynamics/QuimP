@@ -326,4 +326,14 @@ public class ShapeTest {
     }
   }
 
+  /**
+   * Test method for {@link com.github.celldynamics.quimp.Shape#countPoints()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testCountPoints() throws Exception {
+    assertThat(test.countPoints(), is(test.POINTS));
+  }
+
 }

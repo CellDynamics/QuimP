@@ -98,7 +98,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
    */
   public static final int BAD_LINKING = 4;
   /**
-   * Number of list elements does match that stored in {@link #POINTS}.
+   * Number of list elements does match to the number stored in {@link #POINTS}.
    * 
    * <p>This can happen when {@link #Shape(PointsList, int)} is used. See {@link #validateShape()}.
    */
@@ -629,13 +629,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
       ret = ret | BAD_LINKING; // bad linking
     }
     if (ret == 0) { // check number of points that can be different if Shape.Shape(T, int) was used
-      T tmp = head;
-      int i = 0;
-      do {
-        i++;
-        tmp = tmp.getNext();
-      } while (!tmp.isHead() && i < MAX_NODES);
-      if (i != POINTS) {
+      if (countPoints() != POINTS) {
         ret = ret | BAD_NUM_POINTS;
       }
     }
@@ -837,7 +831,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
    * <p>Number of Points is stored in local POINTS field as well. This method can verify if that
    * field contains correct value.
    * 
-   * @return number of Points in Shape
+   * @return number of Points in Shape or negative value if {@value #MAX_NODES} was reached
    */
   public int countPoints() {
     T v = head;
@@ -845,9 +839,13 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
     do {
       c++;
       v = v.getNext();
-    } while (!v.isHead());
+    } while (!v.isHead() && c < MAX_NODES);
 
-    return c;
+    if (c == MAX_NODES) {
+      return -1;
+    } else {
+      return c;
+    }
   }
 
   /**
@@ -938,7 +936,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
   public Iterator<T> iterator() {
     int ret = validateShape();
     if (ret != 0) {
-      LOGGER.warn("Shape is broken, iterator may behave unstable. Reason: " + ret);
+      LOGGER.warn("Shape is broken, iterator may be unpredicable. Reason: " + ret);
     }
     Iterator<T> it = new Iterator<T>() {
       private transient T nextToReturn = head; // element to return by next()
