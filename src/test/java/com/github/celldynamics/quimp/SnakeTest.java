@@ -2,12 +2,13 @@ package com.github.celldynamics.quimp;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,13 +16,6 @@ import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.BOAState;
-import com.github.celldynamics.quimp.BOA_;
-import com.github.celldynamics.quimp.Node;
-import com.github.celldynamics.quimp.QuimP;
-import com.github.celldynamics.quimp.QuimpVersion;
-import com.github.celldynamics.quimp.Serializer;
-import com.github.celldynamics.quimp.Snake;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
@@ -184,6 +178,19 @@ public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
     assertThat(newSnake.asList(), is(obj.asList()));
     assertThat(newSnake.getHead().getPoint(), is(obj.getHead().getPoint()));
 
+  }
+
+  /**
+   * Test method for
+   * {@link com.github.celldynamics.quimp.Snake#Snake(com.github.celldynamics.quimp.Snake)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testSnakeSnake() throws Exception {
+    Snake copy = new Snake(obj);
+    assertThat(copy, is(obj));
+    assertThat(EqualsBuilder.reflectionEquals(obj, copy, false), is(true)); // copy is same
   }
 
 }
