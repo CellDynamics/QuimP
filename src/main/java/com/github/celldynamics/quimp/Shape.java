@@ -589,6 +589,9 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
    * @return found head or null if not found
    */
   public T checkIsHead() {
+    if (head == null) {
+      return null;
+    }
     T n = head;
     int count = 0;
     do {
@@ -611,7 +614,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
    * <p>Check if Shape has head, it is correct and all nodes have previous and next neighbour.
    * 
    * @return {@value #LIST_OK} or combination of {@value #NO_HEAD}, {@value #BAD_LINKING},
-   *         {@value #BAD_HEAD}
+   *         {@value #BAD_HEAD}, {@value #BAD_NUM_POINTS}
    */
   public int validateShape() {
     int ret = LIST_OK;

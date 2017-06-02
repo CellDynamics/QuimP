@@ -263,12 +263,53 @@ public class ShapeTest {
   }
 
   /**
+   * Test iterator. Default constructor
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testIterator_2() throws Exception {
+    TestShape test = new TestShape();
+    Iterator<Vert> iter = test.iterator();
+    int tracknumber = 0;
+    while (iter.hasNext()) {
+      ;
+      tracknumber++; // never enter here
+    }
+    assertThat(tracknumber, is(test.POINTS)); // 0 points in list
+  }
+
+  /**
    * Test class.
    * 
    * @author p.baniukiewicz
    *
    */
   class TestShape extends Shape<Vert> {
+
+    /*
+     * 
+     */
+    public TestShape() {
+      super();
+      // TODO Auto-generated constructor stub
+    }
+
+    /*
+     * 
+     */
+    public TestShape(Shape<Vert> src, Vert destType) {
+      super(src, destType);
+      // TODO Auto-generated constructor stub
+    }
+
+    /*
+     * 
+     */
+    public TestShape(Shape<Vert> src) {
+      super(src);
+      // TODO Auto-generated constructor stub
+    }
 
     /*
      * 
