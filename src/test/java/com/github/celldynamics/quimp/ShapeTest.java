@@ -5,17 +5,25 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author p.baniukiewicz
  * @see com.github.celldynamics.quimp.SnakeTest
  */
 public class ShapeTest {
+
+  /**
+   * The Constant LOGGER.
+   */
+  static final Logger LOGGER = LoggerFactory.getLogger(ShapeTest.class.getName());
 
   private Vert head;
   private Vert v1;
@@ -139,7 +147,7 @@ public class ShapeTest {
   /**
    * Test of Shape constructor.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testShape() throws Exception {
@@ -159,9 +167,51 @@ public class ShapeTest {
   }
 
   /**
+   * Test method for {@link com.github.celldynamics.quimp.Shape#validateShape()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testValidateShape() throws Exception {
+    assertThat(test.validateShape(), is(Shape.LIST_OK));
+    test.getHead().head = false; // cancel head tag for head
+    assertThat(test.validateShape(), is(Shape.BAD_HEAD | Shape.NO_HEAD));
+    test.getHead().head = true; // restore it
+    head.getNext().setNext(null); // but break linking
+    assertThat(test.validateShape(), is(Shape.BAD_LINKING));
+  }
+
+  /**
+   * Test method for {@link com.github.celldynamics.quimp.Shape#validateShape()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testValidateShape_1() throws Exception {
+    assertThat(test.validateShape(), is(Shape.LIST_OK));
+    test.getHead().head = false; // cancel head tag for head
+    assertThat(test.validateShape(), is(Shape.BAD_HEAD | Shape.NO_HEAD));
+    test.getHead().head = true; // restore it
+    head.getNext().setNext(null); // but break linking
+    assertThat(test.validateShape(), is(Shape.BAD_LINKING));
+  }
+
+  /**
+   * Test method for {@link com.github.celldynamics.quimp.Shape#validateShape()}. Wrong number of
+   * given elements.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testValidateShape_2() throws Exception {
+    TestShape test1 = new TestShape(head, 2); // wrong number of points in list
+    assertThat(test1.validateShape(), is(Shape.BAD_NUM_POINTS));
+  }
+
+  /**
    * Test of Shape constructor.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test(expected = IllegalArgumentException.class)
   public void testShape_1() throws Exception {
@@ -173,12 +223,93 @@ public class ShapeTest {
   }
 
   /**
+   * Test iterator.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testIterator() throws Exception {
+    Iterator<Vert> iter = test.iterator();
+    int tracknumber = 1;
+    while (iter.hasNext()) {
+      Vert v = iter.next();
+      LOGGER.debug(v.toString());
+      assertThat(v.getTrackNum(), is(tracknumber++)); // elements in order
+    }
+    assertThat(tracknumber, is(test.POINTS + 1)); // 4 points in list
+  }
+
+  /**
+   * Test iterator. One element - looped
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testIterator_1() throws Exception {
+    Vert vinit = com.github.celldynamics.quimp.VertTest.getRandomVert(1);
+    vinit.setHead(true);
+    vinit.setNext(vinit);
+    vinit.setPrev(vinit);
+
+    TestShape test = new TestShape(vinit, 1);
+    Iterator<Vert> iter = test.iterator();
+    int tracknumber = 1;
+    while (iter.hasNext()) {
+      Vert v = iter.next();
+      LOGGER.debug(v.toString());
+      assertThat(v.getTrackNum(), is(tracknumber++)); // elements in order
+    }
+    assertThat(tracknumber, is(test.POINTS + 1)); // 4 points in list
+  }
+
+  /**
+   * Test iterator. Default constructor
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testIterator_2() throws Exception {
+    TestShape test = new TestShape();
+    Iterator<Vert> iter = test.iterator();
+    int tracknumber = 0;
+    while (iter.hasNext()) {
+      ;
+      tracknumber++; // never enter here
+    }
+    assertThat(tracknumber, is(test.POINTS)); // 0 points in list
+  }
+
+  /**
    * Test class.
    * 
    * @author p.baniukiewicz
    *
    */
   class TestShape extends Shape<Vert> {
+
+    /*
+     * 
+     */
+    public TestShape() {
+      super();
+      // TODO Auto-generated constructor stub
+    }
+
+    /*
+     * 
+     */
+    public TestShape(Shape<Vert> src, Vert destType) {
+      super(src, destType);
+      // TODO Auto-generated constructor stub
+    }
+
+    /*
+     * 
+     */
+    public TestShape(Shape<Vert> src) {
+      super(src);
+      // TODO Auto-generated constructor stub
+    }
 
     /*
      * 

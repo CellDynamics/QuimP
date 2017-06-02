@@ -12,7 +12,8 @@ import com.github.celldynamics.quimp.geom.ExtendedVector2d;
  * <p>This abstract class contains basic properties of points and provides method for moving across
  * the
  * list. Points in list are numbered from <b>1</b> and list can be looped. There is one special node
- * called <b>head</b> that indicates beginning of the list (and its end if the list is looped)
+ * called <b>head</b> that indicates beginning of the list (and its end if the list is looped).
+ * PointList is assumed to be infinite long and may not be looped.
  * 
  * @author p.baniukiewicz
  *
@@ -439,17 +440,16 @@ public abstract class PointsList<T extends PointsList<T>> {
     }
   }
 
-  /**
-   * Current Point as String.
+  /*
+   * (non-Javadoc)
    * 
-   * @return String representation of Node
+   * @see java.lang.Object#toString()
    */
+  @Override
   public String toString() {
-    String str;
-    // str = "[" + this.getX() + "," + this.getY() + "] " + "head is " + head + " next:"
-    // + getNext() + " prev: " + getPrev();
-    str = "[" + this.getX() + "," + this.getY() + "] " + "tracknumber " + tracknumber;
-    return str;
+    return "PointsList [point=" + point + ", normal=" + normal + ", tan=" + tan + ", head=" + head
+            + ", tracknumber=" + tracknumber + ", position=" + position + ", frozen=" + frozen
+            + "]";
   }
 
   /**

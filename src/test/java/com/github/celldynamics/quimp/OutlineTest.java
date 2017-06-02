@@ -8,14 +8,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
-import com.github.celldynamics.quimp.Node;
-import com.github.celldynamics.quimp.Outline;
-import com.github.celldynamics.quimp.Shape;
-import com.github.celldynamics.quimp.Snake;
-import com.github.celldynamics.quimp.Vert;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
 /**
@@ -58,13 +54,16 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
   }
 
   /**
-   * Test of {@link com.github.celldynamics.quimp.Outline#Outline(com.github.celldynamics.quimp.Outline)}.
+   * Test of {@link Outline#Outline(Outline)}.
    * 
    * @throws Exception Exception
    */
   @Test
   public void testOutline() throws Exception {
-    // TODO add copy constructor
+    Outline copy = new Outline(obj);
+    assertThat(copy.POINTS, is(obj.POINTS));
+    assertThat(copy, is(obj));
+    assertThat(EqualsBuilder.reflectionEquals(obj, copy, false), is(true)); // copy is same
   }
 
   /**

@@ -1086,6 +1086,40 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   /*
    * (non-Javadoc)
    * 
+   * @see java.lang.Object#hashCode()
+   */
+  @SuppressWarnings("unused")
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    return result;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @SuppressWarnings("unused")
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!super.equals(obj)) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    Outline other = (Outline) obj;
+    return true;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see com.github.celldynamics.quimp.Shape#beforeSerialize()
    */
   @Override

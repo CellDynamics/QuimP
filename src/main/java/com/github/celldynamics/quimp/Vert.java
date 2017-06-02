@@ -54,7 +54,8 @@ public class Vert extends PointsList<Vert> {
   public double coord;
   /**
    * coord relative to coord on previous frame. Set by
-   * {@link com.github.celldynamics.quimp.plugin.ecmm.Mapping#migrate()} and during changing resolution
+   * {@link com.github.celldynamics.quimp.plugin.ecmm.Mapping#migrate()} and during changing
+   * resolution
    * in ECMM
    */
   @SuppressWarnings("javadoc")
@@ -67,7 +68,8 @@ public class Vert extends PointsList<Vert> {
   public double fLandCoord;
   /**
    * global coord relative to head node on frame 1. Set by
-   * {@link com.github.celldynamics.quimp.plugin.ecmm.Mapping#migrate()} and during changing resolution
+   * {@link com.github.celldynamics.quimp.plugin.ecmm.Mapping#migrate()} and during changing
+   * resolution
    * in ECMM
    */
   @SuppressWarnings("javadoc")
@@ -329,23 +331,6 @@ public class Vert extends PointsList<Vert> {
   }
 
   /**
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    return "Vert [charge=" + charge + ", distance=" + distance + ", fluores="
-            + Arrays.toString(fluores) + ", curvatureLocal=" + curvatureLocal
-            + ", curvatureSmoothed=" + curvatureSmoothed + ", curvatureSum=" + curvatureSum
-            + ", coord=" + coord + ", fCoord=" + fCoord + ", fLandCoord=" + fLandCoord + ", gCoord="
-            + gCoord + ", gLandCoord=" + gLandCoord + ", tarLandingCoord=" + tarLandingCoord
-            + ", color=" + color + ", intPoint=" + intPoint + ", snapped=" + snapped
-            + ", intsectID=" + intsectID + ", intState=" + intState + ", point=" + point
-            + ", tracknumber=" + tracknumber + ", position=" + position + "]";
-  }
-
-  /**
    * isIntPoint.
    * 
    * @return intPoint
@@ -481,6 +466,22 @@ public class Vert extends PointsList<Vert> {
       fluores[i].x = m[i].x;
       fluores[i].y = m[i].y;
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "Vert [charge=" + charge + ", distance=" + distance + ", fluores="
+            + Arrays.toString(fluores) + ", curvatureLocal=" + curvatureLocal
+            + ", curvatureSmoothed=" + curvatureSmoothed + ", curvatureSum=" + curvatureSum
+            + ", coord=" + coord + ", fCoord=" + fCoord + ", fLandCoord=" + fLandCoord + ", gCoord="
+            + gCoord + ", gLandCoord=" + gLandCoord + ", tarLandingCoord=" + tarLandingCoord
+            + ", color=" + color + ", intsectID=" + intsectID + ", intState=" + intState
+            + ", toString()=" + super.toString() + "]";
   }
 
   /**
