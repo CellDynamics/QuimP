@@ -139,7 +139,7 @@ public class ShapeTest {
   /**
    * Test of Shape constructor.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testShape() throws Exception {
@@ -161,7 +161,7 @@ public class ShapeTest {
   /**
    * Test of Shape constructor.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test(expected = IllegalArgumentException.class)
   public void testShape_1() throws Exception {
@@ -193,6 +193,21 @@ public class ShapeTest {
     public TestShape(Vert h) {
       super(h);
     }
+  }
+
+  /**
+   * Test method for {@link com.github.celldynamics.quimp.Shape#validateShape()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testValidateShape() throws Exception {
+    assertThat(test.validateShape(), is(Shape.LIST_OK));
+    test.getHead().head = false; // cancel head tag for head
+    assertThat(test.validateShape(), is(Shape.BAD_HEAD | Shape.NO_HEAD));
+    test.getHead().head = true; // restore it
+    head.getNext().setNext(null); // but break liking
+    assertThat(test.validateShape(), is(Shape.BAD_LINKING));
   }
 
 }
