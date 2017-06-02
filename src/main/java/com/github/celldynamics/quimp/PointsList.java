@@ -440,17 +440,16 @@ public abstract class PointsList<T extends PointsList<T>> {
     }
   }
 
-  /**
-   * Current Point as String.
+  /*
+   * (non-Javadoc)
    * 
-   * @return String representation of Node
+   * @see java.lang.Object#toString()
    */
+  @Override
   public String toString() {
-    String str;
-    // str = "[" + this.getX() + "," + this.getY() + "] " + "head is " + head + " next:"
-    // + getNext() + " prev: " + getPrev();
-    str = "[" + this.getX() + "," + this.getY() + "] " + "tracknumber " + tracknumber;
-    return str;
+    return "PointsList [point=" + point + ", normal=" + normal + ", tan=" + tan + ", head=" + head
+            + ", tracknumber=" + tracknumber + ", position=" + position + ", frozen=" + frozen
+            + "]";
   }
 
   /**

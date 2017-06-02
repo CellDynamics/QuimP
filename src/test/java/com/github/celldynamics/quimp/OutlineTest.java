@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
@@ -62,6 +63,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     Outline copy = new Outline(obj);
     assertThat(copy.POINTS, is(obj.POINTS));
     assertThat(copy, is(obj));
+    assertThat(EqualsBuilder.reflectionEquals(obj, copy, false), is(true)); // copy is same
   }
 
   /**

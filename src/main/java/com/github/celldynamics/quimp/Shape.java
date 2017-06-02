@@ -4,7 +4,9 @@ import java.awt.Polygon;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.scijava.vecmath.Point2d;
 import org.scijava.vecmath.Tuple2d;
@@ -28,7 +30,7 @@ import ij.gui.Roi;
  *
  * @param <T> Type of point, currently can be Node or Vert
  */
-public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize {
+public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize, Iterable<T> {
 
   /**
    * Threshold value for choosing new head as next or previous element on list if old head is
@@ -86,15 +88,21 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
    */
   public static final int BAD_HEAD = 1;
   /**
+   * No head found among first {@value #MAX_NODES}.
+   * {@link #validateShape()}
+   */
+  public static final int NO_HEAD = 2;
+  /**
    * List is not closed. At least one nod has not previous or next neighbour.
    * {@link #validateShape()}
    */
   public static final int BAD_LINKING = 4;
   /**
-   * No head found among first {@value #MAX_NODES}.
-   * {@link #validateShape()}
+   * Number of list elements does match that stored in {@link #POINTS}.
+   * 
+   * <p>This can happen when {@link #Shape(PointsList, int)} is used. See {@link #validateShape()}.
    */
-  public static final int NO_HEAD = 2;
+  public static final int BAD_NUM_POINTS = 8;
   /**
    * Elements of Shape as List. Initialised on Serialise. Temporary array to store linked list as
    * array to allow serialisation
@@ -116,6 +124,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
    * 
    * @param h head point of the list
    * @param n number of points in the list
+   * @see #validateShape()
    */
   public Shape(T h, int n) {
     head = h;
@@ -517,7 +526,6 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
     if (!status) {
       throw new IllegalArgumentException("Given element has not been found on list");
     }
-
   }
 
   /**
@@ -616,6 +624,17 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
       }
     } catch (IllegalArgumentException e) {
       ret = ret | BAD_LINKING; // bad linking
+    }
+    if (ret == 0) { // check number of points that can be different if Shape.Shape(T, int) was used
+      T tmp = head;
+      int i = 0;
+      do {
+        i++;
+        tmp = tmp.getNext();
+      } while (!tmp.isHead() && i < MAX_NODES);
+      if (i != POINTS) {
+        ret = ret | BAD_NUM_POINTS;
+      }
     }
     return ret;
   }
@@ -905,6 +924,56 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize 
       v = v.getNext();
     } while (!v.isHead());
     return arry;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Iterable#iterator()
+   */
+  @Override
+  public Iterator<T> iterator() {
+    int ret = validateShape();
+    if (ret != 0) {
+      LOGGER.warn("Shape is broken, iterator may behave unstable. Reason: " + ret);
+    }
+    Iterator<T> it = new Iterator<T>() {
+      private transient T nextToReturn = head; // element to return by next()
+      private transient boolean traversed = false; // true if we started iterating, used for
+      // detection that first head should be returned but second not (second - we approached head
+      // from left side)
+
+      @Override
+      public boolean hasNext() {
+        if (nextToReturn == null || nextToReturn.getNext() == null) {
+          return false;
+        }
+        if (POINTS == 1 && nextToReturn.isHead()) {
+          return true; // only head linked to itself
+        }
+        if (nextToReturn.isHead() && traversed == true) {
+          return false; // is head and we started iterating, so approached it from left
+        } else {
+          return true; // iterating not started - return at least current element (head)
+        }
+      }
+
+      @Override
+      public T next() {
+        if (hasNext() == false) {
+          throw new NoSuchElementException("No more elements");
+        }
+        T ret = nextToReturn;
+        if (POINTS == 1) { // if only head
+          nextToReturn = null;
+        } else {
+          nextToReturn = nextToReturn.getNext();
+        }
+        traversed = true;
+        return ret;
+      }
+    };
+    return it;
   }
 
   /*
