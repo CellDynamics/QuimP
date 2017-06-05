@@ -1,5 +1,13 @@
 # Change Log
 
+## [v17.06.01](https://github.com/CellDynamics/QuimP/tree/v17.06.01) (2017-06-05)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.05.01...v17.06.01)
+
+**Implemented enhancements:**
+
+- Add Iterator to Shape [\#252](https://github.com/CellDynamics/QuimP/issues/252)
+- Better filtration in HatSnakeFilter  [\#245](https://github.com/CellDynamics/QuimP/issues/245)
+
 ## [v17.05.01](https://github.com/CellDynamics/QuimP/tree/v17.05.01) (2017-05-24)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.04.04...v17.05.01)
 
