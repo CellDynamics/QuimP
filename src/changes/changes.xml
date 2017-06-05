@@ -6,6 +6,14 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="17.06.01" date="2017-06-05" description="Release">
+         <action dev="baniuk" type="add" issue="252">
+              QuimP-API: Added Iterator for Shape objects and copy constructor.
+         </action>
+         <action dev="baniuk" type="update" issue="245">
+              QuimP-RandomWalk: HatSnakeFilter ranks are not normalised now, fixed also several other bugs.
+         </action>
+       </release>
        <release version="17.05.01" date="2017-05-24" description="Release">
          <action dev="baniuk" type="update" issue="245">
               QuimP-RandomWalk: HatSnakeFilter uses now intensity sampled on 3x3 lattice. This should make results more deterministic (see #244)
