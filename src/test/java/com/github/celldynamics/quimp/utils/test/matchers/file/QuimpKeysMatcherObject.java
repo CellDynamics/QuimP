@@ -1,6 +1,6 @@
 package com.github.celldynamics.quimp.utils.test.matchers.file;
 
-import static com.github.celldynamics.quimp.utils.test.matchers.file.FileMatchers.haveSameKeys;
+import static com.github.baniuk.ImageJTestSuite.matchers.json.JsonMatchers.haveSameKeys;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

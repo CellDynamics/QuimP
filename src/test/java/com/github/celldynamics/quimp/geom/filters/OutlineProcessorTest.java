@@ -1,6 +1,6 @@
 package com.github.celldynamics.quimp.geom.filters;
 
-import static com.github.celldynamics.quimp.utils.test.matchers.arrays.ArrayMatchers.arrayCloseTo;
+import static com.github.baniuk.ImageJTestSuite.matchers.arrays.ArrayMatchers.arrayCloseTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package com.github.celldynamics.quimp.utils.graphics.svg;
 
-import static com.github.celldynamics.quimp.utils.test.matchers.file.FileMatchers.containsExactText;
+import static com.github.baniuk.ImageJTestSuite.matchers.file.FileMatchers.containsExactText;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import com.github.celldynamics.quimp.QColor;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
-import com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter;
 import com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter.QPolarAxes;
 import com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter.QScaleBar;
 import com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter.Qcircle;

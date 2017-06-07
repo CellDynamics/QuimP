@@ -1,6 +1,6 @@
 package com.github.celldynamics.quimp;
 
-import static com.github.celldynamics.quimp.utils.test.matchers.file.FileMatchers.haveSameKeys;
+import static com.github.baniuk.ImageJTestSuite.matchers.json.JsonMatchers.haveSameKeys;
 import static io.github.benas.randombeans.FieldDefinitionBuilder.field;
 import static org.junit.Assert.assertThat;
 

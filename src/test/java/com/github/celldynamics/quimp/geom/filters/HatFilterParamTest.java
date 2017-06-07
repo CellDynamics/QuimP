@@ -16,9 +16,8 @@ import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter;
+import com.github.baniuk.ImageJTestSuite.dataaccess.DataLoader;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
-import com.github.celldynamics.quimp.utils.test.DataLoader;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
 /**
@@ -70,7 +69,7 @@ public class HatFilterParamTest {
    */
   @Before
   public void setUp() throws Exception {
-    testcase = new DataLoader(testfileName.toString()).getData();
+    testcase = new DataLoader(testfileName.toString()).getListofPoints();
   }
 
   /**

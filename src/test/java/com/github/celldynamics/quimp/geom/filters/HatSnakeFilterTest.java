@@ -17,10 +17,9 @@ import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter;
+import com.github.baniuk.ImageJTestSuite.dataaccess.DataLoader;
 import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter.WindowIndRange;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
-import com.github.celldynamics.quimp.utils.test.DataLoader;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
 /**
@@ -76,8 +75,10 @@ public class HatSnakeFilterTest {
       lininput.add(new Point2d(i, i));
     }
 
-    circ = new DataLoader("src/test/Resources-static/HatSnakeFilter/testData_circle.dat").getData();
-    prot = new DataLoader("src/test/Resources-static/HatSnakeFilter/testData_prot.dat").getData();
+    circ = new DataLoader("src/test/Resources-static/HatSnakeFilter/testData_circle.dat")
+            .getListofPoints();
+    prot = new DataLoader("src/test/Resources-static/HatSnakeFilter/testData_prot.dat")
+            .getListofPoints();
   }
 
   /**
