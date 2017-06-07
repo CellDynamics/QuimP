@@ -40,7 +40,7 @@ public class PluginProperties {
    * @param type Type of plugin returned by IQuimpPlugin.setup() method
    * @param version Version of plugin returned from IQuimpPlugin.getVersion() method
    */
-  PluginProperties(final File file, final String className, int type, final String version) {
+  public PluginProperties(final File file, final String className, int type, final String version) {
     this.file = file;
     this.type = type;
     this.className = className;
