@@ -289,6 +289,7 @@ public class SnakePluginList implements IQuimpSerialize {
         throw new QuimpPluginException(
                 "Plugin initialization failed. Plugin " + name + " can not be loaded or instanced");
       }
+      ver = ref.getVersion();
       this.name = name;
     }
 
@@ -369,12 +370,24 @@ public class SnakePluginList implements IQuimpSerialize {
     }
 
     /**
-     * Upload provided configuration to plugin.
+     * Upload provided configuration to plugin and set it as local.
      * 
      * @param config Configuration to upload
      * @throws QuimpPluginException when config can not be uploaded to plugin
      */
     public void uploadPluginConfig(final ParamList config) throws QuimpPluginException {
+      if (ref != null) {
+        ref.setPluginConfig(config);
+      }
+      this.config = config;
+    }
+
+    /**
+     * Upload local configuration to plugin.
+     * 
+     * @throws QuimpPluginException when config can not be uploaded to plugin
+     */
+    public void uploadPluginConfig() throws QuimpPluginException {
       if (ref != null) {
         ref.setPluginConfig(config);
       }
@@ -388,13 +401,16 @@ public class SnakePluginList implements IQuimpSerialize {
     public IQuimpCorePlugin getRef() {
       return ref;
     }
+
   }
 
   /**
    * Holds list of plugins up to max allowed.
    * 
-   * <p>This list always contains valid \c Plugin objects but they can point to null reference (
-   * Plugin.ref) when there is no plugin on i-th slot
+   * <p>This list always contains valid Plugin objects but they can point to null reference (
+   * Plugin.ref) when there is no plugin on i-th slot. Keep also plugin configuration for
+   * serialisation purposes. Configuration can be exchanged with jar plugin.
+   * 
    */
   private ArrayList<Plugin> sPluginList;
 
@@ -478,7 +494,7 @@ public class SnakePluginList implements IQuimpSerialize {
    * @return Copy of current object
    */
   public SnakePluginList getDeepCopy() {
-    beforeSerialize(); // get plugin config from Plugins (jars->Plugin) to fill Plugin subclass
+    downloadPluginsConfig(); // get plugin config from Plugins (jars->Plugin) to fill Plugin
     SnakePluginList ret = new SnakePluginList();
     ret.updateRefs(pluginFactory, viewUpdater); // assign current external data
     // make deep copy of the list
@@ -551,7 +567,7 @@ public class SnakePluginList implements IQuimpSerialize {
    */
   public ParamList getConfig(int i) {
     if (sPluginList.get(i).config != null) {
-      return new ParamList(sPluginList.get(i).config); // makes copy of plugin configuration
+      return new ParamList(sPluginList.get(i).config); // TODO makes copy? of plugin configuration
     } else {
       return null;
     }
@@ -610,7 +626,12 @@ public class SnakePluginList implements IQuimpSerialize {
   private void setInstance(int i, final String name, boolean act, final ParamList config)
           throws QuimpPluginException {
     setInstance(i, name, act);
-    sPluginList.get(i).uploadPluginConfig(config);
+    try {
+      sPluginList.get(i).uploadPluginConfig(config);
+      // sPluginList.get(i).downloadPluginConfig(); // TODO uploadPluginConfig set it local as well
+    } catch (QuimpPluginException e) { // catch here if e.g. lack of backward comp.
+      LOGGER.warn("Plugin " + sPluginList.get(i).name + " refused provided configuration");
+    }
 
   }
 
@@ -658,6 +679,35 @@ public class SnakePluginList implements IQuimpSerialize {
   }
 
   /**
+   * Download configuration from all opened plugins into internal structure. Performs transfer
+   * jar->local object.
+   * 
+   * <p>Configuration is kept locally for serialisation purposes.
+   * 
+   * @see #beforeSerialize()
+   */
+  public void downloadPluginsConfig() {
+    for (Plugin i : sPluginList) {
+      i.downloadPluginConfig();
+    }
+  }
+
+  /**
+   * Transfer locally stored config to plugins instance for current list of plugin.
+   * 
+   * @see #downloadPluginsConfig()
+   */
+  public void uploadPluginsConfig() {
+    for (Plugin i : sPluginList) {
+      try {
+        i.uploadPluginConfig();
+      } catch (QuimpPluginException e) {
+        LOGGER.warn("Plugin " + i.name + " refused provided configuration");
+      }
+    }
+  }
+
+  /**
    * Fills fields in Plugin class related to configuration and version. These fields are
    * serialized then.
    * 
@@ -665,9 +715,7 @@ public class SnakePluginList implements IQuimpSerialize {
    */
   @Override
   public void beforeSerialize() {
-    for (Plugin i : sPluginList) {
-      i.downloadPluginConfig();
-    }
+    downloadPluginsConfig();
   }
 
   /**
@@ -683,7 +731,7 @@ public class SnakePluginList implements IQuimpSerialize {
   public void afterSerialize() {
     // go through list and create new Plugin using old values that were restored after loading
     for (int i = 0; i < sPluginList.size(); i++) {
-      String ver = sPluginList.get(i).ver;
+      String savedVer = sPluginList.get(i).ver;
       String name = getName(i); // only for exception handling to know name before setInstance
       // sets new instance of plugin using old configuration loaded
       // skip plugin that cannot be loaded or with wrong configuration
@@ -695,10 +743,10 @@ public class SnakePluginList implements IQuimpSerialize {
       }
       // check version compatibility - only inform user
       if (getInstance(i) != null) {
-        if (!ver.equals(sPluginList.get(i).ref.getVersion())) {
+        if (!savedVer.equals(sPluginList.get(i).ver)) {
           LOGGER.warn("Loaded plugin (" + sPluginList.get(i).name
-                  + ") is in different version than saved (" + sPluginList.get(i).ref.getVersion()
-                  + " vs. " + ver + ")");
+                  + ") is in different version than saved (" + sPluginList.get(i).ver + " vs. "
+                  + savedVer + ")");
         }
       }
     }

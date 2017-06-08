@@ -455,7 +455,8 @@ public class BOAState implements IQuimpSerialize {
    * <p>BOAp is static class contains internal as well as external parameters used to define snake
    * and to control contour matching algorithm. There are also several basic get/set methods for
    * accessing selected parameters, setting default
-   * {@link com.github.celldynamics.quimp.BOAState.SegParam#setDefaults() values} and writing/reading
+   * {@link com.github.celldynamics.quimp.BOAState.SegParam#setDefaults() values} and
+   * writing/reading
    * these (external) parameters to/from disk. File format used for storing data in files is
    * defined at {@link QParams} class.
    * 
@@ -989,6 +990,8 @@ public class BOAState implements IQuimpSerialize {
       segParam = tmp;
     }
     snakePluginList = snakePluginListSnapshots.get(frame - 1);
+    snakePluginList.uploadPluginsConfig(); // same plugin across frames is represented by the same
+    // instance, every time frame is restored plugin configuration must be updated to current
   }
 
   /**

@@ -1197,8 +1197,8 @@ public class BOA_ implements PlugIn {
      * @see #itemStateChanged(ItemEvent)
      */
     private void updateChoices() {
-      Color ok = new Color(178, 255, 102);
-      Color bad = new Color(255, 153, 153);
+      final Color ok = new Color(178, 255, 102);
+      final Color bad = new Color(255, 153, 153);
       // first slot snake plugin
       if (qState.snakePluginList.getName(0).isEmpty()) {
         chFirstPluginName.select(NONE);

@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.ParamList;
-import com.github.celldynamics.quimp.plugin.utils.QWindowBuilder;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -107,13 +106,13 @@ public class QWindowBuilder_Test {
    */
   @Test
   public void test_setgetValues() {
-    ParamList ret;
     ParamList set = new ParamList();
     set.put("windOw", String.valueOf(0.32));
     set.put("sMooth", String.valueOf(7.0));
     set.put("selector", "option_3"); // must exist in list
     inst.buildWindow(def1);
     inst.setValues(set);
+    ParamList ret;
     ret = inst.getValues();
     assertEquals(0.32, ret.getDoubleValue("window"), 1e-4);
     assertEquals(7, ret.getDoubleValue("smooth"), 1e-4);
