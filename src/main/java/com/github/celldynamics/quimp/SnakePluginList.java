@@ -250,7 +250,7 @@ public class SnakePluginList implements IQuimpSerialize {
      */
     private String name;
     /**
-     * Configuration read from plugin on save operation.
+     * Configuration read from plugin on save operation. This field should not be null.
      */
     private ParamList config;
     /**
@@ -265,7 +265,7 @@ public class SnakePluginList implements IQuimpSerialize {
       ref = null;
       isActive = true; // Default value
       name = "";
-      config = null; // no config or not supported by plugin
+      config = new ParamList(); // no config or not supported by plugin
       ver = ""; // no version or not supported
     }
 
@@ -364,8 +364,11 @@ public class SnakePluginList implements IQuimpSerialize {
      */
     public void downloadPluginConfig() {
       if (ref != null) {
-        config = ref.getPluginConfig();
-        ver = ref.getVersion();
+        ParamList tmpconfig = ref.getPluginConfig();
+        // if plugin returns null, create empty container
+        config = tmpconfig != null ? tmpconfig : new ParamList();
+        String tmpVer = ref.getVersion();
+        ver = tmpVer != null ? tmpVer : "";
       }
     }
 
@@ -569,7 +572,7 @@ public class SnakePluginList implements IQuimpSerialize {
     if (sPluginList.get(i).config != null) {
       return new ParamList(sPluginList.get(i).config); // TODO makes copy? of plugin configuration
     } else {
-      return null;
+      return new ParamList(); // return empty list
     }
   }
 
@@ -701,7 +704,8 @@ public class SnakePluginList implements IQuimpSerialize {
       try {
         i.uploadPluginConfig();
       } catch (QuimpPluginException e) {
-        LOGGER.warn("Plugin " + i.name + " refused provided configuration");
+        LOGGER.warn("Plugin " + i.name
+                + " refused provided configuration. Default values will be used on next run");
       }
     }
   }
