@@ -70,8 +70,10 @@
  * <h1>QCONF file description</h1> The content of QCONF file is strictly related to the QuimP
  * architecture. User is supposed to read JavaDoc documentation for particular classes to find what
  * data are kept there. The starting point is the main container
- * {@link com.github.celldynamics.quimp.filesystem.DataContainer} that covers the whole QCONF structure.
- * Briefly relations among classes used by {@link com.github.celldynamics.quimp.filesystem.DataContainer}
+ * {@link com.github.celldynamics.quimp.filesystem.DataContainer} that covers the whole QCONF
+ * structure.
+ * Briefly relations among classes used by
+ * {@link com.github.celldynamics.quimp.filesystem.DataContainer}
  * are:<br>
  * <img src="doc-files/datacontainer_UML.png"/><br>
  * 
@@ -82,12 +84,17 @@
  * cortex. They are stored in <i>stQP.csv</i> and <i>QCONF</i> files but they are built on different
  * stages of processing. The general class relationship is as follows:<br>
  * <img src="doc-files/stats_1_UML.png"/><br>
- * {@link com.github.celldynamics.quimp.CellStatsEval} depending how it is created writes statistics to
+ * {@link com.github.celldynamics.quimp.CellStatsEval} depending how it is created writes statistics
+ * to
  * disk as stQP files or only computes them internally (they are computed as well for first case).
- * They can be obtained by calling {@link com.github.celldynamics.quimp.CellStatsEval#getStatH()} which
- * provides {@link com.github.celldynamics.quimp.CellStats} object that holds statistics for one cell for
- * all frames (as List of {@link com.github.celldynamics.quimp.FrameStatistics} objects. DataContainer
- * holds List of {@link com.github.celldynamics.quimp.CellStats} for every cell in experiment. Fitting
+ * They can be obtained by calling {@link com.github.celldynamics.quimp.CellStatsEval#getStatH()}
+ * which
+ * provides {@link com.github.celldynamics.quimp.CellStats} object that holds statistics for one
+ * cell for
+ * all frames (as List of {@link com.github.celldynamics.quimp.FrameStatistics} objects.
+ * DataContainer
+ * holds List of {@link com.github.celldynamics.quimp.CellStats} for every cell in experiment.
+ * Fitting
  * statistic object into {@link com.github.celldynamics.quimp.filesystem.DataContainer}:<br>
  * <img src="doc-files/stats_2_UML.png"/><br>
  * Relevant part of code:<br>
@@ -113,11 +120,13 @@
  * Many algorithms implemented in QuimP related to either Snake or Outline perform node removing
  * from {@link com.github.celldynamics.quimp.PointsList} wrapped by
  * {@link com.github.celldynamics.quimp.Shape}. If head node (can be
- * {@link com.github.celldynamics.quimp.Vert} or {@link com.github.celldynamics.quimp.Node} object) is
+ * {@link com.github.celldynamics.quimp.Vert} or {@link com.github.celldynamics.quimp.Node} object)
+ * is
  * removed, new head is chosen randomly between next and previous element. This affects end result
  * making it nondeterministic, especially for iterative shrinking like e.g.
  * {@link com.github.celldynamics.quimp.Outline#scale(double, double, double, double)}
- * or scaling in {@link com.github.celldynamics.quimp.Snake}. To make testing possible, threshold level
+ * or scaling in {@link com.github.celldynamics.quimp.Snake}. To make testing possible, threshold
+ * level
  * defined in {@link com.github.celldynamics.quimp.Shape} is static and private to avoid accidental
  * modification.
  * 

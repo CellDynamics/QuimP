@@ -54,6 +54,10 @@ public class ViewUpdater {
 
   /**
    * Calls updateView method from object ob.
+   * 
+   * <p>Also stores current plugin configuration locally in QuimP.
+   * 
+   * @see SnakePluginList
    */
   public void updateView() {
     if (ob instanceof BOA_) {
