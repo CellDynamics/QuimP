@@ -2,8 +2,10 @@ package com.github.celldynamics.quimp.plugin.engine;
 
 import java.io.File;
 
+import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
+
 /**
- * Store basic plugin properties read from jar file.
+ * Store basic plugin properties read from jar file and jar instance.
  * 
  * @author p.baniukiewicz
  *
@@ -13,6 +15,7 @@ public class PluginProperties {
   private int type; // type of plugin
   private String className; // name of plugin class
   private String version; // version returned from plugin
+  private IQuimpCorePlugin ref = null; // reference of plugin - loaded jar
 
   /**
    * Version getter.
@@ -72,5 +75,24 @@ public class PluginProperties {
   @Override
   public String toString() {
     return "ClassName: " + className + " path: " + file + " type: " + type + " ver: " + version;
+  }
+
+  /**
+   * Return reference of loaded plugin or null if plugin is not used.
+   * 
+   * @return reference or null
+   */
+  public IQuimpCorePlugin getRef() {
+    return ref;
+  }
+
+  /**
+   * Set reference to plugin. If plugin is used at any frame reference is remembered here and
+   * returned on demand for each other frame.
+   * 
+   * @param ref plugin reference returned by PluginFactory.getPluginInstance
+   */
+  public void setRef(IQuimpCorePlugin ref) {
+    this.ref = ref;
   }
 }

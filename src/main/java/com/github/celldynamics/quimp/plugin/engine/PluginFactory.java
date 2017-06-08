@@ -469,10 +469,14 @@ public class PluginFactory {
   }
 
   /**
-   * Return instance of plugin name.
+   * Return instance of named plugin.
    * 
-   * <br>
+   * <p><br>
    * <img src="doc-files/PluginFactory_6_UML.png"/><br>
+   * 
+   * <p>JAR is loaded only once on first request. Then its reference is stored in
+   * {@link PluginProperties} and served on next demand. Thus, if plugin is used on different frames
+   * in stack it is the same instance.
    * 
    * @param name Name of plugin compatible with general rules
    * @return reference to plugin of name or null when there is any problem with creating instance
@@ -492,8 +496,13 @@ public class PluginFactory {
         throw new IllegalArgumentException("Plugin of name: " + name + " is not loaded");
       }
       // load class and create instance
-      IQuimpCorePlugin instance =
-              (IQuimpCorePlugin) getPluginInstance(pp.getFile(), pp.getClassName());
+      IQuimpCorePlugin instance;
+      if (pp.getRef() == null) { // not used yet
+        instance = (IQuimpCorePlugin) getPluginInstance(pp.getFile(), pp.getClassName());
+        pp.setRef(instance); // store for next request
+      } else {
+        instance = pp.getRef(); // return same instance as previous for "name"
+      }
       return instance;
     } catch (MalformedURLException | ClassNotFoundException | InstantiationException
             | IllegalAccessException | IllegalArgumentException e) {

@@ -627,8 +627,7 @@ public class SnakePluginList implements IQuimpSerialize {
           throws QuimpPluginException {
     setInstance(i, name, act);
     try {
-      sPluginList.get(i).uploadPluginConfig(config);
-      // sPluginList.get(i).downloadPluginConfig(); // TODO uploadPluginConfig set it local as well
+      sPluginList.get(i).uploadPluginConfig(config); // and set given config as local as well
     } catch (QuimpPluginException e) { // catch here if e.g. lack of backward comp.
       LOGGER.warn("Plugin " + sPluginList.get(i).name + " refused provided configuration");
     }
