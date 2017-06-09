@@ -63,6 +63,12 @@ import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
  * PF -> PL : //<<getPluginInstance>>//
  * activate PL
  * PF --> user : ""instance""
+ * note left
+ * Only one instance of requested
+ * plugin is created.
+ * On next requests previous reference
+ * is returned
+ * endnote
  * @enduml
  * 
  * @startuml doc-files/PluginFactory_2_UML.png
@@ -117,29 +123,28 @@ import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
  * @enduml
  * 
  * @startuml doc-files/PluginFactory_6_UML.png
- * partition getInstance(name) {
- * (*) -->if name is not empty
- * --> Build qualified name\nfrom ""getClassName()""
- * --> get plugin data from\n ""availPlugins""
- * if returned ""null""
- * -->[true] log error
- * --->[return ""null""](*)
+ * start
+ * if (name is not empty) then (yes)
+ *   :Build qualified name\nfrom ""getClassName()"";
+ *   if (get plugin data from\n ""availPlugins"") then (null)
+ *     :log error; 
+ *     ->Return null;
+ *     stop
+ *   else
+ *     if (was plugin used\nbefore) then (yes)
+ *       :Restore instance;
+ *       ->Return instance;
+ *       stop
+ *     else
+ *        :""getPluginInstance"";
+ *        :Store instance;
+ *     endif   
+ *   endif
  * else
- * partition "getPluginInstance" {
- * -->[false] Open jar
- * --> Load class
- * -down> Create instance
- * }
+ *   stop  
  * endif
- * --> if **jar loader**\nsuccess
- * ->[true return ""instance""](*)
- * else
- * ->[false return ""null""](*)
- * endif
- * endif
- * }
+ * stop
  * @enduml
-     * 
  * //!<
  */
 /**
@@ -178,7 +183,8 @@ import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
  * <li>Given directory exists but plugins are corrupted - they fulfil naming criterion but they are
  * not valid QuimP plugins
  * <ol>
- * <li>getInstance(final String) returns null when correct name is given. It means that plugin has
+ * <li>getInstance(final String) returns <tt>null</tt> when correct name is given. It means that
+ * plugin has
  * been registered by scanDirectory() so it had correct name and supported
  * wsbc.plugin.IQuimpPlugin.setup() method
  * </ol>
@@ -198,6 +204,8 @@ import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
  * getInstance that returns null in this case. All exceptions are masked besides scanDirectory()
  * that can throw checked PluginException that must be handled by caller. It usually means that
  * given plugin directory does not exist.
+ * 
+ * <p>Each jar is loaded only once on first request. Next requests get the same instance.
  * 
  * @author p.baniukiewicz
  */
@@ -469,10 +477,14 @@ public class PluginFactory {
   }
 
   /**
-   * Return instance of plugin name.
+   * Return instance of named plugin.
    * 
-   * <br>
+   * <p><br>
    * <img src="doc-files/PluginFactory_6_UML.png"/><br>
+   * 
+   * <p>JAR is loaded only once on first request. Then its reference is stored in
+   * {@link PluginProperties} and served on next demand. Thus, if plugin is used on different frames
+   * in stack it is the same instance.
    * 
    * @param name Name of plugin compatible with general rules
    * @return reference to plugin of name or null when there is any problem with creating instance
@@ -492,8 +504,13 @@ public class PluginFactory {
         throw new IllegalArgumentException("Plugin of name: " + name + " is not loaded");
       }
       // load class and create instance
-      IQuimpCorePlugin instance =
-              (IQuimpCorePlugin) getPluginInstance(pp.getFile(), pp.getClassName());
+      IQuimpCorePlugin instance;
+      if (pp.getRef() == null) { // not used yet
+        instance = (IQuimpCorePlugin) getPluginInstance(pp.getFile(), pp.getClassName());
+        pp.setRef(instance); // store for next request
+      } else {
+        instance = pp.getRef(); // return same instance as previous for "name"
+      }
       return instance;
     } catch (MalformedURLException | ClassNotFoundException | InstantiationException
             | IllegalAccessException | IllegalArgumentException e) {

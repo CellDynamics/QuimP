@@ -14,6 +14,8 @@ import quimp.plugin.HedgehogSnakeFilter_;
 import quimp.plugin.MeanSnakeFilter_;
 import quimp.plugin.SetHeadSnakeFilter_;
 import com.github.celldynamics.quimp.plugin.IQuimpPlugin;
+import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
+import com.github.celldynamics.quimp.plugin.engine.PluginProperties;
 
 /**
  * This class mock PluginFactory class making possible to call plugins from local Eclipse workspace.

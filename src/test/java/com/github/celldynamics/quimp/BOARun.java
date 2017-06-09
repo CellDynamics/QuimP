@@ -4,9 +4,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.CountDownLatch;
 
-import com.github.celldynamics.quimp.BOA_;
-import com.github.celldynamics.quimp.QuimP;
-
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -58,7 +55,8 @@ public class BOARun {
     Toolbar t = new Toolbar();
     BOA_ ob = new BOA_();
 
-    ob.run("/home/baniuk/Desktop/Tests/184/plugins"); // run BOA, control is immediately returned
+    ob.run("/home/baniuk/Documents/Repos/Fiji.app.test/plugins"); // run BOA, control is immediately
+                                                                  // returned
     // ob.run("../plugins_test/target/"); // run BOA, control is immediately returned
 
     // add window listener to BOA_ window window is \public field of BOA_ class

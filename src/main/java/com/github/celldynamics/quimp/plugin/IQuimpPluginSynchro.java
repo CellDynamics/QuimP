@@ -1,16 +1,17 @@
 package com.github.celldynamics.quimp.plugin;
 
+import com.github.celldynamics.quimp.SnakePluginList;
 import com.github.celldynamics.quimp.ViewUpdater;
 
-// TODO: Auto-generated Javadoc
 /**
- * The interface that add synchronization between plugin and QuimP.
+ * The interface that add synchronisation between plugin and QuimP.
  * 
  * <p>Plugin can refresh main QuimP screen and redraw its content. Every outline is processed by all
- * active plugins and then redrawn on QuimP main screen.
+ * active plugins and then redrawn on QuimP main screen. Additionally current plugin configuration
+ * is transferred and stored in QuimP.
  * 
  * @author p.baniukiewicz
- *
+ * @see SnakePluginList
  */
 public interface IQuimpPluginSynchro {
 
