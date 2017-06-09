@@ -339,6 +339,7 @@
                     <source>${basedir}/../HedgehogSnakeFilter_quimp/src/main/java</source>
                     <source>${basedir}/../MeanSnakeFilter_quimp/src/main/java</source>
                     <source>${basedir}/../SetHeadSnakeFilter_quimp/src/main/java</source>
+                    <source>${basedir}/../RandomWalkSnakeFilter_quimp/src/main/java</source>
                   </sources>
                 </configuration>
               </execution>

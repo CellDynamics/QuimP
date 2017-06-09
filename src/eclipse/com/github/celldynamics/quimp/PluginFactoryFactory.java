@@ -57,7 +57,8 @@ public class PluginFactoryFactory {
         pluginFactory = Mockito.mock(PluginFactory.class);
         Mockito.when(pluginFactory.getPluginNames(IQuimpPlugin.DOES_SNAKES))
                 .thenReturn(new ArrayList<String>(Arrays.asList("HedgehogSnakeFilterMock",
-                        "MeanSnakeFilterMock", "SetHeadSnakeFilterMock", "HatSnakeFilterMock")));
+                        "MeanSnakeFilterMock", "SetHeadSnakeFilterMock", "HatSnakeFilterMock",
+                        "RandomWalkFilterMock")));
 
         Mockito.when(pluginFactory.getInstance("HedgehogSnakeFilterMock"))
                 .thenReturn(new HedgehogSnakeFilter_());
@@ -67,6 +68,8 @@ public class PluginFactoryFactory {
                 .thenReturn(new SetHeadSnakeFilter_());
         Mockito.when(pluginFactory.getInstance("HatSnakeFilterMock"))
                 .thenReturn(new HatSnakeFilter_());
+        Mockito.when(pluginFactory.getInstance("RandomWalkFilterMock"))
+                .thenReturn(new HatSnakeFilter_());        
 
         HashMap<String, PluginProperties> availPlugins = new HashMap<String, PluginProperties>();
         availPlugins.put("HedgehogSnakeFilterMock",
@@ -85,6 +88,10 @@ public class PluginFactoryFactory {
                 new PluginProperties(new File("mocked"), "HatSnakeFilterFilter_",
                         IQuimpPlugin.DOES_SNAKES,
                         pluginFactory.getInstance("HatSnakeFilterMock").getVersion()));
+        availPlugins.put("RandomWalkFilterMock",
+                new PluginProperties(new File("mocked"), "RandomWalkFilter_",
+                        IQuimpPlugin.DOES_SNAKES,
+                        pluginFactory.getInstance("RandomWalkFilterMock").getVersion()));
 
         Mockito.when(pluginFactory.getRegisterdPlugins()).thenReturn(availPlugins);
         return pluginFactory;
