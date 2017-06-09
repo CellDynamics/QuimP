@@ -23,12 +23,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.QuimP;
-import com.github.celldynamics.quimp.QuimpVersion;
-import com.github.celldynamics.quimp.Serializer;
-import com.github.celldynamics.quimp.SnakePluginList;
-import com.github.celldynamics.quimp.SnakePluginListInstanceCreator;
-import com.github.celldynamics.quimp.ViewUpdater;
 import com.github.celldynamics.quimp.filesystem.versions.Converter170202;
 import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
 import com.github.celldynamics.quimp.plugin.ParamList;
@@ -37,7 +31,6 @@ import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-// TODO: Auto-generated Javadoc
 /**
  * Tests of SnakePluginList class and serialization
  * 
@@ -363,8 +356,17 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
     for (int i = 0; i < 3; i++) {
       IQuimpCorePlugin inst = snakePluginList.getInstance(i);
       assertEquals(inst.getVersion(), snakePluginList.getVer(i));
-      assertEquals(snakePluginList.getInstance(i).getPluginConfig(), snakePluginList.getConfig(i));
     }
+    // returns config
+    assertEquals(snakePluginList.getInstance(1).getPluginConfig(), snakePluginList.getConfig(1));
+    // plugin returns null
+    assertEquals(snakePluginList.getInstance(0).getPluginConfig(), null);
+    assertEquals(snakePluginList.getInstance(2).getPluginConfig(), null);
+    // but objects has empty lists
+    assertEquals(snakePluginList.getConfig(0).getClass(), ParamList.class);
+    assertEquals(snakePluginList.getConfig(2).getClass(), ParamList.class);
+    assertEquals(snakePluginList.getConfig(0).isEmpty(), true);
+    assertEquals(snakePluginList.getConfig(2).isEmpty(), true);
   }
 
   /**
@@ -775,14 +777,14 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
   }
 
   /**
-   * Test of loading incompatibile config.
+   * Test of loading incompatible config.
    * 
    * <p>This depends on plugin configuration. Wrong config is detected by exception thrown from
    * setPluginConfig() from IQuimpPlugin
    * 
-   * <p>pre: Incompatibile config
+   * <p>pre: Incompatible config
    * 
-   * <p>post: Plugin loaded but config not restored
+   * <p>post: Plugin loaded but config not restored (action rely on plugin)
    * 
    * @throws IOException IOException
    * @throws QuimpPluginException QuimpPluginException
@@ -813,17 +815,17 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
 
     local.afterSerialize();
 
-    assertEquals(null, local.getInstance(1));
+    assertEquals(snakePluginList.getInstance(1), local.getInstance(1));
     assertEquals(snakePluginList.getInstance(0), local.getInstance(0));
   }
 
   /**
-   * Test of loading incompatibile config.
+   * Test of loading incompatible config.
    * 
    * <p>This depends on plugin configuration. Wrong config is detected by exception thrown from
    * setPluginConfig() from IQuimpPlugin.
    * 
-   * <p>Pre: Incompatibile config
+   * <p>Pre: Incompatible config
    * 
    * <p>Post: Plugin loaded but config not restored
    * 
@@ -848,7 +850,7 @@ public class SnakePluginListTest extends JsonKeyMatchTemplate<SnakePluginList> {
 
     assertEquals(snakePluginList.getInstance(0), out.obj.getInstance(0));
     assertEquals(snakePluginList.getInstance(2), out.obj.getInstance(2));
-    assertEquals(null, out.obj.getInstance(1));
+    assertEquals(snakePluginList.getInstance(1), out.obj.getInstance(1));
 
   }
 
