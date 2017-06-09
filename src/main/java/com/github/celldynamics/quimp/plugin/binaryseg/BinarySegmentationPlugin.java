@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.BOA_;
 import com.github.celldynamics.quimp.Nest;
-import com.github.celldynamics.quimp.ViewUpdater;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
+import com.github.celldynamics.quimp.ViewUpdater;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
 import com.github.celldynamics.quimp.plugin.IQuimpNestPlugin;
 import com.github.celldynamics.quimp.plugin.IQuimpPluginSynchro;
@@ -103,8 +103,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * com.github.celldynamics.quimp.plugin.utils.QWindowBuilder#buildWindow(com.github.celldynamics.quimp.
+   * @see QWindowBuilder#buildWindow(com.github.celldynamics.quimp.
    * plugin.ParamList)
    */
   @Override
@@ -217,8 +216,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   /*
    * (non-Javadoc)
    * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setPluginConfig(com.github.celldynamics.quimp.
-   * plugin.ParamList)
+   * @see IQuimpCorePlugin#setPluginConfig(com.github.celldynamics.quimp.plugin.ParamList)
    */
   @Override
   public void setPluginConfig(ParamList par) throws QuimpPluginException {
@@ -298,7 +296,9 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   /*
    * (non-Javadoc)
    * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpNestPlugin#attachData(com.github.celldynamics.quimp.Nest)
+   * @see
+   * com.github.celldynamics.quimp.plugin.IQuimpNestPlugin#attachData(com.github.celldynamics.quimp.
+   * Nest)
    */
   @Override
   public void attachData(Nest data) {

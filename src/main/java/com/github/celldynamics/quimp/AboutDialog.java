@@ -26,7 +26,6 @@ import javax.swing.JTextArea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * Build About dialog with support of mouse operations.
  * 
@@ -47,12 +46,12 @@ public class AboutDialog implements ActionListener {
   /**
    * Number of rows in window.
    */
-  private int ROWS = 30;
+  private int rows = 30;
   /**
    * Number of columns in window.
    */
-  private int COLS = 80;
-  private final String c = "-"; // Limiter char
+  private int cols = 80;
+  private final String limiter = "-"; // Limiter char
 
   /**
    * Build window and menus with given size.
@@ -62,8 +61,8 @@ public class AboutDialog implements ActionListener {
    * @param cols Number of columns.
    */
   public AboutDialog(Window owner, int rows, int cols) {
-    ROWS = rows;
-    COLS = cols;
+    this.rows = rows;
+    this.cols = cols;
     buildWindow(owner);
   }
 
@@ -81,11 +80,11 @@ public class AboutDialog implements ActionListener {
   /**
    * Construct the window.
    * 
-   * @param owner
+   * @param owner parent window
    */
   private void buildWindow(Window owner) {
     aboutWnd = new JDialog(owner, "Info", JDialog.ModalityType.DOCUMENT_MODAL);
-    aboutWnd.addWindowListener(new myWindowAdapter());
+    aboutWnd.addWindowListener(new MyWindowAdapter());
     // located in middle of quimp qindow
     Rectangle orgBounds = owner.getBounds();
     aboutWnd.setBounds(orgBounds.x + orgBounds.width / 2, orgBounds.y + orgBounds.height / 2, 600,
@@ -94,7 +93,7 @@ public class AboutDialog implements ActionListener {
     p.setLayout(new GridLayout(1, 1)); // main window panel
     JPanel tp = new JPanel(); // panel with text area
     tp.setLayout(new GridLayout(1, 1));
-    info = new JTextArea(ROWS, COLS); // area to write
+    info = new JTextArea(rows, cols); // area to write
     info.setBackground(Color.WHITE);
     info.setEditable(false);
     Font font = new Font(Font.MONOSPACED, Font.PLAIN, 11);
@@ -123,10 +122,8 @@ public class AboutDialog implements ActionListener {
     mbar = new JMenuBar();
     popup = new JPopupMenu();
     JMenu medit = new JMenu("Edit");
-    JMenuItem selectall = new JMenuItem("Select All"); // changing the name must follow with
-                                                       // actionPerformed
-    JMenuItem copy = new JMenuItem("Copy"); // changing the name must follow with
-                                            // actionPerformed
+    JMenuItem selectall = new JMenuItem("Select All"); // name must follow actionPerformed
+    JMenuItem copy = new JMenuItem("Copy"); // changing the name must follow actionPerformed
     selectall.addActionListener(this);
     copy.addActionListener(this);
     mbar.add(medit);
@@ -146,7 +143,7 @@ public class AboutDialog implements ActionListener {
    * component to its new instance (shallow copy of selected properties)
    * 
    * @param src source MenuItem
-   * @return Copy of \c src MenuItem
+   * @return Copy of \limiter src MenuItem
    */
   private JMenuItem copyMenuItem(JMenuItem src) {
     JMenuItem dst = new JMenuItem();
@@ -173,7 +170,7 @@ public class AboutDialog implements ActionListener {
    */
   public void appendDistance() {
     String line;
-    line = new String(new char[COLS]).replace("\0", c);
+    line = new String(new char[cols]).replace("\0", limiter);
     appendLine(line);
   }
 
@@ -183,7 +180,7 @@ public class AboutDialog implements ActionListener {
    * <p><b>Warning</b><br>
    * When window is visible append(final String) does not work.
    * 
-   * @param state \c true to show window
+   * @param state \limiter true to show window
    */
   public void setVisible(boolean state) {
     info.setCaretPosition(0); // causes that initially view is scrolled to up
@@ -196,7 +193,7 @@ public class AboutDialog implements ActionListener {
    * @author p.baniukiewicz
    *
    */
-  class myWindowAdapter extends WindowAdapter {
+  class MyWindowAdapter extends WindowAdapter {
 
     /*
      * (non-Javadoc)
@@ -256,6 +253,8 @@ public class AboutDialog implements ActionListener {
         break;
       case "Select All":
         info.selectAll();
+        break;
+      default:
         break;
     }
 
