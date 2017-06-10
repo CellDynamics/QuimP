@@ -13,6 +13,7 @@ import quimp.plugin.HatSnakeFilter_;
 import quimp.plugin.HedgehogSnakeFilter_;
 import quimp.plugin.MeanSnakeFilter_;
 import quimp.plugin.SetHeadSnakeFilter_;
+import quimp.plugin.RandomWalkSnakeFilter_;
 import com.github.celldynamics.quimp.plugin.IQuimpPlugin;
 import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
 import com.github.celldynamics.quimp.plugin.engine.PluginProperties;
@@ -69,7 +70,7 @@ public class PluginFactoryFactory {
         Mockito.when(pluginFactory.getInstance("HatSnakeFilterMock"))
                 .thenReturn(new HatSnakeFilter_());
         Mockito.when(pluginFactory.getInstance("RandomWalkFilterMock"))
-                .thenReturn(new HatSnakeFilter_());        
+                .thenReturn(new RandomWalkSnakeFilter_());        
 
         HashMap<String, PluginProperties> availPlugins = new HashMap<String, PluginProperties>();
         availPlugins.put("HedgehogSnakeFilterMock",

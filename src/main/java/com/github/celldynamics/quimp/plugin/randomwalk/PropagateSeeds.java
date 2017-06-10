@@ -173,7 +173,7 @@ public abstract class PropagateSeeds {
      * 
      */
     @Override
-    Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
+    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
             double expandPower) {
       return binary.propagateSeed(previous, 0, 0);
     }
@@ -181,7 +181,8 @@ public abstract class PropagateSeeds {
     /*
      * (non-Javadoc)
      * 
-     * @see com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds#getCompositeSeed(ij.ImagePlus)
+     * @see
+     * com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds#getCompositeSeed(ij.ImagePlus)
      */
     @Override
     public ImagePlus getCompositeSeed(ImagePlus org, int offset) throws RandomWalkException {
@@ -453,7 +454,7 @@ public abstract class PropagateSeeds {
    * @param expandPower the expand power
    * @return the map
    */
-  abstract Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
-          double expandPower);
+  public abstract Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous,
+          double shrinkPower, double expandPower);
 
 }

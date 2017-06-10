@@ -63,6 +63,7 @@ import com.github.celldynamics.quimp.filesystem.StatsCollection;
 import com.github.celldynamics.quimp.filesystem.versions.Converter170202;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
+import com.github.celldynamics.quimp.plugin.IQuimpPluginAttachImage;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentationPlugin;
 import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
@@ -2210,6 +2211,9 @@ public class BOA_ implements PlugIn {
         if (!qsP.isExecutable()) {
           continue; // no plugin on this slot or not active
         }
+        if (qsP.getRef() instanceof IQuimpPluginAttachImage) {
+          ((IQuimpPluginAttachImage) qsP.getRef()).attachImage(imageGroup.getOrgIp());
+        }
         if (qsP.getRef() instanceof IQuimpBOAPoint2dFilter) { // check interface type
           if (previousConversion == isnake) { // previous was IQuimpSnakeFilter
             dataToProcess = snakeToProcess.asList(); // and data needs to be converted
@@ -2852,6 +2856,13 @@ class ImageGroup {
     orgIpl.setOverlay(null);
   }
 
+  /**
+   * Set internal field to currently processed ImageProcessor.
+   * 
+   * <p>Those fields are used by e.g. {@link BOA_#runBoa(int, int)} during computations.
+   * 
+   * @param i current frame
+   */
   public final void setProcessor(int i) {
     orgIp = orgStack.getProcessor(i);
     pathsIp = pathsStack.getProcessor(i);
@@ -2859,7 +2870,7 @@ class ImageGroup {
   }
 
   /**
-   * Calls updateSliceSelector callback only if i != current frame.
+   * Set slice in stack. Call updateSliceSelector callback only if i != current frame.
    * 
    * @param i slice number
    */

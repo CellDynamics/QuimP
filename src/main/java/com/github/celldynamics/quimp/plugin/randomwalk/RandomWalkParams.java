@@ -2,6 +2,8 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
 
 /**
@@ -10,7 +12,7 @@ import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Se
  * @author p.baniukiewicz
  *
  */
-public class Params {
+public class RandomWalkParams {
   /**
    * Alpha penalises pixels whose intensities are far away from the mean seed intensity.
    */
@@ -77,7 +79,7 @@ public class Params {
   /**
    * Set default values.
    */
-  public Params() {
+  public RandomWalkParams() {
     this.gamma = new double[2];
     alpha = 4e2;
     beta = 2 * 25;
@@ -93,7 +95,8 @@ public class Params {
   }
 
   /**
-   * Set user values. For compulsory parameters only.
+   * Set user values. For compulsory parameters only. If any of given parameters is null default
+   * value is used instead.
    * 
    * @param alpha alpha
    * @param beta beta
@@ -105,18 +108,36 @@ public class Params {
    * @param useLocalMean useLocalMean
    * @param localMeanMaskSize localMeanMaskSize
    */
-  public Params(double alpha, double beta, double gamma1, double gamma2, int iter, double dt,
-          double[] relim, boolean useLocalMean, int localMeanMaskSize) {
+  public RandomWalkParams(Double alpha, Double beta, Double gamma1, Double gamma2, Integer iter,
+          Double dt, Double[] relim, Boolean useLocalMean, Integer localMeanMaskSize) {
     this();
-    this.alpha = alpha;
-    this.beta = beta;
-    this.gamma[0] = gamma1;
-    this.gamma[1] = gamma2;
-    this.iter = iter;
-    this.dt = dt;
-    this.relim = Arrays.copyOf(relim, this.relim.length);
-    this.useLocalMean = useLocalMean;
-    this.localMeanMaskSize = localMeanMaskSize;
+    if (alpha != null) {
+      this.alpha = alpha;
+    }
+    if (beta != null) {
+      this.beta = beta;
+    }
+    if (gamma1 != null) {
+      this.gamma[0] = gamma1;
+    }
+    if (gamma2 != null) {
+      this.gamma[1] = gamma2;
+    }
+    if (iter != null) {
+      this.iter = iter;
+    }
+    if (dt != null) {
+      this.dt = dt;
+    }
+    if (relim != null) {
+      this.relim = Arrays.copyOf(ArrayUtils.toPrimitive(relim), this.relim.length);
+    }
+    if (useLocalMean != null) {
+      this.useLocalMean = useLocalMean;
+    }
+    if (localMeanMaskSize != null) {
+      this.localMeanMaskSize = localMeanMaskSize;
+    }
   }
 
   /*
@@ -126,10 +147,11 @@ public class Params {
    */
   @Override
   public String toString() {
-    return "Params [alpha=" + alpha + ", beta=" + beta + ", gamma=" + Arrays.toString(gamma)
-            + ", iter=" + iter + ", dt=" + dt + ", relim=" + Arrays.toString(relim)
-            + ", useLocalMean=" + useLocalMean + ", localMeanMaskSize=" + localMeanMaskSize
-            + ", intermediateFilter=" + intermediateFilter + ", finalFilter=" + finalFilter + "]";
+    return "RandomWalkParams [alpha=" + alpha + ", beta=" + beta + ", gamma="
+            + Arrays.toString(gamma) + ", iter=" + iter + ", dt=" + dt + ", relim="
+            + Arrays.toString(relim) + ", useLocalMean=" + useLocalMean + ", localMeanMaskSize="
+            + localMeanMaskSize + ", intermediateFilter=" + intermediateFilter + ", finalFilter="
+            + finalFilter + "]";
   }
 
   /*
@@ -172,7 +194,7 @@ public class Params {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    Params other = (Params) obj;
+    RandomWalkParams other = (RandomWalkParams) obj;
     if (Double.doubleToLongBits(alpha) != Double.doubleToLongBits(other.alpha)) {
       return false;
     }

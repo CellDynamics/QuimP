@@ -13,7 +13,7 @@ import ij.ImagePlus;
  * @author p.baniukiewicz
  * @see RandomWalkSegmentationPlugin_
  * @see RandomWalkView
- * @see Params
+ * @see RandomWalkParams
  */
 public class RandomWalkModel {
 
@@ -47,7 +47,7 @@ public class RandomWalkModel {
    * 
    * @see RandomWalkSegmentation
    */
-  public Params params;
+  public RandomWalkParams params;
 
   /**
    * Get shrink methods supported by PropagateSeeds class in form of String[].
@@ -244,7 +244,7 @@ public class RandomWalkModel {
    * Default constructor setting default parameters.
    */
   public RandomWalkModel() {
-    params = new Params();
+    params = new RandomWalkParams();
     originalImage = null;
     seedSource = SeedSource.RGBImage;
     seedImage = null;
