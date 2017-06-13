@@ -12,9 +12,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.plugin.randomwalk.Params;
-import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds;
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
 
 import ij.IJ;
@@ -69,7 +66,7 @@ public class RandomWalkSegmentationProfileTest {
   /**
    * The p.
    */
-  Params params;
+  RandomWalkParams params;
 
   /**
    * @throws java.lang.Exception on error
@@ -81,7 +78,8 @@ public class RandomWalkSegmentationProfileTest {
     fluoreszenz1 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_1.tif");
     fluoreszenz2 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_2.tif");
 
-    params = new Params(400, 50, 100, 300, 80, 0.1, new double[] { 8e-3, 1e-3 }, false, 25);
+    params = new RandomWalkParams(400d, 50d, 100d, 300d, 80, 0.1, new Double[] { 8e-3, 1e-3 },
+            false, 25);
     // Thread.sleep(10000);
   }
 

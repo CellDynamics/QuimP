@@ -72,14 +72,14 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     // define window controls (selecter filled in buildWindow
     uiDefinition = new ParamList(); // will hold ui definitions
     uiDefinition.put("name", "BinarySegmentation"); // name of window
-    uiDefinition.put("load mask", "button, Load_mask");
-    uiDefinition.put("get opened", "choice," + BOA_.NONE);
+    uiDefinition.put("load mask", "button: Load mask");
+    uiDefinition.put("get opened", "choice:" + BOA_.NONE);
     // start, end, step, default
-    uiDefinition.put("step", "spinner, 1, 10001, 1," + Integer.toString(step));
+    uiDefinition.put("step", "spinner: 1: 10001: 1:" + Integer.toString(step));
     // name
-    uiDefinition.put("smoothing", "checkbox, interpolation," + Boolean.toString(smoothing));
+    uiDefinition.put("smoothing", "checkbox: interpolation:" + Boolean.toString(smoothing));
     // clear nest
-    uiDefinition.put("Clear nest", "checkbox, clear," + Boolean.toString(clearnest));
+    uiDefinition.put("Clear nest", "checkbox: clear:" + Boolean.toString(clearnest));
     // use http://www.freeformatter.com/java-dotnet-escape.html#ad-output for escaping
     //!>
     uiDefinition.put("help", "<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. "
@@ -110,7 +110,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   public void buildWindow(ParamList def) {
     super.buildWindow(def);
     // add preffered size to this window
-    pluginWnd.setPreferredSize(new Dimension(300, 450));
+    pluginWnd.setPreferredSize(new Dimension(450, 450));
     pluginWnd.pack();
     pluginWnd.setVisible(true);
     // Destroy window on exit

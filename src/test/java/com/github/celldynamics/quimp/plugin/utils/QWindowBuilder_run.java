@@ -10,9 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.ParamList;
-import com.github.celldynamics.quimp.plugin.utils.QWindowBuilder;
 
-// TODO: Auto-generated Javadoc
 /**
  * Simple test class showing window from QWindowBuilder
  * 
@@ -34,9 +32,12 @@ public class QWindowBuilder_run {
 
     def1 = new ParamList(); // setup window params
     def1.put("NAME", "test");
-    def1.put("window", "spinner, -0.5, 0.5, 0.1, 0");
-    def1.put("SMOOTH", "spinner, -1, 10, 1, -1");
-    def1.put("Selector", "choice, option_1, option_2, option_3");
+    def1.put("window", "spinner: -0.5: 0.5: 0.1: 0");
+    def1.put("SMOOTH", "spinner: -1: 10: 1: -1: Other help text");
+    def1.put("Selector", "choice: option_1: option_2: option_3");
+    def1.put("Selector1", "choiceh: option_1: option_2: option_3: Help text");
+    def1.put("Button", "Button: name: help text");
+    def1.put("boolean", "checkbox: name: true: help text");
     def1.put("help",
             "FlowLayout is the default layout manager for"
                     + " every JPanel. It simply lays out components in a"
