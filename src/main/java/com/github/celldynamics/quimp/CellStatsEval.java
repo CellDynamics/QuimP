@@ -1,8 +1,6 @@
 package com.github.celldynamics.quimp;
 
-// import ij.process.PolygonFiller;
 import java.awt.Polygon;
-// import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -19,7 +17,6 @@ import ij.measure.Measurements;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
-// TODO: Auto-generated Javadoc
 /**
  * Calculate statistics for whole stack (all cells).
  * 
@@ -44,17 +41,17 @@ public class CellStatsEval implements Measurements {
   /**
    * The outfile.
    */
-  File OUTFILE;
+  File outfile;
 
   /**
    * The i plus.
    */
-  ImagePlus iPlus;
+  ImagePlus iplus;
 
   /**
    * The i proc.
    */
-  ImageProcessor iProc;
+  ImageProcessor iproc;
 
   /**
    * The is.
@@ -77,24 +74,24 @@ public class CellStatsEval implements Measurements {
    * <p>After creating the object, file with stats is written and stats are available by calling
    * {@link #getStatH()} method.
    * 
-   * @param oH
+   * @param oh OutlineHandler
    * @param ip image associated with OutlineHandler
    * @param f file name to write stats, if null file is not created
    * @param s image scale
-   * @param fI frame interval
+   * @param fi frame interval
    */
-  public CellStatsEval(OutlineHandler oH, ImagePlus ip, File f, double s, double fI) {
+  public CellStatsEval(OutlineHandler oh, ImagePlus ip, File f, double s, double fi) {
     IJ.showStatus("BOA-Calculating Cell stats");
-    outputH = oH;
-    OUTFILE = f;
-    iPlus = ip;
-    iProc = ip.getProcessor();
+    outputH = oh;
+    outfile = f;
+    iplus = ip;
+    iproc = ip.getProcessor();
     scale = s;
-    frameInterval = fI;
+    frameInterval = fi;
 
     FrameStatistics[] stats = record();
-    iPlus.setSlice(1);
-    iPlus.killRoi();
+    iplus.setSlice(1);
+    iplus.killRoi();
     if (f == null) {
       buildData(stats);
     } else {
@@ -106,13 +103,13 @@ public class CellStatsEval implements Measurements {
    * Only create the object. Stats file is not created but results are available by calling
    * {@link #getStatH()} method.
    * 
-   * @param oH
+   * @param oh OutlineHandler
    * @param ip image associated with OutlineHandler
    * @param s image scale
-   * @param fI frame interval
+   * @param fi frame interval
    */
-  public CellStatsEval(OutlineHandler oH, ImagePlus ip, double s, double fI) {
-    this(oH, ip, null, s, fI);
+  public CellStatsEval(OutlineHandler oh, ImagePlus ip, double s, double fi) {
+    this(oh, ip, null, s, fi);
   }
 
   /**
@@ -143,16 +140,15 @@ public class CellStatsEval implements Measurements {
       store = f - outputH.getStartFrame();
 
       o = outputH.getOutline(f);
-      iPlus.setSlice(f); // also updates the processor
+      iplus.setSlice(f); // also updates the processor
       stats[store] = new FrameStatistics();
 
-      Polygon oPoly = o.asPolygon();
-      roi = new PolygonRoi(oPoly, Roi.POLYGON);
+      Polygon opoly = o.asPolygon();
+      roi = new PolygonRoi(opoly, Roi.POLYGON);
 
-      iPlus.setRoi(roi);
-      is = iPlus.getStatistics(AREA + CENTROID + ELLIPSE + SHAPE_DESCRIPTORS); // this does
-                                                                               // scale to
-                                                                               // image
+      iplus.setRoi(roi);
+      is = iplus.getStatistics(AREA + CENTROID + ELLIPSE + SHAPE_DESCRIPTORS); // this does scale to
+      // image
 
       // all theses already to scale
       stats[store].frame = f;
@@ -160,8 +156,7 @@ public class CellStatsEval implements Measurements {
       stats[store].centroid.setX(is.xCentroid);
       stats[store].centroid.setY(is.yCentroid);
 
-      stats[store].elongation = is.major / is.minor; // include both axis
-                                                     // plus elongation
+      stats[store].elongation = is.major / is.minor; // include both axis plus elongation
       stats[store].perimiter = roi.getLength(); // o.getLength();
       stats[store].circularity =
               4 * Math.PI * (stats[store].area / (stats[store].perimiter * stats[store].perimiter));
@@ -197,9 +192,9 @@ public class CellStatsEval implements Measurements {
 
   private void write(FrameStatistics[] s, int startFrame) {
     try {
-      PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
+      PrintWriter pw = new PrintWriter(new FileWriter(outfile), true); // auto flush
       // IJ.log("Writing to file");
-      pw.print("#p2\n#QuimP output - " + OUTFILE.getAbsolutePath() + "\n");
+      pw.print("#p2\n#QuimP output - " + outfile.getAbsolutePath() + "\n");
       pw.print("# Centroids are given in pixels.  Distance & speed & area measurements are"
               + " scaled to micro meters\n");
       pw.print("# Scale: " + scale + " micro meter per pixel | Frame interval: " + frameInterval
@@ -243,6 +238,8 @@ public class CellStatsEval implements Measurements {
   }
 
   /**
+   * getStatH.
+   * 
    * @return the statH
    */
   public CellStats getStatH() {
