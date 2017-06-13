@@ -126,14 +126,15 @@ public class ParamList extends LinkedStringMap<String> {
    * <p>May be used only when val under key can be parsed
    * 
    * @param key to be read
+   * @param ch string delimiter
    * @return Split substrings or empty array in case of any error
    * @see StringParser
    */
-  public String[] getParsed(String key) {
+  public String[] getParsed(String key, char ch) {
     String val = get(key);
     String[] ret;
     try {
-      ret = StringParser.getParams(val);
+      ret = StringParser.getParams(val, ch);
     } catch (Exception e) {
       ret = new String[0];
     }

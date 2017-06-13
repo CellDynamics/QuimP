@@ -1,5 +1,7 @@
 package com.github.celldynamics.quimp.plugin.utils;
 
+import static com.github.celldynamics.quimp.plugin.utils.StringParser.removeSpaces;
+
 import java.awt.BorderLayout;
 import java.awt.Choice;
 import java.awt.Component;
@@ -91,6 +93,10 @@ public abstract class QWindowBuilder {
   static final Logger LOGGER = LoggerFactory.getLogger(QWindowBuilder.class.getName());
 
   /**
+   * Delimiter used in UI definition strings.
+   */
+  public static final char DELIMITER = ':';
+  /**
    * The plugin wnd.
    */
   protected JFrame pluginWnd; // main window object
@@ -114,8 +120,7 @@ public abstract class QWindowBuilder {
   private final HashSet<String> reservedKeys =
           new HashSet<String>(Arrays.asList(new String[] { "help", "name" })); // reserved keys
 
-  // definition string - positions of configuration data in value string (see
-  // BuildWindow)
+  // definition string - positions of configuration data in value string (see BuildWindow)
   private final int uiType = 0; // type of UI control to create
   private final int srMin = 1; // spinner min value
   private final int srMax = 2; // spinner max value
@@ -125,7 +130,6 @@ public abstract class QWindowBuilder {
   /**
    * The apply B.
    */
-  // definition of constant elements of UI
   protected JButton applyB; // Apply button (do nothing but may be overwritten)
 
   /**
@@ -161,27 +165,37 @@ public abstract class QWindowBuilder {
    * <p>The UI elements are defined for all other cases in value filed of Map as comma separated
    * string. Known UI are as follows:
    * <ul>
-   * <li>spinner - creates Spinner control. It requires 4 parameters (in order)
+   * <li>spinner - creates Spinner control. It requires 4 parameters (in order). Fifth parameter is
+   * help text and it is <b>optional</b>
    * <ol>
    * <li>minimal range
    * <li>maximal range
    * <li>step
    * <li>default value
    * </ol>
-   * <li>choice - creates Choice control. It requires 0 or more parameters - entries in list
+   * <li>choiceh - creates Choice control. It requires 1 or more parameters - entries in list. Last
+   * parameter is help text and it is <b>compulsory</b>
+   * <ol>
+   * <li>first entry
+   * <li>second entry
+   * <li>...
+   * <li>help
+   * </ol>
+   * <li>choice - creates Choice control without help. It requires 0 or more parameters
    * <ol>
    * <li>first entry
    * <li>second entry
    * <li>...
    * </ol>
-   * <li>button - creates JButton control. It requires 1 parameter:
+   * <li>button - creates JButton control. It requires 1 parameter. Last parameter is
+   * help text and it is <b>optional</b>
    * <ol>
    * <li>Name on the button
    * </ol>
-   * <li>checkbox - creates JCheckBox control. It requires 3 parameters (in order)
+   * <li>checkbox - creates JCheckBox control. It requires 2 parameters (in order). Last parameter
+   * is help text and it is <b>optional</b>
    * <ol>
    * <li>checkbox name
-   * <li>checkbox state (boolean value, true or false)
    * <li>initial value (true or false)
    * </ol>
    * </ul>
@@ -245,11 +259,12 @@ public abstract class QWindowBuilder {
         siz--;
       }
     }
-    GridLayout gridL = new GridLayout(siz, 2); // Nx2, by default in row we have control and its des
+    GridLayout gridL = new GridLayout(siz, 3); // Nx3, by default in row we have control and its des
     north.setLayout(gridL);
     gridL.setVgap(5); // set bigger gaps
     gridL.setHgap(5);
 
+    String helpText;
     // iterate over def entries except first one which is always title
     // every decoded control is put into ordered hashmap together with its
     // descriptor (label)
@@ -258,54 +273,61 @@ public abstract class QWindowBuilder {
       if (reservedKeys.contains(key)) {
         continue;
       }
-      String[] uiparams = StringParser.getParams(e.getValue());
+      String[] uiparams = StringParser.getParams(e.getValue(), DELIMITER);
       if (uiparams.length == 0) {
         throw new IllegalArgumentException("Probably wrong syntax in UI definition");
       }
       switch (uiparams[uiType].toLowerCase()) {
         case "spinner": // by default all spinners are double
-          if (uiparams.length != 5) {
-            throw new IllegalArgumentException(
-                    "Probably wrong syntax in UI definition for " + uiparams[uiType]);
-          }
-          SpinnerNumberModel model = new SpinnerNumberModel(Double.parseDouble(uiparams[srDefault]),
-                  Double.parseDouble(uiparams[srMin]), // min
-                  Double.parseDouble(uiparams[srMax]), // max
-                  Double.parseDouble(uiparams[srStep])); // step
+          helpText = spinnerVerify(uiparams);
+          SpinnerNumberModel model =
+                  new SpinnerNumberModel(Double.parseDouble(removeSpaces(uiparams[srDefault])),
+                          Double.parseDouble(removeSpaces(uiparams[srMin])), // min
+                          Double.parseDouble(removeSpaces(uiparams[srMax])), // max
+                          Double.parseDouble(removeSpaces(uiparams[srStep]))); // step
           ui.put(key, new JSpinner(model));
           ui.put(key + "label", new Label(WordUtils.capitalize(WordUtils.capitalize(key)))); // des
+          ui.put(key + "help", new Label(helpText));
           break;
-        case "choice":
-          if (uiparams.length < 2) {
-            throw new IllegalArgumentException(
-                    "Probably wrong syntax in UI definition for " + uiparams[uiType]);
-          }
+        case "choiceh":
+          helpText = choiceVerify(uiparams);
           Choice c = new Choice();
-          for (int i = uiType + 1; i < uiparams.length; i++) {
-            c.add(uiparams[i]);
+          for (int i = uiType + 1; i < uiparams.length - 1; i++) {
+            c.add(removeSpaces(uiparams[i]));
           }
           c.select(0);
           ui.put(key, c);
           ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+          ui.put(key + "help", new Label(helpText));
           break;
-        case "button":
-          if (uiparams.length != 2) {
+        case "choice":
+          if (uiparams.length < 1) { // default
             throw new IllegalArgumentException(
                     "Probably wrong syntax in UI definition for " + uiparams[uiType]);
           }
+          Choice c1 = new Choice();
+          for (int i = uiType + 1; i < uiparams.length; i++) {
+            c1.add(removeSpaces(uiparams[i]));
+          }
+          c1.select(0);
+          ui.put(key, c1);
+          ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+          ui.put(key + "help", new Label(""));
+          break;
+        case "button":
+          helpText = buttonVerify(uiparams);
           JButton b = new JButton(uiparams[1]);
           ui.put(key, b);
           ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+          ui.put(key + "help", new Label(helpText));
           break;
         case "checkbox":
-          if (uiparams.length != 3) {
-            throw new IllegalArgumentException(
-                    "Probably wrong syntax in UI definition for " + uiparams[uiType]);
-          }
+          helpText = checkboxVerify(uiparams);
           JCheckBox cb = new JCheckBox(WordUtils.capitalize(uiparams[1]),
-                  Boolean.parseBoolean(uiparams[2]));
+                  Boolean.parseBoolean(removeSpaces(uiparams[2])));
           ui.put(key, cb);
           ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
+          ui.put(key + "help", new Label(helpText));
           break;
         default:
           // wrong param syntax
@@ -368,6 +390,80 @@ public abstract class QWindowBuilder {
   }
 
   /**
+   * Verify syntax for spinner and return help text if any.
+   * 
+   * @param uiparams uiparams
+   * @return Help text (last from list)
+   */
+  private String spinnerVerify(String[] uiparams) {
+    String helpText = "";
+    if (uiparams.length != 5) { // default
+      if (uiparams.length != 6) { // with help text
+        throw new IllegalArgumentException(
+                "Probably wrong syntax in UI definition for " + uiparams[uiType]);
+      } else {
+        helpText = uiparams[5];
+      }
+    }
+    return helpText;
+  }
+
+  /**
+   * Verify syntax for choice and return help text if any.
+   * 
+   * @param uiparams uiparams
+   * @return Help text (last from list)
+   */
+  private String choiceVerify(String[] uiparams) {
+    String helpText = "";
+    if (uiparams.length < 2) { // default
+      throw new IllegalArgumentException(
+              "Probably wrong syntax in UI definition for " + uiparams[uiType]);
+    } else {
+      helpText = uiparams[uiparams.length - 1];
+    }
+    return helpText;
+  }
+
+  /**
+   * Verify syntax for button and return help text if any.
+   * 
+   * @param uiparams uiparams
+   * @return Help text (last from list)
+   */
+  private String buttonVerify(String[] uiparams) {
+    String helpText = "";
+    if (uiparams.length != 2) { // default
+      if (uiparams.length != 3) {
+        throw new IllegalArgumentException(
+                "Probably wrong syntax in UI definition for " + uiparams[uiType]);
+      } else {
+        helpText = uiparams[2];
+      }
+    }
+    return helpText;
+  }
+
+  /**
+   * Verify syntax for checkbox and return help text if any.
+   * 
+   * @param uiparams uiparams
+   * @return Help text (last from list)
+   */
+  private String checkboxVerify(String[] uiparams) {
+    String helpText = "";
+    if (uiparams.length != 3) { // default
+      if (uiparams.length != 4) {
+        throw new IllegalArgumentException(
+                "Probably wrong syntax in UI definition for " + uiparams[uiType]);
+      } else {
+        helpText = uiparams[3];
+      }
+    }
+    return helpText;
+  }
+
+  /**
    * Show or hide window.
    * 
    * @param state State of the window true to show, false to hide
@@ -423,10 +519,10 @@ public abstract class QWindowBuilder {
   public void setValues(final ParamList vals) {
     // iterate over parameters and match names to UIs
     for (Map.Entry<String, String> e : vals.entrySet()) {
-      String key = e.getKey();
-      String val = e.getValue();
+      String key = removeSpaces(e.getKey());
+      String val = removeSpaces(e.getValue());
       // find key in def and get type of control and its instance
-      switch (def.getParsed(key)[uiType]) { // first string in vals is type of
+      switch (removeSpaces(def.getParsed(key, DELIMITER)[uiType])) { // first string in vals is type
         // control, see BuildWindow
         case "spinner": {
           // get UI component of name key (keys in vals must match to keys in BuildWindow(def))
@@ -451,7 +547,6 @@ public abstract class QWindowBuilder {
         case "checkbox": {
           JCheckBox c = (JCheckBox) ui.get(key);
           c.setSelected(Boolean.parseBoolean(val));
-
           break;
         }
         default:
@@ -484,7 +579,7 @@ public abstract class QWindowBuilder {
       Map.Entry<String, Component> m = entryIterator.next();
       String key = m.getKey();
       // check type of component
-      switch (def.getParsed(key)[uiType]) {
+      switch (removeSpaces(def.getParsed(key, DELIMITER)[uiType])) {
         case "spinner": {
           JSpinner val = (JSpinner) m.getValue(); // get value
           ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
@@ -508,6 +603,7 @@ public abstract class QWindowBuilder {
           throw new IllegalArgumentException("Unknown UI type in getValues");
       }
       entryIterator.next(); // skip label. ui Map has repeating entries UI,label,UI1,label1,..
+      entryIterator.next(); // skip help
     }
     return ret;
   }

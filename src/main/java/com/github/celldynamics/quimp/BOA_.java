@@ -439,7 +439,7 @@ public class BOA_ implements PlugIn {
         }
       }
     } catch (Exception e) {
-      LOGGER.error("Can not update view. Output snake may be defective: " + e.getMessage());
+      LOGGER.error("Plugin error. Output snake may be defective. Reason: " + e.getMessage());
       LOGGER.debug(e.getMessage(), e);
     } finally {
       historyLogger.addEntry("Plugin settings", qState);
