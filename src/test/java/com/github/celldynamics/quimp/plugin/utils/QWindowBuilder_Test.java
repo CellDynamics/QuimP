@@ -12,9 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.ParamList;
 
-// TODO: Auto-generated Javadoc
 /**
- * Test class for QWindowBuilder
+ * Test class for QWindowBuilder.
  * 
  * @author p.baniukiewicz
  *
@@ -55,16 +54,20 @@ public class QWindowBuilder_Test {
   @Before
   public void setUp() throws Exception {
     def1 = new ParamList(); // setup window params
-    def1.put("Name", "test");
-    def1.put("wIndow", "spinner, -0.5, 0.5, 0.1, 0");
-    def1.put("smootH", "spinner, -1, 10, 1, -1");
-    def1.put("Selector", "choice, option_1, option_2, option_3");
+    def1.put("NAME", "test");
+    def1.put("window", "spinner: -0.5: 0.5: 0.1: 0");
+    def1.put("SMOOTH", "spinner: -1: 10: 1: -1: Other help text");
+    def1.put("Selector", "choice: option_1: option_2: option_3");
+    def1.put("Selector1", "choiceh: option_1: option_2: option_3: Help text");
+    def1.put("Button", "Button: Two words: help text");
+    def1.put("boolean", "checkbox: Two words: true: help text");
     def1.put("help",
-            "FlowLayout is the default layout manager for every JPanel."
-                    + " It simply lays out components in a single row, starting a"
-                    + " new row if its container is not sufficiently wide. Both "
-                    + "panels in CardLayoutDemo, shown previously, use FlowLayout."
-                    + " For further details, see How to Use FlowLayout.");
+            "FlowLayout is the default layout manager for"
+                    + " every JPanel. It simply lays out components in a"
+                    + " single row, starting a new row if its container "
+                    + "is not sufficiently wide. Both panels in CardLayoutDemo, "
+                    + "shown previously, use FlowLayout. For further "
+                    + "details, see How to Use FlowLayout.");
     inst = new QWindowBuilderInst(); // create window object
   }
 

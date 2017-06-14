@@ -1,7 +1,5 @@
 package com.github.celldynamics.quimp.plugin.utils;
 
-import static com.github.celldynamics.quimp.plugin.utils.StringParser.removeSpaces;
-
 import java.awt.BorderLayout;
 import java.awt.Choice;
 import java.awt.Component;
@@ -163,7 +161,7 @@ public abstract class QWindowBuilder {
    * name it contains single string with help text and plugin name respectively.
    * 
    * <p>The UI elements are defined for all other cases in value filed of Map as comma separated
-   * string. Known UI are as follows:
+   * string. UI element name is case insensitive. Known UI are as follows:
    * <ul>
    * <li>spinner - creates Spinner control. It requires 4 parameters (in order). Fifth parameter is
    * help text and it is <b>optional</b>
@@ -213,7 +211,7 @@ public abstract class QWindowBuilder {
    * updated until unfocused. User can overwrite this behaviour in his own class derived from
    * QWindowBuilder
    * 
-   * <p>This method can be overriden in implementing class that allows for e.g. setting size of the
+   * <p>This method can be overridden in implementing class that allows for e.g. setting size of the
    * window or add listeners:
    * 
    * <pre>
@@ -280,11 +278,10 @@ public abstract class QWindowBuilder {
       switch (uiparams[uiType].toLowerCase()) {
         case "spinner": // by default all spinners are double
           helpText = spinnerVerify(uiparams);
-          SpinnerNumberModel model =
-                  new SpinnerNumberModel(Double.parseDouble(removeSpaces(uiparams[srDefault])),
-                          Double.parseDouble(removeSpaces(uiparams[srMin])), // min
-                          Double.parseDouble(removeSpaces(uiparams[srMax])), // max
-                          Double.parseDouble(removeSpaces(uiparams[srStep]))); // step
+          SpinnerNumberModel model = new SpinnerNumberModel(Double.parseDouble(uiparams[srDefault]),
+                  Double.parseDouble(uiparams[srMin]), // min
+                  Double.parseDouble(uiparams[srMax]), // max
+                  Double.parseDouble(uiparams[srStep])); // step
           ui.put(key, new JSpinner(model));
           ui.put(key + "label", new Label(WordUtils.capitalize(WordUtils.capitalize(key)))); // des
           ui.put(key + "help", new Label(helpText));
@@ -293,7 +290,7 @@ public abstract class QWindowBuilder {
           helpText = choiceVerify(uiparams);
           Choice c = new Choice();
           for (int i = uiType + 1; i < uiparams.length - 1; i++) {
-            c.add(removeSpaces(uiparams[i]));
+            c.add(uiparams[i]);
           }
           c.select(0);
           ui.put(key, c);
@@ -307,7 +304,7 @@ public abstract class QWindowBuilder {
           }
           Choice c1 = new Choice();
           for (int i = uiType + 1; i < uiparams.length; i++) {
-            c1.add(removeSpaces(uiparams[i]));
+            c1.add(uiparams[i]);
           }
           c1.select(0);
           ui.put(key, c1);
@@ -324,7 +321,7 @@ public abstract class QWindowBuilder {
         case "checkbox":
           helpText = checkboxVerify(uiparams);
           JCheckBox cb = new JCheckBox(WordUtils.capitalize(uiparams[1]),
-                  Boolean.parseBoolean(removeSpaces(uiparams[2])));
+                  Boolean.parseBoolean(uiparams[2]));
           ui.put(key, cb);
           ui.put(key + "label", new Label(WordUtils.capitalize(key))); // add description
           ui.put(key + "help", new Label(helpText));
@@ -519,10 +516,10 @@ public abstract class QWindowBuilder {
   public void setValues(final ParamList vals) {
     // iterate over parameters and match names to UIs
     for (Map.Entry<String, String> e : vals.entrySet()) {
-      String key = removeSpaces(e.getKey());
-      String val = removeSpaces(e.getValue());
+      String key = e.getKey();
+      String val = e.getValue();
       // find key in def and get type of control and its instance
-      switch (removeSpaces(def.getParsed(key, DELIMITER)[uiType])) { // first string in vals is type
+      switch (def.getParsed(key, DELIMITER)[uiType].toLowerCase()) { // first string in vals is type
         // control, see BuildWindow
         case "spinner": {
           // get UI component of name key (keys in vals must match to keys in BuildWindow(def))
@@ -536,6 +533,7 @@ public abstract class QWindowBuilder {
           }
           break;
         }
+        case "choiceh":
         case "choice": {
           Choice comp = (Choice) ui.get(key);
           comp.select(val);
@@ -550,7 +548,8 @@ public abstract class QWindowBuilder {
           break;
         }
         default:
-          throw new IllegalArgumentException("Unknown UI type in setValues");
+          throw new IllegalArgumentException(
+                  "Unknown UI type in setValues: " + def.getParsed(key, DELIMITER)[uiType]);
       }
     }
   }
@@ -579,13 +578,14 @@ public abstract class QWindowBuilder {
       Map.Entry<String, Component> m = entryIterator.next();
       String key = m.getKey();
       // check type of component
-      switch (removeSpaces(def.getParsed(key, DELIMITER)[uiType])) {
+      switch (def.getParsed(key, DELIMITER)[uiType].toLowerCase()) {
         case "spinner": {
           JSpinner val = (JSpinner) m.getValue(); // get value
           ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
           // the same key
           break;
         }
+        case "choiceh":
         case "choice": {
           Choice val = (Choice) m.getValue();
           ret.put(key, val.getSelectedItem());
@@ -600,7 +600,8 @@ public abstract class QWindowBuilder {
           break;
         }
         default:
-          throw new IllegalArgumentException("Unknown UI type in getValues");
+          throw new IllegalArgumentException(
+                  "Unknown UI type in getValues: " + def.getParsed(key, DELIMITER)[uiType]);
       }
       entryIterator.next(); // skip label. ui Map has repeating entries UI,label,UI1,label1,..
       entryIterator.next(); // skip help

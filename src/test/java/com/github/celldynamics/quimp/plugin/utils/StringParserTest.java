@@ -114,6 +114,23 @@ public class StringParserTest {
   /**
    * Test method for GetParams.
    * 
+   * <p>Pre: valid list of parameters
+   * 
+   * <p>Post: array of substrings
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testGetParams_3() throws Exception {
+    String s = "1,   2," + " 3.1, With Space ";
+    String[] ret = StringParser.getParams(s, ',');
+    String[] exp = { "1", "2", "3.1", "With Space" };
+    assertArrayEquals(exp, ret);
+  }
+
+  /**
+   * Test method for GetParams.
+   * 
    * <p>Pre: invalid list of parameters
    * 
    * <p>Post: print of array, one field is empty
@@ -126,6 +143,31 @@ public class StringParserTest {
     String[] ret = StringParser.getParams(s, ',');
     String[] exp = { "1", "", "2", "3.1" };
     assertArrayEquals(exp, ret);
+  }
+
+  /**
+   * Test method for
+   * {@link com.github.celldynamics.quimp.plugin.utils.StringParser#removeSpaces(java.lang.String)}.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testRemoveSpaces() throws Exception {
+    String test;
+    String exp;
+
+    test = " 2";
+    exp = "2";
+    assertEquals(exp, StringParser.removeSpaces(test));
+
+    test = " word ";
+    exp = "word";
+    assertEquals(exp, StringParser.removeSpaces(test));
+
+    test = " two words ";
+    exp = "two words";
+    assertEquals(exp, StringParser.removeSpaces(test));
+
   }
 
 }

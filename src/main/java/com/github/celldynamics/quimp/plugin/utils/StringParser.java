@@ -34,8 +34,8 @@ public class StringParser {
   /**
    * Split input string into separate substrings using defined separator.
    * 
-   * <p>All white characters are removed from string. Output array may contain empty fields if
-   * incorrect string is given
+   * <p>All leading and trailing white characters are removed from output strings. Output array may
+   * contain empty fields if incorrect string is given
    * 
    * @param s string to be parsed
    * @param ch char to look for
@@ -47,16 +47,20 @@ public class StringParser {
       return new String[0];
     }
     // String l = s.replaceAll("\\s+", ""); // get rid with white spaces
-    return s.split(String.valueOf(ch));
+    String[] ret = s.split(String.valueOf(ch));
+    for (int i = 0; i < ret.length; i++) {
+      ret[i] = removeSpaces(ret[i]);
+    }
+    return ret;
   }
 
   /**
-   * Remove spaces from string.
+   * Remove spaces from beginning and end of string.
    * 
    * @param in input
    * @return input without spaces
    */
   public static String removeSpaces(String in) {
-    return in.replaceAll("\\s+", "");
+    return in.trim();
   }
 }
