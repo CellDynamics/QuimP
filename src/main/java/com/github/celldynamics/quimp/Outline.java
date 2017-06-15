@@ -1053,7 +1053,7 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
           vtmp = vtmp.getNext();
           continue;
         }
-        closest = ExtendedVector2d.PointToSegment(v.getPoint(), vtmp.getPoint(),
+        closest = ExtendedVector2d.pointToSegment(v.getPoint(), vtmp.getPoint(),
                 vtmp.getNext().getPoint());
         dis = ExtendedVector2d.lengthP2P(v.getPoint(), closest);
         // System.out.println("dis: " + dis);

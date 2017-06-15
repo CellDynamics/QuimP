@@ -7,7 +7,11 @@
  * user -> StatsCollection : //<create>//
  * activate StatsCollection 
  * StatsCollection --> user : pointer
- * user -> StatsCollection : ""copyFromCellStat(CellStatsEval)""
+ * StatsCollection -> StatsCollection : ""copyFromCellStat(CellStatsEval)""
+ * note left
+ * Populate stats
+ * to serializable container
+ * end note
  * user -> Serializer : //<create>//, ""dt""
  * activate Serializer
  * user -> Serializer : ""save()""
@@ -23,10 +27,77 @@
  * CellStats o-- "1..*" FrameStatistics
  * StatsCollection o-- "1..*" CellStats
  * 
- * note top of CellStatsEval : Exchange class\nWrites files and delivers\nstat ""CellStats"" object.
+ * note top of CellStatsEval
+ * Exchange class
+ * Writes files and delivers
+ * stat ""CellStats"" object.
+ * end note
  * note top of StatsCollection : Keep ""CellStats"" for every cell\nin DataContainer.
- * note left of CellStats : Keep stats for every cell\n in ""FrameStatistics""
- * note left of FrameStatistics : Keep numeric data for every\n frame for one cell.
+ * note left of CellStats
+ * Keep stats for every cell
+ * in ""FrameStatistics""
+ * for all frames
+ * This representation is used
+ * by **NEW** file format
+ * end note 
+ * note left of FrameStatistics
+ * Keep numeric data for every
+ * frame for one cell.
+ * This representation is used by
+ * **old** file format
+ * end note
+ * 
+ * class CellStats{
+ * +List<FrameStatistics>
+ * }
+ * class CellStatsEval {
+ * -CellStats
+ * }
+ * class StatsCollection {
+ * +List<CellStats>
+ * }
+ * @enduml
+ * 
+ * //!<
+ */
+
+/*
+ * //!>
+ * @startuml doc-files/stats_3_UML.png
+ * actor user
+ * user-->BOA: finish()
+ * note left: Ending analysis
+ * BOA->Nest:analyse(ImageProcessor)
+ * loop All SnakeHandlers
+ * Nest->Nest: convert SnakeHandler
+ * Nest-->CellStatsEval: <<create>>(OutlineHandler)
+ * activate CellStatsEval
+ * loop All frames
+ * CellStatsEval->CellStatsEval:record
+ * note left
+ * Compute stats for
+ * each frame
+ * end note
+ * alt New format
+ * CellStatsEval->CellStatsEval:build
+ * note left
+ * Build CellStats
+ * objects
+ * end note
+ * else Old format
+ * CellStatsEval->CellStatsEval:write
+ * CellStatsEval->CellStatsEval:build
+ * end
+ * end
+ * CellStatsEval-->Nest:store in List<CellStatsEval>
+ * deactivate CellStatsEval
+ * end
+ * 
+ * Nest-->BOA:List<CellStatsEval>
+ * group Fill container
+ * BOA->BOA:copyFromCellStat
+ * note left: See //stats_2_UML//
+ * end
  * @enduml
  * 
  * //!<
@@ -84,7 +155,8 @@
  * cortex. They are stored in <i>stQP.csv</i> and <i>QCONF</i> files but they are built on different
  * stages of processing. The general class relationship is as follows:<br>
  * <img src="doc-files/stats_1_UML.png"/><br>
- * {@link com.github.celldynamics.quimp.CellStatsEval} depending how it is created writes statistics
+ * {@link com.github.celldynamics.quimp.CellStatsEval} depending how it is created, writes
+ * statistics
  * to
  * disk as stQP files or only computes them internally (they are computed as well for first case).
  * They can be obtained by calling {@link com.github.celldynamics.quimp.CellStatsEval#getStatH()}
@@ -92,11 +164,20 @@
  * provides {@link com.github.celldynamics.quimp.CellStats} object that holds statistics for one
  * cell for
  * all frames (as List of {@link com.github.celldynamics.quimp.FrameStatistics} objects.
+ * {@link com.github.celldynamics.quimp.FrameStatistics} are computed by
+ * {@link com.github.celldynamics.quimp.CellStatsEval} and they are used by old path (paQP) to write
+ * stQP file. {@link com.github.celldynamics.quimp.CellStats} is wrapper to
+ * <tt>FrameStatistics[]</tt> that delivers List of
+ * {@link com.github.celldynamics.quimp.FrameStatistics} (stats for subsequent frames for one cell)
+ * to {@link com.github.celldynamics.quimp.filesystem.StatsCollection} which gather statistics for
+ * all cells in experiments and then is serialized.
  * DataContainer
  * holds List of {@link com.github.celldynamics.quimp.CellStats} for every cell in experiment.
  * Fitting
- * statistic object into {@link com.github.celldynamics.quimp.filesystem.DataContainer}:<br>
- * <img src="doc-files/stats_2_UML.png"/><br>
+ * statistic object into {@link com.github.celldynamics.quimp.filesystem.DataContainer}:
+ * <br>
+ * <img src="doc-files/stats_2_UML.png"/>
+ * <br>
  * Relevant part of code:<br>
  * 
  * <pre>
@@ -111,7 +192,12 @@
  *     n.save(qState.boap.deductNewParamFileName());
  * </code>
  * </pre>
- *
+ * 
+ * Some general dependencies:
+ * <br>
+ * <img src="doc-files/stats_3_UML.png"/>
+ * <br>
+ * 
  * <h1>Code rules</h1>
  * 
  * <h1>Other</h1>

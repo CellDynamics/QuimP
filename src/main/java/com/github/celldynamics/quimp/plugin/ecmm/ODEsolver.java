@@ -202,7 +202,7 @@ public class ODEsolver {
     v = v.getNext();
     closestEdge = v;
     do {
-      current = ExtendedVector2d.PointToSegment(p, v.getPoint(), v.getNext().getPoint());
+      current = ExtendedVector2d.pointToSegment(p, v.getPoint(), v.getNext().getPoint());
       tempDis = ExtendedVector2d.lengthP2P(p, current);
 
       if (tempDis < distance) {

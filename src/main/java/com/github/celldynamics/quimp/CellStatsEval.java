@@ -4,9 +4,8 @@ import java.awt.Polygon;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
 
+import com.github.celldynamics.quimp.filesystem.StatsCollection;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 
 import ij.IJ;
@@ -29,7 +28,7 @@ import ij.process.ImageStatistics;
  */
 public class CellStatsEval implements Measurements {
   /**
-   * Hold all stats for cell. the same data are written to disk as csv file.
+   * Hold all stats for cell. The same data are written to disk as csv file.
    */
   private CellStats statH;
 
@@ -123,8 +122,9 @@ public class CellStatsEval implements Measurements {
    * image, it is used scale from tiff (they are the same as user scale is copied to image in
    * initialisation stage).
    * 
-   * 
-   * @return Array with stats for every frame for one cell.
+   * @return Array with stats for every frame for one cell. Array is for compatibility reasons. New
+   *         format uses List of objects.
+   * @see #getStatH()
    */
   private FrameStatistics[] record() {
     // ImageStack orgStack = orgIpl.getStack();
@@ -226,19 +226,20 @@ public class CellStatsEval implements Measurements {
 
   /**
    * Complementary to write method. Create the same data as write but in form of arrays. For
-   * compatible reasons.
+   * compatible reasons. New format uses this representation
    * 
    * @param s Frame statistics calculated by
    *        {@link com.github.celldynamics.quimp.CellStatsEval#record()}
    */
   private void buildData(FrameStatistics[] s) {
-    statH = new CellStats(s.length, 11, 11);
-    // duplicate from write method
-    statH.framestat = new ArrayList<FrameStatistics>(Arrays.asList(s));
+    statH = new CellStats(s);
   }
 
   /**
-   * getStatH.
+   * Return statistics in new format for one cell along all frames it appears in.
+   * 
+   * <p>This is roughly the same as FrameStatistics[] computed by this class. New format is included
+   * in QCONF file through {@link StatsCollection}
    * 
    * @return the statH
    */

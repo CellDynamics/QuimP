@@ -80,6 +80,8 @@ public class StatsCollection implements IQuimpSerialize {
   }
 
   /**
+   * Get stats collection object wrapped by this class.
+   * 
    * @return the sHs
    */
   public ArrayList<CellStats> getStatCollection() {

@@ -15,77 +15,88 @@ import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import ij.IJ;
 import ij.measure.ResultsTable;
 
-// TODO: Auto-generated Javadoc
 /**
- * Hold statistic evaluated for one frame, geometric and fluorescence.
+ * Hold statistic evaluated for one frame and one outline, both geometric and fluorescence.
  * 
  * @author p.baniukiewicz
- * @see com.github.celldynamics.quimp.CellStatsEval
+ * @see CellStatsEval
+ * @see ChannelStat
  */
 public class FrameStatistics {
   /**
-   * 
+   * Frame number.
    */
   public int frame;
-
   /**
-   * 
+   * Area of outline.
    */
   public double area;
-  // double totalFlour;
-  // double meanFlour;
   /**
-   * 
+   * Centroid of outline.
    */
   public ExtendedVector2d centroid;
   /**
-   * 
+   * Elongation of outline. An ellipse is fitted to the cell outline and the major/minor axis used
+   * to compute the elongation of the cell’s shape. Elongation = major axis∕minor axis. Note that a
+   * value of 1 does not necessarily represent a perfectly circular cell, only a circular fitted
+   * ellipse.
    */
   public double elongation;
   /**
-   * 
+   * Circularity of outline. A measure of circularity defined by the following equation:
+   * 4*PI*Area/(Perimeter*Perimeter). A value of 1 reveals the cell’s outline to be perfectly
+   * circular.
    */
   public double circularity;
   /**
-   * 
+   * Perimeter of outline. Length of the cell perimeter (segmented outline).
    */
   public double perimiter;
   /**
-   * 
+   * Displacement of outline. Distance the cell centroid has moved from its position in the first
+   * recorded frame.
    */
   public double displacement;
   /**
-   * 
+   * Cumulated distance that cell moved from the first recorded frame. (sum of distances between i-1
+   * and i frame)
    */
   public double dist;
   /**
-   * 
+   * Persistence of outline. Persistence in direction, calculated as Displacement∕Dist.Travelled
+   * (chemotaxis index). A value of 1 reveals that a cell has moved in a straight line. Decreasing
+   * values denote a cell moving increasingly erratically.
    */
   public double persistance;
   /**
-   * 
+   * Speed at which the centroid moved between the current and previous frame.
    */
-  public double speed; // over 1 frame
+  public double speed;
   /**
+   * Unknown.
    * 
+   * @deprecated Not used
    */
   public double persistanceToSource;
   /**
+   * Dispersion of outline.
    * 
+   * @deprecated Not used
    */
   public double dispersion;
   /**
+   * Extension of outline.
    * 
+   * @deprecated Not used
    */
   public double extension;
   /**
    * Fluorescence stats added by ANA module.
    */
   public ChannelStat[] channels;
-  // int cellAge;
 
   /**
-   * 
+   * Default constructor, create empty container.
    */
   public FrameStatistics() {
     centroid = new ExtendedVector2d();
@@ -96,8 +107,10 @@ public class FrameStatistics {
   }
 
   /**
-   * @param scale
-   * @param frameInterval
+   * Rescale scalable parameters (area, perimeter,etc) to SI units.
+   * 
+   * @param scale scale
+   * @param frameInterval frame interval
    */
   public void toScale(double scale, double frameInterval) {
     area = QuimpToolsCollection.areaToScale(area, scale);
@@ -108,15 +121,18 @@ public class FrameStatistics {
   }
 
   /**
+   * Re-scale centroid to pixels (from SI).
    * 
-   * @param scale
+   * @param scale scale
    */
   void centroidToPixels(double scale) {
     centroid.setXY(centroid.getX() / scale, centroid.getY() / scale);
   }
 
   /**
+   * Clear channel statistics.
    * 
+   * @see ChannelStat
    */
   public void clearFluo() {
     this.channels[0] = new ChannelStat();
@@ -125,15 +141,18 @@ public class FrameStatistics {
   }
 
   /**
-   * @param s
-   * @param OUTFILE
-   * @param anap
-   * @throws IOException
+   * Write stat file in old format.
+   * 
+   * @param s statistics to write
+   * @param outfile file name
+   * @param anap ANA configuration object
+   * @throws IOException on file error
+   * @see ANAp
    */
-  public static void write(FrameStatistics[] s, File OUTFILE, ANAp anap) throws IOException {
-    PrintWriter pw = new PrintWriter(new FileWriter(OUTFILE), true); // auto flush
+  public static void write(FrameStatistics[] s, File outfile, ANAp anap) throws IOException {
+    PrintWriter pw = new PrintWriter(new FileWriter(outfile), true); // auto flush
     IJ.log("Writing to file");
-    pw.print("#p2\n#QuimP ouput - " + OUTFILE.getAbsolutePath() + "\n");
+    pw.print("#p2\n#QuimP ouput - " + outfile.getAbsolutePath() + "\n");
     pw.print("# Centroids are given in pixels.  Distance & speed & area measurements are scaled"
             + " to micro meters\n");
     pw.print("# Scale: " + anap.scale + " micro meter per pixel | Frame interval: "
@@ -173,13 +192,15 @@ public class FrameStatistics {
   }
 
   /**
-   * @param INFILE
+   * Load statistics from old file format.
+   * 
+   * @param infile file to read
    * @return Array of statistics for all object in frame
-   * @throws IOException
+   * @throws IOException on file error
    */
-  public static FrameStatistics[] read(File INFILE) throws IOException {
+  public static FrameStatistics[] read(File infile) throws IOException {
 
-    BufferedReader br = new BufferedReader(new FileReader(INFILE));
+    BufferedReader br = new BufferedReader(new FileReader(infile));
     String thisLine;
     int i = 0;
     // count the number of frames in .scv file
@@ -198,7 +219,7 @@ public class FrameStatistics {
 
     i = 0;
     String[] split;
-    br = new BufferedReader(new FileReader(INFILE)); // re-open and read
+    br = new BufferedReader(new FileReader(infile)); // re-open and read
     while ((thisLine = br.readLine()) != null) {
       if (thisLine.startsWith("# Channel")) { // reached fluo stats
         break;
@@ -267,8 +288,8 @@ public class FrameStatistics {
   /**
    * Add channel statistic to given ResultsTable.
    * 
-   * @param rt
-   * @param channelno
+   * @param rt IJ result table
+   * @param channelno channel number for fluoro stats
    */
   public void addFluoToResultTable(ResultsTable rt, int channelno) {
     // Those fields must be related to writeFluo

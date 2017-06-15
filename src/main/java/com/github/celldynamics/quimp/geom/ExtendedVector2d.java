@@ -7,7 +7,6 @@ import org.scijava.vecmath.Tuple2f;
 import org.scijava.vecmath.Vector2d;
 import org.scijava.vecmath.Vector2f;
 
-// TODO: Auto-generated Javadoc
 /**
  * Defines 2D vector and performs operations on vectors and lines.
  *
@@ -18,42 +17,52 @@ import org.scijava.vecmath.Vector2f;
 public class ExtendedVector2d extends Vector2d {
 
   /**
-   * @param v
+   * Constructs and initializes a Vector2d from the specified array.
+   * 
+   * @param v initial array
    */
   public ExtendedVector2d(double[] v) {
     super(v);
   }
 
   /**
-   * @param t1
+   * Constructs and initializes a Vector2d from the specified Tuple.
+   * 
+   * @param t1 initial Tuple
    */
   public ExtendedVector2d(Tuple2d t1) {
     super(t1);
   }
 
   /**
-   * @param t1
+   * Constructs and initializes a Vector2d from the specified Tuple.
+   * 
+   * @param t1 initial Tuple
    */
   public ExtendedVector2d(Tuple2f t1) {
     super(t1);
   }
 
   /**
-   * @param v1
+   * Constructs and initializes a Vector2d from the specified Vector.
+   * 
+   * @param v1 initial vestor
    */
   public ExtendedVector2d(Vector2d v1) {
     super(v1);
   }
 
   /**
-   * @param v1
+   * Constructs and initializes a Vector2d from the specified Vector.
+   * 
+   * @param v1 initial vestor
    */
   public ExtendedVector2d(Vector2f v1) {
     super(v1);
   }
 
   /**
-   * 
+   * Constructs and initializes a Vector2d to (0,0).
    */
   public ExtendedVector2d() {
     super();
@@ -74,7 +83,7 @@ public class ExtendedVector2d extends Vector2d {
   private static final long serialVersionUID = -7238793665995665600L;
 
   /**
-   * 
+   * Make versor from vector.
    */
   public void makeUnit() {
 
@@ -82,14 +91,14 @@ public class ExtendedVector2d extends Vector2d {
     if (length != 0) {
       x = x / length;
       y = y / length;
-      // vec.setX(vec.getX() / length);
-      // vec.setY(vec.getY() / length);
     }
   }
 
   /**
-   * @param nx
-   * @param ny
+   * Set vector coordinates.
+   * 
+   * @param nx x coordinate
+   * @param ny y coordinate
    */
   public void setXY(double nx, double ny) {
     y = ny;
@@ -98,7 +107,9 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param v
+   * Add vector to this.
+   * 
+   * @param v vector
    */
   public void addVec(ExtendedVector2d v) {
     x += v.getX();
@@ -106,7 +117,9 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param d
+   * Multiply this vector.
+   * 
+   * @param d multiplier
    */
   public void multiply(double d) {
     x *= d;
@@ -114,7 +127,9 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param p
+   * Power this vector.
+   * 
+   * @param p power
    */
   public void power(double p) {
     x = Math.pow(x, p);
@@ -123,8 +138,10 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param a
-   * @param b
+   * Unit vector to target.
+   * 
+   * @param a a
+   * @param b b
    * @return calc unit vector to target
    */
   public static ExtendedVector2d unitVector(ExtendedVector2d a, ExtendedVector2d b) {
@@ -139,8 +156,10 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param a
-   * @param b
+   * Create vector between points.
+   * 
+   * @param a start point
+   * @param b end point
    * @return vector between points
    */
   public static ExtendedVector2d vecP2P(ExtendedVector2d a, ExtendedVector2d b) {
@@ -153,8 +172,10 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param a
-   * @param b
+   * Get length of the vector between points.
+   * 
+   * @param a initial point
+   * @param b end point
    * @return length of the vector
    */
   public static double lengthP2P(ExtendedVector2d a, ExtendedVector2d b) {
@@ -163,63 +184,74 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * Calculate the intersect between two edges \b A and \b B. Edge is defined as vector \b AB,
-   * where \b A and \b B stand for initial and terminal points given as vectors mounted at (0,0).
+   * Calculate the intersect between two edges A and B. Edge is defined as vector AB,
+   * where A and B stand for initial and terminal points given as vectors mounted at (0,0).
    * 
-   * @param nA1 initial point of \b A edge
-   * @param nA2 terminal point of \b A edge
-   * @param nB1 initial point of \b B edge
-   * @param nB2 terminal point of \b B edge
+   * @param na1 initial point of A edge
+   * @param na2 terminal point of A edge
+   * @param nb1 initial point of B edge
+   * @param nb2 terminal point of B edge
    * @return Intersect point
    * @deprecated Actually not used in this version of QuimP
    */
-  @Deprecated
-  public static ExtendedVector2d lineIntersectionOLD(ExtendedVector2d nA1, ExtendedVector2d nA2,
-          ExtendedVector2d nB1, ExtendedVector2d nB2) {
-    double aA, bB, aB, bA, denom;
-    aA = nA2.getY() - nA1.getY();
-    bA = nA1.getX() - nA2.getX();
+  public static ExtendedVector2d lineIntersectionOLD(ExtendedVector2d na1, ExtendedVector2d na2,
+          ExtendedVector2d nb1, ExtendedVector2d nb2) {
+    double aa;
+    double bb;
+    double ab;
+    double ba;
+    double denom;
+    aa = na2.getY() - na1.getY();
+    ba = na1.getX() - na2.getX();
 
-    aB = nB2.getY() - nB1.getY();
-    bB = nB1.getX() - nB2.getX();
+    ab = nb2.getY() - nb1.getY();
+    bb = nb1.getX() - nb2.getX();
 
-    denom = aA * bB - aB * bA;
+    denom = aa * bb - ab * ba;
 
     if (denom == 0) { // lines are parallel
       // System.out.println("parrellel lines");
       return null;
     }
 
-    double cA, cB;
+    double ca;
+    double cb;
 
-    cA = nA2.getX() * nA1.getY() - nA1.getX() * nA2.getY();
-    cB = nB2.getX() * nB1.getY() - nB1.getX() * nB2.getY();
+    ca = na2.getX() * na1.getY() - na1.getX() * na2.getY();
+    cb = nb2.getX() * nb1.getY() - nb1.getX() * nb2.getY();
 
     ExtendedVector2d cp = null;
-    double dA2, dA1, eA1, eA2, dB2, dB1, eB1, eB2;
+    double da2;
+    double da1;
+    double ea1;
+    double ea2;
 
     // intersection point
-    cp = new ExtendedVector2d((bA * cB - bB * cA) / denom, (aB * cA - aA * cB) / denom);
+    cp = new ExtendedVector2d((ba * cb - bb * ca) / denom, (ab * ca - aa * cb) / denom);
 
     // System.out.println("Pos Intersect at x:" + cp.getX() + ", y:" +
     // cp.getY());
 
     // check in bounds of line1
-    dA1 = cp.getX() - nA1.getX(); // line1.getX1();
-    dA2 = cp.getX() - nA2.getX(); // line1.getX2();
-    eA1 = cp.getY() - nA1.getY(); // line1.getY1();
-    eA2 = cp.getY() - nA2.getY(); // line1.getY2();
+    da1 = cp.getX() - na1.getX(); // line1.getX1();
+    da2 = cp.getX() - na2.getX(); // line1.getX2();
+    ea1 = cp.getY() - na1.getY(); // line1.getY1();
+    ea2 = cp.getY() - na2.getY(); // line1.getY2();
 
-    dB1 = cp.getX() - nB1.getX(); // line2.getX1();
-    dB2 = cp.getX() - nB2.getX(); // line2.getX2();
-    eB1 = cp.getY() - nB1.getY(); // line2.getY1();
-    eB2 = cp.getY() - nB2.getY(); // line2.getY2();
+    double db2;
+    double db1;
+    double eb1;
+    double eb2;
+    db1 = cp.getX() - nb1.getX(); // line2.getX1();
+    db2 = cp.getX() - nb2.getX(); // line2.getX2();
+    eb1 = cp.getY() - nb1.getY(); // line2.getY1();
+    eb2 = cp.getY() - nb2.getY(); // line2.getY2();
 
-    if ((Math.abs(bA) >= (Math.abs(dA1) + Math.abs(dA2)))
-            && (Math.abs(aA) >= (Math.abs(eA1) + Math.abs(eA2)))) {
+    if ((Math.abs(ba) >= (Math.abs(da1) + Math.abs(da2)))
+            && (Math.abs(aa) >= (Math.abs(ea1) + Math.abs(ea2)))) {
 
-      if ((Math.abs(bB) >= (Math.abs(dB1) + Math.abs(dB2)))
-              && (Math.abs(aB) >= (Math.abs(eB1) + Math.abs(eB2)))) {
+      if ((Math.abs(bb) >= (Math.abs(db1) + Math.abs(db2)))
+              && (Math.abs(ab) >= (Math.abs(eb1) + Math.abs(eb2)))) {
 
         // System.out.println("Intersect at x:" + cp.getX() + ", y:" +
         // cp.getY());
@@ -230,48 +262,54 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param nA1
-   * @param nA2
-   * @param nB1
-   * @param nB2
+   * lineIntersectionOLD2.
+   * 
+   * @param na1 initial point of A edge
+   * @param na2 terminal point of A edge
+   * @param nb1 initial point of B edge
+   * @param nb2 terminal point of B edge
    * @return line intersection point
+   * @deprecated Actually not used in this version of QuimP
    */
-  @Deprecated
-  public static ExtendedVector2d lineIntersectionOLD2(ExtendedVector2d nA1, ExtendedVector2d nA2,
-          ExtendedVector2d nB1, ExtendedVector2d nB2) {
-    if (Line2D.linesIntersect(nA1.getX(), nA1.getY(), nA2.getX(), nA2.getY(), nB1.getX(),
-            nB1.getY(), nB2.getX(), nB2.getY())) {
+  public static ExtendedVector2d lineIntersectionOLD2(ExtendedVector2d na1, ExtendedVector2d na2,
+          ExtendedVector2d nb1, ExtendedVector2d nb2) {
+    if (Line2D.linesIntersect(na1.getX(), na1.getY(), na2.getX(), na2.getY(), nb1.getX(),
+            nb1.getY(), nb2.getX(), nb2.getY())) {
 
-      double aA, bB, aB, bA, denom;
-      aA = nA2.getY() - nA1.getY();
-      bA = nA1.getX() - nA2.getX();
+      double aa;
+      double bb;
+      double ab;
+      double ba;
+      double denom;
+      aa = na2.getY() - na1.getY();
+      ba = na1.getX() - na2.getX();
 
-      aB = nB2.getY() - nB1.getY();
-      bB = nB1.getX() - nB2.getX();
+      ab = nb2.getY() - nb1.getY();
+      bb = nb1.getX() - nb2.getX();
 
-      denom = aA * bB - aB * bA;
+      denom = aa * bb - ab * ba;
 
       if (denom == 0) { // lines are parallel
         System.out.println("parrellel lines");
         return null;
       }
 
-      double cA, cB;
+      double ca;
+      double cb;
 
-      cA = nA2.getX() * nA1.getY() - nA1.getX() * nA2.getY();
-      cB = nB2.getX() * nB1.getY() - nB1.getX() * nB2.getY();
+      ca = na2.getX() * na1.getY() - na1.getX() * na2.getY();
+      cb = nb2.getX() * nb1.getY() - nb1.getX() * nb2.getY();
 
       ExtendedVector2d cp = null;
       // intersection point
-      cp = new ExtendedVector2d((bA * cB - bB * cA) / denom, (aB * cA - aA * cB) / denom);
+      cp = new ExtendedVector2d((ba * cb - bb * ca) / denom, (ab * ca - aa * cb) / denom);
 
       // cp.print("Intersect at: ");
 
-      System.out.println("plot([" + nA1.getX() + "," + nA2.getX() + "],[" + nA1.getY() + ","
-              + nA2.getY() + "],'-ob');"); // matlab
-                                           // output
-      System.out.println("hold on; plot([" + nB1.getX() + "," + nB2.getX() + "],[" + nB1.getY()
-              + "," + nB2.getY() + "],'-or');");
+      System.out.println("plot([" + na1.getX() + "," + na2.getX() + "],[" + na1.getY() + ","
+              + na2.getY() + "],'-ob');"); // matlab output
+      System.out.println("hold on; plot([" + nb1.getX() + "," + nb2.getX() + "],[" + nb1.getY()
+              + "," + nb2.getY() + "],'-or');");
       System.out.println("plot(" + cp.x + "," + cp.y + ", 'og');");
 
       return cp;
@@ -300,29 +338,30 @@ public class ExtendedVector2d extends Vector2d {
   public static int segmentIntersection(double x0, double y0, double x1, double y1, double x2,
           double y2, double x3, double y3, double[] intersection) {
 
-    final double LIMIT = 1e-5;
-    final double INFINITY = 1e8;
+    final double limit = 1e-5;
+    final double infinity = 1e8;
 
-    double x, y;
+    double x;
+    double y;
 
     //
     // Convert the lines to the form y = ax + b
     //
 
     // Slope of the two lines
-    double a0 = equals(x0, x1, LIMIT) ? INFINITY : (y0 - y1) / (x0 - x1);
-    double a1 = equals(x2, x3, LIMIT) ? INFINITY : (y2 - y3) / (x2 - x3);
+    double a0 = equals(x0, x1, limit) ? infinity : (y0 - y1) / (x0 - x1);
+    double a1 = equals(x2, x3, limit) ? infinity : (y2 - y3) / (x2 - x3);
 
     double b0 = y0 - a0 * x0; // y intersects intersects
     double b1 = y2 - a1 * x2;
 
     // Check if lines are parallel (within tolloerance)
-    if (equals(a0, a1, LIMIT)) {
-      if (!equals(b0, b1, LIMIT)) {
+    if (equals(a0, a1, limit)) {
+      if (!equals(b0, b1, limit)) {
         return -1; // Parallel non-overlapping
 
       } else {
-        if (equals(x0, x1, LIMIT)) {
+        if (equals(x0, x1, limit)) {
           if (Math.min(y0, y1) < Math.max(y2, y3) || Math.max(y0, y1) > Math.min(y2, y3)) {
             double twoMiddle = y0 + y1 + y2 + y3 - min(y0, y1, y2, y3) - max(y0, y1, y2, y3);
             y = (twoMiddle) / 2.0;
@@ -347,10 +386,10 @@ public class ExtendedVector2d extends Vector2d {
     }
 
     // Find correct intersection point
-    if (equals(a0, INFINITY, LIMIT)) {
+    if (equals(a0, infinity, limit)) {
       x = x0;
       y = a1 * x + b1;
-    } else if (equals(a1, INFINITY, LIMIT)) {
+    } else if (equals(a1, infinity, limit)) {
       x = x2;
       y = a0 * x + b0;
     } else {
@@ -363,7 +402,7 @@ public class ExtendedVector2d extends Vector2d {
 
     // Then check if intersection is within line segments
     double distanceFrom1;
-    if (equals(x0, x1, LIMIT)) {
+    if (equals(x0, x1, limit)) {
       if (y0 < y1) {
         distanceFrom1 = y < y0 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x0, y0))
                 : y > y1 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x1, y1))
@@ -386,7 +425,7 @@ public class ExtendedVector2d extends Vector2d {
     }
 
     double distanceFrom2;
-    if (equals(x2, x3, LIMIT)) {
+    if (equals(x2, x3, limit)) {
 
       if (y2 < y3) {
         distanceFrom2 = y < y2 ? lengthP2P(new ExtendedVector2d(x, y), new ExtendedVector2d(x2, y2))
@@ -409,13 +448,15 @@ public class ExtendedVector2d extends Vector2d {
       }
     }
 
-    return equals(distanceFrom1, 0.0, LIMIT) && equals(distanceFrom2, 0.0, LIMIT) ? 1 : 0;
+    return equals(distanceFrom1, 0.0, limit) && equals(distanceFrom2, 0.0, limit) ? 1 : 0;
   }
 
   /**
-   * @param a
-   * @param b
-   * @param c
+   * Compute area of triangle (can be negative).
+   * 
+   * @param a a point
+   * @param b b point
+   * @param c c point
    * @return area of triangle (can be negative)
    */
   public static double triangleArea(ExtendedVector2d a, ExtendedVector2d b, ExtendedVector2d c) {
@@ -425,49 +466,55 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param P
-   * @param S0
-   * @param S1
-   * @return calculate the closest point on a segment to point P
+   * Calculate the closest point on a segment to point P.
+   * 
+   * @param p point to test
+   * @param s0 first point of segment
+   * @param s1 last point of segment
+   * @return closest point on a segment to point P
    */
-  public static ExtendedVector2d PointToSegment(ExtendedVector2d P, ExtendedVector2d S0,
-          ExtendedVector2d S1) {
-    ExtendedVector2d v = ExtendedVector2d.vecP2P(S0, S1);
-    ExtendedVector2d w = ExtendedVector2d.vecP2P(S0, P);
+  public static ExtendedVector2d pointToSegment(ExtendedVector2d p, ExtendedVector2d s0,
+          ExtendedVector2d s1) {
+    ExtendedVector2d v = ExtendedVector2d.vecP2P(s0, s1);
+    ExtendedVector2d w = ExtendedVector2d.vecP2P(s0, p);
 
     double c1 = dot(w, v);
     if (c1 <= 0) {
-      return S0;
+      return s0;
     }
 
     double c2 = dot(v, v);
     if (c2 <= c1) {
-      return S1;
+      return s1;
     }
 
     double b = c1 / c2;
 
     v.multiply(b);
-    v.addVec(S0);
+    v.addVec(s0);
 
     return v;
   }
 
   /**
-   * @param P
-   * @param S0
-   * @param S1
+   * Compute distance between closest point and segment.
+   * 
+   * @param p point to test
+   * @param s0 first point of segment
+   * @param s1 last point of segment
    * @return distance between closest point and segment
    */
-  public static double distPointToSegment(ExtendedVector2d P, ExtendedVector2d S0,
-          ExtendedVector2d S1) {
-    ExtendedVector2d closest = ExtendedVector2d.PointToSegment(P, S0, S1);
-    return ExtendedVector2d.lengthP2P(P, closest);
+  public static double distPointToSegment(ExtendedVector2d p, ExtendedVector2d s0,
+          ExtendedVector2d s1) {
+    ExtendedVector2d closest = ExtendedVector2d.pointToSegment(p, s0, s1);
+    return ExtendedVector2d.lengthP2P(p, closest);
   }
 
   /**
-   * @param a
-   * @param b
+   * Compute scalar dot.
+   * 
+   * @param a left operand
+   * @param b right operand
    * @return scalar dot
    */
   public static double dot(ExtendedVector2d a, ExtendedVector2d b) {
@@ -477,9 +524,11 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param aa
-   * @param bb
-   * @return calc angle between 2 vectors
+   * Calculate non relative angle between 2 vectors.
+   * 
+   * @param aa vector
+   * @param bb vector
+   * @return angle between 2 vectors (non relative)
    */
   public static double angleNonRelative(ExtendedVector2d aa, ExtendedVector2d bb) {
     ExtendedVector2d a;
@@ -493,9 +542,11 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param aa
-   * @param bb
-   * @return calc angle between 2 vectors
+   * Calculate angle between 2 vectors.
+   * 
+   * @param aa vector
+   * @param bb vector
+   * @return angle between 2 vectors
    */
   public static double angle(ExtendedVector2d aa, ExtendedVector2d bb) {
     ExtendedVector2d a;
@@ -509,9 +560,11 @@ public class ExtendedVector2d extends Vector2d {
   }
 
   /**
-   * @param p
-   * @param a
-   * @param b
+   * Calculate distance of point to line given as two points.
+   * 
+   * @param p point to test
+   * @param a line point
+   * @param b line point
    * @return distance of point to line given as two points
    */
   public static double distPoinToInfLine(ExtendedVector2d p, ExtendedVector2d a,
