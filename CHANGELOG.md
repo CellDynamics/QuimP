@@ -1,5 +1,19 @@
 # Change Log
 
+## [v17.06.02](https://github.com/CellDynamics/QuimP/tree/v17.06.02) (2017-06-16)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.06.01...v17.06.02)
+
+**Implemented enhancements:**
+
+- Update documentation [\#257](https://github.com/CellDynamics/QuimP/issues/257)
+- Combine RW and AC [\#206](https://github.com/CellDynamics/QuimP/issues/206)
+
+**Fixed bugs:**
+
+- Save & Quit fails if only one frame is segmented [\#255](https://github.com/CellDynamics/QuimP/issues/255)
+- Store BOA filter config in QCONF [\#254](https://github.com/CellDynamics/QuimP/issues/254)
+- Hamcrest is obsolete [\#253](https://github.com/CellDynamics/QuimP/issues/253)
+
 ## [v17.06.01](https://github.com/CellDynamics/QuimP/tree/v17.06.01) (2017-06-05)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.05.01...v17.06.01)
 
