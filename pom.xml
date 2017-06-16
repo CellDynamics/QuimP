@@ -4,13 +4,13 @@
     <groupId>com.github.celldynamics</groupId>
     <artifactId>pom-quimp-root</artifactId>
     <version>16.1.1</version>
-    <relativePath/>
+    <relativePath />
   </parent>
   <!-- Project's coordinates -->
   <groupId>com.github.celldynamics.quimp</groupId>
   <artifactId>QuimP_</artifactId>
   <packaging>jar</packaging>
-  <version>17.06.02-SNAPSHOT</version>
+  <version>17.06.02</version>
   <!-- Name and licencing and other project informations -->
   <name>QuimP</name>
   <url>www.warwick.ac.uk/quimp</url>
@@ -31,7 +31,7 @@
     <connection>scm:git:https://github.com/CellDynamics/QuimP.git</connection>
     <developerConnection>scm:git:https://github.com/CellDynamics/QuimP.git</developerConnection>
     <url>https://github.com/CellDynamics/QuimP/</url>
-    <tag>HEAD</tag>
+    <tag>v17.06.02</tag>
   </scm>
   <issueManagement>
     <system>GitHub</system>
