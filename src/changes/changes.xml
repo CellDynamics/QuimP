@@ -6,6 +6,26 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+       <release version="17.06.02" date="2017-06-16" description="Release">
+         <action dev="baniuk" type="update" issue="257">
+              QuimP-API: Updated documentation.
+         </action>
+         <action dev="baniuk" type="fix" issue="255">
+              QuimP-BOA: Save and Quit fails if only one frame is segmented. Fixed also endFrame field handling in QCONF.
+         </action>
+         <action dev="baniuk" type="fix" issue="254">
+              QuimP-BOA: BOA plugins use less memory.
+         </action>
+         <action dev="baniuk" type="update" issue="253">
+              QuimP-API: Removed methods for testing from production code.
+         </action>
+         <action dev="baniuk" type="add" issue="206">
+              QuimP-BOA: Added support for plugins that need image to work. Introduced Random Walk segmentation support to BOA (through external filter).  
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-API: Changes in QWindowBuilder.
+         </action>
+       </release>
         <release version="17.06.01" date="2017-06-05" description="Release">
          <action dev="baniuk" type="add" issue="252">
               QuimP-API: Added Iterator for Shape objects and copy constructor.
