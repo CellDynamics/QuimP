@@ -225,5 +225,37 @@
  * f.setDouble(Shape.class, 1.0);
  * </code>
  * </pre>
+ * 
+ * <h2>Restoring Snake parameters</h2>
+ * 
+ * If Snake is given as pure list of points some remaining internal parameters can be restored as
+ * follows:
+ * 
+ * <pre>
+ * <code>
+ * Constrictor constrictor = new Constrictor();
+ * for (SnakeHandler sh : nest.getHandlers()) {
+ *   for (int f = sh.getStartFrame(); f <= sh.getEndFrame(); f++) {
+ *     sh.getBackupSnake(f).calcCentroid();
+ *     sh.getBackupSnake(f).setPositions();
+ *     sh.getBackupSnake(f).updateNormales(true);
+ *     sh.getBackupSnake(f).getBounds();
+ *
+ *     sh.getStoredSnake(f).calcCentroid();
+ *     sh.getStoredSnake(f).setPositions();
+ *     sh.getStoredSnake(f).updateNormales(true);
+ *     sh.getStoredSnake(f).getBounds();
+ *
+ *     constrictor.constrict(sh.getStoredSnake(f), ip.getStack().getProcessor(f));
+ *     constrictor.constrict(sh.getBackupSnake(f), ip.getStack().getProcessor(f));
+ *   }
+ *   sh.getLiveSnake().calcCentroid();
+ *   sh.getLiveSnake().setPositions();
+ *   sh.getLiveSnake().updateNormales(true);
+ *   sh.getLiveSnake().getBounds();
+ *   constrictor.constrict(sh.getLiveSnake(), ip.getStack().getProcessor(sh.getStartFrame()));
+ * }
+ * </code>
+ * </pre>
  */
 package com.github.celldynamics.quimp;

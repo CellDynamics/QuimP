@@ -17,8 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.BOA_;
+import com.github.celldynamics.quimp.Constrictor;
 import com.github.celldynamics.quimp.Nest;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
+import com.github.celldynamics.quimp.SnakeHandler;
 import com.github.celldynamics.quimp.ViewUpdater;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
 import com.github.celldynamics.quimp.plugin.IQuimpNestPlugin;
@@ -53,10 +55,12 @@ public class BinarySegmentationPlugin extends QWindowBuilder
   private int step; // discretization step
   private boolean smoothing; // use smoothing?
   private boolean clearnest; // clear nest before adding next outline
+  private boolean restoreFields; // if true internal Snake fields will be restored
   private ImagePlus maskFile; // mask file
   private String maskFilename; // mask file name
   private ViewUpdater vu; // BOA context for updating it
   private ParamList params; // holds current configuration of plugin. Updated on plugin run
+  private ImagePlus ip;
 
   /**
    * Construct object
@@ -68,6 +72,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     step = 1;
     smoothing = false;
     clearnest = true;
+    restoreFields = true;
     maskFilename = "";
     // define window controls (selecter filled in buildWindow
     uiDefinition = new ParamList(); // will hold ui definitions
@@ -80,6 +85,8 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     uiDefinition.put("smoothing", "checkbox: interpolation:" + Boolean.toString(smoothing));
     // clear nest
     uiDefinition.put("Clear nest", "checkbox: clear:" + Boolean.toString(clearnest));
+    // restore
+    uiDefinition.put("Restore Snake", "checkbox: restore:" + Boolean.toString(restoreFields));
     // use http://www.freeformatter.com/java-dotnet-escape.html#ad-output for escaping
     //!>
     uiDefinition.put("help", "<font size=\"3\"><p><strong>Load Mask</strong> - Load mask file. "
@@ -94,7 +101,11 @@ public class BinarySegmentationPlugin extends QWindowBuilder
             + "- add extra Spline interpolation to the shape</p>"
             + "\r\n<p><strong>Clear nest</strong>&nbsp;"
             + "- Delete all other snakes from view. If disabled, each use of <i>Apply</i> "
-            + "will create new snake</p></font>");
+            + "will create new snake "
+            + "\r\n<p><strong>Restore Snake</strong>&nbsp;"
+            + "- Try to compute some internal data stored in Snake which are ususally obtained"
+            + " if regular Active Contour method is used. Current AC options are used."
+            + "</p></font>");
     //!<
     buildWindow(uiDefinition);
     params = new ParamList();
@@ -173,6 +184,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
       step = getIntegerFromUI("step");
       smoothing = getBooleanFromUI("smoothing");
       clearnest = getBooleanFromUI("clear nest");
+      restoreFields = getBooleanFromUI("Restore Snake");
       try {
         runPlugin();
       } catch (QuimpPluginException e1) {
@@ -286,6 +298,31 @@ public class BinarySegmentationPlugin extends QWindowBuilder
         nest.cleanNest(); // remove old stuff
       }
       nest.addHandlers(ret); // convert from array of SegmentedShapeRoi to SnakeHandlers
+
+      if (restoreFields) {
+        Constrictor constrictor = new Constrictor();
+        for (SnakeHandler sh : nest.getHandlers()) {
+          for (int f = sh.getStartFrame(); f <= sh.getEndFrame(); f++) {
+            sh.getBackupSnake(f).calcCentroid();
+            sh.getBackupSnake(f).setPositions();
+            sh.getBackupSnake(f).updateNormales(true);
+            sh.getBackupSnake(f).getBounds();
+
+            sh.getStoredSnake(f).calcCentroid();
+            sh.getStoredSnake(f).setPositions();
+            sh.getStoredSnake(f).updateNormales(true);
+            sh.getStoredSnake(f).getBounds();
+
+            constrictor.constrict(sh.getStoredSnake(f), ip.getStack().getProcessor(f));
+            constrictor.constrict(sh.getBackupSnake(f), ip.getStack().getProcessor(f));
+          }
+          sh.getLiveSnake().calcCentroid();
+          sh.getLiveSnake().setPositions();
+          sh.getLiveSnake().updateNormales(true);
+          sh.getLiveSnake().getBounds();
+          constrictor.constrict(sh.getLiveSnake(), ip.getStack().getProcessor(sh.getStartFrame()));
+        }
+      }
       vu.updateView(); // update view
     } catch (QuimpPluginException e) { // thrown by BinarySegmentation
       e.setMessageSinkType(MessageSinkTypes.GUI);
@@ -323,6 +360,11 @@ public class BinarySegmentationPlugin extends QWindowBuilder
       }
       LOGGER.debug("Choice action - mask: " + maskFile != null ? maskFile.toString() : "null");
     }
+  }
+
+  public void attachImage(ImagePlus img) {
+    ip = img;
+
   }
 
 }
