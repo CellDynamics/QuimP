@@ -1639,6 +1639,7 @@ public class BOA_ implements PlugIn {
           // plugin is run internally after Apply update screen is always on Apply button of plugin
           qState.binarySegmentationPlugin.showUi(true);
         }
+        qState.binarySegmentationPlugin.attachImage(imageGroup.getOrgIpl());
         BOA_.log("Run segmentation from mask file");
       }
 

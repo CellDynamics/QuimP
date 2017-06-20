@@ -44,4 +44,22 @@ public abstract class ShapeHandler<T extends Shape<?>> {
     startFrame = src.startFrame;
     endFrame = src.endFrame;
   }
+
+  /**
+   * Gets the start frame.
+   * 
+   * @return the startFrame
+   */
+  public int getStartFrame() {
+    return startFrame;
+  }
+
+  /**
+   * Gets the end frame.
+   * 
+   * @return the endFrame
+   */
+  public int getEndFrame() {
+    return endFrame;
+  }
 }

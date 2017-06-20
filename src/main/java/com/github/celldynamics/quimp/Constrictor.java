@@ -12,7 +12,7 @@ import ij.process.ImageProcessor;
  * 
  * @author rtyson
  */
-class Constrictor {
+public class Constrictor {
 
   /**
    * Default constructor.

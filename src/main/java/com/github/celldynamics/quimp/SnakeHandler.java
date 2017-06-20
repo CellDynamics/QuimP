@@ -103,7 +103,6 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   public SnakeHandler(List<SegmentedShapeRoi> snakes, int id) throws BoaException {
     this();
     startFrame = snakes.get(0).getFrame(); // get first frame from outline
-    endFrame = BOA_.qState.boap.getFrames();
     finalSnakes = new Snake[BOA_.qState.boap.getFrames() - startFrame + 1]; // stored snakes
     segSnakes = new Snake[BOA_.qState.boap.getFrames() - startFrame + 1]; // stored snakes
     ID = id;
@@ -113,6 +112,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
       backupLiveSnake(ss.getFrame()); // fill segSnakes for frame
       storeLiveSnake(ss.getFrame()); // fill finalSnakes for frame
     }
+    endFrame = snakes.get(snakes.size() - 1).getFrame();
     liveSnake = new Snake(snakes.get(0).getOutlineasPoints(), ID); // set live again for frame
     // SegmentedShapeRoi contains number of frame that it came from. The are sorted as frames so
     // last originates from last frame
@@ -541,24 +541,6 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
     } else {
       finalSnakes[frame - startFrame] = s;
     }
-  }
-
-  /**
-   * Gets the start frame.
-   *
-   * @return the start frame
-   */
-  int getStartFrame() {
-    return startFrame;
-  }
-
-  /**
-   * Gets the end frame.
-   *
-   * @return the end frame
-   */
-  int getEndFrame() {
-    return endFrame;
   }
 
   /**

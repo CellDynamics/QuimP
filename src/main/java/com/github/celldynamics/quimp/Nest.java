@@ -3,6 +3,7 @@ package com.github.celldynamics.quimp;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -143,6 +144,15 @@ public class Nest implements IQuimpSerialize {
    */
   public SnakeHandler getHandler(int s) {
     return sHs.get(s);
+  }
+
+  /**
+   * Return list of handlers stored in Nest.
+   * 
+   * @return unmodifiable list of handlers.
+   */
+  public List<SnakeHandler> getHandlers() {
+    return Collections.unmodifiableList(sHs);
   }
 
   /**
@@ -416,7 +426,8 @@ public class Nest implements IQuimpSerialize {
   /**
    * Store OutlineHandler as finalSnake.
    * 
-   * <p>Use {@link com.github.celldynamics.quimp.SnakeHandler#copyFromFinalToSeg()} to populate snake
+   * <p>Use {@link com.github.celldynamics.quimp.SnakeHandler#copyFromFinalToSeg()} to populate
+   * snake
    * over
    * segSnakes.
    * 
