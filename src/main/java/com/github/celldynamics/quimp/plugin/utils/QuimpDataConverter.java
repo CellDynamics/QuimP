@@ -193,13 +193,15 @@ public class QuimpDataConverter {
   /**
    * Return Snake created from stored data.
    * 
-   * <p>Head node is first point from list.
+   * <p>Head node is first point from list. Snake has centroid and boundaries calculated already.
+   * Normales are set according to global BOAState.SegParam#expandSnake.
    * 
    * @param id Id of snake
    * @return Snake object with Nodes in order of data given on input. Can be null. Normales depend
    *         on BOA_.qState.segParam.expandSnake
    * @see com.github.celldynamics.quimp.Snake#Snake(double[], double[], int)
    * @see com.github.celldynamics.quimp.Snake#removeNode(com.github.celldynamics.quimp.Node)
+   * @see Shape#updateNormales(boolean)
    */
   public Snake getSnake(int id) {
     Snake ret = null;
@@ -214,10 +216,14 @@ public class QuimpDataConverter {
   /**
    * Return Outline created from stored data.
    * 
+   * <p>Snake has centroid and boundaries calculated already.
+   * Normales are set <tt>true</tt>
+   * 
    * @return Outline object with Nodes in order of data given on input. Can be null. Normales are
    *         set outwards. Head node is first point from list.
    * @see com.github.celldynamics.quimp.Snake#Snake(double[], double[], int)
    * @see com.github.celldynamics.quimp.Snake#removeNode(com.github.celldynamics.quimp.Node)
+   * @see Shape#updateNormales(boolean)
    */
   public Outline getOutline() {
     Outline ret = null;

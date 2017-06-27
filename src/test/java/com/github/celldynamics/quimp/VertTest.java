@@ -15,9 +15,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.FluoMeasurement;
-import com.github.celldynamics.quimp.Vert;
-
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
@@ -73,7 +70,8 @@ public class VertTest {
   }
 
   /**
-   * Produces random vertex, all filed filled with random data. Contains nex and previous neighbours
+   * Produces random vertex, all filed filled with random data. Contains next and previous
+   * neighbours
    * but not looped.
    * 
    * @param id vertex id

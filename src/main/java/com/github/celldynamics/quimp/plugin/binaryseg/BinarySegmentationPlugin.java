@@ -303,10 +303,10 @@ public class BinarySegmentationPlugin extends QWindowBuilder
         Constrictor constrictor = new Constrictor();
         for (SnakeHandler sh : nest.getHandlers()) {
           for (int f = sh.getStartFrame(); f <= sh.getEndFrame(); f++) {
-            sh.getBackupSnake(f).calcCentroid();
-            sh.getBackupSnake(f).setPositions();
-            sh.getBackupSnake(f).updateNormales(true);
-            sh.getBackupSnake(f).getBounds();
+            sh.getBackupSnake(f).calcCentroid(); // actually this is calculated in Snake constr.
+            sh.getBackupSnake(f).setPositions(); // actually this is calculated in Snake constr.
+            sh.getBackupSnake(f).updateNormales(true); // calculated in Snake constr. but for other
+            sh.getBackupSnake(f).getBounds(); // actually this is calculated in Snake constr.
 
             sh.getStoredSnake(f).calcCentroid();
             sh.getStoredSnake(f).setPositions();

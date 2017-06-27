@@ -236,10 +236,10 @@
  * Constrictor constrictor = new Constrictor();
  * for (SnakeHandler sh : nest.getHandlers()) {
  *   for (int f = sh.getStartFrame(); f <= sh.getEndFrame(); f++) {
- *     sh.getBackupSnake(f).calcCentroid();
+ *     sh.getBackupSnake(f).calcCentroid(); // called in Shape constructor
  *     sh.getBackupSnake(f).setPositions();
  *     sh.getBackupSnake(f).updateNormales(true);
- *     sh.getBackupSnake(f).getBounds();
+ *     sh.getBackupSnake(f).getBounds(); // called in Snake constructor
  *
  *     sh.getStoredSnake(f).calcCentroid();
  *     sh.getStoredSnake(f).setPositions();
@@ -257,5 +257,7 @@
  * }
  * </code>
  * </pre>
+ * 
+ * Some of them are computed in constructors.
  */
 package com.github.celldynamics.quimp;

@@ -143,6 +143,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
 
     POINTS = n;
     nextTrackNumber = n + 1;
+    calcCentroid();
+    setPositions();
   }
 
   /**
@@ -158,10 +160,12 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
     head.setPrev(head);
     nextTrackNumber = head.getTrackNum() + 1;
     POINTS = 1;
+    calcCentroid();
+    setPositions();
   }
 
   /**
-   * Copy constructor. Calculates centroid as well.
+   * Copy constructor. Calculates centroid as well and positions.
    * 
    * @param src source Shape to copy from
    * @throws RuntimeException when T does no have copy constructor
@@ -171,14 +175,14 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
   }
 
   /**
-   * Conversion constructor.
+   * Conversion and copy constructor.
    * 
    * <p>Converts between different types of PointsList. <tt>src</tt> is source Shape of type T to
    * convert to other Shape based on <tt>PointsList</tt> other type (but in general extended from
    * PointsList) Typical approach is to convert Snake to Outline ({@link Node} to
    * {@link Vert}).
    * 
-   * <p>Can be used as copy constructor. Calculates centroid as well.
+   * <p>Can be used as copy constructor.
    * 
    * @param src input Shape to convert.
    * @param destType object of base node that PointsList is composed from
@@ -215,7 +219,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
     // copy rest of params
     POINTS = src.POINTS;
     nextTrackNumber = src.nextTrackNumber;
-    calcCentroid();
+    centroid = new ExtendedVector2d(src.centroid);
   }
 
   /**
@@ -251,6 +255,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
     }
     updateNormales(inner);
     calcCentroid();
+    setPositions();
   }
 
   /**
@@ -287,6 +292,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
     }
     updateNormales(inner);
     calcCentroid();
+    setPositions();
   }
 
   /**
@@ -397,6 +403,14 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
    * <p>This method modifies internal field centroid.
    */
   public void calcCentroid() {
+    if (POINTS == 0) {
+      centroid = null;
+      return;
+    }
+    if (POINTS == 1) {
+      centroid = new ExtendedVector2d(head.getX(), head.getY());
+      return;
+    }
     centroid = new ExtendedVector2d(0, 0);
     T v = head;
     double x;
@@ -438,7 +452,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
 
     } while (!n.isHead());
     area = 0.5 * sum;
-    return area;/* !< ID number of point, unique across list */
+    return area;
   }
 
   /**

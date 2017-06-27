@@ -14,6 +14,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.geom.ExtendedVector2d;
+
 /**
  * @author p.baniukiewicz
  * @see com.github.celldynamics.quimp.SnakeTest
@@ -163,6 +165,16 @@ public class ShapeTest {
     head.setHead(false);
     TestShape ts2 = new TestShape(v1, 4);
     assertThat(ts2.getHead(), is(v1)); // head is set to current
+
+    // only one vertex
+    Vert v = com.github.celldynamics.quimp.VertTest.getRandomVert(1);
+    v.setNext(null);
+    v.setPrev(null);
+    TestShape ts3 = new TestShape(v);
+    assertThat(ts3.getHead(), is(v));
+    assertThat(ts3.getHead().getNext(), is(v));
+    assertThat(ts3.getHead().getPrev(), is(v));
+    assertThat(ts3.getCentroid(), is(new ExtendedVector2d(v.getX(), v.getY())));
 
   }
 

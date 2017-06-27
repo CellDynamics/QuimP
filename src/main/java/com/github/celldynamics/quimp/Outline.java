@@ -59,7 +59,6 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
     super(h, nn);
     // removeVert(head);
     this.updateCurvature();
-    calcCentroid();
   }
 
   /**
@@ -70,7 +69,6 @@ public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSeria
   public Outline(final Vert h) {
     super(h);
     this.updateCurvature();
-    calcCentroid();
   }
 
   /**

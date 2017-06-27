@@ -79,7 +79,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     startingNnodes = POINTS / 100.; // as 1%. limit to X%
     countFrozen(); // set FROZEN
     // calcOrientation();
-    calcCentroid();
     getBounds();
   }
 
@@ -96,7 +95,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     startingNnodes = src.startingNnodes;
     countFrozen();
     bounds = new Rectangle(src.bounds);
-    // calcCentroid(); done in super(src)
   }
 
   /**
@@ -178,7 +176,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     updateNormales(BOA_.qState.segParam.expandSnake); // called in super, here just in case
     startingNnodes = POINTS / 100;
     alive = true;
-    calcCentroid();
     getBounds();
   }
 
@@ -199,7 +196,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     updateNormales(BOA_.qState.segParam.expandSnake); // called in super, here just in case
     startingNnodes = POINTS / 100;
     alive = true;
-    calcCentroid();
     getBounds();
   }
 
