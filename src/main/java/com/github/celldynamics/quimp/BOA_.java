@@ -599,6 +599,7 @@ public class BOA_ implements PlugIn {
     private Button bnEdit;
     private Button bnDefault;
     private Button bnScale;
+    private Button bnCopyLast;
 
     private Button bnAdd;
     private Button bnDel;
@@ -639,6 +640,8 @@ public class BOA_ implements PlugIn {
     private Checkbox cbFirstPluginActiv;
     private Checkbox cbSecondPluginActiv;
     private Checkbox cbThirdPluginActiv;
+    private Button bnPopulatePlugin; // same as menuPopulatePlugin
+    private Button bnCopyLastPlugin;
 
     private MenuBar quimpMenuBar;
     private MenuItem menuAbout;
@@ -799,11 +802,17 @@ public class BOA_ implements PlugIn {
       Panel northPanel = new Panel(); // Contains static info and four buttons (Scale, Truncate, etc
       Panel southPanel = new Panel(); // Quit and Finish
       Panel centerPanel = new Panel();
+      Panel pluginPanelButtons = new Panel(); // buttons below plugins
 
       setupPanel.setLayout(new BorderLayout());
       northPanel.setLayout(new GridLayout(3, 2));
       southPanel.setLayout(new GridLayout(2, 2));
       centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
+
+      // plugins buttons
+      pluginPanelButtons.setLayout(new GridLayout(1, 2)); // here is number of buttons
+      bnPopulatePlugin = addButton("Populate", pluginPanelButtons);
+      bnCopyLastPlugin = addButton("Copy Prev", pluginPanelButtons);
 
       // Grid bag for plugin zone
       GridBagLayout gridbag = new GridBagLayout();
@@ -841,12 +850,10 @@ public class BOA_ implements PlugIn {
       c.gridx = 0;
       c.gridy = 0;
       pluginPanel.add(chFirstPluginName, c);
-
       bnFirstPluginGUI = addButton("GUI", pluginPanel);
       c.gridx = 1;
       c.gridy = 0;
       pluginPanel.add(bnFirstPluginGUI, c);
-
       cbFirstPluginActiv = addCheckbox("A", pluginPanel, qState.snakePluginList.isActive(0));
       c.gridx = 2;
       c.gridy = 0;
@@ -856,12 +863,10 @@ public class BOA_ implements PlugIn {
       c.gridx = 0;
       c.gridy = 1;
       pluginPanel.add(chSecondPluginName, c);
-
       bnSecondPluginGUI = addButton("GUI", pluginPanel);
       c.gridx = 1;
       c.gridy = 1;
       pluginPanel.add(bnSecondPluginGUI, c);
-
       cbSecondPluginActiv = addCheckbox("A", pluginPanel, qState.snakePluginList.isActive(1));
       c.gridx = 2;
       c.gridy = 1;
@@ -871,16 +876,20 @@ public class BOA_ implements PlugIn {
       c.gridx = 0;
       c.gridy = 2;
       pluginPanel.add(chThirdPluginName, c);
-
       bnThirdPluginGUI = addButton("GUI", pluginPanel);
       c.gridx = 1;
       c.gridy = 2;
       pluginPanel.add(bnThirdPluginGUI, c);
-
       cbThirdPluginActiv = addCheckbox("A", pluginPanel, qState.snakePluginList.isActive(2));
       c.gridx = 2;
       c.gridy = 2;
       pluginPanel.add(cbThirdPluginActiv, c);
+
+      c.gridx = 0;
+      c.gridy = 3;
+      c.gridwidth = 3;
+      c.fill = GridBagConstraints.HORIZONTAL;
+      pluginPanel.add(pluginPanelButtons, c);
 
       // --------build log---------
       Panel tp = new Panel(); // panel with text area
@@ -928,13 +937,14 @@ public class BOA_ implements PlugIn {
       Panel bottomPanel = new Panel();
 
       controlPanel.setLayout(new BorderLayout());
-      topPanel.setLayout(new GridLayout(1, 2));
+      topPanel.setLayout(new GridLayout(2, 2));
       paramPanel.setLayout(new GridLayout(14, 1));
       bottomPanel.setLayout(new GridLayout(1, 2));
 
       // --------build topPanel--------
       bnLoad = addButton("Load", topPanel);
       bnDefault = addButton("Default", topPanel);
+      bnCopyLast = addButton("Copy Prev", topPanel);
       // -----------------------
 
       // --------build paramPanel--------------
@@ -1418,6 +1428,27 @@ public class BOA_ implements PlugIn {
           qState.snakePluginList.getInstance(2).showUi(true);
         }
       }
+      if (b == bnCopyLastPlugin) {
+        int frameCopyFrom = qState.boap.frame - 1;
+        if (frameCopyFrom < 1 || frameCopyFrom > qState.boap.getFrames()) {
+          return;
+        }
+        LOGGER.debug(
+                "Copy config from frame " + frameCopyFrom + " current frame " + qState.boap.frame);
+        qState.copyPluginListFrom(frameCopyFrom);
+        recalculatePlugins(); // update screen
+      }
+      if (b == bnCopyLast) { // copy previous settings
+        int frameCopyFrom = qState.boap.frame - 1;
+        if (frameCopyFrom < 1 || frameCopyFrom > qState.boap.getFrames()) {
+          return;
+        }
+        LOGGER.debug(
+                "Copy config from frame " + frameCopyFrom + " current frame " + qState.boap.frame);
+        qState.copySegParamFrom(frameCopyFrom);
+        updateSpinnerValues(); // update segmentation gui
+        run = true; // re run BOA (+plugins)
+      }
 
       // menu listeners
       if (b == menuAbout) {
@@ -1604,12 +1635,13 @@ public class BOA_ implements PlugIn {
       /*
        * Copy current plugin tree to all frames and applies plugins.
        */
-      if (b == menuPopulatePlugin) {
+      if (b == menuPopulatePlugin || b == bnPopulatePlugin) {
         SnakePluginList tmp = qState.snakePluginList.getDeepCopy();
         for (int i = 0; i < qState.snakePluginListSnapshots.size(); i++) {
           // make a deep copy
           qState.snakePluginListSnapshots.set(i, tmp.getDeepCopy());
-          // instance separate copy of jar for this plugin
+          // instance separate copy of jar for this plugin (in fact PluginFactory will return here
+          // reference if this jar is already opened)
           qState.snakePluginListSnapshots.get(i).afterSerialize();
         }
         int cf = qState.boap.frame;
@@ -1664,7 +1696,7 @@ public class BOA_ implements PlugIn {
         System.out.println("running from in stackwindow");
         // run on current frame
         try {
-          runBoa(qState.boap.frame, qState.boap.frame);
+          runBoa(qState.boap.frame, qState.boap.frame); // and plugins as well
         } catch (BoaException be) {
           BOA_.log(be.getMessage());
         }
@@ -2053,7 +2085,7 @@ public class BOA_ implements PlugIn {
    * Start segmentation process on range of frames.
    * 
    * <p>This method is called for update only current view as well (<tt>startF</tt> ==
-   * <tt>endF</tt>)
+   * <tt>endF</tt>). It also go through plugin stack.
    * 
    * @param startF start frame
    * @param endF end frame

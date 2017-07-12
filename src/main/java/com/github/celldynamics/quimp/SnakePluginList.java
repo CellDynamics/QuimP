@@ -391,6 +391,8 @@ public class SnakePluginList implements IQuimpSerialize {
         config = tmpconfig != null ? tmpconfig : new ParamList();
         String tmpVer = ref.getVersion();
         ver = tmpVer != null ? tmpVer : "";
+      } else {
+        LOGGER.debug("WARN: Plugin not instanced. Config not downloaded");
       }
     }
 
@@ -488,9 +490,26 @@ public class SnakePluginList implements IQuimpSerialize {
   /**
    * Copy method.
    * 
-   * <p>Returns copy of current object.It does copy loaded plugin (ref). Should be called after
-   * {@link SnakePluginList.Plugin#downloadPluginConfig()} to make sure that config, ver are
-   * filled correctly
+   * <p>Returns copy of current object.It does copy loaded plugin (ref). It requires that plugins
+   * must be correctly instanced. This code copies plugin stack between frames. Note
+   * double afterSerialise():
+   * 
+   * <pre>
+   * <code>
+   * qState.snakePluginList.clear();
+   * // snakePluginListSnapshots keeps only params and name, whereas deepCopy requires real
+   * // instance to download config from it.
+   * SnakePluginList previous = qState.snakePluginListSnapshots.get(frameCopyFrom - 1);
+   * // So create instances on copy first (config will be uploaded here)
+   * previous.afterSerialize();
+   * // and make deep copy downloading config back
+   * qState.snakePluginList = previous.getDeepCopy();
+   * qState.snakePluginList.afterSerialize(); // instance all plugins
+   * qState.store(qState.boap.frame); // copy to current snapshot
+   *
+   * recalculatePlugins(); // update screen
+   * </code>
+   * </pre>
    * 
    * <p>All copied plugin will refer to the same jar thus they will share e.g. configuration
    * parameters. To have independent copies {@link #afterSerialize()} should be called on the list.
@@ -519,6 +538,8 @@ public class SnakePluginList implements IQuimpSerialize {
    * @return Copy of current object
    */
   public SnakePluginList getDeepCopy() {
+    // Should be called after downloadPluginConfig()} to make sure that config, ver are filled
+    // correctly
     downloadPluginsConfig(); // get plugin config from Plugins (jars->Plugin) to fill Plugin
     SnakePluginList ret = new SnakePluginList();
     ret.updateRefs(pluginFactory, viewUpdater); // assign current external data

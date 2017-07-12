@@ -978,7 +978,9 @@ public class BOAState implements IQuimpSerialize {
   }
 
   /**
-   * Copy from snapshots data to current one.
+   * Restore from snapshots data to current one.
+   * 
+   * <p>Technically makes reference links between snapshots and fields keeping hot data.
    * 
    * @param frame current frame
    * @see com.github.celldynamics.quimp.SnakePluginList
@@ -995,9 +997,49 @@ public class BOAState implements IQuimpSerialize {
   }
 
   /**
+   * Copy {@link SegParam} data from given snapshot to current frame.
+   * 
+   * <p>Exchange data between {@link #segParamSnapshots} and {@link #segParam} fields making
+   * copy of object but not reference like {@link #restore(int)}.
+   * 
+   * @param sourceFrame valid index of frame to copy parameters from. Numbered from 1
+   * @see BOAState#copyPluginListFrom(int)
+   */
+  public void copySegParamFrom(int sourceFrame) {
+    SegParam tmp = segParamSnapshots.get(sourceFrame - 1);
+    if (tmp != null) {
+      segParam = new SegParam(tmp);
+    }
+  }
+
+  /**
+   * Copy {@link SnakePluginList} data from given snapshot to current frame.
+   * 
+   * <p>Exchange data between {@link #snakePluginListSnapshots} and {@link #snakePluginList} fields
+   * making copy of object but not reference like {@link #restore(int)}.
+   * 
+   * @param sourceFrame valid index of frame to copy parameters from. Numbered from 1
+   * @see #copySegParamFrom(int)
+   */
+  public void copyPluginListFrom(int sourceFrame) {
+    snakePluginList.clear(); // clear current
+    // snakePluginListSnapshots keeps only params and name, whereas deepCopy requires real
+    // instance to download config from it.
+    SnakePluginList previous = snakePluginListSnapshots.get(sourceFrame - 1);
+    // So create instances on copy first (config will be uploaded here)
+    previous.afterSerialize();
+    // and make deep copy downloading config back
+    snakePluginList = previous.getDeepCopy();
+    snakePluginList.afterSerialize(); // instance all plugins
+    // qState.store(qState.boap.frame); // copy to current snapshot
+    // recalculatePlugins(); // update screen
+
+  }
+
+  /**
    * Store information whether frame was edited only.
    * 
-   * <p>Can be called when global state does not change, e.g. user clicked \b Edit button so
+   * <p>Can be called when global state does not change, e.g. user clicked Edit button so
    * parameters and plugins have not been modified.
    * 
    * @param frame current frame numbered from 1
@@ -1016,7 +1058,7 @@ public class BOAState implements IQuimpSerialize {
    * <li>Set default parameters
    * </ol>
    * 
-   * @param ip current image object, can be \c null. In latter case only subclasses are
+   * @param ip current image object, can be null. In latter case only subclasses are
    *        initialized
    * @param pf PluginFactory used for creating plugins
    * @param vu ViewUpdater reference
