@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
-import com.github.celldynamics.quimp.geom.MapTracker;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -64,7 +63,7 @@ public class TrackMapTest {
   double[][] coordMap2;
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -77,14 +76,14 @@ public class TrackMapTest {
   } // throw new UnsupportedOperationException("Not implemented here");
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -96,7 +95,7 @@ public class TrackMapTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
@@ -107,7 +106,7 @@ public class TrackMapTest {
    * 
    * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testTrackMap() throws Exception {
@@ -130,11 +129,12 @@ public class TrackMapTest {
   }
 
   /**
-   * Test method for {@link com.github.celldynamics.quimp.geom.MapTracker#trackForward(int, int, int)}.
+   * Test method for
+   * {@link com.github.celldynamics.quimp.geom.MapTracker#trackForward(int, int, int)}.
    * 
    * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings({ "deprecation", "javadoc" })
   @Test
@@ -149,7 +149,7 @@ public class TrackMapTest {
    * Test method for
    * {@link com.github.celldynamics.quimp.geom.MapTracker#trackForwardValid(int, int, int)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings("serial")
   @Test
@@ -174,11 +174,12 @@ public class TrackMapTest {
   }
 
   /**
-   * Test method for {@link com.github.celldynamics.quimp.geom.MapTracker#trackForward(int, int, int)}.
+   * Test method for
+   * {@link com.github.celldynamics.quimp.geom.MapTracker#trackForward(int, int, int)}.
    * 
    * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings({ "deprecation", "javadoc" })
   @Test
@@ -198,7 +199,7 @@ public class TrackMapTest {
    * 
    * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings("serial")
   @Test
@@ -225,7 +226,8 @@ public class TrackMapTest {
   }
 
   /**
-   * Test method for {@link com.github.celldynamics.quimp.geom.MapTracker#getForwardFrames(int, int)}.
+   * Test method for
+   * {@link com.github.celldynamics.quimp.geom.MapTracker#getForwardFrames(int, int)}.
    */
   @SuppressWarnings({ "deprecation", "javadoc" })
   @Test
@@ -245,7 +247,7 @@ public class TrackMapTest {
    * 
    * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings({ "deprecation", "javadoc" })
   @Test
@@ -262,7 +264,7 @@ public class TrackMapTest {
    * 
    * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings("serial")
   @Test
@@ -287,7 +289,7 @@ public class TrackMapTest {
    * 
    * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings({ "deprecation", "javadoc" })
   @Test
@@ -307,7 +309,7 @@ public class TrackMapTest {
    * 
    * <p>Output results generated in Matlab by TrackMapTests/main.m
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings("serial")
   @Test
@@ -340,9 +342,10 @@ public class TrackMapTest {
   }
 
   /**
-   * Test method for {@link com.github.celldynamics.quimp.geom.MapTracker#getBackwardFrames(int, int)}.
+   * Test method for
+   * {@link com.github.celldynamics.quimp.geom.MapTracker#getBackwardFrames(int, int)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings({ "deprecation", "javadoc" })
   @Test

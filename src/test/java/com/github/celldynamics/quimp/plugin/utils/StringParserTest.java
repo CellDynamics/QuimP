@@ -40,7 +40,7 @@ public class StringParserTest {
    * 
    * <p>Post: number of parameters in list
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetNumofParam_1() throws Exception {
@@ -55,7 +55,7 @@ public class StringParserTest {
    * 
    * <p>Post: number of parameters in list
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetNumofParam_2() throws Exception {
@@ -70,7 +70,7 @@ public class StringParserTest {
    * 
    * <p>Post: 0
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetNumofParam_3() throws Exception {
@@ -85,7 +85,7 @@ public class StringParserTest {
    * 
    * <p>Post: empty array
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetParams() throws Exception {
@@ -101,7 +101,7 @@ public class StringParserTest {
    * 
    * <p>Post: array of substrings
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetParams_1() throws Exception {
@@ -118,7 +118,7 @@ public class StringParserTest {
    * 
    * <p>Post: array of substrings
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetParams_3() throws Exception {
@@ -135,7 +135,7 @@ public class StringParserTest {
    * 
    * <p>Post: print of array, one field is empty
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetParams_2() throws Exception {
@@ -149,7 +149,7 @@ public class StringParserTest {
    * Test method for
    * {@link com.github.celldynamics.quimp.plugin.utils.StringParser#removeSpaces(java.lang.String)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testRemoveSpaces() throws Exception {

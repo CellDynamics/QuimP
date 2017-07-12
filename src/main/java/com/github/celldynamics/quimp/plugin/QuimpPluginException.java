@@ -2,27 +2,30 @@ package com.github.celldynamics.quimp.plugin;
 
 import com.github.celldynamics.quimp.QuimpException;
 
-// TODO: Auto-generated Javadoc
 /**
- * Basic class derived from Exception for purposes of QuimP plugins
+ * Basic class derived from Exception for purposes of QuimP plugins.
  * 
  * @author p.baniukiewicz
+ * @see QuimpException
  * 
  */
 @SuppressWarnings("serial")
 public class QuimpPluginException extends QuimpException {
 
   /**
-   * @param type
+   * Exception constructor for given sink type (GUI or Text).
+   * 
+   * @param type of message
    */
   public QuimpPluginException(MessageSinkTypes type) {
     super(type);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param message
-   * @param type
+   * Exception constructor for given sink type (GUI or Text).
+   * 
+   * @param message message
+   * @param type of message
    */
   public QuimpPluginException(String message, MessageSinkTypes type) {
     super(message, type);
@@ -30,63 +33,69 @@ public class QuimpPluginException extends QuimpException {
   }
 
   /**
-   * @param message
-   * @param cause
-   * @param type
+   * Exception constructor for given sink type (GUI or Text).
+   * 
+   * @param message message
+   * @param cause cause of exception
+   * @param type of message
    */
   public QuimpPluginException(String message, Throwable cause, MessageSinkTypes type) {
     super(message, cause, type);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param cause
-   * @param type
+   * Exception constructor for given sink type (GUI or Text).
+   * 
+   * @param cause cause of exception
+   * @param type of message
    */
   public QuimpPluginException(Throwable cause, MessageSinkTypes type) {
     super(cause, type);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * 
+   * Default constructor for text sink type.
    */
   public QuimpPluginException() {
     super();
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param message
-   * @param cause
-   * @param enableSuppression
-   * @param writableStackTrace
+   * Constructor for text sink type.
+   * 
+   * @param message message
+   * @param cause cause of exception
+   * @param enableSuppression enableSuppression
+   * @param writableStackTrace writableStackTrace
    */
   public QuimpPluginException(String message, Throwable cause, boolean enableSuppression,
           boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param message
-   * @param cause
+   * Constructor for text sink type.
+   * 
+   * @param message message
+   * @param cause cause of exception
    */
   public QuimpPluginException(String message, Throwable cause) {
     super(message, cause);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param message
+   * Constructor for text sink type.
+   * 
+   * @param message message
    */
   public QuimpPluginException(String message) {
     super(message);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param cause
+   * Constructor for text sink type.
+   * 
+   * @param cause message
    */
   public QuimpPluginException(Throwable cause) {
     super(cause);

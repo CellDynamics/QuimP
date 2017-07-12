@@ -10,8 +10,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.QuimpVersion;
-import com.github.celldynamics.quimp.Serializer;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
@@ -37,7 +35,7 @@ public class SerializerVersioning {
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -53,10 +51,10 @@ public class SerializerVersioning {
    * <p>Post: Loaded class contains vales of old fields and new (not available in json) initialized
    * in cnew class constructor. If no initialisation given - empty or default value.
    * 
-   * @throws Exception
-   * @throws IOException
-   * @throws JsonIOException
-   * @throws JsonSyntaxException
+   * @throws Exception Exception
+   * @throws IOException IOException
+   * @throws JsonIOException JsonIOException
+   * @throws JsonSyntaxException JsonSyntaxException
    */
   @Test
   public void testScenario1() throws JsonSyntaxException, JsonIOException, IOException, Exception {
@@ -92,10 +90,10 @@ public class SerializerVersioning {
    * active
    * because GSon version is read from json file.
    * 
-   * @throws Exception
-   * @throws IOException
-   * @throws JsonIOException
-   * @throws JsonSyntaxException
+   * @throws Exception Exception
+   * @throws IOException IOException
+   * @throws JsonIOException JsonIOException
+   * @throws JsonSyntaxException JsonSyntaxException
    */
   @Test
   public void testScenario2() throws JsonSyntaxException, JsonIOException, IOException, Exception {
@@ -134,10 +132,10 @@ public class SerializerVersioning {
    * <p>d field is default as it is not loaded due to Until tag, c is default because not available
    * in json as well as f
    * 
-   * @throws Exception
-   * @throws IOException
-   * @throws JsonIOException
-   * @throws JsonSyntaxException
+   * @throws Exception Exception
+   * @throws IOException IOException
+   * @throws JsonIOException JsonIOException
+   * @throws JsonSyntaxException JsonSyntaxException
    */
   @Test
   public void testScenario3() throws JsonSyntaxException, JsonIOException, IOException, Exception {

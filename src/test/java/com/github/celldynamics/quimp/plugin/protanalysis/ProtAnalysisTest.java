@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 import java.nio.file.Paths;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,17 +21,16 @@ import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
-public class Prot_AnalysisTest {
+public class ProtAnalysisTest {
 
   /**
    * The Constant LOGGER.
    */
-  static final Logger LOGGER = LoggerFactory.getLogger(Prot_AnalysisTest.class.getName());
+  static final Logger LOGGER = LoggerFactory.getLogger(ProtAnalysisTest.class.getName());
 
   /**
    * The q L 1.
@@ -42,7 +40,7 @@ public class Prot_AnalysisTest {
   private ImageProcessor imp;
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -52,14 +50,7 @@ public class Prot_AnalysisTest {
   }
 
   /**
-   * @throws java.lang.Exception
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -71,7 +62,7 @@ public class Prot_AnalysisTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
@@ -82,7 +73,7 @@ public class Prot_AnalysisTest {
    * 
    * <p>See: src/test/Resources-static/ProtAnalysisTest/main.m
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings("deprecation")
   @Test
@@ -91,11 +82,11 @@ public class Prot_AnalysisTest {
         141 - 1, 139 - 1 };
     int[] expectedF =
             { 22 - 1, 23 - 1, 24 - 1, 25 - 1, 26 - 1, 27 - 1, 28 - 1, 29 - 1, 30 - 1, 31 - 1 };
-    MapTracker tM = new MapTracker(stMap[0].originMap, stMap[0].coordMap);
+    MapTracker testM = new MapTracker(stMap[0].originMap, stMap[0].coordMap);
     int frame = 20; // frame from found maxima [0]
     int index = 160; // index from found maxima [0]
-    int[] ret = tM.trackForward(frame, index, 10);
-    int[] retF = tM.getForwardFrames(frame, 10);
+    int[] ret = testM.trackForward(frame, index, 10);
+    int[] retF = testM.getForwardFrames(frame, 10);
     assertThat(ret, is(expectedI));
     assertThat(retF, is(expectedF));
   }

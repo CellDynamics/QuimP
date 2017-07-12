@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
@@ -21,20 +19,6 @@ import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
  *
  */
 public class PointListProcessorTest {
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
 
   /**
    * Test method for

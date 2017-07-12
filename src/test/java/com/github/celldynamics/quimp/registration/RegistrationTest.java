@@ -14,9 +14,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.celldynamics.quimp.registration.Registration;
-
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -52,28 +49,28 @@ public class RegistrationTest {
   private String title;
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
@@ -82,7 +79,7 @@ public class RegistrationTest {
   /**
    * Test method for private Registration#validateRegInfo(java.lang.String, java.lang.String).
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testValidateRegInfo() throws Exception {
@@ -97,7 +94,7 @@ public class RegistrationTest {
   /**
    * Test method for private Registration#validateRegInfo(java.lang.String, java.lang.String).
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testValidateRegInfo_1() throws Exception {
@@ -112,7 +109,7 @@ public class RegistrationTest {
   /**
    * Test method for private Registration#validateRegInfo(java.lang.String, java.lang.String).
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testValidateRegInfo_2() throws Exception {
@@ -127,7 +124,7 @@ public class RegistrationTest {
   /**
    * Test method for private Registration#validateRegInfo(java.lang.String, java.lang.String).
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testValidateRegInfo_3() throws Exception {
@@ -142,7 +139,7 @@ public class RegistrationTest {
   /**
    * Test method for private Registration#validateRegInfo(java.lang.String, java.lang.String).
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testValidateRegInfo_4() throws Exception {
@@ -157,7 +154,7 @@ public class RegistrationTest {
   /**
    * Test method for private Registration#registerUser(java.lang.String, java.lang.String).
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testRegisterUser() throws Exception {

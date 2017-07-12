@@ -21,15 +21,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.plugin.protanalysis.MaximaFinder;
-import com.github.celldynamics.quimp.plugin.protanalysis.TrackVisualisation;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -47,21 +44,21 @@ public class TrackVisualisationTest {
   private TrackVisualisation.Stack protrusionVis;
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -73,7 +70,7 @@ public class TrackVisualisationTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @After
   public void tearDown() throws Exception {
@@ -83,7 +80,7 @@ public class TrackVisualisationTest {
    * Test method for
    * {@link TrackVisualisation.Stack#addMaximaToImage(STmap, MaximaFinder)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings("unused")
   @Test
@@ -167,7 +164,7 @@ public class TrackVisualisationTest {
   // }
 
   /**
-   * 
+   * Test of ListPoint2iComparator.
    */
   @Test
   public void testListPoint2iComparator() {

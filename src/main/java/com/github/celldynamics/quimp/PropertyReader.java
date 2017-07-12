@@ -12,7 +12,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * Read properties from resources.
  * 
@@ -27,7 +26,7 @@ public class PropertyReader {
   static final Logger LOGGER = LoggerFactory.getLogger(PropertyReader.class.getName());
 
   /**
-   * Default constructor
+   * Default constructor.
    */
   public PropertyReader() {
   }
@@ -81,10 +80,10 @@ public class PropertyReader {
    * 
    * <p>Used when there is many the same properties in many jars.
    * 
-   * @param c
+   * @param c class object associated with properties (being in jar)
    * @param partofFilename A part of expected jar name where property is located.
-   * @param propFileName
-   * @param propKey
+   * @param propFileName file name in jar with path
+   * @param propKey key
    * @return Value of property for <tt>propKey</tt>
    */
   public static String readProperty(Class<?> c, String partofFilename, String propFileName,
