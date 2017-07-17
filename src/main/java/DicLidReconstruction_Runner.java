@@ -1,4 +1,4 @@
-import com.github.celldynamics.quimp.plugin.dic.DICLIDReconstruction_;
+import com.github.celldynamics.quimp.plugin.dic.DicLidReconstruction_;
 
 /**
  * Compatibility layer for ImageJ.
@@ -8,6 +8,6 @@ import com.github.celldynamics.quimp.plugin.dic.DICLIDReconstruction_;
  * @author p.baniukiewicz
  *
  */
-public class DICLIDReconstruction_Runner extends DICLIDReconstruction_ {
+public class DicLidReconstruction_Runner extends DicLidReconstruction_ {
 
 }

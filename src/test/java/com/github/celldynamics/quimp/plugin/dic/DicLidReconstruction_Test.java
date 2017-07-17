@@ -10,15 +10,15 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.github.celldynamics.quimp.plugin.dic.DICLIDReconstruction_;
+import com.github.celldynamics.quimp.plugin.dic.DicLidReconstruction_;
 
 // TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
  */
-public class DICLIDReconstruction_Test {
-  private DICLIDReconstruction_ inst;
+public class DicLidReconstruction_Test {
+  private DicLidReconstruction_ inst;
 
   /**
    * @throws java.lang.Exception
@@ -39,7 +39,7 @@ public class DICLIDReconstruction_Test {
    */
   @Before
   public void setUp() throws Exception {
-    inst = new DICLIDReconstruction_();
+    inst = new DicLidReconstruction_();
   }
 
   /**
@@ -51,19 +51,19 @@ public class DICLIDReconstruction_Test {
 
   /**
    * Test method for
-   * {@link com.github.celldynamics.quimp.plugin.dic.DICLIDReconstruction_#showUi(boolean)}.
+   * {@link com.github.celldynamics.quimp.plugin.dic.DicLidReconstruction_#showUi(boolean)}.
    * 
    * @throws Exception
    */
   @Test
   @Ignore
   public void testShowDialog() throws Exception {
-    new DICLIDReconstruction_().showUi(true);
+    new DicLidReconstruction_().showUi(true);
   }
 
   /**
    * Test method for
-   * {@link com.github.celldynamics.quimp.plugin.dic.DICLIDReconstruction_#roundtofull(double)}.
+   * {@link com.github.celldynamics.quimp.plugin.dic.DicLidReconstruction_#roundtofull(double)}.
    * 
    * @throws Exception
    */

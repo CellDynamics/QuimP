@@ -26,12 +26,12 @@ import ij.process.ShortProcessor;
  * @author p.baniukiewicz
  * @see LidReconstructor
  */
-public class DICLIDReconstruction_ implements IQuimpPluginFilter {
+public class DicLidReconstruction_ implements IQuimpPluginFilter {
 
   /**
    * The Constant LOGGER.
    */
-  static final Logger LOGGER = LoggerFactory.getLogger(DICLIDReconstruction_.class.getName());
+  static final Logger LOGGER = LoggerFactory.getLogger(DicLidReconstruction_.class.getName());
   private LidReconstructor dic;
   private ImagePlus imp;
   /**
@@ -52,6 +52,12 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
    * <p>Filled by {@link #showUi(boolean)} as {@link #angle}+90.
    */
   private String prefilterangle;
+  /**
+   * Output image inversion.
+   * 
+   * <p>Filled by {@link #showUi(boolean)}
+   */
+  private boolean invertOutput;
 
   /*
    * (non-Javadoc)
@@ -96,6 +102,9 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
         // here (see DICReconstruction documentation)
         IJ.showProgress(0.0);
         ret = dic.reconstructionDicLid();
+        if (invertOutput) {
+          ret.invert();
+        }
         result.getProcessor().setPixels(ret.getPixels());
         IJ.showProgress(1.0);
         result.show();
@@ -107,6 +116,9 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
           IJ.showProgress(s / ((double) stack.getSize() + 1));
           dic.setIp(stack.getProcessor(s));
           ret = dic.reconstructionDicLid();
+          if (invertOutput) {
+            ret.invert();
+          }
           resultstack.addSlice(ret);
         }
         IJ.showProgress(1.0);
@@ -150,7 +162,7 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
    * (non-Javadoc)
    * 
    * @see
-   * com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setPluginConfig(com.github.celldynamics.quimp.
+   * IQuimpCorePlugin#setPluginConfig(com.github.celldynamics.quimp.
    * plugin.ParamList)
    */
   @Override
@@ -182,6 +194,7 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
     // gd.addChoice("Angle perpendicular to shear", new String[] { "0", "45", "90", "135" },
     // "45");
     gd.addNumericField("Filter mask size (odd, 0 to switch filtering off)", 0, 0);
+    gd.addCheckbox("Invert output", false);
 
     gd.setResizable(false);
     gd.showDialog();
@@ -197,6 +210,7 @@ public class DICLIDReconstruction_ implements IQuimpPluginFilter {
     decay = gd.getNextNumber();
     prefilterangle = roundtofull(angle + 90); // filtering angle
     masksize = (int) gd.getNextNumber();
+    invertOutput = gd.getNextBoolean();
 
     if (gd.invalidNumber()) { // check if numbers in fields were correct
       IJ.error("One of the numbers in dialog box is not valid");
