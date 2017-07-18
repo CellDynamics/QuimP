@@ -1,20 +1,17 @@
 package com.github.celldynamics.quimp.filesystem.converter;
 
+import static com.github.baniuk.ImageJTestSuite.tools.files.FileModifiers.getLine;
+import static com.github.baniuk.ImageJTestSuite.tools.files.FileModifiers.replaceLine;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.github.baniuk.ImageJTestSuite.matchers.file.FileMatchers;
@@ -31,20 +28,6 @@ public class StatFileParserTest {
 
   ArrayList<String> expFiles;
   StatFileParser obj;
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
 
   /**
    * Test method for
@@ -95,33 +78,6 @@ public class StatFileParserTest {
       // header
       assertThat(tmp, is(FileMatchers.containsExactText(p.toFile())));
     }
-  }
-
-  /**
-   * Replace line in file.
-   * 
-   * @param name file name and path
-   * @param lineNumber line number from 0
-   * @param data replace string
-   * @throws IOException error
-   */
-  public void replaceLine(Path name, int lineNumber, String data) throws IOException {
-    List<String> lines = Files.readAllLines(name, StandardCharsets.UTF_8);
-    lines.set(lineNumber, data);
-    Files.write(name, lines, StandardCharsets.UTF_8);
-  }
-
-  /**
-   * Get line from file.
-   * 
-   * @param name file name and path
-   * @param lineNumber line number from 0
-   * @return Line at position lineNumber
-   * @throws IOException error
-   */
-  public String getLine(Path name, int lineNumber) throws IOException {
-    List<String> lines = Files.readAllLines(name, StandardCharsets.UTF_8);
-    return lines.get(lineNumber);
   }
 
 }
