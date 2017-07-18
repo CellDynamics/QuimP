@@ -1,4 +1,4 @@
-package com.github.celldynamics.quimp;
+package com.github.celldynamics.quimp.filesystem.converter;
 
 import java.awt.Frame;
 import java.io.File;
@@ -14,6 +14,17 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.BOAState;
+import com.github.celldynamics.quimp.BOA_;
+import com.github.celldynamics.quimp.Nest;
+import com.github.celldynamics.quimp.OutlineHandler;
+import com.github.celldynamics.quimp.PointsList;
+import com.github.celldynamics.quimp.QParams;
+import com.github.celldynamics.quimp.QParamsQconf;
+import com.github.celldynamics.quimp.QuimP;
+import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.Serializer;
+import com.github.celldynamics.quimp.Shape;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.ANAParamCollection;
 import com.github.celldynamics.quimp.filesystem.DataContainer;

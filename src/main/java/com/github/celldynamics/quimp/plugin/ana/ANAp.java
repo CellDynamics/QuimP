@@ -2,9 +2,9 @@ package com.github.celldynamics.quimp.plugin.ana;
 
 import java.io.File;
 
-import com.github.celldynamics.quimp.FormatConverter;
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.QParams;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
 /**

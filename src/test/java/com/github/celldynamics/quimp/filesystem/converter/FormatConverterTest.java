@@ -1,4 +1,4 @@
-package com.github.celldynamics.quimp;
+package com.github.celldynamics.quimp.filesystem.converter;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -16,8 +16,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.github.celldynamics.quimp.FormatConverter;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 
 // TODO Run all tests on directories in /tmp after copying relevant files
 /**

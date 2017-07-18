@@ -176,8 +176,7 @@ public abstract class PluginTemplate implements IQuimpPlugin {
    * (non-Javadoc)
    * 
    * @see
-   * com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setPluginConfig(com.github.celldynamics.quimp.
-   * plugin.ParamList)
+   * IQuimpCorePlugin#setPluginConfig(com.github.celldynamics.quimp.plugin.ParamList)
    */
   @Override
   public abstract void setPluginConfig(ParamList par) throws QuimpPluginException;

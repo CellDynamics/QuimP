@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.CellStats;
-import com.github.celldynamics.quimp.FormatConverter;
 import com.github.celldynamics.quimp.FrameStatistics;
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.OutlineHandler;
@@ -27,6 +26,7 @@ import com.github.celldynamics.quimp.filesystem.ANAParamCollection;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.ecmm.ECMM_Mapping;
 import com.github.celldynamics.quimp.plugin.ecmm.ECMp;

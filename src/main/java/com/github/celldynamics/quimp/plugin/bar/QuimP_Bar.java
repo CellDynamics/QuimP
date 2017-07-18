@@ -39,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.AboutDialog;
-import com.github.celldynamics.quimp.FormatConverter;
 import com.github.celldynamics.quimp.PropertyReader;
 import com.github.celldynamics.quimp.QuimP;
 import com.github.celldynamics.quimp.QuimpException;
@@ -47,6 +46,7 @@ import com.github.celldynamics.quimp.QuimpVersion;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileDialogEx;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 import com.github.celldynamics.quimp.registration.Registration;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import com.github.celldynamics.quimp.utils.UiTools;

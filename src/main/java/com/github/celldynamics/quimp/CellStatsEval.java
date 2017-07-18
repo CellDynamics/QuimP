@@ -254,7 +254,8 @@ public class CellStatsEval implements Measurements {
             + " Mean Cyto. Fluo.,"
             + "Cortex Area,Total Cortex Fluo., Mean Cortex Fluo., %age Cortex Fluo.");
     for (int i = 0; i < size; i++) {
-      pw.print("\n" + (i + startFrame) + ",-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");
+      pw.print("\n" + (i + startFrame)
+              + ",-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00");
     }
   }
 }

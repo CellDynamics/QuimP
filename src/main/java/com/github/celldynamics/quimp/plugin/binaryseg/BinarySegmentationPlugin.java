@@ -362,6 +362,11 @@ public class BinarySegmentationPlugin extends QWindowBuilder
     }
   }
 
+  /**
+   * Attach image to this plugin.
+   * 
+   * @param img Image to attach
+   */
   public void attachImage(ImagePlus img) {
     ip = img;
 

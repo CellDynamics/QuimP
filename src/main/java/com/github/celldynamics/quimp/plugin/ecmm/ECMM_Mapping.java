@@ -9,7 +9,6 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.FormatConverter;
 import com.github.celldynamics.quimp.Nest;
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.OutlineHandler;
@@ -23,6 +22,7 @@ import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.registration.Registration;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;

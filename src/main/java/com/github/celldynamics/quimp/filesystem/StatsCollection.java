@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.CellStats;
 import com.github.celldynamics.quimp.CellStatsEval;
 
-// TODO: Auto-generated Javadoc
 /**
  * Keep statistics for cells.
  * 

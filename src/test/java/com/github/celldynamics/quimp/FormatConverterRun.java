@@ -2,8 +2,8 @@ package com.github.celldynamics.quimp;
 
 import java.io.File;
 
-import com.github.celldynamics.quimp.FormatConverter;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 
 import ij.ImageJ;
 
