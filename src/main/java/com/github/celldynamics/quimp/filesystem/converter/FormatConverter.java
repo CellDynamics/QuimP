@@ -310,10 +310,10 @@ public class FormatConverter {
       // nonexiting file
 
       // process stQP - all files
-      StatFileParser obj = new StatFileParser(qcL.getQp().getPath() + orginal);
+      StatFileParser obj = new StatFileParser(Paths.get(qcL.getQp().getPath(), orginal).toString());
       List<Path> statFiles = obj.getAllFiles(); // count stQP files
       // and do simple checking
-      if (i - 1 != statFiles.size()) {
+      if (i != statFiles.size()) { // i counted from 0
         LOGGER.warn("It seems that number of stQP files is different than number of paQP files.");
       }
       ArrayList<CellStats> stats = obj.importStQp();

@@ -1,9 +1,8 @@
-package com.github.celldynamics.quimp;
+package com.github.celldynamics.quimp.filesystem.converter;
 
 import java.io.File;
 
 import com.github.celldynamics.quimp.QuimpException;
-import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 
 import ij.ImageJ;
 
@@ -26,8 +25,8 @@ public class FormatConverterRun {
     ImageJ ij = new ImageJ();
     // FormatConverter fc = new FormatConverter(
     // new File("src/test/Resources-static/formatconv/currenttest/fluoreszenz-test.QCONF"));
-    FormatConverter fc = new FormatConverter(new File("/home/baniuk/Desktop/Tests/146/"
-            + "saveAsQCONF (copy)/July14ABD_GFP_actin_twoCells.QCONF"));
+    FormatConverter fc =
+            new FormatConverter(new File("/home/baniuk/Desktop/Tests/175/test_0.paQP"));
     fc.showConversionCapabilities(ij);
     fc.doConversion();
   }
