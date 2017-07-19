@@ -1,4 +1,4 @@
-package com.github.celldynamics.quimp;
+package com.github.celldynamics.quimp.filesystem.converter;
 
 import java.awt.Frame;
 import java.io.File;
@@ -8,18 +8,32 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.BOAState;
+import com.github.celldynamics.quimp.BOA_;
+import com.github.celldynamics.quimp.CellStats;
+import com.github.celldynamics.quimp.Nest;
+import com.github.celldynamics.quimp.OutlineHandler;
+import com.github.celldynamics.quimp.PointsList;
+import com.github.celldynamics.quimp.QParams;
+import com.github.celldynamics.quimp.QParamsQconf;
+import com.github.celldynamics.quimp.QuimP;
+import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
+import com.github.celldynamics.quimp.Serializer;
+import com.github.celldynamics.quimp.Shape;
 import com.github.celldynamics.quimp.filesystem.ANAParamCollection;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
+import com.github.celldynamics.quimp.filesystem.StatsCollection;
 import com.github.celldynamics.quimp.plugin.ana.ANAp;
 import com.github.celldynamics.quimp.plugin.qanalysis.FluoMap;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
@@ -115,7 +129,7 @@ public class FormatConverter {
                 + " [+] paQP->QCONF\n"
                 + " [+] snQP->QCONF\n"
                 + " [+] maQP->QCONF\n"
-                + " [-] stQP->QCONF\n"
+                + " [+] stQP->QCONF\n"
                 + "QCONF->paQP features:\n"
                 + " [+] QCONF->paQP\n"
                 + " [+] QCONF->snQP\n"
@@ -138,13 +152,6 @@ public class FormatConverter {
    * @throws FileNotFoundException on saving QCONF
    */
   private void generateNewDataFile() throws QuimpException, FileNotFoundException {
-    //!>
-    LOGGER.info("\n----------------------------------------------------------\n"
-                + "Warning:\n"
-                + "    1. Stats file stQP is not read during conversion\n"
-                + "       and these data are not converted to QCONF.\n"
-                + "----------------------------------------------------------\n");
-    //!<
     if (qcL.getConfVersion() == QParams.NEW_QUIMP) {
       throw new QuimpException("Can not convert from new format to new", MessageSinkTypes.GUI);
     }
@@ -301,6 +308,17 @@ public class FormatConverter {
         i++; // go to next paQP
       } while (true); // exception thrown by QconfLoader will stop this loop, e.g. trying to load
       // nonexiting file
+
+      // process stQP - all files
+      StatFileParser obj = new StatFileParser(Paths.get(qcL.getQp().getPath(), orginal).toString());
+      List<Path> statFiles = obj.getAllFiles(); // count stQP files
+      // and do simple checking
+      if (i != statFiles.size()) { // i counted from 0
+        LOGGER.warn("It seems that number of stQP files is different than number of paQP files.");
+      }
+      ArrayList<CellStats> stats = obj.importStQp();
+      dt.Stats = new StatsCollection();
+      dt.Stats.setStatCollection(stats);
 
     } catch (Exception e) { // repack exception with proper message about defective file
       throw new QuimpException(

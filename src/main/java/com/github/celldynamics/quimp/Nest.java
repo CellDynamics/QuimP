@@ -435,7 +435,7 @@ public class Nest implements IQuimpSerialize {
    * 
    * @param oh OutlineHandler to convert from.
    */
-  void addOutlinehandler(final OutlineHandler oh) {
+  public void addOutlinehandler(final OutlineHandler oh) {
     SnakeHandler sh = addHandler(oh.indexGetOutline(0).asFloatRoi(), oh.getStartFrame());
 
     Outline o;

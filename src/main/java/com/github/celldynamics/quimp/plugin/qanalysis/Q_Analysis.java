@@ -8,7 +8,6 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.FormatConverter;
 import com.github.celldynamics.quimp.OutlineHandler;
 import com.github.celldynamics.quimp.QColor;
 import com.github.celldynamics.quimp.QParams;
@@ -18,6 +17,7 @@ import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 import com.github.celldynamics.quimp.plugin.ecmm.ECMM_Mapping;
 import com.github.celldynamics.quimp.registration.Registration;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;

@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.CellStats;
 import com.github.celldynamics.quimp.CellStatsEval;
 
-// TODO: Auto-generated Javadoc
 /**
  * Keep statistics for cells.
  * 
@@ -86,6 +85,15 @@ public class StatsCollection implements IQuimpSerialize {
    */
   public ArrayList<CellStats> getStatCollection() {
     return sHs;
+  }
+
+  /**
+   * Set stats collection object wrapped by this class.
+   * 
+   * @param shs the sHs to set
+   */
+  public void setStatCollection(ArrayList<CellStats> shs) {
+    this.sHs = shs;
   }
 
 }

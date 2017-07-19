@@ -2,11 +2,11 @@ package com.github.celldynamics.quimp.filesystem;
 
 import com.github.celldynamics.quimp.BOAState;
 import com.github.celldynamics.quimp.BOA_;
-import com.github.celldynamics.quimp.FormatConverter;
 import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.SnakePluginList;
 import com.github.celldynamics.quimp.ViewUpdater;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
