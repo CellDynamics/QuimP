@@ -87,4 +87,13 @@ public class StatsCollection implements IQuimpSerialize {
     return sHs;
   }
 
+  /**
+   * Set stats collection object wrapped by this class.
+   * 
+   * @param shs the sHs to set
+   */
+  public void setStatCollection(ArrayList<CellStats> shs) {
+    this.sHs = shs;
+  }
+
 }

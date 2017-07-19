@@ -52,14 +52,17 @@ public class StatFileParser {
    * Read all files along given path and prefix used for constructing the object and convert them to
    * CellStat objects.
    * 
+   * @return Imported stats
+   * 
    * @throws IOException on File read error
    */
-  public void importStQp() throws IOException {
+  public ArrayList<CellStats> importStQp() throws IOException {
     List<Path> files = getAllFiles();
     for (Path p : files) {
       FrameStatistics[] fs = FrameStatistics.read(p.toFile());
       stats.add(new CellStats(fs));
     }
+    return getStats();
   }
 
   /**
