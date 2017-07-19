@@ -249,11 +249,15 @@ public class FormatConverterTest {
     // copy staff to tmp
     Files.copy(input.resolve("test.QCONF"), target.resolve("test.QCONF"),
             StandardCopyOption.REPLACE_EXISTING);
+    Files.copy(input.resolve("test.tif"), target.resolve("test.tif"),
+            StandardCopyOption.REPLACE_EXISTING);
     // perform conversion
     FormatConverter fc = new FormatConverter(target.resolve("test.QCONF").toFile());
     fc.doConversion();
     // copy converted paQP to other folder and convert them back to QCONF
     Path targetConv = folder.newFolder("convpaQP2QCONF").toPath();
+    Files.copy(input.resolve("test.tif"), targetConv.resolve("test.tif"),
+            StandardCopyOption.REPLACE_EXISTING);
     Files.copy(target.resolve("test_0.paQP"), targetConv.resolve("test_0.paQP"),
             StandardCopyOption.REPLACE_EXISTING);
     Files.copy(target.resolve("test_0.snQP"), targetConv.resolve("test_0.snQP"),
@@ -292,6 +296,8 @@ public class FormatConverterTest {
     // then convert this QCONF to paQP back
     Path targetConv2 = folder.newFolder("convQCONF2paQP").toPath();
     Files.copy(targetConv.resolve("test.QCONF"), targetConv2.resolve("test.QCONF"),
+            StandardCopyOption.REPLACE_EXISTING);
+    Files.copy(input.resolve("test.tif"), targetConv2.resolve("test.tif"),
             StandardCopyOption.REPLACE_EXISTING);
     fc = new FormatConverter(targetConv2.resolve("test.QCONF").toFile());
     fc.doConversion();

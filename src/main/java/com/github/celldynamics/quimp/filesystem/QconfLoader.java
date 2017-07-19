@@ -10,10 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.BOAState;
+import com.github.celldynamics.quimp.BOAState.BOAp;
+import com.github.celldynamics.quimp.PropertyReader;
 import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
-import com.github.celldynamics.quimp.BOAState.BOAp;
 import com.github.celldynamics.quimp.plugin.bar.QuimP_Bar;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
@@ -35,6 +36,8 @@ import ij.io.OpenDialog;
  *
  */
 public class QconfLoader {
+
+  private Path qconfFile; // path to loaded file
 
   /**
    * The Constant LOGGER.
@@ -70,7 +73,6 @@ public class QconfLoader {
    */
   public QconfLoader(File file, String fileExt) throws QuimpException {
     loader(file, fileExt);
-
   }
 
   /**
@@ -82,7 +84,6 @@ public class QconfLoader {
    */
   public QconfLoader(File file) throws QuimpException {
     loader(file, null); // use default filter set in QuimP_Bar
-
   }
 
   /**
@@ -122,13 +123,17 @@ public class QconfLoader {
       qp = new QParams(paramFile); // initialize general param storage
     }
     qp.readParams(); // create associated files included in paQP and read params
+    qconfFile = paramFile.toPath();
   }
 
   /**
    * Try to load image associated with QCONF or paQP file.
    * 
    * <p>If image has not been found, user is being asked to point relevant file. If file is loaded
-   * from disk it updates <tt>orgFile</tt> in {@link BOAp}
+   * from disk it updates <tt>orgFile</tt> in {@link BOAp}.
+   * 
+   * <p>If run in testing mode it try to load an image from folder where QCONF is. Do not display
+   * UI.
    * 
    * @return Loaded image from QCONF or that pointed by user. <tt>null</tt> if user cancelled.
    */
@@ -141,30 +146,32 @@ public class QconfLoader {
     switch (getQp().paramFormat) {
       case QParams.NEW_QUIMP:
         imagepath = ((QParamsQconf) qp).getLoadedDataContainer().getBOAState().boap.getOrgFile();
-        LOGGER.debug("Attempt to open image: " + imagepath.getAbsolutePath());
-        // try to load from QCONF
-        im = IJ.openImage(imagepath.getPath());
         break;
       case QParams.QUIMP_11:
         imagepath = qp.getSegImageFile();
-        LOGGER.debug("Attempt to open image: " + imagepath.toString());
-        // try to load from QCONF
-        im = IJ.openImage(imagepath.toString());
         break;
       default:
-        im = null;
+        throw new IllegalArgumentException("Format not supported");
     }
 
+    LOGGER.debug("Attempt to open image: " + imagepath.toString());
+    // try to load from QCONF or paQP
+    im = IJ.openImage(imagepath.getPath());
+
     if (im == null) { // if failed ask user
-      String imagename;
-      if (imagepath != null) {
-        imagename = imagepath.getName();
-      } else {
-        imagename = "";
+      // but first check testing mode
+      String skipReg = new PropertyReader().readProperty("quimpconfig.properties", "noRegWindow");
+      if (Boolean.parseBoolean(skipReg) == true) {
+        Path imName = imagepath.toPath().getFileName();
+        Path dir = (qconfFile.getParent() == null) ? Paths.get(".") : qconfFile.getParent();
+        LOGGER.debug("Testing mode, looking for image: " + dir.resolve(imName).toString());
+        im = IJ.openImage(dir.resolve(imName).toString());
+        return im;
       }
       Object[] options = { "Load from disk", "Load from IJ", "Cancel" };
       int n = JOptionPane.showOptionDialog(IJ.getInstance(),
-              "The image " + imagename + " pointed in loaded configuration file can not be found.\n"
+              "The image " + imagepath.getName()
+                      + " pointed in loaded configuration file can not be found.\n"
                       + "Would you like to load it manually?",
               "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
               options, options[2]);
@@ -201,8 +208,7 @@ public class QconfLoader {
             getBOA().boap.setOrgFile(orgFile.toFile());
           }
         } catch (QuimpException e) {
-          throw new Error(); // should never be here, we know that there is BOA and ew are
-                             // on new path
+          throw new Error(); // should never be here, we know there is BOA and we are on new path
         }
       }
     }
