@@ -110,8 +110,11 @@ public class QconfLoader {
     } else { // use name provided in constructor
       Path path = file.toPath();
       // getParent can return null
-      directory = path.getParent() == null ? "" : path.getParent().toString();
-      filename = path.getFileName() == null ? "" : path.getFileName().toString();
+      directory = (path.getParent() == null) ? "." : path.getParent().toString();
+      if (path.getFileName() == null) {
+        throw new QuimpException("Can not get file name to load: " + path.toString());
+      }
+      filename = path.getFileName().toString();
       LOGGER.debug("Use provided file:" + directory + " " + filename);
     }
     // detect old/new file format
@@ -132,10 +135,11 @@ public class QconfLoader {
    * <p>If image has not been found, user is being asked to point relevant file. If file is loaded
    * from disk it updates <tt>orgFile</tt> in {@link BOAp}.
    * 
-   * <p>If run in testing mode it try to load an image from folder where QCONF is. Do not display
+   * <p>If run in testing mode it tries to load an image from folder where QCONF is. Do not display
    * UI.
    * 
-   * @return Loaded image from QCONF or that pointed by user. <tt>null</tt> if user cancelled.
+   * @return Loaded image from QCONF or that pointed by user. <tt>null</tt> if user cancelled or
+   *         image has not been found.
    */
   public ImagePlus getImage() {
     if (getQp() == null) {
@@ -159,14 +163,14 @@ public class QconfLoader {
     im = IJ.openImage(imagepath.getPath());
 
     if (im == null) { // if failed ask user
-      // but first check testing mode
+      // but first check against testing mode
       String skipReg = new PropertyReader().readProperty("quimpconfig.properties", "noRegWindow");
       if (Boolean.parseBoolean(skipReg) == true) {
         Path imName = imagepath.toPath().getFileName();
         Path dir = (qconfFile.getParent() == null) ? Paths.get(".") : qconfFile.getParent();
         LOGGER.debug("Testing mode, looking for image: " + dir.resolve(imName).toString());
         im = IJ.openImage(dir.resolve(imName).toString());
-        return im;
+        return im; // do not modify paths in boap in testing mode
       }
       Object[] options = { "Load from disk", "Load from IJ", "Cancel" };
       int n = JOptionPane.showOptionDialog(IJ.getInstance(),
@@ -224,7 +228,7 @@ public class QconfLoader {
    *         <ol>
    *         <li>0 if QCONF is not loaded properly.
    *         <li>QParams.QUIMP_11 if it is in old format
-   *         <li>{@link com.github.celldynamics.quimp.filesystem.DataContainer#validateDataContainer()}
+   *         <li>{@link DataContainer#validateDataContainer()}
    *         flags otherwise
    *         </ol>
    */
