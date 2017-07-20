@@ -18,7 +18,6 @@ import com.github.baniuk.ImageJTestSuite.matchers.file.FileMatchers;
 import com.github.celldynamics.quimp.FrameStatistics;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.filesystem.StatsCollection;
-import com.github.celldynamics.quimp.plugin.ana.ANAp;
 
 /**
  * @author p.baniukiewicz
@@ -67,13 +66,9 @@ public class StatFileParserTest {
       QconfLoader qcl = new QconfLoader(Paths.get(folder, "test.QCONF").toFile()); // load QCONF
       StatsCollection stats = qcl.getStats(); // get stats
       File tmp = File.createTempFile("importBOA", ""); // tmp output
-      ANAp anap = new ANAp(); // needed for saving stQP
-      // copy params from BOA to ANAp
-      anap.scale = qcl.getBOA().boap.getImageScale();
-      anap.frameInterval = qcl.getBOA().boap.getImageFrameInterval();
       // write stats (with rounding)
       FrameStatistics.write(stats.sHs.get(i++).framestat.toArray(new FrameStatistics[0]), tmp,
-              anap);
+              qcl.getBOA().boap.getImageScale(), qcl.getBOA().boap.getImageFrameInterval());
       replaceLine(tmp.toPath(), 1, getLine(p, 1)); // make sure that both files have same
       // header
       assertThat(tmp, is(FileMatchers.containsExactText(p.toFile())));

@@ -2,8 +2,9 @@ package com.github.celldynamics.quimp;
 
 import java.awt.Polygon;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.github.celldynamics.quimp.filesystem.StatsCollection;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
@@ -58,12 +59,16 @@ public class CellStatsEval implements Measurements {
   ImageStatistics is;
 
   /**
-   * The scale.
+   * The scale used for evaluation of {@link FrameStatistics}.
+   * 
+   * @see #record()
    */
   double scale;
 
   /**
-   * The frame interval.
+   * The frame interval used for evaluation of {@link FrameStatistics}.
+   * 
+   * @see #record()
    */
   double frameInterval;
 
@@ -94,7 +99,13 @@ public class CellStatsEval implements Measurements {
     if (f == null) {
       buildData(stats);
     } else {
-      write(stats, outputH.getStartFrame()); // also call buildData
+      // write(stats, outputH.getStartFrame()); // also call buildData
+      try {
+        buildData(stats);
+        FrameStatistics.write(stats, outfile, s, fi);
+      } catch (IOException e) {
+        IJ.error("could not open out file");
+      }
     }
   }
 
@@ -190,49 +201,15 @@ public class CellStatsEval implements Measurements {
     return stats;
   }
 
-  private void write(FrameStatistics[] s, int startFrame) {
-    try {
-      PrintWriter pw = new PrintWriter(new FileWriter(outfile), true); // auto flush
-      // IJ.log("Writing to file");
-      pw.print("#p2\n#QuimP output - " + outfile.getAbsolutePath() + "\n");
-      pw.print("# Centroids are given in pixels.  Distance & speed & area measurements are"
-              + " scaled to micro meters\n");
-      pw.print("# Scale: " + scale + " micro meter per pixel | Frame interval: " + frameInterval
-              + " sec\n");
-      pw.print("# Frame,X-Centroid,Y-Centroid,Displacement,Dist. Traveled,"
-              + "Directionality,Speed,Perimeter,Elongation,Circularity,Area");
-
-      for (int i = 0; i < s.length; i++) {
-        pw.print("\n" + (i + startFrame) + "," + IJ.d2s(s[i].centroid.getX(), 2) + ","
-                + IJ.d2s(s[i].centroid.getY(), 2) + "," + IJ.d2s(s[i].displacement) + ","
-                + IJ.d2s(s[i].dist) + "," + IJ.d2s(s[i].persistance) + "," + IJ.d2s(s[i].speed)
-                + "," + IJ.d2s(s[i].perimiter) + "," + IJ.d2s(s[i].elongation) + ","
-                + IJ.d2s(s[i].circularity, 3) + "," + IJ.d2s(s[i].area));
-
-      }
-
-      pw.print("\n#\n# Fluorescence measurements");
-      writeDummyFluo(pw, 1, startFrame, s.length);
-      writeDummyFluo(pw, 2, startFrame, s.length);
-      writeDummyFluo(pw, 3, startFrame, s.length);
-
-      pw.close();
-      buildData(s);
-    } catch (Exception e) {
-      IJ.error("could not open out file");
-      return;
-    }
-  }
-
   /**
    * Complementary to write method. Create the same data as write but in form of arrays. For
-   * compatible reasons. New format uses this representation
+   * compatible reasons. New format uses this representation.
    * 
    * @param s Frame statistics calculated by
    *        {@link com.github.celldynamics.quimp.CellStatsEval#record()}
    */
   private void buildData(FrameStatistics[] s) {
-    statH = new CellStats(s);
+    statH = new CellStats(new ArrayList<FrameStatistics>(Arrays.asList(s)));
   }
 
   /**
@@ -247,15 +224,4 @@ public class CellStatsEval implements Measurements {
     return statH;
   }
 
-  private void writeDummyFluo(PrintWriter pw, int channel, int startFrame, int size)
-          throws Exception {
-    pw.print("\n#\n# Channel " + channel
-            + ";Frame, Total Fluo.,Mean Fluo.,Cortex Width, Cyto. Area,Total Cyto. Fluo.,"
-            + " Mean Cyto. Fluo.,"
-            + "Cortex Area,Total Cortex Fluo., Mean Cortex Fluo., %age Cortex Fluo.");
-    for (int i = 0; i < size; i++) {
-      pw.print("\n" + (i + startFrame)
-              + ",-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00");
-    }
-  }
 }

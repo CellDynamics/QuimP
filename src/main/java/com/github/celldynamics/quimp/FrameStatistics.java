@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
-import com.github.celldynamics.quimp.plugin.ana.ANAp;
 import com.github.celldynamics.quimp.plugin.ana.ChannelStat;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
@@ -141,22 +140,23 @@ public class FrameStatistics {
   }
 
   /**
-   * Write stat file in old format.
+   * Write stat file in old format (stQP.csv).
    * 
    * @param s statistics to write
    * @param outfile file name
-   * @param anap ANA configuration object
+   * @param scale image scale
+   * @param frameInterval data frame interval
    * @throws IOException on file error
-   * @see ANAp
    */
-  public static void write(FrameStatistics[] s, File outfile, ANAp anap) throws IOException {
+  public static void write(FrameStatistics[] s, File outfile, double scale, double frameInterval)
+          throws IOException {
     PrintWriter pw = new PrintWriter(new FileWriter(outfile), true); // auto flush
     IJ.log("Writing to file");
-    pw.print("#p2\n#QuimP ouput - " + outfile.getAbsolutePath() + "\n");
+    pw.print("#p2\n#QuimP output - " + outfile.getAbsolutePath() + "\n");
     pw.print("# Centroids are given in pixels.  Distance & speed & area measurements are scaled"
             + " to micro meters\n");
-    pw.print("# Scale: " + anap.scale + " micro meter per pixel | Frame interval: "
-            + anap.frameInterval + " sec\n");
+    pw.print("# Scale: " + scale + " micro meter per pixel | Frame interval: " + frameInterval
+            + " sec\n");
     pw.print("# Frame,X-Centroid,Y-Centroid,Displacement,Dist. Traveled,"
             + "Directionality,Speed,Perimeter,Elongation,Circularity,Area");
 
