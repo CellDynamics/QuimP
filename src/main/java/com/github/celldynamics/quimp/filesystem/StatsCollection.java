@@ -72,7 +72,8 @@ public class StatsCollection implements IQuimpSerialize {
    * Bridge method to maintain compatibility with old code. Copies statistics from CellStat
    * objects into internal fields of StatsHandler.
    * 
-   * @param in List of CellStat objects - size of this list equals to number of cells.
+   * @param in List of CellStat objects - size of this list equals to number of cells. Each
+   *        {@link CellStats} object maintain statistic for one cell along all frames.
    */
   public void copyFromCellStat(List<CellStatsEval> in) {
     in.forEach(cl -> sHs.add(cl.getStatH()));

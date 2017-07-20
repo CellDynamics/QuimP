@@ -1,7 +1,6 @@
 package com.github.celldynamics.quimp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import ij.measure.ResultsTable;
 
@@ -14,10 +13,6 @@ import ij.measure.ResultsTable;
  */
 public class CellStats {
 
-  /**
-   * Number of frames stored in.
-   */
-  private int frames;
   /**
    * Number of parameters stored for cell statistic. This is like number of columns in output
    * array.
@@ -41,7 +36,6 @@ public class CellStats {
    */
   public CellStats() {
     framestat = new ArrayList<>();
-    frames = 0;
     statsElements = 0;
     fluoElements = 0;
   }
@@ -51,9 +45,8 @@ public class CellStats {
    * 
    * @param framestat stats for subsequent frames for one cell
    */
-  public CellStats(FrameStatistics[] framestat) {
-    this.frames = framestat.length;
-    this.framestat = new ArrayList<FrameStatistics>(Arrays.asList(framestat));
+  public CellStats(ArrayList<FrameStatistics> framestat) {
+    this.framestat = framestat;
   }
 
   /**
@@ -65,7 +58,6 @@ public class CellStats {
    * @deprecated statsElements not used
    */
   public CellStats(int frames, int statsElements, int fluoElements) {
-    this.frames = frames;
     this.statsElements = statsElements;
     this.fluoElements = fluoElements;
     framestat = new ArrayList<>(frames);
@@ -76,8 +68,8 @@ public class CellStats {
    * 
    * @return the frames
    */
-  public int getFrames() {
-    return frames;
+  public int getNumStoredFrames() {
+    return framestat.size();
   }
 
   /**

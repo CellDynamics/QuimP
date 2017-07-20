@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public class StatFileParser {
     List<Path> files = getAllFiles();
     for (Path p : files) {
       FrameStatistics[] fs = FrameStatistics.read(p.toFile());
-      stats.add(new CellStats(fs));
+      stats.add(new CellStats(new ArrayList<FrameStatistics>(Arrays.asList(fs))));
     }
     return getStats();
   }
