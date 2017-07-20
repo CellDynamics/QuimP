@@ -4,7 +4,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 
-// TODO: Auto-generated Javadoc
 /**
  * Filter that filters out packages that not belong to QuimP.
  * 
@@ -19,7 +18,7 @@ public class LogbackFilter extends Filter<ILoggingEvent> {
   private String packageName;
 
   /**
-   * 
+   * Main constructor.
    */
   public LogbackFilter() {
     packageName = LogbackFilter.class.getPackage().getName().toLowerCase();

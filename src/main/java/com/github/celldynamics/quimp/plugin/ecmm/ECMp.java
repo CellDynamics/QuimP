@@ -189,13 +189,13 @@ public class ECMp {
   static boolean preserveHeads = false; //!< true if original head should be preserved
 
   /**
-   * 
+   * Default constructor.
    */
   public ECMp() {
   }
 
   /**
-   * Defines default values for ECMM algorithm
+   * Defines default values for ECMM algorithm.
    * 
    * @param maxCellLength Maximal length of cell
    */
@@ -203,10 +203,10 @@ public class ECMp {
     maxCellSize = maxCellLength / Math.PI; // guess cell diameter
 
     lineCharges = true;
-    markerRes = 4; // resolution of outlines (set to 0 to not alter density,
-                   // set negative to only alter at first frame)
-    chargeDensity = -1; // field complexity (set to -1 to leave as marker
-                        // density)
+    // resolution of outlines (set to 0 to not alter density, set negative to only alter at first
+    // frame)
+    markerRes = 4;
+    chargeDensity = -1; // field complexity (set to -1 to leave as marker density)
     maxVertF = 0.1; // max force allowed on a marker (0.06)
     migPower = 2;
     tarPower = 2;
@@ -238,7 +238,7 @@ public class ECMp {
   }
 
   /**
-   * Fills ECMp fields with values from previous analysis (master paQP file)
+   * Fills ECMp fields with values from previous analysis (master paQP file).
    * 
    * @param qp Master configuration file
    */

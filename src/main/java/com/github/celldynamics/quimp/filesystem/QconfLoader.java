@@ -24,7 +24,6 @@ import ij.WindowManager;
 import ij.io.FileInfo;
 import ij.io.OpenDialog;
 
-// TODO: Auto-generated Javadoc
 /**
  * Load QCONF or paQP file and initiate proper instance of {@link QParams} class.
  * 
@@ -400,6 +399,8 @@ public class QconfLoader {
   }
 
   /**
+   * Return QParams object.
+   * 
    * @return the qp
    */
   public QParams getQp() {
@@ -407,6 +408,7 @@ public class QconfLoader {
   }
 
   /**
+   * Return version of file loaded.
    * 
    * @return Version of loaded file, see {@link QParams}
    */

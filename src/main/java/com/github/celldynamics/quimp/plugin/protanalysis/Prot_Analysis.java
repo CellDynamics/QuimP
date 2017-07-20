@@ -44,8 +44,10 @@ import ij.plugin.ZProjector;
  * Main class for Protrusion Analysis module.
  * 
  * <p>Contain business logic for protrusion analysis. The UI is built by
- * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisUI}. The communication between
- * these modules is through {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisConfig}
+ * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisUI}. The communication
+ * between
+ * these modules is through
+ * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisConfig}
  * <br>
  * <img src="doc-files/Prot_Analysis_1_UML.png"/><br>
  * 
@@ -149,7 +151,8 @@ public class Prot_Analysis implements IQuimpPlugin {
    * <p>Keeps logic of ECMM, ANA, Q plugins.
    * 
    * <p>This method reads entries in
-   * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisConfig} and performs selected
+   * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisConfig} and performs
+   * selected
    * actions. Additionally it collects all results for all cells in one common table.
    * 
    * @throws QuimpException on problem with plugin
@@ -329,7 +332,8 @@ public class Prot_Analysis implements IQuimpPlugin {
    * (non-Javadoc)
    * 
    * @see
-   * com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setPluginConfig(com.github.celldynamics.quimp.
+   * com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setPluginConfig(com.github.celldynamics.
+   * quimp.
    * plugin.ParamList)
    */
   @Override

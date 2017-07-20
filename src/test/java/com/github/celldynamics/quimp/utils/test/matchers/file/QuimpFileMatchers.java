@@ -4,7 +4,7 @@ import com.github.baniuk.ImageJTestSuite.matchers.file.FileMatchers;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 
 /**
- * Extends FileMatcher for QuimP data related matchers.
+ * Extend FileMatcher for QuimP data related matchers.
  * 
  * @author p.baniukiewicz
  * @see com.github.baniuk.ImageJTestSuite.matchers.file.FileMatchers

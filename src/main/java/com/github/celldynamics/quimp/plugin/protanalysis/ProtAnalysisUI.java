@@ -81,7 +81,7 @@ class ProtAnalysisUI implements ActionListener {
   }
 
   /**
-   * Copy UI settings to {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisConfig}
+   * Copy UI settings to {@link ProtAnalysisConfig}
    * object.
    */
   public void readUI() {
@@ -113,7 +113,7 @@ class ProtAnalysisUI implements ActionListener {
   }
 
   /**
-   * Copy {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisConfig} settings to UI.
+   * Copy {@link ProtAnalysisConfig} settings to UI.
    */
   public void writeUI() {
     tfNoiseTolerance.setValue(new Double(model.config.noiseTolerance));

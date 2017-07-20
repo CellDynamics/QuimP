@@ -10,8 +10,6 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel;
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentationPlugin_;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel.SeedSource;
 
 import ij.ImagePlus;
@@ -57,7 +55,7 @@ public class RandomWalkSegmentationPluginTest {
 
   /**
    * Test method for
-   * {@link com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentationPlugin_#writeUI()}.
+   * {@link RandomWalkSegmentationPlugin_#writeUI()}.
    * 
    * <p>PRE: Set UI from model and then read it.
    * 

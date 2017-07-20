@@ -22,12 +22,12 @@ import com.google.gson.annotations.Until;
  * @author p.baniukiewicz
  *
  */
-public class SerializerVersioning {
+public class SerializerVersioningTest {
 
   /**
    * The Constant LOGGER.
    */
-  static final Logger LOGGER = LoggerFactory.getLogger(SerializerVersioning.class.getName());
+  static final Logger LOGGER = LoggerFactory.getLogger(SerializerVersioningTest.class.getName());
 
   /**
    * The tmpdir.

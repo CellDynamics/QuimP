@@ -1,16 +1,9 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
-
 package com.github.celldynamics.quimp.utils.graphics.vrml;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
-// import javax.media.j3d.BranchGroup;
-// import javax.media.j3d.IndexedQuadArray;
-// import javax.media.j3d.Shape3D;
 import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3f;
 

@@ -105,7 +105,7 @@ public abstract class SVGwritter {
     /*
      * (non-Javadoc)
      * 
-     * @see com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
+     * @see SVGwritter#draw(java.io.OutputStreamWriter)
      */
     @Override
     public void draw(OutputStreamWriter osw) throws IOException {
@@ -188,7 +188,8 @@ public abstract class SVGwritter {
     /*
      * (non-Javadoc)
      * 
-     * @see com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
+     * @see
+     * com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
     @Override
     public void draw(OutputStreamWriter osw) throws IOException {
@@ -258,7 +259,8 @@ public abstract class SVGwritter {
     /*
      * (non-Javadoc)
      * 
-     * @see com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
+     * @see
+     * com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
     @Override
     public void draw(OutputStreamWriter osw) throws IOException {
@@ -302,7 +304,8 @@ public abstract class SVGwritter {
     /*
      * (non-Javadoc)
      * 
-     * @see com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
+     * @see
+     * com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
     @Override
     public void draw(OutputStreamWriter osw) throws IOException {
@@ -402,7 +405,8 @@ public abstract class SVGwritter {
     /*
      * (non-Javadoc)
      * 
-     * @see com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
+     * @see
+     * com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
     @Override
     public void draw(OutputStreamWriter osw) throws IOException {

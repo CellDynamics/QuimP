@@ -15,13 +15,14 @@ public class PluginFactoryFactory {
   private static final PluginFactoryFactory instance = new PluginFactoryFactory();
 
   /**
-   * 
+   * Main constructor.
    */
   public PluginFactoryFactory() {
-    // TODO Auto-generated constructor stub
   }
 
   /**
+   * Get instance of PluginFactory.
+   * 
    * @return PluginFactory instance
    */
   public static PluginFactoryFactory getInstance() {
@@ -29,11 +30,11 @@ public class PluginFactoryFactory {
   }
 
   /**
-   * Provide mocked PluginFactory object that uses sources of plugins available on path
+   * Provide mocked PluginFactory object that uses sources of plugins available on path.
    * 
-   * @param path
+   * @param path plugin folder
    * @return mocked PluginFactory object
-   * @throws QuimpPluginException
+   * @throws QuimpPluginException on error
    */
   public static PluginFactory getPluginFactory(String path) throws QuimpPluginException {
     return new PluginFactory(Paths.get(path));

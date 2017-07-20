@@ -413,7 +413,7 @@ public class QColor {
   }
 
   /**
-   * Create a color map
+   * Create a color map.
    * 
    * @param c choice of color map: "Summer"
    * @param size size of the color map

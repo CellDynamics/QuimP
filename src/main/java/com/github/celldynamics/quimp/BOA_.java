@@ -31,7 +31,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.BOAState.BOAp;
 import com.github.celldynamics.quimp.SnakePluginList.Plugin;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
+import com.github.celldynamics.quimp.filesystem.DataContainerInstanceCreator;
 import com.github.celldynamics.quimp.filesystem.FileDialogEx;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.StatsCollection;
@@ -73,8 +73,6 @@ import com.github.celldynamics.quimp.registration.Registration;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import com.github.celldynamics.quimp.utils.graphics.GraphicsElements;
-import com.google.gson.Gson;
-import com.google.gson.InstanceCreator;
 import com.google.gson.JsonSyntaxException;
 
 import ij.IJ;
@@ -3095,32 +3093,5 @@ class ImageGroup {
         }
       }
     }
-  }
-}
-
-/**
- * Object builder for GSon and DataContainer class.
- * 
- * <p>This class is used on load JSon representation of DataContainer class. Rebuilds
- * snakePluginList
- * field that is not serialized. This field keeps current state of plugins.
- * 
- * @author p.baniukiewicz
- * @see Gson
- */
-class DataContainerInstanceCreator implements InstanceCreator<DataContainer> {
-
-  private PluginFactory pf;
-  private ViewUpdater vu;
-
-  public DataContainerInstanceCreator(final PluginFactory pf, final ViewUpdater vu) {
-    this.pf = pf;
-    this.vu = vu;
-  }
-
-  @Override
-  public DataContainer createInstance(Type arg0) {
-    DataContainer dt = new DataContainer(pf, vu);
-    return dt;
   }
 }

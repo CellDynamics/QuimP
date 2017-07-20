@@ -501,7 +501,8 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
    * Register constructor for wrapped class.
    * 
    * <p>It may be necessary during loading JSON file if wrapped class needs some parameters to
-   * restore its state on com.github.celldynamics.quimp.IQuimpSerialize.afterSerialize() call and those
+   * restore its state on com.github.celldynamics.quimp.IQuimpSerialize.afterSerialize() call and
+   * those
    * parameters are passed in constructor.
    * 
    * @param type Type of class

@@ -21,7 +21,8 @@ import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
  * these files to local configuration classes such as e.g.
  * {@link com.github.celldynamics.quimp.plugin.ecmm.ECMp},
  * {@link com.github.celldynamics.quimp.plugin.qanalysis.Q_Analysis},
- * {@link com.github.celldynamics.quimp.plugin.ana.ANAp}. QuimP supports two independent file formats:
+ * {@link com.github.celldynamics.quimp.plugin.ana.ANAp}. QuimP supports two independent file
+ * formats:
  * <ol>
  * <li>based on separate files (old QuimP) such as case_cellno.paQP
  * <li>compound <i>case.QCONF</i> that contains data for all cells

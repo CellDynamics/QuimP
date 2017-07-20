@@ -119,8 +119,7 @@ public abstract class BinaryFilters {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters#filter(ij.process.ImageProcessor)
+     * @see BinaryFilters#filter(ij.process.ImageProcessor)
      */
     @Override
     ImageProcessor filter(ImageProcessor input) {
@@ -141,7 +140,8 @@ public abstract class BinaryFilters {
      * (non-Javadoc)
      * 
      * @see
-     * com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters#filter(ij.process.ImageProcessor)
+     * com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters#filter(ij.process.
+     * ImageProcessor)
      */
     @Override
     ImageProcessor filter(ImageProcessor input) {

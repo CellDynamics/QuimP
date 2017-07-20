@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Compute forward and backward tracking maps from origin and coordinates maps.
  * 
@@ -22,7 +21,7 @@ import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 public class MapTracker {
 
   /**
-   * 
+   * Denote bad index.
    */
   public static final int BAD_INDEX = -1;
   /**
@@ -65,7 +64,8 @@ public class MapTracker {
    * 
    * @param originMap originMap stored in
    *        {@link com.github.celldynamics.quimp.filesystem.DataContainer}
-   * @param coordMap coordMap stored in {@link com.github.celldynamics.quimp.filesystem.DataContainer}
+   * @param coordMap coordMap stored in
+   *        {@link com.github.celldynamics.quimp.filesystem.DataContainer}
    * @see com.github.celldynamics.quimp.filesystem.DataContainer
    * @see com.github.celldynamics.quimp.plugin.qanalysis.STmap
    */
@@ -101,8 +101,7 @@ public class MapTracker {
         minI[1] = minDiffB[1];
         minI[2] = minDiffC[1];
         double[] minMinV = QuimPArrayUtils.minArrayIndexElement(minV);
-        backwardMap[i][j] = (int) minI[(int) minMinV[1]]; // copy index of smallest among
-                                                          // A,B,C
+        backwardMap[i][j] = (int) minI[(int) minMinV[1]]; // copy index of smallest among A,B,C
       }
     }
 
@@ -126,8 +125,7 @@ public class MapTracker {
         minI[1] = minDiffB[1];
         minI[2] = minDiffC[1];
         double[] minMinV = QuimPArrayUtils.minArrayIndexElement(minV);
-        forwardMap[i][j] = (int) minI[(int) minMinV[1]]; // copy index of smallest among
-                                                         // A,B,C
+        forwardMap[i][j] = (int) minI[(int) minMinV[1]]; // copy index of smallest among A,B,C
       }
     }
   }
@@ -137,8 +135,8 @@ public class MapTracker {
    * 
    * <p>Based on Matlab routine buildTrackMaps.m
    * 
-   * @param p
-   * @param row
+   * @param p single value that row will be subtracted from
+   * @param row row to subtract from p
    * @return Vector of <tt>p</tt>-<tt>row</tt> as a copy.
    */
   private double[] rowDiff(double p, double[] row) {
@@ -375,22 +373,21 @@ public class MapTracker {
     return ret;
   }
 
-}
+  /**
+   * Predicate class for detection bad indexes in tracking methods.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class PredicateBadIndex implements Predicate<Point> {
 
-/**
- * Predicate class for detection bad indexes in tracking methods.
- * 
- * @author p.baniukiewicz
- *
- */
-class PredicateBadIndex implements Predicate<Point> {
-
-  @Override
-  public boolean test(Point t) {
-    if (t.y == MapTracker.BAD_INDEX) {
-      return true;
-    } else {
-      return false;
+    @Override
+    public boolean test(Point t) {
+      if (t.y == MapTracker.BAD_INDEX) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 }

@@ -4,7 +4,6 @@ import com.github.celldynamics.quimp.Snake;
 import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 
-// TODO: Auto-generated Javadoc
 /**
  * General interface that defines filter run on Snakes directly.
  * 
@@ -42,7 +41,7 @@ public interface IQuimpBOASnakeFilter extends IQuimpCorePlugin {
    * 
    * <p>Plugin may be run without attached data. Plugin must deal with this
    * 
-   * @param data
+   * @param data snake to connect
    */
   void attachData(final Snake data);
 }

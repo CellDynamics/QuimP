@@ -29,8 +29,10 @@
  * is used for computing intensity statistics, saved later in <tt>stQP.csv</tt> output file. Inner
  * and outer contours are used to set ROIs within statistics are computed.
  * 
- * Check {@link com.github.celldynamics.quimp.plugin.ana.ChannelStat} for details on computed statistics.
- * Moreover, some parameters of Outline are filled by ANA: {@link com.github.celldynamics.quimp.Outline}
+ * Check {@link com.github.celldynamics.quimp.plugin.ana.ChannelStat} for details on computed
+ * statistics.
+ * Moreover, some parameters of Outline are filled by ANA:
+ * {@link com.github.celldynamics.quimp.Outline}
  * is supplemented with intensity data stored at
  * {@link com.github.celldynamics.quimp.Vert#fluores}. Depending on UI settings
  * <tt>anap.sampleAtSame</tt>, intensity is sampled for coordinates from other channel or for inner

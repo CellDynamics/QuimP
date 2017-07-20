@@ -2,7 +2,6 @@ package com.github.celldynamics.quimp.plugin;
 
 import com.github.celldynamics.quimp.Nest;
 
-// TODO: Auto-generated Javadoc
 /**
  * This core plugin accepts Nest as input and can modify it.
  * 
@@ -32,7 +31,7 @@ public interface IQuimpNestPlugin extends IQuimpCorePlugin {
    * 
    * <p><tt>data</tt> may be passed as <tt>null</tt> from QuimP. Plugin must deal with this.
    * 
-   * @param data
+   * @param data nest to connect
    */
   void attachData(final Nest data);
 

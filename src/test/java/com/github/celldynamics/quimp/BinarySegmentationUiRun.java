@@ -11,20 +11,22 @@ import ij.ImageJ;
  * @author p.baniukiewicz
  *
  */
-public class BinarySegmentationUI_run {
+public class BinarySegmentationUiRun {
 
   static {
     System.setProperty("logback.configurationFile", "quimp-logback.xml");
   }
 
   /**
-   * 
+   * Default constructor.
    */
-  public BinarySegmentationUI_run() {
+  public BinarySegmentationUiRun() {
   }
 
   /**
-   * @param args
+   * Runner.
+   * 
+   * @param args args
    */
   @SuppressWarnings("unused")
   public static void main(String[] args) {

@@ -9,15 +9,12 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.BOAState;
-import com.github.celldynamics.quimp.BOA_;
 import com.github.celldynamics.quimp.plugin.IQuimpCorePlugin;
 import com.github.celldynamics.quimp.plugin.ParamList;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
@@ -29,7 +26,7 @@ import com.google.gson.InstanceCreator;
 /**
  * Test case of GSon, not related with any class in project
  * 
- * @author p.baniukiewicz
+ * @author pl.baniukiewicz
  *
  */
 public class ConfigStreamerTest {
@@ -43,11 +40,13 @@ public class ConfigStreamerTest {
    * The tmpdir.
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
-  private tSnakePluginList p;
+  private tSnakePluginList pl;
   private ConfigContainer1 cc;
 
   /**
-   * @throws Exception
+   * Setup.
+   * 
+   * @throws Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -61,56 +60,13 @@ public class ConfigStreamerTest {
     config1.put("Beta", "0.32");
 
     cc = new ConfigContainer1();
-    p = new tSnakePluginList(2);
+    pl = new tSnakePluginList(2);
 
-    p.snakePluginList.get(0).name = "Plugin1_quimp";
-    p.snakePluginList.get(0).ver = "0.01";
-    p.snakePluginList.get(0).config = config;
-    p.snakePluginList.get(0).isActive = true;
-    p.snakePluginList.get(0).ref = new IQuimpCorePlugin() {
-
-      @Override
-      public int showUi(boolean val) {
-        return 0;
-
-      }
-
-      @Override
-      public int setup() {
-        // TODO Auto-generated method stub
-        return 0;
-      }
-
-      @Override
-      public void setPluginConfig(ParamList par) throws QuimpPluginException {
-        // TODO Auto-generated method stub
-
-      }
-
-      @Override
-      public String getVersion() {
-        // TODO Auto-generated method stub
-        return null;
-      }
-
-      @Override
-      public ParamList getPluginConfig() {
-        // TODO Auto-generated method stub
-        return null;
-      }
-
-      @Override
-      public String about() {
-        // TODO Auto-generated method stub
-        return null;
-      }
-    };
-
-    p.snakePluginList.get(1).name = "Plugin2_quimp";
-    p.snakePluginList.get(1).ver = "0.02";
-    p.snakePluginList.get(1).config = config1;
-    p.snakePluginList.get(1).isActive = false;
-    p.snakePluginList.get(1).ref = new IQuimpCorePlugin() {
+    pl.snakePluginList.get(0).name = "Plugin1_quimp";
+    pl.snakePluginList.get(0).ver = "0.01";
+    pl.snakePluginList.get(0).config = config;
+    pl.snakePluginList.get(0).isActive = true;
+    pl.snakePluginList.get(0).ref = new IQuimpCorePlugin() {
 
       @Override
       public int showUi(boolean val) {
@@ -149,19 +105,57 @@ public class ConfigStreamerTest {
       }
     };
 
-    cc.activePluginList = p;
+    pl.snakePluginList.get(1).name = "Plugin2_quimp";
+    pl.snakePluginList.get(1).ver = "0.02";
+    pl.snakePluginList.get(1).config = config1;
+    pl.snakePluginList.get(1).isActive = false;
+    pl.snakePluginList.get(1).ref = new IQuimpCorePlugin() {
+
+      @Override
+      public int showUi(boolean val) {
+        return 0;
+
+      }
+
+      @Override
+      public int setup() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+
+      @Override
+      public void setPluginConfig(ParamList par) throws QuimpPluginException {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public String getVersion() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public ParamList getPluginConfig() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public String about() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    };
+
+    cc.activePluginList = pl;
 
   }
 
   /**
-   * @throws Exception
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /**
-   * @throws IOException
+   * test_create.
+   * 
+   * @throws IOException IOException
    */
   @Test
   public void test_create() throws IOException {
@@ -174,7 +168,9 @@ public class ConfigStreamerTest {
   }
 
   /**
-   * @throws IOException
+   * test_create_pretty.
+   * 
+   * @throws IOException IOException
    */
   @Test
   public void test_create_pretty() throws IOException {
@@ -186,7 +182,9 @@ public class ConfigStreamerTest {
   }
 
   /**
-   * @throws IOException
+   * test_load.
+   * 
+   * @throws IOException IOException
    */
   @Test
   @Ignore
@@ -208,7 +206,9 @@ public class ConfigStreamerTest {
   }
 
   /**
-   * @throws IOException
+   * test_create_pretty_static.
+   * 
+   * @throws IOException IOException
    */
   @Test
   @Ignore
@@ -237,7 +237,7 @@ class tSnakePluginList {
   /**
    * Keeps all Plugin related information
    * 
-   * @author p.baniukiewicz
+   * @author pl.baniukiewicz
    *
    */
   class Plugin {
