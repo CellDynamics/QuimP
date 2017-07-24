@@ -1003,9 +1003,9 @@ public class BOAState implements IQuimpSerialize {
    * copy of object but not reference like {@link #restore(int)}.
    * 
    * @param sourceFrame valid index of frame to copy parameters from. Numbered from 1
-   * @see BOAState#copyPluginListFrom(int)
+   * @see BOAState#copyPluginListFromSnapshot(int)
    */
-  public void copySegParamFrom(int sourceFrame) {
+  public void copySegParamFromSnapshot(int sourceFrame) {
     SegParam tmp = segParamSnapshots.get(sourceFrame - 1);
     if (tmp != null) {
       segParam = new SegParam(tmp);
@@ -1019,9 +1019,9 @@ public class BOAState implements IQuimpSerialize {
    * making copy of object but not reference like {@link #restore(int)}.
    * 
    * @param sourceFrame valid index of frame to copy parameters from. Numbered from 1
-   * @see #copySegParamFrom(int)
+   * @see #copySegParamFromSnapshot(int)
    */
-  public void copyPluginListFrom(int sourceFrame) {
+  public void copyPluginListFromSnapshot(int sourceFrame) {
     snakePluginList.clear(); // clear current
     // snakePluginListSnapshots keeps only params and name, whereas deepCopy requires real
     // instance to download config from it.
