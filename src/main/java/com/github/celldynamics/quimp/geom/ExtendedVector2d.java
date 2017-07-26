@@ -1,6 +1,8 @@
 package com.github.celldynamics.quimp.geom;
 
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.scijava.vecmath.Tuple2d;
 import org.scijava.vecmath.Tuple2f;
@@ -153,6 +155,24 @@ public class ExtendedVector2d extends Vector2d {
       vec.setY(vec.getY() / length);
     }
     return vec;
+  }
+
+  /**
+   * Generate linearly distributed doubles between a;b including a and b.
+   * 
+   * @param start start value
+   * @param end end value
+   * @param numPoints number of points
+   * @return list of values including a and b
+   */
+  public static List<Double> linspace(double start, double end, int numPoints) {
+    List<Double> result = new ArrayList<Double>();
+    double step = (end - start) / (numPoints - 1);
+    for (int i = 0; i <= numPoints - 2; i++) {
+      result.add(start + (i * step));
+    }
+    result.add(end);
+    return result;
   }
 
   /**

@@ -6,13 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.scijava.vecmath.Point2d;
 import org.scijava.vecmath.Vector2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.QColor;
+import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.plugin.utils.IPadArray;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
@@ -47,6 +49,11 @@ public class PolarPlot {
    * Distance of plot from edge. Rescaling factor.
    */
   public double uscale;
+
+  /**
+   * Whether to plot rho and theta labels.
+   */
+  public boolean labels = false;
 
   /**
    * Create PolarPlot object with default plot size.
@@ -180,11 +187,16 @@ public class PolarPlot {
     double[] angles = getUniformAngles(magn.length);
     // remove negative values (shift)
     double min = QuimPArrayUtils.arrayMin(magn);
+    double max = QuimPArrayUtils.arrayMax(magn);
     for (int i = 0; i < magn.length; i++) {
       magn[i] -= (min + kscale * min); // k*min - distance from 0
     }
 
-    polarPlotPoints(filename, angles, magn); // generate plot
+    if (labels) {
+      polarPlotPoints(filename, angles, magn, new double[] { min, max });
+    } else {
+      polarPlotPoints(filename, angles, magn, null);
+    } // generate plot
 
   }
 
@@ -213,10 +225,15 @@ public class PolarPlot {
     double[] magn = QuimPArrayUtils.getMeanC(magnF); // compute mean for map on frames
     // rescale to remove negative values and make distance from 0 point
     double min = QuimPArrayUtils.arrayMin(magn);
+    double max = QuimPArrayUtils.arrayMax(magn);
     for (int i = 0; i < magn.length; i++) {
       magn[i] -= (min + kscale * min); // k*min - distance from 0
     }
-    polarPlotPoints(filename, angles, magn); // generate plot
+    if (labels) {
+      polarPlotPoints(filename, angles, magn, new double[] { min, max });
+    } else {
+      polarPlotPoints(filename, angles, magn, null);
+    } // generate plot
     LOGGER.debug("Polar plot saved: " + filename);
 
   }
@@ -227,9 +244,12 @@ public class PolarPlot {
    * @param filename name of svg file
    * @param angles vector of arguments (angles) generated {@link #getUniformAngles(int)}
    * @param magn vector of values related to <tt>angles</tt>
+   * @param valMinMax array of [minVal maxVal] of magn before scaling. Note that this method expect
+   *        magn already scaled to positive values. If null or empty axis legend will not show
    * @throws IOException on file save
    */
-  private void polarPlotPoints(String filename, double[] angles, double[] magn) throws IOException {
+  private void polarPlotPoints(String filename, double[] angles, double[] magn, double[] valMinMax)
+          throws IOException {
     // scale for plotting (6/2) - half of plot area size as plotted from centre)
     double plotscale = plotArea.getWidth() / 2 / QuimPArrayUtils.arrayMax(magn);
     plotscale -= plotscale * uscale; // move a little from edge
@@ -237,14 +257,23 @@ public class PolarPlot {
     BufferedOutputStream out;
     out = new BufferedOutputStream(new FileOutputStream(filename));
     OutputStreamWriter osw = new OutputStreamWriter(out);
-    SVGwritter.writeHeader(osw, plotArea); // write header with sizes
+    Rectangle extendedPlotArea = (Rectangle) plotArea.clone(); // extend square for axis labels
+    extendedPlotArea.grow(1, 1);
+    SVGwritter.writeHeader(osw, extendedPlotArea); // write header with sizes
     // plot axes
     SVGwritter.QPolarAxes qaxes = new SVGwritter.QPolarAxes(plotArea);
+    qaxes.angleLabel = labels;
+    if (valMinMax != null && valMinMax.length != 0) {
+      List<Double> ret =
+              ExtendedVector2d.linspace(valMinMax[0], valMinMax[1], qaxes.numofIntCircles + 2);
+      // +2 because of middle and outer (max)
+      // remove first and alst (just to not display it on inner and outer circle)
+      ret.remove(0);
+      ret.remove(ret.size() - 1);
+      // qaxes.radiusLabels = new double[] { 1e-5, 2, 3, 4, 5 };
+      qaxes.radiusLabels = ArrayUtils.toPrimitive(ret.toArray(new Double[0]));
+    }
     qaxes.draw(osw);
-    // circle around
-    SVGwritter.Qcircle qc = new SVGwritter.Qcircle(0, 0, 0.02);
-    qc.colour = new QColor(1, 0, 0);
-    qc.draw(osw);
     // plot points
     for (int i = 0; i < angles.length; i++) {
       // x1;y1, x2;y2 two points that define line segment

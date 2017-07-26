@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.celldynamics.quimp.QColor;
@@ -45,7 +44,6 @@ public class SVGwritterTest {
    * @throws Exception on error
    */
   @Test
-  @Ignore
   public void testGetReference() throws Exception {
     BufferedOutputStream out =
             new BufferedOutputStream(new FileOutputStream(tmpdir + "testWriteHeader"));

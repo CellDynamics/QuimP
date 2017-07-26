@@ -232,11 +232,21 @@ public abstract class SVGwritter {
     public ExtendedVector2d pos;
 
     /**
+     * If letters overlap, set it to half of font size.
+     */
+    public double letterSpacing = 0;
+
+    /**
+     * Text anchor. Possible values: start, middle, end.
+     */
+    public String textAnchor = "start";
+
+    /**
      * Instantiates a new qtext.
      *
-     * @param t the t
-     * @param s the s
-     * @param f the f
+     * @param t Text
+     * @param s Size
+     * @param f Font name
      * @param pos position
      */
     public Qtext(String t, double s, String f, ExtendedVector2d pos) {
@@ -266,7 +276,8 @@ public abstract class SVGwritter {
     public void draw(OutputStreamWriter osw) throws IOException {
       osw.write("\n<text x=\"" + pos.getX() + "\" y=\"" + pos.getY() + "\" "
               + "style=\"font-family: " + font + ";font-size: " + size + ";fill: "
-              + colour.getColorSVG() + "\">" + text + "</text>");
+              + colour.getColorSVG() + ";letter-spacing: " + letterSpacing + ";text-anchor: "
+              + textAnchor + "\">" + text + "</text>");
 
     }
   }
@@ -291,6 +302,30 @@ public abstract class SVGwritter {
     public double thickness;
 
     /**
+     * Show angle labels.
+     */
+    public boolean angleLabel = false;
+
+    /**
+     * Font size. If one gets overlap letters, play with fontSize and {@link Qtext#letterSpacing}
+     */
+    public double fontSize = 0.2;
+
+    /**
+     * Labels for radius. Must contain numofIntCircles entries only.
+     * 
+     * @see #numofIntCircles
+     */
+    public double[] radiusLabels = null;
+
+    /**
+     * Number of circles in polar plot.
+     * 
+     * @see #radiusLabels
+     */
+    public int numofIntCircles = 5;
+
+    /**
      * Create polar axes.
      * 
      * @param rect boundaries
@@ -313,6 +348,7 @@ public abstract class SVGwritter {
       double x0 = rect.getLocation().getX() + rect.getWidth() / 2;
       double y0 = rect.getLocation().getY() + rect.getHeight() / 2;
       double radius = rect.getHeight() / 2;
+
       // main circle
       Qcircle qcmain = new Qcircle(x0, y0, radius);
       qcmain.colour = new QColor(1, 1, 1);
@@ -322,16 +358,28 @@ public abstract class SVGwritter {
 
       // lines
       for (int a = 0; a < 360; a += 20) {
-        Qline ql = new Qline(x0, y0, radius * Math.cos(Math.toRadians(a)) + x0,
-                radius * Math.sin(Math.toRadians(a)) + y0);
+        double xend = radius * Math.cos(Math.toRadians(a)) + x0;
+        double yend = radius * Math.sin(Math.toRadians(a)) + y0;
+        Qline ql = new Qline(x0, y0, xend, yend);
         ql.thickness = thickness;
         ql.colour = colour;
         ql.draw(osw);
-      }
 
+        // labels on angles
+        if (angleLabel) {
+          Qtext qt = new Qtext(Integer.toString(a), fontSize, "New Roman",
+                  new ExtendedVector2d(xend, yend));
+          qt.letterSpacing = fontSize / 2; // may not be important for fontSize>0.6 (?)
+          if (a < 90 || a > 270) {
+            qt.textAnchor = "start";
+          } else {
+            qt.textAnchor = "end";
+          }
+          qt.draw(osw);
+        }
+      }
       // circles
-      int n = 5;
-      double d = radius / (n + 1);
+      double d = radius / (numofIntCircles + 1);
       double gridrad = d;
       int i = 0;
       do {
@@ -340,14 +388,43 @@ public abstract class SVGwritter {
         g1.strokecolour = colour;
         g1.thickness = thickness;
         g1.draw(osw);
-        gridrad += d;
-      } while (++i < n);
 
-      // middle
-      Qcircle qcm = new Qcircle(rect.getLocation().getX() + rect.getWidth() / 2,
-              rect.getLocation().getY() + rect.getHeight() / 2, thickness * 4);
-      qcm.colour = colour;
-      qcm.draw(osw);
+        // rlabel
+        if (radiusLabels != null && i < numofIntCircles) {
+          String st = IJ.d2s(radiusLabels[i], 2, 4);
+          double x = gridrad * Math.cos(Math.toRadians(160)) + x0;
+          double y = gridrad * Math.sin(Math.toRadians(160)) + y0;
+          Qtext qt = new Qtext(st, fontSize - 0.04, "New Roman", new ExtendedVector2d(x, y));
+          qt.letterSpacing = (fontSize - 0.04) / 2;
+          qt.textAnchor = "middle";
+          qt.draw(osw);
+        }
+        gridrad += d;
+      } while (++i < numofIntCircles);
+
+      // circle red in middle
+      {
+        Qcircle qc = new Qcircle(rect.getLocation().getX() + rect.getWidth() / 2,
+                rect.getLocation().getY() + rect.getHeight() / 2, thickness * 4);
+        qc.colour = new QColor(1, 0, 0);
+        qc.draw(osw);
+      }
+
+      // green at 0deg
+      {
+        Qcircle qc = new Qcircle(radius * Math.cos(Math.toRadians(0)) + x0,
+                radius * Math.sin(Math.toRadians(0)) + y0, thickness * 4);
+        qc.colour = new QColor(0, 1, 0);
+        qc.draw(osw);
+      }
+
+      // green at 180deg
+      {
+        Qcircle qc = new Qcircle(radius * Math.cos(Math.toRadians(180)) + x0,
+                radius * Math.sin(Math.toRadians(180)) + y0, thickness * 4);
+        qc.colour = new QColor(0, 0, 1);
+        qc.draw(osw);
+      }
 
     }
   }

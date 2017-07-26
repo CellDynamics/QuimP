@@ -255,6 +255,7 @@ public class Prot_Analysis implements IQuimpPlugin {
       // write svg plots
       if (config.polarPlot.plotpolar && config.polarPlot.useGradient) {
         PolarPlot pp = new PolarPlot(mapCell, config.polarPlot.gradientPoint);
+        pp.labels = true;
         pp.generatePlot(Paths.get(qconfLoader.getQp().getPath(),
                 qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.polarPlotSuffix)
                 .toString());
