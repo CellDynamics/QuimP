@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
-import com.github.celldynamics.quimp.utils.graphics.PolarPlot;
 
 /**
  * @author p.baniukiewicz
@@ -94,7 +93,7 @@ public class PolarPlotTest {
 
   /**
    * Test method for
-   * {@link com.github.celldynamics.quimp.utils.graphics.PolarPlot#getVectors(int, Point2d[], int[])}.
+   * {@link PolarPlot#getVectors(int, Point2d[], int[])}.
    * 
    * @throws Exception on error
    */
