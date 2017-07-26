@@ -51,6 +51,11 @@ public class PolarPlot {
   public double uscale;
 
   /**
+   * Whether to plot rho and theta labels.
+   */
+  public boolean labels = false;
+
+  /**
    * Create PolarPlot object with default plot size.
    * 
    * @param mapCell mapCell
@@ -182,11 +187,16 @@ public class PolarPlot {
     double[] angles = getUniformAngles(magn.length);
     // remove negative values (shift)
     double min = QuimPArrayUtils.arrayMin(magn);
+    double max = QuimPArrayUtils.arrayMax(magn);
     for (int i = 0; i < magn.length; i++) {
       magn[i] -= (min + kscale * min); // k*min - distance from 0
     }
 
-    polarPlotPoints(filename, angles, magn, null); // generate plot
+    if (labels) {
+      polarPlotPoints(filename, angles, magn, new double[] { min, max });
+    } else {
+      polarPlotPoints(filename, angles, magn, null);
+    } // generate plot
 
   }
 
@@ -219,7 +229,11 @@ public class PolarPlot {
     for (int i = 0; i < magn.length; i++) {
       magn[i] -= (min + kscale * min); // k*min - distance from 0
     }
-    polarPlotPoints(filename, angles, magn, new double[] { min, max }); // generate plot
+    if (labels) {
+      polarPlotPoints(filename, angles, magn, new double[] { min, max });
+    } else {
+      polarPlotPoints(filename, angles, magn, null);
+    } // generate plot
     LOGGER.debug("Polar plot saved: " + filename);
 
   }
@@ -248,6 +262,7 @@ public class PolarPlot {
     SVGwritter.writeHeader(osw, extendedPlotArea); // write header with sizes
     // plot axes
     SVGwritter.QPolarAxes qaxes = new SVGwritter.QPolarAxes(plotArea);
+    qaxes.angleLabel = labels;
     if (valMinMax != null && valMinMax.length != 0) {
       List<Double> ret =
               ExtendedVector2d.linspace(valMinMax[0], valMinMax[1], qaxes.numofIntCircles + 2);

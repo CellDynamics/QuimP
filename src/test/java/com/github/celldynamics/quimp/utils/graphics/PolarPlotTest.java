@@ -101,10 +101,8 @@ public class PolarPlotTest {
   public void testGetVectors() throws Exception {
     int f = 0;
     // expected in correct order
-    //!<
     Vector2d[] expected = { new Vector2d(0.5, 1), new Vector2d(1.5, 0), new Vector2d(0.5, -1),
         new Vector2d(-0.5, -1), new Vector2d(-1.5, 0), new Vector2d(-0.5, 1) };
-    /**/
     Vector2d[] ret = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
     assertThat(ret, is(expected));
   }
@@ -119,10 +117,8 @@ public class PolarPlotTest {
   public void testGetAngles() throws Exception {
 
     int f = 0;
-    //!>
     double[] expected = { 0, // rounded, assume that polygon is given in anticlock dir
         63, 127, 180, -117, -53 };
-    //!<
     Vector2d[] v = polarPlot.getVectors(f, polarPlot.getMassCentre(), polarPlot.getShift());
     double[] ret = polarPlot.getAngles(v, v[0]);
     for (int i = 0; i < ret.length; i++) {
@@ -156,6 +152,7 @@ public class PolarPlotTest {
    */
   @Test
   public void testGeneratePlot() throws Exception {
+    polarPlot.labels = true;
     polarPlot.generatePlotFrame(tmpdir + "test.svg", 0);
   }
 
@@ -172,6 +169,7 @@ public class PolarPlotTest {
     QconfLoader qconfLoader = new QconfLoader(new File("src/test/Resources-static/"
             + "ProtAnalysisTest/KZ4/KZ4-220214-cAR1-GFP-devel5.QCONF"));
     PolarPlot pp = new PolarPlot(qconfLoader.getQ()[0], new Point2d(512, 512));
+    pp.labels = true;
     pp.generatePlot(tmpdir + "test_1.svg");
     pp.generatePlotFrame(tmpdir + "test_1f2.svg", 1);
   }

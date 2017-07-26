@@ -304,7 +304,7 @@ public abstract class SVGwritter {
     /**
      * Show angle labels.
      */
-    public boolean angleLabel = true;
+    public boolean angleLabel = false;
 
     /**
      * Font size. If one gets overlap letters, play with fontSize and {@link Qtext#letterSpacing}
