@@ -369,7 +369,7 @@ public abstract class SVGwritter {
         if (angleLabel) {
           Qtext qt = new Qtext(Integer.toString(a), fontSize, "New Roman",
                   new ExtendedVector2d(xend, yend));
-          qt.letterSpacing = fontSize / 2; // may not be important for fontSize>0.6 (?)
+          // qt.letterSpacing = fontSize / 2; // may not be important for fontSize>0.6 (?)
           if (a < 90 || a > 270) {
             qt.textAnchor = "start";
           } else {
@@ -395,7 +395,7 @@ public abstract class SVGwritter {
           double x = gridrad * Math.cos(Math.toRadians(160)) + x0;
           double y = gridrad * Math.sin(Math.toRadians(160)) + y0;
           Qtext qt = new Qtext(st, fontSize - 0.04, "New Roman", new ExtendedVector2d(x, y));
-          qt.letterSpacing = (fontSize - 0.04) / 2;
+          // qt.letterSpacing = (fontSize - 0.04) / 2;
           qt.textAnchor = "middle";
           qt.draw(osw);
         }
