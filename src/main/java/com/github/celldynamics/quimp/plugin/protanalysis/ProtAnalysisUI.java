@@ -340,6 +340,8 @@ class ProtAnalysisUI implements ActionListener {
       bnGradient.addActionListener(this);
       outlinesp.add(bnGradient);
       chUseGradient = new JCheckBox("Use grad");
+      chUseGradient.setEnabled(false);
+      chUseGradient.setToolTipText("Not implemented");
       outlinesp.add(chUseGradient);
       outlinesp.add(new JLabel(" "));
       outlinesp.add(new JLabel(" "));
