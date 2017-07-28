@@ -6,6 +6,26 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+       <release version="17.07.01" date="2017-07-28" description="Release">
+         <action dev="baniuk" type="fix" issue="175">
+              QuimP-FormatConverter: stQP files are converted to QCONF.
+         </action>
+         <action dev="baniuk" type="update" issue="256">
+              QuimP-ConvertMask: Snakes recreated from masks have basic properties set.
+         </action>
+         <action dev="baniuk" type="add" issue="259">
+              QuimP-BOA: Added copy from last frame buttons.
+         </action>
+         <action dev="baniuk" type="update" issue="261">
+              QuimP-DIC: Added invert option to the filter.
+         </action>
+         <action dev="baniuk" type="update" issue="262">
+              QuimP-API: Optimise statistics saving.
+         </action>
+         <action dev="baniuk" type="update" issue="264">
+              QuimP-ProtrusionAnalysis: Better polar plots.
+         </action>
+       </release>
        <release version="17.06.02" date="2017-06-16" description="Release">
          <action dev="baniuk" type="update" issue="257">
               QuimP-API: Updated documentation.
