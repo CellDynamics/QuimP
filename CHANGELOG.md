@@ -1,5 +1,20 @@
 # Change Log
 
+## [v17.07.01](https://github.com/CellDynamics/QuimP/tree/v17.07.01) (2017-07-28)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.06.02...v17.07.01)
+
+**Implemented enhancements:**
+
+- Fix polar plots [\#264](https://github.com/CellDynamics/QuimP/issues/264)
+- Optimise stat saving [\#262](https://github.com/CellDynamics/QuimP/issues/262)
+- Add invert option to DIC [\#261](https://github.com/CellDynamics/QuimP/issues/261)
+- Add copy from previous option [\#259](https://github.com/CellDynamics/QuimP/issues/259)
+- Snakes created from binary masks do not have properties set  [\#256](https://github.com/CellDynamics/QuimP/issues/256)
+
+**Fixed bugs:**
+
+- Add conversion for STATS [\#175](https://github.com/CellDynamics/QuimP/issues/175)
+
 ## [v17.06.02](https://github.com/CellDynamics/QuimP/tree/v17.06.02) (2017-06-16)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.06.01...v17.06.02)
 
