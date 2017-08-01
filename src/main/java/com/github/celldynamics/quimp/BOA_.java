@@ -1634,7 +1634,7 @@ public class BOA_ implements PlugIn {
         }
         // copy snaphots for frame to current snakePluginList (and segParams)
         qState.restore(qState.boap.frame);
-        recalculatePlugins(); // update screen
+        // recalculatePlugins(); // update screen
       }
 
       /*
@@ -2629,6 +2629,9 @@ public class BOA_ implements PlugIn {
     YesNoCancelDialog ync;
     File testF;
     LOGGER.debug(qState.segParam.toString());
+    for (SnakeHandler sh : qState.nest.getHandlers()) {
+      sh.findLastFrame(); // make sure that endFrame points good frame
+    }
     if (qState.boap.saveSnake) {
       try {
         // this field is set on loading of QCONF thus BOA will ask to save in the same

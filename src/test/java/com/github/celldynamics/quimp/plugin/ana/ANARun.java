@@ -1,7 +1,5 @@
 package com.github.celldynamics.quimp.plugin.ana;
 
-import com.github.celldynamics.quimp.plugin.ana.ANA_;
-
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -31,7 +29,8 @@ public class ANARun {
   @SuppressWarnings("unused")
   public static void main(String[] args) {
     ImageJ ij = new ImageJ();
-    ImagePlus im = IJ.openImage("/home/baniuk/Desktop/Tests/Pabloemail/test.tif");
+    ImagePlus im = IJ.openImage(
+            "/home/baniuk/Documents/OneDrive/BioinformaticsPaper/Supplementary_material_C_data (copy)/KZ4-220214-cAR1-GFP-devel5.5h-agar07-14.tif");
     im.show();
     ANA_ ana = new ANA_();
     ana.setup(new String(), im);
