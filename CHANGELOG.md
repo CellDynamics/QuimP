@@ -1,5 +1,12 @@
 # Change Log
 
+## [v17.07.02](https://github.com/CellDynamics/QuimP/tree/v17.07.02) (2017-08-01)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.07.01...v17.07.02)
+
+**Fixed bugs:**
+
+- Re-apply filter breaks stats [\#268](https://github.com/CellDynamics/QuimP/issues/268)
+
 ## [v17.07.01](https://github.com/CellDynamics/QuimP/tree/v17.07.01) (2017-07-28)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.06.02...v17.07.01)
 
