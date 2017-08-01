@@ -6,6 +6,11 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="17.07.02" date="2017-08-01" description="Bugfix">
+         <action dev="baniuk" type="fix" issue="268">
+              QuimP-BOA: Last frame index could be wrongly set after manulal editing of frames or using filters. This affected e.g. ANA
+         </action>
+       </release>
        <release version="17.07.01" date="2017-07-28" description="Release">
          <action dev="baniuk" type="fix" issue="175">
               QuimP-FormatConverter: stQP files are converted to QCONF.
