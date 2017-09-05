@@ -37,6 +37,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -45,6 +46,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -111,6 +113,8 @@ import ij.process.StackConverter;
  */
 public class BOA_ implements PlugIn {
   private static final Logger LOGGER = LoggerFactory.getLogger(BOA_.class.getName());
+
+  private boolean stopped = false;
 
   /**
    * The canvas.
@@ -426,6 +430,7 @@ public class BOA_ implements PlugIn {
           continue;
         }
         try {
+          setBusyStatus(true, false);
           Snake out = iterateOverSnakePlugins(snake); // apply all plugins to snake
           sh.storeThisSnake(out, qState.boap.frame); // set processed snake as final
         } catch (QuimpPluginException qpe) {
@@ -442,6 +447,7 @@ public class BOA_ implements PlugIn {
     } finally {
       historyLogger.addEntry("Plugin settings", qState);
       qState.store(qState.boap.frame); // always remember state of the BOA that is
+      setBusyStatus(false, true);
     }
     imageGroup.updateOverlay(qState.boap.frame);
   }
@@ -505,7 +511,7 @@ public class BOA_ implements PlugIn {
       // workaround for Mac and theirs menus on top screen bar
       // IJ is doing the same for activation of its window so every time one has correct menu
       // on top
-      window.setMenuBar(window.quimpMenuBar);
+      window.setMenuBar(window.menuBar);
     }
   }
 
@@ -593,10 +599,11 @@ public class BOA_ implements PlugIn {
      * Number of currently supported plugins.
      */
     static final int SNAKE_PLUGIN_NUM = 3;
-    private Button bnFinish;
     private Button bnSeg;
+    private Button bnFinish;
     private Button bnLoad;
     private Button bnEdit;
+    private Button bnQuit;
     private Button bnDefault;
     private Button bnScale;
     private Button bnCopyLast;
@@ -604,7 +611,6 @@ public class BOA_ implements PlugIn {
     private Button bnAdd;
     private Button bnDel;
     private Button bnDelSeg;
-    private Button bnQuit;
 
     private Checkbox cbPrevSnake;
     private Checkbox cbExpSnake;
@@ -643,7 +649,7 @@ public class BOA_ implements PlugIn {
     private Button bnPopulatePlugin; // same as menuPopulatePlugin
     private Button bnCopyLastPlugin;
 
-    private MenuBar quimpMenuBar;
+    private MenuBar menuBar; // main menu bar
     private MenuItem menuAbout;
     private MenuItem menuOpenHelp;
     private MenuItem menuSaveConfig;
@@ -656,7 +662,6 @@ public class BOA_ implements PlugIn {
     private MenuItem menuSegmentationReset; // items
     private CheckboxMenuItem cbMenuPlotOriginalSnakes;
     private CheckboxMenuItem cbMenuPlotHead;
-    private Color defaultColor;
 
     private MenuItem menuPopulatePlugin;
 
@@ -672,6 +677,67 @@ public class BOA_ implements PlugIn {
     }
 
     /**
+     * Enables or disables all UI controls.
+     * 
+     * @param state true for enabled, false for disabled.
+     */
+    public void enableUi(boolean state) {
+      bnSeg.setEnabled(state);
+      bnFinish.setEnabled(state);
+      bnLoad.setEnabled(state);
+      bnEdit.setEnabled(state);
+      bnQuit.setEnabled(state);
+      bnDefault.setEnabled(state);
+      bnScale.setEnabled(state);
+      bnCopyLast.setEnabled(state);
+
+      bnAdd.setEnabled(state);
+      bnDel.setEnabled(state);
+      bnDelSeg.setEnabled(state);
+
+      cbPrevSnake.setEnabled(state);
+      cbExpSnake.setEnabled(state);
+      cbPath.setEnabled(state);
+      chZoom.setEnabled(state);
+
+      dsNodeRes.setEnabled(state);
+      dsVelCrit.setEnabled(state);
+      dsFImage.setEnabled(state);
+      dsFCentral.setEnabled(state);
+      dsFContract.setEnabled(state);
+      dsFinalShrink.setEnabled(state);
+
+      isMaxIterations.setEnabled(state);
+      isBlowup.setEnabled(state);
+      isSampletan.setEnabled(state);
+      isSamplenorm.setEnabled(state);
+      chFirstPluginName.setEnabled(state);
+      chSecondPluginName.setEnabled(state);
+      chThirdPluginName.setEnabled(state);
+      bnFirstPluginGUI.setEnabled(state);
+      bnSecondPluginGUI.setEnabled(state);
+      bnThirdPluginGUI.setEnabled(state);
+      cbFirstPluginActiv.setEnabled(state);
+      cbSecondPluginActiv.setEnabled(state);
+      cbThirdPluginActiv.setEnabled(state);
+      bnPopulatePlugin.setEnabled(state); // same as menuPopulatePlugin
+      bnCopyLastPlugin.setEnabled(state);
+      for (int i = 0; i < menuBar.getMenuCount(); i++) {
+        menuBar.getMenu(i).setEnabled(state);
+      }
+    }
+
+    /**
+     * Similar to {@link #enableUi(boolean)} but always enables cancel button.
+     * 
+     * @param state true for enabled, false for disabled.
+     */
+    public void enableUiInterruptile(boolean state) {
+      enableUi(state);
+      bnSeg.setEnabled(true);
+    }
+
+    /**
      * Build user interface.
      * 
      * <p>This method is called as first. The interface is built in three steps: Left side of
@@ -680,7 +746,7 @@ public class BOA_ implements PlugIn {
      * 
      * @see com.github.celldynamics.quimp.BOA_.CustomStackWindow#updateWindowState()
      */
-    private void buildWindow() {
+    public void buildWindow() {
 
       setLayout(new BorderLayout(10, 3));
 
@@ -699,12 +765,10 @@ public class BOA_ implements PlugIn {
       add(new Label(""), BorderLayout.SOUTH);
 
       LOGGER.debug("Menu: " + getMenuBar());
-      quimpMenuBar = buildMenu(); // store menu in var to reuse on window activation
-      setMenuBar(quimpMenuBar);
+      menuBar = buildMenu(); // store menu in var to reuse on window activation
+      setMenuBar(menuBar);
       pack();
       updateWindowState(); // window logic on start
-      defaultColor = sp.getBackground();
-
     }
 
     /**
@@ -718,7 +782,6 @@ public class BOA_ implements PlugIn {
      * @return Reference to menu bar
      */
     final MenuBar buildMenu() {
-      MenuBar menuBar; // main menu bar
       Menu menuHelp; // menu About in menubar
       Menu menuConfig; // menu Config in menubar
       Menu menuFile; // menu File in menubar
@@ -1211,7 +1274,7 @@ public class BOA_ implements PlugIn {
       // first slot snake plugin
       if (qState.snakePluginList.getName(0).isEmpty()) {
         chFirstPluginName.select(NONE);
-        chFirstPluginName.setBackground(defaultColor);
+        chFirstPluginName.setBackground(null);
       } else {
         // try to select name from pluginList in choice
         chFirstPluginName.select(qState.snakePluginList.getName(0));
@@ -1231,7 +1294,7 @@ public class BOA_ implements PlugIn {
       // second slot snake plugin
       if (qState.snakePluginList.getName(1).isEmpty()) {
         chSecondPluginName.select(NONE);
-        chSecondPluginName.setBackground(defaultColor);
+        chSecondPluginName.setBackground(null);
       } else {
         chSecondPluginName.select(qState.snakePluginList.getName(1));
         if (chSecondPluginName.getSelectedItem().equals(NONE)) {
@@ -1246,7 +1309,7 @@ public class BOA_ implements PlugIn {
       // third slot snake plugin
       if (qState.snakePluginList.getName(2).isEmpty()) {
         chThirdPluginName.select(NONE);
-        chThirdPluginName.setBackground(defaultColor);
+        chThirdPluginName.setBackground(null);
       } else {
         chThirdPluginName.select(qState.snakePluginList.getName(2));
         if (chThirdPluginName.getSelectedItem().equals(NONE)) {
@@ -1380,20 +1443,11 @@ public class BOA_ implements PlugIn {
         this.setDefualts();
         run = true;
       } else if (b == bnSeg) { // main segmentation procedure starts here
-        IJ.showStatus("SEGMENTING...");
-        bnSeg.setLabel("computing");
-        int framesCompleted;
-        try {
-          runBoa(qState.boap.frame, qState.boap.getFrames());
-          framesCompleted = qState.boap.getFrames();
-          IJ.showStatus("COMPLETE");
-        } catch (BoaException be) {
-          BOA_.log(be.getMessage());
-          framesCompleted = be.getFrame();
-          IJ.showStatus("FAIL AT " + framesCompleted);
-          BOA_.log("FAIL AT " + framesCompleted);
+        if (qState.boap.SEGrunning) {
+          stopped = true;
+          return;
         }
-        bnSeg.setLabel("SEGMENT");
+        runBoaThread(qState.boap.frame, qState.boap.getFrames(), true);
       } else if (b == bnScale) {
         setScales();
         pixelLabel.setText("Scale: " + IJ.d2s(qState.boap.getImageScale(), 6) + " \u00B5m");
@@ -1684,15 +1738,53 @@ public class BOA_ implements PlugIn {
 
       // run segmentation for selected cases
       if (run) {
-        System.out.println("running from in stackwindow");
-        // run on current frame
-        try {
-          runBoa(qState.boap.frame, qState.boap.frame); // and plugins as well
-        } catch (BoaException be) {
-          BOA_.log(be.getMessage());
-        }
-        // imageGroup.setSlice(1);
+        runBoaThread(qState.boap.frame, qState.boap.frame, false);
       }
+    }
+
+    /**
+     * Run segmentation in separate thread.
+     * 
+     * @param startFrame start frame
+     * @param endFrame end frame
+     * 
+     * @param interruptible if true cancel button is active.
+     */
+    private void runBoaThread(int startFrame, int endFrame, boolean interruptible) {
+      System.out.println("running from in stackwindow");
+      // run on current frame
+      SwingWorker<Boolean, Object> sww = new SwingWorker<Boolean, Object>() {
+        @Override
+        protected Boolean doInBackground() throws Exception {
+          setBusyStatus(true, interruptible);
+          IJ.showStatus("SEGMENTING...");
+          runBoa(startFrame, endFrame);
+          return true;
+        }
+
+        @Override
+        protected void done() {
+          try {
+            get();
+          } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof BoaException) {
+              BOA_.log(cause.getMessage());
+              int framesCompleted = ((BoaException) cause).getFrame();
+              IJ.showStatus("FAIL AT " + framesCompleted);
+              BOA_.log("FAIL AT " + framesCompleted);
+            }
+          } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          } finally {
+            setBusyStatus(false, true);
+            IJ.showStatus("COMPLETE");
+          }
+        }
+
+      };
+      sww.execute();
     }
 
     /**
@@ -2104,6 +2196,32 @@ public class BOA_ implements PlugIn {
   }
 
   /**
+   * Set busy status for BOA window.
+   * 
+   * <p>Window is inactive for busy status. Setting flag <tt>interruptible</tt> enables Cancel
+   * button that breaks current operation.
+   * 
+   * @param busy True if busy, false otherwise
+   * @param interruptible true for enabling Cancel button.
+   */
+  private void setBusyStatus(boolean busy, boolean interruptible) {
+    if (busy == true) {
+      window.bnSeg.setBackground(Color.RED);
+      window.bnSeg.setLabel("Busy");
+      if (interruptible) {
+        window.enableUiInterruptile(false);
+      } else {
+        window.enableUi(false);
+      }
+    } else {
+      window.bnSeg.setBackground(null);
+      window.bnSeg.setLabel("SEGMENT");
+      window.enableUi(true);
+    }
+
+  }
+
+  /**
    * Start segmentation process on range of frames.
    * 
    * <p>This method is called for update only current view as well (<tt>startF</tt> ==
@@ -2117,6 +2235,8 @@ public class BOA_ implements PlugIn {
    */
   public void runBoa(int startF, int endF) throws BoaException {
     System.out.println("run BOA");
+    // setBusyStatus(true, true);
+    stopped = false;
     qState.boap.SEGrunning = true;
     if (qState.nest.isVacant()) {
       BOA_.log("Nothing to segment!");
@@ -2141,7 +2261,8 @@ public class BOA_ implements PlugIn {
       Snake snake;
       imageGroup.clearPaths(startF);
 
-      for (qState.boap.frame = startF; qState.boap.frame <= endF; qState.boap.frame++) {
+      for (qState.boap.frame = startF; qState.boap.frame <= endF
+              && stopped != true; qState.boap.frame++) {
         // per frame
         imageGroup.setProcessor(qState.boap.frame);
         imageGroup.setIpSliceAll(qState.boap.frame);
@@ -2222,8 +2343,11 @@ public class BOA_ implements PlugIn {
       // do no add LOGGER here #278
       throw new BoaException("Frame " + qState.boap.frame + ": " + e.getMessage(),
               qState.boap.frame, 1);
+    } finally {
+      // setBusyStatus(false, true);
+      qState.boap.SEGrunning = false;
     }
-    qState.boap.SEGrunning = false;
+
   }
 
   /**
@@ -2724,6 +2848,7 @@ public class BOA_ implements PlugIn {
     window.setImage(new ImagePlus());// remove link to window
     window.close();
   }
+
 }
 
 /**
