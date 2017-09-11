@@ -114,7 +114,22 @@ import ij.process.StackConverter;
 public class BOA_ implements PlugIn {
   private static final Logger LOGGER = LoggerFactory.getLogger(BOA_.class.getName());
 
-  private boolean stopped = false;
+  /**
+   * Indicate that {@link com.github.celldynamics.quimp.BOA_#runBoa(int, int)} is active.
+   * 
+   * <p>This method calls {@link com.github.celldynamics.quimp.ImageGroup#setIpSliceAll(int)} that
+   * raises event
+   * {@link com.github.celldynamics.quimp.BOA_.CustomStackWindow#updateSliceSelector()} which then
+   * fire other methods.
+   */
+  boolean isSegRunning = false;
+
+  /**
+   * Used for breaking segmentation if Cancel is hit. If true segmentation is stopped.
+   * 
+   * @see #runBoa(int, int)
+   */
+  private boolean isSegBreakHit = false;
 
   /**
    * The canvas.
@@ -132,9 +147,9 @@ public class BOA_ implements PlugIn {
   static TextArea logArea;
 
   /**
-   * The running.
+   * Indicate if the BOA plugin is run.
    */
-  static boolean running = false;
+  static boolean isBoaRunning = false;
 
   /**
    * The image group.
@@ -210,8 +225,8 @@ public class BOA_ implements PlugIn {
       return;
     }
 
-    if (BOA_.running) {
-      BOA_.running = false;
+    if (BOA_.isBoaRunning) {
+      BOA_.isBoaRunning = false;
       IJ.error("Warning: Only have one instance of BOA running at a time");
       return;
     }
@@ -277,7 +292,7 @@ public class BOA_ implements PlugIn {
         return;
       }
     }
-    BOA_.running = true;
+    BOA_.isBoaRunning = true;
     setup(ip); // create main objects in BOA and BOAState, build window + registration window
 
     if (qState.boap.useSubPixel == false) {
@@ -402,7 +417,7 @@ public class BOA_ implements PlugIn {
 
   /**
    * Redraw current view. Process outlines by all active plugins. Do not run segmentation again
-   * Updates liveSnake.
+   * Updates liveSnake. Also disables UI.
    * 
    * <p>Strictly related to current view {@link BOAState.BOAp#frame}.
    */
@@ -476,7 +491,7 @@ public class BOA_ implements PlugIn {
     // It is too late for asking user
     public void windowClosed(final WindowEvent arg0) {
       LOGGER.trace("CLOSED");
-      BOA_.running = false; // set marker
+      BOA_.isBoaRunning = false; // set marker
       qState.snakePluginList.clear(); // close all opened plugin windows
       if (qState.binarySegmentationPlugin != null) {
         qState.binarySegmentationPlugin.showUi(false);
@@ -599,7 +614,7 @@ public class BOA_ implements PlugIn {
      * Number of currently supported plugins.
      */
     static final int SNAKE_PLUGIN_NUM = 3;
-    private Button bnSeg;
+    private Button bnSeg; // also play role of Cancel button
     private Button bnFinish;
     private Button bnLoad;
     private Button bnEdit;
@@ -1443,8 +1458,8 @@ public class BOA_ implements PlugIn {
         this.setDefualts();
         run = true;
       } else if (b == bnSeg) { // main segmentation procedure starts here
-        if (qState.boap.SEGrunning) {
-          stopped = true;
+        if (isSegRunning) { // set by runBoa, true if segmentation runs.
+          isSegBreakHit = true;
           return;
         }
         runBoaThread(qState.boap.frame, qState.boap.getFrames(), true);
@@ -2116,7 +2131,7 @@ public class BOA_ implements PlugIn {
         IJ.setTool(lastTool);
       }
       LOGGER.trace("Snakes at this frame: " + qState.nest.getSnakesforFrame(qState.boap.frame));
-      if (!qState.boap.SEGrunning) {
+      if (!isSegRunning) {
         // do not update or restore state when we hit this event from runBoa() method (through
         // setIpSliceAll(int))
         qState.restore(qState.boap.frame);
@@ -2202,7 +2217,7 @@ public class BOA_ implements PlugIn {
    * button that breaks current operation.
    * 
    * @param busy True if busy, false otherwise
-   * @param interruptible true for enabling Cancel button.
+   * @param interruptible true for enabling Cancel button. Ignored if busy==false
    */
   private void setBusyStatus(boolean busy, boolean interruptible) {
     if (busy == true) {
@@ -2235,12 +2250,11 @@ public class BOA_ implements PlugIn {
    */
   public void runBoa(int startF, int endF) throws BoaException {
     System.out.println("run BOA");
-    // setBusyStatus(true, true);
-    stopped = false;
-    qState.boap.SEGrunning = true;
+    isSegBreakHit = false;
+    isSegRunning = true;
     if (qState.nest.isVacant()) {
       BOA_.log("Nothing to segment!");
-      qState.boap.SEGrunning = false;
+      isSegRunning = false;
       return;
     }
     try {
@@ -2262,7 +2276,7 @@ public class BOA_ implements PlugIn {
       imageGroup.clearPaths(startF);
 
       for (qState.boap.frame = startF; qState.boap.frame <= endF
-              && stopped != true; qState.boap.frame++) {
+              && isSegBreakHit != true; qState.boap.frame++) {
         // per frame
         imageGroup.setProcessor(qState.boap.frame);
         imageGroup.setIpSliceAll(qState.boap.frame);
@@ -2309,7 +2323,7 @@ public class BOA_ implements PlugIn {
               qState.nest.kill(snH);
               snake.unfreezeAll();
               BOA_.log("Snake " + snake.getSnakeID() + " died, frame " + qState.boap.frame);
-              qState.boap.SEGrunning = false;
+              isSegRunning = false;
               if (qState.nest.allDead()) {
                 throw new BoaException("All snakes dead: " + be.getMessage(), qState.boap.frame, 1);
               }
@@ -2319,7 +2333,7 @@ public class BOA_ implements PlugIn {
           imageGroup.updateOverlay(qState.boap.frame); // redraw display
           IJ.showProgress(qState.boap.frame, endF);
         } catch (BoaException be) {
-          qState.boap.SEGrunning = false;
+          isSegRunning = false;
           if (!qState.segParam.use_previous_snake) {
             imageGroup.setIpSliceAll(qState.boap.frame);
             imageGroup.updateOverlay(qState.boap.frame);
@@ -2337,15 +2351,14 @@ public class BOA_ implements PlugIn {
       // e.printStackTrace();
       /// imageGroup.drawContour(nest.getSNAKES(), frame);
       // imageGroup.updateAndDraw();
-      qState.boap.SEGrunning = false;
+      isSegRunning = false;
       LOGGER.debug(e.getMessage(), e);
       imageGroup.updateOverlay(qState.boap.frame); // update on error
       // do no add LOGGER here #278
       throw new BoaException("Frame " + qState.boap.frame + ": " + e.getMessage(),
               qState.boap.frame, 1);
     } finally {
-      // setBusyStatus(false, true);
-      qState.boap.SEGrunning = false;
+      isSegRunning = false;
     }
 
   }
@@ -2820,7 +2833,7 @@ public class BOA_ implements PlugIn {
         return;
       }
     }
-    BOA_.running = false;
+    BOA_.isBoaRunning = false;
     imageGroup.makeContourImage();
     qState.nest = null; // remove from memory
     imageGroup.getOrgIpl().setOverlay(new Overlay());
@@ -2840,7 +2853,7 @@ public class BOA_ implements PlugIn {
       return;
     }
 
-    BOA_.running = false;
+    BOA_.isBoaRunning = false;
     qState.nest = null; // remove from memory
     imageGroup.getOrgIpl().setOverlay(new Overlay()); // clear overlay
     new StackWindow(imageGroup.getOrgIpl());
