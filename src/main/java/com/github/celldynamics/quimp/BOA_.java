@@ -445,7 +445,6 @@ public class BOA_ implements PlugIn {
           continue;
         }
         try {
-          setBusyStatus(true, false);
           Snake out = iterateOverSnakePlugins(snake); // apply all plugins to snake
           sh.storeThisSnake(out, qState.boap.frame); // set processed snake as final
         } catch (QuimpPluginException qpe) {
@@ -462,7 +461,6 @@ public class BOA_ implements PlugIn {
     } finally {
       historyLogger.addEntry("Plugin settings", qState);
       qState.store(qState.boap.frame); // always remember state of the BOA that is
-      setBusyStatus(false, true);
     }
     imageGroup.updateOverlay(qState.boap.frame);
   }
@@ -614,6 +612,13 @@ public class BOA_ implements PlugIn {
      * Number of currently supported plugins.
      */
     static final int SNAKE_PLUGIN_NUM = 3;
+    /**
+     * Any worker that run thread for boa or plugins will be referenced here.
+     * 
+     * @see #runBoaThread(int, int, boolean)
+     * @see #populatePlugins(List)
+     */
+    private SwingWorker<Boolean, Object> sww = null;
     private Button bnSeg; // also play role of Cancel button
     private Button bnFinish;
     private Button bnLoad;
@@ -1353,27 +1358,30 @@ public class BOA_ implements PlugIn {
       updateChoices(); // and choices
       updateStatics();
 
-      // Rule 1 - NONE on any slot in filters disable GUI button and Active checkbox
-      if (chFirstPluginName.getSelectedItem() == NONE) {
-        cbFirstPluginActiv.setEnabled(false);
-        bnFirstPluginGUI.setEnabled(false);
-      } else {
-        cbFirstPluginActiv.setEnabled(true);
-        bnFirstPluginGUI.setEnabled(true);
-      }
-      if (chSecondPluginName.getSelectedItem() == NONE) {
-        cbSecondPluginActiv.setEnabled(false);
-        bnSecondPluginGUI.setEnabled(false);
-      } else {
-        cbSecondPluginActiv.setEnabled(true);
-        bnSecondPluginGUI.setEnabled(true);
-      }
-      if (chThirdPluginName.getSelectedItem() == NONE) {
-        cbThirdPluginActiv.setEnabled(false);
-        bnThirdPluginGUI.setEnabled(false);
-      } else {
-        cbThirdPluginActiv.setEnabled(true);
-        bnThirdPluginGUI.setEnabled(true);
+      // Rule 1 - NONE on any slot in filters disable GUI button and Active checkbox but only if
+      // there is no worker working
+      if (sww == null || sww.getState() == SwingWorker.StateValue.DONE) {
+        if (chFirstPluginName.getSelectedItem() == NONE) {
+          cbFirstPluginActiv.setEnabled(false);
+          bnFirstPluginGUI.setEnabled(false);
+        } else {
+          cbFirstPluginActiv.setEnabled(true);
+          bnFirstPluginGUI.setEnabled(true);
+        }
+        if (chSecondPluginName.getSelectedItem() == NONE) {
+          cbSecondPluginActiv.setEnabled(false);
+          bnSecondPluginGUI.setEnabled(false);
+        } else {
+          cbSecondPluginActiv.setEnabled(true);
+          bnSecondPluginGUI.setEnabled(true);
+        }
+        if (chThirdPluginName.getSelectedItem() == NONE) {
+          cbThirdPluginActiv.setEnabled(false);
+          bnThirdPluginGUI.setEnabled(false);
+        } else {
+          cbThirdPluginActiv.setEnabled(true);
+          bnThirdPluginGUI.setEnabled(true);
+        }
       }
 
     }
@@ -1454,11 +1462,12 @@ public class BOA_ implements PlugIn {
         BOA_.log("**EDIT IS ON**");
         return;
       }
-      if (b == bnDefault) {
+      if (b == bnDefault) { // run in thread
         this.setDefualts();
         run = true;
       } else if (b == bnSeg) { // main segmentation procedure starts here
-        if (isSegRunning) { // set by runBoa, true if segmentation runs.
+        if (sww != null && sww.getState() != SwingWorker.StateValue.DONE) {
+          // if any worker works
           isSegBreakHit = true;
           return;
         }
@@ -1497,7 +1506,7 @@ public class BOA_ implements PlugIn {
           qState.snakePluginList.getInstance(2).showUi(true);
         }
       }
-      if (b == bnCopyLastPlugin) {
+      if (b == bnCopyLastPlugin) { // run in thread
         int frameCopyFrom = qState.boap.frame - 1;
         if (frameCopyFrom < 1 || frameCopyFrom > qState.boap.getFrames()) {
           return;
@@ -1505,7 +1514,9 @@ public class BOA_ implements PlugIn {
         LOGGER.debug(
                 "Copy config from frame " + frameCopyFrom + " current frame " + qState.boap.frame);
         qState.copyPluginListFromSnapshot(frameCopyFrom);
-        recalculatePlugins(); // update screen
+        setBusyStatus(true, false);
+        recalculatePlugins();
+        setBusyStatus(false, true); // update screen
       }
 
       if (b == bnCopyLast) { // copy previous settings
@@ -1709,7 +1720,7 @@ public class BOA_ implements PlugIn {
       /*
        * Copy current plugin tree to all frames and applies plugins.
        */
-      if (b == menuPopulatePlugin) {
+      if (b == menuPopulatePlugin) { // run in thread
         List<Integer> range = IntStream.rangeClosed(1, qState.boap.getFrames()).boxed()
                 .collect(Collectors.toList());
         populatePlugins(range);
@@ -1752,7 +1763,7 @@ public class BOA_ implements PlugIn {
       updateWindowState(); // window logic on any change and selectors
 
       // run segmentation for selected cases
-      if (run) {
+      if (run) { // in thread
         runBoaThread(qState.boap.frame, qState.boap.frame, false);
       }
     }
@@ -1768,7 +1779,7 @@ public class BOA_ implements PlugIn {
     private void runBoaThread(int startFrame, int endFrame, boolean interruptible) {
       System.out.println("running from in stackwindow");
       // run on current frame
-      SwingWorker<Boolean, Object> sww = new SwingWorker<Boolean, Object>() {
+      sww = new SwingWorker<Boolean, Object>() {
         @Override
         protected Boolean doInBackground() throws Exception {
           setBusyStatus(true, interruptible);
@@ -1815,22 +1826,43 @@ public class BOA_ implements PlugIn {
         return;
       }
       SnakePluginList tmp = qState.snakePluginList.getDeepCopy();
-      for (int f : frames) {
-        // make a deep copy
-        qState.snakePluginListSnapshots.set(f - 1, tmp.getDeepCopy());
-        // instance separate copy of jar for this plugin (in fact PluginFactory will return here
-        // reference if this jar is already opened)
-        qState.snakePluginListSnapshots.get(f - 1).afterSerialize();
-      }
       int cf = qState.boap.frame;
-      // iterate over frames and applies plugins
-      for (int f : frames) {
-        qState.boap.frame = f; // assign to global frame variable
-        imageGroup.updateToFrame(qState.boap.frame);
-        recalculatePlugins();
-      }
-      qState.boap.frame = cf;
-      imageGroup.updateToFrame(qState.boap.frame);
+
+      sww = new SwingWorker<Boolean, Object>() {
+        @Override
+        protected Boolean doInBackground() throws Exception {
+          setBusyStatus(true, true);
+
+          // iterate over frames and applies plugins
+          for (int f : frames) {
+            // make a deep copy
+            qState.snakePluginListSnapshots.set(f - 1, tmp.getDeepCopy());
+            qState.snakePluginListSnapshots.set(f - 1, tmp.getDeepCopy());
+            // instance separate copy of jar for this plugin (in fact PluginFactory will return here
+            // reference if this jar is already opened)
+            qState.snakePluginListSnapshots.get(f - 1).afterSerialize();
+
+            qState.boap.frame = f; // assign to global frame variable
+            imageGroup.updateToFrame(qState.boap.frame);
+            recalculatePlugins();
+            if (isSegBreakHit == true) { // if flag set, stop
+              isSegBreakHit = false;
+              break;
+            }
+          }
+          qState.boap.frame = cf;
+          imageGroup.updateToFrame(qState.boap.frame);
+          return true;
+        }
+
+        @Override
+        protected void done() {
+          setBusyStatus(false, true);
+        }
+
+      };
+      sww.execute();
+
     }
 
     /**
@@ -1936,20 +1968,24 @@ public class BOA_ implements PlugIn {
       } else if (source == cbExpSnake) {
         qState.segParam.expandSnake = cbExpSnake.getState();
         run = true;
-      } else if (source == cbFirstPluginActiv) {
+      } else if (source == cbFirstPluginActiv) { // run in thread
         qState.snakePluginList.setActive(0, cbFirstPluginActiv.getState());
+        setBusyStatus(true, false);
         recalculatePlugins();
-      } else if (source == cbSecondPluginActiv) {
+      } else if (source == cbSecondPluginActiv) { // run in thread
         qState.snakePluginList.setActive(1, cbSecondPluginActiv.getState());
+        setBusyStatus(true, false);
         recalculatePlugins();
-      } else if (source == cbThirdPluginActiv) {
+      } else if (source == cbThirdPluginActiv) { // run in thread
         qState.snakePluginList.setActive(2, cbThirdPluginActiv.getState());
+        setBusyStatus(true, false);
         recalculatePlugins();
       }
 
       // action on menus
-      if (source == cbMenuPlotOriginalSnakes) {
+      if (source == cbMenuPlotOriginalSnakes) { // run in thread
         qState.boap.isProcessedSnakePlotted = cbMenuPlotOriginalSnakes.getState();
+        setBusyStatus(true, false);
         recalculatePlugins();
       }
       if (source == cbMenuPlotHead) {
@@ -1958,22 +1994,25 @@ public class BOA_ implements PlugIn {
       }
 
       // actions on Plugin selections
-      if (source == chFirstPluginName) {
+      if (source == chFirstPluginName) { // run in thread
         LOGGER.debug("Used firstPluginName, val: " + chFirstPluginName.getSelectedItem());
         instanceSnakePlugin((String) chFirstPluginName.getSelectedItem(), 0,
                 cbFirstPluginActiv.getState());
+        setBusyStatus(true, false);
         recalculatePlugins();
       }
-      if (source == chSecondPluginName) {
+      if (source == chSecondPluginName) { // run in thread
         LOGGER.debug("Used secondPluginName, val: " + chSecondPluginName.getSelectedItem());
         instanceSnakePlugin((String) chSecondPluginName.getSelectedItem(), 1,
                 cbSecondPluginActiv.getState());
+        setBusyStatus(true, false);
         recalculatePlugins();
       }
-      if (source == chThirdPluginName) {
+      if (source == chThirdPluginName) { // run in thread
         LOGGER.debug("Used thirdPluginName, val: " + chThirdPluginName.getSelectedItem());
         instanceSnakePlugin((String) chThirdPluginName.getSelectedItem(), 2,
                 cbThirdPluginActiv.getState());
+        setBusyStatus(true, false);
         recalculatePlugins();
       }
 
@@ -2010,6 +2049,8 @@ public class BOA_ implements PlugIn {
         }
       } catch (BoaException be) {
         BOA_.log(be.getMessage());
+      } finally {
+        setBusyStatus(false, true);
       }
     }
 
@@ -2275,8 +2316,12 @@ public class BOA_ implements PlugIn {
       Snake snake;
       imageGroup.clearPaths(startF);
 
-      for (qState.boap.frame = startF; qState.boap.frame <= endF
-              && isSegBreakHit != true; qState.boap.frame++) {
+      for (qState.boap.frame = startF; qState.boap.frame <= endF; qState.boap.frame++) {
+        if (isSegBreakHit == true) {
+          qState.boap.frame--;
+          isSegBreakHit = false;
+          break;
+        }
         // per frame
         imageGroup.setProcessor(qState.boap.frame);
         imageGroup.setIpSliceAll(qState.boap.frame);
