@@ -619,6 +619,12 @@ public class BOA_ implements PlugIn {
      * @see #populatePlugins(List)
      */
     private SwingWorker<Boolean, Object> sww = null;
+    /**
+     * Block rerun of runBoa() when spinners have been changed programmatically.
+     * 
+     * <p>Modification of spinners from code causes that stateChanged() event is called.
+     */
+    private boolean supressStateChangeBOArun = false;
     private Button bnSeg; // also play role of Cancel button
     private Button bnFinish;
     private Button bnLoad;
@@ -1243,7 +1249,7 @@ public class BOA_ implements PlugIn {
      */
     private void updateSpinnerValues() {
       // block rerun of runBoa() that is called on Spinner event
-      qState.boap.supressStateChangeBOArun = true;
+      supressStateChangeBOArun = true;
       dsNodeRes.setValue(qState.segParam.getNodeRes());
       dsVelCrit.setValue(qState.segParam.vel_crit);
       dsFImage.setValue(qState.segParam.f_image);
@@ -1254,7 +1260,7 @@ public class BOA_ implements PlugIn {
       isBlowup.setValue(qState.segParam.blowup);
       isSampletan.setValue(qState.segParam.sample_tan);
       isSamplenorm.setValue(qState.segParam.sample_norm);
-      qState.boap.supressStateChangeBOArun = false;
+      supressStateChangeBOArun = false;
     }
 
     /**
@@ -2037,10 +2043,8 @@ public class BOA_ implements PlugIn {
 
       try {
         if (run) {
-          if (qState.boap.supressStateChangeBOArun) { // when spinners are changed
-            // programmatically they raise the
-            // event. this is to block running
-            // segmentation
+          if (supressStateChangeBOArun) { // when spinners are changed
+            // programmatically they raise the event. this is to block segmentation re-run
             LOGGER.debug("supressState");
             return;
           }
@@ -2119,8 +2123,8 @@ public class BOA_ implements PlugIn {
       try {
         if (run) {
           // when spinners are changed programmatically they raise the event. this is to block
-          // running segmentation
-          if (qState.boap.supressStateChangeBOArun) {
+          // segmentation re-run
+          if (supressStateChangeBOArun) {
             LOGGER.debug("supressState");
             return;
           }

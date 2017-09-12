@@ -596,12 +596,6 @@ public class BOAState implements IQuimpSerialize {
      */
     boolean useSubPixel = true;
     /**
-     * Block rerun of runBoa() when spinners have been changed programmatically.
-     * 
-     * <p>Modification of spinners from code causes that stateChanged() event is called.
-     */
-    boolean supressStateChangeBOArun = false;
-    /**
      * use to test how many times a method is called.
      */
     int callCount;
