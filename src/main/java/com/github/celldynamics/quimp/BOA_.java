@@ -1838,7 +1838,8 @@ public class BOA_ implements PlugIn {
         @Override
         protected Boolean doInBackground() throws Exception {
           setBusyStatus(true, true);
-
+          IJ.showStatus("SEGMENTING...");
+          IJ.showProgress(0, frames.get(frames.size() - 1) - frames.get(0));
           // iterate over frames and applies plugins
           for (int f : frames) {
             // make a deep copy
@@ -1855,6 +1856,7 @@ public class BOA_ implements PlugIn {
               isSegBreakHit = false;
               break;
             }
+            IJ.showProgress(f, frames.get(frames.size() - 1));
           }
           qState.boap.frame = cf;
           imageGroup.updateToFrame(qState.boap.frame);
@@ -1864,6 +1866,8 @@ public class BOA_ implements PlugIn {
         @Override
         protected void done() {
           setBusyStatus(false, true);
+          IJ.showStatus("COMPLETE");
+          IJ.showProgress(2.0); // >1 to erase progress bar
         }
 
       };
@@ -2408,6 +2412,7 @@ public class BOA_ implements PlugIn {
               qState.boap.frame, 1);
     } finally {
       isSegRunning = false;
+      IJ.showProgress(2.0); // >1 to erase progress bar
     }
 
   }
