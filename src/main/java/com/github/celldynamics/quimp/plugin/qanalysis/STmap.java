@@ -421,6 +421,24 @@ public class STmap implements IQuimpSerialize {
               Qp.outFile.getParent() + File.separator + Qp.filename + tmpfilename);
     }
 
+    // saveMaps(); // save maQP files
+
+    if (QuimPArrayUtils.sumArray(migColor) == 0) {
+      IJ.showMessage("ECMM data is missing (or corrupt), and is needed for building accurate maps.+"
+              + "\nPlease run ECMM (fluorescence data will be lost)");
+    }
+    // test making LUT images
+    /*
+     * ImagePlus migImPLut = IJ.createImage("mig_32", "32-bit", res, T,1); ImageProcessor
+     * ipFloat = new FloatProcessor(res, T, migPixels, null); LUT lut = new LUT();
+     * ipFloat.setLut(lut) migImPLut.setProcessor(ipFloat); resize(migImPLut); migImPLut.show();
+     */
+  }
+
+  /**
+   * Save map files (maQP) on disk.
+   */
+  public void saveMaps() {
     try {
       // save images
       IJ.saveAs(migImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename
@@ -454,17 +472,6 @@ public class STmap implements IQuimpSerialize {
     } catch (IOException e) {
       IJ.error("Could not write Map file:\n " + e.getMessage());
     }
-
-    if (QuimPArrayUtils.sumArray(migColor) == 0) {
-      IJ.showMessage("ECMM data is missing (or corrupt), and is needed for building accurate maps.+"
-              + "\nPlease run ECMM (fluorescence data will be lost)");
-    }
-    // test making LUT images
-    /*
-     * ImagePlus migImPLut = IJ.createImage("mig_32", "32-bit", res, T,1); ImageProcessor
-     * ipFloat = new FloatProcessor(res, T, migPixels, null); LUT lut = new LUT();
-     * ipFloat.setLut(lut) migImPLut.setProcessor(ipFloat); resize(migImPLut); migImPLut.show();
-     */
   }
 
   /**

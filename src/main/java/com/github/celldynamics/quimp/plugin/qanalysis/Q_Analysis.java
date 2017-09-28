@@ -174,7 +174,7 @@ public class Q_Analysis {
       Qp.setup(qconfLoader.getQp()); // copy selected data from general QParams to local storage
       oh = oi.next();
       run();
-      tmp.add(new STmap(stMap));
+      tmp.add(new STmap(stMap)); // store generated map
     }
     qp.getLoadedDataContainer().QState = tmp.toArray(new STmap[0]);
     qp.writeParams(); // save global container
@@ -225,6 +225,9 @@ public class Q_Analysis {
     Qp.convexityToPixels();
 
     stMap = new STmap(oh, Qp.mapRes);
+    if (QuimP.newFileFormat.get() == false) {
+      stMap.saveMaps(); // save maps only for old path
+    }
 
     SVGplotter svgPlotter = new SVGplotter(oh, Qp.fps, Qp.scale, Qp.channel, Qp.outFile);
     svgPlotter.plotTrack(Qp.trackColor, Qp.increment);
