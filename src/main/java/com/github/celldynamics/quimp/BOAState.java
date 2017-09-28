@@ -596,24 +596,10 @@ public class BOAState implements IQuimpSerialize {
      */
     boolean useSubPixel = true;
     /**
-     * Block rerun of runBoa() when spinners have been changed programmatically.
-     * 
-     * <p>Modification of spinners from code causes that stateChanged() event is called.
-     */
-    boolean supressStateChangeBOArun = false;
-    /**
      * use to test how many times a method is called.
      */
     int callCount;
-    /**
-     * Indicate that {@link com.github.celldynamics.quimp.BOA_#runBoa(int, int)} is active.
-     * 
-     * <p>This method calls {@link com.github.celldynamics.quimp.ImageGroup#setIpSliceAll(int)} that
-     * raises event
-     * {@link com.github.celldynamics.quimp.BOA_.CustomStackWindow#updateSliceSelector()} which then
-     * fire other methods.
-     */
-    boolean SEGrunning;
+
     private double imageScale; // scale of image read from ip
     private boolean scaleAdjusted = false; // true when adjusted in constructor
 
@@ -706,7 +692,6 @@ public class BOAState implements IQuimpSerialize {
       editMode = false;
       editingID = -1;
       callCount = 0;
-      SEGrunning = false;
       frame = 1;
       savePretty = true;
     }
