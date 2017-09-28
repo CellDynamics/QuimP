@@ -96,10 +96,9 @@ public class CellStatsEval implements Measurements {
     FrameStatistics[] stats = record();
     iplus.setSlice(1);
     iplus.killRoi();
-    if (f == null) {
+    if (f == null) { // do not write stQP file
       buildData(stats);
     } else {
-      // write(stats, outputH.getStartFrame()); // also call buildData
       try {
         buildData(stats);
         FrameStatistics.write(stats, outfile, s, fi);

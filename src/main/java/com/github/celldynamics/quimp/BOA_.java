@@ -2819,6 +2819,7 @@ public class BOA_ implements PlugIn {
     IJ.showStatus("BOA-FINISHING");
     YesNoCancelDialog ync;
     File testF;
+    boolean saveStats = false; // indicate if stQP file should be saved separatelly.
     LOGGER.debug(qState.segParam.toString());
     for (SnakeHandler sh : qState.nest.getHandlers()) {
       sh.findLastFrame(); // make sure that endFrame points good frame
@@ -2854,10 +2855,13 @@ public class BOA_ implements PlugIn {
         // blocked by #263, enabled by 228
         if (QuimP.newFileFormat.get() == false) {
           qState.nest.writeSnakes(); // write snPQ file (if any snake) and paQP
+          saveStats = true; // write also stQP file
+
         }
         // if (qState.nest.writeSnakes()) { // write snPQ file (if any snake) and paQP
         // write stQP file and fill outFile used later
-        List<CellStatsEval> ret = qState.nest.analyse(imageGroup.getOrgIpl().duplicate(), true);
+        List<CellStatsEval> ret =
+                qState.nest.analyse(imageGroup.getOrgIpl().duplicate(), saveStats);
         // auto save plugin config (but only if there is at least one snake)
         if (!qState.nest.isVacant()) {
           // Create Serialization object with extra info layer
