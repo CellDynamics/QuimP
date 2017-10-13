@@ -6,6 +6,20 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="17.10.01" date="2017-10-14" description="Release">
+         <action dev="baniuk" type="add" issue="46">
+              QuimP-BOA: Segmentation can be interrupted. Fixed also plugin propagation algorithm. Note that BOA plugins can not be interrupted. BOA shows also busy status that is useful with computationally intensive plugins.
+         </action>
+         <action dev="baniuk" type="fix" issue="">
+              QuimP-BOA: Removed obsolete parameters from QCONF.
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP: Statistic files and maps are not saved when new (default) format is selected.
+         </action>
+         <action dev="baniuk" type="add" issue="145">
+              QuimP-FormatConverter: New module, full conversion between format is supported. Selected parameters from QCONF can be saved as csv file.
+         </action>
+        </release>
         <release version="17.07.02" date="2017-08-01" description="Bugfix">
          <action dev="baniuk" type="fix" issue="268">
               QuimP-BOA: Last frame index could be wrongly set after manulal editing of frames or using filters. This affected e.g. ANA
