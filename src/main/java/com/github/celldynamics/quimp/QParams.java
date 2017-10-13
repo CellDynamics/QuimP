@@ -72,7 +72,7 @@ public class QParams {
   /**
    * Indicates format of data file.
    */
-  public int paramFormat;
+  protected int paramFormat;
   /**
    * Name of the data file - without path and extension. Equals to name of the case. If
    * initialised from {@link QParamsQconf} contains underscored cell number as well.
@@ -208,9 +208,10 @@ public class QParams {
   }
 
   /**
-   * Get name of parameter file (paQP).
+   * Get name of parameter file with extension (paQP).
    * 
    * @return the paramFile
+   * @see #getPath()
    */
   public File getParamFile() {
     return paramFile;
@@ -247,7 +248,7 @@ public class QParams {
   /**
    * getPath.
    * 
-   * @return the path of param file
+   * @return the path of param file (no file name)
    */
   public String getPath() {
     return path;
@@ -256,7 +257,8 @@ public class QParams {
   /**
    * getPathasPath.
    * 
-   * @return the path of param file as Path
+   * @return the path of param file as Path (no file name)
+   * @see #getParamFile()
    */
   public Path getPathasPath() {
     return Paths.get(this.getPath());
@@ -528,7 +530,7 @@ public class QParams {
    * 
    * @return the ymapFile
    */
-  public File getyFile() {
+  public File getymapFile() {
     return ymapFile;
   }
 
@@ -539,6 +541,15 @@ public class QParams {
    */
   public void setymapFile(File ymapFile) {
     this.ymapFile = ymapFile;
+  }
+
+  /**
+   * Return loaded format.
+   * 
+   * @return the paramFormat {@value #OLD_QUIMP}, {@value #NEW_QUIMP}, {@link #QUIMP_11}
+   */
+  public int getParamFormat() {
+    return paramFormat;
   }
 
   /**

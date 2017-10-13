@@ -151,7 +151,7 @@ public class FrameStatistics {
   public static void write(FrameStatistics[] s, File outfile, double scale, double frameInterval)
           throws IOException {
     PrintWriter pw = new PrintWriter(new FileWriter(outfile), true); // auto flush
-    IJ.log("Writing to file");
+    IJ.log("Writing to file: " + outfile.getName());
     pw.print("#p2\n#QuimP output - " + outfile.getAbsolutePath() + "\n");
     pw.print("# Centroids are given in pixels.  Distance & speed & area measurements are scaled"
             + " to micro meters\n");

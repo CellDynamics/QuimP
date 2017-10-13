@@ -8,9 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,17 +24,13 @@ import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.QuimpVersion;
 import com.github.celldynamics.quimp.Serializer;
-import com.github.celldynamics.quimp.filesystem.ANAParamCollection;
-import com.github.celldynamics.quimp.filesystem.DataContainer;
-import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
-import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
+import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -57,7 +51,7 @@ public class QconfLoaderTest {
   /**
    * Prepare fake QCONF. No data just empty container.
    * 
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -70,31 +64,17 @@ public class QconfLoaderTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
-   */
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /**
    * Test method for
    * {@link com.github.celldynamics.quimp.filesystem.QconfLoader#QconfLoader(java.io.File)}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testQconfLoaderPath() throws Exception {
@@ -104,7 +84,7 @@ public class QconfLoaderTest {
   /**
    * Test method for {@link com.github.celldynamics.quimp.filesystem.QconfLoader#getImage()}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings("unused")
   @Test
@@ -130,7 +110,7 @@ public class QconfLoaderTest {
   /**
    * Test method for {@link com.github.celldynamics.quimp.filesystem.QconfLoader#validateQconf()}.
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test
   public void testValidateQconf() throws Exception {
@@ -138,45 +118,52 @@ public class QconfLoaderTest {
     QconfLoader q =
             Mockito.spy(new QconfLoader(Paths.get(tmpdir + "qconftestloader.QCONF").toFile()));
 
-    QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
-    ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
-    DataContainer dC = new DataContainer();
+    QParamsQconf qpc = Mockito.mock(QParamsQconf.class);
+    DataContainer dc = new DataContainer();
 
-    Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
-    Mockito.when(q.getQp()).thenReturn(qPc);
-
+    Mockito.when(qpc.getLoadedDataContainer()).thenReturn(dc);
+    Mockito.when(qpc.getParamFormat()).thenReturn(QParams.NEW_QUIMP);
+    Mockito.when(q.getQp()).thenReturn(qpc);
     assertThat("DataContainer is empty", q.validateQconf(), is(QconfLoader.QCONF_INVALID));
 
-    dC.BOAState = new BOAState();
+    dc.BOAState = new BOAState();
     assertThat(q.validateQconf(), is(DataContainer.BOA_RUN));
-    assertThat(q.getBOA(), is(dC.BOAState));
-    dC.ECMMState = new OutlinesCollection();
+    assertThat(q.getBOA(), is(dc.BOAState));
+    dc.ECMMState = new OutlinesCollection();
     assertThat(q.validateQconf(), is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN));
-    assertThat(q.getEcmm(), is(dC.ECMMState));
-    dC.ANAState = new ANAParamCollection();
+    assertThat(q.getEcmm(), is(dc.ECMMState));
+    dc.ANAState = new ANAParamCollection();
     assertThat(q.validateQconf(),
             is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN + DataContainer.ANA_RUN));
-    assertThat(q.getANA(), is(dC.ANAState));
-    dC.QState = new STmap[1];
+    assertThat(q.getANA(), is(dc.ANAState));
+    dc.QState = new STmap[1]; // broken qmap, allocated but empty
+    assertThat(q.validateQconf(),
+            is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN + DataContainer.ANA_RUN));
+    dc.QState[0] = new STmap(); // broken qmap, allocated but empty map (only fluoro struct is but
+    // no map)
+    assertThat(q.validateQconf(),
+            is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN + DataContainer.ANA_RUN));
+    dc.QState[0].setConvMap(QuimPArrayUtils.initDouble2dArray(10, 2)); // set any map
     assertThat(q.validateQconf(), is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN
             + DataContainer.ANA_RUN + DataContainer.Q_RUN));
-    assertThat(q.getQ(), is(dC.QState));
-    dC.ANAState = null;
+    assertThat(q.getQ(), is(dc.QState));
+    dc.ANAState = null;
     assertThat(q.validateQconf(),
             is(DataContainer.ECMM_RUN + DataContainer.BOA_RUN + DataContainer.Q_RUN));
 
     Mockito.when(q.getQp()).thenReturn(null);
     assertThat("DataContainer is empty", q.validateQconf(), is(QconfLoader.QCONF_INVALID));
 
-    Mockito.when(q.getQp()).thenReturn(qPc);
-    ((QParamsQconf) qPc).paramFormat = QParams.QUIMP_11;
+    Mockito.when(q.getQp()).thenReturn(qpc);
+    Mockito.when(qpc.getParamFormat()).thenReturn(QParams.QUIMP_11);
+
     assertThat(q.validateQconf(), is(QParams.QUIMP_11));
   }
 
   /**
    * Test method for {@link com.github.celldynamics.quimp.filesystem.QconfLoader#isBOAPresent()}.
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test
   public void testIsBOAPresent() throws Exception {
@@ -200,10 +187,10 @@ public class QconfLoaderTest {
   /**
    * Test method for {@link com.github.celldynamics.quimp.filesystem.QconfLoader#isECMMPresent()}.
    * 
-   * @throws Exception
+   * @throws Exception on error
    */
   @Test
-  public void testIsECMMPresent() throws Exception {
+  public void testIsEcmmPresent() throws Exception {
     QconfLoader q =
             Mockito.spy(new QconfLoader(Paths.get(tmpdir + "qconftestloader.QCONF").toFile()));
     Mockito.when(q.validateQconf()).thenReturn(DataContainer.BOA_RUN + DataContainer.ECMM_RUN);
@@ -224,7 +211,7 @@ public class QconfLoaderTest {
   /**
    * Test method for {@link com.github.celldynamics.quimp.filesystem.QconfLoader#isANAPresent()}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testIsANAPresent() throws Exception {
@@ -248,7 +235,7 @@ public class QconfLoaderTest {
   /**
    * Test method for {@link com.github.celldynamics.quimp.filesystem.QconfLoader#isQPresent()}.
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testIsQPresent() throws Exception {
@@ -270,19 +257,21 @@ public class QconfLoaderTest {
   }
 
   /**
-   * @throws Exception
+   * Test get BOA.
+   * 
+   * @throws Exception Exception
    */
   @Test(expected = QuimpException.class)
   public void testGetBOA() throws Exception {
     QconfLoader q =
             Mockito.spy(new QconfLoader(Paths.get(tmpdir + "qconftestloader.QCONF").toFile()));
 
-    QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
-    ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
-    DataContainer dC = new DataContainer();
+    QParamsQconf qpc = Mockito.mock(QParamsQconf.class);
+    Mockito.when(qpc.getParamFormat()).thenReturn(QParams.NEW_QUIMP);
+    DataContainer dc = new DataContainer();
 
-    Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
-    Mockito.when(q.getQp()).thenReturn(qPc);
+    Mockito.when(qpc.getLoadedDataContainer()).thenReturn(dc);
+    Mockito.when(q.getQp()).thenReturn(qpc);
     q.getBOA();
   }
 
@@ -296,47 +285,52 @@ public class QconfLoaderTest {
     QconfLoader q =
             Mockito.spy(new QconfLoader(Paths.get(tmpdir + "qconftestloader.QCONF").toFile()));
 
-    QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
-    ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
-    DataContainer dC = new DataContainer();
+    QParamsQconf qpc = Mockito.mock(QParamsQconf.class);
+    Mockito.when(qpc.getParamFormat()).thenReturn(QParams.NEW_QUIMP);
+    // ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
+    DataContainer dc = new DataContainer();
 
-    Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
-    Mockito.when(q.getQp()).thenReturn(qPc);
+    Mockito.when(qpc.getLoadedDataContainer()).thenReturn(dc);
+    Mockito.when(q.getQp()).thenReturn(qpc);
     q.getQ();
   }
 
   /**
-   * @throws Exception
+   * Test get ANA.
+   * 
+   * @throws Exception Exception
    */
   @Test(expected = QuimpException.class)
   public void testGetANA() throws Exception {
     QconfLoader q =
             Mockito.spy(new QconfLoader(Paths.get(tmpdir + "qconftestloader.QCONF").toFile()));
 
-    QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
-    ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
-    DataContainer dC = new DataContainer();
+    QParamsQconf qpc = Mockito.mock(QParamsQconf.class);
+    Mockito.when(qpc.getParamFormat()).thenReturn(QParams.NEW_QUIMP);
+    DataContainer dc = new DataContainer();
 
-    Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
-    Mockito.when(q.getQp()).thenReturn(qPc);
+    Mockito.when(qpc.getLoadedDataContainer()).thenReturn(dc);
+    Mockito.when(q.getQp()).thenReturn(qpc);
     q.getANA();
   }
 
   /**
-     * @throws Exception
-     */
-    @Test(expected = QuimpException.class)
-    public void testGetEcmm() throws Exception {
-      QconfLoader q =
-              Mockito.spy(new QconfLoader(Paths.get(tmpdir + "qconftestloader.QCONF").toFile()));
-  
-      QParamsQconf qPc = Mockito.mock(QParamsQconf.class);
-      ((QParamsQconf) qPc).paramFormat = QParams.NEW_QUIMP;
-      DataContainer dC = new DataContainer();
-  
-      Mockito.when(qPc.getLoadedDataContainer()).thenReturn(dC);
-      Mockito.when(q.getQp()).thenReturn(qPc);
-      q.getEcmm();
-    }
+   * Test get ECMM.
+   * 
+   * @throws Exception Exception
+   */
+  @Test(expected = QuimpException.class)
+  public void testGetEcmm() throws Exception {
+    QconfLoader q =
+            Mockito.spy(new QconfLoader(Paths.get(tmpdir + "qconftestloader.QCONF").toFile()));
+
+    QParamsQconf qpc = Mockito.mock(QParamsQconf.class);
+    Mockito.when(qpc.getParamFormat()).thenReturn(QParams.NEW_QUIMP);
+    DataContainer dc = new DataContainer();
+
+    Mockito.when(qpc.getLoadedDataContainer()).thenReturn(dc);
+    Mockito.when(q.getQp()).thenReturn(qpc);
+    q.getEcmm();
+  }
 
 }

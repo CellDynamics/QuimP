@@ -26,8 +26,9 @@ public class FormatConverterRun {
     // FormatConverter fc = new FormatConverter(
     // new File("src/test/Resources-static/formatconv/currenttest/fluoreszenz-test.QCONF"));
     FormatConverter fc =
-            new FormatConverter(new File("/home/baniuk/Desktop/Tests/175/test_0.paQP"));
-    fc.showConversionCapabilities(ij);
+            new FormatConverter(new File("/home/baniuk/Desktop/Tests/17.10/test_1.paQP"));
+    // fc.showConversionCapabilities(ij);
+    // System.out.print(fc.toString());
     fc.doConversion();
   }
 

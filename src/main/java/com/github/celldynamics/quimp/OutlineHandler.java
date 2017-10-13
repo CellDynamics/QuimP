@@ -182,12 +182,12 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
   }
 
   /**
-   * Gets the outline.
+   * Return Outline stored for frame f.
    *
-   * @param f the f
-   * @return the outline
+   * @param f the frame
+   * @return the outline or null
    */
-  public Outline getOutline(int f) {
+  public Outline getStoredOutline(int f) {
     if (f - startFrame < 0 || f - startFrame > outlines.length) {
       IJ.log("Tried to access OOR frame store\n\t...frame:" + f);
       return null;
@@ -459,7 +459,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
       // see com.github.celldynamics.quimp.plugin.qanalysis.STmap.calcCurvature()
       Vert v;
       for (int f = getStartFrame(); f <= getEndFrame(); f++) {
-        Outline o = getOutline(f);
+        Outline o = getStoredOutline(f);
         if (o == null) {
           continue;
         }
@@ -526,7 +526,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
 
       Outline o;
       for (int i = startFrame; i <= endFrame; i++) {
-        o = getOutline(i);
+        o = getStoredOutline(i);
         pw.write("\n#Frame " + i);
         write(pw, o.getNumPoints(), o.getHead());
       }

@@ -1679,7 +1679,6 @@ public class BOA_ implements PlugIn {
         } catch (Exception e1) {
           LOGGER.error(e1.getMessage(), e1); // something serious
         }
-
       }
 
       /*
@@ -2871,13 +2870,12 @@ public class BOA_ implements PlugIn {
           s.save(qState.boap.deductFilterFileName());
           s = null; // remove
           // Dump BOAState object in new format
-          Serializer<DataContainer> n;
           DataContainer dt = new DataContainer(); // create container
           dt.BOAState = qState; // assign boa state to correct field
           // extract relevant data from CellStat
           dt.Stats = new StatsCollection();
           dt.Stats.copyFromCellStat(ret); // StatsHandler is initialized here.
-          n = new Serializer<>(dt, quimpInfo);
+          Serializer<DataContainer> n = new Serializer<>(dt, quimpInfo);
           if (qState.boap.savePretty) {
             n.setPretty();
           }

@@ -19,6 +19,15 @@ public class CellStats {
   public ArrayList<FrameStatistics> framestat;
 
   /**
+   * Return list of statistic calculated for subsequent frames for the same object.
+   * 
+   * @return the framestat
+   */
+  public ArrayList<FrameStatistics> getFramestat() {
+    return framestat;
+  }
+
+  /**
    * Initialises empty container.
    */
   public CellStats() {

@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
-import com.github.celldynamics.quimp.plugin.protanalysis.MaximaFinder;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
@@ -68,7 +67,7 @@ public class MaximaFinderTest {
   @Before
   public void setUp() throws Exception {
     stMap = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState;
-    float[][] motMap = QuimPArrayUtils.double2dfloat(stMap[0].motMap);
+    float[][] motMap = QuimPArrayUtils.double2dfloat(stMap[0].getMotMap());
     // rotate and flip to match orientation of ColorProcessor (QuimP default)
     imp = new FloatProcessor(motMap).rotateRight();
     imp.flipHorizontal();

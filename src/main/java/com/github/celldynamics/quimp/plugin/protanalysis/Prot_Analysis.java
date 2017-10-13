@@ -132,14 +132,14 @@ public class Prot_Analysis implements IQuimpPlugin {
       if (qconfLoader.getQp() == null) {
         return; // not loaded
       }
-      if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
+      if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
         // validate in case new format
         qconfLoader.getBOA(); // will throw exception if not present
         qconfLoader.getEcmm();
         qconfLoader.getQ();
       } else {
         qconfLoader = null; // failed load or checking
-        throw new QuimpPluginException("QconfLoader returned unsupported version of QuimP."
+        throw new QuimpPluginException("QconfLoader returned unsupported version of QuimP or error."
                 + " Only new format can be loaded");
       }
     }
@@ -197,7 +197,7 @@ public class Prot_Analysis implements IQuimpPlugin {
     for (STmap mapCell : stMap) { // iterate through cells
       // convert binary 2D array to ImageJ
       TrackVisualisation.Map visSingle = new TrackVisualisation.Map("motility_map_cell_" + h,
-              QuimPArrayUtils.double2dfloat(mapCell.motMap));
+              QuimPArrayUtils.double2dfloat(mapCell.getMotMap()));
       // compute maxima
       MaximaFinder mf = new MaximaFinder(visSingle.getOriginalImage().getProcessor());
       mf.computeMaximaIJ(config.noiseTolerance); // 1.5

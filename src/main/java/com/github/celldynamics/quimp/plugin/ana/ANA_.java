@@ -154,9 +154,9 @@ public class ANA_ implements PlugInFilter, DialogListener {
       if (qconfLoader == null || qconfLoader.getQp() == null) {
         return; // failed to load exit
       }
-      if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
+      if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
         runFromPaqp();
-      } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
+      } else if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
         qconfLoader.getBOA(); // verify whether boa has been run (throws if not)
         qconfLoader.getEcmm(); // verify whether ecmm has been run (throws if not)
         qconfLoader.getStats(); // verify whether file contains stats
@@ -173,7 +173,8 @@ public class ANA_ implements PlugInFilter, DialogListener {
         IJ.log("The new data file " + qconfLoader.getQp().getParamFile().toString()
                 + " has been updated by results of ECMM analysis.");
       } else {
-        throw new IllegalStateException("QconfLoader returned unknown version of QuimP");
+        throw new IllegalStateException("QconfLoader returned unknown version of QuimP or error: "
+                + qconfLoader.isFileLoaded());
       }
       // post-plotting
       overlay = new Overlay();
@@ -181,7 +182,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
       for (int f = 1; f < orgIpl.getStackSize(); f++) {
         orgIpl.setSlice(f);
         for (OutlineHandler ohTmp : outputOutlineHandlers.oHs) {
-          Outline o = ohTmp.getOutline(f);
+          Outline o = ohTmp.getStoredOutline(f);
           if (o == null) {
             continue;
           }
@@ -207,7 +208,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
 
       // edd results to IJtable named Results - to allow Summarise
       if (fluoResultTable || fluoResultTableAppend) {
-        if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) {
+        if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) {
           ResultsTable rt;
           if (fluoResultTableAppend) { // get current table
             rt = Analyzer.getResultsTable();
@@ -510,7 +511,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
       IJ.showProgress(f, oh.getEndFrame());
 
       orgIpl.setSlice(f);
-      o1 = oh.getOutline(f);
+      o1 = oh.getStoredOutline(f);
 
       s1 = new Outline(o1);
       s2 = new Outline(o1);
@@ -556,7 +557,7 @@ public class ANA_ implements PlugInFilter, DialogListener {
         // some nodes may fail to migrate properly so need to check
         // tracknumbers match
         Vert v = o1.getHead();
-        Vert v2 = ecmH.getOutline(2).getHead();
+        Vert v2 = ecmH.getStoredOutline(2).getHead();
 
         while (v2.getTrackNum() != v.getTrackNum()) { // check id's match
           v = v.getNext();

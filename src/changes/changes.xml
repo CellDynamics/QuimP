@@ -42,7 +42,7 @@
               QuimP-BOA: BOA plugins use less memory.
          </action>
          <action dev="baniuk" type="update" issue="253">
-              QuimP-API: Removed methods for testing from production code.
+              QuimP-API: Removed tests from production code.
          </action>
          <action dev="baniuk" type="add" issue="206">
               QuimP-BOA: Added support for plugins that need image to work. Introduced Random Walk segmentation support to BOA (through external filter).  

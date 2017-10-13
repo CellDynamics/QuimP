@@ -86,7 +86,7 @@ public class Q_Analysis {
       if (!showDialog()) { // if user cancelled dialog
         return; // do nothing
       }
-      if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
+      if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
         QParams qp;
         runFromPaqp();
         File[] otherPaFiles = qconfLoader.getQp().findParamFiles();
@@ -124,7 +124,7 @@ public class Q_Analysis {
             return; // no batch processing
           }
         }
-      } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
+      } else if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
         // verification for components run
         qconfLoader.getBOA(); // will throw exception if not present
         qconfLoader.getEcmm(); // will throw exception if not present
@@ -141,7 +141,8 @@ public class Q_Analysis {
         IJ.log("The new data file " + qconfLoader.getQp().getParamFile().toString()
                 + " has been updated by results of Q Analysis.");
       } else {
-        throw new IllegalStateException("QconfLoader returned unknown version of QuimP");
+        throw new IllegalStateException("QconfLoader returned unknown version of QuimP or error: "
+                + qconfLoader.isFileLoaded());
       }
       IJ.log("QuimP Analysis complete");
       IJ.showStatus("Finished");
@@ -219,14 +220,14 @@ public class Q_Analysis {
     if (oh.getSize() == 1) {
       Qp.singleImage = true;
       // only one frame - re lable node indices
-      oh.getOutline(1).resetAllCoords();
+      oh.getStoredOutline(1).resetAllCoords();
     }
 
     Qp.convexityToPixels();
 
     stMap = new STmap(oh, Qp.mapRes);
     if (QuimP.newFileFormat.get() == false) {
-      stMap.saveMaps(); // save maps only for old path
+      stMap.saveMaps(STmap.ALLMAPS); // save maps only for old path
     }
 
     SVGplotter svgPlotter = new SVGplotter(oh, Qp.fps, Qp.scale, Qp.channel, Qp.outFile);

@@ -148,7 +148,7 @@ public class DataContainer implements IQuimpSerialize {
    * @see com.github.celldynamics.quimp.filesystem.QconfLoader
    */
   public int validateDataContainer() {
-    int ret = 0;
+    int ret = QconfLoader.QCONF_INVALID;
     // check for all modules
     if (getBOAState() != null) {
       ret += DataContainer.BOA_RUN;
@@ -160,7 +160,19 @@ public class DataContainer implements IQuimpSerialize {
       ret += DataContainer.ANA_RUN;
     }
     if (getQState() != null) {
-      ret += DataContainer.Q_RUN;
+      if (getQState().length > 0) {
+        int count = 0;
+        for (STmap tmp : getQState()) {
+          if (tmp != null && tmp.getT() != 0) {
+            count++;
+          }
+        }
+        if (count == getQState().length) { // qstate can be !null but contain invalid
+          // data, e.g fluoro[3] array with initial default vales but empty. This is e,g, after
+          // paQP-QCONF conversion. So check resolution T (array size)
+          ret += DataContainer.Q_RUN;
+        }
+      }
     }
     if (getStats() != null) {
       ret += DataContainer.STATS_AVAIL;
@@ -208,8 +220,8 @@ public class DataContainer implements IQuimpSerialize {
     if (BOAState != null) {
       BOAState.snakePluginList = new SnakePluginList(BOA_.NUM_SNAKE_PLUGINS, pf, vu);
       BOAState.afterSerialize();
-      for (SnakePluginList sL : BOAState.snakePluginListSnapshots) {
-        sL.updateRefs(pf, vu);
+      for (SnakePluginList sl : BOAState.snakePluginListSnapshots) {
+        sl.updateRefs(pf, vu);
       }
     }
     if (ECMMState != null) {

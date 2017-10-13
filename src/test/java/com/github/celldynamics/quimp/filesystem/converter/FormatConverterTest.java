@@ -1,5 +1,8 @@
 package com.github.celldynamics.quimp.filesystem.converter;
 
+import static com.github.baniuk.ImageJTestSuite.matchers.file.FileMatchers.containsExactText;
+import static com.github.baniuk.ImageJTestSuite.tools.files.FileModifiers.getLine;
+import static com.github.baniuk.ImageJTestSuite.tools.files.FileModifiers.replaceLine;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -16,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -25,10 +29,10 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.Shape;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 
-// TODO Run all tests on directories in /tmp after copying relevant files
 /**
  * @author p.baniukiewicz
  * 
@@ -216,7 +220,7 @@ public class FormatConverterTest {
    */
   @Test
   @Ignore
-  public void testGenerateNewDataFile() throws Exception {
+  public void testGenerateNewDataFiles() throws Exception {
     QconfLoader qc = new QconfLoader(new File("src/test/Resources-static/FormatConverter/res/"
             + "fluoreszenz-test_eq_smooth_0_expected.paQP"));
     FormatConverter fc = new FormatConverter(qc);
@@ -229,11 +233,280 @@ public class FormatConverterTest {
    * @throws Exception Exception
    */
   @Test
-  public void testGenerateOldDataFile() throws Exception {
+  public void testGenerateOldDataFiles() throws Exception {
     QconfLoader qc = new QconfLoader(
             new File("src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth.QCONF"));
     FormatConverter fc = new FormatConverter(qc);
-    accessPrivate("generateOldDataFile", fc, new Object[] {}, new Class<?>[] {});
+    accessPrivate("generateOldDataFiles", fc, new Object[] {}, new Class<?>[] {});
+  }
+
+  /**
+   * Start conversion from not 0 paQP. Expected exception.
+   * 
+   * @throws Exception on error
+   */
+  @Test(expected = QuimpException.class)
+  public void testDoConversionNotFirstFile() throws Exception {
+    // copy and rename to _1 any valid paQP we have
+    Path input = Paths.get(
+            "src/test/Resources-static/FormatConverter/fluoreszenz-test_eq_smooth_0_expected.paQP");
+    Path target = folder.getRoot().toPath();
+    Files.copy(input, target.resolve("test_1.paQP"), StandardCopyOption.REPLACE_EXISTING);
+    FormatConverter fc = new FormatConverter(target.resolve("test_1.paQP").toFile());
+    fc.doConversion();
+  }
+
+  /**
+   * Compare conversion results to ground truth.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testConversionCompareTemplate() throws Exception {
+    Path inputFileName = Paths.get("test.QCONF");
+    Path inputPath =
+            Paths.get("src/test/Resources-static/FormatConverter/templates/Qconf-Q to Paqp");
+    Path target = folder.getRoot().toPath();
+    // copy stuff to tmp
+    Files.copy(inputPath.resolve(inputFileName), target.resolve(inputFileName),
+            StandardCopyOption.REPLACE_EXISTING);
+    // perform conversion
+    FormatConverter fc = new FormatConverter(target.resolve(inputFileName).toFile());
+    fc.doConversion();
+    // do compare
+    Path outputFileName;
+    outputFileName = Paths.get("test_0.paQP");
+    replaceLine(target.resolve(outputFileName), 0, getLine(inputPath.resolve(outputFileName), 0));
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.paQP");
+    replaceLine(target.resolve(outputFileName), 0, getLine(inputPath.resolve(outputFileName), 0));
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0.snQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.snQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0.stQP.csv");
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.stQP.csv");
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0_convexityMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0_coordMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0_fluoCh1.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0_motilityMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0_originMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0_xMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0_yMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+
+    outputFileName = Paths.get("test_1_convexityMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1_coordMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1_fluoCh2.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1_motilityMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1_originMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1_xMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1_yMap.maQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+
+  }
+
+  /**
+   * Compare conversion results to ground truth.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testConversionCompareTemplate_1() throws Exception {
+    Path inputFileName = Paths.get("test.QCONF");
+    Path inputPath =
+            Paths.get("src/test/Resources-static/FormatConverter/templates/Qconf-ECMM to Paqp");
+    Path target = folder.getRoot().toPath();
+    // copy stuff to tmp
+    Files.copy(inputPath.resolve(inputFileName), target.resolve(inputFileName),
+            StandardCopyOption.REPLACE_EXISTING);
+    // perform conversion
+    FormatConverter fc = new FormatConverter(target.resolve(inputFileName).toFile());
+    fc.doConversion();
+    // do compare
+    Path outputFileName;
+    outputFileName = Paths.get("test_0.paQP");
+    replaceLine(target.resolve(outputFileName), 0, getLine(inputPath.resolve(outputFileName), 0));
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.paQP");
+    replaceLine(target.resolve(outputFileName), 0, getLine(inputPath.resolve(outputFileName), 0));
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0.snQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.snQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0.stQP.csv");
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.stQP.csv");
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+  }
+
+  /**
+   * Compare conversion results to ground truth.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testConversionCompareTemplate_2() throws Exception {
+    Path inputFileName = Paths.get("test.QCONF");
+    Path inputPath =
+            Paths.get("src/test/Resources-static/FormatConverter/templates/Qconf-BOA to Paqp");
+    Path target = folder.getRoot().toPath();
+    // copy stuff to tmp
+    Files.copy(inputPath.resolve(inputFileName), target.resolve(inputFileName),
+            StandardCopyOption.REPLACE_EXISTING);
+    // perform conversion
+    FormatConverter fc = new FormatConverter(target.resolve(inputFileName).toFile());
+    fc.doConversion();
+    // do compare
+    Path outputFileName;
+    outputFileName = Paths.get("test_0.paQP");
+    replaceLine(target.resolve(outputFileName), 0, getLine(inputPath.resolve(outputFileName), 0));
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.paQP");
+    replaceLine(target.resolve(outputFileName), 0, getLine(inputPath.resolve(outputFileName), 0));
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0.snQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.snQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0.stQP.csv");
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.stQP.csv");
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+  }
+
+  /**
+   * Compare conversion results to ground truth.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testConversionCompareTemplate_3() throws Exception {
+    Path inputFileName = Paths.get("test.QCONF");
+    Path inputPath =
+            Paths.get("src/test/Resources-static/FormatConverter/templates/Qconf-ANA to Paqp");
+    Path target = folder.getRoot().toPath();
+    // copy stuff to tmp
+    Files.copy(inputPath.resolve(inputFileName), target.resolve(inputFileName),
+            StandardCopyOption.REPLACE_EXISTING);
+    // perform conversion
+    FormatConverter fc = new FormatConverter(target.resolve(inputFileName).toFile());
+    fc.doConversion();
+    // do compare
+    Path outputFileName;
+    outputFileName = Paths.get("test_0.paQP");
+    replaceLine(target.resolve(outputFileName), 0, getLine(inputPath.resolve(outputFileName), 0));
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.paQP");
+    replaceLine(target.resolve(outputFileName), 0, getLine(inputPath.resolve(outputFileName), 0));
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0.snQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.snQP");
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_0.stQP.csv");
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+    outputFileName = Paths.get("test_1.stQP.csv");
+    replaceLine(target.resolve(outputFileName), 1, getLine(inputPath.resolve(outputFileName), 1));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+  }
+
+  /**
+   * Compare conversion results to ground truth.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  @Ignore("Due to fluctuating heads")
+  public void testConversionCompareTemplate_4() throws Exception {
+    Field f = Shape.class.getDeclaredField("threshold");
+    f.setAccessible(true);
+    f.setDouble(Shape.class, 0.0);
+    Path inputFileName = Paths.get("test_0.paQP"); // template should be saved with fixed heads
+    Path inputPath =
+            Paths.get("src/test/Resources-static/FormatConverter/templates/Paqp-Q to QCONF");
+    Path target = folder.getRoot().toPath();
+    Path outputFileName = Paths.get("test.QCONF");
+    // copy stuff to tmp
+    FileUtils.copyDirectory(inputPath.toFile(), target.toFile());
+    Files.delete(target.resolve(outputFileName)); // remove copied template result
+    // perform conversion
+    FormatConverter fc = new FormatConverter(target.resolve(inputFileName).toFile());
+    fc.doConversion();
+
+    replaceLine(target.resolve(outputFileName), 7, getLine(inputPath.resolve(outputFileName), 7));
+    assertThat(target.resolve(outputFileName).toFile(),
+            is(containsExactText(inputPath.resolve(outputFileName).toFile())));
+
   }
 
   /**
@@ -246,7 +519,7 @@ public class FormatConverterTest {
     Path input = Paths.get("src/test/Resources-static/FormatConverter/QCONF");
     Path target = folder.getRoot().toPath();
     LOGGER.debug("Working dir: " + target.toString());
-    // copy staff to tmp
+    // copy stuff to tmp
     Files.copy(input.resolve("test.QCONF"), target.resolve("test.QCONF"),
             StandardCopyOption.REPLACE_EXISTING);
     Files.copy(input.resolve("test.tif"), target.resolve("test.tif"),
@@ -271,11 +544,11 @@ public class FormatConverterTest {
     Files.copy(target.resolve("test_2.snQP"), targetConv.resolve("test_2.snQP"),
             StandardCopyOption.REPLACE_EXISTING);
     // copy also other files required for paQP->QCONF
-    Files.copy(input.resolve("test_0.stQP.csv"), targetConv.resolve("test_0.stQP.csv"),
+    Files.copy(target.resolve("test_0.stQP.csv"), targetConv.resolve("test_0.stQP.csv"),
             StandardCopyOption.REPLACE_EXISTING);
-    Files.copy(input.resolve("test_1.stQP.csv"), targetConv.resolve("test_1.stQP.csv"),
+    Files.copy(target.resolve("test_1.stQP.csv"), targetConv.resolve("test_1.stQP.csv"),
             StandardCopyOption.REPLACE_EXISTING);
-    Files.copy(input.resolve("test_2.stQP.csv"), targetConv.resolve("test_2.stQP.csv"),
+    Files.copy(target.resolve("test_2.stQP.csv"), targetConv.resolve("test_2.stQP.csv"),
             StandardCopyOption.REPLACE_EXISTING);
     DirectoryStream<Path> dirStream = Files.newDirectoryStream(input, "*.maQP"); // all maps
     dirStream.forEach(path -> {
@@ -290,8 +563,9 @@ public class FormatConverterTest {
     // convert back to QCONF
     fc = new FormatConverter(targetConv.resolve("test_0.paQP").toFile());
     fc.doConversion();
+
     // This QCONF could be compared with that from target but roundings causes problems. Original
-    // QCONF was generated qith random head that matters here.
+    // QCONF was generated with random head that matters here.
 
     // then convert this QCONF to paQP back
     Path targetConv2 = folder.newFolder("convQCONF2paQP").toPath();
@@ -301,7 +575,7 @@ public class FormatConverterTest {
             StandardCopyOption.REPLACE_EXISTING);
     fc = new FormatConverter(targetConv2.resolve("test.QCONF").toFile());
     fc.doConversion();
-    // here snQP from target folder can be compared with those from targetConv2.
+    // here snQP,stQP from target folder can be compared with those from targetConv2.
     // there are differences after rounding so automatic tests will fail
 
   }

@@ -127,7 +127,7 @@ public class ECMM_Mapping {
       if (qconfLoader == null || qconfLoader.getQp() == null) {
         return; // failed to load exit
       }
-      if (qconfLoader.getConfVersion() == QParams.QUIMP_11) { // old path
+      if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
         QParams qp;
         runFromPaqp();
         // old flow with paQP files - detect other paQP
@@ -171,7 +171,7 @@ public class ECMM_Mapping {
             return; // no batch processing
           }
         }
-      } else if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
+      } else if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
         // validate in case new format
         qconfLoader.getBOA(); // will throw exception if not present
         if (qconfLoader.isECMMPresent()) {
@@ -187,7 +187,8 @@ public class ECMM_Mapping {
         IJ.log("The new data file " + qconfLoader.getQp().getParamFile().toString()
                 + " has been updated by results of ECMM analysis.");
       } else {
-        throw new IllegalStateException("QconfLoader returned unknown version of QuimP");
+        throw new IllegalStateException("QconfLoader returned unknown version of QuimP or error: "
+                + qconfLoader.isFileLoaded());
       }
 
       IJ.log("ECMM Analysis complete");
@@ -340,7 +341,7 @@ public class ECMM_Mapping {
 
     Mapping map1;
     int f = ECMp.startFrame; // now in frames
-    Outline o1 = oh.getOutline(f);
+    Outline o1 = oh.getStoredOutline(f);
     // resolution is always as in segmentation - not now
     if (!ECMp.ANA) {
       if (Math.abs(ECMp.markerRes) > 0) {
@@ -374,7 +375,7 @@ public class ECMM_Mapping {
         IJ.log("Mapping " + f + " to " + (f + 1));
       }
 
-      o2 = oh.getOutline(f + 1);
+      o2 = oh.getStoredOutline(f + 1);
       // o2 left as seen in the segmentation - i.e. marker res unchanged
       if (!ECMp.ANA && ECMp.markerRes > 0) {
         o2.setResolution(ECMp.markerRes); // must be done b4 intersects are calculated

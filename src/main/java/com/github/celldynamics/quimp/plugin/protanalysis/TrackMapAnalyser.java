@@ -102,11 +102,12 @@ public class TrackMapAnalyser {
    */
   public void trackMaxima(final STmap mapCell, double drop, final MaximaFinder maximaFinder) {
 
-    int numFrames = mapCell.motMap.length;
+    int numFrames = mapCell.getMotMap().length;
     // int[] indexes = new int[numFrames];
     Polygon maxi = maximaFinder.getMaxima(); // restore computed maxima
     double[] maxValues = maximaFinder.getMaxValues(); // max values in order of maxi
-    MapTracker trackMap = new MapTracker(mapCell.originMap, mapCell.coordMap); // build tracking map
+    // build tracking map
+    MapTracker trackMap = new MapTracker(mapCell.getOriginMap(), mapCell.getCoordMap());
     trackMap.includeFirst = INCLUDE_INITIAL; // include also initial point
     ArrayList<Point> trackForward = null;
     ArrayList<Point> trackBackward = null;
@@ -126,7 +127,7 @@ public class TrackMapAnalyser {
       // check where is drop off - index that has velocity below drop
       double dropValue = maxValues[i] - maxValues[i] * drop;
       for (nb = 0; nb < trackBackward.size() && trackBackward.get(nb).y >= 0; nb++) {
-        double val = (mapCell.motMap[trackBackward.get(nb).x][trackBackward.get(nb).y]);
+        double val = (mapCell.getMotMap()[trackBackward.get(nb).x][trackBackward.get(nb).y]);
         if (val < dropValue) {
           break;
         }
@@ -135,7 +136,7 @@ public class TrackMapAnalyser {
       LOGGER.trace("Accepted:" + nb);
 
       for (nf = 0; nf < trackForward.size() && trackForward.get(nf).y >= 0; nf++) {
-        double val = (mapCell.motMap[trackForward.get(nf).x][trackForward.get(nf).y]);
+        double val = (mapCell.getMotMap()[trackForward.get(nf).x][trackForward.get(nf).y]);
         if (val < dropValue) {
           break;
         }

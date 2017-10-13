@@ -4,14 +4,13 @@ import java.awt.Frame;
 
 import javax.swing.JOptionPane;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
+import ch.qos.logback.classic.Logger;
 import ij.IJ;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -19,9 +18,9 @@ import ij.IJ;
 public class QuimpException extends Exception {
 
   /**
-   * The Constant LOGGER.
+   * The LOGGER.
    */
-  static final Logger LOGGER = LoggerFactory.getLogger(QuimpException.class.getName());
+  public Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());
 
   /**
    * Define where the message should be displayed.
@@ -183,7 +182,7 @@ public class QuimpException extends Exception {
    * @param appendMessage Message added to beginning of the exception message, can be ""
    */
   public void handleException(Frame frame, String appendMessage) {
-    LOGGER.debug(getMessage(), this);
+    logger.debug(getMessage(), this);
     switch (getMessageSinkType()) {
       case GUI:
         JOptionPane.showMessageDialog(frame, QuimpToolsCollection
@@ -191,8 +190,8 @@ public class QuimpException extends Exception {
                 JOptionPane.ERROR_MESSAGE);
         break;
       case CONSOLE:
-        LOGGER.debug(getMessage(), this);
-        LOGGER.error(appendMessage + " " + getMessage());
+        logger.debug(getMessage(), this);
+        logger.error(appendMessage + " " + getMessage());
         break;
       case IJERROR:
         IJ.error(appendMessage + " " + getMessage());

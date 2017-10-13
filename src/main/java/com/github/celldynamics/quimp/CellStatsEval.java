@@ -149,7 +149,7 @@ public class CellStatsEval implements Measurements {
       IJ.showProgress(f, outputH.getEndFrame());
       store = f - outputH.getStartFrame();
 
-      o = outputH.getOutline(f);
+      o = outputH.getStoredOutline(f);
       iplus.setSlice(f); // also updates the processor
       stats[store] = new FrameStatistics();
 

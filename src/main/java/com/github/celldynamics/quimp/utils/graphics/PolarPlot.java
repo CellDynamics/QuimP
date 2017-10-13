@@ -4,7 +4,7 @@ import java.awt.Rectangle;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -255,8 +255,8 @@ public class PolarPlot {
     plotscale -= plotscale * uscale; // move a little from edge
     // generate svg
     BufferedOutputStream out;
-    out = new BufferedOutputStream(new FileOutputStream(filename));
-    OutputStreamWriter osw = new OutputStreamWriter(out);
+    out = new BufferedOutputStream(new FileOutputStream(filename)); // TODO change to FileWriter
+    PrintWriter osw = new PrintWriter(out, true);
     Rectangle extendedPlotArea = (Rectangle) plotArea.clone(); // extend square for axis labels
     extendedPlotArea.grow(1, 1);
     SVGwritter.writeHeader(osw, extendedPlotArea); // write header with sizes

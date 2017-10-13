@@ -165,10 +165,10 @@ public class ProtStat implements IQuimpSerialize {
     public CellStatistics() {
       getFromCellStats(); // copy some stats from CellStats
       // calculate basic stats for motility and convexity
-      motMean = QuimPArrayUtils.getMeanR(maps.motMap);
-      conMean = QuimPArrayUtils.getMeanR(maps.convMap);
-      motVar = QuimPArrayUtils.getVarR(maps.motMap);
-      conVar = QuimPArrayUtils.getVarR(maps.convMap);
+      motMean = QuimPArrayUtils.getMeanR(maps.getMotMap());
+      conMean = QuimPArrayUtils.getMeanR(maps.getConvMap());
+      motVar = QuimPArrayUtils.getVarR(maps.getMotMap());
+      conVar = QuimPArrayUtils.getVarR(maps.getConvMap());
       protcount = countProtrusions();
     }
 

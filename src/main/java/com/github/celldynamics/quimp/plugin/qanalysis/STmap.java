@@ -12,6 +12,7 @@ import com.github.celldynamics.quimp.QColor;
 import com.github.celldynamics.quimp.Vert;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
@@ -25,67 +26,137 @@ import ij.process.ImageProcessor;
  * Create spatial temporal maps from ECMM and ANA data.
  * 
  * <p>This class can be serialized but only as container of maps. Data required for creation of
- * those
- * maps are not serialized, thus restored object is not fully functional. As this is last step in
- * QuimP workflow it may not be necessary to load this json anymore.
+ * those maps are not serialized, thus restored object is not fully functional. As this is last step
+ * in QuimP workflow it may not be necessary to load this json anymore.
  * 
  * @author rtyson
+ * @author baniuk
  */
 public class STmap implements IQuimpSerialize {
 
   /**
-   * The Constant LOGGER.
+   * The Constant LOGGER. It is public because {@link FormatConverter#saveMaps(int)} can replace it
    */
-  static final Logger LOGGER = LoggerFactory.getLogger(STmap.class.getName());
+  public static Logger LOGGER = LoggerFactory.getLogger(STmap.class.getName());
+
+  /**
+   * Motility map code.
+   * 
+   * @see #saveMaps(int)
+   */
+  public static final int MOTILITY = 1;
+  /**
+   * Convexity map code.
+   * 
+   * @see #saveMaps(int)
+   */
+  public static final int CONVEXITY = 2;
+  /**
+   * Origin map code.
+   * 
+   * @see #saveMaps(int)
+   */
+  public static final int ORIGIN = 4;
+  /**
+   * Coordinates map code.
+   * 
+   * @see #saveMaps(int)
+   */
+  public static final int COORD = 8;
+  /**
+   * X coordinates map code.
+   * 
+   * @see #saveMaps(int)
+   */
+  public static final int XMAP = 16;
+  /**
+   * Y coordinates map code.
+   * 
+   * @see #saveMaps(int)
+   */
+  public static final int YMAP = 32;
+  /**
+   * Fluorescence channel 1 map code.
+   * 
+   * @see #saveMaps(int)
+   */
+  public static final int FLU1 = 64;
+  /**
+   * Fluorescence channel 2 map code.
+   * 
+   * @see #saveMaps(int)
+   */
+  public static final int FLU2 = 128;
+  /**
+   * Fluorescence channel 3 map code.
+   * 
+   * @see #saveMaps(int)
+   */
+  public static final int FLU3 = 256;
+  /**
+   * Combine all FLU maps.
+   * 
+   * @see #saveMaps(int)
+   */
+  public static final int ALLFLU = FLU1 | FLU2 | FLU3;
+  /**
+   * Combine all maps.
+   */
+  public static final int ALLMAPS = MOTILITY | CONVEXITY | ORIGIN | COORD | XMAP | YMAP | ALLFLU;
+
   /**
    * Coordinates map.
    * 
    * <p>Each node has an associated position. The co-ordinate map, rather than contain values
    * regarding motility, fluorescence or convexity, instead contains the position values of nodes.
    * The main purpose of the co-ordinate map, along with the origin map, is for tracking positions
-   * through time.
+   * through time. Size is Map[getT()][getRes()]. Setter is recommended for proper initialisation.
    * 
    * @see <a href=
    *      "http://pilip.lnx.warwick.ac.uk/docs/develop/QuimP_Guide.html#x1-320005">Manual</a>
    */
-  public double[][] coordMap;
+  private double[][] coordMap;
   /**
    * Each node has an origin, the position a node originated from on the previous frame. The
    * origin map contains origin values and can be used, along with the co-ordinate map, to track
-   * positions through time.
+   * positions through time. Size is Map[getT()][getRes()]. Setter is recommended for proper
+   * initialisation.
    * 
    * @see <a href=
    *      "http://pilip.lnx.warwick.ac.uk/docs/develop/QuimP_Guide.html#x1-320005">Manual</a>
    */
-  public double[][] originMap;
+  private double[][] originMap;
   /**
    * Contains horizontal image pixel co-ordinates (those on the image used for segmentation)
-   * relating to map pixels.
+   * relating to map pixels. Size is Map[getT()][getRes()]. Setter is recommended for proper
+   * initialisation.
    * 
    * @see <a href=
    *      "http://pilip.lnx.warwick.ac.uk/docs/develop/QuimP_Guide.html#x1-320005">Manual</a>
    */
-  public double[][] xMap;
+  private double[][] xMap;
   /**
    * Contains vertical image pixel co-ordinates (those on the image used for segmentation)
-   * relating to map pixels.
+   * relating to map pixels. Size is Map[getT()][getRes()]. Setter is recommended for proper
+   * initialisation.
    * 
    * @see <a href=
    *      "http://pilip.lnx.warwick.ac.uk/docs/develop/QuimP_Guide.html#x1-320005">Manual</a>
    */
-  public double[][] yMap;
+  private double[][] yMap;
   /**
    * Motility map.
    * 
    * <p>Pixels are coloured according to node speed, as calculated by ECMM. Red shades represent
    * expanding regions, blue shades contracting regions. Pixel values within the tiff image are
    * scaled to fill the colour spectrum. The map file extended _motilityMap.maPQ contains
-   * un-scaled values, in microns per second.
+   * un-scaled values, in microns per second. Size is Map[getT()][getRes()]. Setter is recommended
+   * for proper initialisation.
    * 
    * @see <a href=
    *      "http://pilip.lnx.warwick.ac.uk/docs/develop/QuimP_Guide.html#x1-320005">Manual</a>
    */
-  public double[][] motMap;
+  private double[][] motMap;
 
   /**
    * The mig color.
@@ -102,8 +173,10 @@ public class STmap implements IQuimpSerialize {
   public FluoMap[] fluoMaps;
   /**
    * Convexity map.
+   * 
+   * <p>Size is Map[getT()][getRes()]. Setter is recommended for proper initialisation.
    */
-  public double[][] convMap;
+  private double[][] convMap;
 
   /**
    * The conv color.
@@ -128,7 +201,7 @@ public class STmap implements IQuimpSerialize {
    * Resolution of maps.
    * 
    * <p>This field together with <tt>T</tt> stands for the dimensions of 2D arrays for storing maps.
-   * For this reason they are serialized.
+   * For this reason they are serialized. Map[T][res]
    */
   private int res;
   /**
@@ -216,7 +289,7 @@ public class STmap implements IQuimpSerialize {
     }
 
     generate();
-    // testQColorBW();
+    saveConvMotImages(); // save images that are opened already
   }
 
   /**
@@ -261,8 +334,8 @@ public class STmap implements IQuimpSerialize {
       pn = tt * res; // pixel index
 
       // find the first node in terms of coord and fcoord (not the head)
-      fhead = oh.getOutline(frame).findFirstNode('f');
-      chead = oh.getOutline(frame).findFirstNode('c');
+      fhead = oh.getStoredOutline(frame).findFirstNode('f');
+      chead = oh.getStoredOutline(frame).findFirstNode('c');
       // fHead.print();
       // cHead.print();
 
@@ -274,7 +347,7 @@ public class STmap implements IQuimpSerialize {
       } else {
         // vert closest below zero (zero being tracked over time from
         // frame 1!)
-        zeroVert = closestFloor(oh.getOutline(frame), origin, 'f', fhead);
+        zeroVert = closestFloor(oh.getStoredOutline(frame), origin, 'f', fhead);
         // System.out.println("zerovert: " + zeroVert.fCoord +", origin:
         // " + origin + ", fHead: " + fHead.fCoord);
         // position of origin between zeroVert and zeroVert.getNext
@@ -335,7 +408,7 @@ public class STmap implements IQuimpSerialize {
         // System.out.println("\tactualtarget:"+actualTarget);
         coordMap[tt][p] = actualTarget;
 
-        v = closestFloor(oh.getOutline(frame), actualTarget, 'c', chead); // should this be 'g'?
+        v = closestFloor(oh.getStoredOutline(frame), actualTarget, 'c', chead); // should this be g
         fraction = cfraction(v, actualTarget, chead);
 
         originMap[tt][p] = interpFCoord(v, fraction, fhead);
@@ -437,41 +510,83 @@ public class STmap implements IQuimpSerialize {
 
   /**
    * Save map files (maQP) on disk.
+   * 
+   * @param maps Map to be saved, defined in this class. Use {@value STmap#ALLMAPS} for save all
    */
-  public void saveMaps() {
+  public void saveMaps(int maps) {
     try {
-      // save images
-      IJ.saveAs(migImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename
-              + FileExtensions.motimageFileExt);
-      IJ.saveAs(convImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename
-              + FileExtensions.convimageFileExt);
-
-      QuimPArrayUtils.arrayToFile(coordMap, ",",
-              new File(Qp.outFile.getPath() + FileExtensions.coordmapFileExt));
-      QuimPArrayUtils.arrayToFile(originMap, ",",
-              new File(Qp.outFile.getPath() + FileExtensions.originmapFileExt));
-      QuimPArrayUtils.arrayToFile(motMap, ",",
-              new File(Qp.outFile.getPath() + FileExtensions.motmapFileExt));
-      QuimPArrayUtils.arrayToFile(convMap, ",",
-              new File(Qp.outFile.getPath() + FileExtensions.convmapFileExt));
-      QuimPArrayUtils.arrayToFile(xMap, ",",
-              new File(Qp.outFile.getPath() + FileExtensions.xmapFileExt));
-      QuimPArrayUtils.arrayToFile(yMap, ",",
-              new File(Qp.outFile.getPath() + FileExtensions.ymapFileExt));
-
-      for (int i = 0; i < 3; i++) {
-        if (!fluoMaps[i].isEnabled()) {
-          continue;
-        }
-        String tmpfilename = FileExtensions.fluomapFileExt.replaceFirst("%",
-                Integer.toString(fluoMaps[i].channel));
-        QuimPArrayUtils.arrayToFile(fluoMaps[i].getMap(), ",",
-                new File(Qp.outFile.getPath() + tmpfilename));
+      if ((maps & MOTILITY) == MOTILITY) {
+        File f = new File(Qp.outFile.getPath() + FileExtensions.motmapFileExt);
+        QuimPArrayUtils.arrayToFile(motMap, ",", f);
+        LOGGER.info("\tSaved motility map at: " + f.getAbsolutePath());
       }
-
+      if ((maps & CONVEXITY) == CONVEXITY) {
+        File f = new File(Qp.outFile.getPath() + FileExtensions.convmapFileExt);
+        QuimPArrayUtils.arrayToFile(convMap, ",", f);
+        LOGGER.info("\tSaved convexity map at: " + f.getAbsolutePath());
+      }
+      if ((maps & ORIGIN) == ORIGIN) {
+        File f = new File(Qp.outFile.getPath() + FileExtensions.originmapFileExt);
+        QuimPArrayUtils.arrayToFile(originMap, ",", f);
+        LOGGER.info("\tSaved origin map at: " + f.getAbsolutePath());
+      }
+      if ((maps & COORD) == COORD) {
+        File f = new File(Qp.outFile.getPath() + FileExtensions.coordmapFileExt);
+        QuimPArrayUtils.arrayToFile(coordMap, ",", f);
+        LOGGER.info("\tSaved coord map at: " + f.getAbsolutePath());
+      }
+      if ((maps & XMAP) == XMAP) {
+        File f = new File(Qp.outFile.getPath() + FileExtensions.xmapFileExt);
+        QuimPArrayUtils.arrayToFile(xMap, ",", f);
+        LOGGER.info("\tSaved x map at: " + f.getAbsolutePath());
+      }
+      if ((maps & YMAP) == YMAP) {
+        File f = new File(Qp.outFile.getPath() + FileExtensions.ymapFileExt);
+        QuimPArrayUtils.arrayToFile(yMap, ",", f);
+        LOGGER.info("\tSaved y map at: " + f.getAbsolutePath());
+      }
+      if ((maps & FLU1) == FLU1) {
+        saveFluoroMap(0);
+      }
+      if ((maps & FLU2) == FLU2) {
+        saveFluoroMap(1);
+      }
+      if ((maps & FLU3) == FLU3) {
+        saveFluoroMap(2);
+      }
     } catch (IOException e) {
       IJ.error("Could not write Map file:\n " + e.getMessage());
     }
+  }
+
+  /**
+   * Saves selected fluoro map.
+   * 
+   * @param index map index in {@link #fluoMaps} array.
+   * 
+   * @throws IOException on file save
+   */
+  private void saveFluoroMap(int index) throws IOException {
+    if (!fluoMaps[index].isEnabled()) {
+      LOGGER.debug("Selected map " + (index + 1) + " is not enabled");
+    } else {
+      String tmpfilename = FileExtensions.fluomapFileExt.replaceFirst("%",
+              Integer.toString(fluoMaps[index].channel));
+      File f = new File(Qp.outFile.getPath() + tmpfilename);
+      QuimPArrayUtils.arrayToFile(fluoMaps[index].getMap(), ",", f);
+      LOGGER.info("\tSaved fluoro map at: " + f.getAbsolutePath());
+    }
+  }
+
+  /**
+   * Saves already opened generated motility and convexity images.
+   */
+  private void saveConvMotImages() {
+    // save images
+    IJ.saveAs(migImP, "tiff",
+            Qp.outFile.getParent() + File.separator + Qp.filename + FileExtensions.motimageFileExt);
+    IJ.saveAs(convImP, "tiff", Qp.outFile.getParent() + File.separator + Qp.filename
+            + FileExtensions.convimageFileExt);
   }
 
   /**
@@ -678,7 +793,7 @@ public class STmap implements IQuimpSerialize {
     oh.curvLimits = new double[2];
 
     for (int f = oh.getStartFrame(); f <= oh.getEndFrame(); f++) {
-      o = oh.getOutline(f);
+      o = oh.getStoredOutline(f);
       if (o == null) {
         IJ.log("ERROR: Outline at frame " + f + " is empty");
         continue;
@@ -879,12 +994,128 @@ public class STmap implements IQuimpSerialize {
   }
 
   /**
+   * Set map. Initialise also resolution fields. All maps must have the same resolution.
+   * 
+   * @param xmap the xMap to set
+   * @see STmap#getRes()
+   * @see #getT()
+   */
+  public void setxMap(double[][] xmap) {
+    this.xMap = xmap;
+    T = xmap.length;
+    res = xmap[0].length;
+  }
+
+  /**
    * getyMap.
    * 
    * @return the yMap
    */
   public double[][] getyMap() {
     return yMap;
+  }
+
+  /**
+   * Set map. Initialise also resolution fields. All maps must have the same resolution.
+   * 
+   * @param ymap the yMap to set
+   * @see STmap#getRes()
+   * @see #getT()
+   */
+  public void setyMap(double[][] ymap) {
+    this.yMap = ymap;
+    T = ymap.length;
+    res = ymap[0].length;
+  }
+
+  /**
+   * Get coordinates map.
+   * 
+   * @return the coordMap
+   */
+  public double[][] getCoordMap() {
+    return coordMap;
+  }
+
+  /**
+   * Set map. Initialise also resolution fields. All maps must have the same resolution.
+   * 
+   * @param coordMap the coordMap to set
+   * @see STmap#getRes()
+   * @see #getT()
+   */
+  public void setCoordMap(double[][] coordMap) {
+    this.coordMap = coordMap;
+    T = coordMap.length;
+    res = coordMap[0].length;
+  }
+
+  /**
+   * Get origin map.
+   * 
+   * @return the originMap
+   */
+  public double[][] getOriginMap() {
+    return originMap;
+  }
+
+  /**
+   * Set map. Initialise also resolution fields. All maps must have the same resolution.
+   * 
+   * @param originMap the originMap to set
+   * 
+   * @see STmap#getRes()
+   * @see #getT()
+   */
+  public void setOriginMap(double[][] originMap) {
+    this.originMap = originMap;
+    T = originMap.length;
+    res = originMap[0].length;
+  }
+
+  /**
+   * getMotMap.
+   * 
+   * @return the motMap
+   */
+  public double[][] getMotMap() {
+    return motMap;
+  }
+
+  /**
+   * Set map. Initialise also resolution fields. All maps must have the same resolution.
+   * 
+   * @param motMap the motMap to set
+   * 
+   * @see STmap#getRes()
+   * @see #getT()
+   */
+  public void setMotMap(double[][] motMap) {
+    this.motMap = motMap;
+    T = motMap.length;
+    res = motMap[0].length;
+  }
+
+  /**
+   * getConvMap.
+   * 
+   * @return the convMap
+   */
+  public double[][] getConvMap() {
+    return convMap;
+  }
+
+  /**
+   * Set map. Initialise also resolution fields. All maps must have the same resolution.
+   * 
+   * @param convMap the convMap to set
+   * @see STmap#getRes()
+   * @see #getT()
+   */
+  public void setConvMap(double[][] convMap) {
+    this.convMap = convMap;
+    T = convMap.length;
+    res = convMap[0].length;
   }
 
   /*
@@ -904,23 +1135,5 @@ public class STmap implements IQuimpSerialize {
   @Override
   public void afterSerialize() throws Exception {
     LOGGER.debug("This class can not be deserialzied without assgning OutlineHndler");
-  }
-
-  /**
-   * getMotMap.
-   * 
-   * @return the motMap
-   */
-  public double[][] getMotMap() {
-    return motMap;
-  }
-
-  /**
-   * getConvMap.
-   * 
-   * @return the convMap
-   */
-  public double[][] getConvMap() {
-    return convMap;
   }
 }

@@ -2,7 +2,7 @@ package com.github.celldynamics.quimp.utils.graphics.svg;
 
 import java.awt.Rectangle;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import com.github.celldynamics.quimp.QColor;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
@@ -26,7 +26,7 @@ public abstract class SVGwritter {
    * @param d bounding box
    * @throws IOException on file error
    */
-  public static void writeHeader(OutputStreamWriter osw, Rectangle d) throws IOException {
+  public static void writeHeader(PrintWriter osw, Rectangle d) throws IOException {
     Rectangle d1 = new Rectangle(d);
     d1.grow(1, 1);
     osw.write("<?xml version=\"1.0\" standalone=\"no\"?>\n");
@@ -47,7 +47,7 @@ public abstract class SVGwritter {
    * @param osw file to write
    * @throws IOException on file error
    */
-  public abstract void draw(OutputStreamWriter osw) throws IOException;
+  public abstract void draw(PrintWriter osw) throws IOException;
 
   /**
    * Represent circle on SVG image.
@@ -108,7 +108,7 @@ public abstract class SVGwritter {
      * @see SVGwritter#draw(java.io.OutputStreamWriter)
      */
     @Override
-    public void draw(OutputStreamWriter osw) throws IOException {
+    public void draw(PrintWriter osw) throws IOException {
       String col; // fill colour
       if (colour == null) {
         col = "none";
@@ -192,7 +192,7 @@ public abstract class SVGwritter {
      * com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
     @Override
-    public void draw(OutputStreamWriter osw) throws IOException {
+    public void draw(PrintWriter osw) throws IOException {
       osw.write("<line x1=\"" + x1 + "\" y1=\"" + y1 + "\" x2=\"" + x2 + "\" y2=\"" + y2 + "\" ");
       osw.write("style=\"stroke:" + colour.getColorSVG() + ";stroke-width:" + thickness + "\"/>\n");
     }
@@ -273,7 +273,7 @@ public abstract class SVGwritter {
      * com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
     @Override
-    public void draw(OutputStreamWriter osw) throws IOException {
+    public void draw(PrintWriter osw) throws IOException {
       osw.write("\n<text x=\"" + pos.getX() + "\" y=\"" + pos.getY() + "\" "
               + "style=\"font-family: " + font + ";font-size: " + size + ";fill: "
               + colour.getColorSVG() + ";letter-spacing: " + letterSpacing + ";text-anchor: "
@@ -343,7 +343,7 @@ public abstract class SVGwritter {
      * com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
     @Override
-    public void draw(OutputStreamWriter osw) throws IOException {
+    public void draw(PrintWriter osw) throws IOException {
       // plot parameters
       double x0 = rect.getLocation().getX() + rect.getWidth() / 2;
       double y0 = rect.getLocation().getY() + rect.getHeight() / 2;
@@ -486,7 +486,7 @@ public abstract class SVGwritter {
      * com.github.celldynamics.quimp.utils.graphics.svg.SVGwritter#draw(java.io.OutputStreamWriter)
      */
     @Override
-    public void draw(OutputStreamWriter osw) throws IOException {
+    public void draw(PrintWriter osw) throws IOException {
       SVGwritter.Qline body;
 
       double tickSize = 2 * thickness;

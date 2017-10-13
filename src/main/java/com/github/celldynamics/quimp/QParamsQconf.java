@@ -110,6 +110,15 @@ public class QParamsQconf extends QParams {
   }
 
   /**
+   * Return file creation date and other parameters.
+   * 
+   * @return QuimpVersion structure
+   */
+  public QuimpVersion getFileVersion() {
+    return loaded.timeStamp;
+  }
+
+  /**
    * Read composite <i>QCONF</i> file.
    * 
    * <p>Update <tt>outputFileCore</tt> in {@link BOAp} to current QCONF.

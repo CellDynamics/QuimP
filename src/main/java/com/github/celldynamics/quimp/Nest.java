@@ -426,9 +426,7 @@ public class Nest implements IQuimpSerialize {
    * Store OutlineHandler as finalSnake.
    * 
    * <p>Use {@link com.github.celldynamics.quimp.SnakeHandler#copyFromFinalToSeg()} to populate
-   * snake
-   * over
-   * segSnakes.
+   * snake over segSnakes.
    * 
    * <p>Conversion to Snakes is through Rois
    * 
@@ -439,7 +437,7 @@ public class Nest implements IQuimpSerialize {
 
     Outline o;
     for (int i = oh.getStartFrame(); i <= oh.getEndFrame(); i++) {
-      o = oh.getOutline(i);
+      o = oh.getStoredOutline(i);
       sh.storeRoi((PolygonRoi) o.asFloatRoi(), i);
     }
     sh.copyFromFinalToSeg();

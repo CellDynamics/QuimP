@@ -21,11 +21,11 @@ public class FluoMap {
   /**
    * Number of frames. Part of QCONF.
    */
-  int T;
+  private int T;
   /**
    * Horizontal resolution (points of outline). Part of QCONF.
    */
-  int res;
+  private int res;
   /**
    * Fluorescence channel kept in this object. Part of QCONF.
    */
@@ -33,7 +33,7 @@ public class FluoMap {
   /**
    * Fluorescence map [time points][outline points]. Part of QCONF.
    */
-  double[][] map;
+  private double[][] map;
   /**
    * Colors for intensities stored in map.
    * 
@@ -160,5 +160,7 @@ public class FluoMap {
     this.map = map;
     recalculateColorScale(QuimPArrayUtils.array2dMax(map));
     setEnabled(true);
+    T = map.length;
+    res = map[0].length;
   }
 }

@@ -29,8 +29,7 @@ public class ANARun {
   @SuppressWarnings("unused")
   public static void main(String[] args) {
     ImageJ ij = new ImageJ();
-    ImagePlus im = IJ.openImage(
-            "/home/baniuk/Documents/OneDrive/BioinformaticsPaper/Supplementary_material_C_data (copy)/KZ4-220214-cAR1-GFP-devel5.5h-agar07-14.tif");
+    ImagePlus im = IJ.openImage("/home/baniuk/Desktop/Tests/175/test.tif");
     im.show();
     ANA_ ana = new ANA_();
     ana.setup(new String(), im);

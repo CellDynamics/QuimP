@@ -55,7 +55,7 @@ public class ProtAnalysisTest {
   @Before
   public void setUp() throws Exception {
     stMap = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState;
-    float[][] motMap = QuimPArrayUtils.double2dfloat(stMap[0].motMap);
+    float[][] motMap = QuimPArrayUtils.double2dfloat(stMap[0].getMotMap());
     // rotate and flip to match orientation of ColorProcessor (QuimP default)
     imp = new FloatProcessor(motMap).rotateRight();
     imp.flipHorizontal();
@@ -82,7 +82,7 @@ public class ProtAnalysisTest {
         141 - 1, 139 - 1 };
     int[] expectedF =
             { 22 - 1, 23 - 1, 24 - 1, 25 - 1, 26 - 1, 27 - 1, 28 - 1, 29 - 1, 30 - 1, 31 - 1 };
-    MapTracker testM = new MapTracker(stMap[0].originMap, stMap[0].coordMap);
+    MapTracker testM = new MapTracker(stMap[0].getOriginMap(), stMap[0].getCoordMap());
     int frame = 20; // frame from found maxima [0]
     int index = 160; // index from found maxima [0]
     int[] ret = testM.trackForward(frame, index, 10);

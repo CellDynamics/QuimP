@@ -153,12 +153,12 @@ public abstract class PluginTemplate implements IQuimpPlugin {
       if (qconfLoader.getQp() == null) {
         return; // not loaded
       }
-      if (qconfLoader.getConfVersion() == QParams.NEW_QUIMP) { // new path
+      if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
         // validate in case new format
         qconfLoader.getBOA(); // will throw exception if not present
       } else {
         qconfLoader = null; // failed load or checking
-        throw new QuimpPluginException("QconfLoader returned unsupported version of QuimP."
+        throw new QuimpPluginException("QconfLoader returned unsupported version of QuimP or error."
                 + " Only new format can be loaded");
       }
     }

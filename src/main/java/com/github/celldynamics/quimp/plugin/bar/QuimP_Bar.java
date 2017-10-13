@@ -42,8 +42,8 @@ import com.github.celldynamics.quimp.AboutDialog;
 import com.github.celldynamics.quimp.PropertyReader;
 import com.github.celldynamics.quimp.QuimP;
 import com.github.celldynamics.quimp.QuimpException;
-import com.github.celldynamics.quimp.QuimpVersion;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
+import com.github.celldynamics.quimp.QuimpVersion;
 import com.github.celldynamics.quimp.filesystem.FileDialogEx;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
@@ -347,6 +347,9 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     button = makeNavigationButton("generatemask.jpg", "run(\"Generate mask\")",
             "Convert Snakes to Masks", "Generate mask");
     toolBarBottom.add(button);
+    button = makeNavigationButton("formatconv.jpg", "run(\"Format converter\")",
+            "Convert between formats", "Format converter");
+    toolBarBottom.add(button);
 
     toolBarUpper.setFloatable(false);
     toolBarBottom.setFloatable(false);
@@ -363,7 +366,7 @@ public class QuimP_Bar implements PlugIn, ActionListener {
     constrains.fill = GridBagConstraints.HORIZONTAL;
     frame.getContentPane().add(toolBarTitle2, constrains);
     constrains.gridx = 0;
-    constrains.gridy = 3;
+    constrains.gridy = 4;
     frame.getContentPane().add(toolBarBottom, constrains);
   }
 

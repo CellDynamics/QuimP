@@ -44,5 +44,4 @@ public class QuimpFileMatchers extends FileMatchers {
   public static <T extends IQuimpSerialize> QuimpObjectMatcher<T> givesSameJson(T expected) {
     return new QuimpObjectMatcher<T>(expected);
   }
-
 }

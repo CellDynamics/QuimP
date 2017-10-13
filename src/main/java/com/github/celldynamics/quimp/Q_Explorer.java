@@ -265,7 +265,7 @@ class ImageManager {
     for (int i = 1; i <= movieIpl.getStackSize(); i++) {
       movOverlay[i - 1] = new Overlay();
       if (oH.isOutlineAt(i)) {
-        movOverlay[i - 1].add(oH.getOutline(i).asFloatRoi());
+        movOverlay[i - 1].add(oH.getStoredOutline(i).asFloatRoi());
       }
     }
 

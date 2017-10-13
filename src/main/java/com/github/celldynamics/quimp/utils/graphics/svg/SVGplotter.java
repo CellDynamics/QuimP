@@ -3,7 +3,7 @@ package com.github.celldynamics.quimp.utils.graphics.svg;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.OutlineHandler;
@@ -97,7 +97,7 @@ public class SVGplotter {
 
       BufferedOutputStream out = new BufferedOutputStream(
               new FileOutputStream(outFile.getAbsolutePath() + FileExtensions.motvecimageFileExt));
-      OutputStreamWriter osw = new OutputStreamWriter(out);
+      PrintWriter osw = new PrintWriter(out);
 
       osw.write("<?xml version=\"1.0\" standalone=\"no\"?>\n");
       osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + minx + " " + miny + " " + width
@@ -148,7 +148,7 @@ public class SVGplotter {
 
       BufferedOutputStream out = new BufferedOutputStream(
               new FileOutputStream(outFile.getAbsolutePath() + "_trackAnim.svg"));
-      OutputStreamWriter osw = new OutputStreamWriter(out);
+      PrintWriter osw = new PrintWriter(out);
 
       osw.write("<?xml version=\"1.0\" standalone=\"no\"?>\n");
       osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + minx + " " + miny + " " + width
@@ -166,7 +166,7 @@ public class SVGplotter {
 
       colorMap = QColor.colourMap("Summer", oh.getSize());
       for (int i = 0; i < oh.getSize(); i++) {
-        o = oh.getOutline(i);
+        o = oh.getStoredOutline(i);
         t = (double) i * dur;
         plotOutline(osw, o, colorMap[i].getColorSVG(), true, t, dur);
       }
@@ -201,7 +201,7 @@ public class SVGplotter {
 
       BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(
               outFile.getAbsolutePath() + FileExtensions.trackvecimageFileExt));
-      OutputStreamWriter osw = new OutputStreamWriter(out);
+      PrintWriter osw = new PrintWriter(out);
 
       osw.write("<?xml version=\"1.0\" standalone=\"no\"?>\n");
       osw.write("<svg width=\"15cm\" height=\"15cm\" viewBox=\"" + minx + " " + miny + " " + width
@@ -239,7 +239,7 @@ public class SVGplotter {
     }
   }
 
-  private void plotOutline(OutputStreamWriter osw, Outline o, String colour, boolean anim, double t,
+  private void plotOutline(PrintWriter osw, Outline o, String colour, boolean anim, double t,
           double dur) throws Exception {
     Vert v = o.getHead();
     osw.write("<polyline ");
@@ -265,7 +265,7 @@ public class SVGplotter {
     osw.write("\n");
   }
 
-  private void plotVerts(OutputStreamWriter osw, Outline o, double t, double dur) throws Exception {
+  private void plotVerts(PrintWriter osw, Outline o, double t, double dur) throws Exception {
     osw.write("<g id=\"verts_1\" display=\"none\">\n");
     Vert v = o.getHead();
     QColor erColour;

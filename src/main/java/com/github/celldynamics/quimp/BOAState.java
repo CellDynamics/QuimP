@@ -478,7 +478,8 @@ public class BOAState implements IQuimpSerialize {
      */
     private File orgFile;
     /**
-     * Corename for output, initially contains path and name without extension from orgFile.
+     * Corename for output, initially contains path and name without extension from orgFile and
+     * without cell number.
      * 
      * <p>Can be changed by user on save Change of this field causes change of the
      * <tt>fileName</tt>
@@ -795,6 +796,7 @@ public class BOAState implements IQuimpSerialize {
      * Get outputFileCore.
      * 
      * @return the outputFileCore
+     * @see #outputFileCore
      */
     public File getOutputFileCore() {
       return outputFileCore;

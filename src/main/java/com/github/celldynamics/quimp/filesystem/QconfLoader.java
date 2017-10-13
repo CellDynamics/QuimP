@@ -3,6 +3,8 @@ package com.github.celldynamics.quimp.filesystem;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -15,6 +17,7 @@ import com.github.celldynamics.quimp.PropertyReader;
 import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 import com.github.celldynamics.quimp.plugin.bar.QuimP_Bar;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
@@ -45,7 +48,33 @@ public class QconfLoader {
   /**
    * Stand for bad QCONF file that can not be loaded.
    */
-  public static final int QCONF_INVALID = 0;
+  public static final int QCONF_INVALID = 0; // Must be 0
+  /**
+   * Stand for bad paQP experiment that has some files missing.
+   */
+  public static final int PAQP_INVALID = QCONF_INVALID; // Must be 0
+  /**
+   * Stand for good paQP experiment that has all files.
+   */
+  public static final int PAQP_VALID = 2;
+  /**
+   * Stand for missing file in experiment.
+   */
+  public static final int SNQP_MISSING = 4;
+  /**
+   * Stand for missing file in experiment.
+   */
+  public static final int STQP_MISSING = 8;
+  /**
+   * Stand for missing file in experiment.
+   */
+  public static final int MAP_MISSING = 16;
+  /**
+   * Separator for error messages.
+   * 
+   * @see #validatePaqp(Path)
+   */
+  public static final String SEPARATOR = ";";
   /**
    * Main object holding loaded configuration file. It can be either traditional QParams or
    * QParamsQconf for newer format.
@@ -146,7 +175,7 @@ public class QconfLoader {
     }
     ImagePlus im;
     File imagepath = null;
-    switch (getQp().paramFormat) {
+    switch (getQp().getParamFormat()) {
       case QParams.NEW_QUIMP:
         imagepath = ((QParamsQconf) qp).getLoadedDataContainer().getBOAState().boap.getOrgFile();
         break;
@@ -223,22 +252,147 @@ public class QconfLoader {
   /**
    * Validate loaded QCONF file in accordance to modules run on it.
    * 
+   * <p>For certain cases this method may not be able to verify if QCONF is valid. This may happen
+   * if QCONF was obtained from paQP files, where some of experiment files were missing (this should
+   * no happen).
+   * 
    * @return Values:
    *         <ol>
    *         <li>0 if QCONF is not loaded properly.
    *         <li>QParams.QUIMP_11 if it is in old format
-   *         <li>{@link DataContainer#validateDataContainer()}
-   *         flags otherwise
+   *         <li>{@link DataContainer#validateDataContainer()} flags otherwise
    *         </ol>
+   * 
+   * @see FormatConverter - may return defective QCONF with warnings.
    */
   public int validateQconf() {
     if (getQp() == null) {
       return QconfLoader.QCONF_INVALID;
     }
-    if (getQp().paramFormat != QParams.NEW_QUIMP) {
+    if (getQp().getParamFormat() != QParams.NEW_QUIMP) {
       return QParams.QUIMP_11;
     }
     return ((QParamsQconf) getQp()).getLoadedDataContainer().validateDataContainer();
+  }
+
+  /**
+   * Perform blind validation of accessible files without reading them.
+   * 
+   * <p>Check if for each cell in same experiment (identified by provided full name
+   * /path/name_0.paQP) all other corresponding files exist.
+   * 
+   * @param firstFile full path to first paQP file in experiment
+   * @return Map with keys defined in in this class: {@value #PAQP_INVALID}, {@value #PAQP_VALID},
+   *         {@value #SNQP_MISSING}, {@value #STQP_MISSING}, {@value #MAP_MISSING} and String values
+   *         in format problem description; problem description. E.g if two maps are missing both
+   *         are logged in value for {@value #MAP_MISSING}. Empty Map stands for proper experiment
+   *         structure.
+   */
+  public static Map<Integer, String> validatePaqp(Path firstFile) {
+    HashMap<Integer, String> ret = new HashMap<>();
+
+    Path folder = firstFile.getParent();
+    Path corep = firstFile.getFileName();
+    if (folder == null || corep == null) {
+      throw new IllegalArgumentException("Wrong path");
+    }
+    String core = corep.toString();
+    int up = core.lastIndexOf('_');
+    if (up <= 0) {
+      ret.put(PAQP_INVALID, "Incorect name."); // wrong name?
+      return ret;
+    } else {
+      core = core.substring(0, up); // remove _0 from name
+    }
+    // iterate over paQP
+    int l = 0;
+    File file = folder.resolve(core + "_" + l + FileExtensions.configFileExt).toFile();
+    int hadMap = 0;
+    while (file.exists()) {
+      // check snQP
+      file = folder.resolve(core + "_" + l + FileExtensions.snakeFileExt).toFile();
+      if (!file.exists()) {
+        String prev = ret.get(SNQP_MISSING) == null ? "" : ret.get(SNQP_MISSING);
+        prev = prev.concat(SEPARATOR).concat("Missing " + file.getName() + " file");
+        ret.put(SNQP_MISSING, prev);
+      }
+      // check stQP
+      file = folder.resolve(core + "_" + l + FileExtensions.statsFileExt).toFile();
+      if (!file.exists()) {
+        String prev = ret.get(STQP_MISSING) == null ? "" : ret.get(STQP_MISSING);
+        prev = prev.concat(SEPARATOR).concat("Missing " + file.getName() + " file");
+        ret.put(STQP_MISSING, prev);
+      }
+      // check maps
+      // check if there is at least one
+      if (folder.resolve(core + "_" + l + FileExtensions.convmapFileExt).toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.motmapFileExt).toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.coordmapFileExt).toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.originmapFileExt).toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.xmapFileExt).toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.ymapFileExt).toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.fluomapFileExt.replace('%', '1'))
+                      .toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.fluomapFileExt.replace('%', '2'))
+                      .toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.fluomapFileExt.replace('%', '3'))
+                      .toFile().exists()) {
+        // so we expect all (except flumaps)
+        hadMap++; // at least one paQP has maps
+        file = folder.resolve(core + "_" + l + FileExtensions.convmapFileExt).toFile();
+        if (!file.exists()) {
+          String prev = ret.get(MAP_MISSING) == null ? "" : ret.get(MAP_MISSING);
+          prev = prev.concat(SEPARATOR).concat("Missing " + file.getName() + " file");
+          ret.put(MAP_MISSING, prev);
+        }
+        file = folder.resolve(core + "_" + l + FileExtensions.motmapFileExt).toFile();
+        if (!file.exists()) {
+          String prev = ret.get(MAP_MISSING) == null ? "" : ret.get(MAP_MISSING);
+          prev = prev.concat(SEPARATOR).concat("Missing " + file.getName() + " file");
+          ret.put(MAP_MISSING, prev);
+        }
+        file = folder.resolve(core + "_" + l + FileExtensions.coordmapFileExt).toFile();
+        if (!file.exists()) {
+          String prev = ret.get(MAP_MISSING) == null ? "" : ret.get(MAP_MISSING);
+          prev = prev.concat(SEPARATOR).concat("Missing " + file.getName() + " file");
+          ret.put(MAP_MISSING, prev);
+        }
+        file = folder.resolve(core + "_" + l + FileExtensions.originmapFileExt).toFile();
+        if (!file.exists()) {
+          String prev = ret.get(MAP_MISSING) == null ? "" : ret.get(MAP_MISSING);
+          prev = prev.concat(SEPARATOR).concat("Missing " + file.getName() + " file");
+          ret.put(MAP_MISSING, prev);
+        }
+        file = folder.resolve(core + "_" + l + FileExtensions.xmapFileExt).toFile();
+        if (!file.exists()) {
+          String prev = ret.get(MAP_MISSING) == null ? "" : ret.get(MAP_MISSING);
+          prev = prev.concat(SEPARATOR).concat("Missing " + file.getName() + " file");
+          ret.put(MAP_MISSING, prev);
+        }
+        file = folder.resolve(core + "_" + l + FileExtensions.ymapFileExt).toFile();
+        if (!file.exists()) {
+          String prev = ret.get(MAP_MISSING) == null ? "" : ret.get(MAP_MISSING);
+          prev = prev.concat(SEPARATOR).concat("Missing " + file.getName() + " file");
+          ret.put(MAP_MISSING, prev);
+        }
+      } else {
+        hadMap--;
+      }
+      l++;
+      file = folder.resolve(core + "_" + l + FileExtensions.configFileExt).toFile();
+    }
+    if (l == 0) {
+      ret.put(PAQP_INVALID, "First file " + file.getName() + " is missing.");
+    }
+    // check case if one paQP does not have maps but other has
+    if (Math.abs(hadMap) != l) {
+      String prev = ret.get(MAP_MISSING) == null ? "" : ret.get(MAP_MISSING);
+      prev = prev.concat(SEPARATOR).concat(
+              "All maps are missing for one or more paQP files whereas avilable for other cases");
+      ret.put(MAP_MISSING, prev);
+    }
+    return ret; // if size 0 - no issues
+
   }
 
   /**
@@ -321,7 +475,7 @@ public class QconfLoader {
    * 
    * @return true if stats are present.
    */
-  private boolean isStatsPresent() {
+  public boolean isStatsPresent() {
     int ret = validateQconf();
     if (ret == QconfLoader.QCONF_INVALID || ret == QParams.QUIMP_11) {
       return false;
@@ -408,12 +562,18 @@ public class QconfLoader {
   }
 
   /**
-   * Return version of file loaded.
+   * Return type of loaded file or 0 if not loaded yet.
    * 
-   * @return Version of loaded file, see {@link QParams}
+   * @return {@link QconfLoader#QCONF_INVALID} or {@link QParams#NEW_QUIMP},
+   *         {@link QParams#QUIMP_11}
    */
-  public int getConfVersion() {
-    return getQp().paramFormat;
+  public int isFileLoaded() {
+    int ret = validateQconf();
+    if (ret == QconfLoader.QCONF_INVALID) {
+      return QconfLoader.QCONF_INVALID;
+    } else {
+      return getQp().getParamFormat();
+    }
   }
 
 }

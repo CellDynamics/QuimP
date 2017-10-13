@@ -87,11 +87,11 @@ public class TrackMapTest {
    */
   @Before
   public void setUp() throws Exception {
-    coordMap1 = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState[0].coordMap;
-    originMap1 = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState[0].originMap;
+    coordMap1 = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState[0].getCoordMap();
+    originMap1 = ((QParamsQconf) qL1.getQp()).getLoadedDataContainer().QState[0].getOriginMap();
 
-    coordMap2 = ((QParamsQconf) qL2.getQp()).getLoadedDataContainer().QState[0].coordMap;
-    originMap2 = ((QParamsQconf) qL2.getQp()).getLoadedDataContainer().QState[0].originMap;
+    coordMap2 = ((QParamsQconf) qL2.getQp()).getLoadedDataContainer().QState[0].getCoordMap();
+    originMap2 = ((QParamsQconf) qL2.getQp()).getLoadedDataContainer().QState[0].getOriginMap();
   }
 
   /**

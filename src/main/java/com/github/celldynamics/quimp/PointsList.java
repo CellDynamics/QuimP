@@ -73,7 +73,7 @@ public abstract class PointsList<T extends PointsList<T>> {
    * com.github.celldynamics.quimp.Shape.setPositions() and called before and after serialise and on
    * Shape writing.
    */
-  double position = -1;
+  protected double position = -1;
   /**
    * flag which is set when the velocity is below the critical velocity.
    */
@@ -284,6 +284,24 @@ public abstract class PointsList<T extends PointsList<T>> {
    */
   public ExtendedVector2d getTangent() {
     return tan;
+  }
+
+  /**
+   * Get normalised position of node.
+   * 
+   * @return the position
+   */
+  public double getPosition() {
+    return position;
+  }
+
+  /**
+   * Set normalised position of node.
+   * 
+   * @param position the position to set
+   */
+  public void setPosition(double position) {
+    this.position = position;
   }
 
   /**
