@@ -1,5 +1,17 @@
 # Change Log
 
+## [v17.10.01](https://github.com/CellDynamics/QuimP/tree/v17.10.01) (2017-10-13)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.07.02...v17.10.01)
+
+**Implemented enhancements:**
+
+- Add busy status [\#267](https://github.com/CellDynamics/QuimP/issues/267)
+- Interrupt segmenetation [\#46](https://github.com/CellDynamics/QuimP/issues/46)
+
+**Fixed bugs:**
+
+- Add UI to FormatConverter [\#145](https://github.com/CellDynamics/QuimP/issues/145)
+
 ## [v17.07.02](https://github.com/CellDynamics/QuimP/tree/v17.07.02) (2017-08-01)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.07.01...v17.07.02)
 
