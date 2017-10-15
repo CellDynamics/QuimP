@@ -4,7 +4,7 @@ import static com.github.baniuk.ImageJTestSuite.matchers.file.FileMatchers.conta
 import static com.github.baniuk.ImageJTestSuite.tools.files.FileModifiers.getLine;
 import static com.github.baniuk.ImageJTestSuite.tools.files.FileModifiers.replaceLine;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.Shape;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
+import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
+import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
 /**
  * @author p.baniukiewicz
@@ -578,6 +580,68 @@ public class FormatConverterTest {
     // here snQP,stQP from target folder can be compared with those from targetConv2.
     // there are differences after rounding so automatic tests will fail
 
+  }
+
+  /**
+   * Verify saving maps.
+   * 
+   * @throws Exception Exception
+   */
+  @Test()
+  public void testSaveMaps_1() throws Exception {
+    Path inputFileName = Paths.get("test.QCONF");
+    Path inputPath =
+            Paths.get("src/test/Resources-static/FormatConverter/templates/Qconf-Q to Paqp");
+    Path target = folder.getRoot().toPath();
+    // copy stuff to tmp
+    Files.copy(inputPath.resolve(inputFileName), target.resolve(inputFileName),
+            StandardCopyOption.REPLACE_EXISTING);
+    // perform conversion
+    FormatConverter fc = new FormatConverter(target.resolve(inputFileName).toFile());
+    fc.saveMaps(STmap.ALLMAPS);
+    assertThat(target.resolve("test_0_convexityMap.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_0_coordMap.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_0_fluoCh1.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_0_motilityMap.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_0_originMap.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_0_xMap.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_0_yMap.maQP").toFile().exists(), is(true));
+
+    assertThat(target.resolve("test_1_convexityMap.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_1_coordMap.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_1_fluoCh2.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_1_motilityMap.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_1_originMap.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_1_xMap.maQP").toFile().exists(), is(true));
+    assertThat(target.resolve("test_1_yMap.maQP").toFile().exists(), is(true));
+
+    // verify random size
+    double[][] map =
+            QuimPArrayUtils.file2Array(",", target.resolve("test_0_convexityMap.maQP").toFile());
+    assertThat(map.length, is(15));
+    assertThat(map[0].length, is(400));
+
+  }
+
+  /**
+   * Verify saving maps.
+   * 
+   * @throws Exception Exception
+   */
+  @Test()
+  public void testSaveStats_1() throws Exception {
+    Path inputFileName = Paths.get("test.QCONF");
+    Path inputPath =
+            Paths.get("src/test/Resources-static/FormatConverter/templates/Qconf-Q to Paqp");
+    Path target = folder.getRoot().toPath();
+    // copy stuff to tmp
+    Files.copy(inputPath.resolve(inputFileName), target.resolve(inputFileName),
+            StandardCopyOption.REPLACE_EXISTING);
+    // perform conversion
+    FormatConverter fc = new FormatConverter(target.resolve(inputFileName).toFile());
+    fc.saveStats();
+    assertThat(target.resolve("test_0.stQP.csv").toFile().exists(), is(true));
+    assertThat(target.resolve("test_1.stQP.csv").toFile().exists(), is(true));
   }
 
   /**

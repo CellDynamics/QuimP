@@ -36,10 +36,7 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
    */
   @Override
   public void setUp() throws Exception {
-    List<Vert> list = VertTest.getRandomVertPointList(); // get list of random vertexes
-    Vert head = list.get(0); // get head of list
-
-    obj = new Outline(head, list.size()); // build outline
+    obj = getRandomOutline(); // build outline
     indir = "com.github.celldynamics.quimp.Outline";
   }
 
@@ -418,6 +415,18 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     assertThat(newOutline.asList(), is(obj.asList()));
     assertThat(newOutline.getHead().getPoint(), is(obj.getHead().getPoint()));
 
+  }
+
+  /**
+   * Return random 4 element outline. All nodes are random.
+   * 
+   * @return 4 elements outline.
+   */
+  public static Outline getRandomOutline() {
+    List<Vert> list = VertTest.getRandomVertPointList(); // get list of random vertexes
+    Vert head = list.get(0); // get head of list
+
+    return new Outline(head, list.size()); // build outline
   }
 
 }

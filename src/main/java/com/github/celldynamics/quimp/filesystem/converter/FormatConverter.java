@@ -978,7 +978,7 @@ public class FormatConverter {
    * @param ext /path/core_cellNo_featName.ext (with dot)
    * @return /path/core_cellNo_featName.ext
    */
-  private Path getFeatureFileName(String featName, int cellNo, String ext) {
+  Path getFeatureFileName(String featName, int cellNo, String ext) {
     DataContainer dt = ((QParamsQconf) qcL.getQp()).getLoadedDataContainer();
     dt.BOAState.boap.setOutputFileCore(path + File.separator + filename.toString());
     String fi = dt.BOAState.boap.getOutputFileCore().toPath().toString();

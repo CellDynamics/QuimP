@@ -328,9 +328,14 @@ public class QconfLoader {
       if (folder.resolve(core + "_" + l + FileExtensions.convmapFileExt).toFile().exists()
               || folder.resolve(core + "_" + l + FileExtensions.motmapFileExt).toFile().exists()
               || folder.resolve(core + "_" + l + FileExtensions.coordmapFileExt).toFile().exists()
-              || folder.resolve(core + "_" + l + FileExtensions.originmapFileExt).toFile().exists()
-              || folder.resolve(core + "_" + l + FileExtensions.xmapFileExt).toFile().exists()
-              || folder.resolve(core + "_" + l + FileExtensions.ymapFileExt).toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.originmapFileExt).toFile()
+                      .exists()
+              || folder
+                      .resolve(core + "_" + l
+                              + FileExtensions.xmapFileExt)
+                      .toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.ymapFileExt).toFile()
+                      .exists()
               || folder.resolve(core + "_" + l + FileExtensions.fluomapFileExt.replace('%', '1'))
                       .toFile().exists()
               || folder.resolve(core + "_" + l + FileExtensions.fluomapFileExt.replace('%', '2'))

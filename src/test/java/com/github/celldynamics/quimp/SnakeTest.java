@@ -193,4 +193,16 @@ public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
     assertThat(EqualsBuilder.reflectionEquals(obj, copy, false), is(true)); // copy is same
   }
 
+  /**
+   * Return random 4 element snake. All nodes are random.
+   * 
+   * @return 4 elements snake.
+   */
+  public static Snake getRandomSnake() {
+    List<Node> list = NodeTest.getRandomNodePointList(); // get list of random vertexes
+    Node head = list.get(0); // get head of list
+
+    return new Snake(head, list.size(), 1); // build snake
+  }
+
 }

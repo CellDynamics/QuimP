@@ -22,7 +22,7 @@ import ij.gui.Roi;
  * @author rtyson
  * @author p.baniukiewicz
  */
-public final class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
+public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
 
   /**
    * The Constant LOGGER.
