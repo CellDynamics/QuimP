@@ -247,6 +247,9 @@ public class FormatConverterController extends FormatConverter {
           case FormatConverterUi.STATS_GEOMETRIC:
             saveStatGeom();
             break;
+          case FormatConverterUi.STATS_Q11:
+            saveStats();
+            break;
           default:
             logger.warn("Parameter " + s + " is inproper");
         }

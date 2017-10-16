@@ -24,6 +24,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 /**
@@ -47,6 +48,7 @@ public class FormatConverterUi extends JDialog {
   // parameters to Formatconverter run in headless mode
   static final String STATS_FLUORES = "stats:fluores";
   static final String STATS_GEOMETRIC = "stats:geometric";
+  static final String STATS_Q11 = "stats:q11 files";
   static final String ECMM_CENTROID = "ecmm:centroid";
   static final String ECCM_OUTLINES = "ecmm:outlines";
   static final String BOA_CENTROID = "boa:centroid";
@@ -77,7 +79,7 @@ public class FormatConverterUi extends JDialog {
   private JCheckBox chckbxConvexity;
   private JToggleButton btnEcmm;
   private JToggleButton btnBoa;
-  private JToggleButton btnStats;
+  private JToggleButton btnRawStats;
   private JToggleButton btnMaps;
   private JButton cancelButton;
   private JPanel okcancelPanel;
@@ -90,7 +92,10 @@ public class FormatConverterUi extends JDialog {
   private JCheckBox chckbxOutlinesEcmm;
   private JPanel multifilePanel;
   private JCheckBox chckbxMultiFileOutput;
-  private JPanel panel_1;
+  private JPanel panel1;
+  private JToggleButton btnQ11Stats;
+  private JPanel statsQ11Panel;
+  private JCheckBox chckbxQ11Stat;
 
   /**
    * Build checkbox with link to model.
@@ -150,7 +155,7 @@ public class FormatConverterUi extends JDialog {
         tabbedPane.setBackgroundAt(0, UIManager.getColor("Panel.background"));
         GridBagLayout gblPanel = new GridBagLayout();
         gblPanel.columnWidths = new int[] { 0, 0, 0, 0, 86, 0 };
-        gblPanel.rowHeights = new int[] { 0 };
+        gblPanel.rowHeights = new int[] { 114 };
         gblPanel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
         gblPanel.rowWeights = new double[] { 1.0 };
         panel.setLayout(gblPanel);
@@ -165,6 +170,7 @@ public class FormatConverterUi extends JDialog {
           panel1.setLayout(new GridLayout(0, 1, 0, 0));
           {
             JPanel boaPanel = new JPanel();
+            boaPanel.setToolTipText("Parameters evaluated during BOA execution");
             boaPanel.setBorder(new TitledBorder(null, "Boa", TitledBorder.LEADING, TitledBorder.TOP,
                     null, null));
             panel1.add(boaPanel);
@@ -190,6 +196,7 @@ public class FormatConverterUi extends JDialog {
           panel1.setLayout(new GridLayout(0, 1, 0, 0));
           {
             JPanel ecmmPanel = new JPanel();
+            ecmmPanel.setToolTipText("Parameters evaluated during ECMM execution");
             panel1.add(ecmmPanel);
             ecmmPanel.setBorder(new TitledBorder(null, "Ecmm", TitledBorder.LEADING,
                     TitledBorder.TOP, null, null));
@@ -214,18 +221,32 @@ public class FormatConverterUi extends JDialog {
           panel.add(panel1, gbcPanel1);
           panel1.setLayout(new GridLayout(0, 1, 0, 0));
           {
-            JPanel statPanel = new JPanel();
-            statPanel.setBorder(new TitledBorder(null, "Stats", TitledBorder.LEADING,
-                    TitledBorder.TOP, null, null));
-            panel1.add(statPanel);
-            statPanel.setLayout(new BoxLayout(statPanel, BoxLayout.Y_AXIS));
+            JPanel statRawPanel = new JPanel();
+            statRawPanel.setToolTipText("Unprocessed statistics for shape and fluorescence");
+            statRawPanel.setBorder(
+                    new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Raw Stats",
+                            TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+            panel1.add(statRawPanel);
+            statRawPanel.setLayout(new BoxLayout(statRawPanel, BoxLayout.Y_AXIS));
             {
               chckbxGeometric = FormatConverterUi.createJCheckBox(STATS_GEOMETRIC, model);
-              statPanel.add(chckbxGeometric);
+              statRawPanel.add(chckbxGeometric);
             }
             {
               chckbxFluoresStat = FormatConverterUi.createJCheckBox(STATS_FLUORES, model);
-              statPanel.add(chckbxFluoresStat);
+              statRawPanel.add(chckbxFluoresStat);
+            }
+          }
+          {
+            statsQ11Panel = new JPanel();
+            statsQ11Panel.setToolTipText("Processed geometric and fluorescence statistics");
+            statsQ11Panel.setBorder(new TitledBorder(null, "Q11 stats", TitledBorder.LEADING,
+                    TitledBorder.TOP, null, null));
+            panel1.add(statsQ11Panel);
+            statsQ11Panel.setLayout(new BoxLayout(statsQ11Panel, BoxLayout.Y_AXIS));
+            {
+              chckbxQ11Stat = FormatConverterUi.createJCheckBox(STATS_Q11, model);
+              statsQ11Panel.add(chckbxQ11Stat);
             }
           }
         }
@@ -240,6 +261,7 @@ public class FormatConverterUi extends JDialog {
           panel1.setLayout(new GridLayout(0, 1, 0, 0));
           {
             JPanel mapsPanel = new JPanel();
+            mapsPanel.setToolTipText("Maps (maQP) evaluated during Q Analysis");
             mapsPanel.setBorder(new TitledBorder(null, "Maps", TitledBorder.LEADING,
                     TitledBorder.TOP, null, null));
             panel1.add(mapsPanel);
@@ -306,14 +328,14 @@ public class FormatConverterUi extends JDialog {
             presetPanel.add(btnEcmm);
           }
           {
-            btnStats = new JToggleButton("Stats");
-            btnStats.addActionListener(new ActionListener() {
+            btnRawStats = new JToggleButton("Raw Stats");
+            btnRawStats.addActionListener(new ActionListener() {
               public void actionPerformed(ActionEvent e) {
                 boolean status = ((JToggleButton) e.getSource()).isSelected();
-                setStats(status);
+                setRawStats(status);
               }
             });
-            presetPanel.add(btnStats);
+            presetPanel.add(btnRawStats);
           }
           {
             btnMaps = new JToggleButton("Maps");
@@ -323,6 +345,16 @@ public class FormatConverterUi extends JDialog {
                 setMaps(status);
               }
             });
+            {
+              btnQ11Stats = new JToggleButton("Q11 stats");
+              btnQ11Stats.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                  boolean status = ((JToggleButton) e.getSource()).isSelected();
+                  setQ11Stats(status);
+                }
+              });
+              presetPanel.add(btnQ11Stats);
+            }
             presetPanel.add(btnMaps);
           }
           {
@@ -359,16 +391,16 @@ public class FormatConverterUi extends JDialog {
         tabbedPane.addTab("Info", null, panel, null);
         panel.setLayout(new BorderLayout(0, 0));
         {
-          panel_1 = new JPanel();
-          panel_1.setLayout(new BorderLayout(0, 0));
+          panel1 = new JPanel();
+          panel1.setLayout(new BorderLayout(0, 0));
           {
             infoText = new JTextPane();
-            panel_1.add(infoText);
+            panel1.add(infoText);
             infoText.setEditable(false);
           }
         }
         {
-          scrollPane = new JScrollPane(panel_1);
+          scrollPane = new JScrollPane(panel1);
           panel.add(scrollPane);
         }
       }
@@ -486,6 +518,10 @@ public class FormatConverterUi extends JDialog {
     return chckbxFluoresStat;
   }
 
+  protected JCheckBox getChckbxQ11Stat() {
+    return chckbxQ11Stat;
+  }
+
   protected JCheckBox getChckbxX() {
     return chckbxX;
   }
@@ -524,9 +560,13 @@ public class FormatConverterUi extends JDialog {
     getChckbxOutlinesEcmm().setSelected(status);
   }
 
-  private void setStats(boolean status) {
+  private void setRawStats(boolean status) {
     getChckbxGeometric().setSelected(status);
     getChckbxFluoresStat().setSelected(status);
+  }
+
+  private void setQ11Stats(boolean status) {
+    getChckbxQ11Stat().setSelected(status);
   }
 
   private void setMaps(boolean status) {
@@ -547,8 +587,12 @@ public class FormatConverterUi extends JDialog {
     return btnBoa;
   }
 
-  protected JToggleButton getBtnStats() {
-    return btnStats;
+  protected JToggleButton getBtnRawStats() {
+    return btnRawStats;
+  }
+
+  protected JToggleButton getBtnQ11Stats() {
+    return btnQ11Stats;
   }
 
   protected JToggleButton getBtnMaps() {
@@ -558,13 +602,15 @@ public class FormatConverterUi extends JDialog {
   private void setUiElements(boolean status) {
     setBoa(status);
     setEcmm(status);
-    setStats(status);
+    setRawStats(status);
     setMaps(status);
+    setQ11Stats(status);
 
     getBtnBoa().setSelected(status);
     getBtnEcmm().setSelected(status);
     getBtnMaps().setSelected(status);
-    getBtnStats().setSelected(status);
+    getBtnRawStats().setSelected(status);
+    getBtnQ11Stats().setSelected(status);
   }
 
   protected JButton getCancelButton() {

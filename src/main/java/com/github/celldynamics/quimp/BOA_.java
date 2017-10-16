@@ -2818,7 +2818,7 @@ public class BOA_ implements PlugIn {
     IJ.showStatus("BOA-FINISHING");
     YesNoCancelDialog ync;
     File testF;
-    boolean saveStats = false; // indicate if stQP file should be saved separatelly.
+    boolean saveStats = true; // indicate if stQP file should be saved separatelly.
     LOGGER.debug(qState.segParam.toString());
     for (SnakeHandler sh : qState.nest.getHandlers()) {
       sh.findLastFrame(); // make sure that endFrame points good frame

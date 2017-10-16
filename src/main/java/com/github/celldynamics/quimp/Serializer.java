@@ -273,7 +273,7 @@ public class Serializer<T extends IQuimpSerialize> implements ParameterizedType 
 
     // warn user if newer config is load to older QuimP
     if (qconfVersionToLoad > convertStringVersion(timeStamp.getVersion())) {
-      LOGGER.warn("You are trying to load config file which is in newer version"
+      LOGGER.info("You are trying to load config file which is in newer version"
               + " than software you are using. (" + qconfVersionToLoad + " vs "
               + convertStringVersion(timeStamp.getVersion()) + ")");
     }
