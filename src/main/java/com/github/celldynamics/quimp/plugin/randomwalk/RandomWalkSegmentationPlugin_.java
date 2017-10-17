@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.PropertyReader;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
 import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter;
 import com.github.celldynamics.quimp.plugin.IQuimpPlugin;
@@ -126,6 +128,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     view.addCloneController(new CloneController());
     view.addLoadQconfController(new LoadQconfController());
     view.addRunActiveController(new RunActiveBtnController());
+    view.addHelpController(new HelpBtnController());
   }
 
   /**
@@ -162,6 +165,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     view.setSrWindow(model.window);
     view.setFilteringPostMethod(model.getFilteringMethods(),
             model.getSelectedFilteringPostMethod().name());
+    view.setChMaskCut(model.params.maskLimit);
 
     view.setChShowSeed(model.showPreview);
     view.setChShowPreview(model.showPreview);
@@ -210,6 +214,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     model.num = view.getSrNum();
     model.window = view.getSrWindow();
     model.setSelectedFilteringPostMethod(view.getFilteringPostMethod());
+    model.params.maskLimit = view.getChMaskCut();
 
     model.showSeeds = view.getChShowSeed();
     model.showPreview = view.getChShowPreview();
@@ -342,7 +347,27 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
       RWWorker rww = new RWWorker();
       rww.execute();
       LOGGER.trace("model: " + model.toString());
+    }
+  }
 
+  /**
+   * Handle Help button.
+   * 
+   * <p>Open browser.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class HelpBtnController implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      String url = new PropertyReader().readProperty("quimpconfig.properties", "manualURL");
+      try {
+        java.awt.Desktop.getDesktop().browse(new URI(url));
+      } catch (Exception e1) {
+        LOGGER.error("Could not open help: " + e1.getMessage(), e1);
+      }
     }
   }
 

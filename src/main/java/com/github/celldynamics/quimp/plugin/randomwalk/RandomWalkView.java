@@ -103,6 +103,7 @@ import com.github.celldynamics.quimp.utils.UiTools;
  *   }
  *   Binary filter | ^cbFilteringPostMethod^
  *   }
+ *   () chMaskCut
  *   {+
  *   Display options
  *   () chShowSeed | () chShowPreview
@@ -636,6 +637,26 @@ public class RandomWalkView implements ActionListener, ItemListener {
     return getJComboBox(cbFilteringPostMethod);
   }
 
+  private JCheckBox chMaskCut;
+
+  /**
+   * Get status of mask cut filter.
+   * 
+   * @return the chHatFilter enabled/disabled
+   */
+  public boolean getChMaskCut() {
+    return chMaskCut.isSelected();
+  }
+
+  /**
+   * Set status of mask cut filter.
+   * 
+   * @param chMaskCut the chHatFilter to set (enabled/disabled)
+   */
+  public void setChMaskCut(boolean chMaskCut) {
+    this.chMaskCut.setSelected(chMaskCut);
+  }
+
   private JCheckBox chShowSeed;
 
   /**
@@ -841,6 +862,11 @@ public class RandomWalkView implements ActionListener, ItemListener {
     constrPost.insets = new Insets(5, 0, 0, 0);
     postprocessPanel.add(getControlwithLabel(cbFilteringPostMethod, "Binary filter",
             "Filtering applied after segmentation"), constrPost);
+    chMaskCut = new JCheckBox("Cut output");
+    constrPost.gridx = 0;
+    constrPost.gridy = 2;
+    UiTools.setToolTip(chMaskCut, "Cut output mask by initial mask (if present)");
+    postprocessPanel.add(getControlwithLabel(chMaskCut, "", ""), constrPost);
 
     JPanel displayPanel = new JPanel();
     displayPanel.setBorder(BorderFactory.createTitledBorder("Display options"));
@@ -969,6 +995,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
       chLocalMean.setEnabled(status);
     }
     cbFilteringMethod.setEnabled(status);
+    chMaskCut.setEnabled(status);
     chShowPreview.setEnabled(status);
     chShowSeed.setEnabled(status);
     cbFilteringPostMethod.setEnabled(status);
@@ -1244,6 +1271,15 @@ public class RandomWalkView implements ActionListener, ItemListener {
    */
   public void addRunController(ActionListener list) {
     bnRun.addActionListener(list);
+  }
+
+  /**
+   * Assign listener to Help button.
+   * 
+   * @param list listener
+   */
+  public void addHelpController(ActionListener list) {
+    bnHelp.addActionListener(list);
   }
 
   /**
