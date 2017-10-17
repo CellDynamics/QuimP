@@ -8,7 +8,7 @@ import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds.Propagator
 import ij.ImagePlus;
 
 /**
- * This class holds all possible RW parameters. Plays as model in MVC.
+ * This class holds all possible RW parameters.
  * 
  * @author p.baniukiewicz
  * @see RandomWalkSegmentationPlugin_

@@ -25,6 +25,7 @@ import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
+import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
@@ -190,6 +191,7 @@ import ij.process.ImageProcessor;
  *   Converter --> rw : ImageProcessor
  *   deactivate Converter  
  * end 
+ * note right: Except filtering, output can be\ncut by raw mask here, See run method.
  * rw --> user : ImageProcessor
  * deactivate rw
  * @enduml
@@ -435,13 +437,24 @@ public class RandomWalkSegmentation {
       solved = solver(seedsNext, precomputed);
     }
     RealMatrix result = compare(solved); // result as matrix
+    ImageProcessor resultim = realMatrix2ImageProcessor(result).convertToByteProcessor(true);
+    // cut mask - cut segmentation result by initial ROUGHMASK if present
+    if (params.maskLimit == true && seeds.get(Seeds.ROUGHMASK) != null) {
+      ImageCalculator ic = new ImageCalculator();
+      ImagePlus retc =
+              ic.run("and create",
+                      new ImagePlus("", new BinaryProcessor(
+                              (ByteProcessor) seeds.get(Seeds.ROUGHMASK).convertToByte(true))),
+                      new ImagePlus("", new BinaryProcessor((ByteProcessor) resultim)));
+      resultim = retc.getProcessor();
+    }
     // do final filtering
     if (params.finalFilter != null) {
-      return params.finalFilter
-              .filter(realMatrix2ImageProcessor(result).convertToByteProcessor(true));
+      return params.finalFilter.filter(resultim.convertToByteProcessor(true));
     } else {
-      return realMatrix2ImageProcessor(result).convertToByteProcessor(true);
+      return resultim.convertToByteProcessor(true);
     }
+
   }
 
   /**

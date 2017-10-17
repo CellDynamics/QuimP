@@ -70,6 +70,9 @@
       <email>T.Bretschneider@warwick.ac.uk</email>
       <organization>University of Warwick</organization>
       <roles>
+        <role>lead</role>
+        <role>reviewer</role>
+        <role>maintainer</role>
         <role>founder</role>
         <role>support</role>
       </roles>

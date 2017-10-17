@@ -75,6 +75,10 @@ public class RandomWalkParams {
    * <p>null value switches off final filtering.
    */
   public BinaryFilters finalFilter;
+  /**
+   * If true, RW mask will be cut by AC mask.
+   */
+  public boolean maskLimit;
 
   /**
    * Set default values.
@@ -92,6 +96,7 @@ public class RandomWalkParams {
     finalFilter = null;
     useLocalMean = false;
     localMeanMaskSize = 25;
+    maskLimit = false;
   }
 
   /**
