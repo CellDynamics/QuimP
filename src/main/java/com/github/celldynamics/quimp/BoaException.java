@@ -93,4 +93,5 @@ public class BoaException extends QuimpException {
   public BoaException(Throwable cause) {
     super(cause);
   }
+
 }

@@ -260,9 +260,9 @@ public class Constrictor {
    * 
    * @param nest nest
    * @param frame frame
-   * @throws Exception on error
+   * @throws BoaException on snake scale
    */
-  public void loosen(final Nest nest, int frame) throws Exception {
+  public void loosen(final Nest nest, int frame) throws BoaException {
     int nestSize = nest.size();
     Snake snakeA;
     Snake snakeB;
@@ -356,9 +356,9 @@ public class Constrictor {
    * 
    * @param nest nest
    * @param f frame number
-   * @throws Exception on implode
+   * @throws BoaException on snake.implode
    */
-  public void implode(final Nest nest, int f) throws Exception {
+  public void implode(final Nest nest, int f) throws BoaException {
     // System.out.println("imploding snake");
     SnakeHandler snakeH;
     Snake snake;

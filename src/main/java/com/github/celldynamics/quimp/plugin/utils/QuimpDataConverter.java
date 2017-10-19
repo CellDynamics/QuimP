@@ -6,6 +6,7 @@ import java.util.List;
 import org.scijava.vecmath.Point2d;
 import org.scijava.vecmath.Tuple2d;
 
+import com.github.celldynamics.quimp.BoaException;
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.Shape;
 import com.github.celldynamics.quimp.Snake;
@@ -196,14 +197,15 @@ public class QuimpDataConverter {
    * <p>Head node is first point from list. Snake has centroid and boundaries calculated already.
    * Normales are set according to global BOAState.SegParam#expandSnake.
    * 
-   * @param id Id of snake
+   * @param id new Id of snake
    * @return Snake object with Nodes in order of data given on input. Can be null. Normales depend
    *         on BOA_.qState.segParam.expandSnake
+   * @throws BoaException when there is less than 3 nodes.
    * @see com.github.celldynamics.quimp.Snake#Snake(double[], double[], int)
    * @see com.github.celldynamics.quimp.Snake#removeNode(com.github.celldynamics.quimp.Node)
    * @see Shape#updateNormales(boolean)
    */
-  public Snake getSnake(int id) {
+  public Snake getSnake(int id) throws BoaException {
     Snake ret = null;
     if (xc.length == 0 || yc.length == 0) {
       return ret;

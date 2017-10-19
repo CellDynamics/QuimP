@@ -2,7 +2,6 @@ package com.github.celldynamics.quimp;
 
 import java.nio.file.Paths;
 
-import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.engine.PluginFactory;
 
 /**
@@ -34,9 +33,8 @@ public class PluginFactoryFactory {
    * 
    * @param path plugin folder
    * @return mocked PluginFactory object
-   * @throws QuimpPluginException on error
    */
-  public static PluginFactory getPluginFactory(String path) throws QuimpPluginException {
+  public static PluginFactory getPluginFactory(String path) {
     return new PluginFactory(Paths.get(path));
 
   }

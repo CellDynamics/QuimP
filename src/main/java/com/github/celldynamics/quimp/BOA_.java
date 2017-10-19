@@ -56,6 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.BOAState.BOAp;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.SnakePluginList.Plugin;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.DataContainerInstanceCreator;
@@ -191,7 +192,7 @@ public class BOA_ implements PlugIn {
    * Number of Snake plugins available.
    */
   public static final int NUM_SNAKE_PLUGINS = 3;
-  private HistoryLogger historyLogger; // logger
+  // private HistoryLogger historyLogger; // logger
   /**
    * Configuration object, available from all modules.
    * 
@@ -207,10 +208,9 @@ public class BOA_ implements PlugIn {
    * subsequent BOA calls from Fiji.
    */
   public BOA_() {
-    LOGGER.trace("Constructor called");
+    LOGGER.trace("Starting BOA from default constructor");
     qState = new BOAState(null);
     logCount = 1; // reset log count (it is also static)
-    // log4j.configurationFile
   }
 
   /**
@@ -235,7 +235,7 @@ public class BOA_ implements PlugIn {
     // collect information about quimp version read from jar
     quimpInfo = QuimP.TOOL_VERSION;
     // create history logger
-    historyLogger = new HistoryLogger();
+    // historyLogger = new HistoryLogger();
 
     // Build plugin engine
     try {
@@ -246,15 +246,14 @@ public class BOA_ implements PlugIn {
         path = QuimP.PLUGIN_DIR;
       }
       if (path == null) {
-        IJ.log("BOA: Plugin directory not found");
-        LOGGER.warn("BOA: Plugin directory not found, use provided with arg: " + arg);
+        IJ.log("BOA: Plugin directory not found, use provided with arg: " + arg);
+        LOGGER.debug("BOA: Plugin directory not found, use provided with arg: " + arg);
         path = arg;
       }
       // initialize plugin factory (jar scanning and registering)
       pluginFactory = PluginFactoryFactory.getPluginFactory(path);
     } catch (Exception e) {
-      // temporary catching may in future be removed
-      LOGGER.error("run: " + e.getMessage());
+      IJ.error("Error during initialisation of plugin engine", e.getMessage());
       LOGGER.debug(e.getMessage(), e);
       return;
     }
@@ -307,9 +306,8 @@ public class BOA_ implements PlugIn {
         runBoa(1, 1);
       }
     } catch (BoaException be) {
-      BOA_.log("RUNNING BOA...inital preview failed");
-      BOA_.log(be.getMessage());
-      be.printStackTrace();
+      be.setMessageSinkType(MessageSinkTypes.GUI);
+      be.handleException(IJ.getInstance(), "Inital preview failed");
     }
   }
 
@@ -449,17 +447,19 @@ public class BOA_ implements PlugIn {
           sh.storeThisSnake(out, qState.boap.frame); // set processed snake as final
         } catch (QuimpPluginException qpe) {
           // must be rewritten with whole runBOA #65 #67
-          BOA_.log("Error in filter module: " + qpe.getMessage());
-          LOGGER.error("Error in filter module: " + qpe.getMessage());
-          LOGGER.debug(qpe.getMessage(), qpe);
+          qpe.setMessageSinkType(MessageSinkTypes.IJERROR);
+          BOA_.log(qpe.handleException(null, "Error in filter module"));
           sh.storeLiveSnake(qState.boap.frame); // so store only segmented snake as final
+        } catch (BoaException be) { // less than 3 nodes in snake
+          be.setMessageSinkType(MessageSinkTypes.IJERROR);
+          BOA_.log(be.handleException(null, "Defective snake returned"));
         }
       }
     } catch (Exception e) {
-      LOGGER.error("Plugin error. Output snake may be defective. Reason: " + e.getMessage());
+      IJ.error("Plugin error", "Output snake may be defective. Reason: " + e.getMessage());
       LOGGER.debug(e.getMessage(), e);
     } finally {
-      historyLogger.addEntry("Plugin settings", qState);
+      // historyLogger.addEntry("Plugin settings", qState);
       qState.store(qState.boap.frame); // always remember state of the BOA that is
     }
     imageGroup.updateOverlay(qState.boap.frame);
@@ -1550,7 +1550,7 @@ public class BOA_ implements PlugIn {
         try {
           java.awt.Desktop.getDesktop().browse(new URI(url));
         } catch (Exception e1) {
-          LOGGER.error("Could not open help: " + e1.getMessage());
+          IJ.error("Could not open help", e1.getMessage());
           LOGGER.debug(e1.getMessage(), e1);
         }
         return;
@@ -1569,7 +1569,7 @@ public class BOA_ implements PlugIn {
             s.save(sd.getDirectory() + sd.getFileName()); // save it
             s = null; // remove
           } catch (FileNotFoundException e1) {
-            LOGGER.error("Problem with saving plugin config: " + e1.getMessage());
+            IJ.error("Problem with saving plugin config", e1.getMessage());
             LOGGER.debug(e1.getMessage(), e1);
           }
         }
@@ -1612,13 +1612,14 @@ public class BOA_ implements PlugIn {
              */
             recalculatePlugins(); // update screen
           } catch (IOException e1) {
-            LOGGER.error("Problem with loading plugin config: " + e1.getMessage());
+            IJ.error("Problem with loading plugin config", e1.getMessage());
             LOGGER.debug(e1.getMessage(), e1);
           } catch (JsonSyntaxException e1) {
-            LOGGER.error("Problem with configuration file: " + e1.getMessage());
+            IJ.error("Problem with configuration file", e1.getMessage());
             LOGGER.debug(e1.getMessage(), e1);
           } catch (Exception e1) {
-            LOGGER.error(e1.getMessage(), e1); // something serious
+            IJ.error("File can not be loaded", e1.getMessage()); // something serious
+            LOGGER.debug(e1.getMessage(), e1);
           }
         }
       }
@@ -1671,13 +1672,14 @@ public class BOA_ implements PlugIn {
             }
           }
         } catch (IOException e1) {
-          LOGGER.error("Problem with loading plugin config. " + e1.getMessage());
+          IJ.error("Problem with loading plugin config", e1.getMessage());
           LOGGER.debug(e1.getMessage(), e1); // if debug enabled - get more info
         } catch (JsonSyntaxException e1) {
-          LOGGER.error("Problem with configuration file: " + e1.getMessage());
+          IJ.error("Problem with configuration file", e1.getMessage());
           LOGGER.debug(e1.getMessage(), e1);
         } catch (Exception e1) {
-          LOGGER.error(e1.getMessage(), e1); // something serious
+          IJ.error("File can not be loaded", e1.getMessage()); // something serious
+          LOGGER.debug(e1.getMessage(), e1);
         }
       }
 
@@ -1800,10 +1802,12 @@ public class BOA_ implements PlugIn {
           } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof BoaException) {
-              BOA_.log(cause.getMessage());
+              ((BoaException) cause).setMessageSinkType(MessageSinkTypes.NONE);
               int framesCompleted = ((BoaException) cause).getFrame();
+              String ret = ((BoaException) cause).handleException(IJ.getInstance(),
+                      "FAIL AT " + framesCompleted);
               IJ.showStatus("FAIL AT " + framesCompleted);
-              BOA_.log("FAIL AT " + framesCompleted);
+              BOA_.log(ret);
             }
           } catch (InterruptedException e) {
             // TODO Auto-generated catch block
@@ -1942,7 +1946,7 @@ public class BOA_ implements PlugIn {
       } else {
         updateSliceSelector(); // repaint window explicitly
       }
-      BOA_.log("Successfully read configuration");
+      BOA_.log("Configuration read successfully");
     }
 
     /**
@@ -2055,7 +2059,8 @@ public class BOA_ implements PlugIn {
           runBoa(qState.boap.frame, qState.boap.frame);
         }
       } catch (BoaException be) {
-        BOA_.log(be.getMessage());
+        be.setMessageSinkType(MessageSinkTypes.NONE);
+        BOA_.log(be.handleException(IJ.getInstance(), "Segmentation failed at " + be.getFrame()));
       } finally {
         setBusyStatus(false, true);
       }
@@ -2135,7 +2140,8 @@ public class BOA_ implements PlugIn {
           runBoa(qState.boap.frame, qState.boap.frame);
         }
       } catch (BoaException be) {
-        BOA_.log(be.getMessage());
+        be.setMessageSinkType(MessageSinkTypes.NONE);
+        BOA_.log(be.handleException(IJ.getInstance(), "Segmentation failed " + be.getFrame()));
       }
     }
 
@@ -2253,7 +2259,7 @@ public class BOA_ implements PlugIn {
         qState.snakePluginList.deletePlugin(slot);
       }
     } catch (QuimpPluginException e) {
-      LOGGER.warn("Plugin " + selectedPlugin + " cannot be loaded. Reason: " + e.getMessage());
+      IJ.error("Plugin " + selectedPlugin + " cannot be loaded.", "Reason: " + e.getMessage());
       LOGGER.debug(e.getMessage(), e);
     }
   }
@@ -2292,12 +2298,10 @@ public class BOA_ implements PlugIn {
    * 
    * @param startF start frame
    * @param endF end frame
-   * @throws BoaException TODO Rewrite exceptions here
-   * @see <a href=
-   *      "http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/65">http://www.trac-wsbc.linkpc.net:8080/trac/QuimP/ticket/65</a>
+   * @throws BoaException on any error
    */
   public void runBoa(int startF, int endF) throws BoaException {
-    System.out.println("run BOA");
+    LOGGER.debug("run BOA");
     isSegBreakHit = false;
     isSegRunning = true;
     if (qState.nest.isVacant()) {
@@ -2308,8 +2312,6 @@ public class BOA_ implements PlugIn {
     try {
       IJ.showProgress(0, endF - startF);
 
-      // if(boap.expandSnake) boap.NMAX = 9990; // percent hack
-
       qState.nest.resetForFrame(startF);
       if (!qState.segParam.expandSnake) {
         // blowup snake ready for contraction (only those not starting at or after the startF)
@@ -2318,7 +2320,6 @@ public class BOA_ implements PlugIn {
         constrictor.implode(qState.nest, startF);
       }
       SnakeHandler snH;
-
       int s = 0;
       Snake snake;
       imageGroup.clearPaths(startF);
@@ -2359,28 +2360,25 @@ public class BOA_ implements PlugIn {
               snH.backupLiveSnake(qState.boap.frame);
               Snake out = iterateOverSnakePlugins(snake);
               snH.storeThisSnake(out, qState.boap.frame); // store resulting snake as final
-
             } catch (QuimpPluginException qpe) {
               // must be rewritten with whole runBOA #65 #67
-              BOA_.log("Error in filter module: " + qpe.getMessage());
-              LOGGER.debug(qpe.getMessage(), qpe);
+              qpe.setMessageSinkType(MessageSinkTypes.NONE);
+              BOA_.log(qpe.handleException(null, "Error in filter module"));
               snH.storeLiveSnake(qState.boap.frame); // store segmented nonmodified
-
-            } catch (BoaException be) {
-              imageGroup.drawPath(snake, qState.boap.frame); // failed
-              // position
-              // sH.deleteStoreAt(frame);
+            } catch (BoaException be) { // from tighten
+              imageGroup.drawPath(snake, qState.boap.frame); // failed position
               snH.storeLiveSnake(qState.boap.frame);
               snH.backupLiveSnake(qState.boap.frame);
               qState.nest.kill(snH);
               snake.unfreezeAll();
-              BOA_.log("Snake " + snake.getSnakeID() + " died, frame " + qState.boap.frame);
+              be.setMessageSinkType(MessageSinkTypes.NONE);
+              BOA_.log(be.handleException(null,
+                      "Snake " + snake.getSnakeID() + " died, frame " + qState.boap.frame));
               isSegRunning = false;
-              if (qState.nest.allDead()) {
+              if (qState.nest.allDead()) { // end of processing (see condition in catch)
                 throw new BoaException("All snakes dead: " + be.getMessage(), qState.boap.frame, 1);
               }
             }
-
           }
           imageGroup.updateOverlay(qState.boap.frame); // redraw display
           IJ.showProgress(qState.boap.frame, endF);
@@ -2389,28 +2387,25 @@ public class BOA_ implements PlugIn {
           if (!qState.segParam.use_previous_snake) {
             imageGroup.setIpSliceAll(qState.boap.frame);
             imageGroup.updateOverlay(qState.boap.frame);
-          } else {
+          } else { // end iterating if all snakes dead and we use previous
             throw be; // do no add LOGGER here #278
           }
         } finally {
-          historyLogger.addEntry("Processing", qState);
+          // historyLogger.addEntry("Processing", qState);
           qState.store(qState.boap.frame); // always remember state of the BOA that is
           // used for segmentation
         }
       }
       qState.boap.frame = endF;
-    } catch (Exception e) {
-      // e.printStackTrace();
-      /// imageGroup.drawContour(nest.getSNAKES(), frame);
-      // imageGroup.updateAndDraw();
-      isSegRunning = false;
-      LOGGER.debug(e.getMessage(), e);
-      imageGroup.updateOverlay(qState.boap.frame); // update on error
+    } catch (BoaException be) { // these from unexpected stopping of alg
+      throw be; // just rethrow them
+    } catch (Exception e) { // any other (should not happen)
       // do no add LOGGER here #278
       throw new BoaException("Frame " + qState.boap.frame + ": " + e.getMessage(),
               qState.boap.frame, 1);
     } finally {
       isSegRunning = false;
+      imageGroup.updateOverlay(qState.boap.frame); // update on error
       IJ.showProgress(2.0); // >1 to erase progress bar
     }
 
@@ -2436,8 +2431,10 @@ public class BOA_ implements PlugIn {
    * @param snake snake to be processed
    * @return Processed snake or original input one when there is no plugin selected
    * @throws QuimpPluginException on plugin error
+   * @throws BoaException on defective snake
    */
-  private Snake iterateOverSnakePlugins(final Snake snake) throws QuimpPluginException {
+  private Snake iterateOverSnakePlugins(final Snake snake)
+          throws QuimpPluginException, BoaException {
     final int ipoint = 0; // define IQuimpPoint2dFilter interface
     final int isnake = 1; // define IQuimpPoint2dFilter interface
     // type of previous plugin. Define if data should be converted for current plugin
@@ -2632,23 +2629,22 @@ public class BOA_ implements PlugIn {
       // if any problem with plugin or other, store snake without modification
       // because snake.asList() returns copy
     } catch (QuimpPluginException qpe) {
+      qpe.setMessageSinkType(MessageSinkTypes.NONE);
+      BOA_.log(qpe.handleException(null, "Error in filter module"));
       snakeH.storeLiveSnake(f);
-      BOA_.log("Error in filter module: " + qpe.getMessage());
-      LOGGER.debug(qpe.getMessage(), qpe);
     } catch (BoaException be) {
       snakeH.deleteStoreAt(f);
       snakeH.kill();
       snakeH.backupLiveSnake(f);
       snakeH.storeLiveSnake(f);
-      BOA_.log("New snake failed to converge: " + be.getMessage());
-      LOGGER.debug(be.getMessage(), be);
+      be.setMessageSinkType(MessageSinkTypes.NONE);
+      BOA_.log(be.handleException(null, "New snake failed to converge"));
     } catch (Exception e) {
-      BOA_.log("Undefined error");
-      LOGGER.error(e.getMessage(), e);
+      IJ.error("Error", e.getMessage());
       LOGGER.debug(e.getMessage(), e);
     } finally {
       imageGroup.updateOverlay(f);
-      historyLogger.addEntry("Added cell", qState);
+      // historyLogger.addEntry("Added cell", qState);
       qState.store(f); // always remember state of the BOA after modification of UI
     }
 
@@ -2883,8 +2879,7 @@ public class BOA_ implements PlugIn {
           n = null;
         }
       } catch (IOException e) {
-        IJ.error("Exception while saving");
-        LOGGER.error("Exception while saving: " + e.getMessage());
+        IJ.error("Problem with saving files", e.getMessage());
         LOGGER.debug(e.getMessage(), e);
         return;
       }

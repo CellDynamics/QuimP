@@ -1,6 +1,9 @@
 package com.github.celldynamics.quimp;
 
 import java.awt.Frame;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -23,11 +26,14 @@ public class QuimpException extends Exception {
   public Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());
 
   /**
-   * Define where the message should be displayed.
+   * Define where the message should be displayed. Anu combination of values is supported by
+   * {@link QuimpException#handleException(Frame, String)}.
    * <ol>
    * <li>CONSOLE - default, message goes to console.
    * <li>GUI - message should be shown in GUI
    * <li>IJERROR - use IJ error handling
+   * <li>NONE - {@link QuimpException#handleException(Frame, String)} will return just formatted
+   * string without any action.
    * </ol>
    * 
    * @author p.baniukiewicz
@@ -36,17 +42,21 @@ public class QuimpException extends Exception {
   public enum MessageSinkTypes {
 
     /**
-     * The console.
+     * Console sink (stderr).
      */
     CONSOLE,
     /**
-     * The gui.
+     * Display window with message.
      */
     GUI,
     /**
-     * IJ error.
+     * Use IJ.error for log.
      */
-    IJERROR
+    IJERROR,
+    /**
+     * None of above, just return formatted exception string.
+     */
+    NONE;
   }
 
   /**
@@ -54,15 +64,24 @@ public class QuimpException extends Exception {
    * 
    * @see MessageSinkTypes
    */
-  protected MessageSinkTypes messageSinkType;
+  protected EnumSet<MessageSinkTypes> messageSinkType;
 
   /**
-   * Set message sink.
+   * Set message sink. It can be combination of {@link MessageSinkTypes} values.
    * 
-   * @param messageSinkType the messageSinkType to set
+   * @param messageSinkType the messageSinkType to set.
    */
-  public void setMessageSinkType(MessageSinkTypes messageSinkType) {
-    this.messageSinkType = messageSinkType;
+  public void setMessageSinkType(MessageSinkTypes... messageSinkType) {
+    this.messageSinkType = EnumSet.copyOf(Arrays.asList(messageSinkType));
+  }
+
+  /**
+   * Set message sink. It can be combination of {@link MessageSinkTypes} values.
+   * 
+   * @param messageSinkType the messageSinkType to set.
+   */
+  public void setMessageSinkType(Set<MessageSinkTypes> messageSinkType) {
+    this.messageSinkType = EnumSet.copyOf(messageSinkType);
   }
 
   /**
@@ -70,7 +89,7 @@ public class QuimpException extends Exception {
    * 
    * @return the type
    */
-  public MessageSinkTypes getMessageSinkType() {
+  public Set<MessageSinkTypes> getMessageSinkType() {
     return messageSinkType;
   }
 
@@ -83,17 +102,27 @@ public class QuimpException extends Exception {
    * Default constructor, set message sink to console.
    */
   public QuimpException() {
-    messageSinkType = MessageSinkTypes.CONSOLE;
+    this.messageSinkType = EnumSet.of(MessageSinkTypes.CONSOLE);
   }
 
   /**
    * Allow to set type of message, where it should be displayed.
    * 
-   * @param type of message
+   * @param types of message (list)
+   * @see MessageSinkTypes
+   */
+  public QuimpException(MessageSinkTypes... types) {
+    setMessageSinkType(types);
+  }
+
+  /**
+   * Allow to set type of message, where it should be displayed.
+   * 
+   * @param type of message (one)
    * @see MessageSinkTypes
    */
   public QuimpException(MessageSinkTypes type) {
-    this.messageSinkType = type;
+    this.messageSinkType = EnumSet.of(type);
   }
 
   /**
@@ -103,7 +132,7 @@ public class QuimpException extends Exception {
    */
   public QuimpException(String message) {
     super(message);
-    messageSinkType = MessageSinkTypes.CONSOLE;
+    this.messageSinkType = EnumSet.of(MessageSinkTypes.CONSOLE);
   }
 
   /**
@@ -114,7 +143,18 @@ public class QuimpException extends Exception {
    */
   public QuimpException(String message, MessageSinkTypes type) {
     super(message);
-    this.messageSinkType = type;
+    this.messageSinkType = EnumSet.of(type);
+  }
+
+  /**
+   * Exception with message.
+   * 
+   * @param message message
+   * @param types where to show message
+   */
+  public QuimpException(String message, MessageSinkTypes... types) {
+    super(message);
+    setMessageSinkType(types);
   }
 
   /**
@@ -124,18 +164,29 @@ public class QuimpException extends Exception {
    */
   public QuimpException(Throwable cause) {
     super(cause);
-    messageSinkType = MessageSinkTypes.CONSOLE;
+    this.messageSinkType = EnumSet.of(MessageSinkTypes.CONSOLE);
   }
 
   /**
    * QuimpException.
    * 
    * @param cause cause
-   * @param type type
+   * @param type type (one)
    */
   public QuimpException(Throwable cause, MessageSinkTypes type) {
     super(cause);
-    this.messageSinkType = type;
+    this.messageSinkType = EnumSet.of(type);
+  }
+
+  /**
+   * QuimpException.
+   * 
+   * @param cause cause
+   * @param types type (list)
+   */
+  public QuimpException(Throwable cause, MessageSinkTypes... types) {
+    super(cause);
+    setMessageSinkType(types);
   }
 
   /**
@@ -146,7 +197,7 @@ public class QuimpException extends Exception {
    */
   public QuimpException(String message, Throwable cause) {
     super(message, cause);
-    messageSinkType = MessageSinkTypes.CONSOLE;
+    this.messageSinkType = EnumSet.of(MessageSinkTypes.CONSOLE);
   }
 
   /**
@@ -160,7 +211,7 @@ public class QuimpException extends Exception {
   public QuimpException(String message, Throwable cause, boolean enableSuppression,
           boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
-    messageSinkType = MessageSinkTypes.CONSOLE;
+    this.messageSinkType = EnumSet.of(MessageSinkTypes.CONSOLE);
   }
 
   /**
@@ -168,36 +219,48 @@ public class QuimpException extends Exception {
    * 
    * @param message message
    * @param cause cause
-   * @param type where to show message
+   * @param type where to show message (one)
    */
   public QuimpException(String message, Throwable cause, MessageSinkTypes type) {
     super(message, cause);
-    this.messageSinkType = type;
+    this.messageSinkType = EnumSet.of(type);
   }
 
   /**
-   * Handle this exception displaying it and logging.
+   * QuimpException.
+   * 
+   * @param message message
+   * @param cause cause
+   * @param types where to show message (list)
+   */
+  public QuimpException(String message, Throwable cause, MessageSinkTypes... types) {
+    super(message, cause);
+    setMessageSinkType(types);
+  }
+
+  /**
+   * Handle this exception displaying it and logging depending on {@link #messageSinkType}.
    * 
    * @param frame Swing frame to display message for user, can be null
    * @param appendMessage Message added to beginning of the exception message, can be ""
+   * @return Exception message
    */
-  public void handleException(Frame frame, String appendMessage) {
+  public String handleException(Frame frame, String appendMessage) {
     logger.debug(getMessage(), this);
-    switch (getMessageSinkType()) {
-      case GUI:
-        JOptionPane.showMessageDialog(frame, QuimpToolsCollection
-                .stringWrap(appendMessage + " " + getMessage(), QuimP.LINE_WRAP), "Error",
-                JOptionPane.ERROR_MESSAGE);
-        break;
-      case CONSOLE:
-        logger.debug(getMessage(), this);
-        logger.error(appendMessage + " " + getMessage());
-        break;
-      case IJERROR:
-        IJ.error(appendMessage + " " + getMessage());
-        break;
-      default:
+    String message = appendMessage + ": " + getMessage();
+
+    if (getMessageSinkType().contains(MessageSinkTypes.CONSOLE)) {
+      logger.error(message);
     }
+    if (getMessageSinkType().contains(MessageSinkTypes.GUI)) {
+      JOptionPane.showMessageDialog(frame,
+              QuimpToolsCollection.stringWrap(appendMessage + " " + getMessage(), QuimP.LINE_WRAP),
+              "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    if (getMessageSinkType().contains(MessageSinkTypes.IJERROR)) {
+      IJ.error(message);
+    }
+    return message;
   }
 
 }

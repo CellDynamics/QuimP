@@ -575,11 +575,9 @@ public class QParams {
       if (!(l.length() < 2)) {
         String fileID = l.substring(0, 2);
         if (!fileID.equals("#p")) {
-          IJ.error("Not compatible paramater file");
           throw new QuimpException("Not compatible paramater file");
         }
       } else {
-        IJ.error("Not compatible paramater file");
         throw new QuimpException("Not compatible paramater file");
       }
       key = (long) QuimpToolsCollection.s2d(d.readLine()); // key

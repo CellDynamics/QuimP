@@ -14,6 +14,7 @@ import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimP;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
@@ -146,9 +147,12 @@ public class Q_Analysis {
       }
       IJ.log("QuimP Analysis complete");
       IJ.showStatus("Finished");
+    } catch (QuimpException qe) {
+      qe.setMessageSinkType(MessageSinkTypes.GUI);
+      qe.handleException(IJ.getInstance(), "Q module failed");
     } catch (Exception e) {
       LOGGER.debug(e.getMessage(), e);
-      LOGGER.error("Problem with running Q Analysis: " + e.getMessage());
+      IJ.error("Problem with running Q Analysis", e.getMessage());
     }
   }
 

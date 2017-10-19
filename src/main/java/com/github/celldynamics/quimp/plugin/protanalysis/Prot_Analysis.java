@@ -443,10 +443,10 @@ public class Prot_Analysis implements IQuimpPlugin {
       }
     } catch (QuimpException qe) { // catch QuimpPluginException and QuimpException
       qe.setMessageSinkType(runAsMacro);
-      qe.handleException(IJ.getInstance(), "Protrusion Analysis:");
+      qe.handleException(IJ.getInstance(), "Protrusion Analysis module failed");
     } catch (Exception e) { // catch all exceptions here
       LOGGER.debug(e.getMessage(), e);
-      LOGGER.error("Problem with running Protrusion Analysis mapping: " + e.getMessage());
+      IJ.error("Problem with running Protrusion Analysis mapping", e.getMessage());
     }
   }
 }

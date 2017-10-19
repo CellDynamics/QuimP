@@ -16,6 +16,7 @@ import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimP;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.SnakeHandler;
 import com.github.celldynamics.quimp.Vert;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
@@ -193,9 +194,12 @@ public class ECMM_Mapping {
 
       IJ.log("ECMM Analysis complete");
       IJ.showStatus("Finished");
-    } catch (Exception e) { // catch all here
+    } catch (QuimpException qe) {
+      qe.setMessageSinkType(MessageSinkTypes.GUI);
+      qe.handleException(IJ.getInstance(), "ECMM module failed");
+    } catch (Exception e) {
       LOGGER.debug(e.getMessage(), e);
-      LOGGER.error("Problem with running ECMM mapping: " + e.getMessage());
+      IJ.error("Problem with running ECMM mapping", e.getMessage());
     }
   }
 

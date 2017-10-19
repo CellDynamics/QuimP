@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 
-// TODO: Auto-generated Javadoc
 /**
  * Builds history logger window and logs.
  * 
@@ -26,7 +25,7 @@ import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
  * parameter is description of this activity and next parameters define QuimP state.
  * 
  * @author p.baniukiewicz
- *
+ * @deprecated No longer in use
  */
 public class HistoryLogger implements WindowListener {
 

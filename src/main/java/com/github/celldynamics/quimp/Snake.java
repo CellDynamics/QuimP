@@ -164,7 +164,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * 
    * @param list list of nodes as Vector2d
    * @param id id of Snake
-   * @throws BoaException on wrong number of array points.
+   * @throws BoaException on wrong number of array points (<3).
    */
   public Snake(final List<? extends Tuple2d> list, int id) throws BoaException {
     super(list, new Node(0), BOA_.qState.segParam.expandSnake);
@@ -185,11 +185,13 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * @param x x coordinates of nodes
    * @param y y coordinates of nodes
    * @param id id of Snake
+   * @throws BoaException on wrong number of array points (<3).
    */
-  public Snake(final double[] x, final double[] y, int id) {
+  public Snake(final double[] x, final double[] y, int id) throws BoaException {
     super(x, y, new Node(0), BOA_.qState.segParam.expandSnake);
     if ((x.length != y.length) || x.length <= 3) {
-      throw new IllegalArgumentException("Lengths of X and Y arrays are not equal");
+      throw new BoaException(
+              "Lengths of X and Y arrays are not equal or there is less than 3 nodes");
     }
     snakeID = id;
     this.makeAntiClockwise(); // specific to snake can affect updateNormales
@@ -202,9 +204,8 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   /**
    * Construct empty Snake object.
    * 
-   * @throws BoaException on wrong number of array points.
    */
-  public Snake() throws BoaException {
+  public Snake() {
     super();
     alive = false;
   }
@@ -532,9 +533,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   /**
    * Implode.
    *
-   * @throws Exception the exception
+   * @throws BoaException if oval could not be initialized.
    */
-  public void implode() throws Exception {
+  public void implode() throws BoaException {
     // calculate centroid
     double cx;
     double cy;
@@ -727,7 +728,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * Ensure nodes are between maxDist and minDist apart, add remove nodes as required.
    * 
    * @param shiftNewNode shiftNewNode
-   * @throws BoaException when there were too less nodes and one of them was removed
+   * @throws BoaException when number of nodes is less than 3 after removal
    */
   public void correctDistance(boolean shiftNewNode) throws BoaException {
     Node.randDirection(); // choose a random direction to process the chain

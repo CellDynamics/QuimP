@@ -21,6 +21,7 @@ import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimP;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.Vert;
 import com.github.celldynamics.quimp.filesystem.ANAParamCollection;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
@@ -229,9 +230,12 @@ public class ANA_ implements PlugInFilter, DialogListener {
       IJ.log("ANA Analysis complete");
       IJ.showStatus("Finished");
       ecmMapping = null;
+    } catch (QuimpException qe) {
+      qe.setMessageSinkType(MessageSinkTypes.GUI);
+      qe.handleException(IJ.getInstance(), "ANA module failed");
     } catch (Exception e) {
       LOGGER.debug(e.getMessage(), e);
-      LOGGER.error("Problem with running ANA processing: " + e.getMessage());
+      IJ.error("Problem with running ANA processing", e.getMessage());
     }
   }
 

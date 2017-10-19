@@ -19,7 +19,9 @@ import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.BoaException;
 import com.github.celldynamics.quimp.PropertyReader;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
 import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter;
 import com.github.celldynamics.quimp.plugin.IQuimpPlugin;
@@ -716,10 +718,13 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
         }
       }
     } catch (QuimpPluginException rwe) {
-      rwe.handleException(view.getWnd(), "Segmentation problem:");
+      if (!(rwe instanceof RandomWalkException)) { // RandomWalkException has set proper sink
+        rwe.setMessageSinkType(MessageSinkTypes.GUI);
+      }
+      rwe.handleException(view.getWnd(), "Segmentation problem");
     } catch (Exception e) {
       LOGGER.debug(e.getMessage(), e);
-      LOGGER.error("Random Walk Segmentation error: " + e.getMessage(), e);
+      IJ.error("Random Walk Segmentation error", e.getMessage());
     } finally {
       isRun = false; // segmentation stopped
       IJ.showProgress(is.getSize() + 1, is.getSize()); // erase progress bar
@@ -754,7 +759,14 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     hsf.setMode(HatSnakeFilter.CAVITIES);
     // dont use interpolation - provide list of points as they are on image
     List<Point2d> retf = hsf.runPlugin(ssR.getOutlineasRawPoints(), orIp);
-    Roi ssRF = new QuimpDataConverter(retf).getSnake(0).asFloatRoi();
+    Roi ssRF;
+    try {
+      ssRF = new QuimpDataConverter(retf).getSnake(0).asFloatRoi();
+    } catch (BoaException e) { // lesss than 3 points
+      e.setMessageSinkType(MessageSinkTypes.IJERROR);
+      e.handleException(null, "HatSnake Filter failed");
+      return retIp;
+    }
     ImageProcessor retIptmp = new ByteProcessor(orIp.getWidth(), orIp.getHeight());
     retIptmp.setColor(Color.WHITE);
     retIptmp.fill(ssRF);
