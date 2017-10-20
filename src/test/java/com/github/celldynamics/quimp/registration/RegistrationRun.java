@@ -1,7 +1,5 @@
 package com.github.celldynamics.quimp.registration;
 
-import com.github.celldynamics.quimp.registration.Registration;
-
 import ij.IJ;
 
 // TODO: Auto-generated Javadoc
@@ -9,13 +7,15 @@ import ij.IJ;
  * @author p.baniukiewicz
  *
  */
-public class Registration_run {
+public class RegistrationRun {
   static {
     System.setProperty("logback.configurationFile", "quimp-logback.xml");
   }
 
   /**
-   * @param args
+   * Runner.
+   * 
+   * @param args args
    */
   @SuppressWarnings("unused")
   public static void main(String[] args) {

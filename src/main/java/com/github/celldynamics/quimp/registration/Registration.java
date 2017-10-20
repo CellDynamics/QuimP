@@ -337,10 +337,12 @@ public class Registration extends JDialog implements ActionListener {
       bnCancel.setEnabled(false);
       Worker w = new Worker(secondsToWait); // will change button text
       w.execute();
+      return;
     }
     // Cancel and waited already - quit
     if (e.getSource() == bnCancel && waited == true) {
       dispose();
+      return;
     }
     // apply - get code, say thank you and exit
     if (e.getSource() == bnOk) {
@@ -355,6 +357,7 @@ public class Registration extends JDialog implements ActionListener {
         JOptionPane.showMessageDialog(this, "The key you provided does not match to the email.",
                 "Error", JOptionPane.WARNING_MESSAGE);
       }
+      return;
     }
     // support for action events
     switch (e.getActionCommand()) {
@@ -367,7 +370,6 @@ public class Registration extends JDialog implements ActionListener {
       default:
         throw new IllegalArgumentException("Unknown action.");
     }
-
   }
 
   /**
