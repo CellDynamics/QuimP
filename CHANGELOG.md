@@ -1,5 +1,17 @@
 # Change Log
 
+## [v17.10.02](https://github.com/CellDynamics/QuimP/tree/v17.10.02) (2017-10-21)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.10.01...v17.10.02)
+
+**Implemented enhancements:**
+
+- Add Q11 stats as option in FC [\#269](https://github.com/CellDynamics/QuimP/issues/269)
+- Implement features from RW plugin in RW module [\#266](https://github.com/CellDynamics/QuimP/issues/266)
+
+**Fixed bugs:**
+
+- Errors when user cancelled registration window [\#270](https://github.com/CellDynamics/QuimP/issues/270)
+
 ## [v17.10.01](https://github.com/CellDynamics/QuimP/tree/v17.10.01) (2017-10-13)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.07.02...v17.10.01)
 
