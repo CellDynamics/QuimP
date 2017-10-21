@@ -6,6 +6,23 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="17.10.02" date="2017-10-21" description="Release">
+         <action dev="baniuk" type="fix" issue="270">
+              QuimP: Exception when registration window was canceled by unregistered user. 
+         </action>
+         <action dev="baniuk" type="add" issue="266">
+              QuimP-RandomWalk: Added output mask cutting by initial mask.
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP: Restored stQP file on save for new path.
+         </action>
+         <action dev="baniuk" type="add" issue="269">
+              QuimP-FormatConverter: Add extraction of stQP file directly from QCONF.
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP: Reduced number of logs produced. Updated exceptions handling.
+         </action>
+        </release>
         <release version="17.10.01" date="2017-10-14" description="Release">
          <action dev="baniuk" type="add" issue="46">
               QuimP-BOA: Segmentation can be interrupted. Fixed also plugin propagation algorithm. Note that BOA plugins can not be interrupted. BOA shows also busy status that is useful with computationally intensive plugins.
@@ -22,7 +39,7 @@
         </release>
         <release version="17.07.02" date="2017-08-01" description="Bugfix">
          <action dev="baniuk" type="fix" issue="268">
-              QuimP-BOA: Last frame index could be wrongly set after manulal editing of frames or using filters. This affected e.g. ANA
+              QuimP-BOA: Last frame index could be wrongly set after manual editing of frames or using filters. This affected e.g. ANA
          </action>
        </release>
        <release version="17.07.01" date="2017-07-28" description="Release">
