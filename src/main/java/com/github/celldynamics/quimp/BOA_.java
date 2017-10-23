@@ -1784,7 +1784,6 @@ public class BOA_ implements PlugIn {
      * @param interruptible if true cancel button is active.
      */
     private void runBoaThread(int startFrame, int endFrame, boolean interruptible) {
-      System.out.println("running from in stackwindow");
       // run on current frame
       sww = new SwingWorker<Boolean, Object>() {
         @Override
