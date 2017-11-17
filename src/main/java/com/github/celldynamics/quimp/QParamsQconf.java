@@ -80,7 +80,7 @@ public class QParamsQconf extends QParams {
   }
 
   /**
-   * Get configuration file.
+   * Get configuration file (with path).
    * 
    * @return the newParamFile
    */

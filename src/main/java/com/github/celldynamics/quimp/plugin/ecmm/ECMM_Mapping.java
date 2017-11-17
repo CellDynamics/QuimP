@@ -28,9 +28,6 @@ import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.registration.Registration;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
-/**
- * Richard Tyson. 23/09/2009. ECM Mapping Systems Biology DTC, Warwick University.
- */
 import ij.IJ;
 import ij.gui.YesNoCancelDialog;
 import ij.process.ImageProcessor;
@@ -68,7 +65,7 @@ import ij.process.ImageProcessor;
 /**
  * Main ECMM implementation class.
  * 
- * @author rtyson
+ * @author Richard Tyson. 23/09/2009. ECM Mapping Systems Biology DTC, Warwick University.
  * @author p.baniukiewicz
  *
  */
@@ -78,7 +75,6 @@ public class ECMM_Mapping {
    * The Constant LOGGER.
    */
   static final Logger LOGGER = LoggerFactory.getLogger(ECMM_Mapping.class.getName());
-
   private OutlineHandler oh;
   private OutlineHandler outputH;
   private OutlinesCollection outputOutlineHandlers; // output for new data file

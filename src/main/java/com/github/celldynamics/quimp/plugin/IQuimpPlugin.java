@@ -12,6 +12,6 @@ import ij.plugin.PlugIn;
  * @author p.baniukiewicz
  *
  */
-public interface IQuimpPlugin extends IQuimpCorePlugin, PlugIn {
+public interface IQuimpPlugin extends PlugIn {
 
 }

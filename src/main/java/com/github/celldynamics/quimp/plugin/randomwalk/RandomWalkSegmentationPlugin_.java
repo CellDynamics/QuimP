@@ -25,7 +25,6 @@ import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
 import com.github.celldynamics.quimp.geom.filters.HatSnakeFilter;
 import com.github.celldynamics.quimp.plugin.IQuimpPlugin;
-import com.github.celldynamics.quimp.plugin.ParamList;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation;
 import com.github.celldynamics.quimp.plugin.generatemask.GenerateMask_;
@@ -230,9 +229,10 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
    * State diagram <br>
    * <img src="doc-files/RandomWalkSegmentationPlugin_2_UML.png"/><br>
    * 
+   * @param val
+   * 
    * @return always 0, not used here.
    */
-  @Override
   public int showUi(boolean val) {
     view.show();
     return 0;
@@ -773,26 +773,11 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     return retIptmp;
   }
 
-  @Override
-  public int setup() {
-    return 0;
-  }
-
-  @Override
-  public void setPluginConfig(ParamList par) throws QuimpPluginException {
-  }
-
-  @Override
-  public ParamList getPluginConfig() {
-    return null;
-  }
-
-  @Override
-  public String getVersion() {
-    return "See QuimP version";
-  }
-
-  @Override
+  /**
+   * About string.
+   * 
+   * @return About string
+   */
   public String about() {
     return "Random Walk plugin.\n" + "Author: Piotr Baniukiewicz\n"
             + "mail: p.baniukiewicz@warwick.ac.uk\n"

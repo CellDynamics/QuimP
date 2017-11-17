@@ -328,14 +328,9 @@ public class QconfLoader {
       if (folder.resolve(core + "_" + l + FileExtensions.convmapFileExt).toFile().exists()
               || folder.resolve(core + "_" + l + FileExtensions.motmapFileExt).toFile().exists()
               || folder.resolve(core + "_" + l + FileExtensions.coordmapFileExt).toFile().exists()
-              || folder.resolve(core + "_" + l + FileExtensions.originmapFileExt).toFile()
-                      .exists()
-              || folder
-                      .resolve(core + "_" + l
-                              + FileExtensions.xmapFileExt)
-                      .toFile().exists()
-              || folder.resolve(core + "_" + l + FileExtensions.ymapFileExt).toFile()
-                      .exists()
+              || folder.resolve(core + "_" + l + FileExtensions.originmapFileExt).toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.xmapFileExt).toFile().exists()
+              || folder.resolve(core + "_" + l + FileExtensions.ymapFileExt).toFile().exists()
               || folder.resolve(core + "_" + l + FileExtensions.fluomapFileExt.replace('%', '1'))
                       .toFile().exists()
               || folder.resolve(core + "_" + l + FileExtensions.fluomapFileExt.replace('%', '2'))
@@ -579,6 +574,17 @@ public class QconfLoader {
     } else {
       return getQp().getParamFormat();
     }
+  }
+
+  /**
+   * Return path to loaded configuration file. A value here does not mean that file has been
+   * successfully loaded.
+   * 
+   * @return path to loaded file
+   * @see QParamsQconf#getParamFile()
+   */
+  public Path getQconfFile() {
+    return qconfFile;
   }
 
 }

@@ -66,17 +66,11 @@ import ij.Macro;
 public abstract class PluginTemplate implements IQuimpPlugin {
 
   /**
-   * Loaded QCONF file.
-   * 
-   * <p>Must be overridden by {@link #parseOptions(String)} or left null to force
-   * {@link QconfLoader} to show file selector.
+   * The Constant logger.
    */
-  protected File paramFile = null;
+  protected final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
-  /**
-   * The Constant LOGGER.
-   */
-  static final Logger LOGGER = LoggerFactory.getLogger(PluginTemplate.class.getName());
+  protected AbstractPluginOptions options;
 
   /**
    * Indicate that plugin is run as macro from script. Blocks all UIs.
@@ -84,166 +78,137 @@ public abstract class PluginTemplate implements IQuimpPlugin {
    * <p>Use this variable in child class together with {@link #apiCall} to decide whether to show
    * message in UI or console. the following rules applies:
    * <ol>
-   * <li>runAsMacro = MessageSinkTypes.GUI - plugin called from IJ menu
-   * <li>runAsMacro = MessageSinkTypes.IJERROR - plugin called from macro
-   * <li>runAsMacro = MessageSinkTypes.CONSOLE - plugin called from API (but exceptions are
+   * <li>errorSink = MessageSinkTypes.GUI - plugin called from IJ menu
+   * <li>errorSink = MessageSinkTypes.IJERROR - plugin called from macro
+   * <li>errorSink = MessageSinkTypes.CONSOLE - plugin called from API (but exceptions are
    * re-thrown to be handled in caller code)
    * </ol>
+   * 
+   * <p>Here assume GUI output for parameterless call from IJ (e.g. menu). Override this setting in
+   * {@link #run(String)} method.
    */
-  protected MessageSinkTypes runAsMacro = MessageSinkTypes.GUI;
+  protected MessageSinkTypes errorSink = MessageSinkTypes.GUI;
 
   /**
-   * Loaded QCONF file.
-   * 
-   * <p>Initialised by {@link #loadFile(File)} through this constructor.
+   * Loaded configuration file.
    */
   protected QconfLoader qconfLoader; // main object representing loaded configuration file
 
   /**
-   * If true plugin is run from parametrised constructor what usually mean API..
-   * 
+   * If true plugin is run from parametrised constructor what usually mean API.
    */
   protected boolean apiCall;
 
   /**
+   * Extension of file plugin asks for after execution in IJ mode.
+   */
+  protected String fileExt = FileExtensions.newConfigFileExt;
+
+  /**
    * Default constructor, should not run plugin. It is called mostly by IJ. All exceptions are
    * handled in place.
+   * 
+   * @param options Reference to plugin configuration container.
    */
-  public PluginTemplate() {
+  public PluginTemplate(AbstractPluginOptions options) {
     apiCall = false;
+    this.options = options;
   }
 
   /**
    * Constructor that allows to provide own parameters. Intended to run from API. In this mode all
-   * exceptions are re-thrown outside.
+   * exceptions are re-thrown outside and plugin is executed.
    * 
-   * @param params it can be null to ask user for file or it can be parameters string like that
+   * @param argString it can be null to ask user for file or it can be parameters string like that
    *        passed in macro.
+   * @param options Reference to plugin configuration container.
    * @throws QuimpPluginException on any error in plugin execution.
+   * @see #loadFile(String)
    */
-  public PluginTemplate(String params) throws QuimpPluginException {
+  public PluginTemplate(String argString, AbstractPluginOptions options)
+          throws QuimpPluginException {
     apiCall = true;
-    prepareToRun(params);
-    runAsMacro = MessageSinkTypes.CONSOLE;
+    this.options = options;
+    this.options = AbstractPluginOptions.deserialize2Macro(argString, options);
+    errorSink = MessageSinkTypes.CONSOLE;
     try {
-      loadFile(paramFile); // load configuration file given by paramFile and verify it
-      if (qconfLoader.getQp() == null) {
-        return; // not loaded
-      }
-      runFromQconf(); // run plugin
+      loadFile(this.options.paramFile); // load configuration file and verify it
     } catch (Exception qe) {
       throw new QuimpPluginException(qe);
     }
   }
 
   /**
-   * Load configuration file. (only if not loaded before).
+   * Load configuration file and execute plugin depending on file type.
    * 
-   * <p>Validates also all necessary datafields in loaded QCONF file. Set <tt>qconfLoader</tt> field
-   * on success or set it to <tt>null</tt>.
+   * <p>If file is QCONF then {@link #runFromQconf()} is executed, if ti is paQP then
+   * {@link #runFromPaqp()}.
    * 
-   * @param paramFile
+   * @param paramFile path to the file. It can be null or empty string to allow user pick the file.
    * 
-   * @throws QuimpException When QCONF could not be loaded or it does not meet requirements.
+   * @throws QuimpException When configuration file could not be loaded or it does not meet
+   *         requirements.
+   * @see #run(String)
+   * @see #showUi(boolean)
    */
-  private void loadFile(File paramFile) throws QuimpException {
+  protected void loadFile(String paramFile) throws QuimpException {
+    File pf;
+    if (paramFile == null || paramFile.isEmpty()) {
+      pf = null;
+    } else {
+      pf = new File(paramFile);
+    }
     if (qconfLoader == null || qconfLoader.getQp() == null) {
       // load new file
-      qconfLoader = new QconfLoader(paramFile, FileExtensions.newConfigFileExt);
+      qconfLoader = new QconfLoader(pf, fileExt);
       if (qconfLoader.getQp() == null) {
         return; // not loaded
       }
-      if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
-        // validate in case new format
-        qconfLoader.getBOA(); // will throw exception if not present
+      if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
+        runFromPaqp();
+      } else if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
+        qconfLoader.getBOA();
+        runFromQconf();
       } else {
         qconfLoader = null; // failed load or checking
-        throw new QuimpPluginException("QconfLoader returned unsupported version of QuimP or error."
-                + " Only new format can be loaded");
+        throw new QuimpPluginException(
+                "QconfLoader returned unsupported version of QuimP or error.");
       }
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setup()
-   */
-  @Override
-  public abstract int setup();
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * IQuimpCorePlugin#setPluginConfig(com.github.celldynamics.quimp.plugin.ParamList)
-   */
-  @Override
-  public abstract void setPluginConfig(ParamList par) throws QuimpPluginException;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#getPluginConfig()
-   */
-  @Override
-  public abstract ParamList getPluginConfig();
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#showUI(boolean)
-   */
-  @Override
-  public abstract int showUi(boolean val);
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#getVersion()
-   */
-  @Override
-  public abstract String getVersion();
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#about()
-   */
-  @Override
-  public abstract String about();
-
   /**
-   * This method should assign all internal variables of child class to values read from options.
+   * Parse parameters string passed from IJ, macro or API.
    * 
-   * <p>It should also deal with null and must set {@link #paramFile} variable. It also provides
-   * simple syntax checking. In case of problems, missing variables etc the {@link #about()}
-   * should be called and displayed to user (rather in console as wrong syntax happens only when
-   * called from macro or code)
+   * <p>This method assign also all internal fields of {@link AbstractPluginOptions} class to values
+   * read from option string.
    * 
-   * @param options string in form key=val key1=val1 etc or null
+   * <p>String arg can be passed here from three sources: macro, IJProp.txt or from
+   * {@link #PluginTemplate(String, AbstractPluginOptions)}. Generally, in arg is empty or null,
+   * {@link #parseArgumentString(String)} tries to get it from Macro, if succeed it parses it and
+   * returns true. Otherwise returns false. If arg is non-empty it assumes Macro call, sets proper
+   * {@link #errorSink} and parses arg returning true.
+   * 
+   * @param arg arguments passed to {@link #run(String)} or
+   *        #{@link #PluginTemplate(String, AbstractPluginOptions)}.
+   * @return return true if something has been parsed
+   * @throws QuimpPluginException when parsin failed
    */
-  protected abstract void parseOptions(String options);
-
-  /**
-   * Helper - set correct sing depending on assumed caller - macro, IJ.
-   * 
-   * @param arg arguments passed to {@link #run(String)}.
-   */
-  private void prepareToRun(String arg) {
-    String options;
+  protected boolean parseArgumentString(String arg) throws QuimpPluginException {
+    String argString;
     IJ.log(new QuimpToolsCollection().getQuimPversion());
     // decode possible params passed in macro or from constructor
     if (arg == null || arg.isEmpty()) { // no options passed directly to method
-      options = Macro.getOptions(); // check if there are any in macro
+      argString = Macro.getOptions(); // check if there are any in macro
     } else {
-      options = arg; // options passed here - they must be in the same format as in macro
+      argString = arg; // options passed here - they must be in the same format as in macro
     }
-    if (options == null || options.isEmpty()) { // nothing passed let user decide about defaults
-      showUi(true); // and in UI
-    } else { // there is something, parse it
-      runAsMacro = MessageSinkTypes.IJERROR; // set errors to ij, we are in macro mode
-      parseOptions(options); // parse whatever it is
+    if (argString != null && !argString.isEmpty()) { // something passed
+      errorSink = MessageSinkTypes.IJERROR; // set errors to ij, we are in macro mode
+      options = AbstractPluginOptions.deserialize2Macro(argString, options);
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -253,29 +218,32 @@ public abstract class PluginTemplate implements IQuimpPlugin {
    * @see ij.plugin.PlugIn#run(java.lang.String)
    */
   /**
-   * That method shows version in console, checks registration and calls {@link #runFromQconf()}
-   * which is main runner for plugin. Catches all exceptions.
+   * Runner if plugin is called from IJ. Depending on {@link #errorSink} exceptions are redirected
+   * to GUI, Console or IJ.
    */
   @Override
   public void run(String arg) {
-    prepareToRun(arg);
+    if (arg == null || arg.isEmpty()) {
+      errorSink = MessageSinkTypes.GUI; // no parameters - assume menu call
+    } else {
+      errorSink = MessageSinkTypes.IJERROR; // parameters available - macro call
+    }
     // validate registered user
     new Registration(IJ.getInstance(), "QuimP Registration");
-    // check whether config file name is provided or ask user for it
     try {
-      loadFile(paramFile); // load configuration file given by paramFile and verify it
-      if (qconfLoader.getQp() == null) {
-        return; // not loaded
+      if (parseArgumentString(arg)) { // process options passed to this method
+        loadFile(options.paramFile); // load configuration file and verify
+      } else {
+        showUi(true);
       }
-      runFromQconf(); // run plugin
-    } catch (QuimpException qe) {
-      qe.setMessageSinkType(runAsMacro);
-      qe.handleException(IJ.getInstance(), "GenerateMask:");
-    } catch (Exception e) { // catch all exceptions here
-      LOGGER.debug(e.getMessage(), e);
-      LOGGER.error("Problem with running GenerateMask plugin: " + e.getMessage());
-    }
 
+    } catch (QuimpException qe) {
+      qe.setMessageSinkType(errorSink);
+      qe.handleException(IJ.getInstance(), this.getClass().getSimpleName());
+    } catch (Exception e) { // catch all exceptions here
+      logger.debug(e.getMessage(), e);
+      logger.error("Problem with running plugin: " + e.getMessage());
+    }
   }
 
   /**
@@ -288,5 +256,18 @@ public abstract class PluginTemplate implements IQuimpPlugin {
    * @throws QuimpException on error
    */
   protected abstract void runFromQconf() throws QuimpException;
+
+  protected abstract void runFromPaqp() throws QuimpException;
+
+  /**
+   * Open plugin UI. Called when there is no parameters to parse.
+   * 
+   * <p>If plugin can handle null {@link AbstractPluginOptions#paramFile} this method can simply
+   * repeat {@link #loadFile(String)}
+   * 
+   * @param val true to show UI
+   * @throws Exception on any error. Handled by {@link #run(String)}
+   */
+  protected abstract void showUi(boolean val) throws Exception;
 
 }

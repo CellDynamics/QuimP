@@ -318,71 +318,20 @@ public class Prot_Analysis implements IQuimpPlugin {
     return cellStat;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Show UI.
    * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setup()
+   * @param val true to show UI
    */
-  @Override
-  public int setup() {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#setPluginConfig(com.github.celldynamics.
-   * quimp.
-   * plugin.ParamList)
-   */
-  @Override
-  public void setPluginConfig(ParamList par) throws QuimpPluginException {
-    paramList = new ParamList(par);
-    // TODO restore config from json
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#getPluginConfig()
-   */
-  @Override
-  public ParamList getPluginConfig() {
-    // TODO convert config to json one liner and add to paramlist
-    // paramList.put("config", json)
-    return paramList;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#showUI(boolean)
-   */
-  @Override
-  public int showUi(boolean val) {
+  public void showUi(boolean val) {
     gui.showUI(val);
-    return 0;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * About string.
    * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#getVersion()
+   * @return About string
    */
-  @Override
-  public String getVersion() {
-    return "See QuimP version";
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.IQuimpCorePlugin#about()
-   */
-  @Override
   public String about() {
     return "Protrusion Analysis Plugin.\n" + "Author: Piotr Baniukiewicz\n"
             + "mail: p.baniukiewicz@warwick.ac.uk";
