@@ -29,6 +29,7 @@ public class ANARun {
   @SuppressWarnings("unused")
   public static void main(String[] args) {
     ImageJ ij = new ImageJ();
+    IJ.runMacro("run(\"Record...\");");
     ImagePlus im = IJ.openImage("/home/baniuk/Desktop/Tests/175/test.tif");
     im.show();
     ANA_ ana = new ANA_();

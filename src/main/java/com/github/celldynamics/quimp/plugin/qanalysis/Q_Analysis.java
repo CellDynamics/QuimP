@@ -149,7 +149,7 @@ public class Q_Analysis {
       IJ.showStatus("Finished");
     } catch (QuimpException qe) {
       qe.setMessageSinkType(MessageSinkTypes.GUI);
-      qe.handleException(IJ.getInstance(), "Q module failed");
+      qe.handleException(IJ.getInstance(), "Q module failed due to following error:");
     } catch (Exception e) {
       LOGGER.debug(e.getMessage(), e);
       IJ.error("Problem with running Q Analysis", e.getMessage());

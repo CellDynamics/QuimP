@@ -196,7 +196,7 @@ public class ECMM_Mapping {
       IJ.showStatus("Finished");
     } catch (QuimpException qe) {
       qe.setMessageSinkType(MessageSinkTypes.GUI);
-      qe.handleException(IJ.getInstance(), "ECMM module failed");
+      qe.handleException(IJ.getInstance(), "ECMM module failed due to following error:");
     } catch (Exception e) {
       LOGGER.debug(e.getMessage(), e);
       IJ.error("Problem with running ECMM mapping", e.getMessage());

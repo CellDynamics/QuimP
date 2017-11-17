@@ -94,11 +94,6 @@ public class ANAp {
   transient boolean sampleAtSame = false;
 
   /**
-   * UI setting, plot outlines on new image.
-   */
-  transient boolean plotOutlines = false;
-
-  /**
    * The present data.
    */
   transient int[] presentData;
@@ -161,7 +156,6 @@ public class ANAp {
     this.noData = src.noData;
     this.channel = src.channel;
     this.useLocFromCh = src.useLocFromCh;
-    this.plotOutlines = src.plotOutlines;
 
     this.fluTiffs = new File[src.fluTiffs.length];
     for (int i = 0; i < fluTiffs.length; i++) {

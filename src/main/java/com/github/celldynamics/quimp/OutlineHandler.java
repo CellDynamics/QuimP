@@ -189,7 +189,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
    */
   public Outline getStoredOutline(int f) {
     if (f - startFrame < 0 || f - startFrame > outlines.length) {
-      IJ.log("Tried to access OOR frame store\n\t...frame:" + f);
+      LOGGER.info("Tried to access negative frame store: frame: " + f);
       return null;
     }
     return outlines[f - startFrame];

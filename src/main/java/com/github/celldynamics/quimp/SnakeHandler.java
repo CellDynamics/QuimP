@@ -341,7 +341,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   public Snake getBackupSnake(int f) {
     LOGGER.trace("Asked for backup snake at frame " + f + " ID " + ID);
     if (f - startFrame < 0) {
-      LOGGER.warn("Tried to access negative frame store");
+      LOGGER.info("Tried to access negative frame store: frame: " + f + ", snakeID: " + ID);
       return null;
     }
     return segSnakes[f - startFrame];
@@ -355,7 +355,7 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    */
   public Snake getStoredSnake(int f) {
     if (f - startFrame < 0) {
-      LOGGER.warn("Tried to access negative frame store\n\tframe:" + f + "\n\tsnakeID:" + ID);
+      LOGGER.info("Tried to access negative frame store: frame: " + f + ", snakeID: " + ID);
       return null;
     }
     return finalSnakes[f - startFrame];
