@@ -137,7 +137,7 @@ public class QuimpToolsCollection {
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
     TemporalAccessor accessor = timeFormatter.parse(dateString);
     Date date = Date.from(Instant.from(accessor));
-    SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     return dt.format(date);
   }
 
