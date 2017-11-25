@@ -19,12 +19,12 @@
  * 
  * <ol>
  * <li>none - will open file selector
- * <li><i>filename</i>=path_to_qconf - load and process the file.
+ * <li><i>paramFile</i>=path_to_qconf - file to process.
  * </ol>
  * <p>
  * 
  * <pre>
- * {@code run("Generate mask","filename=[C:/Users/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine.QCONF]") }
+ * {@code run("Generate mask","{paramFile:[RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine.QCONF]}") }
  * </pre>
  * 
  * Output file <b>will be</b> saved on disk as well.

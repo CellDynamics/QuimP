@@ -44,7 +44,7 @@ public class GenerateMask_ extends PluginTemplate {
   private ImagePlus res;
 
   /**
-   * Executed if plugni is run from IJ. Set apiCall to false and redirect exception to IJ.
+   * Executed if plugin is run from IJ. Set apiCall to false and redirect exception to IJ.
    */
   public GenerateMask_() {
     super(new GenerateMaskOptions());
@@ -157,7 +157,7 @@ public class GenerateMask_ extends PluginTemplate {
     if (apiCall) {
       throw new IllegalArgumentException("Old files are not supported");
     } else {
-      IJ.error("Generate MAsk", "Old files are not supported");
+      IJ.error("Generate Mask", "Old files are not supported");
     }
 
   }

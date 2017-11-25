@@ -34,7 +34,7 @@ public class GenerateMaskTest {
     GenerateMask_ mask;
     mask = new GenerateMask_();
     // parameter string like in macro - errors redirected to IJ.error, no visual output
-    mask.run("{paramFile:[src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine."
+    mask.run("{paramFile:[src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7%agar_LU_fine."
             + "QCONF]}");
   }
 

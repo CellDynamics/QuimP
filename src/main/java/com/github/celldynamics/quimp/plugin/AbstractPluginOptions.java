@@ -15,33 +15,37 @@ import com.google.gson.GsonBuilder;
  * This abstract class serves basic methods for processing parameters strings specified in macros.
  * 
  * <p>The principal idea is to have separate class that would hold all parameters plugin uses. Such
- * class, if derived from {@link AbstractPluginOptions} allows to produce its json representation
- * that can be given in macro recorder as plugin parameters string. Reverse operation - creating
- * instance of option class from json string is also supported.
+ * class, if derived from {@link AbstractPluginOptions} allows to produce self-representation as
+ * JSon that can be displayed in macro recorder as plugin parameters string. Reverse operation -
+ * creating instance of option class from JSon string is also supported.
  * 
- * <p>Additional features provided by this template are removing quotes from json string and
- * allowing for parameters with spaces. In the first case such de-quoted string can be easily passed
- * as a parameter string in macro (which is also string) without the need of escaping quotes.
+ * <p>Additional features provided by this template are removing quotes from JSon string and
+ * allowing parameters that contain spaces. In the first case such de-quoted string can be easily
+ * passed as a parameter string in macro (which is also string) without the need of escaping quotes.
  * De-quoted strings can be also deserialzied. Second feature allows using {@link EscapedPath}
  * annotation for fields of String type which then are automatically enclosed in specified escape
  * character. This allows to use white spaces in these fields.
  * 
  * <p>Methods {@link #serialize2Macro()} and
- * {@link #deserialize2Macro(String, AbstractPluginOptions)} are intended for processing parameter
- * strings displayed in Macro Recorder and collected collected from macro. Remaining two:
+ * {@link #deserialize2Macro(String, AbstractPluginOptions)} are intended for creating parameter
+ * strings, which can be then displayed in Macro Recorder, and creating instance of Option object
+ * from such strings (specified by user in macro). Remaining two other methods:
  * {@link #serialize()} and {@link #deserialize(String, AbstractPluginOptions)} stand for normal
- * conversion to and from json (both take under account {@link EscapedPath} annotation).
+ * conversion to and from JSon (both take under account {@link EscapedPath} annotation).
+ * 
+ * <p>This abstract class by default provides {@link AbstractPluginOptions#paramFile} field that
+ * holds path to the configuration file.
  * 
  * <p>There are following restriction to parameter string:
  * <ul>
  * <li>Quotes are not allowed in Strings (even properly escaped)
  * <li>Arrays are not allowed in parameter class (derived from {@link AbstractPluginOptions}) due to
- * json representation of array that uses square brackets (same as default string escaping
+ * JSon representation of array that uses square brackets (same as default string escaping
  * characters).
  * </ul>
  * 
  * @author p.baniukiewicz
- *
+ * @see com.github.celldynamics.quimp.plugin.AbstractPluginOptionsTest#testSerDeser_2()
  */
 public abstract class AbstractPluginOptions implements Cloneable {
   /**
@@ -60,16 +64,16 @@ public abstract class AbstractPluginOptions implements Cloneable {
   public String paramFile;
 
   /**
-   * Create json string from this object.
+   * Create JSon string from this object.
    * 
    * <p>Fields annotated by {@link EscapedPath} will be enclosed by escape characters. If
    * {@link EscapedPath} is applied to non string data type, it is ignored.
    * 
-   * <p>This method return regular json (but with escaped Strings if annotation is set).
-   * Complementary method {@link #serialize2Macro()} return json file without quotes supposed to be
+   * <p>This method return regular JSon (but with escaped Strings if annotation is set).
+   * Complementary method {@link #serialize2Macro()} return JSon file without quotes supposed to be
    * used as parameter string in macro.
    * 
-   * @return json string from this object
+   * @return JSon string from this object
    * @see EscapedPath
    * @see #serialize2Macro()
    */
@@ -103,12 +107,12 @@ public abstract class AbstractPluginOptions implements Cloneable {
   }
 
   /**
-   * Serialize this class and produce json without spaces (except escaped strings) and without
+   * Serialize this class and produce JSon without spaces (except escaped strings) and without
    * quotes.
    * 
    * <p>Return is intended to show in macro recorder.
    * 
-   * @return json without spaces and quotes
+   * @return JSon without spaces and quotes
    * @see EscapedPath
    * @see #escapeJsonMacro(String)
    * @see #serialize()
@@ -119,14 +123,14 @@ public abstract class AbstractPluginOptions implements Cloneable {
   }
 
   /**
-   * Create AbstractPluginOptions reference from json. Remove escaping chars.
+   * Create AbstractPluginOptions reference from JSon. Remove escaping chars.
    * 
-   * <p>This method return object from regular json. All fields annotated with {@link EscapedPath}
+   * <p>This method return object from regular JSon. All fields annotated with {@link EscapedPath}
    * will have escaping characters removed. Complementary method
-   * {@link #deserialize2Macro(String, AbstractPluginOptions)} accepr json file without quotes
+   * {@link #deserialize2Macro(String, AbstractPluginOptions)} accept JSon file without quotes
    * and it is supposed to be used as processor of parameter string specified in macro.
    * 
-   * @param json json string produced by {@link #serialize()}
+   * @param json JSon string produced by {@link #serialize()}
    * @param t type of restored object
    * @return instance of T class
    * @see EscapedPath
@@ -155,14 +159,14 @@ public abstract class AbstractPluginOptions implements Cloneable {
   }
 
   /**
-   * Deserialize json produced by {@link #serialize2Macro()}, that is json without quotations.
+   * Deserialize JSon produced by {@link #serialize2Macro()}, that is json without quotations.
    * 
-   * @param json json to deserialize
+   * @param json JSon to deserialize
    * @param t type of object
-   * @return object produced from json, fields annotated with {@link EscapedPath} does not contain
+   * @return object produced from JSon, fields annotated with {@link EscapedPath} does not contain
    *         escape characters.
-   * @throws QuimpPluginException on deserialization error. As json will be produced by user in
-   *         macro script this usually will be problem with escaping or forming proper json.
+   * @throws QuimpPluginException on deserialization error. As JSon will be produced by user in
+   *         macro script this usually will be problem with escaping or forming proper JSon.
    */
   public static <T extends AbstractPluginOptions> T deserialize2Macro(String json, T t)
           throws QuimpPluginException {
@@ -179,7 +183,7 @@ public abstract class AbstractPluginOptions implements Cloneable {
   }
 
   /**
-   * Remove quotes and white characters from json file.
+   * Remove quotes and white characters from JSon file.
    * 
    * <p>Note that none of value can contain quote. Spaces in Strings for fields annotated by
    * {@link EscapedPath} are preserved.

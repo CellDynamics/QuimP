@@ -87,12 +87,31 @@ public class AbstractPluginOptionsTest {
    */
   @Test
   public void testDeserialize2Macro() throws Exception {
-    Options opt = new Options();
     String ret = "{param2:10,param3:3.14,otherPath:[space space],param4:{internal1:20},paramFile:"
             + "[path/to/file with spaces.qconf]}";
     Options des = Options.deserialize2Macro(ret, new Options());
     assertThat(des.otherPath, is("space space")); // escaping chars removed
     assertThat(des.paramFile, is("path/to/file with spaces.qconf")); // escaping chars removed
+  }
+
+  /**
+   * Test of {@link AbstractPluginOptions#deserialize2Macro(String, AbstractPluginOptions)}. Bad
+   * parameter string.
+   * 
+   * <p>If [ missing - json is correct but spaces can be removed from escaped string. Exception in
+   * other case.
+   * 
+   * @throws Exception on error
+   */
+  @Test(expected = QuimpPluginException.class)
+  public void testDeserialize2Macro_1() throws Exception {
+    // missing :
+    String ret = "{param2:10, param3 3.14,otherPath:[space space],param4: {internal1:20},paramFile:"
+            + "[path/to/file with spaces.qconf]}";
+    Options des = Options.deserialize2Macro(ret, new Options());
+    assertThat(des.otherPath, is("space space")); // escaping chars removed
+    assertThat(des.paramFile, is("path/to/file with spaces.qconf"));
+    assertThat(des.param4.internal1, is(20));// escaping chars removed
   }
 
   /**

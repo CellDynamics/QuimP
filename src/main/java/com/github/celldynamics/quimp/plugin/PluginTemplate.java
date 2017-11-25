@@ -10,6 +10,7 @@ import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
+import com.github.celldynamics.quimp.plugin.generatemask.GenerateMask_;
 import com.github.celldynamics.quimp.registration.Registration;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
@@ -19,48 +20,124 @@ import ij.Macro;
 /*
  * !>
  * @startuml doc-files/PluginTemplate_1_UML.png
+ * User->(Run from IJ) : From macro\nor IJ menu
+ * User->(Run from API) : Run from code
+ * @enduml
+ * !<
+ * 
+ * !>
+ * @startuml doc-files/PluginTemplate_2_UML.png
  * actor User
- * User -> PluginTemplate : <<create>>
+ * actor IJ
+ * User-->IJ : Run plugin
+ * IJ-->ConcretePlugin : create instance
+ * note left: Default constructor
+ * ConcretePlugin-->PluginTemplate : PluginTemplate(AbstractPluginOptions)
  * activate PluginTemplate
- * PluginTemplate -> PluginTemplate : apiCall=false
- * User -> PluginTemplate : run(arg)
- * alt arg == null || arg.isEmpty()
- * PluginTemplate -> Macro : getOptions()
- * Macro --> PluginTemplate : options
- * else
- * PluginTemplate -> PluginTemplate : options = arg
+ * PluginTemplate->PluginTemplate : apiCall=false
+ * IJ-->PluginTemplate : run(String)
+ * activate PluginTemplate
+ * PluginTemplate->Registration
+ * Registration-->PluginTemplate
+ * PluginTemplate->PluginTemplate : parseArgumentString(String)
+ * note left 
+ * Fill concrete instance of
+ * AbstractPluginOptions passed 
+ * to constructor. runFromXX()
+ * can then use Options object.
+ * end note 
+ * alt returned true
+ * PluginTemplate->PluginTemplate : loadFile
+ * alt loaded QCONF
+ * PluginTemplate->ConcretePlugin : runFromQconf()
+ * else loaded paQP
+ * PluginTemplate->ConcretePlugin : runFromPaQp()
  * end
- * alt options == null || options.isEmpty()
- * PluginTemplate->PluginTemplate : showUI
- * else
- * PluginTemplate->PluginTemplate : runAsMacro = MessageSinkTypes.IJERROR
+ * note left: Detect File type(QCONF/paQP)
+ * else returned false
+ * PluginTemplate->ConcretePlugin : showUI
+ * note right: It means no parameters provided\nperhaps menu call
  * end
- * PluginTemplate->PluginTemplate : parseOptions(options)
- * PluginTemplate->Registration : <<create>>
- * PluginTemplate -> PluginTemplate : loadFile()
- * PluginTemplate -> PluginTemplate : runFromQCONF()
- * PluginTemplate --> User
- * deactivate PluginTemplate
+ * @enduml
+ * !<
+ * 
+ * !>
+ * @startuml doc-files/PluginTemplate_3_UML.png
+ * actor User
+ * User-->ConcretePlugin : create instance(String)
+ * note left: Default constructor
+ * ConcretePlugin-->PluginTemplate : PluginTemplate(String, AbstractPluginOptions)
+ * activate PluginTemplate
+ * PluginTemplate->PluginTemplate : apiCall=true
+ * PluginTemplate->deserialize2Macro
+ * deserialize2Macro-->PluginTemplate : options object
+ * PluginTemplate->PluginTemplate : loadFile
+ * alt loaded QCONF
+ * PluginTemplate->ConcretePlugin : runFromQconf()
+ * else loaded paQP
+ * PluginTemplate->ConcretePlugin : runFromPaQp()
+ * end
+ * note left: Detect File type(QCONF/paQP)
  * @enduml
  * !<
  */
 
 /**
- * This is template for general purpose plugin based on QCONF file exchange platform.
+ * This is template for general purpose plugin based on QCONF file exchange platform. It provided
+ * parsing parameters string, loading QuimP datafile and setting correct backend for exception
+ * handling.
  * 
- * <p>Should not be used for standard IJ plugins. There are two ways to initiate the plugin: 1) from
- * constructor, 2) from {@link #run(String)} method. The latter is default one whereas the
- * constructor should just call {@link #run(String)}. Note, that plugin architecture assumes that
- * default constructor (and any other) does not run the plugins. Parametrised constructor can be
- * used for tests or for using plugin from API. In latter case all exceptions are repacked to
- * {@link QuimpPluginException} and re-thrown. Here is sequence of actions for IJ or macro run:<br>
- * <img src="doc-files/PluginTemplate_1_UML.png"/><br>
+ * <p>There are two main use cases: <br><img src="doc-files/PluginTemplate_1_UML.png"/><br>
  * 
- * <p>For API call constructor {@link PluginTemplate#PluginTemplate(String)} run plugin.
+ * <ul>
+ * <li>Run from IJ. It cover either macro or execution from IJ menu.
+ * <li>Run from API.
+ * </ul>
  * 
- * <p>For API calls the parametrised constructor should be used.
+ * <h2>Run from IJ</h2>
+ * This model assumes that plugin is run by {@link PluginTemplate#run(String)} method where string
+ * parameter can be passed from Macro or IJProps file. It can be empty if plugin is run from IJ
+ * menu. All exceptions are redirected to IJERROR stream, except the latter case which assumes
+ * interaction with plugin and redirects exceptions to GUI (see
+ * {@link QuimpException#handleException(java.awt.Frame, String)}. Note that IJ expects default
+ * constructor in concrete class there fore recommended way of plugin initialisation is:
+ * 
+ * <pre>
+ * <code>
+ * class Concrete extends PluginTemplate {
+ *    public Concrete() {
+ *      super(new ConcreteOptions());
+ *    }
+ * }
+ * </code>
+ * </pre>
+ * 
+ * <br><img src="doc-files/PluginTemplate_2_UML.png"/><br>
+ * 
+ * <p><h2>Run from API</h2>
+ * For API calls plugin can be instanced from
+ * {@link PluginTemplate#PluginTemplate(String, AbstractPluginOptions)}, where String is a parameter
+ * string in format required by plugin. From concrete class it can be done by:
+ * 
+ * <pre>
+ * <code>
+ * class Concrete extends PluginTemplate {
+ *    public Concrete(String paramString) {
+ *      super(paramString, new ConcreteOptions());
+ *    }
+ * }
+ * </code>
+ * </pre>
+ * 
+ * <p>For this path {@link PluginTemplate#apiCall} is set to true (can be used in overridden
+ * {@link PluginTemplate#runFromQconf()} for specific behaviour) and all exceptions are passed to
+ * caller with sink set to Console. This path does not support GUI.
+ * 
+ * <br><img src="doc-files/PluginTemplate_3_UML.png"/><br>
  * 
  * @author p.baniukiewicz
+ * @see GenerateMask_
+ * @see GenerateMaskTest.class
  *
  */
 public abstract class PluginTemplate implements IQuimpPlugin {
@@ -105,12 +182,21 @@ public abstract class PluginTemplate implements IQuimpPlugin {
   protected String fileExt = FileExtensions.newConfigFileExt;
 
   /**
-   * Default constructor, should not run plugin. It is called mostly by IJ. All exceptions are
-   * handled in place.
+   * This default constructor must be overridden in concrete class. It is called by IJ when plugin
+   * instance is created. A concrete instance of {@link AbstractPluginOptions} class should be
+   * created there and then passed to {@link #PluginTemplate(AbstractPluginOptions)}.
+   */
+  protected PluginTemplate() {
+    throw new NoSuchMethodError();
+  }
+
+  /**
+   * Default constructor, should be encapsulated by default constructor of child class. Used when
+   * instance is created by IJ.
    * 
    * @param options Reference to plugin configuration container.
    */
-  public PluginTemplate(AbstractPluginOptions options) {
+  protected PluginTemplate(AbstractPluginOptions options) {
     apiCall = false;
     this.options = options;
   }
@@ -125,7 +211,7 @@ public abstract class PluginTemplate implements IQuimpPlugin {
    * @throws QuimpPluginException on any error in plugin execution.
    * @see #loadFile(String)
    */
-  public PluginTemplate(String argString, AbstractPluginOptions options)
+  protected PluginTemplate(String argString, AbstractPluginOptions options)
           throws QuimpPluginException {
     apiCall = true;
     this.options = options;
@@ -184,15 +270,15 @@ public abstract class PluginTemplate implements IQuimpPlugin {
    * read from option string.
    * 
    * <p>String arg can be passed here from three sources: macro, IJProp.txt or from
-   * {@link #PluginTemplate(String, AbstractPluginOptions)}. Generally, in arg is empty or null,
-   * {@link #parseArgumentString(String)} tries to get it from Macro, if succeed it parses it and
+   * {@link #PluginTemplate(String, AbstractPluginOptions)}. Generally, if arg is empty or null,
+   * {@link #parseArgumentString(String)} tries to get it from Macro, if succeeds it parses it and
    * returns true. Otherwise returns false. If arg is non-empty it assumes Macro call, sets proper
    * {@link #errorSink} and parses arg returning true.
    * 
    * @param arg arguments passed to {@link #run(String)} or
    *        #{@link #PluginTemplate(String, AbstractPluginOptions)}.
    * @return return true if something has been parsed
-   * @throws QuimpPluginException when parsin failed
+   * @throws QuimpPluginException when parsing failed
    */
   protected boolean parseArgumentString(String arg) throws QuimpPluginException {
     String argString;
@@ -249,9 +335,10 @@ public abstract class PluginTemplate implements IQuimpPlugin {
   /**
    * Main runner.
    * 
-   * <p>This method expects that {@link #qconfLoader} is already set ({@link #run(String)}. In macro
-   * or IJ mode exceptions will be handled in place and displayed as IJERROR or GUI message. For API
-   * call (only if initialised by {@link #PluginTemplate(String)} exceptions are re-thrown.
+   * <p>This method expects that {@link #qconfLoader} is already set up ({@link #run(String)}. In
+   * macro or IJ mode exceptions will be handled in place and displayed as IJERROR or GUI message.
+   * For API call (only if initialised by {@link #PluginTemplate(String, AbstractPluginOptions)})
+   * exceptions are re-thrown.
    * 
    * @throws QuimpException on error
    */
