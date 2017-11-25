@@ -140,7 +140,6 @@ public class QParamsQconf extends QParams {
                 .setOutputFileCore(newParamFile.getAbsolutePath());
       }
     } catch (Exception e) { // stop on fail (file or json error)
-      LOGGER.error(e.getMessage());
       LOGGER.debug(e.getMessage(), e);
       throw new QuimpException(
               "Loading or processing of " + getParamFile().getAbsolutePath() + " failed", e);
@@ -149,7 +148,7 @@ public class QParamsQconf extends QParams {
     // checking against nulls is in Serializer
     if (!loaded.className.equals("DataContainer") || !loaded.timeStamp.getName().equals("QuimP")
             && !loaded.timeStamp.getName().equals(QuimpToolsCollection.defNote)) {
-      LOGGER.error("Not QuimP file?");
+      LOGGER.debug("Not QuimP file?");
       throw new QuimpException(
               "Loaded file " + getParamFile().getAbsolutePath() + " is not QuimP file");
     }

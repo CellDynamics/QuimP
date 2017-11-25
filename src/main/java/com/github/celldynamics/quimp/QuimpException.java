@@ -1,8 +1,10 @@
 package com.github.celldynamics.quimp;
 
 import java.awt.Frame;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
@@ -258,9 +260,38 @@ public class QuimpException extends Exception {
               "Error", JOptionPane.ERROR_MESSAGE);
     }
     if (getMessageSinkType().contains(MessageSinkTypes.IJERROR)) {
+      List<String> ex = getExceptionMessageChain(this);
+      if (ex.size() > 1) {
+        IJ.log("Error messages stack:");
+        for (int i = 0; i < ex.size(); i++) {
+          if (i == 0) {
+            IJ.log(" " + ex.get(i));
+          } else {
+            IJ.log("  ->" + ex.get(i));
+          }
+        }
+      }
+      IJ.handleException(this);
       IJ.error(message);
     }
     return message;
+  }
+
+  /**
+   * Get messages from exception stack.
+   * 
+   * <p>Taken from stackoverflow.com/questions/15987258/
+   * 
+   * @param throwable exception
+   * @return list of messages from underlying exceptions
+   */
+  public static List<String> getExceptionMessageChain(Throwable throwable) {
+    List<String> result = new ArrayList<String>();
+    while (throwable != null) {
+      result.add(throwable.getMessage());
+      throwable = throwable.getCause();
+    }
+    return result;
   }
 
 }
