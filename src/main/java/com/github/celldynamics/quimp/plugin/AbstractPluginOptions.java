@@ -36,12 +36,14 @@ import com.google.gson.GsonBuilder;
  * <p>This abstract class by default provides {@link AbstractPluginOptions#paramFile} field that
  * holds path to the configuration file.
  * 
- * <p>There are following restriction to parameter string:
+ * <p>There are following restriction to parameter string and concrete options class:
  * <ul>
  * <li>Quotes are not allowed in Strings (even properly escaped)
  * <li>Arrays are not allowed in parameter class (derived from {@link AbstractPluginOptions}) due to
  * JSon representation of array that uses square brackets (same as default string escaping
  * characters).
+ * <li>Concrete object should be cloneable, {@link #serialize()} makes <b>shallow</b> copy of
+ * obejct.
  * </ul>
  * 
  * @author p.baniukiewicz
@@ -95,7 +97,7 @@ public abstract class AbstractPluginOptions implements Cloneable {
           }
         } catch (IllegalArgumentException | IllegalAccessException | SecurityException
                 | ClassCastException e) {
-          ; // ignore and process next field. This protects against non string fields annotaed
+          ; // ignore and process next field. This protects against non string fields annotated
         }
       }
     } catch (CloneNotSupportedException e1) {
@@ -230,10 +232,10 @@ public abstract class AbstractPluginOptions implements Cloneable {
 
   /**
    * Reverse {@link #escapeJsonMacro(String)}. Add removed quotes. Do not verify integrity of
-   * produced json.
+   * produced JSon.
    * 
-   * @param json json returned by {@link #escapeJsonMacro(String)}
-   * @return proper json string
+   * @param json JSon returned by {@link #escapeJsonMacro(String)}
+   * @return proper JSon string
    */
   public static String unescapeJsonMacro(String json) {
     String nospaces = removeSpacesMacro(json);

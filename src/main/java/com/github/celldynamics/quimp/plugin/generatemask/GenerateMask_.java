@@ -154,12 +154,7 @@ public class GenerateMask_ extends PluginTemplate {
 
   @Override
   protected void runFromPaqp() throws QuimpException {
-    if (apiCall) {
-      throw new IllegalArgumentException("Old files are not supported");
-    } else {
-      IJ.error("Generate Mask", "Old files are not supported");
-    }
-
+    throw new QuimpException("Old file format is not supported");
   }
 
   /*

@@ -8,7 +8,7 @@ import com.github.celldynamics.quimp.JsonKeyMatchTemplate;
  * @author p.baniukiewicz
  *
  */
-public class ProtAnalysisConfigTest extends JsonKeyMatchTemplate<ProtAnalysisConfig> {
+public class ProtAnalysisOptionsTest extends JsonKeyMatchTemplate<ProtAnalysisOptions> {
 
   /*
    * (non-Javadoc)
@@ -17,7 +17,7 @@ public class ProtAnalysisConfigTest extends JsonKeyMatchTemplate<ProtAnalysisCon
    */
   @Override
   public void setUp() throws Exception {
-    obj = new ProtAnalysisConfig();
+    obj = new ProtAnalysisOptions();
     indir = "com.github.celldynamics.quimp.filesystem.ProtAnalysisConfig";
   }
 }

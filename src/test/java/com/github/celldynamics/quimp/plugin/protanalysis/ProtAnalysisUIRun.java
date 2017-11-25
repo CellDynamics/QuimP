@@ -1,6 +1,6 @@
 package com.github.celldynamics.quimp.plugin.protanalysis;
 
-import com.github.celldynamics.quimp.plugin.protanalysis.Prot_Analysis;
+import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 
 import ij.ImageJ;
 
@@ -17,12 +17,11 @@ public class ProtAnalysisUIRun {
    * Runner.
    * 
    * @param args args
+   * @throws QuimpPluginException on error
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws QuimpPluginException {
     ImageJ ij = new ImageJ();
-    new Prot_Analysis(
-            "src/test/Resources-static/ProtAnalysisTest/KZ4/KZ4-220214-cAR1-GFP-devel5.QCONF").gui
-                    .showUI(true);
+    new Prot_Analysis(null).gui.showUI(true);
     // ImagePlus ip =
     // IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frames_1-5.tif");
     // new ProtAnalysisUI(new ProtAnalysisConfig(), null).getGradient(ip);

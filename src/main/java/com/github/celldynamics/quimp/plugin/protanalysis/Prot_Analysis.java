@@ -1,42 +1,33 @@
 package com.github.celldynamics.quimp.plugin.protanalysis;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.celldynamics.quimp.QParams;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
-import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
-import com.github.celldynamics.quimp.filesystem.QconfLoader;
-import com.github.celldynamics.quimp.plugin.IQuimpPlugin;
-import com.github.celldynamics.quimp.plugin.ParamList;
+import com.github.celldynamics.quimp.plugin.PluginTemplate;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
-import com.github.celldynamics.quimp.registration.Registration;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
-import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import com.github.celldynamics.quimp.utils.graphics.PolarPlot;
 
 import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import ij.plugin.ZProjector;
+import ij.plugin.frame.Recorder;
 
 /*
  * !>
  * @startuml doc-files/Prot_Analysis_1_UML.png
- * Prot_Analysis *-- "1" ProtAnalysisConfig
+ * Prot_Analysis *-- "1" ProtAnalysisOptions
  * Prot_Analysis *-- "1" ProtAnalysisUI
- * ProtAnalysisUI o-- "1" ProtAnalysisConfig
+ * ProtAnalysisUI o-- "1" ProtAnalysisOptions
  * @enduml
  * !<
  */
@@ -47,25 +38,14 @@ import ij.plugin.ZProjector;
  * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisUI}. The communication
  * between
  * these modules is through
- * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisConfig}
+ * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions}
  * <br>
  * <img src="doc-files/Prot_Analysis_1_UML.png"/><br>
  * 
  * @author p.baniukiewicz
  */
-public class Prot_Analysis implements IQuimpPlugin {
+public class Prot_Analysis extends PluginTemplate {
 
-  /**
-   * The Constant LOGGER.
-   */
-  static final Logger LOGGER = LoggerFactory.getLogger(Prot_Analysis.class.getName());
-
-  /**
-   * Loaded QCONF file.
-   * 
-   * <p>Initialised by {@link #loadFile(File)} through this constructor.
-   */
-  QconfLoader qconfLoader = null; // main object representing loaded configuration file
   private boolean uiCancelled = false;
   /**
    * Instance of module UI.
@@ -73,23 +53,6 @@ public class Prot_Analysis implements IQuimpPlugin {
    * <p>Initialised by this constructor.
    */
   public ProtAnalysisUI gui;
-  /**
-   * Indicate that plugin is run as macro from script. Blocks all UIs.
-   */
-  private MessageSinkTypes runAsMacro = MessageSinkTypes.GUI;
-
-  /**
-   * The param list.
-   */
-  // default configuration parameters, for future using
-  ParamList paramList = new ParamList();
-  /**
-   * Keep overall configuration.
-   * 
-   * <p>This object is filled in GUI and passed to runPlugin, where it is read out. Initialised by
-   * this constructor.
-   */
-  ProtAnalysisConfig config;
 
   /**
    * Instance of ResultTable.
@@ -104,44 +67,149 @@ public class Prot_Analysis implements IQuimpPlugin {
    * 
    */
   public Prot_Analysis() {
+    super(new ProtAnalysisOptions());
+    gui = new ProtAnalysisUI(this);
+    gui.writeUI(); // fill UI controls with default options
+    rt = createCellResultTable();
   }
 
   /**
-   * Constructor that allows to provide own file.
+   * Constructor that allows to provide own configuration parameters.
    * 
-   * @param paramFile File to process.
+   * @param paramString parameter string.
+   * @throws QuimpPluginException on error
    */
-  public Prot_Analysis(String paramFile) {
-    run(paramFile);
+  public Prot_Analysis(String paramString) throws QuimpPluginException {
+    super(paramString, new ProtAnalysisOptions());
+    gui = new ProtAnalysisUI(this);
+    gui.writeUI(); // fill UI controls with default options
+    rt = createCellResultTable();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#validate()
+   */
+  @Override
+  protected void validate() throws QuimpException {
+    super.validate();
+    qconfLoader.getEcmm();
+    qconfLoader.getQ();
   }
 
   /**
-   * Load configuration file. (only if not loaded before).
+   * Write cell statistic and protrusion statistics to files.
    * 
-   * <p>Validates also all necessary datafields in loaded QCONF file. Set <tt>qconfLoader</tt> field
-   * on success or set it to <tt>null</tt>.
+   * @param h Cell number
+   * @param mapCell cell map
+   * @param mf maxima finder object
+   * @param trackCollection track collection object
+   * @return ProtStat instance of object that keeps cell statistics. Can be used to form e.g.
+   *         table with results.
    * 
-   * @param paramFile
-   * 
-   * @throws QuimpException When QCONF could not be loaded or it does not meet requirements.
+   * @throws FileNotFoundException if stats can not be written
    */
-  private void loadFile(File paramFile) throws QuimpException {
-    if (qconfLoader == null || qconfLoader.getQp() == null) {
-      // load new file
-      qconfLoader = new QconfLoader(paramFile, FileExtensions.newConfigFileExt);
-      if (qconfLoader.getQp() == null) {
-        return; // not loaded
-      }
-      if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
-        // validate in case new format
-        qconfLoader.getBOA(); // will throw exception if not present
-        qconfLoader.getEcmm();
-        qconfLoader.getQ();
-      } else {
-        qconfLoader = null; // failed load or checking
-        throw new QuimpPluginException("QconfLoader returned unsupported version of QuimP or error."
-                + " Only new format can be loaded");
-      }
+  private ProtStat writeStats(int h, STmap mapCell, MaximaFinder mf,
+          TrackCollection trackCollection) throws FileNotFoundException {
+    QParamsQconf qp = (QParamsQconf) qconfLoader.getQp();
+    // Maps are correlated in order with Outlines in DataContainer.
+    // write data
+    PrintWriter cellStatFile = new PrintWriter(
+            Paths.get(qp.getPath(), qp.getFileName() + "_" + h + FileExtensions.cellStatSuffix)
+                    .toFile());
+    PrintWriter protStatFile = new PrintWriter(
+            Paths.get(qp.getPath(), qp.getFileName() + "_" + h + FileExtensions.protStatSuffix)
+                    .toFile());
+    new ProtStat(mf, trackCollection, qp.getLoadedDataContainer().getStats().sHs.get(h), mapCell)
+            .writeProtrusion(protStatFile, h);
+
+    ProtStat cellStat = new ProtStat(mf, trackCollection,
+            qp.getLoadedDataContainer().getStats().sHs.get(h), mapCell);
+
+    cellStat.writeCell(cellStatFile, h);
+    protStatFile.close();
+    cellStatFile.close();
+    return cellStat;
+  }
+
+  /**
+   * Show UI.
+   * 
+   * @param val true to show UI
+   */
+  @Override
+  public void showUi(boolean val) throws Exception {
+    // this method is called when no options were provided to run, paramFile is empty or null
+    loadFile(options.paramFile); // if no options (run from menu) let qconfloader show file selector
+    // fill this for macro recorder
+    options.paramFile = qconfLoader.getQp().getParamFile().getAbsolutePath();
+    gui.writeUI(); // fill UI controls with default options
+    gui.showUI(val);
+  }
+
+  /**
+   * About string.
+   * 
+   * @return About string
+   */
+  public String about() {
+    return "Protrusion Analysis Plugin.\n" + "Author: Piotr Baniukiewicz\n"
+            + "mail: p.baniukiewicz@warwick.ac.uk";
+  }
+
+  /**
+   * Called after Apply in contrary to #{@link Prot_Analysis#run(String)} called once on the
+   * beginning.
+   * 
+   */
+  void runPlugin() {
+    try {
+      IJ.showStatus("Protrusion Analysis");
+      runFromQconf();
+      IJ.log("Protrusion Analysis complete");
+      IJ.showStatus("Finished");
+      publishMacroString();
+    } catch (QuimpException qe) {
+      qe.setMessageSinkType(errorSink);
+      qe.handleException(IJ.getInstance(), this.getClass().getSimpleName());
+    } catch (Exception e) { // catch all here and convert to expected type
+      logger.debug(e.getMessage(), e);
+      logger.error("Problem with running plugin: " + e.getMessage());
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see ij.plugin.PlugIn#run(java.lang.String)
+   */
+  @Override
+  public void run(String arg) {
+    super.run(arg);
+    publishMacroString();
+  }
+
+  /**
+   * Build cell statistic result table. It contains statistics for all cells.
+   * 
+   * @return Handle to ResultTable that can be displayed by show("Name"_ method.
+   */
+  public ResultsTable createCellResultTable() {
+    ResultsTable rt = new ResultsTable();
+    return rt;
+  }
+
+  /**
+   * Helper, show macro string if recorder is active.
+   */
+  private void publishMacroString() {
+    // check whether config file name is provided or ask user for it
+    ProtAnalysisOptions opts = (ProtAnalysisOptions) options;
+    logger.debug("Internal options " + options.serialize2Macro());
+    if (Recorder.record) {
+      Recorder.record("run(\"Protrusion Analysis\"," + "\"" + opts.serialize2Macro() + "\")");
+      Recorder.setCommand(null);
     }
   }
 
@@ -151,14 +219,16 @@ public class Prot_Analysis implements IQuimpPlugin {
    * <p>Keeps logic of ECMM, ANA, Q plugins.
    * 
    * <p>This method reads entries in
-   * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisConfig} and performs
+   * {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions} and performs
    * selected
    * actions. Additionally it collects all results for all cells in one common table.
    * 
    * @throws QuimpException on problem with plugin
-   * @throws IOException on problem with saving svg plots
    */
-  private void runFromQconf() throws QuimpException, IOException {
+  @Override
+  protected void runFromQconf() throws QuimpException {
+    // need to be mapped locally, run will create new object after deserialisation
+    ProtAnalysisOptions config = (ProtAnalysisOptions) options;
     STmap[] stMap = ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getQState();
     OutlinesCollection ohs =
             ((QParamsQconf) qconfLoader.getQp()).getLoadedDataContainer().getEcmmState();
@@ -193,7 +263,7 @@ public class Prot_Analysis implements IQuimpPlugin {
       visStackOutline.getOriginalImage().setTitle("Outlines");
     }
 
-    LOGGER.trace("Cells in database: " + stMap.length);
+    logger.trace("Cells in database: " + stMap.length);
     for (STmap mapCell : stMap) { // iterate through cells
       // convert binary 2D array to ImageJ
       TrackVisualisation.Map visSingle = new TrackVisualisation.Map("motility_map_cell_" + h,
@@ -253,15 +323,19 @@ public class Prot_Analysis implements IQuimpPlugin {
       }
 
       // write svg plots
-      if (config.polarPlot.plotpolar && config.polarPlot.useGradient) {
-        PolarPlot pp = new PolarPlot(mapCell, config.polarPlot.gradientPoint);
-        pp.labels = true;
-        pp.generatePlot(Paths.get(qconfLoader.getQp().getPath(),
-                qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.polarPlotSuffix)
-                .toString());
+      try {
+        if (config.polarPlot.plotpolar && config.polarPlot.useGradient) {
+          PolarPlot pp = new PolarPlot(mapCell, config.polarPlot.gradientPoint);
+          pp.labels = true;
+          pp.generatePlot(Paths.get(qconfLoader.getQp().getPath(),
+                  qconfLoader.getQp().getFileName() + "_" + h + FileExtensions.polarPlotSuffix)
+                  .toString());
+        }
+        // write stats, and add to table
+        writeStats(h, mapCell, mf, trackCollection).cellStatistics.addCellToCellTable(rt);
+      } catch (IOException e) {
+        throw new QuimpException(e);
       }
-      // write stats, and add to table
-      writeStats(h, mapCell, mf, trackCollection).cellStatistics.addCellToCellTable(rt);
 
       // update static fields in gui
       gui.lbMaxnum.setText(Integer.toString(mf.getMaximaNumber()));
@@ -281,121 +355,14 @@ public class Prot_Analysis implements IQuimpPlugin {
     if (config.plotOutline) {
       visStackOutline.getOriginalImage().show();
     }
+    rt.show("Cumulated cell statistics");
+
   }
 
-  /**
-   * Write cell statistic and protrusion statistics to files.
-   * 
-   * @param h Cell number
-   * @param mapCell cell map
-   * @param mf maxima finder object
-   * @param trackCollection track collection object
-   * @return ProtStat instance of object that keeps cell statistics. Can be used to form e.g.
-   *         table with results.
-   * 
-   * @throws FileNotFoundException if stats can not be written
-   */
-  private ProtStat writeStats(int h, STmap mapCell, MaximaFinder mf,
-          TrackCollection trackCollection) throws FileNotFoundException {
-    QParamsQconf qp = (QParamsQconf) qconfLoader.getQp();
-    // Maps are correlated in order with Outlines in DataContainer.
-    // write data
-    PrintWriter cellStatFile = new PrintWriter(
-            Paths.get(qp.getPath(), qp.getFileName() + "_" + h + FileExtensions.cellStatSuffix)
-                    .toFile());
-    PrintWriter protStatFile = new PrintWriter(
-            Paths.get(qp.getPath(), qp.getFileName() + "_" + h + FileExtensions.protStatSuffix)
-                    .toFile());
-    new ProtStat(mf, trackCollection, qp.getLoadedDataContainer().getStats().sHs.get(h), mapCell)
-            .writeProtrusion(protStatFile, h);
-
-    ProtStat cellStat = new ProtStat(mf, trackCollection,
-            qp.getLoadedDataContainer().getStats().sHs.get(h), mapCell);
-
-    cellStat.writeCell(cellStatFile, h);
-    protStatFile.close();
-    cellStatFile.close();
-    return cellStat;
-  }
-
-  /**
-   * Show UI.
-   * 
-   * @param val true to show UI
-   */
-  public void showUi(boolean val) {
-    gui.showUI(val);
-  }
-
-  /**
-   * About string.
-   * 
-   * @return About string
-   */
-  public String about() {
-    return "Protrusion Analysis Plugin.\n" + "Author: Piotr Baniukiewicz\n"
-            + "mail: p.baniukiewicz@warwick.ac.uk";
-  }
-
-  void runPlugin() throws QuimpPluginException {
-    try {
-      IJ.showStatus("Protrusion Analysis");
-      runFromQconf();
-      IJ.log("Protrusion Analysis complete");
-      IJ.showStatus("Finished");
-    } catch (Exception e) { // catch all here and convert to expected type
-      throw new QuimpPluginException(e);
-    }
-  }
-
-  /**
-   * Build cell statistic result table. It contains statistics for all cells.
-   * 
-   * @return Handle to ResultTable that can be displayed by show("Name"_ method.
-   */
-  public ResultsTable createCellResultTable() {
-    ResultsTable rt = new ResultsTable();
-    return rt;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see ij.plugin.PlugIn#run(java.lang.String)
-   */
   @Override
-  public void run(String arg) {
-    // set file name or null if no file provided
-    File paramFile;
-    if (arg == null || arg.isEmpty()) {
-      paramFile = null;
-    } else {
-      paramFile = new File(arg);
-    }
-    IJ.log(new QuimpToolsCollection().getQuimPversion());
-    config = new ProtAnalysisConfig();
-    gui = new ProtAnalysisUI(this);
-    rt = createCellResultTable();
-    // validate registered user
-    new Registration(IJ.getInstance(), "QuimP Registration");
-    // check whether config file name is provided or ask user for it
-    try {
-      IJ.showStatus("Protrusion Analysis");
-      loadFile(paramFile); // load configuration file given by paramFile and verify it
-      if (qconfLoader.getQp() == null) {
-        return; // not loaded
-      }
-      gui.writeUI(); // set ui
-      showUi(true); // show it and wait for user action. Plugin is run from Apply button
-      if (uiCancelled) {
-        return;
-      }
-    } catch (QuimpException qe) { // catch QuimpPluginException and QuimpException
-      qe.setMessageSinkType(runAsMacro);
-      qe.handleException(IJ.getInstance(), "Protrusion Analysis module failed");
-    } catch (Exception e) { // catch all exceptions here
-      LOGGER.debug(e.getMessage(), e);
-      IJ.error("Problem with running Protrusion Analysis mapping", e.getMessage());
-    }
+  protected void runFromPaqp() throws QuimpException {
+    throw new QuimpException("This plugin does not support paQP files.");
+
   }
+
 }

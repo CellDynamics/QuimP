@@ -48,6 +48,9 @@ import ij.Macro;
  * end note 
  * alt returned true
  * PluginTemplate->PluginTemplate : loadFile
+ * activate PluginTemplate
+ * PluginTemplate->PluginTemplate : validate
+ * deactivate PluginTemplate
  * alt loaded QCONF
  * PluginTemplate->ConcretePlugin : runFromQconf()
  * else loaded paQP
@@ -72,6 +75,9 @@ import ij.Macro;
  * PluginTemplate->deserialize2Macro
  * deserialize2Macro-->PluginTemplate : options object
  * PluginTemplate->PluginTemplate : loadFile
+ * activate PluginTemplate
+ * PluginTemplate->PluginTemplate : validate
+ * deactivate PluginTemplate
  * alt loaded QCONF
  * PluginTemplate->ConcretePlugin : runFromQconf()
  * else loaded paQP
@@ -114,6 +120,9 @@ import ij.Macro;
  * 
  * <br><img src="doc-files/PluginTemplate_2_UML.png"/><br>
  * 
+ * <p>By default QCONF is checked against BOA module. User can override
+ * {@link PluginTemplate#validate()} to provide his own validators.
+ * 
  * <p><h2>Run from API</h2>
  * For API calls plugin can be instanced from
  * {@link PluginTemplate#PluginTemplate(String, AbstractPluginOptions)}, where String is a parameter
@@ -135,9 +144,21 @@ import ij.Macro;
  * 
  * <br><img src="doc-files/PluginTemplate_3_UML.png"/><br>
  * 
+ * <p>By default QCONF is checked against BOA module. User can override
+ * {@link PluginTemplate#validate()} to provide his own validators.
+ * 
+ * <p>Executors {@link PluginTemplate#runFromQconf()} and {@link PluginTemplate#runFromPaqp()} are
+ * executed from {@link PluginTemplate#loadFile(String)} which is default activity (load
+ * configuration and execute plugin). If plugin supports GUI, they should be called from
+ * {@link #showUi(boolean)}.
+ * 
+ * <p>If plugin does not load configuration file on start (by {@link #run(String)}, concrete class
+ * should override {@link #loadFile(String)} to call {@link #runFromQconf()} directly.
+ * 
+ * <p>Default constructor would always need {@link #run(String)} method.
+ * 
  * @author p.baniukiewicz
  * @see GenerateMask_
- * @see GenerateMaskTest.class
  *
  */
 public abstract class PluginTemplate implements IQuimpPlugin {
@@ -205,8 +226,8 @@ public abstract class PluginTemplate implements IQuimpPlugin {
    * Constructor that allows to provide own parameters. Intended to run from API. In this mode all
    * exceptions are re-thrown outside and plugin is executed.
    * 
-   * @param argString it can be null to ask user for file or it can be parameters string like that
-   *        passed in macro.
+   * @param argString parameters string like that passed in macro. If it is empty string or null
+   *        constructor exits before deserialisation.
    * @param options Reference to plugin configuration container.
    * @throws QuimpPluginException on any error in plugin execution.
    * @see #loadFile(String)
@@ -215,8 +236,11 @@ public abstract class PluginTemplate implements IQuimpPlugin {
           throws QuimpPluginException {
     apiCall = true;
     this.options = options;
-    this.options = AbstractPluginOptions.deserialize2Macro(argString, options);
     errorSink = MessageSinkTypes.CONSOLE;
+    if (argString == null || argString.isEmpty()) {
+      return;
+    }
+    this.options = AbstractPluginOptions.deserialize2Macro(argString, options);
     try {
       loadFile(this.options.paramFile); // load configuration file and verify it
     } catch (Exception qe) {
@@ -253,7 +277,7 @@ public abstract class PluginTemplate implements IQuimpPlugin {
       if (qconfLoader.isFileLoaded() == QParams.QUIMP_11) { // old path
         runFromPaqp();
       } else if (qconfLoader.isFileLoaded() == QParams.NEW_QUIMP) { // new path
-        qconfLoader.getBOA();
+        validate();
         runFromQconf();
       } else {
         qconfLoader = null; // failed load or checking
@@ -261,6 +285,16 @@ public abstract class PluginTemplate implements IQuimpPlugin {
                 "QconfLoader returned unsupported version of QuimP or error.");
       }
     }
+  }
+
+  /**
+   * OVerride this file to pass your own validation of QCONF structure.
+   * 
+   * @throws QuimpException if file can not be validated.
+   */
+  protected void validate() throws QuimpException {
+    qconfLoader.getBOA();
+
   }
 
   /**
@@ -356,5 +390,23 @@ public abstract class PluginTemplate implements IQuimpPlugin {
    * @throws Exception on any error. Handled by {@link #run(String)}
    */
   protected abstract void showUi(boolean val) throws Exception;
+
+  /**
+   * Return {@link QconfLoader} object.
+   * 
+   * @return the qconfLoader
+   */
+  public QconfLoader getQconfLoader() {
+    return qconfLoader;
+  }
+
+  /**
+   * Return {@link #options}.
+   * 
+   * @return the options
+   */
+  public AbstractPluginOptions getOptions() {
+    return options;
+  }
 
 }
