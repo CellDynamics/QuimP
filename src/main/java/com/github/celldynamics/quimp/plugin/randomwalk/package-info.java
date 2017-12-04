@@ -15,9 +15,12 @@
  * 
  * <h2>Macro support</h2>
  * 
- * Macro not supported.
+ * Macro is supported.
  * 
  * <h3>Parameters</h3>
+ * 
+ * See {@link com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel} and
+ * {@link com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkOptions}
  * 
  * <h2>API support</h2>
  * 

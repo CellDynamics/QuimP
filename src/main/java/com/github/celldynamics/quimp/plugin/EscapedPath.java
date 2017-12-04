@@ -27,7 +27,7 @@ public @interface EscapedPath {
    * @return Left escaping character
    * @deprecated Not implemented in removeSpacesMacro
    */
-  char left() default '[';
+  char left() default '(';
 
   /**
    * Right escaping character.
@@ -35,6 +35,6 @@ public @interface EscapedPath {
    * @return Right escaping character
    * @deprecated Not implemented in removeSpacesMacro
    */
-  char right() default ']';
+  char right() default ')';
 
 }

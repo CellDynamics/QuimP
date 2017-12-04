@@ -33,10 +33,10 @@ public class AbstractPluginOptionsTest {
     logger.debug(opt.paramFile);
     assertThat(opt.otherPath, is("space space")); // not modified in main object
     assertThat(opt.paramFile, is("path/to/file with spaces.qconf"));
-    assertThat(json, containsString("[space space]")); // escaped in json
-    assertThat(json, containsString("[path/to/file with spaces.qconf]"));
-    assertThat(StringUtils.countMatches(json, "["), is(2));
-    assertThat(StringUtils.countMatches(json, "]"), is(2));
+    assertThat(json, containsString("(space space)")); // escaped in json
+    assertThat(json, containsString("(path/to/file with spaces.qconf)"));
+    assertThat(StringUtils.countMatches(json, "("), is(2));
+    assertThat(StringUtils.countMatches(json, ")"), is(2));
   }
 
   /**
@@ -60,8 +60,8 @@ public class AbstractPluginOptionsTest {
    */
   @Test
   public void testRemoveSpacesMacro() throws Exception {
-    String test1 = "{param:test , param2 : test2, param3: [path to file],{ param5: [other path]} }";
-    String ret = "{param:test,param2:test2,param3:[path to file],{param5:[other path]}}";
+    String test1 = "{param:test , param2 : test2, param3: (path to file),{ param5: (other path)} }";
+    String ret = "{param:test,param2:test2,param3:(path to file),{param5:(other path)}}";
     assertThat(AbstractPluginOptions.removeSpacesMacro(test1), is(ret));
   }
 
@@ -75,8 +75,8 @@ public class AbstractPluginOptionsTest {
     Options opt = new Options();
     String json = opt.serialize2Macro();
     logger.debug(json);
-    String ret = "{param2:10,param3:3.14,otherPath:[space space],param4:{internal1:20},paramFile:"
-            + "[path/to/file with spaces.qconf]}";
+    String ret = "{param2:10,param3:3.14,otherPath:(space space),param4:{internal1:20},paramFile:"
+            + "(path/to/file with spaces.qconf)}";
     assertThat(json, is(ret));
   }
 
@@ -87,8 +87,8 @@ public class AbstractPluginOptionsTest {
    */
   @Test
   public void testDeserialize2Macro() throws Exception {
-    String ret = "{param2:10,param3:3.14,otherPath:[space space],param4:{internal1:20},paramFile:"
-            + "[path/to/file with spaces.qconf]}";
+    String ret = "{param2:10,param3:3.14,otherPath:(space space),param4:{internal1:20},paramFile:"
+            + "(path/to/file with spaces.qconf)}";
     Options des = Options.deserialize2Macro(ret, new Options());
     assertThat(des.otherPath, is("space space")); // escaping chars removed
     assertThat(des.paramFile, is("path/to/file with spaces.qconf")); // escaping chars removed
@@ -98,7 +98,7 @@ public class AbstractPluginOptionsTest {
    * Test of {@link AbstractPluginOptions#deserialize2Macro(String, AbstractPluginOptions)}. Bad
    * parameter string.
    * 
-   * <p>If [ missing - json is correct but spaces can be removed from escaped string. Exception in
+   * <p>If ( missing - json is correct but spaces can be removed from escaped string. Exception in
    * other case.
    * 
    * @throws Exception on error
@@ -106,8 +106,8 @@ public class AbstractPluginOptionsTest {
   @Test(expected = QuimpPluginException.class)
   public void testDeserialize2Macro_1() throws Exception {
     // missing :
-    String ret = "{param2:10, param3 3.14,otherPath:[space space],param4: {internal1:20},paramFile:"
-            + "[path/to/file with spaces.qconf]}";
+    String ret = "{param2:10, param3 3.14,otherPath:(space space),param4: {internal1:20},paramFile:"
+            + "(path/to/file with spaces.qconf)}";
     Options des = Options.deserialize2Macro(ret, new Options());
     assertThat(des.otherPath, is("space space")); // escaping chars removed
     assertThat(des.paramFile, is("path/to/file with spaces.qconf"));
@@ -140,16 +140,40 @@ public class AbstractPluginOptionsTest {
   public void testSerDeser_2() throws Exception {
     Options opt = new Options();
     String js = opt.serialize2Macro(); // change to json
-    assertThat(js, containsString("[space space]")); // escaped in json
-    assertThat(js, containsString("[path/to/file with spaces.qconf]"));
-    assertThat(StringUtils.countMatches(js, "["), is(2));
-    assertThat(StringUtils.countMatches(js, "]"), is(2));
+    assertThat(js, containsString("(space space)")); // escaped in json
+    assertThat(js, containsString("(path/to/file with spaces.qconf)"));
+    assertThat(StringUtils.countMatches(js, "("), is(2));
+    assertThat(StringUtils.countMatches(js, ")"), is(2));
     Options ret = AbstractPluginOptions.deserialize2Macro(js, new Options()); // back to object
     assertThat(ret.param2, is(opt.param2));
     assertThat(ret.paramFile, is(opt.paramFile));
     assertThat(ret.param3, is(opt.param3));
     assertThat(ret.otherPath, is(opt.otherPath)); // no escape chars
     assertThat(ret.param4.internal1, is(opt.param4.internal1));
+  }
+
+  /**
+   * Test of serialization->deserialization for macro processing serialzers.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSerDeser_arrays() throws Exception {
+    Options2 opt = new Options2();
+    String js = opt.serialize2Macro(); // change to json
+    assertThat(js, containsString("(space space)")); // escaped in json
+    assertThat(js, containsString("(path/to/file with spaces.qconf)"));
+    assertThat(StringUtils.countMatches(js, "("), is(2));
+    assertThat(StringUtils.countMatches(js, ")"), is(2));
+    Options2 ret = AbstractPluginOptions.deserialize2Macro(js, new Options2()); // back to object
+    assertThat(ret.param2, is(opt.param2));
+    assertThat(ret.paramFile, is(opt.paramFile));
+    assertThat(ret.param3, is(opt.param3));
+    assertThat(ret.otherPath, is(opt.otherPath)); // no escape chars
+    assertThat(ret.param4.internal1, is(opt.param4.internal1));
+    assertThat(ret.tab, is(opt.tab));
+    assertThat(ret.param4.tabint, is(opt.param4.tabint));
+
   }
 
   /**
@@ -175,6 +199,45 @@ public class AbstractPluginOptionsTest {
 
     public Options() {
       paramFile = "path/to/file with spaces.qconf";
+    }
+  }
+
+  class Empty {
+
+  }
+
+  /**
+   * Test class.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class Options2 extends AbstractPluginOptions {
+    int param2 = 10;
+    @EscapedPath // should be ignored
+    double param3 = 3.14;
+
+    @EscapedPath()
+    String otherPath = "space space";
+
+    Internal param4 = new Internal();
+    Empty param5 = new Empty(); // test {}
+    double[] tab = new double[2];
+
+    class Internal {
+      int[] tabint = new int[2];
+      public int internal1 = 20;
+
+      public Internal() {
+        tabint[0] = 1;
+        tabint[1] = 2;
+      }
+    }
+
+    public Options2() {
+      paramFile = "path/to/file with spaces.qconf";
+      tab[0] = 3.14;
+      tab[1] = 2.14;
     }
   }
 }

@@ -12,7 +12,7 @@ import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Se
  * @author p.baniukiewicz
  *
  */
-public class RandomWalkParams {
+public class RandomWalkOptions {
   /**
    * Alpha penalises pixels whose intensities are far away from the mean seed intensity.
    */
@@ -68,13 +68,13 @@ public class RandomWalkParams {
    * sweeps use
    * {@link BinaryFilters.EmptyMorpho}
    */
-  public BinaryFilters intermediateFilter;
+  public transient BinaryFilters intermediateFilter;
   /**
    * Reference to filter used on final processing.
    * 
    * <p>null value switches off final filtering.
    */
-  public BinaryFilters finalFilter;
+  public transient BinaryFilters finalFilter;
   /**
    * If true, RW mask will be cut by AC mask.
    */
@@ -83,7 +83,7 @@ public class RandomWalkParams {
   /**
    * Set default values.
    */
-  public RandomWalkParams() {
+  public RandomWalkOptions() {
     this.gamma = new double[2];
     alpha = 4e2;
     beta = 2 * 25;
@@ -113,7 +113,7 @@ public class RandomWalkParams {
    * @param useLocalMean useLocalMean
    * @param localMeanMaskSize localMeanMaskSize
    */
-  public RandomWalkParams(Double alpha, Double beta, Double gamma1, Double gamma2, Integer iter,
+  public RandomWalkOptions(Double alpha, Double beta, Double gamma1, Double gamma2, Integer iter,
           Double dt, Double[] relim, Boolean useLocalMean, Integer localMeanMaskSize) {
     this();
     if (alpha != null) {
@@ -199,7 +199,7 @@ public class RandomWalkParams {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    RandomWalkParams other = (RandomWalkParams) obj;
+    RandomWalkOptions other = (RandomWalkOptions) obj;
     if (Double.doubleToLongBits(alpha) != Double.doubleToLongBits(other.alpha)) {
       return false;
     }

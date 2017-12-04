@@ -34,8 +34,8 @@ public class ProtAnalysisRun {
             + "dynamicPlot:{plotmax:true,plottrack:true},"
             + "polarPlot:{useGradient:true,plotpolar:false,type:SCREENPOINT,"
             + "gradientPoint:{x:0.0,y:0.0},gradientOutline:0},"
-            + "paramFile:[/home/baniuk/Desktop/Tests/formatconv/currenttest/"
-            + "fluoreszenz-test.QCONF]}");
+            + "paramFile:(/home/baniuk/Desktop/Tests/formatconv/currenttest/"
+            + "fluoreszenz-test.QCONF)}");
     // obj.run(""); // shows ui
 
   }

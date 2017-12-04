@@ -66,7 +66,7 @@ public class RandomWalkSegmentationProfileTest {
   /**
    * The p.
    */
-  RandomWalkParams params;
+  RandomWalkOptions params;
 
   /**
    * @throws java.lang.Exception on error
@@ -78,7 +78,7 @@ public class RandomWalkSegmentationProfileTest {
     fluoreszenz1 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_1.tif");
     fluoreszenz2 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_2.tif");
 
-    params = new RandomWalkParams(400d, 50d, 100d, 300d, 80, 0.1, new Double[] { 8e-3, 1e-3 },
+    params = new RandomWalkOptions(400d, 50d, 100d, 300d, 80, 0.1, new Double[] { 8e-3, 1e-3 },
             false, 25);
     // Thread.sleep(10000);
   }

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -26,6 +27,9 @@ import com.google.gson.GsonBuilder;
  * annotation for fields of String type which then are automatically enclosed in specified escape
  * character. This allows to use white spaces in these fields.
  * 
+ * <p>Use {@link #beforeSerialize()} and {@link #afterSerialize()} to prepare object before
+ * converting to options string and after converting it back.
+ * 
  * <p>Methods {@link #serialize2Macro()} and
  * {@link #deserialize2Macro(String, AbstractPluginOptions)} are intended for creating parameter
  * strings, which can be then displayed in Macro Recorder, and creating instance of Option object
@@ -39,17 +43,19 @@ import com.google.gson.GsonBuilder;
  * <p>There are following restriction to parameter string and concrete options class:
  * <ul>
  * <li>Quotes are not allowed in Strings (even properly escaped)
- * <li>Arrays are not allowed in parameter class (derived from {@link AbstractPluginOptions}) due to
- * JSon representation of array that uses square brackets (same as default string escaping
- * characters).
+ * <li>Brackets are not allowed in strings - they are used for escaping strings
+ * <li>Arrays are allowed but only those containing primitive numbers. Strings in arrays are not
+ * allowed
  * <li>Concrete object should be cloneable, {@link #serialize()} makes <b>shallow</b> copy of
- * obejct.
+ * object.
+ * <li>If there are other objects stored in concrete implementation of this abstract class, they
+ * must have default constructors for GSon.
  * </ul>
  * 
  * @author p.baniukiewicz
  * @see com.github.celldynamics.quimp.plugin.AbstractPluginOptionsTest#testSerDeser_2()
  */
-public abstract class AbstractPluginOptions implements Cloneable {
+public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerialize {
   /**
    * The Constant logger.
    */
@@ -61,7 +67,7 @@ public abstract class AbstractPluginOptions implements Cloneable {
   /**
    * Maximal length of parameter string.
    */
-  public static final int MAXLEN = 512;
+  public static final int MAXITER = 512;
   /**
    * Name and path of QCONF file.
    */
@@ -106,6 +112,9 @@ public abstract class AbstractPluginOptions implements Cloneable {
     } catch (CloneNotSupportedException e1) {
       LOGGER.debug(e1.getMessage(), e1);
     } finally {
+      if (cp != null) {
+        ((AbstractPluginOptions) cp).beforeSerialize();
+      }
       json = gson.toJson(cp);
     }
     return json;
@@ -192,6 +201,7 @@ public abstract class AbstractPluginOptions implements Cloneable {
       String jsonU = unescapeJsonMacro(json);
       jsonU = jsonU.replaceFirst(AbstractPluginOptions.KEY + "=", "");
       obj = deserialize(jsonU, t);
+      ((AbstractPluginOptions) obj).afterSerialize();
     } catch (Exception e) {
       throw new QuimpPluginException("Malformed options string (" + e.getMessage() + ")", e);
     }
@@ -215,9 +225,9 @@ public abstract class AbstractPluginOptions implements Cloneable {
   }
 
   /**
-   * Remove white characters from string except those enclosed in [].
+   * Remove white characters from string except those enclosed in ().
    * 
-   * <p>String can not start with [. Integrity (number of opening and closing brackets) is not
+   * <p>String can not start with (. Integrity (number of opening and closing brackets) is not
    * checked.
    * 
    * <p>TODO This should accept chars set in {@link EscapedPath}. (defined in class annotation)
@@ -235,10 +245,10 @@ public abstract class AbstractPluginOptions implements Cloneable {
       } else {
         sb.append(c);
       }
-      if (c == '[') {
+      if (c == '(') {
         outRegion = false;
       }
-      if (c == ']') {
+      if (c == ')') {
         outRegion = true;
       }
     }
@@ -265,12 +275,16 @@ public abstract class AbstractPluginOptions implements Cloneable {
     // detect content between : and , or { what denotes value
     // if it is not numeric put it in quotes
     while (true) {
+      if (nospaces.charAt(startIndex) == '[') {
+        startIndex = nospaces.indexOf(']', startIndex);
+      }
       indexOfColon = nospaces.indexOf(':', startIndex);
       startIndex = indexOfColon + 1;
       if (indexOfColon < 0) {
         break;
       }
-      if (nospaces.charAt(indexOfColon + 1) == '{') { // nested class, find next :
+      // nested class, find next :
+      if (nospaces.charAt(indexOfColon + 1) == '{' || nospaces.charAt(indexOfColon + 1) == '[') {
         continue;
       }
       indexOfComa = nospaces.indexOf(',', indexOfColon);
@@ -283,7 +297,7 @@ public abstract class AbstractPluginOptions implements Cloneable {
         nospaces = new StringBuilder(nospaces).insert(indexOfColon + 1, toInsert).toString();
         nospaces = new StringBuilder(nospaces).insert(indexOfComa + 1, toInsert).toString();
       }
-      if (i++ > MAXLEN) {
+      if (i++ > MAXITER) {
         throw new IllegalArgumentException("Malformed options string.");
       }
     }
@@ -292,27 +306,61 @@ public abstract class AbstractPluginOptions implements Cloneable {
     indexOfComa = 0;
     indexOfColon = 0;
     indexOfParenthes = 0;
+    int indexOfParenthesro = 0;
+    int indexOfParenthesrc = 0;
     i = 0;
     while (true) {
+      if (nospaces.charAt(startIndex) == '[') {
+        startIndex = nospaces.indexOf(']', startIndex);
+      }
       indexOfComa = nospaces.indexOf(',', startIndex);
       indexOfParenthes = nospaces.indexOf('{', startIndex);
       if (indexOfParenthes >= 0 && indexOfParenthes < indexOfComa) { // beginning of file or nested
         indexOfComa = indexOfParenthes;
+        if (nospaces.charAt(indexOfParenthes + 1) == '}') {
+          startIndex = indexOfParenthes + 1;
+          continue;
+        }
       }
+
+      indexOfParenthesro = nospaces.indexOf('[', startIndex);
+      indexOfParenthesrc = nospaces.indexOf(']', startIndex);
+
       startIndex = indexOfComa + 1;
       if (indexOfComa < 0) {
         break;
       }
       indexOfColon = nospaces.indexOf(':', startIndex);
+      if (indexOfComa + 1 > indexOfParenthesro && indexOfComa + 1 < indexOfParenthesrc) {
+        continue;
+      }
       nospaces = new StringBuilder(nospaces).insert(indexOfComa + 1, toInsert).toString();
       nospaces = new StringBuilder(nospaces).insert(indexOfColon + 1, toInsert).toString();
-      if (i++ > MAXLEN) {
+      if (i++ > MAXITER) {
         throw new IllegalArgumentException("Malformed options string.");
       }
     }
 
     return nospaces;
 
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#beforeSerialize()
+   */
+  @Override
+  public void beforeSerialize() {
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.filesystem.IQuimpSerialize#afterSerialize()
+   */
+  @Override
+  public void afterSerialize() throws Exception {
   }
 
   /**

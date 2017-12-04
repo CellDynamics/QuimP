@@ -256,8 +256,8 @@ public class QuimpException extends Exception {
     }
     if (getMessageSinkType().contains(MessageSinkTypes.GUI)) {
       JOptionPane.showMessageDialog(frame,
-              QuimpToolsCollection.stringWrap(appendMessage + " " + getMessage(), QuimP.LINE_WRAP),
-              "Error", JOptionPane.ERROR_MESSAGE);
+              QuimpToolsCollection.stringWrap(message, QuimP.LINE_WRAP), "Error",
+              JOptionPane.ERROR_MESSAGE);
     }
     if (getMessageSinkType().contains(MessageSinkTypes.IJERROR)) {
       List<String> ex = getExceptionMessageChain(this);

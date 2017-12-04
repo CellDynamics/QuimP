@@ -3,6 +3,8 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.lang.reflect.Field;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,13 +62,22 @@ public class RandomWalkSegmentationPluginTest {
    * <p>PRE: Set UI from model and then read it.
    * 
    * <p>POST: read model should be the same as set up.
+   * 
+   * @throws SecurityException SecurityException
+   * @throws NoSuchFieldException NoSuchFieldException
+   * @throws IllegalAccessException IllegalAccessException
+   * @throws IllegalArgumentException IllegalArgumentException
    */
   @Test
-  public void testWriteReadUI() {
+  public void testWriteReadUI() throws NoSuchFieldException, SecurityException,
+          IllegalArgumentException, IllegalAccessException {
     RandomWalkSegmentationPlugin_ plugin = new RandomWalkSegmentationPlugin_();
     RandomWalkModel model = new RandomWalkModel();
     model.seedSource = SeedSource.MaskImage;
-    plugin.model = model;
+    Field f = plugin.getClass().getSuperclass().getDeclaredField("options");
+    f.setAccessible(true);
+    f.set(plugin, model);
+    // plugin.model = model;
     int hash = model.hashCode(); // remember hash
     LOGGER.debug("before: " + model.toString());
     plugin.writeUI();

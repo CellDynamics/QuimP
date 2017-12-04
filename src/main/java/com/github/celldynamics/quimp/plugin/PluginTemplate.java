@@ -193,9 +193,9 @@ public abstract class PluginTemplate implements IQuimpPlugin {
   protected QconfLoader qconfLoader; // main object representing loaded configuration file
 
   /**
-   * If true plugin is run from parametrised constructor what usually mean API.
+   * If true plugin is run from parametrised constructor what usually means API.
    */
-  protected boolean apiCall;
+  public boolean apiCall;
 
   /**
    * Extension of file plugin asks for after execution in IJ mode.

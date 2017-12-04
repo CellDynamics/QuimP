@@ -34,9 +34,9 @@ public class GenerateMaskTest {
     GenerateMask_ mask;
     mask = new GenerateMask_();
     // parameter string like in macro - errors redirected to IJ.error, no visual output
-    mask.run("opts={paramFile:[src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine."
-            + "QCONF]}");
-    // mask.run("opts={paramFile:[/home/baniuk/Desktop/Tests/17.10/test.QCONF]}");
+    mask.run("opts={paramFile:(src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_fine."
+            + "QCONF)}");
+    // mask.run("opts={paramFile:(/home/baniuk/Desktop/Tests/17.10/test.QCONF)}");
   }
 
   /**
@@ -48,8 +48,8 @@ public class GenerateMaskTest {
   @Test
   public void testGenerateMask_3() throws QuimpPluginException {
     GenerateMask_ pa = new GenerateMask_(
-            "opts={paramFile:[src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7"
-                    + "%agar_FLU_fine.QCONF]}");
+            "opts={paramFile:(src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7"
+                    + "%agar_FLU_fine.QCONF)}");
 
     ImagePlus ret = pa.getRes();
     if (ret != null) {

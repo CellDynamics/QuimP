@@ -9,9 +9,11 @@
  * 
  * <h2>Macro support</h2>
  * 
- * Macro not supported.
+ * Macro is supported.
  * 
  * <h3>Parameters</h3>
+ * 
+ * See {@link com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions}
  * 
  * <h2>API support</h2>
  * 
