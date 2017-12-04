@@ -10,6 +10,7 @@ import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.OutlinesCollection;
+import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.PluginTemplate;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
@@ -208,8 +209,8 @@ public class Prot_Analysis extends PluginTemplate {
     ProtAnalysisOptions opts = (ProtAnalysisOptions) options;
     logger.debug("Internal options " + options.serialize2Macro());
     if (Recorder.record) {
-      Recorder.record("run(\"Protrusion Analysis\"," + "\"" + opts.serialize2Macro() + "\")");
-      Recorder.setCommand(null);
+      Recorder.setCommand("Protrusion Analysis");
+      Recorder.recordOption(AbstractPluginOptions.KEY, opts.serialize2Macro());
     }
   }
 

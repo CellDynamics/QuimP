@@ -16,6 +16,7 @@ import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.Snake;
 import com.github.celldynamics.quimp.SnakeHandler;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
+import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.PluginTemplate;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
@@ -74,8 +75,8 @@ public class GenerateMask_ extends PluginTemplate {
     GenerateMaskOptions opts = (GenerateMaskOptions) options;
     logger.debug(options.serialize2Macro());
     if (Recorder.record) {
-      Recorder.record("run(\"Generate mask\"," + "\"" + opts.serialize2Macro() + "\")");
-      Recorder.setCommand(null);
+      Recorder.setCommand("Generate mask");
+      Recorder.recordOption(AbstractPluginOptions.KEY, opts.serialize2Macro());
     }
   }
 

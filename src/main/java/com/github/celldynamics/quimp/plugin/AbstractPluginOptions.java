@@ -54,7 +54,10 @@ public abstract class AbstractPluginOptions implements Cloneable {
    * The Constant logger.
    */
   public static final Logger LOGGER = LoggerFactory.getLogger(AbstractPluginOptions.class);
-
+  /**
+   * Default key used to denote options string in IJ macro recorder.
+   */
+  public static final String KEY = "opts";
   /**
    * Maximal length of parameter string.
    */
@@ -112,12 +115,21 @@ public abstract class AbstractPluginOptions implements Cloneable {
    * Serialize this class and produce JSon without spaces (except escaped strings) and without
    * quotes.
    * 
-   * <p>Return is intended to show in macro recorder.
+   * <p>Return is intended to show in macro recorder. Note that IJ require key to assign a parameter
+   * string to it. Recommended way of use this method is:
+   * 
+   * <pre>
+   * <code>
+   * Recorder.setCommand("Generate mask");
+   * Recorder.recordOption(AbstractPluginOptions.KEY, opts.serialize2Macro()); 
+   * </code>
+   * </pre>
    * 
    * @return JSon without spaces and quotes
    * @see EscapedPath
    * @see #escapeJsonMacro(String)
    * @see #serialize()
+   * @see #deserialize2Macro(String, AbstractPluginOptions)
    */
   public String serialize2Macro() {
     return escapeJsonMacro(serialize());
@@ -163,6 +175,9 @@ public abstract class AbstractPluginOptions implements Cloneable {
   /**
    * Deserialize JSon produced by {@link #serialize2Macro()}, that is json without quotations.
    * 
+   * <p>This method accepts that input string can contain a key specified by {@value #KEY}. See
+   * {@link #serialize2Macro()}.
+   * 
    * @param json JSon to deserialize
    * @param t type of object
    * @return object produced from JSon, fields annotated with {@link EscapedPath} does not contain
@@ -175,9 +190,10 @@ public abstract class AbstractPluginOptions implements Cloneable {
     T obj = null;
     try {
       String jsonU = unescapeJsonMacro(json);
+      jsonU = jsonU.replaceFirst(AbstractPluginOptions.KEY + "=", "");
       obj = deserialize(jsonU, t);
     } catch (Exception e) {
-      throw new QuimpPluginException("Malformed Json string (" + e.getMessage() + ")", e);
+      throw new QuimpPluginException("Malformed options string (" + e.getMessage() + ")", e);
     }
 
     return obj;
@@ -268,7 +284,7 @@ public abstract class AbstractPluginOptions implements Cloneable {
         nospaces = new StringBuilder(nospaces).insert(indexOfComa + 1, toInsert).toString();
       }
       if (i++ > MAXLEN) {
-        throw new IllegalArgumentException("Malformed Json string.");
+        throw new IllegalArgumentException("Malformed options string.");
       }
     }
     // detect keys between { or , and :
@@ -291,7 +307,7 @@ public abstract class AbstractPluginOptions implements Cloneable {
       nospaces = new StringBuilder(nospaces).insert(indexOfComa + 1, toInsert).toString();
       nospaces = new StringBuilder(nospaces).insert(indexOfColon + 1, toInsert).toString();
       if (i++ > MAXLEN) {
-        throw new IllegalArgumentException("Malformed Json string.");
+        throw new IllegalArgumentException("Malformed options string.");
       }
     }
 
