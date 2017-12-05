@@ -47,7 +47,7 @@ import com.google.gson.GsonBuilder;
  * <li>Arrays are allowed but only those containing primitive numbers. Strings in arrays are not
  * allowed
  * <li>Concrete object should be cloneable, {@link #serialize()} makes <b>shallow</b> copy of
- * object.
+ * object otherwise. Implement your own clone if you use arrays.
  * <li>If there are other objects stored in concrete implementation of this abstract class, they
  * must have default constructors for GSon.
  * </ul>
@@ -59,15 +59,16 @@ public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerializ
   /**
    * The Constant logger.
    */
-  public static final Logger LOGGER = LoggerFactory.getLogger(AbstractPluginOptions.class);
+  public static final transient Logger LOGGER =
+          LoggerFactory.getLogger(AbstractPluginOptions.class);
   /**
    * Default key used to denote options string in IJ macro recorder.
    */
-  public static final String KEY = "opts";
+  public static final transient String KEY = "opts";
   /**
    * Maximal length of parameter string.
    */
-  public static final int MAXITER = 512;
+  public static final transient int MAXITER = 512;
   /**
    * Name and path of QCONF file.
    */

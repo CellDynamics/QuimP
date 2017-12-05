@@ -18,6 +18,7 @@ import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileDialogEx;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
+import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
 import ch.qos.logback.classic.Level;
@@ -27,6 +28,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ij.IJ;
 import ij.io.OpenDialog;
+import ij.plugin.frame.Recorder;
 
 /**
  * Performs conversion actions. UI interface to {@link FormatConverter}
@@ -67,7 +69,7 @@ public class FormatConverterController extends FormatConverter {
    */
   public FormatConverterController(Path fileToLoad) {
     this();
-    model.convertedFile = fileToLoad;
+    model.paramFile = fileToLoad.toString();
   }
 
   /**
@@ -129,7 +131,7 @@ public class FormatConverterController extends FormatConverter {
       }
       try {
         logger.info("-------------------------------------------------------------------------");
-        model.convertedFile = od.getPath();
+        model.paramFile = od.getPath().toString();
         attachFile(od.getPath().toFile());
         logger.info(FormatConverterController.this.toString());
       } catch (QuimpException e1) {
@@ -162,6 +164,7 @@ public class FormatConverterController extends FormatConverter {
         logger.info("-------------------------------------------------------------------------");
         attachFile(od.getPath().toFile());
         doConversion();
+        publishMacroString();
       } catch (QuimpException e1) {
         e1.logger.addAppender(logger.getAppender("internalr"));
         e1.logger.setAdditive(false); // show only in appender
@@ -192,6 +195,7 @@ public class FormatConverterController extends FormatConverter {
       }
       logger.info("Generating data...");
       saveDataFiles();
+      publishMacroString();
     }
   }
 
@@ -261,6 +265,18 @@ public class FormatConverterController extends FormatConverter {
       qe.handleException(null, "Conversion stopped. Some data can not be accessed.");
     }
 
+  }
+
+  /**
+   * Helper, show macro string if recorder is active.
+   */
+  private void publishMacroString() {
+    // check whether config file name is provided or ask user for it
+    System.out.println("Internal options " + model.serialize2Macro());
+    if (Recorder.record) {
+      Recorder.setCommand("Format converter");
+      Recorder.recordOption(AbstractPluginOptions.KEY, model.serialize2Macro());
+    }
   }
 
   /**
