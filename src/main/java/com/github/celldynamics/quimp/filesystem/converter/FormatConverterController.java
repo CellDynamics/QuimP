@@ -19,6 +19,7 @@ import com.github.celldynamics.quimp.filesystem.FileDialogEx;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
+import com.github.celldynamics.quimp.plugin.IQuimpPlugin;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
 import ch.qos.logback.classic.Level;
@@ -36,16 +37,17 @@ import ij.plugin.frame.Recorder;
  * @author p.baniukiewicz
  * @see FormatConverterUi
  */
-public class FormatConverterController extends FormatConverter {
+public class FormatConverterController implements IQuimpPlugin {
 
   private FormatConverterModel model;
   private FormatConverterUi view;
+  private FormatConverter fc;
 
   /**
    * Default constructor.
    */
   public FormatConverterController() {
-    super();
+    fc = new FormatConverter();
     initializeLogger();
     model = new FormatConverterModel();
     view = new FormatConverterUi(model);
@@ -64,7 +66,7 @@ public class FormatConverterController extends FormatConverter {
    * Constructor allowing passing file to process.
    * 
    * @param fileToLoad to process
-   * @see #doConversion()
+   * @see FormatConverter#doConversion()
    * @see #getModel()
    */
   public FormatConverterController(Path fileToLoad) {
@@ -77,6 +79,12 @@ public class FormatConverterController extends FormatConverter {
    */
   public void showUi() {
     view.setVisible(true);
+  }
+
+  @Override
+  public void run(String arg) {
+    // TODO Auto-generated method stub
+
   }
 
   /**
@@ -96,7 +104,7 @@ public class FormatConverterController extends FormatConverter {
    * stdout
    */
   private void initializeLogger() {
-    LoggerContext lc = logger.getLoggerContext();
+    LoggerContext lc = FormatConverter.logger.getLoggerContext();
     MyAppender myAppender = new MyAppender();
     myAppender.setContext(lc);
     myAppender.setName("internalr");
@@ -105,10 +113,10 @@ public class FormatConverterController extends FormatConverter {
     th.start();
     myAppender.addFilter(th);
     myAppender.start();
-    logger.addAppender(myAppender);
+    FormatConverter.logger.addAppender(myAppender);
     // trick to prevent doubling logs in windows and console (for normal debug state)
-    if (logger.getEffectiveLevel().isGreaterOrEqual(Level.INFO)) {
-      logger.setAdditive(false);
+    if (FormatConverter.logger.getEffectiveLevel().isGreaterOrEqual(Level.INFO)) {
+      FormatConverter.logger.setAdditive(false);
     } // otherwise if debug set below INFO, all will be doubled (but in this window only those
     // >=INFO, Console will capture everything)
   }
@@ -130,12 +138,13 @@ public class FormatConverterController extends FormatConverter {
         return;
       }
       try {
-        logger.info("-------------------------------------------------------------------------");
+        FormatConverter.logger
+                .info("-------------------------------------------------------------------------");
         model.paramFile = od.getPath().toString();
-        attachFile(od.getPath().toFile());
-        logger.info(FormatConverterController.this.toString());
+        fc.attachFile(od.getPath().toFile());
+        FormatConverter.logger.info(FormatConverterController.this.toString());
       } catch (QuimpException e1) {
-        e1.logger.addAppender(logger.getAppender("internalr"));
+        e1.logger.addAppender(FormatConverter.logger.getAppender("internalr"));
         e1.logger.setAdditive(false); // show only in appender
         e1.setMessageSinkType(MessageSinkTypes.CONSOLE);
         e1.handleException(null, "File could not be loaded.");
@@ -161,12 +170,13 @@ public class FormatConverterController extends FormatConverter {
         return;
       }
       try {
-        logger.info("-------------------------------------------------------------------------");
-        attachFile(od.getPath().toFile());
-        doConversion();
+        FormatConverter.logger
+                .info("-------------------------------------------------------------------------");
+        fc.attachFile(od.getPath().toFile());
+        fc.doConversion();
         publishMacroString();
       } catch (QuimpException e1) {
-        e1.logger.addAppender(logger.getAppender("internalr"));
+        e1.logger.addAppender(FormatConverter.logger.getAppender("internalr"));
         e1.logger.setAdditive(false); // show only in appender
         e1.setMessageSinkType(MessageSinkTypes.CONSOLE);
         e1.handleException(null, "File could not be loaded.");
@@ -189,11 +199,11 @@ public class FormatConverterController extends FormatConverter {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-      if (isFileLoaded() == QconfLoader.QCONF_INVALID) {
-        logger.error("Load valid QCONF file first");
+      if (fc.isFileLoaded() == QconfLoader.QCONF_INVALID) {
+        FormatConverter.logger.error("Load valid QCONF file first");
         return;
       }
-      logger.info("Generating data...");
+      FormatConverter.logger.info("Generating data...");
       saveDataFiles();
       publishMacroString();
     }
@@ -207,59 +217,59 @@ public class FormatConverterController extends FormatConverter {
    */
   public void saveDataFiles() {
     List<String> status = model.getStatus();
-    logger.debug(status.toString());
+    FormatConverter.logger.debug(status.toString());
     try {
       for (String s : status) {
-        logger.info("Saving " + s);
+        FormatConverter.logger.info("Saving " + s);
         switch (s.toLowerCase()) { // if user provide in other case
           case FormatConverterUi.MAP_MOTILITY: // this is also String displayed on control
-            saveMaps(STmap.MOTILITY);
+            fc.saveMaps(STmap.MOTILITY);
             break;
           case FormatConverterUi.MAP_CONVEXITY:
-            saveMaps(STmap.CONVEXITY);
+            fc.saveMaps(STmap.CONVEXITY);
             break;
           case FormatConverterUi.MAP_COORD:
-            saveMaps(STmap.COORD);
+            fc.saveMaps(STmap.COORD);
             break;
           case FormatConverterUi.MAP_FLUORES:
-            saveMaps(STmap.ALLFLU);
+            fc.saveMaps(STmap.ALLFLU);
             break;
           case FormatConverterUi.MAP_ORIGIN:
-            saveMaps(STmap.ORIGIN);
+            fc.saveMaps(STmap.ORIGIN);
             break;
           case FormatConverterUi.MAP_X_COORDS:
-            saveMaps(STmap.XMAP);
+            fc.saveMaps(STmap.XMAP);
             break;
           case FormatConverterUi.MAP_Y_COORDS:
-            saveMaps(STmap.YMAP);
+            fc.saveMaps(STmap.YMAP);
             break;
           case FormatConverterUi.BOA_CENTROID:
-            saveBoaCentroids();
+            fc.saveBoaCentroids();
             break;
           case FormatConverterUi.BOA_SNAKES:
-            saveBoaSnakes(view.getChckbxMultiFileOutput());
+            fc.saveBoaSnakes(view.getChckbxMultiFileOutput());
             break;
           case FormatConverterUi.ECMM_CENTROID:
-            saveEcmmCentroids();
+            fc.saveEcmmCentroids();
             break;
           case FormatConverterUi.ECCM_OUTLINES:
-            saveEcmmOutlines(view.getChckbxMultiFileOutput());
+            fc.saveEcmmOutlines(view.getChckbxMultiFileOutput());
             break;
           case FormatConverterUi.STATS_FLUORES:
-            saveStatFluores();
+            fc.saveStatFluores();
             break;
           case FormatConverterUi.STATS_GEOMETRIC:
-            saveStatGeom();
+            fc.saveStatGeom();
             break;
           case FormatConverterUi.STATS_Q11:
-            saveStats();
+            fc.saveStats();
             break;
           default:
-            logger.warn("Parameter " + s + " is inproper");
+            fc.logger.warn("Parameter " + s + " is inproper");
         }
       }
     } catch (QuimpException qe) {
-      qe.logger.addAppender(logger.getAppender("internalr"));
+      qe.logger.addAppender(fc.logger.getAppender("internalr"));
       qe.logger.setAdditive(false); // show only in appender
       qe.setMessageSinkType(MessageSinkTypes.CONSOLE);
       qe.handleException(null, "Conversion stopped. Some data can not be accessed.");
@@ -307,4 +317,5 @@ public class FormatConverterController extends FormatConverter {
       }
     }
   }
+
 }
