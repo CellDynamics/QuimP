@@ -35,6 +35,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   static final Logger LOGGER = LoggerFactory.getLogger(Snake.class.getName());
   /**
    * true if snake is alive Changed during segmentation and user interaction.
+   * 
+   * <p>snake is killed by {@link SnakeHandler#kill()} method usually called after unsuccessful
+   * segmentation.
    */
   public boolean alive;
   /**

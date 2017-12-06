@@ -2035,10 +2035,22 @@ public class BOA_ implements PlugIn {
           qState.boap.snakeToZoom = -1; // set negative value to indicate no zoom
           qState.boap.zoom = false; // important for other parts (legacy)
           imageGroup.unzoom(canvas); // unzoom view
+          // unfreeze all
+          for (SnakeHandler sh : qState.nest.getHandlers()) {
+            sh.unfreezeHandler();
+          }
         } else { // zoom here
           if (!qState.nest.isVacant()) { // any snakes present
             qState.boap.snakeToZoom = Integer.parseInt(chZoom.getSelectedItem()); // get int
             qState.boap.zoom = true; // legacy compatibility
+            // snakeID, not index
+            SnakeHandler snakeH = qState.nest.getHandlerofId(qState.boap.snakeToZoom);
+            if (snakeH != null && snakeH.isStoredAt(qState.boap.frame)) {
+              for (SnakeHandler sh : qState.nest.getHandlers()) {
+                sh.freezeHandler();
+              } // freeze all except:
+              snakeH.unfreezeHandler();
+            }
             imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
           }
         }
@@ -2336,12 +2348,12 @@ public class BOA_ implements PlugIn {
         try {
           if (qState.boap.frame != startF) { // expand snakes for next frame
             if (!qState.segParam.use_previous_snake) {
-              qState.nest.resetForFrame(qState.boap.frame);
+              qState.nest.resetForFrame(qState.boap.frame); // FIXME block here as well
             } else {
               if (!qState.segParam.expandSnake) {
-                constrictor.loosen(qState.nest, qState.boap.frame);
+                constrictor.loosen(qState.nest, qState.boap.frame); // FIXME here
               } else {
-                constrictor.implode(qState.nest, qState.boap.frame);
+                constrictor.implode(qState.nest, qState.boap.frame); // FIXME and here
               }
             }
           }
@@ -2350,6 +2362,9 @@ public class BOA_ implements PlugIn {
             snH = qState.nest.getHandler(s);
             snake = snH.getLiveSnake();
             try {
+              if (snH.isSnakeHandlerFrozen()) {
+                continue;
+              }
               if (!snake.alive || qState.boap.frame < snH.getStartFrame()) {
                 continue;
               }
