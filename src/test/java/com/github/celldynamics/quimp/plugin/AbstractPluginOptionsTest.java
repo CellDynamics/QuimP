@@ -2,7 +2,7 @@ package com.github.celldynamics.quimp.plugin;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -177,6 +177,77 @@ public class AbstractPluginOptionsTest {
   }
 
   /**
+   * Test of serialization->deserialization for macro processing serialzers.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSerDeser_arrays_1() throws Exception {
+    Options3 opt = new Options3();
+    String js = opt.serialize2Macro(); // change to json
+    logger.debug(js);
+    assertThat(js, containsString("(space space)")); // escaped in json
+    assertThat(js, containsString("(path/to/file with spaces.qconf)"));
+    assertThat(StringUtils.countMatches(js, "("), is(2));
+    assertThat(StringUtils.countMatches(js, ")"), is(2));
+    Options3 ret = AbstractPluginOptions.deserialize2Macro(js, new Options3()); // back to object
+    assertThat(ret.param2, is(opt.param2));
+    assertThat(ret.paramFile, is(opt.paramFile));
+    assertThat(ret.param3, is(opt.param3));
+    assertThat(ret.otherPath, is(opt.otherPath)); // no escape chars
+    assertThat(ret.param4.internal1, is(opt.param4.internal1));
+    assertThat(ret.tab, is(opt.tab));
+    assertThat(ret.param4.tabint, is(opt.param4.tabint));
+    assertThat(ret.param4.tabstr, is(opt.param4.tabstr));
+
+  }
+
+  /**
+   * Test of serialization->deserialization for macro processing serialzers.
+   * 
+   * <p>Empty array in json.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSerDeser_arrays_2() throws Exception {
+    String js = "{param2:10,param3:3.14,otherPath:(space space),"
+            + "param4:{tabint:[],internal1:20," + "tabstr:[aba,vddd,ffgth]},param5:{},"
+            + "tab:[3.14,2.14]," + "paramFile:(path/to/file with spaces.qconf)}";
+    AbstractPluginOptions.deserialize2Macro(js, new Options3()); // back to object
+  }
+
+  /**
+   * Test of serialization->deserialization for macro processing serialzers.
+   * 
+   * <p>No array closing
+   * 
+   * @throws Exception on error
+   */
+  @Test(expected = QuimpPluginException.class)
+  public void testSerDeser_arrays_3() throws Exception {
+    String js = "{param2:10,param3:3.14,otherPath:(space space),"
+            + "param4:{tabint:[0,0,internal1:20," + "tabstr:[aba,vddd,ffgth]},param5:{},"
+            + "tab:[3.14,2.14]," + "paramFile:(path/to/file with spaces.qconf)}";
+    AbstractPluginOptions.deserialize2Macro(js, new Options3()); // back to object
+  }
+
+  /**
+   * Test of serialization->deserialization for macro processing serialzers.
+   * 
+   * <p>No array closing
+   * 
+   * @throws Exception on error
+   */
+  @Test(expected = QuimpPluginException.class)
+  public void testSerDeser_arrays_4() throws Exception {
+    String js = "{param2:10,param3:3.14,otherPath:(space space),"
+            + "param4:{tabint:[0,0],internal1:20," + "tabstr:[aba,vddd,ffgth]},param5:{},"
+            + "tab:[3.14,2.14," + "paramFile:(path/to/file with spaces.qconf)}";
+    AbstractPluginOptions.deserialize2Macro(js, new Options3()); // back to object
+  }
+
+  /**
    * Test class.
    * 
    * @author p.baniukiewicz
@@ -235,6 +306,44 @@ public class AbstractPluginOptionsTest {
     }
 
     public Options2() {
+      paramFile = "path/to/file with spaces.qconf";
+      tab[0] = 3.14;
+      tab[1] = 2.14;
+    }
+  }
+
+  /**
+   * Test class.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class Options3 extends AbstractPluginOptions {
+    int param2 = 10;
+    @EscapedPath // should be ignored
+    double param3 = 3.14;
+
+    @EscapedPath()
+    String otherPath = "space space";
+
+    Internal param4 = new Internal();
+    Empty param5 = new Empty(); // test {}
+    double[] tab = new double[2]; // empty
+
+    class Internal {
+      int[] tabint = new int[2];
+      public int internal1 = 20;
+      String[] tabstr;
+
+      public Internal() {
+        tabstr = new String[3];
+        tabstr[0] = "aba";
+        tabstr[1] = "vddd";
+        tabstr[2] = "ffgth";
+      }
+    }
+
+    public Options3() {
       paramFile = "path/to/file with spaces.qconf";
       tab[0] = 3.14;
       tab[1] = 2.14;

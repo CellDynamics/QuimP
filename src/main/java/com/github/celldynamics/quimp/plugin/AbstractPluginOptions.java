@@ -1,6 +1,8 @@
 package com.github.celldynamics.quimp.plugin;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -43,11 +45,10 @@ import com.google.gson.GsonBuilder;
  * <p>There are following restriction to parameter string and concrete options class:
  * <ul>
  * <li>Quotes are not allowed in Strings (even properly escaped)
- * <li>Brackets are not allowed in strings - they are used for escaping strings
- * <li>Arrays are allowed but only those containing primitive numbers. Strings in arrays are not
- * allowed
+ * <li>Round brackets are not allowed in strings - they are used for escaping strings
+ * <li>Arrays are allowed but only those containing primitive numbers and strings
  * <li>Concrete object should be cloneable, {@link #serialize()} makes <b>shallow</b> copy of
- * object otherwise. Implement your own clone if you use arrays.
+ * object otherwise. Implement your own clone if you use arrays or collections.
  * <li>If there are other objects stored in concrete implementation of this abstract class, they
  * must have default constructors for GSon.
  * </ul>
@@ -269,23 +270,48 @@ public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerializ
 
     final char toInsert = '"';
     int startIndex = 0;
+    int indexOfParenthesSL = 0; // square left
+    int indexOfParenthesSR = 0; // square right
+    int i = 0; // iterations counter
+    HashMap<String, String> map = new HashMap<>();
+    // remove arrays [] and replace them with placeholders, they will be processed latter
+    while (true) {
+      indexOfParenthesSL = nospaces.indexOf('[', startIndex); // find opening [
+      if (indexOfParenthesSL < 0) {
+        break; // stop if not found
+      } else {
+        startIndex = indexOfParenthesSL; // start looking for ] from position of [
+        indexOfParenthesSR = nospaces.indexOf(']', startIndex);
+        if (indexOfParenthesSR < 0) { // closing not found
+          break; // error in general
+        }
+        // cut text between [] inclusively
+        String random = Long.toHexString(Double.doubleToLongBits(Math.random())); // random placeh
+        map.put(random, nospaces.substring(indexOfParenthesSL, indexOfParenthesSR + 1)); // store it
+        nospaces = nospaces.replace(map.get(random), random); // remove from sequence
+        startIndex = indexOfParenthesSR - map.get(random).length() + random.length(); // next iter
+      }
+      if (i++ > MAXITER) {
+        throw new IllegalArgumentException("Malformed options string.");
+      }
+    }
+
+    // now nospaces does not contains [], they are replaced by alphanumeric strings
+    // note that those string will be pu into "" after two next blocks
+    startIndex = 0;
+    int indexOfParenthes = 0;
     int indexOfComa = 0;
     int indexOfColon = 0;
-    int indexOfParenthes = 0;
-    int i = 0; // iterations counter
     // detect content between : and , or { what denotes value
     // if it is not numeric put it in quotes
     while (true) {
-      if (nospaces.charAt(startIndex) == '[') {
-        startIndex = nospaces.indexOf(']', startIndex);
-      }
       indexOfColon = nospaces.indexOf(':', startIndex);
       startIndex = indexOfColon + 1;
       if (indexOfColon < 0) {
         break;
       }
       // nested class, find next :
-      if (nospaces.charAt(indexOfColon + 1) == '{' || nospaces.charAt(indexOfColon + 1) == '[') {
+      if (nospaces.charAt(indexOfColon + 1) == '{') {
         continue;
       }
       indexOfComa = nospaces.indexOf(',', indexOfColon);
@@ -307,13 +333,8 @@ public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerializ
     indexOfComa = 0;
     indexOfColon = 0;
     indexOfParenthes = 0;
-    int indexOfParenthesro = 0;
-    int indexOfParenthesrc = 0;
     i = 0;
     while (true) {
-      if (nospaces.charAt(startIndex) == '[') {
-        startIndex = nospaces.indexOf(']', startIndex);
-      }
       indexOfComa = nospaces.indexOf(',', startIndex);
       indexOfParenthes = nospaces.indexOf('{', startIndex);
       if (indexOfParenthes >= 0 && indexOfParenthes < indexOfComa) { // beginning of file or nested
@@ -323,23 +344,44 @@ public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerializ
           continue;
         }
       }
-
-      indexOfParenthesro = nospaces.indexOf('[', startIndex);
-      indexOfParenthesrc = nospaces.indexOf(']', startIndex);
-
       startIndex = indexOfComa + 1;
       if (indexOfComa < 0) {
         break;
       }
       indexOfColon = nospaces.indexOf(':', startIndex);
-      if (indexOfComa + 1 > indexOfParenthesro && indexOfComa + 1 < indexOfParenthesrc) {
-        continue;
-      }
       nospaces = new StringBuilder(nospaces).insert(indexOfComa + 1, toInsert).toString();
       nospaces = new StringBuilder(nospaces).insert(indexOfColon + 1, toInsert).toString();
       if (i++ > MAXITER) {
         throw new IllegalArgumentException("Malformed options string.");
       }
+    }
+
+    // process content of arrays and substitute them to string. If array was numeric do not change
+    // it, otherwise put every element in quotes
+    for (Map.Entry<String, String> entry : map.entrySet()) {
+      String val = entry.getValue();
+      val = val.substring(1, val.length() - 1); // remove []
+      if (val.isEmpty()) {
+        nospaces = nospaces.replace(toInsert + entry.getKey() + toInsert, entry.getValue());
+        continue;
+      }
+      String[] elements = val.split(",");
+      // check if first is number (assume array of primitives)
+      if (!NumberUtils.isCreatable(elements[0])) { // not a number - add "" to all
+        for (i = 0; i < elements.length; i++) {
+          elements[i] = toInsert + elements[i] + toInsert;
+        }
+      }
+      // build proper array json
+      String ret = "[";
+      for (i = 0; i < elements.length; i++) {
+        ret = ret.concat(elements[i]).concat(",");
+      }
+      ret = ret.substring(0, ret.length() - 1).concat("]");
+      entry.setValue(ret);
+      // now map contains proper representation of arrays as json, e.g. [0,0] or ["d","e"]
+      // replace placeholders from nospaces (placeholders are already quoted after previous steps)
+      nospaces = nospaces.replace(toInsert + entry.getKey() + toInsert, entry.getValue());
     }
 
     return nospaces;
