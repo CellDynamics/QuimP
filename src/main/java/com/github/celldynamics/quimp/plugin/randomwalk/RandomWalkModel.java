@@ -100,7 +100,7 @@ public class RandomWalkModel {
    * Shrink method getter.
    * 
    * @return the selectedFilteringMethod number
-   * @see PropagateSeeds#getPropagator(Propagators, boolean)
+   * @see PropagateSeeds#getPropagator(Propagators, boolean, ij.process.AutoThresholder.Method)
    * @see Propagators
    */
   public Propagators getselectedShrinkMethod() {
@@ -140,6 +140,13 @@ public class RandomWalkModel {
    * expand contour.
    */
   public double expandPower;
+  /**
+   * Estimate background if true.
+   * 
+   * @see PropagateSeeds#getTrueBackground(ij.process.ImageProcessor, ij.process.ImageProcessor)
+   * @see PropagateSeeds
+   */
+  public boolean estimateBackground;
   /**
    * Selected intermediate filtering algorithm.
    */
@@ -252,12 +259,13 @@ public class RandomWalkModel {
     selectedShrinkMethod = Propagators.NONE;
     shrinkPower = 10;
     expandPower = 15;
-    selectedFilteringMethod = Filters.NONE;
+    estimateBackground = false;
+    setSelectedFilteringMethod(Filters.NONE);
     hatFilter = false;
     alev = 0.9;
     num = 1;
     window = 15;
-    selectedFilteringPostMethod = Filters.NONE;
+    setSelectedFilteringPostMethod(Filters.NONE);
     showSeeds = false;
     showPreview = false;
   }
@@ -272,15 +280,16 @@ public class RandomWalkModel {
     return "RandomWalkModel [params=" + params + ", originalImage=" + originalImage
             + ", seedSource=" + seedSource + ", seedImage=" + seedImage + ", qconfFile=" + qconfFile
             + ", selectedShrinkMethod=" + selectedShrinkMethod + ", shrinkPower=" + shrinkPower
-            + ", expandPower=" + expandPower + ", selectedFilteringMethod="
-            + selectedFilteringMethod + ", hatFilter=" + hatFilter + ", alev=" + alev + ", num="
-            + num + ", window=" + window + ", selectedFilteringPostMethod="
-            + selectedFilteringPostMethod + ", showSeeds=" + showSeeds + ", showPreview="
-            + showPreview + ", getShrinkMethods()=" + Arrays.toString(getShrinkMethods())
-            + ", getFilteringMethods()=" + Arrays.toString(getFilteringMethods())
-            + ", getselectedShrinkMethod()=" + getselectedShrinkMethod()
-            + ", getSelectedFilteringMethod()=" + getSelectedFilteringMethod()
-            + ", getSelectedFilteringPostMethod()=" + getSelectedFilteringPostMethod() + "]";
+            + ", expandPower=" + expandPower + ", estimateBackground=" + estimateBackground
+            + ", selectedFilteringMethod=" + selectedFilteringMethod + ", hatFilter=" + hatFilter
+            + ", alev=" + alev + ", num=" + num + ", window=" + window
+            + ", selectedFilteringPostMethod=" + selectedFilteringPostMethod + ", showSeeds="
+            + showSeeds + ", showPreview=" + showPreview + ", getShrinkMethods()="
+            + Arrays.toString(getShrinkMethods()) + ", getFilteringMethods()="
+            + Arrays.toString(getFilteringMethods()) + ", getselectedShrinkMethod()="
+            + getselectedShrinkMethod() + ", getSelectedFilteringMethod()="
+            + getSelectedFilteringMethod() + ", getSelectedFilteringPostMethod()="
+            + getSelectedFilteringPostMethod() + "]";
   }
 
   /*
@@ -312,6 +321,7 @@ public class RandomWalkModel {
             + ((selectedShrinkMethod == null) ? 0 : selectedShrinkMethod.hashCode());
     result = prime * result + (showPreview ? 1231 : 1237);
     result = prime * result + (showSeeds ? 1231 : 1237);
+    result = prime * result + (estimateBackground ? 1231 : 1237);
     temp = Double.doubleToLongBits(shrinkPower);
     result = prime * result + (int) (temp ^ (temp >>> 32));
     result = prime * result + window;
@@ -391,6 +401,9 @@ public class RandomWalkModel {
       return false;
     }
     if (showSeeds != other.showSeeds) {
+      return false;
+    }
+    if (estimateBackground != other.estimateBackground) {
       return false;
     }
     if (Double.doubleToLongBits(shrinkPower) != Double.doubleToLongBits(other.shrinkPower)) {
