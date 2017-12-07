@@ -712,7 +712,7 @@ public class BOAState implements IQuimpSerialize {
     /**
      * If cell is zoomed, all parameter changes influence only this cell. (UI)
      */
-    boolean isZoomFreeze = true;
+    boolean isZoomFreeze = false;
 
     /**
      * When any plugin fails this field defines how QuimP should behave.

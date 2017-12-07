@@ -745,12 +745,28 @@ public class BOA_ implements PlugIn {
       chFirstPluginName.setEnabled(state);
       chSecondPluginName.setEnabled(state);
       chThirdPluginName.setEnabled(state);
-      bnFirstPluginGUI.setEnabled(state);
-      bnSecondPluginGUI.setEnabled(state);
-      bnThirdPluginGUI.setEnabled(state);
-      cbFirstPluginActiv.setEnabled(state);
-      cbSecondPluginActiv.setEnabled(state);
-      cbThirdPluginActiv.setEnabled(state);
+
+      if (chFirstPluginName.getSelectedItem() == NONE) {
+        bnFirstPluginGUI.setEnabled(false);
+        cbFirstPluginActiv.setEnabled(false);
+      } else {
+        bnFirstPluginGUI.setEnabled(state);
+        cbFirstPluginActiv.setEnabled(state);
+      }
+      if (chSecondPluginName.getSelectedItem() == NONE) {
+        bnSecondPluginGUI.setEnabled(false);
+        cbSecondPluginActiv.setEnabled(false);
+      } else {
+        bnSecondPluginGUI.setEnabled(state);
+        cbSecondPluginActiv.setEnabled(state);
+      }
+      if (chThirdPluginName.getSelectedItem() == NONE) {
+        bnThirdPluginGUI.setEnabled(false);
+        cbThirdPluginActiv.setEnabled(false);
+      } else {
+        bnThirdPluginGUI.setEnabled(state);
+        cbThirdPluginActiv.setEnabled(state);
+      }
       bnPopulatePlugin.setEnabled(state); // same as menuPopulatePlugin
       bnCopyLastPlugin.setEnabled(state);
       for (int i = 0; i < menuBar.getMenuCount(); i++) {
