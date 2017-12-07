@@ -91,7 +91,7 @@ public class RandomWalkParams {
     gamma[1] = 300;
     iter = 10000;
     dt = 0.1;
-    relim = new double[] { 8e-3, 1e-2 };
+    relim = new double[] { 8e-3, 10 * 8e-3 };
     intermediateFilter = null;
     finalFilter = null;
     useLocalMean = false;
