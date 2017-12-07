@@ -100,7 +100,7 @@ public class RandomWalkModel {
    * Shrink method getter.
    * 
    * @return the selectedFilteringMethod number
-   * @see PropagateSeeds#getPropagator(Propagators, boolean)
+   * @see PropagateSeeds#getPropagator(Propagators, boolean, ij.process.AutoThresholder.Method)
    * @see Propagators
    */
   public Propagators getselectedShrinkMethod() {
@@ -140,6 +140,13 @@ public class RandomWalkModel {
    * expand contour.
    */
   public double expandPower;
+  /**
+   * Estimate background if true.
+   * 
+   * @see PropagateSeeds#getTrueBackground(ij.process.ImageProcessor, ij.process.ImageProcessor)
+   * @see PropagateSeeds
+   */
+  public boolean estimateBackground;
   /**
    * Selected intermediate filtering algorithm.
    */
@@ -252,6 +259,7 @@ public class RandomWalkModel {
     selectedShrinkMethod = Propagators.NONE;
     shrinkPower = 10;
     expandPower = 15;
+    estimateBackground = false;
     selectedFilteringMethod = Filters.NONE;
     hatFilter = false;
     alev = 0.9;

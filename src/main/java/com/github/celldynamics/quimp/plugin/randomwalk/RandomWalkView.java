@@ -401,7 +401,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srIter
    */
   public int getSrIter() {
-    return (int) srIter.getValue();
+    return ((Integer) srIter.getValue()).intValue();
   }
 
   /**
@@ -517,6 +517,26 @@ public class RandomWalkView implements ActionListener, ItemListener {
     return getJComboBox(cbFilteringMethod);
   }
 
+  private JCheckBox chTrueBackground;
+
+  /**
+   * Get status of True Background.
+   * 
+   * @return the chTrueBackground enabled/disabled
+   */
+  public boolean getChTrueBackground() {
+    return chTrueBackground.isSelected();
+  }
+
+  /**
+   * Set status of True Background.
+   * 
+   * @param chTrueBackground the chTrueBackground to set (enabled/disabled)
+   */
+  public void setChTrueBackground(boolean chTrueBackground) {
+    this.chTrueBackground.setSelected(chTrueBackground);
+  }
+
   private JCheckBox chLocalMean;
 
   /**
@@ -545,7 +565,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srWindow
    */
   public int getSrLocalMeanWindow() {
-    return (int) srLocalMeanWindow.getValue();
+    return ((Integer) srLocalMeanWindow.getValue()).intValue();
   }
 
   /**
@@ -605,7 +625,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srNum
    */
   public int getSrNum() {
-    return (int) srNum.getValue();
+    return ((Integer) srNum.getValue()).intValue();
   }
 
   /**
@@ -625,7 +645,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srWindow
    */
   public int getSrWindow() {
-    return (int) srWindow.getValue();
+    return ((Integer) srWindow.getValue()).intValue();
   }
 
   /**
@@ -844,17 +864,27 @@ public class RandomWalkView implements ActionListener, ItemListener {
             getControlwithLabel(cbFilteringMethod, "Binary filter",
                     "Filtering applied for result between sweeps. Ignored if gamma[1]==0"),
             constrProc);
+    chTrueBackground = new JCheckBox("Estimate Background");
+    constrProc.gridx = 0;
+    constrProc.gridy = 4;
+    processPanel.add(
+            getControlwithLabel(chTrueBackground, "",
+                    "Try to estimate background level. Disable is background is homogenious"),
+            constrProc);
+
     JPanel localMeanPanel = new JPanel();
     localMeanPanel.setLayout(new GridLayout(2, 1));
     localMeanPanel.setBorder(BorderFactory.createTitledBorder("Use local mean"));
     chLocalMean = new JCheckBox("Local mean");
     chLocalMean.addItemListener(this);
-    localMeanPanel.add(getControlwithLabel(chLocalMean, "", "Enables local mean feature"));
+    localMeanPanel.add(getControlwithLabel(chLocalMean, "",
+            "Enable local mean feature. LM works best if mask is greater that object"
+                    + " (external masks)."));
     srLocalMeanWindow = getDoubleSpinner(23, 3, 501, 2, 0);
     localMeanPanel.add(getControlwithLabel(srLocalMeanWindow, "Window",
             "Odd mask within the local mean is evaluated"));
     constrProc.gridx = 0;
-    constrProc.gridy = 4;
+    constrProc.gridy = 5;
     processPanel.add(localMeanPanel, constrProc);
 
     JPanel postprocessPanel = new JPanel();
@@ -998,10 +1028,12 @@ public class RandomWalkView implements ActionListener, ItemListener {
     srGamma0.setEnabled(status);
     srGamma1.setEnabled(status);
     srIter.setEnabled(status);
+    srRelerr.setEnabled(status);
     cbShrinkMethod.setEnabled(status);
     srShrinkPower.setEnabled(status);
     srExpandPower.setEnabled(status);
     cbFilteringMethod.setEnabled(status);
+    chTrueBackground.setEnabled(status);
     chHatFilter.setEnabled(status);
     if (chHatFilter.isSelected()) {
       chHatFilter.setEnabled(status);

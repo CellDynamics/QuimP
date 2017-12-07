@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -42,6 +43,7 @@ import ij.gui.Roi;
 import ij.io.OpenDialog;
 import ij.plugin.Converter;
 import ij.plugin.tool.BrushTool;
+import ij.process.AutoThresholder;
 import ij.process.ByteProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
@@ -159,6 +161,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     view.setSrShrinkPower(model.shrinkPower);
     view.setSrExpandPower(model.expandPower);
     view.setFilteringMethod(model.getFilteringMethods(), model.getSelectedFilteringMethod().name());
+    view.setChTrueBackground(model.estimateBackground);
     view.setChLocalMean(model.params.useLocalMean);
     view.setSrLocalMeanWindow(model.params.localMeanMaskSize);
 
@@ -211,6 +214,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     model.shrinkPower = view.getSrShrinkPower();
     model.expandPower = view.getSrExpandPower();
     model.setSelectedFilteringMethod(view.getFilteringMethod());
+    model.estimateBackground = view.getChTrueBackground();
     model.params.useLocalMean = view.getChLocalMean();
     model.params.localMeanMaskSize = view.getSrLocalMeanWindow();
 
@@ -580,10 +584,10 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     ImagePlus seedImage = model.seedImage;
     ImagePlus segmented = null; // result of segmentation
     ImageStack ret; // all images treated as stacks
+    ImageStack is = null;
     Map<Seeds, ImageProcessor> seeds;
     PropagateSeeds propagateSeeds;
     isRun = true; // segmentation started
-    ImageStack is = image.getStack(); // get current stack (size 1 for one image)
     // local mean should not be applied for first slice if seeds are rgb - remember status here
     // to temporarily disable it and enable before processing second slice
     boolean localMeanUserStatus = model.params.useLocalMean;
@@ -591,7 +595,15 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     if (model.showPreview) {
       prev = new ImagePlus();
     }
+    AutoThresholder.Method thresholdBackground = null;
+    if (model.estimateBackground == true) {
+      thresholdBackground = AutoThresholder.Method.Otsu;
+    }
     try {
+      if (image == null || seedImage == null) {
+        throw new RandomWalkException("Can not open image");
+      }
+      is = image.getStack(); // get current stack (size 1 for one image)
       if (seedImage.getStackSize() == 1) {
         useSeedStack = false; // use propagateSeed for generating next frame seed from prev
       } else if (seedImage.getStackSize() == image.getStackSize()) {
@@ -600,8 +612,8 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
         throw new RandomWalkException("Seed stack and image stack must have the same z dimension");
       }
       // create seeding object with or without storing the history of configured type
-      propagateSeeds =
-              PropagateSeeds.getPropagator(model.selectedShrinkMethod, model.showSeeds, null);
+      propagateSeeds = PropagateSeeds.getPropagator(model.selectedShrinkMethod, model.showSeeds,
+              thresholdBackground);
       ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
       // create segmentation engine
       RandomWalkSegmentation obj =
@@ -732,7 +744,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
       IJ.error("Random Walk Segmentation error", e.getMessage());
     } finally {
       isRun = false; // segmentation stopped
-      IJ.showProgress(is.getSize() + 1, is.getSize()); // erase progress bar
+      IJ.showProgress(2, 1); // erase progress bar
       if (prev != null) {
         prev.close();
       }
@@ -826,7 +838,21 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
       runPlugin(); // will update IJ progress bar
       view.enableUI(true);
       view.setCancelLabel("Cancel");
-      return null;
+      return true;
+    }
+
+    @Override
+    protected void done() {
+      try {
+        get();
+      } catch (ExecutionException e) {
+        LOGGER.error(e.getMessage());
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } finally {
+        view.enableUI(true);
+        view.setCancelLabel("Cancel");
+      }
     }
   }
 
