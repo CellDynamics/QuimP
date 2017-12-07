@@ -21,6 +21,8 @@ import com.github.celldynamics.quimp.utils.test.RoiSaver;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
+import ij.process.AutoThresholder;
+import ij.process.Blitter;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
@@ -69,6 +71,16 @@ public abstract class PropagateSeeds {
     MORPHOLOGICAL
 
   }
+
+  /**
+   * Default setting. Better do not change.
+   */
+  public boolean darkBackground = true;
+  /**
+   * Thresholding method used for estimating true background.
+   * 
+   */
+  public AutoThresholder.Method thresholdMethod = AutoThresholder.Method.Otsu;
 
   /**
    * Default constructor.
@@ -314,6 +326,11 @@ public abstract class PropagateSeeds {
       return track.getOutlines(STEPS, false);
     }
 
+    @Override
+    public ImageProcessor getTrueBackground(ImageProcessor bck, ImageProcessor processor) {
+      return super.getTrueBackground(bck, processor);
+    }
+
   }
 
   /**
@@ -456,5 +473,28 @@ public abstract class PropagateSeeds {
    */
   public abstract Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous,
           double shrinkPower, double expandPower);
+
+  /**
+   * Excluded objects from estimated background.
+   * 
+   * <p>If seed propagator is used, background is obtained by expanding initially segmented cell and
+   * then negating the image. Thus background covers all area except cell. If there are other cell
+   * there they can influence background mean. To avoid this, that background is thresholded to
+   * detect objects that should be excluded from mean. This should be used when there are other
+   * objects around.
+   * 
+   * @param bck Background (white) estimated from Propagator
+   * @param org Original 8-bit image
+   * @return Background without objects above threshold
+   */
+  public ImageProcessor getTrueBackground(ImageProcessor bck, ImageProcessor org) {
+    ImageProcessor orgD = org.duplicate();
+    // orgD.setAutoThreshold(AutoThresholder.Method.Li, true);
+    orgD.threshold(
+            new AutoThresholder().getThreshold(AutoThresholder.Method.Otsu, orgD.getHistogram()));
+    orgD.invert();
+    orgD.copyBits(bck, 0, 0, Blitter.AND);
+    return orgD;
+  }
 
 }

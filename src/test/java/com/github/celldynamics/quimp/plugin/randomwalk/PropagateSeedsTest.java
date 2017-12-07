@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -12,7 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.celldynamics.quimp.Outline;
-import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds;
+import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
 import ij.IJ;
@@ -176,6 +177,30 @@ public class PropagateSeedsTest {
     cc.propagateSeed(mask.getStack().getProcessor(1), 20, 40);
     ImagePlus ret = cc.getCompositeSeed(org, 0);
     IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeedM_QuimP.tif");
+  }
+
+  /**
+   * Test of getTrueBackground().
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testGetTrueBackground() throws Exception {
+    ImageJ ij = new ImageJ();
+    ImagePlus testImage = IJ.openImage("src/test/Resources-static/PropagateSeeds/stack.tif");
+    ImagePlus testImagemask =
+            IJ.openImage("src/test/Resources-static/PropagateSeeds/stack-mask.tif");
+
+    PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
+    Map<Seeds, ImageProcessor> ret = cc.propagateSeed(testImagemask.getProcessor(), 5, 10);
+    ImageProcessor bck = cc.getTrueBackground(ret.get(Seeds.BACKGROUND), testImage.getProcessor());
+    IJ.saveAsTiff(new ImagePlus("", ret.get(Seeds.BACKGROUND)),
+            tmpdir + "testPropagateSeedBackground_B_QuimP.tif");
+    IJ.saveAsTiff(new ImagePlus("", ret.get(Seeds.FOREGROUND)),
+            tmpdir + "testPropagateSeedBackground_F_QuimP.tif");
+    IJ.saveAsTiff(new ImagePlus("", bck), tmpdir + "testPropagateSeedBackground_MOD_QuimP.tif");
+    // output is expected to not contain expanded cell and has removed other cells from background
+    // area
   }
 
 }
