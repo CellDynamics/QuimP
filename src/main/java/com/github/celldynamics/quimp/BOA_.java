@@ -430,6 +430,10 @@ public class BOA_ implements PlugIn {
     try {
       for (int s = 0; s < qState.nest.size(); s++) { // for each snake
         sh = qState.nest.getHandler(s);
+        if (sh.isSnakeHandlerFrozen()) {
+          LOGGER.debug("SnakeHandler " + sh.getID() + " is frozen");
+          continue;
+        }
         if (qState.boap.frame < sh.getStartFrame()) {
           continue;
         }
@@ -690,6 +694,7 @@ public class BOA_ implements PlugIn {
     private CheckboxMenuItem cbMenuPlotHead;
 
     private MenuItem menuPopulatePlugin;
+    private CheckboxMenuItem cbMenuZoomFreeze;
 
     /**
      * Default constructor.
@@ -740,12 +745,28 @@ public class BOA_ implements PlugIn {
       chFirstPluginName.setEnabled(state);
       chSecondPluginName.setEnabled(state);
       chThirdPluginName.setEnabled(state);
-      bnFirstPluginGUI.setEnabled(state);
-      bnSecondPluginGUI.setEnabled(state);
-      bnThirdPluginGUI.setEnabled(state);
-      cbFirstPluginActiv.setEnabled(state);
-      cbSecondPluginActiv.setEnabled(state);
-      cbThirdPluginActiv.setEnabled(state);
+
+      if (chFirstPluginName.getSelectedItem() == NONE) {
+        bnFirstPluginGUI.setEnabled(false);
+        cbFirstPluginActiv.setEnabled(false);
+      } else {
+        bnFirstPluginGUI.setEnabled(state);
+        cbFirstPluginActiv.setEnabled(state);
+      }
+      if (chSecondPluginName.getSelectedItem() == NONE) {
+        bnSecondPluginGUI.setEnabled(false);
+        cbSecondPluginActiv.setEnabled(false);
+      } else {
+        bnSecondPluginGUI.setEnabled(state);
+        cbSecondPluginActiv.setEnabled(state);
+      }
+      if (chThirdPluginName.getSelectedItem() == NONE) {
+        bnThirdPluginGUI.setEnabled(false);
+        cbThirdPluginActiv.setEnabled(false);
+      } else {
+        bnThirdPluginGUI.setEnabled(state);
+        cbThirdPluginActiv.setEnabled(state);
+      }
       bnPopulatePlugin.setEnabled(state); // same as menuPopulatePlugin
       bnCopyLastPlugin.setEnabled(state);
       for (int i = 0; i < menuBar.getMenuCount(); i++) {
@@ -856,6 +877,10 @@ public class BOA_ implements PlugIn {
       cbMenuPlotHead.setState(qState.boap.isHeadPlotted);
       cbMenuPlotHead.addItemListener(this);
       menuConfig.add(cbMenuPlotHead);
+      cbMenuZoomFreeze = new CheckboxMenuItem("Zoom freezes");
+      cbMenuZoomFreeze.setState(qState.boap.isZoomFreeze);
+      cbMenuZoomFreeze.addItemListener(this);
+      menuConfig.add(cbMenuZoomFreeze);
 
       menuShowHistory = new MenuItem("Show history");
       menuShowHistory.addActionListener(this);
@@ -1276,6 +1301,15 @@ public class BOA_ implements PlugIn {
       cbSecondPluginActiv.setState(qState.snakePluginList.isActive(1));
       // third plugin activity
       cbThirdPluginActiv.setState(qState.snakePluginList.isActive(2));
+    }
+
+    /**
+     * Update Menu checkboxes.
+     */
+    private void updateMenus() {
+      cbMenuPlotOriginalSnakes.setState(qState.boap.isProcessedSnakePlotted);
+      cbMenuPlotHead.setState(qState.boap.isHeadPlotted);
+      cbMenuZoomFreeze.setState(qState.boap.isZoomFreeze);
     }
 
     /**
@@ -1707,7 +1741,8 @@ public class BOA_ implements PlugIn {
       }
 
       /*
-       * Reload and re-apply all plugins stored in snakePluginListSnapshot.
+       * Reload and all plugins stored in snakePluginListSnapshot. Note that plugins are not
+       * executed, only loaded.
        * 
        * qState.snakePluginList.clear(); can not be called here because
        * com.github.celldynamics.quimp.BOAState.restore(int) makes reference to
@@ -1719,7 +1754,7 @@ public class BOA_ implements PlugIn {
         for (SnakePluginList sp : qState.snakePluginListSnapshots) {
           sp.afterSerialize();
         }
-        // copy snaphots for frame to current snakePluginList (and segParams)
+        // copy snapshots for frame to current snakePluginList (and segParams)
         qState.restore(qState.boap.frame);
         // recalculatePlugins(); // update screen
       }
@@ -1939,6 +1974,7 @@ public class BOA_ implements PlugIn {
       // updateToFrame calls updateSliceSelector only if there is action of
       // changing frame. If loaded frame is the same as current one this event is
       // not called.
+      updateMenus();
       if (qState.boap.frame != imageGroup.getOrgIpl().getSlice()) {
         // move to frame (will call updateSliceSelector)
         imageGroup.updateToFrame(qState.boap.frame);
@@ -2004,7 +2040,16 @@ public class BOA_ implements PlugIn {
         qState.boap.isHeadPlotted = cbMenuPlotHead.getState();
         imageGroup.updateOverlay(qState.boap.frame);
       }
-
+      if (source == cbMenuZoomFreeze) {
+        qState.boap.isZoomFreeze = cbMenuZoomFreeze.getState();
+        if (qState.boap.isZoomFreeze && qState.boap.zoom) { // set in zoom mode
+          JOptionPane.showMessageDialog(window, QuimpToolsCollection
+                  .stringWrap("Please un-zoom your view first.", QuimP.LINE_WRAP), "Error",
+                  JOptionPane.ERROR_MESSAGE);
+          qState.boap.isZoomFreeze = false;
+          cbMenuZoomFreeze.setState(false); // unselect
+        }
+      }
       // actions on Plugin selections
       if (source == chFirstPluginName) { // run in thread
         LOGGER.debug("Used firstPluginName, val: " + chFirstPluginName.getSelectedItem());
@@ -2035,10 +2080,23 @@ public class BOA_ implements PlugIn {
           qState.boap.snakeToZoom = -1; // set negative value to indicate no zoom
           qState.boap.zoom = false; // important for other parts (legacy)
           imageGroup.unzoom(canvas); // unzoom view
+          // unfreeze all
+          for (SnakeHandler sh : qState.nest.getHandlers()) { // always unfreeze
+            sh.unfreezeHandler();
+          }
         } else { // zoom here
           if (!qState.nest.isVacant()) { // any snakes present
             qState.boap.snakeToZoom = Integer.parseInt(chZoom.getSelectedItem()); // get int
             qState.boap.zoom = true; // legacy compatibility
+            // snakeID, not index
+            SnakeHandler snakeH = qState.nest.getHandlerofId(qState.boap.snakeToZoom);
+            if (qState.boap.isZoomFreeze == true && snakeH != null
+                    && snakeH.isStoredAt(qState.boap.frame)) {
+              for (SnakeHandler sh : qState.nest.getHandlers()) {
+                sh.freezeHandler();
+              } // freeze all except:
+              snakeH.unfreezeHandler();
+            }
             imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
           }
         }
@@ -2336,12 +2394,12 @@ public class BOA_ implements PlugIn {
         try {
           if (qState.boap.frame != startF) { // expand snakes for next frame
             if (!qState.segParam.use_previous_snake) {
-              qState.nest.resetForFrame(qState.boap.frame);
+              qState.nest.resetForFrame(qState.boap.frame); // FIXME block here as well? liveSnake
             } else {
               if (!qState.segParam.expandSnake) {
-                constrictor.loosen(qState.nest, qState.boap.frame);
+                constrictor.loosen(qState.nest, qState.boap.frame); // FIXME here? this is about LS
               } else {
-                constrictor.implode(qState.nest, qState.boap.frame);
+                constrictor.implode(qState.nest, qState.boap.frame); // FIXME and here
               }
             }
           }
@@ -2350,6 +2408,10 @@ public class BOA_ implements PlugIn {
             snH = qState.nest.getHandler(s);
             snake = snH.getLiveSnake();
             try {
+              if (snH.isSnakeHandlerFrozen()) {
+                LOGGER.debug("SnakeHandler " + snH.getID() + " is frozen");
+                continue;
+              }
               if (!snake.alive || qState.boap.frame < snH.getStartFrame()) {
                 continue;
               }
