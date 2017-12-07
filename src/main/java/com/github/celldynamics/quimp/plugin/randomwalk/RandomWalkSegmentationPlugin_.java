@@ -153,6 +153,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     view.setSrGamma0(model.params.gamma[0]);
     view.setSrGamma1(model.params.gamma[1]);
     view.setSrIter(model.params.iter);
+    view.setSrRelerr(model.params.relim[0]);
 
     view.setShrinkMethod(model.getShrinkMethods(), model.getselectedShrinkMethod().name());
     view.setSrShrinkPower(model.shrinkPower);
@@ -203,6 +204,8 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
     model.params.gamma[0] = view.getSrGamma0();
     model.params.gamma[1] = view.getSrGamma1();
     model.params.iter = view.getSrIter();
+    model.params.relim[0] = view.getSrRelerr();
+    model.params.relim[1] = model.params.relim[0] * 10;
 
     model.setselectedShrinkMethod(view.getShrinkMethod());
     model.shrinkPower = view.getSrShrinkPower();

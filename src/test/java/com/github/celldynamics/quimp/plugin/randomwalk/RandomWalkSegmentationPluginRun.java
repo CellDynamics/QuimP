@@ -2,8 +2,6 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import java.util.concurrent.CountDownLatch;
 
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentationPlugin_;
-
 import ij.IJ;
 import ij.ImageJ;
 
@@ -31,11 +29,8 @@ public class RandomWalkSegmentationPluginRun {
     // IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
     // "open(\"src/test/Resources-static/ticket209gh/fluoreszenz-test.tif\")");
     // IJ.runMacro("open(\"src/test/Resources-static/ticket209gh/segmented_color.tif\")");
-    IJ.openImage("src/test/Resources-static/RW/" + "C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18.tif")
-            .show();
-    IJ.openImage(
-            "src/test/Resources-static/RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_manualseed.png")
-            .show();
+    IJ.openImage("/home/baniuk/Documents/Other_Images/from_Till/Stack.tif").show();
+    IJ.openImage("/home/baniuk/Documents/SEED_Stack.tif").show();
     obj.showUi(true);
 
   }

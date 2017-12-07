@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowFocusListener;
+import java.util.Collections;
 import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
@@ -79,6 +80,7 @@ import com.github.celldynamics.quimp.utils.UiTools;
  *   Gamma 0 | "srGamma0"
  *   Gamma 1 | "srGamma1"
  *   Iterations | "srIter"
+ *   Rel error | "srRelerr"
  *   }
  *   {+
  *   Inter-process
@@ -409,6 +411,26 @@ public class RandomWalkView implements ActionListener, ItemListener {
    */
   public void setSrIter(int srIter) {
     this.srIter.setValue(srIter);
+  }
+
+  private JSpinner srRelerr;
+
+  /**
+   * Get RW number of iterations.
+   * 
+   * @return the srRelerr
+   */
+  public double getSrRelerr() {
+    return (double) srRelerr.getValue();
+  }
+
+  /**
+   * Set RW number of iterations.
+   * 
+   * @param srRelerr the srRelerr to set
+   */
+  public void setSrRelerr(double srRelerr) {
+    this.srRelerr.setValue(srRelerr);
   }
 
   private JComboBox<String> cbShrinkMethod;
@@ -770,26 +792,28 @@ public class RandomWalkView implements ActionListener, ItemListener {
 
     JPanel optionsPanel = new JPanel();
     optionsPanel.setBorder(BorderFactory.createTitledBorder("Segmentation options"));
-    optionsPanel.setLayout(new GridLayout(5, 1, 2, 2));
-    srAlpha = getDoubleSpinner(400, 0, 1e5, 1, 5);
+    optionsPanel.setLayout(new GridLayout(6, 1, 2, 2));
+    srAlpha = getDoubleSpinner(400, 0, 1e5, 1, 0);
     optionsPanel.add(getControlwithLabel(srAlpha, "Alpha",
             "alpha penalises pixels whose intensities are far away from the mean seed intensity"));
-    srBeta = getDoubleSpinner(50, 0, 1e5, 1, 5);
+    srBeta = getDoubleSpinner(50, 0, 1e5, 1, 0);
     optionsPanel.add(getControlwithLabel(srBeta, "Beta",
             "beta penalises pixels located at an edge, i.e.where there is a large gradient in"
                     + " intensity. Diffusion will be reduced</html>"));
-    srGamma0 = getDoubleSpinner(100, 0, 1e5, 1, 5);
+    srGamma0 = getDoubleSpinner(100, 0, 1e5, 1, 0);
     optionsPanel.add(getControlwithLabel(srGamma0, "Gamma 0",
             "gamma is the strength of competition between foreground and background."
                     + " gamma 0 is for preliminary segmentation whereas gamma 1 for fine"
                     + " segmentation. Temporally disabled"));
     srGamma0.setEnabled(false); // Temporally disabled, see enableUI as well
-    srGamma1 = getDoubleSpinner(300, 0, 1e5, 1, 5);
+    srGamma1 = getDoubleSpinner(300, 0, 1e5, 1, 0);
     optionsPanel.add(getControlwithLabel(srGamma1, "Gamma 1",
             "Set to 0 to skip second sweep. Any other value is currently ignored."));
-    srIter = new JSpinner(new SpinnerNumberModel(300, 1, 10000, 1));
+    srIter = getDoubleSpinner(300, 1, 10000, 1, 0);
     optionsPanel.add(getControlwithLabel(srIter, "Iterations",
             "Maximum number of iterations." + "Second sweep uses half of this value"));
+    srRelerr = getDoubleSpinner(8.1e-3, 0, 10, 1e-4, 6);
+    optionsPanel.add(getControlwithLabel(srRelerr, "Rel error", "Relative error."));
 
     JPanel processPanel = new JPanel();
     processPanel.setBorder(BorderFactory.createTitledBorder("Inter-process"));
@@ -805,11 +829,11 @@ public class RandomWalkView implements ActionListener, ItemListener {
                     "Shrinking/expanding if nth frame result is used as n+1 frame seed."
                             + " Ignored for single image and if seed is stack of image size."),
             constrProc);
-    srShrinkPower = getDoubleSpinner(10, 0, 10000, 1, 5);
+    srShrinkPower = getDoubleSpinner(10, 0, 10000, 1, 0);
     constrProc.gridx = 0;
     constrProc.gridy = 1;
     processPanel.add(getControlwithLabel(srShrinkPower, "Shrink power", ""), constrProc);
-    srExpandPower = getDoubleSpinner(15, 0, 10000, 1, 5);
+    srExpandPower = getDoubleSpinner(15, 0, 10000, 1, 0);
     constrProc.gridx = 0;
     constrProc.gridy = 2;
     processPanel.add(getControlwithLabel(srExpandPower, "Expand power", ""), constrProc);
@@ -826,7 +850,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     chLocalMean = new JCheckBox("Local mean");
     chLocalMean.addItemListener(this);
     localMeanPanel.add(getControlwithLabel(chLocalMean, "", "Enables local mean feature"));
-    srLocalMeanWindow = new JSpinner(new SpinnerNumberModel(23, 3, 501, 2));
+    srLocalMeanWindow = getDoubleSpinner(23, 3, 501, 2, 0);
     localMeanPanel.add(getControlwithLabel(srLocalMeanWindow, "Window",
             "Odd mask within the local mean is evaluated"));
     constrProc.gridx = 0;
@@ -843,12 +867,12 @@ public class RandomWalkView implements ActionListener, ItemListener {
     chHatFilter.addItemListener(this);
     UiTools.setToolTip(chHatFilter, "Try to remove small inclusions in contour");
     postprocesshatPanel.add(getControlwithLabel(chHatFilter, "", ""));
-    srAlev = getDoubleSpinner(0.9, 0, 1, 0.01, 5);
+    srAlev = getDoubleSpinner(0.9, 0, 1, 0.01, 4);
     postprocesshatPanel.add(getControlwithLabel(srAlev, "srAlev", ""));
-    srNum = new JSpinner(new SpinnerNumberModel(1, 0, 500, 1));
+    srNum = getDoubleSpinner(1, 0, 500, 1, 0);
     postprocesshatPanel.add(getControlwithLabel(srNum, "srNum",
             "If set to 0 all features with rank > srAlew will be removed"));
-    srWindow = new JSpinner(new SpinnerNumberModel(15, 1, 500, 1));
+    srWindow = getDoubleSpinner(15, 1, 500, 1, 0);
     postprocesshatPanel.add(getControlwithLabel(srWindow, "srWindow", ""));
     GridBagConstraints constrPost = new GridBagConstraints();
     constrPost.gridx = 0;
@@ -1057,7 +1081,13 @@ public class RandomWalkView implements ActionListener, ItemListener {
   private JSpinner getDoubleSpinner(double d, double min, double max, double step, int columns) {
     SpinnerNumberModel model = new SpinnerNumberModel(d, min, max, step);
     JSpinner spinner = new JSpinner(model);
-    ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().setColumns(columns);
+    String c = "";
+    if (columns == 0) {
+      c = "0";
+    } else {
+      c = "0." + String.join("", Collections.nCopies(columns, "0"));
+    }
+    spinner.setEditor(new JSpinner.NumberEditor(spinner, c));
     return spinner;
   }
 
