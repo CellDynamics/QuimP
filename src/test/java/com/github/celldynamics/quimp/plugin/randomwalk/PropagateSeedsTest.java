@@ -19,6 +19,7 @@ import com.github.celldynamics.quimp.utils.test.RoiSaver;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import ij.process.AutoThresholder;
 import ij.process.ImageProcessor;
 
 /**
@@ -139,7 +140,7 @@ public class PropagateSeedsTest {
     ImageJ ij = new ImageJ();
     ImagePlus ip = testImage2.duplicate();
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
-    cc.propagateSeed(ip.getProcessor(), 5, 10);
+    cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 5, 10);
 
   }
 
@@ -152,11 +153,11 @@ public class PropagateSeedsTest {
   public void testGetCompositeSeed_Contour() throws Exception {
     ImageJ ij = new ImageJ();
     ImagePlus ip = testImage2.duplicate();
-    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(true);
+    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(true, null);
     ImagePlus org = IJ.openImage("src/test/Resources-static/G.tif");
     ImagePlus mask = IJ.openImage("src/test/Resources-static/GMask.tif");
 
-    cc.propagateSeed(mask.getStack().getProcessor(1), 5, 10);
+    cc.propagateSeed(mask.getStack().getProcessor(1), mask.getStack().getProcessor(1), 5, 10);
     ImagePlus ret = cc.getCompositeSeed(org, 0);
     IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeed_QuimP.tif");
   }
@@ -170,11 +171,11 @@ public class PropagateSeedsTest {
   public void testGetCompositeSeed_Morphological() throws Exception {
     ImageJ ij = new ImageJ();
     ImagePlus ip = testImage2.duplicate();
-    PropagateSeeds.Morphological cc = new PropagateSeeds.Morphological(true);
+    PropagateSeeds.Morphological cc = new PropagateSeeds.Morphological(true, null);
     ImagePlus org = IJ.openImage("src/test/Resources-static/G.tif");
     ImagePlus mask = IJ.openImage("src/test/Resources-static/GMask.tif");
 
-    cc.propagateSeed(mask.getStack().getProcessor(1), 20, 40);
+    cc.propagateSeed(mask.getStack().getProcessor(1), mask.getStack().getProcessor(1), 20, 40);
     ImagePlus ret = cc.getCompositeSeed(org, 0);
     IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeedM_QuimP.tif");
   }
@@ -191,8 +192,9 @@ public class PropagateSeedsTest {
     ImagePlus testImagemask =
             IJ.openImage("src/test/Resources-static/PropagateSeeds/stack-mask.tif");
 
-    PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
-    Map<Seeds, ImageProcessor> ret = cc.propagateSeed(testImagemask.getProcessor(), 5, 10);
+    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, AutoThresholder.Method.Otsu);
+    Map<Seeds, ImageProcessor> ret =
+            cc.propagateSeed(testImagemask.getProcessor(), testImagemask.getProcessor(), 5, 10);
     ImageProcessor bck = cc.getTrueBackground(ret.get(Seeds.BACKGROUND), testImage.getProcessor());
     IJ.saveAsTiff(new ImagePlus("", ret.get(Seeds.BACKGROUND)),
             tmpdir + "testPropagateSeedBackground_B_QuimP.tif");

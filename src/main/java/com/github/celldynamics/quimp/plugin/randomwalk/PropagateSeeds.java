@@ -79,8 +79,10 @@ public abstract class PropagateSeeds {
   /**
    * Thresholding method used for estimating true background.
    * 
+   * <p>If null background is not modified.
+   * 
    */
-  public AutoThresholder.Method thresholdMethod = AutoThresholder.Method.Otsu;
+  private AutoThresholder.Method thresholdMethod = null;
 
   /**
    * Default constructor.
@@ -92,13 +94,16 @@ public abstract class PropagateSeeds {
    * Allow to store seed history that can be later presented in form of composite image.
    * 
    * @param storeSeeds <tt>true</tt> to store seeds.
+   * @param trueBackground if not null, selected method will be used for estimating true background
+   *        - excluding bright objects from it
    * @see #getCompositeSeed(ImagePlus, int)
    */
-  public PropagateSeeds(boolean storeSeeds) {
+  public PropagateSeeds(boolean storeSeeds, AutoThresholder.Method trueBackground) {
     this.storeSeeds = storeSeeds;
     if (storeSeeds) {
       this.seeds = new ArrayList<>();
     }
+    thresholdMethod = trueBackground;
   }
 
   /**
@@ -134,17 +139,20 @@ public abstract class PropagateSeeds {
    * Return demanded propagator.
    * 
    * @param prop propagator to create
-   * @param storeseeds true for storig seeds
+   * @param storeseeds true for storing seeds
+   * @param trueBackground if not null, selected method will be used for estimating true
+   *        background - excluding bright objects from it
    * @return the propagator
    */
-  public static PropagateSeeds getPropagator(Propagators prop, boolean storeseeds) {
+  public static PropagateSeeds getPropagator(Propagators prop, boolean storeseeds,
+          AutoThresholder.Method trueBackground) {
     switch (prop) {
       case NONE:
         return new PropagateSeeds.Dummy(storeseeds);
       case CONTOUR:
-        return new PropagateSeeds.Contour(storeseeds);
+        return new PropagateSeeds.Contour(storeseeds, trueBackground);
       case MORPHOLOGICAL:
-        return new PropagateSeeds.Morphological(storeseeds);
+        return new PropagateSeeds.Morphological(storeseeds, trueBackground);
       default:
         throw new IllegalArgumentException("Unknown propagator");
     }
@@ -174,7 +182,7 @@ public abstract class PropagateSeeds {
      * @see #getCompositeSeed(ImagePlus, int)
      */
     public Dummy(boolean storeSeeds) {
-      binary = new PropagateSeeds.Morphological(storeSeeds);
+      binary = new PropagateSeeds.Morphological(storeSeeds, null);
     }
 
     /*
@@ -185,9 +193,9 @@ public abstract class PropagateSeeds {
      * 
      */
     @Override
-    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
-            double expandPower) {
-      return binary.propagateSeed(previous, 0, 0);
+    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, ImageProcessor org,
+            double shrinkPower, double expandPower) {
+      return binary.propagateSeed(previous, org, 0, 0);
     }
 
     /*
@@ -224,17 +232,19 @@ public abstract class PropagateSeeds {
      * Default constructor without storing seed history.
      */
     public Contour() {
-      this(false);
+      this(false, null);
     }
 
     /**
      * Allow to store seed history that can be later presented in form of composite image.
      * 
      * @param storeSeeds <tt>true</tt> to store seeds.
+     * @param trueBackground if not null, selected method will be used for estimating true
+     *        background - excluding bright objects from it
      * @see #getCompositeSeed(ImagePlus, int)
      */
-    public Contour(boolean storeSeeds) {
-      super(storeSeeds);
+    public Contour(boolean storeSeeds, AutoThresholder.Method trueBackground) {
+      super(storeSeeds, trueBackground);
     }
 
     /**
@@ -248,16 +258,20 @@ public abstract class PropagateSeeds {
      * 
      * @param previous Previous result of segmentation. BW mask with white object on black
      *        background.
+     * @param org original image that new seeds are computed for. Usually it is current image
      * @param shrinkPower Shrink size for objects in pixels.
      * @param expandPower Expand size used to generate background (object is expanded and then
      *        subtracted from background)
      * @return List of background and foreground coordinates.
-     * @see PropagateSeeds.Morphological#propagateSeed(ImageProcessor, double, double)
+     * @see PropagateSeeds.Morphological#propagateSeed(ImageProcessor, ImageProcessor, double,
+     *      double)
      * @see Outline#scale(double, double, double, double)
+     * @see #getTrueBackground(ImageProcessor, ImageProcessor)
+     * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
      */
     @Override
-    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
-            double expandPower) {
+    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, ImageProcessor org,
+            double shrinkPower, double expandPower) {
       ByteProcessor small = new ByteProcessor(previous.getWidth(), previous.getHeight());
       ByteProcessor big = new ByteProcessor(previous.getWidth(), previous.getHeight());
       small.setColor(Color.BLACK);
@@ -305,7 +319,7 @@ public abstract class PropagateSeeds {
       // store seeds if option ticked
       Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
       ret.put(Seeds.FOREGROUND, small);
-      ret.put(Seeds.BACKGROUND, big);
+      ret.put(Seeds.BACKGROUND, getTrueBackground(big, org));
       if (storeSeeds) {
         seeds.add(ret);
       }
@@ -326,11 +340,6 @@ public abstract class PropagateSeeds {
       return track.getOutlines(STEPS, false);
     }
 
-    @Override
-    public ImageProcessor getTrueBackground(ImageProcessor bck, ImageProcessor processor) {
-      return super.getTrueBackground(bck, processor);
-    }
-
   }
 
   /**
@@ -345,17 +354,19 @@ public abstract class PropagateSeeds {
      * Default constructor without storing seed history.
      */
     public Morphological() {
-      this(false);
+      this(false, null);
     }
 
     /**
      * Allow to store seed history that can be later presented in form of composite image.
      * 
      * @param storeSeeds <tt>true</tt> to store seeds.
+     * @param trueBackground if not null, selected method will be used for estimating true
+     *        background - excluding bright objects from it
      * @see #getCompositeSeed(ImagePlus, int)
      */
-    public Morphological(boolean storeSeeds) {
-      super(storeSeeds);
+    public Morphological(boolean storeSeeds, AutoThresholder.Method trueBackground) {
+      super(storeSeeds, trueBackground);
     }
 
     /**
@@ -364,17 +375,20 @@ public abstract class PropagateSeeds {
      * <p>Setting <tt>shrinkPower</tt> or <tt>expandPower</tt> to zero prevents contour
      * modifications.
      * 
-     * @param previous segmented image, background on \b zero
+     * @param previous segmented image, background on zero
+     * @param org original image that new seeds are computed for. Usually it is current image
      * @param shrinkPower number of erode iterations
      * @param expandPower number of dilate iterations
      * 
      * @return Map containing list of coordinates that belong to foreground and background. Map is
      *         addressed by two enums: <tt>FOREGROUND</tt> and <tt>BACKGROUND</tt>
      * @see RandomWalkSegmentation#decodeSeeds(ImagePlus, Color, Color)
+     * @see #getTrueBackground(ImageProcessor, ImageProcessor)
+     * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
      */
     @Override
-    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, double shrinkPower,
-            double expandPower) {
+    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, ImageProcessor org,
+            double shrinkPower, double expandPower) {
       ImageProcessor cp = previous;
       // object smaller than on frame n
       ImageProcessor small = cp.duplicate();
@@ -401,7 +415,7 @@ public abstract class PropagateSeeds {
       // store seeds if option ticked
       Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
       ret.put(Seeds.FOREGROUND, small);
-      ret.put(Seeds.BACKGROUND, big);
+      ret.put(Seeds.BACKGROUND, getTrueBackground(big, org));
       if (storeSeeds) {
         seeds.add(ret);
       }
@@ -467,15 +481,18 @@ public abstract class PropagateSeeds {
    * Propagate seed.
    *
    * @param previous the previous
+   * @param org original image that new seeds are computed for. Usually it is current image
    * @param shrinkPower the shrink power
    * @param expandPower the expand power
    * @return the map
+   * @see #getTrueBackground(ImageProcessor, ImageProcessor)
+   * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
    */
   public abstract Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous,
-          double shrinkPower, double expandPower);
+          ImageProcessor org, double shrinkPower, double expandPower);
 
   /**
-   * Excluded objects from estimated background.
+   * Excludes objects from estimated background.
    * 
    * <p>If seed propagator is used, background is obtained by expanding initially segmented cell and
    * then negating the image. Thus background covers all area except cell. If there are other cell
@@ -486,15 +503,26 @@ public abstract class PropagateSeeds {
    * @param bck Background (white) estimated from Propagator
    * @param org Original 8-bit image
    * @return Background without objects above threshold
+   * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
    */
-  public ImageProcessor getTrueBackground(ImageProcessor bck, ImageProcessor org) {
+  ImageProcessor getTrueBackground(ImageProcessor bck, ImageProcessor org) {
+    if (thresholdMethod == null) {
+      return bck;
+    }
     ImageProcessor orgD = org.duplicate();
-    // orgD.setAutoThreshold(AutoThresholder.Method.Li, true);
-    orgD.threshold(
-            new AutoThresholder().getThreshold(AutoThresholder.Method.Otsu, orgD.getHistogram()));
+    orgD.threshold(new AutoThresholder().getThreshold(thresholdMethod, orgD.getHistogram()));
     orgD.invert();
-    orgD.copyBits(bck, 0, 0, Blitter.AND);
+    orgD.copyBits(bck, 0, 0, Blitter.AND); // cut
     return orgD;
+  }
+
+  /**
+   * Turn on processing background before using it as seed.
+   * 
+   * @param method Threshold method. null for turning off processing
+   */
+  public void setTrueBackgroundProcessing(AutoThresholder.Method method) {
+    thresholdMethod = method;
   }
 
 }

@@ -600,7 +600,8 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
         throw new RandomWalkException("Seed stack and image stack must have the same z dimension");
       }
       // create seeding object with or without storing the history of configured type
-      propagateSeeds = PropagateSeeds.getPropagator(model.selectedShrinkMethod, model.showSeeds);
+      propagateSeeds =
+              PropagateSeeds.getPropagator(model.selectedShrinkMethod, model.showSeeds, null);
       ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
       // create segmentation engine
       RandomWalkSegmentation obj =
@@ -637,8 +638,8 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
           Map<Seeds, ImageProcessor> seedsTmp = RandomWalkSegmentation
                   .decodeSeeds(seedImage.getStack().getProcessor(startSlice), foreColor, backColor);
           // this is mask (bigger) so produce seeds, overwrite seeds
-          seeds = propagateSeeds.propagateSeed(seedsTmp.get(Seeds.FOREGROUND), model.shrinkPower,
-                  model.expandPower);
+          seeds = propagateSeeds.propagateSeed(seedsTmp.get(Seeds.FOREGROUND),
+                  is.getProcessor(startSlice), model.shrinkPower, model.expandPower);
           // mask to local mean
           seeds.put(Seeds.ROUGHMASK,
                   seedImage.getStack().getProcessor(startSlice).convertToByte(false));
@@ -671,7 +672,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
             case QconfFile:
             case MaskImage:
               nextseed = propagateSeeds.propagateSeed(nextseed.get(Seeds.FOREGROUND),
-                      model.shrinkPower, model.expandPower);
+                      is.getProcessor(s), model.shrinkPower, model.expandPower);
               nextseed.put(Seeds.ROUGHMASK,
                       seedImage.getStack().getProcessor(s).convertToByte(false));
               break;
@@ -679,7 +680,8 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
           }
         } else { // false - use previous frame
           // modify masks and convert to lists
-          nextseed = propagateSeeds.propagateSeed(retIp, model.shrinkPower, model.expandPower);
+          nextseed = propagateSeeds.propagateSeed(retIp, is.getProcessor(s), model.shrinkPower,
+                  model.expandPower);
           nextseed.put(Seeds.ROUGHMASK, retIp);
         }
         // segmentation and results stored for next seeding
