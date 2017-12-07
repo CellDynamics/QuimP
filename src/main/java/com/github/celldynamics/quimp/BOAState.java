@@ -710,6 +710,11 @@ public class BOAState implements IQuimpSerialize {
     boolean isHeadPlotted = false;
 
     /**
+     * If cell is zoomed, all parameter changes influence only this cell. (UI)
+     */
+    boolean isZoomFreeze = true;
+
+    /**
      * When any plugin fails this field defines how QuimP should behave.
      * 
      * <p>When it is true QuimP breaks process of segmentation and do not store filtered snake in
