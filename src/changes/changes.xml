@@ -6,6 +6,20 @@
     <author email="p.baniukiewicz@warwick.ac.uk">Piotr Baniukiewicz</author>
   </properties>
   <body>
+        <release version="17.12.01" date="2017-12-08" description="Release">
+         <action dev="baniuk" type="update" issue="275">
+              QuimP-RandomWalk: Allow to set relative error in Random Walk plugin. This solves problem with ending iterative process too early. There is also new options for better estimation of background level in automatic seed propagation mode.
+         </action>
+         <action dev="baniuk" type="add" issue="274">
+              QuimP-BOA: New setting that allows to process only cell that is currently zoomed in. Other cells are frozen and they are not touched when either segmentation options or filters are changed.  
+         </action>
+         <action dev="baniuk" type="fix" issue="">
+              QuimP: Better exception handling and minor fixes.
+         </action>
+         <action dev="baniuk" type="update" issue="">
+              QuimP-ANA: Changed behavior of Plot Outline check box in ANA GUI. Now, its state is propagated through all cells processed within one QCONF.
+         </action>
+        </release>
         <release version="17.10.02" date="2017-10-21" description="Release">
          <action dev="baniuk" type="fix" issue="270">
               QuimP: Exception when registration window was canceled by unregistered user. 
