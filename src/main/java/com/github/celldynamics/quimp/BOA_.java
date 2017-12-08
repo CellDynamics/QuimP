@@ -2107,8 +2107,10 @@ public class BOA_ implements PlugIn {
           qState.boap.zoom = false; // important for other parts (legacy)
           imageGroup.unzoom(canvas); // unzoom view
           // unfreeze all
-          for (SnakeHandler sh : qState.nest.getHandlers()) { // always unfreeze
-            sh.unfreezeHandler();
+          if (qState.boap.isZoomFreeze == true) {
+            for (SnakeHandler sh : qState.nest.getHandlers()) {
+              sh.unfreezeHandler();
+            }
           }
         } else { // zoom here
           if (!qState.nest.isVacant()) { // any snakes present
