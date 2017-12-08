@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -124,6 +125,7 @@ public abstract class QWindowBuilder {
   private final int srMax = 2; // spinner max value
   private final int srStep = 3; // spinner step value
   private final int srDefault = 4; // spinner default value
+  private final int srFract = 5; // spinner number of fractional places
 
   /**
    * The apply B.
@@ -277,14 +279,40 @@ public abstract class QWindowBuilder {
       }
       switch (uiparams[uiType].toLowerCase()) {
         case "spinner": // by default all spinners are double
+        {
           helpText = spinnerVerify(uiparams);
           SpinnerNumberModel model = new SpinnerNumberModel(Double.parseDouble(uiparams[srDefault]),
                   Double.parseDouble(uiparams[srMin]), // min
                   Double.parseDouble(uiparams[srMax]), // max
                   Double.parseDouble(uiparams[srStep])); // step
-          ui.put(key, new JSpinner(model));
+          JSpinner sp = new JSpinner(model);
+          ui.put(key, sp);
+
           ui.put(key + "label", new Label(WordUtils.capitalize(WordUtils.capitalize(key)))); // des
           ui.put(key + "help", new Label(helpText));
+        }
+          break;
+        case "spinnerd": // by default all spinners are double
+        {
+          helpText = spinnerVerify(uiparams);
+          SpinnerNumberModel model = new SpinnerNumberModel(Double.parseDouble(uiparams[srDefault]),
+                  Double.parseDouble(uiparams[srMin]), // min
+                  Double.parseDouble(uiparams[srMax]), // max
+                  Double.parseDouble(uiparams[srStep])); // step
+          JSpinner sp = new JSpinner(model);
+          String c = "";
+          Double val = Double.parseDouble(uiparams[srFract]);
+          if (val == 0) {
+            c = "0";
+          } else {
+            c = "0." + String.join("", Collections.nCopies(val.intValue(), "0"));
+          }
+          sp.setEditor(new JSpinner.NumberEditor(sp, c));
+          ui.put(key, sp);
+
+          ui.put(key + "label", new Label(WordUtils.capitalize(WordUtils.capitalize(key)))); // des
+          ui.put(key + "help", new Label(helpText));
+        }
           break;
         case "choiceh":
           helpText = choiceVerify(uiparams);
@@ -580,6 +608,12 @@ public abstract class QWindowBuilder {
       // check type of component
       switch (def.getParsed(key, DELIMITER)[uiType].toLowerCase()) {
         case "spinner": {
+          JSpinner val = (JSpinner) m.getValue(); // get value
+          ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
+          // the same key
+          break;
+        }
+        case "spinnerd": {
           JSpinner val = (JSpinner) m.getValue(); // get value
           ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
           // the same key
