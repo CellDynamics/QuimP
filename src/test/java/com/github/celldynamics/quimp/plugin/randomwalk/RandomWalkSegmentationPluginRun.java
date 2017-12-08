@@ -29,8 +29,8 @@ public class RandomWalkSegmentationPluginRun {
     // IJ.runMacro( // load images that are called from RandomWalkSegmentationPlugin
     // "open(\"src/test/Resources-static/ticket209gh/fluoreszenz-test.tif\")");
     // IJ.runMacro("open(\"src/test/Resources-static/ticket209gh/segmented_color.tif\")");
-    IJ.openImage("/home/baniuk/Documents/Other_Images/from_Till/Stack.tif").show();
-    IJ.openImage("/home/baniuk/Documents/SEED_Stack.tif").show();
+    IJ.openImage("src/test/Resources-static/PropagateSeeds/stack.tif").show();
+    IJ.openImage("src/test/Resources-static/PropagateSeeds/stack-mask.tif").show();
     obj.showUi(true);
 
   }

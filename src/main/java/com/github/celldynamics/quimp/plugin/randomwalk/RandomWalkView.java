@@ -88,6 +88,7 @@ import com.github.celldynamics.quimp.utils.UiTools;
  *   Shrink power | "srShrinkPower"
  *   Expand power | "srExpandPower"
  *   Binary filter | ^cbFilteringMethod^
+ *   () chTrueBackground
  *   {+
  *   Use local mean
  *   () chLocalMean
@@ -321,7 +322,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srAlpha
    */
   public double getSrAlpha() {
-    return (Double) srAlpha.getValue();
+    return ((Number) srAlpha.getValue()).doubleValue();
   }
 
   /**
@@ -341,7 +342,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srBeta
    */
   public double getSrBeta() {
-    return (double) srBeta.getValue();
+    return ((Number) srBeta.getValue()).doubleValue();
   }
 
   /**
@@ -361,7 +362,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srGamma0
    */
   public double getSrGamma0() {
-    return (double) srGamma0.getValue();
+    return ((Number) srGamma0.getValue()).doubleValue();
   }
 
   /**
@@ -381,7 +382,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srGamma1
    */
   public double getSrGamma1() {
-    return (double) srGamma1.getValue();
+    return ((Number) srGamma1.getValue()).doubleValue();
   }
 
   /**
@@ -401,7 +402,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srIter
    */
   public int getSrIter() {
-    return ((Integer) srIter.getValue()).intValue();
+    return ((Number) srIter.getValue()).intValue();
   }
 
   /**
@@ -421,7 +422,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srRelerr
    */
   public double getSrRelerr() {
-    return (double) srRelerr.getValue();
+    return ((Number) srRelerr.getValue()).doubleValue();
   }
 
   /**
@@ -463,7 +464,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srShrinkPower
    */
   public double getSrShrinkPower() {
-    return (double) srShrinkPower.getValue();
+    return ((Number) srShrinkPower.getValue()).doubleValue();
   }
 
   /**
@@ -483,7 +484,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srExpandPower
    */
   public double getSrExpandPower() {
-    return (double) srExpandPower.getValue();
+    return ((Number) srExpandPower.getValue()).doubleValue();
   }
 
   /**
@@ -565,7 +566,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srWindow
    */
   public int getSrLocalMeanWindow() {
-    return ((Integer) srLocalMeanWindow.getValue()).intValue();
+    return ((Number) srLocalMeanWindow.getValue()).intValue();
   }
 
   /**
@@ -605,7 +606,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srAlev
    */
   public double getSrAlev() {
-    return (double) srAlev.getValue();
+    return ((Number) srAlev.getValue()).doubleValue();
   }
 
   /**
@@ -625,7 +626,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srNum
    */
   public int getSrNum() {
-    return ((Integer) srNum.getValue()).intValue();
+    return ((Number) srNum.getValue()).intValue();
   }
 
   /**
@@ -645,7 +646,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return the srWindow
    */
   public int getSrWindow() {
-    return ((Integer) srWindow.getValue()).intValue();
+    return ((Number) srWindow.getValue()).intValue();
   }
 
   /**
