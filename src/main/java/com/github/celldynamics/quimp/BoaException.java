@@ -11,7 +11,7 @@ package com.github.celldynamics.quimp;
 public class BoaException extends QuimpException {
 
   private static final long serialVersionUID = 1L;
-  private int frame;
+  private int frame = 0;
   private int type;
 
   /**
@@ -43,6 +43,16 @@ public class BoaException extends QuimpException {
    */
   public int getFrame() {
     return frame;
+  }
+
+  /**
+   * Set frame.
+   * 
+   * @param frame frame
+   * 
+   */
+  public void setFrame(int frame) {
+    this.frame = frame;
   }
 
   /**

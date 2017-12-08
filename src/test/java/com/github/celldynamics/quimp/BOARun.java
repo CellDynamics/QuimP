@@ -46,7 +46,7 @@ public class BOARun {
     CountDownLatch startSignal = new CountDownLatch(1);
     // img = IJ.openImage("src/test/Resources-static/movie03_8bit_10slices.tif");
     // img = IJ.openImage("src/test/Resources-static/movie03_8bit.tif");
-    img = IJ.openImage("/home/baniuk/Desktop/Tests/17.10/test.tif");
+    img = IJ.openImage("/home/baniuk/Documents/Other_Images/from_Till/Stack.tif");
     // img = IJ.openImage("src/test/Resources-static/Stack_cut.tif");
     // img = IJ.openImage("C:/Users/baniu/Desktop/attachments/Example_1.tif");
 

@@ -2441,7 +2441,7 @@ public class BOA_ implements PlugIn {
               }
             }
           }
-          imageGroup.updateOverlay(qState.boap.frame); // redraw display
+          // imageGroup.updateOverlay(qState.boap.frame); // redraw display
           IJ.showProgress(qState.boap.frame, endF);
         } catch (BoaException be) {
           isSegRunning = false;
@@ -2459,6 +2459,9 @@ public class BOA_ implements PlugIn {
       }
       qState.boap.frame = endF;
     } catch (BoaException be) { // these from unexpected stopping of alg
+      if (be.getFrame() == 0) { // if not set by thrower
+        be.setFrame(qState.boap.frame);
+      }
       throw be; // just rethrow them
     } catch (Exception e) { // any other (should not happen)
       // do no add LOGGER here #278
