@@ -285,6 +285,9 @@ public class Constrictor {
       // check for contacts, freeze nodes in contact.
       // Ignore snakes that begin after 'frame'
       for (int si = 0; si < nestSize; si++) {
+        // if (nest.getHandler(si).isSnakeHandlerFrozen()) {
+        // continue;
+        // }
         snakeA = nest.getHandler(si).getLiveSnake();
         if (!snakeA.alive || frame < nest.getHandler(si).getStartFrame()) {
           continue;
@@ -305,6 +308,9 @@ public class Constrictor {
       // scale up all snakes by one step (if node not frozen, or dead) unless they start at this
       // frame or after
       for (int s = 0; s < nestSize; s++) {
+        if (nest.getHandler(s).isSnakeHandlerFrozen()) {
+          continue;
+        }
         snakeA = nest.getHandler(s).getLiveSnake();
         if (snakeA.alive && frame > nest.getHandler(s).getStartFrame()) {
           snakeA.scale(stepSize, stepSize, true);
@@ -364,6 +370,9 @@ public class Constrictor {
     Snake snake;
     for (int s = 0; s < nest.size(); s++) {
       snakeH = nest.getHandler(s);
+      if (nest.getHandler(s).isSnakeHandlerFrozen()) {
+        continue;
+      }
       snake = snakeH.getLiveSnake();
       if (snake.alive && f > snakeH.getStartFrame()) {
         snake.implode();

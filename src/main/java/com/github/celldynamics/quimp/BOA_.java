@@ -581,6 +581,9 @@ public class BOA_ implements PlugIn {
         deleteCell(offScreenX(e.getX()), offScreenY(e.getY()), qState.boap.frame);
         IJ.setTool(lastTool);
       }
+      if (qState.boap.doFreeze) {
+        freezeCell(offScreenX(e.getX()), offScreenY(e.getY()), qState.boap.frame);
+      }
       if (qState.boap.doDeleteSeg) {
         // BOA_.log("Delete at:
         // ("+offScreenX(e.getX())+","+offScreenY(e.getY())+")");
@@ -641,6 +644,7 @@ public class BOA_ implements PlugIn {
     private Button bnAdd;
     private Button bnDel;
     private Button bnDelSeg;
+    private Button bnFreezeCell;
 
     private Checkbox cbPrevSnake;
     private Checkbox cbExpSnake;
@@ -721,6 +725,7 @@ public class BOA_ implements PlugIn {
       bnDefault.setEnabled(state);
       bnScale.setEnabled(state);
       bnCopyLast.setEnabled(state);
+      bnFreezeCell.setEnabled(state);
 
       bnAdd.setEnabled(state);
       bnDel.setEnabled(state);
@@ -919,7 +924,7 @@ public class BOA_ implements PlugIn {
       Panel pluginPanelButtons = new Panel(); // buttons below plugins
 
       setupPanel.setLayout(new BorderLayout());
-      northPanel.setLayout(new GridLayout(3, 2));
+      northPanel.setLayout(new GridLayout(4, 2));
       southPanel.setLayout(new GridLayout(2, 2));
       centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
 
@@ -946,6 +951,7 @@ public class BOA_ implements PlugIn {
       bnDelSeg = addButton("Truncate Seg", northPanel);
       bnAdd = addButton("Add cell", northPanel);
       bnDel = addButton("Delete cell", northPanel);
+      bnFreezeCell = addButton("Freeze", northPanel);
 
       // build subpanel with plugins
       // get plugins names collected by PluginFactory
@@ -1440,6 +1446,7 @@ public class BOA_ implements PlugIn {
     public void actionPerformed(final ActionEvent e) {
       LOGGER.trace("EVENT:actionPerformed");
       boolean run = false; // some actions require to re-run segmentation. They set it to true
+      setFreeze(false); // disable if active
       Object b = e.getSource();
       if (b == bnDel && !qState.boap.editMode && !qState.boap.doDeleteSeg) {
         if (qState.boap.doDelete == false) {
@@ -1453,6 +1460,9 @@ public class BOA_ implements PlugIn {
           IJ.setTool(lastTool);
         }
         return;
+      }
+      if (b == bnFreezeCell && !qState.boap.editMode && !qState.boap.doDeleteSeg) {
+        setFreeze(!qState.boap.doFreeze);
       }
       if (qState.boap.doDelete) { // stop if delete is on
         BOA_.log("**DELETE IS ON**");
@@ -1811,6 +1821,21 @@ public class BOA_ implements PlugIn {
     }
 
     /**
+     * If Freeze cell button is clicked.
+     * 
+     * @param status on or off this function
+     */
+    private void setFreeze(boolean status) {
+      if (status) {
+        bnFreezeCell.setLabel("*CANCEL*");
+        qState.boap.doFreeze = true;
+      } else {
+        bnFreezeCell.setLabel("Freeze");
+        qState.boap.doFreeze = false;
+      }
+    }
+
+    /**
      * Run segmentation in separate thread.
      * 
      * @param startFrame start frame
@@ -1996,6 +2021,7 @@ public class BOA_ implements PlugIn {
     @Override
     public void itemStateChanged(final ItemEvent e) {
       LOGGER.trace("EVENT:itemStateChanged");
+      setFreeze(false); // disable if active
       if (qState.boap.doDelete) {
         BOA_.log("**WARNING:DELETE IS ON**");
       }
@@ -2100,6 +2126,7 @@ public class BOA_ implements PlugIn {
             imageGroup.zoom(canvas, qState.boap.frame, qState.boap.snakeToZoom);
           }
         }
+        imageGroup.updateOverlay(qState.boap.frame); // to have proper colors for frozen snakes
       }
 
       updateWindowState(); // window logic on any change
@@ -2135,6 +2162,7 @@ public class BOA_ implements PlugIn {
     @Override
     public void stateChanged(final ChangeEvent ce) {
       LOGGER.trace("EVENT:stateChanged");
+      setFreeze(false); // disable if active
       if (qState.boap.doDelete) {
         BOA_.log("**WARNING:DELETE IS ON**");
       }
@@ -2209,7 +2237,7 @@ public class BOA_ implements PlugIn {
     @Override
     public void updateSliceSelector() {
       super.updateSliceSelector();
-      LOGGER.debug("EVENT:updateSliceSelector");
+      LOGGER.trace("EVENT:updateSliceSelector");
       if (!qState.boap.singleImage) {
         zSelector.setValue(imp.getCurrentSlice()); // this is delayed in
         // super.updateSliceSelector force it now
@@ -2721,34 +2749,20 @@ public class BOA_ implements PlugIn {
    * to clicked point. If found, the whole SnakeHandler (all Snakes of the same ID across frames)
    * is deleted.
    * 
-   * @param x clicked coordinate
-   * @param y clicked coordinate
+   * @param offScreenX clicked coordinate
+   * @param offScreenY clicked coordinate
    * @param frame current frame
    * @return true if handler deleted, false if not (because user does not click it)
    */
-  boolean deleteCell(int x, int y, int frame) {
+  boolean deleteCell(int offScreenX, int offScreenY, int frame) {
     if (qState.nest.isVacant()) {
       return false;
     }
 
-    SnakeHandler snakeH;
-    Snake snake;
-    ExtendedVector2d snakeV;
-    ExtendedVector2d mdV = new ExtendedVector2d(x, y);
-    List<Double> distance = new ArrayList<Double>();
-
-    for (int i = 0; i < qState.nest.size(); i++) { // calc all distances
-      snakeH = qState.nest.getHandler(i);
-      if (snakeH.isStoredAt(frame)) {
-        snake = snakeH.getStoredSnake(frame);
-        snakeV = snake.getCentroid();
-        distance.add(ExtendedVector2d.lengthP2P(mdV, snakeV));
-      }
-    }
-    int minIndex = QuimPArrayUtils.minListIndex(distance);
-    if (distance.get(minIndex) < 10) { // if closest < 10, delete it
-      BOA_.log("Deleted cell " + qState.nest.getHandler(minIndex).getID());
-      qState.nest.removeHandler(qState.nest.getHandler(minIndex));
+    SnakeHandler sh = qState.nest.findClosestTo(offScreenX, offScreenY, frame, 10);
+    if (sh != null) { // if closest < 10, delete it
+      BOA_.log("Deleted cell " + sh.getID());
+      qState.nest.removeHandler(sh);
       imageGroup.updateOverlay(frame);
       window.switchOffDelete();
       return true;
@@ -2756,6 +2770,30 @@ public class BOA_ implements PlugIn {
       BOA_.log("Click the cell centre to delete");
     }
     return false;
+  }
+
+  boolean freezeCell(int offScreenX, int offScreenY, int frame) {
+    if (qState.nest.isVacant()) {
+      return false;
+    }
+
+    SnakeHandler sh = qState.nest.findClosestTo(offScreenX, offScreenY, frame, 10);
+    if (sh != null) { // if closest < 10, delete it
+      if (sh.isSnakeHandlerFrozen()) {
+        sh.unfreezeHandler();
+        BOA_.log("Unfreezed cell " + sh.getID());
+      } else {
+        sh.freezeHandler();
+        BOA_.log("Freezed cell " + sh.getID());
+      }
+      imageGroup.updateOverlay(frame);
+      window.setFreeze(false);
+      return true;
+    } else {
+      BOA_.log("Click the cell centre to delete");
+    }
+    return false;
+
   }
 
   /**
@@ -3085,9 +3123,15 @@ class ImageGroup {
     Roi r;
     overlay = new Overlay();
     BOA_.viewUpdater.connectSnakeObject(null); //
+    Color snakeColor = Color.YELLOW;
     for (int i = 0; i < nest.size(); i++) {
       snakeH = nest.getHandler(i);
-      if (snakeH.isStoredAt(frame)) { // is there a snake a;t iplStack?
+      if (snakeH.isSnakeHandlerFrozen()) {
+        snakeColor = Color.BLUE;
+      } else {
+        snakeColor = Color.YELLOW;
+      }
+      if (snakeH.isStoredAt(frame)) { // is there a snake at iplStack?
 
         // plot segmented snake
         if (BOA_.qState.boap.isProcessedSnakePlotted == true) {
@@ -3103,7 +3147,7 @@ class ImageGroup {
         snake = snakeH.getStoredSnake(frame); // processed by plugins
         // Roi r = snake.asRoi();
         r = snake.asFloatRoi();
-        r.setStrokeColor(Color.YELLOW);
+        r.setStrokeColor(snakeColor);
         overlay.add(r);
         x = (int) Math.round(snake.getCentroid().getX()) - 15;
         y = (int) Math.round(snake.getCentroid().getY()) - 15;
@@ -3137,8 +3181,6 @@ class ImageGroup {
           polyginR1.setFillColor(Color.GREEN);
           overlay.add(polyginR1);
         }
-        // dump String to log
-        LOGGER.trace(snake.toString());
       } else {
         BOA_.viewUpdater.connectSnakeObject(null);
       }

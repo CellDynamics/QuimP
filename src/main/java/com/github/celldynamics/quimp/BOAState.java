@@ -578,6 +578,10 @@ public class BOAState implements IQuimpSerialize {
      * The do delete.
      */
     boolean doDelete;
+    /**
+     * true if we are in freeze mode."
+     */
+    transient boolean doFreeze;
 
     /**
      * The do delete seg.
