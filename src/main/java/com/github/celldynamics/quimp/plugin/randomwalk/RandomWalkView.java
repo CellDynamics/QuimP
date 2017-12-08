@@ -833,7 +833,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     srIter = getDoubleSpinner(300, 1, 10000, 1, 0);
     optionsPanel.add(getControlwithLabel(srIter, "Iterations",
             "Maximum number of iterations." + "Second sweep uses half of this value"));
-    srRelerr = getDoubleSpinner(8.1e-3, 0, 10, 1e-4, 6);
+    srRelerr = getDoubleSpinner(8.1e-3, 0, 10, 1e-5, 6);
     optionsPanel.add(getControlwithLabel(srRelerr, "Rel error", "Relative error."));
 
     JPanel processPanel = new JPanel();

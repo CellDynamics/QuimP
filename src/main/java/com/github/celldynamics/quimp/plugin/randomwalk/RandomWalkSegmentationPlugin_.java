@@ -674,6 +674,7 @@ public class RandomWalkSegmentationPlugin_ implements IQuimpPlugin {
       }
       // iterate over all slices after first (may not run for one image and for current image seg)
       for (int s = 2; s <= is.getSize() && isCanceled == false && oneSlice == false; s++) {
+        LOGGER.info("----- Slice " + s + " -----");
         Map<Seeds, ImageProcessor> nextseed;
         obj = new RandomWalkSegmentation(is.getProcessor(s), model.params);
         // get seeds from previous result
