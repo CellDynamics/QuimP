@@ -2710,6 +2710,9 @@ public class BOA_ implements PlugIn {
   // @SuppressWarnings("unchecked")
   void addCell(final Roi r, int f) {
     SnakeHandler snakeH = qState.nest.addHandler(r, f);
+    if (snakeH == null) { // cell failed to initialise
+      return;
+    }
     Snake snake = snakeH.getLiveSnake();
     imageGroup.setProcessor(f);
     try {

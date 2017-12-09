@@ -439,7 +439,10 @@ public class Nest implements IQuimpSerialize {
    */
   public void addOutlinehandler(final OutlineHandler oh) {
     SnakeHandler sh = addHandler(oh.indexGetOutline(0).asFloatRoi(), oh.getStartFrame());
-
+    if (sh == null) {
+      LOGGER.error("Outline handler could not be added");
+      return;
+    }
     Outline o;
     for (int i = oh.getStartFrame(); i <= oh.getEndFrame(); i++) {
       o = oh.getStoredOutline(i);
