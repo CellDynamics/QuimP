@@ -1669,7 +1669,7 @@ public class BOA_ implements PlugIn {
             IJ.error("Problem with configuration file", e1.getMessage());
             LOGGER.debug(e1.getMessage(), e1);
           } catch (Exception e1) {
-            IJ.error("File can not be loaded", e1.getMessage()); // something serious
+            IJ.error("Error", "File can not be loaded or parsed" + e1.getMessage());
             LOGGER.debug(e1.getMessage(), e1);
           }
         }
@@ -1728,8 +1728,8 @@ public class BOA_ implements PlugIn {
         } catch (JsonSyntaxException e1) {
           IJ.error("Problem with configuration file", e1.getMessage());
           LOGGER.debug(e1.getMessage(), e1);
-        } catch (Exception e1) {
-          IJ.error("File can not be loaded", e1.getMessage()); // something serious
+        } catch (Exception e1) { // eg json but wrong
+          IJ.error("Error", "File can not be loaded or parsed" + e1.getMessage());
           LOGGER.debug(e1.getMessage(), e1);
         }
       }

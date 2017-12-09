@@ -173,6 +173,15 @@ public abstract class QWindowBuilder {
    * <li>step
    * <li>default value
    * </ol>
+   * <li>spinnerd - creates Spinner control. It requires 5 parameters (in order). Sixth parameter is
+   * help text and it is <b>optional</b>
+   * <ol>
+   * <li>minimal range
+   * <li>maximal range
+   * <li>step
+   * <li>default value
+   * <li>Precision as number of fractional numbers
+   * </ol>
    * <li>choiceh - creates Choice control. It requires 1 or more parameters - entries in list. Last
    * parameter is help text and it is <b>compulsory</b>
    * <ol>
@@ -294,7 +303,7 @@ public abstract class QWindowBuilder {
           break;
         case "spinnerd": // by default all spinners are double
         {
-          helpText = spinnerVerify(uiparams);
+          helpText = spinnerdVerify(uiparams);
           SpinnerNumberModel model = new SpinnerNumberModel(Double.parseDouble(uiparams[srDefault]),
                   Double.parseDouble(uiparams[srMin]), // min
                   Double.parseDouble(uiparams[srMax]), // max
@@ -424,6 +433,25 @@ public abstract class QWindowBuilder {
     String helpText = "";
     if (uiparams.length != 5) { // default
       if (uiparams.length != 6) { // with help text
+        throw new IllegalArgumentException(
+                "Probably wrong syntax in UI definition for " + uiparams[uiType]);
+      } else {
+        helpText = uiparams[5];
+      }
+    }
+    return helpText;
+  }
+
+  /**
+   * Verify syntax for spinner and return help text if any.
+   * 
+   * @param uiparams uiparams
+   * @return Help text (last from list)
+   */
+  private String spinnerdVerify(String[] uiparams) {
+    String helpText = "";
+    if (uiparams.length != 6) { // default
+      if (uiparams.length != 7) { // with help text
         throw new IllegalArgumentException(
                 "Probably wrong syntax in UI definition for " + uiparams[uiType]);
       } else {
