@@ -549,6 +549,7 @@ public abstract class QWindowBuilder {
       // find key in def and get type of control and its instance
       switch (def.getParsed(key, DELIMITER)[uiType].toLowerCase()) { // first string in vals is type
         // control, see BuildWindow
+        case "spinnerd":
         case "spinner": {
           // get UI component of name key (keys in vals must match to keys in BuildWindow(def))
           JSpinner comp = (JSpinner) ui.get(key);
@@ -607,13 +608,8 @@ public abstract class QWindowBuilder {
       String key = m.getKey();
       // check type of component
       switch (def.getParsed(key, DELIMITER)[uiType].toLowerCase()) {
+        case "spinnerd":
         case "spinner": {
-          JSpinner val = (JSpinner) m.getValue(); // get value
-          ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
-          // the same key
-          break;
-        }
-        case "spinnerd": {
           JSpinner val = (JSpinner) m.getValue(); // get value
           ret.put(key, String.valueOf(val.getValue())); // store it in returned Map at
           // the same key
