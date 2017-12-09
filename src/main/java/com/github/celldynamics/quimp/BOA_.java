@@ -725,11 +725,11 @@ public class BOA_ implements PlugIn {
       bnDefault.setEnabled(state);
       bnScale.setEnabled(state);
       bnCopyLast.setEnabled(state);
-      bnFreezeCell.setEnabled(state);
 
       bnAdd.setEnabled(state);
       bnDel.setEnabled(state);
       bnDelSeg.setEnabled(state);
+      bnFreezeCell.setEnabled(state);
 
       cbPrevSnake.setEnabled(state);
       cbExpSnake.setEnabled(state);
@@ -1446,9 +1446,9 @@ public class BOA_ implements PlugIn {
     public void actionPerformed(final ActionEvent e) {
       LOGGER.trace("EVENT:actionPerformed");
       boolean run = false; // some actions require to re-run segmentation. They set it to true
-      setFreeze(false); // disable if active
       Object b = e.getSource();
-      if (b == bnDel && !qState.boap.editMode && !qState.boap.doDeleteSeg) {
+      if (b == bnDel && !qState.boap.editMode && !qState.boap.doDeleteSeg
+              && !qState.boap.doFreeze) {
         if (qState.boap.doDelete == false) {
           bnDel.setLabel("*STOP DEL*");
           qState.boap.doDelete = true;
@@ -1461,13 +1461,20 @@ public class BOA_ implements PlugIn {
         }
         return;
       }
-      if (b == bnFreezeCell && !qState.boap.editMode && !qState.boap.doDeleteSeg) {
-        setFreeze(!qState.boap.doFreeze);
-      }
       if (qState.boap.doDelete) { // stop if delete is on
         BOA_.log("**DELETE IS ON**");
         return;
       }
+      if (b == bnFreezeCell && !qState.boap.editMode && !qState.boap.doDeleteSeg
+              && !qState.boap.doDelete) {
+        setFreeze(!qState.boap.doFreeze);
+        return;
+      }
+      if (qState.boap.doFreeze) { // stop if delete is on
+        BOA_.log("**FREEZE IS ON**");
+        return;
+      }
+
       if (b == bnDelSeg && !qState.boap.editMode) {
         if (!qState.boap.doDeleteSeg) {
           bnDelSeg.setLabel("*STOP TRUNCATE*");
@@ -1829,9 +1836,12 @@ public class BOA_ implements PlugIn {
       if (status) {
         bnFreezeCell.setLabel("*CANCEL*");
         qState.boap.doFreeze = true;
+        lastTool = IJ.getToolName();
+        IJ.setTool(Toolbar.LINE);
       } else {
         bnFreezeCell.setLabel("Freeze");
         qState.boap.doFreeze = false;
+        IJ.setTool(lastTool);
       }
     }
 
@@ -2758,6 +2768,7 @@ public class BOA_ implements PlugIn {
    * @param offScreenY clicked coordinate
    * @param frame current frame
    * @return true if handler deleted, false if not (because user does not click it)
+   * @see #freezeCell(int, int, int)
    */
   boolean deleteCell(int offScreenX, int offScreenY, int frame) {
     if (qState.nest.isVacant()) {
@@ -2777,6 +2788,17 @@ public class BOA_ implements PlugIn {
     return false;
   }
 
+  /**
+   * Freeze SnakeHandler closes to specified coordinates.
+   * 
+   * <p>Coordinates relate to Snake from SnakeHandler.
+   * 
+   * @param offScreenX clicked coordinate
+   * @param offScreenY clicked coordinate
+   * @param frame frame
+   * @return true on success.
+   * @see #deleteCell(int, int, int)
+   */
   boolean freezeCell(int offScreenX, int offScreenY, int frame) {
     if (qState.nest.isVacant()) {
       return false;
@@ -2795,7 +2817,7 @@ public class BOA_ implements PlugIn {
       window.setFreeze(false);
       return true;
     } else {
-      BOA_.log("Click the cell centre to delete");
+      BOA_.log("Click the cell centre to freeze");
     }
     return false;
 
