@@ -18,6 +18,7 @@ import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -151,6 +152,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * Main window panel.
    */
   private JPanel panel;
+
+  private JPanel panelMain;
 
   /**
    * Original image selector.
@@ -813,7 +816,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
 
     JPanel optionsPanel = new JPanel();
     optionsPanel.setBorder(BorderFactory.createTitledBorder("Segmentation options"));
-    optionsPanel.setLayout(new GridLayout(6, 1, 2, 2));
+    optionsPanel.setLayout(new GridLayout(8, 1, 2, 2));
     srAlpha = getDoubleSpinner(400, 0, 1e5, 1, 0);
     optionsPanel.add(getControlwithLabel(srAlpha, "Alpha",
             "alpha penalises pixels whose intensities are far away from the mean seed intensity"));
@@ -925,7 +928,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
 
     JPanel displayPanel = new JPanel();
     displayPanel.setBorder(BorderFactory.createTitledBorder("Display options"));
-    displayPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+    displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
     chShowSeed = new JCheckBox("Show seeds");
     UiTools.setToolTip(chShowSeed,
             "Show generated seeds. Works only if seeds are polpulated between frames"
@@ -951,52 +954,67 @@ public class RandomWalkView implements ActionListener, ItemListener {
     caButtons.add(bnHelp);
 
     GridBagConstraints constrains = new GridBagConstraints();
-    panel = new JPanel(new GridBagLayout());
+    panel = new JPanel(new BorderLayout());
+    panelMain = new JPanel(new GridBagLayout());
+    panel.add(panelMain, BorderLayout.CENTER);
+    JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    panel.add(panelButtons, BorderLayout.SOUTH);
+
     constrains.gridx = 0;
     constrains.gridy = 0;
-    constrains.weighty = 0;
-    constrains.fill = GridBagConstraints.HORIZONTAL;
-    panel.add(imagePanel, constrains);
+    constrains.weighty = 1;
+    constrains.gridheight = 1;
+    constrains.anchor = GridBagConstraints.NORTH;
+    constrains.fill = GridBagConstraints.BOTH;
+    panelMain.add(imagePanel, constrains);
+
     constrains.gridx = 0;
     constrains.gridy = 1;
-    constrains.weighty = 0;
-    constrains.fill = GridBagConstraints.HORIZONTAL;
-    panel.add(seedSelPanel, constrains);
+    constrains.weighty = 1;
+    constrains.gridheight = 1;
+    constrains.anchor = GridBagConstraints.NORTH;
+    constrains.fill = GridBagConstraints.BOTH;
+    panelMain.add(seedSelPanel, constrains);
+
     constrains.gridx = 0;
     constrains.gridy = 2;
+    constrains.gridheight = 1;
+    constrains.fill = GridBagConstraints.BOTH;
     constrains.weighty = 1;
-    constrains.fill = GridBagConstraints.HORIZONTAL;
-    panel.add(getRgbImage(), constrains); // dynamic panel no 2
-    constrains.gridx = 0;
-    constrains.gridy = 3;
+    constrains.anchor = GridBagConstraints.NORTH;
+    panelMain.add(getRgbImage(), constrains); // dynamic panel no 2
+
+    constrains.gridx = 3;
+    constrains.gridy = 0;
+    constrains.weighty = 1;
+    constrains.gridheight = 3;
+    constrains.anchor = GridBagConstraints.NORTH;
+    constrains.fill = GridBagConstraints.VERTICAL;
+    panelMain.add(optionsPanel, constrains);
+
+    constrains.gridx = 4;
+    constrains.gridy = 0;
+    constrains.weighty = 1;
+    constrains.gridheight = 3;
+    constrains.anchor = GridBagConstraints.NORTH;
+    constrains.fill = GridBagConstraints.VERTICAL;
+    panelMain.add(processPanel, constrains);
+
+    constrains.gridx = 5;
+    constrains.gridy = 0;
+    constrains.weighty = 1;
+    constrains.gridheight = 3;
+    constrains.anchor = GridBagConstraints.NORTH;
+    constrains.fill = GridBagConstraints.VERTICAL;
+    panelMain.add(postprocessPanel, constrains);
+
+    constrains.gridx = 7;
+    constrains.gridy = 0;
     constrains.weighty = 0;
-    constrains.fill = GridBagConstraints.HORIZONTAL;
-    panel.add(optionsPanel, constrains);
-    constrains.gridx = 0;
-    constrains.gridy = 4;
-    constrains.weighty = 0;
-    constrains.fill = GridBagConstraints.HORIZONTAL;
-    panel.add(processPanel, constrains);
-    constrains.gridx = 0;
-    constrains.gridy = 5;
-    constrains.weighty = 0;
-    constrains.fill = GridBagConstraints.HORIZONTAL;
-    panel.add(processPanel, constrains);
-    constrains.gridx = 0;
-    constrains.gridy = 6;
-    constrains.weighty = 0;
-    constrains.fill = GridBagConstraints.HORIZONTAL;
-    panel.add(postprocessPanel, constrains);
-    constrains.gridx = 0;
-    constrains.gridy = 7;
-    constrains.weighty = 0;
-    constrains.fill = GridBagConstraints.HORIZONTAL;
-    panel.add(displayPanel, constrains);
-    constrains.gridx = 0;
-    constrains.gridy = 8;
-    constrains.weighty = 0;
-    constrains.fill = GridBagConstraints.HORIZONTAL;
-    panel.add(caButtons, constrains);
+    constrains.fill = GridBagConstraints.VERTICAL;
+    panelMain.add(displayPanel, constrains);
+
+    panelButtons.add(caButtons);
 
     wnd.add(panel);
 
@@ -1144,7 +1162,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
   private JPanel getRgbImage() {
     JPanel dynPanel;
     try { // protect against empty component at given index - used because this is default one
-      dynPanel = (JPanel) panel.getComponent(2);
+      dynPanel = (JPanel) panelMain.getComponent(2);
       dynPanel.removeAll();
     } catch (ArrayIndexOutOfBoundsException e) {
       dynPanel = new JPanel();
@@ -1164,7 +1182,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return created panel.
    */
   private JPanel getCreateImage() {
-    JPanel dynPanel = (JPanel) panel.getComponent(2);
+    JPanel dynPanel = (JPanel) panelMain.getComponent(2);
     dynPanel.removeAll();
 
     dynPanel.setBorder(BorderFactory
@@ -1195,7 +1213,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return created panel.
    */
   private JPanel getMaskImage() {
-    JPanel dynPanel = (JPanel) panel.getComponent(2);
+    JPanel dynPanel = (JPanel) panelMain.getComponent(2);
     dynPanel.removeAll();
 
     dynPanel.setBorder(BorderFactory
@@ -1214,7 +1232,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @return created panel.
    */
   private JPanel getQconfImage() {
-    JPanel dynPanel = (JPanel) panel.getComponent(2);
+    JPanel dynPanel = (JPanel) panelMain.getComponent(2);
     dynPanel.removeAll();
 
     dynPanel.setBorder(BorderFactory
@@ -1243,22 +1261,22 @@ public class RandomWalkView implements ActionListener, ItemListener {
     Object source = e.getSource();
     if (source == rbRgbImage) {
       getRgbImage();
-      panel.revalidate();
+      panelMain.revalidate();
       wnd.validate();
     }
     if (source == rbCreateImage) {
       getCreateImage();
-      panel.revalidate();
+      panelMain.revalidate();
       wnd.validate();
     }
     if (source == rbMaskImage) {
       getMaskImage();
-      panel.revalidate();
+      panelMain.revalidate();
       wnd.validate();
     }
     if (source == rbQcofFile) {
       getQconfImage();
-      panel.revalidate();
+      panelMain.revalidate();
       wnd.validate();
     }
     if (source == bnFore) {
