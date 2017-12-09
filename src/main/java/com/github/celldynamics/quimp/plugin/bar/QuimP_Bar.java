@@ -52,7 +52,6 @@ import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import com.github.celldynamics.quimp.utils.UiTools;
 
 import ij.IJ;
-import ij.ImagePlus;
 import ij.Prefs;
 import ij.WindowManager;
 import ij.io.OpenDialog;
@@ -499,20 +498,6 @@ public class QuimP_Bar implements PlugIn, ActionListener {
         LOGGER.debug(e1.getMessage(), e1);
         LOGGER.error("Problem with running FormatConverter: " + e1.getMessage());
       }
-      return;
-    }
-    if (e.getActionCommand().equals("open(\"\")")) {
-      ImagePlus o = IJ.openImage();
-      if (o == null) {
-        return;
-      }
-      // add +1 to names
-      WindowManager.getImage(o.getTitle());
-      if (WindowManager.getImage(o.getTitle()) != null) { // if there is one opened with same name
-        String newName = WindowManager.getUniqueName(o.getTitle());
-        o.setTitle(newName);
-      }
-      o.show();
       return;
     }
     try {
