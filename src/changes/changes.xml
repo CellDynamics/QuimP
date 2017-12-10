@@ -8,16 +8,13 @@
   <body>
 		<release version="17.12.02" date="2017-12-10" description="Release">
          <action dev="baniuk" type="fix" issue="271">
-              QuimP-BOA: Fixed wrong frames reported in BOA ststus log on error.
-         </action>
-         <action dev="baniuk" type="add" issue="271">
-              QuimP-BOA: New setting that allows to process only cell that is currently zoomed in. Other cells are frozen and they are not touched when either segmentation options or filters are changed.  
+              QuimP-BOA: Fixed wrong frames reported in BOA status log on error.
          </action>
          <action dev="baniuk" type="add" issue="274">
-              QuimP-BOA: Added Freeze Cell feature. Frozen cells are not modified when segmentation options are changed.
+              QuimP-BOA: Added Freeze Cell button. Frozen cells are not modified when segmentation options are changed.
          </action>
-         <action dev="baniuk" type="update" issue="">
-              QuimP-RandomWalk: Increased nimber of fractional places in some controls in plugins.
+         <action dev="baniuk" type="update" issue="278">
+              QuimP-RandomWalk: Increased number of fractional digits in some controls in plugins.
          </action>
 		 <action dev="baniuk" type="update" issue="">
               QuimP-API: Added new types of controls in QWindowBuilder.
@@ -25,10 +22,13 @@
 		 <action dev="baniuk" type="fix" issue="">
               QuimP-BOA: Fixed possible exception when Add Cell button was used without ROI. Also fixed empty error window when wrong file was loaded.
          </action>
+		 <action dev="baniuk" type="update" issue="">
+              QuimP-RandomWalk: Changed UI to horizontal.
+         </action>
         </release>
         <release version="17.12.01" date="2017-12-08" description="Internal Release">
          <action dev="baniuk" type="update" issue="275">
-              QuimP-RandomWalk: Allow to set relative error in Random Walk plugin. This solves problem with ending iterative process too early. There is also new options for better estimation of background level in automatic seed propagation mode.
+              QuimP-RandomWalk: Allow to set relative error in Random Walk plugin. This solves problem with ending iterative process too early. There is also new option for better estimation of background level in automatic seed propagation mode.
          </action>
          <action dev="baniuk" type="add" issue="274">
               QuimP-BOA: New setting that allows to process only cell that is currently zoomed in. Other cells are frozen and they are not touched when either segmentation options or filters are changed.  
