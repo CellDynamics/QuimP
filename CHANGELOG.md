@@ -1,5 +1,28 @@
 # Change Log
 
+## [v17.12.02](https://github.com/CellDynamics/QuimP/tree/v17.12.02) (2017-12-10)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.12.01...v17.12.02)
+
+**Implemented enhancements:**
+
+- Add freeze cell button in BOA [\#277](https://github.com/CellDynamics/QuimP/issues/277)
+
+**Fixed bugs:**
+
+- Fix problem with JSpinners and 4 fractional places only [\#278](https://github.com/CellDynamics/QuimP/issues/278)
+- BOA reports wrong frame number on error [\#271](https://github.com/CellDynamics/QuimP/issues/271)
+
+## [v17.12.01](https://github.com/CellDynamics/QuimP/tree/v17.12.01) (2017-12-08)
+[Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.10.02...v17.12.01)
+
+**Implemented enhancements:**
+
+- Freeze cells to skip resegmenting [\#274](https://github.com/CellDynamics/QuimP/issues/274)
+
+**Fixed bugs:**
+
+- Allow to set relative error in RW [\#275](https://github.com/CellDynamics/QuimP/issues/275)
+
 ## [v17.10.02](https://github.com/CellDynamics/QuimP/tree/v17.10.02) (2017-10-21)
 [Full Changelog](https://github.com/CellDynamics/QuimP/compare/v17.10.01...v17.10.02)
 

@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -44,6 +45,7 @@ import ij.io.OpenDialog;
 import ij.plugin.Converter;
 import ij.plugin.frame.Recorder;
 import ij.plugin.tool.BrushTool;
+import ij.process.AutoThresholder;
 import ij.process.ByteProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
@@ -167,6 +169,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     view.setSrGamma0(model.algOptions.gamma[0]);
     view.setSrGamma1(model.algOptions.gamma[1]);
     view.setSrIter(model.algOptions.iter);
+    view.setSrRelerr(model.algOptions.relim[0]);
 
     view.setShrinkMethod(model.getShrinkMethods(), model.getselectedShrinkMethod().name());
     view.setSrShrinkPower(model.shrinkPower);
@@ -174,6 +177,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     view.setFilteringMethod(model.getFilteringMethods(), model.getSelectedFilteringMethod().name());
     view.setChLocalMean(model.algOptions.useLocalMean);
     view.setSrLocalMeanWindow(model.algOptions.localMeanMaskSize);
+    view.setChTrueBackground(model.estimateBackground);
 
     view.setChHatFilter(model.hatFilter);
     view.setSrAlev(model.alev);
@@ -218,6 +222,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     model.algOptions.gamma[0] = view.getSrGamma0();
     model.algOptions.gamma[1] = view.getSrGamma1();
     model.algOptions.iter = view.getSrIter();
+    model.algOptions.relim[0] = view.getSrRelerr();
+    model.algOptions.relim[1] = model.algOptions.relim[0] * 10;
 
     model.setselectedShrinkMethod(view.getShrinkMethod());
     model.shrinkPower = view.getSrShrinkPower();
@@ -225,6 +231,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     model.setSelectedFilteringMethod(view.getFilteringMethod());
     model.algOptions.useLocalMean = view.getChLocalMean();
     model.algOptions.localMeanMaskSize = view.getSrLocalMeanWindow();
+    model.estimateBackground = view.getChTrueBackground();
 
     model.hatFilter = view.getChHatFilter();
     model.alev = view.getSrAlev();
@@ -634,21 +641,25 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     Color backColor; // color of seed image background pixels
     boolean localMeanUserStatus = model.algOptions.useLocalMean;
     ImageStack ret; // all images treated as stacks
+    ImageStack is = null;
     Map<Seeds, ImageProcessor> seeds;
     PropagateSeeds propagateSeeds;
     isRun = true; // segmentation started
+    // if preview selected - prepare image
+    if (model.showPreview) {
+      prev = new ImagePlus();
+    }
+    AutoThresholder.Method thresholdBackground = null;
+    if (model.estimateBackground == true) {
+      thresholdBackground = AutoThresholder.Method.Otsu;
+    }
     try {
       ImagePlus image = model.getOriginalImage();
       ImagePlus seedImage = model.getSeedImage();
       if (image == null || seedImage == null) {
         throw new QuimpPluginException("Input image or seed image can not be opened.");
       }
-      ImageStack is = image.getStack(); // get current stack (size 1 for one image)
-      // if preview selected - prepare image
-      if (model.showPreview) {
-        prev = new ImagePlus();
-      }
-
+      is = image.getStack(); // get current stack (size 1 for one image)
       if (seedImage.getStackSize() == 1) {
         useSeedStack = false; // use propagateSeed for generating next frame seed from prev
       } else if (seedImage.getStackSize() == image.getStackSize()) {
@@ -657,7 +668,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         throw new RandomWalkException("Seed stack and image stack must have the same z dimension");
       }
       // create seeding object with or without storing the history of configured type
-      propagateSeeds = PropagateSeeds.getPropagator(model.selectedShrinkMethod, model.showSeeds);
+      propagateSeeds = PropagateSeeds.getPropagator(model.selectedShrinkMethod, model.showSeeds,
+              thresholdBackground);
       ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
       // create segmentation engine
       RandomWalkSegmentation obj =
@@ -694,8 +706,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           Map<Seeds, ImageProcessor> seedsTmp = RandomWalkSegmentation
                   .decodeSeeds(seedImage.getStack().getProcessor(startSlice), foreColor, backColor);
           // this is mask (bigger) so produce seeds, overwrite seeds
-          seeds = propagateSeeds.propagateSeed(seedsTmp.get(Seeds.FOREGROUND), model.shrinkPower,
-                  model.expandPower);
+          seeds = propagateSeeds.propagateSeed(seedsTmp.get(Seeds.FOREGROUND),
+                  is.getProcessor(startSlice), model.shrinkPower, model.expandPower);
           // mask to local mean
           seeds.put(Seeds.ROUGHMASK,
                   seedImage.getStack().getProcessor(startSlice).convertToByte(false));
@@ -718,6 +730,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       }
       // iterate over all slices after first (may not run for one image and for current image seg)
       for (int s = 2; s <= is.getSize() && isCanceled == false && oneSlice == false; s++) {
+        LOGGER.info("----- Slice " + s + " -----");
         Map<Seeds, ImageProcessor> nextseed;
         obj = new RandomWalkSegmentation(is.getProcessor(s), model.algOptions);
         // get seeds from previous result
@@ -728,7 +741,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
             case QconfFile:
             case MaskImage:
               nextseed = propagateSeeds.propagateSeed(nextseed.get(Seeds.FOREGROUND),
-                      model.shrinkPower, model.expandPower);
+                      is.getProcessor(s), model.shrinkPower, model.expandPower);
               nextseed.put(Seeds.ROUGHMASK,
                       seedImage.getStack().getProcessor(s).convertToByte(false));
               break;
@@ -736,7 +749,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           }
         } else { // false - use previous frame
           // modify masks and convert to lists
-          nextseed = propagateSeeds.propagateSeed(retIp, model.shrinkPower, model.expandPower);
+          nextseed = propagateSeeds.propagateSeed(retIp, is.getProcessor(s), model.shrinkPower,
+                  model.expandPower);
           nextseed.put(Seeds.ROUGHMASK, retIp);
         }
         // segmentation and results stored for next seeding
@@ -870,7 +884,21 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       runPlugin(); // will update IJ progress bar
       view.enableUI(true);
       view.setCancelLabel("Cancel");
-      return null;
+      return true;
+    }
+
+    @Override
+    protected void done() {
+      try {
+        get();
+      } catch (ExecutionException e) {
+        LOGGER.error(e.getMessage());
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } finally {
+        view.enableUI(true);
+        view.setCancelLabel("Cancel");
+      }
     }
   }
 

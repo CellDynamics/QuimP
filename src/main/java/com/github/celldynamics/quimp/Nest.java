@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
+import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
+import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -359,6 +361,9 @@ public class Nest implements IQuimpSerialize {
     ArrayList<SnakeHandler> toRemove = new ArrayList<>(); // will keep handler to remove
     while (shitr.hasNext()) {
       SnakeHandler sh = (SnakeHandler) shitr.next();
+      if (sh.isSnakeHandlerFrozen()) {
+        continue;
+      }
       try {
         if (f <= sh.getStartFrame()) {
           // BOA_.log("Reset snake " + sH.getID() + " as Roi");
@@ -434,13 +439,49 @@ public class Nest implements IQuimpSerialize {
    */
   public void addOutlinehandler(final OutlineHandler oh) {
     SnakeHandler sh = addHandler(oh.indexGetOutline(0).asFloatRoi(), oh.getStartFrame());
-
+    if (sh == null) {
+      LOGGER.error("Outline handler could not be added");
+      return;
+    }
     Outline o;
     for (int i = oh.getStartFrame(); i <= oh.getEndFrame(); i++) {
       o = oh.getStoredOutline(i);
       sh.storeRoi((PolygonRoi) o.asFloatRoi(), i);
     }
     sh.copyFromFinalToSeg();
+  }
+
+  /**
+   * Find Snake that distance of its centroid to given point is smaller than given value.
+   * 
+   * @param offScreenX x coordinate
+   * @param offScreenY y coordinate
+   * @param frame frame
+   * @param dist maximal distance
+   * @return SnakeHandler that meets requirements or null.
+   */
+  public SnakeHandler findClosestTo(int offScreenX, int offScreenY, int frame, double dist) {
+    SnakeHandler snakeH;
+    Snake snake;
+    ExtendedVector2d snakeV;
+    ExtendedVector2d mdV = new ExtendedVector2d(offScreenX, offScreenY);
+    List<Double> distance = new ArrayList<Double>();
+
+    for (int i = 0; i < size(); i++) { // calc all distances
+      snakeH = getHandler(i);
+      if (snakeH.isStoredAt(frame)) {
+        snake = snakeH.getStoredSnake(frame);
+        snakeV = snake.getCentroid();
+        distance.add(ExtendedVector2d.lengthP2P(mdV, snakeV));
+      }
+    }
+    int minIndex = QuimPArrayUtils.minListIndex(distance);
+    double minDistance = distance.get(minIndex);
+    if (minDistance < dist) {
+      return getHandler(minIndex);
+    } else {
+      return null;
+    }
   }
 
   /*

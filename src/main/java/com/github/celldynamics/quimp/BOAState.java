@@ -578,6 +578,10 @@ public class BOAState implements IQuimpSerialize {
      * The do delete.
      */
     boolean doDelete;
+    /**
+     * true if we are in freeze mode."
+     */
+    transient boolean doFreeze;
 
     /**
      * The do delete seg.
@@ -708,6 +712,11 @@ public class BOAState implements IQuimpSerialize {
      * Define if first node of Snake (head) is plotted or not.
      */
     boolean isHeadPlotted = false;
+
+    /**
+     * If cell is zoomed, all parameter changes influence only this cell. (UI)
+     */
+    boolean isZoomFreeze = false;
 
     /**
      * When any plugin fails this field defines how QuimP should behave.

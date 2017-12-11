@@ -1070,7 +1070,11 @@ public class RandomWalkSegmentation {
     int iter = params.iter / (currentSweep + 1);
     // main loop here we simulate diffusion process in time
     outerloop: for (i = 0; i < iter; i++) {
-      LOGGER.trace("Iter: " + i);
+      if (i % 50 == 0) {
+        LOGGER.info("Iter: " + i);
+      } else {
+        LOGGER.trace("Iter: " + i);
+      }
       // fill seed pixels explicitly with probability 1 for FG and BG
       ArrayRealVector tmp = new ArrayRealVector(1); // filled with 0, setValues() needs that input
       double[] tmpref = tmp.getDataRef(); // just get reference to underlying array
@@ -1163,7 +1167,7 @@ public class RandomWalkSegmentation {
       QuimPArrayUtils.copy2darray(fg2d, tmpFglast2d);
     }
 
-    LOGGER.info("Sweep " + currentSweep + " Stopped by " + stoppedReason + " at " + i
+    LOGGER.info("Sweep " + currentSweep + " Stopped by " + stoppedReason + " after " + i
             + " iteration from " + iter);
     Map<Seeds, RealMatrix> ret = new HashMap<Seeds, RealMatrix>(2);
     ret.put(Seeds.FOREGROUND, fg);
@@ -1198,7 +1202,7 @@ public class RandomWalkSegmentation {
       }
     }
     double rele = rel / (rows * cols);
-    LOGGER.debug("Relative error = " + rele);
+    LOGGER.info("Relative error = " + rele);
     return rele; // return mean error
   }
 

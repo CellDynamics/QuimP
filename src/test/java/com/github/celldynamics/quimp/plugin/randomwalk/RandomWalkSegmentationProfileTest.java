@@ -108,8 +108,8 @@ public class RandomWalkSegmentationProfileTest {
     Map<Seeds, ImageProcessor> seeds =
             RandomWalkSegmentation.decodeSeeds(testImage2seed, Color.RED, Color.GREEN);
     ImageProcessor retFrame1 = obj.run(seeds);
-    Map<Seeds, ImageProcessor> nextseed =
-            new PropagateSeeds.Morphological().propagateSeed(retFrame1, 3, 4.5);
+    Map<Seeds, ImageProcessor> nextseed = new PropagateSeeds.Morphological()
+            .propagateSeed(retFrame1, fluoreszenz1.getProcessor(), 3, 4.5);
     obj = new RandomWalkSegmentation(fluoreszenz2.getProcessor(), params);
     ImageProcessor retFrame2 = obj.run(nextseed);
 

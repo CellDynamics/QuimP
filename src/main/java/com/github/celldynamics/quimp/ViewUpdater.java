@@ -41,7 +41,7 @@ public class ViewUpdater {
    * 
    * <p>Connected snake can be requested by plugins (always as copy)
    * 
-   * @param snake Snake to be connected. I can be \c null when user e.g. deleted last object
+   * @param snake Snake to be connected. I can be null when user e.g. deleted last object
    */
   protected void connectSnakeObject(final Snake snake) {
     if (snake != null) {

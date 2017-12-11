@@ -12,6 +12,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.BOA_.CustomStackWindow;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
@@ -59,9 +60,18 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
    * ID of Snakes stored in this SnakeHandler.
    */
   private int ID;
+  /**
+   * If true this snakeHandler (and related to it continuous series of snakes) is not modified
+   * segmentation is called.
+   * 
+   * @see BOA_#runBoa(int, int)
+   * @see #freezeHandler()
+   * @see #unfreezeHandler()
+   */
+  private boolean snakeHandlerFrozen = false;
 
   /**
-   * Instantiates a new snake handler. Do not initialize anything.
+   * Instantiates a new snake handler. Do not initialise anything.
    */
   public SnakeHandler() {
   }
@@ -590,6 +600,41 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
       }
     }
     endFrame = BOA_.qState.boap.getFrames();
+  }
+
+  /**
+   * Return true if this handler is frozen.
+   * 
+   * <p>Frozen handler is excluded from frame segmentation.
+   * 
+   * @return status of this handler.
+   * @see #freezeHandler()
+   * @see #unfreezeHandler()
+   */
+  public boolean isSnakeHandlerFrozen() {
+    return snakeHandlerFrozen;
+  }
+
+  /**
+   * Prevent this handler from segmentation.
+   * 
+   * @see #unfreezeHandler()
+   * @see #isSnakeHandlerFrozen()
+   * @see CustomStackWindow#itemStateChanged(java.awt.event.ItemEvent) (zoom action)
+   */
+  public void freezeHandler() {
+    snakeHandlerFrozen = true;
+  }
+
+  /**
+   * Unlock handler.
+   * 
+   * @see #freezeHandler()
+   * @see #isSnakeHandlerFrozen()
+   * @see CustomStackWindow#itemStateChanged(java.awt.event.ItemEvent) (zoom action)
+   */
+  public void unfreezeHandler() {
+    snakeHandlerFrozen = false;
   }
 
   /*
