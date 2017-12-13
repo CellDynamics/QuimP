@@ -20,6 +20,11 @@ public class FormatConverterModelTest {
    */
   static final Logger LOGGER = LoggerFactory.getLogger(FormatConverterModelTest.class.getName());
 
+  /**
+   * Serialisation deserialisation test.
+   * 
+   * @throws Exception Exception
+   */
   @Test
   public void testGetStatus() throws Exception {
     FormatConverterModel model = new FormatConverterModel();

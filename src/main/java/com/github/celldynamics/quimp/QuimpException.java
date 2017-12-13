@@ -249,7 +249,22 @@ public class QuimpException extends Exception {
    */
   public String handleException(Frame frame, String appendMessage) {
     logger.debug(getMessage(), this);
-    String message = appendMessage + ": " + getMessage();
+    String message = appendMessage;
+    List<String> ch = getExceptionMessageChain(this);
+    int l = 0;
+    for (String c : ch) {
+      if (c != null) {
+        if (l == 0) {
+          message = message.concat(" (" + c);
+        } else {
+          message = message.concat(" ->" + c);
+        }
+        l++;
+      }
+    }
+    if (l > 0) {
+      message = message.concat(")");
+    }
 
     if (getMessageSinkType().contains(MessageSinkTypes.CONSOLE)) {
       logger.error(message);
@@ -264,15 +279,17 @@ public class QuimpException extends Exception {
       if (ex.size() > 1) {
         IJ.log("Error messages stack:");
         for (int i = 0; i < ex.size(); i++) {
-          if (i == 0) {
-            IJ.log(" " + ex.get(i));
-          } else {
-            IJ.log("  ->" + ex.get(i));
+          if (ex.get(i) != null) {
+            if (i == 0) {
+              IJ.log(" " + ex.get(i));
+            } else {
+              IJ.log("  ->" + ex.get(i));
+            }
           }
         }
       }
       IJ.handleException(this);
-      IJ.error(message);
+      IJ.error(appendMessage + ":" + getMessage());
     }
     return message;
   }

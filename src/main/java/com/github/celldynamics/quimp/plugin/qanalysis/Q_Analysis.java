@@ -219,8 +219,10 @@ public class Q_Analysis {
    * <p>Process current <tt>OutlineHandler oh</tt>; object and modify it filling some fields from
    * Vertex class
    * 
+   * @throws QuimpException on error wit saving maps
+   * 
    */
-  private void run() {
+  private void run() throws QuimpException {
     if (oh.getSize() == 1) {
       Qp.singleImage = true;
       // only one frame - re lable node indices

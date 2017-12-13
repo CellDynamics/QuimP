@@ -142,7 +142,7 @@ public class FormatConverterController implements IQuimpPlugin {
                 .info("-------------------------------------------------------------------------");
         model.paramFile = od.getPath().toString();
         fc.attachFile(od.getPath().toFile());
-        FormatConverter.logger.info(FormatConverterController.this.toString());
+        FormatConverter.logger.info(fc.toString());
       } catch (QuimpException e1) {
         e1.logger.addAppender(FormatConverter.logger.getAppender("internalr"));
         e1.logger.setAdditive(false); // show only in appender
@@ -179,7 +179,7 @@ public class FormatConverterController implements IQuimpPlugin {
         e1.logger.addAppender(FormatConverter.logger.getAppender("internalr"));
         e1.logger.setAdditive(false); // show only in appender
         e1.setMessageSinkType(MessageSinkTypes.CONSOLE);
-        e1.handleException(null, "File could not be loaded.");
+        e1.handleException(null, "File could not be converted.");
       }
     }
   }

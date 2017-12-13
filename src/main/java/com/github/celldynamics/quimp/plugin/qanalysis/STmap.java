@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.OutlineHandler;
 import com.github.celldynamics.quimp.QColor;
+import com.github.celldynamics.quimp.QuimpException;
 import com.github.celldynamics.quimp.Vert;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
@@ -512,8 +513,9 @@ public class STmap implements IQuimpSerialize {
    * Save map files (maQP) on disk.
    * 
    * @param maps Map to be saved, defined in this class. Use {@value STmap#ALLMAPS} for save all
+   * @throws QuimpException any error with saving maps (except IO)
    */
-  public void saveMaps(int maps) {
+  public void saveMaps(int maps) throws QuimpException {
     try {
       if ((maps & MOTILITY) == MOTILITY) {
         File f = new File(Qp.outFile.getPath() + FileExtensions.motmapFileExt);
@@ -554,8 +556,16 @@ public class STmap implements IQuimpSerialize {
       if ((maps & FLU3) == FLU3) {
         saveFluoroMap(2);
       }
-    } catch (IOException e) {
-      IJ.error("Could not write Map file:\n " + e.getMessage());
+    } catch (NullPointerException np) {
+      LOGGER.debug(np.getMessage(), np);
+      throw new QuimpException("Can not save map. Input array does not exist: " + np.getMessage());
+    } catch (IOException e1) {
+      IJ.error("Could not write Map file:\n " + e1.getMessage());
+      LOGGER.debug(e1.getMessage(), e1);
+      throw new QuimpException(e1);
+    } catch (Exception e) {
+      LOGGER.debug(e.getMessage(), e);
+      throw new QuimpException(e);
     }
   }
 
