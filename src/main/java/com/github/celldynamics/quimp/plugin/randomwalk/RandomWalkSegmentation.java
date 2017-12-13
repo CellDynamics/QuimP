@@ -314,7 +314,7 @@ public class RandomWalkSegmentation {
      */
     BACKGROUND(1),
     /**
-     * Rough mask used for computing local mean. Used only if {@link RandomWalkParams#useLocalMean}
+     * Rough mask used for computing local mean. Used only if {@link RandomWalkOptions#useLocalMean}
      * is true.
      * 
      * @see RandomWalkSegmentation#solver(Map, RealMatrix[])

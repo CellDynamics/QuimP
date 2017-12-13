@@ -1,7 +1,9 @@
 /**
+ * Random Walk solver and QuimP plugin.
+ * 
  * <h1>About</h1>
  * 
- * This plugin performs segmentation by random Walk method.
+ * This plugin performs segmentation by Random Walk method.
  * 
  * <h2>Prerequisites</h2>
  * 
