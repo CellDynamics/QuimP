@@ -174,6 +174,8 @@ public class FormatConverterController implements IQuimpPlugin {
                 .info("-------------------------------------------------------------------------");
         fc.attachFile(od.getPath().toFile());
         fc.doConversion();
+        // this will clear UI and clear status list as well. Empty status list stands for conversion
+        view.setUiElements(false);
         publishMacroString();
       } catch (QuimpException e1) {
         e1.logger.addAppender(FormatConverter.logger.getAppender("internalr"));
@@ -265,7 +267,7 @@ public class FormatConverterController implements IQuimpPlugin {
             fc.saveStats();
             break;
           default:
-            fc.logger.warn("Parameter " + s + " is inproper");
+            FormatConverter.logger.warn("Parameter " + s + " is inproper");
         }
       }
     } catch (QuimpException qe) {

@@ -23,6 +23,11 @@ public class FormatConverterModel extends AbstractPluginOptions {
   private List<String> status;
 
   /**
+   * Save one file with all snakes or many files with one snake.
+   */
+  public boolean areMultipleFiles = true;
+
+  /**
    * Return status map.
    * 
    * @return the status
@@ -58,6 +63,7 @@ public class FormatConverterModel extends AbstractPluginOptions {
     FormatConverterModel cp = new FormatConverterModel();
     cp.status = new ArrayList<>(this.status);
     cp.paramFile = this.paramFile;
+    cp.areMultipleFiles = this.areMultipleFiles;
     return cp;
   }
 

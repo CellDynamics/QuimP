@@ -48,7 +48,7 @@ import com.google.gson.GsonBuilder;
  * <li>Round brackets are not allowed in strings - they are used for escaping strings
  * <li>Arrays are allowed but only those containing primitive numbers and strings
  * <li>Concrete object should be cloneable, {@link #serialize()} makes <b>shallow</b> copy of
- * object otherwise. Implement your own clone if you use arrays or collections.
+ * object otherwise. <b>Implement your own clone if you use arrays or collections.</b>
  * <li>If there are other objects stored in concrete implementation of this abstract class, they
  * must have default constructors for GSon.
  * </ul>
