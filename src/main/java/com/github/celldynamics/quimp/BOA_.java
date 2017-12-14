@@ -2948,6 +2948,7 @@ public class BOA_ implements PlugIn {
     for (SnakeHandler sh : qState.nest.getHandlers()) {
       sh.findLastFrame(); // make sure that endFrame points good frame
     }
+    imageGroup.getOrgIpl().deleteRoi(); // clean all roi for qState.nest.analyse
     if (qState.boap.saveSnake) {
       try {
         // this field is set on loading of QCONF thus BOA will ask to save in the same
