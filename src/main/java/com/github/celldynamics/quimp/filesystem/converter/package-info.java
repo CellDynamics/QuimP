@@ -17,7 +17,8 @@
  * <h3>Parameters</h3>
  * 
  * If status list is empty, plugin performs conversion of loaded file to opposed format. If it is
- * not empty, specified fields from new file are extracted.
+ * not empty, specified fields from new file are extracted. See
+ * {@link com.github.celldynamics.quimp.filesystem.converter.FormatConverterModel}
  * 
  * <h2>API support</h2>
  * 

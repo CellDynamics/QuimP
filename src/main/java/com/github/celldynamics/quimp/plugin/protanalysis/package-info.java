@@ -1,4 +1,6 @@
 /**
+ * Demo of node tracking.
+ * 
  * <h1>About</h1>
  * 
  * This plugin performs basic protrusion analysis and visualisation.

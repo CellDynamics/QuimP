@@ -8,12 +8,12 @@ import com.github.celldynamics.quimp.filesystem.converter.FormatConverterControl
  */
 public class Format_ConverterRunner extends FormatConverterController {
 
-  /**
-   * Show ui.
-   */
-  public Format_ConverterRunner() {
-    super();
-    showUi();
-  }
+  // /**
+  // * Show ui.
+  // */
+  // public Format_ConverterRunner() {
+  // super();
+  // showUi();
+  // }
 
 }

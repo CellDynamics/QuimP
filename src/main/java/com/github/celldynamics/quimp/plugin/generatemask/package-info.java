@@ -1,4 +1,6 @@
 /**
+ * Convert snakes to binary masks.
+ * 
  * <h1>About</h1>
  * 
  * This plugin converts Snakes stored in QCONF file to binary masks.

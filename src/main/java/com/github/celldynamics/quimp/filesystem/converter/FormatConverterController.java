@@ -3,6 +3,7 @@ package com.github.celldynamics.quimp.filesystem.converter;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -19,8 +20,9 @@ import com.github.celldynamics.quimp.filesystem.FileDialogEx;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.QconfLoader;
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
-import com.github.celldynamics.quimp.plugin.IQuimpPlugin;
+import com.github.celldynamics.quimp.plugin.PluginTemplate;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
+import com.github.celldynamics.quimp.registration.Registration;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -37,9 +39,8 @@ import ij.plugin.frame.Recorder;
  * @author p.baniukiewicz
  * @see FormatConverterUi
  */
-public class FormatConverterController implements IQuimpPlugin {
+public class FormatConverterController extends PluginTemplate {
 
-  private FormatConverterModel model;
   private FormatConverterUi view;
   private FormatConverter fc;
 
@@ -47,9 +48,10 @@ public class FormatConverterController implements IQuimpPlugin {
    * Default constructor.
    */
   public FormatConverterController() {
+    super(new FormatConverterModel());
     fc = new FormatConverter();
-    initializeLogger();
-    model = new FormatConverterModel();
+
+    FormatConverterModel model = (FormatConverterModel) options;
     view = new FormatConverterUi(model);
     view.getOkButton().addActionListener(new GenerateActionListener());
     view.getLoadButton().addActionListener(new LoadActionListener());
@@ -71,20 +73,71 @@ public class FormatConverterController implements IQuimpPlugin {
    */
   public FormatConverterController(Path fileToLoad) {
     this();
+    FormatConverterModel model = (FormatConverterModel) options;
     model.paramFile = fileToLoad.toString();
   }
 
   /**
-   * Display UI.
+   * Called on plugin run.
+   * 
+   * <p>Overrides {@link PluginTemplate#run(String)} to avoid loading QCONF file which is not used
+   * here.
+   * 
+   * @see PluginTemplate
    */
-  public void showUi() {
-    view.setVisible(true);
-  }
-
   @Override
   public void run(String arg) {
-    // TODO Auto-generated method stub
+    if (arg == null || arg.isEmpty()) {
+      errorSink = MessageSinkTypes.CONSOLE; // assume menu call but all go to UI text field
+    } else {
+      errorSink = MessageSinkTypes.IJERROR; // parameters available - macro call
+    }
+    // validate registered user
+    new Registration(IJ.getInstance(), "QuimP Registration");
+    try {
+      if (parseArgumentString(arg)) { // process options passed to this method
+        FormatConverterModel model = (FormatConverterModel) options;
+        if (model.getStatus().isEmpty()) {
+          runPluginConversion();
+        } else {
+          runPluginExtraction();
+        }
+      } else {
+        initializeLogger(); // redirect log anly for UI
+        showUi(true);
+      }
 
+    } catch (QuimpException qe) {
+      qe.setMessageSinkType(errorSink);
+      qe.handleException(IJ.getInstance(), "Conversion stopped. Some data can not be accessed.");
+    } catch (Exception e) { // catch all exceptions here
+      logger.debug(e.getMessage(), e);
+      IJ.error("Problem with running plugin", e.getMessage());
+    }
+  }
+
+  /**
+   * Run in convert mode.
+   * 
+   * @throws QuimpException QuimpException
+   */
+  private void runPluginConversion() throws QuimpException {
+    FormatConverterModel model = (FormatConverterModel) options;
+    fc.attachFile(new File(model.paramFile));
+    fc.doConversion();
+    publishMacroString();
+  }
+
+  /**
+   * Run in QCONF extraction mode.
+   * 
+   * @throws QuimpException on file load error
+   */
+  private void runPluginExtraction() throws QuimpException {
+    FormatConverterModel model = (FormatConverterModel) options;
+    fc.attachFile(new File(model.paramFile));
+    saveDataFiles();
+    publishMacroString();
   }
 
   /**
@@ -93,6 +146,7 @@ public class FormatConverterController implements IQuimpPlugin {
    * @return the model
    */
   public FormatConverterModel getModel() {
+    FormatConverterModel model = (FormatConverterModel) options;
     return model;
   }
 
@@ -128,6 +182,7 @@ public class FormatConverterController implements IQuimpPlugin {
    *
    */
   private class LoadActionListener implements ActionListener {
+    FormatConverterModel model = (FormatConverterModel) options;
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -160,6 +215,7 @@ public class FormatConverterController implements IQuimpPlugin {
    *
    */
   private class ConvertActionListener implements ActionListener {
+    FormatConverterModel model = (FormatConverterModel) options;
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -172,11 +228,10 @@ public class FormatConverterController implements IQuimpPlugin {
       try {
         FormatConverter.logger
                 .info("-------------------------------------------------------------------------");
-        fc.attachFile(od.getPath().toFile());
-        fc.doConversion();
         // this will clear UI and clear status list as well. Empty status list stands for conversion
         view.setUiElements(false);
-        publishMacroString();
+        model.paramFile = od.getPath().toString();
+        runPluginConversion(); // run in convert mode - status clear
       } catch (QuimpException e1) {
         e1.logger.addAppender(FormatConverter.logger.getAppender("internalr"));
         e1.logger.setAdditive(false); // show only in appender
@@ -205,86 +260,88 @@ public class FormatConverterController implements IQuimpPlugin {
         FormatConverter.logger.error("Load valid QCONF file first");
         return;
       }
-      FormatConverter.logger.info("Generating data...");
-      saveDataFiles();
-      publishMacroString();
+      try {
+        FormatConverter.logger.info("Generating data...");
+        runPluginExtraction();
+      } catch (QuimpException e1) {
+        e1.logger.addAppender(FormatConverter.logger.getAppender("internalr"));
+        e1.logger.setAdditive(false); // show only in appender
+        e1.setMessageSinkType(MessageSinkTypes.CONSOLE);
+        e1.handleException(null, "File could not be converted.");
+      }
     }
   }
 
   /**
    * Save data selected in {@link FormatConverterModel}.
    * 
+   * @throws QuimpException
+   * 
    * @see FormatConverterModel#getStatus()
    * @see FormatConverterUi
    */
-  public void saveDataFiles() {
+  public void saveDataFiles() throws QuimpException {
+    FormatConverterModel model = (FormatConverterModel) options;
     List<String> status = model.getStatus();
     FormatConverter.logger.debug(status.toString());
-    try {
-      for (String s : status) {
-        FormatConverter.logger.info("Saving " + s);
-        switch (s.toLowerCase()) { // if user provide in other case
-          case FormatConverterUi.MAP_MOTILITY: // this is also String displayed on control
-            fc.saveMaps(STmap.MOTILITY);
-            break;
-          case FormatConverterUi.MAP_CONVEXITY:
-            fc.saveMaps(STmap.CONVEXITY);
-            break;
-          case FormatConverterUi.MAP_COORD:
-            fc.saveMaps(STmap.COORD);
-            break;
-          case FormatConverterUi.MAP_FLUORES:
-            fc.saveMaps(STmap.ALLFLU);
-            break;
-          case FormatConverterUi.MAP_ORIGIN:
-            fc.saveMaps(STmap.ORIGIN);
-            break;
-          case FormatConverterUi.MAP_X_COORDS:
-            fc.saveMaps(STmap.XMAP);
-            break;
-          case FormatConverterUi.MAP_Y_COORDS:
-            fc.saveMaps(STmap.YMAP);
-            break;
-          case FormatConverterUi.BOA_CENTROID:
-            fc.saveBoaCentroids();
-            break;
-          case FormatConverterUi.BOA_SNAKES:
-            fc.saveBoaSnakes(view.getChckbxMultiFileOutput());
-            break;
-          case FormatConverterUi.ECMM_CENTROID:
-            fc.saveEcmmCentroids();
-            break;
-          case FormatConverterUi.ECCM_OUTLINES:
-            fc.saveEcmmOutlines(view.getChckbxMultiFileOutput());
-            break;
-          case FormatConverterUi.STATS_FLUORES:
-            fc.saveStatFluores();
-            break;
-          case FormatConverterUi.STATS_GEOMETRIC:
-            fc.saveStatGeom();
-            break;
-          case FormatConverterUi.STATS_Q11:
-            fc.saveStats();
-            break;
-          default:
-            FormatConverter.logger.warn("Parameter " + s + " is inproper");
-        }
+    for (String s : status) {
+      FormatConverter.logger.info("Saving " + s);
+      switch (s.toLowerCase()) { // if user provide in other case
+        case FormatConverterUi.MAP_MOTILITY: // this is also String displayed on control
+          fc.saveMaps(STmap.MOTILITY);
+          break;
+        case FormatConverterUi.MAP_CONVEXITY:
+          fc.saveMaps(STmap.CONVEXITY);
+          break;
+        case FormatConverterUi.MAP_COORD:
+          fc.saveMaps(STmap.COORD);
+          break;
+        case FormatConverterUi.MAP_FLUORES:
+          fc.saveMaps(STmap.ALLFLU);
+          break;
+        case FormatConverterUi.MAP_ORIGIN:
+          fc.saveMaps(STmap.ORIGIN);
+          break;
+        case FormatConverterUi.MAP_X_COORDS:
+          fc.saveMaps(STmap.XMAP);
+          break;
+        case FormatConverterUi.MAP_Y_COORDS:
+          fc.saveMaps(STmap.YMAP);
+          break;
+        case FormatConverterUi.BOA_CENTROID:
+          fc.saveBoaCentroids();
+          break;
+        case FormatConverterUi.BOA_SNAKES:
+          fc.saveBoaSnakes(view.getChckbxMultiFileOutput());
+          break;
+        case FormatConverterUi.ECMM_CENTROID:
+          fc.saveEcmmCentroids();
+          break;
+        case FormatConverterUi.ECCM_OUTLINES:
+          fc.saveEcmmOutlines(view.getChckbxMultiFileOutput());
+          break;
+        case FormatConverterUi.STATS_FLUORES:
+          fc.saveStatFluores();
+          break;
+        case FormatConverterUi.STATS_GEOMETRIC:
+          fc.saveStatGeom();
+          break;
+        case FormatConverterUi.STATS_Q11:
+          fc.saveStats();
+          break;
+        default:
+          FormatConverter.logger.warn("Parameter " + s + " is inproper");
       }
-    } catch (QuimpException qe) {
-      qe.logger.addAppender(fc.logger.getAppender("internalr"));
-      qe.logger.setAdditive(false); // show only in appender
-      qe.setMessageSinkType(MessageSinkTypes.CONSOLE);
-      qe.handleException(null, "Conversion stopped. Some data can not be accessed.");
     }
-
   }
 
   /**
    * Helper, show macro string if recorder is active.
    */
   private void publishMacroString() {
+    FormatConverterModel model = (FormatConverterModel) options;
     // check whether config file name is provided or ask user for it
-    System.out.println("Internal options " + model.serialize2Macro());
+    logger.debug("Internal options " + model.serialize2Macro());
     if (Recorder.record) {
       Recorder.setCommand("Format converter");
       Recorder.recordOption(AbstractPluginOptions.KEY, model.serialize2Macro());
@@ -318,6 +375,21 @@ public class FormatConverterController implements IQuimpPlugin {
         e.printStackTrace();
       }
     }
+  }
+
+  @Override
+  protected void runFromQconf() throws QuimpException {
+    throw new UnsupportedOperationException("Should not be called here.");
+  }
+
+  @Override
+  protected void runFromPaqp() throws QuimpException {
+    throw new UnsupportedOperationException("Should not be called here.");
+  }
+
+  @Override
+  public void showUi(boolean val) throws Exception {
+    view.setVisible(val);
   }
 
 }
