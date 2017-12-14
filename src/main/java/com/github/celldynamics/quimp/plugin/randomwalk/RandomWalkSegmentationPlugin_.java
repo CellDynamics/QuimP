@@ -616,6 +616,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     if (Recorder.record) {
       Recorder.setCommand("RandomWalk");
       Recorder.recordOption(AbstractPluginOptions.KEY, opts.serialize2Macro());
+      Recorder.saveCommand();
     }
   }
 

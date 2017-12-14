@@ -211,6 +211,7 @@ public class Prot_Analysis extends PluginTemplate {
     if (Recorder.record) {
       Recorder.setCommand("Protrusion Analysis");
       Recorder.recordOption(AbstractPluginOptions.KEY, opts.serialize2Macro());
+      Recorder.saveCommand();
     }
   }
 

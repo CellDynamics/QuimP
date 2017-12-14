@@ -345,6 +345,7 @@ public class FormatConverterController extends PluginTemplate {
     if (Recorder.record) {
       Recorder.setCommand("Format converter");
       Recorder.recordOption(AbstractPluginOptions.KEY, model.serialize2Macro());
+      Recorder.saveCommand();
     }
   }
 
