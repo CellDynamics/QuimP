@@ -15,8 +15,9 @@ public class FormatConverterUiRun {
    * Runner.
    * 
    * @param args args
+   * @throws Exception Exception
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     // try {
     // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     // } catch (ClassNotFoundException e) {
@@ -29,7 +30,9 @@ public class FormatConverterUiRun {
     // e.printStackTrace();
     // }
     FormatConverterController obj = new FormatConverterController();
-    obj.showUi();
+    // obj.run("{status:[]," + "areMultipleFiles:true,"
+    // + "paramFile:(/home/baniuk/Desktop/Tests/17.10/test.QCONF)}");
+    obj.run("");
   }
 
 }

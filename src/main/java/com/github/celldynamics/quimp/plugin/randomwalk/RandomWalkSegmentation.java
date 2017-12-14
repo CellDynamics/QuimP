@@ -205,7 +205,7 @@ import ij.process.ImageProcessor;
  * 
  * <h1>Parameters</h1>
  * In this Use Case user create a set of segmentation parameters. They are hold in
- * {@link RandomWalkParams}
+ * {@link RandomWalkOptions}
  * class. This class also contains some pre- and post-processing settings used by
  * {@link RandomWalkSegmentation} object. Default constructor sets recommended values to all numeric
  * options skipping those related to pre- post-processing objects.
@@ -262,7 +262,7 @@ public class RandomWalkSegmentation {
    * in {@link #solver(Map, RealMatrix[]) for computing actual number of iterations (second sweep
    * uses half of defined)}
    * 
-   * @see RandomWalkParams
+   * @see RandomWalkOptions
    */
   private int currentSweep = 0;
 
@@ -314,7 +314,7 @@ public class RandomWalkSegmentation {
      */
     BACKGROUND(1),
     /**
-     * Rough mask used for computing local mean. Used only if {@link RandomWalkParams#useLocalMean}
+     * Rough mask used for computing local mean. Used only if {@link RandomWalkOptions#useLocalMean}
      * is true.
      * 
      * @see RandomWalkSegmentation#solver(Map, RealMatrix[])
@@ -375,7 +375,7 @@ public class RandomWalkSegmentation {
   /**
    * User provided parameters.
    */
-  private RandomWalkParams params;
+  private RandomWalkOptions params;
 
   /**
    * Construct segmentation object from ImageProcessor.
@@ -384,7 +384,7 @@ public class RandomWalkSegmentation {
    * @param params parameters
    * @throws RandomWalkException on wrong image format
    */
-  public RandomWalkSegmentation(ImageProcessor ip, RandomWalkParams params)
+  public RandomWalkSegmentation(ImageProcessor ip, RandomWalkOptions params)
           throws RandomWalkException {
     if (ip.getBitDepth() != 8 && ip.getBitDepth() != 16) {
       throw new RandomWalkException("Only 8-bit or 16-bit images are supported");
@@ -399,7 +399,7 @@ public class RandomWalkSegmentation {
    * Construct segmentation object from 2D RealMatrix representing image.
    * 
    * <p>It is assumed that this input image is 8-bit. Use
-   * {@link #RandomWalkSegmentation(ImageProcessor, RandomWalkParams)} for support 8 and 16-bit
+   * {@link #RandomWalkSegmentation(ImageProcessor, RandomWalkOptions)} for support 8 and 16-bit
    * images.
    * Passing wrong image can have effect to results as {@link #solver(Map, RealMatrix[])} normalises
    * image intensities to maximal theoretical intensity. See
@@ -408,7 +408,7 @@ public class RandomWalkSegmentation {
    * @param image image to segment
    * @param params parameters
    */
-  public RandomWalkSegmentation(RealMatrix image, RandomWalkParams params) {
+  public RandomWalkSegmentation(RealMatrix image, RandomWalkOptions params) {
     this.image = image;
     this.ip = realMatrix2ImageProcessor(image);
     this.params = params;
@@ -1347,7 +1347,7 @@ public class RandomWalkSegmentation {
     } else {
       delta = 1; // move to the next one
     }
-    for (Point p : ind) { // interate over points to fill with values val
+    for (Point p : ind) { // iterate over points to fill with values val
       in.setEntry(p.row, p.col, val.getDataRef()[l]);
       l += delta; // skip to next value (points are iterated in for)
     }

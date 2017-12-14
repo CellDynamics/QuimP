@@ -8,8 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel;
-
 import ij.ImagePlus;
 
 /**
@@ -62,15 +60,15 @@ public class RandomWalkModelTest {
   public void testEquals1() {
     // different objects the same vals
     RandomWalkModel model = new RandomWalkModel();
-    model.originalImage = originalImage;
-    model.seedImage = seedImage;
+    model.setOriginalImage(originalImage);
+    model.setSeedImage(seedImage);
     RandomWalkModel model1 = new RandomWalkModel();
-    model1.originalImage = originalImage;
-    model1.seedImage = seedImage;
+    model1.setOriginalImage(originalImage);
+    model1.setSeedImage(seedImage);
 
     assertThat(model1.hashCode(), is(model.hashCode()));
 
-    model.originalImage = originalImagesmall;
+    model.setOriginalImage(originalImagesmall);
     assertThat(model1.hashCode(), not(model.hashCode()));
 
   }

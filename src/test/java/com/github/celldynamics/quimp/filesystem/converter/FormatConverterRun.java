@@ -30,6 +30,7 @@ public class FormatConverterRun {
     // fc.showConversionCapabilities(ij);
     // System.out.print(fc.toString());
     fc.doConversion();
+    // {status:[stats:fluores,map:ycoords,stats:q11files],paramFile:(/home/baniuk/Desktop/Tests/formatconv/currenttest/fluoreszenz-test.QCONF)}
   }
 
 }

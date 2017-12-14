@@ -80,7 +80,7 @@ public class RandomWalkSegmentationOtherTest {
   private ImagePlus fluoreszenz1;
   private ImagePlus fluoreszenz2;
 
-  RandomWalkParams params;
+  RandomWalkOptions params;
 
   /**
    * @throws java.lang.Exception on error
@@ -97,7 +97,7 @@ public class RandomWalkSegmentationOtherTest {
     fluoreszenz2 = IJ.openImage("src/test/Resources-static/fluoreszenz-test_eq_smooth_frame_2.tif");
 
     testImage1rgb = IJ.openImage("src/test/Resources-static/segtest_small_rgb_test.tif");
-    params = new RandomWalkParams(400.0, 50.0, 100.0, 300.0, 80, 0.1, new Double[] { 8e-3, 1e-3 },
+    params = new RandomWalkOptions(400.0, 50.0, 100.0, 300.0, 80, 0.1, new Double[] { 8e-3, 1e-3 },
             false, 25);
     params.intermediateFilter = new BinaryFilters.EmptyMorpho();
   }

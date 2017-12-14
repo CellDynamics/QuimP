@@ -2,10 +2,13 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import java.util.Arrays;
 
+import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
+import com.github.celldynamics.quimp.plugin.EscapedPath;
 import com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters.Filters;
 import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds.Propagators;
 
 import ij.ImagePlus;
+import ij.WindowManager;
 
 /**
  * This class holds all possible RW parameters.
@@ -13,9 +16,9 @@ import ij.ImagePlus;
  * @author p.baniukiewicz
  * @see RandomWalkSegmentationPlugin_
  * @see RandomWalkView
- * @see RandomWalkParams
+ * @see RandomWalkOptions
  */
-public class RandomWalkModel {
+public class RandomWalkModel extends AbstractPluginOptions {
 
   /**
    * Possible sources of seeds.
@@ -47,7 +50,7 @@ public class RandomWalkModel {
    * 
    * @see RandomWalkSegmentation
    */
-  public RandomWalkParams params;
+  public RandomWalkOptions algOptions;
 
   /**
    * Get shrink methods supported by PropagateSeeds class in form of String[].
@@ -75,7 +78,40 @@ public class RandomWalkModel {
   /**
    * Image to process.
    */
-  public ImagePlus originalImage;
+  private transient ImagePlus originalImage;
+  /**
+   * Image to process - name. This is required for proper serialisation. Only name is remembered.
+   */
+  @EscapedPath
+  private String originalImageName;
+
+  /**
+   * Get original image. If not available try to restore from remembered title.
+   * 
+   * @return the originalImage
+   */
+  public ImagePlus getOriginalImage() {
+    if (this.originalImage != null) {
+      return originalImage;
+    } else {
+      return WindowManager.getImage(originalImageName);
+    }
+  }
+
+  /**
+   * Set original image and update name field for serialisation.
+   * 
+   * @param originalImage the originalImage to set
+   */
+  public void setOriginalImage(ImagePlus originalImage) {
+    this.originalImage = originalImage;
+    if (originalImage == null) {
+      this.originalImageName = "";
+    } else {
+      this.originalImageName = originalImage.getTitle();
+    }
+  }
+
   /**
    * Selected seed source. Depending on value some of fields may be invalid.
    */
@@ -83,10 +119,44 @@ public class RandomWalkModel {
   /**
    * Seed given by RGB image selected from IJ. Valid for all seed sources.
    */
-  public ImagePlus seedImage;
+  private transient ImagePlus seedImage;
+  /**
+   * Seed image - name. This is required for proper serialisation.
+   */
+  @EscapedPath
+  private String seedImageName;
+
+  /**
+   * Get seed image.
+   * 
+   * @return the seedImage
+   */
+  public ImagePlus getSeedImage() {
+    if (this.seedImage != null) {
+      return seedImage;
+    } else {
+      return WindowManager.getImage(seedImageName);
+    }
+  }
+
+  /**
+   * Set seed image and update name for serialisation.
+   * 
+   * @param seedImage the seedImage to set
+   */
+  public void setSeedImage(ImagePlus seedImage) {
+    this.seedImage = seedImage;
+    if (seedImage == null) {
+      this.seedImageName = "";
+    } else {
+      this.seedImageName = seedImage.getTitle();
+    }
+  }
+
   /**
    * Selected QCONF file. Will fill seedImage.
    */
+  @EscapedPath
   public String qconfFile;
 
   /**
@@ -170,7 +240,7 @@ public class RandomWalkModel {
    */
   public void setSelectedFilteringMethod(Filters selectedFilteringMethod) {
     this.selectedFilteringMethod = selectedFilteringMethod;
-    params.intermediateFilter = BinaryFilters.getFilter(selectedFilteringMethod);
+    algOptions.intermediateFilter = BinaryFilters.getFilter(selectedFilteringMethod);
   }
 
   /**
@@ -181,7 +251,7 @@ public class RandomWalkModel {
    */
   public void setSelectedFilteringMethod(int selectedFilteringMethod) {
     this.selectedFilteringMethod = Filters.valueOf(getFilteringMethods()[selectedFilteringMethod]);
-    params.intermediateFilter = BinaryFilters.getFilter(this.selectedFilteringMethod);
+    algOptions.intermediateFilter = BinaryFilters.getFilter(this.selectedFilteringMethod);
   }
 
   /**
@@ -223,7 +293,7 @@ public class RandomWalkModel {
    */
   public void setSelectedFilteringPostMethod(Filters selectedFilteringPostMethod) {
     this.selectedFilteringPostMethod = selectedFilteringPostMethod;
-    params.finalFilter = BinaryFilters.getFilter(selectedFilteringPostMethod);
+    algOptions.finalFilter = BinaryFilters.getFilter(selectedFilteringPostMethod);
   }
 
   /**
@@ -235,7 +305,7 @@ public class RandomWalkModel {
   public void setSelectedFilteringPostMethod(int selectedFilteringPostMethod) {
     this.selectedFilteringPostMethod =
             Filters.valueOf(getFilteringMethods()[selectedFilteringPostMethod]);
-    params.finalFilter = BinaryFilters.getFilter(this.selectedFilteringPostMethod);
+    algOptions.finalFilter = BinaryFilters.getFilter(this.selectedFilteringPostMethod);
   }
 
   /**
@@ -251,7 +321,7 @@ public class RandomWalkModel {
    * Default constructor setting default parameters.
    */
   public RandomWalkModel() {
-    params = new RandomWalkParams();
+    algOptions = new RandomWalkOptions();
     originalImage = null;
     seedSource = SeedSource.RGBImage;
     seedImage = null;
@@ -277,7 +347,7 @@ public class RandomWalkModel {
    */
   @Override
   public String toString() {
-    return "RandomWalkModel [params=" + params + ", originalImage=" + originalImage
+    return "RandomWalkModel [params=" + algOptions + ", originalImage=" + originalImage
             + ", seedSource=" + seedSource + ", seedImage=" + seedImage + ", qconfFile=" + qconfFile
             + ", selectedShrinkMethod=" + selectedShrinkMethod + ", shrinkPower=" + shrinkPower
             + ", expandPower=" + expandPower + ", estimateBackground=" + estimateBackground
@@ -309,7 +379,7 @@ public class RandomWalkModel {
     result = prime * result + (hatFilter ? 1231 : 1237);
     result = prime * result + num;
     result = prime * result + ((originalImage == null) ? 0 : originalImage.getTitle().hashCode());
-    result = prime * result + ((params == null) ? 0 : params.hashCode());
+    result = prime * result + ((algOptions == null) ? 0 : algOptions.hashCode());
     result = prime * result + ((qconfFile == null) ? 0 : qconfFile.hashCode());
     result = prime * result + ((seedImage == null) ? 0 : seedImage.getTitle().hashCode());
     result = prime * result + ((seedSource == null) ? 0 : seedSource.hashCode());
@@ -364,11 +434,11 @@ public class RandomWalkModel {
     } else if (!originalImage.getTitle().equals(other.originalImage.getTitle())) {
       return false;
     }
-    if (params == null) {
-      if (other.params != null) {
+    if (algOptions == null) {
+      if (other.algOptions != null) {
         return false;
       }
-    } else if (!params.equals(other.params)) {
+    } else if (!algOptions.equals(other.algOptions)) {
       return false;
     }
     if (qconfFile == null) {
@@ -413,6 +483,17 @@ public class RandomWalkModel {
       return false;
     }
     return true;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.AbstractPluginOptions#afterSerialize()
+   */
+  @Override
+  public void afterSerialize() throws Exception {
+    setSelectedFilteringPostMethod(selectedFilteringPostMethod);
+    setSelectedFilteringMethod(selectedFilteringMethod);
   }
 
 }

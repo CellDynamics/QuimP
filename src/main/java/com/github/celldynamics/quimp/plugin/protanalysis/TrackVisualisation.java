@@ -584,9 +584,9 @@ public abstract class TrackVisualisation {
      * 
      * @param mapCell map related to given cell.
      * @param config configuration object defining colors, type of plot, etc.
-     * @see ProtAnalysisConfig
+     * @see ProtAnalysisOptions
      */
-    public void addOutlinesToImage(STmap mapCell, ProtAnalysisConfig config) {
+    public void addOutlinesToImage(STmap mapCell, ProtAnalysisOptions config) {
       double[][] mm = mapCell.getMotMap();
       double[][] cm = mapCell.getConvMap();
 

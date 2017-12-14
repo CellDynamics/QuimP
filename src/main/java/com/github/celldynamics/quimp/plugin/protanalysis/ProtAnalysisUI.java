@@ -25,8 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.PropertyReader;
-import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisConfig.GradientType;
-import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisConfig.OutlinePlotTypes;
+import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions.GradientType;
+import com.github.celldynamics.quimp.plugin.protanalysis.ProtAnalysisOptions.OutlinePlotTypes;
 
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -51,7 +51,7 @@ class ProtAnalysisUI implements ActionListener {
   private JFormattedTextField tfDropValue;
   private JFormattedTextField tfMotThreshold;
   private JFormattedTextField tfConvThreshold;
-  private JComboBox<ProtAnalysisConfig.OutlinePlotTypes> cbPlotType;
+  private JComboBox<ProtAnalysisOptions.OutlinePlotTypes> cbPlotType;
   private JCheckBox chPlotMotmap;
   private JCheckBox chPlotMotmapmax;
   private JCheckBox chPlotConmap;
@@ -81,73 +81,74 @@ class ProtAnalysisUI implements ActionListener {
   }
 
   /**
-   * Copy UI settings to {@link ProtAnalysisConfig}
+   * Copy UI settings to {@link ProtAnalysisOptions}
    * object.
    */
   public void readUI() {
-    model.config.noiseTolerance = ((Number) tfNoiseTolerance.getValue()).doubleValue();
-    model.config.dropValue = ((Number) tfDropValue.getValue()).doubleValue();
+    ProtAnalysisOptions config = (ProtAnalysisOptions) model.getOptions();
+    config.noiseTolerance = ((Number) tfNoiseTolerance.getValue()).doubleValue();
+    config.dropValue = ((Number) tfDropValue.getValue()).doubleValue();
 
-    model.config.plotOutline = chPlotOutline.isSelected();
-    model.config.outlinesToImage.motThreshold = ((Number) tfMotThreshold.getValue()).doubleValue();
-    model.config.outlinesToImage.convThreshold =
-            ((Number) tfConvThreshold.getValue()).doubleValue();
-    model.config.outlinesToImage.plotType = (OutlinePlotTypes) cbPlotType.getSelectedItem();
+    config.plotOutline = chPlotOutline.isSelected();
+    config.outlinesToImage.motThreshold = ((Number) tfMotThreshold.getValue()).doubleValue();
+    config.outlinesToImage.convThreshold = ((Number) tfConvThreshold.getValue()).doubleValue();
+    config.outlinesToImage.plotType = (OutlinePlotTypes) cbPlotType.getSelectedItem();
 
-    model.config.plotMotmap = chPlotMotmap.isSelected();
-    model.config.plotMotmapmax = chPlotMotmapmax.isSelected();
-    model.config.plotConmap = chPlotConmap.isSelected();
+    config.plotMotmap = chPlotMotmap.isSelected();
+    config.plotMotmapmax = chPlotMotmapmax.isSelected();
+    config.plotConmap = chPlotConmap.isSelected();
 
-    model.config.plotStaticmax = chPlotStaticmax.isSelected();
-    model.config.staticPlot.plotmax = chStaticPlotmax.isSelected();
-    model.config.staticPlot.plottrack = chStaticPlottrack.isSelected();
-    model.config.staticPlot.averimage = chStaticAverimage.isSelected();
+    config.plotStaticmax = chPlotStaticmax.isSelected();
+    config.staticPlot.plotmax = chStaticPlotmax.isSelected();
+    config.staticPlot.plottrack = chStaticPlottrack.isSelected();
+    config.staticPlot.averimage = chStaticAverimage.isSelected();
 
-    model.config.plotDynamicmax = chPlotDynamicmax.isSelected();
-    model.config.dynamicPlot.plotmax = chDynamicPlotmax.isSelected();
-    model.config.dynamicPlot.plottrack = chDynamicPlottrack.isSelected();
+    config.plotDynamicmax = chPlotDynamicmax.isSelected();
+    config.dynamicPlot.plotmax = chDynamicPlotmax.isSelected();
+    config.dynamicPlot.plottrack = chDynamicPlottrack.isSelected();
 
-    model.config.polarPlot.plotpolar = chPlotPolarplot.isSelected();
-    model.config.polarPlot.useGradient = chUseGradient.isSelected();
+    config.polarPlot.plotpolar = chPlotPolarplot.isSelected();
+    config.polarPlot.useGradient = chUseGradient.isSelected();
 
   }
 
   /**
-   * Copy {@link ProtAnalysisConfig} settings to UI.
+   * Copy {@link ProtAnalysisOptions} settings to UI.
    */
   public void writeUI() {
-    tfNoiseTolerance.setValue(new Double(model.config.noiseTolerance));
-    tfDropValue.setValue(new Double(model.config.dropValue));
+    ProtAnalysisOptions config = (ProtAnalysisOptions) model.getOptions();
+    tfNoiseTolerance.setValue(new Double(config.noiseTolerance));
+    tfDropValue.setValue(new Double(config.dropValue));
 
-    chPlotOutline.setSelected(model.config.plotOutline);
-    tfMotThreshold.setValue(new Double(model.config.outlinesToImage.motThreshold));
-    tfConvThreshold.setValue(new Double(model.config.outlinesToImage.convThreshold));
-    cbPlotType.setSelectedItem(model.config.outlinesToImage.plotType);
+    chPlotOutline.setSelected(config.plotOutline);
+    tfMotThreshold.setValue(new Double(config.outlinesToImage.motThreshold));
+    tfConvThreshold.setValue(new Double(config.outlinesToImage.convThreshold));
+    cbPlotType.setSelectedItem(config.outlinesToImage.plotType);
 
-    chPlotMotmap.setSelected(model.config.plotMotmap);
-    chPlotMotmapmax.setSelected(model.config.plotMotmapmax);
-    chPlotConmap.setSelected(model.config.plotConmap);
+    chPlotMotmap.setSelected(config.plotMotmap);
+    chPlotMotmapmax.setSelected(config.plotMotmapmax);
+    chPlotConmap.setSelected(config.plotConmap);
 
-    chPlotStaticmax.setSelected(model.config.plotStaticmax);
-    chStaticPlotmax.setSelected(model.config.staticPlot.plotmax);
-    chStaticPlottrack.setSelected(model.config.staticPlot.plottrack);
-    chStaticAverimage.setSelected(model.config.staticPlot.averimage);
+    chPlotStaticmax.setSelected(config.plotStaticmax);
+    chStaticPlotmax.setSelected(config.staticPlot.plotmax);
+    chStaticPlottrack.setSelected(config.staticPlot.plottrack);
+    chStaticAverimage.setSelected(config.staticPlot.averimage);
 
-    chPlotDynamicmax.setSelected(model.config.plotDynamicmax);
-    chDynamicPlotmax.setSelected(model.config.dynamicPlot.plotmax);
-    chDynamicPlottrack.setSelected(model.config.dynamicPlot.plottrack);
+    chPlotDynamicmax.setSelected(config.plotDynamicmax);
+    chDynamicPlotmax.setSelected(config.dynamicPlot.plotmax);
+    chDynamicPlottrack.setSelected(config.dynamicPlot.plottrack);
 
-    chPlotPolarplot.setSelected(model.config.polarPlot.plotpolar);
-    chUseGradient.setSelected(model.config.polarPlot.useGradient);
+    chPlotPolarplot.setSelected(config.polarPlot.plotpolar);
+    chUseGradient.setSelected(config.polarPlot.useGradient);
     String g;
-    switch (model.config.polarPlot.type) {
+    switch (config.polarPlot.type) {
       case OUTLINEPOINT:
         g = "Not implemented";
         chUseGradient.setSelected(true);
         break;
       case SCREENPOINT:
-        g = "x=" + model.config.polarPlot.gradientPoint.getX() + " y="
-                + model.config.polarPlot.gradientPoint.getY();
+        g = "x=" + config.polarPlot.gradientPoint.getX() + " y="
+                + config.polarPlot.gradientPoint.getY();
         chUseGradient.setSelected(true);
         break;
       default:
@@ -392,8 +393,6 @@ class ProtAnalysisUI implements ActionListener {
       readUI(); // get ui values to config class
       try {
         model.runPlugin();
-        model.rt.show("Cumulated cell statistics");
-
       } catch (Exception ex) { // catch all exceptions here
         LOGGER.debug(ex.getMessage(), ex);
         LOGGER.error("Problem with running of Protrusion Analysis mapping: " + ex.getMessage());
@@ -412,7 +411,7 @@ class ProtAnalysisUI implements ActionListener {
       }
     }
     if (e.getSource() == bnGradient) {
-      getGradient(model.qconfLoader.getImage());
+      getGradient(model.getQconfLoader().getImage());
     }
   }
 
@@ -438,11 +437,11 @@ class ProtAnalysisUI implements ActionListener {
      */
     @Override
     public void mousePressed(MouseEvent e) {
+      ProtAnalysisOptions config = (ProtAnalysisOptions) model.getOptions();
       super.mousePressed(e);
       LOGGER.debug("Image coords: " + offScreenX(e.getX()) + " " + offScreenY(e.getY()));
-      model.config.polarPlot.type = GradientType.SCREENPOINT;
-      model.config.polarPlot.gradientPoint =
-              new Point2d(offScreenX(e.getX()), offScreenY(e.getY()));
+      config.polarPlot.type = GradientType.SCREENPOINT;
+      config.polarPlot.gradientPoint = new Point2d(offScreenX(e.getX()), offScreenY(e.getY()));
       writeUI(); // update UI
     }
 

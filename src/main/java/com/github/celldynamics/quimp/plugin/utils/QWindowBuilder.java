@@ -616,7 +616,7 @@ public abstract class QWindowBuilder {
    * 
    * <p>To get one particular parameter use getIntegerFromUI(String) or getDoubleFromUI(String)
    * 
-   * <p>JSpinners are set to support double values and that values are returned here It means that
+   * <p>JSpinners are set to support double values and that values are returned here. It means that
    * originally pushed to UI integers are changed to Double what can affect set/getpluginConfig
    * from filter interface as well
    * 

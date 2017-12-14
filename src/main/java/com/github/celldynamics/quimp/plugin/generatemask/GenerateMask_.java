@@ -1,7 +1,6 @@
 package com.github.celldynamics.quimp.plugin.generatemask;
 
 import java.awt.Color;
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -13,11 +12,11 @@ import com.github.celldynamics.quimp.Nest;
 import com.github.celldynamics.quimp.QParamsQconf;
 import com.github.celldynamics.quimp.QuimP;
 import com.github.celldynamics.quimp.QuimpException;
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.Snake;
 import com.github.celldynamics.quimp.SnakeHandler;
-import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.filesystem.FileExtensions;
-import com.github.celldynamics.quimp.plugin.ParamList;
+import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.PluginTemplate;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
@@ -25,9 +24,9 @@ import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.Macro;
 import ij.gui.NewImage;
 import ij.gui.Roi;
+import ij.plugin.frame.Recorder;
 import ij.process.ImageProcessor;
 
 /**
@@ -41,108 +40,55 @@ import ij.process.ImageProcessor;
 public class GenerateMask_ extends PluginTemplate {
 
   /**
-   * Resulting image.
+   * Resulting image. (Not saved or shown if apiCall==true)
    */
   private ImagePlus res;
-  /**
-   * default configuration parameters, for future using.
-   */
-  private ParamList paramList = new ParamList();
 
   /**
-   * Do nothing here. For compatibility with IJ
+   * Executed if plugin is run from IJ. Set apiCall to false and redirect exception to IJ.
    */
   public GenerateMask_() {
-    super();
+    super(new GenerateMaskOptions());
   }
 
   /**
-   * Constructor that allows to provide own file.
+   * Constructor that allows to provide own parameters.
    * 
-   * @param paramFile it can be null to ask user for file or it can be parameters string like that
+   * @param paramString it can be null to ask user for file or it can be parameters string like that
    *        passed in macro.
    * @throws QuimpPluginException on any error
-   * @see #about()
    */
-  public GenerateMask_(String paramFile) throws QuimpPluginException {
-    super(paramFile);
-  }
+  public GenerateMask_(String paramString) throws QuimpPluginException {
+    super(paramString, new GenerateMaskOptions()); // will parse and fill options
 
-  @Override
-  public int setup() {
-    return 0;
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#setPluginConfig(com.github.celldynamics.quimp.
-   * plugin.ParamList)
+   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#run(java.lang.String)
    */
   @Override
-  public void setPluginConfig(ParamList par) throws QuimpPluginException {
-    paramList = new ParamList(par);
+  public void run(String arg) {
+    super.run(arg);
+    // check whether config file name is provided or ask user for it
+    GenerateMaskOptions opts = (GenerateMaskOptions) options;
+    logger.debug(options.serialize2Macro());
+    if (Recorder.record) {
+      Recorder.setCommand("Generate mask");
+      Recorder.recordOption(AbstractPluginOptions.KEY, opts.serialize2Macro());
+    }
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * About string.
    * 
-   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#getPluginConfig()
+   * @return About string
    */
-  @Override
-  public ParamList getPluginConfig() {
-    return paramList;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#showUI(boolean)
-   */
-  @Override
-  public int showUi(boolean val) {
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#getVersion()
-   */
-  @Override
-  public String getVersion() {
-    return "See QuimP version";
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#about()
-   */
-  @Override
   public String about() {
     return "Generate mask plugin.\n" + "Author: Piotr Baniukiewicz\n"
             + "mail: p.baniukiewicz@warwick.ac.uk\n" + "This plugin supports macro parameters\n"
             + "\tfilenam=path_to_QCONF";
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#parseOptions(java.lang.String)
-   */
-  @Override
-  protected void parseOptions(String options) {
-    if (options == null || options.isEmpty()) {
-      return; // just use paramFile=null
-    }
-    // go through params
-    String val = Macro.getValue(options, "filename", null);
-    if (val == null) { // this is allowed, just ask user
-      paramFile = null; // do not do anything, paramFile isnull by default
-    } else {
-      paramFile = new File(val); // set file from options
-    }
   }
 
   /*
@@ -185,10 +131,10 @@ public class GenerateMask_ extends PluginTemplate {
       Path filename = Paths.get(qp.getPath(), qp.getFileName() + FileExtensions.generateMaskSuffix);
       IJ.saveAsTiff(res, filename.toString());
       IJ.log("Saved in: " + filename.toString());
-      if (runAsMacro == MessageSinkTypes.GUI) { // run form IJ not from macro
+      if (errorSink == MessageSinkTypes.GUI) { // run form IJ not from macro
         JOptionPane.showMessageDialog(
                 IJ.getInstance(), QuimpToolsCollection
-                        .stringWrap("Image saved! (see log to find path)", QuimP.LINE_WRAP),
+                        .stringWrap("Image saved! (" + filename.toString() + ")", QuimP.LINE_WRAP),
                 "Saved!", JOptionPane.INFORMATION_MESSAGE);
       } else {
         IJ.log("Mask generated!");
@@ -205,5 +151,23 @@ public class GenerateMask_ extends PluginTemplate {
    */
   public ImagePlus getRes() {
     return res;
+  }
+
+  @Override
+  protected void runFromPaqp() throws QuimpException {
+    throw new QuimpException("Old file format is not supported");
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.plugin.PluginTemplate#showUi(boolean)
+   */
+  @Override
+  protected void showUi(boolean val) throws Exception {
+    // this method is called when no options were provided to run, paramFile is empty or null
+    loadFile(options.paramFile); // if no options (run from menu) let qconfloader show file selector
+    // fill this for macro recorder
+    options.paramFile = qconfLoader.getQp().getParamFile().getAbsolutePath();
   }
 }

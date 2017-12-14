@@ -470,9 +470,10 @@ public class FormatConverterUi extends JDialog {
               } else {
                 chckbxMultiFileOutput.setText(FILE_PER_CELL);
               }
+              model.areMultipleFiles = chckbxMultiFileOutput.isSelected();
             }
           });
-          chckbxMultiFileOutput.setSelected(true);
+          chckbxMultiFileOutput.setSelected(model.areMultipleFiles);
           chckbxMultiFileOutput.setToolTipText(
                   "Save one file per cell or one file per frame (snakes and outlines only)");
           multifilePanel.add(chckbxMultiFileOutput);
@@ -599,7 +600,7 @@ public class FormatConverterUi extends JDialog {
     return btnMaps;
   }
 
-  private void setUiElements(boolean status) {
+  void setUiElements(boolean status) {
     setBoa(status);
     setEcmm(status);
     setRawStats(status);

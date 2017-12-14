@@ -1,7 +1,9 @@
 /**
+ * Random Walk solver and QuimP plugin.
+ * 
  * <h1>About</h1>
  * 
- * This plugin performs segmentation by random Walk method.
+ * This plugin performs segmentation by Random Walk method.
  * 
  * <h2>Prerequisites</h2>
  * 
@@ -15,9 +17,12 @@
  * 
  * <h2>Macro support</h2>
  * 
- * Macro not supported.
+ * Macro is supported.
  * 
  * <h3>Parameters</h3>
+ * 
+ * See {@link com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel} and
+ * {@link com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkOptions}
  * 
  * <h2>API support</h2>
  * 

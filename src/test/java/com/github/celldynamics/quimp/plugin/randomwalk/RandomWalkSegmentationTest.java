@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkParams;
+import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkOptions;
 import com.github.celldynamics.quimp.plugin.randomwalk.Point;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkException;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation;
@@ -59,7 +59,7 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
    * @throws RandomWalkException on wrong image
    */
   public RandomWalkSegmentationTest() throws RandomWalkException {
-    super(testImage1.getProcessor(), new RandomWalkParams());
+    super(testImage1.getProcessor(), new RandomWalkOptions());
   }
 
   /**
@@ -464,7 +464,7 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     //!<
 
     RandomWalkSegmentation rws =
-            new RandomWalkSegmentation(testImage1.getProcessor(), new RandomWalkParams());
+            new RandomWalkSegmentation(testImage1.getProcessor(), new RandomWalkOptions());
     double ret = rws.computeRelErr(fglast, fg);
     assertThat(ret, is(expected));
   }

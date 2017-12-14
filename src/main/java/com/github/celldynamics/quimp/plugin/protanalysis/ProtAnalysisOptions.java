@@ -5,6 +5,7 @@ import java.awt.Color;
 import org.scijava.vecmath.Point2d;
 
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
+import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
 
 /**
@@ -13,7 +14,7 @@ import com.github.celldynamics.quimp.plugin.qanalysis.STmap;
  * @author p.baniukiewicz
  *
  */
-public class ProtAnalysisConfig implements IQuimpSerialize {
+public class ProtAnalysisOptions extends AbstractPluginOptions implements IQuimpSerialize {
 
   /**
    * Sensitivity of maximum detection.
@@ -43,7 +44,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
   /**
    * Type of plots to show.
    */
-  public boolean plotStaticmax = false;
+  public boolean plotStaticmax = true;
   /**
    * Type of plots to show.
    */
@@ -51,7 +52,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
 
   /**
    * Plot types supported by
-   * {@link TrackVisualisation.Stack#addOutlinesToImage(STmap, ProtAnalysisConfig)}.
+   * {@link TrackVisualisation.Stack#addOutlinesToImage(STmap, ProtAnalysisOptions)}.
    * <ol>
    * <li>MOTILITY - only motility based outline.
    * <li>CONVEXITY - only convexity based outline.
@@ -187,7 +188,7 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
    * Configuration of plotting outlines of cells on stack of images.
    * 
    * @author p.baniukiewicz
-   * @see TrackVisualisation.Stack#addOutlinesToImage(STmap,ProtAnalysisConfig)
+   * @see TrackVisualisation.Stack#addOutlinesToImage(STmap,ProtAnalysisOptions)
    */
   class OutlinesToImage {
     /**
@@ -245,26 +246,18 @@ public class ProtAnalysisConfig implements IQuimpSerialize {
   /**
    * Instantiates a new prot analysis config.
    */
-  public ProtAnalysisConfig() {
+  public ProtAnalysisOptions() {
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.IQuimpSerialize#beforeSerialize()
-   */
   @Override
   public void beforeSerialize() {
+    // TODO Auto-generated method stub
 
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.github.celldynamics.quimp.IQuimpSerialize#afterSerialize()
-   */
   @Override
   public void afterSerialize() throws Exception {
+    // TODO Auto-generated method stub
 
   }
 
