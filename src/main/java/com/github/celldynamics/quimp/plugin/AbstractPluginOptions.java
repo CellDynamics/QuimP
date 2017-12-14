@@ -98,17 +98,23 @@ public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerializ
     try {
       cp = this.clone();
       for (Field f : FieldUtils.getFieldsListWithAnnotation(this.getClass(), EscapedPath.class)) {
+        boolean flag = f.isAccessible();
         try {
+          f.setAccessible(true);
           String s = (String) f.get(this);
           EscapedPath annotation = (EscapedPath) f.getAnnotation(EscapedPath.class);
           s = annotation.left() + s + annotation.right();
           Field cpf = getField(cp.getClass(), f.getName());
           if (cpf != null) {
+            cpf.setAccessible(true);
             cpf.set(cp, s);
+            cpf.setAccessible(flag);
           }
         } catch (IllegalArgumentException | IllegalAccessException | SecurityException
                 | ClassCastException e) {
           ; // ignore and process next field. This protects against non string fields annotated
+        } finally {
+          f.setAccessible(flag);
         }
       }
     } catch (CloneNotSupportedException e1) {
@@ -169,7 +175,9 @@ public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerializ
 
     obj = (T) gson.fromJson(json, t.getClass());
     for (Field f : FieldUtils.getFieldsListWithAnnotation(obj.getClass(), EscapedPath.class)) {
+      boolean flag = f.isAccessible();
       try {
+        f.setAccessible(true);
         String s = (String) f.get(obj);
         EscapedPath annotation = (EscapedPath) f.getAnnotation(EscapedPath.class);
         s = StringUtils.removeStart(s, Character.toString(annotation.left()));
@@ -178,6 +186,8 @@ public abstract class AbstractPluginOptions implements Cloneable, IQuimpSerializ
       } catch (IllegalArgumentException | IllegalAccessException | SecurityException
               | ClassCastException e) {
         ; // ignore and process next field. This protects against non string fields annotaed
+      } finally {
+        f.setAccessible(flag);
       }
     }
     return obj;

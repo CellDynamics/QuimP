@@ -33,8 +33,8 @@ public class RandomWalkSegmentationPluginRun {
     IJ.openImage("src/test/Resources-static/PropagateSeeds/stack-mask.tif").show();
     obj.run("{algOptions:{alpha:401.0,beta:50.0,gamma:[100.0,300.0],"
             + "iter:10000,dt:0.1,relim:[0.008,0.01],useLocalMean:true,localMeanMaskSize:25,"
-            + "maskLimit:false},originalImageName:stack.tif," + "seedSource:MaskImage,"
-            + "seedImageName:stack-mask.tif,"
+            + "maskLimit:false},originalImageName:(stack.tif)," + "seedSource:MaskImage,"
+            + "seedImageName:(stack-mask.tif),"
             + "selectedShrinkMethod:NONE,shrinkPower:10.0,expandPower:15.0,"
             + "selectedFilteringMethod:NONE,hatFilter:false,alev:0.9,num:1,window:15,"
             + "selectedFilteringPostMethod:MEDIAN,showSeeds:false,showPreview:false,"

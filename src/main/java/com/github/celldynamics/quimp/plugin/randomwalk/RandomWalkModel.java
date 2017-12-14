@@ -3,6 +3,7 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 import java.util.Arrays;
 
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
+import com.github.celldynamics.quimp.plugin.EscapedPath;
 import com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters.Filters;
 import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds.Propagators;
 
@@ -81,6 +82,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
   /**
    * Image to process - name. This is required for proper serialisation. Only name is remembered.
    */
+  @EscapedPath
   private String originalImageName;
 
   /**
@@ -121,6 +123,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
   /**
    * Seed image - name. This is required for proper serialisation.
    */
+  @EscapedPath
   private String seedImageName;
 
   /**
@@ -153,6 +156,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
   /**
    * Selected QCONF file. Will fill seedImage.
    */
+  @EscapedPath
   public String qconfFile;
 
   /**
