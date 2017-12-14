@@ -257,7 +257,7 @@ public class QuimpException extends Exception {
         if (l == 0) {
           message = message.concat(" (" + c);
         } else {
-          message = message.concat(" ->" + c);
+          message = message.concat(" -> " + c);
         }
         l++;
       }

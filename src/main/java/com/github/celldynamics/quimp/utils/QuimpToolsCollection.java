@@ -12,6 +12,7 @@ import java.util.Enumeration;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -345,7 +346,7 @@ public class QuimpToolsCollection {
   }
 
   /**
-   * Insert \n character after given number of chars keeping to not break words.
+   * Insert \n character after given number of chars trying to not break words.
    * 
    * @param in Input string
    * @param len line length
@@ -358,7 +359,7 @@ public class QuimpToolsCollection {
   }
 
   /**
-   * Insert \n character after default number of chars keeping to not break words.
+   * Insert \n character after default number of chars trying to not break words.
    * 
    * @param in Input string
    * @return Wrapped string
@@ -370,7 +371,7 @@ public class QuimpToolsCollection {
   }
 
   /**
-   * Insert any symbol after given number of chars keeping to not break words.
+   * Insert any symbol after given number of chars trying to not break words.
    * 
    * @param in Input string
    * @param len line length
@@ -380,8 +381,8 @@ public class QuimpToolsCollection {
    *      "link">http://stackoverflow.com/questions/8314566/splitting-a-string-on-to-several-different-lines-in-java</a>
    */
   public static String stringWrap(String in, int len, String brek) {
-
-    return in.replaceAll("(.{" + len + ",}?)\\s+", "$1" + brek);
+    String str = WordUtils.wrap(in, len, brek, false, "( |/|\\\\)");
+    return str;
   }
 
 }

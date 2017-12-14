@@ -173,10 +173,10 @@ public class Prot_Analysis extends PluginTemplate {
       publishMacroString();
     } catch (QuimpException qe) {
       qe.setMessageSinkType(errorSink);
-      qe.handleException(IJ.getInstance(), this.getClass().getSimpleName());
+      qe.handleException(IJ.getInstance(), "Error during execution of Protrusion Analysis");
     } catch (Exception e) { // catch all here and convert to expected type
       logger.debug(e.getMessage(), e);
-      logger.error("Problem with running plugin: " + e.getMessage());
+      IJ.error("Problem with running plugin", e.getMessage());
     }
   }
 
