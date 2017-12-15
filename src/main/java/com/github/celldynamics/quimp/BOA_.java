@@ -165,6 +165,7 @@ public class BOA_ implements PlugIn {
    * deleting operation
    */
   private String lastTool;
+
   /**
    * Reserved word that stands for plugin that is not selected.
    */
@@ -640,6 +641,7 @@ public class BOA_ implements PlugIn {
     private Button bnDefault;
     private Button bnScale;
     private Button bnCopyLast;
+    private Button bnSave;
 
     private Button bnAdd;
     private Button bnDel;
@@ -690,6 +692,8 @@ public class BOA_ implements PlugIn {
     private MenuItem menuLoadConfig;
     private MenuItem menuShowHistory;
     private MenuItem menuLoad;
+    private MenuItem menuSave;
+    private MenuItem menuSaveAs;
     private MenuItem menuDeletePlugin;
     private MenuItem menuApplyPlugin;
     private MenuItem menuSegmentationRun;
@@ -725,6 +729,7 @@ public class BOA_ implements PlugIn {
       bnDefault.setEnabled(state);
       bnScale.setEnabled(state);
       bnCopyLast.setEnabled(state);
+      bnSave.setEnabled(state);
 
       bnAdd.setEnabled(state);
       bnDel.setEnabled(state);
@@ -856,9 +861,16 @@ public class BOA_ implements PlugIn {
       menuBar.add(menuHelp);
 
       // add entries
-      menuLoad = new MenuItem("Load global config");
+      menuLoad = new MenuItem("Load experiment");
       menuLoad.addActionListener(this);
       menuFile.add(menuLoad);
+      menuSave = new MenuItem("Save experiment");
+      menuSave.addActionListener(this);
+      menuFile.add(menuSave);
+      menuSaveAs = new MenuItem("Save experiment as..");
+      menuSaveAs.addActionListener(this);
+      menuFile.add(menuSaveAs);
+
       menuFile.addSeparator();
       menuLoadConfig = new MenuItem("Load plugin preferences");
       menuLoadConfig.addActionListener(this);
@@ -1063,8 +1075,10 @@ public class BOA_ implements PlugIn {
 
       // --------build topPanel--------
       bnLoad = addButton("Load", topPanel);
-      bnDefault = addButton("Default", topPanel);
+      bnSave = addButton("Update", topPanel);
       bnCopyLast = addButton("Copy prev", topPanel);
+      bnDefault = addButton("Default", topPanel);
+
       // -----------------------
 
       // --------build paramPanel--------------
@@ -1537,11 +1551,21 @@ public class BOA_ implements PlugIn {
         addCell(canvas.getImage().getRoi(), qState.boap.frame);
         canvas.getImage().killRoi();
       } else if (b == bnFinish) {
-        BOA_.log("Finish: Exiting BOA...");
         fpsLabel.setName("moo");
-        finish();
-      } else if (b == bnQuit) {
+        finish(true); // ask for new file
         quit();
+      } else if (b == bnQuit) {
+        YesNoCancelDialog ync;
+        ync = new YesNoCancelDialog(window, "Quit", "Quit without saving?");
+        if (!ync.yesPressed()) {
+          return;
+        }
+        quit();
+      } else if (b == bnSave || b == menuSave) {
+        finish(false); // update old file
+      }
+      if (b == menuSaveAs) {
+        finish(true); // create new file
       }
       // process plugin GUI buttons
       if (b == bnFirstPluginGUI) {
@@ -2938,8 +2962,10 @@ public class BOA_ implements PlugIn {
 
   /**
    * Initialising all data saving and exporting results to disk and IJ.
+   * 
+   * @param finish if false file is updated, true created new
    */
-  private void finish() {
+  private void finish(boolean finish) {
     IJ.showStatus("BOA-FINISHING");
     YesNoCancelDialog ync;
     File testF;
@@ -2951,27 +2977,33 @@ public class BOA_ implements PlugIn {
     imageGroup.getOrgIpl().deleteRoi(); // clean all roi for qState.nest.analyse
     if (qState.boap.saveSnake) {
       try {
+        // check whether there is case saved and warn user
+        testF = new File(qState.boap.deductNewParamFileName());
+        // to check only once
+        boolean testFileExists = testF.exists() && !testF.isDirectory();
+        LOGGER.trace("Test for QCONF: " + testF.toString());
         // this field is set on loading of QCONF thus BOA will ask to save in the same
         // folder
-        String saveIn = BOA_.qState.boap.getOutputFileCore().getParent();
-        SaveDialog sd = new SaveDialog("Save segmentation data...", saveIn,
-                BOA_.qState.boap.getFileName() + ".QCONF", "");
-        if (sd.getFileName() == null) {
-          BOA_.log("Save canceled");
-          return;
+        // show dialog if we are in create mode OR QCONF does not exist (user clicked update withour
+        // saving first)
+        if (finish || !testFileExists) {
+          String saveIn = BOA_.qState.boap.getOutputFileCore().getParent();
+          SaveDialog sd = new SaveDialog("Save segmentation data...", saveIn,
+                  BOA_.qState.boap.getFileName() + FileExtensions.newConfigFileExt, "");
+          if (sd.getFileName() == null) {
+            BOA_.log("Save canceled");
+            return;
+          }
+          // This initialize various filenames that can be accessed by other modules (also qconf)
+          BOA_.qState.boap.setOutputFileCore(sd.getDirectory() + sd.getFileName());
+          testF = new File(qState.boap.deductNewParamFileName());
+          testFileExists = testF.exists() && !testF.isDirectory();
         }
-        // This initialize various filenames that can be accessed by other modules (also qconf)
-        BOA_.qState.boap.setOutputFileCore(sd.getDirectory() + sd.getFileName());
 
-        // check whether there is case saved and warn user
-        // there is no option to solve this problem here. User can only agree or cancel
-        // test for QCONF that is created always
-        testF = new File(qState.boap.deductNewParamFileName());
-        LOGGER.trace("Test for QCONF: " + testF.toString());
-        if (testF.exists() && !testF.isDirectory()) {
+        if (testFileExists) {
           ync = new YesNoCancelDialog(window, "Save Segmentation",
-                  "You are about to override previous results. Is it ok?\nIf not,"
-                          + " previous data must be moved to another directory");
+                  QuimpToolsCollection.stringWrap("You are about to override previous results ("
+                          + testF.toString() + "). Is it ok?", QuimP.LINE_WRAP));
           if (!ync.yesPressed()) {
             return;
           }
@@ -3007,6 +3039,14 @@ public class BOA_ implements PlugIn {
           }
           n.save(qState.boap.deductNewParamFileName());
           n = null;
+          BOA_.log("Updated file " + BOA_.qState.boap.deductNewParamFileName());
+        } else {
+          BOA_.log("Nest empty. Nothing saved.");
+          JOptionPane.showMessageDialog(window,
+                  QuimpToolsCollection.stringWrap(
+                          "There are not any cell segmented! Nothing has been saved.",
+                          QuimP.LINE_WRAP),
+                  "Info", JOptionPane.INFORMATION_MESSAGE);
         }
       } catch (IOException e) {
         IJ.error("Problem with saving files", e.getMessage());
@@ -3014,13 +3054,6 @@ public class BOA_ implements PlugIn {
         return;
       }
     }
-    BOA_.isBoaRunning = false;
-    imageGroup.makeContourImage();
-    qState.nest = null; // remove from memory
-    imageGroup.getOrgIpl().setOverlay(new Overlay());
-    new StackWindow(imageGroup.getOrgIpl()); // clear overlay
-    window.setImage(new ImagePlus());
-    window.close();
   }
 
   /**
@@ -3028,12 +3061,8 @@ public class BOA_ implements PlugIn {
    * 
    */
   void quit() {
-    YesNoCancelDialog ync;
-    ync = new YesNoCancelDialog(window, "Quit", "Quit without saving?");
-    if (!ync.yesPressed()) {
-      return;
-    }
-
+    BOA_.log("Finish: Exiting BOA...");
+    imageGroup.makeContourImage();
     BOA_.isBoaRunning = false;
     qState.nest = null; // remove from memory
     imageGroup.getOrgIpl().setOverlay(new Overlay()); // clear overlay
