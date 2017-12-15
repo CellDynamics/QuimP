@@ -1075,7 +1075,7 @@ public class BOA_ implements PlugIn {
 
       // --------build topPanel--------
       bnLoad = addButton("Load", topPanel);
-      bnSave = addButton("Update", topPanel);
+      bnSave = addButton("Save", topPanel);
       bnCopyLast = addButton("Copy prev", topPanel);
       bnDefault = addButton("Default", topPanel);
 
