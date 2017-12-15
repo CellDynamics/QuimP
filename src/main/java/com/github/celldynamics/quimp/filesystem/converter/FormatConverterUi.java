@@ -24,6 +24,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
@@ -140,6 +141,12 @@ public class FormatConverterUi extends JDialog {
    * @param model model class for this view
    */
   public FormatConverterUi(FormatConverterModel model) {
+    try {
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+            | UnsupportedLookAndFeelException e) {
+      e.printStackTrace();
+    }
     setTitle("Format Converter");
     setBounds(100, 100, 568, 307);
     getContentPane().setLayout(new BorderLayout());
