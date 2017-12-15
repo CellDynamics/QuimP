@@ -313,7 +313,7 @@ public class Constrictor {
         }
         snakeA = nest.getHandler(s).getLiveSnake();
         if (snakeA.alive && frame > nest.getHandler(s).getStartFrame()) {
-          snakeA.scale(stepSize, stepSize, true);
+          snakeA.scaleSnake(stepSize, stepSize, true);
         }
       }
 

@@ -210,7 +210,7 @@
  * is
  * removed, new head is chosen randomly between next and previous element. This affects end result
  * making it nondeterministic, especially for iterative shrinking like e.g.
- * {@link com.github.celldynamics.quimp.Outline#scale(double, double, double, double)}
+ * {@link com.github.celldynamics.quimp.Outline#scaleOutline(double, double, double, double)}
  * or scaling in {@link com.github.celldynamics.quimp.Snake}. To make testing possible, threshold
  * level
  * defined in {@link com.github.celldynamics.quimp.Shape} is static and private to avoid accidental

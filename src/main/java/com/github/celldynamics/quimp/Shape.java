@@ -891,6 +891,8 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
    * 
    * @param stepSize increment
    * @see PointsList#updateNormale(boolean)
+   * @see #calcCentroid()
+   * @see #setPositions()
    * @see PointsList#setClockwise(boolean)
    */
   public void scale(double stepSize) {

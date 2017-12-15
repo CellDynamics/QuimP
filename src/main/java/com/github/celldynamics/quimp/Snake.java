@@ -563,7 +563,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    */
   @Deprecated
   public void blowup() throws Exception {
-    scale(BOA_.qState.segParam.blowup, 4, true);
+    scaleSnake(BOA_.qState.segParam.blowup, 4, true);
   }
 
   /**
@@ -576,9 +576,9 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
    * @param correct if true it corrects the node distance
    * @throws BoaException if node distance correction failed
    * @see com.github.celldynamics.quimp.Shape#scale(double)
-   * @see Outline#scale(double, double, double, double)
+   * @see Outline#scaleOutline(double, double, double, double)
    */
-  public void scale(double amount, double stepRes, boolean correct) throws BoaException {
+  public void scaleSnake(double amount, double stepRes, boolean correct) throws BoaException {
     if (amount == 0) {
       return;
     }

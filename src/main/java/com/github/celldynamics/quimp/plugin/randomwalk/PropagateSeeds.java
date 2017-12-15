@@ -223,7 +223,7 @@ public abstract class PropagateSeeds {
     /**
      * Step size during object outline shrinking.
      * 
-     * @see Outline#scale(double, double, double, double)
+     * @see Outline#scaleOutline(double, double, double, double)
      * @see ANAp
      */
     public static final double stepSize = 0.04;
@@ -265,7 +265,7 @@ public abstract class PropagateSeeds {
      * @return List of background and foreground coordinates.
      * @see PropagateSeeds.Morphological#propagateSeed(ImageProcessor, ImageProcessor, double,
      *      double)
-     * @see Outline#scale(double, double, double, double)
+     * @see Outline#scaleOutline(double, double, double, double)
      * @see #getTrueBackground(ImageProcessor, ImageProcessor)
      * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
      */

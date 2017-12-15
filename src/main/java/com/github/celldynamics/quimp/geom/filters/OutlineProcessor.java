@@ -69,7 +69,7 @@ public class OutlineProcessor<T extends Shape<?>> {
    * @param stepRes length of the step
    * @param angleTh angle threshold
    * @param freezeTh freeze threshold
-   * @see Outline#scale(double, double, double, double)
+   * @see Outline#scaleOutline(double, double, double, double)
    */
   public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh) {
     // later drop any local feature like curvature and use rather snakehatfileter to get proper

@@ -920,7 +920,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    * @param a a
    * @return ?
    */
-  Vert findCoordEdge(double a) {
+  public Vert findCoordEdge(double a) {
     Vert v = head;
     do {
 
@@ -957,7 +957,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    * @param angleTh angle threshold
    * @param freezeTh freeze threshold
    */
-  public void scale(double amount, double stepRes, double angleTh, double freezeTh) {
+  public void scaleOutline(double amount, double stepRes, double angleTh, double freezeTh) {
     int j;
     updateNormales(true);
     double steps = Math.abs(amount / stepRes);
@@ -965,7 +965,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
       if (getNumPoints() <= 3) {
         break;
       }
-      scale(stepRes);
+      super.scale(stepRes);
       updateNormales(true);
       removeProx(1.5, 1.5); // constants taken from old removeProx were they were hardcoded
       freezeProx(angleTh, freezeTh);

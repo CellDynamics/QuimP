@@ -51,7 +51,7 @@ public class ANAp {
   /**
    * Angle threshold.
    * 
-   * @see Outline#scale(double, double, double, double)
+   * @see Outline#scaleOutline(double, double, double, double)
    */
   public final transient double angleTh = 0.1;
   /**
