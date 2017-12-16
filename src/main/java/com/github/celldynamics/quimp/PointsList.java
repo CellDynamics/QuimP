@@ -27,7 +27,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   static final Logger LOGGER = LoggerFactory.getLogger(PointsList.class.getName());
 
   /**
-   * Previous point in list, \c null if no other point.
+   * Previous point in list, null if no other point.
    */
   protected transient T prev;
 
@@ -48,7 +48,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   protected ExtendedVector2d normal;
   /**
    * tangent vector. Calculated by com.github.celldynamics.quimp.PointsList.calcTan(). Implicitly
-   * during calculating normals (see \c normal)
+   * during calculating normals (see normal)
    */
   protected ExtendedVector2d tan;
 

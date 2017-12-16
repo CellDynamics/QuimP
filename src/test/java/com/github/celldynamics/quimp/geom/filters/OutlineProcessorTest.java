@@ -102,20 +102,19 @@ public class OutlineProcessorTest {
 
   /**
    * Test method for
-   * {@link com.github.celldynamics.quimp.geom.filters.OutlineProcessor#smooth(int,int)}.
+   * {@link com.github.celldynamics.quimp.geom.filters.OutlineProcessor#runningMean(int, int)}.
    * 
    * @throws Exception Exception
    */
   @Test
-  public void testSmooth() throws Exception {
+  public void testRunningMean() throws Exception {
     double[] x = { 0, 5, 10, 10, 10, 5, 0, 0 };
     double[] y = { 0, 0, 0, 5, 10, 10, 10, 5 };
     Outline o = new QuimpDataConverter(x, y).getOutline();
 
     double[] xe = { 1.6667, 5.0000, 8.3333, 10.0000, 8.3333, 5.0000, 1.6667, 0 };
     double[] ye = { 1.6667, 0, 1.6667, 5.0000, 8.3333, 10.0000, 8.3333, 5.0000 };
-
-    new OutlineProcessor<Outline>(o).smooth(3, 1);
+    new OutlineProcessor<Outline>(o).runningMean(3, 1);
     assertThat(ArrayUtils.toObject(o.xtoArr()), arrayCloseTo(xe, 1e-4));
     assertThat(ArrayUtils.toObject(o.ytoArr()), arrayCloseTo(ye, 1e-4));
 
@@ -128,7 +127,7 @@ public class OutlineProcessorTest {
     double[] xe1 = { 5 };
     double[] ye1 = { 3 };
 
-    new OutlineProcessor<Snake>(o1).smooth(3, 1);
+    new OutlineProcessor<Snake>(o1).runningMean(3, 1);
     assertThat(ArrayUtils.toObject(o1.xtoArr()), arrayCloseTo(xe1, 1e-4));
     assertThat(ArrayUtils.toObject(o1.ytoArr()), arrayCloseTo(ye1, 1e-4));
 

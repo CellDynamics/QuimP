@@ -1,5 +1,9 @@
 package com.github.celldynamics.quimp.geom.filters;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,8 +11,8 @@ import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.PointsList;
 import com.github.celldynamics.quimp.Shape;
 import com.github.celldynamics.quimp.Vert;
+import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.ana.ANA_;
-import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
 /**
  * Support algorithms for processing outlines using their specific properties.
@@ -33,6 +37,36 @@ public class OutlineProcessor<T extends Shape<?>> {
    */
   public OutlineProcessor(T outline) {
     this.outline = outline;
+  }
+
+  /**
+   * Apply running mean filter to Shape.
+   * 
+   * <p>Do not create new Shape but modify nodes of existing one. Compute
+   * {@link Shape#calcCentroid()}, {@link Shape#updateNormales(boolean)} and
+   * {@link Shape#setPositions()}. Normales are updated inwards.
+   * 
+   * @param window size of filter window, must be uneven
+   * @param iters number of smoothing interations
+   * @return reference to this object. Allows chaining
+   */
+  public OutlineProcessor<T> runningMean(int window, int iters) {
+    PointListProcessor pp = new PointListProcessor(outline.asList());
+    pp.smoothMean(window, iters);
+    List<Point2d> p = pp.getList();
+    Iterator<?> it = outline.iterator();
+    Iterator<Point2d> itl = p.iterator();
+    while (it.hasNext() && itl.hasNext()) {
+      PointsList<?> n = (PointsList<?>) it.next();
+      ExtendedVector2d v = n.getPoint();
+      Point2d pr = itl.next();
+      v.x = pr.x;
+      v.y = pr.y;
+    }
+    outline.calcCentroid();
+    outline.updateNormales(true);
+    outline.setPositions();
+    return this;
   }
 
   /**
@@ -135,34 +169,6 @@ public class OutlineProcessor<T extends Shape<?>> {
     // LOGGER.debug("Shrank Verts: " + outline.getNumVerts());
     // LOGGER.debug("Verts after density correction: " + outline.getNumVerts());
     // LOGGER.debug("Density " + d + " [" + d / 4 + "," + d / 2 + "]");
-  }
-
-  /**
-   * Apply mean filter to Shape. Recalculate centroid and normalised coords. Set normales inwards.
-   * 
-   * @param window size of mean window
-   * @param iters number of iterations
-   */
-  public void smooth(int window, int iters) {
-    QuimpDataConverter dt = new QuimpDataConverter(outline);
-    double[] xcoords = dt.getX();
-    double[] ycoords = dt.getY();
-    for (int i = 0; i < iters; i++) {
-      PointListProcessor.runningMean(xcoords, window);
-      PointListProcessor.runningMean(ycoords, window);
-    }
-    PointsList<?> n = outline.getHead();
-    int count = 0;
-    // do not create new object, just replace coords
-    do {
-      n.setX(xcoords[count]);
-      n.setY(ycoords[count]);
-      n = n.getNext();
-      count++;
-    } while (!n.isHead());
-    outline.calcCentroid();
-    outline.setPositions();
-    outline.updateNormales(true);
   }
 
   /**
