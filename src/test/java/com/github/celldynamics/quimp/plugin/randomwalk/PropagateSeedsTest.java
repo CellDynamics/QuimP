@@ -163,6 +163,26 @@ public class PropagateSeedsTest {
   }
 
   /**
+   * testGetCompositeSeed_Contour.
+   * 
+   * <p>Check if high scaling factor will remove thin objects.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testGetCompositeSeed_Contour1() throws Exception {
+    ImageJ ij = new ImageJ();
+    ImagePlus ip = IJ.openImage("C:/Users/baniu/Desktop/scaletest.tif");
+    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null);
+
+    Map<Seeds, ImageProcessor> ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 10, 10);
+    IJ.saveAsTiff(new ImagePlus("", ret.get(Seeds.BACKGROUND)),
+            tmpdir + "testGetCompositeSeed_Contour1_B_QuimP.tif");
+    IJ.saveAsTiff(new ImagePlus("", ret.get(Seeds.FOREGROUND)),
+            tmpdir + "testGetCompositeSeed_Contour1_F_QuimP.tif");
+  }
+
+  /**
    * testGetCompositeSeed_Morphological.
    * 
    * @throws Exception on error
