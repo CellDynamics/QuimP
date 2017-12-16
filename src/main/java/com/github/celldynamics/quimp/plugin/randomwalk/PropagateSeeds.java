@@ -293,20 +293,28 @@ public abstract class PropagateSeeds {
                   o.asList());
         }
       }
-
+      small.setColor(Color.WHITE); // for fill(Roi)
       for (Outline o : outlines) {
+        if (o.getNumPoints() < 4) {
+          continue;
+        }
         // shrink outline - copy as we want to expand it later
         Outline copy = new Outline(o);
         new OutlineProcessor<Outline>(copy).shrinknl(stepsshrink, stepSize, 0.1, 1.5); // from anap
         copy.unfreezeAll();
-        Roi fr = copy.asFloatRoi();
+        Roi fr = copy.asIntRoi();
         fr.setFillColor(Color.WHITE);
-        fr.setStrokeWidth(1.0);
+        fr.setStrokeWidth(1.1);
         fr.setStrokeColor(Color.WHITE);
+        small.fill(fr);
         small.drawRoi(fr);
+        // small.resetRoi();
       }
 
       for (Outline o : outlines) {
+        if (o.getNumPoints() < 4) {
+          continue;
+        }
         // frezeTh influences artifacts that appear when concave regions are expanded
         // 0 prevent a liitle
         new OutlineProcessor<Outline>(o).shrinknl(stepsexp, -stepSize, 0.1, 0); // taken from anap
@@ -337,7 +345,7 @@ public abstract class PropagateSeeds {
      * @see TrackOutline
      */
     private List<Outline> getOutline(ImageProcessor previous) {
-      TrackOutline track = new TrackOutline(previous, 0);
+      TrackOutlineLocal track = new TrackOutlineLocal(previous, 0);
       return track.getOutlines(STEPS, false);
     }
 
@@ -526,4 +534,35 @@ public abstract class PropagateSeeds {
     thresholdMethod = method;
   }
 
+  /**
+   * In purpose of overriding {@link TrackOutline#prepare()} which in super class can remove this
+   * lines.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class TrackOutlineLocal extends TrackOutline {
+
+    /**
+     * Default constructor here.
+     * 
+     * @param imp image to process
+     * @param background background color
+     */
+    public TrackOutlineLocal(ImageProcessor imp, int background) {
+      super(imp, background);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.celldynamics.quimp.geom.TrackOutline#prepare()
+     */
+    @Override
+    public ImageProcessor prepare() {
+      ImageProcessor filtered = imp.duplicate();
+      return filtered;
+    }
+
+  }
 }

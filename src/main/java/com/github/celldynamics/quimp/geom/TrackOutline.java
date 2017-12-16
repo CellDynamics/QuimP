@@ -158,7 +158,7 @@ public class TrackOutline {
    * 
    * @return Filtered processor
    */
-  ImageProcessor prepare() {
+  public ImageProcessor prepare() {
     ImageProcessor filtered = imp.duplicate();
     // closing
     filtered.dilate();
