@@ -1,6 +1,7 @@
 package com.github.celldynamics.quimp;
 
 import java.awt.Polygon;
+import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -432,6 +433,40 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
       centroid.setX(0);
       centroid.setY(0);
     }
+  }
+
+  /**
+   * Get bounds of Shape.
+   * 
+   * @return Bounding box of current Snake object as Double
+   */
+  public Rectangle2D.Double getDoubleBounds() {
+    double minX;
+    double minY;
+    double maxX;
+    double maxY;
+    T n = getHead();
+    minX = n.getX();
+    maxX = n.getX();
+    minY = n.getY();
+    maxY = n.getY();
+    n = n.getNext();
+    do {
+      if (n.getX() > maxX) {
+        maxX = n.getX();
+      }
+      if (n.getX() < minX) {
+        minX = n.getX();
+      }
+      if (n.getY() > maxY) {
+        maxY = n.getY();
+      }
+      if (n.getY() < minY) {
+        minY = n.getY();
+      }
+      n = n.getNext();
+    } while (!n.isHead());
+    return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
   }
 
   /**

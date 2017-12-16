@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.List;
 
@@ -203,6 +204,20 @@ public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
     Node head = list.get(0); // get head of list
 
     return new Snake(head, list.size(), 1); // build snake
+  }
+
+  /**
+   * Test of {@link Shape#getDoubleBounds()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetBounds() throws Exception {
+    double[] x = { 0, 5, 10, 5 };
+    double[] y = { 5, 10, 5, 0 };
+    Snake s = new QuimpDataConverter(x, y).getSnake(0);
+    Rectangle ret = s.getBounds();
+    assertThat(ret, is(new Rectangle(0, 0, 10, 10)));
   }
 
 }

@@ -95,6 +95,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
   public Outline(final Snake src) {
     super((Shape) src, new Vert());
     this.updateCurvature();
+    setPositions();
     this.updateNormales(false);
   }
 
@@ -121,6 +122,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
     removeVert(head); // remove dummy head node
     updateNormales(false);
     this.updateCurvature();
+    setPositions();
     calcCentroid();
   }
 
@@ -131,6 +133,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    */
   public Outline(final List<? extends Tuple2d> list) {
     super(list, new Vert(0), true);
+    this.updateCurvature();
   }
 
   /**
@@ -141,6 +144,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    */
   public Outline(final double[] x, final double[] y) {
     super(x, y, new Vert(0), true);
+    this.updateCurvature();
   }
 
   /*

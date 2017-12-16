@@ -883,40 +883,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   }
 
   /**
-   * Get bounds of snake.
-   * 
-   * @return Bounding box of current Snake object as Double
-   */
-  public Rectangle2D.Double getDoubleBounds() {
-    double minX;
-    double minY;
-    double maxX;
-    double maxY;
-    Node n = head;
-    minX = n.getX();
-    maxX = n.getX();
-    minY = n.getY();
-    maxY = n.getY();
-    n = n.getNext();
-    do {
-      if (n.getX() > maxX) {
-        maxX = n.getX();
-      }
-      if (n.getX() < minX) {
-        minX = n.getX();
-      }
-      if (n.getY() > maxY) {
-        maxY = n.getY();
-      }
-      if (n.getY() < minY) {
-        minY = n.getY();
-      }
-      n = n.getNext();
-    } while (!n.isHead());
-    return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
-  }
-
-  /**
    * Edits the snake.
    */
   public void editSnake() {
