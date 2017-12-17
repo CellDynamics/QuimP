@@ -194,7 +194,8 @@ public class QuimpDataConverter {
   /**
    * Return Snake created from stored data.
    * 
-   * <p>Head node is first point from list. Snake has centroid and boundaries calculated already.
+   * <p>Head node is first point from list. Snake has centroid, linear coordinates and boundaries
+   * calculated already.
    * Normales are set according to global BOAState.SegParam#expandSnake.
    * 
    * @param id new Id of snake
@@ -218,7 +219,7 @@ public class QuimpDataConverter {
   /**
    * Return Outline created from stored data.
    * 
-   * <p>Snake has centroid and boundaries calculated already.
+   * <p>Snake has centroid, local curvature and linear coordinates calculated already.
    * Normales are set <tt>true</tt>
    * 
    * @return Outline object with Nodes in order of data given on input. Can be null. Normales are

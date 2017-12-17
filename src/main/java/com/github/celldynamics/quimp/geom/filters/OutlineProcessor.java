@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.PointsList;
 import com.github.celldynamics.quimp.Shape;
+import com.github.celldynamics.quimp.Snake;
 import com.github.celldynamics.quimp.Vert;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.ana.ANA_;
@@ -70,10 +71,119 @@ public class OutlineProcessor<T extends Shape<?>> {
   }
 
   /**
+   * Compute average curvature of {@link Outline}.
+   * 
+   * <p>Does not apply to {@link Snake}. Require {@link Outline#updateCurvature()} to be called
+   * first to fill {@link Vert#curvatureLocal} field.
+   * 
+   * @param averdistance Average distance in pixels to compute curvature. Nodes in half of distance
+   *        on left and right from current node will be included in average curvature for this node.
+   * @return instance of this object.
+   */
+  public OutlineProcessor<T> averageCurvature(double averdistance) {
+    Vert v;
+    Vert tmpV;
+    double totalCur;
+    double distance;
+    int count;
+    if (!(outline instanceof Outline)) {
+      throw new IllegalArgumentException("This method applies to Outline only");
+    }
+    // avertage over curvatures
+    if (averdistance > 0) {
+      // System.out.println("new outline");
+      v = (Vert) outline.getHead();
+      do {
+        // System.out.println("\tnew vert");
+        totalCur = v.curvatureLocal; // reset
+        count = 1;
+
+        // add up curvatures of prev nodes
+        // System.out.println("\t prev nodes");
+        tmpV = v.getPrev();
+        distance = 0;
+        do {
+          distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+          totalCur += tmpV.curvatureLocal;
+          count++;
+          tmpV = tmpV.getPrev();
+        } while (distance < averdistance / 2);
+
+        // add up curvatures of next nodes
+        distance = 0;
+        tmpV = v.getNext();
+        do {
+          distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+          totalCur += tmpV.curvatureLocal;
+          count++;
+          tmpV = tmpV.getNext();
+        } while (distance < averdistance / 2);
+
+        v.curvatureSmoothed = totalCur / count;
+
+        v = v.getNext();
+      } while (!v.isHead());
+    }
+    return this;
+  }
+
+  /**
+   * Sum smoothed curvature over a region of the membrane. For {@link Outline} only.
+   * 
+   * <p><p>Does not apply to {@link Snake}. Require {@link #averageCurvature(double)} to be called
+   * first to fill {@link Vert#curvatureSmoothed} field.
+   * 
+   * @param averdistance Average distance in pixels to compute curvature. Nodes in half of distance
+   *        on left and right from current node will be included in average curvature for this node.
+   * @return instance of this object.
+   */
+  public OutlineProcessor<T> sumCurvature(double averdistance) {
+    Vert v;
+    Vert tmpV;
+    double totalCur;
+    double distance;
+    if (!(outline instanceof Outline)) {
+      throw new IllegalArgumentException("This method applies to Outline only");
+    }
+    // avertage over curvatures
+    if (averdistance > 0) {
+      LOGGER.trace("summing curv");
+      v = (Vert) outline.getHead();
+      do {
+        // System.out.println("\tnew vert");
+        totalCur = v.curvatureSmoothed; // reset
+        // add up curvatures of prev nodes
+        // System.out.println("\t prev nodes");
+        tmpV = v.getPrev();
+        distance = 0;
+        do {
+          distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+          totalCur += tmpV.curvatureSmoothed;
+          tmpV = tmpV.getPrev();
+        } while (distance < averdistance / 2);
+
+        // add up curvatures of next nodes
+        distance = 0;
+        tmpV = v.getNext();
+        do {
+          distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+          totalCur += tmpV.curvatureSmoothed;
+          tmpV = tmpV.getNext();
+        } while (distance < averdistance / 2);
+
+        v.curvatureSum = totalCur;
+
+        v = v.getNext();
+      } while (!v.isHead());
+    }
+    return this;
+  }
+
+  /**
    * Compute running mean on <tt>Outline</tt>.
    * 
    * @param window Window size
-   * @deprecated Will not be used after implementeing HatSnakeFilter for getting weights.
+   * @deprecated Will not be used after implementing HatSnakeFilter for getting weights.
    */
   private void runningmeanfilter(int window) {
     if (!(outline instanceof Outline)) {
