@@ -73,7 +73,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   public Snake(final Node h, int n, int id) {
     super(h, n);
     snakeID = id;
-    centroid = new ExtendedVector2d(0d, 0d);
+    centroid = new ExtendedVector2d(0d, 0d); // TODO does make sense after super()?
 
     // removeNode(head);
     this.makeAntiClockwise(); // can affect centroid on last positions, so calculate it afterwards
