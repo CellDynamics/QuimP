@@ -2,8 +2,6 @@ package com.github.celldynamics.quimp.geom.filters;
 
 import static com.github.baniuk.ImageJTestSuite.matchers.arrays.ArrayMatchers.arrayCloseTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.closeTo;
-import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +14,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
+import com.github.celldynamics.quimp.AbstractCircularShape;
 import com.github.celldynamics.quimp.Node;
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.Snake;
-import com.github.celldynamics.quimp.Vert;
 import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
 import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
@@ -143,18 +141,15 @@ public class OutlineProcessorTest {
    */
   @Test
   public void testSumCurvature() throws Exception {
-    List<Point2d> p = getCircle();
+    List<Point2d> p = AbstractCircularShape.getCircle();
     Outline o = new QuimpDataConverter(p).getOutline();
     OutlineProcessor<Outline> op = new OutlineProcessor<Outline>(o);
-    op.averageCurvature(2.0); // compute in range +-1 vertex
+    op.averageCurvature(Math.ceil(AbstractCircularShape.DISTANCE)); // compute in range +-1 vertex
     // curvSmoothed set to -0.055555, required by sumCurvature()
-    op.sumCurvature(2.0);
+    op.sumCurvature(Math.ceil(AbstractCircularShape.DISTANCE));
 
-    assertThat(o.getNumPoints(), is(36)); // not changed number of verts
-    for (Vert v : o) { // all curvatures the same as it is circle
-      // sum of curvatureSmoothed over 3 vertexes
-      assertThat(v.curvatureSum, is(closeTo(-0.055555555555 * 3, 1e-5)));
-    }
+    AbstractCircularShape.validateNumOfPoints(o);
+    AbstractCircularShape.validateCurvatureSum(o);
   }
 
   /**
@@ -164,10 +159,10 @@ public class OutlineProcessorTest {
    */
   @Test(expected = IllegalArgumentException.class)
   public void testSumCurvature_1() throws Exception {
-    List<Point2d> p = getCircle();
+    List<Point2d> p = AbstractCircularShape.getCircle();
     Snake s = new QuimpDataConverter(p).getSnake(0);
     OutlineProcessor<Snake> sp = new OutlineProcessor<Snake>(s);
-    sp.sumCurvature(2.0); // convert to outline
+    sp.sumCurvature(Math.ceil(AbstractCircularShape.DISTANCE)); // convert to outline
   }
 
   /**
@@ -177,17 +172,13 @@ public class OutlineProcessorTest {
    */
   @Test
   public void testAverageCurvature() throws Exception {
-    List<Point2d> p = getCircle();
+    List<Point2d> p = AbstractCircularShape.getCircle();
     Outline o = new QuimpDataConverter(p).getOutline();
     OutlineProcessor<Outline> op = new OutlineProcessor<Outline>(o);
-    op.averageCurvature(2.0); // compute in range +-1 vertex
+    op.averageCurvature(Math.ceil(AbstractCircularShape.DISTANCE)); // compute in range +-1 vertex
 
-    assertThat(o.getNumPoints(), is(36)); // not changed number of verts
-    for (Vert v : o) { // all curvatures the same as it is circle
-      // for vertex v curvature Smoothed is average from v-1 v+1 and v of curvatureLocal. This is
-      // circle so all curvatures are the same so average is also the same as local curvature
-      assertThat(v.curvatureSmoothed, is(closeTo(v.curvatureLocal, 1e-5)));
-    }
+    AbstractCircularShape.validateCurvatureSmooth(o);
+    AbstractCircularShape.validateNumOfPoints(o);
   }
 
   /**
@@ -197,30 +188,10 @@ public class OutlineProcessorTest {
    */
   @Test(expected = IllegalArgumentException.class)
   public void testAverageCurvature_1() throws Exception {
-    List<Point2d> p = getCircle();
+    List<Point2d> p = AbstractCircularShape.getCircle();
     Snake s = new QuimpDataConverter(p).getSnake(0);
     OutlineProcessor<Snake> sp = new OutlineProcessor<Snake>(s);
-    sp.averageCurvature(2.0); // convert to outline
-  }
-
-  /**
-   * Circle from 36 points at 0,0.
-   * 
-   * @return List of points that forms circle.
-   */
-  public static List<Point2d> getCircle() {
-    double a = 0;
-    double d = 10;
-    int steps = 36;
-    double r = 10;
-    ArrayList<Point2d> ret = new ArrayList<>();
-    for (int i = 0; i < steps; i++) {
-      double x = r * Math.sin(a * Math.PI / 180);
-      double y = r * Math.cos(a * Math.PI / 180);
-      ret.add(new Point2d(x, y));
-      a += d;
-    }
-    return ret;
+    sp.averageCurvature(Math.ceil(AbstractCircularShape.DISTANCE)); // convert to outline
   }
 
 }

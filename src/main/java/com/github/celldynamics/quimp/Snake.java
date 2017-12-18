@@ -73,9 +73,6 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
   public Snake(final Node h, int n, int id) {
     super(h, n);
     snakeID = id;
-    centroid = new ExtendedVector2d(0d, 0d); // TODO does make sense after super()?
-
-    // removeNode(head);
     this.makeAntiClockwise(); // can affect centroid on last positions, so calculate it afterwards
     this.updateNormales(BOA_.qState.segParam.expandSnake);
     alive = true;
@@ -374,6 +371,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
       }
     }
     removeNode(head); // remove dummy head node new head will be set
+    setPositions();
     this.makeAntiClockwise();
     updateNormales(BOA_.qState.segParam.expandSnake);
   }
@@ -402,6 +400,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     removeNode(head); // remove dummy head node
+    setPositions();
     this.makeAntiClockwise();
     updateNormales(BOA_.qState.segParam.expandSnake);
   }
@@ -429,6 +428,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
 
     removeNode(head); // remove dummy head node
+    setPositions();
     this.makeAntiClockwise();
     updateNormales(BOA_.qState.segParam.expandSnake);
   }
