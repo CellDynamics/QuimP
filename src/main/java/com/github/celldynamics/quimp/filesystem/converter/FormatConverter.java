@@ -671,38 +671,7 @@ public class FormatConverter {
           if (separateFiles == false) {
             csv.writeLine("#frame " + f); // just add break if one file outputed
           }
-          logger.info("\tSaved outlines at: " + csv.getPath().getFileName());
-          Iterator<Vert> it = outline.iterator();
-          while (it.hasNext()) {
-            Vert n = it.next();
-            //!>
-            csv.writeLine(
-                    n.charge,
-                    n.distance,
-                    n.fluores[0].x,
-                    n.fluores[0].y,
-                    n.fluores[0].intensity,
-                    n.fluores[1].x,
-                    n.fluores[1].y,
-                    n.fluores[1].intensity,
-                    n.fluores[2].x,
-                    n.fluores[2].y,
-                    n.fluores[2].intensity,
-                    n.getCurvatureLocal(),
-                    n.curvatureSmoothed,
-                    n.curvatureSum,
-                    n.coord,
-                    n.gLandCoord,
-                    n.getPoint().x,
-                    n.getPoint().y,
-                    n.getNormal().x,
-                    n.getNormal().y,
-                    n.getTangent().x,
-                    n.getTangent().y,
-                    n.getPosition(),
-                    n.isFrozen() ? 1.0 : 0.0);
-            //!<
-          }
+          saveOutline(outline, csv);
           if (separateFiles == true) {
             csv.close(); // after frame
           }
@@ -716,7 +685,47 @@ public class FormatConverter {
         }
       }
     }
+  }
 
+  /**
+   * Save specified outline to {@link CsvWritter}.
+   * 
+   * @param outline outline to save
+   * @param csv opened csv object
+   */
+  public static void saveOutline(Outline outline, CsvWritter csv) {
+    logger.info("\tSaved outlines at: " + csv.getPath().getFileName());
+    Iterator<Vert> it = outline.iterator();
+    while (it.hasNext()) {
+      Vert n = it.next();
+      //!>
+      csv.writeLine(
+              n.charge,
+              n.distance,
+              n.fluores[0].x,
+              n.fluores[0].y,
+              n.fluores[0].intensity,
+              n.fluores[1].x,
+              n.fluores[1].y,
+              n.fluores[1].intensity,
+              n.fluores[2].x,
+              n.fluores[2].y,
+              n.fluores[2].intensity,
+              n.getCurvatureLocal(),
+              n.curvatureSmoothed,
+              n.curvatureSum,
+              n.coord,
+              n.gLandCoord,
+              n.getPoint().x,
+              n.getPoint().y,
+              n.getNormal().x,
+              n.getNormal().y,
+              n.getTangent().x,
+              n.getTangent().y,
+              n.getPosition(),
+              n.isFrozen() ? 1.0 : 0.0);
+      //!<
+    }
   }
 
   /**
