@@ -172,7 +172,7 @@ public class PropagateSeedsTest {
   @Test
   public void testGetCompositeSeed_Contour1() throws Exception {
     ImageJ ij = new ImageJ();
-    ImagePlus ip = IJ.openImage("C:/Users/baniu/OneDrive/scaletest.tif");
+    ImagePlus ip = IJ.openImage("src/test/Resources-static/scaletest.tif");
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null);
 
     Map<Seeds, ImageProcessor> ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 2, 10);
