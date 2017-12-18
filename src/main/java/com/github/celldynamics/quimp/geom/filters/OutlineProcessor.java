@@ -71,6 +71,36 @@ public class OutlineProcessor<T extends Shape<?>> {
   }
 
   /**
+   * Apply running median filter to Shape.
+   * 
+   * <p>Do not create new Shape but modify nodes of existing one. Compute
+   * {@link Shape#calcCentroid()}, {@link Shape#updateNormales(boolean)} and
+   * {@link Shape#setPositions()}. Normales are updated inwards.
+   * 
+   * @param window size of filter window, must be uneven
+   * @param iters number of smoothing interations
+   * @return reference to this object. Allows chaining
+   */
+  public OutlineProcessor<T> runningMedian(int window, int iters) {
+    PointListProcessor pp = new PointListProcessor(outline.asList());
+    pp.smoothMedian(window, iters);
+    List<Point2d> p = pp.getList();
+    Iterator<?> it = outline.iterator();
+    Iterator<Point2d> itl = p.iterator();
+    while (it.hasNext() && itl.hasNext()) {
+      PointsList<?> n = (PointsList<?>) it.next();
+      ExtendedVector2d v = n.getPoint();
+      Point2d pr = itl.next();
+      v.x = pr.x;
+      v.y = pr.y;
+    }
+    outline.calcCentroid();
+    outline.updateNormales(true);
+    outline.setPositions();
+    return this;
+  }
+
+  /**
    * Compute average curvature of {@link Outline}.
    * 
    * <p>Does not apply to {@link Snake}. Require {@link Outline#updateCurvature()} to be called

@@ -135,6 +135,39 @@ public class OutlineProcessorTest {
   }
 
   /**
+   * Test method for
+   * {@link com.github.celldynamics.quimp.geom.filters.OutlineProcessor#runningMedian(int, int)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testRunningMedian() throws Exception {
+    double[] x = { 0, 5, 10, 10, 10, 5, 0, 0 };
+    double[] y = { 0, 0, 0, 5, 10, 10, 10, 5 };
+    Outline o = new QuimpDataConverter(x, y).getOutline();
+
+    double[] xe = { 0, 5.0000, 10, 10.0000, 10, 5.0000, 0, 0 };
+    double[] ye = { 0, 0, 0, 5.0000, 10, 10.0000, 10, 5.0000 };
+    new OutlineProcessor<Outline>(o).runningMedian(3, 1);
+    assertThat(ArrayUtils.toObject(o.xtoArr()), arrayCloseTo(xe, 1e-4));
+    assertThat(ArrayUtils.toObject(o.ytoArr()), arrayCloseTo(ye, 1e-4));
+
+    // one vertex
+    Node v = new Node(5, 3, 0);
+    v.setNext(v);
+    v.setPrev(v);
+    Snake o1 = new Snake(v, 1, 0);
+
+    double[] xe1 = { 5 };
+    double[] ye1 = { 3 };
+
+    new OutlineProcessor<Snake>(o1).runningMedian(3, 1);
+    assertThat(ArrayUtils.toObject(o1.xtoArr()), arrayCloseTo(xe1, 1e-4));
+    assertThat(ArrayUtils.toObject(o1.ytoArr()), arrayCloseTo(ye1, 1e-4));
+
+  }
+
+  /**
    * Test of {@link OutlineProcessor#sumCurvature(double)}. Values checked manually.
    * 
    * @throws Exception Exception
