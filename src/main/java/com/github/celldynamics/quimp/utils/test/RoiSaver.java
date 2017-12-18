@@ -85,6 +85,76 @@ public class RoiSaver {
   }
 
   /**
+   * Save ROIs as image
+   * 
+   * <p>Get ListArray with vertices and create fileName.tif image with ROI For non-valid input list
+   * it creates red image of size 100 x 100. Allows to add up to three ROIS in different colors.
+   * 
+   * @param fileName file to save image with path
+   * @param xres resolution of output image, must include ROI
+   * @param yres resolution of output image, must include ROI
+   * @param vert1 list 1
+   * @param c1 color of list 1
+   * @param vert2 list 2
+   * @param c2 color of list 2
+   * @param vert3 list 3
+   * @param c3 color of list 3
+   */
+  public static void saveRois(String fileName, int xres, int yres, List<Point2d> vert1, Color c1,
+          List<Point2d> vert2, Color c2, List<Point2d> vert3, Color c3) {
+
+    ImagePlus outputImage = IJ.createImage("", xres, yres, 1, 24);
+    ImageProcessor ip = outputImage.getProcessor(); // get processor required later
+    if (vert1 != null && !vert1.isEmpty()) {
+      ip = plotOnRoi(ip, vert1, c1);
+    }
+    if (vert2 != null && !vert2.isEmpty()) {
+      ip = plotOnRoi(ip, vert2, c2);
+    }
+    if (vert3 != null && !vert3.isEmpty()) {
+      ip = plotOnRoi(ip, vert3, c3);
+    }
+    IJ.saveAsTiff(outputImage, fileName); // save image
+  }
+
+  /**
+   * Plot ROI on image.
+   * 
+   * <p>Get ListArray with vertices and create image image with ROI For non-valid input list
+   * it creates red image of size 100 x 100.
+   * 
+   * @param ip image to plot in.
+   * @param vert list of points to plot
+   * @param c color
+   * @return image with plotted point
+   */
+  public static ImageProcessor plotOnRoi(ImageProcessor ip, List<Point2d> vert, Color c) {
+    try {
+      float[] x;
+      float[] y;
+      x = new float[vert.size()];
+      y = new float[vert.size()];
+      int l = 0;
+      // copy to arrays
+      for (Point2d el : vert) {
+        x[l] = (float) el.getX();
+        y[l] = (float) el.getY();
+        l++;
+      }
+      PolygonRoi pp = new PolygonRoi(x, y, Roi.FREELINE); // create polygon object
+      ip.setColor(c); // set pen
+      pp.drawPixels(ip); // draw roi
+    } catch (Exception e) {
+      ImagePlus outputImage = IJ.createImage("", 100, 100, 1, 24);
+      ip = outputImage.getProcessor();
+      ip.setColor(Color.RED);
+      ip.fill();
+      LOGGER.error(e.getMessage());
+    }
+    return ip;
+  }
+
+  /**
    * Save ROI as image.
    * 
    * @param fileName fileName

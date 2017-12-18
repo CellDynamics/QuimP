@@ -1,5 +1,6 @@
 package com.github.celldynamics.quimp.plugin.randomwalk;
 
+import java.awt.Color;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,6 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.celldynamics.quimp.Outline;
+import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds.Contour;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
@@ -180,6 +182,26 @@ public class PropagateSeedsTest {
             tmpdir + "testGetCompositeSeed_Contour1_B_QuimP.tif");
     IJ.saveAsTiff(new ImagePlus("", ret.get(Seeds.FOREGROUND)),
             tmpdir + "testGetCompositeSeed_Contour1_F_QuimP.tif");
+  }
+
+  /**
+   * testGetCompositeSeed_Contour.
+   * 
+   * <p>Check if high scaling factor will remove thin objects.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testGetCompositeSeed_Contour2() throws Exception {
+    ImagePlus ip = IJ.openImage("/home/baniuk/Desktop/Tests/239/shape1.tif");
+    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null);
+
+    List<Outline> outlineOrg = Contour.getOutline(ip.getProcessor());
+    Map<Seeds, ImageProcessor> ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 2, 10);
+    List<Outline> outlineSh = Contour.getOutline(ret.get(Seeds.FOREGROUND));
+
+    RoiSaver.saveRois(tmpdir + "reo.tif", 512, 512, outlineOrg.get(0).asList(), Color.GREEN,
+            outlineSh.get(0).asList(), Color.RED, null, null);
   }
 
   /**

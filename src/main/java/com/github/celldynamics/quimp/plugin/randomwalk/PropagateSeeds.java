@@ -344,7 +344,7 @@ public abstract class PropagateSeeds {
      * @return List of Outline for current frame
      * @see TrackOutline
      */
-    private List<Outline> getOutline(ImageProcessor previous) {
+    public static List<Outline> getOutline(ImageProcessor previous) {
       TrackOutlineLocal track = new TrackOutlineLocal(previous, 0);
       return track.getOutlines(STEPS, false);
     }
@@ -534,35 +534,36 @@ public abstract class PropagateSeeds {
     thresholdMethod = method;
   }
 
+}
+
+/**
+ * In purpose of overriding {@link TrackOutline#prepare()} which in super class can remove this
+ * lines.
+ * 
+ * @author p.baniukiewicz
+ *
+ */
+class TrackOutlineLocal extends TrackOutline {
+
   /**
-   * In purpose of overriding {@link TrackOutline#prepare()} which in super class can remove this
-   * lines.
+   * Default constructor here.
    * 
-   * @author p.baniukiewicz
-   *
+   * @param imp image to process
+   * @param background background color
    */
-  class TrackOutlineLocal extends TrackOutline {
-
-    /**
-     * Default constructor here.
-     * 
-     * @param imp image to process
-     * @param background background color
-     */
-    public TrackOutlineLocal(ImageProcessor imp, int background) {
-      super(imp, background);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.github.celldynamics.quimp.geom.TrackOutline#prepare()
-     */
-    @Override
-    public ImageProcessor prepare() {
-      ImageProcessor filtered = imp.duplicate();
-      return filtered;
-    }
-
+  public TrackOutlineLocal(ImageProcessor imp, int background) {
+    super(imp, background);
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.github.celldynamics.quimp.geom.TrackOutline#prepare()
+   */
+  @Override
+  public ImageProcessor prepare() {
+    ImageProcessor filtered = imp.duplicate();
+    return filtered;
+  }
+
 }
