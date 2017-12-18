@@ -99,6 +99,38 @@ public abstract class AbstractCircularShape {
   }
 
   /**
+   * Get shape as linked and closed node list.
+   * 
+   * @param reversed true if reversed
+   * 
+   * @return head node
+   * @throws Exception on error
+   */
+  public static final Vert getVertList(boolean reversed) throws Exception {
+    Outline s = new Outline();
+    List<Point2d> p;
+    if (reversed) {
+      p = getCircleReversed();
+    } else {
+      p = getCircle();
+    }
+    int nextTrackNumber = 0;
+    s.head = new Vert(0); // make a dummy head node for list initialization
+    s.head.setPrev(s.head); // link head to itself
+    s.head.setNext(s.head);
+    s.head.setHead(true);
+
+    Vert node;
+    for (int i = 0; i < p.size(); i++) {
+      node = new Vert(p.get(i).getX(), p.get(i).getY(), nextTrackNumber++);
+      s.addPoint(node);
+    }
+    s.removeVert(s.head); // remove dummy head node
+    s.setHeadClosestTo(new ExtendedVector2d(p.get(0)));
+    return s.getHead();
+  }
+
+  /**
    * Return normales for {@link #getCircle()}.
    * 
    * @param reversed true if list reversed
@@ -258,6 +290,20 @@ public abstract class AbstractCircularShape {
   }
 
   /**
+   * Validate curvature.
+   * 
+   * <p>For circular object it should be the the same for each node.
+   * 
+   * @param o Outline to validate.
+   * @throws Exception on error
+   */
+  public static void validateCurvature(Outline o) throws Exception {
+    for (Vert v : o) {
+      assertThat(v.curvatureLocal, is(closeTo(CURVATURELOCAL, 1e-5)));
+    }
+  }
+
+  /**
    * Validate summed curvature. For circular object it should be the same as for one node.
    * 
    * @param o Outline to validate.
@@ -403,6 +449,19 @@ public abstract class AbstractCircularShape {
     validateShapeGeomProperties(s, true, BOA_.qState.segParam.expandSnake);
     validateBounds(s);
     validateFrozen(s);
+  }
+
+  /**
+   * Collection of geometric properties for Outlines.
+   * 
+   * <p>Remember about random selection of head node.
+   * 
+   * @param o outline to validate.
+   * @throws Exception on error
+   */
+  public static void validateOutlineGeomProperties(Outline o) throws Exception {
+    validateShapeGeomProperties(o, false, false);
+    validateCurvature(o);
   }
 
   /**

@@ -1,6 +1,5 @@
 package com.github.celldynamics.quimp;
 
-import java.awt.Polygon;
 import java.util.List;
 
 import org.scijava.vecmath.Tuple2d;
@@ -12,6 +11,7 @@ import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 
 import ij.IJ;
 import ij.gui.Roi;
+import ij.process.FloatPolygon;
 
 /**
  * Represent Outline object used as Snake representation after ECMM mapping.
@@ -59,6 +59,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
     super(h, nn);
     // removeVert(head);
     this.updateCurvature();
+    this.updateNormales(false);
   }
 
   /**
@@ -113,7 +114,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
 
     Vert v = head;
 
-    Polygon p = roi.getPolygon();
+    FloatPolygon p = roi.getFloatPolygon();
     for (int i = 0; i < p.npoints; i++) {
       v = insertVert(v);
       v.setX(p.xpoints[i]);
@@ -132,7 +133,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    * @param list list of nodes as Vector2d
    */
   public Outline(final List<? extends Tuple2d> list) {
-    super(list, new Vert(0), true);
+    super(list, new Vert(0), false);
     this.updateCurvature();
   }
 
@@ -143,7 +144,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    * @param y y coordinates of nodes
    */
   public Outline(final double[] x, final double[] y) {
-    super(x, y, new Vert(0), true);
+    super(x, y, new Vert(0), false);
     this.updateCurvature();
   }
 

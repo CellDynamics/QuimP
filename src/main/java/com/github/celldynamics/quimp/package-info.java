@@ -209,7 +209,10 @@
  * {@link com.github.celldynamics.quimp.Shape#setPositions()}
  * <li>Normal vector {@link com.github.celldynamics.quimp.PointsList#normal} - set by
  * {@link com.github.celldynamics.quimp.PointsList#updateNormale(boolean)} and
- * {@link com.github.celldynamics.quimp.Shape#updateNormales(boolean)}
+ * {@link com.github.celldynamics.quimp.Shape#updateNormales(boolean)}. Snakes have normales
+ * dependent on {@link com.github.celldynamics.quimp.BOAState.SegParam#expandSnake} whereas Outlines
+ * use inner==false in {@link com.github.celldynamics.quimp.PointsList#updateNormale(boolean)}.
+ * Snakes are also reversed by {@link com.github.celldynamics.quimp.Snake#makeAntiClockwise()}
  * <li>Tangent {@link com.github.celldynamics.quimp.PointsList#tan} - set during updating normales
  * {@link com.github.celldynamics.quimp.Shape#updateNormales(boolean)}
  * </ol>
