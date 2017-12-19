@@ -84,7 +84,7 @@ public class Constrictor {
       n = n.getNext();
     } while (!n.isHead());
 
-    snake.updateNormales(BOA_.qState.segParam.expandSnake);
+    snake.updateNormals(BOA_.qState.segParam.expandSnake);
 
     return snake.isFrozen(); // true if all nodes frozen
   }
@@ -165,7 +165,7 @@ public class Constrictor {
         n = n.getNext();
       } while (!n.isHead());
 
-      snake.updateNormales(BOA_.qState.segParam.expandSnake);
+      snake.updateNormals(BOA_.qState.segParam.expandSnake);
 
       pw.close();
       return snake.isFrozen(); // true if all nodes frozen

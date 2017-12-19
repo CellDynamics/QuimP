@@ -42,7 +42,7 @@ public abstract class PointsList<T extends PointsList<T>> {
   /**
    * Normal vector. Calculated by
    * {@link com.github.celldynamics.quimp.PointsList#updateNormale(boolean)} and implicitly by
-   * {@link com.github.celldynamics.quimp.Shape#updateNormales(boolean)} from Shape during
+   * {@link com.github.celldynamics.quimp.Shape#updateNormals(boolean)} from Shape during
    * serialization and deserialization and changing the shape of Shape
    */
   protected ExtendedVector2d normal;

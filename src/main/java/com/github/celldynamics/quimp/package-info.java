@@ -209,12 +209,12 @@
  * {@link com.github.celldynamics.quimp.Shape#setPositions()}
  * <li>Normal vector {@link com.github.celldynamics.quimp.PointsList#normal} - set by
  * {@link com.github.celldynamics.quimp.PointsList#updateNormale(boolean)} and
- * {@link com.github.celldynamics.quimp.Shape#updateNormales(boolean)}. Snakes have normales
+ * {@link com.github.celldynamics.quimp.Shape#updateNormals(boolean)}. Snakes have normals
  * dependent on {@link com.github.celldynamics.quimp.BOAState.SegParam#expandSnake} whereas Outlines
  * use inner==false in {@link com.github.celldynamics.quimp.PointsList#updateNormale(boolean)}.
  * Snakes are also reversed by {@link com.github.celldynamics.quimp.Snake#makeAntiClockwise()}
- * <li>Tangent {@link com.github.celldynamics.quimp.PointsList#tan} - set during updating normales
- * {@link com.github.celldynamics.quimp.Shape#updateNormales(boolean)}
+ * <li>Tangent {@link com.github.celldynamics.quimp.PointsList#tan} - set during updating normals
+ * {@link com.github.celldynamics.quimp.Shape#updateNormals(boolean)}
  * </ol>
  * <li>Shape {@link com.github.celldynamics.quimp.Shape}
  * <ol>
@@ -273,12 +273,12 @@
  *   for (int f = sh.getStartFrame(); f <= sh.getEndFrame(); f++) {
  *     sh.getBackupSnake(f).calcCentroid(); // called in Shape constructor
  *     sh.getBackupSnake(f).setPositions();
- *     sh.getBackupSnake(f).updateNormales(true);
+ *     sh.getBackupSnake(f).updateNormals(true);
  *     sh.getBackupSnake(f).getBounds(); // called in Snake constructor
  *
  *     sh.getStoredSnake(f).calcCentroid();
  *     sh.getStoredSnake(f).setPositions();
- *     sh.getStoredSnake(f).updateNormales(true);
+ *     sh.getStoredSnake(f).updateNormals(true);
  *     sh.getStoredSnake(f).getBounds();
  *
  *     constrictor.constrict(sh.getStoredSnake(f), ip.getStack().getProcessor(f));
@@ -286,7 +286,7 @@
  *   }
  *   sh.getLiveSnake().calcCentroid();
  *   sh.getLiveSnake().setPositions();
- *   sh.getLiveSnake().updateNormales(true);
+ *   sh.getLiveSnake().updateNormals(true);
  *   sh.getLiveSnake().getBounds();
  *   constrictor.constrict(sh.getLiveSnake(), ip.getStack().getProcessor(sh.getStartFrame()));
  * }

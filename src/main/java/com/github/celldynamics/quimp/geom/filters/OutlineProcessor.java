@@ -46,11 +46,11 @@ public class OutlineProcessor<T extends Shape<?>> {
    * Apply running mean filter to Shape.
    * 
    * <p>Do not create new Shape but modify nodes of existing one. Compute
-   * {@link Shape#calcCentroid()}, {@link Shape#updateNormales(boolean)} and
-   * {@link Shape#setPositions()}. Normales are updated inwards.
+   * {@link Shape#calcCentroid()}, {@link Shape#updateNormals(boolean)} and
+   * {@link Shape#setPositions()}. Normals are updated inwards.
    * 
    * @param window size of filter window, must be uneven
-   * @param iters number of smoothing interations
+   * @param iters number of smoothing iterations
    * @return reference to this object. Allows chaining
    */
   public OutlineProcessor<T> runningMean(int window, int iters) {
@@ -67,7 +67,7 @@ public class OutlineProcessor<T extends Shape<?>> {
       v.y = pr.y;
     }
     outline.calcCentroid();
-    outline.updateNormales(true);
+    outline.updateNormals(true);
     outline.setPositions();
     return this;
   }
@@ -76,11 +76,11 @@ public class OutlineProcessor<T extends Shape<?>> {
    * Apply running median filter to Shape.
    * 
    * <p>Do not create new Shape but modify nodes of existing one. Compute
-   * {@link Shape#calcCentroid()}, {@link Shape#updateNormales(boolean)} and
-   * {@link Shape#setPositions()}. Normales are updated inwards.
+   * {@link Shape#calcCentroid()}, {@link Shape#updateNormals(boolean)} and
+   * {@link Shape#setPositions()}. Normals are updated inwards.
    * 
    * @param window size of filter window, must be uneven
-   * @param iters number of smoothing interations
+   * @param iters number of smoothing iterations
    * @return reference to this object. Allows chaining
    */
   public OutlineProcessor<T> runningMedian(int window, int iters) {
@@ -97,7 +97,7 @@ public class OutlineProcessor<T extends Shape<?>> {
       v.y = pr.y;
     }
     outline.calcCentroid();
-    outline.updateNormales(true);
+    outline.updateNormals(true);
     outline.setPositions();
     return this;
   }
@@ -280,7 +280,7 @@ public class OutlineProcessor<T extends Shape<?>> {
   // ((Outline) outline).freezeProx(angleTh, freezeTh);
   // // double d = outline.getLength() / outline.getNumVerts();
   // ((Outline) outline).correctDensity(d, d / 2);
-  // ((Outline) outline).updateNormales(true);
+  // ((Outline) outline).updateNormals(true);
   // ((Outline) outline).updateCurvature();
   //
   // // do not shrink if there are 4 nodes or less
@@ -334,7 +334,7 @@ public class OutlineProcessor<T extends Shape<?>> {
    * {@link OutlineProcessor#sumCurvature(double)} to produce nonlinear scaling. Scaling factor
    * depends on {@link Vert#curvatureSum} and it is computed by
    * {@link #amplificationFactor(double, double, double)} method. Nodes are shifted inwards
-   * according to normals ({@link Vert#getNormal()}). If <i>averageNormales</i> is positive, this
+   * according to normals ({@link Vert#getNormal()}). If <i>averageNormals</i> is positive, this
    * number of nodes on each side of current node will be analysed to find lowest (must be negative)
    * {@link Vert#curvatureSum} and then normal vector of this node will be copied to all other nodes
    * in current window.
@@ -349,12 +349,12 @@ public class OutlineProcessor<T extends Shape<?>> {
    * @param freezeTh freeze threshold
    * @param sigma sigma of Gaussian
    * @param magn maximum amplification (for curv<<0)
-   * @param averageNormales number of neighbouring nodes to set normals the same (set 0 to disable)
+   * @param averageNormals number of neighbouring nodes to set normals the same (set 0 to disable)
    * @see Outline#scaleOutline(double, double, double, double)
    * @see OutlineProcessor#amplificationFactor(double, double, double)
    */
   public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh, double sigma,
-          double magn, int averageNormales) {
+          double magn, int averageNormals) {
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
@@ -364,11 +364,11 @@ public class OutlineProcessor<T extends Shape<?>> {
     int max = 10000;
     double d = outline.getLength() / outline.getNumPoints();
     ((Outline) outline).correctDensity(d, d / 2);
-    ((Outline) outline).updateNormales(true);
+    ((Outline) outline).updateNormals(true);
     ((Outline) outline).updateCurvature();
     double d1 = outline.getLength() / outline.getNumPoints();
     averageCurvature(d1).sumCurvature(d1);
-    constrainNormales(d1 * averageNormales);
+    constrainNormals(d1 * averageNormals);
 
     LOGGER.debug("Res after 1: " + outline.getNumPoints());
 
@@ -387,11 +387,11 @@ public class OutlineProcessor<T extends Shape<?>> {
       ((Outline) outline).removeProx(1.5, 1.5);
       ((Outline) outline).freezeProx(angleTh, freezeTh);
       ((Outline) outline).correctDensity(d, d / 2);
-      // ((Outline) outline).updateNormales(true); // sometimes it is better
+      // ((Outline) outline).updateNormals(true); // sometimes it is better
       ((Outline) outline).updateCurvature();
       d1 = outline.getLength() / outline.getNumPoints();
       averageCurvature(d1).sumCurvature(d1);
-      // equalNormales(d1 * 5); // better if original normales stay. interpolate can add vertex but
+      // equalNormales(d1 * 5); // better if original normals stay. interpolate can add vertex but
       // ith will have updated normales
 
       // do not shrink if there are 4 nodes or less
@@ -420,12 +420,12 @@ public class OutlineProcessor<T extends Shape<?>> {
   }
 
   /**
-   * Set normales to the same direction according to local minimum of sumCurvature.
+   * Set normals to the same direction according to local minimum of sumCurvature.
    * 
    * @param averdistance distance to look along. Set 0 to turn off any modification. Any value
    *        smaller than distance will cause that at least 3 nodes are taken.
    */
-  private void constrainNormales(double averdistance) {
+  private void constrainNormals(double averdistance) {
     Vert v;
     Vert tmpV;
     double distance;
@@ -436,7 +436,7 @@ public class OutlineProcessor<T extends Shape<?>> {
       return;
     }
     List<Double> curvSums = new ArrayList<>(); // will keep local curvature sums in +-distance
-    List<ExtendedVector2d> norms = new ArrayList<>(); // will keep normales in +-distance
+    List<ExtendedVector2d> norms = new ArrayList<>(); // will keep normals in +-distance
 
     if (averdistance > 0) {
       v = (Vert) outline.getHead();

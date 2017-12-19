@@ -131,13 +131,13 @@ public abstract class AbstractCircularShape {
   }
 
   /**
-   * Return normales for {@link #getCircle()}.
+   * Return normals for {@link #getCircle()}.
    * 
    * @param reversed true if list reversed
    * @param inner true for inner
-   * @return List of normales.
+   * @return List of normals.
    */
-  public static final List<Point2d> getNormales(boolean reversed, boolean inner) {
+  public static final List<Point2d> getNormals(boolean reversed, boolean inner) {
     List<Point2d> ret = new ArrayList<>();
     List<Point2d> p = null;
     if (reversed) {
@@ -395,17 +395,17 @@ public abstract class AbstractCircularShape {
   }
 
   /**
-   * Validate coordinates of normales.
+   * Validate coordinates of normals.
    * 
    * @param sh shape to validate
    * @param reversed true if shape reversed
    * @param inner true for inner
    * @throws Exception on error
    */
-  public static void validateNormales(Shape<?> sh, boolean reversed, boolean inner)
+  public static void validateNormals(Shape<?> sh, boolean reversed, boolean inner)
           throws Exception {
     List<Point2d> exp = null;
-    exp = getNormales(reversed, inner);
+    exp = getNormals(reversed, inner);
     Iterator<Point2d> itexp = exp.iterator();
     Iterator<?> it = sh.iterator();
     assertThat(sh.getNumPoints(), is(exp.size()));
@@ -425,7 +425,7 @@ public abstract class AbstractCircularShape {
    * 
    * @param sh shape to validate
    * @param reversed true for reversed direction
-   * @param inner true for inner normales
+   * @param inner true for inner normals
    * @throws Exception on error
    */
   public static void validateShapeGeomProperties(Shape<?> sh, boolean reversed, boolean inner)
@@ -433,7 +433,7 @@ public abstract class AbstractCircularShape {
     validateNumOfPoints(sh);
     validateCentroid(sh);
     validatePoints(sh, reversed);
-    validateNormales(sh, reversed, inner);
+    validateNormals(sh, reversed, inner);
     validateLinearIndices(sh, reversed);
   }
 

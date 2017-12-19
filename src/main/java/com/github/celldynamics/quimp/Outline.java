@@ -59,7 +59,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
     super(h, nn);
     // removeVert(head);
     this.updateCurvature();
-    this.updateNormales(false);
+    this.updateNormals(false);
   }
 
   /**
@@ -87,7 +87,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    * <p>Convert only basic properties. Do not forget that many of Vert properties are set during
    * ECMM or Q Analysis.
    * 
-   * <p>Set normales outwards. This can be changed by calling {@link #updateNormales(boolean)}
+   * <p>Set normals outwards. This can be changed by calling {@link #updateNormals(boolean)}
    * afterwards.
    * 
    * @param src Snake to be converted to Outline
@@ -97,7 +97,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
     super((Shape) src, new Vert());
     this.updateCurvature();
     setPositions();
-    this.updateNormales(false);
+    this.updateNormals(false);
   }
 
   /**
@@ -121,7 +121,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
       v.setY(p.ypoints[i]);
     }
     removeVert(head); // remove dummy head node
-    updateNormales(false);
+    updateNormals(false);
     this.updateCurvature();
     setPositions();
     calcCentroid();
@@ -825,7 +825,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
 
       ov = ov.getNext();
     } while (!ov.isHead());
-    n.updateNormales(true);
+    n.updateNormals(true);
     n.calcCentroid();
     n.updateCurvature();
 
@@ -951,7 +951,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
   /**
    * Scale the outline proportionally.
    * 
-   * <p>Shape is constricted in given number of <tt>steps</tt>. Method updates shape normales
+   * <p>Shape is constricted in given number of <tt>steps</tt>. Method updates shape normals
    * setting them in inner direction. Results can differ (slightly) on each run due to random
    * selection of head on point remove.
    * 
@@ -964,14 +964,14 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    */
   public void scaleOutline(double amount, double stepRes, double angleTh, double freezeTh) {
     int j;
-    updateNormales(true);
+    updateNormals(true);
     double steps = Math.abs(amount / stepRes);
     for (j = 0; j < steps; j++) {
       if (getNumPoints() <= 3) {
         break;
       }
       super.scale(stepRes);
-      updateNormales(true);
+      updateNormals(true);
       removeProx(1.5, 1.5); // constants taken from old removeProx were they were hardcoded
       freezeProx(angleTh, freezeTh);
       if (j > MAX_NODES) {

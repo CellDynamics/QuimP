@@ -19,7 +19,7 @@ import ij.process.FloatPolygon;
  * Low level snake definition. Form snake from Node objects. Snake is defined by first head node.
  * Remaining nodes are in bidirectional linked list.
  * 
- * <p>Node list may be modified externally but then method such as findNode(), updateNormales(),
+ * <p>Node list may be modified externally but then method such as findNode(), updateNormals(),
  * calcCentroid() should be called to update internal fields of Snake. If number of nodes changes it
  * is recommended to create new object.
  * 
@@ -74,7 +74,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     super(h, n);
     snakeID = id;
     this.makeAntiClockwise(); // can affect centroid on last positions, so calculate it afterwards
-    this.updateNormales(BOA_.qState.segParam.expandSnake);
+    this.updateNormals(BOA_.qState.segParam.expandSnake);
     alive = true;
     startingNnodes = POINTS / 100.; // as 1%. limit to X%
     countFrozen(); // set FROZEN
@@ -172,8 +172,8 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
       throw new BoaException("Not enough points provided");
     }
     snakeID = id;
-    this.makeAntiClockwise(); // specific to snake can affect updateNormales
-    updateNormales(BOA_.qState.segParam.expandSnake); // called in super, here just in case
+    this.makeAntiClockwise(); // specific to snake can affect updateNormals
+    updateNormals(BOA_.qState.segParam.expandSnake); // called in super, here just in case
     startingNnodes = POINTS / 100;
     alive = true;
     getBounds();
@@ -194,8 +194,8 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
               "Lengths of X and Y arrays are not equal or there is less than 3 nodes");
     }
     snakeID = id;
-    this.makeAntiClockwise(); // specific to snake can affect updateNormales
-    updateNormales(BOA_.qState.segParam.expandSnake); // called in super, here just in case
+    this.makeAntiClockwise(); // specific to snake can affect updateNormals
+    updateNormals(BOA_.qState.segParam.expandSnake); // called in super, here just in case
     startingNnodes = POINTS / 100;
     alive = true;
     getBounds();
@@ -322,7 +322,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     }
     removeNode(head); // remove dummy head node
     this.makeAntiClockwise();
-    updateNormales(BOA_.qState.segParam.expandSnake);
+    updateNormals(BOA_.qState.segParam.expandSnake);
   }
 
   /**
@@ -373,7 +373,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     removeNode(head); // remove dummy head node new head will be set
     setPositions();
     this.makeAntiClockwise();
-    updateNormales(BOA_.qState.segParam.expandSnake);
+    updateNormals(BOA_.qState.segParam.expandSnake);
   }
 
   /**
@@ -402,7 +402,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     removeNode(head); // remove dummy head node
     setPositions();
     this.makeAntiClockwise();
-    updateNormales(BOA_.qState.segParam.expandSnake);
+    updateNormals(BOA_.qState.segParam.expandSnake);
   }
 
   /**
@@ -430,7 +430,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
     removeNode(head); // remove dummy head node
     setPositions();
     this.makeAntiClockwise();
-    updateNormales(BOA_.qState.segParam.expandSnake);
+    updateNormals(BOA_.qState.segParam.expandSnake);
   }
 
   /**
@@ -597,7 +597,7 @@ public class Snake extends Shape<Node> implements IQuimpSerialize {
         correctDistance(false);
       }
       cutLoops();
-      updateNormales(BOA_.qState.segParam.expandSnake);
+      updateNormals(BOA_.qState.segParam.expandSnake);
     }
     calcCentroid();
     setPositions();

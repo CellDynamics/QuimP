@@ -356,7 +356,7 @@ public class ShapeTest {
     List<Point2d> p = AbstractCircularShape.getCircle();
     Snake s = new Snake(p, 0);
     AbstractCircularShape.validateShapeGeomProperties(s, true, BOA_.qState.segParam.expandSnake);
-    s.reverseShape(); // check revese but id does not update normales
+    s.reverseShape(); // check revese but id does not update normals
     AbstractCircularShape.validateShapeGeomProperties(s, false, !BOA_.qState.segParam.expandSnake);
   }
 
