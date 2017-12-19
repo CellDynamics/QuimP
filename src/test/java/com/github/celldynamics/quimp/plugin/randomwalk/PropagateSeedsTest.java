@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -14,8 +15,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.celldynamics.quimp.Outline;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
+import com.github.celldynamics.quimp.geom.filters.OutlineProcessor;
 import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds.Contour;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
+import com.github.celldynamics.quimp.utils.CsvWritter;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
 import ij.IJ;
@@ -187,21 +191,29 @@ public class PropagateSeedsTest {
   /**
    * testGetCompositeSeed_Contour.
    * 
-   * <p>Check if high scaling factor will remove thin objects.
+   * <p>Produce outline plot with scaled and original outline.
    * 
    * @throws Exception on error
    */
   @Test
   public void testGetCompositeSeed_Contour2() throws Exception {
-    ImagePlus ip = IJ.openImage("/home/baniuk/Desktop/Tests/239/shape1.tif");
-    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null);
+    ImagePlus ip = IJ.openImage("src/test/Resources-static/239/shape1.tif");
+    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null, 0.35, 5, 0);
 
-    List<Outline> outlineOrg = Contour.getOutline(ip.getProcessor());
-    Map<Seeds, ImageProcessor> ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 2, 10);
-    List<Outline> outlineSh = Contour.getOutline(ret.get(Seeds.FOREGROUND));
+    Outline outlineOrg = Contour.getOutline(ip.getProcessor()).get(0);
+    new OutlineProcessor<Outline>(outlineOrg).averageCurvature(1).sumCurvature(1);
+    Map<Seeds, ImageProcessor> ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 5, 10);
+    Outline outlineSh = Contour.getOutline(ret.get(Seeds.FOREGROUND)).get(0);
+    ImageProcessor bck = ret.get(Seeds.BACKGROUND);
+    bck.invert();
+    Outline outlineEx = Contour.getOutline(bck).get(0);
 
-    RoiSaver.saveRois(tmpdir + "reo.tif", 512, 512, outlineOrg.get(0).asList(), Color.GREEN,
-            outlineSh.get(0).asList(), Color.RED, null, null);
+    RoiSaver.saveRois(tmpdir + "reo.tif", 512, 512, outlineOrg.asList(), Color.GREEN,
+            outlineSh.asList(), Color.RED, outlineEx.asList(), Color.BLUE);
+    CsvWritter csv =
+            new CsvWritter(Paths.get(tmpdir, "outlineOrg.csv"), FormatConverter.headerEcmmOutline);
+    FormatConverter.saveOutline(outlineOrg, csv);
+    csv.close();
   }
 
   /**

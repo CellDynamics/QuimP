@@ -42,7 +42,6 @@ import ij.process.ImageProcessor;
  * pixels in remaining part of image. There should be unseeded strip of pixels around the object.
  * 
  * @author p.baniukiewicz
- *
  */
 public abstract class PropagateSeeds {
 
@@ -215,8 +214,23 @@ public abstract class PropagateSeeds {
   /**
    * Contain methods for propagating seeds to the next frame using contour shrinking operations.
    * 
+   * <p><t>ampl</t> and <t>shrinkPower</t> specified in
+   * {@link #propagateSeed(ImageProcessor, ImageProcessor, double, double)} are related to each
+   * other. Larger <t>shrinkPower</t> stands for larger number of steps during shrinking
+   * ({@link OutlineProcessor#shrinknl(double, double, double, double, double, double, int)}, step
+   * size is fixed {@link Contour#stepSize}). Therefore large <t>ampl</t> will move concave node too
+   * fast because internally @link Contour#stepSize} is multiplied by factor returned by
+   * {@link OutlineProcessor#amplificationFactor(double, double, double)} that ranges 1.0 for
+   * positive curvatures to <t>amp</t> for negative with specified <t>sigma</t>. Generally
+   * increasing <t>shrinkPower</t>, the <t>ampl</t> should be deceased.
+   * 
+   * <p>To increase effect of shifting nodes with negative curvature, normals locally can be
+   * adjusted according to node with lowest curvature. See
+   * {@link OutlineProcessor#shrinknl(double, double, double, double, double, double, int)}
+   * 
    * @author p.baniukiewicz
-   *
+   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, int)
+   * @see OutlineProcessor#amplificationFactor(double, double, double)
    */
   public static class Contour extends PropagateSeeds {
 
@@ -227,6 +241,10 @@ public abstract class PropagateSeeds {
      * @see ANAp
      */
     public static final double stepSize = 0.04;
+
+    private double ampl = 5;
+    private double sigma = 0.3;
+    private int normWindow = 0;
 
     /**
      * Default constructor without storing seed history.
@@ -245,6 +263,30 @@ public abstract class PropagateSeeds {
      */
     public Contour(boolean storeSeeds, AutoThresholder.Method trueBackground) {
       super(storeSeeds, trueBackground);
+    }
+
+    /**
+     * Allow additionally to set power of shrinking curved parts of the outline and window for
+     * equalising normals.
+     * 
+     * @param storeSeeds <tt>true</tt> to store seeds.
+     * @param trueBackground if not null, selected method will be used for estimating true
+     *        background - excluding bright objects from it
+     * @param sigma sigma of Gaussian
+     * @param ampl maximum amplification (for curv<<0)
+     * @param normWindow distance to look along for node with smallest curvature (negative) from
+     *        current node. Set 0 to turn off this feature. Any value smaller than distance will
+     *        cause that at least 3 nodes are taken. See
+     *        {@link OutlineProcessor#shrinknl(double, double, double, double, double, double, int)}
+     * @see Contour#Contour(boolean, ij.process.AutoThresholder.Method)
+     * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, int)
+     */
+    public Contour(boolean storeSeeds, AutoThresholder.Method trueBackground, double sigma,
+            double ampl, int normWindow) {
+      super(storeSeeds, trueBackground);
+      this.ampl = ampl;
+      this.sigma = sigma;
+      this.normWindow = normWindow;
     }
 
     /**
@@ -300,7 +342,8 @@ public abstract class PropagateSeeds {
         }
         // shrink outline - copy as we want to expand it later
         Outline copy = new Outline(o);
-        new OutlineProcessor<Outline>(copy).shrinknl(stepsshrink, stepSize, 0.1, 1.5); // from anap
+        new OutlineProcessor<Outline>(copy).shrinknl(stepsshrink, stepSize, 0.1, 1.5, sigma, ampl,
+                normWindow);
         copy.unfreezeAll();
         Roi fr = copy.asIntRoi();
         fr.setFillColor(Color.WHITE);
@@ -316,8 +359,9 @@ public abstract class PropagateSeeds {
           continue;
         }
         // frezeTh influences artifacts that appear when concave regions are expanded
-        // 0 prevent a liitle
-        new OutlineProcessor<Outline>(o).shrinknl(stepsexp, -stepSize, 0.1, 0); // taken from anap
+        // 0 prevent a little
+        // TODO check if expand shuold use normWindow
+        new OutlineProcessor<Outline>(o).shrinknl(stepsexp, -stepSize, 0.1, 0, sigma, ampl, 0);
         o.unfreezeAll();
         Roi fr = o.asFloatRoi();
         fr.setFillColor(Color.WHITE);
