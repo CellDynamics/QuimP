@@ -32,6 +32,8 @@ import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -416,7 +418,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @param srIter the srIter to set
    */
   public void setSrIter(int srIter) {
-    this.srIter.setValue(srIter);
+    this.srIter.setValue((double) srIter);
   }
 
   private JSpinner srRelerr;
@@ -640,7 +642,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @param srWindow the srWindow to set
    */
   public void setSrLocalMeanWindow(int srWindow) {
-    this.srLocalMeanWindow.setValue(srWindow);
+    this.srLocalMeanWindow.setValue((double) srWindow);
   }
 
   private JCheckBox chHatFilter;
@@ -700,7 +702,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @param srNum the srNum to set
    */
   public void setSrNum(int srNum) {
-    this.srNum.setValue(srNum);
+    this.srNum.setValue((double) srNum);
   }
 
   private JSpinner srWindow;
@@ -720,7 +722,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @param srWindow the srWindow to set
    */
   public void setSrWindow(int srWindow) {
-    this.srWindow.setValue(srWindow);
+    this.srWindow.setValue((double) srWindow);
   }
 
   private JComboBox<String> cbFilteringPostMethod;
@@ -814,6 +816,12 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * Build View but not show it.
    */
   public RandomWalkView() {
+    try {
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+            | UnsupportedLookAndFeelException e) {
+      e.printStackTrace();
+    }
     ToolTipManager.sharedInstance().setDismissDelay(UiTools.TOOLTIPDELAY);
     wnd = new JFrame("Random Walker Segmentation");
     wnd.setResizable(false);
@@ -939,7 +947,9 @@ public class RandomWalkView implements ActionListener, ItemListener {
     scalePanel.add(getControlwithLabel(new JLabel(), "", ""));
     srScaleEqNormalsDist = getDoubleSpinner(0, 0, 100, 1, 1);
     scalePanel.add(getControlwithLabel(srScaleEqNormalsDist, "Norm dist",
-            "Distance of normals normalisation. Set to 0 to disable."));
+            "Distance (number of nodes) of normals alignment and curvature averaging "
+                    + "Set to 0 to disable"
+                    + " normals alignment and set averaging to approx. 3 nodes."));
     constrProc.gridx = 0;
     constrProc.gridy = 3;
 

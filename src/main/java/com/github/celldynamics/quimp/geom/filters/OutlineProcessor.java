@@ -117,7 +117,7 @@ public class OutlineProcessor<T extends Shape<?>> {
     Vert tmpV;
     double totalCur;
     double distance;
-    int count;
+    int count = 0;
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
@@ -156,6 +156,7 @@ public class OutlineProcessor<T extends Shape<?>> {
         v = v.getNext();
       } while (!v.isHead());
     }
+    LOGGER.debug("Average curvature over:" + averdistance + " nodes number:" + count);
     return this;
   }
 
@@ -177,6 +178,7 @@ public class OutlineProcessor<T extends Shape<?>> {
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
+    LOGGER.debug("Sum curvature over:" + averdistance);
     // Average over curvatures
     if (averdistance > 0) {
       v = (Vert) outline.getHead();
@@ -349,26 +351,36 @@ public class OutlineProcessor<T extends Shape<?>> {
    * @param freezeTh freeze threshold
    * @param sigma sigma of Gaussian
    * @param magn maximum amplification (for curv<<0)
-   * @param averageNormals number of neighbouring nodes to set normals the same (set 0 to disable)
+   * @param averageDist number of neighbouring nodes to set normals the same (set 0 to
+   *        disable) and average curvature over.
    * @see Outline#scaleOutline(double, double, double, double)
    * @see OutlineProcessor#amplificationFactor(double, double, double)
    */
   public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh, double sigma,
-          double magn, double averageNormals) {
+          double magn, double averageDist) {
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
     LOGGER.debug("Steps: " + steps);
     LOGGER.debug("Original res: " + outline.getNumPoints());
+    double curvatureAverageDist;
+    if (averageDist == 0.0) {
+      curvatureAverageDist = 1.0;
+    } else {
+      curvatureAverageDist = averageDist;
+    }
     Vert n;
     int max = 10000;
     double d = outline.getLength() / outline.getNumPoints();
+    LOGGER.debug("steps:" + steps + " stepRes:" + stepRes + " angleTh:" + angleTh + " freezeTh:"
+            + freezeTh + " sigma:" + sigma + " magn:" + magn + " averageDist:" + averageDist
+            + " curvatureAverageDist" + curvatureAverageDist + " averDistanceBefore:" + d);
     ((Outline) outline).correctDensity(d, d / 2);
     ((Outline) outline).updateNormals(true);
     ((Outline) outline).updateCurvature();
     double d1 = outline.getLength() / outline.getNumPoints();
-    averageCurvature(d1).sumCurvature(d1);
-    constrainNormals(d1 * averageNormals);
+    averageCurvature(d1 * curvatureAverageDist).sumCurvature(d1 * curvatureAverageDist);
+    constrainNormals(d1 * averageDist);
 
     LOGGER.debug("Res after 1: " + outline.getNumPoints());
 
@@ -390,7 +402,7 @@ public class OutlineProcessor<T extends Shape<?>> {
       // ((Outline) outline).updateNormals(true); // sometimes it is better
       ((Outline) outline).updateCurvature();
       d1 = outline.getLength() / outline.getNumPoints();
-      averageCurvature(d1).sumCurvature(d1);
+      averageCurvature(d1 * curvatureAverageDist).sumCurvature(d1 * curvatureAverageDist);
       // equalNormales(d1 * 5); // better if original normals stay. interpolate can add vertex but
       // ith will have updated normales
 
@@ -432,6 +444,7 @@ public class OutlineProcessor<T extends Shape<?>> {
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
+    LOGGER.debug("constrainNormals over:" + averdistance);
     if (averdistance == 0) {
       return;
     }

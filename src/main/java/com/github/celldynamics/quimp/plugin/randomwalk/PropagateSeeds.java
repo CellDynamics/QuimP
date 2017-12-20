@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.QuimP;
 import com.github.celldynamics.quimp.geom.TrackOutline;
@@ -44,6 +47,7 @@ import ij.process.ImageProcessor;
  * @author p.baniukiewicz
  */
 public abstract class PropagateSeeds {
+  static final Logger LOGGER = LoggerFactory.getLogger(PropagateSeeds.class.getName());
 
   /**
    * Seed propagators available in this class.
@@ -357,6 +361,7 @@ public abstract class PropagateSeeds {
         }
         // shrink outline - copy as we want to expand it later
         Outline copy = new Outline(o);
+        LOGGER.debug("Shrink object");
         new OutlineProcessor<Outline>(copy).shrinknl(stepsshrink, stepSize, 0.1, 1.5, scaleSigma,
                 scaleMagn, scaleEqNormalsDist);
         copy.unfreezeAll();
@@ -375,7 +380,7 @@ public abstract class PropagateSeeds {
         }
         // frezeTh influences artifacts that appear when concave regions are expanded
         // 0 prevent a little
-        // TODO check if expand shuold use normWindow
+        LOGGER.debug("Expand object");
         new OutlineProcessor<Outline>(o).shrinknl(stepsexp, -stepSize, 0.1, 0, scaleSigma,
                 scaleMagn, 0);
         o.unfreezeAll();
