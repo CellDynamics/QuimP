@@ -2,6 +2,7 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import java.util.Arrays;
 
+import com.github.celldynamics.quimp.geom.filters.OutlineProcessor;
 import com.github.celldynamics.quimp.plugin.AbstractPluginOptions;
 import com.github.celldynamics.quimp.plugin.EscapedPath;
 import com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters.Filters;
@@ -210,6 +211,34 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * expand contour.
    */
   public double expandPower;
+  /**
+   * Scale sigma parameter.
+   * 
+   * <p>Shape of Gaussian curve used to estimate magnitude of scaling related to local curvature.
+   * 
+   * @see PropagateSeeds.Contour#propagateSeed(ij.process.ImageProcessor, ij.process.ImageProcessor,
+   *      double, double)
+   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double)
+   */
+  public double scaleSigma = 0.3;
+  /**
+   * Maximal magnitude of scaling for regions with smallest curvature.
+   * 
+   * @see PropagateSeeds.Contour#propagateSeed(ij.process.ImageProcessor,
+   *      ij.process.ImageProcessor,
+   *      double, double)
+   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double)
+   */
+  public double scaleMagn = 1.0;
+  /**
+   * If non zero, normals are set to direction of normal of node with smallest curvature (negative).
+   * Work locally within defined range.
+   * 
+   * @see PropagateSeeds.Contour#propagateSeed(ij.process.ImageProcessor, ij.process.ImageProcessor,
+   *      double, double)
+   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double)
+   */
+  public double scaleEqNormalsDist = 0;
   /**
    * Estimate background if true.
    * 

@@ -319,7 +319,7 @@ public class OutlineProcessor<T extends Shape<?>> {
    * @param stepRes stepRes
    * @param angleTh angleTh
    * @param freezeTh freezeTh
-   * @see #shrinknl(double, double, double, double, double, double, int)
+   * @see #shrinknl(double, double, double, double, double, double, double)
    */
   public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh) {
     final double defSigma = 0.3;
@@ -354,7 +354,7 @@ public class OutlineProcessor<T extends Shape<?>> {
    * @see OutlineProcessor#amplificationFactor(double, double, double)
    */
   public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh, double sigma,
-          double magn, int averageNormals) {
+          double magn, double averageNormals) {
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
