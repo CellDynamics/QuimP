@@ -32,8 +32,6 @@ import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +89,7 @@ import com.github.celldynamics.quimp.utils.UiTools;
  *   Shrink power | "srShrinkPower" 
  *   Expand power | "srExpandPower" 
  *   Sigma | "srScaleSigma" | Magn | "srScaleMagn"
- *   | | Norm Dist | "srScaleEqNormalsDist"
+ *   | Curv Dist | "srScaleCurvDistDist"| Norm Dist | "srScaleEqNormalsDist"
  *   Binary filter | ^cbFilteringMethod^
  *   () chTrueBackground
  *   {+
@@ -548,7 +546,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
   /**
    * Get distance.
    * 
-   * @return the srScaleMagn
+   * @return the srScaleEqNormalsDist
    */
   public double getSrScaleEqNormalsDist() {
     return ((Number) srScaleEqNormalsDist.getValue()).doubleValue();
@@ -561,6 +559,26 @@ public class RandomWalkView implements ActionListener, ItemListener {
    */
   public void setSrScaleEqNormalsDist(double srScaleEqNormalsDist) {
     this.srScaleEqNormalsDist.setValue(srScaleEqNormalsDist);
+  }
+
+  private JSpinner srScaleCurvDistDist;
+
+  /**
+   * Get distance.
+   * 
+   * @return the srScaleCurvDistDist
+   */
+  public double getSrScaleCurvDistDist() {
+    return ((Number) srScaleCurvDistDist.getValue()).doubleValue();
+  }
+
+  /**
+   * Set distance.
+   * 
+   * @param srScaleCurvDistDist the srScaleCurvDistDist to set
+   */
+  public void setSrScaleCurvDistDist(double srScaleCurvDistDist) {
+    this.srScaleCurvDistDist.setValue(srScaleCurvDistDist);
   }
 
   private JComboBox<String> cbFilteringMethod;
@@ -816,12 +834,12 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * Build View but not show it.
    */
   public RandomWalkView() {
-    try {
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-            | UnsupportedLookAndFeelException e) {
-      e.printStackTrace();
-    }
+    // try {
+    // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    // } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+    // | UnsupportedLookAndFeelException e) {
+    // e.printStackTrace();
+    // }
     ToolTipManager.sharedInstance().setDismissDelay(UiTools.TOOLTIPDELAY);
     wnd = new JFrame("Random Walker Segmentation");
     wnd.setResizable(false);
@@ -944,12 +962,14 @@ public class RandomWalkView implements ActionListener, ItemListener {
     srScaleMagn = getDoubleSpinner(1, 1, 10, 1, 0);
     scalePanel.add(getControlwithLabel(srScaleMagn, "Magn",
             "Maximum multiplier of shrink power. Set to 1.0 to disable"));
-    scalePanel.add(getControlwithLabel(new JLabel(), "", ""));
+    srScaleCurvDistDist = getDoubleSpinner(1, 1, 100, 1, 1);
+    scalePanel.add(getControlwithLabel(srScaleCurvDistDist, "Curv dist",
+            "Approximated number of nodes used for averaging curvature. "
+                    + "At least 3 nodes are always used"));
     srScaleEqNormalsDist = getDoubleSpinner(0, 0, 100, 1, 1);
     scalePanel.add(getControlwithLabel(srScaleEqNormalsDist, "Norm dist",
-            "Distance (number of nodes) of normals alignment and curvature averaging "
-                    + "Set to 0 to disable"
-                    + " normals alignment and set averaging to approx. 3 nodes."));
+            "Approximated number of nodes used for normals alignment "
+                    + "Set to 0 to disable otherwise at least 3 nodes are used"));
     constrProc.gridx = 0;
     constrProc.gridy = 3;
 
@@ -1150,6 +1170,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     if (cbShrinkMethod.getSelectedItem().equals("CONTOUR")) {
       srScaleMagn.setEnabled(status);
       srScaleSigma.setEnabled(status);
+      srScaleCurvDistDist.setEnabled(status);
       srScaleEqNormalsDist.setEnabled(status);
     } else {
       cbShrinkMethod.setEnabled(status);
@@ -1432,10 +1453,12 @@ public class RandomWalkView implements ActionListener, ItemListener {
         srScaleMagn.setEnabled(false);
         srScaleSigma.setEnabled(false);
         srScaleEqNormalsDist.setEnabled(false);
+        srScaleCurvDistDist.setEnabled(false);
       } else {
         srScaleMagn.setEnabled(true);
         srScaleSigma.setEnabled(true);
         srScaleEqNormalsDist.setEnabled(true);
+        srScaleCurvDistDist.setEnabled(true);
       }
     }
   }

@@ -156,7 +156,7 @@ public class OutlineProcessor<T extends Shape<?>> {
         v = v.getNext();
       } while (!v.isHead());
     }
-    LOGGER.debug("Average curvature over:" + averdistance + " nodes number:" + count);
+    LOGGER.trace("Average curvature over:" + averdistance + " nodes number:" + count);
     return this;
   }
 
@@ -178,7 +178,6 @@ public class OutlineProcessor<T extends Shape<?>> {
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
-    LOGGER.debug("Sum curvature over:" + averdistance);
     // Average over curvatures
     if (averdistance > 0) {
       v = (Vert) outline.getHead();
@@ -212,121 +211,21 @@ public class OutlineProcessor<T extends Shape<?>> {
     return this;
   }
 
-  // /**
-  // * Compute running mean on <tt>Outline</tt>.
-  // *
-  // * @param window Window size
-  // * @deprecated Will not be used after implementing HatSnakeFilter for getting weights.
-  // */
-  // private void runningmeanfilter(int window) {
-  // if (!(outline instanceof Outline)) {
-  // throw new IllegalArgumentException("This method applies to Outline only");
-  // }
-  // double[] curv;
-  // int l;
-  // Vert n;
-  // curv = getCurvatureLocal();
-  // PointListProcessor.runningMean(curv, window);
-  // // copy back to outline
-  // n = (Vert) outline.getHead();
-  // l = 0;
-  // do {
-  // n.curvatureLocal = curv[l];
-  // n = n.getNext();
-  // l++;
-  // } while (!n.isHead());
-  // }
-
-  // /**
-  // * Shrink the outline nonlinearly.
-  // *
-  // * <p>TODO Nonlinearlity not implemented.
-  // *
-  // * @param steps number of steps - integer
-  // * @param stepRes length of the step
-  // * @param angleTh angle threshold
-  // * @param freezeTh freeze threshold
-  // * @see Outline#scaleOutline(double, double, double, double)
-  // */
-  // public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh) {
-  // // later drop any local feature like curvature and use rather snakehatfileter to get proper
-  // // weighting
-  // if (!(outline instanceof Outline)) {
-  // throw new IllegalArgumentException("This method applies to Outline only");
-  // }
-  // LOGGER.debug("Steps: " + steps);
-  // LOGGER.debug("Original res: " + outline.getNumPoints());
-  // int meanmasksize = 5;
-  // // System.out.println("steps: " + steps + ", step size: " +
-  // // ANAp.stepRes);
-  // Vert n;
-  // int j;
-  // int max = 10000;
-  // double d = outline.getLength() / outline.getNumPoints();
-  //
-  // for (j = 0; j < steps; j++) {
-  // runningmeanfilter(meanmasksize);
-  // if (outline.getNumPoints() <= 3) {
-  // break;
-  // }
-  // n = (Vert) outline.getHead();
-  // do {
-  // if (!n.isFrozen()) {
-  // n.setX(n.getX() - stepRes * 1.0 * n.getNormal().getX());
-  // n.setY(n.getY() - stepRes * 1.0 * n.getNormal().getY());
-  // }
-  // n = n.getNext();
-  // } while (!n.isHead());
-  //
-  // ((Outline) outline).removeProx(1.5, 1.5);
-  // ((Outline) outline).freezeProx(angleTh, freezeTh);
-  // // double d = outline.getLength() / outline.getNumVerts();
-  // ((Outline) outline).correctDensity(d, d / 2);
-  // ((Outline) outline).updateNormals(true);
-  // ((Outline) outline).updateCurvature();
-  //
-  // // do not shrink if there are 4 nodes or less
-  // if (outline.getNumPoints() <= 4) {
-  // LOGGER.debug("Stopped iterations");
-  // break;
-  // }
-  //
-  // if (j > max) {
-  // LOGGER.warn("shrink (336) hit max iterations!");
-  // break;
-  // }
-  // }
-  //
-  // if (outline.getNumPoints() < 3) {
-  // LOGGER.info("ANA 377_NODES LESS THAN 3 BEFORE CUTS");
-  // }
-  //
-  // if (((Outline) outline).cutSelfIntersects()) {
-  // LOGGER.debug("ANA_(382)...fixed ana intersects");
-  // }
-  //
-  // if (outline.getNumPoints() < 3) {
-  // LOGGER.info("ANA 377_NODES LESS THAN 3");
-  // }
-  //
-  // // LOGGER.debug("Shrank Verts: " + outline.getNumVerts());
-  // // LOGGER.debug("Verts after density correction: " + outline.getNumVerts());
-  // // LOGGER.debug("Density " + d + " [" + d / 4 + "," + d / 2 + "]");
-  // }
-
   /**
-   * Compatibility layer.
+   * Shrink outline linearly.
    * 
    * @param steps steps
    * @param stepRes stepRes
    * @param angleTh angleTh
    * @param freezeTh freezeTh
-   * @see #shrinknl(double, double, double, double, double, double, double)
+   * @see #shrinknl(double, double, double, double, double, double, double, double)
    */
-  public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh) {
+  public void shrinkLin(double steps, double stepRes, double angleTh, double freezeTh) {
     final double defSigma = 0.3;
-    final double defAmpl = 5;
-    shrinknl(steps, stepRes, angleTh, freezeTh, defSigma, defAmpl, 0);
+    final double defAmpl = 1.0; // linear shrink
+    final double defCurvAverDist = 1.0;
+    final double defNormalsDist = 0; // off
+    shrinknl(steps, stepRes, angleTh, freezeTh, defSigma, defAmpl, defCurvAverDist, defNormalsDist);
   }
 
   /**
@@ -336,14 +235,17 @@ public class OutlineProcessor<T extends Shape<?>> {
    * {@link OutlineProcessor#sumCurvature(double)} to produce nonlinear scaling. Scaling factor
    * depends on {@link Vert#curvatureSum} and it is computed by
    * {@link #amplificationFactor(double, double, double)} method. Nodes are shifted inwards
-   * according to normals ({@link Vert#getNormal()}). If <i>averageNormals</i> is positive, this
-   * number of nodes on each side of current node will be analysed to find lowest (must be negative)
-   * {@link Vert#curvatureSum} and then normal vector of this node will be copied to all other nodes
+   * according to normals ({@link Vert#getNormal()}). If parameter <i>averageNormalsDist</i> is
+   * greater than zero, nodes within this distance to current node will be analysed to find lowest
+   * (must be negative) {@link Vert#curvatureSum} and then normal vector of this node will be copied
+   * to all other nodes
    * in current window.
    * 
    * <p>{@link #amplificationFactor(double, double, double)} increase step size used by
-   * {@link #shrinknl(double, double, double, double)} maximally by factor of <t>magn</t>
+   * {@link #shrinkLin(double, double, double, double)} maximally by factor of <t>magn</t>
    * ({@link #amplificationFactor(double, double, double)} option).
+   * 
+   * <p>For linear shrinking use <t>magn</t>=1 and <t>averageNormalsDist</t>=0.
    * 
    * @param steps number of steps - integer
    * @param stepRes length of the step
@@ -351,36 +253,34 @@ public class OutlineProcessor<T extends Shape<?>> {
    * @param freezeTh freeze threshold
    * @param sigma sigma of Gaussian
    * @param magn maximum amplification (for curv<<0)
-   * @param averageDist number of neighbouring nodes to set normals the same (set 0 to
-   *        disable) and average curvature over.
+   * @param averageCurvDist number of neighbouring nodes to average curvature over. This is
+   *        multiplier of average node distance. Always at least three nodes are averaged
+   *        (n-1,n,n+1).
+   * @param averageNormalsDist number of neighbouring nodes to set normals the same (set 0 to
+   *        disable).
    * @see Outline#scaleOutline(double, double, double, double)
    * @see OutlineProcessor#amplificationFactor(double, double, double)
    */
   public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh, double sigma,
-          double magn, double averageDist) {
+          double magn, double averageCurvDist, double averageNormalsDist) {
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
     LOGGER.debug("Steps: " + steps);
     LOGGER.debug("Original res: " + outline.getNumPoints());
-    double curvatureAverageDist;
-    if (averageDist == 0.0) {
-      curvatureAverageDist = 1.0;
-    } else {
-      curvatureAverageDist = averageDist;
-    }
+
     Vert n;
     int max = 10000;
     double d = outline.getLength() / outline.getNumPoints();
     LOGGER.debug("steps:" + steps + " stepRes:" + stepRes + " angleTh:" + angleTh + " freezeTh:"
-            + freezeTh + " sigma:" + sigma + " magn:" + magn + " averageDist:" + averageDist
-            + " curvatureAverageDist" + curvatureAverageDist + " averDistanceBefore:" + d);
+            + freezeTh + " sigma:" + sigma + " magn:" + magn + " averageCurvDist:" + averageCurvDist
+            + " averageNormalsDist" + averageNormalsDist + " averDistanceBefore:" + d);
     ((Outline) outline).correctDensity(d, d / 2);
     ((Outline) outline).updateNormals(true);
     ((Outline) outline).updateCurvature();
     double d1 = outline.getLength() / outline.getNumPoints();
-    averageCurvature(d1 * curvatureAverageDist).sumCurvature(d1 * curvatureAverageDist);
-    constrainNormals(d1 * averageDist);
+    averageCurvature(d1 * averageCurvDist).sumCurvature(d1 * averageCurvDist);
+    constrainNormals(d1 * averageNormalsDist);
 
     LOGGER.debug("Res after 1: " + outline.getNumPoints());
 
@@ -402,7 +302,7 @@ public class OutlineProcessor<T extends Shape<?>> {
       // ((Outline) outline).updateNormals(true); // sometimes it is better
       ((Outline) outline).updateCurvature();
       d1 = outline.getLength() / outline.getNumPoints();
-      averageCurvature(d1 * curvatureAverageDist).sumCurvature(d1 * curvatureAverageDist);
+      averageCurvature(d1 * averageCurvDist).sumCurvature(d1 * averageCurvDist);
       // equalNormales(d1 * 5); // better if original normals stay. interpolate can add vertex but
       // ith will have updated normales
 
@@ -487,28 +387,6 @@ public class OutlineProcessor<T extends Shape<?>> {
     }
   }
 
-  // /**
-  // * Return local curvature as array. Applies to Outline.class, returns array of zeros for other
-  // * classes.
-  // *
-  // * @return local curvature values or aray of zeros
-  // * @see Vert#curvatureLocal
-  // * @deprecated Will be removed after implementing nonproportional shrinking based on HSF
-  // */
-  // public double[] getCurvatureLocal() {
-  // double[] ret = new double[outline.getNumPoints()];
-  // if (outline instanceof Outline) {
-  // int l = 0;
-  // Vert n = (Vert) outline.getHead();
-  // do {
-  // ret[l] = n.curvatureLocal;
-  // n = n.getNext();
-  // l++;
-  // } while (!n.isHead());
-  // }
-  // return ret;
-  // }
-
   /**
    * Return amplification factor dependent on curvature.
    * 
@@ -528,7 +406,7 @@ public class OutlineProcessor<T extends Shape<?>> {
    * 
    * @param curv curvature value to compute magnification coefficient for
    * @param sigma sigma of Gaussian
-   * @param magn maximum amplification (for curv<<0)
+   * @param magn maximum amplification (for curv<<0). Set to 1.0 for constant output of 1.0
    * @return amplification coefficient
    */
   public double amplificationFactor(double curv, double sigma, double magn) {

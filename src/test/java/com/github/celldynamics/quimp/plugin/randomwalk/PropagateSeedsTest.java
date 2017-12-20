@@ -191,14 +191,15 @@ public class PropagateSeedsTest {
   /**
    * testGetCompositeSeed_Contour.
    * 
-   * <p>Produce outline plot with scaled and original outline.
+   * <p>Produce outline plot with scaled and original outline. This is used for tests or nonlinear
+   * shrinking.
    * 
    * @throws Exception on error
    */
   @Test
-  public void testGetCompositeSeed_Contour2() throws Exception {
+  public void testGetCompositeSeed_Example() throws Exception {
     ImagePlus ip = IJ.openImage("src/test/Resources-static/239/shape1.tif");
-    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null, 0.35, 5, 0);
+    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null, 0.35, 5, 1, 6);
 
     Outline outlineOrg = Contour.getOutline(ip.getProcessor()).get(0);
     new OutlineProcessor<Outline>(outlineOrg).averageCurvature(1).sumCurvature(1);

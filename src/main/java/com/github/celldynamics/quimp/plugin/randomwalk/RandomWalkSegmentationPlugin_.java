@@ -176,6 +176,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     view.setSrExpandPower(model.expandPower);
     view.setSrScaleSigma(model.scaleSigma);
     view.setSrScaleMagn(model.scaleMagn);
+    view.setSrScaleCurvDistDist(model.scaleCurvDistDist);
     view.setSrScaleEqNormalsDist(model.scaleEqNormalsDist);
     view.setFilteringMethod(model.getFilteringMethods(), model.getSelectedFilteringMethod().name());
     view.setChLocalMean(model.algOptions.useLocalMean);
@@ -233,6 +234,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     model.expandPower = view.getSrExpandPower();
     model.scaleSigma = view.getSrScaleSigma();
     model.scaleMagn = view.getSrScaleMagn();
+    model.scaleCurvDistDist = view.getSrScaleCurvDistDist();
     model.scaleEqNormalsDist = view.getSrScaleEqNormalsDist();
     model.setSelectedFilteringMethod(view.getFilteringMethod());
     model.algOptions.useLocalMean = view.getChLocalMean();
@@ -680,7 +682,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       if (propagateSeeds instanceof PropagateSeeds.Contour) {
         ((PropagateSeeds.Contour) propagateSeeds).scaleMagn = model.scaleMagn;
         ((PropagateSeeds.Contour) propagateSeeds).scaleSigma = model.scaleSigma;
-        ((PropagateSeeds.Contour) propagateSeeds).scaleEqNormalsDist = model.scaleEqNormalsDist;
+        ((PropagateSeeds.Contour) propagateSeeds).averageNormalsDist = model.scaleEqNormalsDist;
+        ((PropagateSeeds.Contour) propagateSeeds).averageCurvDist = model.scaleCurvDistDist;
       }
 
       ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack

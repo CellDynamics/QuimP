@@ -218,7 +218,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * 
    * @see PropagateSeeds.Contour#propagateSeed(ij.process.ImageProcessor, ij.process.ImageProcessor,
    *      double, double)
-   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double)
+   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double, double)
    */
   public double scaleSigma = 0.3;
   /**
@@ -227,7 +227,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * @see PropagateSeeds.Contour#propagateSeed(ij.process.ImageProcessor,
    *      ij.process.ImageProcessor,
    *      double, double)
-   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double)
+   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double, double)
    */
   public double scaleMagn = 1.0;
   /**
@@ -236,9 +236,18 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * 
    * @see PropagateSeeds.Contour#propagateSeed(ij.process.ImageProcessor, ij.process.ImageProcessor,
    *      double, double)
-   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double)
+   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double, double)
    */
   public double scaleEqNormalsDist = 0;
+  /**
+   * Range of averaging of curvature. Roughly equals to number of nodes being averaged. Regardless
+   * this value always at least three nodes are averaged.
+   * 
+   * @see PropagateSeeds.Contour#propagateSeed(ij.process.ImageProcessor, ij.process.ImageProcessor,
+   *      double, double)
+   * @see OutlineProcessor#shrinknl(double, double, double, double, double, double, double, double)
+   */
+  public double scaleCurvDistDist = 1.0;
   /**
    * Estimate background if true.
    * 
