@@ -305,12 +305,12 @@ public class BinarySegmentationPlugin extends QWindowBuilder
           for (int f = sh.getStartFrame(); f <= sh.getEndFrame(); f++) {
             sh.getBackupSnake(f).calcCentroid(); // actually this is calculated in Snake constr.
             sh.getBackupSnake(f).setPositions(); // actually this is calculated in Snake constr.
-            sh.getBackupSnake(f).updateNormales(true); // calculated in Snake constr. but for other
+            sh.getBackupSnake(f).updateNormals(true); // calculated in Snake constr. but for other
             sh.getBackupSnake(f).getBounds(); // actually this is calculated in Snake constr.
 
             sh.getStoredSnake(f).calcCentroid();
             sh.getStoredSnake(f).setPositions();
-            sh.getStoredSnake(f).updateNormales(true);
+            sh.getStoredSnake(f).updateNormals(true);
             sh.getStoredSnake(f).getBounds();
 
             constrictor.constrict(sh.getStoredSnake(f), ip.getStack().getProcessor(f));
@@ -318,7 +318,7 @@ public class BinarySegmentationPlugin extends QWindowBuilder
           }
           sh.getLiveSnake().calcCentroid();
           sh.getLiveSnake().setPositions();
-          sh.getLiveSnake().updateNormales(true);
+          sh.getLiveSnake().updateNormals(true);
           sh.getLiveSnake().getBounds();
           constrictor.constrict(sh.getLiveSnake(), ip.getStack().getProcessor(sh.getStartFrame()));
         }

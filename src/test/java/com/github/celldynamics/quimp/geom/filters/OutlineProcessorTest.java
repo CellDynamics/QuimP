@@ -14,6 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
+import com.github.celldynamics.quimp.AbstractCircularShape;
 import com.github.celldynamics.quimp.Node;
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.Snake;
@@ -78,44 +79,43 @@ public class OutlineProcessorTest {
   }
 
   /**
-   * Test method for
-   * {@link Outline#scale(double, double, double, double)}. - linear shrinking
-   * 
-   * <p>Saves processed outline for comparison
-   * 
-   * @throws Exception Exception
-   */
-  @Test
-  public void testShrink() throws Exception {
-    // nc - not changing on run
-    SegmentedShapeRoi ssR = ret.get(0).get(0);// nc
-    RoiSaver.saveRoi("/tmp/fgf", ssR);
-    List<Point2d> points = ssR.getOutlineasRawPoints();
-    RoiSaver.saveRoi("/tmp/fgfs", points); // nc
-    Outline outline = new QuimpDataConverter(points).getOutline();
-    RoiSaver.saveRoi("/tmp/outline", outline.asList()); // nc
-    outline.scale(3, 0.3, 0.1, 0.01); // modified outline differs in number
-    // of points. Not related to conversion.
-    outline.unfreezeAll();
-    RoiSaver.saveRoi("/tmp/conv", outline.asFloatRoi()); // every time slightly different
-  }
+     * Test method for
+     * {@link Outline#scaleOutline(double, double, double, double)}. - linear shrinking
+     * 
+     * <p>Saves processed outline for comparison
+     * 
+     * @throws Exception Exception
+     */
+    @Test
+    public void testShrinkLin() throws Exception {
+      // nc - not changing on run
+      SegmentedShapeRoi ssR = ret.get(0).get(0);// nc
+      RoiSaver.saveRoi("/tmp/fgf", ssR);
+      List<Point2d> points = ssR.getOutlineasRawPoints();
+      RoiSaver.saveRoi("/tmp/fgfs", points); // nc
+      Outline outline = new QuimpDataConverter(points).getOutline();
+      RoiSaver.saveRoi("/tmp/outline", outline.asList()); // nc
+      outline.scaleOutline(3, 0.3, 0.1, 0.01); // modified outline differs in number
+      // of points. Not related to conversion.
+      outline.unfreezeAll();
+      RoiSaver.saveRoi("/tmp/conv", outline.asFloatRoi()); // every time slightly different
+    }
 
   /**
    * Test method for
-   * {@link com.github.celldynamics.quimp.geom.filters.OutlineProcessor#smooth(int,int)}.
+   * {@link com.github.celldynamics.quimp.geom.filters.OutlineProcessor#runningMean(int, int)}.
    * 
    * @throws Exception Exception
    */
   @Test
-  public void testSmooth() throws Exception {
+  public void testRunningMean() throws Exception {
     double[] x = { 0, 5, 10, 10, 10, 5, 0, 0 };
     double[] y = { 0, 0, 0, 5, 10, 10, 10, 5 };
     Outline o = new QuimpDataConverter(x, y).getOutline();
 
     double[] xe = { 1.6667, 5.0000, 8.3333, 10.0000, 8.3333, 5.0000, 1.6667, 0 };
     double[] ye = { 1.6667, 0, 1.6667, 5.0000, 8.3333, 10.0000, 8.3333, 5.0000 };
-
-    new OutlineProcessor<Outline>(o).smooth(3, 1);
+    new OutlineProcessor<Outline>(o).runningMean(3, 1);
     assertThat(ArrayUtils.toObject(o.xtoArr()), arrayCloseTo(xe, 1e-4));
     assertThat(ArrayUtils.toObject(o.ytoArr()), arrayCloseTo(ye, 1e-4));
 
@@ -128,10 +128,103 @@ public class OutlineProcessorTest {
     double[] xe1 = { 5 };
     double[] ye1 = { 3 };
 
-    new OutlineProcessor<Snake>(o1).smooth(3, 1);
+    new OutlineProcessor<Snake>(o1).runningMean(3, 1);
     assertThat(ArrayUtils.toObject(o1.xtoArr()), arrayCloseTo(xe1, 1e-4));
     assertThat(ArrayUtils.toObject(o1.ytoArr()), arrayCloseTo(ye1, 1e-4));
 
+  }
+
+  /**
+   * Test method for
+   * {@link com.github.celldynamics.quimp.geom.filters.OutlineProcessor#runningMedian(int, int)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testRunningMedian() throws Exception {
+    double[] x = { 0, 5, 10, 10, 10, 5, 0, 0 };
+    double[] y = { 0, 0, 0, 5, 10, 10, 10, 5 };
+    Outline o = new QuimpDataConverter(x, y).getOutline();
+
+    double[] xe = { 0, 5.0000, 10, 10.0000, 10, 5.0000, 0, 0 };
+    double[] ye = { 0, 0, 0, 5.0000, 10, 10.0000, 10, 5.0000 };
+    new OutlineProcessor<Outline>(o).runningMedian(3, 1);
+    assertThat(ArrayUtils.toObject(o.xtoArr()), arrayCloseTo(xe, 1e-4));
+    assertThat(ArrayUtils.toObject(o.ytoArr()), arrayCloseTo(ye, 1e-4));
+
+    // one vertex
+    Node v = new Node(5, 3, 0);
+    v.setNext(v);
+    v.setPrev(v);
+    Snake o1 = new Snake(v, 1, 0);
+
+    double[] xe1 = { 5 };
+    double[] ye1 = { 3 };
+
+    new OutlineProcessor<Snake>(o1).runningMedian(3, 1);
+    assertThat(ArrayUtils.toObject(o1.xtoArr()), arrayCloseTo(xe1, 1e-4));
+    assertThat(ArrayUtils.toObject(o1.ytoArr()), arrayCloseTo(ye1, 1e-4));
+
+  }
+
+  /**
+   * Test of {@link OutlineProcessor#sumCurvature(double)}. Values checked manually.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testSumCurvature() throws Exception {
+    List<Point2d> p = AbstractCircularShape.getCircle();
+    Outline o = new QuimpDataConverter(p).getOutline();
+    OutlineProcessor<Outline> op = new OutlineProcessor<Outline>(o);
+    op.averageCurvature(Math.ceil(AbstractCircularShape.DISTANCE)); // compute in range +-1 vertex
+    // curvSmoothed set to -0.055555, required by sumCurvature()
+    op.sumCurvature(Math.ceil(AbstractCircularShape.DISTANCE));
+
+    AbstractCircularShape.validateNumOfPoints(o);
+    AbstractCircularShape.validateCurvatureSum(o);
+  }
+
+  /**
+   * Test of {@link OutlineProcessor#sumCurvature(double)}. Values checked manually.
+   * 
+   * @throws Exception Exception
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testSumCurvature_1() throws Exception {
+    List<Point2d> p = AbstractCircularShape.getCircle();
+    Snake s = new QuimpDataConverter(p).getSnake(0);
+    OutlineProcessor<Snake> sp = new OutlineProcessor<Snake>(s);
+    sp.sumCurvature(Math.ceil(AbstractCircularShape.DISTANCE)); // convert to outline
+  }
+
+  /**
+   * Test of {@link OutlineProcessor#averageCurvature(double)}. Values checked manually.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testAverageCurvature() throws Exception {
+    List<Point2d> p = AbstractCircularShape.getCircle();
+    Outline o = new QuimpDataConverter(p).getOutline();
+    OutlineProcessor<Outline> op = new OutlineProcessor<Outline>(o);
+    op.averageCurvature(Math.ceil(AbstractCircularShape.DISTANCE)); // compute in range +-1 vertex
+
+    AbstractCircularShape.validateCurvatureSmooth(o);
+    AbstractCircularShape.validateNumOfPoints(o);
+  }
+
+  /**
+   * Test of {@link OutlineProcessor#averageCurvature(double)}. Values checked manually.
+   * 
+   * @throws Exception Exception
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testAverageCurvature_1() throws Exception {
+    List<Point2d> p = AbstractCircularShape.getCircle();
+    Snake s = new QuimpDataConverter(p).getSnake(0);
+    OutlineProcessor<Snake> sp = new OutlineProcessor<Snake>(s);
+    sp.averageCurvature(Math.ceil(AbstractCircularShape.DISTANCE)); // convert to outline
   }
 
 }

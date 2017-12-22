@@ -1,8 +1,10 @@
 package com.github.celldynamics.quimp.plugin.randomwalk;
 
+import java.awt.Color;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +15,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.celldynamics.quimp.Outline;
+import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
+import com.github.celldynamics.quimp.geom.filters.OutlineProcessor;
+import com.github.celldynamics.quimp.plugin.randomwalk.PropagateSeeds.Contour;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
+import com.github.celldynamics.quimp.utils.CsvWritter;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
 import ij.IJ;
@@ -160,6 +166,55 @@ public class PropagateSeedsTest {
     cc.propagateSeed(mask.getStack().getProcessor(1), mask.getStack().getProcessor(1), 5, 10);
     ImagePlus ret = cc.getCompositeSeed(org, 0);
     IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeed_QuimP.tif");
+  }
+
+  /**
+   * testGetCompositeSeed_Contour.
+   * 
+   * <p>Check if high scaling factor will remove thin objects.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testGetCompositeSeed_Contour1() throws Exception {
+    ImageJ ij = new ImageJ();
+    ImagePlus ip = IJ.openImage("src/test/Resources-static/scaletest.tif");
+    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null);
+
+    Map<Seeds, ImageProcessor> ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 2, 10);
+    IJ.saveAsTiff(new ImagePlus("", ret.get(Seeds.BACKGROUND)),
+            tmpdir + "testGetCompositeSeed_Contour1_B_QuimP.tif");
+    IJ.saveAsTiff(new ImagePlus("", ret.get(Seeds.FOREGROUND)),
+            tmpdir + "testGetCompositeSeed_Contour1_F_QuimP.tif");
+  }
+
+  /**
+   * testGetCompositeSeed_Contour.
+   * 
+   * <p>Produce outline plot with scaled and original outline. This is used for tests or nonlinear
+   * shrinking.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testGetCompositeSeed_Example() throws Exception {
+    ImagePlus ip = IJ.openImage("src/test/Resources-static/239/shape1.tif");
+    PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null, 0.35, 5, 1, 6);
+
+    Outline outlineOrg = Contour.getOutline(ip.getProcessor()).get(0);
+    new OutlineProcessor<Outline>(outlineOrg).averageCurvature(1).sumCurvature(1);
+    Map<Seeds, ImageProcessor> ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 5, 10);
+    Outline outlineSh = Contour.getOutline(ret.get(Seeds.FOREGROUND)).get(0);
+    ImageProcessor bck = ret.get(Seeds.BACKGROUND);
+    bck.invert();
+    Outline outlineEx = Contour.getOutline(bck).get(0);
+
+    RoiSaver.saveRois(tmpdir + "reo.tif", 512, 512, outlineOrg.asList(), Color.GREEN,
+            outlineSh.asList(), Color.RED, outlineEx.asList(), Color.BLUE);
+    CsvWritter csv =
+            new CsvWritter(Paths.get(tmpdir, "outlineOrg.csv"), FormatConverter.headerEcmmOutline);
+    FormatConverter.saveOutline(outlineOrg, csv);
+    csv.close();
   }
 
   /**

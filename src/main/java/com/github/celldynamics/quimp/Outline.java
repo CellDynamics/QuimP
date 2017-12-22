@@ -1,6 +1,5 @@
 package com.github.celldynamics.quimp;
 
-import java.awt.Polygon;
 import java.util.List;
 
 import org.scijava.vecmath.Tuple2d;
@@ -12,6 +11,7 @@ import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 
 import ij.IJ;
 import ij.gui.Roi;
+import ij.process.FloatPolygon;
 
 /**
  * Represent Outline object used as Snake representation after ECMM mapping.
@@ -59,6 +59,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
     super(h, nn);
     // removeVert(head);
     this.updateCurvature();
+    this.updateNormals(false);
   }
 
   /**
@@ -86,7 +87,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    * <p>Convert only basic properties. Do not forget that many of Vert properties are set during
    * ECMM or Q Analysis.
    * 
-   * <p>Set normales outwards. This can be changed by calling {@link #updateNormales(boolean)}
+   * <p>Set normals outwards. This can be changed by calling {@link #updateNormals(boolean)}
    * afterwards.
    * 
    * @param src Snake to be converted to Outline
@@ -95,7 +96,8 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
   public Outline(final Snake src) {
     super((Shape) src, new Vert());
     this.updateCurvature();
-    this.updateNormales(false);
+    setPositions();
+    this.updateNormals(false);
   }
 
   /**
@@ -112,15 +114,16 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
 
     Vert v = head;
 
-    Polygon p = roi.getPolygon();
+    FloatPolygon p = roi.getFloatPolygon();
     for (int i = 0; i < p.npoints; i++) {
       v = insertVert(v);
       v.setX(p.xpoints[i]);
       v.setY(p.ypoints[i]);
     }
     removeVert(head); // remove dummy head node
-    updateNormales(false);
+    updateNormals(false);
     this.updateCurvature();
+    setPositions();
     calcCentroid();
   }
 
@@ -130,7 +133,8 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    * @param list list of nodes as Vector2d
    */
   public Outline(final List<? extends Tuple2d> list) {
-    super(list, new Vert(0), true);
+    super(list, new Vert(0), false);
+    this.updateCurvature();
   }
 
   /**
@@ -140,7 +144,8 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    * @param y y coordinates of nodes
    */
   public Outline(final double[] x, final double[] y) {
-    super(x, y, new Vert(0), true);
+    super(x, y, new Vert(0), false);
+    this.updateCurvature();
   }
 
   /*
@@ -820,7 +825,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
 
       ov = ov.getNext();
     } while (!ov.isHead());
-    n.updateNormales(true);
+    n.updateNormals(true);
     n.calcCentroid();
     n.updateCurvature();
 
@@ -920,7 +925,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    * @param a a
    * @return ?
    */
-  Vert findCoordEdge(double a) {
+  public Vert findCoordEdge(double a) {
     Vert v = head;
     do {
 
@@ -946,7 +951,7 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
   /**
    * Scale the outline proportionally.
    * 
-   * <p>Shape is constricted in given number of <tt>steps</tt>. Method updates shape normales
+   * <p>Shape is constricted in given number of <tt>steps</tt>. Method updates shape normals
    * setting them in inner direction. Results can differ (slightly) on each run due to random
    * selection of head on point remove.
    * 
@@ -957,16 +962,16 @@ public class Outline extends Shape<Vert> implements Cloneable, IQuimpSerialize {
    * @param angleTh angle threshold
    * @param freezeTh freeze threshold
    */
-  public void scale(double amount, double stepRes, double angleTh, double freezeTh) {
+  public void scaleOutline(double amount, double stepRes, double angleTh, double freezeTh) {
     int j;
-    updateNormales(true);
+    updateNormals(true);
     double steps = Math.abs(amount / stepRes);
     for (j = 0; j < steps; j++) {
       if (getNumPoints() <= 3) {
         break;
       }
-      scale(stepRes);
-      updateNormales(true);
+      super.scale(stepRes);
+      updateNormals(true);
       removeProx(1.5, 1.5); // constants taken from old removeProx were they were hardcoded
       freezeProx(angleTh, freezeTh);
       if (j > MAX_NODES) {

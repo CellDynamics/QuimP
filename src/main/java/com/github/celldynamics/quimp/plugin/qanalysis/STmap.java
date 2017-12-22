@@ -15,6 +15,7 @@ import com.github.celldynamics.quimp.filesystem.FileExtensions;
 import com.github.celldynamics.quimp.filesystem.IQuimpSerialize;
 import com.github.celldynamics.quimp.filesystem.converter.FormatConverter;
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
+import com.github.celldynamics.quimp.geom.filters.OutlineProcessor;
 import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
@@ -820,8 +821,9 @@ public class STmap implements IQuimpSerialize {
         v = v.getNext();
       } while (!v.isHead());
 
-      averageCurvature(o);
-      sumCurvature(o);
+      new OutlineProcessor<Outline>(o).averageCurvature(Qp.avgCov).sumCurvature(Qp.sumCov);
+      // averageCurvature(o);
+      // sumCurvature(o);
 
       // find min and max of sum curvature
 
@@ -851,6 +853,7 @@ public class STmap implements IQuimpSerialize {
     // oh.curvLimits[1]);
   }
 
+  @Deprecated
   private void averageCurvature(Outline o) {
 
     Vert v;
@@ -901,6 +904,7 @@ public class STmap implements IQuimpSerialize {
    * 
    * @param o the outline
    */
+  @Deprecated
   private void sumCurvature(Outline o) {
 
     Vert v;

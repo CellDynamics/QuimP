@@ -25,8 +25,8 @@ class Mapping {
 
     if (ECMp.ANA || ECMp.forceNoSectors) { // for ANA force no intersection points
       insertFake();
-      o1.updateNormales(true);
-      o2.updateNormales(true);
+      o1.updateNormals(true);
+      o2.updateNormals(true);
       formSectors();
       return;
     }
@@ -37,8 +37,8 @@ class Mapping {
     if (ECMp.numINTS == 0) {
       System.out.println("No intersects found");
       insertFake();
-      o1.updateNormales(true);
-      o2.updateNormales(true);
+      o1.updateNormals(true);
+      o2.updateNormals(true);
       formSectors();
     } else {
       if (ECMp.inspectSectors) {
@@ -56,8 +56,8 @@ class Mapping {
       }
       // System.out.println("Num intersects: " + INTS);
 
-      o1.updateNormales(true);
-      o2.updateNormales(true);
+      o1.updateNormals(true);
+      o2.updateNormals(true);
       formSectors();
     }
   }

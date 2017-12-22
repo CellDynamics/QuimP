@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -304,7 +305,6 @@ public class ShapeTest {
      */
     public TestShape() {
       super();
-      // TODO Auto-generated constructor stub
     }
 
     /*
@@ -312,7 +312,6 @@ public class ShapeTest {
      */
     public TestShape(Shape<Vert> src, Vert destType) {
       super(src, destType);
-      // TODO Auto-generated constructor stub
     }
 
     /*
@@ -320,7 +319,6 @@ public class ShapeTest {
      */
     public TestShape(Shape<Vert> src) {
       super(src);
-      // TODO Auto-generated constructor stub
     }
 
     /*
@@ -346,6 +344,20 @@ public class ShapeTest {
   @Test
   public void testCountPoints() throws Exception {
     assertThat(test.countPoints(), is(test.POINTS));
+  }
+
+  /**
+   * Test method for {@link Shape#reverseShape()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testReverseShape() throws Exception {
+    List<Point2d> p = AbstractCircularShape.getCircle();
+    Snake s = new Snake(p, 0);
+    AbstractCircularShape.validateShapeGeomProperties(s, true, BOA_.qState.segParam.expandSnake);
+    s.reverseShape(); // check revese but id does not update normals
+    AbstractCircularShape.validateShapeGeomProperties(s, false, !BOA_.qState.segParam.expandSnake);
   }
 
 }

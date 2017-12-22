@@ -120,6 +120,38 @@ public class FormatConverter {
   private Path filename; // file name extracted from qcL, no extension
 
   /**
+   * Order of parameters saved by {@link #saveOutline(Outline, CsvWritter)}.
+   */
+  public static final String[] headerEcmmOutline = {
+      //!> order of data, must follow writeLine below
+      "charge",
+      "distance",
+      "fluo-ch1_x",
+      "fluo-ch1_y",
+      "fluo-ch1_i",
+      "fluo-ch2_x",
+      "fluo-ch2_y",
+      "fluo-ch2_i",
+      "fluo-ch3_x", 
+      "fluo-ch3_y", 
+      "fluo-ch3_i",
+      "curvLoc",
+      "curvSmooth",
+      "curvSum",
+      "coord",
+      "gLandCoord",
+      "node_x",
+      "node_y",
+      "normal_x",
+      "normal_y",
+      "tan_x",
+      "tan_y",
+      "position",
+      "frozen"        
+      };
+  //!<
+
+  /**
    * Do nothing.
    * 
    * @see #attachFile(File)
@@ -626,34 +658,6 @@ public class FormatConverter {
     if (qcL.isFileLoaded() == QParams.QUIMP_11) {
       throw new IllegalArgumentException("New format required.");
     }
-    //!> order of data, must follow writeLine below
-    final String[] params = {
-        "charge",
-        "distance",
-        "fluo-ch1_x",
-        "fluo-ch1_y",
-        "fluo-ch1_i",
-        "fluo-ch2_x",
-        "fluo-ch2_y",
-        "fluo-ch2_i",
-        "fluo-ch3_x", 
-        "fluo-ch3_y", 
-        "fluo-ch3_i",
-        "curvLoc",
-        "curvSmooth",
-        "curvSum",
-        "coord",
-        "gLandCoord",
-        "node_x",
-        "node_y",
-        "normal_x",
-        "normal_y",
-        "tan_x",
-        "tan_y",
-        "position",
-        "frozen"        
-        };
-    //!<
     CsvWritter csv = null;
     int activeHandler = 0;
     for (OutlineHandler oh : qcL.getEcmm().oHs) {
@@ -664,45 +668,15 @@ public class FormatConverter {
           Outline outline = oh.getStoredOutline(f);
           if (separateFiles == true) { // create for each frame
             csv = new CsvWritter(getFeatureFileName("outline-frame" + f, activeHandler, ".csv"),
-                    params);
+                    headerEcmmOutline);
           } else if (f == sf) { // create only once on first frame
-            csv = new CsvWritter(getFeatureFileName("outline", activeHandler, ".csv"), params);
+            csv = new CsvWritter(getFeatureFileName("outline", activeHandler, ".csv"),
+                    headerEcmmOutline);
           }
           if (separateFiles == false) {
             csv.writeLine("#frame " + f); // just add break if one file outputed
           }
-          logger.info("\tSaved outlines at: " + csv.getPath().getFileName());
-          Iterator<Vert> it = outline.iterator();
-          while (it.hasNext()) {
-            Vert n = it.next();
-            //!>
-            csv.writeLine(
-                    n.charge,
-                    n.distance,
-                    n.fluores[0].x,
-                    n.fluores[0].y,
-                    n.fluores[0].intensity,
-                    n.fluores[1].x,
-                    n.fluores[1].y,
-                    n.fluores[1].intensity,
-                    n.fluores[2].x,
-                    n.fluores[2].y,
-                    n.fluores[2].intensity,
-                    n.getCurvatureLocal(),
-                    n.curvatureSmoothed,
-                    n.curvatureSum,
-                    n.coord,
-                    n.gLandCoord,
-                    n.getPoint().x,
-                    n.getPoint().y,
-                    n.getNormal().x,
-                    n.getNormal().y,
-                    n.getTangent().x,
-                    n.getTangent().y,
-                    n.getPosition(),
-                    n.isFrozen() ? 1.0 : 0.0);
-            //!<
-          }
+          saveOutline(outline, csv);
           if (separateFiles == true) {
             csv.close(); // after frame
           }
@@ -716,7 +690,47 @@ public class FormatConverter {
         }
       }
     }
+  }
 
+  /**
+   * Save specified outline to {@link CsvWritter}.
+   * 
+   * @param outline outline to save
+   * @param csv opened csv object
+   */
+  public static void saveOutline(Outline outline, CsvWritter csv) {
+    logger.info("\tSaved outlines at: " + csv.getPath().getFileName());
+    Iterator<Vert> it = outline.iterator();
+    while (it.hasNext()) {
+      Vert n = it.next();
+      //!>
+      csv.writeLine(
+              n.charge,
+              n.distance,
+              n.fluores[0].x,
+              n.fluores[0].y,
+              n.fluores[0].intensity,
+              n.fluores[1].x,
+              n.fluores[1].y,
+              n.fluores[1].intensity,
+              n.fluores[2].x,
+              n.fluores[2].y,
+              n.fluores[2].intensity,
+              n.getCurvatureLocal(),
+              n.curvatureSmoothed,
+              n.curvatureSum,
+              n.coord,
+              n.gLandCoord,
+              n.getPoint().x,
+              n.getPoint().y,
+              n.getNormal().x,
+              n.getNormal().y,
+              n.getTangent().x,
+              n.getTangent().y,
+              n.getPosition(),
+              n.isFrozen() ? 1.0 : 0.0);
+      //!<
+    }
   }
 
   /**

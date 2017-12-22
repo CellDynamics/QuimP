@@ -403,7 +403,7 @@ public class HatSnakeFilter implements IPadArray {
     Outline outline = new QuimpDataConverter(points).getOutline(); // FIXME What if more contours?
     // shrink original to sample intensities close cortex - used for detecting vesicles that are
     // holes in cortex area.
-    outline.scale(shrinkAmount, -0.3, 0.1, 0.01);
+    outline.scaleOutline(shrinkAmount, -0.3, 0.1, 0.01);
     outline.unfreezeAll();
     outline.correctDensity(1, 0.5); // dense shape, shrank has different number of verts than org
     shCont = outline.asList();

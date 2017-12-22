@@ -174,6 +174,10 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     view.setShrinkMethod(model.getShrinkMethods(), model.getselectedShrinkMethod().name());
     view.setSrShrinkPower(model.shrinkPower);
     view.setSrExpandPower(model.expandPower);
+    view.setSrScaleSigma(model.scaleSigma);
+    view.setSrScaleMagn(model.scaleMagn);
+    view.setSrScaleCurvDistDist(model.scaleCurvDistDist);
+    view.setSrScaleEqNormalsDist(model.scaleEqNormalsDist);
     view.setFilteringMethod(model.getFilteringMethods(), model.getSelectedFilteringMethod().name());
     view.setChLocalMean(model.algOptions.useLocalMean);
     view.setSrLocalMeanWindow(model.algOptions.localMeanMaskSize);
@@ -228,6 +232,10 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     model.setselectedShrinkMethod(view.getShrinkMethod());
     model.shrinkPower = view.getSrShrinkPower();
     model.expandPower = view.getSrExpandPower();
+    model.scaleSigma = view.getSrScaleSigma();
+    model.scaleMagn = view.getSrScaleMagn();
+    model.scaleCurvDistDist = view.getSrScaleCurvDistDist();
+    model.scaleEqNormalsDist = view.getSrScaleEqNormalsDist();
     model.setSelectedFilteringMethod(view.getFilteringMethod());
     model.algOptions.useLocalMean = view.getChLocalMean();
     model.algOptions.localMeanMaskSize = view.getSrLocalMeanWindow();
@@ -671,6 +679,13 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       // create seeding object with or without storing the history of configured type
       propagateSeeds = PropagateSeeds.getPropagator(model.selectedShrinkMethod, model.showSeeds,
               thresholdBackground);
+      if (propagateSeeds instanceof PropagateSeeds.Contour) {
+        ((PropagateSeeds.Contour) propagateSeeds).scaleMagn = model.scaleMagn;
+        ((PropagateSeeds.Contour) propagateSeeds).scaleSigma = model.scaleSigma;
+        ((PropagateSeeds.Contour) propagateSeeds).averageNormalsDist = model.scaleEqNormalsDist;
+        ((PropagateSeeds.Contour) propagateSeeds).averageCurvDist = model.scaleCurvDistDist;
+      }
+
       ret = new ImageStack(image.getWidth(), image.getHeight()); // output stack
       // create segmentation engine
       RandomWalkSegmentation obj =

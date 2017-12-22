@@ -1,14 +1,21 @@
 package com.github.celldynamics.quimp.geom.filters;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.Outline;
 import com.github.celldynamics.quimp.PointsList;
 import com.github.celldynamics.quimp.Shape;
+import com.github.celldynamics.quimp.Snake;
 import com.github.celldynamics.quimp.Vert;
+import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.ana.ANA_;
-import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
 /**
  * Support algorithms for processing outlines using their specific properties.
@@ -36,77 +43,268 @@ public class OutlineProcessor<T extends Shape<?>> {
   }
 
   /**
-   * Compute running mean on <tt>Outline</tt>.
+   * Apply running mean filter to Shape.
    * 
-   * @param window Window size
-   * @deprecated Will not be used after implementeing HatSnakeFilter for getting weights.
+   * <p>Do not create new Shape but modify nodes of existing one. Compute
+   * {@link Shape#calcCentroid()}, {@link Shape#updateNormals(boolean)} and
+   * {@link Shape#setPositions()}. Normals are updated inwards.
+   * 
+   * @param window size of filter window, must be uneven
+   * @param iters number of smoothing iterations
+   * @return reference to this object. Allows chaining
    */
-  private void runningmeanfilter(int window) {
+  public OutlineProcessor<T> runningMean(int window, int iters) {
+    PointListProcessor pp = new PointListProcessor(outline.asList());
+    pp.smoothMean(window, iters);
+    List<Point2d> p = pp.getList();
+    Iterator<?> it = outline.iterator();
+    Iterator<Point2d> itl = p.iterator();
+    while (it.hasNext() && itl.hasNext()) {
+      PointsList<?> n = (PointsList<?>) it.next();
+      ExtendedVector2d v = n.getPoint();
+      Point2d pr = itl.next();
+      v.x = pr.x;
+      v.y = pr.y;
+    }
+    outline.calcCentroid();
+    outline.updateNormals(true);
+    outline.setPositions();
+    return this;
+  }
+
+  /**
+   * Apply running median filter to Shape.
+   * 
+   * <p>Do not create new Shape but modify nodes of existing one. Compute
+   * {@link Shape#calcCentroid()}, {@link Shape#updateNormals(boolean)} and
+   * {@link Shape#setPositions()}. Normals are updated inwards.
+   * 
+   * @param window size of filter window, must be uneven
+   * @param iters number of smoothing iterations
+   * @return reference to this object. Allows chaining
+   */
+  public OutlineProcessor<T> runningMedian(int window, int iters) {
+    PointListProcessor pp = new PointListProcessor(outline.asList());
+    pp.smoothMedian(window, iters);
+    List<Point2d> p = pp.getList();
+    Iterator<?> it = outline.iterator();
+    Iterator<Point2d> itl = p.iterator();
+    while (it.hasNext() && itl.hasNext()) {
+      PointsList<?> n = (PointsList<?>) it.next();
+      ExtendedVector2d v = n.getPoint();
+      Point2d pr = itl.next();
+      v.x = pr.x;
+      v.y = pr.y;
+    }
+    outline.calcCentroid();
+    outline.updateNormals(true);
+    outline.setPositions();
+    return this;
+  }
+
+  /**
+   * Compute average curvature of {@link Outline}.
+   * 
+   * <p>Does not apply to {@link Snake}. Require {@link Outline#updateCurvature()} to be called
+   * first to fill {@link Vert#curvatureLocal} field.
+   * 
+   * @param averdistance Average distance in pixels to compute curvature. Nodes in half of distance
+   *        on left and right from current node will be included in average curvature for this node.
+   * @return instance of this object.
+   */
+  public OutlineProcessor<T> averageCurvature(double averdistance) {
+    Vert v;
+    Vert tmpV;
+    double totalCur;
+    double distance;
+    int count = 0;
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
-    double[] curv;
-    int l;
-    Vert n;
-    curv = getCurvatureLocal();
-    PointListProcessor.runningMean(curv, window);
-    // copy back to outline
-    n = (Vert) outline.getHead();
-    l = 0;
-    do {
-      n.curvatureLocal = curv[l];
-      n = n.getNext();
-      l++;
-    } while (!n.isHead());
+    // Average over curvatures
+    if (averdistance > 0) {
+      // System.out.println("new outline");
+      v = (Vert) outline.getHead();
+      do {
+        // System.out.println("\tnew vert");
+        totalCur = v.curvatureLocal; // reset
+        count = 1;
+
+        // add up curvatures of prev nodes
+        // System.out.println("\t prev nodes");
+        tmpV = v.getPrev();
+        distance = 0;
+        do {
+          distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+          totalCur += tmpV.curvatureLocal;
+          count++;
+          tmpV = tmpV.getPrev();
+        } while (distance < averdistance / 2);
+
+        // add up curvatures of next nodes
+        distance = 0;
+        tmpV = v.getNext();
+        do {
+          distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+          totalCur += tmpV.curvatureLocal;
+          count++;
+          tmpV = tmpV.getNext();
+        } while (distance < averdistance / 2);
+
+        v.curvatureSmoothed = totalCur / count;
+
+        v = v.getNext();
+      } while (!v.isHead());
+    }
+    LOGGER.trace("Average curvature over:" + averdistance + " nodes number:" + count);
+    return this;
+  }
+
+  /**
+   * Sum smoothed curvature over a region of the membrane. For {@link Outline} only.
+   * 
+   * <p><p>Does not apply to {@link Snake}. Require {@link #averageCurvature(double)} to be called
+   * first to fill {@link Vert#curvatureSmoothed} field.
+   * 
+   * @param averdistance Average distance in pixels to compute curvature. Nodes in half of distance
+   *        on left and right from current node will be included in average curvature for this node.
+   * @return instance of this object.
+   */
+  public OutlineProcessor<T> sumCurvature(double averdistance) {
+    Vert v;
+    Vert tmpV;
+    double totalCur;
+    double distance;
+    if (!(outline instanceof Outline)) {
+      throw new IllegalArgumentException("This method applies to Outline only");
+    }
+    // Average over curvatures
+    if (averdistance > 0) {
+      v = (Vert) outline.getHead();
+      do {
+        // System.out.println("\tnew vert");
+        totalCur = v.curvatureSmoothed; // reset
+        // add up curvatures of prev nodes
+        // System.out.println("\t prev nodes");
+        tmpV = v.getPrev();
+        distance = 0;
+        do {
+          distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+          totalCur += tmpV.curvatureSmoothed;
+          tmpV = tmpV.getPrev();
+        } while (distance < averdistance / 2);
+
+        // add up curvatures of next nodes
+        distance = 0;
+        tmpV = v.getNext();
+        do {
+          distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+          totalCur += tmpV.curvatureSmoothed;
+          tmpV = tmpV.getNext();
+        } while (distance < averdistance / 2);
+
+        v.curvatureSum = totalCur;
+
+        v = v.getNext();
+      } while (!v.isHead());
+    }
+    return this;
+  }
+
+  /**
+   * Shrink outline linearly.
+   * 
+   * @param steps steps
+   * @param stepRes stepRes
+   * @param angleTh angleTh
+   * @param freezeTh freezeTh
+   * @see #shrinknl(double, double, double, double, double, double, double, double)
+   */
+  public void shrinkLin(double steps, double stepRes, double angleTh, double freezeTh) {
+    final double defSigma = 0.3;
+    final double defAmpl = 1.0; // linear shrink
+    final double defCurvAverDist = 1.0;
+    final double defNormalsDist = 0; // off
+    shrinknl(steps, stepRes, angleTh, freezeTh, defSigma, defAmpl, defCurvAverDist, defNormalsDist);
   }
 
   /**
    * Shrink the outline nonlinearly.
    * 
-   * <p>TODO Nonlinearlity not implemented.
+   * <p>This method uses {@link Vert#curvatureSum} computed by
+   * {@link OutlineProcessor#sumCurvature(double)} to produce nonlinear scaling. Scaling factor
+   * depends on {@link Vert#curvatureSum} and it is computed by
+   * {@link #amplificationFactor(double, double, double)} method. Nodes are shifted inwards
+   * according to normals ({@link Vert#getNormal()}). If parameter <i>averageNormalsDist</i> is
+   * greater than zero, nodes within this distance to current node will be analysed to find lowest
+   * (must be negative) {@link Vert#curvatureSum} and then normal vector of this node will be copied
+   * to all other nodes
+   * in current window.
+   * 
+   * <p>{@link #amplificationFactor(double, double, double)} increase step size used by
+   * {@link #shrinkLin(double, double, double, double)} maximally by factor of <t>magn</t>
+   * ({@link #amplificationFactor(double, double, double)} option).
+   * 
+   * <p>For linear shrinking use <t>magn</t>=1 and <t>averageNormalsDist</t>=0.
    * 
    * @param steps number of steps - integer
    * @param stepRes length of the step
    * @param angleTh angle threshold
    * @param freezeTh freeze threshold
-   * @see Outline#scale(double, double, double, double)
+   * @param sigma sigma of Gaussian
+   * @param magn maximum amplification (for curv<<0)
+   * @param averageCurvDist number of neighbouring nodes to average curvature over. This is
+   *        multiplier of average node distance. Always at least three nodes are averaged
+   *        (n-1,n,n+1).
+   * @param averageNormalsDist number of neighbouring nodes to set normals the same (set 0 to
+   *        disable).
+   * @see Outline#scaleOutline(double, double, double, double)
+   * @see OutlineProcessor#amplificationFactor(double, double, double)
    */
-  public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh) {
-    // later drop any local feature like curvature and use rather snakehatfileter to get proper
-    // weighting
+  public void shrinknl(double steps, double stepRes, double angleTh, double freezeTh, double sigma,
+          double magn, double averageCurvDist, double averageNormalsDist) {
     if (!(outline instanceof Outline)) {
       throw new IllegalArgumentException("This method applies to Outline only");
     }
     LOGGER.debug("Steps: " + steps);
     LOGGER.debug("Original res: " + outline.getNumPoints());
-    int meanmasksize = 5;
-    // System.out.println("steps: " + steps + ", step size: " +
-    // ANAp.stepRes);
+
     Vert n;
-    int j;
     int max = 10000;
     double d = outline.getLength() / outline.getNumPoints();
+    LOGGER.debug("steps:" + steps + " stepRes:" + stepRes + " angleTh:" + angleTh + " freezeTh:"
+            + freezeTh + " sigma:" + sigma + " magn:" + magn + " averageCurvDist:" + averageCurvDist
+            + " averageNormalsDist" + averageNormalsDist + " averDistanceBefore:" + d);
+    ((Outline) outline).correctDensity(d, d / 2);
+    ((Outline) outline).updateNormals(true);
+    ((Outline) outline).updateCurvature();
+    double d1 = outline.getLength() / outline.getNumPoints();
+    averageCurvature(d1 * averageCurvDist).sumCurvature(d1 * averageCurvDist);
+    constrainNormals(d1 * averageNormalsDist);
 
-    for (j = 0; j < steps; j++) {
-      runningmeanfilter(meanmasksize);
-      if (outline.getNumPoints() <= 3) {
-        break;
-      }
+    LOGGER.debug("Res after 1: " + outline.getNumPoints());
+
+    for (int j = 0; j < steps; j++) {
       n = (Vert) outline.getHead();
       do {
         if (!n.isFrozen()) {
-          n.setX(n.getX() - stepRes * 1.0 * n.getNormal().getX());
-          n.setY(n.getY() - stepRes * 1.0 * n.getNormal().getY());
+          n.setX(n.getX() - stepRes * amplificationFactor(n.curvatureSum, sigma, magn)
+                  * n.getNormal().getX());
+          n.setY(n.getY() - stepRes * amplificationFactor(n.curvatureSum, sigma, magn)
+                  * n.getNormal().getY());
         }
         n = n.getNext();
       } while (!n.isHead());
 
       ((Outline) outline).removeProx(1.5, 1.5);
       ((Outline) outline).freezeProx(angleTh, freezeTh);
-      // double d = outline.getLength() / outline.getNumVerts();
       ((Outline) outline).correctDensity(d, d / 2);
-      ((Outline) outline).updateNormales(true);
+      // ((Outline) outline).updateNormals(true); // sometimes it is better
       ((Outline) outline).updateCurvature();
+      d1 = outline.getLength() / outline.getNumPoints();
+      averageCurvature(d1 * averageCurvDist).sumCurvature(d1 * averageCurvDist);
+      // equalNormales(d1 * 5); // better if original normals stay. interpolate can add vertex but
+      // ith will have updated normales
 
       // do not shrink if there are 4 nodes or less
       if (outline.getNumPoints() <= 4) {
@@ -131,70 +329,99 @@ public class OutlineProcessor<T extends Shape<?>> {
     if (outline.getNumPoints() < 3) {
       LOGGER.info("ANA 377_NODES LESS THAN 3");
     }
-
-    // LOGGER.debug("Shrank Verts: " + outline.getNumVerts());
-    // LOGGER.debug("Verts after density correction: " + outline.getNumVerts());
-    // LOGGER.debug("Density " + d + " [" + d / 4 + "," + d / 2 + "]");
   }
 
   /**
-   * Apply mean filter to Shape. Recalculate centroid and normalised coords. Set normales inwards.
+   * Set normals to the same direction according to local minimum of sumCurvature.
    * 
-   * @param window size of mean window
-   * @param iters number of iterations
+   * @param averdistance distance to look along. Set 0 to turn off any modification. Any value
+   *        smaller than distance will cause that at least 3 nodes are taken.
    */
-  public void smooth(int window, int iters) {
-    QuimpDataConverter dt = new QuimpDataConverter(outline);
-    double[] xcoords = dt.getX();
-    double[] ycoords = dt.getY();
-    for (int i = 0; i < iters; i++) {
-      PointListProcessor.runningMean(xcoords, window);
-      PointListProcessor.runningMean(ycoords, window);
+  private void constrainNormals(double averdistance) {
+    Vert v;
+    Vert tmpV;
+    double distance;
+    if (!(outline instanceof Outline)) {
+      throw new IllegalArgumentException("This method applies to Outline only");
     }
-    PointsList<?> n = outline.getHead();
-    int count = 0;
-    // do not create new object, just replace coords
-    do {
-      n.setX(xcoords[count]);
-      n.setY(ycoords[count]);
-      n = n.getNext();
-      count++;
-    } while (!n.isHead());
-    outline.calcCentroid();
-    outline.setPositions();
-    outline.updateNormales(true);
+    LOGGER.debug("constrainNormals over:" + averdistance);
+    if (averdistance == 0) {
+      return;
+    }
+    List<Double> curvSums = new ArrayList<>(); // will keep local curvature sums in +-distance
+    List<ExtendedVector2d> norms = new ArrayList<>(); // will keep normals in +-distance
+
+    if (averdistance > 0) {
+      v = (Vert) outline.getHead();
+      do { // main loop
+        curvSums.clear(); // new vertex
+        norms.clear();
+        curvSums.add(v.curvatureSum); // remember it
+        norms.add(v.getNormal());
+        tmpV = v.getPrev();
+        distance = 0;
+        do { // after current vert in +distance
+          distance += ExtendedVector2d.lengthP2P(tmpV.getNext().getPoint(), tmpV.getPoint());
+          curvSums.add(tmpV.curvatureSum); // Remember all verts in this window
+          norms.add(tmpV.getNormal());
+          tmpV = tmpV.getPrev();
+        } while (distance < averdistance / 2);
+        distance = 0;
+        tmpV = v.getNext();
+        do { // before current vert
+          distance += ExtendedVector2d.lengthP2P(tmpV.getPrev().getPoint(), tmpV.getPoint());
+          curvSums.add(tmpV.curvatureSum); // Remember all verts in this window
+          norms.add(tmpV.getNormal());
+          tmpV = tmpV.getNext();
+        } while (distance < averdistance / 2);
+        // v is current vert
+        // find min curv
+        Double minCurv = Collections.min(curvSums);
+        int indmin = curvSums.indexOf(minCurv); // min curvature index
+        if (minCurv < 0) { // propagate only in curvature is negative
+          ExtendedVector2d normmin = norms.get(indmin); // get its normale
+          v.setNormal(normmin.getX(), normmin.getY()); // and propagate to current
+        }
+        v = v.getNext(); // go to next vert
+      } while (!v.isHead());
+    }
   }
 
   /**
-   * Return local curvature as array. Applies to Outline.class, returns array of zeros for other
-   * classes.
+   * Return amplification factor dependent on curvature.
    * 
-   * @return local curvature values or aray of zeros
-   * @see Vert#curvatureLocal
-   * @deprecated Will be removed after implementing nonproportional shrinking based on HSF
+   * <p>For positive curvature it returns 1, for negative a reversed Gaussian curve scaled between
+   * 1.0 and specified magnitude is returned.
+   * 
+   * <pre>
+   * <code>
+   * x=linspace(-2,0,100);
+   * sig = 0.3;
+   * u = 0;
+   * a = 4
+   * y = (a*(1-exp(-0.5*((x-u)/sig).^2)))/(a/(a-1))+1;
+   * plot(x,y)
+   * </code>
+   * </pre>
+   * 
+   * @param curv curvature value to compute magnification coefficient for
+   * @param sigma sigma of Gaussian
+   * @param magn maximum amplification (for curv<<0). Set to 1.0 for constant output of 1.0
+   * @return amplification coefficient
    */
-  public double[] getCurvatureLocal() {
-    double[] ret = new double[outline.getNumPoints()];
-    if (outline instanceof Outline) {
-      int l = 0;
-      Vert n = (Vert) outline.getHead();
-      do {
-        ret[l] = n.curvatureLocal;
-        n = n.getNext();
-        l++;
-      } while (!n.isHead());
+  public double amplificationFactor(double curv, double sigma, double magn) {
+    double ampl;
+    double u = 0;
+    if (magn == 1) {
+      return 1.0;
     }
-    return ret;
-  }
-
-  private double fcn(double curv) {
-    double ret;
     if (curv >= 0) {
-      ret = 1.0;
+      ampl = 1.0;
     } else {
-      ret = 1 + 10 * (Math.exp(-curv * 0.5) / Math.exp(0.5));
+      ampl = (magn * (1 - Math.exp(-0.5 * (Math.pow((curv - u) / sigma, 2))))) / (magn / (magn - 1))
+              + 1;
     }
-    return ret;
+    return ampl;
   }
 
   /**

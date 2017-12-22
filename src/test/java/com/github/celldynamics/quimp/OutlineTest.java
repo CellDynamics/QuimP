@@ -14,6 +14,8 @@ import org.scijava.vecmath.Point2d;
 
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
+import ij.gui.PolygonRoi;
+
 /**
  * @author p.baniukiewicz
  * @see com.github.celldynamics.quimp.geom.filters.OutlineProcessorTest#testShrink()
@@ -427,6 +429,74 @@ public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
     Vert head = list.get(0); // get head of list
 
     return new Outline(head, list.size()); // build outline
+  }
+
+  /**
+   * Test if initialised outline has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testOutlineInitGeomProperties() throws Exception {
+    List<Point2d> p = AbstractCircularShape.getCircle();
+    Outline s = new Outline(p);
+    AbstractCircularShape.validateOutlineGeomProperties(s);
+  }
+
+  /**
+   * Test if initialised outline has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testOutlineInitGeomProperties_1() throws Exception {
+    Outline s = new Outline(AbstractCircularShape.getX(), AbstractCircularShape.getY());
+    AbstractCircularShape.validateOutlineGeomProperties(s);
+  }
+
+  /**
+   * Test if initialised outline has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testOutlineInitGeomProperties_2() throws Exception {
+    Field f = Shape.class.getDeclaredField("threshold");
+    f.setAccessible(true);
+    f.setDouble(Shape.class, 0.0);
+    PolygonRoi pr = new PolygonRoi(AbstractCircularShape.getXfloat(),
+            AbstractCircularShape.getYfloat(), PolygonRoi.FREEROI);
+    Outline s = new Outline(pr);
+    AbstractCircularShape.validateOutlineGeomProperties(s);
+    f.setDouble(Shape.class, 0.5);
+  }
+
+  /**
+   * Test if initialised outline has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testOutlineInitGeomProperties_3() throws Exception {
+    Outline s = new Outline(AbstractCircularShape.getX(), AbstractCircularShape.getY());
+    Outline cp = new Outline(s);
+    AbstractCircularShape.validateOutlineGeomProperties(cp);
+  }
+
+  /**
+   * Test if initialised outline has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testOutlineInitGeomProperties_4() throws Exception {
+    Field f = Shape.class.getDeclaredField("threshold");
+    f.setAccessible(true);
+    f.setDouble(Shape.class, 0.0);
+    Outline s =
+            new Outline(AbstractCircularShape.getVertList(false), AbstractCircularShape.NUMVERT);
+    AbstractCircularShape.validateOutlineGeomProperties(s);
+    f.setDouble(Shape.class, 0.5);
   }
 
 }

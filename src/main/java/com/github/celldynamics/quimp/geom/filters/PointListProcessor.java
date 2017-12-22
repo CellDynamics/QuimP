@@ -1,5 +1,6 @@
 package com.github.celldynamics.quimp.geom.filters;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.scijava.vecmath.Point2d;
@@ -34,13 +35,32 @@ public class PointListProcessor {
    * @param iters number of iterations
    * @return Reference to this object
    */
-  public PointListProcessor smooth(int window, int iters) {
+  public PointListProcessor smoothMean(int window, int iters) {
     double[] x = dt.getX();
     double[] y = dt.getY();
 
     for (int i = 0; i < iters; i++) {
-      runningMean(y, window);
-      runningMean(x, window);
+      y = runningMean(y, window);
+      x = runningMean(x, window);
+    }
+    dt = new QuimpDataConverter(x, y);
+    return this;
+  }
+
+  /**
+   * Apply median filter to list.
+   * 
+   * @param window size of median window
+   * @param iters number of iterations
+   * @return Reference to this object
+   */
+  public PointListProcessor smoothMedian(int window, int iters) {
+    double[] x = dt.getX();
+    double[] y = dt.getY();
+
+    for (int i = 0; i < iters; i++) {
+      y = runningMedian(y, window);
+      x = runningMedian(x, window);
     }
     dt = new QuimpDataConverter(x, y);
     return this;
@@ -69,8 +89,9 @@ public class PointListProcessor {
    * 
    * @param data data to filter, can be empty
    * @param windowSize odd window size
+   * @return Filtered array
    */
-  public static void runningMean(double[] data, int windowSize) {
+  public static double[] runningMean(double[] data, int windowSize) {
     if (windowSize % 2 == 0) {
       throw new IllegalArgumentException("Window must be odd");
     }
@@ -86,7 +107,36 @@ public class PointListProcessor {
       mean = mean / windowSize;
       ret[c] = mean; // remember result
     }
-    // replace input array
-    System.arraycopy(ret, 0, data, 0, data.length);
+    return ret;
+  }
+
+  /**
+   * Running median on input array.
+   * 
+   * @param data data to filter, can be empty
+   * @param windowSize odd window size
+   * @return Filtered array
+   */
+  public static double[] runningMedian(double[] data, int windowSize) {
+    if (windowSize % 2 == 0) {
+      throw new IllegalArgumentException("Window must be odd");
+    }
+    double[] ret = new double[data.length];
+    int cp = windowSize / 2; // left and right range of window
+    double[] xs = new double[windowSize]; // window point
+    int l = 0;
+
+    for (int c = 0; c < data.length; c++) { // for every point in data
+      l = 0;
+      for (int cc = c - cp; cc <= c + cp; cc++) { // collect points in range c-2 c-1 c-0 c+1 c+2
+        int indexTmp = IPadArray.getIndex(data.length, cc, IPadArray.CIRCULARPAD);
+        xs[l] = data[indexTmp];
+        l++;
+      }
+      // get median
+      Arrays.sort(xs);
+      ret[c] = xs[cp];
+    }
+    return ret;
   }
 }

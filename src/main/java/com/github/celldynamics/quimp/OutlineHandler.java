@@ -350,7 +350,7 @@ public class OutlineHandler extends ShapeHandler<Outline> implements IQuimpSeria
         tmp.setHead(newHead); // be sure to set head to first node on snQP list.
 
         outlines[s] = tmp;
-        outlines[s].updateNormales(true);
+        outlines[s].updateNormals(true);
         outlines[s].makeAntiClockwise();
         outlines[s].coordReset(); // there is no cord data in snQP file this set it as Position.
         length = outlines[s].getLength();

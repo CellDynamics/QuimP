@@ -1,6 +1,7 @@
 package com.github.celldynamics.quimp;
 
 import java.awt.Polygon;
+import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -253,7 +254,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
             | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new RuntimeException(e); // change to unchecked exception
     }
-    updateNormales(inner);
+    updateNormals(inner);
     calcCentroid();
     setPositions();
   }
@@ -264,7 +265,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
    * @param x coordinates
    * @param y coordinates
    * @param elInst instance of requested element type
-   * @param inner direction of normales. For Outlines set to true, for snakes to
+   * @param inner direction of normals. For Outlines set to true, for snakes to
    *        BOA_.qState.segParam.expandSnake
    */
   @SuppressWarnings("unchecked")
@@ -290,7 +291,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
             | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new RuntimeException(e); // change to unchecked exception
     }
-    updateNormales(inner);
+    updateNormals(inner);
     calcCentroid();
     setPositions();
   }
@@ -435,6 +436,40 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
   }
 
   /**
+   * Get bounds of Shape.
+   * 
+   * @return Bounding box of current Snake object as Double
+   */
+  public Rectangle2D.Double getDoubleBounds() {
+    double minX;
+    double minY;
+    double maxX;
+    double maxY;
+    T n = getHead();
+    minX = n.getX();
+    maxX = n.getX();
+    minY = n.getY();
+    maxY = n.getY();
+    n = n.getNext();
+    do {
+      if (n.getX() > maxX) {
+        maxX = n.getX();
+      }
+      if (n.getX() < minX) {
+        minX = n.getX();
+      }
+      if (n.getY() > maxY) {
+        maxY = n.getY();
+      }
+      if (n.getY() < minY) {
+        minY = n.getY();
+      }
+      n = n.getNext();
+    } while (!n.isHead());
+    return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
+  }
+
+  /**
    * Calculate area of the Shape.
    * 
    * @return Area
@@ -489,11 +524,11 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
   }
 
   /**
-   * Update all node normales. Called after modification of Shape nodes.
+   * Update all node normals. Called after modification of Shape nodes.
    * 
-   * @param inner Direction of normales. If <tt>false</tt> they are set outwards the shape.
+   * @param inner Direction of normals. If <tt>false</tt> they are set outwards the shape.
    */
-  public void updateNormales(boolean inner) {
+  public void updateNormals(boolean inner) {
     T v = head;
     do {
       v.updateNormale(inner);
@@ -758,7 +793,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
     if (sum > 0) {
       LOGGER.trace("Warning. Was clockwise, reversed");
       this.reverseShape();
-      this.updateNormales(true); // WARN This was in Outline but not in Snake
+      this.updateNormals(true); // WARN This was in Outline but not in Snake
     }
   }
 
@@ -885,12 +920,14 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
   }
 
   /**
-   * Scale current Shape by <tt>stepSize</tt>. Centroid and normales need to be updated afterwards.
+   * Scale current Shape by <tt>stepSize</tt>. Centroid and normals need to be updated afterwards.
    * 
-   * <p>Direction of scaling depends on direction of normales.
+   * <p>Direction of scaling depends on direction of normals.
    * 
    * @param stepSize increment
    * @see PointsList#updateNormale(boolean)
+   * @see #calcCentroid()
+   * @see #setPositions()
    * @see PointsList#setClockwise(boolean)
    */
   public void scale(double stepSize) {
@@ -1000,7 +1037,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
   public void beforeSerialize() {
     calcCentroid();
     setPositions();
-    updateNormales(true);
+    updateNormals(true);
     makeAntiClockwise();
     Elements = new ArrayList<>();
     T n = getHead().getNext(); // do not store head as it is stored in head variable
@@ -1042,7 +1079,7 @@ public abstract class Shape<T extends PointsList<T>> implements IQuimpSerialize,
     clearElements();
     calcCentroid(); // WARN Updating saved data - may be wrong
     setPositions();
-    updateNormales(true);
+    updateNormals(true);
     makeAntiClockwise();
   }
 

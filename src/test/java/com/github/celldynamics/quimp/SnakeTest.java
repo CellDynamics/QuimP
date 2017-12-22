@@ -5,7 +5,9 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
+import java.awt.Rectangle;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -18,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.geom.ExtendedVector2d;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
+
+import ij.gui.PolygonRoi;
 
 /**
  * @author p.baniukiewicz
@@ -203,6 +207,107 @@ public class SnakeTest extends JsonKeyMatchTemplate<Snake> {
     Node head = list.get(0); // get head of list
 
     return new Snake(head, list.size(), 1); // build snake
+  }
+
+  /**
+   * Test of {@link Shape#getDoubleBounds()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetBounds() throws Exception {
+    double[] x = { 0, 5, 10, 5 };
+    double[] y = { 5, 10, 5, 0 };
+    Snake s = new QuimpDataConverter(x, y).getSnake(0);
+    Rectangle ret = s.getBounds();
+    assertThat(ret, is(new Rectangle(0, 0, 10, 10)));
+  }
+
+  /**
+   * Test if initialised snake has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSnakeInitGeomProperties() throws Exception {
+    List<Point2d> p = AbstractCircularShape.getCircle();
+    Snake s = new Snake(p, 0);
+    AbstractCircularShape.validateSnakeGeomProperties(s);
+  }
+
+  /**
+   * Test if initialised snake has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSnakeInitGeomProperties_1() throws Exception {
+    Snake s = new Snake(AbstractCircularShape.getX(), AbstractCircularShape.getY(), 0);
+    AbstractCircularShape.validateSnakeGeomProperties(s);
+  }
+
+  /**
+   * Test if initialised snake has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSnakeInitGeomProperties_2() throws Exception {
+    Field f = Shape.class.getDeclaredField("threshold");
+    f.setAccessible(true);
+    f.setDouble(Shape.class, 0.0);
+    PolygonRoi pr = new PolygonRoi(AbstractCircularShape.getXfloat(),
+            AbstractCircularShape.getYfloat(), PolygonRoi.FREEROI);
+    Snake s = new Snake(pr, 0);
+    AbstractCircularShape.validateSnakeGeomProperties(s);
+    f.setDouble(Shape.class, 0.5);
+  }
+
+  /**
+   * Test if initialised snake has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSnakeInitGeomProperties_3() throws Exception {
+    Field f = Shape.class.getDeclaredField("threshold");
+    f.setAccessible(true);
+    f.setDouble(Shape.class, 0.0);
+    Snake s = new Snake(AbstractCircularShape.getX(), AbstractCircularShape.getY(), 0);
+    Snake cp = new Snake(s);
+    AbstractCircularShape.validateSnakeGeomProperties(cp);
+    f.setDouble(Shape.class, 0.5);
+  }
+
+  /**
+   * Test if initialised snake has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSnakeInitGeomProperties_4() throws Exception {
+    Field f = Shape.class.getDeclaredField("threshold");
+    f.setAccessible(true);
+    f.setDouble(Shape.class, 0.0);
+    Snake s = new Snake(AbstractCircularShape.getX(), AbstractCircularShape.getY(), 0);
+    Snake cp = new Snake(s, 1);
+    AbstractCircularShape.validateSnakeGeomProperties(cp);
+    f.setDouble(Shape.class, 0.5);
+  }
+
+  /**
+   * Test if initialised snake has all geometric properties set up correctly.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testSnakeInitGeomProperties_5() throws Exception {
+    Field f = Shape.class.getDeclaredField("threshold");
+    f.setAccessible(true);
+    f.setDouble(Shape.class, 0.0);
+    Snake s = new Snake(AbstractCircularShape.getNodeList(false), AbstractCircularShape.NUMVERT, 0);
+    AbstractCircularShape.validateSnakeGeomProperties(s);
+    f.setDouble(Shape.class, 0.5);
   }
 
 }

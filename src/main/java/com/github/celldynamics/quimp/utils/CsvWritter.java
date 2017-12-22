@@ -38,7 +38,7 @@ public class CsvWritter {
   }
 
   /**
-   * Create file and fill first line with header.
+   * Create file and fill first line with header. Requires {@link #close()} at the end.
    * 
    * @param path path to file
    * @param header header, null/empty value will skip header. Delimiter added automatically

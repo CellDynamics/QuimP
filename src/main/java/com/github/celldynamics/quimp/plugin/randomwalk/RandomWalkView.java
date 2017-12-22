@@ -85,9 +85,11 @@ import com.github.celldynamics.quimp.utils.UiTools;
  *   }
  *   {+
  *   Inter-process
- *   Shrink method | ^cbShrinkMethod^
- *   Shrink power | "srShrinkPower"
- *   Expand power | "srExpandPower"
+ *   Shrink method | ^cbShrinkMethod^ 
+ *   Shrink power | "srShrinkPower" 
+ *   Expand power | "srExpandPower" 
+ *   Sigma | "srScaleSigma" | Magn | "srScaleMagn"
+ *   | Curv Dist | "srScaleCurvDistDist"| Norm Dist | "srScaleEqNormalsDist"
  *   Binary filter | ^cbFilteringMethod^
  *   () chTrueBackground
  *   {+
@@ -414,7 +416,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @param srIter the srIter to set
    */
   public void setSrIter(int srIter) {
-    this.srIter.setValue(srIter);
+    this.srIter.setValue((double) srIter);
   }
 
   private JSpinner srRelerr;
@@ -499,6 +501,86 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.srExpandPower.setValue(srExpandPower);
   }
 
+  private JSpinner srScaleSigma;
+
+  /**
+   * Get sigma.
+   * 
+   * @return the srScaleSigma
+   */
+  public double getSrScaleSigma() {
+    return ((Number) srScaleSigma.getValue()).doubleValue();
+  }
+
+  /**
+   * Set sigma power.
+   * 
+   * @param srScaleSigma the srScaleSigma to set
+   */
+  public void setSrScaleSigma(double srScaleSigma) {
+    this.srScaleSigma.setValue(srScaleSigma);
+  }
+
+  private JSpinner srScaleMagn;
+
+  /**
+   * Get magnitude.
+   * 
+   * @return the srScaleMagn
+   */
+  public double getSrScaleMagn() {
+    return ((Number) srScaleMagn.getValue()).doubleValue();
+  }
+
+  /**
+   * Set magnitude power.
+   * 
+   * @param srScaleMagn the srScaleMagn to set
+   */
+  public void setSrScaleMagn(double srScaleMagn) {
+    this.srScaleMagn.setValue(srScaleMagn);
+  }
+
+  private JSpinner srScaleEqNormalsDist;
+
+  /**
+   * Get distance.
+   * 
+   * @return the srScaleEqNormalsDist
+   */
+  public double getSrScaleEqNormalsDist() {
+    return ((Number) srScaleEqNormalsDist.getValue()).doubleValue();
+  }
+
+  /**
+   * Set distance.
+   * 
+   * @param srScaleEqNormalsDist the srScaleEqNormalsDist to set
+   */
+  public void setSrScaleEqNormalsDist(double srScaleEqNormalsDist) {
+    this.srScaleEqNormalsDist.setValue(srScaleEqNormalsDist);
+  }
+
+  private JSpinner srScaleCurvDistDist;
+
+  /**
+   * Get distance.
+   * 
+   * @return the srScaleCurvDistDist
+   */
+  public double getSrScaleCurvDistDist() {
+    return ((Number) srScaleCurvDistDist.getValue()).doubleValue();
+  }
+
+  /**
+   * Set distance.
+   * 
+   * @param srScaleCurvDistDist the srScaleCurvDistDist to set
+   */
+  public void setSrScaleCurvDistDist(double srScaleCurvDistDist) {
+    this.srScaleCurvDistDist.setValue(srScaleCurvDistDist);
+  }
+
   private JComboBox<String> cbFilteringMethod;
 
   /**
@@ -578,7 +660,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @param srWindow the srWindow to set
    */
   public void setSrLocalMeanWindow(int srWindow) {
-    this.srLocalMeanWindow.setValue(srWindow);
+    this.srLocalMeanWindow.setValue((double) srWindow);
   }
 
   private JCheckBox chHatFilter;
@@ -638,7 +720,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @param srNum the srNum to set
    */
   public void setSrNum(int srNum) {
-    this.srNum.setValue(srNum);
+    this.srNum.setValue((double) srNum);
   }
 
   private JSpinner srWindow;
@@ -658,7 +740,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * @param srWindow the srWindow to set
    */
   public void setSrWindow(int srWindow) {
-    this.srWindow.setValue(srWindow);
+    this.srWindow.setValue((double) srWindow);
   }
 
   private JComboBox<String> cbFilteringPostMethod;
@@ -752,6 +834,12 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * Build View but not show it.
    */
   public RandomWalkView() {
+    // try {
+    // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    // } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+    // | UnsupportedLookAndFeelException e) {
+    // e.printStackTrace();
+    // }
     ToolTipManager.sharedInstance().setDismissDelay(UiTools.TOOLTIPDELAY);
     wnd = new JFrame("Random Walker Segmentation");
     wnd.setResizable(false);
@@ -838,7 +926,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
             "Maximum number of iterations." + "Second sweep uses half of this value"));
     srRelerr = getDoubleSpinner(8.1e-3, 0, 10, 1e-5, 6);
     optionsPanel.add(getControlwithLabel(srRelerr, "Rel error", "Relative error."));
-
+    // inter process panel
     JPanel processPanel = new JPanel();
     processPanel.setBorder(BorderFactory.createTitledBorder("Inter-process"));
     processPanel.setLayout(new GridBagLayout());
@@ -847,12 +935,14 @@ public class RandomWalkView implements ActionListener, ItemListener {
     constrProc.gridy = 0;
     constrProc.fill = GridBagConstraints.HORIZONTAL;
     constrProc.weightx = 1;
+    constrProc.insets = new Insets(1, 2, 1, 2);
     cbShrinkMethod = new JComboBox<String>();
     processPanel.add(
             getControlwithLabel(cbShrinkMethod, "Shrink method",
                     "Shrinking/expanding if nth frame result is used as n+1 frame seed."
                             + " Ignored for single image and if seed is stack of image size."),
             constrProc);
+    cbShrinkMethod.addItemListener(this);
     srShrinkPower = getDoubleSpinner(10, 0, 10000, 1, 0);
     constrProc.gridx = 0;
     constrProc.gridy = 1;
@@ -861,23 +951,47 @@ public class RandomWalkView implements ActionListener, ItemListener {
     constrProc.gridx = 0;
     constrProc.gridy = 2;
     processPanel.add(getControlwithLabel(srExpandPower, "Expand power", ""), constrProc);
-    cbFilteringMethod = new JComboBox<String>();
+    // scale panel
+    JPanel scalePanel = new JPanel();
+    GridLayout gr = new GridLayout(2, 2);
+    gr.setHgap(2);
+    scalePanel.setLayout(gr);
+    srScaleSigma = getDoubleSpinner(0.3, 1e-2, 1, 1e-2, 2);
+    scalePanel.add(getControlwithLabel(srScaleSigma, "Sigma",
+            "Set up expotential relation between negative curvature and node translocation"));
+    srScaleMagn = getDoubleSpinner(1, 1, 10, 1, 0);
+    scalePanel.add(getControlwithLabel(srScaleMagn, "Magn",
+            "Maximum multiplier of shrink power. Set to 1.0 to disable"));
+    srScaleCurvDistDist = getDoubleSpinner(1, 1, 100, 1, 1);
+    scalePanel.add(getControlwithLabel(srScaleCurvDistDist, "Curv dist",
+            "Approximated number of nodes used for averaging curvature. "
+                    + "At least 3 nodes are always used"));
+    srScaleEqNormalsDist = getDoubleSpinner(0, 0, 100, 1, 1);
+    scalePanel.add(getControlwithLabel(srScaleEqNormalsDist, "Norm dist",
+            "Approximated number of nodes used for normals alignment "
+                    + "Set to 0 to disable otherwise at least 3 nodes are used"));
     constrProc.gridx = 0;
     constrProc.gridy = 3;
+
+    processPanel.add(scalePanel, constrProc);
+
+    cbFilteringMethod = new JComboBox<String>();
+    constrProc.gridx = 0;
+    constrProc.gridy = 4;
     processPanel.add(
             getControlwithLabel(cbFilteringMethod, "Binary filter",
                     "Filtering applied for result between sweeps. Ignored if gamma[1]==0"),
             constrProc);
     chTrueBackground = new JCheckBox("Estimate Background");
     constrProc.gridx = 0;
-    constrProc.gridy = 4;
+    constrProc.gridy = 5;
     processPanel.add(
             getControlwithLabel(chTrueBackground, "",
                     "Try to estimate background level. Disable is background is homogenious"),
             constrProc);
-
+    // Use local mean panel
     JPanel localMeanPanel = new JPanel();
-    localMeanPanel.setLayout(new GridLayout(2, 1));
+    localMeanPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
     localMeanPanel.setBorder(BorderFactory.createTitledBorder("Use local mean"));
     chLocalMean = new JCheckBox("Local mean");
     chLocalMean.addItemListener(this);
@@ -888,9 +1002,10 @@ public class RandomWalkView implements ActionListener, ItemListener {
     localMeanPanel.add(getControlwithLabel(srLocalMeanWindow, "Window",
             "Odd mask within the local mean is evaluated"));
     constrProc.gridx = 0;
-    constrProc.gridy = 5;
+    constrProc.gridy = 6;
     processPanel.add(localMeanPanel, constrProc);
 
+    // post process panel
     JPanel postprocessPanel = new JPanel();
     postprocessPanel.setBorder(BorderFactory.createTitledBorder("Post-process"));
     postprocessPanel.setLayout(new GridBagLayout());
@@ -912,6 +1027,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     constrPost.gridx = 0;
     constrPost.gridy = 0;
     constrPost.fill = GridBagConstraints.HORIZONTAL;
+    constrPost.anchor = GridBagConstraints.NORTH;
     constrPost.weightx = 1;
     postprocessPanel.add(postprocesshatPanel, constrPost);
     cbFilteringPostMethod = new JComboBox<String>();
@@ -965,7 +1081,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     constrains.weighty = 1;
     constrains.gridheight = 1;
     constrains.anchor = GridBagConstraints.NORTH;
-    constrains.fill = GridBagConstraints.BOTH;
+    constrains.fill = GridBagConstraints.HORIZONTAL;
     panelMain.add(imagePanel, constrains);
 
     constrains.gridx = 0;
@@ -1051,6 +1167,14 @@ public class RandomWalkView implements ActionListener, ItemListener {
     cbShrinkMethod.setEnabled(status);
     srShrinkPower.setEnabled(status);
     srExpandPower.setEnabled(status);
+    if (cbShrinkMethod.getSelectedItem().equals("CONTOUR")) {
+      srScaleMagn.setEnabled(status);
+      srScaleSigma.setEnabled(status);
+      srScaleCurvDistDist.setEnabled(status);
+      srScaleEqNormalsDist.setEnabled(status);
+    } else {
+      cbShrinkMethod.setEnabled(status);
+    }
     cbFilteringMethod.setEnabled(status);
     chTrueBackground.setEnabled(status);
     chHatFilter.setEnabled(status);
@@ -1093,6 +1217,25 @@ public class RandomWalkView implements ActionListener, ItemListener {
   private JPanel getControlwithLabel(JComponent c, String label, String toolTip) {
     JPanel panel = new JPanel();
     panel.setLayout(new GridLayout(1, 2, 2, 2));
+    JLabel lab = new JLabel(label);
+    panel.add(lab);
+    panel.add(c);
+    UiTools.setToolTip(c, toolTip);
+    UiTools.setToolTip(lab, toolTip);
+    return panel;
+  }
+
+  /**
+   * Create two elements row [label component]. Component and label have tooltip.
+   * 
+   * @param c component to add.
+   * @param label label to add.
+   * @param toolTip tooltip.
+   * @return Panel with two components.
+   */
+  private JPanel getControlwithLabelSqueezed(JComponent c, String label, String toolTip) {
+    JPanel panel = new JPanel();
+    panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
     JLabel lab = new JLabel(label);
     panel.add(lab);
     panel.add(c);
@@ -1289,7 +1432,6 @@ public class RandomWalkView implements ActionListener, ItemListener {
         bnFore.setSelected(false);
       }
     }
-
   }
 
   /**
@@ -1305,6 +1447,19 @@ public class RandomWalkView implements ActionListener, ItemListener {
     }
     if (source == chLocalMean) {
       srLocalMeanWindow.setEnabled(chLocalMean.isSelected());
+    }
+    if (source == cbShrinkMethod) {
+      if (!cbShrinkMethod.getSelectedItem().equals("CONTOUR")) {
+        srScaleMagn.setEnabled(false);
+        srScaleSigma.setEnabled(false);
+        srScaleEqNormalsDist.setEnabled(false);
+        srScaleCurvDistDist.setEnabled(false);
+      } else {
+        srScaleMagn.setEnabled(true);
+        srScaleSigma.setEnabled(true);
+        srScaleEqNormalsDist.setEnabled(true);
+        srScaleCurvDistDist.setEnabled(true);
+      }
     }
   }
 

@@ -997,7 +997,7 @@ public class RandomWalkSegmentation {
     diffIbg.walkInOptimizedOrder(new MatrixElementPowerDiv(maxTheoreticalIntSqr));
     LOGGER.trace("fseeds size: " + seedsP.get(Seeds.FOREGROUND).size());
     LOGGER.trace("bseeds size: " + seedsP.get(Seeds.BACKGROUND).size());
-    LOGGER.trace("getValfseed: " + getValues(image, seedsP.get(Seeds.FOREGROUND)));
+    // LOGGER.trace("getValfseed: " + getValues(image, seedsP.get(Seeds.FOREGROUND)));
 
     // compute weights for diffusion in all four directions, dependent on local gradients and
     // differences to mean intensities of seeds, for FG and BG
