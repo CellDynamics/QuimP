@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
+import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 
 /**
  * Hold algorithm parameters.
@@ -52,7 +52,7 @@ public class RandomWalkOptions {
    * true if local mean algorithm is used. false if global mean for seeds is computed.
    * 
    * <p>If localMean is used, the seeds provided to
-   * {@link RandomWalkSegmentation#run(java.util.Map)} must have {@link Seeds#ROUGHMASK} entry.
+   * {@link RandomWalkSegmentation#run(Seeds)} must have {@link SeedTypes#ROUGHMASK} entry.
    */
   public boolean useLocalMean;
 

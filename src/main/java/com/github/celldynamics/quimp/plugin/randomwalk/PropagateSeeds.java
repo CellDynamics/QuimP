@@ -4,9 +4,7 @@ import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +15,7 @@ import com.github.celldynamics.quimp.geom.TrackOutline;
 import com.github.celldynamics.quimp.geom.filters.OutlineProcessor;
 import com.github.celldynamics.quimp.plugin.ana.ANAp;
 import com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters.MorphoOperations;
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
+import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 import com.github.celldynamics.quimp.utils.IJTools;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
@@ -128,7 +126,7 @@ public abstract class PropagateSeeds {
    * @see #getCompositeSeed(ImagePlus, int)
    * @see PropagateSeeds#storeSeeds
    */
-  protected List<Map<Seeds, ImageProcessor>> seeds;
+  protected List<Seeds> seeds;
   /**
    * Scale color values in composite preview.
    * 
@@ -196,8 +194,8 @@ public abstract class PropagateSeeds {
      * 
      */
     @Override
-    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, ImageProcessor org,
-            double shrinkPower, double expandPower) {
+    public Seeds propagateSeed(ImageProcessor previous, ImageProcessor org, double shrinkPower,
+            double expandPower) {
       return binary.propagateSeed(previous, org, 0, 0);
     }
 
@@ -538,8 +536,8 @@ public abstract class PropagateSeeds {
      * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
      */
     @Override
-    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, ImageProcessor org,
-            double shrinkPower, double expandPower) {
+    public Seeds propagateSeed(ImageProcessor previous, ImageProcessor org, double shrinkPower,
+            double expandPower) {
       ByteProcessor small = new ByteProcessor(previous.getWidth(), previous.getHeight());
       ByteProcessor big = new ByteProcessor(previous.getWidth(), previous.getHeight());
       small.setColor(Color.BLACK);
@@ -598,9 +596,9 @@ public abstract class PropagateSeeds {
       }
       big.invert();
       // store seeds if option ticked
-      Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
-      ret.put(Seeds.FOREGROUND, small);
-      ret.put(Seeds.BACKGROUND, getTrueBackground(big, org));
+      Seeds ret = new Seeds(2);
+      ret.put(SeedTypes.FOREGROUNDS, small);
+      ret.put(SeedTypes.BACKGROUND, getTrueBackground(big, org));
       if (storeSeeds) {
         seeds.add(ret);
       }
@@ -663,13 +661,13 @@ public abstract class PropagateSeeds {
      * 
      * @return Map containing list of coordinates that belong to foreground and background. Map is
      *         addressed by two enums: <tt>FOREGROUND</tt> and <tt>BACKGROUND</tt>
-     * @see RandomWalkSegmentation#decodeSeeds(ImagePlus, Color, Color)
+     * @see SeedProcessor#decodeSeedsfromRgb(ImagePlus, List, Color)
      * @see #getTrueBackground(ImageProcessor, ImageProcessor)
      * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
      */
     @Override
-    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, ImageProcessor org,
-            double shrinkPower, double expandPower) {
+    public Seeds propagateSeed(ImageProcessor previous, ImageProcessor org, double shrinkPower,
+            double expandPower) {
       ImageProcessor cp = previous;
       // object smaller than on frame n
       ImageProcessor small = cp.duplicate();
@@ -694,9 +692,9 @@ public abstract class PropagateSeeds {
 
       big.invert(); // invert to have BG pixels white in seed. (required by convertToList)
       // store seeds if option ticked
-      Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
-      ret.put(Seeds.FOREGROUND, small);
-      ret.put(Seeds.BACKGROUND, getTrueBackground(big, org));
+      Seeds ret = new Seeds(2);
+      ret.put(SeedTypes.FOREGROUNDS, small);
+      ret.put(SeedTypes.BACKGROUND, getTrueBackground(big, org));
       if (storeSeeds) {
         seeds.add(ret);
       }
@@ -723,15 +721,17 @@ public abstract class PropagateSeeds {
       throw new RandomWalkException(
               "Seeds were not stored. You need at least two time frames to collect one seed");
     }
-    ImageStack smallstack = new ImageStack(seeds.get(0).get(Seeds.FOREGROUND).getWidth(),
-            seeds.get(0).get(Seeds.FOREGROUND).getHeight());
-    ImageStack bigstack = new ImageStack(seeds.get(0).get(Seeds.FOREGROUND).getWidth(),
-            seeds.get(0).get(Seeds.FOREGROUND).getHeight());
+    ImageStack smallstack =
+            new ImageStack(seeds.get(0).get(SeedTypes.FOREGROUNDS).get(0).getWidth(),
+                    seeds.get(0).get(SeedTypes.FOREGROUNDS).get(0).getHeight());
+    ImageStack bigstack = new ImageStack(seeds.get(0).get(SeedTypes.FOREGROUNDS).get(0).getWidth(),
+            seeds.get(0).get(SeedTypes.FOREGROUNDS).get(0).getHeight());
 
-    for (Map<Seeds, ImageProcessor> p : seeds) {
+    for (Seeds p : seeds) {
       // just in case convert to byte
-      ImageProcessor fg = (ImageProcessor) p.get(Seeds.FOREGROUND).convertToByte(true);
-      ImageProcessor bg = (ImageProcessor) p.get(Seeds.BACKGROUND).convertToByte(true);
+      // FIXME compile foregorunds from all images
+      ImageProcessor fg = (ImageProcessor) p.get(SeedTypes.FOREGROUNDS, 1).convertToByte(true);
+      ImageProcessor bg = (ImageProcessor) p.get(SeedTypes.BACKGROUND, 1).convertToByte(true);
       // make colors transparent
       bg.multiply(colorScaling);
       fg.multiply(colorScaling);
@@ -769,8 +769,8 @@ public abstract class PropagateSeeds {
    * @see #getTrueBackground(ImageProcessor, ImageProcessor)
    * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
    */
-  public abstract Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous,
-          ImageProcessor org, double shrinkPower, double expandPower);
+  public abstract Seeds propagateSeed(ImageProcessor previous, ImageProcessor org,
+          double shrinkPower, double expandPower);
 
   /**
    * Excludes objects from estimated background.
@@ -809,7 +809,7 @@ public abstract class PropagateSeeds {
 }
 
 /**
- * In purpose of overriding {@link TrackOutline#prepare()} which in super class can remove this
+ * In purpose of overriding {@link TrackOutline#prepare()} which in super class can remove thin
  * lines.
  * 
  * @author p.baniukiewicz

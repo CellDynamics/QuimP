@@ -69,7 +69,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * 
    * @return array of filters
    * @see BinaryFilters
-   * @see RandomWalkSegmentation#run(java.util.Map)
+   * @see RandomWalkSegmentation#run(Seeds)
    * @see RandomWalkSegmentation
    */
   public String[] getFilteringMethods() {

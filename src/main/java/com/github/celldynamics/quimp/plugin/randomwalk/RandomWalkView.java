@@ -859,13 +859,15 @@ public class RandomWalkView implements ActionListener, ItemListener {
     rbRgbImage.addActionListener(this);
     rbRgbImage.setActionCommand(SeedSource.RGBImage.toString());
     rbRgbImage.addItemListener(this);
-    UiTools.setToolTip(rbRgbImage, "Load seeds as scribble image. Stack or single image");
+    UiTools.setToolTip(rbRgbImage,
+            "Load seeds from scribble image. Stack or single image. FG must be pure red,"
+                    + " BG pure green. Only one foreground object supported");
     rbCreateImage = new JRadioButton("Create image");
     rbCreateImage.addActionListener(this);
     rbCreateImage.setActionCommand(SeedSource.CreatedImage.toString());
     rbCreateImage.addItemListener(this);
     UiTools.setToolTip(rbCreateImage,
-            "Create copy of original image for scribbling. Stack or single image");
+            "Create FG and BG seeds. Many FG object supported. Single image only.");
     rbMaskImage = new JRadioButton("Mask image");
     rbMaskImage.addActionListener(this);
     rbMaskImage.setActionCommand(SeedSource.MaskImage.toString());
@@ -893,14 +895,18 @@ public class RandomWalkView implements ActionListener, ItemListener {
     bnClone = new JButton("Clone");
     UiTools.setToolTip(bnClone, "Clone selected original image and allow to seed it manually");
     bnFore = new JToggleButton("FG");
-    UiTools.setToolTip(bnFore, "Select Foreground pen");
+    UiTools.setToolTip(bnFore,
+            "Select Foreground pen. Not used and will be removed in next version.");
     bnFore.addActionListener(this);
     bnFore.setBackground(Color.ORANGE);
     bnBack = new JToggleButton("BG");
-    UiTools.setToolTip(bnBack, "Select Background pen");
+    UiTools.setToolTip(bnBack,
+            "Select Background pen. Not used and will be removed in next version.");
     bnBack.addActionListener(this);
     bnBack.setBackground(Color.GREEN);
     lbQconfFile = new JLabel("");
+    bnFore.setEnabled(false); // Temporally disabled, see enableUI as well
+    bnBack.setEnabled(false);
 
     JPanel optionsPanel = new JPanel();
     optionsPanel.setBorder(BorderFactory.createTitledBorder("Segmentation options"));
@@ -1204,6 +1210,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
 
     // chHatFilter.setEnabled(status); // not implemented, remove after
     srGamma0.setEnabled(false); // feature currently disabled, see constructor as well
+    bnFore.setEnabled(false);
+    bnBack.setEnabled(false);
   }
 
   /**

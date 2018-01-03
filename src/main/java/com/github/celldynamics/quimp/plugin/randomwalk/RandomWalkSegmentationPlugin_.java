@@ -9,11 +9,10 @@ import java.awt.event.WindowFocusListener;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.scijava.vecmath.Point2d;
@@ -31,10 +30,9 @@ import com.github.celldynamics.quimp.plugin.PluginTemplate;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation;
 import com.github.celldynamics.quimp.plugin.generatemask.GenerateMask_;
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
+import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 import com.github.celldynamics.quimp.registration.Registration;
-import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -473,11 +471,12 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     public void actionPerformed(ActionEvent arg0) {
       ImagePlus tmpImage = WindowManager.getImage(view.getCbOrginalImage());
       Object[] options = { "Whole stack", "Current slice", "Cancel" };
-      int ret = JOptionPane.showOptionDialog(view.getWnd(),
-              QuimpToolsCollection
-                      .stringWrap("Do you want to duplicte the whole stack or only current slice?"),
-              "Duplicate stack", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-              null, options, null);
+      // int ret = JOptionPane.showOptionDialog(view.getWnd(),
+      // QuimpToolsCollection
+      // .stringWrap("Do you want to duplicte the whole stack or only current slice?"),
+      // "Duplicate stack", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+      // null, options, null);
+      int ret = 1; // FIXME disabled feature
       ImagePlus duplicatedImage;
       switch (ret) {
         case 0: // stack
@@ -495,6 +494,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       new Converter().run("RGB Color");
       duplicatedImage.setTitle("SEED_" + tmpImage.getTitle());
       view.setCbCreatedSeedImage(WindowManager.getImageTitles(), duplicatedImage.getTitle());
+      new SeedPicker(duplicatedImage, true);
+      // TODO collect seeds here
     }
   }
 
@@ -651,7 +652,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     boolean localMeanUserStatus = model.algOptions.useLocalMean;
     ImageStack ret; // all images treated as stacks
     ImageStack is = null;
-    Map<Seeds, ImageProcessor> seeds;
+    Seeds seeds;
     PropagateSeeds propagateSeeds;
     isRun = true; // segmentation started
     // if preview selected - prepare image
@@ -693,15 +694,18 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       // decode provided seeds depending on selected option
       switch (model.seedSource) {
         case RGBImage: // use seeds as they are
+          // TODO replace RGB by separate grayscale image or add next option
         case CreatedImage:
           foreColor = Color.RED;
           backColor = Color.GREEN;
           if (seedImage.getNSlices() >= startSlice) {
-            seeds = RandomWalkSegmentation.decodeSeeds(
-                    seedImage.getStack().getProcessor(startSlice), foreColor, backColor);
+            // FIXME seeds can be empty (but at leas one map will exist always)
+            seeds = SeedProcessor.decodeSeedsfromRgb(
+                    seedImage.getStack().getProcessor(startSlice), Arrays.asList(foreColor),
+                    backColor);
           } else {
-            seeds = RandomWalkSegmentation.decodeSeeds(seedImage.getStack().getProcessor(1),
-                    foreColor, backColor);
+            seeds = SeedProcessor.decodeSeedsfromRgb(seedImage.getStack().getProcessor(1),
+                    Arrays.asList(foreColor), backColor);
           }
           if (model.algOptions.useLocalMean) {
             LOGGER.warn("LocalMean is not used for first frame when seed is RGB image");
@@ -715,17 +719,20 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           }
           // and continue to the next case
         case MaskImage:
+          // TODO mask image must be grayscale then
           foreColor = Color.WHITE;
           backColor = Color.BLACK;
           new ImageConverter(seedImage).convertToRGB(); // convert to rgb
           // get seeds split to FG and BG
-          Map<Seeds, ImageProcessor> seedsTmp = RandomWalkSegmentation
-                  .decodeSeeds(seedImage.getStack().getProcessor(startSlice), foreColor, backColor);
+          Seeds seedsTmp =
+                  SeedProcessor.decodeSeedsfromRgb(seedImage.getStack().getProcessor(startSlice),
+                          Arrays.asList(foreColor), backColor);
           // this is mask (bigger) so produce seeds, overwrite seeds
-          seeds = propagateSeeds.propagateSeed(seedsTmp.get(Seeds.FOREGROUND),
+          // TODO propagate all foreground seeds (some maps can be empty)
+          seeds = propagateSeeds.propagateSeed(seedsTmp.get(SeedTypes.FOREGROUNDS, 1),
                   is.getProcessor(startSlice), model.shrinkPower, model.expandPower);
           // mask to local mean
-          seeds.put(Seeds.ROUGHMASK,
+          seeds.put(SeedTypes.ROUGHMASK,
                   seedImage.getStack().getProcessor(startSlice).convertToByte(false));
           break;
         default:
@@ -747,18 +754,19 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       // iterate over all slices after first (may not run for one image and for current image seg)
       for (int s = 2; s <= is.getSize() && isCanceled == false && oneSlice == false; s++) {
         LOGGER.info("----- Slice " + s + " -----");
-        Map<Seeds, ImageProcessor> nextseed;
+        Seeds nextseed;
         obj = new RandomWalkSegmentation(is.getProcessor(s), model.algOptions);
         // get seeds from previous result
         if (useSeedStack) { // true - use slices
-          nextseed = RandomWalkSegmentation.decodeSeeds(seedImage.getStack().getProcessor(s),
-                  foreColor, backColor);
+          nextseed = SeedProcessor.decodeSeedsfromRgb(seedImage.getStack().getProcessor(s),
+                  Arrays.asList(foreColor), backColor);
           switch (model.seedSource) {
             case QconfFile:
             case MaskImage:
-              nextseed = propagateSeeds.propagateSeed(nextseed.get(Seeds.FOREGROUND),
+              // TODO propagate all foreground seeds
+              nextseed = propagateSeeds.propagateSeed(nextseed.get(SeedTypes.FOREGROUNDS, 1),
                       is.getProcessor(s), model.shrinkPower, model.expandPower);
-              nextseed.put(Seeds.ROUGHMASK,
+              nextseed.put(SeedTypes.ROUGHMASK,
                       seedImage.getStack().getProcessor(s).convertToByte(false));
               break;
             default:
@@ -767,7 +775,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           // modify masks and convert to lists
           nextseed = propagateSeeds.propagateSeed(retIp, is.getProcessor(s), model.shrinkPower,
                   model.expandPower);
-          nextseed.put(Seeds.ROUGHMASK, retIp);
+          nextseed.put(SeedTypes.ROUGHMASK, retIp);
         }
         // segmentation and results stored for next seeding
         retIp = obj.run(nextseed);

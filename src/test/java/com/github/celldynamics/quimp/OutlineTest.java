@@ -18,7 +18,7 @@ import ij.gui.PolygonRoi;
 
 /**
  * @author p.baniukiewicz
- * @see com.github.celldynamics.quimp.geom.filters.OutlineProcessorTest#testShrink()
+ * @see com.github.celldynamics.quimp.geom.filters.OutlineProcessorTest#testShrinkLin()
  */
 public class OutlineTest extends JsonKeyMatchTemplate<Outline> {
 
