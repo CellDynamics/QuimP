@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.scijava.vecmath.Point2d;
@@ -30,10 +31,13 @@ import com.github.celldynamics.quimp.plugin.PluginTemplate;
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation;
 import com.github.celldynamics.quimp.plugin.generatemask.GenerateMask_;
+import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkModel.SeedSource;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 import com.github.celldynamics.quimp.registration.Registration;
+import com.github.celldynamics.quimp.utils.QuimpToolsCollection;
 
+import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -101,6 +105,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           LoggerFactory.getLogger(RandomWalkSegmentationPlugin_.class.getName());
 
   RandomWalkView view;
+  private SeedPicker seedPickerWnd = null;
 
   private BrushTool br = new BrushTool();
   private String lastTool; // tool selected in IJ
@@ -120,6 +125,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     isCanceled = false;
     isRun = false;
     view = new RandomWalkView();
+    seedPickerWnd = new SeedPicker(false);
     writeUI();
     view.addWindowController(new ActivateWindowController());
     view.addImageController(new ImageController());
@@ -132,6 +138,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     view.addLoadQconfController(new LoadQconfController());
     view.addRunActiveController(new RunActiveBtnController());
     view.addHelpController(new HelpBtnController());
+    view.addSeedRoiController(new SeedRoiController());
+    seedPickerWnd.addFinishController(new FinishControllerSeedPicker());
   }
 
   /**
@@ -155,7 +163,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       view.setCbOrginalImage(new String[] { model.getOriginalImage().getTitle() }, "");
     }
 
-    view.setSeedSource(model.seedSource);
+    view.setSeedSource(model.getSeedSources(), model.getSelectedSeedSource().name());
     if (model.getSeedImage() != null) {
       view.setCbRgbSeedImage(new String[] { model.getSeedImage().getTitle() }, "");
       view.setCbCreatedSeedImage(new String[] { model.getSeedImage().getTitle() }, "");
@@ -202,8 +210,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
   public RandomWalkModel readUI() {
     RandomWalkModel model = (RandomWalkModel) options;
     model.setOriginalImage(WindowManager.getImage(view.getCbOrginalImage()));
-    model.seedSource = view.getSeedSource();
-    switch (model.seedSource) {
+    model.setSelectedSeedSource(view.getSeedSource());
+    switch (model.getSelectedSeedSource()) {
       case RGBImage:
         model.setSeedImage(WindowManager.getImage(view.getCbRgbSeedImage()));
         break;
@@ -215,6 +223,9 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         break;
       case QconfFile:
         break; // no control to display or read from for this case
+      case Rois:
+        // TODO can read seeds from seedpicker and store in model (consider)
+        break;
       default:
         throw new IllegalArgumentException("Unknown seed source");
     }
@@ -264,6 +275,34 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
    */
   public void showUi(boolean val) {
     view.show();
+  }
+
+  /**
+   * Action {@link OnConsoleStatusListener} {@link SeedPicker}.
+   * 
+   * <p>Fill
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  class FinishControllerSeedPicker implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      if (seedPickerWnd == null) {
+        return;
+      }
+      RandomWalkModel model = (RandomWalkModel) options;
+      model.getOriginalImage().deleteRoi(); // just in case if ROI tool left something
+      // TODO add info about found ROIs - but this listener is called first before seedsRoi
+      // JLabel lab = view.getLroiSeedsInfo();
+      // List<Seeds> rois = seedPickerWnd.seedsRoi;
+      // if (rois != null) {
+      // lab.setText(rois.get(0).get(SeedTypes.FOREGROUNDS).size() + " FG and "
+      // + rois.get(0).get(SeedTypes.BACKGROUND).size() + " BG objects");
+      // }
+    }
+
   }
 
   /**
@@ -343,7 +382,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     @Override
     public void actionPerformed(ActionEvent e) {
       RandomWalkModel model = (RandomWalkModel) options;
-      switch (view.getSeedSource()) {
+      SeedSource src = SeedSource.valueOf(model.getSeedSources()[view.getSeedSource()]);
+      switch (src) {
         case RGBImage:
           model.setSeedImage(WindowManager.getImage(view.getCbRgbSeedImage()));
           break;
@@ -354,6 +394,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           model.setSeedImage(WindowManager.getImage(view.getCbCreatedSeedImage()));
           break;
         case QconfFile:
+          break;
+        case Rois:
           break;
         default:
           throw new IllegalArgumentException("Unknown seed source");
@@ -470,14 +512,16 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     @Override
     public void actionPerformed(ActionEvent arg0) {
       ImagePlus tmpImage = WindowManager.getImage(view.getCbOrginalImage());
-      Object[] options = { "Whole stack", "Current slice", "Cancel" };
-      // int ret = JOptionPane.showOptionDialog(view.getWnd(),
-      // QuimpToolsCollection
-      // .stringWrap("Do you want to duplicte the whole stack or only current slice?"),
-      // "Duplicate stack", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-      // null, options, null);
-      int ret = 1; // FIXME disabled feature
+      if (tmpImage == null) {
+        return;
+      }
       ImagePlus duplicatedImage;
+      Object[] options = { "Whole stack", "Current slice", "Cancel" };
+      int ret = JOptionPane.showOptionDialog(view.getWnd(),
+              QuimpToolsCollection
+                      .stringWrap("Do you want to duplicte the whole stack or only current slice?"),
+              "Duplicate stack", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+              null, options, null);
       switch (ret) {
         case 0: // stack
           duplicatedImage = tmpImage.duplicate();
@@ -494,9 +538,59 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       new Converter().run("RGB Color");
       duplicatedImage.setTitle("SEED_" + tmpImage.getTitle());
       view.setCbCreatedSeedImage(WindowManager.getImageTitles(), duplicatedImage.getTitle());
-      new SeedPicker(duplicatedImage, true);
-      // TODO collect seeds here
     }
+  }
+
+  /**
+   * Handle seed ROI button. Open {@link SeedPicker}.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  public class SeedRoiController implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      ImagePlus tmpImage = WindowManager.getCurrentImage();
+      if (tmpImage == null) {
+        return;
+      }
+      if (seedPickerWnd != null) {
+        seedPickerWnd.image = tmpImage;
+        seedPickerWnd.reset();
+        seedPickerWnd.setVisible(true);
+      }
+    }
+
+  }
+
+  /**
+   * Clone whole image or selected slice. Helper
+   * 
+   * @param tmpImage image to clone
+   * @return cloned image
+   */
+  private ImagePlus cloneImageAndAsk(ImagePlus tmpImage) {
+    Object[] options = { "Whole stack", "Current slice", "Cancel" };
+    int ret = JOptionPane.showOptionDialog(view.getWnd(),
+            QuimpToolsCollection
+                    .stringWrap("Do you want to duplicte the whole stack or only current slice?"),
+            "Duplicate stack", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+            options, null);
+    ImagePlus duplicatedImage;
+    switch (ret) {
+      case 0: // stack
+        duplicatedImage = tmpImage.duplicate();
+        break;
+      case 1: // slice
+        duplicatedImage = new ImagePlus("",
+                tmpImage.getStack().getProcessor(tmpImage.getCurrentSlice()).duplicate());
+        break;
+      case 2: // cancel
+      default: // closed window
+        return null;
+    }
+    return duplicatedImage;
   }
 
   /**
@@ -692,21 +786,29 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       RandomWalkSegmentation obj =
               new RandomWalkSegmentation(is.getProcessor(startSlice), model.algOptions);
       // decode provided seeds depending on selected option
-      switch (model.seedSource) {
+      switch (model.getSelectedSeedSource()) {
         case RGBImage: // use seeds as they are
-          // TODO replace RGB by separate grayscale image or add next option
         case CreatedImage:
           foreColor = Color.RED;
           backColor = Color.GREEN;
           if (seedImage.getNSlices() >= startSlice) {
-            // FIXME seeds can be empty (but at leas one map will exist always)
-            seeds = SeedProcessor.decodeSeedsfromRgb(
-                    seedImage.getStack().getProcessor(startSlice), Arrays.asList(foreColor),
-                    backColor);
+            // FIXME seeds can be empty (but at least one map will exist always)
+            seeds = SeedProcessor.decodeSeedsfromRgb(seedImage.getStack().getProcessor(startSlice),
+                    Arrays.asList(foreColor), backColor);
           } else {
             seeds = SeedProcessor.decodeSeedsfromRgb(seedImage.getStack().getProcessor(1),
                     Arrays.asList(foreColor), backColor);
           }
+          if (model.algOptions.useLocalMean) {
+            LOGGER.warn("LocalMean is not used for first frame when seed is RGB image");
+          }
+          model.algOptions.useLocalMean = false; // do not use LM on first frame (reenable it later)
+          break;
+        case Rois:
+          if (seedPickerWnd.seedsRoi.isEmpty()) {
+            throw new RandomWalkException("No ROIs processed, did you forget to use Finish?");
+          }
+          seeds = seedPickerWnd.seedsRoi.get(startSlice - 1);
           if (model.algOptions.useLocalMean) {
             LOGGER.warn("LocalMean is not used for first frame when seed is RGB image");
           }
@@ -758,9 +860,11 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         obj = new RandomWalkSegmentation(is.getProcessor(s), model.algOptions);
         // get seeds from previous result
         if (useSeedStack) { // true - use slices
+          foreColor = Color.RED;
+          backColor = Color.GREEN;
           nextseed = SeedProcessor.decodeSeedsfromRgb(seedImage.getStack().getProcessor(s),
                   Arrays.asList(foreColor), backColor);
-          switch (model.seedSource) {
+          switch (model.getSelectedSeedSource()) {
             case QconfFile:
             case MaskImage:
               // TODO propagate all foreground seeds
@@ -800,7 +904,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       // show seeds if selected and not stack seeds
       if (model.showSeeds) {
         if (useSeedStack == true) {
-          switch (model.seedSource) {
+          switch (model.getSelectedSeedSource()) {
             case QconfFile:
             case MaskImage:
               if (oneSlice) { // have stack but want only one slice
@@ -924,6 +1028,22 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         view.setCancelLabel("Cancel");
       }
     }
+  }
+
+  class SeedWorker extends SwingWorker<Object, Object> {
+
+    @Override
+    protected Object doInBackground() throws Exception {
+      view.enableUI(false);
+      return true;
+    }
+
+    @Override
+    protected void done() {
+
+      view.enableUI(true);
+    }
+
   }
 
   @Override

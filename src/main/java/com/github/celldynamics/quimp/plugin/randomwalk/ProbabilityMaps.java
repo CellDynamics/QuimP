@@ -20,7 +20,7 @@ import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Se
 public class ProbabilityMaps extends ListMap<RealMatrix> {
 
   /**
-   * 
+   * Default constructor.
    */
   public ProbabilityMaps() {
     super();
@@ -36,6 +36,7 @@ public class ProbabilityMaps extends ListMap<RealMatrix> {
    * @throws IllegalArgumentException if size is not equal
    */
   public double[][][] convertTo3dMatrix(Object key) {
+    // TODO consider using ImageStack here
     List<RealMatrix> maps = get(key);
     // Can be null if points not found
     if (maps == null || maps.isEmpty()) {

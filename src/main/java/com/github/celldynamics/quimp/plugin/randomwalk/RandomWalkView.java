@@ -2,6 +2,7 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -14,12 +15,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowFocusListener;
 import java.util.Collections;
-import java.util.Enumeration;
 
-import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -27,7 +25,6 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
@@ -183,37 +180,28 @@ public class RandomWalkView implements ActionListener, ItemListener {
     setJComboBox(cbOrginalImage, item, sel);
   }
 
-  private ButtonGroup seedSource = new ButtonGroup();
+  private JComboBox<String> cbSeedSource;
 
   /**
-   * Get selected seed source.
+   * Initialiser of cbSeedSource.
    * 
-   * @return selected seed source
+   * @param item list of items
+   * @param sel name of the selection to select.
+   * @see javax.swing.JComboBox#addItem(java.lang.Object)
    */
-  public SeedSource getSeedSource() {
-    return SeedSource.valueOf(seedSource.getSelection().getActionCommand());
+  public void setSeedSource(String[] item, String sel) {
+    setJComboBox(cbSeedSource, item, sel);
   }
 
   /**
-   * Set seed source i UI.
+   * cbFilteringMethod getter.
    * 
-   * @param val source to set.
+   * @return index of selected entry.
    */
-  public void setSeedSource(SeedSource val) {
-    Enumeration<AbstractButton> elements = seedSource.getElements();
-    while (elements.hasMoreElements()) {
-      AbstractButton button = (AbstractButton) elements.nextElement();
-      if (button.getActionCommand().equals(val.toString())) {
-        button.setSelected(true);
-      }
-    }
+  public int getSeedSource() {
+    return getJComboBox(cbSeedSource);
   }
 
-  private JRadioButton rbRgbImage;
-  private JRadioButton rbCreateImage;
-  private JRadioButton rbMaskImage;
-
-  private JRadioButton rbQcofFile;
   private JLabel lbQconfFile;
 
   /**
@@ -274,6 +262,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
   private JButton bnQconfSeedImage;
 
   private JButton bnClone;
+  private JButton bnSeedRoi;
+
   private JToggleButton bnFore;
 
   /**
@@ -316,6 +306,17 @@ public class RandomWalkView implements ActionListener, ItemListener {
   public void setCbCreatedSeedImage(String[] item, String sel) {
     cbCreatedSeedImage.removeAllItems();
     setJComboBox(cbCreatedSeedImage, item, sel);
+  }
+
+  private JLabel lbRoiSeedsInfo;
+
+  /**
+   * Getter for lRoiSeedsInfo
+   * 
+   * @return lRoiSeedsInfo
+   */
+  public JLabel getLroiSeedsInfo() {
+    return lbRoiSeedsInfo;
   }
 
   // optionsPanel
@@ -855,45 +856,28 @@ public class RandomWalkView implements ActionListener, ItemListener {
     seedSelPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(Color.ORANGE, 1), "Get seeds from:"));
     seedSelPanel.setLayout(new GridLayout(2, 1, 2, 2));
-    rbRgbImage = new JRadioButton("RGB image");
-    rbRgbImage.addActionListener(this);
-    rbRgbImage.setActionCommand(SeedSource.RGBImage.toString());
-    rbRgbImage.addItemListener(this);
-    UiTools.setToolTip(rbRgbImage,
-            "Load seeds from scribble image. Stack or single image. FG must be pure red,"
-                    + " BG pure green. Only one foreground object supported");
-    rbCreateImage = new JRadioButton("Create image");
-    rbCreateImage.addActionListener(this);
-    rbCreateImage.setActionCommand(SeedSource.CreatedImage.toString());
-    rbCreateImage.addItemListener(this);
-    UiTools.setToolTip(rbCreateImage,
-            "Create FG and BG seeds. Many FG object supported. Single image only.");
-    rbMaskImage = new JRadioButton("Mask image");
-    rbMaskImage.addActionListener(this);
-    rbMaskImage.setActionCommand(SeedSource.MaskImage.toString());
-    rbMaskImage.addItemListener(this);
-    UiTools.setToolTip(rbMaskImage, "Initial seed as binary mask.");
-    rbQcofFile = new JRadioButton("QCONF file");
-    rbQcofFile.addActionListener(this);
-    rbQcofFile.setActionCommand(SeedSource.QconfFile.toString());
-    rbQcofFile.addItemListener(this);
-    UiTools.setToolTip(rbQcofFile, "Get binary mask from QCONF file.");
-    seedSource = new ButtonGroup();
-    seedSource.add(rbRgbImage);
-    seedSource.add(rbCreateImage);
-    seedSource.add(rbMaskImage);
-    seedSource.add(rbQcofFile);
-    seedSelPanel.add(rbRgbImage);
-    seedSelPanel.add(rbCreateImage);
-    seedSelPanel.add(rbMaskImage);
-    seedSelPanel.add(rbQcofFile);
+    cbSeedSource = new JComboBox<String>();
+    cbSeedSource.setPreferredSize(new Dimension(250, cbOrginalImage.getPreferredSize().height));
+    cbSeedSource.addActionListener(this);
+    UiTools.setToolTip(cbSeedSource, "Select seed source.");
+
+    // UiTools.setToolTip(rbRgbImage,
+    // "Load seeds from scribble image. Stack or single image. FG must be pure red,"
+    // + " BG pure green. Only one foreground object supported");
+    // UiTools.setToolTip(rbCreateImage,
+    // "Create FG and BG seeds. Many FG object supported. Single image only.");
+    // UiTools.setToolTip(rbMaskImage, "Initial seed as binary mask.");
+    // UiTools.setToolTip(rbQcofFile, "Get binary mask from QCONF file.");
+    seedSelPanel.add(cbSeedSource);
     // create all controls with values even if not visible
     cbCreatedSeedImage = new JComboBox<String>();
     cbRgbSeedImage = new JComboBox<String>();
     cbMaskSeedImage = new JComboBox<String>();
     bnQconfSeedImage = new JButton("Open");
     bnClone = new JButton("Clone");
-    UiTools.setToolTip(bnClone, "Clone selected original image and allow to seed it manually");
+    UiTools.setToolTip(bnClone, "Clone selected original image.");
+    bnSeedRoi = new JButton("Seed");
+    UiTools.setToolTip(bnSeedRoi, "Open ROI seed tool.");
     bnFore = new JToggleButton("FG");
     UiTools.setToolTip(bnFore,
             "Select Foreground pen. Not used and will be removed in next version.");
@@ -905,8 +889,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     bnBack.addActionListener(this);
     bnBack.setBackground(Color.GREEN);
     lbQconfFile = new JLabel("");
-    bnFore.setEnabled(false); // Temporally disabled, see enableUI as well
-    bnBack.setEnabled(false);
+    lbRoiSeedsInfo = new JLabel("");
 
     JPanel optionsPanel = new JPanel();
     optionsPanel.setBorder(BorderFactory.createTitledBorder("Segmentation options"));
@@ -1095,13 +1078,13 @@ public class RandomWalkView implements ActionListener, ItemListener {
     constrains.weighty = 1;
     constrains.gridheight = 1;
     constrains.anchor = GridBagConstraints.NORTH;
-    constrains.fill = GridBagConstraints.BOTH;
+    constrains.fill = GridBagConstraints.HORIZONTAL;
     panelMain.add(seedSelPanel, constrains);
 
     constrains.gridx = 0;
     constrains.gridy = 2;
     constrains.gridheight = 1;
-    constrains.fill = GridBagConstraints.BOTH;
+    constrains.fill = GridBagConstraints.HORIZONTAL;
     constrains.weighty = 1;
     constrains.anchor = GridBagConstraints.NORTH;
     panelMain.add(getRgbImage(), constrains); // dynamic panel no 2
@@ -1154,13 +1137,11 @@ public class RandomWalkView implements ActionListener, ItemListener {
   public void enableUI(boolean status) {
     cbOrginalImage.setEnabled(status);
     cbRgbSeedImage.setEnabled(status);
-    rbRgbImage.setEnabled(status);
-    rbCreateImage.setEnabled(status);
-    rbMaskImage.setEnabled(status);
-    rbQcofFile.setEnabled(status);
+    cbSeedSource.setEnabled(status);
     cbMaskSeedImage.setEnabled(status);
     bnQconfSeedImage.setEnabled(status);
     bnClone.setEnabled(status);
+    bnSeedRoi.setEnabled(status);
     bnFore.setEnabled(status);
     bnBack.setEnabled(status);
     cbCreatedSeedImage.setEnabled(status);
@@ -1210,8 +1191,6 @@ public class RandomWalkView implements ActionListener, ItemListener {
 
     // chHatFilter.setEnabled(status); // not implemented, remove after
     srGamma0.setEnabled(false); // feature currently disabled, see constructor as well
-    bnFore.setEnabled(false);
-    bnBack.setEnabled(false);
   }
 
   /**
@@ -1297,7 +1276,6 @@ public class RandomWalkView implements ActionListener, ItemListener {
    * Set initial state of UI.
    */
   private void setInitial() {
-    rbRgbImage.setSelected(true);
     srAlev.setEnabled(false);
     srNum.setEnabled(false);
     srWindow.setEnabled(false);
@@ -1344,11 +1322,26 @@ public class RandomWalkView implements ActionListener, ItemListener {
     JPanel seedBuildPanel = new JPanel();
     seedBuildPanel.setLayout(new GridLayout(2, 1, 2, 2));
     JPanel seedBuildPanelButtons = new JPanel();
-    seedBuildPanelButtons.setLayout(new GridLayout(1, 3, 2, 2));
+    seedBuildPanelButtons.setLayout(new GridBagLayout());
 
-    seedBuildPanelButtons.add(bnClone);
-    seedBuildPanelButtons.add(bnFore);
-    seedBuildPanelButtons.add(bnBack);
+    GridBagConstraints constrProc = new GridBagConstraints();
+    constrProc.gridx = 0;
+    constrProc.gridy = 0;
+    constrProc.weightx = 1;
+    constrProc.weighty = 1;
+    constrProc.fill = GridBagConstraints.HORIZONTAL;
+    // constrProc.insets = new Insets(1, 1, 1, 1);
+    seedBuildPanelButtons.add(bnClone, constrProc);
+    constrProc.gridx = 1;
+    constrProc.weightx = 1;
+    constrProc.fill = GridBagConstraints.HORIZONTAL;
+    // constrProc.insets = new Insets(1, 2, 1, 2);
+    seedBuildPanelButtons.add(bnFore, constrProc);
+    constrProc.gridx = 2;
+    constrProc.weightx = 1;
+    constrProc.fill = GridBagConstraints.HORIZONTAL;
+    // constrProc.insets = new Insets(1, 2, 1, 2);
+    seedBuildPanelButtons.add(bnBack, constrProc);
 
     seedBuildPanel.add(seedBuildPanelButtons);
     seedBuildPanel.add(cbCreatedSeedImage);
@@ -1397,6 +1390,47 @@ public class RandomWalkView implements ActionListener, ItemListener {
   }
 
   /**
+   * Helper creating dynamic panel for loading seeds from Rois file
+   * 
+   * @return created panel.
+   */
+  private JPanel getRois() {
+    JPanel dynPanel = (JPanel) panelMain.getComponent(2);
+    dynPanel.removeAll();
+
+    dynPanel.setBorder(BorderFactory
+            .createTitledBorder(BorderFactory.createLineBorder(Color.ORANGE), "Seed from ROIs"));
+    dynPanel.setLayout(new BorderLayout());
+    ((BorderLayout) dynPanel.getLayout()).setVgap(2);
+    // middle buttons
+    JPanel seedBuildPanel = new JPanel();
+    seedBuildPanel.setLayout(new GridLayout(2, 1, 2, 2));
+    JPanel seedBuildPanelButtons = new JPanel();
+    seedBuildPanelButtons.setLayout(new GridBagLayout());
+
+    GridBagConstraints constrProc = new GridBagConstraints();
+    constrProc.gridx = 0;
+    constrProc.gridy = 0;
+    constrProc.weightx = 1;
+    constrProc.weighty = 1;
+    constrProc.fill = GridBagConstraints.HORIZONTAL;
+    // constrProc.insets = new Insets(1, 1, 1, 1);
+    seedBuildPanelButtons.add(bnClone, constrProc);
+    constrProc.gridx = 1;
+    constrProc.weightx = 1;
+    constrProc.fill = GridBagConstraints.HORIZONTAL;
+    // constrProc.insets = new Insets(1, 2, 1, 2);
+    seedBuildPanelButtons.add(bnSeedRoi, constrProc);
+
+    seedBuildPanel.add(seedBuildPanelButtons);
+    seedBuildPanel.add(lbRoiSeedsInfo);
+
+    dynPanel.add(seedBuildPanel);
+
+    return dynPanel;
+  }
+
+  /**
    * Show the window.
    */
   public void show() {
@@ -1410,25 +1444,35 @@ public class RandomWalkView implements ActionListener, ItemListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
-    if (source == rbRgbImage) {
-      getRgbImage();
-      panelMain.revalidate();
-      wnd.validate();
-    }
-    if (source == rbCreateImage) {
-      getCreateImage();
-      panelMain.revalidate();
-      wnd.validate();
-    }
-    if (source == rbMaskImage) {
-      getMaskImage();
-      panelMain.revalidate();
-      wnd.validate();
-    }
-    if (source == rbQcofFile) {
-      getQconfImage();
-      panelMain.revalidate();
-      wnd.validate();
+    if (source == cbSeedSource) {
+      SeedSource val = SeedSource.valueOf((String) cbSeedSource.getSelectedItem());
+      switch (val) {
+        case RGBImage:
+          getRgbImage();
+          panelMain.revalidate();
+          wnd.validate();
+          break;
+        case CreatedImage:
+          getCreateImage();
+          panelMain.revalidate();
+          wnd.validate();
+          break;
+        case MaskImage:
+          getMaskImage();
+          panelMain.revalidate();
+          wnd.validate();
+          break;
+        case QconfFile:
+          getQconfImage();
+          panelMain.revalidate();
+          wnd.validate();
+          break;
+        case Rois:
+          getRois();
+          panelMain.revalidate();
+          wnd.validate();
+          break;
+      }
     }
     if (source == bnFore) {
       if (bnFore.isSelected()) {
@@ -1551,6 +1595,15 @@ public class RandomWalkView implements ActionListener, ItemListener {
    */
   public void addCloneController(ActionListener list) {
     bnClone.addActionListener(list);
+  }
+
+  /**
+   * Assign listener to Seed ROI button.
+   * 
+   * @param list listener
+   */
+  public void addSeedRoiController(ActionListener list) {
+    bnSeedRoi.addActionListener(list);
   }
 
   /**

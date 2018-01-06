@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +13,18 @@ import org.slf4j.LoggerFactory;
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.gui.Roi;
+import ij.plugin.ZProjector;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;
 
 /**
  * Contain various methods for converting labelled images to Seeds.
+ * 
+ * TODO consider to return each FG seed in different grayscale, even if they are at separate image
  * 
  * @author p.baniukiewicz
  *
@@ -82,22 +88,8 @@ public class SeedProcessor {
       }
     }
     // check if there is at least one seed pixel in any seed map
-    int pixelsNum = 0;
-    int pixelHistNum = 0;
-    // iterate over foregrounds
-    for (ImageProcessor i : out.get(RandomWalkSegmentation.SeedTypes.FOREGROUNDS)) {
-      int[] histfg = i.getHistogram();
-      pixelHistNum += histfg[0]; // sum number of background pixels for each map
-      pixelsNum += i.getPixelCount(); // sum number of all pixels
-    }
-    int[] histbg = background.getHistogram();
-    // if number of all pixels is same as number of hist[0] - no other pixels than background
-    if (pixelHistNum == pixelsNum || histbg[0] == background.getPixelCount()) {
-      throw new RandomWalkException(
-              "Seed pixels are empty, check if:\n- correct colors were used\n- all slices have"
-                      + " been seeded (if stacked seed is used)\n"
-                      + "- Shrink/expand parameters are not too big.");
-    }
+    validateSeeds(out, SeedTypes.FOREGROUNDS);
+    validateSeeds(out, SeedTypes.BACKGROUND);
 
     return out;
   }
@@ -126,6 +118,35 @@ public class SeedProcessor {
   }
 
   /**
+   * Validate if at least one map in specified seed type contains non-zero pixel.
+   * 
+   * @param seeds seeds to verify
+   * @param type seed type
+   * @throws RandomWalkException when all maps under specified key are empty (black). Allows empty
+   *         or nonexisting keys
+   */
+  public static void validateSeeds(Seeds seeds, SeedTypes type) throws RandomWalkException {
+    if (seeds.get(type) == null || seeds.get(type).isEmpty()) {
+      return;
+    }
+    // check if there is at least one seed pixel in any seed map
+    int pixelsNum = 0;
+    int pixelHistNum = 0;
+    // iterate over foregrounds
+    for (ImageProcessor i : seeds.get(type)) {
+      int[] histfg = i.getHistogram();
+      pixelHistNum += histfg[0]; // sum number of background pixels for each map
+      pixelsNum += i.getPixelCount(); // sum number of all pixels
+    }
+    if (pixelHistNum == pixelsNum) {
+      throw new RandomWalkException(
+              "Seed pixels are empty, check if:\n- correct colors were used\n- all slices have"
+                      + " been seeded (if stacked seed is used)\n"
+                      + "- Shrink/expand parameters are not too big.");
+    }
+  }
+
+  /**
    * Decode seeds from list of ROIs objects.
    * 
    * <p>ROIs naming must comply with the following pattern: coreID_NO, where core is different for
@@ -139,9 +160,10 @@ public class SeedProcessor {
    * @param width width of output map
    * @param height height of output map
    * @return Seed structure with FG and BG maps.
+   * @throws RandomWalkException when all seeds are empty (but maps exist)
    */
   public static Seeds decodeSeedsRoi(List<Roi> rois, String fgName, String bgName, int width,
-          int height) {
+          int height) throws RandomWalkException {
     Seeds ret = new Seeds();
 
     List<Roi> fglist = rois.stream().filter(roi -> roi.getName().startsWith(fgName))
@@ -158,7 +180,9 @@ public class SeedProcessor {
       r.setStrokeColor(Color.WHITE);
       bg.draw(r);
     }
-    ret.put(SeedTypes.BACKGROUND, bg);
+    if (!bglist.isEmpty()) {
+      ret.put(SeedTypes.BACKGROUND, bg);
+    }
 
     ArrayList<Integer> ind = new ArrayList<>(); // array of cell numbers
     // init color for roi and collect unique cell id from name fgNameId_no
@@ -182,6 +206,9 @@ public class SeedProcessor {
       ret.put(SeedTypes.FOREGROUNDS, fg);
     }
 
+    // check if there is at least one seed pixel in any seed map
+    validateSeeds(ret, SeedTypes.FOREGROUNDS);
+    validateSeeds(ret, SeedTypes.BACKGROUND);
     // LOGGER.debug(norepeat.toString());
     // new ImagePlus("", ret.get(0).get(SeedTypes.BACKGROUND, 1)).show();
     // List<ImageProcessor> tmp = ret.get(0).get(SeedTypes.FOREGROUNDS);
@@ -193,4 +220,150 @@ public class SeedProcessor {
     return ret;
   }
 
+  /**
+   * Convert {@link Seeds} object into one-slice grayscale image. Background map have maximum
+   * intensity.
+   * 
+   * <p>If there is more than one BG map it is not possible to find which of last colours are they.
+   * 
+   * @param seeds seeds to convert
+   * @return Image with seeds in gray scale. Background is last (brightest). Null if there is no FG.
+   *         Empty BG is allowed.
+   */
+  public static ImageProcessor getSeedsAsGrayscale(Seeds seeds) {
+    if (seeds.get(SeedTypes.FOREGROUNDS) == null) {
+      return null;
+    }
+    ImageProcessor fg = flatten(seeds, SeedTypes.FOREGROUNDS, 1);
+    ImageStatistics stat = fg.getStats();
+    ImageProcessor bg = flatten(seeds, SeedTypes.BACKGROUND, (int) stat.max + 1);
+    ImageStack stack = new ImageStack(fg.getWidth(), fg.getHeight());
+    stack.addSlice(fg);
+    stack.addSlice(bg);
+
+    ImagePlus im = new ImagePlus("", stack);
+    ZProjector z = new ZProjector(im);
+    z.setImage(im);
+    z.setMethod(ZProjector.MAX_METHOD);
+    z.doProjection();
+    ImageProcessor ret = z.getProjection().getProcessor();
+    return ret;
+  }
+
+  /**
+   * Flatten seeds of specified type ad output grayscale image.
+   * 
+   * @param seeds seeds to flatten
+   * @param type which map
+   * @param initialValue brightness value to start from (typically 1)
+   * @return Image with seeds in gray scale or null if input does not contain specified map
+   */
+  public static ImageProcessor flatten(Seeds seeds, SeedTypes type, int initialValue) {
+    if (seeds.get(type) == null) {
+      return null;
+    }
+    int currentVal = initialValue;
+    // assume same sizes of seeds
+    ImageStack stack = seeds.convertToStack(type).duplicate();
+    for (int s = 1; s <= stack.size(); s++) {
+      stack.getProcessor(s).multiply(1.0 * currentVal / 255);
+      currentVal++;
+    }
+    ImagePlus im = new ImagePlus("", stack);
+    ZProjector z = new ZProjector(im);
+    z.setImage(im);
+    z.setMethod(ZProjector.MAX_METHOD);
+    z.doProjection();
+    ImageProcessor ret = z.getProjection().getProcessor();
+    return ret;
+  }
+
+  /**
+   * Convert grayscale image to {@link Seeds}.
+   * 
+   * @param im 8-bit grayscale image, 0 is background
+   * @return Seeds with {@link SeedTypes#FOREGROUNDS} filled. No {@link SeedTypes#BACKGROUND}
+   */
+  public static Seeds getGrayscaleAsSeeds(ImageProcessor im) {
+    Seeds ret = new Seeds(2);
+    ImageStatistics stats = im.getStats();
+    int max = (int) stats.max; // max value
+    // list of all possible theoretical values of labels in image processor except background
+    // 1...max(im)
+    List<Integer> lin = IntStream.rangeClosed(1, max).boxed().collect(Collectors.toList());
+    ImageProcessor tmp = new ByteProcessor(im.getWidth(), im.getHeight());
+    // create requested number of foreground maps
+    for (int i = 0; i < max; i++) {
+      ret.put(SeedTypes.FOREGROUNDS, tmp.duplicate());
+    }
+    // fill each map with corresponding values
+    for (int r = 0; r < im.getHeight(); r++) {
+      for (int c = 0; c < im.getWidth(); c++) {
+        int pixel = (int) im.getPixelValue(r, c);
+        if (pixel > 0) { // skip background
+          ret.get(SeedTypes.FOREGROUNDS).get(pixel - 1).set(r, c, Color.WHITE.getBlue());
+          // remove this map number from list - for further detection gaps in grayscale seeds that
+          // impose empty FG
+          lin.remove(new Integer(pixel));
+        }
+      }
+    }
+    // now lin should be empty, if not it means that there are gaps and some maps were not touched
+    if (!lin.isEmpty()) {
+      // remove starting from end
+      Collections.reverse(lin);
+      for (Integer i : lin) {
+        ret.get(SeedTypes.FOREGROUNDS).remove(i.intValue() - 1);
+      }
+    }
+    return ret;
+  }
+
+  /**
+   * Convert list of ROIs to binary images separately for each ROI.
+   * 
+   * <p>Assumes that ROIs are named: fgNameID_NO, where ID belongs to the same object and NO are
+   * different scribbles for it. Similar to {@link #decodeSeedsRoi(List, String, String, int, int)}
+   * but process each slice separatelly.
+   * 
+   * @param rois rois to process.
+   * @param width width of output map
+   * @param height height of output map
+   * @param slices number of slices
+   * @param fgName core for FG ROI name
+   * @param bgName core for BG core name
+   * @return List of Seeds for each slice
+   * @throws RandomWalkException
+   * @see #decodeSeedsRoi(List, String, String, int, int)
+   */
+  public static List<Seeds> decodeSeedsRoiStack(List<Roi> rois, String fgName, String bgName,
+          int width, int height, int slices) throws RandomWalkException {
+    ArrayList<Seeds> ret = new ArrayList<>();
+    // find nonassigned ROIs - according to DOC getPosition() can return 0 as well (stacks start
+    // from 1)
+    List<Roi> col0 =
+            rois.stream().filter(roi -> roi.getPosition() == 0).collect(Collectors.toList());
+    // find ROIS on each slice
+    for (int s = 1; s <= slices; s++) {
+      final int w = s;
+      List<Roi> col =
+              rois.stream().filter(roi -> roi.getPosition() == w).collect(Collectors.toList());
+      // merge those nonassigned to slice 1
+      if (s == 1) {
+        col.addAll(col0);
+      }
+      // produce Seeds
+      Seeds tmpSeed = SeedProcessor.decodeSeedsRoi(col, fgName, bgName, width, height);
+      ret.add(tmpSeed);
+    }
+
+    // new ImagePlus("", ret.get(0).get(SeedTypes.BACKGROUND, 1)).show();
+    // List<ImageProcessor> tmp = ret.get(0).get(SeedTypes.FOREGROUNDS);
+    // for (ImageProcessor ip : tmp) {
+    // new ImagePlus("", ip).show();
+    // }
+
+    return ret;
+
+  }
 }

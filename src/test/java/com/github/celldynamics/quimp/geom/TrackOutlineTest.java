@@ -1,5 +1,8 @@
 package com.github.celldynamics.quimp.geom;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -12,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.Outline;
-import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
-import com.github.celldynamics.quimp.geom.TrackOutline;
 import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
@@ -25,7 +26,6 @@ import ij.gui.ShapeRoi;
 import ij.plugin.RoiRotator;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -111,6 +111,7 @@ public class TrackOutlineTest {
   public void testGetOutlines() throws Exception {
     List<List<Point2d>> ret = obj.getOutlinesasPoints(2, false);
     LOGGER.debug("Found " + ret.size());
+    assertThat(ret.size(), is(3));
     ImagePlus r = image.duplicate();
     r.setProcessor((ImageProcessor) accessPrivateField("prepared", obj));
     IJ.saveAsTiff(r, tmpdir + "testGetOutlines.tif");

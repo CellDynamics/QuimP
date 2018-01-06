@@ -3,17 +3,24 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
+import com.github.celldynamics.quimp.utils.UiTools;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -24,6 +31,9 @@ import ij.plugin.frame.RoiManager;
 /**
  * Simple seed picker by means of ROIs. Allow to select multiple foreground objects and one
  * background. Produces {@link Seeds} structure at output.
+ * 
+ * <p>Add current ROI to ROI list, if nothing selected look through ROI manager and renames
+ * un-renamed ROIs according to requested type (FG or BG).
  * 
  * @author p.baniukiewicz
  *
@@ -49,21 +59,25 @@ public class SeedPicker extends JFrame {
    * Image used for seeding. It is not modified, only its dimensions are used.
    */
   public ImagePlus image;
-  private RoiManager rm;
+  RoiManager rm;
   private String lastTool;
   private int lastLineWidth;
   private int lastFgNum = 0; // cell number
   private int lastBgNum = 0; // but this is index, cell is always 0 for BG
+
   /**
    * Converted seeds available after Finish.
    */
-  public List<Seeds> seeds = new ArrayList<>();
+  public List<Seeds> seedsRoi = new ArrayList<>();
+
+  private JButton btnFinish;
 
   /**
    * Default constructor. Does not show window. Require {@link #image} to be set.
    */
   public SeedPicker() {
     this(false);
+
   }
 
   /**
@@ -93,49 +107,133 @@ public class SeedPicker extends JFrame {
    * @param show true to show the UI
    */
   public SeedPicker(boolean show) {
+    setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     setResizable(false);
     setAlwaysOnTop(true);
+    setType(Type.NORMAL);
+    setTitle("Select seeds");
     setVisible(show);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    setBounds(100, 100, 270, 40);
+    // setPreferredSize(new Dimension(300, 100));
+    // setBounds(100, 100, 295, 66);
     contentPane = new JPanel();
     setContentPane(contentPane);
     contentPane.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
     JButton tglbtnNewFg = new JButton("New FG");
+    UiTools.setToolTip(tglbtnNewFg,
+            "Create next FG label from current selection or from unassigned ROIs from Roi Manager"
+                    + ". For creating one label from separated ROIs,"
+                    + " add them first to Roi Manager and then use this button.");
     tglbtnNewFg.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if (renameRois(fgName)) {
-          lastFgNum++;
+        if (!increaseRois(fgName)) {
+          // nothing added - add current selection
+          Roi current = image.getRoi();
+          if (current != null) {
+            rm.add(image, current, 0);
+            increaseRois(fgName);
+          }
         }
       }
     });
     contentPane.add(tglbtnNewFg);
 
     JButton btnBackground = new JButton("New BG");
+    UiTools.setToolTip(btnBackground,
+            "Create next BG label from current selection or from unassigned ROIs from Roi Manager"
+                    + ". For creating one label from separated ROIs,"
+                    + " add them first to Roi Manager and then use this button.");
     btnBackground.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if (renameRois(bgName)) {
-          lastBgNum++;
+        if (!increaseRois(bgName)) {
+          // nothing added - add current selection
+          Roi current = image.getRoi();
+          if (current != null) {
+            rm.add(image, current, 0);
+            increaseRois(bgName);
+          }
         }
       }
     });
     contentPane.add(btnBackground);
 
-    JButton btnFinish = new JButton("Finish");
+    btnFinish = new JButton("Finish");
     btnFinish.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
-        seeds = convert(Arrays.asList(rm.getRoisAsArray()));
-        IJ.setTool(lastTool);
-        Line.setWidth(lastLineWidth);
-        dispose();
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          if (image == null) {
+            throw new RandomWalkException("No image opened with SeedPicker.");
+          }
+          seedsRoi = SeedProcessor.decodeSeedsRoiStack(Arrays.asList(rm.getRoisAsArray()), fgName,
+                  bgName, image.getWidth(), image.getHeight(), image.getImageStackSize());
+          dispose();
+        } catch (RandomWalkException ex) {
+          ex.setMessageSinkType(MessageSinkTypes.GUI);
+          ex.handleException((JFrame) SwingUtilities.getRoot(contentPane),
+                  "Problem with converting seeds from ROI");
+        }
+
       }
     });
+
     contentPane.add(btnFinish);
-    if (show) {
-      openRoiManager();
-      selectTools();
+
+    addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentShown(ComponentEvent arg0) {
+        openRoiManager();
+        selectTools();
+      }
+
+      @Override
+      public void componentHidden(ComponentEvent e) {
+        IJ.setTool(lastTool);
+        Line.setWidth(lastLineWidth);
+      }
+    });
+    addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosing(WindowEvent arg0) {
+        IJ.setTool(lastTool);
+        Line.setWidth(lastLineWidth);
+      }
+
+      @Override
+      public void windowClosed(WindowEvent e) {
+        IJ.setTool(lastTool);
+        Line.setWidth(lastLineWidth);
+      }
+    });
+    pack();
+  }
+
+  void addFinishController(ActionListener list) {
+    btnFinish.addActionListener(list);
+  }
+
+  /**
+   * Rename ROIs in RoiManager and increases counters.
+   * 
+   * @param coreName ROI to rename
+   * @return true if something added
+   */
+  private boolean increaseRois(String coreName) {
+    boolean ret = false;
+    if (coreName.equals(fgName)) {
+      ret = renameRois(fgName);
+      if (ret) { // rename FG
+        lastFgNum++; // and increase counter if anything renamed
+      }
     }
+    if (coreName.equals(bgName)) {
+      ret = renameRois(bgName);
+      if (ret) {
+        lastBgNum++;
+      }
+    }
+    return ret;
   }
 
   private void openRoiManager() {
@@ -154,7 +252,8 @@ public class SeedPicker extends JFrame {
   /**
    * Rename ROIs in RoiManager.
    * 
-   * Any nonrenamed ROIS will be renamed to format corenameCell_no, where Cell is cell number and no
+   * <p>Any nonrenamed ROIS will be renamed to format corenameCell_no, where Cell is cell number and
+   * no
    * is ROI number for the cell. There can be many ROIs for one cell. For background there is only
    * one object but again it cn be scribbled by many ROIs.
    * 
@@ -194,46 +293,15 @@ public class SeedPicker extends JFrame {
   }
 
   /**
-   * Convert list of ROIs to binary images separately for each ROI.
-   * 
-   * <p>Assumes that ROIs are named: fgNameID_NO, where ID belongs to the same object and NO are
-   * different scribbles for it.
-   * 
-   * @param rois rois to process.
-   * @return List of Seeds for each slice
+   * Prepare for new ROI selection. Clears all counters, roi manager and Seed list.
    */
-  public List<Seeds> convert(List<Roi> rois) {
-    ArrayList<Seeds> ret = new ArrayList<>();
-    if (image == null) {
-      LOGGER.warn("Image does not exist!");
-      return ret;
+  public void reset() {
+    lastFgNum = 0;
+    lastBgNum = 0;
+    seedsRoi.clear();
+    if (rm != null) {
+      rm.reset();
     }
-    // find nonassigned ROIs
-    List<Roi> col0 =
-            rois.stream().filter(roi -> roi.getPosition() == 0).collect(Collectors.toList());
-    // find ROIS on each slice
-    for (int s = 1; s <= image.getStackSize(); s++) {
-      final int w = s;
-      List<Roi> col =
-              rois.stream().filter(roi -> roi.getPosition() == w).collect(Collectors.toList());
-      // merge those nonassigned and slice 1
-      if (s == 1) {
-        col.addAll(col0);
-      }
-      // produce Seeds
-      Seeds tmpSeed = SeedProcessor.decodeSeedsRoi(col, fgName, bgName, image.getWidth(),
-              image.getHeight());
-      ret.add(tmpSeed);
-    }
-
-    // new ImagePlus("", ret.get(0).get(SeedTypes.BACKGROUND, 1)).show();
-    // List<ImageProcessor> tmp = ret.get(0).get(SeedTypes.FOREGROUNDS);
-    // for (ImageProcessor ip : tmp) {
-    // new ImagePlus("", ip).show();
-    // }
-
-    return ret;
-
   }
 
 }

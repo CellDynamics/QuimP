@@ -546,8 +546,9 @@ public abstract class PropagateSeeds {
       big.fill();
       double stepsshrink = shrinkPower / stepSize; // total shrink/step size
       double stepsexp = (expandPower) / stepSize; // total shrink/step size
+      Seeds ret = new Seeds(2);
 
-      List<Outline> outlines = getOutline(previous);
+      List<Outline> outlines = getOutline(previous); // this supports grayscales
 
       // save extra debug info if property set
       if (QuimP.SUPER_DEBUG) {
@@ -577,6 +578,7 @@ public abstract class PropagateSeeds {
         small.fill(fr);
         small.drawRoi(fr);
         // small.resetRoi();
+        ret.put(SeedTypes.FOREGROUNDS, small);
       }
 
       for (Outline o : outlines) {
@@ -596,8 +598,6 @@ public abstract class PropagateSeeds {
       }
       big.invert();
       // store seeds if option ticked
-      Seeds ret = new Seeds(2);
-      ret.put(SeedTypes.FOREGROUNDS, small);
       ret.put(SeedTypes.BACKGROUND, getTrueBackground(big, org));
       if (storeSeeds) {
         seeds.add(ret);
@@ -610,7 +610,7 @@ public abstract class PropagateSeeds {
     /**
      * Convert mask to outline.
      * 
-     * @param previous image to outline. White object on black background.
+     * @param previous image to be converted outline. White object on black background.
      * @return List of Outline for current frame
      * @see TrackOutline
      */
@@ -729,8 +729,9 @@ public abstract class PropagateSeeds {
 
     for (Seeds p : seeds) {
       // just in case convert to byte
-      // FIXME compile foregorunds from all images
-      ImageProcessor fg = (ImageProcessor) p.get(SeedTypes.FOREGROUNDS, 1).convertToByte(true);
+      // ImageProcessor fg = (ImageProcessor) p.get(SeedTypes.FOREGROUNDS, 1).convertToByte(true);
+      ImageProcessor fg = SeedProcessor.flatten(p, SeedTypes.FOREGROUNDS, 1).convertToByte(true);
+      fg.threshold(0); // need 255 not real value of map
       ImageProcessor bg = (ImageProcessor) p.get(SeedTypes.BACKGROUND, 1).convertToByte(true);
       // make colors transparent
       bg.multiply(colorScaling);

@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 
+import ij.ImageStack;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
@@ -115,12 +116,43 @@ public class SeedsTest {
     Seeds ret = new Seeds();
 
     List<List<Point>> list = ret.convertToList(SeedTypes.FOREGROUNDS);
-    assertThat(list, is(nullValue()));
+    assertThat(list.isEmpty(), is(true));
 
     // empty stack
     ret.put(SeedTypes.FOREGROUNDS, new ArrayList<>());
     list = ret.convertToList(SeedTypes.FOREGROUNDS);
-    assertThat(list, is(nullValue()));
+    assertThat(list.isEmpty(), is(true));
+  }
+
+  /**
+   * Test of {@link Seeds#convertToStack(Object)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testConvertToStack() throws Exception {
+    Seeds obj = new Seeds();
+    ImageProcessor imp = new ByteProcessor(150, 150);
+    imp.putPixel(100, 101, 63); // equals des not work for IPs, recognize by this pixels
+    ImageProcessor imp1 = new ByteProcessor(150, 150);
+    imp1.putPixel(63, 63, 52);
+    obj.put(SeedTypes.FOREGROUNDS, imp);
+    obj.put(SeedTypes.FOREGROUNDS, imp1);
+
+    // no key
+    ImageStack ret = obj.convertToStack(SeedTypes.BACKGROUND);
+    assertThat(ret, is(nullValue()));
+
+    ret = obj.convertToStack(SeedTypes.FOREGROUNDS);
+    assertThat(ret.getSize(), is(2));
+    assertThat(ret.getVoxel(100, 101, 0), is(63.0));
+    assertThat(ret.getVoxel(63, 63, 1), is(52.0));
+
+    // empty
+    obj.put(SeedTypes.BACKGROUND, new ArrayList<>());
+    ret = obj.convertToStack(SeedTypes.BACKGROUND);
+    assertThat(ret, is(nullValue()));
+
   }
 
 }

@@ -36,14 +36,16 @@ import ij.process.ImageProcessor;
 public class Seeds extends ListMap<ImageProcessor> {
 
   /**
-   * 
+   * Default constructor.
    */
   public Seeds() {
     super();
   }
 
   /**
-   * @param initialCapacity
+   * Allow to set initial capacity.
+   * 
+   * @param initialCapacity initial capacity
    */
   public Seeds(int initialCapacity) {
     super(initialCapacity);
@@ -107,6 +109,36 @@ public class Seeds extends ListMap<ImageProcessor> {
       out.add(points);
     }
     return out;
+  }
+
+  /**
+   * Convert seeds to ImageStack.
+   * 
+   * @param key which map to convert
+   * @return Stack of seeds for selected key or null if key does not exist or there aren't maps
+   *         under it.
+   */
+  public ImageStack convertToStack(Object key) {
+    List<ImageProcessor> seeds = get(key);
+    if (seeds == null || seeds.isEmpty()) {
+      return null;
+    }
+    ImageProcessor tmp = seeds.get(0);
+    ImageStack ret = new ImageStack(tmp.getWidth(), tmp.getHeight());
+    for (ImageProcessor ip : seeds) {
+      ret.addSlice(ip);
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return super.toString();
   }
 
 }
