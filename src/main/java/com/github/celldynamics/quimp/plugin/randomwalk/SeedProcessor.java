@@ -283,8 +283,9 @@ public class SeedProcessor {
    * 
    * @param im 8-bit grayscale image, 0 is background
    * @return Seeds with {@link SeedTypes#FOREGROUNDS} filled. No {@link SeedTypes#BACKGROUND}
+   * @throws RandomWalkException when all output FG seed maps are empty
    */
-  public static Seeds getGrayscaleAsSeeds(ImageProcessor im) {
+  public static Seeds getGrayscaleAsSeeds(ImageProcessor im) throws RandomWalkException {
     Seeds ret = new Seeds(2);
     ImageStatistics stats = im.getStats();
     int max = (int) stats.max; // max value
@@ -316,6 +317,7 @@ public class SeedProcessor {
         ret.get(SeedTypes.FOREGROUNDS).remove(i.intValue() - 1);
       }
     }
+    validateSeeds(ret, SeedTypes.FOREGROUNDS);
     return ret;
   }
 

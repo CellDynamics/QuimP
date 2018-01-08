@@ -28,9 +28,11 @@ import ij.process.ImageProcessor;
  * in {@link ImageStack}. One needs to take care about proper unwrapping data if standard
  * {@link #get(Object)} is used.
  * 
+ * <p>Seed maps can be converted from various sources like RGB images or grayscale images but maps
+ * are always binary.
  * 
  * @author p.baniukiewicz
- *
+ * @see SeedProcessor
  */
 @SuppressWarnings("serial")
 public class Seeds extends ListMap<ImageProcessor> {

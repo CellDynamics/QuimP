@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.QuimP;
+
 // TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
@@ -80,6 +82,31 @@ public class QuimpToolsCollectionTest {
             + "test_0.paQP should be broken";
     ret = QuimpToolsCollection.stringWrap(str, 20);
     assertEquals(9, StringUtils.countMatches(ret, '\n'));
+
+    str = "Long string with /home/baniuk/Documents/\n"
+            + "Repos/QuimP-env/QuimP/src/test/Resources-static/\n"
+            + "FormatConverter/templates\\Paqp-Q to QCONF missing maps/\n"
+            + "test_0.paQP should be broken";
+    ret = QuimpToolsCollection.stringWrap(str, 20);
+    LOGGER.debug(ret);
+    assertEquals(10, StringUtils.countMatches(ret, '\n'));
+  }
+
+  /**
+   * Test of {@link QuimpToolsCollection#stringWrap(String, int, String)}.
+   * 
+   * <p>Test if new line symbols are preserved.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testStringWrapStringInt() throws Exception {
+    String str = "Seed pixels are empty, check if:\n"
+            + "- correct colors were used\n- all slices have been seeded (if stacked seed is used)\n"
+            + "- Shrink/expand parameters are not too big.";
+    String ret = QuimpToolsCollection.stringWrap(str, QuimP.LINE_WRAP);
+    LOGGER.debug(ret);
+    assertEquals(3, StringUtils.countMatches(ret, '\n'));
   }
 
 }

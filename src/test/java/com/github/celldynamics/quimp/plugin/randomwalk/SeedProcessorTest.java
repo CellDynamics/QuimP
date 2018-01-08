@@ -139,6 +139,7 @@ public class SeedProcessorTest {
     ImagePlus testImage = IJ.openImage("src/test/Resources-static/GMask.tif");
     new ImageConverter(testImage).convertToRGB(); // convert to rgb
 
+    // there are more objects there
     Seeds ret =
             SeedProcessor.decodeSeedsfromRgb(testImage, Arrays.asList(Color.WHITE), Color.BLACK);
 
@@ -277,6 +278,22 @@ public class SeedProcessorTest {
     assertThat(ret.get(SeedTypes.FOREGROUNDS).get(1).getPixel(10, 20), is(255));
     assertThat(ret.get(SeedTypes.FOREGROUNDS).get(2).getPixel(20, 30), is(255));
 
+  }
+
+  /**
+   * Test of {@link SeedProcessor#getGrayscaleAsSeeds(ImageProcessor)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetGrayscaleAsSeeds_1() throws Exception {
+    ImageProcessor test = IJ.openImage("src/test/Resources-static/GMask.tif").getProcessor();
+
+    Seeds ret = SeedProcessor.getGrayscaleAsSeeds(test);
+    assertThat(ret.size(), is(1));
+    assertThat(ret.get(SeedTypes.FOREGROUNDS), is(not(nullValue())));
+    assertThat(ret.get(SeedTypes.FOREGROUNDS).isEmpty(), is(false));
+    assertThat(ret.get(SeedTypes.FOREGROUNDS).size(), is(3));
   }
 
   /**

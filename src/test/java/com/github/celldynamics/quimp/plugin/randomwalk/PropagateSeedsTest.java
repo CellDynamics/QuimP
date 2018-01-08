@@ -171,6 +171,7 @@ public class PropagateSeedsTest {
 
     cc.propagateSeed(mask.getStack().getProcessor(1), mask.getStack().getProcessor(1), 5, 10);
     ImagePlus ret = cc.getCompositeSeed(org, 0);
+    // no objects in org, so no in composite
     IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeed_QuimP.tif");
   }
 
@@ -270,8 +271,9 @@ public class PropagateSeedsTest {
     ImagePlus org = IJ.openImage("src/test/Resources-static/G.tif");
     ImagePlus mask = IJ.openImage("src/test/Resources-static/GMask.tif");
 
-    cc.propagateSeed(mask.getStack().getProcessor(1), mask.getStack().getProcessor(1), 20, 40);
+    cc.propagateSeed(mask.getStack().getProcessor(1), mask.getStack().getProcessor(1), 5, 25);
     ImagePlus ret = cc.getCompositeSeed(org, 0);
+    // no objects in org, so no in composite
     IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeedM_QuimP.tif");
   }
 

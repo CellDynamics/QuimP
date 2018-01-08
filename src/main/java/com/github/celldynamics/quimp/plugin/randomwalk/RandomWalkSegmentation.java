@@ -305,15 +305,19 @@ public class RandomWalkSegmentation {
   public enum SeedTypes {
     /**
      * Denote foreground related data. Usually on index 0.
+     * 
+     * <p>FG data can be grayscale images up to 8-bits.
      */
     FOREGROUNDS(0),
     /**
      * Denote background related data. Usually on index 1.
+     * 
+     * <p>BG data can be grayscale image up to 8-bits.
      */
     BACKGROUND(1),
     /**
      * Rough mask used for computing local mean. Used only if {@link RandomWalkOptions#useLocalMean}
-     * is true.
+     * is true. This mask should be always binary.
      * 
      * @see RandomWalkSegmentation#solver(Seeds, RealMatrix[])
      * @see RandomWalkSegmentation#getMeanSeedLocal(ImageProcessor, int)
@@ -422,12 +426,15 @@ public class RandomWalkSegmentation {
    * probability 0. IT should wor even if there is only one seed FG and no BG because most arrays
    * are 0-filled by default.
    * 
-   * @param seeds Seed arrays from decodeSeeds(ImagePlus, Color, Color)
-   * @return Segmented image as ByteProcessor
+   * @param seeds Seed arrays from {@link SeedProcessor}
+   * @return Segmented image as ByteProcessor or null if segmentation failed due to e.g. empty seeds
    * @throws RandomWalkException On wrong seeds
    */
   public ImageProcessor run(Seeds seeds) throws RandomWalkException {
     LOGGER.debug("Running with options: " + params.toString());
+    if (seeds.get(SeedTypes.FOREGROUNDS) == null) {
+      return null; // no FG maps - no segmentation
+    }
     // TODO change behaviour of gamma[1]==0. Maybe it should do second sweep but with gamma==0
     ProbabilityMaps solved;
     RealMatrix[] precomputed = precomputeGradients(); // precompute gradients
@@ -958,8 +965,8 @@ public class RandomWalkSegmentation {
    * @param seeds seed array returned from
    *        {@link SeedProcessor#decodeSeedsfromRgb(ImagePlus, List, Color)}
    * @param gradients pre-computed gradients returned from {@link #precomputeGradients()}
-   * @return Computed probabilities for background and foreground, RealMatrix[2]=
-   *         RealMatrix[FOREGROUND] and RealMatrix[BACKGROUND]
+   * @return Computed probabilities for background and foreground. Returned structure can be also
+   *         empty if there are not FG seeds provided on input (no FG map in {@link Seeds})
    */
   protected ProbabilityMaps solver(Seeds seeds, RealMatrix[] gradients) {
     RealMatrix diffIfg = null; // normalised squared differences to mean seed intensities for FG
@@ -969,6 +976,9 @@ public class RandomWalkSegmentation {
 
     ProbabilityMaps ret = new ProbabilityMaps(); // keep output probab map for each object
 
+    if (seeds.get(SeedTypes.FOREGROUNDS) == null) { // if no FG maps (e.g. all disappeared)
+      return ret;
+    }
     // seed images as list of points
     List<List<Point>> seedsPointsFg = seeds.convertToList(SeedTypes.FOREGROUNDS);
     // user selected background (it is solved like other objects but e.g. local mean does not apply
@@ -991,6 +1001,8 @@ public class RandomWalkSegmentation {
       // make copy of objects seeds - need of removing current one and integrate remaining with bck
       ArrayList<List<Point>> tmpSeedsPointsFg = new ArrayList<List<Point>>(seedsPointsFg);
       tmpSeedsPointsFg.remove(cell); // remove current object seed
+      // clear Bg, it always contains all objects except current (seedsPointsFg[cell])
+      seedsPointsBg.clear();
       seedsPointsBg.addAll(tmpSeedsPointsFg); // add all remaining foregrounds to current bck
 
       // decide whether to use local mean or global mean. Local mean is computed within square mask
@@ -1034,7 +1046,7 @@ public class RandomWalkSegmentation {
 
       // get average "distance" between weights multiplying w = w.*avgw, this is only for
       // optimisation purposes.
-      // does not apply for FG if we use local mean, applied for BG always FIXME why?
+      // does not apply for FG if we use local mean, applied for BG always (better results)
       if (params.useLocalMean == false || userBckPoints.contains(seedsPointsFg.get(cell))) {
         wrfg.walkInOptimizedOrder(new MatrixDotProduct(avgwxfg));
         wlfg.walkInOptimizedOrder(new MatrixDotProduct(avgwxfg));
@@ -1066,8 +1078,10 @@ public class RandomWalkSegmentation {
       // segmented object. Here we stop segmenting background after certain number of iterations but
       // not relErr. This is how we have it solved in MAtlab
       if (userBckPoints.contains(seedsPointsFg.get(cell)) && iterations.size() > 0) {
-        // just use average of iters for BCK or TODO check max
-        iter = iterations.stream().mapToInt(Integer::intValue).sum() / iterations.size();
+        // just use average of iters for BCK
+        iter = iterations.stream().mapToInt(Integer::intValue).max().getAsInt() / iterations.size();
+        // FIXME This can be disabled, then BCK will need more iterations but sometimes results are
+        // better
         iter /= (currentSweep + 1);
       } else { // object - use specified number of iters
         iter = params.iter / (currentSweep + 1);
