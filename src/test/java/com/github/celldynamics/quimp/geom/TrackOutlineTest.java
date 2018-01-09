@@ -1,12 +1,15 @@
 package com.github.celldynamics.quimp.geom;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
+import java.awt.Color;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -196,6 +199,21 @@ public class TrackOutlineTest {
     RoiSaver.saveRoi(tmpdir + "test0.tif", ret.get(0).asList());
     RoiSaver.saveRoi(tmpdir + "test1.tif", ret.get(1).asList());
     RoiSaver.saveRoi(tmpdir + "test2.tif", ret.get(2).asList());
+  }
+
+  /**
+   * Test if color is handled correctly,
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testGetOutlinesColors() throws Exception {
+    Pair<List<Outline>, List<Color>> ret = obj.getOutlinesColors(2, false);
+    List<Color> c = ret.getRight();
+    assertThat(ret.getLeft().size(), is(3));
+    assertThat(ret.getLeft().size(), is(ret.getRight().size()));
+    assertThat(ret.getRight(), containsInAnyOrder(new Color(255), new Color(109), new Color(109)));
+    assertThat(ret.getRight(), is(obj.getColors()));
   }
 
 }

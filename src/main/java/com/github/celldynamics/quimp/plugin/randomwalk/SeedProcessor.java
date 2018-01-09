@@ -281,6 +281,10 @@ public class SeedProcessor {
   /**
    * Convert grayscale image to {@link Seeds}.
    * 
+   * <p>Pixels with the same intensity are collected in one map at {@link Seeds} structure under
+   * {@link SeedTypes#FOREGROUNDS} key. Works for separated objects as
+   * well. Collected maps are binary.
+   * 
    * @param im 8-bit grayscale image, 0 is background
    * @return Seeds with {@link SeedTypes#FOREGROUNDS} filled. No {@link SeedTypes#BACKGROUND}
    * @throws RandomWalkException when all output FG seed maps are empty
@@ -300,7 +304,7 @@ public class SeedProcessor {
     // fill each map with corresponding values
     for (int r = 0; r < im.getHeight(); r++) {
       for (int c = 0; c < im.getWidth(); c++) {
-        int pixel = (int) im.getPixelValue(r, c);
+        int pixel = (int) im.getPixelValue(r, c); // color of the pixel = slice in FG maps
         if (pixel > 0) { // skip background
           ret.get(SeedTypes.FOREGROUNDS).get(pixel - 1).set(r, c, Color.WHITE.getBlue());
           // remove this map number from list - for further detection gaps in grayscale seeds that

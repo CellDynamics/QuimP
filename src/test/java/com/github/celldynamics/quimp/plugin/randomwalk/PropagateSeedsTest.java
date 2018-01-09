@@ -27,6 +27,7 @@ import com.github.celldynamics.quimp.utils.test.RoiSaver;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.process.AutoThresholder;
 import ij.process.ImageProcessor;
 
@@ -189,14 +190,18 @@ public class PropagateSeedsTest {
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null);
 
     Seeds ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 2, 10);
-    IJ.saveAsTiff(new ImagePlus("", ret.get(SeedTypes.BACKGROUND).get(0)),
-            tmpdir + "testGetCompositeSeed_Contour1_B_QuimP.tif");
-    IJ.saveAsTiff(new ImagePlus("", ret.get(SeedTypes.FOREGROUNDS).get(0)),
-            tmpdir + "testGetCompositeSeed_Contour1_F_QuimP.tif");
+    assertThat(ret.size(), is(2));
+    assertThat(ret.get(SeedTypes.BACKGROUND).size(), is(1));
+    assertThat(ret.get(SeedTypes.FOREGROUNDS).size(), is(5));
+    ImageStack is = ret.convertToStack(SeedTypes.BACKGROUND);
+    IJ.saveAsTiff(new ImagePlus("", is), tmpdir + "testGetCompositeSeed_Contour1_B_QuimP.tif");
+    is = ret.convertToStack(SeedTypes.FOREGROUNDS);
+    // all five lines should be present
+    IJ.saveAsTiff(new ImagePlus("", is), tmpdir + "testGetCompositeSeed_Contour1_F_QuimP.tif");
   }
 
   /**
-   * testGetCompositeSeed_Contour.
+   * testPropagateSeedsNonlinear_Example.
    * 
    * <p>Produce outline plot with scaled and original outline. This is used for tests or nonlinear
    * shrinking.
@@ -238,7 +243,7 @@ public class PropagateSeedsTest {
    * @throws Exception on error
    */
   @Test
-  public void testGetCompositeSeed_Example() throws Exception {
+  public void testPropagateSeedsNonlinear_Example() throws Exception {
     ImagePlus ip = IJ.openImage("src/test/Resources-static/239/shape1.tif");
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null, 0.35, 5, 1, 6);
 

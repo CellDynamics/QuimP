@@ -45,7 +45,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
      */
     QconfFile,
     /**
-     * ROIs
+     * ROIs.
      */
     Rois
   }

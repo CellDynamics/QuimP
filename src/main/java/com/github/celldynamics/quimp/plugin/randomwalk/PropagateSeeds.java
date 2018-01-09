@@ -539,7 +539,7 @@ public abstract class PropagateSeeds {
     public Seeds propagateSeed(ImageProcessor previous, ImageProcessor org, double shrinkPower,
             double expandPower) {
       // FIXME if there are two separate objects in the same color they will be treated as
-      // separate objects
+      // separate objects. Binary seeds is not affected (due to SeedProcessor.getGrayscaleAsSeeds)
       double stepsshrink = shrinkPower / stepSize; // total shrink/step size
       double stepsexp = (expandPower) / stepSize; // total shrink/step size
       Seeds ret = new Seeds(2);
