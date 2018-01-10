@@ -2,6 +2,7 @@ package com.github.celldynamics.quimp.geom;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import java.awt.Color;
@@ -204,7 +205,7 @@ public class TrackOutlineTest {
   /**
    * Test if color is handled correctly,
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @Test
   public void testGetOutlinesColors() throws Exception {
@@ -214,6 +215,17 @@ public class TrackOutlineTest {
     assertThat(ret.getLeft().size(), is(ret.getRight().size()));
     assertThat(ret.getRight(), containsInAnyOrder(new Color(255), new Color(109), new Color(109)));
     assertThat(ret.getRight(), is(obj.getColors()));
+  }
+
+  /**
+   * Test of {@link TrackOutline#getPairs(double, boolean)}
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetPairs() throws Exception {
+    List<Pair<Outline, Color>> ret = obj.getPairs(2, false);
+    assertThat(ret, hasSize(3));
   }
 
 }

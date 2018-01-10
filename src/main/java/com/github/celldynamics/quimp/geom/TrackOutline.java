@@ -2,6 +2,7 @@ package com.github.celldynamics.quimp.geom;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -274,6 +275,25 @@ public class TrackOutline {
     }
 
     return new ImmutablePair<List<Outline>, List<Color>>(outlines, colors);
+  }
+
+  /**
+   * Reformat collected outlines and Colors to list of pairs.
+   * 
+   * @param step resolution step
+   * @param smooth true to use IJ polygon smoothing (running average).
+   * @return List of pairs, outlines and colors of pixels they were created from
+   */
+  public List<Pair<Outline, Color>> getPairs(double step, boolean smooth) {
+    List<Outline> out = getOutlinesColors(step, smooth).getLeft();
+    List<Pair<Outline, Color>> ret = new ArrayList<>();
+    Iterator<Outline> ito = out.iterator();
+    Iterator<Color> itc = colors.iterator();
+    while (ito.hasNext() && itc.hasNext()) {
+      Pair<Outline, Color> p = new ImmutablePair<Outline, Color>(ito.next(), itc.next());
+      ret.add(p);
+    }
+    return ret;
   }
 
   /**

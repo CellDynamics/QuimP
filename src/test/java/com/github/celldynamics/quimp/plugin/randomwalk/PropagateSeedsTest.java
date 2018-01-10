@@ -1,6 +1,7 @@
 package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import java.awt.Color;
@@ -129,9 +130,10 @@ public class PropagateSeedsTest {
    */
   @SuppressWarnings("unchecked")
   @Test
-  public void testGetOutline() throws Exception {
+  public void testGetOutlineAndColors() throws Exception {
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour();
-    List<Outline> ret = PropagateSeeds.Contour.getOutline(testImage2.getProcessor());
+    List<Outline> ret =
+            PropagateSeeds.Contour.getOutlineAndColors(testImage2.getProcessor()).getLeft();
 
     int i = 0;
     for (Outline o : ret) {
@@ -192,7 +194,7 @@ public class PropagateSeedsTest {
     Seeds ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 2, 10);
     assertThat(ret.size(), is(2));
     assertThat(ret.get(SeedTypes.BACKGROUND).size(), is(1));
-    assertThat(ret.get(SeedTypes.FOREGROUNDS).size(), is(5));
+    assertThat(ret.get(SeedTypes.FOREGROUNDS).size(), is(3)); // 3 groups of objects (colors)
     ImageStack is = ret.convertToStack(SeedTypes.BACKGROUND);
     IJ.saveAsTiff(new ImagePlus("", is), tmpdir + "testGetCompositeSeed_Contour1_B_QuimP.tif");
     is = ret.convertToStack(SeedTypes.FOREGROUNDS);
@@ -247,13 +249,14 @@ public class PropagateSeedsTest {
     ImagePlus ip = IJ.openImage("src/test/Resources-static/239/shape1.tif");
     PropagateSeeds.Contour cc = new PropagateSeeds.Contour(false, null, 0.35, 5, 1, 6);
 
-    Outline outlineOrg = Contour.getOutline(ip.getProcessor()).get(0);
+    Outline outlineOrg = Contour.getOutlineAndColors(ip.getProcessor()).getLeft().get(0);
     new OutlineProcessor<Outline>(outlineOrg).averageCurvature(1).sumCurvature(1);
     Seeds ret = cc.propagateSeed(ip.getProcessor(), ip.getProcessor(), 5, 10);
-    Outline outlineSh = Contour.getOutline(ret.get(SeedTypes.FOREGROUNDS, 1)).get(0);
+    Outline outlineSh =
+            Contour.getOutlineAndColors(ret.get(SeedTypes.FOREGROUNDS, 1)).getLeft().get(0);
     ImageProcessor bck = ret.get(SeedTypes.BACKGROUND, 1);
     bck.invert();
-    Outline outlineEx = Contour.getOutline(bck).get(0);
+    Outline outlineEx = Contour.getOutlineAndColors(bck).getLeft().get(0);
 
     RoiSaver.saveRois(tmpdir + "reo.tif", 512, 512, outlineOrg.asList(), Color.GREEN,
             outlineSh.asList(), Color.RED, outlineEx.asList(), Color.BLUE);
@@ -276,10 +279,22 @@ public class PropagateSeedsTest {
     ImagePlus org = IJ.openImage("src/test/Resources-static/G.tif");
     ImagePlus mask = IJ.openImage("src/test/Resources-static/GMask.tif");
 
-    cc.propagateSeed(mask.getStack().getProcessor(1), mask.getStack().getProcessor(1), 5, 25);
+    Seeds s = cc.propagateSeed(mask.getStack().getProcessor(1), mask.getStack().getProcessor(1), 5,
+            25);
+
+    assertThat(s.get(SeedTypes.FOREGROUNDS), hasSize(3));
+    assertThat(s.get(SeedTypes.BACKGROUND), hasSize(1));
     ImagePlus ret = cc.getCompositeSeed(org, 0);
     // no objects in org, so no in composite
     IJ.saveAsTiff(ret, tmpdir + "testGetCompositeSeedM_QuimP.tif");
+
+    ImageStack is = s.convertToStack(SeedTypes.BACKGROUND);
+    // new ImageJ();
+    // new ImagePlus("", is).show();
+    IJ.saveAsTiff(new ImagePlus("", is), tmpdir + "testGetCompositeSeed_Morphological_B_QuimP.tif");
+    is = s.convertToStack(SeedTypes.FOREGROUNDS);
+    // all five lines should be present
+    IJ.saveAsTiff(new ImagePlus("", is), tmpdir + "testGetCompositeSeed_Morphological_F_QuimP.tif");
   }
 
   /**

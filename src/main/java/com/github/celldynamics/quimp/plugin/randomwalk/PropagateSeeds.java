@@ -3,9 +3,13 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +114,7 @@ public abstract class PropagateSeeds {
   /**
    * Default resolution used during outlining objects.
    * 
-   * @see Contour#getOutline(ImageProcessor)
+   * @see Contour#getOutlineAndColors(ImageProcessor)
    */
   public static final int STEPS = 4;
   /**
@@ -522,6 +526,10 @@ public abstract class PropagateSeeds {
      * <p>Setting <tt>shrinkPower</tt> or <tt>expandPower</tt> to zero prevents contour
      * modifications.
      * 
+     * <p>Algorithm can utilise object colour to process them in groups within one colour. Objects
+     * in one group are processed separately, but then all are stored in the same {@link Seeds}
+     * {@link SeedTypes#FOREGROUNDS} map.
+     * 
      * @param previous Previous result of segmentation. BW mask with white object on black
      *        background.
      * @param org original image that new seeds are computed for. Usually it is current image
@@ -538,29 +546,51 @@ public abstract class PropagateSeeds {
     @Override
     public Seeds propagateSeed(ImageProcessor previous, ImageProcessor org, double shrinkPower,
             double expandPower) {
-      // FIXME if there are two separate objects in the same color they will be treated as
-      // separate objects. Binary seeds is not affected (due to SeedProcessor.getGrayscaleAsSeeds)
       double stepsshrink = shrinkPower / stepSize; // total shrink/step size
       double stepsexp = (expandPower) / stepSize; // total shrink/step size
       Seeds ret = new Seeds(2);
 
-      List<Outline> outlines = getOutline(previous); // this supports grayscales
+      // this supports grayscales;
+      List<Pair<Outline, Color>> oc = getPairsOutlineAndColors(previous);
+      // sort according to colors, need to collect outlines with the same object color in the same
+      // map
+      Collections.sort(oc, new Comparator<Pair<Outline, Color>>() {
+
+        @Override
+        public int compare(Pair<Outline, Color> o1, Pair<Outline, Color> o2) {
+          Color c1 = o1.getRight();
+          Color c2 = o2.getRight();
+          Integer ci1 = new Integer(c1.getRed() + c1.getBlue() + c1.getGreen());
+          Integer ci2 = new Integer(c2.getRed() + c2.getBlue() + c2.getGreen());
+          return ci1.compareTo(ci2);
+        }
+      });
+
+      Iterator<Pair<Outline, Color>> oci = oc.iterator();
 
       // save extra debug info if property set
       if (QuimP.SUPER_DEBUG) {
         String tmp = System.getProperty("java.io.tmpdir");
-        for (Outline o : outlines) {
+        for (Pair<Outline, Color> o : oc) {
           long time = new Date().getTime();
-          RoiSaver.saveRoi(
-                  tmp + File.separator + "propagateSeed_" + time + "_" + outlines.hashCode(),
-                  o.asList());
+          RoiSaver.saveRoi(tmp + File.separator + "propagateSeed_" + time + "_" + oc.hashCode(),
+                  o.getLeft().asList());
         }
       }
-      for (Outline o : outlines) {
+      int cprev = -1; // previous object color, IT CANT EXIST IN LIST
+      ByteProcessor small = null;
+      while (oci.hasNext()) {
+        Pair<Outline, Color> p = oci.next();
+        Outline o = p.getLeft();
+        Color c = p.getRight();
+        // restore int (see TrackOutline.getColors())
+        int color = c.getRed() + c.getBlue() + c.getGreen();
         if (o.getNumPoints() < 4) {
           continue;
         }
-        ByteProcessor small = new ByteProcessor(previous.getWidth(), previous.getHeight());
+        if (color != cprev) { // if new color, create new processor (list is sorted)
+          small = new ByteProcessor(previous.getWidth(), previous.getHeight());
+        }
         small.setColor(Color.WHITE); // for fill(Roi)
         // shrink outline - copy as we want to expand it later
         Outline copy = new Outline(o);
@@ -575,13 +605,17 @@ public abstract class PropagateSeeds {
         small.fill(fr);
         small.drawRoi(fr);
         // small.resetRoi();
-        ret.put(SeedTypes.FOREGROUNDS, small);
+        if (color != cprev) { // store only new, old will be updated by reference
+          ret.put(SeedTypes.FOREGROUNDS, small);
+        }
+        cprev = color; // for next iter
       }
 
       ByteProcessor big = new ByteProcessor(previous.getWidth(), previous.getHeight());
       // big.setColor(Color.BLACK);
       // big.fill();
-      for (Outline o : outlines) {
+      for (Pair<Outline, Color> p : oc) {
+        Outline o = p.getLeft();
         if (o.getNumPoints() < 4) {
           continue;
         }
@@ -611,12 +645,26 @@ public abstract class PropagateSeeds {
      * Convert mask to outline.
      * 
      * @param previous image to be converted outline. White object on black background.
-     * @return List of Outline for current frame
+     * @return List of Outline for current frame and colors
      * @see TrackOutline
+     * @see #getOutlineAndColors(ImageProcessor)
      */
-    public static List<Outline> getOutline(ImageProcessor previous) {
+    public static Pair<List<Outline>, List<Color>> getOutlineAndColors(ImageProcessor previous) {
       TrackOutlineLocal track = new TrackOutlineLocal(previous, 0);
-      return track.getOutlines(STEPS, false);
+      return track.getOutlinesColors(STEPS, false);
+    }
+
+    /**
+     * Convert mask to outline.
+     * 
+     * @param previous image to be converted outline. White object on black background.
+     * @return List of Outline for current frame and colors enclosed in pairs
+     * @see TrackOutline
+     * @see #getOutlineAndColors(ImageProcessor)
+     */
+    public static List<Pair<Outline, Color>> getPairsOutlineAndColors(ImageProcessor previous) {
+      TrackOutlineLocal track = new TrackOutlineLocal(previous, 0);
+      return track.getPairs(STEPS, false);
     }
 
   }
@@ -679,6 +727,9 @@ public abstract class PropagateSeeds {
       Seeds decodedSeeds;
       try {
         decodedSeeds = SeedProcessor.getGrayscaleAsSeeds(cp);
+        if (decodedSeeds.get(SeedTypes.FOREGROUNDS) == null) {
+          throw new RandomWalkException("no FG maps");
+        }
         for (ImageProcessor ip : decodedSeeds.get(SeedTypes.FOREGROUNDS)) {
           // make objects smaller
           small = BinaryFilters.iterateMorphological(ip, MorphoOperations.ERODE, shrinkPower);
@@ -703,14 +754,13 @@ public abstract class PropagateSeeds {
         }
 
         big.invert(); // invert to have BG pixels white in seed. (required by convertToList)
-
         ret.put(SeedTypes.BACKGROUND, getTrueBackground(big, org));
         if (storeSeeds) {
           seeds.add(ret);
         }
       } catch (RandomWalkException e) { // from decodeseeds - no FG seeds
         // this is handled to console only as return is still valid (no FG seeds in output)
-        LOGGER.debug("Empty seeds.");
+        LOGGER.debug("Empty seeds. " + e.getMessage());
       }
       return ret;
     }
@@ -740,10 +790,13 @@ public abstract class PropagateSeeds {
 
       for (Seeds p : seeds) {
         // just in case convert to byte
-        // ImageProcessor fg = (ImageProcessor) p.get(SeedTypes.FOREGROUNDS, 1).convertToByte(true);
         ImageProcessor fg = SeedProcessor.flatten(p, SeedTypes.FOREGROUNDS, 1).convertToByte(true);
         fg.threshold(0); // need 255 not real value of map
-        ImageProcessor bg = (ImageProcessor) p.get(SeedTypes.BACKGROUND, 1).convertToByte(true);
+        // why duplicate here? without returned map is at 128???????????????? Seems that
+        // converToByte returns duplicate only if input is not 8-bit
+        // (PropagateSeedsTest.testGetCompositeSeed_Morphological()
+        ImageProcessor bg = p.get(SeedTypes.BACKGROUND, 1).duplicate().convertToByte(true);
+        bg.threshold(0); // need 255 not real value of map
         // make colors transparent
         bg.multiply(colorScaling);
         fg.multiply(colorScaling);

@@ -840,12 +840,13 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         case MaskImage:
           // get seeds split to FG and BG
           // this is mask (bigger) so produce seeds, overwrite seeds
+          // do no scale here as seedImage is 16bit and it would remove some colors. Assume clipping
           seeds = propagateSeeds.propagateSeed(
-                  seedImage.getStack().getProcessor(startSlice).convertToByte(true),
+                  seedImage.getStack().getProcessor(startSlice).convertToByte(false),
                   is.getProcessor(startSlice), model.shrinkPower, model.expandPower);
           // mask to local mean
           seeds.put(SeedTypes.ROUGHMASK,
-                  seedImage.getStack().getProcessor(startSlice).convertToByte(true));
+                  seedImage.getStack().getProcessor(startSlice).convertToByte(false));
           seeds.get(SeedTypes.ROUGHMASK, 1).threshold(0); // to have BW map in case
           break;
         default:
@@ -862,7 +863,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         retIp = applyHatSnakeFilter(retIp, is.getProcessor(startSlice));
       }
       ret.addSlice(retIp.convertToByte(true)); // store output in new stack
-      if (model.showPreview) { // display first slice
+      if (model.showPreview) { // display first
+                               // slice
         prev.setProcessor(retIp);
         prev.setTitle("Previev - frame: " + 1);
         prev.show();
@@ -871,7 +873,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       // iterate over all slices after first (may not run for one image and for current image seg)
       for (int s = 2; s <= is.getSize() && isCanceled == false && oneSlice == false; s++) {
         LOGGER.info("----- Slice " + s + " -----");
-        Seeds nextseed = null;
+        Seeds nextseed = new Seeds(); // just to remove null warning
         obj = new RandomWalkSegmentation(is.getProcessor(s), model.algOptions);
         // get seeds from previous result
         if (useSeedStack) { // true - use slices
@@ -884,8 +886,10 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
                               + "not a stack");
             case QconfFile:
             case MaskImage:
+              // do no scale here as seedImage is 16bit and it would remove some colors. Assume
+              // clipping
               nextseed = propagateSeeds.propagateSeed(
-                      seedImage.getStack().getProcessor(s).convertToByte(true), is.getProcessor(s),
+                      seedImage.getStack().getProcessor(s).convertToByte(false), is.getProcessor(s),
                       model.shrinkPower, model.expandPower);
               nextseed.put(SeedTypes.ROUGHMASK,
                       seedImage.getStack().getProcessor(s).convertToByte(false)); // this makes copy
@@ -953,7 +957,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       rwe.handleException(view.getWnd(), "Segmentation problem");
     } catch (Exception e) {
       LOGGER.debug(e.getMessage(), e);
-      IJ.error("Random Walk Segmentation error", e.getMessage());
+      IJ.error("Random Walk Segmentation error",
+              e.getClass().getSimpleName() + ": " + e.getMessage());
     } finally {
       isRun = false; // segmentation stopped
       IJ.showProgress(2, 1); // erase progress bar
