@@ -136,6 +136,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
     view.addFgController(new FgController());
     view.addCloneController(new CloneController());
     view.addLoadQconfController(new LoadQconfController());
+    view.addQconfShowSeedImageController(new QconfShowSeedImageController());
     view.addRunActiveController(new RunActiveBtnController());
     view.addHelpController(new HelpBtnController());
     view.addSeedRoiController(new SeedRoiController());
@@ -673,8 +674,25 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       RandomWalkModel model = (RandomWalkModel) options;
       model.qconfFile = Paths.get(directory, filename).toString();
       view.setLqconfFile(filename);
+    }
+  }
+
+  /**
+   * Handle show loaded qconf file mask button.
+   * 
+   * @author p.baniukiewicz
+   *
+   */
+  public class QconfShowSeedImageController implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent arg0) {
+      RandomWalkModel model = (RandomWalkModel) options;
+      if (model.qconfFile == null || model.qconfFile.isEmpty()
+              || Paths.get(model.qconfFile).getFileName() == null) {
+        return;
+      }
       try {
-        // TODO add checkbox in UI to show (in QCONFfile dynamic region, first line)
         ImagePlus seedImage;
         // temporary load, it is repeated in runPlugin
         seedImage = new GenerateMask_("opts={paramFile:(" + model.qconfFile + "),binary:false}")
@@ -682,11 +700,12 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         seedImage.setTitle("Mask-" + Paths.get(model.qconfFile).getFileName().toString() + ".tif");
         new ContrastEnhancer().stretchHistogram(seedImage, 0.35);
         seedImage.show();
-
       } catch (QuimpPluginException e) {
         LOGGER.debug("Can not load QCONF"); // not important, error handled in runPlugin
       }
+
     }
+
   }
 
   /**

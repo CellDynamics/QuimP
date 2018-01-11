@@ -260,6 +260,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
   }
 
   private JButton bnQconfSeedImage;
+  private JButton bnQconfShowSeedImage;
 
   private JButton bnClone;
   private JButton bnSeedRoi;
@@ -873,7 +874,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
     cbCreatedSeedImage = new JComboBox<String>();
     cbRgbSeedImage = new JComboBox<String>();
     cbMaskSeedImage = new JComboBox<String>();
-    bnQconfSeedImage = new JButton("Open");
+    bnQconfSeedImage = new JButton("Load");
+    bnQconfShowSeedImage = new JButton("Show");
     bnClone = new JButton("Clone");
     UiTools.setToolTip(bnClone, "Clone selected original image.");
     bnSeedRoi = new JButton("Seed");
@@ -1140,6 +1142,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     cbSeedSource.setEnabled(status);
     cbMaskSeedImage.setEnabled(status);
     bnQconfSeedImage.setEnabled(status);
+    bnQconfShowSeedImage.setEnabled(status);
     bnClone.setEnabled(status);
     bnSeedRoi.setEnabled(status);
     bnFore.setEnabled(status);
@@ -1383,8 +1386,25 @@ public class RandomWalkView implements ActionListener, ItemListener {
             .createTitledBorder(BorderFactory.createLineBorder(Color.ORANGE), "Seed from QCONF"));
     dynPanel.setLayout(new GridLayout(2, 1, 2, 2));
 
-    dynPanel.add(bnQconfSeedImage);
+    JPanel upperrow = new JPanel();
+    upperrow.setLayout(new GridBagLayout());
+    GridBagConstraints constrProc = new GridBagConstraints();
+    constrProc.gridx = 0;
+    constrProc.gridy = 0;
+    constrProc.weightx = 1;
+    constrProc.weighty = 1;
+    constrProc.fill = GridBagConstraints.HORIZONTAL;
+    upperrow.add(bnQconfSeedImage, constrProc);
+    constrProc.gridx = 1;
+    constrProc.gridy = 0;
+    constrProc.weightx = 1;
+    constrProc.weighty = 1;
+    constrProc.fill = GridBagConstraints.HORIZONTAL;
+    upperrow.add(bnQconfShowSeedImage, constrProc);
+    dynPanel.add(upperrow);
     dynPanel.add(lbQconfFile);
+    UiTools.setToolTip(bnQconfShowSeedImage, "Show mask generated from loaded QCONF file.");
+    UiTools.setToolTip(bnQconfSeedImage, "Load mask from QCONF file.");
 
     return dynPanel;
   }
@@ -1631,6 +1651,15 @@ public class RandomWalkView implements ActionListener, ItemListener {
    */
   public void addLoadQconfController(ActionListener list) {
     bnQconfSeedImage.addActionListener(list);
+  }
+
+  /**
+   * Assign listener to Show loaded Qconfbutton.
+   * 
+   * @param list listener
+   */
+  public void addQconfShowSeedImageController(ActionListener list) {
+    bnQconfShowSeedImage.addActionListener(list);
   }
 
   /**
