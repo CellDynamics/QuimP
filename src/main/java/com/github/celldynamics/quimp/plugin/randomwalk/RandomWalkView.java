@@ -952,10 +952,10 @@ public class RandomWalkView implements ActionListener, ItemListener {
     constrProc.weightx = 1;
     constrProc.insets = new Insets(1, 2, 1, 2);
     cbShrinkMethod = new JComboBox<String>();
-    processPanel.add(
-            getControlwithLabel(cbShrinkMethod, "Shrink method",
-                    "Shrinking/expanding if nth frame result is used as n+1 frame seed."
-                            + " Ignored for single image and if seed is stack of image size."),
+    processPanel.add(getControlwithLabel(cbShrinkMethod, "Shrink method",
+            "Shrinking/expanding if nth frame result is used as n+1 frame seed or"
+                    + " seed is binary mask bigger than object (e.g. Active Contour segmentation)"
+                    + " Ignored if seed is RGB image."),
             constrProc);
     cbShrinkMethod.addItemListener(this);
     srShrinkPower = getDoubleSpinner(10, 0, 10000, 1, 0);
@@ -1012,7 +1012,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
     chLocalMean.addItemListener(this);
     localMeanPanel.add(getControlwithLabel(chLocalMean, "",
             "Enable local mean feature. LM works best if mask is greater that object"
-                    + " (external masks)."));
+                    + " (external masks). Apply only for binary masks or seeds "
+                    + "propagation between frames."));
     srLocalMeanWindow = getDoubleSpinner(23, 3, 501, 2, 0);
     localMeanPanel.add(getControlwithLabel(srLocalMeanWindow, "Window",
             "Odd mask within the local mean is evaluated"));

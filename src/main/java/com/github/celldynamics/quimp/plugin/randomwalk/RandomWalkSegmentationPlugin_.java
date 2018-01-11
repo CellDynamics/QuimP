@@ -959,26 +959,6 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         segmented.show();
         segmented.updateAndDraw();
       }
-      // show seeds if selected and not stack seeds
-      if (model.showSeeds) {
-        if (useSeedStack == true) {
-          switch (model.getSelectedSeedSource()) {
-            case QconfFile:
-            case MaskImage:
-              if (oneSlice) { // have stack but want only one slice
-                propagateSeeds.getCompositeSeed(image.duplicate(), startSlice).show();
-              } else { // have stack and segmented stack
-                propagateSeeds.getCompositeSeed(image.duplicate(), 0).show();
-              }
-              break;
-            default:
-              LOGGER.warn("Effective seeds are not displayed if"
-                      + " initial seeds are provided as stack");
-          }
-        } else {
-          propagateSeeds.getCompositeSeed(image.duplicate(), 0).show();
-        }
-      }
       // show maps (last used - not stack!)
       if (model.showProbMaps == true) {
         ProbabilityMaps pm = obj.getProbabilityMaps();
@@ -996,6 +976,26 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
               new ImagePlus("Last Probability maps", pmstackfg).show();
             }
           }
+        }
+      }
+      // show seeds if selected and not stack seeds (throw must be last
+      if (model.showSeeds) {
+        if (useSeedStack == true) {
+          switch (model.getSelectedSeedSource()) {
+            case QconfFile:
+            case MaskImage:
+              if (oneSlice) { // have stack but want only one slice
+                propagateSeeds.getCompositeSeed(image.duplicate(), startSlice).show();
+              } else { // have stack and segmented stack
+                propagateSeeds.getCompositeSeed(image.duplicate(), 0).show();
+              }
+              break;
+            default:
+              LOGGER.warn("Effective seeds are not displayed if"
+                      + " initial seeds are provided as stack");
+          }
+        } else {
+          propagateSeeds.getCompositeSeed(image.duplicate(), 0).show();
         }
       }
     } catch (QuimpPluginException rwe) {
