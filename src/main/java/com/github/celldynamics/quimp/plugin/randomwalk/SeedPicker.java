@@ -64,7 +64,8 @@ public class SeedPicker extends JFrame {
   private int lastLineWidth;
   private int lastFgNum = 0; // cell number
   private int lastBgNum = 0; // but this is index, cell is always 0 for BG
-
+  // For Finish button we need specific order of ActionListeners
+  private ActionListener[] bnFinishListeners = new ActionListener[2];
   /**
    * Converted seeds available after Finish.
    */
@@ -158,7 +159,8 @@ public class SeedPicker extends JFrame {
     contentPane.add(btnBackground);
 
     btnFinish = new JButton("Finish");
-    btnFinish.addActionListener(new ActionListener() {
+    // this listener should go first, before that from RandomWalkView
+    bnFinishListeners[0] = new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -175,6 +177,14 @@ public class SeedPicker extends JFrame {
                   "Problem with converting seeds from ROI");
         }
 
+      }
+    };
+    btnFinish.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        bnFinishListeners[0].actionPerformed(e);
+        bnFinishListeners[1].actionPerformed(e);
       }
     });
 
@@ -209,8 +219,15 @@ public class SeedPicker extends JFrame {
     pack();
   }
 
+  /**
+   * Add Listener to Finish button that is executed as second.
+   * 
+   * <p>First listener prepares {@link SeedPicker#seedsRoi} structure, so second one can use it.
+   * 
+   * @param list listener to add as second
+   */
   void addFinishController(ActionListener list) {
-    btnFinish.addActionListener(list);
+    bnFinishListeners[1] = list;
   }
 
   /**

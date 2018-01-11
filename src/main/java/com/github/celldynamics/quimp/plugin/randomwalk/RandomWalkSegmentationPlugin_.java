@@ -295,13 +295,11 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       }
       RandomWalkModel model = (RandomWalkModel) options;
       model.getOriginalImage().deleteRoi(); // just in case if ROI tool left something
-      // TODO add info about found ROIs - but this listener is called first before seedsRoi
-      // JLabel lab = view.getLroiSeedsInfo();
-      // List<Seeds> rois = seedPickerWnd.seedsRoi;
-      // if (rois != null) {
-      // lab.setText(rois.get(0).get(SeedTypes.FOREGROUNDS).size() + " FG and "
-      // + rois.get(0).get(SeedTypes.BACKGROUND).size() + " BG objects");
-      // }
+      List<Seeds> rois = seedPickerWnd.seedsRoi;
+      if (rois != null) {
+        view.setLroiSeedsInfo("Objects: " + rois.get(0).get(SeedTypes.FOREGROUNDS).size()
+                + " FG and " + rois.get(0).get(SeedTypes.BACKGROUND).size() + " BG");
+      }
     }
 
   }

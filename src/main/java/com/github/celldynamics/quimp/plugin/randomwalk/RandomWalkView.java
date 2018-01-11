@@ -312,12 +312,14 @@ public class RandomWalkView implements ActionListener, ItemListener {
   private JLabel lbRoiSeedsInfo;
 
   /**
-   * Getter for lRoiSeedsInfo
+   * Set ROP info.
    * 
-   * @return lRoiSeedsInfo
+   * @param lab name to set
    */
-  public JLabel getLroiSeedsInfo() {
-    return lbRoiSeedsInfo;
+  public void setLroiSeedsInfo(String lab) {
+    lbRoiSeedsInfo.setFont(new Font(lbRoiSeedsInfo.getFont().getName(), Font.ITALIC,
+            lbRoiSeedsInfo.getFont().getSize()));
+    lbRoiSeedsInfo.setText(lab);
   }
 
   // optionsPanel
@@ -876,6 +878,8 @@ public class RandomWalkView implements ActionListener, ItemListener {
     cbMaskSeedImage = new JComboBox<String>();
     bnQconfSeedImage = new JButton("Load");
     bnQconfShowSeedImage = new JButton("Show");
+    UiTools.setToolTip(bnQconfShowSeedImage, "Show mask generated from loaded QCONF file.");
+    UiTools.setToolTip(bnQconfSeedImage, "Load mask from QCONF file.");
     bnClone = new JButton("Clone");
     UiTools.setToolTip(bnClone, "Clone selected original image.");
     bnSeedRoi = new JButton("Seed");
@@ -1403,8 +1407,6 @@ public class RandomWalkView implements ActionListener, ItemListener {
     upperrow.add(bnQconfShowSeedImage, constrProc);
     dynPanel.add(upperrow);
     dynPanel.add(lbQconfFile);
-    UiTools.setToolTip(bnQconfShowSeedImage, "Show mask generated from loaded QCONF file.");
-    UiTools.setToolTip(bnQconfSeedImage, "Load mask from QCONF file.");
 
     return dynPanel;
   }
