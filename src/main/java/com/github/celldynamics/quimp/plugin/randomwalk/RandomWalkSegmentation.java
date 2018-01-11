@@ -48,7 +48,7 @@ import ij.process.ImageProcessor;
  * that are available as static
  * methods. They allow to change
  * representation of objects among
- * dataformat used by this object.
+ * dataformats used by this object.
  * "
  * 
  * usecase PAR as "Parameters
@@ -153,7 +153,7 @@ import ij.process.ImageProcessor;
  *  rw --> rw : RealMatrix[]
  *  deactivate rw
  * rw -> rw : solver(..) 
- *  note right: Solver always return\nprobability maps for\nforeground AND background
+ *  note right: Solver always return\nprobability map for\nforeground unless input\nFG was empty
  *  activate rw
  *  rw --> rw : Map<Seeds, RealMatrix> solved
  *  deactivate rw
@@ -200,7 +200,7 @@ import ij.process.ImageProcessor;
  * <img src="doc-files/RandomWalkSegmentation_1_UML.png"/><br>
  * 
  * <h1>Parameters</h1>
- * In this Use Case user create a set of segmentation parameters. They are hold in
+ * In this Use Case user creates a set of segmentation parameters. They are hold in
  * {@link RandomWalkOptions}
  * class. This class also contains some pre- and post-processing settings used by
  * {@link RandomWalkSegmentation} object. Default constructor sets recommended values to all numeric
@@ -216,24 +216,38 @@ import ij.process.ImageProcessor;
  * 
  * <h1>Convert</h1>
  * This Use Case contains preparatory static methods used for converting data into required format.
- * Those are:
+ * {@link RandomWalkSegmentation} uses {@link Seeds} structure to store information about foreground
+ * (FG) and background (BG) seeds. Initially these seeds can be provided in different formats such
+ * as:
  * <ol>
- * <li>ImageProcessor &lt;-&gt; RealMatrix converters
- * <li> RGB image -&gt; Seed converter
+ * <li>RGB image where FG seeds are {@link Color#RED} and BG is {@link Color#GREEN}. In this mode
+ * only these two seeds can be stored.
+ * <li>Grayscale image, each object is labelled by different gray level. In this mode each object is
+ * segmented separately, setting other objects to background.
+ * <li>Binary image, works as grayscales.
+ * <li>ROIs - rois selected on image.
  * </ol>
- * The latter ones convert an RGB image that contain pixels labelled with different colors to binary
- * images. Each binary image will have only those pixels set which correspond to color of the
- * particular label. Seed colors should be unique across image, i.e. the object itself should be in
- * grey scale.
+ * All above formats are converted to {@link Seeds} (the only accepted input by
+ * {@link #run(Seeds)} by numerous methods from {@link SeedProcessor}. The
+ * {@link Seeds} contains two keys important for segmentation, {@link SeedTypes#FOREGROUNDS} and
+ * {@link SeedTypes#BACKGROUND}, {@link SeedTypes#FOREGROUNDS} is mandatory whereas
+ * {@link SeedTypes#BACKGROUND} can be empty. Along one key seeds are stored as separate
+ * <b>binary</b>
+ * images that contain only pixels that belong to specified seed (e.g. red color for RGB or
+ * specified grayscale for multi-cell segmentation). The optionl key {@link SeedTypes#ROUGHMASK}
+ * contains one binary image that stands for initial estimation of object larger than the object. It
+ * is used by local mean feature only ({@link RandomWalkOptions#useLocalMean} set <tt>true</tt>).
  * 
  * <h1>Run</h1>
- * In this USe Case the image assigned in <b>Initialisation</b> step is segmented and processed
+ * In this Use Case the image assigned in <b>Initialisation</b> step is segmented and processed
  * according to parameters set in <b>Parameters</b>. The process is started by calling
- * {@link #run(Seeds)} method. The input <tt>Map</tt> contains seeds pixels converted to binary
- * images
- * formed into {@link java.util.Map}. This structure is produced from RGB images by static
- * {@link SeedProcessor#decodeSeedsfromRgb(ImagePlus, List, Color)} or
- * {@link SeedProcessor#decodeSeedsfromRgb(ImageProcessor, List, Color)}.
+ * {@link #run(Seeds)} method. For RGB seeds FG and BG are always defined but if the input is
+ * converted from grayscale image, {@link SeedTypes#BACKGROUND} in {@link Seeds} is empty. The
+ * method returns probability maps {@link ProbabilityMaps} that are organised similarly to
+ * {@link Seeds}. Again for multi-cell segmentation returned {@link ProbabilityMaps} may not contain
+ * {@link SeedTypes#BACKGROUND} key. The algorithm assumes that background is on probability 0 and
+ * it is {@link Color#BLACK}. Probabilities are compared in {@link #compare(ProbabilityMaps)}
+ * method that returns 2d matrix being an output image.
  * 
  * <p>Here is brief look for {@link #run(Seeds)} method activity:
  * <img src="doc-files/RandomWalkSegmentation_3_UML.png"/><br>
@@ -869,6 +883,10 @@ public class RandomWalkSegmentation {
    * @startuml doc-files/RandomWalkSegmentation_5_UML.png
    * start
    * :Convert seeds to coordinates;
+   * :Combine FG and BG maps together;
+   * repeat :solve for object **i**
+   * :Set object **i** as FG;
+   * :Set all other objects as BG;
    * if (local mean?) then (yes)
    *  :compute **local** mean for **FG**;
    *  note left
@@ -920,10 +938,13 @@ public class RandomWalkSegmentation {
    * by Euler method (loop, number of iter
    * depends on sweep number)
    * end note
-   * :compute BG;
+   * :Store map;
    * note right
-   * The same loop like FG
+   * Generally algorithm assumes that 
+   * last map is BG and can detect it 
+   * and store under proper key in Seeds
    * end note
+   * repeat while (more objects?)
    * stop
    * @enduml
    * //!<
@@ -934,15 +955,17 @@ public class RandomWalkSegmentation {
    * <p>The activity diagram for solver is as follows:
    * <img src="doc-files/RandomWalkSegmentation_5_UML.png"/><br>
    * 
-   * <p>Note that solver treats FG and BG seeds like equal objects. There is no difference between
-   * foreground and background seeds.
-   * FIXME change javadoc
+   * <p>Note 1: that solver treats FG and BG seeds like equal objects. There is no difference
+   * between foreground and background seeds.
    * 
-   * @param seeds seed array returned from
-   *        {@link SeedProcessor#decodeSeedsfromRgb(ImagePlus, List, Color)}
+   * <p>Note 2:number of iterations for BG object is limited to maximum number of iterations that
+   * occurred for FG objects.
+   * 
+   * @param seeds seed array returned from {@link SeedProcessor}
    * @param gradients pre-computed gradients returned from {@link #precomputeGradients()}
    * @return Computed probabilities for background and foreground. Returned structure can be also
-   *         empty if there are not FG seeds provided on input (no FG map in {@link Seeds})
+   *         empty if there are not FG seeds provided on input (no FG map in {@link Seeds}) or may
+   *         not contain BG map.
    */
   protected ProbabilityMaps solver(Seeds seeds, RealMatrix[] gradients) {
     RealMatrix diffIfg = null; // normalised squared differences to mean seed intensities for FG
@@ -958,7 +981,8 @@ public class RandomWalkSegmentation {
     // seed images as list of points
     List<List<Point>> seedsPointsFg = seeds.convertToList(SeedTypes.FOREGROUNDS);
     // user selected background (it is solved like other objects but e.g. local mean does not apply
-    // for it so we need to know what was selected by user as background)
+    // for it so we need to know what was selected by user as background). There is possible
+    // that there will be no BCK key, if input is given as GraySclale image
     List<List<Point>> userBckPoints = seeds.convertToList(SeedTypes.BACKGROUND);
     // add background at the end - it will be solved as regular object
     seedsPointsFg.addAll(userBckPoints);

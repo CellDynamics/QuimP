@@ -84,7 +84,7 @@ public class Seeds extends ListMap<ImageProcessor> {
    * @param key which map to convert
    * @return List of point coordinates accepted by RW algorithm for each label within specified key.
    *         If there is more labels for e.g. FOREGROUND key, each is converted to list of points
-   *         separately. Null if key does not exist. If seed map is empty (black) or key does not
+   *         separately. If seed map is empty (black) or key does not
    *         exist empty list is returned.
    * @see SeedProcessor#decodeSeedsfromRgb(ImagePlus, List, Color)
    * @see SeedProcessor#decodeSeedsfromRgb(ImageProcessor, List, Color)
