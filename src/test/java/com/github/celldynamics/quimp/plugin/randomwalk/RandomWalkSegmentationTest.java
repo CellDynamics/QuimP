@@ -20,6 +20,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
@@ -318,43 +320,6 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
     double[] toSet = { -1, -2 }; // values to set into indexes ind
     setValues(in, ind, new ArrayRealVector(toSet)); // input is modified
     assertThat(in, is(MatrixUtils.createRealMatrix(expected)));
-  }
-
-  /**
-   * Test method for
-   * {@link RandomWalkSegmentation#realMatrix2ImageProcessor(RealMatrix)}.
-   */
-  @Test
-  public void testRealMatrix2ImageProcessor() {
-    int rows = 10; // y
-    int cols = 20; // x
-    RealMatrix test = new Array2DRowRealMatrix(rows, cols);
-    test.setEntry(3, 7, 50); // row, col
-    test.setEntry(6, 19, 25); // row, col
-    ImageProcessor out = realMatrix2ImageProcessor(test);
-    assertThat(out.getHeight(), is(rows));
-    assertThat(out.getWidth(), is(cols));
-    assertThat(out.getPixelValue(7, 3), is(50f));
-    assertThat(out.getPixelValue(19, 6), is(25f)); // x y
-  }
-
-  /**
-   * Test method for
-   * {@link RandomWalkSegmentation#imageProcessor2RealMatrix(ImageProcessor)}.
-   */
-  @Test
-  public void testImageProcessor2RealMatrix() {
-    int rows = 10; // y
-    int cols = 20; // x
-    ImageProcessor test = new FloatProcessor(cols, rows); // width, height
-    test.putPixelValue(7, 3, 50); // x y
-    test.putPixelValue(19, 6, 25); // x y
-    RealMatrix out = imageProcessor2RealMatrix(test);
-    assertThat(out.getRowDimension(), is(rows));
-    assertThat(out.getColumnDimension(), is(cols));
-    assertThat(out.getEntry(3, 7), is(50.0));
-    assertThat(out.getEntry(6, 19), is(25.0)); // row column
-
   }
 
   /**

@@ -829,6 +829,26 @@ public class RandomWalkView implements ActionListener, ItemListener {
     this.chShowPreview.setSelected(chShowPreview);
   }
 
+  private JCheckBox chShowProbMaps;
+
+  /**
+   * Get status of show prob maps.
+   * 
+   * @return the chShowProbMaps
+   */
+  public boolean getChShowProbMaps() {
+    return chShowProbMaps.isSelected();
+  }
+
+  /**
+   * Set status of show prob maps.
+   * 
+   * @param chShowProbMaps the chShowProbMaps to set
+   */
+  public void setChShowProbMaps(boolean chShowProbMaps) {
+    this.chShowProbMaps.setSelected(chShowProbMaps);
+  }
+
   private JButton bnRun;
   private JButton bnCancel;
   private JButton bnHelp;
@@ -1047,8 +1067,13 @@ public class RandomWalkView implements ActionListener, ItemListener {
     chShowSeed.setSelected(false);
     chShowPreview = new JCheckBox("Show preview");
     chShowPreview.setSelected(false);
+    chShowProbMaps = new JCheckBox("Show maps");
+    chShowProbMaps.setSelected(false);
+    UiTools.setToolTip(chShowProbMaps,
+            "Show probability maps for current frame. Does not work for stacks.");
     displayPanel.add(chShowSeed);
     displayPanel.add(chShowPreview);
+    displayPanel.add(chShowProbMaps);
 
     // cancel apply row
     JPanel caButtons = new JPanel();
@@ -1191,6 +1216,7 @@ public class RandomWalkView implements ActionListener, ItemListener {
     chMaskCut.setEnabled(status);
     chShowPreview.setEnabled(status);
     chShowSeed.setEnabled(status);
+    chShowProbMaps.setEnabled(status);
     cbFilteringPostMethod.setEnabled(status);
     bnRun.setEnabled(status);
     bnRunActive.setEnabled(status);

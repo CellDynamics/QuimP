@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
+import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -306,17 +307,17 @@ public class RandomWalkSegmentationOtherTest {
             (RealMatrix[]) accessPrivate("precomputeGradients", obj, new Object[0], new Class[0]);
 
     IJ.saveAsTiff(
-            new ImagePlus("gRight2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[0])),
+            new ImagePlus("gRight2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[0])),
             tmpdir + "testPrecompute_gRight2_QuimP.tif");
 
-    IJ.saveAsTiff(new ImagePlus("gTop2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[1])),
+    IJ.saveAsTiff(new ImagePlus("gTop2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[1])),
             tmpdir + "testPrecompute_gTop2_QuimP.tif");
 
-    IJ.saveAsTiff(new ImagePlus("gLeft2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[2])),
+    IJ.saveAsTiff(new ImagePlus("gLeft2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[2])),
             tmpdir + "testPrecompute_gLeft2_QuimP.tif");
 
     IJ.saveAsTiff(
-            new ImagePlus("gBottom2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[3])),
+            new ImagePlus("gBottom2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[3])),
             tmpdir + "testPrecompute_gBottom2_QuimP.tif");
   }
 
@@ -325,9 +326,9 @@ public class RandomWalkSegmentationOtherTest {
    */
   @Test
   public void testConversion() {
-    RealMatrix image = RandomWalkSegmentation.imageProcessor2RealMatrix(testImage1.getProcessor());
+    RealMatrix image = QuimPArrayUtils.imageProcessor2RealMatrix(testImage1.getProcessor());
 
-    IJ.saveAsTiff(new ImagePlus("orimage", RandomWalkSegmentation.realMatrix2ImageProcessor(image)),
+    IJ.saveAsTiff(new ImagePlus("orimage", QuimPArrayUtils.realMatrix2ImageProcessor(image)),
             tmpdir + "testConversion_image_QuimP.tif");
   }
 
@@ -343,7 +344,7 @@ public class RandomWalkSegmentationOtherTest {
 
     RealMatrix ret = obj.getMeanSeedLocal(mask.getProcessor(), 3);
 
-    IJ.saveAsTiff(new ImagePlus("meanseed", RandomWalkSegmentation.realMatrix2ImageProcessor(ret)),
+    IJ.saveAsTiff(new ImagePlus("meanseed", QuimPArrayUtils.realMatrix2ImageProcessor(ret)),
             tmpdir + "testGetMeanSeed_QuimP.tif");
 
     assertThat(ret.hashCode(), is(1549840221)); // checked manually

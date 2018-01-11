@@ -51,6 +51,7 @@ import ij.plugin.tool.BrushTool;
 import ij.process.AutoThresholder;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+import ij.process.StackStatistics;
 
 /*
  * !>
@@ -200,6 +201,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
 
     view.setChShowSeed(model.showPreview);
     view.setChShowPreview(model.showPreview);
+    view.setChShowProbMaps(model.showProbMaps);
 
   }
 
@@ -225,7 +227,6 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       case QconfFile:
         break; // no control to display or read from for this case
       case Rois:
-        // TODO can read seeds from seedpicker and store in model (consider)
         break;
       default:
         throw new IllegalArgumentException("Unknown seed source");
@@ -260,6 +261,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
 
     model.showSeeds = view.getChShowSeed();
     model.showPreview = view.getChShowPreview();
+    model.showProbMaps = view.getChShowProbMaps();
 
     return model;
   }
@@ -855,11 +857,15 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         case QconfFile:
           seedImage = new GenerateMask_("opts={paramFile:(" + model.qconfFile + "),binary:false}")
                   .getRes(); // it throws in case
-          // TODO check if each slice max value is less than 255
           // and continue to the next case
         case MaskImage:
           if (seedImage != null && seedImage.equals(image)) {
             throw new RandomWalkException("Seed image and segmented image are the same.");
+          }
+          double max = new StackStatistics(seedImage).max;
+          if (max > 255) {
+            LOGGER.warn("There are more than 255 objects in loaded QCONF file. Only first"
+                    + " 255 will be segmented");
           }
           // get seeds split to FG and BG
           // this is mask (bigger) so produce seeds, overwrite seeds
@@ -905,8 +911,8 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
             case Rois:
               // TODO add support for multislice seeds
               throw new RandomWalkException(
-                      "This combination is not supported - input seed should be single image, "
-                              + "not a stack");
+                      "This combination is not supported - for ROI seeds should be selected in "
+                              + "single image, " + "not a stack");
             case QconfFile:
             case MaskImage:
               // do no scale here as seedImage is 16bit and it would remove some colors. Assume
@@ -971,6 +977,25 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           }
         } else {
           propagateSeeds.getCompositeSeed(image.duplicate(), 0).show();
+        }
+      }
+      // show maps (last used - not stack!)
+      if (model.showProbMaps == true) {
+        ProbabilityMaps pm = obj.getProbabilityMaps();
+        if (pm != null) { // if seg run
+          ImageStack pmstackfg = pm.convertToImageStack(SeedTypes.FOREGROUNDS);
+          if (pmstackfg == null) { // if not successful seg
+            logger.warn("showProbMaps is selected but segmentation returned empty FG maps.");
+          } else { // if successful seg
+            ImageStack pmstackbg = pm.convertToImageStack(SeedTypes.BACKGROUND);
+            // add bg if exists
+            if (pmstackbg != null) {
+              for (int s = 1; s <= pmstackbg.size(); s++) {
+                pmstackfg.addSlice(pmstackbg.getProcessor(s));
+              }
+              new ImagePlus("Last Probability maps", pmstackfg).show();
+            }
+          }
         }
       }
     } catch (QuimpPluginException rwe) {

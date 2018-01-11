@@ -25,7 +25,6 @@ import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
 import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 /*
@@ -211,8 +210,8 @@ import ij.process.ImageProcessor;
  * In this step the image that is supposed to be segmented is assigned to the object as well as
  * parameters of the process. There are two constructors available accepting <tt>ImageProcessor</tt>
  * and <tt>RelaMatrix</tt> image. These formats can be converted to each other using static
- * {@link #imageProcessor2RealMatrix(ImageProcessor)} and
- * {@link #realMatrix2ImageProcessor(RealMatrix)}.
+ * {@link QuimPArrayUtils#imageProcessor2RealMatrix(ImageProcessor)} and
+ * {@link QuimPArrayUtils#realMatrix2ImageProcessor(RealMatrix)}.
  * <img src="doc-files/RandomWalkSegmentation_2_UML.png"/><br>
  * 
  * <h1>Convert</h1>
@@ -378,6 +377,10 @@ public class RandomWalkSegmentation {
    * User provided parameters.
    */
   private RandomWalkOptions params;
+  /**
+   * Probability map obtained in {@link #run(Seeds)}.
+   */
+  private ProbabilityMaps solved = null;
 
   /**
    * Construct segmentation object from ImageProcessor.
@@ -392,7 +395,7 @@ public class RandomWalkSegmentation {
       throw new RandomWalkException("Only 8-bit or 16-bit images are supported");
     }
     this.ip = ip;
-    this.image = RandomWalkSegmentation.imageProcessor2RealMatrix(ip);
+    this.image = QuimPArrayUtils.imageProcessor2RealMatrix(ip);
     this.params = params;
     setMaxTheoreticalIntSqr(ip);
   }
@@ -413,7 +416,7 @@ public class RandomWalkSegmentation {
    */
   public RandomWalkSegmentation(RealMatrix image, RandomWalkOptions params) {
     this.image = image;
-    this.ip = realMatrix2ImageProcessor(image);
+    this.ip = QuimPArrayUtils.realMatrix2ImageProcessor(image);
     this.params = params;
     setMaxTheoreticalIntSqr(ip);
   }
@@ -435,8 +438,6 @@ public class RandomWalkSegmentation {
     if (seeds.get(SeedTypes.FOREGROUNDS) == null) {
       return null; // no FG maps - no segmentation
     }
-    // TODO change behaviour of gamma[1]==0. Maybe it should do second sweep but with gamma==0
-    ProbabilityMaps solved;
     RealMatrix[] precomputed = precomputeGradients(); // precompute gradients
     solved = solver(seeds, precomputed);
     if (params.intermediateFilter != null && params.gamma[1] != 0) { // do second sweep
@@ -448,7 +449,8 @@ public class RandomWalkSegmentation {
       solved = solver(seedsNext, precomputed);
     }
     RealMatrix result = compare(solved); // result as matrix
-    ImageProcessor resultim = realMatrix2ImageProcessor(result).convertToByteProcessor(true);
+    ImageProcessor resultim =
+            QuimPArrayUtils.realMatrix2ImageProcessor(result).convertToByteProcessor(true);
     // cut mask - cut segmentation result by initial ROUGHMASK if present
     if (params.maskLimit == true && seeds.get(SeedTypes.ROUGHMASK) != null) {
       ImageCalculator ic = new ImageCalculator();
@@ -487,7 +489,8 @@ public class RandomWalkSegmentation {
               new MatrixCompareWeighted(solved.get(SeedTypes.BACKGROUND).get(0), weight));
 
       // convert weighted results to images
-      ImageProcessor fg1 = realMatrix2ImageProcessor(solvedWeighted).convertToByte(true);
+      ImageProcessor fg1 =
+              QuimPArrayUtils.realMatrix2ImageProcessor(solvedWeighted).convertToByte(true);
 
       if (QuimP.SUPER_DEBUG) { // save intermediate results
         LOGGER.debug("Saving intermediate results");
@@ -506,7 +509,8 @@ public class RandomWalkSegmentation {
     // seed_bg = BGl>1e20*FGl;
     solvedWeighted.walkInOptimizedOrder(
             new MatrixCompareWeighted(MatrixUtils.createRealMatrix(fl), weight));
-    ImageProcessor bg1 = realMatrix2ImageProcessor(solvedWeighted).convertToByte(true);
+    ImageProcessor bg1 =
+            QuimPArrayUtils.realMatrix2ImageProcessor(solvedWeighted).convertToByte(true);
     if (QuimP.SUPER_DEBUG) { // save intermediate results
       String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
       IJ.saveAsTiff(new ImagePlus("", bg1), tmpdir + "bg1_\"+m+\"_QuimP.tif");
@@ -517,34 +521,6 @@ public class RandomWalkSegmentation {
     ret.put(SeedTypes.BACKGROUND, bg1);
 
     return ret;
-  }
-
-  /**
-   * Create RealMatrix 2D from image. Image is converted to Double.
-   * 
-   * @param ip input image
-   * @return 2D matrix converted to Double
-   */
-  public static RealMatrix imageProcessor2RealMatrix(ImageProcessor ip) {
-    if (ip == null) {
-      return null;
-    }
-    RealMatrix out;
-    float[][] image = ip.getFloatArray();
-    // no copy (it is done in float2double)
-    out = new Array2DRowRealMatrix(QuimPArrayUtils.float2ddouble(image), false);
-    return out.transpose();
-  }
-
-  /**
-   * Create FloatProcessor 2D from RealMatrix.
-   * 
-   * @param rm input matrix
-   * @return FloatProcessor
-   */
-  public static FloatProcessor realMatrix2ImageProcessor(RealMatrix rm) {
-    double[][] rawData = rm.transpose().getData();
-    return new FloatProcessor(QuimPArrayUtils.double2dfloat(rawData));
   }
 
   /**
@@ -879,7 +855,7 @@ public class RandomWalkSegmentation {
       String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
       IJ.saveAsTiff(new ImagePlus("", numofpix), tmpdir + "maskc_QuimP.tif");
       IJ.saveAsTiff(new ImagePlus("", cutImage), tmpdir + "imagecc_QuimP.tif");
-      IJ.saveAsTiff(new ImagePlus("", realMatrix2ImageProcessor(meanseedFg)),
+      IJ.saveAsTiff(new ImagePlus("", QuimPArrayUtils.realMatrix2ImageProcessor(meanseedFg)),
               tmpdir + "meanseedFg_QuimP.tif");
       LOGGER.trace("meanseedFg M[183;289] " + meanseedFg.getEntry(183 - 1, 289 - 1));
       LOGGER.trace("meanseedFg M[242;392] " + meanseedFg.getEntry(242 - 1, 392 - 1));
@@ -1346,6 +1322,15 @@ public class RandomWalkSegmentation {
       in.setEntry(p.row, p.col, val.getDataRef()[l]);
       l += delta; // skip to next value (points are iterated in for)
     }
+  }
+
+  /**
+   * Return probability maps for each object (foreground is last). Valid after running the plugin.
+   * 
+   * @return probability maps
+   */
+  public ProbabilityMaps getProbabilityMaps() {
+    return solved;
   }
 
   /**

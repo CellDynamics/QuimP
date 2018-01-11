@@ -24,8 +24,6 @@ import ij.process.ImageStatistics;
 /**
  * Contain various methods for converting labelled images to Seeds.
  * 
- * TODO consider to return each FG seed in different grayscale, even if they are at separate image
- * 
  * @author p.baniukiewicz
  *
  */

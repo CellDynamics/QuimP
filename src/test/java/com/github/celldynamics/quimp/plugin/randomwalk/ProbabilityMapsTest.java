@@ -13,6 +13,8 @@ import org.junit.Test;
 
 import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 
+import ij.ImageStack;
+
 /**
  * @author p.baniukiewicz
  *
@@ -81,7 +83,54 @@ public class ProbabilityMapsTest {
     obj.put(SeedTypes.FOREGROUNDS, m1);
     obj.put(SeedTypes.FOREGROUNDS, m2);
 
-    double[][][] ret = obj.convertTo3dMatrix(SeedTypes.FOREGROUNDS);
+    obj.convertTo3dMatrix(SeedTypes.FOREGROUNDS); // throws
+  }
+
+  /**
+   * Test of {@link ProbabilityMaps#convertToImageStack(Object)}
+   * 
+   * @throws Exception IllegalArgumentException
+   */
+  @Test
+  public void testConvertToImageStack() throws Exception {
+    double[][] m1d = { { 1, 2, 3 }, { 4, 5, 6 } }; // [2][3]
+    double[][] m2d = { { 7, 8, 9 }, { 10, 11, 12 } };
+
+    RealMatrix m1 = new Array2DRowRealMatrix(m1d);
+    RealMatrix m2 = new Array2DRowRealMatrix(m2d);
+
+    ProbabilityMaps obj = new ProbabilityMaps();
+    obj.put(SeedTypes.FOREGROUNDS, m1);
+    obj.put(SeedTypes.FOREGROUNDS, m2);
+
+    ImageStack ret = obj.convertToImageStack(SeedTypes.BACKGROUND);
+    assertThat(ret, is(nullValue()));
+
+    ret = obj.convertToImageStack(SeedTypes.FOREGROUNDS);
+    assertThat(ret.getBitDepth(), is(32));
+    assertThat(ret.getSize(), is(2));
+    assertThat(ret.getVoxel(1, 0, 0), is(2.0));
+    assertThat(ret.getVoxel(2, 1, 1), is(12.0));
+  }
+
+  /**
+   * Test of {@link ProbabilityMaps#convertToImageStack(Object)}
+   * 
+   * @throws Exception Exception
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testConvertToImageStack_1() throws Exception {
+    double[][] m1d = { { 1, 2, 3 }, { 4, 5, 6 } }; // [2][3]
+    double[][] m2d = { { 7, 8, 9, 10 }, { 10, 11, 12, 10 } };
+
+    RealMatrix m1 = new Array2DRowRealMatrix(m1d);
+    RealMatrix m2 = new Array2DRowRealMatrix(m2d);
+
+    ProbabilityMaps obj = new ProbabilityMaps();
+    obj.put(SeedTypes.FOREGROUNDS, m1);
+    obj.put(SeedTypes.FOREGROUNDS, m2);
+
+    obj.convertToImageStack(SeedTypes.FOREGROUNDS); // throws
   }
 
 }

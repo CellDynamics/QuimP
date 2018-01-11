@@ -398,6 +398,10 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * true for showing preview.
    */
   public boolean showPreview;
+  /**
+   * true for showing probability maps.
+   */
+  public boolean showProbMaps;
 
   /**
    * Default constructor setting default parameters.
@@ -420,6 +424,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
     setSelectedFilteringPostMethod(Filters.NONE);
     showSeeds = false;
     showPreview = false;
+    showProbMaps = false;
   }
 
   /*
@@ -437,11 +442,12 @@ public class RandomWalkModel extends AbstractPluginOptions {
             + selectedFilteringMethod + ", hatFilter=" + hatFilter + ", alev=" + alev + ", num="
             + num + ", window=" + window + ", selectedFilteringPostMethod="
             + selectedFilteringPostMethod + ", showSeeds=" + showSeeds + ", showPreview="
-            + showPreview + ", getShrinkMethods()=" + Arrays.toString(getShrinkMethods())
-            + ", getFilteringMethods()=" + Arrays.toString(getFilteringMethods())
-            + ", getselectedShrinkMethod()=" + getselectedShrinkMethod()
-            + ", getSelectedFilteringMethod()=" + getSelectedFilteringMethod()
-            + ", getSelectedFilteringPostMethod()=" + getSelectedFilteringPostMethod() + "]";
+            + showPreview + ", showPprobMaps=" + showProbMaps + ", getShrinkMethods()="
+            + Arrays.toString(getShrinkMethods()) + ", getFilteringMethods()="
+            + Arrays.toString(getFilteringMethods()) + ", getselectedShrinkMethod()="
+            + getselectedShrinkMethod() + ", getSelectedFilteringMethod()="
+            + getSelectedFilteringMethod() + ", getSelectedFilteringPostMethod()="
+            + getSelectedFilteringPostMethod() + "]";
   }
 
   /*
@@ -473,6 +479,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
             + ((selectedShrinkMethod == null) ? 0 : selectedShrinkMethod.hashCode());
     result = prime * result + (showPreview ? 1231 : 1237);
     result = prime * result + (showSeeds ? 1231 : 1237);
+    result = prime * result + (showProbMaps ? 1231 : 1237);
     result = prime * result + (estimateBackground ? 1231 : 1237);
     temp = Double.doubleToLongBits(shrinkPower);
     result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -553,6 +560,9 @@ public class RandomWalkModel extends AbstractPluginOptions {
       return false;
     }
     if (showSeeds != other.showSeeds) {
+      return false;
+    }
+    if (showProbMaps != other.showProbMaps) {
       return false;
     }
     if (estimateBackground != other.estimateBackground) {
