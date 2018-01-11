@@ -827,6 +827,9 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
         case CreatedImage:
           foreColor = Color.RED;
           backColor = Color.GREEN;
+          if (seedImage != null && seedImage.equals(image)) {
+            throw new RandomWalkException("Seed image and segmented image are the same.");
+          }
           if (seedImage.getNSlices() >= startSlice) {
             seeds = SeedProcessor.decodeSeedsfromRgb(seedImage.getStack().getProcessor(startSlice),
                     Arrays.asList(foreColor), backColor);
@@ -841,11 +844,11 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           break;
         case Rois:
           if (seedPickerWnd.seedsRoi.isEmpty()) {
-            throw new RandomWalkException("No ROIs processed, did you forget to use Finish?");
+            throw new RandomWalkException("No ROIs processed, did you forget to click Finish?");
           }
           seeds = seedPickerWnd.seedsRoi.get(startSlice - 1);
           if (model.algOptions.useLocalMean) {
-            LOGGER.warn("LocalMean is not used for first frame when seed is RGB image");
+            LOGGER.warn("LocalMean is not used for first frame when seeds are ROIs.");
           }
           model.algOptions.useLocalMean = false; // do not use LM on first frame (reenable it later)
           break;
@@ -855,6 +858,9 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           // TODO check if each slice max value is less than 255
           // and continue to the next case
         case MaskImage:
+          if (seedImage != null && seedImage.equals(image)) {
+            throw new RandomWalkException("Seed image and segmented image are the same.");
+          }
           // get seeds split to FG and BG
           // this is mask (bigger) so produce seeds, overwrite seeds
           // do no scale here as seedImage is 16bit and it would remove some colors. Assume clipping
@@ -971,7 +977,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       // if (!(rwe instanceof RandomWalkException)) { // RandomWalkException has set proper sink
       rwe.setMessageSinkType(errorSink);
       // }
-      rwe.handleException(view.getWnd(), "Segmentation problem");
+      rwe.handleException(view.getWnd(), "Segmentation problem.");
     } catch (Exception e) {
       LOGGER.debug(e.getMessage(), e);
       IJ.error("Random Walk Segmentation error",
