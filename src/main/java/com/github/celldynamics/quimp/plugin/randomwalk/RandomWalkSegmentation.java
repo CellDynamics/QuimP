@@ -2,6 +2,8 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import java.awt.Color;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +24,7 @@ import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.plugin.ImageCalculator;
 import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
@@ -968,6 +971,7 @@ public class RandomWalkSegmentation {
    *         not contain BG map.
    */
   protected ProbabilityMaps solver(Seeds seeds, RealMatrix[] gradients) {
+    ImageStack debugPm = null;
     RealMatrix diffIfg = null; // normalised squared differences to mean seed intensities for FG
     // store number of iterations performed for each object. These numbers are used for stopping
     // iterations earlier for background object
@@ -1077,18 +1081,21 @@ public class RandomWalkSegmentation {
       // specified relError and after weighting it dominates leaving only original object seed as
       // segmented object. Here we stop segmenting background after certain number of iterations but
       // not relErr. This is how we have it solved in MAtlab
-      if (userBckPoints.contains(seedsPointsFg.get(cell)) && iterations.size() > 0) {
+      if (true && (userBckPoints.contains(seedsPointsFg.get(cell)) && iterations.size() > 0)) {
         // just use average of iters for BCK
         iter = iterations.stream().mapToInt(Integer::intValue).max().getAsInt() / iterations.size();
         // FIXME This can be disabled, then BCK will need more iterations but sometimes results are
         // better
+        // potential pitfall is if user mark BG far from cell, then small number of iters is not
+        // enough to flood whole background (but it will work because during comparison bck is on 0
+        // and FG segmentation rather does not leave object
         iter /= (currentSweep + 1);
       } else { // object - use specified number of iters
         iter = params.iter / (currentSweep + 1);
       }
       // main loop here we simulate diffusion process in time
       outerloop: for (i = 0; i < iter; i++) {
-        if (i % 50 == 0) {
+        if (i % relErrStep == 0) {
           LOGGER.info("Iter: " + i);
         } else {
           LOGGER.trace("Iter: " + i);
@@ -1157,6 +1164,19 @@ public class RandomWalkSegmentation {
             break outerloop;
           }
         }
+        // store probabilities over iterations
+        if (QuimP.SUPER_DEBUG) {
+          debugPm =
+                  (debugPm == null) ? new ImageStack(fg.getColumnDimension(), fg.getRowDimension())
+                          : debugPm;
+          if (i > 1000) {
+            if (i % 50 == 0) {
+              debugPm.addSlice(QuimPArrayUtils.realMatrix2ImageProcessor(fg));
+            }
+          } else {
+            debugPm.addSlice(QuimPArrayUtils.realMatrix2ImageProcessor(fg));
+          }
+        }
         // remember FG map for this iteration to use it to compute relative error in next iteration
         QuimPArrayUtils.copy2darray(fg2d, tmpFglast2d);
       } // iter
@@ -1167,6 +1187,16 @@ public class RandomWalkSegmentation {
         ret.put(SeedTypes.BACKGROUND, fg); // store it in separate key - needed for proper compar.
       } else {
         ret.put(SeedTypes.FOREGROUNDS, fg);
+      }
+      // save stack of probability maps (over iterations) for each processed object separately
+      if (QuimP.SUPER_DEBUG) {
+        if (debugPm != null) {
+          ImagePlus debugIm = new ImagePlus("debug", debugPm);
+          String tmp = System.getProperty("java.io.tmpdir");
+          Path p = Paths.get(tmp, "Rw_ProbMap-cell_" + cell);
+          IJ.saveAsTiff(debugIm, p.toString());
+          debugPm = null; // next object
+        }
       }
     } // cell
     return ret;
