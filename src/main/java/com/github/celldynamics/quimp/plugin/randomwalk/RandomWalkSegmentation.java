@@ -750,7 +750,9 @@ public class RandomWalkSegmentation {
     // find maximum of horizontal and vertical maxima
     double maxGrad2 = maxGright2 > maxGtop2 ? maxGright2 : maxGtop2;
     LOGGER.debug("maxGrad2max " + maxGrad2);
-
+    if (maxGrad2 == 0) {
+      maxGrad2 = 1.0;
+    }
     // Normalize squared gradients to maxGrad
     gradRight2.walkInOptimizedOrder(new MatrixElementDivide(maxGrad2));
     gradTop2.walkInOptimizedOrder(new MatrixElementDivide(maxGrad2));
@@ -1083,7 +1085,7 @@ public class RandomWalkSegmentation {
       // not relErr. This is how we have it solved in MAtlab
       if (true && (userBckPoints.contains(seedsPointsFg.get(cell)) && iterations.size() > 0)) {
         // just use average of iters for BCK
-        iter = iterations.stream().mapToInt(Integer::intValue).max().getAsInt() / iterations.size();
+        iter = iterations.stream().mapToInt(Integer::intValue).max().getAsInt();
         // FIXME This can be disabled, then BCK will need more iterations but sometimes results are
         // better
         // potential pitfall is if user mark BG far from cell, then small number of iters is not
@@ -1152,7 +1154,7 @@ public class RandomWalkSegmentation {
           break outerloop;
         }
         // check error every relErrStep number of iterations
-        if (i % relErrStep == 0) {
+        if ((i + 1) % relErrStep == 0) {
           double rele = computeRelErr(tmpFglast2d, fg2d);
           LOGGER.info("Relative error for object " + cell + " = " + rele);
           if (rele < params.relim[currentSweep]) {
@@ -1180,7 +1182,6 @@ public class RandomWalkSegmentation {
         // remember FG map for this iteration to use it to compute relative error in next iteration
         QuimPArrayUtils.copy2darray(fg2d, tmpFglast2d);
       } // iter
-
       LOGGER.info("Sweep " + currentSweep + " for object " + cell + " stopped by " + stoppedReason
               + " after " + i + " iteration from " + iter);
       if (userBckPoints.contains(seedsPointsFg.get(cell))) { // we processed background seeds

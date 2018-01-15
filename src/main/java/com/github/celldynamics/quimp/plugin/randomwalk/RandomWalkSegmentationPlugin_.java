@@ -299,8 +299,19 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
       model.getOriginalImage().deleteRoi(); // just in case if ROI tool left something
       List<Seeds> rois = seedPickerWnd.seedsRoi;
       if (rois != null) {
-        view.setLroiSeedsInfo("Objects: " + rois.get(0).get(SeedTypes.FOREGROUNDS).size()
-                + " FG and " + rois.get(0).get(SeedTypes.BACKGROUND).size() + " BG");
+        String fgsize;
+        String bgsize;
+        if (rois.get(0).get(SeedTypes.FOREGROUNDS) == null) {
+          fgsize = "<no FG>";
+        } else {
+          fgsize = "" + rois.get(0).get(SeedTypes.FOREGROUNDS).size();
+        }
+        if (rois.get(0).get(SeedTypes.BACKGROUND) == null) {
+          bgsize = "<no BG>";
+        } else {
+          bgsize = "" + rois.get(0).get(SeedTypes.BACKGROUND).size();
+        }
+        view.setLroiSeedsInfo("Objects: " + fgsize + " FG and " + bgsize + " BG");
       }
     }
 
@@ -871,11 +882,11 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           // this is mask (bigger) so produce seeds, overwrite seeds
           // do no scale here as seedImage is 16bit and it would remove some colors. Assume clipping
           seeds = propagateSeeds.propagateSeed(
-                  seedImage.getStack().getProcessor(startSlice).convertToByte(false),
+                  seedImage.getStack().getProcessor(startSlice).duplicate().convertToByte(false),
                   is.getProcessor(startSlice), model.shrinkPower, model.expandPower);
           // mask to local mean
           seeds.put(SeedTypes.ROUGHMASK,
-                  seedImage.getStack().getProcessor(startSlice).convertToByte(false));
+                  seedImage.getStack().getProcessor(startSlice).duplicate().convertToByte(false));
           seeds.get(SeedTypes.ROUGHMASK, 1).threshold(0); // to have BW map in case
           break;
         default:
@@ -918,10 +929,10 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
               // do no scale here as seedImage is 16bit and it would remove some colors. Assume
               // clipping
               nextseed = propagateSeeds.propagateSeed(
-                      seedImage.getStack().getProcessor(s).convertToByte(false), is.getProcessor(s),
-                      model.shrinkPower, model.expandPower);
+                      seedImage.getStack().getProcessor(s).duplicate().convertToByte(false),
+                      is.getProcessor(s), model.shrinkPower, model.expandPower);
               nextseed.put(SeedTypes.ROUGHMASK,
-                      seedImage.getStack().getProcessor(s).convertToByte(false)); // this makes copy
+                      seedImage.getStack().getProcessor(s).duplicate().convertToByte(false));
               nextseed.get(SeedTypes.ROUGHMASK, 1).threshold(0); // to have BW map in case
               break;
             default:
@@ -973,9 +984,9 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
               for (int s = 1; s <= pmstackbg.size(); s++) {
                 pmstackfg.addSlice(pmstackbg.getProcessor(s));
               }
-              new ImagePlus("Last Probability maps", pmstackfg).show();
             }
-          }
+            new ImagePlus("Last Probability maps", pmstackfg).show();
+          } // Successful segm
         }
       }
       // show seeds if selected and not stack seeds (throw must be last

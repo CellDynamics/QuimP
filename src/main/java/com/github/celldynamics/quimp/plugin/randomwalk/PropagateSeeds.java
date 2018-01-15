@@ -200,7 +200,17 @@ public abstract class PropagateSeeds {
     @Override
     public Seeds propagateSeed(ImageProcessor previous, ImageProcessor org, double shrinkPower,
             double expandPower) {
-      return binary.propagateSeed(previous, org, 0, 0);
+      Seeds decodedSeeds = new Seeds(2);
+      try {
+        decodedSeeds = SeedProcessor.getGrayscaleAsSeeds(previous);
+        if (decodedSeeds.get(SeedTypes.FOREGROUNDS) == null) {
+          throw new RandomWalkException("no FG maps");
+        }
+      } catch (RandomWalkException e) {
+        // this is handled to console only as return is still valid (no FG seeds in output)
+        LOGGER.debug("Empty seeds. " + e.getMessage());
+      }
+      return decodedSeeds;
     }
 
     /*

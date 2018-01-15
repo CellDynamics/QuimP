@@ -41,11 +41,11 @@ public class RandomWalkSegmentationPluginRun {
     // + "selectedFilteringPostMethod:MEDIAN,showSeeds:false,showPreview:false,"
     // + "paramFile:(null)}");
 
-    // obj.run("");
+    obj.run("");
 
     // ************** Run **************
     // example1();
-    example2();
+    // example2();
   }
 
   /**

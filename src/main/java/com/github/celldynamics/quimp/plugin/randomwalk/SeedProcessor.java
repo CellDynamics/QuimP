@@ -237,7 +237,9 @@ public class SeedProcessor {
     ImageProcessor bg = flatten(seeds, SeedTypes.BACKGROUND, (int) stat.max + 1);
     ImageStack stack = new ImageStack(fg.getWidth(), fg.getHeight());
     stack.addSlice(fg);
-    stack.addSlice(bg);
+    if (bg != null) {
+      stack.addSlice(bg);
+    }
 
     ImagePlus im = new ImagePlus("", stack);
     ZProjector z = new ZProjector(im);
