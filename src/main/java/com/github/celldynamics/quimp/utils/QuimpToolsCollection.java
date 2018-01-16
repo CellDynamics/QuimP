@@ -373,6 +373,8 @@ public class QuimpToolsCollection {
   /**
    * Insert any symbol after given number of chars trying to not break words.
    * 
+   * <p>It preserve position of new line symbol if present in text.
+   * 
    * @param in Input string
    * @param len line length
    * @param brek symbol to insert on line break
@@ -381,7 +383,14 @@ public class QuimpToolsCollection {
    *      "link">http://stackoverflow.com/questions/8314566/splitting-a-string-on-to-several-different-lines-in-java</a>
    */
   public static String stringWrap(String in, int len, String brek) {
-    String str = WordUtils.wrap(in, len, brek, false, "( |/|\\\\)");
+    String[] sp = in.split("\n");
+    String str = "";
+    for (String s : sp) {
+      s = s.concat("\n");
+      str = str.concat(WordUtils.wrap(s, len, brek, false, "( |/|\\\\)"));
+    }
+    str = str.trim();
+    // String str = WordUtils.wrap(in, len, brek, false, "( |/|\\\\)");
     return str;
   }
 

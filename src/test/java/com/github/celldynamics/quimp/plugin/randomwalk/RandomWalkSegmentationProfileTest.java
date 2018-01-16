@@ -4,15 +4,13 @@ import java.awt.Color;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -105,11 +103,11 @@ public class RandomWalkSegmentationProfileTest {
     long startTime = System.nanoTime();
 
     RandomWalkSegmentation obj = new RandomWalkSegmentation(fluoreszenz1.getProcessor(), params);
-    Map<Seeds, ImageProcessor> seeds =
-            RandomWalkSegmentation.decodeSeeds(testImage2seed, Color.RED, Color.GREEN);
+    Seeds seeds =
+            SeedProcessor.decodeSeedsfromRgb(testImage2seed, Arrays.asList(Color.RED), Color.GREEN);
     ImageProcessor retFrame1 = obj.run(seeds);
-    Map<Seeds, ImageProcessor> nextseed = new PropagateSeeds.Morphological()
-            .propagateSeed(retFrame1, fluoreszenz1.getProcessor(), 3, 4.5);
+    Seeds nextseed = new PropagateSeeds.Morphological().propagateSeed(retFrame1,
+            fluoreszenz1.getProcessor(), 3, 4.5);
     obj = new RandomWalkSegmentation(fluoreszenz2.getProcessor(), params);
     ImageProcessor retFrame2 = obj.run(nextseed);
 

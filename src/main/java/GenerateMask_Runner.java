@@ -3,8 +3,6 @@ import com.github.celldynamics.quimp.plugin.generatemask.GenerateMask_;
 /**
  * Compatibility layer for ImageJ.
  * 
- * <p>Runnable classes packaged cause problems in pure ImageJ.
- * 
  * @author p.baniukiewicz
  *
  */

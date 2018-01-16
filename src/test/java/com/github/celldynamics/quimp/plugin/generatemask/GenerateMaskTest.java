@@ -1,11 +1,20 @@
 package com.github.celldynamics.quimp.plugin.generatemask;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.celldynamics.quimp.plugin.QuimpPluginException;
 
 import ij.ImagePlus;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 
 /**
  * Test class and use example for GenerateMask plugin.
@@ -55,6 +64,47 @@ public class GenerateMaskTest {
     if (ret != null) {
       ret.show();
     }
+  }
 
+  /**
+   * Example of use of GenerateMask plugin from API - API way + many cells. All exceptions handled
+   * by user, logs go to logger.
+   * 
+   * @throws QuimpPluginException on error
+   */
+  @Test
+  public void testGenerateMask_4() throws QuimpPluginException {
+    GenerateMask_ pa =
+            new GenerateMask_("opts={paramFile:(src/test/Resources-static/Stack_cut_1.QCONF)}");
+
+    ImagePlus ret = pa.getRes();
+    assertThat(ret, is(not(nullValue())));
+    // normal binary output
+    ImageProcessor i = ret.getStack().getProcessor(5);
+    assertThat(i, is(instanceOf(ByteProcessor.class)));
+    assertThat(i.get(273, 255), is(255));
+    assertThat(i.get(194, 301), is(255));
+    assertThat(i.get(218, 404), is(255));
+  }
+
+  /**
+   * Example of use of GenerateMask plugin from API - API way + many cells + grayscale. All
+   * exceptions handled by user, logs go to logger.
+   * 
+   * @throws QuimpPluginException on error
+   */
+  @Test
+  public void testGenerateMask_5() throws QuimpPluginException {
+    GenerateMask_ pa = new GenerateMask_(
+            "opts={paramFile:(src/test/Resources-static/Stack_cut_1.QCONF),binary:false}");
+
+    ImagePlus ret = pa.getRes();
+    assertThat(ret, is(not(nullValue())));
+    // normal binary output
+    ImageProcessor i = ret.getStack().getProcessor(5);
+    assertThat(i, is(instanceOf(ShortProcessor.class)));
+    assertThat(i.get(273, 255), is(1));
+    assertThat(i.get(194, 301), is(2));
+    assertThat(i.get(218, 404), is(3));
   }
 }

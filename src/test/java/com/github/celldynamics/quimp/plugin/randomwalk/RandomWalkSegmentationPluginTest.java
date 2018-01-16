@@ -73,7 +73,7 @@ public class RandomWalkSegmentationPluginTest {
           IllegalArgumentException, IllegalAccessException {
     RandomWalkSegmentationPlugin_ plugin = new RandomWalkSegmentationPlugin_();
     RandomWalkModel model = new RandomWalkModel();
-    model.seedSource = SeedSource.MaskImage;
+    model.setSelectedSeedSource(SeedSource.MaskImage);
     Field f = plugin.getClass().getSuperclass().getDeclaredField("options");
     f.setAccessible(true);
     f.set(plugin, model);

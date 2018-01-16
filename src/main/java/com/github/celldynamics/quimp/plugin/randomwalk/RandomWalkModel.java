@@ -43,7 +43,11 @@ public class RandomWalkModel extends AbstractPluginOptions {
     /**
      * Seed from binary mask image read from Qconf file.
      */
-    QconfFile
+    QconfFile,
+    /**
+     * ROIs.
+     */
+    Rois
   }
 
   /**
@@ -69,11 +73,21 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * 
    * @return array of filters
    * @see BinaryFilters
-   * @see RandomWalkSegmentation#run(java.util.Map)
+   * @see RandomWalkSegmentation#run(Seeds)
    * @see RandomWalkSegmentation
    */
   public String[] getFilteringMethods() {
     return Arrays.stream(Filters.values()).map(Enum::name).toArray(String[]::new);
+  }
+
+  /**
+   * Get seed sources defined in {@link SeedSource}.
+   * 
+   * @return array of seed sources
+   * @see SeedSource
+   */
+  public String[] getSeedSources() {
+    return Arrays.stream(SeedSource.values()).map(Enum::name).toArray(String[]::new);
   }
 
   /**
@@ -116,7 +130,37 @@ public class RandomWalkModel extends AbstractPluginOptions {
   /**
    * Selected seed source. Depending on value some of fields may be invalid.
    */
-  public SeedSource seedSource;
+  private SeedSource selectedSeedSource;
+
+  /**
+   * SeedSource getter.
+   * 
+   * @return the seedSource
+   * @see SeedSource
+   */
+  public SeedSource getSelectedSeedSource() {
+    return selectedSeedSource;
+  }
+
+  /**
+   * SeedSource setter.
+   * 
+   * @param selectedSeedSource the selectedSeedSource to set
+   */
+  public void setSelectedSeedSource(SeedSource selectedSeedSource) {
+    this.selectedSeedSource = selectedSeedSource;
+  }
+
+  /**
+   * SeedSource setter.
+   * 
+   * @param selectedSeedSource index of SeedSource to set according to order returned by
+   *        {@link #getSeedSources()}
+   */
+  public void setSelectedSeedSource(int selectedSeedSource) {
+    this.selectedSeedSource = SeedSource.valueOf(getSeedSources()[selectedSeedSource]);
+  }
+
   /**
    * Seed given by RGB image selected from IJ. Valid for all seed sources.
    */
@@ -354,6 +398,10 @@ public class RandomWalkModel extends AbstractPluginOptions {
    * true for showing preview.
    */
   public boolean showPreview;
+  /**
+   * true for showing probability maps.
+   */
+  public boolean showProbMaps;
 
   /**
    * Default constructor setting default parameters.
@@ -361,7 +409,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
   public RandomWalkModel() {
     algOptions = new RandomWalkOptions();
     originalImage = null;
-    seedSource = SeedSource.RGBImage;
+    setSelectedSeedSource(SeedSource.RGBImage);
     seedImage = null;
     qconfFile = null;
     selectedShrinkMethod = Propagators.NONE;
@@ -376,6 +424,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
     setSelectedFilteringPostMethod(Filters.NONE);
     showSeeds = false;
     showPreview = false;
+    showProbMaps = false;
   }
 
   /*
@@ -386,13 +435,14 @@ public class RandomWalkModel extends AbstractPluginOptions {
   @Override
   public String toString() {
     return "RandomWalkModel [params=" + algOptions + ", originalImage=" + originalImage
-            + ", seedSource=" + seedSource + ", seedImage=" + seedImage + ", qconfFile=" + qconfFile
-            + ", selectedShrinkMethod=" + selectedShrinkMethod + ", shrinkPower=" + shrinkPower
-            + ", expandPower=" + expandPower + ", estimateBackground=" + estimateBackground
-            + ", selectedFilteringMethod=" + selectedFilteringMethod + ", hatFilter=" + hatFilter
-            + ", alev=" + alev + ", num=" + num + ", window=" + window
-            + ", selectedFilteringPostMethod=" + selectedFilteringPostMethod + ", showSeeds="
-            + showSeeds + ", showPreview=" + showPreview + ", getShrinkMethods()="
+            + ", seedSource=" + getSelectedSeedSource() + ", seedImage=" + seedImage
+            + ", qconfFile=" + qconfFile + ", selectedShrinkMethod=" + selectedShrinkMethod
+            + ", shrinkPower=" + shrinkPower + ", expandPower=" + expandPower
+            + ", estimateBackground=" + estimateBackground + ", selectedFilteringMethod="
+            + selectedFilteringMethod + ", hatFilter=" + hatFilter + ", alev=" + alev + ", num="
+            + num + ", window=" + window + ", selectedFilteringPostMethod="
+            + selectedFilteringPostMethod + ", showSeeds=" + showSeeds + ", showPreview="
+            + showPreview + ", showPprobMaps=" + showProbMaps + ", getShrinkMethods()="
             + Arrays.toString(getShrinkMethods()) + ", getFilteringMethods()="
             + Arrays.toString(getFilteringMethods()) + ", getselectedShrinkMethod()="
             + getselectedShrinkMethod() + ", getSelectedFilteringMethod()="
@@ -420,7 +470,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
     result = prime * result + ((algOptions == null) ? 0 : algOptions.hashCode());
     result = prime * result + ((qconfFile == null) ? 0 : qconfFile.hashCode());
     result = prime * result + ((seedImage == null) ? 0 : seedImage.getTitle().hashCode());
-    result = prime * result + ((seedSource == null) ? 0 : seedSource.hashCode());
+    result = prime * result + ((selectedSeedSource == null) ? 0 : selectedSeedSource.hashCode());
     result = prime * result
             + ((selectedFilteringMethod == null) ? 0 : selectedFilteringMethod.hashCode());
     result = prime * result
@@ -429,6 +479,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
             + ((selectedShrinkMethod == null) ? 0 : selectedShrinkMethod.hashCode());
     result = prime * result + (showPreview ? 1231 : 1237);
     result = prime * result + (showSeeds ? 1231 : 1237);
+    result = prime * result + (showProbMaps ? 1231 : 1237);
     result = prime * result + (estimateBackground ? 1231 : 1237);
     temp = Double.doubleToLongBits(shrinkPower);
     result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -493,7 +544,7 @@ public class RandomWalkModel extends AbstractPluginOptions {
     } else if (!seedImage.getTitle().equals(other.seedImage.getTitle())) {
       return false;
     }
-    if (seedSource != other.seedSource) {
+    if (selectedSeedSource != other.selectedSeedSource) {
       return false;
     }
     if (selectedFilteringMethod != other.selectedFilteringMethod) {
@@ -509,6 +560,9 @@ public class RandomWalkModel extends AbstractPluginOptions {
       return false;
     }
     if (showSeeds != other.showSeeds) {
+      return false;
+    }
+    if (showProbMaps != other.showProbMaps) {
       return false;
     }
     if (estimateBackground != other.estimateBackground) {

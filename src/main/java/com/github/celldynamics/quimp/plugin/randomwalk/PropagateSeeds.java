@@ -3,11 +3,13 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +19,7 @@ import com.github.celldynamics.quimp.geom.TrackOutline;
 import com.github.celldynamics.quimp.geom.filters.OutlineProcessor;
 import com.github.celldynamics.quimp.plugin.ana.ANAp;
 import com.github.celldynamics.quimp.plugin.randomwalk.BinaryFilters.MorphoOperations;
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
+import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
 import com.github.celldynamics.quimp.utils.IJTools;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
@@ -112,7 +114,7 @@ public abstract class PropagateSeeds {
   /**
    * Default resolution used during outlining objects.
    * 
-   * @see Contour#getOutline(ImageProcessor)
+   * @see Contour#getOutlineAndColors(ImageProcessor)
    */
   public static final int STEPS = 4;
   /**
@@ -128,7 +130,7 @@ public abstract class PropagateSeeds {
    * @see #getCompositeSeed(ImagePlus, int)
    * @see PropagateSeeds#storeSeeds
    */
-  protected List<Map<Seeds, ImageProcessor>> seeds;
+  protected List<Seeds> seeds;
   /**
    * Scale color values in composite preview.
    * 
@@ -196,9 +198,19 @@ public abstract class PropagateSeeds {
      * 
      */
     @Override
-    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, ImageProcessor org,
-            double shrinkPower, double expandPower) {
-      return binary.propagateSeed(previous, org, 0, 0);
+    public Seeds propagateSeed(ImageProcessor previous, ImageProcessor org, double shrinkPower,
+            double expandPower) {
+      Seeds decodedSeeds = new Seeds(2);
+      try {
+        decodedSeeds = SeedProcessor.getGrayscaleAsSeeds(previous);
+        if (decodedSeeds.get(SeedTypes.FOREGROUNDS) == null) {
+          throw new RandomWalkException("no FG maps");
+        }
+      } catch (RandomWalkException e) {
+        // this is handled to console only as return is still valid (no FG seeds in output)
+        LOGGER.debug("Empty seeds. " + e.getMessage());
+      }
+      return decodedSeeds;
     }
 
     /*
@@ -524,6 +536,10 @@ public abstract class PropagateSeeds {
      * <p>Setting <tt>shrinkPower</tt> or <tt>expandPower</tt> to zero prevents contour
      * modifications.
      * 
+     * <p>Algorithm can utilise object colour to process them in groups within one colour. Objects
+     * in one group are processed separately, but then all are stored in the same {@link Seeds}
+     * {@link SeedTypes#FOREGROUNDS} map.
+     * 
      * @param previous Previous result of segmentation. BW mask with white object on black
      *        background.
      * @param org original image that new seeds are computed for. Usually it is current image
@@ -538,34 +554,54 @@ public abstract class PropagateSeeds {
      * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
      */
     @Override
-    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, ImageProcessor org,
-            double shrinkPower, double expandPower) {
-      ByteProcessor small = new ByteProcessor(previous.getWidth(), previous.getHeight());
-      ByteProcessor big = new ByteProcessor(previous.getWidth(), previous.getHeight());
-      small.setColor(Color.BLACK);
-      small.fill();
-      big.setColor(Color.BLACK);
-      big.fill();
+    public Seeds propagateSeed(ImageProcessor previous, ImageProcessor org, double shrinkPower,
+            double expandPower) {
       double stepsshrink = shrinkPower / stepSize; // total shrink/step size
       double stepsexp = (expandPower) / stepSize; // total shrink/step size
+      Seeds ret = new Seeds(2);
 
-      List<Outline> outlines = getOutline(previous);
+      // this supports grayscales;
+      List<Pair<Outline, Color>> oc = getPairsOutlineAndColors(previous);
+      // sort according to colors, need to collect outlines with the same object color in the same
+      // map
+      Collections.sort(oc, new Comparator<Pair<Outline, Color>>() {
+
+        @Override
+        public int compare(Pair<Outline, Color> o1, Pair<Outline, Color> o2) {
+          Color c1 = o1.getRight();
+          Color c2 = o2.getRight();
+          Integer ci1 = new Integer(c1.getRed() + c1.getBlue() + c1.getGreen());
+          Integer ci2 = new Integer(c2.getRed() + c2.getBlue() + c2.getGreen());
+          return ci1.compareTo(ci2);
+        }
+      });
+
+      Iterator<Pair<Outline, Color>> oci = oc.iterator();
 
       // save extra debug info if property set
       if (QuimP.SUPER_DEBUG) {
         String tmp = System.getProperty("java.io.tmpdir");
-        for (Outline o : outlines) {
+        for (Pair<Outline, Color> o : oc) {
           long time = new Date().getTime();
-          RoiSaver.saveRoi(
-                  tmp + File.separator + "propagateSeed_" + time + "_" + outlines.hashCode(),
-                  o.asList());
+          RoiSaver.saveRoi(tmp + File.separator + "propagateSeed_" + time + "_" + oc.hashCode(),
+                  o.getLeft().asList());
         }
       }
-      small.setColor(Color.WHITE); // for fill(Roi)
-      for (Outline o : outlines) {
+      int cprev = -1; // previous object color, IT CANT EXIST IN LIST
+      ByteProcessor small = null;
+      while (oci.hasNext()) {
+        Pair<Outline, Color> p = oci.next();
+        Outline o = p.getLeft();
+        Color c = p.getRight();
+        // restore int (see TrackOutline.getColors())
+        int color = c.getRed() + c.getBlue() + c.getGreen();
         if (o.getNumPoints() < 4) {
           continue;
         }
+        if (color != cprev) { // if new color, create new processor (list is sorted)
+          small = new ByteProcessor(previous.getWidth(), previous.getHeight());
+        }
+        small.setColor(Color.WHITE); // for fill(Roi)
         // shrink outline - copy as we want to expand it later
         Outline copy = new Outline(o);
         LOGGER.debug("Shrink object");
@@ -579,9 +615,17 @@ public abstract class PropagateSeeds {
         small.fill(fr);
         small.drawRoi(fr);
         // small.resetRoi();
+        if (color != cprev) { // store only new, old will be updated by reference
+          ret.put(SeedTypes.FOREGROUNDS, small);
+        }
+        cprev = color; // for next iter
       }
 
-      for (Outline o : outlines) {
+      ByteProcessor big = new ByteProcessor(previous.getWidth(), previous.getHeight());
+      // big.setColor(Color.BLACK);
+      // big.fill();
+      for (Pair<Outline, Color> p : oc) {
+        Outline o = p.getLeft();
         if (o.getNumPoints() < 4) {
           continue;
         }
@@ -598,9 +642,7 @@ public abstract class PropagateSeeds {
       }
       big.invert();
       // store seeds if option ticked
-      Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
-      ret.put(Seeds.FOREGROUND, small);
-      ret.put(Seeds.BACKGROUND, getTrueBackground(big, org));
+      ret.put(SeedTypes.BACKGROUND, getTrueBackground(big, org));
       if (storeSeeds) {
         seeds.add(ret);
       }
@@ -612,13 +654,27 @@ public abstract class PropagateSeeds {
     /**
      * Convert mask to outline.
      * 
-     * @param previous image to outline. White object on black background.
-     * @return List of Outline for current frame
+     * @param previous image to be converted outline. White object on black background.
+     * @return List of Outline for current frame and colors
      * @see TrackOutline
+     * @see #getOutlineAndColors(ImageProcessor)
      */
-    public static List<Outline> getOutline(ImageProcessor previous) {
+    public static Pair<List<Outline>, List<Color>> getOutlineAndColors(ImageProcessor previous) {
       TrackOutlineLocal track = new TrackOutlineLocal(previous, 0);
-      return track.getOutlines(STEPS, false);
+      return track.getOutlinesColors(STEPS, false);
+    }
+
+    /**
+     * Convert mask to outline.
+     * 
+     * @param previous image to be converted outline. White object on black background.
+     * @return List of Outline for current frame and colors enclosed in pairs
+     * @see TrackOutline
+     * @see #getOutlineAndColors(ImageProcessor)
+     */
+    public static List<Pair<Outline, Color>> getPairsOutlineAndColors(ImageProcessor previous) {
+      TrackOutlineLocal track = new TrackOutlineLocal(previous, 0);
+      return track.getPairs(STEPS, false);
     }
 
   }
@@ -663,44 +719,59 @@ public abstract class PropagateSeeds {
      * 
      * @return Map containing list of coordinates that belong to foreground and background. Map is
      *         addressed by two enums: <tt>FOREGROUND</tt> and <tt>BACKGROUND</tt>
-     * @see RandomWalkSegmentation#decodeSeeds(ImagePlus, Color, Color)
+     * @see SeedProcessor#decodeSeedsfromRgb(ImagePlus, List, Color)
      * @see #getTrueBackground(ImageProcessor, ImageProcessor)
      * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
      */
     @Override
-    public Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous, ImageProcessor org,
-            double shrinkPower, double expandPower) {
-      ImageProcessor cp = previous;
+    public Seeds propagateSeed(ImageProcessor previous, ImageProcessor org, double shrinkPower,
+            double expandPower) {
+      ImageProcessor cp = previous.duplicate();
       // object smaller than on frame n
       ImageProcessor small = cp.duplicate();
       // object bigger than on frame n
       ImageProcessor big = cp.duplicate();
-      // make objects smaller
-      small = BinaryFilters.iterateMorphological(small, MorphoOperations.ERODE, shrinkPower);
-      // make background bigger
-      big = BinaryFilters.iterateMorphological(big, MorphoOperations.DILATE, expandPower);
-
-      // apply big to old background making object bigger and prevent covering objects on
-      // frame
-      // n+1
-      // by previous background (make "empty" not seeded space around objects)
-      // IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_bigbef.tif");
-      // IJ.saveAsTiff(new ImagePlus("", cp), "/tmp/testIterateMorphological_cp.tif");
-      for (int x = 0; x < cp.getWidth(); x++) {
-        for (int y = 0; y < cp.getHeight(); y++) {
-          big.putPixel(x, y, big.getPixel(x, y) | cp.getPixel(x, y));
-        }
-      }
-
-      big.invert(); // invert to have BG pixels white in seed. (required by convertToList)
       // store seeds if option ticked
-      Map<Seeds, ImageProcessor> ret = new HashMap<Seeds, ImageProcessor>(2);
-      ret.put(Seeds.FOREGROUND, small);
-      ret.put(Seeds.BACKGROUND, getTrueBackground(big, org));
-      if (storeSeeds) {
-        seeds.add(ret);
-      }
+      Seeds ret = new Seeds(2);
+      // need to process each object separately to preserve multi fg seeds.
+      Seeds decodedSeeds;
+      try {
+        decodedSeeds = SeedProcessor.getGrayscaleAsSeeds(cp);
+        if (decodedSeeds.get(SeedTypes.FOREGROUNDS) == null) {
+          throw new RandomWalkException("no FG maps");
+        }
+        for (ImageProcessor ip : decodedSeeds.get(SeedTypes.FOREGROUNDS)) {
+          // make objects smaller
+          small = BinaryFilters.iterateMorphological(ip, MorphoOperations.ERODE, shrinkPower);
+          ret.put(SeedTypes.FOREGROUNDS, small);
+        }
 
+        // make background bigger but for all, convert to binary first
+        big.threshold(0);
+        big = BinaryFilters.iterateMorphological(big, MorphoOperations.DILATE, expandPower);
+        cp.threshold(0); // input also must be binary (after computing FG)
+
+        // apply big to old background making object bigger and prevent covering objects on
+        // frame
+        // n+1
+        // by previous background (make "empty" not seeded space around objects)
+        // IJ.saveAsTiff(new ImagePlus("", big), "/tmp/testIterateMorphological_bigbef.tif");
+        // IJ.saveAsTiff(new ImagePlus("", cp), "/tmp/testIterateMorphological_cp.tif");
+        for (int x = 0; x < cp.getWidth(); x++) {
+          for (int y = 0; y < cp.getHeight(); y++) {
+            big.putPixel(x, y, big.getPixel(x, y) | cp.getPixel(x, y));
+          }
+        }
+
+        big.invert(); // invert to have BG pixels white in seed. (required by convertToList)
+        ret.put(SeedTypes.BACKGROUND, getTrueBackground(big, org));
+        if (storeSeeds) {
+          seeds.add(ret);
+        }
+      } catch (RandomWalkException e) { // from decodeseeds - no FG seeds
+        // this is handled to console only as return is still valid (no FG seeds in output)
+        LOGGER.debug("Empty seeds. " + e.getMessage());
+      }
       return ret;
     }
 
@@ -718,48 +789,61 @@ public abstract class PropagateSeeds {
    * @throws RandomWalkException When seeds were not collected.
    */
   public ImagePlus getCompositeSeed(ImagePlus org, int offset) throws RandomWalkException {
-    ImagePlus ret;
-    if (seeds == null || seeds.size() == 0) {
-      throw new RandomWalkException(
-              "Seeds were not stored. You need at least two time frames to collect one seed");
-    }
-    ImageStack smallstack = new ImageStack(seeds.get(0).get(Seeds.FOREGROUND).getWidth(),
-            seeds.get(0).get(Seeds.FOREGROUND).getHeight());
-    ImageStack bigstack = new ImageStack(seeds.get(0).get(Seeds.FOREGROUND).getWidth(),
-            seeds.get(0).get(Seeds.FOREGROUND).getHeight());
+    ImagePlus ret = null;
+    try {
+      ImageStack smallstack =
+              new ImageStack(seeds.get(0).get(SeedTypes.FOREGROUNDS).get(0).getWidth(),
+                      seeds.get(0).get(SeedTypes.FOREGROUNDS).get(0).getHeight());
+      ImageStack bigstack =
+              new ImageStack(seeds.get(0).get(SeedTypes.FOREGROUNDS).get(0).getWidth(),
+                      seeds.get(0).get(SeedTypes.FOREGROUNDS).get(0).getHeight());
 
-    for (Map<Seeds, ImageProcessor> p : seeds) {
-      // just in case convert to byte
-      ImageProcessor fg = (ImageProcessor) p.get(Seeds.FOREGROUND).convertToByte(true);
-      ImageProcessor bg = (ImageProcessor) p.get(Seeds.BACKGROUND).convertToByte(true);
-      // make colors transparent
-      bg.multiply(colorScaling);
-      fg.multiply(colorScaling);
-      // set gray lut just in case
-      fg.setLut(IJTools.getGrayLut());
-      bg.setLut(IJTools.getGrayLut());
-      smallstack.addSlice((ImageProcessor) fg);
-      bigstack.addSlice((ImageProcessor) bg);
-    }
-    // check if stack or not. getComposite requires the same type
-    if (org.getStack().getSize() == 1) { // single image
-      ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack.getProcessor(1)),
-              new ImagePlus("", bigstack.getProcessor(1)));
-    } else {
-      if (offset > 0) { // stack but show only one image
-        ImageProcessor tmp = org.getStack().getProcessor(offset).duplicate();
-        ret = IJTools.getComposite(new ImagePlus("", tmp), new ImagePlus("", smallstack),
-                new ImagePlus("", bigstack));
-      } else { // stack
-        ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack),
-                new ImagePlus("", bigstack));
+      for (Seeds p : seeds) {
+        // just in case convert to byte
+        ImageProcessor fg = SeedProcessor.flatten(p, SeedTypes.FOREGROUNDS, 1).convertToByte(true);
+        fg.threshold(0); // need 255 not real value of map
+        // why duplicate here? without returned map is at 128???????????????? Seems that
+        // converToByte returns duplicate only if input is not 8-bit
+        // (PropagateSeedsTest.testGetCompositeSeed_Morphological()
+        ImageProcessor bg = p.get(SeedTypes.BACKGROUND, 1).duplicate().convertToByte(true);
+        bg.threshold(0); // need 255 not real value of map
+        // make colors transparent
+        bg.multiply(colorScaling);
+        fg.multiply(colorScaling);
+        // set gray lut just in case
+        fg.setLut(IJTools.getGrayLut());
+        bg.setLut(IJTools.getGrayLut());
+        smallstack.addSlice((ImageProcessor) fg);
+        bigstack.addSlice((ImageProcessor) bg);
       }
+      // check if stack or not. getComposite requires the same type
+      if (org.getStack().getSize() == 1) { // single image
+        ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack.getProcessor(1)),
+                new ImagePlus("", bigstack.getProcessor(1)));
+      } else {
+        if (offset > 0) { // stack but show only one image
+          ImageProcessor tmp = org.getStack().getProcessor(offset).duplicate();
+          ret = IJTools.getComposite(new ImagePlus("", tmp), new ImagePlus("", smallstack),
+                  new ImagePlus("", bigstack));
+        } else { // stack
+          ret = IJTools.getComposite(org.duplicate(), new ImagePlus("", smallstack),
+                  new ImagePlus("", bigstack));
+        }
+      }
+    } catch (NullPointerException | IndexOutOfBoundsException e) {
+      throw new RandomWalkException("Problem with showing seeds. Seeds were not stored. "
+              + "You need at least two time frames to collect one seed or "
+              + "segmentation returned empty image.");
     }
     return ret;
   }
 
   /**
    * Propagate seed.
+   * 
+   * <p>Each separated object found in <tt>previous</tt> is returned as separate BW map in
+   * {@link Seeds} under {@link SeedTypes#FOREGROUNDS} map. <tt>previous</tt> can contain grayscale
+   * labelled objects.
    *
    * @param previous the previous
    * @param org original image that new seeds are computed for. Usually it is current image
@@ -769,8 +853,8 @@ public abstract class PropagateSeeds {
    * @see #getTrueBackground(ImageProcessor, ImageProcessor)
    * @see #setTrueBackgroundProcessing(ij.process.AutoThresholder.Method)
    */
-  public abstract Map<Seeds, ImageProcessor> propagateSeed(ImageProcessor previous,
-          ImageProcessor org, double shrinkPower, double expandPower);
+  public abstract Seeds propagateSeed(ImageProcessor previous, ImageProcessor org,
+          double shrinkPower, double expandPower);
 
   /**
    * Excludes objects from estimated background.
@@ -809,7 +893,7 @@ public abstract class PropagateSeeds {
 }
 
 /**
- * In purpose of overriding {@link TrackOutline#prepare()} which in super class can remove this
+ * In purpose of overriding {@link TrackOutline#prepare()} which in super class can remove thin
  * lines.
  * 
  * @author p.baniukiewicz

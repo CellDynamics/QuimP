@@ -1,9 +1,16 @@
 package com.github.celldynamics.quimp.geom;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
+
+import java.awt.Color;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.Outline;
-import com.github.celldynamics.quimp.geom.SegmentedShapeRoi;
-import com.github.celldynamics.quimp.geom.TrackOutline;
 import com.github.celldynamics.quimp.plugin.binaryseg.BinarySegmentation;
 import com.github.celldynamics.quimp.utils.test.RoiSaver;
 
@@ -25,7 +30,6 @@ import ij.gui.ShapeRoi;
 import ij.plugin.RoiRotator;
 import ij.process.ImageProcessor;
 
-// TODO: Auto-generated Javadoc
 /**
  * @author p.baniukiewicz
  *
@@ -111,6 +115,7 @@ public class TrackOutlineTest {
   public void testGetOutlines() throws Exception {
     List<List<Point2d>> ret = obj.getOutlinesasPoints(2, false);
     LOGGER.debug("Found " + ret.size());
+    assertThat(ret.size(), is(3));
     ImagePlus r = image.duplicate();
     r.setProcessor((ImageProcessor) accessPrivateField("prepared", obj));
     IJ.saveAsTiff(r, tmpdir + "testGetOutlines.tif");
@@ -195,6 +200,32 @@ public class TrackOutlineTest {
     RoiSaver.saveRoi(tmpdir + "test0.tif", ret.get(0).asList());
     RoiSaver.saveRoi(tmpdir + "test1.tif", ret.get(1).asList());
     RoiSaver.saveRoi(tmpdir + "test2.tif", ret.get(2).asList());
+  }
+
+  /**
+   * Test if color is handled correctly,
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetOutlinesColors() throws Exception {
+    Pair<List<Outline>, List<Color>> ret = obj.getOutlinesColors(2, false);
+    List<Color> c = ret.getRight();
+    assertThat(ret.getLeft().size(), is(3));
+    assertThat(ret.getLeft().size(), is(ret.getRight().size()));
+    assertThat(ret.getRight(), containsInAnyOrder(new Color(255), new Color(109), new Color(109)));
+    assertThat(ret.getRight(), is(obj.getColors()));
+  }
+
+  /**
+   * Test of {@link TrackOutline#getPairs(double, boolean)}
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testGetPairs() throws Exception {
+    List<Pair<Outline, Color>> ret = obj.getPairs(2, false);
+    assertThat(ret, hasSize(3));
   }
 
 }

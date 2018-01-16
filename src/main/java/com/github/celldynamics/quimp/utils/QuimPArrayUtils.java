@@ -22,6 +22,7 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.stat.StatUtils;
 
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 /**
@@ -679,5 +680,33 @@ public class QuimPArrayUtils {
     } else {
       throw new IllegalArgumentException("Unknown bit depth");
     }
+  }
+
+  /**
+   * Create FloatProcessor 2D from RealMatrix.
+   * 
+   * @param rm input matrix
+   * @return FloatProcessor
+   */
+  public static FloatProcessor realMatrix2ImageProcessor(RealMatrix rm) {
+    double[][] rawData = rm.transpose().getData();
+    return new FloatProcessor(double2dfloat(rawData));
+  }
+
+  /**
+   * Create RealMatrix 2D from image. Image is converted to Double.
+   * 
+   * @param ip input image
+   * @return 2D matrix converted to Double
+   */
+  public static RealMatrix imageProcessor2RealMatrix(ImageProcessor ip) {
+    if (ip == null) {
+      return null;
+    }
+    RealMatrix out;
+    float[][] image = ip.getFloatArray();
+    // no copy (it is done in float2double)
+    out = new Array2DRowRealMatrix(float2ddouble(image), false);
+    return out.transpose();
   }
 }

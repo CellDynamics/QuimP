@@ -1,8 +1,12 @@
 package com.github.celldynamics.quimp.geom;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.scijava.vecmath.Point2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +102,14 @@ public class TrackOutline {
   public ArrayList<SegmentedShapeRoi> outlines;
 
   /**
+   * List of colors of objects that were used to produce SegmentedShapeRoi.
+   * 
+   * <p>This list is related to {@link TrackOutline#outlines}. Colors are encoded as rgb
+   * {@link Color#Color(int)}
+   */
+  public ArrayList<Color> colors;
+
+  /**
    * The background color.
    */
   protected int background;
@@ -123,6 +135,7 @@ public class TrackOutline {
       throw new IllegalArgumentException("Only 8-bit or 16-bit images are supported");
     }
     outlines = new ArrayList<>();
+    colors = new ArrayList<>();
     this.imp = imp;
     this.background = background;
     this.prepared = prepare();
@@ -205,12 +218,14 @@ public class TrackOutline {
    * 
    */
   private void getOutlines() {
-    // go through the image and look for non \a background pixels
+    // go through the image and look for non background pixels
     outer: for (int r = 0; r < prepared.getHeight(); r++) {
       for (int c = 0; c < prepared.getWidth(); c++) {
-        if (prepared.getPixel(c, r) != background) { // non background pixel
+        int pixel = prepared.getPixel(c, r);
+        if (pixel != background) { // non background pixel
           // remember outline and delete it from input image
-          outlines.add(getOutline(c, r, prepared.getPixel(c, r)));
+          outlines.add(getOutline(c, r, pixel));
+          colors.add(new Color(pixel)); // store source color as rgb
           if (maxNumObj > -1) {
             if (outlines.size() >= maxNumObj) {
               LOGGER.warn("Reached maximal number of outlines");
@@ -223,15 +238,31 @@ public class TrackOutline {
   }
 
   /**
-   * Convert found Oulines to Outline.
+   * Convert found outlines to Outline.
    * 
    * @param step resolution step
    * @param smooth true to use IJ polygon smoothing (running average).
    * @return List of Outline object that represents all
    * @see SegmentedShapeRoi#getOutlineasPoints()
    * @see #getOutlinesasPoints(double, boolean)
+   * @see #getOutlinesColors(double, boolean)
    */
   public List<Outline> getOutlines(double step, boolean smooth) {
+    Pair<List<Outline>, List<Color>> ret = getOutlinesColors(step, smooth);
+    return ret.getLeft();
+  }
+
+  /**
+   * Convert found outlines to Outline.
+   * 
+   * @param step resolution step
+   * @param smooth true to use IJ polygon smoothing (running average).
+   * @return List of Outline object and colors of foreground pixels used to produce them coded as
+   *         rgb by {@link Color#Color(int)}
+   * @see SegmentedShapeRoi#getOutlineasPoints()
+   * @see #getOutlinesasPoints(double, boolean)
+   */
+  public Pair<List<Outline>, List<Color>> getOutlinesColors(double step, boolean smooth) {
     List<SegmentedShapeRoi> rois = getCopyofShapes();
     // convert to Outlines from ROIs
     ArrayList<Outline> outlines = new ArrayList<>();
@@ -241,9 +272,28 @@ public class TrackOutline {
       Outline o;
       o = new QuimpDataConverter(sr.getOutlineasPoints()).getOutline();
       outlines.add(o);
-
     }
-    return outlines;
+
+    return new ImmutablePair<List<Outline>, List<Color>>(outlines, colors);
+  }
+
+  /**
+   * Reformat collected outlines and Colors to list of pairs.
+   * 
+   * @param step resolution step
+   * @param smooth true to use IJ polygon smoothing (running average).
+   * @return List of pairs, outlines and colors of pixels they were created from
+   */
+  public List<Pair<Outline, Color>> getPairs(double step, boolean smooth) {
+    List<Outline> out = getOutlinesColors(step, smooth).getLeft();
+    List<Pair<Outline, Color>> ret = new ArrayList<>();
+    Iterator<Outline> ito = out.iterator();
+    Iterator<Color> itc = colors.iterator();
+    while (ito.hasNext() && itc.hasNext()) {
+      Pair<Outline, Color> p = new ImmutablePair<Outline, Color>(ito.next(), itc.next());
+      ret.add(p);
+    }
+    return ret;
   }
 
   /**
@@ -300,6 +350,19 @@ public class TrackOutline {
       clon.add((SegmentedShapeRoi) sr.clone());
     }
     return clon;
+  }
+
+  /**
+   * Get colors of pixels that outlines were produced from.
+   * 
+   * <p>Size of this array and order of elements correspond to {@link TrackOutline#outlines} and all
+   * get methods in this class.
+   * 
+   * @return the colors as RGB, created by {@link Color#Color(int)}. Integer can be retrieved by
+   *         summing up three RGB components.
+   */
+  public ArrayList<Color> getColors() {
+    return colors;
   }
 
   /*

@@ -2,16 +2,11 @@ package com.github.celldynamics.quimp.plugin.randomwalk;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
-import java.awt.Color;
 import java.io.File;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
@@ -25,15 +20,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkOptions;
-import com.github.celldynamics.quimp.plugin.randomwalk.Point;
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkException;
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation;
+import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
-import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 
 /**
@@ -238,79 +229,6 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
   }
 
   /**
-   * Test of decodeSeeds(ImagePlus, Color, Color).
-   * 
-   * <p>Pre: Image with green/red seed with known positions (segtest_small.rgb.tif)
-   * 
-   * <p>Post: Two lists with positions of seeds
-   * 
-   * @throws Exception on error
-   */
-  @Test
-  public void testDecodeSeeds() throws Exception {
-    Set<Point> expectedForeground = new HashSet<Point>();
-    expectedForeground.add(new Point(70, 70));
-    expectedForeground.add(new Point(71, 70));
-    expectedForeground.add(new Point(72, 70));
-    expectedForeground.add(new Point(100, 20));
-    expectedForeground.add(new Point(172, 97));
-
-    Set<Point> expectedBackground = new HashSet<Point>();
-    expectedBackground.add(new Point(20, 20));
-    expectedBackground.add(new Point(40, 40));
-    expectedBackground.add(new Point(60, 60));
-
-    Map<Seeds, ImageProcessor> ret = decodeSeeds(testImage1rgb, Color.RED, Color.GREEN);
-    Map<Seeds, List<Point>> list = RandomWalkSegmentation.convertToList(ret);
-
-    Set<Point> fseeds = new HashSet<>(list.get(Seeds.FOREGROUND));
-    Set<Point> bseeds = new HashSet<>(list.get(Seeds.BACKGROUND));
-
-    assertThat(fseeds, is(expectedForeground));
-    assertThat(bseeds, is(expectedBackground));
-  }
-
-  /**
-   * Test of decodeSeeds(ImagePlus, Color, Color).
-   * 
-   * <p>Pre: Mask image. Test approach if input is binary mask converted to rgb
-   * 
-   * <p>Post: Two lists with positions of seeds
-   * 
-   * @throws Exception on error
-   */
-  @Test
-  public void testDecodeSeedsBW() throws Exception {
-    Set<Point> expectedForeground = new HashSet<Point>();
-    expectedForeground.add(new Point(218, 120));
-    expectedForeground.add(new Point(233, 118));
-    expectedForeground.add(new Point(239, 132));
-    expectedForeground.add(new Point(249, 131));
-    expectedForeground.add(new Point(322, 225));
-
-    Set<Point> expectedBackground = new HashSet<Point>();
-    expectedBackground.add(new Point(334, 321));
-    expectedBackground.add(new Point(238, 81));
-    expectedBackground.add(new Point(319, 246));
-
-    ImagePlus testImage = IJ.openImage("src/test/Resources-static/GMask.tif");
-    new ImageConverter(testImage).convertToRGB(); // convert to rgb
-
-    Map<Seeds, ImageProcessor> ret = decodeSeeds(testImage, Color.WHITE, Color.BLACK);
-    Map<Seeds, List<Point>> list = RandomWalkSegmentation.convertToList(ret);
-
-    Set<Point> fseeds = new HashSet<>(list.get(Seeds.FOREGROUND));
-    Set<Point> bseeds = new HashSet<>(list.get(Seeds.BACKGROUND));
-
-    for (Point p : expectedForeground) {
-      assertTrue(fseeds.contains(p));
-    }
-    for (Point p : expectedBackground) {
-      assertTrue(bseeds.contains(p));
-    }
-  }
-
-  /**
    * Test of getValues(RealMatrix, List).
    * 
    * @throws Exception on error
@@ -406,43 +324,6 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
 
   /**
    * Test method for
-   * {@link RandomWalkSegmentation#realMatrix2ImageProcessor(RealMatrix)}.
-   */
-  @Test
-  public void testRealMatrix2ImageProcessor() {
-    int rows = 10; // y
-    int cols = 20; // x
-    RealMatrix test = new Array2DRowRealMatrix(rows, cols);
-    test.setEntry(3, 7, 50); // row, col
-    test.setEntry(6, 19, 25); // row, col
-    ImageProcessor out = realMatrix2ImageProcessor(test);
-    assertThat(out.getHeight(), is(rows));
-    assertThat(out.getWidth(), is(cols));
-    assertThat(out.getPixelValue(7, 3), is(50f));
-    assertThat(out.getPixelValue(19, 6), is(25f)); // x y
-  }
-
-  /**
-   * Test method for
-   * {@link RandomWalkSegmentation#imageProcessor2RealMatrix(ImageProcessor)}.
-   */
-  @Test
-  public void testImageProcessor2RealMatrix() {
-    int rows = 10; // y
-    int cols = 20; // x
-    ImageProcessor test = new FloatProcessor(cols, rows); // width, height
-    test.putPixelValue(7, 3, 50); // x y
-    test.putPixelValue(19, 6, 25); // x y
-    RealMatrix out = imageProcessor2RealMatrix(test);
-    assertThat(out.getRowDimension(), is(rows));
-    assertThat(out.getColumnDimension(), is(cols));
-    assertThat(out.getEntry(3, 7), is(50.0));
-    assertThat(out.getEntry(6, 19), is(25.0)); // row column
-
-  }
-
-  /**
-   * Test method for
    * {@link RandomWalkSegmentation#computeRelErr(double[][], double[][])}.
    * 
    * @throws Exception on error
@@ -467,6 +348,64 @@ public class RandomWalkSegmentationTest extends RandomWalkSegmentation {
             new RandomWalkSegmentation(testImage1.getProcessor(), new RandomWalkOptions());
     double ret = rws.computeRelErr(fglast, fg);
     assertThat(ret, is(expected));
+  }
+
+  /**
+   * Test of {@link RandomWalkSegmentation#compare(ProbabilityMaps)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testCompare() throws Exception {
+    // probability for 1 obj
+    double[][] m1d = { { 1, 2, 3 }, { 4, 5, 6 } }; // [2][3]
+    // probability for 2nd object
+    double[][] m2d = { { 0.1, 0.8, 0.9 }, { 10, 11, 12 } };
+    // background
+    double[][] m3d = { { 0, 0, 0 }, { 0, 0, 15 } };
+    // higher wins, returned indexes of object, 0 for bck
+    double[][] exp = { { 1, 1, 1 }, { 2, 2, 0 } };
+
+    RealMatrix m1 = new Array2DRowRealMatrix(m1d);
+    RealMatrix m2 = new Array2DRowRealMatrix(m2d);
+    RealMatrix m3 = new Array2DRowRealMatrix(m3d);
+
+    ProbabilityMaps obj = new ProbabilityMaps();
+    obj.put(SeedTypes.FOREGROUNDS, m1);
+    obj.put(SeedTypes.FOREGROUNDS, m2);
+    obj.put(SeedTypes.BACKGROUND, m3);
+
+    RandomWalkSegmentation rws =
+            new RandomWalkSegmentation(testImage1.getProcessor(), new RandomWalkOptions());
+    RealMatrix ret = rws.compare(obj);
+    assertThat(ret, is(MatrixUtils.createRealMatrix(exp)));
+  }
+
+  /**
+   * Test of {@link RandomWalkSegmentation#flatten(ProbabilityMaps, SeedTypes)}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testFlatten() throws Exception {
+    // probability for 1 obj
+    double[][] m1d = { { 1, 2, 3 }, { 4, 5, 6 } }; // [2][3]
+    // probability for 2nd object
+    double[][] m2d = { { 0.1, 0.8, 0.9 }, { 10, 11, 12 } };
+    // higher wins, returned indexes of object, 0 for bck
+    double[][] exp = { { 1, 2, 3 }, { 10, 11, 12 } };
+
+    RealMatrix m1 = new Array2DRowRealMatrix(m1d);
+    RealMatrix m2 = new Array2DRowRealMatrix(m2d);
+
+    ProbabilityMaps obj = new ProbabilityMaps();
+    obj.put(SeedTypes.FOREGROUNDS, m1);
+    obj.put(SeedTypes.FOREGROUNDS, m2);
+
+    RandomWalkSegmentation rws =
+            new RandomWalkSegmentation(testImage1.getProcessor(), new RandomWalkOptions());
+    double[][] ret = rws.flatten(obj, SeedTypes.FOREGROUNDS);
+    assertThat(MatrixUtils.createRealMatrix(ret), is(MatrixUtils.createRealMatrix(exp)));
   }
 
 }

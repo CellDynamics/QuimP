@@ -1,10 +1,14 @@
 package com.github.celldynamics.quimp.plugin.randomwalk;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.closeTo;
+import static org.junit.Assert.assertThat;
+
 import java.awt.Color;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.Arrays;
 
 import org.apache.commons.math3.linear.RealMatrix;
 import org.junit.After;
@@ -13,7 +17,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Seeds;
+import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.SeedTypes;
+import com.github.celldynamics.quimp.utils.QuimPArrayUtils;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -49,6 +54,10 @@ public class RandomWalkSegmentationOtherTest {
    * The tmpdir.
    */
   static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
+
+  static {
+    System.setProperty("quimpconfig.superDebug", "false");
+  }
 
   /**
    * Access private.
@@ -129,10 +138,12 @@ public class RandomWalkSegmentationOtherTest {
   @Test
   public void testRun_1() throws Exception {
     RandomWalkSegmentation obj = new RandomWalkSegmentation(testImage1.getProcessor(), params);
-    Map<Seeds, ImageProcessor> seeds =
-            RandomWalkSegmentation.decodeSeeds(testImage1seed, Color.RED, Color.GREEN);
-    IJ.saveAsTiff(new ImagePlus("", seeds.get(Seeds.FOREGROUND)), tmpdir + "foreSeeds_QuimP.tif");
-    IJ.saveAsTiff(new ImagePlus("", seeds.get(Seeds.BACKGROUND)), tmpdir + "backSeeds_QuimP.tif");
+    Seeds seeds =
+            SeedProcessor.decodeSeedsfromRgb(testImage1seed, Arrays.asList(Color.RED), Color.GREEN);
+    IJ.saveAsTiff(new ImagePlus("", seeds.get(SeedTypes.FOREGROUNDS).get(0)),
+            tmpdir + "foreSeeds_QuimP.tif");
+    IJ.saveAsTiff(new ImagePlus("", seeds.get(SeedTypes.BACKGROUND).get(0)),
+            tmpdir + "backSeeds_QuimP.tif");
     // number of seed correct with matlab file
     ImageProcessor ret = obj.run(seeds);
     ImagePlus results = new ImagePlus("cmp", ret);
@@ -157,8 +168,8 @@ public class RandomWalkSegmentationOtherTest {
   @Test
   public void testRun_2() throws Exception {
     RandomWalkSegmentation obj = new RandomWalkSegmentation(fluoreszenz1.getProcessor(), params);
-    Map<Seeds, ImageProcessor> seeds =
-            RandomWalkSegmentation.decodeSeeds(testImage2seed, Color.RED, Color.GREEN);
+    Seeds seeds =
+            SeedProcessor.decodeSeedsfromRgb(testImage2seed, Arrays.asList(Color.RED), Color.GREEN);
     // number of seed correct with matlab file
     ImageProcessor ret = obj.run(seeds);
     ImagePlus results = new ImagePlus("cmp2", ret);
@@ -205,15 +216,60 @@ public class RandomWalkSegmentationOtherTest {
     ImagePlus org = IJ.openImage(
             "src/test/Resources-static/" + "RW/C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18.tif");
     RandomWalkSegmentation obj = new RandomWalkSegmentation(org.getProcessor(), params);
-    Map<Seeds, ImageProcessor> seeds =
-            RandomWalkSegmentation.decodeSeeds(seed, Color.RED, Color.GREEN);
+    Seeds seeds = SeedProcessor.decodeSeedsfromRgb(seed, Arrays.asList(Color.RED), Color.GREEN);
     ImagePlus rough = IJ.openImage("src/test/Resources-static/RW/"
             + "C1-talA_mNeon_bleb_0pt7%agar_FLU_frame18_rough_snakemask.tif");
-    seeds.put(Seeds.ROUGHMASK, rough.getProcessor());
+    seeds.put(SeedTypes.ROUGHMASK, rough.getProcessor());
     // number of seed correct with matlab file
     ImageProcessor ret = obj.run(seeds);
     ImagePlus results = new ImagePlus("cmp2", ret);
     IJ.saveAsTiff(results, tmpdir + "testRun_4_QuimP.tif");
+  }
+
+  /**
+   * Main runner, multiple seeds.
+   * 
+   * <p>Give wrong results if second sweep is used.
+   * 
+   * <p>Expected is division line splitting two circles.
+   * 
+   * @throws Exception on error
+   */
+  @Test
+  public void testRun_5() throws Exception {
+    params.gamma[1] = 0; // do not use 2nd sweep - give wrong results
+    params.iter = 1000; // stop by error
+    ImageProcessor ip = IJ.openImage("src/test/Resources-static/284/2uniform.tif").getProcessor();
+    RandomWalkSegmentation obj = new RandomWalkSegmentation(ip, params);
+    ImageProcessor seedsIp =
+            IJ.openImage("src/test/Resources-static/284/CompositeRGB.tif").getProcessor();
+    Seeds seeds = SeedProcessor.decodeSeedsfromRgb(seedsIp,
+            Arrays.asList(new Color(244, 0, 0), new Color(0, 0, 244)), new Color(0, 244, 0));
+    IJ.saveAsTiff(new ImagePlus("", seeds.get(SeedTypes.FOREGROUNDS).get(0)),
+            tmpdir + "foreSeeds5_0_QuimP.tif");
+    IJ.saveAsTiff(new ImagePlus("", seeds.get(SeedTypes.FOREGROUNDS).get(1)),
+            tmpdir + "foreSeeds5_1_QuimP.tif");
+    IJ.saveAsTiff(new ImagePlus("", seeds.get(SeedTypes.BACKGROUND).get(0)),
+            tmpdir + "backSeeds5_QuimP.tif");
+
+    ImageProcessor ret = obj.run(seeds);
+    ImagePlus results = new ImagePlus("cmp", ret);
+
+    // simple stats
+    int[] hist = ret.getHistogram();
+    // Expecting two circles in color 128 and 255 (after scaling to 8bit)
+    // segmented area should be roughly similar
+    double ratio = (double) hist[128] / hist[255]; // tested in IJ
+    IJ.saveAsTiff(results, tmpdir + "testRun_5_QuimP.tif");
+    assertThat(ratio, is(closeTo(0.96555436, 0.1)));
+
+    // now the same if there is no background defined. For this case we expect exactly the same
+    // result.
+    seeds.remove(SeedTypes.BACKGROUND);
+    ret = obj.run(seeds);
+    hist = ret.getHistogram();
+    double ratio1 = (double) hist[128] / hist[255]; // tested in IJ
+    assertThat(ratio1, is(closeTo(ratio, 1e-5)));
   }
 
   /**
@@ -228,8 +284,8 @@ public class RandomWalkSegmentationOtherTest {
   @Test(expected = RandomWalkException.class)
   public void testRun_3() throws Exception {
     RandomWalkSegmentation obj = new RandomWalkSegmentation(testImage2.getProcessor(), params);
-    Map<Seeds, ImageProcessor> seeds =
-            RandomWalkSegmentation.decodeSeeds(testImage2seed, Color.CYAN, Color.GREEN);
+    Seeds seeds = SeedProcessor.decodeSeedsfromRgb(testImage2seed, Arrays.asList(Color.CYAN),
+            Color.GREEN);
     // number of seed correct with matlab file
     ImageProcessor ret = obj.run(seeds);
   }
@@ -251,17 +307,17 @@ public class RandomWalkSegmentationOtherTest {
             (RealMatrix[]) accessPrivate("precomputeGradients", obj, new Object[0], new Class[0]);
 
     IJ.saveAsTiff(
-            new ImagePlus("gRight2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[0])),
+            new ImagePlus("gRight2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[0])),
             tmpdir + "testPrecompute_gRight2_QuimP.tif");
 
-    IJ.saveAsTiff(new ImagePlus("gTop2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[1])),
+    IJ.saveAsTiff(new ImagePlus("gTop2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[1])),
             tmpdir + "testPrecompute_gTop2_QuimP.tif");
 
-    IJ.saveAsTiff(new ImagePlus("gLeft2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[2])),
+    IJ.saveAsTiff(new ImagePlus("gLeft2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[2])),
             tmpdir + "testPrecompute_gLeft2_QuimP.tif");
 
     IJ.saveAsTiff(
-            new ImagePlus("gBottom2", RandomWalkSegmentation.realMatrix2ImageProcessor(ret[3])),
+            new ImagePlus("gBottom2", QuimPArrayUtils.realMatrix2ImageProcessor(ret[3])),
             tmpdir + "testPrecompute_gBottom2_QuimP.tif");
   }
 
@@ -270,9 +326,9 @@ public class RandomWalkSegmentationOtherTest {
    */
   @Test
   public void testConversion() {
-    RealMatrix image = RandomWalkSegmentation.imageProcessor2RealMatrix(testImage1.getProcessor());
+    RealMatrix image = QuimPArrayUtils.imageProcessor2RealMatrix(testImage1.getProcessor());
 
-    IJ.saveAsTiff(new ImagePlus("orimage", RandomWalkSegmentation.realMatrix2ImageProcessor(image)),
+    IJ.saveAsTiff(new ImagePlus("orimage", QuimPArrayUtils.realMatrix2ImageProcessor(image)),
             tmpdir + "testConversion_image_QuimP.tif");
   }
 
@@ -286,8 +342,12 @@ public class RandomWalkSegmentationOtherTest {
     RandomWalkSegmentation obj = new RandomWalkSegmentation(testImage2.getProcessor(), params);
     ImagePlus mask = IJ.openImage("src/test/Resources-static/RW/mask.tif");
 
-    obj.getMeanSeedLocal(mask.getProcessor(), 3);
+    RealMatrix ret = obj.getMeanSeedLocal(mask.getProcessor(), 3);
 
+    IJ.saveAsTiff(new ImagePlus("meanseed", QuimPArrayUtils.realMatrix2ImageProcessor(ret)),
+            tmpdir + "testGetMeanSeed_QuimP.tif");
+
+    assertThat(ret.hashCode(), is(1549840221)); // checked manually
   }
 
 }
