@@ -74,14 +74,14 @@ public class QuimpToolsCollectionTest {
             + "test_0.paQP should be broken";
     String ret = QuimpToolsCollection.stringWrap(str, 20);
     LOGGER.debug(ret);
-    assertEquals(9, StringUtils.countMatches(ret, '\n'));
+    assertEquals(10, StringUtils.countMatches(ret, '\n'));
 
     str = "Long string with /home/baniuk/Documents/"
             + "Repos/QuimP-env/QuimP/src/test/Resources-static/"
             + "FormatConverter/templates\\Paqp-Q to QCONF missing maps/"
             + "test_0.paQP should be broken";
     ret = QuimpToolsCollection.stringWrap(str, 20);
-    assertEquals(9, StringUtils.countMatches(ret, '\n'));
+    assertEquals(10, StringUtils.countMatches(ret, '\n'));
 
     str = "Long string with /home/baniuk/Documents/\n"
             + "Repos/QuimP-env/QuimP/src/test/Resources-static/\n"

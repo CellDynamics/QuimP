@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.github.celldynamics</groupId>
     <artifactId>pom-quimp-root</artifactId>
-    <version>17.1.1</version>
+    <version>19.0.0</version>
     <relativePath />
   </parent>
   <!-- Project's coordinates -->
@@ -154,6 +154,10 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-math3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
