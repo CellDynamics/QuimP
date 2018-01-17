@@ -403,14 +403,14 @@ public class BOAState implements IQuimpSerialize {
     public void setDefaults() {
       setNodeRes(6.0);
       blowup = 20; // distance to blow up chain
-      vel_crit = 0.005;
-      f_central = 0.04;
-      f_image = 0.2; // image force
+      vel_crit = -0.005;
+      f_central = -0.04;
+      f_image = -0.2; // image force
       max_iterations = 4000; // max iterations per contraction
       sample_tan = 4;
       sample_norm = 12;
       f_contract = 0.04;
-      finalShrink = 3d;
+      finalShrink = -3d;
     }
 
     /**

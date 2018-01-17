@@ -1088,14 +1088,14 @@ public class BOA_ implements PlugIn {
               100, 10000, 100, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       isBlowup = addIntSpinner("Blowup:", paramPanel, qState.segParam.blowup, 0, 200, 2,
               CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsVelCrit = addDoubleSpinner("Crit velocity:", paramPanel, qState.segParam.vel_crit, 0.0001,
-              2., 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsFImage = addDoubleSpinner("Image F:", paramPanel, qState.segParam.f_image, 0.01, 10., 0.01,
-              CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsFCentral = addDoubleSpinner("Central F:", paramPanel, qState.segParam.f_central, 0.0005, 1,
+      dsVelCrit = addDoubleSpinner("Crit velocity:", paramPanel, qState.segParam.vel_crit, -10, 2.,
+              0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+      dsFImage = addDoubleSpinner("Image F:", paramPanel, qState.segParam.f_image, -10.0, 10.0,
+              0.01, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+      dsFCentral = addDoubleSpinner("Central F:", paramPanel, qState.segParam.f_central, -10, 1,
               0.002, CustomStackWindow.DEFAULT_SPINNER_SIZE);
-      dsFContract = addDoubleSpinner("Contract F:", paramPanel, qState.segParam.f_contract, 0.001,
-              1, 0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
+      dsFContract = addDoubleSpinner("Contract F:", paramPanel, qState.segParam.f_contract, -10, 1,
+              0.001, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       dsFinalShrink = addDoubleSpinner("Final Shrink:", paramPanel, qState.segParam.finalShrink,
               -100, 100, 0.5, CustomStackWindow.DEFAULT_SPINNER_SIZE);
       isSampletan = addIntSpinner("Sample tan:", paramPanel, qState.segParam.sample_tan, 1, 30, 1,
@@ -2444,7 +2444,7 @@ public class BOA_ implements PlugIn {
       int s = 0;
       Snake snake;
       imageGroup.clearPaths(startF);
-
+      LOGGER.debug("Use options: " + qState.segParam.toString());
       for (qState.boap.frame = startF; qState.boap.frame <= endF; qState.boap.frame++) {
         if (isSegBreakHit == true) {
           qState.boap.frame--;
@@ -2458,12 +2458,12 @@ public class BOA_ implements PlugIn {
         try {
           if (qState.boap.frame != startF) { // expand snakes for next frame
             if (!qState.segParam.use_previous_snake) {
-              qState.nest.resetForFrame(qState.boap.frame); // FIXME block here as well? liveSnake
+              qState.nest.resetForFrame(qState.boap.frame); // #274 block here as well? liveSnake
             } else {
               if (!qState.segParam.expandSnake) {
-                constrictor.loosen(qState.nest, qState.boap.frame); // FIXME here? this is about LS
+                constrictor.loosen(qState.nest, qState.boap.frame); // #274 here? this is about LS
               } else {
-                constrictor.implode(qState.nest, qState.boap.frame); // FIXME and here
+                constrictor.implode(qState.nest, qState.boap.frame); // #274 and here
               }
             }
           }
@@ -2750,6 +2750,7 @@ public class BOA_ implements PlugIn {
     Snake snake = snakeH.getLiveSnake();
     imageGroup.setProcessor(f);
     try {
+      LOGGER.debug("Use options: " + qState.segParam.toString());
       imageGroup.drawPath(snake, f); // pre tightned snake on path
       tightenSnake(snake);
       imageGroup.drawPath(snake, f); // post tightned snake on path

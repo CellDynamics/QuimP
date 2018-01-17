@@ -95,7 +95,7 @@ public class Constrictor {
    * @param snake snake
    * @param ip ip
    * @return true on success
-   * @deprecated Strictly related to absolute paths on disk. Probably for testing purposes only.
+   * @deprecated Strictly related to absolute paths on disk. Probably for testing only.
    */
   public boolean constrictWrite(final Snake snake, final ImageProcessor ip) {
     // for writing forces at each frame

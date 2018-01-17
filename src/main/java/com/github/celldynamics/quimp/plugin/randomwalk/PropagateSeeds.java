@@ -506,7 +506,8 @@ public abstract class PropagateSeeds {
      * @param trueBackground if not null, selected method will be used for estimating true
      *        background - excluding bright objects from it
      * @param sigma sigma of Gaussian
-     * @param scaleMagn maximum amplification of scaling index (for curv<<0)
+     * @param scaleMagn maximum amplification of scaling index (for curv<<0). 1.0 causes linear
+     *        shrink.
      * @param averageCurvDist distance to average curvature over. At any case at least 3 nodes are
      *        taken (current, previous and next). See {@link OutlineProcessor}. This parameter plays
      *        as multiplier of average node distance. Setting it to e.g. 5, likely 5 nodes will be
