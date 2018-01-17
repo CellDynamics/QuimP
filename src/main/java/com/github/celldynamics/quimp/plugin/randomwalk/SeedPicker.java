@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -255,7 +256,7 @@ public class SeedPicker extends JFrame {
 
   private void openRoiManager() {
     rm = RoiManager.getRoiManager();
-    rm.reset();
+    // rm.reset();
   }
 
   private void selectTools() {
@@ -317,7 +318,14 @@ public class SeedPicker extends JFrame {
     lastBgNum = 0;
     seedsRoi.clear();
     if (rm != null) {
-      rm.reset();
+      if (rm.getRoisAsArray().length != 0) {
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult =
+                JOptionPane.showConfirmDialog(null, "Clear ROI manager??", "Warning", dialogButton);
+        if (dialogResult == JOptionPane.YES_OPTION) {
+          rm.reset();
+        }
+      }
     }
   }
 

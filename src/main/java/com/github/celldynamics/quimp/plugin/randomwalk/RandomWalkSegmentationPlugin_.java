@@ -859,7 +859,7 @@ public class RandomWalkSegmentationPlugin_ extends PluginTemplate {
           if (seedPickerWnd.seedsRoi.isEmpty()) {
             throw new RandomWalkException("No ROIs processed, did you forget to click Finish?");
           }
-          seeds = seedPickerWnd.seedsRoi.get(startSlice - 1);
+          seeds = seedPickerWnd.seedsRoi.get(0); // TODO startSlice - 1 if it will support frames
           if (model.algOptions.useLocalMean) {
             LOGGER.warn("LocalMean is not used for first frame when seeds are ROIs.");
           }
