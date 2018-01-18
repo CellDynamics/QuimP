@@ -23,6 +23,8 @@ import ij.gui.NewImage;
 import ij.gui.Roi;
 
 /**
+ * HatSnakeFilterRun.
+ * 
  * @author p.baniukiewicz
  *
  */

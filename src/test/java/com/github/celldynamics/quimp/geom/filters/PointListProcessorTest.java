@@ -15,6 +15,8 @@ import org.scijava.vecmath.Point2d;
 import com.github.celldynamics.quimp.plugin.utils.QuimpDataConverter;
 
 /**
+ * PointListProcessorTest.
+ * 
  * @author p.baniukiewicz
  *
  */
