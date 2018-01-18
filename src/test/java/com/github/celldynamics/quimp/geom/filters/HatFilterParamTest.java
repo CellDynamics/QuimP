@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,13 +72,6 @@ public class HatFilterParamTest {
   }
 
   /**
-   * @throws java.lang.Exception on error
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /**
    * Set of parameters for tests.
    * 
    * @return List of strings with paths to testfiles and smooth parameter
@@ -99,7 +91,7 @@ public class HatFilterParamTest {
   }
 
   /**
-   * Test of getInterpolationLoess method
+   * Test of getInterpolationLoess method.
    * 
    * <p>Pre: Real cases extracted from
    * 

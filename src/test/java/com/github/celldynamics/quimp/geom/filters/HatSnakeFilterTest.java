@@ -53,7 +53,7 @@ public class HatSnakeFilterTest {
   public TestName name = new TestName();
 
   /**
-   * Load all data
+   * Load all data.
    * 
    * @throws Exception on error
    * @see <a

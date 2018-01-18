@@ -3,14 +3,13 @@ package com.github.celldynamics.quimp.geom.filters;
 import static com.github.baniuk.ImageJTestSuite.matchers.arrays.ArrayMatchers.arrayCloseTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.vecmath.Point2d;
 
@@ -27,6 +26,8 @@ import ij.IJ;
 import ij.ImagePlus;
 
 /**
+ * OutlineProcessorTest.
+ * 
  * @author p.baniukiewicz
  *
  */
@@ -34,24 +35,14 @@ public class OutlineProcessorTest {
 
   private ImagePlus mask;
   private ArrayList<ArrayList<SegmentedShapeRoi>> ret;
-
   /**
-   * @throws java.lang.Exception Exception
+   * The tmpdir.
    */
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-    // ij = new ImageJ();
-  }
+  static String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 
   /**
-   * @throws java.lang.Exception Exception
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-
-  }
-
-  /**
+   * Setup.
+   * 
    * @throws java.lang.Exception Exception
    */
   @Before
@@ -70,6 +61,8 @@ public class OutlineProcessorTest {
   }
 
   /**
+   * tearDown.
+   * 
    * @throws java.lang.Exception Exception
    */
   @After
@@ -90,15 +83,15 @@ public class OutlineProcessorTest {
   public void testShrinkLin() throws Exception {
     // nc - not changing on run
     SegmentedShapeRoi ssR = ret.get(0).get(0);// nc
-    RoiSaver.saveRoi("/tmp/fgf", ssR);
+    RoiSaver.saveRoi(tmpdir + "fgf", ssR);
     List<Point2d> points = ssR.getOutlineasRawPoints();
-    RoiSaver.saveRoi("/tmp/fgfs", points); // nc
+    RoiSaver.saveRoi(tmpdir + "fgfs", points); // nc
     Outline outline = new QuimpDataConverter(points).getOutline();
-    RoiSaver.saveRoi("/tmp/outline", outline.asList()); // nc
+    RoiSaver.saveRoi(tmpdir + "outline", outline.asList()); // nc
     outline.scaleOutline(3, 0.3, 0.1, 0.01); // modified outline differs in number
     // of points. Not related to conversion.
     outline.unfreezeAll();
-    RoiSaver.saveRoi("/tmp/conv", outline.asFloatRoi()); // every time slightly different
+    RoiSaver.saveRoi(tmpdir + "conv", outline.asFloatRoi()); // every time slightly different
   }
 
   /**
