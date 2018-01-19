@@ -282,16 +282,7 @@ public class Constrictor {
     Snake snakeA;
     Snake snakeB;
 
-    double[][] prox = new double[nestSize][nestSize]; // dist between snake centroids, triangular
-    for (int si = 0; si < nestSize; si++) {
-      snakeA = nest.getHandler(si).getLiveSnake();
-      snakeA.calcCentroid();
-      for (int sj = si + 1; sj < nestSize; sj++) {
-        snakeB = nest.getHandler(sj).getLiveSnake();
-        snakeB.calcCentroid();
-        prox[si][sj] = ExtendedVector2d.lengthP2P(snakeA.getCentroid(), snakeB.getCentroid());
-      }
-    }
+    double[][] prox = computeProxMatrix(nest);
     // will be negative if blowup is <0
     double stepSize = 0.1 * Math.signum(BOA_.qState.segParam.blowup);
     double steps = (double) BOA_.qState.segParam.blowup / stepSize; // always positive
@@ -337,6 +328,60 @@ public class Constrictor {
     }
   }
 
+  public void freezeProxSnakes(final Nest nest, int frame) throws BoaException {
+    int nestSize = nest.size();
+    Snake snakeA;
+    Snake snakeB;
+
+    double[][] prox = computeProxMatrix(nest);
+
+    // check for contacts, freeze nodes in contact.
+    // Ignore snakes that begin after 'frame'
+    for (int si = 0; si < nestSize; si++) {
+      snakeA = nest.getHandler(si).getLiveSnake();
+      if (!snakeA.alive || frame < nest.getHandler(si).getStartFrame()) {
+        continue;
+      }
+      for (int sj = si + 1; sj < nestSize; sj++) {
+        snakeB = nest.getHandler(sj).getLiveSnake();
+        if (!snakeB.alive || frame < nest.getHandler(si).getStartFrame()) {
+          continue;
+        }
+        // proximity is computed for centroids, this is limit below we test for contact.
+        // if snake is big enough it can be not tested even if interact with other
+        if (prox[si][sj] > BOA_.qState.boap.proximity) {
+          continue; // snakes far away, assume no chance that they will interact
+        }
+        freezeProx(snakeA, snakeB);
+      }
+
+    }
+  }
+
+  /**
+   * Compute distance between centroids of all snakes in nest.
+   * 
+   * @param nest nest to process
+   * @return triangular matrix of centroids distances
+   */
+  private double[][] computeProxMatrix(final Nest nest) {
+    int nestSize = nest.size();
+    Snake snakeA;
+    Snake snakeB;
+    // dist between snake centroids, triangular
+    double[][] prox = new double[nestSize][nestSize];
+    for (int si = 0; si < nestSize; si++) {
+      snakeA = nest.getHandler(si).getLiveSnake();
+      snakeA.calcCentroid();
+      for (int sj = si + 1; sj < nestSize; sj++) {
+        snakeB = nest.getHandler(sj).getLiveSnake();
+        snakeB.calcCentroid();
+        prox[si][sj] = ExtendedVector2d.lengthP2P(snakeA.getCentroid(), snakeB.getCentroid());
+      }
+    }
+    return prox;
+  }
+
   /**
    * Freeze nodes that are close to each other in two snakes.
    * 
@@ -365,9 +410,13 @@ public class Constrictor {
         prox = ExtendedVector2d.distPointToSegment(an.getPoint(), bn.getPoint(),
                 bn.getNext().getPoint());
         if (prox < BOA_.qState.boap.proxFreeze) {
-          an.freeze();
-          bn.freeze(); // FIXME using this will exclude Snake.FREEZE from updating. Use from Snake
-          bn.getNext().freeze();
+          a.freezeNode(an);
+          b.freezeNode(bn);
+          b.freezeNode(bn.getNext());
+          // an.freeze();
+          // bn.freeze(); // FIXME using this will exclude Snake.FREEZE from updating. Use from
+          // Snake
+          // bn.getNext().freeze();
           break;
         }
         bn = bn.getNext();
