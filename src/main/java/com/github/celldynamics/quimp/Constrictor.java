@@ -70,7 +70,16 @@ public class Constrictor {
         // store the prelimanary point to move the node to
         tempV.setX(BOA_.qState.boap.delta_t * n.getVel().getX());
         tempV.setY(BOA_.qState.boap.delta_t * n.getVel().getY());
-        n.setPrelim(tempV);
+        n.setPrelim(tempV); // normal
+        // if (BOA_.qState.segParam.contractingDirection == true) {
+        // n.setPrelim(tempV); // normal
+        // } else {
+        // if (n.isFrozen()) {
+        // n.setPrelim(new ExtendedVector2d(0, 0)); // expanding
+        // } else {
+        // n.setPrelim(tempV); // normal
+        // }
+        // }
 
         // add some friction
         n.getVel().multiply(BOA_.qState.boap.f_friction);

@@ -2578,6 +2578,11 @@ public class BOA_ implements PlugIn {
     int i;
 
     for (i = 0; i < qState.segParam.max_iterations; i++) { // iter constrict snake
+      // if snakes are expanded from cell inside, testing against overlapping shuld be done in
+      // expanding step but not in prparatory (loosen) as for constricting
+      // if (qState.segParam.contractingDirection == false) { // expand from inside
+      // constrictor.freezeProxSnakes(qState.nest, qState.boap.frame);
+      // }
       if (i % qState.boap.cut_every == 0) {
         snake.cutLoops(); // cut out loops every p.cut_every timesteps
       }
