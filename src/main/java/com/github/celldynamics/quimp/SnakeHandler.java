@@ -45,15 +45,18 @@ public class SnakeHandler extends ShapeHandler<Snake> implements IQuimpSerialize
   private transient Roi roi;
   /**
    * initial snake being currently processed.
+   * 
+   * <p>Live snake is preserved for whole {@link SnakeHandler} regardless image frame.
    */
   private Snake liveSnake;
   /**
-   * Series of snakes, result of cell segm. and plugin processing. These are the same as stored in
-   * <i>snQP</i> file.
+   * Series of snakes, result of cell segm. and plugin processing.
+   * 
+   * <p>These are the same as stored in <i>snQP</i> file for each frame and can be plugin processed.
    */
   private Snake[] finalSnakes;
   /**
-   * series of snakes, result of cell segmentation only.
+   * series of snakes, result of cell segmentation only. Before plugin application.
    */
   private Snake[] segSnakes;
   /**

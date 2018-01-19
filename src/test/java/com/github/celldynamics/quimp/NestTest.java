@@ -1,6 +1,9 @@
 package com.github.celldynamics.quimp;
 
-import com.github.celldynamics.quimp.Nest;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 /**
  * Verify keys in JSon for tested class (field naming).
@@ -30,6 +33,16 @@ public class NestTest extends JsonKeyMatchTemplate<Nest> {
   protected void prepare() throws Exception {
     ser.doBeforeSerialize = false;
     super.prepare();
+  }
+
+  /**
+   * Test method for {@link com.github.celldynamics.quimp.Nest#allFrozen()}.
+   * 
+   * @throws Exception Exception
+   */
+  @Test
+  public void testAllFrozen() throws Exception {
+    assertThat(obj.allFrozen(), is(true));
   }
 
 }

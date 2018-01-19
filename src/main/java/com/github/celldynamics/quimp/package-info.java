@@ -233,6 +233,14 @@
  * </ol>
  * </ol>
  * 
+ * <h2>Segmentation</h2>
+ * 
+ * Read documentation of {@link com.github.celldynamics.quimp.BOA_#runBoa(int, int)},
+ * {@link com.github.celldynamics.quimp.BOA_#tightenSnake(Snake)},
+ * {@link com.github.celldynamics.quimp.Constrictor},
+ * {@link com.github.celldynamics.quimp.Constrictor#constrict(Snake, ij.process.ImageProcessor)} and
+ * {@link com.github.celldynamics.quimp.Constrictor#loosen(Nest, int)}
+ * 
  * <h1>Code rules</h1>
  * 
  * <h1>Other</h1>

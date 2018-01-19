@@ -10,6 +10,8 @@ import ij.process.ImageProcessor;
 /**
  * Calculate forces that affect the snake. Active Contour segmentation.
  * 
+ * <p>This procedure is aware of possible overlapping and try to counteract them.
+ * 
  * @author rtyson
  */
 public class Constrictor {
@@ -21,11 +23,15 @@ public class Constrictor {
   }
 
   /**
-   * Compute force power.
+   * Compute force power and moves nodes by predefined step.
+   * 
+   * <p>This routine should be called in loop. Each call moves nodes by
+   * {@link BOAState.BOAp#delta_t}.
    * 
    * @param snake Processed snake
    * @param ip Original image
    * @return status of snake (true if it is frozen)
+   * @see BOA_#tightenSnake
    */
   public boolean constrict(final Snake snake, final ImageProcessor ip) {
 
@@ -254,9 +260,18 @@ public class Constrictor {
   }
 
   /**
-   * Expand all snakes while preventing overlaps.
+   * Expand all snakes while preventing overlaps adequately to blowup parameter.
    * 
    * <p>Dead snakes are ignored. Count snakes on frame.
+   * 
+   * <p>This method blows up live snakes (e.g. from previous frame) and prepare for contracting at
+   * current one next frame. snakes are expanded in small steps and at every step their nodes are
+   * tested for proximity {@link BOAState.BOAp#proxFreeze}. Only snakes whose centroids are closer
+   * than {@link BOAState.BOAp#proximity} are tested for overlapping. Note that this actions happen
+   * before contracting snakes around objects. This is preparatory step and if we assume contracting
+   * direction ({@link BOAState.SegParam#contractingDirection} is true) so then after this step
+   * snakes will not overlap during actual segmentation
+   * {@link Constrictor#constrict(Snake, ImageProcessor)}
    * 
    * @param nest nest
    * @param frame frame
@@ -297,8 +312,10 @@ public class Constrictor {
           if (!snakeB.alive || frame < nest.getHandler(si).getStartFrame()) {
             continue;
           }
+          // proximity is computed for centroids, this is limit below we test for contact.
+          // if snake is big enough it can be not tested even if interact with other
           if (prox[si][sj] > BOA_.qState.boap.proximity) {
-            continue;
+            continue; // snakes far away, assume no chance that they will interact
           }
           freezeProx(snakeA, snakeB);
         }
@@ -308,9 +325,9 @@ public class Constrictor {
       // scale up all snakes by one step (if node not frozen, or dead) unless they start at this
       // frame or after
       for (int s = 0; s < nestSize; s++) {
-        if (nest.getHandler(s).isSnakeHandlerFrozen()) {
-          // continue;
-        }
+        // if (nest.getHandler(s).isSnakeHandlerFrozen()) {
+        // continue;
+        // }
         snakeA = nest.getHandler(s).getLiveSnake();
         if (snakeA.alive && frame > nest.getHandler(s).getStartFrame()) {
           snakeA.scaleSnake(stepSize, Math.abs(stepSize), true);
@@ -321,12 +338,16 @@ public class Constrictor {
   }
 
   /**
-   * Freeze Prox.
+   * Freeze nodes that are close to each other in two snakes.
+   * 
+   * <p>This method is called for two snakes whose centroids are closer than
+   * {@link BOAState.BOAp#proximity}
    * 
    * @param a snake
    * @param b snake
+   * @see #loosen(Nest, int)
    */
-  public void freezeProx(final Snake a, final Snake b) {
+  private void freezeProx(final Snake a, final Snake b) {
 
     Node bn;
     Node an = a.getHead();

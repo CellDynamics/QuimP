@@ -16,6 +16,8 @@ import com.github.celldynamics.quimp.plugin.randomwalk.RandomWalkSegmentation.Se
 import ij.ImageStack;
 
 /**
+ * ProbabilityMapsTest.
+ * 
  * @author p.baniukiewicz
  *
  */

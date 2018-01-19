@@ -26,7 +26,7 @@ public class Qp {
   /**
    * Full path to output file.
    * 
-   * <p>Include {@value #filename}
+   * <p>Include {@link #filename}
    */
   public static File outFile;
 
@@ -48,7 +48,7 @@ public class Qp {
   /**
    * Frames per second.
    * 
-   * <p>1/{@value #frameInterval}
+   * <p>1/{@link #frameInterval}
    */
   public static double fps = 1;
 

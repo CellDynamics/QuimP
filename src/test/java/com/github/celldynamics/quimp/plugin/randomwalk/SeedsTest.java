@@ -18,6 +18,8 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
 /**
+ * SeedsTest.
+ * 
  * @author p.baniukiewicz
  *
  */

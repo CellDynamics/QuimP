@@ -56,6 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.celldynamics.quimp.BOAState.BOAp;
+import com.github.celldynamics.quimp.BOAState.SegParam;
 import com.github.celldynamics.quimp.QuimpException.MessageSinkTypes;
 import com.github.celldynamics.quimp.SnakePluginList.Plugin;
 import com.github.celldynamics.quimp.filesystem.DataContainer;
@@ -1106,7 +1107,7 @@ public class BOA_ implements PlugIn {
               1, CustomStackWindow.DEFAULT_SPINNER_SIZE);
 
       cbPrevSnake =
-              addCheckbox("Use Previouse Snake", paramPanel, qState.segParam.use_previous_snake);
+              addCheckbox("Use Previous Snake", paramPanel, qState.segParam.use_previous_snake);
       cbExpSnake = addCheckbox("Expanding Snake", paramPanel, qState.segParam.expandSnake);
       cbExpSnake.setEnabled(false); // FIXME DISABLED OPTION
       cbContractingDirection =
@@ -2558,6 +2559,66 @@ public class BOA_ implements PlugIn {
   }
 
   /**
+   * Perform AC segmentation. Tighten snake around object.
+   * 
+   * <p>This method starts with snakes ({@link SnakeHandler#getLiveSnake()} that were blown up by
+   * {@link Constrictor#loosen(Nest, int)} counteracting overlaps. If
+   * {@link BOAState.SegParam#use_previous_snake} was not set, initial snake is produced from
+   * original ROI by {@link Nest#resetForFrame(int)}. Then
+   * {@link Constrictor#constrict(Snake, ImageProcessor)} is called many times, each time liveSnake
+   * is moved slightly. Note that <b>liveSnake</b> is the same for each frame for given
+   * {@link SnakeHandler}, this is why it can be used for seeding next frame.
+   * 
+   * @param snake snake to process
+   * @throws BoaException if there is too less nodes left
+   * @see SegParam#max_iterations
+   */
+  private void tightenSnake(final Snake snake) throws BoaException {
+
+    int i;
+
+    for (i = 0; i < qState.segParam.max_iterations; i++) { // iter constrict snake
+      if (i % qState.boap.cut_every == 0) {
+        snake.cutLoops(); // cut out loops every p.cut_every timesteps
+      }
+      if (i % 10 == 0 && i != 0) {
+        snake.correctDistance(true);
+      }
+      if (constrictor.constrict(snake, imageGroup.getOrgIp())) { // if all nodes frozen
+        break;
+      }
+      if (i % 4 == 0) {
+        imageGroup.drawPath(snake, qState.boap.frame); // draw current snake
+      }
+
+      if ((snake.getNumPoints() / snake.startingNnodes) > qState.boap.NMAX) {
+        // if max nodes reached (as % starting) prompt for reset
+        if (qState.segParam.use_previous_snake) {
+          // imageGroup.drawContour(snake, frame);
+          // imageGroup.updateAndDraw();
+          throw new BoaException(
+                  "Frame " + qState.boap.frame + "-max nodes reached " + snake.getNumPoints(),
+                  qState.boap.frame, 1);
+        } else {
+          BOA_.log("Frame " + qState.boap.frame + "-max nodes reached..continue");
+          break;
+        }
+      }
+    }
+    snake.unfreezeAll(); // set freeze tag back to false
+
+    if (!qState.segParam.expandSnake) { // shrink a bit to get final outline
+      if (BOA_.qState.segParam.contractingDirection) { // standard behaviour
+        snake.scaleSnake(-BOA_.qState.segParam.finalShrink, 0.5, false);
+      } else { // expanding from cell inside, set the same as contracting
+        snake.scaleSnake(-BOA_.qState.segParam.finalShrink, 0.5, false);
+      }
+    }
+    snake.cutLoops();
+    snake.cutIntersects();
+  }
+
+  /**
    * Process Snake by all active plugins.
    * 
    * <p>Processed Snake is returned as new Snake with the same ID. Input snake is not modified. For
@@ -2637,48 +2698,6 @@ public class BOA_ implements PlugIn {
       LOGGER.debug("sPluginList empty");
     }
     return outsnake;
-
-  }
-
-  private void tightenSnake(final Snake snake) throws BoaException {
-
-    int i;
-
-    for (i = 0; i < qState.segParam.max_iterations; i++) { // iter constrict snake
-      if (i % qState.boap.cut_every == 0) {
-        snake.cutLoops(); // cut out loops every p.cut_every timesteps
-      }
-      if (i % 10 == 0 && i != 0) {
-        snake.correctDistance(true);
-      }
-      if (constrictor.constrict(snake, imageGroup.getOrgIp())) { // if all nodes frozen
-        break;
-      }
-      if (i % 4 == 0) {
-        imageGroup.drawPath(snake, qState.boap.frame); // draw current snake
-      }
-
-      if ((snake.getNumPoints() / snake.startingNnodes) > qState.boap.NMAX) {
-        // if max nodes reached (as % starting) prompt for reset
-        if (qState.segParam.use_previous_snake) {
-          // imageGroup.drawContour(snake, frame);
-          // imageGroup.updateAndDraw();
-          throw new BoaException(
-                  "Frame " + qState.boap.frame + "-max nodes reached " + snake.getNumPoints(),
-                  qState.boap.frame, 1);
-        } else {
-          BOA_.log("Frame " + qState.boap.frame + "-max nodes reached..continue");
-          break;
-        }
-      }
-    }
-    snake.unfreezeAll(); // set freeze tag back to false
-
-    if (!qState.segParam.expandSnake) { // shrink a bit to get final outline
-      snake.scaleSnake(-BOA_.qState.segParam.finalShrink, 0.5, false);
-    }
-    snake.cutLoops();
-    snake.cutIntersects();
   }
 
   /**
